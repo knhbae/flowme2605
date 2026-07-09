@@ -197,7 +197,12 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByRole('heading', { name: '콘텐츠를 일정과 할 일로 저장' })).toBeVisible();
   await expect(page.getByText('서비스 구조')).toHaveCount(0);
   await expect(page.getByText('짧은 단일 Flow')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
+  const urlFirstEntry = page.getByTestId('home-url-first-entry');
+  await expect(urlFirstEntry).toBeVisible();
+  await expect(urlFirstEntry).toHaveAttribute('href', '/flows');
+  await expect(urlFirstEntry).toContainText('URL이나 메모로 Flow 찾기');
+  await expect(urlFirstEntry).toContainText('링크 붙여넣기');
+  await expect(urlFirstEntry).toContainText('요청 메모');
   await expect(page.getByRole('link', { name: '내 콘텐츠로 Flow 만들기' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByText('원룸 이사 D-30').first()).toBeVisible();

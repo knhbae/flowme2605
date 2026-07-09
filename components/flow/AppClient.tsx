@@ -2365,8 +2365,13 @@ export function HomeLanding() {
             블로그, 유튜브, 공식 안내에서 따라 할 부분만 골라 일정과 체크리스트로 저장합니다.
           </p>
           <div className="mt-5 flex flex-wrap gap-3 md:mt-7">
-            <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#3654FF] px-5 py-3 text-sm font-semibold text-white hover:bg-[#2945E8] sm:w-auto" href="/flows">
-              콘텐츠 고르러 가기
+            <Link
+              data-testid="home-url-first-entry"
+              className="inline-flex min-h-12 w-full flex-col items-start justify-center rounded-xl bg-[#3654FF] px-5 py-3 text-left text-sm font-semibold text-white hover:bg-[#2945E8] sm:w-auto sm:min-w-[19rem]"
+              href="/flows"
+            >
+              <span>URL이나 메모로 Flow 찾기</span>
+              <span className="mt-0.5 text-xs font-medium text-white/80">링크 붙여넣기 · 요청 메모 · 준비된 Flow 확인</span>
             </Link>
           </div>
         </div>

@@ -1834,6 +1834,13 @@ async function scanPage(page, options = {}) {
     };
     const homePrimaryRect = rectForElement(document.querySelector('[data-testid="home-primary-flow-card"]'));
     const homeSecondaryRect = rectForElement(document.querySelector('[data-testid="home-secondary-flow-card"]'));
+    const homeUrlFirstEntry = document.querySelector('[data-testid="home-url-first-entry"]');
+    const homeUrlFirstEntryRect = rectForElement(homeUrlFirstEntry);
+    const homeUrlFirstEntryAnchor = anchorHrefs.find((anchor) => anchor.testId === 'home-url-first-entry') ?? null;
+    const homeUrlFirstEntryLabel = normalizeLine(homeUrlFirstEntry?.textContent ?? '');
+    const homeUrlFirstEntryVisible = Boolean(homeUrlFirstEntryRect && homeUrlFirstEntryAnchor?.visible);
+    const homeUrlFirstEntryAboveFold = Boolean(homeUrlFirstEntryRect && homeUrlFirstEntryRect.y >= 0 && homeUrlFirstEntryRect.y < window.innerHeight);
+    const homePrimaryEntryCompetesWithRecommendations = !homeUrlFirstEntryVisible || !homeUrlFirstEntryAboveFold;
     const visibleFlowFindingLinkCount = anchorHrefs.filter((anchor) => anchor.visible && anchor.pathname === '/flows').length;
     const widePrimaryCtaVisible = [
       '[data-testid="home-primary-flow-card"]',
@@ -1920,6 +1927,15 @@ async function scanPage(page, options = {}) {
       },
       markers: {
         homeRecommendationCards: document.querySelectorAll('[data-home-recommendation-card="true"]').length,
+        homeUrlFirstEntry: {
+          visible: homeUrlFirstEntryVisible,
+          label: homeUrlFirstEntryLabel,
+          destination: homeUrlFirstEntryAnchor?.pathname ?? null,
+          aboveFold: homeUrlFirstEntryAboveFold,
+          rect: homeUrlFirstEntryRect,
+          memoEntryVisible: homeUrlFirstEntryVisible && /메모/u.test(homeUrlFirstEntryLabel),
+          competesWithRecommendations: homePrimaryEntryCompetesWithRecommendations,
+        },
         catalogCards: document.querySelectorAll('[data-testid="flow-map-catalog-card"], [data-testid="single-flow-catalog-card"]').length,
         postSavePanel: Boolean(document.querySelector('[data-testid="my-flow-post-save-panel"]')),
         myFlowNowSection: Boolean(document.querySelector('[data-testid="my-flow-now-section"]')),
@@ -2307,6 +2323,14 @@ function summarizeEvidence(records) {
       ...(record.markers?.urlFirst?.candidateResolvedHitScenario ?? {}),
     }))
     .filter((entry) => entry.captured !== undefined || entry.availabilityState);
+  const homeUrlFirstEntryEvidence = records
+    .filter((record) => record.url === '/')
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      viewportWidth: record.viewportWidth,
+      ...(record.markers?.homeUrlFirstEntry ?? {}),
+    }));
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -2334,6 +2358,23 @@ function summarizeEvidence(records) {
         .map((record) => record.markers?.wideLayout?.homeRecommendationCardWidthRatio)
         .filter((value) => typeof value === 'number'),
     ),
+    homeUrlFirstEntryVisible: homeUrlFirstEntryEvidence.some((entry) => entry.visible),
+    homeUrlFirstEntryLabel: Array.from(new Set(homeUrlFirstEntryEvidence.map((entry) => entry.label).filter(Boolean))).slice(0, 5),
+    homeUrlFirstEntryDestination: Array.from(new Set(homeUrlFirstEntryEvidence.map((entry) => entry.destination).filter(Boolean))).slice(0, 5),
+    homeUrlFirstEntryAboveFold: homeUrlFirstEntryEvidence.every((entry) => entry.aboveFold === true),
+    homeMemoEntryVisible: homeUrlFirstEntryEvidence.some((entry) => entry.memoEntryVisible),
+    homePrimaryEntryCompetesWithRecommendations: homeUrlFirstEntryEvidence.some((entry) => entry.competesWithRecommendations),
+    homeUrlFirstEntryByViewport: homeUrlFirstEntryEvidence.reduce((acc, entry) => {
+      const viewportKey = String(entry.viewportWidth ?? viewport.width);
+      acc[viewportKey] = {
+        visible: Boolean(entry.visible),
+        aboveFold: Boolean(entry.aboveFold),
+        destination: entry.destination ?? null,
+        memoEntryVisible: Boolean(entry.memoEntryVisible),
+      };
+      return acc;
+    }, {}),
+    homeUrlFirstEntryEvidence,
     wideViewportGuardrailRouteCount: wideUserSurfaceRecords.length,
     wideViewportInternalHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.internalHits.length, 0),
     wideViewportSourceSlugHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
@@ -3020,6 +3061,8 @@ P19-02 keeps task completion controls unified around a row-left checkbox pattern
 
 P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress uses contextual whole-Flow labels, routine counters use routine-item labels, detail checklists use checklist-context labels, and Today/Calendar rows avoid row-level whole-Flow progress chips.
 
+P19-06 makes the Home URL/memo entry discoverable without adding a second lookup implementation. The Home primary entry points to \`/flows\`, uses explicit URL/memo copy, and records its label, destination, viewport visibility, and whether it remains above the first fold.
+
 P19-07 keeps the post-save editing model discoverable without moving full editing into URL-first. My Flow personal copies expose Flow-wide anchor/name editing as a contextual button such as \`이사일·이름 바꾸기\`, item detail edit entries expose title/date/memo editing with row-title accessible names, and the evidence records anchor-vs-item edit entry visibility by viewport.
 
 ## Files
@@ -3072,6 +3115,12 @@ P19-07 keeps the post-save editing model discoverable without moving full editin
 - Today remaining-count visible count: ${evidence.summary.todayRemainingCountVisible}
 - Calendar selected-day remaining-count visible count: ${evidence.summary.calendarSelectedDayRemainingCountVisible}
 - Date anchor labels by Flow: ${JSON.stringify(evidence.summary.dateAnchorLabelByFlow)}
+- Home URL-first entry visible: ${evidence.summary.homeUrlFirstEntryVisible ? 'yes' : 'no'}
+- Home URL-first entry labels: ${JSON.stringify(evidence.summary.homeUrlFirstEntryLabel)}
+- Home URL-first entry destination: ${JSON.stringify(evidence.summary.homeUrlFirstEntryDestination)}
+- Home URL-first entry above fold: ${evidence.summary.homeUrlFirstEntryAboveFold ? 'yes' : 'no'}
+- Home memo entry visible: ${evidence.summary.homeMemoEntryVisible ? 'yes' : 'no'}
+- Home primary entry competes with recommendations: ${evidence.summary.homePrimaryEntryCompetesWithRecommendations ? 'yes' : 'no'}
 - My Flow anchor edit entry visible: ${evidence.summary.myFlowAnchorEditEntryVisible ? 'yes' : 'no'}
 - My Flow anchor settings open labels: ${JSON.stringify(evidence.summary.myFlowAnchorSettingsOpenLabels)}
 - My Flow anchor settings open accessible names: ${JSON.stringify(evidence.summary.myFlowAnchorSettingsOpenAccessibleNameSamples)}
@@ -3522,6 +3571,10 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteRawIsoHitCount}</b><span>normal raw ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoHitCount}</b><span>normal input ISO hits</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteInputRawIsoExemptCount}</b><span>normal input ISO exempt</span></div>
+      <div class="stat"><b>${evidence.summary.homeUrlFirstEntryVisible ? 'yes' : 'no'}</b><span>home URL/memo entry</span></div>
+      <div class="stat"><b>${escapeHtml((evidence.summary.homeUrlFirstEntryDestination ?? []).join(', ') || '-')}</b><span>home entry destination</span></div>
+      <div class="stat"><b>${evidence.summary.homeUrlFirstEntryAboveFold ? 'yes' : 'no'}</b><span>home entry above fold</span></div>
+      <div class="stat"><b>${evidence.summary.homePrimaryEntryCompetesWithRecommendations ? 'yes' : 'no'}</b><span>home entry competes</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstScenarioTriggerUrlCount}</b><span>URL-first trigger URLs</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstExportModeScannedCount}</b><span>URL-first mode scans</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstVisibleMarkdownHitCount}</b><span>URL-first Markdown hits</span></div>
