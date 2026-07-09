@@ -7517,20 +7517,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
       {savedFlows.length > 0 ? (
         <section className="mb-6">
-          <div className={`mb-2 flex-wrap items-end justify-between gap-3 sm:mb-3 ${isCalendarSurface ? 'hidden lg:flex' : 'hidden sm:flex'}`}>
-            <div>
-              <p className="text-sm font-semibold text-blue-700">{myFlowWorkspaceHeader.eyebrow}</p>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-xl font-semibold">{myFlowWorkspaceHeader.title}</h2>
-                {showDemoData ? (
-                  <span data-testid="my-flow-demo-badge" className="rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
-                    {myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
-                  </span>
-                ) : null}
+          {!isCalendarSurface ? (
+            <div className="mb-2 hidden flex-wrap items-end justify-between gap-3 sm:mb-3 sm:flex">
+              <div>
+                <p className="text-sm font-semibold text-blue-700">{myFlowWorkspaceHeader.eyebrow}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-xl font-semibold">{myFlowWorkspaceHeader.title}</h2>
+                  {showDemoData ? (
+                    <span data-testid="my-flow-demo-badge" className="rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
+                      {myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
+                    </span>
+                  ) : null}
+                </div>
               </div>
+              <p className="hidden text-sm text-gray-500 sm:block">{myFlowWorkspaceHeader.help}</p>
             </div>
-            <p className="hidden text-sm text-gray-500 sm:block">{myFlowWorkspaceHeader.help}</p>
-          </div>
+          ) : null}
           {showPostSavePanel ? renderPostSavePanel() : null}
           {showMyFlowWorkspace ? (
           <div

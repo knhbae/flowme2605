@@ -1395,6 +1395,14 @@ async function scanPage(page, options = {}) {
         .filter(Boolean);
       const myFlowCompactRowTexts = visibleText('[data-testid="my-flow-mobile-structure-row"]');
       const routeLines = visibleText('main h1, main h2, main h3, main p');
+      const pageHeadings = visibleText('main h1, main h2, main h3');
+      const headingCounts = pageHeadings.reduce((counts, label) => {
+        counts.set(label, (counts.get(label) ?? 0) + 1);
+        return counts;
+      }, new Map());
+      const duplicateHeadings = Array.from(headingCounts.entries())
+        .filter(([, count]) => count > 1)
+        .map(([label, count]) => ({ label, count }));
       const calendarPrimaryLabels = uniqueLines([
         ...calendarHeadings,
         ...calendarScopeLabels,
@@ -1430,6 +1438,8 @@ async function scanPage(page, options = {}) {
           /오늘,\s*다음,\s*지난\s*할\s*일/u.test(line)
           || /오늘\s*할\s*일/u.test(line),
         ),
+        calendarHeadingDuplicateCount: duplicateHeadings.reduce((sum, item) => sum + item.count - 1, 0),
+        calendarHeadingDuplicateHits: duplicateHeadings.slice(0, 8),
         calendarPrimaryLabels: calendarPrimaryLabels.slice(0, 12),
       };
     };
@@ -2504,6 +2514,9 @@ function summarizeEvidence(records) {
     calendarPrimaryGenericTypeLabelCount: normal.reduce((sum, record) =>
       sum + (getRoleLabelMeta(record).calendarPrimaryGenericTypeLabelCount ?? 0),
     0),
+    calendarHeadingDuplicateCount: normal.reduce((sum, record) =>
+      sum + (record.url.startsWith('/calendar') ? (getRoleLabelMeta(record).calendarHeadingDuplicateCount ?? 0) : 0),
+    0),
     myFlowPrimaryGenericFlowLabelCount: normal.reduce((sum, record) =>
       sum + (getRoleLabelMeta(record).myFlowPrimaryGenericFlowLabelCount ?? 0),
     0),
@@ -2522,6 +2535,8 @@ function summarizeEvidence(records) {
         calendarTitleContainsMyFlowCount: getRoleLabelMeta(record).calendarTitleContainsMyFlowCount ?? 0,
         calendarPrimaryGenericTypeLabelCount: getRoleLabelMeta(record).calendarPrimaryGenericTypeLabelCount ?? 0,
         calendarPrimaryGenericTypeLabelHits: getRoleLabelMeta(record).calendarPrimaryGenericTypeLabelHits ?? [],
+        calendarHeadingDuplicateCount: getRoleLabelMeta(record).calendarHeadingDuplicateCount ?? 0,
+        calendarHeadingDuplicateHits: getRoleLabelMeta(record).calendarHeadingDuplicateHits ?? [],
         myFlowPrimaryGenericFlowLabelCount: getRoleLabelMeta(record).myFlowPrimaryGenericFlowLabelCount ?? 0,
         myFlowPrimaryGenericFlowLabelHits: getRoleLabelMeta(record).myFlowPrimaryGenericFlowLabelHits ?? [],
         calendarTaskRoleCopyPresent: Boolean(getRoleLabelMeta(record).calendarTaskRoleCopyPresent),
@@ -2999,6 +3014,7 @@ P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress u
 - Calendar agenda grouped by Flow: ${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}
 - Calendar title contains My Flow count: ${evidence.summary.calendarTitleContainsMyFlowCount}
 - Calendar primary generic type label count: ${evidence.summary.calendarPrimaryGenericTypeLabelCount}
+- Calendar heading duplicate count: ${evidence.summary.calendarHeadingDuplicateCount}
 - My Flow primary generic flow label count: ${evidence.summary.myFlowPrimaryGenericFlowLabelCount}
 - Calendar date-first role copy present: ${evidence.summary.calendarTaskRoleCopyPresent ? 'yes' : 'no'}
 - My Flow task-first role copy present: ${evidence.summary.myFlowTaskRoleCopyPresent ? 'yes' : 'no'}
@@ -3491,6 +3507,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}</b><span>calendar grouped by Flow</span></div>
       <div class="stat"><b>${evidence.summary.calendarTitleContainsMyFlowCount}</b><span>calendar title My Flow hits</span></div>
       <div class="stat"><b>${evidence.summary.calendarPrimaryGenericTypeLabelCount}</b><span>calendar generic labels</span></div>
+      <div class="stat"><b>${evidence.summary.calendarHeadingDuplicateCount}</b><span>calendar duplicate headings</span></div>
       <div class="stat"><b>${evidence.summary.myFlowPrimaryGenericFlowLabelCount}</b><span>My Flow generic labels</span></div>
       <div class="stat"><b>${evidence.summary.calendarTaskRoleCopyPresent ? 'yes' : 'no'}</b><span>calendar date-first copy</span></div>
       <div class="stat"><b>${evidence.summary.myFlowTaskRoleCopyPresent ? 'yes' : 'no'}</b><span>My Flow task-first copy</span></div>

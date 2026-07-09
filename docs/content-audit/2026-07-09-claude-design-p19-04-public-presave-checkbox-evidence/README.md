@@ -1,9 +1,9 @@
 # FlowMe Claude Design P19 Final Review Package
 
-- Generated: 2026-07-09T14:57:34.979Z
+- Generated: 2026-07-09T15:21:35.584Z
 - Branch: `main`
-- UI baseline commit: `d11fe27`
-- Package generated from commit: `d11fe27`
+- UI baseline commit: `27a9532`
+- Package generated from commit: `27a9532`
 - Package commit ref: `git commit containing this generated package`
 - Viewport: 390x844
 - Wide viewport spot check: 1024x768
@@ -86,6 +86,7 @@ P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress u
 - Calendar agenda grouped by Flow: yes
 - Calendar title contains My Flow count: 0
 - Calendar primary generic type label count: 0
+- Calendar heading duplicate count: 0
 - My Flow primary generic flow label count: 0
 - Calendar date-first role copy present: yes
 - My Flow task-first role copy present: yes

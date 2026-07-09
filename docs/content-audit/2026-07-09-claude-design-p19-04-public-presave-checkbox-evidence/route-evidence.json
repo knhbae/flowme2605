@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-09T14:57:34.979Z",
+  "generatedAt": "2026-07-09T15:21:35.584Z",
   "packageName": "2026-07-09-claude-design-p19-04-public-presave-checkbox-evidence",
   "reviewCycle": "P19",
   "nextBacklogCycle": "P20",
   "branchName": "main",
-  "uiBaselineCommit": "d11fe27",
-  "packageGeneratedFromCommit": "d11fe27",
+  "uiBaselineCommit": "27a9532",
+  "packageGeneratedFromCommit": "27a9532",
   "packageCommitRef": "git commit containing this generated package",
-  "commit": "d11fe27",
+  "commit": "27a9532",
   "viewport": {
     "width": 390,
     "height": 844
@@ -19,8 +19,8 @@
   "baseURL": "http://127.0.0.1:3221",
   "summary": {
     "totalScreenshots": 47,
-    "uiBaselineCommit": "d11fe27",
-    "packageGeneratedFromCommit": "d11fe27",
+    "uiBaselineCommit": "27a9532",
+    "packageGeneratedFromCommit": "27a9532",
     "packageCommitRef": "git commit containing this generated package",
     "wideViewportEvidenceCount": 10,
     "wideViewportWidth": 1024,
@@ -1153,6 +1153,7 @@
     ],
     "calendarTitleContainsMyFlowCount": 0,
     "calendarPrimaryGenericTypeLabelCount": 0,
+    "calendarHeadingDuplicateCount": 0,
     "myFlowPrimaryGenericFlowLabelCount": 0,
     "calendarTaskRoleCopyPresent": true,
     "myFlowTaskRoleCopyPresent": true,
@@ -1164,6 +1165,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1177,6 +1180,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1190,6 +1195,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1203,6 +1210,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": true,
@@ -1218,6 +1227,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": true,
@@ -1233,6 +1244,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1246,6 +1259,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1259,6 +1274,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1272,6 +1289,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1285,6 +1304,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1298,6 +1319,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -1311,6 +1334,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": true,
@@ -1328,6 +1353,8 @@
         "calendarTitleContainsMyFlowCount": 0,
         "calendarPrimaryGenericTypeLabelCount": 0,
         "calendarPrimaryGenericTypeLabelHits": [],
+        "calendarHeadingDuplicateCount": 0,
+        "calendarHeadingDuplicateHits": [],
         "myFlowPrimaryGenericFlowLabelCount": 0,
         "myFlowPrimaryGenericFlowLabelHits": [],
         "calendarTaskRoleCopyPresent": false,
@@ -2497,6 +2524,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -2839,6 +2868,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -3171,6 +3202,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -3561,6 +3594,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -3951,6 +3986,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -4341,6 +4378,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -4683,6 +4722,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -5063,6 +5104,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -5404,6 +5447,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -5748,6 +5793,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -6079,6 +6126,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -6452,6 +6501,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -6825,6 +6876,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -7191,6 +7244,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -7550,6 +7605,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -7910,6 +7967,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -8274,6 +8333,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -8632,6 +8693,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -8996,6 +9059,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -9370,6 +9435,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -9714,6 +9781,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -10077,6 +10146,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -10475,6 +10546,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": true,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": [
             "날짜 항목"
           ]
@@ -10932,6 +11005,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": true,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": [
             "날짜 항목"
           ]
@@ -11280,6 +11355,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -11644,6 +11721,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -12076,6 +12155,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [
@@ -12446,6 +12527,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -12804,6 +12887,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -13165,6 +13250,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -13593,6 +13680,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [
@@ -13983,6 +14072,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [
@@ -14387,6 +14478,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [
@@ -14791,6 +14884,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [
@@ -15206,6 +15301,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -15544,6 +15641,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -15887,6 +15986,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -16218,6 +16319,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -16560,6 +16663,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -16893,6 +16998,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -17233,6 +17340,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -17402,8 +17511,8 @@
       "label": "Calendar same-date multi-Flow markers wide",
       "route": "/calendar",
       "screenshot": "screenshots/44-calendar-same-date-multi-flow-wide.png",
-      "screenshotBytes": 56980,
-      "screenshotHash": "38aa9616f881f7df6e2a90c87ac1787a44c8c3536a83fb71dfd58d0132bf4e16",
+      "screenshotBytes": 57413,
+      "screenshotHash": "35b4d63ea95c7729325751cd5947b7e9422dcdc8d9ec23986250393004e330a4",
       "category": "wide-viewport",
       "prototypeBucket": false,
       "prototypeTier": null,
@@ -17417,8 +17526,8 @@
       "url": "/calendar",
       "h1": "캘린더",
       "scrollPurpose": null,
-      "scrollY": 58,
-      "scrollHeight": 1933,
+      "scrollY": 0,
+      "scrollHeight": 1873,
       "scrollWidth": 1024,
       "clientWidth": 1024,
       "viewportWidth": 1024,
@@ -17708,6 +17817,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": true,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": [
             "모든 저장 콘텐츠",
             "월간 날짜 보기",
@@ -18058,6 +18169,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": true,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -18402,6 +18515,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -18792,6 +18907,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -19171,6 +19288,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],
@@ -19514,6 +19633,8 @@
           "myFlowPrimaryGenericFlowLabelHits": [],
           "calendarTaskRoleCopyPresent": false,
           "myFlowTaskRoleCopyPresent": false,
+          "calendarHeadingDuplicateCount": 0,
+          "calendarHeadingDuplicateHits": [],
           "calendarPrimaryLabels": []
         },
         "rowControlAccessibleNames": [],

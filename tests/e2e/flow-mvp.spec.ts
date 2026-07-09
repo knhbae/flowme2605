@@ -2891,6 +2891,14 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
   await expect(agendaRows.getByRole('button', { name: /열기/ })).toHaveCount(agendaRowCount);
   await expect(agendaRows.getByTestId('my-flow-task-complete-control')).toHaveCount(agendaRowCount);
   await expect(agendaRows.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  await page.locator('.fc-daygrid-day[data-date="2026-06-03"]').click();
+  await expect(page.locator('main').getByText('날짜별 실행', { exact: true })).toHaveCount(1);
+  const calendarHeadingCount = await page.locator('main h1, main h2, main h3').filter({ hasText: /^캘린더$/ }).count();
+  expect(calendarHeadingCount).toBe(1);
 });
 
 test('calendar route keeps the first agenda and light day cells in the mobile viewport', async ({ page }) => {
