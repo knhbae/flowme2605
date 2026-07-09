@@ -306,6 +306,19 @@ test('capture script exposes URL-first user-copy tone markers', () => {
   assert.ok(script.includes('내가 쓴 제목·메모'));
 });
 
+test('capture script exposes URL-first miss draft gate markers', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('flow-url-miss-draft-gate'));
+  assert.ok(script.includes('urlFirstMissDraftGateVisible'));
+  assert.ok(script.includes('urlFirstMissDraftCtaLabel'));
+  assert.ok(script.includes('urlFirstMissDraftImpliesLiveAi'));
+  assert.ok(script.includes('urlFirstMissCandidateCopyInternalHitCount'));
+});
+
 test('user surface guardrail helpers lock positive and negative display cases', () => {
   assert.equal(normalizeGuardrailLine('  first   line  '), 'first line');
   assert.deepEqual(normalizeGuardrailLines(['  first   line  ', '   ']), ['first line']);

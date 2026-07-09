@@ -1136,18 +1136,18 @@ function getUrlLookupStatusLabel(result: UrlFirstLookupResult): string {
 }
 
 function getUrlSupplyCandidateStatusLabel(candidate: UrlFirstSupplyCandidate): string {
-  return candidate.status === 'needs_review_request' ? '원문 확인 요청' : '새 콘텐츠 요청';
+  return candidate.status === 'needs_review_request' ? '원문 확인 요청' : '초안 요청';
 }
 
 function getUrlSupplyCandidateQueueLabel(candidate: UrlFirstSupplyCandidate): string {
-  return candidate.status === 'needs_review_request' ? '원문 확인 중' : '준비 중';
+  return candidate.status === 'needs_review_request' ? '원문 확인 중' : '초안 준비 중';
 }
 
 function getUrlSupplyCandidateAvailabilityLabel(candidate: UrlFirstSupplyCandidate): string {
   const availability = getUrlFirstSupplyCandidateAvailability(candidate);
   if (availability.state === 'executable') return '이제 실행 가능';
   if (availability.state === 'needs_review') return '원문 확인 중';
-  return '준비 중';
+  return '초안 준비 중';
 }
 
 function getUrlFirstLookupHistoryStatusLabel(status: UrlFirstSupplyCandidateLastLookupStatus): string {
@@ -1184,7 +1184,7 @@ function FlowUrlLookupResult({
   supplyCandidates: UrlFirstSupplyCandidate[];
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
 }) {
-  const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow ? '저장 전 보기' : result.routeHref ? '미리보기 열기' : '요청 대기';
+  const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow ? '저장 전 보기' : result.routeHref ? '미리보기 열기' : '초안 요청 가능';
   const exportModes = result.exportModes.map((mode) => urlFirstExportModeLabels[mode]);
   const sourceBackedStartPackage = useMemo(
     () => (result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined),
@@ -1295,7 +1295,7 @@ function FlowUrlLookupResult({
     const upserted = onSaveSupplyCandidate(candidate);
     setCandidateTitle(upserted.candidate.title);
     setCandidateMemo(upserted.candidate.memo);
-    setCandidateFeedback(upserted.created ? '요청 후보에 저장됨' : '이미 저장한 요청 후보입니다');
+    setCandidateFeedback(upserted.created ? '초안 요청 저장됨' : '이미 저장한 초안 요청입니다');
   };
 
   return (
@@ -1478,16 +1478,16 @@ function FlowUrlLookupResult({
 
       {canRequestSupplyCandidate ? (
         <section data-testid="flow-url-supply-request" className="mt-3 rounded-xl border border-[#E7E4DD] bg-white p-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm font-semibold text-[#1B1A17]">요청으로 남기기</p>
+          <div data-testid="flow-url-miss-draft-gate" className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-[#1B1A17]">초안 준비 요청</p>
             <span className="rounded-full bg-[#FFF7E0] px-2.5 py-1 text-[11px] font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님</span>
           </div>
           <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
-            URL과 메모만 저장합니다. 같은 원문이면 기존 요청을 다시 보여줍니다.
+            URL과 메모를 저장해 두면 초안으로 만들 때 제목, 날짜, 메모를 손볼 기준으로 씁니다. 지금 바로 Flow를 만들지는 않습니다.
           </p>
           {existingSupplyCandidate ? (
             <div data-testid="flow-url-supply-existing" className="mt-3 rounded-lg bg-[#F7FBF4] px-3 py-2 text-xs leading-5 text-[#5F6A5A]">
-              <p className="font-semibold text-[#176D5D]">이미 저장한 요청 후보</p>
+              <p className="font-semibold text-[#176D5D]">이미 저장한 초안 요청</p>
               <p className="mt-1 font-semibold text-[#1B1A17]">{existingSupplyCandidate.title}</p>
               {existingSupplyCandidate.memo ? <p className="mt-1">{existingSupplyCandidate.memo}</p> : null}
               <p className="mt-1 font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님 · {getUrlSupplyCandidateStatusLabel(existingSupplyCandidate)}</p>
@@ -1528,7 +1528,7 @@ function FlowUrlLookupResult({
                   type="submit"
                   className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
                 >
-                  요청으로 저장
+                  초안 요청 저장
                 </button>
                 <span className="text-xs font-semibold text-[#6E6B64]">브라우저에만 저장</span>
               </div>
@@ -1613,7 +1613,7 @@ function FlowUrlSupplyCandidateCard({
   const userSummaryMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
   const productionStatusNote = executable
     ? '이미 Flow로 준비됐어요. Flow 결과로 이동해 바로 시작할 수 있어요.'
-    : '아직 바로 실행할 수 없어 원문과 요청 내용을 보관합니다.';
+    : '원문과 요청 내용을 보관했어요. 초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.';
 
   useEffect(() => {
     setEditTitle(candidate.title);
@@ -1625,7 +1625,7 @@ function FlowUrlSupplyCandidateCard({
   const copyUserSummaryMarkdown = async () => {
     try {
       await navigator.clipboard.writeText(userSummaryMarkdown);
-      setFeedback('요청 정리본 복사됨');
+      setFeedback('초안 요청 정리본 복사됨');
     } catch {
       const textarea = document.createElement('textarea');
       textarea.value = userSummaryMarkdown;
@@ -1636,7 +1636,7 @@ function FlowUrlSupplyCandidateCard({
       textarea.select();
       const copied = document.execCommand('copy');
       document.body.removeChild(textarea);
-      setFeedback(copied ? '요청 정리본 복사됨' : '복사하지 못했습니다.');
+      setFeedback(copied ? '초안 요청 정리본 복사됨' : '복사하지 못했습니다.');
     }
   };
 
@@ -1646,7 +1646,7 @@ function FlowUrlSupplyCandidateCard({
       memo: editMemo,
     });
     if (!updated.updated || !updated.candidate) {
-      setFeedback('수정할 후보를 찾지 못했습니다.');
+      setFeedback('수정할 요청을 찾지 못했습니다.');
       return;
     }
     setEditTitle(updated.candidate.title);
@@ -1685,9 +1685,9 @@ function FlowUrlSupplyCandidateCard({
           }}
         >
           <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
-            후보 제목 수정
+            요청 제목 수정
             <input
-              aria-label="후보 제목 수정"
+              aria-label="요청 제목 수정"
               className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
               value={editTitle}
               maxLength={80}
@@ -1695,9 +1695,9 @@ function FlowUrlSupplyCandidateCard({
             />
           </label>
           <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
-            후보 메모 수정
+            요청 메모 수정
             <textarea
-              aria-label="후보 메모 수정"
+              aria-label="요청 메모 수정"
               className="min-h-20 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
               value={editMemo}
               maxLength={240}
@@ -1797,7 +1797,7 @@ function FlowUrlSupplyCandidateCard({
             data-testid="flow-url-supply-user-summary-copy"
             onClick={copyUserSummaryMarkdown}
           >
-            요청 정리본 복사
+            초안 요청 정리본 복사
           </button>
         </div>
       ) : null}
@@ -1822,7 +1822,7 @@ function FlowUrlSupplyCandidateList({
   return (
     <section data-testid="flow-url-supply-candidate-list" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-[#1B1A17]">내가 요청한 후보</h2>
+        <h2 className="text-sm font-semibold text-[#1B1A17]">내 초안 요청</h2>
         <span className="rounded-full bg-[#FFF7E0] px-2.5 py-1 text-[11px] font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님</span>
       </div>
       <div className="mt-3 grid gap-2 sm:grid-cols-2">

@@ -108,7 +108,7 @@ const TRACKING_QUERY_KEYS = new Set(['fbclid', 'gclid']);
 
 const aiDisabledForP0: UrlFirstAiGenerationState = {
   enabled: false,
-  reason: '지금은 기존 Flow를 먼저 찾아보고, 새로 필요한 URL은 요청으로 남깁니다.',
+  reason: '지금은 기존 Flow를 먼저 찾아보고, 새로 필요한 URL은 초안 요청으로 보관합니다.',
 };
 
 const movingHitPreview: UrlFirstPreview = {
@@ -140,7 +140,7 @@ const missPreview: UrlFirstPreview = {
   calendar: [],
   markdown: [],
   checklist: [],
-  myFlow: ['아직 저장 가능한 Flow가 없어요.', 'URL과 메모를 남겨두면 준비 상태로 보관합니다.'],
+  myFlow: ['아직 저장 가능한 Flow가 없어요.', 'URL과 메모를 초안 요청으로 보관합니다.'],
 };
 
 const memoDraftPreview: UrlFirstPreview = {
@@ -362,7 +362,7 @@ function buildMiss(input: string, canonicalUrl?: string): UrlFirstLookupResult {
     canonicalUrl,
     displayUrl: canonicalUrl ?? input.trim(),
     title: '아직 Flow화되지 않은 URL입니다',
-    summary: '아직 준비된 Flow가 없어요. URL과 메모를 남겨두면 준비 상태로 보관합니다.',
+    summary: '아직 준비된 Flow가 없어요. URL과 메모를 초안 요청으로 보관하고, 바로 만들지는 않습니다.',
     sourceStatus: 'missing',
     exportModes: [],
     canExport: false,

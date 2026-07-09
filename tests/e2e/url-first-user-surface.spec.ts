@@ -200,15 +200,21 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('아직 Flow화되지 않은 URL입니다');
   await expect(result).toContainText('이미 만든 준비가 있는지 먼저 찾아봤어요');
+  await expect(result.getByTestId('flow-url-miss-draft-gate')).toBeVisible();
+  await expect(result).toContainText('초안 준비 요청');
+  await expect(result).toContainText('지금 바로 Flow를 만들지는 않습니다');
   await expect(result).not.toContainText('AI 자동 생성 없이 먼저 찾아봤어요');
+  await expect(result).not.toContainText(/AI가|자동 생성|바로 생성|생성 중/);
   await expectCleanUrlFirstUserSurface(result);
 
   await result.getByLabel('요청 제목').fill('새로 보고 싶은 준비 체크리스트');
   await result.getByLabel('요청 메모').fill('URL에서 따라 할 순서만 남겨두고 싶음');
-  await result.getByRole('button', { name: '요청으로 저장' }).click();
+  await result.getByRole('button', { name: '초안 요청 저장' }).click();
 
   const candidateList = page.getByTestId('flow-url-supply-candidate-list');
   await expect(candidateList).toBeVisible();
+  await expect(candidateList).toContainText('내 초안 요청');
+  await expect(candidateList).not.toContainText('내가 요청한 후보');
   const candidateCard = candidateList.locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' });
   await expect(candidateCard).toBeVisible();
   await expectCleanUrlFirstUserSurface(candidateCard);
@@ -217,16 +223,18 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   await expect(candidateCard.getByTestId('flow-url-supply-production-handoff')).toBeVisible();
   await expect(candidateCard).toContainText('내가 쓴 제목·메모');
   await expect(candidateCard).toContainText('마지막 확인');
+  await expect(candidateCard).toContainText('초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요');
   await expect(candidateCard).not.toContainText('사용자 제목/메모');
   await expect(candidateCard).not.toContainText('마지막 다시 조회');
   await expectCleanUrlFirstUserSurface(candidateCard);
 
   await candidateCard.getByTestId('flow-url-supply-user-summary-copy').click();
-  await expect(candidateCard).toContainText('요청 정리본 복사됨');
+  await expect(candidateCard).toContainText('초안 요청 정리본 복사됨');
   const copiedText = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copiedText).toContain('# 요청 정리본');
+  expect(copiedText).toContain('# 초안 요청 정리본');
   expect(copiedText).toContain('새로 보고 싶은 준비 체크리스트');
   expect(copiedText).toContain('URL에서 따라 할 순서만 남겨두고 싶음');
+  expect(copiedText).toContain('초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.');
   expectCleanUserFacingOutput(copiedText);
 });
 

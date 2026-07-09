@@ -282,8 +282,8 @@ function getUserFacingLastLookupLabel(candidate: UrlFirstSupplyCandidate): strin
 function getUserFacingCandidateStatusNote(candidate: UrlFirstSupplyCandidate): string {
   const availability = getUrlFirstSupplyCandidateAvailability(candidate);
   if (availability.state === 'executable') return '같은 원문으로 바로 시작할 수 있는 Flow가 준비됐어요.';
-  if (availability.state === 'needs_review') return '원문 확인이 더 필요해 요청 내용을 보관했어요.';
-  return '아직 실행 가능한 Flow가 없어 요청 내용을 보관했어요.';
+  if (availability.state === 'needs_review') return '원문 확인이 더 필요해 초안 요청으로 보관했어요.';
+  return '아직 바로 시작할 Flow가 없어 초안 요청으로 보관했어요.';
 }
 
 export function buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate: UrlFirstSupplyCandidate): string {
@@ -291,7 +291,7 @@ export function buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate: UrlFi
   if (!normalized) return '';
 
   return [
-    '# 요청 정리본',
+    '# 초안 요청 정리본',
     '',
     `- 원문 링크: ${normalized.originalUrl}`,
     `- 요청 제목: ${normalized.title}`,
@@ -300,7 +300,7 @@ export function buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate: UrlFi
     `- 현재 상태: ${getUserFacingCandidateStatusNote(normalized)}`,
     `- 마지막 확인: ${getUserFacingLastLookupLabel(normalized)}`,
     '',
-    '필요하면 이 내용을 바탕으로 FlowMe에서 다시 찾아보거나 요청 내용을 수정할 수 있어요.',
+    '초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.',
     '',
   ].join('\n');
 }

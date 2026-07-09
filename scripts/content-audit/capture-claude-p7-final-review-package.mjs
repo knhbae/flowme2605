@@ -863,7 +863,7 @@ async function captureUrlFirstCandidateDetail(page, captureOptions = {}) {
 
 async function collectUrlFirstCandidateUserCopyEvidence(page, candidateCard, candidateFixture) {
   await candidateCard.getByTestId('flow-url-supply-user-summary-copy').click();
-  await candidateCard.getByText('요청 정리본 복사됨').waitFor({ state: 'visible' });
+  await candidateCard.getByText('초안 요청 정리본 복사됨').waitFor({ state: 'visible' });
   const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
   const guardrailResult = scanUserFacingOutputGuardrails({
     text: clipboardText,
@@ -1527,6 +1527,8 @@ async function scanPage(page, options = {}) {
       const lookupResult = document.querySelector('[data-testid="flow-url-lookup-result"]');
       const customStart = document.querySelector('[data-testid="flow-url-custom-start-panel"]');
       const supplyForm = document.querySelector('[data-testid="flow-url-supply-candidate-form"]');
+      const supplyRequest = document.querySelector('[data-testid="flow-url-supply-request"]');
+      const missDraftGate = document.querySelector('[data-testid="flow-url-miss-draft-gate"]');
       const candidateList = document.querySelector('[data-testid="flow-url-supply-candidate-list"]');
       const requestDetail = document.querySelector('[data-testid="flow-url-supply-production-handoff"]');
       const resultText = normalizeLine(lookupResult?.textContent ?? '');
@@ -1554,6 +1556,13 @@ async function scanPage(page, options = {}) {
       const candidateCardTextLines = candidateList
         ? uniqueLines(Array.from(candidateList.querySelectorAll('article')).flatMap((card) => collectElementLines(card)))
         : [];
+      const missDraftGateLines = supplyRequest
+        ? uniqueLines(collectElementLines(supplyRequest))
+        : [];
+      const missDraftLiveAiLines = missDraftGateLines.filter((line) =>
+        /AI가|AI로|자동\s*생성|바로\s*생성|생성\s*중|실시간\s*생성|지금\s*만들어/u.test(line),
+      );
+      const missDraftCta = supplyForm?.querySelector('button[type="submit"]') ?? null;
       const startDateInput = lookupResult?.querySelector('[data-testid="url-first-start-date-input"]')
         ?? document.querySelector('[data-testid="url-first-start-date-input"]');
       const startDateInputValue = startDateInput && 'value' in startDateInput ? startDateInput.value : '';
@@ -1568,6 +1577,13 @@ async function scanPage(page, options = {}) {
         supplyFormVisible: Boolean(supplyForm && isVisible(supplyForm)),
         candidateListVisible: Boolean(candidateList && isVisible(candidateList)),
         requestDetailVisible: Boolean(requestDetail && isVisible(requestDetail)),
+        missDraftGate: {
+          visible: Boolean(missDraftGate && isVisible(missDraftGate)),
+          ctaLabel: normalizeLine(missDraftCta?.textContent ?? ''),
+          copyLines: missDraftGateLines.slice(0, 12),
+          impliesLiveAi: missDraftLiveAiLines.length > 0,
+          liveAiLines: missDraftLiveAiLines,
+        },
         visibleMarkdownHitCount: visibleMarkdownLines.length,
         visibleMarkdownLines,
         mechanismCopyOldHitCount: mechanismCopyOldLines.length,
@@ -2084,6 +2100,15 @@ function summarizeEvidence(records) {
       ...(record.markers?.urlFirst?.candidateUserCopyEvidence ?? {}),
     }))
     .filter((entry) => entry.copiedTextHash);
+  const urlFirstMissDraftGateEvidence = urlFirst
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      state: record.urlFirstState,
+      scenarioName: record.urlFirstScenarioName ?? record.markers?.urlFirst?.scenarioName ?? null,
+      ...(record.markers?.urlFirst?.missDraftGate ?? {}),
+    }))
+    .filter((entry) => entry.visible || entry.ctaLabel);
   const urlFirstScenarioTriggers = urlFirst
     .map((record) => ({
       recordId: record.id,
@@ -2480,6 +2505,10 @@ function summarizeEvidence(records) {
       (sum, entry) => sum + (entry.forbiddenHitCount ?? 0),
       0,
     ),
+    urlFirstMissCandidateCopyInternalHitCount: urlFirstCandidateUserCopyEvidence.reduce(
+      (sum, entry) => sum + (entry.forbiddenHitCount ?? 0),
+      0,
+    ),
     urlFirstCandidateUserCopyForbiddenHits: urlFirstCandidateUserCopyEvidence.flatMap((entry) =>
       (entry.forbiddenHits ?? []).map((hit) => ({
         route: entry.route,
@@ -2502,6 +2531,14 @@ function summarizeEvidence(records) {
     urlFirstCandidateResolvedHitScenarioCaptured: urlFirstCandidateResolvedHitScenarios.some((entry) => entry.captured),
     urlFirstCandidateResolvedHitScenarioStatus: urlFirstCandidateResolvedHitScenarios.find((entry) => entry.captured)?.availabilityState ?? 'not-captured',
     urlFirstCandidateResolvedHitScenarios,
+    urlFirstMissDraftGateVisible: urlFirstMissDraftGateEvidence.some((entry) => entry.visible),
+    urlFirstMissDraftCtaLabel: urlFirstMissDraftGateEvidence.find((entry) => entry.ctaLabel)?.ctaLabel ?? '',
+    urlFirstMissDraftImpliesLiveAi: urlFirstMissDraftGateEvidence.some((entry) => entry.impliesLiveAi),
+    urlFirstMissDraftLiveAiHitCount: urlFirstMissDraftGateEvidence.reduce(
+      (sum, entry) => sum + (entry.liveAiLines?.length ?? 0),
+      0,
+    ),
+    urlFirstMissDraftGateEvidence,
     urlFirstStartDateInputVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.startDateInput?.visible).length,
     urlFirstStartDateInputMarkers: urlFirst
       .map((record) => ({
@@ -2715,6 +2752,8 @@ P18-04/P18-06 separate Calendar and My Flow role language. Calendar is measured 
 
 P18-07 makes the URL-first and My Flow date anchor copy contextual. The summary records URL-first date-anchor labels, My Flow anchor edit-entry labels, item-level date override labels, and whether the copy distinguishes whole-Flow anchor changes from one-item date overrides.
 
+P18-08 keeps URL-first miss as a draft-preparation gate instead of implying live AI generation. The miss state records a visible draft-gate entry, the CTA label, whether copy implies live AI, and the candidate user-copy output guardrail count so the future AI draft path can be judged before real API integration.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -2819,6 +2858,11 @@ P18-07 makes the URL-first and My Flow date anchor copy contextual. The summary 
 - URL-first candidate expanded detail captured: ${evidence.summary.urlFirstCandidateExpandedDetailCaptured}
 - URL-first candidate resolved-hit scenario captured: ${evidence.summary.urlFirstCandidateResolvedHitScenarioCaptured}
 - URL-first candidate resolved-hit scenario status: ${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}
+- URL-first miss draft gate visible: ${evidence.summary.urlFirstMissDraftGateVisible ? 'yes' : 'no'}
+- URL-first miss draft CTA label: ${evidence.summary.urlFirstMissDraftCtaLabel}
+- URL-first miss draft implies live AI: ${evidence.summary.urlFirstMissDraftImpliesLiveAi ? 'yes' : 'no'}
+- URL-first miss draft live-AI copy hits: ${evidence.summary.urlFirstMissDraftLiveAiHitCount}
+- URL-first miss/candidate user-copy internal hits: ${evidence.summary.urlFirstMissCandidateCopyInternalHitCount}
 - URL-first start date input visible count: ${evidence.summary.urlFirstStartDateInputVisibleCount}
 - URL-first visible marker count: ${evidence.summary.urlFirstMarkerVisibleCount}
 - Prototype release-preview route count: ${evidence.summary.prototypeReleasePreviewRouteCount}
@@ -2918,6 +2962,12 @@ P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda re
 P18-02 merges My Flow's today execution/status framing. The package records \`myFlowTodayFrameCount\`, \`myFlowTodayRemainingCountSourceCount\`, \`myFlowTodayInlineCompleteControlCount\`, \`myFlowTodayOpenBeforeCompleteRequired\`, and \`myFlowTodayGenericMetaChipCount\` so Claude Design can verify that today's work has one count source and can be completed inline without opening detail first.
 
 P18-03 keeps public share \`/f\` save/export/item responsibilities auditable. The summary records Flow-level save primary count, one secondary export entry per public share route, export format option count, item-level export-like label count, and pre-save preview control counts.
+
+P18-04/P18-06 separate Calendar and My Flow role language. Calendar should read as the date-first execution surface, My Flow as the task-first execution hub, and primary labels should not fall back to generic type copy such as \`월간 일정\`, \`저장한 일정\`, or \`일정 흐름\`.
+
+P18-07 makes URL-first and My Flow date-anchor copy contextual. The evidence records URL-first date-anchor labels, My Flow anchor edit-entry labels, item-level date override labels, and whether the copy distinguishes whole-Flow anchor changes from one-item date overrides.
+
+P18-08 frames URL-first miss as a draft-preparation request without pretending that live AI generation already exists. The miss state should show a visible draft gate and a clear CTA, while \`urlFirstMissDraftImpliesLiveAi\` and \`urlFirstMissCandidateCopyInternalHitCount\` stay at zero.
 
 ## Baselines Covered
 
@@ -3188,6 +3238,9 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.urlFirstCandidateCardLegacyStatusHitCount}</b><span>candidate card legacy hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateExpandedDetailCaptured ? 'yes' : 'no'}</b><span>candidate detail expanded</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}</b><span>resolved candidate status</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftGateVisible ? 'yes' : 'no'}</b><span>miss draft gate</span></div>
+      <div class="stat"><b>${escapeHtml(evidence.summary.urlFirstMissDraftCtaLabel ?? '-')}</b><span>miss draft CTA</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftLiveAiHitCount}</b><span>miss live-AI copy hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstStartDateInputVisibleCount}</b><span>URL-first date inputs</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>

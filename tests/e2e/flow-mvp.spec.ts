@@ -392,7 +392,7 @@ test('flow finding URL lookup reuses existing source-backed Flows first', async 
   await lookup.getByLabel('원문 URL').fill('https://example.com/some-plan?utm_source=newsletter');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   await expect(result).toContainText('아직 Flow화되지 않은 URL입니다');
-  await expect(result).toContainText('요청 대기');
+  await expect(result).toContainText('초안 요청 가능');
   await expect(result).toContainText('저장 대기');
   await expect(result).not.toContainText('이미 만들어진 Flow가 있어요');
   await expectNoHorizontalOverflow(page);
@@ -412,14 +412,17 @@ test('flow finding URL lookup saves production candidates without AI generation'
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('아직 Flow화되지 않은 URL입니다');
   await expect(result).toContainText('아직 실행 가능한 Flow 아님');
+  await expect(result.getByTestId('flow-url-miss-draft-gate')).toBeVisible();
+  await expect(result).toContainText('초안 준비 요청');
+  await expect(result).toContainText('지금 바로 Flow를 만들지는 않습니다');
   await expect(result.getByTestId('flow-url-supply-candidate-form')).toBeVisible();
   await result.getByLabel('요청 제목').fill('예시 준비 체크리스트');
   await result.getByLabel('요청 메모').fill('블로그에서 따라 하고 싶은 단계가 있어서 Flow 후보로 남김');
-  await result.getByRole('button', { name: '요청으로 저장' }).click();
+  await result.getByRole('button', { name: '초안 요청 저장' }).click();
 
-  await expect(result.getByTestId('flow-url-supply-existing')).toContainText('이미 저장한 요청 후보');
+  await expect(result.getByTestId('flow-url-supply-existing')).toContainText('이미 저장한 초안 요청');
   const candidateList = page.getByTestId('flow-url-supply-candidate-list');
-  await expect(candidateList).toContainText('내가 요청한 후보');
+  await expect(candidateList).toContainText('내 초안 요청');
   await expect(candidateList).toContainText('예시 준비 체크리스트');
   await expect(candidateList).toContainText('아직 실행 가능한 Flow 아님');
 
@@ -436,7 +439,7 @@ test('flow finding URL lookup saves production candidates without AI generation'
 
   await lookup.getByLabel('원문 URL').fill('https://example.com/some-plan?utm_campaign=again');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
-  await expect(result.getByTestId('flow-url-supply-existing')).toContainText('이미 저장한 요청 후보');
+  await expect(result.getByTestId('flow-url-supply-existing')).toContainText('이미 저장한 초안 요청');
   await expect(result).toContainText('예시 준비 체크리스트');
   await expect(result.getByTestId('flow-url-supply-candidate-form')).toHaveCount(0);
   storedCandidates = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:url-first:supply-candidates') || '[]'));
@@ -448,7 +451,7 @@ test('flow finding URL lookup saves production candidates without AI generation'
   await expect(result).toContainText('아직 실행 가능한 Flow 아님');
   await result.getByLabel('요청 제목').fill('자동차검사 준비 보강 요청');
   await result.getByLabel('요청 메모').fill('원문 확인 뒤 실행 가능하게 만들 후보');
-  await result.getByRole('button', { name: '요청으로 저장' }).click();
+  await result.getByRole('button', { name: '초안 요청 저장' }).click();
 
   storedCandidates = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:url-first:supply-candidates') || '[]'));
   expect(storedCandidates).toHaveLength(2);
@@ -502,8 +505,8 @@ test('flow finding production candidates can be revisited edited resolved and re
   await expect(manageCard.getByRole('link', { name: '원 URL 열기' })).toHaveAttribute('href', 'https://example.com/manage-me?utm_source=user');
 
   await manageCard.getByRole('button', { name: '제목/메모 수정' }).click();
-  await manageCard.getByLabel('후보 제목 수정').fill('수정한 후보 제목');
-  await manageCard.getByLabel('후보 메모 수정').fill('수정한 후보 메모');
+  await manageCard.getByLabel('요청 제목 수정').fill('수정한 후보 제목');
+  await manageCard.getByLabel('요청 메모 수정').fill('수정한 후보 메모');
   await manageCard.getByRole('button', { name: '수정 저장' }).click();
   await expect(candidateList).toContainText('수정한 후보 제목');
   await expect(candidateList).toContainText('수정한 후보 메모');
@@ -656,14 +659,15 @@ test('flow finding production candidates expose a production handoff markdown wi
   await expect(pendingCard).toContainText('7월 5일 · 아직 준비 전');
   await expect(pendingCard).not.toContainText('sourceTrace');
 
-  await pendingCard.getByRole('button', { name: '요청 정리본 복사' }).click();
-  await expect(pendingCard).toContainText('요청 정리본 복사됨');
+  await pendingCard.getByRole('button', { name: '초안 요청 정리본 복사' }).click();
+  await expect(pendingCard).toContainText('초안 요청 정리본 복사됨');
   const copiedMarkdown = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copiedMarkdown).toContain('# 요청 정리본');
+  expect(copiedMarkdown).toContain('# 초안 요청 정리본');
   expect(copiedMarkdown).toContain('요청 준비 후보');
   expect(copiedMarkdown).toContain('원문을 보고 따라 하고 싶어서 남김');
   expect(copiedMarkdown).toContain('https://example.com/production-ready?utm_source=user');
-  expect(copiedMarkdown).toContain('아직 실행 가능한 Flow가 없어 요청 내용을 보관했어요.');
+  expect(copiedMarkdown).toContain('아직 바로 시작할 Flow가 없어 초안 요청으로 보관했어요.');
+  expect(copiedMarkdown).toContain('초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.');
   expect(copiedMarkdown).not.toContain('handoff');
   expect(copiedMarkdown).not.toContain('Canonical URL');
   expect(copiedMarkdown).not.toContain('Original URL');
