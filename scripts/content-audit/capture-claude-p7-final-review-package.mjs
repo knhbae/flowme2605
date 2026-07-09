@@ -1178,7 +1178,7 @@ async function scanPage(page, options = {}) {
       const remainingCountElements = Array.from(document.querySelectorAll('[data-testid="my-flow-today-remaining-count"]'))
         .filter((element) => isVisible(element));
       const inlineCompleteControls = section
-        ? Array.from(section.querySelectorAll('[data-testid="my-flow-mobile-continuation-complete"]'))
+        ? Array.from(section.querySelectorAll('[data-testid="my-flow-task-complete-control"]'))
           .filter((element) => isVisibleInteractiveElement(element))
         : [];
       const todayTaskVisible = sectionVisible && inlineCompleteControls.length > 0;
@@ -1201,6 +1201,49 @@ async function scanPage(page, options = {}) {
         genericMetaChipCount,
         firstInlineCompleteAccessibleName: getAccessibleNameCandidate(inlineCompleteControls[0]),
         todayTaskVisible,
+      };
+    };
+    const collectTaskCompletionControlPatterns = () => {
+      const taskCompleteCheckboxes = Array.from(document.querySelectorAll('[data-testid="my-flow-task-complete-control"]'))
+        .filter((element) => isVisibleInteractiveElement(element));
+      const taskCompleteButtonSelectors = [
+        '[data-testid="my-flow-now-section"] button',
+        '[data-testid="my-flow-status-sheet"] button',
+        '[data-testid="my-flow-calendar-selected-day"] article button',
+        '[data-testid="my-flow-item-detail"] button',
+      ].join(',');
+      const taskCompleteButtonPattern = /(?:^완료$|^취소$|^완료됨$|^항목 완료$|완료 체크$|완료 취소$|이번 항목 완료(?: 취소)?$)/u;
+      const taskCompleteButtons = Array.from(document.querySelectorAll(taskCompleteButtonSelectors))
+        .filter((element) => isVisibleInteractiveElement(element))
+        .filter((element) => {
+          const visibleLabel = getVisibleLabel(element);
+          const accessibleName = getAccessibleNameCandidate(element);
+          return taskCompleteButtonPattern.test(visibleLabel) || taskCompleteButtonPattern.test(accessibleName);
+        });
+      const subChecklistCheckboxes = Array.from(document.querySelectorAll([
+        '[data-testid="my-flow-item-checklist"] input[type="checkbox"]',
+        '[data-testid="artifact-list-card"] input[type="checkbox"]',
+      ].join(','))).filter((element) => isVisibleInteractiveElement(element));
+
+      return {
+        taskCompleteControlPattern: taskCompleteButtons.length > 0
+          ? (taskCompleteCheckboxes.length > 0 ? 'mixed' : 'button')
+          : (taskCompleteCheckboxes.length > 0 ? 'checkbox' : 'none'),
+        taskCompleteCheckboxCount: taskCompleteCheckboxes.length,
+        taskCompleteButtonCount: taskCompleteButtons.length,
+        taskCompleteMixedControlCount: taskCompleteButtons.length > 0 && taskCompleteCheckboxes.length > 0 ? taskCompleteButtons.length : 0,
+        taskCompleteButtonSamples: taskCompleteButtons.slice(0, 5).map((element) => ({
+          surface: getSurfaceName(element),
+          visibleLabel: getVisibleLabel(element),
+          accessibleName: getAccessibleNameCandidate(element),
+          testId: getElementTestId(element),
+        })),
+        taskCompleteCheckboxSamples: taskCompleteCheckboxes.slice(0, 5).map((element) => ({
+          surface: getSurfaceName(element),
+          accessibleName: getAccessibleNameCandidate(element),
+          checked: Boolean(element.checked),
+        })),
+        subChecklistCheckboxCount: subChecklistCheckboxes.length,
       };
     };
     const collectPostSaveConfirmation = () => {
@@ -1792,6 +1835,7 @@ async function scanPage(page, options = {}) {
         statusSheetRows: document.querySelectorAll('[data-testid="my-flow-status-sheet-row"]').length,
         continuationActionable: collectContinuationActionable(),
         myFlowTodayFrame: collectMyFlowTodayFrame(),
+        taskCompletionControls: collectTaskCompletionControlPatterns(),
         postSaveConfirmation: collectPostSaveConfirmation(),
         dateAnchor: collectDateAnchorMarkers(),
         agendaGroupMeta: collectAgendaGroupMeta(),
@@ -2307,6 +2351,36 @@ function summarizeEvidence(records) {
         openBeforeCompleteRequired: Boolean(record.markers?.myFlowTodayFrame?.openBeforeCompleteRequired),
         genericMetaChipCount: record.markers?.myFlowTodayFrame?.genericMetaChipCount ?? 0,
         firstInlineCompleteAccessibleName: record.markers?.myFlowTodayFrame?.firstInlineCompleteAccessibleName ?? '',
+      })),
+    taskCompleteCheckboxCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.taskCompletionControls?.taskCompleteCheckboxCount ?? 0),
+    0),
+    taskCompleteButtonCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.taskCompletionControls?.taskCompleteButtonCount ?? 0),
+    0),
+    taskCompleteMixedControlCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.taskCompletionControls?.taskCompleteMixedControlCount ?? 0),
+    0),
+    subChecklistCheckboxCount: normal.reduce((sum, record) =>
+      sum + (record.markers?.taskCompletionControls?.subChecklistCheckboxCount ?? 0),
+    0),
+    taskCompleteControlPatternEvidence: normal
+      .filter((record) =>
+        record.url.startsWith('/my')
+        || record.url.startsWith('/calendar')
+        || record.url.startsWith('/f/'),
+      )
+      .map((record) => ({
+        id: record.id,
+        route: record.url,
+        viewportWidth: record.viewportWidth,
+        pattern: record.markers?.taskCompletionControls?.taskCompleteControlPattern ?? 'none',
+        checkboxCount: record.markers?.taskCompletionControls?.taskCompleteCheckboxCount ?? 0,
+        buttonCount: record.markers?.taskCompletionControls?.taskCompleteButtonCount ?? 0,
+        mixedControlCount: record.markers?.taskCompletionControls?.taskCompleteMixedControlCount ?? 0,
+        subChecklistCheckboxCount: record.markers?.taskCompletionControls?.subChecklistCheckboxCount ?? 0,
+        checkboxSamples: record.markers?.taskCompletionControls?.taskCompleteCheckboxSamples ?? [],
+        buttonSamples: record.markers?.taskCompletionControls?.taskCompleteButtonSamples ?? [],
       })),
     normalRouteAgendaGroupMetaCount: normal.reduce((sum, record) => sum + getAgendaGroups(record).length, 0),
     normalRouteAgendaGroupRepeatedDateMetaRowCount: normal.reduce((sum, record) =>

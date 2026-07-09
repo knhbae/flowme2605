@@ -4917,6 +4917,51 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     refreshSavedFlowState();
   };
 
+  const renderTaskCompletionCheckbox = ({
+    title,
+    checked,
+    onToggle,
+    routine = false,
+    compact = false,
+    detail = false,
+  }: {
+    title: string;
+    checked: boolean;
+    onToggle: () => void;
+    routine?: boolean;
+    compact?: boolean;
+    detail?: boolean;
+  }) => {
+    const actionLabel = routine
+      ? (checked ? '이번 항목 완료 취소' : '이번 항목 완료')
+      : (checked ? '완료 취소' : '완료 체크');
+    const ariaLabel = `${title} ${actionLabel}`;
+    const shellSize = compact ? 'min-h-8 w-8' : detail ? 'min-h-9 w-9' : 'min-h-9 w-9';
+
+    return (
+      <label
+        data-testid="my-flow-task-complete-label"
+        className={`inline-flex shrink-0 items-center justify-center self-center rounded-md border bg-white transition ${shellSize} ${
+          checked
+            ? 'border-emerald-300 text-emerald-700'
+            : 'border-slate-300 text-slate-700 hover:border-blue-300 hover:bg-blue-50'
+        }`}
+        title={ariaLabel}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <input
+          data-testid="my-flow-task-complete-control"
+          aria-label={ariaLabel}
+          className="h-4 w-4 rounded border-slate-300 accent-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          type="checkbox"
+          checked={checked}
+          onChange={onToggle}
+        />
+        <span className="sr-only">{ariaLabel}</span>
+      </label>
+    );
+  };
+
   const removeSavedFlow = (flow: MySavedFlow) => {
     if (isMyFlowScenarioDemo) {
       setActiveProgress((current) => current.filter((item) => item.slug !== flow.progress.slug));
@@ -5234,21 +5279,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showFlowChip = !options.minimalMeta && !options.hideFlowMeta && (options.showFlowProgress || visibleSavedFlows.length > 1 || Boolean(row.flow.savedMap));
     const flowProgressLabel = getMyFlowFlowProgressLabel(row.flow);
     const isRoutineExecution = options.kind === 'routine' || row.itemType?.primary === 'routine_session';
-    const completionActionLabel = isRoutineExecution
-      ? (checked ? '이번 항목 완료 취소' : '이번 항목 완료')
-      : (checked ? '완료 취소' : '완료 체크');
-    const useMobileIconCompletion = isMyFlowMobileViewport && options.compact;
-    const visibleCompletionActionLabel = options.compact
-      ? (useMobileIconCompletion ? (checked ? '✓' : '') : (isRoutineExecution ? (checked ? '완료 취소' : '항목 완료') : (checked ? '취소' : '완료')))
-      : completionActionLabel;
     const routineProgressLabel = `항목 ${row.flow.done}/${row.flow.total}`;
     const routineDragKey = getMyFlowRowInstanceKey(row);
     const rowClassName = `flex min-w-0 items-stretch rounded-md border bg-white text-sm ${options.compact ? 'gap-1 p-1 sm:gap-1.5 sm:p-1.5' : 'gap-2 p-2'} ${isActive ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200'}`;
     const rowButtonClassName = `flex min-w-0 flex-1 items-start rounded-md text-left hover:bg-blue-50 ${options.compact ? 'gap-1.5 px-0.5 py-0.5 sm:gap-2 sm:py-1' : 'gap-3 px-1 py-1'}`;
     const rowDotClassName = `mt-1 shrink-0 rounded-full ${options.compact ? 'h-1.5 w-1.5 sm:h-2 sm:w-2' : 'h-2.5 w-2.5'}`;
-    const rowCompletionClassName = useMobileIconCompletion
-      ? `inline-flex h-7 w-7 shrink-0 items-center justify-center self-center rounded-md border text-sm font-black ${checked ? 'border-blue-700 bg-blue-700 text-white' : 'border-slate-300 bg-white text-transparent'}`
-      : `shrink-0 self-center rounded-md font-semibold ${options.compact ? 'px-1.5 py-1 text-[11px] sm:px-2 sm:py-1.5 sm:text-xs' : 'px-2.5 py-2 text-xs'} ${checked ? 'bg-slate-100 text-slate-500' : 'bg-blue-50 text-blue-700'}`;
     const startRoutineRowDrag = (dataTransfer?: DataTransfer) => {
       if (!isRoutineExecution) return;
       myFlowDraggingRoutineKeyRef.current = routineDragKey;
@@ -5310,14 +5345,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {routineProgressLabel}
               </span>
             ) : null}
-            <button
-              className={rowCompletionClassName}
-              type="button"
-              aria-label={completionActionLabel}
-              onClick={() => toggleSavedFlowItem(row.flow, row.id, row)}
-            >
-            {visibleCompletionActionLabel}
-          </button>
+            {renderTaskCompletionCheckbox({
+              title: displayTitle,
+              checked,
+              routine: isRoutineExecution,
+              compact: options.compact,
+              onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
+            })}
         </div>
       </article>
       {activeInlineDetail && myFlowActiveRow ? (
@@ -5378,14 +5412,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {routineProgressLabel}
             </span>
           ) : null}
-          <button
-            className={rowCompletionClassName}
-            type="button"
-            aria-label={completionActionLabel}
-            onClick={() => toggleSavedFlowItem(row.flow, row.id, row)}
-          >
-            {visibleCompletionActionLabel}
-          </button>
+          {renderTaskCompletionCheckbox({
+            title: displayTitle,
+            checked,
+            routine: isRoutineExecution,
+            compact: options.compact,
+            onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
+          })}
         </div>
       </article>
     );
@@ -5401,8 +5434,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isActive = myFlowDetailSurface === 'today' && activeRowKey === rowKey;
     const checked = isMyFlowRowChecked(flow, row);
     const rowTitle = getMyFlowRowDisplayTitle(row);
-    const completeLabel = checked ? '취소' : '완료';
-    const completeAriaLabel = `${rowTitle} ${checked ? '완료 취소' : '완료 체크'}`;
     const color = categoryColors[flow.bundle.flow.category] ?? '#2563EB';
     const isPrimary = options.tone === 'primary';
     const rowMeta = [
@@ -5463,22 +5494,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </span>
         </button>
         <div className="mt-3 flex min-w-0 items-center justify-between gap-2">
-          <button
-            type="button"
-            data-testid="my-flow-mobile-continuation-complete"
-            aria-label={completeAriaLabel}
-            className={`min-h-9 shrink-0 rounded-md border px-3 py-1.5 text-xs font-semibold transition ${
-              checked
-                ? 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
-                : 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-300'
-            }`}
-            onClick={(event) => {
-              event.stopPropagation();
-              toggleSavedFlowItem(flow, row.id, row);
-            }}
-          >
-            {completeLabel}
-          </button>
+          <span data-testid="my-flow-mobile-continuation-complete">
+            {renderTaskCompletionCheckbox({
+              title: rowTitle,
+              checked,
+              onToggle: () => toggleSavedFlowItem(flow, row.id, row),
+            })}
+          </span>
         </div>
         <div data-testid="my-flow-mobile-continuation-flow-context" className="mt-2 flex min-w-0 items-center gap-2 text-[11px] font-semibold text-slate-500">
           <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
@@ -5877,19 +5899,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const hasExpandableMemo = editorDraft.memo.trim().length > 0;
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
-    const detailCompletionActionLabel = isRoutineRow
-      ? (checked ? '이번 항목 완료 취소' : '이번 항목 완료')
-      : (checked ? '완료 취소' : '완료 체크');
-    const detailCompletionVisibleLabel = isRoutineRow
-      ? detailCompletionActionLabel
-      : checked ? '완료됨' : '완료';
-    const detailCompletionClassName = isRoutineRow
-      ? `rounded-md px-3 py-2 text-xs font-semibold ${checked ? 'bg-white text-slate-600' : 'bg-blue-700 text-white'}`
-      : `inline-flex min-h-9 items-center gap-2 rounded-md border px-3 py-2 text-xs font-semibold ${
-        checked
-          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          : 'border-slate-200 bg-white text-slate-700'
-      }`;
     const routineProgressLabel = `항목 ${row.flow.done}/${row.flow.total}`;
     const canUndoRoutineCompletion = isRoutineRow && myFlowRoutineCompletionUndo?.flowSlug === row.flow.progress.slug;
     const fieldClassName = 'mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
@@ -6132,19 +6141,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {routineProgressLabel}
               </span>
             ) : null}
-            <button
-              className={detailCompletionClassName}
-              type="button"
-              aria-label={detailCompletionActionLabel}
-              onClick={() => toggleSavedFlowItem(row.flow, row.id, row)}
-            >
-              {!isRoutineRow ? (
-                <span className={`inline-flex h-4 w-4 items-center justify-center rounded border text-[10px] ${checked ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-transparent'}`} aria-hidden="true">
-                  ✓
-                </span>
-              ) : null}
-              {detailCompletionVisibleLabel}
-            </button>
+            {renderTaskCompletionCheckbox({
+              title: editorDraft.title,
+              checked,
+              routine: isRoutineRow,
+              detail: true,
+              onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
+            })}
             {!isDrawerMode && !isInlineMobileMode ? (
               <button
                 className={`rounded-md px-3 py-2 text-xs font-semibold ${

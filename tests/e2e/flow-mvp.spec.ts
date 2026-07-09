@@ -2526,7 +2526,7 @@ test('my flow management uses today and flow locally while calendar is global', 
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
   const inlineDetail = page.getByTestId('my-flow-overview-inline-detail').getByTestId('my-flow-item-detail');
   await expect(inlineDetail).toBeVisible();
-  await inlineDetail.getByRole('button', { name: '완료 체크' }).click();
+  await inlineDetail.getByRole('checkbox', { name: /완료 체크$/ }).check();
   await expect(page.getByTestId('my-flow-overview-card')).toContainText('1/24');
 });
 
@@ -2587,12 +2587,12 @@ test('my flow today exposes inline completion without a separate today status fr
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toHaveCount(0);
 
   const firstRunnableRow = nowSection.getByTestId('my-flow-mobile-continuation-card').first();
-  const completeButton = firstRunnableRow.getByTestId('my-flow-mobile-continuation-complete');
-  await expect(completeButton).toBeVisible();
-  await expect(completeButton).toHaveText('완료');
-  await expect(completeButton).toHaveAttribute('aria-label', /완료 체크$/);
+  const completeCheckbox = firstRunnableRow.getByTestId('my-flow-task-complete-control');
+  await expect(completeCheckbox).toBeVisible();
+  await expect(completeCheckbox).toHaveAttribute('type', 'checkbox');
+  await expect(completeCheckbox).toHaveAttribute('aria-label', /완료 체크$/);
 
-  await completeButton.click();
+  await completeCheckbox.check();
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-today-completed-list')).toBeVisible();
 });
@@ -3004,7 +3004,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await firstPriorityOpen.click();
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByTestId('my-flow-priority-inline-detail')).toContainText('기출 회독 목표 정하기');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByRole('button', { name: '완료 체크' })).toBeVisible();
+  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByRole('checkbox', { name: /완료 체크$/ })).toBeVisible();
   await firstPriorityOpen.click();
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByTestId('my-flow-priority-inline-detail')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
@@ -3107,7 +3107,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(selectedCalendarGroup.getByTestId('my-flow-group-section-label')).toContainText('범위 쪼개기');
   await expect(selectedCalendarRow.getByTestId('my-flow-row-timing-chip')).toHaveCount(0);
   await expect(selectedCalendarRow.getByTestId('my-flow-row-section-label')).toHaveCount(0);
-  await expect(selectedCalendarRow.getByRole('button', { name: '완료 취소' })).toBeVisible();
+  await expect(selectedCalendarRow.getByRole('checkbox', { name: /완료 취소$/ })).toBeVisible();
   await selectedCalendarRow.getByRole('button').first().click();
   const selectedCalendarDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
   await expect(selectedCalendarDetail.getByTestId('my-flow-detail-timing-chip')).toContainText('기준 D-30');
@@ -3137,9 +3137,9 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toHaveAttribute('data-overflow-date', '2026-06-03');
   await expect(page.getByTestId('my-flow-selected-day-overflow-note')).toContainText('+3');
   await expect(page.getByTestId('my-flow-selected-day-overflow-note')).toContainText('반복 항목 포함');
-  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first().getByRole('button', { name: '완료 체크' })).toBeVisible();
+  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first().getByRole('checkbox', { name: /완료 체크$/ })).toBeVisible();
   const selectedDayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();
-  await expect(selectedDayRoutineRow.getByRole('button', { name: '이번 항목 완료' })).toBeVisible();
+  await expect(selectedDayRoutineRow.getByRole('checkbox', { name: /이번 항목 완료$/ })).toBeVisible();
   await expect(selectedDayRoutineRow.getByTestId('my-flow-routine-completion-note')).toHaveCount(0);
   await expect(selectedDayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/항목 \d+\/\d+/);
   await page.locator('[data-testid="my-flow-routine-icon"]').first().click();
@@ -3151,12 +3151,11 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   const routineDoneBefore = Number(routineProgressMatch?.[1] ?? 0);
   const routineTotal = Number(routineProgressMatch?.[2] ?? 0);
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`항목 ${routineDoneBefore}/${routineTotal}`);
-  await expect(selectedRoutineDetail.getByRole('button', { name: '이번 항목 완료' })).toBeVisible();
+  await expect(selectedRoutineDetail.getByRole('checkbox', { name: /이번 항목 완료$/ })).toBeVisible();
   await selectedRoutineDetail.getByTestId('my-flow-detail-edit-toggle').click();
   const routineTitleBefore = await selectedRoutineDetail.getByLabel('제목').inputValue();
-  await selectedRoutineDetail.getByRole('button', { name: '이번 항목 완료' }).click();
+  await selectedRoutineDetail.getByRole('checkbox', { name: /이번 항목 완료$/ }).first().click();
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`항목 ${routineDoneBefore + 1}/${routineTotal}`);
-  await expect(selectedRoutineDetail.getByRole('button', { name: '이번 항목 완료' })).toBeVisible();
   await selectedRoutineDetail.getByTestId('my-flow-detail-edit-toggle').click();
   await expect(selectedRoutineDetail.getByLabel('제목')).not.toHaveValue(routineTitleBefore);
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-undo-notice')).toContainText('방금 완료한 항목');
@@ -3166,7 +3165,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`항목 ${routineDoneBefore}/${routineTotal}`);
   await selectedRoutineDetail.getByTestId('my-flow-detail-edit-toggle').click();
   await expect(selectedRoutineDetail.getByLabel('제목')).toHaveValue(routineTitleBefore);
-  await expect(selectedRoutineDetail.getByRole('button', { name: '이번 항목 완료' })).toBeVisible();
+  await expect(selectedRoutineDetail.getByRole('checkbox', { name: /이번 항목 완료$/ })).toBeVisible();
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-completion-note')).toHaveCount(0);
   await expect(selectedRoutineDetail.getByLabel('메모')).not.toHaveValue(/실행:/);
   await expect(selectedRoutineDetail.getByLabel('메모')).not.toHaveValue(/완료 기준:/);
@@ -3521,6 +3520,35 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
     'moving-meter-photos',
     'moving-move-day-admin',
   ]);
+});
+
+test('P19 task completion controls use one checkbox pattern in My Flow and Calendar', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/moving-d30');
+
+  await page.getByLabel('이사일').fill('2026-07-22');
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+
+  const nowSection = page.getByTestId('my-flow-now-section');
+  const nowComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
+  await expect(nowComplete).toHaveAttribute('type', 'checkbox');
+  await expect(nowComplete).toHaveAttribute('aria-label', /완료/);
+  await nowComplete.check();
+  await expect(nowComplete).toBeChecked();
+
+  await page.getByTestId('my-flow-post-save-open-first').click();
+  const inlineDetail = nowSection.getByTestId('my-flow-inline-detail');
+  const detailComplete = inlineDetail.getByTestId('my-flow-task-complete-control').first();
+  await expect(detailComplete).toHaveAttribute('type', 'checkbox');
+  await expect(detailComplete).toHaveAttribute('aria-label', /완료/);
+
+  await page.goto('/calendar');
+  const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
+  const calendarComplete = selectedDateGroup.getByTestId('my-flow-task-complete-control').first();
+  await expect(calendarComplete).toHaveAttribute('type', 'checkbox');
+  await expect(calendarComplete).toHaveAttribute('aria-label', /완료/);
+  await expect(selectedDateGroup.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 });
 
 test('source-backed baby health map saves input-bearing official schedule flows into My Flow', async ({ page }) => {
@@ -4096,7 +4124,7 @@ test('my flow ux12 keeps single-flow detail lightweight inside the Flow view', a
   await expect(flowDetail).toBeVisible();
   await expect(flowDetail.getByLabel('제목')).toHaveCount(0);
   await expect(flowDetail.getByTestId('my-flow-log-fields')).toHaveCount(0);
-  await expect(flowDetail.getByRole('button', { name: '완료 체크' })).toHaveCount(1);
+  await expect(flowDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(1);
   await flowDetail.getByTestId('my-flow-detail-edit-toggle').click();
   await expect(flowDetail.getByLabel('메모')).toBeVisible();
   await expect(flowDetail.locator('[data-testid^="my-flow-proof"]')).toHaveCount(0);
@@ -4309,8 +4337,8 @@ test('my flow mobile item opens editable detail inline from today page', async (
   await expect(mobileDetail).not.toContainText('할 일 상태');
   await expect(mobileDetail).toContainText('실행할 일');
   await expect(mobileDetail.getByLabel('제목')).toHaveCount(0);
-  await expect(mobileDetail.getByRole('button', { name: '완료 체크' })).toHaveCount(1);
-  await expect(mobileDetail.getByRole('button', { name: '이번 항목 완료' })).toHaveCount(0);
+  await expect(mobileDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(1);
+  await expect(mobileDetail.getByRole('checkbox', { name: /이번 항목 완료$/ })).toHaveCount(0);
   await expect(mobileDetail.getByRole('button', { name: '수정', exact: true })).toHaveCount(0);
   await mobileDetail.getByText('메모·일정').click();
   await mobileDetail.getByRole('button', { name: '메모/일정 수정' }).click();
@@ -4402,7 +4430,7 @@ test('my flow mobile calendar keeps date selection separate and gives events usa
   const selectedDayFirstRowBox = await selectedDayFirstRow.boundingBox();
   expect(selectedDayFirstRowBox?.height ?? 9999).toBeLessThanOrEqual(92);
   await expect(selectedDayFirstRow.getByTestId('my-flow-row-date-meta')).toBeHidden();
-  await expect(page.getByTestId('my-flow-calendar-selected-day').getByRole('button', { name: '이번 항목 완료' }).first()).toBeVisible();
+  await expect(page.getByTestId('my-flow-calendar-selected-day').getByRole('checkbox', { name: /이번 항목 완료$/ }).first()).toBeVisible();
 
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   const mobileScheduleContent = page.locator('.fc-daygrid-day[data-date="2026-05-28"] [data-testid="my-flow-calendar-schedule-content"]').first();
