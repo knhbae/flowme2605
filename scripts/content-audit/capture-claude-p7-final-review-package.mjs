@@ -1481,6 +1481,45 @@ async function scanPage(page, options = {}) {
         hits: hits.slice(0, 5),
       };
     };
+    const collectProgressMetricSemantics = () => {
+      const progressMetricPattern = /\b\d+\s*\/\s*\d+(?:\s*완료)?\b/u;
+      const contextualProgressPattern = /^(?:전체|확인 항목|개념 항목|반복 항목)\s+\d+\s*\/\s*\d+(?:\s*완료)?$/u;
+      const progressElements = Array.from(document.querySelectorAll([
+        '[data-testid="my-flow-overview-progress-summary"]',
+        '[data-testid="my-flow-mobile-structure-progress"]',
+        '[data-testid="my-flow-inventory-progress-summary"]',
+        '[data-testid="my-flow-detail-checklist-progress"]',
+        '[data-testid="my-flow-routine-progress-pill"]',
+        '[data-testid="my-flow-row-progress-chip"]',
+      ].join(','))).filter((element) => isVisible(element));
+      const progressLabels = progressElements
+        .map((element) => ({
+          testId: getElementTestId(element),
+          text: normalizeLine(element.textContent ?? ''),
+        }))
+        .filter((entry) => progressMetricPattern.test(entry.text));
+      const ambiguousProgressHits = progressLabels.filter((entry) => !contextualProgressPattern.test(entry.text));
+      const contextualProgressLabels = progressLabels.filter((entry) => contextualProgressPattern.test(entry.text));
+      const rowLevelFlowProgressChips = Array.from(document.querySelectorAll('[data-testid="my-flow-row-progress-chip"]')).filter((element) => isVisible(element));
+      const detailChecklistProgressLabels = Array.from(document.querySelectorAll('[data-testid="my-flow-detail-checklist-progress"]')).filter((element) =>
+        isVisible(element) && /^(?:확인 항목|개념 항목)\s+\d+\s*\/\s*\d+$/u.test(normalizeLine(element.textContent ?? '')),
+      );
+      const todayRemainingCounts = Array.from(document.querySelectorAll('[data-testid="my-flow-today-remaining-count"]')).filter((element) => isVisible(element));
+      const calendarSelectedDayRemainingCounts = Array.from(document.querySelectorAll('[data-testid="my-flow-selected-day-summary"]')).filter((element) =>
+        isVisible(element) && /\d+\s*개\s*항목/u.test(normalizeLine(element.textContent ?? '')),
+      );
+
+      return {
+        progressMetricAmbiguousCount: ambiguousProgressHits.length,
+        progressMetricAmbiguousHits: ambiguousProgressHits.slice(0, 8),
+        progressMetricContextLabelCount: contextualProgressLabels.length,
+        progressMetricContextLabels: contextualProgressLabels.slice(0, 8),
+        rowLevelFlowProgressChipCount: rowLevelFlowProgressChips.length,
+        detailChecklistProgressLabelCount: detailChecklistProgressLabels.length,
+        todayRemainingCountVisible: todayRemainingCounts.length,
+        calendarSelectedDayRemainingCountVisible: calendarSelectedDayRemainingCounts.length,
+      };
+    };
     const collectWorkbenchRepeatedDetailSentences = () => {
       const lines = Array.from(document.querySelectorAll('[data-testid="artifact-list-card"] details p'))
         .filter((element) => isVisible(element))
@@ -1856,6 +1895,7 @@ async function scanPage(page, options = {}) {
         rowControlAccessibleNames: getRowControlAccessibleNames(),
         inventoryProgressMetrics: collectInventoryProgressMetrics(),
         inventoryHeaderMetrics: collectInventoryHeaderMetrics(),
+        progressMetricSemantics: collectProgressMetricSemantics(),
         workbenchRepeatedDetailSentences: collectWorkbenchRepeatedDetailSentences(),
         publicWorkbenchExportLabels: collectPublicWorkbenchExportLabels(),
         urlFirst: collectUrlFirstMarkers(),
@@ -2494,6 +2534,51 @@ function summarizeEvidence(records) {
     normalRouteInventoryHeaderLargeRemainingCount: normal.reduce((sum, record) =>
       sum + (record.markers?.inventoryHeaderMetrics?.largeRemainingCount ?? 0),
     0),
+    progressMetricAmbiguousCount: normal.reduce((sum, record) =>
+      record.url.startsWith('/my') || record.url.startsWith('/calendar')
+        ? sum + (record.markers?.progressMetricSemantics?.progressMetricAmbiguousCount ?? 0)
+        : sum,
+    0),
+    progressMetricContextLabelCount: normal.reduce((sum, record) =>
+      record.url.startsWith('/my') || record.url.startsWith('/calendar')
+        ? sum + (record.markers?.progressMetricSemantics?.progressMetricContextLabelCount ?? 0)
+        : sum,
+    0),
+    rowLevelFlowProgressChipCount: normal.reduce((sum, record) =>
+      record.url.startsWith('/my') || record.url.startsWith('/calendar')
+        ? sum + (record.markers?.progressMetricSemantics?.rowLevelFlowProgressChipCount ?? 0)
+        : sum,
+    0),
+    detailChecklistProgressLabelCount: normal.reduce((sum, record) =>
+      record.url.startsWith('/my') || record.url.startsWith('/calendar')
+        ? sum + (record.markers?.progressMetricSemantics?.detailChecklistProgressLabelCount ?? 0)
+        : sum,
+    0),
+    todayRemainingCountVisible: normal.reduce((sum, record) =>
+      record.url.startsWith('/my')
+        ? sum + (record.markers?.progressMetricSemantics?.todayRemainingCountVisible ?? 0)
+        : sum,
+    0),
+    calendarSelectedDayRemainingCountVisible: normal.reduce((sum, record) =>
+      record.url.startsWith('/calendar')
+        ? sum + (record.markers?.progressMetricSemantics?.calendarSelectedDayRemainingCountVisible ?? 0)
+        : sum,
+    0),
+    progressMetricSemanticsEvidence: normal
+      .filter((record) => record.url.startsWith('/my') || record.url.startsWith('/calendar'))
+      .map((record) => ({
+        id: record.id,
+        route: record.url,
+        viewportWidth: record.viewportWidth,
+        progressMetricAmbiguousCount: record.markers?.progressMetricSemantics?.progressMetricAmbiguousCount ?? 0,
+        progressMetricAmbiguousHits: record.markers?.progressMetricSemantics?.progressMetricAmbiguousHits ?? [],
+        progressMetricContextLabelCount: record.markers?.progressMetricSemantics?.progressMetricContextLabelCount ?? 0,
+        progressMetricContextLabels: record.markers?.progressMetricSemantics?.progressMetricContextLabels ?? [],
+        rowLevelFlowProgressChipCount: record.markers?.progressMetricSemantics?.rowLevelFlowProgressChipCount ?? 0,
+        detailChecklistProgressLabelCount: record.markers?.progressMetricSemantics?.detailChecklistProgressLabelCount ?? 0,
+        todayRemainingCountVisible: record.markers?.progressMetricSemantics?.todayRemainingCountVisible ?? 0,
+        calendarSelectedDayRemainingCountVisible: record.markers?.progressMetricSemantics?.calendarSelectedDayRemainingCountVisible ?? 0,
+      })),
     urlFirstScenarioCount: urlFirst.length,
     urlFirstStatesCaptured: urlFirst.map((record) => record.urlFirstState ?? record.id),
     urlFirstScenarioTriggerUrlCount: urlFirstScenarioTriggers.length,
@@ -2853,6 +2938,12 @@ P18-07 makes the URL-first and My Flow date anchor copy contextual. The summary 
 
 P18-08 keeps URL-first miss as a draft-preparation gate instead of implying live AI generation. The miss state records a visible draft-gate entry, the CTA label, whether copy implies live AI, and the candidate user-copy output guardrail count so the future AI draft path can be judged before real API integration.
 
+P19-01 keeps Calendar mobile agenda rows readable after same-date multi-Flow grouping. Row-level date, timing, Flow, and progress metadata stay at zero; Flow identity stays in the group header/marker, and each row keeps the task title, completion checkbox, and short open action.
+
+P19-02 keeps task completion controls unified around a row-left checkbox pattern. Open remains the detail/navigation action, while detail-level checklist checkboxes and public share pre-save preview checkboxes are tracked outside the task-completion-control bucket.
+
+P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress uses contextual whole-Flow labels, routine counters use routine-item labels, detail checklists use checklist-context labels, and Today/Calendar rows avoid row-level whole-Flow progress chips.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -2895,6 +2986,12 @@ P18-08 keeps URL-first miss as a draft-preparation gate instead of implying live
 - My Flow today inline complete controls: ${evidence.summary.myFlowTodayInlineCompleteControlCount}
 - My Flow today open-before-complete required: ${evidence.summary.myFlowTodayOpenBeforeCompleteRequired}
 - My Flow today generic meta chips: ${evidence.summary.myFlowTodayGenericMetaChipCount}
+- Progress metric ambiguous count: ${evidence.summary.progressMetricAmbiguousCount}
+- Progress metric contextual label count: ${evidence.summary.progressMetricContextLabelCount}
+- Row-level Flow progress chip count: ${evidence.summary.rowLevelFlowProgressChipCount}
+- Detail checklist progress label count: ${evidence.summary.detailChecklistProgressLabelCount}
+- Today remaining-count visible count: ${evidence.summary.todayRemainingCountVisible}
+- Calendar selected-day remaining-count visible count: ${evidence.summary.calendarSelectedDayRemainingCountVisible}
 - Date anchor labels by Flow: ${JSON.stringify(evidence.summary.dateAnchorLabelByFlow)}
 - My Flow anchor edit entry visible: ${evidence.summary.myFlowAnchorEditEntryVisible ? 'yes' : 'no'}
 - My Flow anchor edit labels: ${JSON.stringify(evidence.summary.myFlowAnchorEditLabels)}
@@ -3075,6 +3172,12 @@ P18-07 makes URL-first and My Flow date-anchor copy contextual. The evidence rec
 
 P18-08 frames URL-first miss as a draft-preparation request without pretending that live AI generation already exists. The miss state should show a visible draft gate and a clear CTA, while \`urlFirstMissDraftImpliesLiveAi\` and \`urlFirstMissCandidateCopyInternalHitCount\` stay at zero.
 
+P19-01 keeps Calendar mobile agenda rows readable after same-date multi-Flow grouping. Row-level date, timing, Flow, and progress metadata stay at zero while the group header owns Flow identity and the row keeps title, completion checkbox, and \`열기\`.
+
+P19-02 keeps task completion controls unified around row-left checkboxes, with sub-checklists measured separately from task completion.
+
+P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress must include \`전체\`, routine counters must include \`반복 항목\`, detail checklist counters must include \`확인 항목\` or \`개념 항목\`, and row-level Flow progress chips must stay at zero.
+
 ## Baselines Covered
 
 - P7-01: \`/restart/moving-d30\` uses user-facing date text and a quieter export hierarchy.
@@ -3114,6 +3217,7 @@ P18-08 frames URL-first miss as a draft-preparation request without pretending t
 
 - P18-01/P18-02: Calendar distinguishes same-date multi-Flow work by Flow marker/group, and My Flow today work uses one frame/count source with inline completion before detail opening.
 - P18-04/P18-06: Calendar role copy is date-first, My Flow role copy is task-first, and primary Calendar/My Flow labels avoid generic type copy such as \`월간 일정\`, \`저장한 일정\`, and \`일정 흐름\`.
+- P19-01/P19-02/P19-03: Calendar mobile rows stay low-density, task completion uses one checkbox pattern, and progress metrics are contextual instead of standalone \`1/5\`-style labels.
 
 ## Summary
 

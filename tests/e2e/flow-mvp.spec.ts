@@ -790,7 +790,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   await expect(personalFlow).toBeVisible();
   await expect(personalFlow).toContainText('시험 전 소인수분해만');
   await expect(personalFlow.getByTestId('my-flow-personal-copy-badge')).toContainText('개인 사본');
-  await expect(personalFlow.getByTestId('my-flow-mobile-structure-progress')).toContainText('0/1 완료');
+  await expect(personalFlow.getByTestId('my-flow-mobile-structure-progress')).toContainText('전체 0/1 완료');
   await personalFlow.getByTestId('my-flow-mobile-structure-open').click();
   const activeSteps = personalFlow.getByTestId('my-flow-mobile-structure-step-list');
   await expect(activeSteps).toContainText('소인수분해');
@@ -908,7 +908,7 @@ test('my flow personal copy settings can readjust saved title date and included 
   await settings.getByRole('button', { name: '저장' }).click();
 
   await expect(personalFlow).toContainText('1학기 앞부분 복습');
-  await expect(personalFlow.getByTestId('my-flow-mobile-structure-progress')).toContainText('0/1 완료');
+  await expect(personalFlow.getByTestId('my-flow-mobile-structure-progress')).toContainText('전체 0/1 완료');
   const activeSteps = personalFlow.getByTestId('my-flow-mobile-structure-step-list');
   await expect(activeSteps).toContainText('정수와 유리수');
   await expect(activeSteps).not.toContainText('소인수분해');
@@ -2072,7 +2072,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
-  await expect(page.getByTestId('my-flow-overview-card')).toContainText('0/24');
+  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/24 완료');
   await expect(page.locator('a[href="/f/moving-d30-basic"]').first()).toBeVisible();
 
   await page.goto('/f/moving-d30-basic');
@@ -2082,7 +2082,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
-  await expect(page.getByTestId('my-flow-overview-card')).toContainText('1/24');
+  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 1/24 완료');
   await expect(page.locator('a[href="/f/moving-d30-basic"]').first()).toBeVisible();
 
   await page.goto('/f/moving-d30-basic');
@@ -2527,7 +2527,7 @@ test('my flow management uses today and flow locally while calendar is global', 
   const inlineDetail = page.getByTestId('my-flow-overview-inline-detail').getByTestId('my-flow-item-detail');
   await expect(inlineDetail).toBeVisible();
   await inlineDetail.getByRole('checkbox', { name: /완료 체크$/ }).check();
-  await expect(page.getByTestId('my-flow-overview-card')).toContainText('1/24');
+  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 1/24 완료');
 });
 
 test('my flow today puts the executable slot before the summary on mobile', async ({ page }) => {
@@ -2591,6 +2591,7 @@ test('my flow today exposes inline completion without a separate today status fr
   await expect(completeCheckbox).toBeVisible();
   await expect(completeCheckbox).toHaveAttribute('type', 'checkbox');
   await expect(completeCheckbox).toHaveAttribute('aria-label', /완료 체크$/);
+  await expect(firstRunnableRow.getByTestId('my-flow-mobile-continuation-flow-context')).not.toContainText(/\d+\/\d+\s*완료/);
 
   await completeCheckbox.check();
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toHaveCount(0);
@@ -2750,8 +2751,8 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
   await expect(inventorySheet).toBeVisible();
   await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(6);
   const firstInventoryRow = inventorySheet.getByTestId('my-flow-group-row').first();
-  await expect(firstInventoryRow).toContainText(/\d+\/\d+ 완료/);
-  await expect(firstInventoryRow).not.toContainText(/\b\d+\/\d+\b(?!\s*완료)/);
+  await expect(firstInventoryRow.getByTestId('my-flow-inventory-progress-summary')).toContainText(/전체 \d+\/\d+ 완료/);
+  await expect(firstInventoryRow).not.toContainText(/\b\d+\/\d+\b(?!\s*완료|개 콘텐츠)/);
   await expect(firstInventoryRow).not.toContainText(/\b\d+%\b/);
   await inventorySheet.getByTestId('my-flow-group-row').last().scrollIntoViewIfNeeded();
 
@@ -2957,7 +2958,7 @@ test('my flow filters narrow saved calendar checklist and routine management', a
 
   await page.getByTestId('my-flow-scope-select').selectOption('home-workout-20min');
   await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'home-workout-20min');
-  await expect(page.getByTestId('my-flow-overview-card')).toContainText('0/18');
+  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/18 완료');
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
@@ -3154,7 +3155,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   const selectedDayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();
   await expect(selectedDayRoutineRow.getByRole('checkbox', { name: /이번 항목 완료$/ })).toBeVisible();
   await expect(selectedDayRoutineRow.getByTestId('my-flow-routine-completion-note')).toHaveCount(0);
-  await expect(selectedDayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/항목 \d+\/\d+/);
+  await expect(selectedDayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/반복 항목 \d+\/\d+/);
   await page.locator('[data-testid="my-flow-routine-icon"]').first().click();
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail')).toBeVisible();
   const selectedRoutineDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
@@ -3163,19 +3164,19 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   expect(routineProgressMatch).not.toBeNull();
   const routineDoneBefore = Number(routineProgressMatch?.[1] ?? 0);
   const routineTotal = Number(routineProgressMatch?.[2] ?? 0);
-  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`항목 ${routineDoneBefore}/${routineTotal}`);
+  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`반복 항목 ${routineDoneBefore}/${routineTotal}`);
   await expect(selectedRoutineDetail.getByRole('checkbox', { name: /이번 항목 완료$/ })).toBeVisible();
   await selectedRoutineDetail.getByTestId('my-flow-detail-edit-toggle').click();
   const routineTitleBefore = await selectedRoutineDetail.getByLabel('제목').inputValue();
   await selectedRoutineDetail.getByRole('checkbox', { name: /이번 항목 완료$/ }).first().click();
-  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`항목 ${routineDoneBefore + 1}/${routineTotal}`);
+  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`반복 항목 ${routineDoneBefore + 1}/${routineTotal}`);
   await selectedRoutineDetail.getByTestId('my-flow-detail-edit-toggle').click();
   await expect(selectedRoutineDetail.getByLabel('제목')).not.toHaveValue(routineTitleBefore);
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-undo-notice')).toContainText('방금 완료한 항목');
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-action-group').getByRole('button', { name: '방금 완료 취소' })).toHaveCount(0);
   await expect(selectedRoutineDetail.getByRole('button', { name: '방금 완료 취소' })).toBeVisible();
   await selectedRoutineDetail.getByRole('button', { name: '방금 완료 취소' }).click();
-  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`항목 ${routineDoneBefore}/${routineTotal}`);
+  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`반복 항목 ${routineDoneBefore}/${routineTotal}`);
   await selectedRoutineDetail.getByTestId('my-flow-detail-edit-toggle').click();
   await expect(selectedRoutineDetail.getByLabel('제목')).toHaveValue(routineTitleBefore);
   await expect(selectedRoutineDetail.getByRole('checkbox', { name: /이번 항목 완료$/ })).toBeVisible();
@@ -3263,7 +3264,7 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
   const movingCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
   await expect(movingCard).toContainText('원룸 이사 준비');
   await expect(movingCard).not.toContainText('원룸 이사 D-30 준비');
-  await expect(movingCard.getByTestId('my-flow-overview-progress-summary')).toContainText('0/5 완료');
+  await expect(movingCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/5 완료');
   await expect(movingCard.getByTestId('my-flow-overview-progress-bar')).toBeVisible();
   await expect(movingCard).not.toContainText('0%');
   await expect(movingCard.getByTestId('my-flow-next-action-open')).toHaveText('열기');
@@ -3271,7 +3272,7 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
 
   const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
   await expect(mathCard).toContainText('단원별 개념 진도');
-  await expect(mathCard.getByTestId('my-flow-overview-progress-summary')).toContainText('0/8 완료');
+  await expect(mathCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/8 완료');
   await expect(mathCard.getByTestId('my-flow-overview-progress-bar')).toBeVisible();
   await expect(mathCard).not.toContainText('0%');
   await expect(mathCard.getByRole('button', { name: '진도 보기' })).toBeVisible();
@@ -3280,6 +3281,7 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
   await expect(mathCard.getByTestId('my-flow-overview-inline-detail')).toContainText('소인수분해');
   await expect(mathCard.getByTestId('my-flow-overview-inline-detail')).toContainText('거듭제곱');
+  await expect(mathCard.getByTestId('my-flow-detail-checklist-progress')).toContainText(/^(확인 항목|개념 항목) \d+\/\d+$/);
 });
 
 test('my flow source-backed demo stays lightweight on mobile inventory', async ({ page }) => {
@@ -3293,12 +3295,12 @@ test('my flow source-backed demo stays lightweight on mobile inventory', async (
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/오늘 0|다음 0|지난 할 일 0/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(2);
   const movingMobileCard = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]');
-  await expect(movingMobileCard).toContainText('원룸 이사 D-30 준비');
-  await expect(movingMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText('0/5 완료');
+  await expect(movingMobileCard).toContainText('원룸 이사 준비');
+  await expect(movingMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText('전체 0/5 완료');
   await expect(movingMobileCard).not.toContainText('0%');
   const mathMobileCard = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-middle-school-math-1"]');
   await expect(mathMobileCard).toContainText('단원별 개념 진도');
-  await expect(mathMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText('0/8 완료');
+  await expect(mathMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText('전체 0/8 완료');
   await expect(mathMobileCard).not.toContainText('0%');
 });
 
@@ -3359,7 +3361,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(mathCard).toContainText('단원별 개념 진도');
   await expect(mathCard.getByTestId('my-flow-map-context')).toContainText('중1 수학 목차 진도표');
   await expect(mathCard).not.toContainText('Mathbang');
-  await expect(mathCard).toContainText('0/8');
+  await expect(mathCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/8 완료');
   await expect(mathCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
 
   await mathCard.getByTestId('my-flow-next-action-open').click();
@@ -3370,7 +3372,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   const itemChecklist = detailSection.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('거듭제곱');
   await itemChecklist.getByLabel('거듭제곱').check();
-  await expect(itemChecklist).toContainText('1/8');
+  await expect(detailSection.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/8');
 
   await detailSection.getByTestId('my-flow-detail-edit-toggle').click();
   await detailSection.getByTestId('my-flow-detail-date-input').fill('2026-06-29');
@@ -3451,7 +3453,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정');
   await expect(flowDetail.getByTestId('my-flow-detail-portable-export')).toContainText('원문·내 도구');
   await itemChecklist.getByLabel('거듭제곱').check();
-  await expect(itemChecklist).toContainText('1/8');
+  await expect(flowDetail.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/8');
 });
 
 test('source-backed moving map saves one dated timeline into My Flow calendar', async ({ page }) => {
@@ -3598,10 +3600,10 @@ test('source-backed baby health map saves input-bearing official schedule flows 
   await expect(checkupCard).toContainText('영유아 건강검진 일정');
   await expect(checkupCard.getByTestId('my-flow-map-context')).toContainText('영유아 검진·접종 일정');
   await expect(checkupCard.getByTestId('my-flow-map-context')).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(checkupCard).toContainText('0/12');
+  await expect(checkupCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/12 완료');
   await expect(checkupCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
   await expect(vaccinationCard).toContainText('아이 예방접종 일정 확인');
-  await expect(vaccinationCard).toContainText('0/6');
+  await expect(vaccinationCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/6 완료');
 
   const savedRecords = await page.evaluate(() => {
     const keys = [
@@ -3640,12 +3642,12 @@ test('source-backed baby health map remains visible on mobile Flow tab after sav
   const checkupMobileCard = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-baby-health-checkups"]');
   await expect(checkupMobileCard).toContainText('영유아 검진·접종 일정');
   await expect(checkupMobileCard).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(checkupMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText(/0\/\d+ 완료/);
+  await expect(checkupMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 0\/\d+ 완료/);
   await expect(checkupMobileCard).not.toContainText('0%');
   const vaccinationMobileCard = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-baby-vaccination-schedule"]');
   await expect(vaccinationMobileCard).toContainText('영유아 검진·접종 일정');
   await expect(vaccinationMobileCard).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(vaccinationMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText(/0\/\d+ 완료/);
+  await expect(vaccinationMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 0\/\d+ 완료/);
   await expect(vaccinationMobileCard).not.toContainText('0%');
 });
 
@@ -4272,7 +4274,7 @@ test('my flow ux12 calendar routine rows rely on the progress pill only', async 
   await page.locator('.fc-daygrid-day[data-date="2026-05-28"]').getByTestId('my-flow-calendar-date-button').click();
   const todayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();
   await expect(todayRoutineRow).toBeVisible();
-  await expect(todayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/항목 \d+\/\d+/);
+  await expect(todayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/반복 항목 \d+\/\d+/);
   await expect(todayRoutineRow.getByTestId('my-flow-routine-completion-note')).toHaveCount(0);
 });
 
@@ -4309,7 +4311,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/오늘 0|다음 0|지난 할 일 0/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(1);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
-  await expect(page.getByTestId('my-flow-mobile-structure-row').getByTestId('my-flow-mobile-structure-progress')).toContainText(/0\/24 완료/);
+  await expect(page.getByTestId('my-flow-mobile-structure-row').getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 0\/24 완료/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).not.toContainText('0%');
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-hide-toggle')).toHaveCount(0);
@@ -4341,7 +4343,7 @@ test('my flow mobile item opens editable detail inline from today page', async (
   await expect(firstRunnableRow).not.toContainText('지난 할 일');
   await expect(firstRunnableRow).not.toContainText('지금 실행할 Step');
   await expect(firstRunnableRow).not.toContainText(/\d+%/);
-  await expect(firstRunnableRow.getByTestId('my-flow-mobile-continuation-flow-context')).toContainText('완료');
+  await expect(firstRunnableRow.getByTestId('my-flow-mobile-continuation-flow-context')).not.toContainText(/\d+\/\d+\s*완료/);
   await firstRunnableRow.getByTestId('my-flow-mobile-continuation-open').click();
   const mobileDetail = firstRunnableRow.getByTestId('my-flow-item-detail');
   await expect(mobileDetail).toBeVisible();
@@ -4496,7 +4498,7 @@ test('my flow mobile status board opens actionable flow lists', async ({ page })
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/오늘 0|다음 0|지난 할 일 0/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(4);
   const firstStructureRow = page.getByTestId('my-flow-mobile-structure-row').first();
-  await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-progress')).toContainText(/\d+\/\d+ 완료/);
+  await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 \d+\/\d+ 완료/);
   await expect(firstStructureRow).not.toContainText(/\d+%/);
   await firstStructureRow.getByTestId('my-flow-mobile-structure-open').click();
   await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-step-list')).toBeVisible();
