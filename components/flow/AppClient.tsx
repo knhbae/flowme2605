@@ -181,6 +181,17 @@ const categoryColors: Record<string, string> = {
   '다이어트/습관': '#A16207',
 };
 
+const calendarFlowMarkerColors = [
+  '#1D4ED8',
+  '#0F766E',
+  '#A16207',
+  '#BE185D',
+  '#7C3AED',
+  '#C2410C',
+  '#0369A1',
+  '#4D7C0F',
+] as const;
+
 const reactionFields: { key: keyof ReactionLog; label: string }[] = [
   { key: 'amount', label: '먹은 양' },
   { key: 'fedAt', label: '먹인 시간' },
@@ -2415,7 +2426,16 @@ type MyFlowSelectedDateGroup = {
   title: string;
   kind: 'routine' | 'schedule';
   rows: MyFlowCalendarRow[];
+  flowMarker: MyFlowFlowMarker;
   savedMap?: SavedFlowMapSnapshot;
+};
+
+type MyFlowFlowMarker = {
+  key: string;
+  color: string;
+  title: string;
+  shortTitle: string;
+  initial: string;
 };
 
 type ChecklistFilter = 'all' | 'open' | 'done';
@@ -3287,6 +3307,32 @@ function getMyFlowCalendarShortTitle(title: string): string {
   return `${title.slice(0, 7)}...`;
 }
 
+function getStableCalendarFlowMarkerIndex(key: string): number {
+  let hash = 0;
+  for (let index = 0; index < key.length; index += 1) {
+    hash = (hash * 31 + key.charCodeAt(index)) >>> 0;
+  }
+  return hash % calendarFlowMarkerColors.length;
+}
+
+function getMyFlowCalendarFlowTitle(flow: MySavedFlow): string {
+  if (flow.savedMap?.title) return toUserFacingMapTitle(flow.savedMap.title);
+  return toContentDisplayTitle(getMyFlowExecutionFlowTitle(flow.progress.title));
+}
+
+function getMyFlowCalendarFlowMarker(flow: MySavedFlow): MyFlowFlowMarker {
+  const key = flow.savedMap?.mapId || flow.progress.slug;
+  const title = getMyFlowCalendarFlowTitle(flow);
+  const titleCharacters = Array.from(title.trim());
+  return {
+    key,
+    color: calendarFlowMarkerColors[getStableCalendarFlowMarkerIndex(key)],
+    title,
+    shortTitle: getMyFlowCalendarShortTitle(title),
+    initial: titleCharacters[0] ?? 'F',
+  };
+}
+
 function getMyFlowRoutineIcon(row: MyFlowCalendarRow): string {
   const text = [
     row.flow.bundle.flow.title,
@@ -4091,6 +4137,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? (kind === 'routine' ? '저장한 루틴' : '저장한 일정')
           : (kind === 'routine' ? '루틴' : '일정'),
         title: savedMap ? toUserFacingMapTitle(savedMap.title) : toContentDisplayTitle(getMyFlowExecutionFlowTitle(row.flow.progress.title)),
+        flowMarker: getMyFlowCalendarFlowMarker(row.flow),
         rows: [row],
         ...(savedMap ? { savedMap } : {}),
       });
@@ -4393,7 +4440,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowCalendarEvents = [
     ...myFlowCalendarScheduleRows.map((row) => {
       const checked = isMyFlowRowChecked(row.flow, row);
-      const color = categoryColors[row.flow.bundle.flow.category] ?? '#2563EB';
+      const flowMarker = getMyFlowCalendarFlowMarker(row.flow);
+      const color = flowMarker.color;
       const title = getMyFlowRowDisplayTitle(row);
       return {
         id: row.calendarKey ?? `${row.flow.progress.slug}-${row.id}-${row.date}`,
@@ -4411,6 +4459,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           itemTitle: title,
           shortTitle: getMyFlowCalendarShortTitle(title),
           itemCountOnDate: row.date ? myFlowScheduleCountByDate[row.date] ?? 1 : 1,
+          flowMarkerKey: flowMarker.key,
+          flowMarkerTitle: flowMarker.title,
+          flowMarkerShortTitle: flowMarker.shortTitle,
           color,
         },
       };
@@ -4451,11 +4502,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           kind: 'routineRail',
           hiddenCount: Math.max(0, rows.length - myFlowRoutineIconLimit),
           routines: rows.slice(0, myFlowRoutineIconLimit).map<MyFlowRoutineCalendarIcon>((row) => {
-            const color = categoryColors[row.flow.bundle.flow.category] ?? '#0F766E';
+            const flowMarker = getMyFlowCalendarFlowMarker(row.flow);
+            const color = flowMarker.color;
             return {
               key: getMyFlowRowInstanceKey(row),
               title: getMyFlowRowDisplayTitle(row),
-              flowTitle: getMyFlowExecutionFlowTitle(row.flow.progress.title),
+              flowTitle: flowMarker.title,
               color,
               iconKind: getMyFlowRoutineIconKind(row),
             };
@@ -5039,10 +5091,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       hideFlowMeta?: boolean;
       showFlowProgress?: boolean;
       detailSurface?: MyFlowView;
+      markerColor?: string;
     } = {},
   ) => {
     const checked = isMyFlowRowChecked(row.flow, row);
-    const color = categoryColors[row.flow.bundle.flow.category] ?? '#2563EB';
+    const color = options.markerColor ?? categoryColors[row.flow.bundle.flow.category] ?? '#2563EB';
     const activeRowKey = myFlowActiveRow && myFlowDetailOpen ? getMyFlowRowInstanceKey(myFlowActiveRow) : '';
     const isActive = Boolean(activeRowKey) && getMyFlowRowInstanceKey(row) === activeRowKey;
     const displayTitle = getMyFlowRowDisplayTitle(row);
@@ -5449,19 +5502,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </span>
       );
     }
-    const itemCountOnDate = Number(info.event.extendedProps.itemCountOnDate ?? 1);
     const checked = Boolean(info.event.extendedProps.checked);
     const color = String(info.event.extendedProps.color ?? '#2563EB');
-    const scheduleLabel = itemCountOnDate > 1 ? `${itemCountOnDate}개` : '일정';
+    const flowMarkerTitle = String(info.event.extendedProps.flowMarkerTitle ?? '');
+    const flowMarkerShortTitle = String(info.event.extendedProps.flowMarkerShortTitle ?? '').trim();
+    const scheduleLabel = flowMarkerShortTitle || getMyFlowCalendarShortTitle(String(info.event.extendedProps.itemTitle ?? info.event.title));
 
     return (
-      <span data-testid="my-flow-calendar-schedule-content" className="flex min-w-0 items-center gap-1">
+      <span data-testid="my-flow-calendar-schedule-content" className="flex min-w-0 items-center gap-1" aria-label={flowMarkerTitle || scheduleLabel}>
         <span
           data-testid="my-flow-calendar-schedule-rail"
           className="h-2.5 w-2.5 shrink-0 rounded-full"
           style={{ backgroundColor: checked ? '#94A3B8' : color }}
         />
-        <span className={`truncate text-[10px] font-black leading-none ${checked ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+        <span
+          data-testid="my-flow-calendar-flow-label"
+          title={flowMarkerTitle || scheduleLabel}
+          className={`truncate text-[10px] font-black leading-none ${checked ? 'text-slate-400 line-through' : 'text-slate-700'}`}
+        >
           {scheduleLabel}
         </span>
       </span>
@@ -5701,7 +5759,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showTimeLocationFields = !isProgressFlow || Boolean(row.calendarKey);
     const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
     const scheduleSummaryRows = [
-      editorDraft.date ? { label: '날짜', value: editorDraft.date } : undefined,
+      editorDraft.date ? { label: '날짜', value: /^\d{4}-\d{2}-\d{2}$/.test(editorDraft.date) ? formatMyFlowDisplayDate(editorDraft.date) : editorDraft.date } : undefined,
       editorDraft.time ? { label: '시간', value: editorDraft.time } : undefined,
       editorDraft.repeatPreset ? { label: '반복', value: editorDraft.repeatPreset === 'daily' ? '매일' : editorDraft.repeatPreset === 'weekly' ? '매주' : editorDraft.repeatPreset === 'monthly' ? '매월' : editorDraft.repeatPreset } : undefined,
       editorDraft.location ? { label: '장소', value: editorDraft.location } : undefined,
@@ -7949,16 +8007,29 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       const groupOpenCount = group.rows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
                       const groupHasMultipleFlows = new Set(group.rows.map((row) => row.flow.progress.slug)).size > 1;
                       const sharedMeta = getMyFlowAgendaSharedMeta(group.rows, group.kind);
+                      const flowMarker = group.flowMarker;
                       return (
                         <section
                           key={group.key}
                           data-testid="my-flow-selected-date-group"
+                          data-flow-marker-key={flowMarker.key}
                           className={`rounded-lg border p-2.5 ${group.savedMap ? 'border-blue-100 bg-blue-50/50' : 'border-slate-200 bg-slate-50'}`}
                         >
                           <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className={`text-xs font-semibold ${group.savedMap ? 'text-blue-700' : 'text-slate-500'}`}>{group.label}</p>
-                              <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
+                            <div className="flex min-w-0 items-start gap-2">
+                              <span
+                                data-testid="my-flow-selected-date-flow-marker"
+                                aria-label={flowMarker.title}
+                                title={flowMarker.title}
+                                className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black text-white shadow-sm ring-1 ring-white"
+                                style={{ backgroundColor: flowMarker.color }}
+                              >
+                                {flowMarker.initial}
+                              </span>
+                              <div className="min-w-0">
+                                <p className={`text-xs font-semibold ${group.savedMap ? 'text-blue-700' : 'text-slate-500'}`}>{group.label}</p>
+                                <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
+                              </div>
                             </div>
                             {group.rows.length > 1 || groupOpenCount !== group.rows.length ? (
                               <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
@@ -7995,6 +8066,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                               hideFlowMeta: !groupHasMultipleFlows,
                               showFlowProgress: groupHasMultipleFlows,
                               detailSurface: 'calendar',
+                              markerColor: flowMarker.color,
                             }))}
                           </div>
                         </section>

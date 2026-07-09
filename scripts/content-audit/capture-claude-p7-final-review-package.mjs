@@ -71,6 +71,10 @@ const savedFixtures = {
     { slug: 'computer-skills-d30-study', selectedArtifactMode: 'calendar', anchor: '2026-06-27' },
     { slug: 'used-car-buying-check', selectedArtifactMode: 'checklist' },
   ],
+  calendarSameDateFlows: [
+    { slug: 'moving-d30-basic', selectedArtifactMode: 'calendar', anchor: '2026-06-02' },
+    { slug: 'computer-skills-d30-study', selectedArtifactMode: 'calendar', anchor: '2026-07-03' },
+  ],
   longList: [
     { slug: 'moving-d30-basic', selectedArtifactMode: 'calendar', anchor: '2026-06-26' },
     { slug: 'computer-skills-d30-study', selectedArtifactMode: 'calendar', anchor: '2026-06-27' },
@@ -134,6 +138,10 @@ async function main() {
     });
     await captureRoute(page, '/calendar', '14-calendar-after-moving-save-mobile.png', 'Calendar agenda-first after moving save', {
       category: 'saved-state',
+    });
+    await captureCalendarSameDateFlows(page, '43-calendar-same-date-multi-flow-mobile.png', 'Calendar same-date multi-Flow markers mobile', {
+      category: 'calendar-same-date-flow',
+      selectedDate: '2026-06-03',
     });
 
     await saveFlowMapThroughUi(page, '/flow-maps/middle-school-math-1', 'middle-school-math-1');
@@ -448,6 +456,11 @@ async function captureWideViewportEvidence(page) {
     category: 'wide-viewport',
     wideViewport: true,
   });
+  await captureCalendarSameDateFlows(page, '44-calendar-same-date-multi-flow-wide.png', 'Calendar same-date multi-Flow markers wide', {
+    category: 'wide-viewport',
+    wideViewport: true,
+    selectedDate: '2026-06-03',
+  });
   await saveFlowMapThroughUi(page, '/flow-maps/moving-d30', 'moving-d30', '2026-07-22');
   await captureCurrent(page, '36-post-save-my-moving-wide.png', 'Post-save My Flow wide viewport spot check', {
     category: 'wide-viewport',
@@ -481,6 +494,22 @@ async function captureWideViewportEvidence(page) {
   });
   await page.setViewportSize(viewport);
   await settle(page);
+}
+
+async function captureCalendarSameDateFlows(page, file, label, options = {}) {
+  await setSavedFlows(page, savedFixtures.calendarSameDateFlows);
+  await page.goto('/calendar');
+  await settle(page);
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  await page.locator('.fc-daygrid-day[data-date="2026-06-03"]').click();
+  await settle(page);
+  await captureCurrent(page, file, label, {
+    ...options,
+    category: options.category ?? 'calendar-same-date-flow',
+    route: '/calendar',
+    selectedDate: '2026-06-03',
+    p18CalendarSameDateFlowFixture: true,
+  });
 }
 
 async function collectUserNavLeakScanEvidence(page) {
@@ -1113,10 +1142,21 @@ async function scanPage(page, options = {}) {
         ?? group.querySelector('[data-testid="my-flow-selected-date-group-meta"]')?.textContent
         ?? ''
       ));
+      const flowMarker = group.querySelector('[data-testid="my-flow-selected-date-flow-marker"]');
+      const flowMarkerLabel = normalizeLine(
+        flowMarker?.getAttribute('aria-label')
+        ?? flowMarker?.getAttribute('title')
+        ?? flowMarker?.textContent
+        ?? '',
+      );
+      const flowMarkerKey = normalizeLine(group.getAttribute('data-flow-marker-key') ?? '');
       const rows = Array.from(group.querySelectorAll(rowSelector)).filter((element) => isVisible(element));
       const rowMeta = rows.map(summarizeRowMeta);
       return {
         headerText,
+        flowMarkerKey,
+        flowMarkerLabel,
+        flowMarkerVisible: Boolean(flowMarker && isVisible(flowMarker)),
         rowCount: rows.length,
         repeatedDateMetaRowCount: rowMeta.filter((row) => row.visibleDateMetaCount > 0 || row.dateTextCount > 0).length,
         repeatedTimingMetaRowCount: rowMeta.filter((row) => row.visibleTimingChipCount > 0 || row.timingTextCount > 0).length,
@@ -1130,6 +1170,12 @@ async function scanPage(page, options = {}) {
       const calendarGroups = Array.from(calendarRoot?.querySelectorAll('[data-testid="my-flow-selected-date-group"]') ?? [])
         .filter((element) => isVisible(element))
         .map((group) => summarizeAgendaGroup(group, '[data-testid="my-flow-execution-row-shell"] > article, article[data-item-type]'));
+      const selectedDateCell = document.querySelector('.fc-daygrid-day.my-flow-calendar-selected-date');
+      const selectedDateGridFlowLabels = Array.from(selectedDateCell?.querySelectorAll('[data-testid="my-flow-calendar-flow-label"]') ?? [])
+        .filter((element) => isVisible(element))
+        .map((element) => normalizeLine(element.textContent ?? ''))
+        .filter(Boolean);
+      const selectedDateGridDistinctFlowLabels = Array.from(new Set(selectedDateGridFlowLabels));
       const statusRoot = document.querySelector('[data-testid="my-flow-status-sheet"]');
       const statusGroups = Array.from(statusRoot?.querySelectorAll('[data-testid="my-flow-status-sheet-group"]') ?? [])
         .filter((element) => isVisible(element))
@@ -1142,6 +1188,11 @@ async function scanPage(page, options = {}) {
         calendarSelectedDay: {
           visible: Boolean(calendarRoot && isVisible(calendarRoot)),
           groupCount: calendarGroups.length,
+          flowMarkerCount: calendarGroups.filter((group) => group.flowMarkerVisible).length,
+          distinctFlowMarkerCount: new Set(calendarGroups.map((group) => group.flowMarkerKey || group.flowMarkerLabel).filter(Boolean)).size,
+          agendaGroupByFlow: calendarGroups.length > 0 && calendarGroups.every((group) => group.flowMarkerVisible && Boolean(group.flowMarkerLabel)),
+          selectedDateGridFlowLabels,
+          selectedDateGridDistinctFlowLabelCount: selectedDateGridDistinctFlowLabels.length,
           groups: calendarGroups,
         },
         myFlowStatusSheet: {
@@ -1452,6 +1503,8 @@ async function scanPage(page, options = {}) {
       urlFirstScenarioName: payload.options.urlFirstScenarioName ?? null,
       urlFirstState: payload.options.urlFirstState ?? null,
       urlFirstTriggerUrl: payload.options.urlFirstTriggerUrl ?? null,
+      selectedDate: payload.options.selectedDate ?? null,
+      p18CalendarSameDateFlowFixture: Boolean(payload.options.p18CalendarSameDateFlowFixture),
       wideViewport: Boolean(payload.options.wideViewport),
       url: window.location.pathname + window.location.search,
       h1: document.querySelector('h1')?.textContent?.trim() ?? '',
@@ -1777,6 +1830,11 @@ function summarizeEvidence(records) {
     ...(record.markers?.agendaGroupMeta?.calendarSelectedDay?.groups ?? []),
     ...(record.markers?.agendaGroupMeta?.myFlowStatusSheet?.groups ?? []),
   ];
+  const getCalendarSelectedDayMeta = (record) =>
+    record.markers?.agendaGroupMeta?.calendarSelectedDay ?? {};
+  const calendarSameDateFlowRecords = records.filter((record) =>
+    record.p18CalendarSameDateFlowFixture || record.category === 'calendar-same-date-flow',
+  );
   const countAgendaGroupRows = (record, field) =>
     getAgendaGroups(record).reduce((sum, group) => sum + (group[field] ?? 0), 0);
   const countPrototypeDisplayGateHits = (record) =>
@@ -1960,6 +2018,38 @@ function summarizeEvidence(records) {
     normalRouteAgendaGroupRepeatedTimingMetaRowCount: normal.reduce((sum, record) =>
       sum + countAgendaGroupRows(record, 'repeatedTimingMetaRowCount'),
     0),
+    calendarFlowMarkerCount: normal.reduce((sum, record) =>
+      sum + (getCalendarSelectedDayMeta(record).flowMarkerCount ?? 0),
+    0),
+    calendarDistinctFlowMarkerCount: Math.max(
+      0,
+      ...normal.map((record) => getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0),
+    ),
+    calendarSameDateDistinctFlowGroupCount: Math.max(
+      0,
+      ...calendarSameDateFlowRecords.map((record) => getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0),
+    ),
+    calendarAgendaGroupByFlow: calendarSameDateFlowRecords.some((record) =>
+      Boolean(getCalendarSelectedDayMeta(record).agendaGroupByFlow),
+    ),
+    calendarFlowMarkerContrastChecked: calendarSameDateFlowRecords.some((record) => {
+      const meta = getCalendarSelectedDayMeta(record);
+      return (meta.flowMarkerCount ?? 0) > 0 && (meta.selectedDateGridDistinctFlowLabelCount ?? 0) > 0;
+    }),
+    calendarSameDateGridDistinctFlowLabelCount: Math.max(
+      0,
+      ...calendarSameDateFlowRecords.map((record) => getCalendarSelectedDayMeta(record).selectedDateGridDistinctFlowLabelCount ?? 0),
+    ),
+    calendarSameDateFlowEvidence: calendarSameDateFlowRecords.map((record) => ({
+      id: record.id,
+      route: record.url,
+      viewportWidth: record.viewportWidth,
+      selectedDate: record.selectedDate,
+      flowMarkerCount: getCalendarSelectedDayMeta(record).flowMarkerCount ?? 0,
+      distinctFlowMarkerCount: getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0,
+      selectedDateGridFlowLabels: getCalendarSelectedDayMeta(record).selectedDateGridFlowLabels ?? [],
+      agendaGroupByFlow: Boolean(getCalendarSelectedDayMeta(record).agendaGroupByFlow),
+    })),
     normalRouteStatusSheetGroupMetaCount: normal.reduce((sum, record) =>
       sum + (record.markers?.agendaGroupMeta?.myFlowStatusSheet?.groupCount ?? 0),
     0),
@@ -2308,6 +2398,9 @@ P14-05/P14-06 soften URL-first candidate/miss/hit copy that was technically clea
 - Normal route agenda/status group marker count: ${evidence.summary.normalRouteAgendaGroupMetaCount}
 - Normal route agenda/status repeated date meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}
 - Normal route agenda/status repeated timing meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedTimingMetaRowCount}
+- Calendar same-date distinct Flow groups: ${evidence.summary.calendarSameDateDistinctFlowGroupCount}
+- Calendar same-date grid Flow labels: ${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}
+- Calendar agenda grouped by Flow: ${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}
@@ -2465,6 +2558,8 @@ P14-05/P14-06 replace URL-first candidate/miss/hit wording that sounded like sys
 P15-01/P15-02 add the creator-profile destination behind the My Flow \`스튜디오\` link to the evidence set. \`/u/my-flow-studio\` is captured at 390px and 1024px as a user-facing secondary surface outside the 4-tab IA, normal user-surface guardrails are applied to that route, and \`studioEntryVisibleByViewport\`/\`studioEntryReachableByViewport\` record the mobile/wide entry policy.
 
 P15-03 scans URL-first candidate resolved card headline/status/body text directly. Legacy state-machine wording such as \`기존 콘텐츠로 닫힌 상태\` or \`실행 가능한 ... 후보\` is measured as candidate card legacy status hits, separate from the internal production handoff bucket.
+
+P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda records Flow marker groups, the month grid records visible Flow labels, and the summary exposes \`calendarSameDateDistinctFlowGroupCount\`, \`calendarSameDateGridDistinctFlowLabelCount\`, and \`calendarAgendaGroupByFlow\` so Calendar Flow identity can be judged without relying only on screenshots.
 
 ## Baselines Covered
 
@@ -2740,6 +2835,9 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupMetaCount}</b><span>agenda/status groups</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}</b><span>repeated date meta rows</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedTimingMetaRowCount}</b><span>repeated timing meta rows</span></div>
+      <div class="stat"><b>${evidence.summary.calendarSameDateDistinctFlowGroupCount}</b><span>calendar same-date Flow groups</span></div>
+      <div class="stat"><b>${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}</b><span>calendar grid Flow labels</span></div>
+      <div class="stat"><b>${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}</b><span>calendar grouped by Flow</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}</b><span>row control a11y samples</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteRowControlAccessibleNameContextCount}</b><span>row control samples with context</span></div>
       <div class="stat"><b>${evidence.summary.wideViewportEvidenceCount}</b><span>wide viewport captures</span></div>

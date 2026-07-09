@@ -2750,6 +2750,57 @@ test('calendar route opens the nearest saved schedule instead of an empty today'
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
 });
 
+test('calendar route distinguishes multiple saved flows on the same selected date', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
+  await page.addInitScript(() => {
+    const savedAt = '2026-07-03T00:00:00.000Z';
+    localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-06-02',
+    }));
+    localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-06-02',
+    }));
+    localStorage.setItem('flow:saved:computer-skills-d30-study', JSON.stringify({
+      slug: 'computer-skills-d30-study',
+      savedAt,
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-07-03',
+    }));
+    localStorage.setItem('flow:computer-skills-d30-study:anchorDate', JSON.stringify({
+      mode: 'custom',
+      anchor: '2026-07-03',
+    }));
+  });
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  await page.locator('.fc-daygrid-day[data-date="2026-06-03"]').click();
+
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay.locator('h3')).toContainText('6월 3일');
+
+  const groupTexts = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
+  expect(groupTexts).toContain('이사 준비');
+  expect(groupTexts).toContain('컴퓨터활용능력 학습');
+
+  const flowMarkers = selectedDay.getByTestId('my-flow-selected-date-flow-marker');
+  await expect(flowMarkers).toHaveCount(2);
+  const markerLabels = (await flowMarkers.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label') ?? ''))).join(' ');
+  expect(markerLabels).toContain('이사 준비');
+  expect(markerLabels).toContain('컴퓨터활용능력 학습');
+
+  const dateCell = page.locator('.fc-daygrid-day[data-date="2026-06-03"]');
+  const scheduleLabels = (await dateCell.getByTestId('my-flow-calendar-flow-label').allInnerTexts()).join(' ');
+  expect(scheduleLabels).toContain('이사');
+  expect(scheduleLabels).toContain('컴퓨터');
+  expect(scheduleLabels).not.toMatch(/(^|\s)(일정|\d+개)(\s|$)/);
+});
+
 test('calendar route keeps the first agenda and light day cells in the mobile viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
