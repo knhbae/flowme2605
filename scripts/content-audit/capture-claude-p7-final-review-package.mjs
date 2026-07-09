@@ -1283,6 +1283,13 @@ async function scanPage(page, options = {}) {
       const visibleTimingChipCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-timing-chip"], [data-testid="my-flow-status-sheet-group-timing-chip"]')).filter((element) => isVisible(element)).length;
       const visibleSectionLabelCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-section-label"]')).filter((element) => isVisible(element)).length;
       const visibleFlowChipCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-flow-chip"]')).filter((element) => isVisible(element)).length;
+      const visibleProgressChipCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-progress-chip"]')).filter((element) => isVisible(element)).length;
+      const visibleOpenLabelCount = Array.from(row.querySelectorAll('[data-testid="my-flow-row-open-label"]')).filter((element) => isVisible(element)).length;
+      const rowDensityMetaCount = visibleDateMetaCount
+        + visibleTimingChipCount
+        + visibleSectionLabelCount
+        + visibleFlowChipCount
+        + visibleProgressChipCount;
 
       return {
         textSample: text.slice(0, 140),
@@ -1292,6 +1299,9 @@ async function scanPage(page, options = {}) {
         visibleTimingChipCount,
         visibleSectionLabelCount,
         visibleFlowChipCount,
+        visibleProgressChipCount,
+        visibleOpenLabelCount,
+        rowDensityMetaCount,
       };
     };
     const summarizeAgendaGroup = (group, rowSelector) => {
@@ -1320,6 +1330,9 @@ async function scanPage(page, options = {}) {
         repeatedTimingMetaRowCount: rowMeta.filter((row) => row.visibleTimingChipCount > 0 || row.timingTextCount > 0).length,
         repeatedSectionMetaRowCount: rowMeta.filter((row) => row.visibleSectionLabelCount > 0).length,
         repeatedFlowMetaRowCount: rowMeta.filter((row) => row.visibleFlowChipCount > 0).length,
+        repeatedProgressMetaRowCount: rowMeta.filter((row) => row.visibleProgressChipCount > 0).length,
+        denseRowCount: rowMeta.filter((row) => row.rowDensityMetaCount > 0).length,
+        openLabelRowCount: rowMeta.filter((row) => row.visibleOpenLabelCount > 0).length,
         rowMeta: rowMeta.slice(0, 5),
       };
     };
@@ -2108,6 +2121,11 @@ function summarizeEvidence(records) {
   );
   const countAgendaGroupRows = (record, field) =>
     getAgendaGroups(record).reduce((sum, group) => sum + (group[field] ?? 0), 0);
+  const countCalendarSelectedDayGroupRows = (record, field) =>
+    (getCalendarSelectedDayMeta(record).groups ?? []).reduce((sum, group) => sum + (group[field] ?? 0), 0);
+  const calendarMobileSameDateFlowRecords = calendarSameDateFlowRecords.filter((record) => record.viewportWidth <= viewport.width);
+  const countCalendarMobileSameDateRows = (field) =>
+    calendarMobileSameDateFlowRecords.reduce((sum, record) => sum + countCalendarSelectedDayGroupRows(record, field), 0);
   const countPrototypeDisplayGateHits = (record) =>
     (record.prototypeDisplayGateHits?.rawRouteSlugHits?.length ?? 0)
     + (record.prototypeDisplayGateHits?.englishWeekdayHits?.length ?? 0)
@@ -2389,6 +2407,13 @@ function summarizeEvidence(records) {
     normalRouteAgendaGroupRepeatedTimingMetaRowCount: normal.reduce((sum, record) =>
       sum + countAgendaGroupRows(record, 'repeatedTimingMetaRowCount'),
     0),
+    calendarMobileAgendaRowCount: countCalendarMobileSameDateRows('rowCount'),
+    calendarMobileAgendaDenseRowCount: countCalendarMobileSameDateRows('denseRowCount'),
+    calendarMobileAgendaRowDateMetaCount: countCalendarMobileSameDateRows('repeatedDateMetaRowCount'),
+    calendarMobileAgendaRowTimingMetaCount: countCalendarMobileSameDateRows('repeatedTimingMetaRowCount'),
+    calendarMobileAgendaRowFlowMetaCount: countCalendarMobileSameDateRows('repeatedFlowMetaRowCount'),
+    calendarMobileAgendaRowProgressMetaCount: countCalendarMobileSameDateRows('repeatedProgressMetaRowCount'),
+    calendarMobileAgendaOpenLabelRowCount: countCalendarMobileSameDateRows('openLabelRowCount'),
     calendarFlowMarkerCount: normal.reduce((sum, record) =>
       sum + (getCalendarSelectedDayMeta(record).flowMarkerCount ?? 0),
     0),
@@ -2850,6 +2875,13 @@ P18-08 keeps URL-first miss as a draft-preparation gate instead of implying live
 - Normal route agenda/status group marker count: ${evidence.summary.normalRouteAgendaGroupMetaCount}
 - Normal route agenda/status repeated date meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}
 - Normal route agenda/status repeated timing meta rows: ${evidence.summary.normalRouteAgendaGroupRepeatedTimingMetaRowCount}
+- Calendar mobile agenda row count: ${evidence.summary.calendarMobileAgendaRowCount}
+- Calendar mobile agenda dense row count: ${evidence.summary.calendarMobileAgendaDenseRowCount}
+- Calendar mobile agenda row date meta count: ${evidence.summary.calendarMobileAgendaRowDateMetaCount}
+- Calendar mobile agenda row timing meta count: ${evidence.summary.calendarMobileAgendaRowTimingMetaCount}
+- Calendar mobile agenda row Flow meta count: ${evidence.summary.calendarMobileAgendaRowFlowMetaCount}
+- Calendar mobile agenda row progress meta count: ${evidence.summary.calendarMobileAgendaRowProgressMetaCount}
+- Calendar mobile agenda open-label rows: ${evidence.summary.calendarMobileAgendaOpenLabelRowCount}
 - Calendar same-date distinct Flow groups: ${evidence.summary.calendarSameDateDistinctFlowGroupCount}
 - Calendar same-date grid Flow labels: ${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}
 - Calendar agenda grouped by Flow: ${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}
@@ -3323,6 +3355,9 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupMetaCount}</b><span>agenda/status groups</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedDateMetaRowCount}</b><span>repeated date meta rows</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteAgendaGroupRepeatedTimingMetaRowCount}</b><span>repeated timing meta rows</span></div>
+      <div class="stat"><b>${evidence.summary.calendarMobileAgendaDenseRowCount}</b><span>mobile dense agenda rows</span></div>
+      <div class="stat"><b>${evidence.summary.calendarMobileAgendaRowDateMetaCount}</b><span>mobile row date meta</span></div>
+      <div class="stat"><b>${evidence.summary.calendarMobileAgendaOpenLabelRowCount}/${evidence.summary.calendarMobileAgendaRowCount}</b><span>mobile agenda open labels</span></div>
       <div class="stat"><b>${evidence.summary.calendarSameDateDistinctFlowGroupCount}</b><span>calendar same-date Flow groups</span></div>
       <div class="stat"><b>${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}</b><span>calendar grid Flow labels</span></div>
       <div class="stat"><b>${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}</b><span>calendar grouped by Flow</span></div>

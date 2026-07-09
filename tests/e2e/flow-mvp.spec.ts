@@ -2877,6 +2877,19 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
   expect(scheduleLabels).toContain('이사');
   expect(scheduleLabels).toContain('컴퓨터');
   expect(scheduleLabels).not.toMatch(/(^|\s)(일정|\d+개)(\s|$)/);
+
+  const agendaRows = selectedDay.locator('[data-testid="my-flow-execution-row-shell"] > article');
+  const agendaRowCount = await agendaRows.count();
+  expect(agendaRowCount).toBeGreaterThanOrEqual(3);
+  await expect(agendaRows.getByTestId('my-flow-row-date-meta')).toHaveCount(0);
+  await expect(agendaRows.getByTestId('my-flow-row-timing-chip')).toHaveCount(0);
+  await expect(agendaRows.getByTestId('my-flow-row-section-label')).toHaveCount(0);
+  await expect(agendaRows.getByTestId('my-flow-row-flow-chip')).toHaveCount(0);
+  await expect(agendaRows.getByTestId('my-flow-row-progress-chip')).toHaveCount(0);
+  await expect(agendaRows.getByTestId('my-flow-row-open-label')).toHaveCount(agendaRowCount);
+  await expect(agendaRows.getByRole('button', { name: /열기/ })).toHaveCount(agendaRowCount);
+  await expect(agendaRows.getByTestId('my-flow-task-complete-control')).toHaveCount(agendaRowCount);
+  await expect(agendaRows.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 });
 
 test('calendar route keeps the first agenda and light day cells in the mobile viewport', async ({ page }) => {

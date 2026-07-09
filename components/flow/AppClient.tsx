@@ -5257,10 +5257,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       minimalMeta?: boolean;
       showRoutineDate?: boolean;
       hideDateMeta?: boolean;
+      suppressDateMeta?: boolean;
       hideTimingMeta?: boolean;
       hideSectionMeta?: boolean;
       hideFlowMeta?: boolean;
       showFlowProgress?: boolean;
+      showOpenLabel?: boolean;
       detailSurface?: MyFlowView;
       markerColor?: string;
     } = {},
@@ -5278,6 +5280,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowChipLabel = getMyFlowFlowChipLabel(row.flow);
     const showFlowChip = !options.minimalMeta && !options.hideFlowMeta && (options.showFlowProgress || visibleSavedFlows.length > 1 || Boolean(row.flow.savedMap));
     const flowProgressLabel = getMyFlowFlowProgressLabel(row.flow);
+    const showDateMeta = Boolean(rowDateMeta) && !options.suppressDateMeta;
+    const showSectionMeta = !options.minimalMeta && Boolean(displaySection);
+    const showProgressMeta = Boolean(options.showFlowProgress);
+    const hasRowMeta = showDateMeta || Boolean(displayTiming) || showSectionMeta || showFlowChip || showProgressMeta;
+    const rowOpenAriaContext = [flowChipLabel, displayDate].filter(Boolean).join(' · ');
+    const rowOpenAriaLabel = options.showOpenLabel
+      ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
+      : undefined;
     const isRoutineExecution = options.kind === 'routine' || row.itemType?.primary === 'routine_session';
     const routineProgressLabel = `항목 ${row.flow.done}/${row.flow.total}`;
     const routineDragKey = getMyFlowRowInstanceKey(row);
@@ -5323,19 +5333,29 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <button
             className={rowButtonClassName}
             type="button"
+            aria-label={rowOpenAriaLabel}
             onClick={() => toggleMyFlowRowDetail(row, rowDetailSurface)}
           >
             <span className={rowDotClassName} style={{ backgroundColor: color }} />
             <span className="min-w-0 flex-1">
-              <span className="flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
-                <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span>
+              {hasRowMeta ? (
+                <span className="flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
+                {showDateMeta ? <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span> : null}
                 {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
-                {!options.minimalMeta && displaySection ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
+                {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
                 {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
-                {options.showFlowProgress ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
-              </span>
-              <span className={`mt-1 block font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
-                {displayTitle}
+                {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
+                </span>
+              ) : null}
+              <span className={`${hasRowMeta ? 'mt-1' : ''} flex min-w-0 items-center gap-2`}>
+                <span className={`min-w-0 flex-1 font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+                  {displayTitle}
+                </span>
+                {options.showOpenLabel ? (
+                  <span data-testid="my-flow-row-open-label" className="shrink-0 rounded bg-white px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-100">
+                    열기
+                  </span>
+                ) : null}
               </span>
             </span>
           </button>
@@ -5389,19 +5409,29 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <button
           className={rowButtonClassName}
           type="button"
+          aria-label={rowOpenAriaLabel}
           onClick={() => toggleMyFlowRowDetail(row, rowDetailSurface)}
         >
           <span className={rowDotClassName} style={{ backgroundColor: color }} />
           <span className="min-w-0 flex-1">
+            {hasRowMeta ? (
               <span className="flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
-                <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span>
+                {showDateMeta ? <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span> : null}
                 {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
-                {!options.minimalMeta && displaySection ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
+                {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
                 {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
-                {options.showFlowProgress ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
+                {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
               </span>
-            <span className={`mt-1 block font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
-              {displayTitle}
+            ) : null}
+            <span className={`${hasRowMeta ? 'mt-1' : ''} flex min-w-0 items-center gap-2`}>
+              <span className={`min-w-0 flex-1 font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+                {displayTitle}
+              </span>
+              {options.showOpenLabel ? (
+                <span data-testid="my-flow-row-open-label" className="shrink-0 rounded bg-white px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-100">
+                  열기
+                </span>
+              ) : null}
             </span>
             {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
@@ -8226,11 +8256,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                               compact: true,
                               openDetail: true,
                               inlineDetail: true,
+                              suppressDateMeta: true,
                               hideDateMeta: true,
                               hideTimingMeta: Boolean(sharedMeta.timing),
                               hideSectionMeta: Boolean(sharedMeta.section),
                               hideFlowMeta: !groupHasMultipleFlows,
                               showFlowProgress: groupHasMultipleFlows,
+                              showOpenLabel: true,
                               detailSurface: 'calendar',
                               markerColor: flowMarker.color,
                             }))}
