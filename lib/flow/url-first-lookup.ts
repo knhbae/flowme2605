@@ -2,6 +2,7 @@ import {
   buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedFlowMapSavedSnapshot,
+  getSourceBackedFlowMapDateAnchorCopy,
   getUrlFirstLookupableSourceBackedFlowMaps,
   type SourceBackedFlowMapPersistenceRecord,
   type SourceBackedFlowMapSavedSnapshot,
@@ -592,11 +593,13 @@ export function buildUrlFirstStartPackage(
   options: UrlFirstStartPackageOptions,
 ): UrlFirstStartPackage {
   const startDate = options.startDate.trim();
+  const sourceBackedStartPackage = result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined;
+  const dateAnchorLabel = getSourceBackedFlowMapDateAnchorCopy(sourceBackedStartPackage).label;
   if (!result.canSaveToMyFlow || result.saveMode !== 'direct') {
     return buildUrlFirstBlockedStartPackage(result, '원문 확인이 끝나지 않았거나 아직 Flow화되지 않은 URL입니다.');
   }
   if (!isPlainDate(startDate)) {
-    return buildUrlFirstBlockedStartPackage(result, '시작일은 yyyy-mm-dd 형식이어야 합니다.');
+    return buildUrlFirstBlockedStartPackage(result, `${dateAnchorLabel}은 yyyy-mm-dd 형식이어야 합니다.`);
   }
 
   const selectedArtifactMode = artifactModeForStartExport(options.exportMode);
@@ -608,7 +611,7 @@ export function buildUrlFirstStartPackage(
   };
 
   if (result.flowMapId) {
-    const publishPackage = buildSourceBackedFlowMapPublishPackage(result.flowMapId);
+    const publishPackage = sourceBackedStartPackage;
     if (!publishPackage) {
       return buildUrlFirstBlockedStartPackage(result, '연결된 Flow Map을 찾을 수 없습니다.');
     }

@@ -54,6 +54,7 @@ const now = '2026-05-28T09:00:00+09:00';
 const urlFirstTriggerUrls = {
   hit: 'https://mathbang.net/13?utm_source=share',
   customStart: 'https://mathbang.net/13?utm_source=share',
+  movingCustomStart: 'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
   miss: 'https://example.com/source-to-convert?utm_source=review',
   candidate: 'https://example.com/source-to-convert?utm_source=review',
   resolvedCandidate: 'https://mathbang.net/13?utm_source=share',
@@ -115,6 +116,7 @@ async function main() {
     await captureCleanRoute(page, '/flows', '02-flows-mobile.png', 'Flow catalog scan with lightweight CTAs');
     await captureUrlFirstHit(page);
     await captureUrlFirstCustomStart(page);
+    await captureUrlFirstMovingCustomStart(page);
     await captureUrlFirstMissCandidateForm(page);
     await captureUrlFirstCandidateDetail(page);
     await captureCleanRoute(page, '/flow-maps/moving-d30', '03-flow-map-moving-top-mobile.png', 'Moving map save screen top');
@@ -136,6 +138,7 @@ async function main() {
       category: 'saved-state',
       firstTaskTitle: '이사 방식과 견적 후보 정하기',
     });
+    await captureMovingPersonalCopyAnchorSettings(page);
     await captureRoute(page, '/calendar', '14-calendar-after-moving-save-mobile.png', 'Calendar agenda-first after moving save', {
       category: 'saved-state',
     });
@@ -697,6 +700,67 @@ async function captureUrlFirstCustomStart(page) {
   });
 }
 
+async function captureUrlFirstMovingCustomStart(page) {
+  await resetStorage(page);
+  await lookupUrlFirstInput(page, urlFirstTriggerUrls.movingCustomStart);
+  await page.getByTestId('flow-url-start-mode-custom').click();
+  await page.getByTestId('flow-url-custom-start-panel').waitFor({ state: 'visible' });
+  await page.getByTestId('url-first-start-date-input').fill('2026-08-01');
+  await settle(page);
+  const urlFirstExportModeEvidence = await collectUrlFirstExportModeEvidence(page);
+  await captureCurrent(page, '28b-url-first-moving-custom-start-mobile.png', 'URL-first moving custom start with contextual move date', {
+    category: 'url-first',
+    route: '/flows',
+    urlFirstScenarioName: 'hit-moving-custom-start',
+    urlFirstState: 'moving-custom-start',
+    urlFirstTriggerUrl: urlFirstTriggerUrls.movingCustomStart,
+    urlFirstExportModeEvidence,
+  });
+}
+
+async function captureMovingPersonalCopyAnchorSettings(page) {
+  await resetStorage(page);
+  await lookupUrlFirstInput(page, urlFirstTriggerUrls.movingCustomStart);
+  await page.getByTestId('flow-url-start-mode-custom').click();
+  await page.getByTestId('flow-url-custom-start-panel').waitFor({ state: 'visible' });
+  await page.getByLabel('저장 이름').fill('8월 이사 핵심만');
+  await page.getByTestId('url-first-start-date-input').fill('2026-08-01');
+  await page.getByRole('button', { name: '시작하기' }).click();
+  await page.waitForURL('**/my?savedMap=curated-ajd-moving-d30', { timeout: 15_000 });
+  await settle(page);
+  await page.getByTestId('my-flow-view-flow').click();
+  await settle(page);
+  const personalFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-ajd-moving-d30"]');
+  await personalFlow.waitFor({ state: 'visible' });
+  await personalFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await personalFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  await personalFlow.getByTestId('my-flow-personal-copy-settings').waitFor({ state: 'visible' });
+  await settle(page);
+  await captureCurrent(page, '13b-my-moving-personal-anchor-settings-mobile.png', 'My Flow moving personal copy anchor edit entry', {
+    category: 'saved-state',
+    route: '/my?savedMap=curated-ajd-moving-d30',
+    firstTaskTitle: '이사 방식과 견적 후보 정하기',
+  });
+  await personalFlow.getByTestId('my-flow-personal-copy-settings').getByRole('button', { name: '취소' }).click();
+  await settle(page);
+  const firstStepRow = personalFlow.getByTestId('my-flow-mobile-structure-step-row').first();
+  await firstStepRow.click();
+  const personalDetail = personalFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await personalDetail.waitFor({ state: 'visible' });
+  const readSummary = personalDetail.getByTestId('my-flow-detail-read-summary');
+  if (await readSummary.locator('summary').count()) {
+    await readSummary.locator('summary').click();
+  }
+  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await personalDetail.getByTestId('my-flow-detail-date-input').waitFor({ state: 'visible' });
+  await settle(page);
+  await captureCurrent(page, '13c-my-moving-personal-step-date-override-mobile.png', 'My Flow moving personal copy item date override label', {
+    category: 'saved-state',
+    route: '/my?savedMap=curated-ajd-moving-d30',
+    firstTaskTitle: '이사 방식과 견적 후보 정하기',
+  });
+}
+
 async function captureUrlFirstMissCandidateForm(page) {
   await resetStorage(page);
   await lookupUrlFirstInput(page, urlFirstTriggerUrls.miss);
@@ -1150,6 +1214,24 @@ async function scanPage(page, options = {}) {
         firstTaskTitle,
       };
     };
+    const collectDateAnchorMarkers = () => {
+      const settings = document.querySelector('[data-testid="my-flow-personal-copy-settings"]');
+      const anchorEditEntry = settings?.querySelector('[data-testid="my-flow-anchor-edit-entry"]') ?? null;
+      const anchorInput = settings?.querySelector('[data-testid="my-flow-personal-copy-start-date-input"]') ?? null;
+      const anchorHelp = settings?.querySelector('[data-testid="my-flow-anchor-edit-help"]') ?? null;
+      const itemDateInput = document.querySelector('[data-testid="my-flow-detail-date-input"]');
+      const anchorInputLabel = normalizeLine(anchorInput?.getAttribute('aria-label') ?? '');
+      const anchorHelpText = normalizeLine(anchorHelp?.textContent ?? '');
+      return {
+        settingsVisible: Boolean(settings && isVisible(settings)),
+        anchorEditEntryVisible: Boolean(anchorEditEntry && isVisible(anchorEditEntry)),
+        anchorEditLabel: normalizeLine(anchorEditEntry?.textContent ?? ''),
+        anchorInputLabel,
+        anchorHelpText,
+        itemDateOverrideLabel: normalizeLine(itemDateInput?.getAttribute('aria-label') ?? ''),
+        anchorVsItemOverrideCopyPresent: Boolean(anchorHelpText && /전체 일정 기준/u.test(anchorHelpText) && /해당 할 일만/u.test(anchorHelpText)),
+      };
+    };
     const rowDateTextPattern = /\d{1,2}\s*월\s*\d{1,2}\s*일/u;
     const rowTimingTextPattern = /\bD(?:-\d+|\+\d+|-Day)\b/u;
     const summarizeRowMeta = (row) => {
@@ -1475,6 +1557,8 @@ async function scanPage(page, options = {}) {
       const startDateInput = lookupResult?.querySelector('[data-testid="url-first-start-date-input"]')
         ?? document.querySelector('[data-testid="url-first-start-date-input"]');
       const startDateInputValue = startDateInput && 'value' in startDateInput ? startDateInput.value : '';
+      const startDateHelp = lookupResult?.querySelector('[data-testid="url-first-date-anchor-help"]')
+        ?? document.querySelector('[data-testid="url-first-date-anchor-help"]');
 
       return {
         scenarioName: payload.options.urlFirstScenarioName ?? null,
@@ -1505,6 +1589,8 @@ async function scanPage(page, options = {}) {
               visible: isVisible(startDateInput),
               testId: getElementTestId(startDateInput),
               inputType: startDateInput.getAttribute('type') ?? '',
+              label: normalizeLine(startDateInput.getAttribute('aria-label') ?? ''),
+              helpText: normalizeLine(startDateHelp?.textContent ?? ''),
               valuePresent: Boolean(startDateInputValue),
               rawIsoValuePresent: /^20\d{2}-\d{2}-\d{2}$/u.test(startDateInputValue),
             }
@@ -1691,6 +1777,7 @@ async function scanPage(page, options = {}) {
         continuationActionable: collectContinuationActionable(),
         myFlowTodayFrame: collectMyFlowTodayFrame(),
         postSaveConfirmation: collectPostSaveConfirmation(),
+        dateAnchor: collectDateAnchorMarkers(),
         agendaGroupMeta: collectAgendaGroupMeta(),
         calendarMyFlowRoleLabels: collectCalendarMyFlowRoleLabels(),
         rowControlAccessibleNames: getRowControlAccessibleNames(),
@@ -2006,6 +2093,36 @@ function summarizeEvidence(records) {
       triggerUrl: record.urlFirstTriggerUrl ?? record.markers?.urlFirst?.triggerUrl ?? null,
     }))
     .filter((entry) => entry.triggerUrl);
+  const urlFirstDateAnchorEvidence = urlFirst
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      state: record.urlFirstState,
+      scenarioName: record.urlFirstScenarioName ?? record.markers?.urlFirst?.scenarioName ?? null,
+      triggerUrl: record.urlFirstTriggerUrl ?? record.markers?.urlFirst?.triggerUrl ?? null,
+      label: record.markers?.urlFirst?.startDateInput?.label ?? '',
+      helpText: record.markers?.urlFirst?.startDateInput?.helpText ?? '',
+      visible: Boolean(record.markers?.urlFirst?.startDateInput?.visible),
+    }))
+    .filter((entry) => entry.visible || entry.label);
+  const myFlowDateAnchorEvidence = normal
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      anchorEditEntryVisible: Boolean(record.markers?.dateAnchor?.anchorEditEntryVisible),
+      anchorEditLabel: record.markers?.dateAnchor?.anchorEditLabel ?? '',
+      anchorInputLabel: record.markers?.dateAnchor?.anchorInputLabel ?? '',
+      itemDateOverrideLabel: record.markers?.dateAnchor?.itemDateOverrideLabel ?? '',
+      anchorVsItemOverrideCopyPresent: Boolean(record.markers?.dateAnchor?.anchorVsItemOverrideCopyPresent),
+      helpText: record.markers?.dateAnchor?.anchorHelpText ?? '',
+    }))
+    .filter((entry) =>
+      entry.anchorEditEntryVisible
+      || entry.anchorEditLabel
+      || entry.anchorInputLabel
+      || entry.itemDateOverrideLabel
+      || entry.anchorVsItemOverrideCopyPresent,
+    );
   const urlFirstCandidateResolvedHitScenarios = urlFirst
     .map((record) => ({
       recordId: record.id,
@@ -2393,6 +2510,13 @@ function summarizeEvidence(records) {
         ...(record.markers?.urlFirst?.startDateInput ?? {}),
       }))
       .filter((entry) => entry.testId),
+    dateAnchorLabelByFlow: Array.from(new Set(urlFirstDateAnchorEvidence.map((entry) => entry.label).filter(Boolean))),
+    urlFirstDateAnchorLabelEvidence: urlFirstDateAnchorEvidence,
+    myFlowAnchorEditEntryVisible: myFlowDateAnchorEvidence.some((entry) => entry.anchorEditEntryVisible),
+    myFlowAnchorEditLabels: Array.from(new Set(myFlowDateAnchorEvidence.map((entry) => entry.anchorEditLabel).filter(Boolean))),
+    myFlowAnchorEditEvidence: myFlowDateAnchorEvidence,
+    itemDateOverrideLabels: Array.from(new Set(myFlowDateAnchorEvidence.map((entry) => entry.itemDateOverrideLabel).filter(Boolean))),
+    anchorVsItemOverrideCopyPresent: myFlowDateAnchorEvidence.some((entry) => entry.anchorVsItemOverrideCopyPresent),
     urlFirstMarkerVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.resultVisible || record.markers?.urlFirst?.candidateListVisible).length,
     prototypeReleasePreviewRouteCount: releasePreviewPrototypes.length,
     prototypeReleasePreviewGuardrailHitCount: releasePreviewPrototypes.reduce(
@@ -2589,6 +2713,8 @@ P18-04/P18-06 separate Calendar and My Flow role language. Calendar should read 
 
 P18-04/P18-06 separate Calendar and My Flow role language. Calendar is measured as a date-first execution surface, My Flow as a task-first execution hub, and the summary records whether primary labels fall back to generic type copy such as \`월간 일정\`, \`저장한 일정\`, or \`일정 흐름\`.
 
+P18-07 makes the URL-first and My Flow date anchor copy contextual. The summary records URL-first date-anchor labels, My Flow anchor edit-entry labels, item-level date override labels, and whether the copy distinguishes whole-Flow anchor changes from one-item date overrides.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -2624,6 +2750,11 @@ P18-04/P18-06 separate Calendar and My Flow role language. Calendar is measured 
 - My Flow today inline complete controls: ${evidence.summary.myFlowTodayInlineCompleteControlCount}
 - My Flow today open-before-complete required: ${evidence.summary.myFlowTodayOpenBeforeCompleteRequired}
 - My Flow today generic meta chips: ${evidence.summary.myFlowTodayGenericMetaChipCount}
+- Date anchor labels by Flow: ${JSON.stringify(evidence.summary.dateAnchorLabelByFlow)}
+- My Flow anchor edit entry visible: ${evidence.summary.myFlowAnchorEditEntryVisible ? 'yes' : 'no'}
+- My Flow anchor edit labels: ${JSON.stringify(evidence.summary.myFlowAnchorEditLabels)}
+- Item date override labels: ${JSON.stringify(evidence.summary.itemDateOverrideLabels)}
+- Anchor vs item override copy present: ${evidence.summary.anchorVsItemOverrideCopyPresent ? 'yes' : 'no'}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}

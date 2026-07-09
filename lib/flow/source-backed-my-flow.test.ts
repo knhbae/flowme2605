@@ -15,6 +15,7 @@ import {
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedMyFlowRows,
+  getSourceBackedFlowMapDateAnchorCopy,
   getSourceBackedFlowMapQualityDecision,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedFlowMapPersistenceStorageKey,
@@ -61,6 +62,21 @@ const curatedMapIds = [
   'curated-wedding-checklist-family',
   'curated-allblanc-workout-park',
 ];
+
+test('source-backed Flow Map date anchor copy follows the user context', () => {
+  const movingPackage = buildSourceBackedFlowMapPublishPackage('moving-d30');
+  assert.ok(movingPackage);
+  assert.equal(getSourceBackedFlowMapDateAnchorCopy(movingPackage).label, '이사일');
+  assert.equal(getSourceBackedFlowMapDateAnchorCopy(movingPackage).editLabel, '이사일 바꾸기');
+  assert.match(getSourceBackedFlowMapDateAnchorCopy(movingPackage).help, /전체 일정/);
+  assert.match(getSourceBackedFlowMapDateAnchorCopy(movingPackage).distinction, /해당 할 일만/);
+
+  const mathPackage = buildSourceBackedFlowMapPublishPackage('middle-school-math-1');
+  assert.ok(mathPackage);
+  assert.equal(getSourceBackedFlowMapDateAnchorCopy(mathPackage).label, '학습 시작일');
+  assert.equal(getSourceBackedFlowMapDateAnchorCopy(mathPackage).editLabel, '학습 시작일 바꾸기');
+  assert.equal(getSourceBackedFlowMapDateAnchorCopy().label, '기준일');
+});
 
 const curatedFlowSlugs = [
   'curated-funmom-weekly-print-picker',

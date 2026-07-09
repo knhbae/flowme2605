@@ -36,6 +36,7 @@ import {
   buildSourceBackedFlowMapSavedSnapshotUpdate,
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
+  getSourceBackedFlowMapDateAnchorCopy,
   getCuratedSourceAppSeedFlowMaps,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedMyFlowMapForBundle,
@@ -1189,6 +1190,7 @@ function FlowUrlLookupResult({
     () => (result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined),
     [result.flowMapId],
   );
+  const dateAnchorCopy = useMemo(() => getSourceBackedFlowMapDateAnchorCopy(sourceBackedStartPackage), [sourceBackedStartPackage]);
   const stepOptions = useMemo(
     () =>
       sourceBackedStartPackage?.public.childFlows.flatMap((flow) =>
@@ -1418,10 +1420,10 @@ function FlowUrlLookupResult({
             </div>
           ) : null}
           <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
-            시작일
+            {dateAnchorCopy.label}
             <input
               data-testid="url-first-start-date-input"
-              aria-label="시작일"
+              aria-label={dateAnchorCopy.label}
               className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
               type="date"
               value={startDate}
@@ -1430,6 +1432,9 @@ function FlowUrlLookupResult({
                 setStartFeedback('');
               }}
             />
+            <span data-testid="url-first-date-anchor-help" className="break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+              {sourceBackedStartPackage?.public.setupInput?.hint ?? dateAnchorCopy.help}
+            </span>
           </label>
           <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
             내보내기 방식
@@ -3222,6 +3227,10 @@ function getMyFlowTimingChipLabel(timing: string): string | undefined {
   return /^D(?:-\d+|\+\d+(?:~D\+\d+)?|-Day|Day)$/i.test(value) ? `Flow 기준 ${value}` : undefined;
 }
 
+function stripMyFlowTimingPrefixFromTitle(title: string): string {
+  return title.replace(/^D(?:-\d+|\+\d+(?:~D\+\d+)?|-Day|Day):?\s+/i, '').trim() || title;
+}
+
 function getMyFlowRowDisplaySectionLabel(row: MyFlowCalendarRow): string {
   const section = row.section.trim();
   const timing = row.timing?.trim() ?? '';
@@ -4087,7 +4096,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
     ...getMyFlowPersonalCopyStepDraft(row),
   });
-  const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => toUserFacingSourceTitle(getMyFlowRowDraft(row).title ?? row.title);
+  const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => {
+    const draftTitle = getMyFlowRowDraft(row).title;
+    return toUserFacingSourceTitle(draftTitle ?? stripMyFlowTimingPrefixFromTitle(row.title));
+  };
   const myFlowNowVisibleCount = myFlowPrimaryContinuationRow ? 1 : 0;
   const myFlowNowTitle = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
@@ -4360,11 +4372,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const editingDraft = myFlowEditingDrafts[key] ?? {};
     const detail = getMyFlowRowDisplayDetail(row);
     const item = row.flow.bundle.items.find((entry) => entry.id === row.id);
+    const fallbackMemo = row.flow.savedMap?.personalCopy ? '' : formatMyFlowDetailMemo(detail, row, item);
     return {
       title: editingDraft.title ?? getMyFlowRowDisplayTitle(row),
       date: editingDraft.date ?? committedDraft.date ?? row.date ?? '',
       repeatPreset: editingDraft.repeatPreset ?? committedDraft.repeatPreset ?? '',
-      memo: editingDraft.memo ?? committedDraft.memo ?? formatMyFlowDetailMemo(detail, row, item),
+      memo: editingDraft.memo ?? committedDraft.memo ?? fallbackMemo,
       location: editingDraft.location ?? committedDraft.location ?? '',
       time: editingDraft.time ?? committedDraft.time ?? '',
     };
@@ -5882,6 +5895,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const fieldClassName = 'mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
     const textareaClassName = `${fieldClassName} ${isMemoExpanded ? 'min-h-52' : isDrawerMode ? 'h-28 min-h-28' : 'h-20 min-h-20'} resize-y font-normal leading-6`;
     const canEditDate = Boolean(row.calendarKey || isProgressFlow);
+    const itemDateOverrideLabel = getSourceBackedFlowMapDateAnchorCopy().itemOverrideLabel;
     const showTimeLocationFields = !isProgressFlow || Boolean(row.calendarKey);
     const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
     const scheduleSummaryRows = [
@@ -5894,10 +5908,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {canEditDate ? (
           <label className="block text-xs font-semibold text-slate-600">
-            날짜
+            {itemDateOverrideLabel}
             <input
               data-testid="my-flow-detail-date-input"
-              aria-label="날짜"
+              aria-label={itemDateOverrideLabel}
               className={fieldClassName}
               type="date"
               value={editorDraft.date}
@@ -6659,6 +6673,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
     const stepRows = getMyFlowPersonalCopyStepRows(flow);
     const includedStepIdSet = new Set(myFlowPersonalCopySettingsDraft.includedStepIds);
+    const dateAnchorCopy = getSourceBackedFlowMapDateAnchorCopy(
+      flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
+    );
+    const anchorInputId = `my-flow-anchor-date-${flow.progress.slug}`;
     return (
       <form
         data-testid="my-flow-personal-copy-settings"
@@ -6668,6 +6686,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           saveMyFlowPersonalCopySettings(flow);
         }}
       >
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div className="min-w-0">
+            <button
+              type="button"
+              data-testid="my-flow-anchor-edit-entry"
+              className="rounded-md bg-blue-50 px-2.5 py-1.5 text-left text-xs font-semibold text-blue-700"
+              onClick={() => document.getElementById(anchorInputId)?.focus()}
+            >
+              {dateAnchorCopy.editLabel}
+            </button>
+            <p data-testid="my-flow-anchor-edit-help" className="mt-1 max-w-2xl break-keep text-xs font-semibold leading-5 text-slate-500">
+              {dateAnchorCopy.help} {dateAnchorCopy.distinction}
+            </p>
+          </div>
+        </div>
         <div className="grid gap-2 sm:grid-cols-2">
           <label className="grid gap-1 text-xs font-semibold text-slate-700">
             저장 이름
@@ -6680,10 +6713,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             />
           </label>
           <label className="grid gap-1 text-xs font-semibold text-slate-700">
-            시작일
+            {dateAnchorCopy.label}
             <input
+              id={anchorInputId}
               data-testid="my-flow-personal-copy-start-date-input"
-              aria-label="시작일"
+              aria-label={dateAnchorCopy.label}
               className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               type="date"
               value={myFlowPersonalCopySettingsDraft.anchor}

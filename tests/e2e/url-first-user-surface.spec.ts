@@ -181,6 +181,7 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
   const startDateInput = result.getByTestId('url-first-start-date-input');
   await expect(startDateInput).toBeVisible();
   await expect(startDateInput).toHaveAttribute('type', 'date');
+  await expect(result.getByLabel('학습 시작일')).toBeVisible();
   await expectCleanUrlFirstUserSurface(result);
   await expectUrlFirstExportModesAvoidTechnicalFormatLabels(result);
 

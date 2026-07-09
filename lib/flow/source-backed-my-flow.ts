@@ -292,6 +292,81 @@ export type SourceBackedFlowMapPublishPackage = {
   };
 };
 
+export type SourceBackedFlowMapDateAnchorCopy = {
+  label: string;
+  editLabel: string;
+  help: string;
+  itemOverrideLabel: string;
+  distinction: string;
+};
+
+type SourceBackedFlowMapDateAnchorSource = SourceBackedMyFlowMap | SourceBackedFlowMapPublishPackage;
+
+function sourceBackedDateAnchorText(source?: SourceBackedFlowMapDateAnchorSource): string {
+  if (!source) return '';
+  if ('public' in source) {
+    return [
+      source.public.title,
+      source.public.summary,
+      source.public.categoryLabel,
+      source.public.setupInput?.label,
+      source.public.setupInput?.hint,
+      ...source.public.artifacts,
+      ...source.public.childFlows.flatMap((flow) => [flow.title, ...flow.steps.map((step) => step.title)]),
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+  return [
+    source.title,
+    source.userLabel,
+    source.summary,
+    source.categoryLabel,
+    source.setupInput?.label,
+    source.setupInput?.hint,
+    ...source.artifacts,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function getExplicitSourceBackedDateAnchorLabel(source?: SourceBackedFlowMapDateAnchorSource): string | undefined {
+  if (!source) return undefined;
+  const label = 'public' in source ? source.public.setupInput?.label : source.setupInput?.label;
+  const normalized = label?.trim();
+  return normalized || undefined;
+}
+
+export function getSourceBackedFlowMapDateAnchorCopy(source?: SourceBackedFlowMapDateAnchorSource): SourceBackedFlowMapDateAnchorCopy {
+  const explicitLabel = getExplicitSourceBackedDateAnchorLabel(source);
+  const text = sourceBackedDateAnchorText(source);
+  const label =
+    explicitLabel ??
+    (/이사/u.test(text)
+      ? '이사일'
+      : /출국|여행/u.test(text)
+        ? '출국일'
+        : /결혼|예식/u.test(text)
+          ? '예식일'
+          : /시험|고사|수능|자격|검정/u.test(text)
+            ? '시험일'
+            : /마감|제출|신청|접수/u.test(text)
+              ? '마감일'
+              : /학습|공부|수학|진도|단원|교육/u.test(text)
+                ? '학습 시작일'
+                : /운동|러닝|챌린지|루틴|반복/u.test(text)
+                  ? '시작일'
+                  : '기준일');
+  const help = `${label}을 바꾸면 전체 일정 기준이 다시 맞춰집니다. 따로 바꾼 할 일 날짜는 그대로 유지됩니다.`;
+  return {
+    label,
+    editLabel: `${label} 바꾸기`,
+    help,
+    itemOverrideLabel: '이 할 일 날짜',
+    distinction: `${label}은 전체 일정 기준이고, 이 할 일 날짜는 해당 할 일만 바꿉니다.`,
+  };
+}
+
 export const SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST = [
   'canonical URL: normalize the production lookup key before adding a Flow.',
   'original/source URL: preserve the exact pasted source URL separately from the canonical key.',

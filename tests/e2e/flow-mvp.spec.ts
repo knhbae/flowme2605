@@ -692,7 +692,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('Flow가 있어요');
   await expect(result.getByLabel('시작일')).toBeVisible();
-  await result.getByLabel('시작일').fill('2026-07-15');
+  await result.getByLabel('학습 시작일').fill('2026-07-15');
   await result.getByLabel('내보내기 방식').selectOption('markdown');
 
   const markdownDownloadPromise = page.waitForEvent('download');
@@ -760,7 +760,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
     await stepBoxes.nth(index).uncheck();
   }
 
-  await result.getByLabel('시작일').fill('2026-07-15');
+  await result.getByLabel('학습 시작일').fill('2026-07-15');
   await result.getByLabel('내보내기 방식').selectOption('markdown');
 
   const markdownDownloadPromise = page.waitForEvent('download');
@@ -892,7 +892,10 @@ test('my flow personal copy settings can readjust saved title date and included 
   const settings = personalFlow.getByTestId('my-flow-personal-copy-settings');
   await expect(settings).toBeVisible();
   await settings.getByLabel('저장 이름').fill('1학기 앞부분 복습');
-  await settings.getByLabel('시작일').fill('2026-08-01');
+  await expect(settings.getByRole('button', { name: '학습 시작일 바꾸기' })).toBeVisible();
+  await expect(settings).toContainText('전체 일정 기준');
+  await expect(settings).toContainText('해당 할 일만');
+  await settings.getByLabel('학습 시작일').fill('2026-08-01');
   const settingsBoxes = settings.locator('input[type="checkbox"]');
   await expect(settingsBoxes).toHaveCount(stepCount);
   await settingsBoxes.nth(0).uncheck();
@@ -911,7 +914,7 @@ test('my flow personal copy settings can readjust saved title date and included 
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:3104' });
   await personalFlow.getByTestId('my-flow-mobile-structure-step-row').first().click();
   const personalDetail = personalFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(personalDetail).toContainText('정수와 유리수');
+  await expect(personalFlow.getByRole('button', { name: /정수와 유리수/ })).toBeVisible();
   await personalDetail.getByTestId('my-flow-detail-portable-export').locator('summary').click();
   await personalDetail.getByTestId('my-flow-detail-copy-portable-text').click();
   const copiedMarkdown = await page.evaluate(() => navigator.clipboard.readText());
@@ -986,7 +989,7 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   for (let index = 1; index < stepCount; index += 1) {
     await stepBoxes.nth(index).uncheck();
   }
-  await result.getByLabel('시작일').fill('2026-08-01');
+  await result.getByLabel('이사일').fill('2026-08-01');
   await result.getByRole('button', { name: '시작하기' }).click();
   await expect(page).toHaveURL(/\/my\?savedMap=curated-ajd-moving-d30/);
   await page.getByTestId('my-flow-view-flow').click();
@@ -997,7 +1000,10 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   await personalFlow.getByTestId('my-flow-personal-copy-settings-open').click();
   const settings = personalFlow.getByTestId('my-flow-personal-copy-settings');
   await settings.getByLabel('저장 이름').fill('8월 이사 준비 사본');
-  await settings.getByLabel('시작일').fill('2026-08-04');
+  await expect(settings.getByRole('button', { name: '이사일 바꾸기' })).toBeVisible();
+  await expect(settings).toContainText('전체 일정 기준');
+  await expect(settings).toContainText('해당 할 일만');
+  await settings.getByLabel('이사일').fill('2026-08-04');
   await settings.getByRole('button', { name: '저장' }).click();
 
   const activeSteps = personalFlow.getByTestId('my-flow-mobile-structure-step-list');
@@ -1020,6 +1026,7 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   await readSummary.locator('summary').click();
   await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
   await personalDetail.getByTestId('my-flow-detail-title-input').fill('견적 후보만 먼저 확인');
+  await expect(personalDetail.getByLabel('이 할 일 날짜')).toBeVisible();
   await personalDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-07');
   await personalDetail.getByTestId('my-flow-detail-memo').fill('오전 중 후보 2곳만 확인');
   await personalDetail.getByTestId('my-flow-detail-save-changes').click();
