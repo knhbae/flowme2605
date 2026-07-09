@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-09 - Post-P16 product direction review queue
+
+**Idea:** Before continuing with more Claude Design polish cycles, run a scenario-based product-direction review around the current merged main. The review should separate first-time users, URL-first hit users, URL-first miss/candidate users, public `/f` share recipients, My Flow repeat users, Calendar-heavy users, and creator/studio explorers. The main open product questions are Calendar multi-Flow identity, My Flow today-action depth, public Flow-level versus Step-level save/export responsibility, URL-first item-level edit depth, URL-first miss-to-AI-draft flow, and whether Studio should remain a secondary surface until the execution hubs feel service-ready.
+
+**Why not now:** These are product direction choices, not a single bug fix. Calendar color/grouping, My Flow inline execution, Flow-level versus Step-level export, and AI draft creation each affect user mental model and data/export shape. They should be reviewed with scenario evidence before implementation.
+
+**Revisit when:** The P17 product-direction review package is generated and human/Claude Design review confirms the next priority. Expected first candidates are Calendar execution clarity and My Flow today-action depth, with Studio/creator held as a secondary surface unless review evidence says otherwise.
+
+**Source context:** User feedback after P16 merge on 2026-07-09. Supporting planning artifacts: [FlowMe product direction feedback board](./content-audit/2026-07-09-flowme-product-direction-feedback-board-ko.html) and [intake plan](./content-audit/2026-07-09-flowme-product-direction-feedback-intake-plan-ko.md).
+
 ### 2026-07-09 - Canonical URL aliases for same-content URL variants
 
 **Idea:** FLOW should eventually recognize cases where the same source content appears under slightly different URLs, such as tracking links, share links, tag/category query variants, mobile/desktop hosts, encoded paths, or publisher-specific aliases. The product should preserve the original submitted URL, but lookup should be able to group likely same-content URLs into a canonical source record with confidence, alias history, and a selected default Flow hit.

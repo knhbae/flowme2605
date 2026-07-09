@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 제품 방향 피드백 보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #5c6875;
+      --line: #d8dee7;
+      --soft: #f4f7fb;
+      --accent: #2457d6;
+      --warn: #9a5b00;
+      --high: #b42318;
+      --ok: #0f766e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #fff;
+      line-height: 1.55;
+    }
+    article {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+    h1, h2, h3 { line-height: 1.25; margin: 0; }
+    h1 { font-size: 30px; letter-spacing: 0; }
+    h2 { font-size: 21px; margin-top: 34px; border-top: 1px solid var(--line); padding-top: 22px; }
+    h3 { font-size: 16px; margin-top: 22px; }
+    p { margin: 10px 0; }
+    a { color: var(--accent); }
+    .meta {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .lead {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: #fff;
+      border-radius: 8px;
+    }
+    .card strong { display: block; margin-bottom: 6px; }
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-right: 5px;
+      margin-top: 5px;
+    }
+    .high { border-left: 4px solid var(--high); }
+    .medium { border-left: 4px solid var(--warn); }
+    .hold { border-left: 4px solid var(--ok); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--soft); }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.95em;
+      background: #eef2f8;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+    .decision {
+      padding: 14px;
+      border: 1px solid #b9d7d3;
+      background: #effaf8;
+      border-radius: 8px;
+      margin-top: 14px;
+    }
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+      article { padding: 24px 14px 42px; }
+      h1 { font-size: 25px; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<article>
+  <h1>FlowMe 제품 방향 피드백 보드</h1>
+  <div class="meta">
+    기준: main / merge commit <code>2fd9d85</code> · 작성일: 2026-07-09 · 목적: P17 이전 제품 방향 판단 준비
+  </div>
+
+  <section class="lead">
+    <strong>핵심 판단</strong>
+    <p>FlowMe는 당분간 "URL/메모를 실행 가능한 Flow로 바꾸고, 내 Flow와 Calendar로 이어지는 개인 실행 도구"로 판단한다. Studio/creator는 보조 표면으로 유지하고, 다음 구현 우선순위는 Calendar와 My Flow의 실제 실행 품질이다.</p>
+  </section>
+
+  <h2>사용자 피드백에서 나온 주요 문제</h2>
+  <div class="grid">
+    <div class="card high">
+      <strong>Calendar 구분 부족</strong>
+      <p>여러 Flow가 같은 색과 비슷한 라벨로 보여 같은 날짜의 실행 항목을 구분하기 어렵다.</p>
+      <span class="tag">High</span><span class="tag">Calendar</span>
+    </div>
+    <div class="card high">
+      <strong>My Flow 실행 depth</strong>
+      <p>오늘 할 일을 체크하려면 여러 번 들어가야 해서 실행 허브라기보다 관리 화면처럼 느껴질 수 있다.</p>
+      <span class="tag">High</span><span class="tag">My Flow</span>
+    </div>
+    <div class="card medium">
+      <strong>Public 저장/export 단위</strong>
+      <p>Flow 단위 저장/export와 Step 단위 export의 책임이 아직 명확하지 않다.</p>
+      <span class="tag">Medium-High</span><span class="tag">Public /f</span>
+    </div>
+    <div class="card medium">
+      <strong>URL-first 편집 자유도</strong>
+      <p>hit에서 Step 제외는 가능하지만, item/event 수준의 수정 자유도는 부족해 보일 수 있다.</p>
+      <span class="tag">Medium</span><span class="tag">URL-first</span>
+    </div>
+    <div class="card medium">
+      <strong>Miss 이후 초안 만들기</strong>
+      <p>준비된 Flow가 없을 때 요청 저장만으로 충분한지, AI 초안 생성 흐름이 필요한지 판단해야 한다.</p>
+      <span class="tag">Medium</span><span class="tag">URL-first</span>
+    </div>
+    <div class="card hold">
+      <strong>Studio는 보조 표면</strong>
+      <p>지금은 creator/studio를 키우기보다 My Flow/Calendar/public export의 기본 실행 품질을 먼저 닫는 것이 낫다.</p>
+      <span class="tag">Hold</span><span class="tag">Studio</span>
+    </div>
+  </div>
+
+  <h2>Claude Design 검토용 시나리오</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>시나리오</th>
+        <th>필수 route/state</th>
+        <th>판단 질문</th>
+        <th>우선 evidence</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>처음 온 사용자</td>
+        <td><code>/</code>, <code>/flows</code>, <code>/my</code>, <code>/calendar</code></td>
+        <td>제품이 "URL/메모 -> 실행 Flow -> My Flow/Calendar"로 한 문장 안에 잡히는가.</td>
+        <td>390px, 1024px screenshot</td>
+      </tr>
+      <tr>
+        <td>URL-first hit</td>
+        <td><code>/flows</code> hit, Step include/exclude, export mode</td>
+        <td>기존 Flow를 찾고 시작하는 가치가 보이는가. 수정 자유도는 충분한가.</td>
+        <td>hit matrix, export mode labels</td>
+      </tr>
+      <tr>
+        <td>URL-first miss/candidate</td>
+        <td><code>/flows</code> miss, candidate form/detail/resolved</td>
+        <td>요청 저장만으로 충분한가, AI 초안 만들기가 필요해 보이는가.</td>
+        <td>candidate detail text, copy output</td>
+      </tr>
+      <tr>
+        <td>Public 공유 진입</td>
+        <td><code>/f/vehicle-inspection-prep</code>, <code>/f/moving-d30-basic</code></td>
+        <td>Flow 단위 저장과 Step 단위 export가 혼동되지 않는가.</td>
+        <td>top, export/body, sticky bottom</td>
+      </tr>
+      <tr>
+        <td>My Flow 반복 사용자</td>
+        <td><code>/my?savedMap=moving-d30</code>, <code>/my</code> 다중 큐</td>
+        <td>오늘 할 일을 보고 체크하기까지 depth가 적절한가.</td>
+        <td>post-save, today queue, detail open</td>
+      </tr>
+      <tr>
+        <td>Calendar-heavy 사용자</td>
+        <td><code>/calendar</code> single/multiple dated Flow</td>
+        <td>Calendar가 실행 화면으로 보이는가. 여러 Flow/동일 날짜가 구분되는가.</td>
+        <td>multi-flow same-day fixture</td>
+      </tr>
+      <tr>
+        <td>Creator / Studio</td>
+        <td><code>/u/flow-curation-team</code>, <code>/u/my-flow-studio</code></td>
+        <td>지금 키울 핵심 축인가, 보조 표면으로 둘 것인가.</td>
+        <td>390px/1024px creator profile</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>권장 다음 순서</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>순서</th>
+        <th>작업</th>
+        <th>이유</th>
+        <th>완료 기준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>P17-00 제품 방향 review package</td>
+        <td>화면을 더 고치기 전에 사람/Claude Design이 같은 시나리오를 보게 한다.</td>
+        <td>시나리오별 screenshot, audit, prompt, route-evidence 준비</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>P17-01 Calendar execution clarity</td>
+        <td>현재 피드백 중 가장 명확한 핵심 실행 화면 문제다.</td>
+        <td>Flow별 구분, 동일 날짜 grouping, 이벤트 라벨 개선</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>P17-02 My Flow today action depth</td>
+        <td>실행 허브의 첫 사용성과 반복 사용성을 직접 건드린다.</td>
+        <td>오늘 할 일 확인/체크 depth 감소, 기존 guardrail 유지</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>P17-03 Public save/export unit model</td>
+        <td>Flow 단위와 Step 단위 export/save 책임을 정해야 한다.</td>
+        <td>public /f primary path와 export hierarchy 명확화</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>P17-04 URL-first edit/draft spec</td>
+        <td>item-level edit와 miss AI draft는 큰 기능이므로 spec부터 필요하다.</td>
+        <td>구현 전 편집 범위, AI draft gate, 저장/export 구조 결정</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Studio 방향 재판단</td>
+        <td>기본 실행 화면이 닫히기 전에는 Studio를 5번째 축으로 키우지 않는다.</td>
+        <td>보조 표면 유지 또는 creator-platform spec 승격 결정</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Claude Design에 요청할 판단</h2>
+  <div class="decision">
+    <p><strong>요청:</strong> 단순 UI polish가 아니라 제품 방향 판단을 해달라고 요청한다. 특히 Calendar와 My Flow가 핵심 실행 화면으로 충분한지, public /f의 저장/export 단위가 맞는지, Studio를 당장 키우는 것이 맞는지를 Blocking/High/Medium/Low로 나누어 달라고 한다.</p>
+  </div>
+
+  <h2>관련 문서</h2>
+  <ul>
+    <li><a href="./2026-07-09-flowme-product-direction-feedback-intake-plan-ko.md">제품 방향 피드백 Intake 실행 계획</a></li>
+    <li><a href="./2026-07-09-flowme-product-direction-claude-prompt-ko.md">Claude Design 요청 프롬프트</a></li>
+    <li><a href="./2026-07-08-claude-design-p16-01-03-creator-studio-policy-evidence/README.md">P16 creator/studio evidence</a></li>
+    <li><a href="./2026-07-08-claude-design-p15-final-review-package/README.md">P15 final review package</a></li>
+  </ul>
+</article>
+</body>
+</html>
