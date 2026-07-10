@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-07-11T03:44:18.1870993+09:00",
+  "package": "2026-07-11-claude-design-p22-03-url-first-miss-compression-evidence",
+  "uiBaselineCommit": "6436f51",
+  "route": "/flows",
+  "triggerUrl": "https://example.com/p22-miss-review?utm_source=visual",
+  "summary": {
+    "urlFirstMissPrimaryActionCount": 1,
+    "urlFirstMissPrimaryActionLabel": "초안 준비하기",
+    "urlFirstMissLegacyOperationalStateHitCount": 0,
+    "urlFirstMissLegacyOperationalStateTerms": [
+      "아직 없음",
+      "저장 대기",
+      "초안 요청 가능",
+      "아직 실행 가능한 Flow 아님"
+    ],
+    "urlFirstMissImpliesLiveAi": false,
+    "urlFirstCandidatePrimaryActionLabel": "초안 편집 시작",
+    "urlFirstCandidateSecondaryActionLabel": "원문·메모 보기",
+    "urlFirstCandidateManagementCollapsed": true,
+    "urlFirstCandidateSingleWideColumn": true,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "candidateStorageSchemaChanged": false,
+    "draftGenerationModelChanged": false
+  },
+  "scenarios": [
+    {
+      "id": "url-first-miss-mobile",
+      "viewport": { "width": 390, "height": 844 },
+      "state": "miss",
+      "primaryActionCount": 1,
+      "legacyOperationalStateHitCount": 0,
+      "horizontalOverflow": 0,
+      "screenshot": "screenshots/01-url-first-miss-mobile.png",
+      "bytes": 42515,
+      "sha256": "1a061c043fdb6a4b928c7a4f15f41bf178393cac7b2ddb73e645ab20006d9bc7"
+    },
+    {
+      "id": "url-first-candidate-mobile",
+      "viewport": { "width": 390, "height": 844 },
+      "capturedElement": { "width": 350, "height": 404 },
+      "state": "saved-candidate",
+      "visibleActions": ["초안 편집 시작", "원문·메모 보기"],
+      "legacyOperationalStateHitCount": 0,
+      "horizontalOverflow": 0,
+      "screenshot": "screenshots/02-url-first-candidate-mobile.png",
+      "bytes": 16054,
+      "sha256": "17db694d05cfbf64bbda96c21a2b24bf83d5a5e2cc88585df48a669022017b49"
+    },
+    {
+      "id": "url-first-miss-wide",
+      "viewport": { "width": 1024, "height": 768 },
+      "state": "miss",
+      "primaryActionCount": 1,
+      "legacyOperationalStateHitCount": 0,
+      "horizontalOverflow": 0,
+      "screenshot": "screenshots/03-url-first-miss-wide.png",
+      "bytes": 45707,
+      "sha256": "2625447c0e7c2ec69018c03917e33e495da20be62d2ac32f97d6a8da376375c5"
+    },
+    {
+      "id": "url-first-candidate-wide",
+      "viewport": { "width": 1024, "height": 768 },
+      "capturedElement": { "width": 984, "height": 320 },
+      "state": "saved-candidate",
+      "visibleActions": ["초안 편집 시작", "원문·메모 보기"],
+      "legacyOperationalStateHitCount": 0,
+      "horizontalOverflow": 0,
+      "screenshot": "screenshots/04-url-first-candidate-wide.png",
+      "bytes": 19165,
+      "sha256": "99cdcd4be5ce3ead8ac7ff1acaca39be8b96c46c1f2d923d2acb8f3a28970e21"
+    }
+  ]
+}
