@@ -1,0 +1,72 @@
+{
+  "packageId": "2026-07-11-claude-design-p22-01-completion-feedback-evidence",
+  "capturedAt": "2026-07-11",
+  "implementationCommit": "8704bfaa149a04304c31dbe868a3708bef41472a",
+  "route": "/my",
+  "fixture": {
+    "flowSlug": "moving-d30-basic",
+    "completed": 24,
+    "total": 24,
+    "persistence": "localStorage"
+  },
+  "scenarios": [
+    {
+      "id": "completed-feedback-entry-mobile",
+      "viewport": { "width": 390, "height": 844 },
+      "state": "completed",
+      "screenshot": "screenshots/01-completed-flow-feedback-entry-mobile.png",
+      "sha256": "f16db007c3f74cbbe3e2bee0a6455426fc46e8f2212b965ea6ee877608bcfefd"
+    },
+    {
+      "id": "private-reflection-mobile",
+      "viewport": { "width": 390, "height": 844 },
+      "state": "reflection-editing",
+      "screenshot": "screenshots/02-private-reflection-mobile.png",
+      "sha256": "5e759b20972d01ddf797fbfe5b8ce286d0a21a7e686fe74dd21648b8aabe9759"
+    },
+    {
+      "id": "unsent-source-correction-mobile",
+      "viewport": { "width": 390, "height": 844 },
+      "state": "source-correction-draft-editing",
+      "screenshot": "screenshots/03-unsent-source-correction-mobile.png",
+      "sha256": "a2ad197a0986d381a413263568b22e3314717271943ad26277e83afc6a5cf3ec"
+    },
+    {
+      "id": "feedback-saved-wide",
+      "viewport": { "width": 1024, "height": 900 },
+      "state": "reflection-and-correction-draft-saved",
+      "screenshot": "screenshots/04-completed-flow-feedback-saved-wide.png",
+      "sha256": "06a69bf54635b70c05907712d917ecf802aaf8504b1084003f21b4f7b08ee52d"
+    }
+  ],
+  "summary": {
+    "completionFeedbackEntryVisible": true,
+    "completionFeedbackVisibleOnlyWhenAllRowsComplete": true,
+    "completedFlowNextActionCount": 0,
+    "privateReflectionEntryCount": 1,
+    "sourceCorrectionDraftEntryCount": 1,
+    "sourceCorrectionScopeOptions": ["flow", "item"],
+    "sourceCorrectionTransport": "local_draft",
+    "sourceCorrectionLiveSubmitAvailable": false,
+    "sourceCorrectionLiveSubmitImplied": false,
+    "publicReviewImpliedCount": 0,
+    "feedbackStorageSeparateFromCompletionChecks": true,
+    "completionChecksMutationFromFeedbackCount": 0,
+    "personalOverlayMutationFromFeedbackCount": 0,
+    "sourceUrlPreservedInCorrectionDraft": true,
+    "normalRouteInternalHitCount": 0,
+    "visibleRawIsoHitCount": 0,
+    "structuralDisplayHitCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0
+  },
+  "verification": {
+    "unitTestsPassed": 380,
+    "targetedCompletionFeedbackE2EPassed": 1,
+    "relatedCompletionAndCalendarE2EPassed": 4,
+    "urlFirstPublicWorkbenchRegressionScenariosPassed": 36,
+    "buildPassed": true,
+    "captureScriptPassed": true
+  }
+}
+

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FlowMe P22-01 완료 후 회고 경계</title>
+    <style>
+      :root { color-scheme: light; font-family: Arial, "Noto Sans KR", sans-serif; color: #171717; background: #f6f7f9; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 64px; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { font-size: 30px; margin-bottom: 10px; }
+      h2 { font-size: 21px; margin: 36px 0 14px; }
+      p, li { line-height: 1.65; }
+      .lead { max-width: 820px; color: #50545b; }
+      .notice { border-left: 4px solid #2563eb; background: #eef4ff; padding: 14px 16px; }
+      .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+      .metric { background: white; border: 1px solid #dfe3e8; border-radius: 8px; padding: 14px; }
+      .metric b { display: block; margin-top: 8px; font-size: 24px; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+      figure { margin: 0; background: white; border: 1px solid #dfe3e8; border-radius: 8px; overflow: hidden; }
+      figure img { display: block; width: 100%; height: auto; background: white; }
+      figure.mobile img { width: min(390px, 100%); margin: 0 auto; }
+      figcaption { border-top: 1px solid #e6e8eb; padding: 13px 15px; color: #4b5563; font-size: 14px; }
+      table { width: 100%; border-collapse: collapse; background: white; }
+      th, td { border: 1px solid #dfe3e8; padding: 11px 12px; text-align: left; vertical-align: top; }
+      th { background: #f1f3f5; }
+      code { background: #eef0f3; padding: 2px 5px; border-radius: 4px; }
+      @media (max-width: 800px) {
+        main { width: min(100% - 20px, 620px); padding-top: 20px; }
+        h1 { font-size: 25px; }
+        .metrics, .grid { grid-template-columns: 1fr; }
+        table { font-size: 13px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><strong>P22-01 focused review</strong></p>
+      <h1>완료 뒤의 개인 회고와 원본 메모를 분리했습니다</h1>
+      <p class="lead">공개 리뷰 시스템을 만들기 전에, 사용자가 완료한 실행을 개인적으로 남기는 행동과 다른 사용자에게도 필요한 원본 수정 내용을 구분하는 최소 경계를 검증합니다.</p>
+      <p class="notice"><strong>중요:</strong> 원본 관련 메모는 아직 전송되지 않습니다. 이 package는 실제 사용자 조사나 제작자 접수 결과가 아니라 구현·E2E·시각 evidence입니다.</p>
+
+      <div class="metrics">
+        <div class="metric">완료 후 경로<b>2</b></div>
+        <div class="metric">공개 리뷰 오해<b>0</b></div>
+        <div class="metric">가로 overflow<b>0</b></div>
+        <div class="metric">unit pass<b>380</b></div>
+      </div>
+
+      <h2>모바일 상태</h2>
+      <div class="grid">
+        <figure class="mobile">
+          <img src="screenshots/01-completed-flow-feedback-entry-mobile.png" alt="완료된 이사 Flow 카드 아래 회고 진입점" />
+          <figcaption>전체 완료 뒤에만 두 후속 행동이 나타납니다. 완료된 Flow에는 더 이상 첫 항목이 다음 할 일로 되살아나지 않습니다.</figcaption>
+        </figure>
+        <figure class="mobile">
+          <img src="screenshots/02-private-reflection-mobile.png" alt="비공개 실행 회고 편집 화면" />
+          <figcaption>도움 여부와 선택 메모를 이 기기에만 저장합니다. 공개 평점이나 댓글이 아닙니다.</figcaption>
+        </figure>
+        <figure class="mobile">
+          <img src="screenshots/03-unsent-source-correction-mobile.png" alt="전송 전 원본 수정 메모 편집 화면" />
+          <figcaption>Flow 전체 또는 특정 할 일을 고르고, 아직 전송되지 않는다는 사실을 명시합니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/04-completed-flow-feedback-saved-wide.png" alt="wide My Flow에서 저장된 회고 상태" />
+          <figcaption>wide 화면에서는 기존 Flow 카드 안에 저장 상태만 한 줄로 남으며 별도 탭을 만들지 않습니다.</figcaption>
+        </figure>
+      </div>
+
+      <h2>데이터 경계</h2>
+      <table>
+        <thead><tr><th>행동</th><th>저장</th><th>변경하지 않는 것</th></tr></thead>
+        <tbody>
+          <tr><td>내 실행 회고</td><td>비공개 local feedback record</td><td>완료 체크, personal overlay, public Flow</td></tr>
+          <tr><td>원본 내용 알릴 점</td><td>Flow/할 일/원 URL을 가진 전송 전 draft</td><td>원본 콘텐츠, creator inbox, 공개 리뷰</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Claude Design이 판단할 것</h2>
+      <ol>
+        <li>두 행동의 목적과 결과가 충분히 다르게 읽히는가?</li>
+        <li>완료 카드 안의 진입점이 너무 이르거나 과밀하지 않은가?</li>
+        <li>실제 전송 기능을 열기 전 필요한 신뢰·moderation gate는 무엇인가?</li>
+        <li>P22-02에서 server transport를 최소 어디까지 구현해야 하는가?</li>
+      </ol>
+    </main>
+  </body>
+</html>
