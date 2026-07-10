@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
-import { buildIcsCalendar, buildWorkbookSheets } from './export';
+import { buildIcsCalendar, buildText, buildWorkbookSheets } from './export';
 import { seedBundles } from './seed-flows';
 import {
   SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST,
@@ -428,6 +428,19 @@ test('source-backed moving D-30 keeps one Step as one dated FlowItem with item t
   assert.match(ics, /DTSTART;VALUE=DATE:20260622/);
   assert.match(ics, /이사 방식/);
   assert.match(ics, /견적 후보/);
+
+  const memoText = buildText(moving, {}, '2026-07-22');
+  const workbookText = buildWorkbookSheets(moving, {}, '2026-07-22')
+    .flatMap((sheet) => sheet.rows.flat())
+    .map(String)
+    .join('\n');
+  const visibleIcs = ics
+    .split(/\r?\n/u)
+    .filter((line) => !line.startsWith('UID:'))
+    .join('\n');
+  for (const output of [visibleIcs, memoText, workbookText]) {
+    assert.doesNotMatch(output, /sourceTrace|\bsource-backed\b|\bStep\b|\bItem\b|\bhandoff\b|Canonical URL|Markdown/iu);
+  }
 });
 
 test('source-backed middle-school math stays a progress destination without inventing progress_step yet', () => {
@@ -1211,7 +1224,7 @@ test('curated source app seed converts each recommended Flow into executable sou
   }
 });
 
-test('curated source app seed preserves Step memo, detail, sourceUrl, and sourceTrace in exports', () => {
+test('curated source app seed preserves sourceTrace internally while exports keep user-facing source links', () => {
   const moving = bundleBySlug('moving-dday');
   const rows = buildSourceBackedMyFlowRows(moving);
 
@@ -1234,15 +1247,15 @@ test('curated source app seed preserves Step memo, detail, sourceUrl, and source
   const unfoldedIcs = ics.replace(/\r\n /g, '');
   assert.match(unfoldedIcs, /SUMMARY:이사 D-day 준비 - 이사\/청소와 위탁 예약하기/);
   assert.match(unfoldedIcs, /DTSTART;VALUE=DATE:20260622/);
-  assert.match(unfoldedIcs, /AJD D-30 table rows/);
+  assert.doesNotMatch(unfoldedIcs, /sourceTrace|AJD D-30 table rows/);
+  assert.match(unfoldedIcs, /D-30 원문: https:\/\/www\.ajd\.co\.kr/);
 
   const sheets = buildWorkbookSheets(moving, {}, '2026-07-22');
   const detail = sheets.find((sheet) => sheet.name === '상세');
   assert.ok(detail);
-  assert.ok(
-    detail.rows.some((row) => row.map(String).join('\n').includes('AJD D-30 table rows')),
-    'sourceTrace should be present in workbook detail rows',
-  );
+  const workbookText = sheets.flatMap((sheet) => sheet.rows.flat()).map(String).join('\n');
+  assert.doesNotMatch(workbookText, /sourceTrace|AJD D-30 table rows/);
+  assert.match(workbookText, /D-30 원문|AJD/);
 });
 
 test('curated source expansion preserves source-specific row counts and sensitive boundaries', () => {

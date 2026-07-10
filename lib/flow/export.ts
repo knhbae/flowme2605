@@ -196,6 +196,30 @@ function completionCriteria(detail: ReturnType<typeof getItemDetail>): string {
   return detail.completion_criteria;
 }
 
+function userFacingExportSourceText(value?: string): string {
+  if (!value) return '';
+  return value
+    .split(/\r?\n/u)
+    .filter((line) => !/^\s*(?:sourceTrace|source\s+trace|원문\s*근거)\s*[:：]/iu.test(line))
+    .join('\n')
+    .replace(/\bsource-backed\b/giu, '원문 기반')
+    .replace(/\bCanonical\s+URL\b/giu, '원문 주소')
+    .replace(/\bhandoff\b/giu, '전달')
+    .replace(/\bMarkdown\b/giu, '메모 문서')
+    .replace(/\bStep으로/gu, '할 일로')
+    .replace(/\bStep을/gu, '할 일을')
+    .replace(/\bStep이/gu, '할 일이')
+    .replace(/\bStep은/gu, '할 일은')
+    .replace(/\bStep과/gu, '할 일과')
+    .replace(/\bStep에서/gu, '할 일에서')
+    .replace(/\bItem으로/gu, '확인 항목으로')
+    .replace(/\bItem을/gu, '확인 항목을')
+    .replace(/\bItem이/gu, '확인 항목이')
+    .replace(/\bStep\b/gu, '할 일')
+    .replace(/\bItem\b/gu, '확인 항목')
+    .trim();
+}
+
 function getExecutableIds(bundle: FlowBundle): string[] {
   return bundle.flow.content_type === 'meal_plan'
     ? (bundle.mealSlots ?? []).map((slot) => slot.id)
@@ -529,7 +553,7 @@ export function buildText(
   const lines = [bundle.flow.title];
   const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
-  if (bundle.flow.warning) lines.push(`주의: ${bundle.flow.warning}`);
+  if (bundle.flow.warning) lines.push(`주의: ${userFacingExportSourceText(bundle.flow.warning)}`);
   appendHoldSectionText(lines, bundle);
   const artifactPlan = getArtifactPlan(bundle);
   const comparison = buildComparisonExport(bundle, comparisonState);
@@ -577,11 +601,11 @@ export function buildText(
       // unchecked with a (스킵) label since those apps have no skip state.
       const checkbox = checks[item.id] ? '[x]' : '[ ]';
       lines.push(`- ${checkbox} ${item.title}${state?.skipped ? ' (스킵)' : ''}`);
-      if (item.description?.trim()) lines.push(`  설명: ${item.description.trim()}`);
+      if (item.description?.trim()) lines.push(`  설명: ${userFacingExportSourceText(item.description)}`);
       if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
       const detail = getItemDetail(bundle, item.id);
       const done = completionCriteria(detail);
-      if (done) lines.push(`  완료 기준: ${done}`);
+      if (done) lines.push(`  완료 기준: ${userFacingExportSourceText(done)}`);
       // Carry the official handoff link into the memo — for a memo-destination
       // checklist this is the action target the user returns to (정부24, 복지로 등).
       for (const link of detail?.links ?? []) lines.push(`  링크: ${link.label} - ${link.url}`);
@@ -637,19 +661,19 @@ function buildIcsDescription(
 ): string {
   const exactVideoDetail = sectionTitle ? undefined : bundle.itemDetails?.[0];
   return [
-    bundle.flow.description,
+    userFacingExportSourceText(bundle.flow.description),
     sectionTitle ? '' : bundle.items[0]?.title,
-    exactVideoDetail?.how,
-    sectionTitle && actionGuide ? actionGuide : '',
-    exactVideoDetail?.completion_criteria,
+    userFacingExportSourceText(exactVideoDetail?.how),
+    sectionTitle && actionGuide ? userFacingExportSourceText(actionGuide) : '',
+    userFacingExportSourceText(exactVideoDetail?.completion_criteria),
     sectionTitle ? `구간: ${sectionTitle}` : '',
     timing ? `기준: ${timing}` : '',
     dateWindow ? `공식 기간: ${dateWindow.label}` : '',
     dateWindow ? `예상 기간: ${dateWindow.startDate} ~ ${dateWindow.endDate}` : '',
-    completionCriteria ? `완료 기준: ${completionCriteria}` : '',
+    completionCriteria ? `완료 기준: ${userFacingExportSourceText(completionCriteria)}` : '',
     userMemo?.trim() ? `내 메모: ${userMemo.trim()}` : '',
-    bundle.flow.warning ? `주의: ${bundle.flow.warning}` : '',
-    links ? `링크:\n${links}` : '',
+    bundle.flow.warning ? `주의: ${userFacingExportSourceText(bundle.flow.warning)}` : '',
+    links ? `링크:\n${userFacingExportSourceText(links)}` : '',
     bundle.flow.source_url ? `원문: ${bundle.flow.source_url}` : '',
   ]
     .filter(Boolean)
@@ -687,8 +711,8 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       start: addDays(new Date(anchor), item.day_offset ?? 0),
       durationDays: Math.max(item.duration_days ?? 1, 1),
       timing: getItemTimingLabel(item),
-      actionGuide: [detail?.why, detail?.how].filter(Boolean).join('\n'),
-      completionCriteria: detail?.completion_criteria,
+      actionGuide: [detail?.why, detail?.how].map(userFacingExportSourceText).filter(Boolean).join('\n'),
+      completionCriteria: userFacingExportSourceText(detail?.completion_criteria),
       links: linkList(detail),
       dateWindow: item.date_window && startDate && endDate
         ? {
@@ -820,8 +844,8 @@ export function buildWorkbookSheets(
     ['위험도', bundle.flow.risk_level ? riskLabels[bundle.flow.risk_level] : ''],
   ];
 
-  if (bundle.flow.description) summaryRows.push(['설명', bundle.flow.description]);
-  if (bundle.flow.warning) summaryRows.push(['주의', bundle.flow.warning]);
+  if (bundle.flow.description) summaryRows.push(['설명', userFacingExportSourceText(bundle.flow.description)]);
+  if (bundle.flow.warning) summaryRows.push(['주의', userFacingExportSourceText(bundle.flow.warning)]);
   if (bundle.flow.hold_section) {
     summaryRows.push(['보류 기준', bundle.flow.hold_section.title]);
     summaryRows.push(['보류 사유', bundle.flow.hold_section.reasons.join('\n')]);
@@ -850,7 +874,7 @@ export function buildWorkbookSheets(
         endDate ? `${startDate} ~ ${endDate}` : startDate,
         section.title,
         item.title,
-        completionCriteria(detail),
+        userFacingExportSourceText(completionCriteria(detail)),
         linkLabelList(detail),
         state?.note?.trim() ?? '',
       ]);
@@ -858,9 +882,9 @@ export function buildWorkbookSheets(
         detailRows.push([
           item.title,
           section.title,
-          detail?.why ?? item.description ?? '',
-          detail?.how ?? '',
-          detail?.caution ?? '',
+          userFacingExportSourceText(detail?.why ?? item.description),
+          userFacingExportSourceText(detail?.how),
+          userFacingExportSourceText(detail?.caution),
           [sourceNote(bundle, item.risk_level), linkList(detail)].filter(Boolean).join('\n'),
         ]);
       }
