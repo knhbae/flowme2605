@@ -15,7 +15,7 @@ P21을 하나의 큰 작업으로 처리하지 않고, 각 단계가 독립적�
 | P21-04 draft 대기 경로 상태 evidence | 완료 | 저장 실패, 중복, 빈 상태, 완료 후 0, 오프라인 상태를 390/1024px matrix로 고정하고 최소 복구 동작을 보강함 | `2026-07-11-claude-design-p21-04-draft-state-evidence/` |
 | P21-02 실제 AI 생성 gate spec | 완료 | provider-neutral 계약과 review/save gate를 문서화했으며 실제 AI 도입은 No-Go로 유지함 | `docs/specs/2026-07-11-url-first-ai-draft-gate/spec.md` |
 | P21-05 홈/Calendar 소규모 polish | 완료 | 홈 separator와 Calendar compact marker identity를 모바일/wide evidence로 고정함 | `2026-07-11-claude-design-p21-05-entry-calendar-polish-evidence/` |
-| P21 final review | 진행 중 | 전체 검증은 통과했고 최신 screenshot/evidence와 P22 요청 prompt를 생성하는 단계 | P22 backlog 입력물 |
+| P21 final review | 완료 | 68장 screenshot, route evidence, review HTML, P22 요청 prompt를 생성하고 Vercel Git 배포 성공을 확인함 | `2026-07-11-claude-design-p21-final-review-package/` |
 
 ## 실행 순서
 

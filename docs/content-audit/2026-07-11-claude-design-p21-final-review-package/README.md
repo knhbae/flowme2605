@@ -5,6 +5,9 @@
 - UI baseline commit: `5762ee7`
 - Package generated from commit: `5762ee7`
 - Package commit ref: `git commit containing this generated package`
+- P21 final package commit: `0a626ab`
+- Vercel Git deployment: `success` for `0a626ab`
+- Public alias: [https://flowme2605.vercel.app](https://flowme2605.vercel.app)
 - Viewport: 390x844
 - Wide viewport spot check: 1024x768
 
