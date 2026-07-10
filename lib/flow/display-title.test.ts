@@ -319,6 +319,22 @@ test('capture script exposes URL-first miss draft gate markers', () => {
   assert.ok(script.includes('urlFirstMissCandidateCopyInternalHitCount'));
 });
 
+test('capture script exposes P21 draft lifecycle and compact Calendar identity markers', () => {
+  const script = fs.readFileSync(
+    path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),
+    'utf8',
+  );
+
+  assert.ok(script.includes('draftLifecycleScenarioCount'));
+  assert.ok(script.includes('draftSaveFailureInputPreserved'));
+  assert.ok(script.includes('draftDuplicateCreatesExtraSavedFlow'));
+  assert.ok(script.includes('draftEmptyStateCaptured'));
+  assert.ok(script.includes('draftCompletedZeroStateCaptured'));
+  assert.ok(script.includes('draftOfflineLocalActionsAvailable'));
+  assert.ok(script.includes('homeUrlFirstEntrySeparatorPresent'));
+  assert.ok(script.includes('calendarGridDistinctVisibleMarkerIdentityCount'));
+});
+
 test('capture script scopes Calendar role-title hits to Calendar headings', () => {
   const script = fs.readFileSync(
     path.join(process.cwd(), 'scripts', 'content-audit', 'capture-claude-p7-final-review-package.mjs'),

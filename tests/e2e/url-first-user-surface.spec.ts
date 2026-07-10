@@ -372,6 +372,77 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   expect(copiedDraftText).not.toContain('Step');
 });
 
+test('URL-first draft preserves input on storage failure and reuses the canonical saved draft', async ({ page }) => {
+  const sourceUrl = 'https://example.com/draft-lifecycle-source?utm_source=review';
+  const requestTitle = '중복 없이 이어갈 주말 준비';
+  await openFlowFinding(page);
+  await lookupUrl(page, sourceUrl);
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('요청 제목').fill(requestTitle);
+  await result.getByLabel('요청 메모').fill('준비물 확인, 일정 정리, 마지막 점검');
+  await result.getByRole('button', { name: '초안 요청 저장' }).click();
+
+  let candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: requestTitle });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  let editor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await editor.getByTestId('flow-url-miss-draft-flow-title').fill('저장 실패를 확인할 주말 준비');
+  await editor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
+
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    (window as typeof window & { __flowmeOriginalStorageSetItem?: typeof original }).__flowmeOriginalStorageSetItem = original;
+    Storage.prototype.setItem = function setItemWithDraftFailure(key: string, value: string) {
+      if (key === 'flow_builder_mvp_bundles_v11') throw new DOMException('Storage quota exceeded', 'QuotaExceededError');
+      return original.call(this, key, value);
+    };
+  });
+
+  await editor.getByTestId('flow-url-miss-draft-save').click();
+  const failureFeedback = candidateCard.getByTestId('flow-url-miss-draft-feedback');
+  await expect(failureFeedback).toContainText('초안을 저장하지 못했습니다');
+  await expect(failureFeedback).toContainText('입력한 내용은 그대로예요');
+  await expect(editor).toBeVisible();
+  await expect(editor.getByTestId('flow-url-miss-draft-flow-title')).toHaveValue('저장 실패를 확인할 주말 준비');
+  await expect(editor.getByTestId('flow-url-miss-draft-anchor-date')).toHaveValue('2026-07-18');
+  expect(await page.evaluate(() => {
+    const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{ flow?: { slug?: string } }>;
+    return bundles.filter((bundle) => bundle.flow?.slug?.startsWith('url-draft-')).length;
+  })).toBe(0);
+
+  await page.evaluate(() => {
+    const target = window as typeof window & { __flowmeOriginalStorageSetItem?: typeof Storage.prototype.setItem };
+    if (target.__flowmeOriginalStorageSetItem) Storage.prototype.setItem = target.__flowmeOriginalStorageSetItem;
+  });
+  await editor.getByTestId('flow-url-miss-draft-save').click();
+  await expect(page).toHaveURL(/\/my/);
+
+  const firstDraftState = await page.evaluate(() => {
+    const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{ flow?: { slug?: string } }>;
+    const drafts = bundles.filter((bundle) => bundle.flow?.slug?.startsWith('url-draft-'));
+    return { count: drafts.length, slug: drafts[0]?.flow?.slug ?? '' };
+  });
+  expect(firstDraftState.count).toBe(1);
+
+  await page.goto('/flows');
+  candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: requestTitle });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  editor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await editor.getByTestId('flow-url-miss-draft-save').click();
+
+  const duplicateFeedback = candidateCard.getByTestId('flow-url-miss-draft-feedback');
+  await expect(duplicateFeedback).toContainText('이미 저장한 초안이 있어요');
+  await expect(duplicateFeedback.getByRole('link', { name: 'My Flow에서 이어서 수정' })).toHaveAttribute('href', '/my');
+  await expect(page).toHaveURL(/\/flows/);
+  const secondDraftState = await page.evaluate(() => {
+    const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{ flow?: { slug?: string } }>;
+    const drafts = bundles.filter((bundle) => bundle.flow?.slug?.startsWith('url-draft-'));
+    return { count: drafts.length, slug: drafts[0]?.flow?.slug ?? '' };
+  });
+  expect(secondDraftState).toEqual(firstDraftState);
+  await expectCleanUrlFirstUserSurface(candidateCard);
+});
+
 test('URL-first miss draft appears in Studio draft shelf and returns to My Flow edit room', async ({ page }) => {
   await openFlowFinding(page);
   await lookupUrl(page, 'https://example.com/studio-draft-source?utm_source=review');

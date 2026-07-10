@@ -195,20 +195,23 @@
       <p class="meta">기준일: 2026-07-11 · 원문 P21-01~P21-05 · 현재 main 기준</p>
       <div class="lead">
         <strong>핵심 결정</strong>
-        <p>P21은 번호순이 아니라 <strong>P21-04 → 조건부 복구 → P21-02 → P21-05 → 사용자 눈검토 → final review</strong> 순서로 닫는다. P21-01과 P21-03은 이미 완료됐다.</p>
+        <p>P21은 <strong>P21-04 → 최소 복구 → P21-02 → P21-05</strong> 순서로 구현·검증을 마쳤다. 이제 Vercel 눈검토와 final review package만 남았다.</p>
       </div>
       <nav class="links" aria-label="관련 문서">
         <a href="./2026-07-11-claude-design-p21-execution-plan-ko.md">상세 실행 계획</a>
         <a href="./2026-07-11-claude-design-p21-goals-ko.md">복붙용 /goal 모음</a>
         <a href="./2026-07-10-claude-design-p21-feedback-intake-ko.md">P21 피드백 접수</a>
         <a href="./2026-07-10-claude-design-p21-01-draft-content-evidence/README.md">P21-01 evidence</a>
+        <a href="./2026-07-11-claude-design-p21-04-draft-state-evidence/README.md">P21-04 evidence</a>
+        <a href="../specs/2026-07-11-url-first-ai-draft-gate/spec.md">P21-02 AI gate</a>
+        <a href="./2026-07-11-claude-design-p21-05-entry-calendar-polish-evidence/README.md">P21-05 evidence</a>
       </nav>
     </header>
 
     <div class="summary" aria-label="P21 상태 요약">
-      <div class="metric"><strong>2</strong><span>완료: P21-01, P21-03</span></div>
-      <div class="metric"><strong>3</strong><span>남은 원문 항목</span></div>
-      <div class="metric"><strong>1</strong><span>조건부 복구 slice</span></div>
+      <div class="metric"><strong>5</strong><span>P21 원문 항목 완료</span></div>
+      <div class="metric"><strong>0</strong><span>남은 원문 항목</span></div>
+      <div class="metric"><strong>1</strong><span>최소 복구 slice 완료</span></div>
       <div class="metric"><strong>0</strong><span>현재 Blocking</span></div>
     </div>
 
@@ -221,36 +224,36 @@
         <p class="done-when"><code>suggestedItemCount ≥ 3</code> · dates from anchor · live AI false · normal/wide structural hit 0</p>
       </section>
 
-      <section class="phase next">
-        <div class="status">다음 실행</div>
+      <section class="phase done">
+        <div class="status">완료</div>
         <h3>P21-04 상태 evidence</h3>
         <p>failure, duplicate, empty, completed-zero, offline 상태를 390/1024px matrix로 만든다.</p>
         <p class="done-when">각 상태의 captured 여부, 복구 행동, 내부어 hit를 JSON에서 판정</p>
       </section>
 
-      <section class="phase conditional">
-        <div class="status">조건부</div>
+      <section class="phase done">
+        <div class="status">완료</div>
         <h3>P21-04B 최소 복구</h3>
         <p>P21-04에서 실제 사용자 dead end가 확인될 때만 연다.</p>
         <p class="done-when">입력 보존 · 한 가지 복구 행동 · 성공 오인 없음</p>
       </section>
 
-      <section class="phase pending">
-        <div class="status">대기</div>
+      <section class="phase done">
+        <div class="status">완료</div>
         <h3>P21-02 AI gate spec</h3>
         <p>실제 AI 없이 입력/출력 계약, 검토 gate, 안전·실패·비용·fallback 정책을 문서화한다.</p>
         <p class="done-when">AI 제안은 자동 저장·발행·완료되지 않으며 P21-01 fallback 유지</p>
       </section>
 
-      <section class="phase pending">
-        <div class="status">대기</div>
+      <section class="phase done">
+        <div class="status">완료</div>
         <h3>P21-05 소규모 polish</h3>
         <p>홈 separator는 먼저 no-op 여부를 확인하고, Calendar 주요 2개 label의 식별성만 최소 조정한다.</p>
         <p class="done-when">홈 붙음 0 · grid label 식별 가능 · `외 N개`와 agenda full detail 유지</p>
       </section>
 
       <section class="phase review">
-        <div class="status">마감 전 확인</div>
+        <div class="status">진행 중</div>
         <h3>Vercel 눈검토 + final</h3>
         <p>사용자가 실제 흐름을 확인한 뒤 P21 final package와 P22 요청 prompt를 만든다.</p>
         <p class="done-when">사용자 correction 반영 여부 확정 · final screenshot/evidence/prompt push</p>
@@ -302,8 +305,8 @@
 
     <div class="next-action">
       <h2 style="margin:0; padding:0; border:0;">바로 다음 행동</h2>
-      <p><strong>P21-04 draft lifecycle evidence</strong>부터 실행한다. 복붙용 목표는 <a href="./2026-07-11-claude-design-p21-goals-ko.md">목표 모음 문서의 1번</a>에 있다.</p>
-      <p class="small">각 단계는 별도 커밋과 push로 닫고, 다음 단계는 바로 자동 실행하지 않는다.</p>
+      <p><strong>P21 final review package</strong>를 생성하고 Vercel에서 핵심 사용자 흐름을 눈으로 확인한다.</p>
+      <p class="small">최종 package에는 390/1024px lifecycle·Home·Calendar 시나리오와 P22 요청 prompt를 포함한다.</p>
     </div>
   </article>
 </body>

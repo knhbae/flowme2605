@@ -203,6 +203,8 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(urlFirstEntry).toContainText('URL이나 메모로 Flow 찾기');
   await expect(urlFirstEntry).toContainText('링크 붙여넣기');
   await expect(urlFirstEntry).toContainText('요청 메모');
+  await expect(urlFirstEntry).toContainText(/Flow 찾기\s*·\s*링크 붙여넣기/);
+  await expect(urlFirstEntry).not.toContainText('Flow 찾기링크 붙여넣기');
   await expect(page.getByRole('link', { name: '내 콘텐츠로 Flow 만들기' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByText('원룸 이사 D-30').first()).toBeVisible();
@@ -1401,7 +1403,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await page.goto('/calendar');
   await expect(page.getByRole('heading', { level: 1, name: '캘린더' })).toBeVisible();
   await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '캘린더' })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByTestId('my-flow-empty-state')).toContainText('일정이 생길 콘텐츠를 먼저 고르세요');
+  await expect(page.getByTestId('my-flow-empty-state')).toContainText('날짜가 있는 콘텐츠를 먼저 고르세요');
   await expect(page.getByTestId('my-flow-empty-state').getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
   await expect(page.getByTestId('my-flow-empty-state').getByRole('link')).toHaveCount(1);
   await expect(page.getByTestId('my-flow-calendar-empty-surface')).toHaveCount(0);
@@ -1520,7 +1522,7 @@ test('my flow and calendar true empty states offer one content-picking action', 
   await page.goto('/calendar');
   const calendarEmptyState = page.getByTestId('my-flow-empty-state');
   await expect(calendarEmptyState).toBeVisible();
-  await expect(calendarEmptyState).toContainText('일정이 생길 콘텐츠를 먼저 고르세요');
+  await expect(calendarEmptyState).toContainText('날짜가 있는 콘텐츠를 먼저 고르세요');
   await expect(calendarEmptyState.getByRole('link', { name: '콘텐츠 고르러 가기' })).toHaveAttribute('href', '/flows');
   await expect(calendarEmptyState.getByRole('link')).toHaveCount(1);
   await expect(calendarEmptyState.getByRole('button')).toHaveCount(0);
@@ -2944,6 +2946,13 @@ test('calendar route compacts three-plus same-date flow labels in the month grid
   await mobileDateCell.getByTestId('my-flow-calendar-date-button').click();
 
   await expect(mobileDateCell.getByTestId('my-flow-calendar-flow-label')).toHaveCount(2);
+  const mobileFlowMarkerInitials = mobileDateCell.getByTestId('my-flow-calendar-schedule-rail');
+  await expect(mobileFlowMarkerInitials).toHaveCount(2);
+  const mobileMarkerLabels = await mobileFlowMarkerInitials.evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute('data-flow-marker-initial') ?? ''),
+  );
+  expect(new Set(mobileMarkerLabels).size).toBe(2);
+  expect(mobileMarkerLabels.every((label) => Array.from(label).length === 1)).toBe(true);
   await expect(mobileDateCell.getByTestId('my-flow-calendar-grid-overflow-summary')).toContainText('외 2개');
   await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 
@@ -2963,6 +2972,7 @@ test('calendar route compacts three-plus same-date flow labels in the month grid
   await wideDateCell.getByTestId('my-flow-calendar-date-button').click();
 
   await expect(wideDateCell.getByTestId('my-flow-calendar-flow-label')).toHaveCount(2);
+  await expect(wideDateCell.getByTestId('my-flow-calendar-schedule-rail')).toHaveCount(2);
   await expect(wideDateCell.getByTestId('my-flow-calendar-grid-overflow-summary')).toContainText('외 2개');
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-selected-date-group')).toHaveCount(4);
   await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);

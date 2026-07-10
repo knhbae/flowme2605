@@ -12,10 +12,10 @@ P21을 하나의 큰 작업으로 처리하지 않고, 각 단계가 독립적�
 | --- | --- | --- | --- |
 | P21-01 URL/메모를 여러 실행 단계 초안으로 전환 | 완료 | 결정론적 3~7개 제안, 기준일 날짜 배치, My Flow 수정, Calendar/export 반영이 구현됨 | `urlFirstMissDraftSuggestedItemCount: 3`, `urlFirstMissDraftStepDatesFromAnchor: true` |
 | P21-03 구조형 사용자 문구 2건 제거 | 완료 | P21-01과 함께 normal/wide 모두 0으로 닫힘 | `normalRouteStructuralDisplayHitCount: 0`, `wideViewportStructuralDisplayHitCount: 0` |
-| P21-04 draft 대기 경로 상태 evidence | 다음 | 저장 실패, 중복, 빈 상태, 완료 후 0, 오프라인 상태를 아직 한 matrix로 판단할 수 없음 | Claude Design Medium |
-| P21-02 실제 AI 생성 gate spec | 대기 | P21-01 모델을 기준으로 AI가 들어와도 자동 실행/자동 발행되지 않는 계약을 먼저 정해야 함 | Claude Design Low, P21-01 후속 |
-| P21-05 홈/Calendar 소규모 polish | 대기 | 홈 구분자는 P21-01에서 일부 정리됨. Calendar compact label은 별도 눈검토 필요 | Claude Design Low |
-| P21 final review | 대기 | P21-04/P21-02/P21-05와 사용자 눈검토 이후 진행 | P22 backlog 입력물 |
+| P21-04 draft 대기 경로 상태 evidence | 완료 | 저장 실패, 중복, 빈 상태, 완료 후 0, 오프라인 상태를 390/1024px matrix로 고정하고 최소 복구 동작을 보강함 | `2026-07-11-claude-design-p21-04-draft-state-evidence/` |
+| P21-02 실제 AI 생성 gate spec | 완료 | provider-neutral 계약과 review/save gate를 문서화했으며 실제 AI 도입은 No-Go로 유지함 | `docs/specs/2026-07-11-url-first-ai-draft-gate/spec.md` |
+| P21-05 홈/Calendar 소규모 polish | 완료 | 홈 separator와 Calendar compact marker identity를 모바일/wide evidence로 고정함 | `2026-07-11-claude-design-p21-05-entry-calendar-polish-evidence/` |
+| P21 final review | 진행 중 | 전체 검증은 통과했고 최신 screenshot/evidence와 P22 요청 prompt를 생성하는 단계 | P22 backlog 입력물 |
 
 ## 실행 순서
 
@@ -105,7 +105,7 @@ P21-04에서 실제 사용자 dead end가 발견될 때만 실행한다.
 
 ### 산출물
 
-- `docs/specs/2026-07-11-url-first-ai-draft-gate/README.md`
+- `docs/specs/2026-07-11-url-first-ai-draft-gate/spec.md`
 - 필요하면 `docs/content-audit/2026-07-11-claude-design-p21-02-ai-gate-audit-ko.md`
 
 ### 완료 게이트

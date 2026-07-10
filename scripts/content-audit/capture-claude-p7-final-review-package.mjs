@@ -50,6 +50,11 @@ const packageCycleMatch = packageName.match(/-p(\d+)-/i);
 const inferredReviewCycle = packageCycleMatch ? `P${packageCycleMatch[1]}` : 'P7';
 const reviewCycle = process.env.FLOWME_EVIDENCE_REVIEW_CYCLE || inferredReviewCycle;
 const nextBacklogCycle = process.env.FLOWME_EVIDENCE_NEXT_BACKLOG || `P${Number(reviewCycle.replace(/^P/i, '')) + 1}`;
+const reviewPackageTitle = packageName.includes('p21-04-draft-state')
+  ? 'P21-04 Draft Lifecycle Evidence'
+  : packageName.includes('p21-05-entry-calendar')
+    ? 'P21-05 Home and Calendar Polish Evidence'
+    : `${reviewCycle} Final Review Package`;
 const captureScriptName = process.env.FLOWME_EVIDENCE_CAPTURE_SCRIPT || 'capture-claude-p7-final-review-package.mjs';
 const outputDir = path.join(repoRoot, 'docs', 'content-audit', packageName);
 const screenshotsDir = path.join(outputDir, 'screenshots');
@@ -141,6 +146,7 @@ async function main() {
     await captureUrlFirstMissCandidateForm(page);
     await captureUrlFirstCandidateDetail(page);
     await captureUrlFirstDraftMyFlowLanding(page);
+    await captureUrlFirstDraftLifecycleStates(page);
     await captureCleanRoute(page, '/flow-maps/moving-d30', '03-flow-map-moving-top-mobile.png', 'Moving map save screen top');
     await captureBottom(page, '/flow-maps/moving-d30', '04-flow-map-moving-bottom-mobile.png', 'Moving map bottom sticky clearance');
     await captureCleanRoute(page, '/flow-maps/middle-school-math-1', '05-flow-map-math-mobile.png', 'Math source-backed map screen');
@@ -563,6 +569,10 @@ async function captureCalendarSameDateFlows(page, file, label, options = {}) {
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await page.locator('.fc-daygrid-day[data-date="2026-06-03"]').click();
   await settle(page);
+  if (options.p20CalendarGridCompactFixture) {
+    await page.getByTestId('my-flow-calendar-card').scrollIntoViewIfNeeded();
+    await settle(page);
+  }
   await captureCurrent(page, file, label, {
     ...options,
     category: options.category ?? 'calendar-same-date-flow',
@@ -1099,6 +1109,240 @@ async function captureUrlFirstDraftMyFlowLanding(page) {
   });
 }
 
+async function prepareUrlFirstDraftEditor(page, {
+  url,
+  requestTitle,
+  requestMemo,
+  flowTitle,
+  anchorDate = '',
+}) {
+  await page.setViewportSize(viewport);
+  await resetStorage(page);
+  await lookupUrlFirstInput(page, url);
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  const form = result.getByTestId('flow-url-supply-candidate-form');
+  await form.waitFor({ state: 'visible' });
+  await form.getByLabel('요청 제목').fill(requestTitle);
+  await form.getByLabel('요청 메모').fill(requestMemo);
+  await form.getByRole('button', { name: '초안 요청 저장' }).click();
+  await settle(page);
+
+  const candidateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: requestTitle })
+    .first();
+  await candidateCard.waitFor({ state: 'visible' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const editor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await editor.waitFor({ state: 'visible' });
+  await editor.getByTestId('flow-url-miss-draft-flow-title').fill(flowTitle);
+  if (anchorDate) await editor.getByTestId('flow-url-miss-draft-anchor-date').fill(anchorDate);
+  return { candidateCard, editor };
+}
+
+async function captureDraftLifecycleAtViewports(page, fileStem, label, draftLifecycle) {
+  await page.setViewportSize(viewport);
+  await settle(page);
+  await captureCurrent(page, `${fileStem}-mobile.png`, `${label} mobile`, {
+    category: 'draft-lifecycle',
+    draftLifecycle,
+  });
+  await page.setViewportSize(wideViewport);
+  await settle(page);
+  await captureCurrent(page, `${fileStem}-wide.png`, `${label} wide`, {
+    category: 'draft-lifecycle',
+    wideViewport: true,
+    draftLifecycle,
+  });
+  await page.setViewportSize(viewport);
+}
+
+async function getStoredUrlDraftState(page) {
+  return page.evaluate(() => {
+    const bundles = JSON.parse(window.localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]');
+    const drafts = bundles.filter((bundle) => bundle?.flow?.slug?.startsWith('url-draft-'));
+    return {
+      count: drafts.length,
+      slug: drafts[0]?.flow?.slug ?? '',
+      itemIds: (drafts[0]?.items ?? []).map((item) => item.id).filter(Boolean),
+    };
+  });
+}
+
+async function captureUrlFirstDraftLifecycleStates(page) {
+  const failure = await prepareUrlFirstDraftEditor(page, {
+    url: 'https://example.com/p21-draft-failure?utm_source=review',
+    requestTitle: '저장 실패를 확인할 주말 준비 요청',
+    requestMemo: '준비물 확인, 일정 정리, 마지막 점검',
+    flowTitle: '저장 실패를 확인할 주말 준비',
+    anchorDate: '2026-06-06',
+  });
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem;
+    window.__flowmeOriginalStorageSetItem = original;
+    Storage.prototype.setItem = function setItemWithDraftFailure(key, value) {
+      if (key === 'flow_builder_mvp_bundles_v11') throw new DOMException('Storage quota exceeded', 'QuotaExceededError');
+      return original.call(this, key, value);
+    };
+  });
+  await failure.editor.getByTestId('flow-url-miss-draft-save').click();
+  const failureFeedback = failure.candidateCard.getByTestId('flow-url-miss-draft-feedback');
+  await failureFeedback.waitFor({ state: 'visible' });
+  const failureInputPreserved = await failure.editor.getByTestId('flow-url-miss-draft-flow-title').inputValue() === '저장 실패를 확인할 주말 준비'
+    && await failure.editor.getByTestId('flow-url-miss-draft-anchor-date').inputValue() === '2026-06-06';
+  const failureDraftCount = (await getStoredUrlDraftState(page)).count;
+  await captureDraftLifecycleAtViewports(page, '45-draft-save-failure', 'Draft save failure with preserved input', {
+    state: 'save-failure',
+    stateGroup: 'failure',
+    captured: true,
+    userRecoveryVisible: await failureFeedback.isVisible(),
+    inputPreserved: failureInputPreserved,
+    savedDraftCount: failureDraftCount,
+    reason: null,
+    nextAction: 'retry-after-storage-check',
+  });
+  await page.evaluate(() => {
+    if (window.__flowmeOriginalStorageSetItem) Storage.prototype.setItem = window.__flowmeOriginalStorageSetItem;
+    delete window.__flowmeOriginalStorageSetItem;
+  });
+
+  const duplicate = await prepareUrlFirstDraftEditor(page, {
+    url: 'https://example.com/p21-draft-duplicate?utm_source=review',
+    requestTitle: '중복 없이 이어갈 주말 준비 요청',
+    requestMemo: '준비물 확인, 일정 정리, 마지막 점검',
+    flowTitle: '중복 없이 이어갈 주말 준비',
+    anchorDate: '2026-06-06',
+  });
+  await duplicate.editor.getByTestId('flow-url-miss-draft-save').click();
+  await page.waitForURL(/\/my/);
+  await settle(page);
+  const beforeDuplicate = await getStoredUrlDraftState(page);
+  await page.goto('/flows');
+  await settle(page);
+  const duplicateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: '중복 없이 이어갈 주말 준비 요청' })
+    .first();
+  await duplicateCard.getByTestId('flow-url-miss-draft-open').click();
+  const duplicateEditor = duplicateCard.getByTestId('flow-url-miss-draft-editor');
+  await duplicateEditor.getByTestId('flow-url-miss-draft-save').click();
+  const duplicateFeedback = duplicateCard.getByTestId('flow-url-miss-draft-feedback');
+  await duplicateFeedback.waitFor({ state: 'visible' });
+  const afterDuplicate = await getStoredUrlDraftState(page);
+  const duplicateRecoveryLink = duplicateFeedback.getByRole('link', { name: 'My Flow에서 이어서 수정' });
+  await captureDraftLifecycleAtViewports(page, '46-draft-duplicate', 'Duplicate draft returns to existing saved draft', {
+    state: 'duplicate-draft',
+    stateGroup: 'duplicate',
+    captured: true,
+    userRecoveryVisible: await duplicateRecoveryLink.isVisible(),
+    createsExtraSavedFlow: afterDuplicate.count > beforeDuplicate.count,
+    beforeSavedDraftCount: beforeDuplicate.count,
+    afterSavedDraftCount: afterDuplicate.count,
+    existingDraftSlugPreserved: beforeDuplicate.slug === afterDuplicate.slug,
+    reason: null,
+    nextAction: 'open-existing-draft',
+  });
+
+  await resetStorage(page);
+  await page.goto('/my');
+  await settle(page);
+  const myFlowEmptyVisible = await page.getByTestId('my-flow-empty-state').isVisible();
+  await captureDraftLifecycleAtViewports(page, '47a-draft-empty-my-flow', 'Empty My Flow recovery entry', {
+    state: 'empty-my-flow',
+    stateGroup: 'empty',
+    captured: true,
+    userRecoveryVisible: myFlowEmptyVisible,
+    surface: 'my-flow',
+    reason: null,
+    nextAction: 'open-flow-finding',
+  });
+  await page.goto('/calendar');
+  await settle(page);
+  const calendarEmptyVisible = await page.getByTestId('my-flow-empty-state').isVisible();
+  await captureDraftLifecycleAtViewports(page, '47b-draft-empty-calendar', 'Empty Calendar recovery entry', {
+    state: 'empty-calendar',
+    stateGroup: 'empty',
+    captured: true,
+    userRecoveryVisible: calendarEmptyVisible,
+    surface: 'calendar',
+    reason: null,
+    nextAction: 'open-flow-finding',
+  });
+
+  const completed = await prepareUrlFirstDraftEditor(page, {
+    url: 'https://example.com/p21-draft-completed?utm_source=review',
+    requestTitle: '완료 상태를 확인할 주말 준비 요청',
+    requestMemo: '준비물 확인, 일정 정리, 마지막 점검',
+    flowTitle: '완료 상태를 확인할 주말 준비',
+    anchorDate: '2026-05-28',
+  });
+  await completed.editor.getByTestId('flow-url-miss-draft-save').click();
+  await page.waitForURL(/\/my/);
+  await settle(page);
+  const completedDraft = await getStoredUrlDraftState(page);
+  await page.evaluate(({ slug, itemIds }) => {
+    window.localStorage.setItem(
+      `flow_builder_mvp_checks_${slug}`,
+      JSON.stringify(Object.fromEntries(itemIds.map((itemId) => [itemId, true]))),
+    );
+  }, completedDraft);
+  await page.reload();
+  await settle(page);
+  await page.getByTestId('my-flow-view-flow').click();
+  await settle(page);
+  const completedFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]').first();
+  await completedFlow.waitFor({ state: 'visible' });
+  const completedProgressVisible = (await completedFlow.innerText()).includes(`전체 ${completedDraft.itemIds.length}/${completedDraft.itemIds.length} 완료`);
+  await captureDraftLifecycleAtViewports(page, '48-draft-completed-zero', 'Draft completed with zero remaining', {
+    state: 'completed-zero',
+    stateGroup: 'completed',
+    captured: true,
+    userRecoveryVisible: true,
+    completedCount: completedDraft.itemIds.length,
+    remainingCount: 0,
+    contextualProgressVisible: completedProgressVisible,
+    reason: null,
+    nextAction: 'uncheck-to-reopen',
+  });
+
+  await page.setViewportSize(viewport);
+  let completedStepRows = completedFlow.getByTestId('my-flow-mobile-structure-step-row');
+  if ((await completedStepRows.count()) === 0) {
+    await completedFlow.getByTestId('my-flow-mobile-structure-open').click();
+    await settle(page);
+    completedStepRows = completedFlow.getByTestId('my-flow-mobile-structure-step-row');
+  }
+  await completedStepRows.first().click();
+  await settle(page);
+  const completionControl = completedFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-task-complete-control')
+    .first();
+  await completionControl.waitFor({ state: 'visible' });
+  await page.context().setOffline(true);
+  await completionControl.click();
+  const offlineChecks = await page.evaluate((slug) => JSON.parse(
+    window.localStorage.getItem(`flow_builder_mvp_checks_${slug}`) || '{}',
+  ), completedDraft.slug);
+  const offlineLocalActionsAvailable = Object.values(offlineChecks).filter(Boolean).length === completedDraft.itemIds.length - 1;
+  await captureDraftLifecycleAtViewports(page, '49-draft-offline-local-action', 'Already-open draft local action while offline', {
+    state: 'offline-local-action',
+    stateGroup: 'offline',
+    captured: true,
+    userRecoveryVisible: true,
+    scope: 'already-open-my-flow-route',
+    localActionsAvailable: offlineLocalActionsAvailable,
+    networkNavigationClaimed: false,
+    reason: null,
+    nextAction: 'continue-local-work-or-reconnect-for-navigation',
+  });
+  await page.context().setOffline(false);
+  await page.setViewportSize(viewport);
+}
+
 async function collectUrlFirstCandidateUserCopyEvidence(page, candidateCard, candidateFixture) {
   await candidateCard.getByTestId('flow-url-supply-user-summary-copy').click();
   await candidateCard.getByText('초안 요청 정리본 복사됨').waitFor({ state: 'visible' });
@@ -1133,7 +1377,7 @@ async function collectUrlFirstCandidateUserCopyEvidence(page, candidateCard, can
 async function captureCurrent(page, file, label, options = {}) {
   await settle(page);
   const screenshotPath = path.join(screenshotsDir, file);
-  await page.screenshot({ path: screenshotPath, fullPage: false });
+  await page.screenshot({ path: screenshotPath, fullPage: false, animations: 'disabled', caret: 'hide' });
   const screenshotBuffer = fs.readFileSync(screenshotPath);
   const scan = await scanPage(page, options);
   scenarioRecords.push({
@@ -1705,6 +1949,13 @@ async function scanPage(page, options = {}) {
         .map((element) => normalizeLine(element.textContent ?? ''))
         .filter(Boolean);
       const selectedDateGridDistinctFlowLabels = Array.from(new Set(selectedDateGridFlowLabels));
+      const selectedDateGridFlowMarkerIdentities = Array.from(selectedDateCell?.querySelectorAll('[data-testid="my-flow-calendar-schedule-rail"][data-flow-marker-initial]') ?? [])
+        .filter((element) => isVisible(element))
+        .map((element) => ({
+          initial: normalizeLine(element.getAttribute('data-flow-marker-initial') ?? ''),
+          key: normalizeLine(element.closest('[data-testid="my-flow-calendar-schedule-content"]')?.getAttribute('data-flow-marker-key') ?? ''),
+        }))
+        .filter((entry) => entry.initial && entry.key);
       const selectedDateGridOverflowSummaryLabels = Array.from(selectedDateCell?.querySelectorAll('[data-testid="my-flow-calendar-grid-overflow-summary"]') ?? [])
         .filter((element) => isVisible(element))
         .map((element) => normalizeLine(element.textContent ?? ''))
@@ -1730,6 +1981,8 @@ async function scanPage(page, options = {}) {
           agendaGroupByFlow: calendarGroups.length > 0 && calendarGroups.every((group) => group.flowMarkerVisible && Boolean(group.flowMarkerLabel)),
           selectedDateGridFlowLabels,
           selectedDateGridDistinctFlowLabelCount: selectedDateGridDistinctFlowLabels.length,
+          selectedDateGridFlowMarkerIdentities,
+          selectedDateGridDistinctMarkerIdentityCount: new Set(selectedDateGridFlowMarkerIdentities.map((entry) => entry.key)).size,
           selectedDateGridOverflowSummaryLabels,
           selectedDateGridOverflowSummaryVisible: selectedDateGridOverflowSummaryLabels.length > 0,
           selectedDateGridHiddenFlowSummaryCount,
@@ -2338,6 +2591,8 @@ async function scanPage(page, options = {}) {
           rect: homeUrlFirstEntryRect,
           memoEntryVisible: homeUrlFirstEntryVisible && /메모/u.test(homeUrlFirstEntryLabel),
           competesWithRecommendations: homePrimaryEntryCompetesWithRecommendations,
+          separatorPresent: /Flow 찾기\s*[·•|]\s*링크 붙여넣기/u.test(homeUrlFirstEntryLabel),
+          concatenatedLabelHitCount: /Flow 찾기링크 붙여넣기/u.test(homeUrlFirstEntryLabel) ? 1 : 0,
         },
         catalogCards: document.querySelectorAll('[data-testid="flow-map-catalog-card"], [data-testid="single-flow-catalog-card"]').length,
         postSavePanel: Boolean(document.querySelector('[data-testid="my-flow-post-save-panel"]')),
@@ -2351,6 +2606,7 @@ async function scanPage(page, options = {}) {
         postSaveConfirmation: collectPostSaveConfirmation(),
         dateAnchor: collectDateAnchorMarkers(),
         draftFlow: collectDraftFlowMarkers(),
+        draftLifecycle: payload.options.draftLifecycle ?? null,
         agendaGroupMeta: collectAgendaGroupMeta(),
         calendarMyFlowRoleLabels: collectCalendarMyFlowRoleLabels(),
         rowControlAccessibleNames: getRowControlAccessibleNames(),
@@ -2794,6 +3050,20 @@ function summarizeEvidence(records) {
       viewportWidth: record.viewportWidth,
       ...(record.markers?.homeUrlFirstEntry ?? {}),
     }));
+  const draftLifecycleEvidence = normal
+    .filter((record) => record.markers?.draftLifecycle)
+    .map((record) => ({
+      recordId: record.id,
+      route: record.url,
+      viewportWidth: record.viewportWidth,
+      internalHitCount: record.internalHits.length,
+      noHorizontalOverflow: record.noHorizontalOverflow,
+      ...record.markers.draftLifecycle,
+    }));
+  const draftLifecycleByGroup = (group) => draftLifecycleEvidence.filter((entry) => entry.stateGroup === group);
+  const draftCompletedRemainingCounts = draftLifecycleByGroup('completed')
+    .map((entry) => entry.remainingCount)
+    .filter((value) => typeof value === 'number');
   return {
     totalScreenshots: records.length,
     uiBaselineCommit,
@@ -2827,6 +3097,11 @@ function summarizeEvidence(records) {
     homeUrlFirstEntryAboveFold: homeUrlFirstEntryEvidence.every((entry) => entry.aboveFold === true),
     homeMemoEntryVisible: homeUrlFirstEntryEvidence.some((entry) => entry.memoEntryVisible),
     homePrimaryEntryCompetesWithRecommendations: homeUrlFirstEntryEvidence.some((entry) => entry.competesWithRecommendations),
+    homeUrlFirstEntrySeparatorPresent: homeUrlFirstEntryEvidence.some((entry) => entry.separatorPresent),
+    homeUrlFirstEntryConcatenatedLabelCount: homeUrlFirstEntryEvidence.reduce(
+      (sum, entry) => sum + (entry.concatenatedLabelHitCount ?? 0),
+      0,
+    ),
     homeUrlFirstEntryByViewport: homeUrlFirstEntryEvidence.reduce((acc, entry) => {
       const viewportKey = String(entry.viewportWidth ?? viewport.width);
       acc[viewportKey] = {
@@ -2838,6 +3113,21 @@ function summarizeEvidence(records) {
       return acc;
     }, {}),
     homeUrlFirstEntryEvidence,
+    draftLifecycleScenarioCount: new Set(draftLifecycleEvidence.map((entry) => entry.stateGroup).filter(Boolean)).size,
+    draftSaveFailureScenarioCaptured: draftLifecycleByGroup('failure').some((entry) => entry.captured),
+    draftSaveFailureRecoveryVisible: draftLifecycleByGroup('failure').some((entry) => entry.userRecoveryVisible),
+    draftSaveFailureInputPreserved: draftLifecycleByGroup('failure').some((entry) => entry.inputPreserved),
+    draftDuplicateScenarioCaptured: draftLifecycleByGroup('duplicate').some((entry) => entry.captured),
+    draftDuplicateCreatesExtraSavedFlow: draftLifecycleByGroup('duplicate').some((entry) => entry.createsExtraSavedFlow),
+    draftDuplicateRecoveryVisible: draftLifecycleByGroup('duplicate').some((entry) => entry.userRecoveryVisible),
+    draftEmptyStateCaptured: new Set(draftLifecycleByGroup('empty').map((entry) => entry.surface)).size >= 2,
+    draftCompletedZeroStateCaptured: draftLifecycleByGroup('completed').some((entry) => entry.captured && entry.remainingCount === 0),
+    draftCompletedRemainingCount: draftCompletedRemainingCounts.length > 0 ? Math.min(...draftCompletedRemainingCounts) : null,
+    draftOfflineScenarioCaptured: draftLifecycleByGroup('offline').some((entry) => entry.captured),
+    draftOfflineLocalActionsAvailable: draftLifecycleByGroup('offline').some((entry) => entry.localActionsAvailable),
+    draftLifecycleInternalHitCount: draftLifecycleEvidence.reduce((sum, entry) => sum + entry.internalHitCount, 0),
+    draftLifecycleHorizontalOverflowCount: draftLifecycleEvidence.filter((entry) => !entry.noHorizontalOverflow).length,
+    draftLifecycleEvidence,
     wideViewportGuardrailRouteCount: wideUserSurfaceRecords.length,
     wideViewportInternalHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.internalHits.length, 0),
     wideViewportSourceSlugHitCount: wideUserSurfaceRecords.reduce((sum, record) => sum + record.sourceSlugHits.length, 0),
@@ -3056,6 +3346,10 @@ function summarizeEvidence(records) {
       0,
       ...calendarGridFlowStackRecords.map((record) => getCalendarSelectedDayMeta(record).selectedDateGridDistinctFlowLabelCount ?? 0),
     ),
+    calendarGridDistinctVisibleMarkerIdentityCount: Math.max(
+      0,
+      ...calendarGridFlowStackRecords.map((record) => getCalendarSelectedDayMeta(record).selectedDateGridDistinctMarkerIdentityCount ?? 0),
+    ),
     calendarGridOverflowSummaryVisible: calendarGridFlowStackRecords.some((record) =>
       Boolean(getCalendarSelectedDayMeta(record).selectedDateGridOverflowSummaryVisible),
     ),
@@ -3079,6 +3373,8 @@ function summarizeEvidence(records) {
       selectedDate: record.selectedDate,
       sameDateFlowCount: getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0,
       visibleFlowLabelCount: getCalendarSelectedDayMeta(record).selectedDateGridDistinctFlowLabelCount ?? 0,
+      visibleMarkerIdentityCount: getCalendarSelectedDayMeta(record).selectedDateGridDistinctMarkerIdentityCount ?? 0,
+      visibleMarkerIdentities: getCalendarSelectedDayMeta(record).selectedDateGridFlowMarkerIdentities ?? [],
       overflowSummaryVisible: Boolean(getCalendarSelectedDayMeta(record).selectedDateGridOverflowSummaryVisible),
       hiddenFlowSummaryCount: getCalendarSelectedDayMeta(record).selectedDateGridHiddenFlowSummaryCount ?? 0,
       overflowSummaryLabels: getCalendarSelectedDayMeta(record).selectedDateGridOverflowSummaryLabels ?? [],
@@ -3582,7 +3878,7 @@ function summarizeEvidence(records) {
 }
 
 function renderReadme(evidence) {
-  return `# FlowMe Claude Design ${reviewCycle} Final Review Package
+  return `# FlowMe Claude Design ${reviewPackageTitle}
 
 - Generated: ${evidence.generatedAt}
 - Branch: \`${branchName}\`
@@ -3642,6 +3938,12 @@ P19-07 keeps the post-save editing model discoverable without moving full editin
 
 P20-05 keeps the Calendar month grid compact when three or more Flows land on the same date. The grid records visible Flow labels plus an overflow summary such as \`외 N개\`, while the selected-day agenda still records every Flow marker/group as full detail.
 
+P21-01 replaces the one-placeholder miss draft with three to seven deterministic action suggestions and projects their anchor-relative dates into My Flow, Calendar, and export without implying live AI generation. P21-03 closes the remaining normal/wide structural display hits.
+
+P21-04 records the draft lifecycle as a state matrix: save failure with preserved input, canonical duplicate reuse, empty My Flow/Calendar recovery, completed-zero state, and already-open offline local action. P21-04B adds only the minimal failure and duplicate recovery needed to avoid data-loss or duplicate-draft dead ends.
+
+P21-05 keeps the Home URL/memo separator explicit and adds a stable one-character Flow identity marker to the two compact Calendar labels, while preserving the P20 two-label plus overflow-summary policy and full selected-day agenda.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -3649,6 +3951,7 @@ P20-05 keeps the Calendar month grid compact when three or more Flows land on th
 - [route-evidence.json](./route-evidence.json)
 - [prompt-ko.md](./prompt-ko.md)
 - [screenshots/](./screenshots/)
+- [P21 AI draft gate spec](${githubBase}/docs/specs/2026-07-11-url-first-ai-draft-gate/spec.md)
 
 ## Guardrail Summary
 
@@ -3676,6 +3979,7 @@ P20-05 keeps the Calendar month grid compact when three or more Flows land on th
 - Calendar agenda grouped by Flow: ${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}
 - Calendar grid same-date Flow count: ${evidence.summary.calendarGridSameDateFlowCount}
 - Calendar grid visible Flow labels: ${evidence.summary.calendarGridVisibleFlowLabelCount}
+- Calendar grid distinct visible marker identities: ${evidence.summary.calendarGridDistinctVisibleMarkerIdentityCount}
 - Calendar grid overflow summary visible: ${evidence.summary.calendarGridOverflowSummaryVisible ? 'yes' : 'no'}
 - Calendar grid hidden Flow summary count: ${evidence.summary.calendarGridHiddenFlowSummaryCount}
 - Calendar grid horizontal overflow count: ${evidence.summary.calendarGridHorizontalOverflowCount}
@@ -3704,6 +4008,22 @@ P20-05 keeps the Calendar month grid compact when three or more Flows land on th
 - Home URL-first entry above fold: ${evidence.summary.homeUrlFirstEntryAboveFold ? 'yes' : 'no'}
 - Home memo entry visible: ${evidence.summary.homeMemoEntryVisible ? 'yes' : 'no'}
 - Home primary entry competes with recommendations: ${evidence.summary.homePrimaryEntryCompetesWithRecommendations ? 'yes' : 'no'}
+- Home URL-first entry separator present: ${evidence.summary.homeUrlFirstEntrySeparatorPresent ? 'yes' : 'no'}
+- Home URL-first concatenated-label hits: ${evidence.summary.homeUrlFirstEntryConcatenatedLabelCount}
+- Draft lifecycle scenario count: ${evidence.summary.draftLifecycleScenarioCount}
+- Draft save-failure captured: ${evidence.summary.draftSaveFailureScenarioCaptured ? 'yes' : 'no'}
+- Draft save-failure recovery visible: ${evidence.summary.draftSaveFailureRecoveryVisible ? 'yes' : 'no'}
+- Draft save-failure input preserved: ${evidence.summary.draftSaveFailureInputPreserved ? 'yes' : 'no'}
+- Draft duplicate captured: ${evidence.summary.draftDuplicateScenarioCaptured ? 'yes' : 'no'}
+- Draft duplicate creates extra saved Flow: ${evidence.summary.draftDuplicateCreatesExtraSavedFlow ? 'yes' : 'no'}
+- Draft duplicate recovery visible: ${evidence.summary.draftDuplicateRecoveryVisible ? 'yes' : 'no'}
+- Draft empty My Flow/Calendar captured: ${evidence.summary.draftEmptyStateCaptured ? 'yes' : 'no'}
+- Draft completed-zero captured: ${evidence.summary.draftCompletedZeroStateCaptured ? 'yes' : 'no'}
+- Draft completed remaining count: ${evidence.summary.draftCompletedRemainingCount}
+- Draft offline captured: ${evidence.summary.draftOfflineScenarioCaptured ? 'yes' : 'no'}
+- Draft offline local actions available: ${evidence.summary.draftOfflineLocalActionsAvailable ? 'yes' : 'no'}
+- Draft lifecycle internal hits: ${evidence.summary.draftLifecycleInternalHitCount}
+- Draft lifecycle horizontal overflow count: ${evidence.summary.draftLifecycleHorizontalOverflowCount}
 - My Flow anchor edit entry visible: ${evidence.summary.myFlowAnchorEditEntryVisible ? 'yes' : 'no'}
 - My Flow anchor settings open labels: ${JSON.stringify(evidence.summary.myFlowAnchorSettingsOpenLabels)}
 - My Flow anchor settings open accessible names: ${JSON.stringify(evidence.summary.myFlowAnchorSettingsOpenAccessibleNameSamples)}
@@ -3871,7 +4191,7 @@ function renderAudit(evidence) {
     `| ${record.id} | \`${record.route}\` | ${record.label} | ${record.noHorizontalOverflow ? 'OK' : 'Overflow'} | ${record.internalHits.length} | ${record.sourceSlugHits.length} | ${record.rawIsoLines.length} | ${record.rawIsoInputValueHits?.length ?? 0} | ${record.rawIsoInputValueExemptions?.length ?? 0} |`
   )).join('\n');
 
-  return `# Claude Design ${reviewCycle} Guardrail Audit
+  return `# Claude Design ${reviewPackageTitle} Audit
 
 ## Scope
 
@@ -3922,6 +4242,12 @@ P19-01 keeps Calendar mobile agenda rows readable after same-date multi-Flow gro
 P19-02 keeps task completion controls unified around row-left checkboxes, with sub-checklists measured separately from task completion.
 
 P19-03 clarifies progress metrics in My Flow and Calendar. Whole-Flow progress must include \`전체\`, routine counters must include \`반복 항목\`, detail checklist counters must include \`확인 항목\` or \`개념 항목\`, and row-level Flow progress chips must stay at zero.
+
+P21-01/P21-03 keep the miss draft useful and user-facing: deterministic title/memo parsing produces at least three dated suggestions, no live-AI claim is made, and normal/wide structural display hits remain zero.
+
+P21-04/P21-04B close the draft lifecycle evidence gap. The audit distinguishes save failure, duplicate reuse, empty My Flow/Calendar, completed-zero, and already-open offline local action. Save failure keeps the editor input visible, and canonical duplicate save offers the existing My Flow draft instead of creating another one.
+
+P21-05 records the Home separator and Calendar compact marker hierarchy. The Home label must not concatenate Flow finding and link-paste copy, and each of the two visible Calendar grid labels keeps a stable Flow key plus one-character marker while the overflow summary and full agenda remain unchanged.
 
 ## Baselines Covered
 
@@ -4065,6 +4391,63 @@ The restart source/export frame and bottom frame must remain distinct:
 }
 
 function renderPrompt(evidence) {
+  if (reviewCycle === 'P21') {
+    return `아래 GitHub 소스/문서/screenshot만 보고 FlowMe P21 마감 상태를 검토해주세요. Vercel이나 로컬 앱을 직접 열 수 없다는 전제로 review package 안의 scenario별 screenshot과 route-evidence.json을 함께 보세요.
+
+제품 전제:
+- FlowMe는 URL/메모를 실행 가능한 Flow 초안으로 바꾸고 My Flow와 Calendar, 사용자 도구 export로 이어지는 개인 실행 도구입니다.
+- 현재 P21 draft 제안은 실제 AI가 아니라 결정론적 파싱입니다. 실제 AI가 연결됐다고 평가하거나 전제하지 마세요.
+- Studio는 5번째 탭이 아니라 draft를 다시 찾는 보조 선반입니다.
+
+검토 기준:
+1. P21-01 URL/메모 miss가 한 개 placeholder가 아니라 3~7개의 구체적 실행 항목으로 제안되는지 확인
+   - 기준일에서 날짜가 배치되는지
+   - 저장 후 제목, 날짜, 메모, 포함 여부를 My Flow에서 수정할 수 있는지
+   - Calendar와 export가 같은 수정본을 읽는지
+   - 실제 AI처럼 과장하지 않는지
+2. P21-03 normal/wide 구조형 사용자 문구 hit가 0인지 확인
+3. P21-04 draft lifecycle 5개 그룹을 시나리오별로 검토
+   - 저장 실패: 입력 보존과 재시도 안내
+   - 중복 draft: 추가 저장물 생성 없이 기존 draft로 이동하는 경로
+   - 빈 My Flow/Calendar: 한 가지 Flow 찾기 recovery
+   - 전체 완료: 남은 개수 0, 완료 상태, 다시 열 수 있는 완료 취소
+   - 오프라인: 이미 열린 My Flow의 로컬 행동 범위만 정직하게 기록하는지
+4. P21-02 실제 AI gate spec을 검토
+   - source 원본, AI 제안, 사용자 overlay가 구분되는지
+   - 사용자 검토 전 자동 저장·발행·완료가 금지되는지
+   - 민감 콘텐츠, 실패, timeout, 비용, 개인정보, fallback 정책이 구현 가능하게 정의됐는지
+5. P21-05 홈과 Calendar micro-polish가 기능 모델을 흔들지 않는지 확인
+   - 홈 Flow 찾기와 링크 붙여넣기 문구가 붙어 읽히지 않는지
+   - Calendar grid의 두 visible Flow가 색만이 아니라 글자 마커와 full accessible name으로 구분되는지
+   - 3개 이상은 외 N개, selected-day agenda는 full detail인지
+6. P18~P20 기준선 회귀 확인
+   - 완료 checkbox 1종, 진행 숫자 맥락화, public 저장 전 preview와 저장 후 completion 경계
+   - public save/setup-first, URL-first visible Markdown 0, internal copy hit 0, horizontal overflow 0
+7. 단순 평가로 끝내지 말고 다음 P22 backlog를 Blocking/High/Medium/Low로 작성
+
+주요 링크:
+- P21 review README: ${githubBase}/docs/content-audit/${packageName}/README.md
+- Audit: ${githubBase}/docs/content-audit/${packageName}/audit.md
+- Review HTML: ${githubBase}/docs/content-audit/${packageName}/review.html
+- Route evidence: ${githubBase}/docs/content-audit/${packageName}/route-evidence.json
+- Screenshots: ${githubBase}/docs/content-audit/${packageName}/screenshots
+- P21 AI gate spec: ${githubBase}/docs/specs/2026-07-11-url-first-ai-draft-gate/spec.md
+- URL-first E2E: ${githubBase}/tests/e2e/url-first-user-surface.spec.ts
+- My Flow/Calendar E2E: ${githubBase}/tests/e2e/flow-mvp.spec.ts
+
+현재 marker summary:
+${JSON.stringify(evidence.summary, null, 2)}
+
+요청 산출물:
+1. P21-01~P21-05 완료/미완료 판정
+2. route·persona별 UX 문제
+3. Blocking/High/Medium/Low 우선순위
+4. 유지해야 할 기준선
+5. 실제 AI 도입 go/no-go 판단과 선행 조건
+6. 바로 개발 가능한 P22 backlog
+7. evidence가 부족한 시나리오
+`;
+  }
   return `아래 GitHub 소스/문서/screenshot만 보고 FlowMe ${reviewCycle} 마감 상태를 다시 검토해주세요. Vercel preview는 볼 수 없다는 전제로 검토해주세요.
 
 검토 기준:
@@ -4140,7 +4523,7 @@ function renderHtml(evidence) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FlowMe ${reviewCycle} Final Review Package</title>
+  <title>FlowMe ${reviewPackageTitle}</title>
   <style>
     :root { color-scheme: light; --bg: #fafaf8; --ink: #171717; --muted: #6b675f; --line: #e7e4dd; --brand: #3654ff; }
     body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -4165,8 +4548,10 @@ function renderHtml(evidence) {
 </head>
 <body>
   <main>
-    <h1>FlowMe ${reviewCycle} Final Review Package</h1>
-    <p class="lead">P7/P8/P9/P10 기준선 위에 P11-01~P11-11 My Flow group header, continuation/status copy, inventory density, capture guardrail traceability, fridge/washer setup affordance, field-checklist detail density, public workbench export label evidence를 고정하기 위한 모바일 390px screenshot/evidence 패키지입니다.</p>
+    <h1>FlowMe ${reviewPackageTitle}</h1>
+    <p class="lead">${reviewCycle === 'P21'
+      ? 'P21 결정론적 draft 내용, lifecycle 실패/중복/빈 상태/완료/오프라인, 실제 AI gate, 홈과 Calendar 식별 polish를 390px/1024px scenario로 검토하는 final package입니다.'
+      : 'P7/P8/P9/P10 기준선 위에 P11 My Flow와 guardrail 기준을 고정하기 위한 모바일/wide screenshot evidence package입니다.'}</p>
     <p class="meta">UI baseline commit: ${escapeHtml(evidence.uiBaselineCommit)} · Package generated from: ${escapeHtml(evidence.packageGeneratedFromCommit)} · Package commit ref: ${escapeHtml(evidence.packageCommitRef)}</p>
     <section class="summary">
       <div class="stat"><b>${evidence.summary.totalScreenshots}</b><span>screenshots</span></div>
@@ -4179,6 +4564,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${escapeHtml((evidence.summary.homeUrlFirstEntryDestination ?? []).join(', ') || '-')}</b><span>home entry destination</span></div>
       <div class="stat"><b>${evidence.summary.homeUrlFirstEntryAboveFold ? 'yes' : 'no'}</b><span>home entry above fold</span></div>
       <div class="stat"><b>${evidence.summary.homePrimaryEntryCompetesWithRecommendations ? 'yes' : 'no'}</b><span>home entry competes</span></div>
+      <div class="stat"><b>${evidence.summary.homeUrlFirstEntrySeparatorPresent ? 'yes' : 'no'}</b><span>home entry separator</span></div>
+      <div class="stat"><b>${evidence.summary.homeUrlFirstEntryConcatenatedLabelCount}</b><span>home concatenated hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstScenarioTriggerUrlCount}</b><span>URL-first trigger URLs</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstExportModeScannedCount}</b><span>URL-first mode scans</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstVisibleMarkdownHitCount}</b><span>URL-first Markdown hits</span></div>
@@ -4201,6 +4588,13 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftSavePathVisible ? 'yes' : 'no'}</b><span>miss draft save path</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftInternalHitCount}</b><span>miss draft internal hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftLiveAiHitCount}</b><span>miss live-AI copy hits</span></div>
+      <div class="stat"><b>${evidence.summary.draftLifecycleScenarioCount}</b><span>draft lifecycle groups</span></div>
+      <div class="stat"><b>${evidence.summary.draftSaveFailureInputPreserved ? 'yes' : 'no'}</b><span>failure input preserved</span></div>
+      <div class="stat"><b>${evidence.summary.draftDuplicateCreatesExtraSavedFlow ? 'yes' : 'no'}</b><span>duplicate creates extra</span></div>
+      <div class="stat"><b>${evidence.summary.draftEmptyStateCaptured ? 'yes' : 'no'}</b><span>empty state captured</span></div>
+      <div class="stat"><b>${evidence.summary.draftCompletedZeroStateCaptured ? 'yes' : 'no'}</b><span>completed-zero captured</span></div>
+      <div class="stat"><b>${evidence.summary.draftOfflineLocalActionsAvailable ? 'yes' : 'no'}</b><span>offline local action</span></div>
+      <div class="stat"><b>${evidence.summary.draftLifecycleInternalHitCount}</b><span>lifecycle internal hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstStartDateInputVisibleCount}</b><span>URL-first date inputs</span></div>
       <div class="stat"><b>${evidence.summary.normalRouteFirstTaskRepetitionHitCount}</b><span>first task repeats</span></div>
@@ -4217,6 +4611,7 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}</b><span>calendar grouped by Flow</span></div>
       <div class="stat"><b>${evidence.summary.calendarGridSameDateFlowCount}</b><span>grid stack Flow count</span></div>
       <div class="stat"><b>${evidence.summary.calendarGridVisibleFlowLabelCount}</b><span>grid visible Flow labels</span></div>
+      <div class="stat"><b>${evidence.summary.calendarGridDistinctVisibleMarkerIdentityCount}</b><span>grid marker identities</span></div>
       <div class="stat"><b>${evidence.summary.calendarGridOverflowSummaryVisible ? 'yes' : 'no'}</b><span>grid overflow summary</span></div>
       <div class="stat"><b>${evidence.summary.calendarSelectedDayAgendaShowsAllFlows ? 'yes' : 'no'}</b><span>agenda shows all Flows</span></div>
       <div class="stat"><b>${evidence.summary.calendarTitleContainsMyFlowCount}</b><span>calendar title My Flow hits</span></div>

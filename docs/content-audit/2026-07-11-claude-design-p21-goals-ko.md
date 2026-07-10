@@ -208,7 +208,7 @@ spec에 포함할 내용:
 17. 다음 구현 `/goal` 후보
 
 출력:
-- docs/specs/2026-07-11-url-first-ai-draft-gate/README.md
+- docs/specs/2026-07-11-url-first-ai-draft-gate/spec.md
 - 필요하면 docs/content-audit/2026-07-11-claude-design-p21-02-ai-gate-audit-ko.md
 
 검증:
@@ -356,7 +356,7 @@ Claude Design P21 백로그의 개선 루프를 마감 감사한다. 새 기능�
 5. docs/content-audit/2026-07-11-claude-design-p21-execution-plan-ko.md
 6. docs/content-audit/2026-07-10-claude-design-p21-01-draft-content-evidence/README.md
 7. docs/content-audit/2026-07-11-claude-design-p21-04-draft-state-evidence/README.md
-8. docs/specs/2026-07-11-url-first-ai-draft-gate/README.md
+8. docs/specs/2026-07-11-url-first-ai-draft-gate/spec.md
 9. docs/content-audit/2026-07-11-claude-design-p21-05-entry-calendar-polish-evidence/README.md
 10. scripts/content-audit/capture-claude-p7-final-review-package.mjs
 11. tests/e2e/url-first-user-surface.spec.ts

@@ -49,7 +49,7 @@ import {
 } from '@/lib/flow/source-backed-my-flow';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
-import { buildUrlFirstStartPackage, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
+import { buildUrlFirstStartPackage, canonicalizeFlowSourceUrl, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
 import { isLegacyUrlFirstCandidateStateCopy } from '@/lib/flow/user-surface-guardrails';
 import {
   buildUrlFirstDraftItemSuggestions,
@@ -1140,8 +1140,8 @@ function useBundles() {
   useEffect(() => setBundles(getBundles()), []);
 
   const persist = (next: FlowBundle[]) => {
-    setBundles(next);
     saveBundles(next);
+    setBundles(next);
   };
 
   return { bundles, persist };
@@ -1158,6 +1158,7 @@ type UrlFirstDraftFlowSaveResult = {
   slug?: string;
   targetHref?: string;
   error?: string;
+  reused?: boolean;
 };
 
 type UrlFirstDraftFlowPackage = {
@@ -1254,6 +1255,20 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
     ...(anchor ? { anchor } : {}),
     itemStates: {},
   };
+}
+
+function findExistingUrlFirstDraftBundle(
+  bundles: FlowBundle[],
+  candidate: UrlFirstSupplyCandidate,
+): FlowBundle | undefined {
+  return bundles.find((bundle) => {
+    if (bundle.flow.status !== 'draft' || !bundle.flow.slug.startsWith('url-draft-') || !bundle.flow.source_url) return false;
+    try {
+      return canonicalizeFlowSourceUrl(bundle.flow.source_url) === candidate.canonicalUrl;
+    } catch {
+      return bundle.flow.source_url === candidate.originalUrl;
+    }
+  });
 }
 
 const urlFirstExportModeLabels: Record<UrlFirstExportMode, string> = {
@@ -1749,6 +1764,7 @@ function FlowUrlSupplyCandidateCard({
   const [showDraftEditor, setShowDraftEditor] = useState(false);
   const [draftTitle, setDraftTitle] = useState(displayTitle);
   const [draftAnchorDate, setDraftAnchorDate] = useState('');
+  const [draftSaveTargetHref, setDraftSaveTargetHref] = useState('');
   const draftItems = useMemo(
     () => buildUrlFirstDraftItemSuggestions(candidate),
     [candidate.canonicalUrl, candidate.title, candidate.memo],
@@ -1764,6 +1780,7 @@ function FlowUrlSupplyCandidateCard({
     setDraftTitle(getUrlSupplyCandidateDisplayTitle(candidate));
     setDraftAnchorDate('');
     setFeedback('');
+    setDraftSaveTargetHref('');
     setIsEditing(false);
     setShowDraftEditor(false);
   }, [candidate.canonicalUrl, candidate.title, candidate.memo]);
@@ -1807,6 +1824,7 @@ function FlowUrlSupplyCandidateCard({
   };
 
   const saveDraftFlow = () => {
+    setDraftSaveTargetHref('');
     const saved = onSaveDraftFlow(candidate, {
       flowTitle: draftTitle,
       anchorDate: draftAnchorDate,
@@ -1814,6 +1832,11 @@ function FlowUrlSupplyCandidateCard({
     });
     if (!saved.saved) {
       setFeedback(saved.error ?? '초안을 저장하지 못했습니다.');
+      return;
+    }
+    if (saved.reused) {
+      setFeedback('이미 저장한 초안이 있어요.');
+      setDraftSaveTargetHref(saved.targetHref ?? '/my');
       return;
     }
     setFeedback('내 Flow에 초안 저장됨');
@@ -2058,7 +2081,21 @@ function FlowUrlSupplyCandidateCard({
           </button>
         </div>
       ) : null}
-      {feedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]">{feedback}</p> : null}
+      {feedback ? (
+        <div
+          data-testid="flow-url-miss-draft-feedback"
+          role="status"
+          aria-live="polite"
+          className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-[#3654FF]"
+        >
+          <span>{feedback}</span>
+          {draftSaveTargetHref ? (
+            <Link className="underline underline-offset-2" href={draftSaveTargetHref}>
+              My Flow에서 이어서 수정
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -2199,23 +2236,45 @@ export function FlowList() {
   }
 
   function handleSaveDraftFlowFromCandidate(candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowSaveResult {
-    const draftPackage = createUrlFirstDraftFlowPackage(candidate, input);
-    const nextBundles = [
-      ...bundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
-      draftPackage.bundle,
-    ];
-    persist(nextBundles);
-    saveFlowRecord(draftPackage.bundle.flow.slug, {
-      selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
-      ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
-    });
-    if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
-    if (Object.keys(draftPackage.itemStates).length > 0) saveItemStates(draftPackage.bundle.flow.slug, draftPackage.itemStates);
-    return {
-      saved: true,
-      slug: draftPackage.bundle.flow.slug,
-      targetHref: '/my',
-    };
+    try {
+      const existingDraft = findExistingUrlFirstDraftBundle(bundles, candidate);
+      if (existingDraft) {
+        const existingAnchor = getStoredAnchor(existingDraft.flow.slug).anchor;
+        saveFlowRecord(existingDraft.flow.slug, {
+          selectedArtifactMode: existingAnchor ? 'calendar' : 'checklist',
+          ...(existingAnchor ? { anchor: existingAnchor } : {}),
+        });
+        return {
+          saved: true,
+          reused: true,
+          slug: existingDraft.flow.slug,
+          targetHref: '/my',
+        };
+      }
+
+      const draftPackage = createUrlFirstDraftFlowPackage(candidate, input);
+      const nextBundles = [
+        ...bundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
+        draftPackage.bundle,
+      ];
+      persist(nextBundles);
+      saveFlowRecord(draftPackage.bundle.flow.slug, {
+        selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
+        ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
+      });
+      if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
+      if (Object.keys(draftPackage.itemStates).length > 0) saveItemStates(draftPackage.bundle.flow.slug, draftPackage.itemStates);
+      return {
+        saved: true,
+        slug: draftPackage.bundle.flow.slug,
+        targetHref: '/my',
+      };
+    } catch {
+      return {
+        saved: false,
+        error: '초안을 저장하지 못했습니다. 입력한 내용은 그대로예요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',
+      };
+    }
   }
 
   return (
@@ -4957,6 +5016,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           flowMarkerKey: flowMarker.key,
           flowMarkerTitle: flowMarker.title,
           flowMarkerShortTitle: flowMarker.shortTitle,
+          flowMarkerInitial: flowMarker.initial,
           color,
         },
       };
@@ -6202,15 +6262,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const color = String(info.event.extendedProps.color ?? '#2563EB');
     const flowMarkerTitle = String(info.event.extendedProps.flowMarkerTitle ?? '');
     const flowMarkerShortTitle = String(info.event.extendedProps.flowMarkerShortTitle ?? '').trim();
+    const flowMarkerInitial = String(info.event.extendedProps.flowMarkerInitial ?? '').trim().slice(0, 1);
     const scheduleLabel = flowMarkerShortTitle || getMyFlowCalendarShortTitle(String(info.event.extendedProps.itemTitle ?? info.event.title));
 
     return (
-      <span data-testid="my-flow-calendar-schedule-content" className="flex min-w-0 items-center gap-1" aria-label={flowMarkerTitle || scheduleLabel}>
+      <span
+        data-testid="my-flow-calendar-schedule-content"
+        data-flow-marker-key={String(info.event.extendedProps.flowMarkerKey ?? '')}
+        className="flex min-w-0 items-center gap-1"
+        aria-label={flowMarkerTitle || scheduleLabel}
+      >
         <span
           data-testid="my-flow-calendar-schedule-rail"
-          className="h-2.5 w-2.5 shrink-0 rounded-full"
+          data-flow-marker-initial={flowMarkerInitial || 'F'}
+          aria-hidden="true"
+          className="flex h-3 w-3 shrink-0 items-center justify-center rounded-[3px] text-[8px] font-black leading-none text-white"
           style={{ backgroundColor: checked ? '#94A3B8' : color }}
-        />
+        >
+          {flowMarkerInitial || 'F'}
+        </span>
         <span
           data-testid="my-flow-calendar-flow-label"
           title={flowMarkerTitle || scheduleLabel}
