@@ -51,6 +51,8 @@ Review rendering:
 
 Implementation commits: `73adff0`, `9caec3c`, `40ffa8f`
 
+Vercel preview: [https://flowme2605-7pe451s7j-flowme.vercel.app](https://flowme2605-7pe451s7j-flowme.vercel.app)
+
 ## 재현
 
 ```powershell

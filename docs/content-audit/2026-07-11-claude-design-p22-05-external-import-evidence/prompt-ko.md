@@ -8,6 +8,7 @@
 - `docs/content-audit/2026-07-11-claude-design-p22-05-external-import-evidence/office-observation.json`
 - `docs/content-audit/2026-07-11-claude-design-p22-05-external-import-evidence/calendar-parser-observation.json`
 - `docs/content-audit/2026-07-11-claude-design-p22-05-external-import-evidence/fixture-manifest.json`
+- Vercel preview: `https://flowme2605-7pe451s7j-flowme.vercel.app`
 
 ## 현재 판정
 
@@ -38,4 +39,3 @@
 5. P22-06 진행 여부와 다음 구현 slice
 
 단순 UI polish 목록보다 **외부 도구에서 실제 실행 가능한가, 중복과 실패를 정직하게 다루는가**를 우선 평가해 주세요. 실제로 관찰하지 않은 Outlook 성공을 추정하지 마세요.
-

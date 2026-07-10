@@ -7,6 +7,11 @@
     "9caec3c",
     "40ffa8f"
   ],
+  "deployment": {
+    "id": "dpl_6NKYZHhTEaTcBmXCB6wQjarzvvuo",
+    "url": "https://flowme2605-7pe451s7j-flowme.vercel.app",
+    "readyState": "READY"
+  },
   "representativeFlows": [
     {
       "id": "moving-d30",
