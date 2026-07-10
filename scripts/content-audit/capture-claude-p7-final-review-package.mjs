@@ -1376,8 +1376,13 @@ async function collectUrlFirstCandidateUserCopyEvidence(page, candidateCard, can
 
 async function captureCurrent(page, file, label, options = {}) {
   await settle(page);
+  await page.bringToFront();
+  await page.evaluate(() => document.body.getBoundingClientRect().height);
   const screenshotPath = path.join(screenshotsDir, file);
-  await page.screenshot({ path: screenshotPath, fullPage: false, animations: 'disabled', caret: 'hide' });
+  const screenshotOptions = { fullPage: false, animations: 'disabled', caret: 'hide' };
+  await page.screenshot(screenshotOptions);
+  await page.waitForTimeout(75);
+  await page.screenshot({ ...screenshotOptions, path: screenshotPath });
   const screenshotBuffer = fs.readFileSync(screenshotPath);
   const scan = await scanPage(page, options);
   scenarioRecords.push({
