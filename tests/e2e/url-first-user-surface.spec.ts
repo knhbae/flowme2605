@@ -258,6 +258,106 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   expectCleanUserFacingOutput(copiedText);
 });
 
+test('URL-first miss draft lands in My Flow with editable anchor and item overlay', async ({ page }) => {
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/weekend-draft-source?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('요청 제목').fill('주말 준비 초안 요청');
+  await result.getByLabel('요청 메모').fill('링크에서 따라 할 부분만 정리하고 싶음');
+  await result.getByRole('button', { name: '초안 요청 저장' }).click();
+
+  const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: '주말 준비 초안 요청' });
+  await expect(candidateCard.getByTestId('flow-url-miss-draft-entry')).toBeVisible();
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('주말 준비 초안');
+  await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
+  await draftEditor.getByTestId('flow-url-miss-draft-item-title').fill('원문에서 필요한 단계 정리하기');
+  await draftEditor.getByTestId('flow-url-miss-draft-item-memo').fill('저장 후 내 일정에 맞게 손볼 메모');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  await page.getByTestId('my-flow-view-flow').click();
+  const mobileDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await expect(mobileDraftFlow).toBeVisible();
+  await expect(mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
+
+  await mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  const mobileSettings = mobileDraftFlow.getByTestId('my-flow-personal-copy-settings');
+  await expect(mobileSettings).toBeVisible();
+  await expect(mobileSettings.getByTestId('my-flow-anchor-edit-entry')).toBeVisible();
+  await expect(mobileSettings).toContainText('전체 일정 기준');
+  await expect(mobileSettings).toContainText('해당 할 일만');
+  await mobileSettings.getByTestId('my-flow-personal-copy-start-date-input').fill('2026-07-25');
+  await mobileSettings.getByRole('button', { name: '저장' }).click();
+
+  if ((await mobileDraftFlow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
+    await mobileDraftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  }
+  await mobileDraftFlow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  const mobileDetail = mobileDraftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await expect(mobileDetail).toBeVisible();
+  const readSummary = mobileDetail.getByTestId('my-flow-detail-read-summary');
+  await readSummary.locator('summary').click();
+  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await mobileDetail.getByTestId('my-flow-detail-title-input').fill('내 일정에 맞춘 첫 단계');
+  await mobileDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-27');
+  await mobileDetail.getByTestId('my-flow-detail-memo').fill('초안에서 직접 고친 사용자 메모');
+  await mobileDetail.getByTestId('my-flow-detail-save-changes').click();
+
+  const storedAfterItemEdit = await page.evaluate(() => ({
+    itemDrafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+    dateOverrides: JSON.parse(window.localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
+  }));
+  expect(JSON.stringify(storedAfterItemEdit.itemDrafts)).toContain('내 일정에 맞춘 첫 단계');
+  expect(JSON.stringify(storedAfterItemEdit.itemDrafts)).toContain('초안에서 직접 고친 사용자 메모');
+  expect(Object.values(storedAfterItemEdit.dateOverrides)).toContain('2026-07-27');
+
+  await mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  await mobileDraftFlow.getByTestId('my-flow-personal-copy-start-date-input').fill('2026-07-30');
+  await mobileDraftFlow.getByRole('button', { name: '저장' }).click();
+  const storedAfterAnchorEdit = await page.evaluate(() => ({
+    savedRecord: Object.entries(window.localStorage)
+      .filter(([key]) => key.startsWith('flow:saved:url-draft-'))
+      .map(([, value]) => JSON.parse(String(value)))[0],
+    dateOverrides: JSON.parse(window.localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
+  }));
+  expect(storedAfterAnchorEdit.savedRecord.anchor).toBe('2026-07-30');
+  expect(Object.values(storedAfterAnchorEdit.dateOverrides)).toContain('2026-07-27');
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]');
+  await expect(wideDraftFlow).toBeVisible();
+  await expect(wideDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  const overriddenEvent = page.locator('.fc-daygrid-day[data-date="2026-07-27"] .fc-event').first();
+  await expect(overriddenEvent).toBeVisible();
+  await overriddenEvent.click();
+  const calendarDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
+  await expect(calendarDetail).toContainText('내 일정에 맞춘 첫 단계');
+  await expect(calendarDetail).toContainText('초안에서 직접 고친 사용자 메모');
+
+  const portableExport = calendarDetail.getByTestId('my-flow-detail-portable-export');
+  const portableExportSummary = portableExport.locator('summary');
+  if ((await portableExportSummary.count()) > 0) {
+    await portableExportSummary.click();
+  }
+  await calendarDetail.getByTestId('my-flow-detail-copy-portable-text').click();
+  const copiedDraftText = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiedDraftText).toContain('내 일정에 맞춘 첫 단계');
+  expect(copiedDraftText).toContain('초안에서 직접 고친 사용자 메모');
+  expect(copiedDraftText).not.toContain('source-backed');
+  expect(copiedDraftText).not.toContain('handoff');
+  expect(copiedDraftText).not.toContain('Canonical URL');
+  expect(copiedDraftText).not.toContain('Step');
+});
+
 test('URL-first resolved candidate cards hide legacy state-machine wording', async ({ page }) => {
   await openFlowFinding(page);
   await seedResolvedUrlFirstCandidate(page);

@@ -3085,6 +3085,14 @@ function isMyFlowPersonalSavedCopy(flow: MySavedFlow): boolean {
   return Boolean(flow.savedMap?.personalCopy || flow.excludedRows.length > 0);
 }
 
+function isUrlFirstDraftSavedFlow(flow: MySavedFlow): boolean {
+  return flow.progress.slug.startsWith('url-draft-') || flow.bundle.flow.slug.startsWith('url-draft-');
+}
+
+function canEditMyFlowSavedFlowSettings(flow: MySavedFlow): boolean {
+  return Boolean(flow.savedMap?.personalCopy) || isUrlFirstDraftSavedFlow(flow);
+}
+
 function getMyFlowPortableExportFlowTitle(flow: MySavedFlow): string {
   return flow.savedMap?.personalCopy ? toUserFacingMapTitle(flow.savedMap.title) : getMyFlowExecutionFlowTitle(flow.progress.title);
 }
@@ -3601,6 +3609,10 @@ function getMyFlowManualScheduleKey(flowSlug: string, rowId: string): string {
   return getMyFlowCalendarRowKey(flowSlug, rowId, 'none');
 }
 
+function getMyFlowDraftItemOverlayKey(flowSlug: string, rowId: string): string {
+  return getMyFlowCalendarRowKey(flowSlug, rowId, 'draft-overlay');
+}
+
 function getMyFlowRowInstanceKey(row: MyFlowCalendarRow): string {
   return row.calendarKey ?? `${row.flow.progress.slug}::${row.id}::${row.date ?? 'none'}`;
 }
@@ -3794,7 +3806,7 @@ type MyFlowsProps = {
 };
 
 export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps = {}) {
-  const { bundles } = useBundles();
+  const { bundles, persist } = useBundles();
   const myFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
   const currentUser = getCurrentUser();
   const isCalendarSurface = surface === 'calendar';
@@ -4117,6 +4129,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const showMyFlowScopeControl = !isMyFlowMobileViewport && savedFlows.length > 1;
   const getSavedFlowNextRow = (flow: MySavedFlow) =>
     flow.rows.find((row) => !isMyFlowRowChecked(flow, row)) ?? flow.rows[0];
+  const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
+    isUrlFirstDraftSavedFlow(flow)
+      ? myFlowDateOverrides[getMyFlowDraftItemOverlayKey(flow.progress.slug, rowId)]
+      : undefined;
   const getMyFlowRoutineWeekdays = (flow: MySavedFlow) =>
     myFlowRoutineRuleDrafts[flow.progress.slug]?.weekdays ?? getRoutineWeekdayLabels(flow.bundle.repeatRules?.[0] ?? '', []);
   const getMyFlowRoutineDraft = (flow: MySavedFlow): MyFlowRoutineRuleDraft => ({
@@ -4172,12 +4188,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         const originalDate = row.date ?? '';
         const calendarKey = getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
         const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
+        const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
         return {
           ...row,
           flow,
           originalDate,
           calendarKey,
-          date: myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
+          date: draftDateOverride ?? myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
         };
       }),
   );
@@ -4186,7 +4203,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       .filter((row) => !row.date)
       .flatMap((row) => {
         const calendarKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
-        const date = myFlowDateOverrides[calendarKey] ?? getMyFlowPersonalCopyStepDateOverride(flow, row.id);
+        const date = getMyFlowDraftItemDateOverride(flow, row.id) ?? myFlowDateOverrides[calendarKey] ?? getMyFlowPersonalCopyStepDateOverride(flow, row.id);
         if (!date) return [];
         return [{
           ...row,
@@ -4393,6 +4410,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? '다음 할 일'
           : '먼저 할 일';
   const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => ({
+    ...(isUrlFirstDraftSavedFlow(row.flow)
+      ? (myFlowItemDrafts[getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id)] ?? {})
+      : {}),
     ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
     ...getMyFlowPersonalCopyStepDraft(row),
   });
@@ -4602,8 +4622,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       : getMyFlowRowDisplayTitle(row);
     return getMyFlowOpenActionAriaLabel(contextTitle, getMyFlowOpenActionLabel(row.flow.bundle));
   };
-  const updateMyFlowItemDraft = (row: MyFlowCalendarRow, patch: MyFlowItemDraft) => {
-    const key = getMyFlowRowInstanceKey(row);
+  const updateMyFlowItemDraftByKey = (key: string, patch: MyFlowItemDraft) => {
     setMyFlowItemDrafts((current) => {
       const next = {
         ...current,
@@ -4615,6 +4634,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       if (!isMyFlowScenarioDemo) saveStoredMyFlowItemDrafts(next);
       return next;
     });
+  };
+  const updateMyFlowItemDraft = (row: MyFlowCalendarRow, patch: MyFlowItemDraft) => {
+    updateMyFlowItemDraftByKey(getMyFlowRowInstanceKey(row), patch);
   };
   const updateMyFlowEditingDraft = (row: MyFlowCalendarRow, patch: MyFlowItemDraft) => {
     const key = getMyFlowRowInstanceKey(row);
@@ -4777,6 +4799,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       if (date) {
         setMyFlowSelectedDate(date);
         setMyFlowVisibleMonth(getMyFlowMonthStart(date));
+      }
+    } else if (isUrlFirstDraftSavedFlow(row.flow)) {
+      if (Object.keys(itemDraft).length > 0) {
+        updateMyFlowItemDraftByKey(getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id), itemDraft);
+      }
+      if (date !== undefined) {
+        const draftDateKey = getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id);
+        updateMyFlowDateOverrideState((current) => {
+          const next = { ...current };
+          if (date) {
+            next[draftDateKey] = date;
+          } else {
+            delete next[draftDateKey];
+          }
+          return next;
+        });
+        if (date) {
+          setMyFlowSelectedDate(date);
+          setMyFlowVisibleMonth(getMyFlowMonthStart(date));
+        }
       }
     } else {
       if (Object.keys(itemDraft).length > 0) updateMyFlowItemDraft(row, itemDraft);
@@ -5319,9 +5361,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const getMyFlowRowForFlowTab = (flow: MySavedFlow, row: MyFlowRow): MyFlowCalendarRow => {
     const originalDate = row.date;
     const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
+    const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
     const calendarKey = originalDate
       ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
-      : personalDateOverride
+      : personalDateOverride || draftDateOverride
         ? getMyFlowManualScheduleKey(flow.progress.slug, row.id)
         : '';
     return {
@@ -5331,7 +5374,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ? {
             originalDate: originalDate ?? 'none',
             calendarKey,
-            date: myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
+            date: draftDateOverride ?? myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
           }
         : {}),
     };
@@ -5395,13 +5438,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const openMyFlowPersonalCopySettings = (flow: MySavedFlow) => {
-    if (!flow.savedMap?.personalCopy) return;
+    if (!canEditMyFlowSavedFlowSettings(flow)) return;
     setMyFlowExpandedStructureSlug(flow.progress.slug);
     setMyFlowPersonalCopySettingsDraft({
       flowSlug: flow.progress.slug,
-      title: toUserFacingMapTitle(flow.savedMap.title),
+      title: flow.savedMap?.personalCopy ? toUserFacingMapTitle(flow.savedMap.title) : getMyFlowExecutionFlowTitle(flow.progress.title),
       anchor: flow.anchor,
-      includedStepIds: getMyFlowPersonalCopyIncludedStepIds(flow),
+      includedStepIds: flow.savedMap?.personalCopy ? getMyFlowPersonalCopyIncludedStepIds(flow) : [],
     });
   };
 
@@ -5423,8 +5466,46 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     });
   };
 
+  const saveMyFlowDraftSettings = (flow: MySavedFlow) => {
+    if (typeof window === 'undefined' || !isUrlFirstDraftSavedFlow(flow) || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return;
+
+    const nextTitle = myFlowPersonalCopySettingsDraft.title.trim() || getMyFlowExecutionFlowTitle(flow.progress.title);
+    const nextAnchor = myFlowPersonalCopySettingsDraft.anchor.trim();
+    const updatedAt = new Date().toISOString();
+    persist(bundles.map((bundle) => (
+      bundle.flow.slug === flow.progress.slug
+        ? {
+            ...bundle,
+            flow: {
+              ...bundle.flow,
+              title: nextTitle,
+              anchor_type: nextAnchor && bundle.flow.anchor_type === 'none' ? 'start_date' : bundle.flow.anchor_type,
+              updated_at: updatedAt,
+            },
+          }
+        : bundle
+    )));
+
+    const savedRecord = getSavedFlowRecord(flow.progress.slug);
+    saveFlowRecord(flow.progress.slug, {
+      selectedArtifactMode: savedRecord?.selectedArtifactMode ?? 'calendar',
+      ...(nextAnchor ? { anchor: nextAnchor } : {}),
+    });
+    saveStoredAnchor(flow.progress.slug, { mode: 'custom', anchor: nextAnchor });
+    setMyFlowSelectedDate(nextAnchor || myFlowSelectedDate);
+    if (nextAnchor) setMyFlowVisibleMonth(getMyFlowMonthStart(nextAnchor));
+    resetMyFlowRowDetailState();
+    setMyFlowPersonalCopySettingsDraft(null);
+    refreshSavedFlowState();
+  };
+
   const saveMyFlowPersonalCopySettings = (flow: MySavedFlow) => {
-    if (typeof window === 'undefined' || !flow.savedMap?.personalCopy || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return;
+    if (typeof window === 'undefined' || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return;
+    if (isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy) {
+      saveMyFlowDraftSettings(flow);
+      return;
+    }
+    if (!flow.savedMap?.personalCopy) return;
 
     const stepRows = getMyFlowPersonalCopyStepRows(flow);
     const allStepIds = stepRows.map((row) => baseStateId(row.id));
@@ -7008,13 +7089,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const renderMyFlowPersonalCopySettings = (flow: MySavedFlow) => {
-    if (!flow.savedMap?.personalCopy || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return null;
+    if (!canEditMyFlowSavedFlowSettings(flow) || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return null;
 
-    const stepRows = getMyFlowPersonalCopyStepRows(flow);
+    const isDraftFlow = isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy;
+    const stepRows = isDraftFlow ? [] : getMyFlowPersonalCopyStepRows(flow);
     const includedStepIdSet = new Set(myFlowPersonalCopySettingsDraft.includedStepIds);
-    const dateAnchorCopy = getSourceBackedFlowMapDateAnchorCopy(
-      flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
-    );
+    const dateAnchorCopy = isDraftFlow
+      ? getSourceBackedFlowMapDateAnchorCopy()
+      : getSourceBackedFlowMapDateAnchorCopy(
+          flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
+        );
     const anchorInputId = `my-flow-anchor-date-${flow.progress.slug}`;
     return (
       <form
@@ -7042,9 +7126,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           <label className="grid gap-1 text-xs font-semibold text-slate-700">
-            저장 이름
+            {isDraftFlow ? 'Flow 이름' : '저장 이름'}
             <input
-              aria-label="저장 이름"
+              aria-label={isDraftFlow ? 'Flow 이름' : '저장 이름'}
               className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               value={myFlowPersonalCopySettingsDraft.title}
               maxLength={80}
@@ -7064,25 +7148,31 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             />
           </label>
         </div>
-        <fieldset className="grid gap-2">
-          <legend className="text-xs font-semibold text-slate-700">포함할 Step</legend>
-          <div className="grid max-h-56 gap-1.5 overflow-auto pr-1 sm:grid-cols-2">
-            {stepRows.map((row) => {
-              const stepId = baseStateId(row.id);
-              return (
-                <label key={`personal-copy-step-${flow.progress.slug}-${stepId}`} className="flex min-h-10 items-start gap-2 rounded-md bg-slate-50 px-2.5 py-2 text-xs font-semibold leading-5 text-slate-800">
-                  <input
-                    className="mt-0.5 h-4 w-4 shrink-0"
-                    type="checkbox"
-                    checked={includedStepIdSet.has(stepId)}
-                    onChange={(event) => toggleMyFlowPersonalCopyStep(stepId, event.target.checked)}
-                  />
-                  <span className="min-w-0 break-keep">{toUserFacingSourceTitle(row.title)}</span>
-                </label>
-              );
-            })}
-          </div>
-        </fieldset>
+        {isDraftFlow ? (
+          <p data-testid="my-flow-draft-anchor-policy" className="rounded-md bg-blue-50 px-3 py-2 text-xs font-semibold leading-5 text-blue-800">
+            기준일을 바꾸면 초안의 전체 일정이 다시 맞춰집니다. 따로 바꾼 할 일 날짜는 그대로 유지돼요.
+          </p>
+        ) : (
+          <fieldset className="grid gap-2">
+            <legend className="text-xs font-semibold text-slate-700">포함할 할 일</legend>
+            <div className="grid max-h-56 gap-1.5 overflow-auto pr-1 sm:grid-cols-2">
+              {stepRows.map((row) => {
+                const stepId = baseStateId(row.id);
+                return (
+                  <label key={`personal-copy-step-${flow.progress.slug}-${stepId}`} className="flex min-h-10 items-start gap-2 rounded-md bg-slate-50 px-2.5 py-2 text-xs font-semibold leading-5 text-slate-800">
+                    <input
+                      className="mt-0.5 h-4 w-4 shrink-0"
+                      type="checkbox"
+                      checked={includedStepIdSet.has(stepId)}
+                      onChange={(event) => toggleMyFlowPersonalCopyStep(stepId, event.target.checked)}
+                    />
+                    <span className="min-w-0 break-keep">{toUserFacingSourceTitle(row.title)}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
         {myFlowPersonalCopySettingsDraft.feedback ? (
           <p className="text-xs font-semibold text-amber-700">{myFlowPersonalCopySettingsDraft.feedback}</p>
         ) : null}
@@ -7097,7 +7187,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <button
             type="submit"
             className="min-h-9 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={myFlowPersonalCopySettingsDraft.includedStepIds.length === 0}
+            disabled={!isDraftFlow && myFlowPersonalCopySettingsDraft.includedStepIds.length === 0}
           >
             저장
           </button>
@@ -7200,12 +7290,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
-    const personalCopyDateAnchorCopy = personalSavedCopy
-      ? getSourceBackedFlowMapDateAnchorCopy(
-          flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
-        )
+    const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
+    const settingsDateAnchorCopy = settingsEditable
+      ? isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy
+        ? getSourceBackedFlowMapDateAnchorCopy()
+        : getSourceBackedFlowMapDateAnchorCopy(
+            flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
+          )
       : null;
-    const personalCopySettingsLabel = personalCopyDateAnchorCopy ? `${personalCopyDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
+    const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const structureLabel = flow.savedMap
       ? toUserFacingMapTitle(flow.savedMap.title)
@@ -7277,7 +7370,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</span>
           ) : null}
         </button>
-        {personalSavedCopy ? (
+        {settingsEditable ? (
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
@@ -7369,12 +7462,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
-    const personalCopyDateAnchorCopy = personalSavedCopy
-      ? getSourceBackedFlowMapDateAnchorCopy(
-          flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
-        )
+    const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
+    const settingsDateAnchorCopy = settingsEditable
+      ? isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy
+        ? getSourceBackedFlowMapDateAnchorCopy()
+        : getSourceBackedFlowMapDateAnchorCopy(
+            flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
+          )
       : null;
-    const personalCopySettingsLabel = personalCopyDateAnchorCopy ? `${personalCopyDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
+    const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
@@ -7444,7 +7540,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 ))}
               </div>
             ) : null}
-            {personalSavedCopy ? (
+            {settingsEditable ? (
               <button
                 type="button"
                 data-testid="my-flow-personal-copy-settings-open"

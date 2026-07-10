@@ -119,6 +119,7 @@ async function main() {
     await captureUrlFirstMovingCustomStart(page);
     await captureUrlFirstMissCandidateForm(page);
     await captureUrlFirstCandidateDetail(page);
+    await captureUrlFirstDraftMyFlowLanding(page);
     await captureCleanRoute(page, '/flow-maps/moving-d30', '03-flow-map-moving-top-mobile.png', 'Moving map save screen top');
     await captureBottom(page, '/flow-maps/moving-d30', '04-flow-map-moving-bottom-mobile.png', 'Moving map bottom sticky clearance');
     await captureCleanRoute(page, '/flow-maps/middle-school-math-1', '05-flow-map-math-mobile.png', 'Math source-backed map screen');
@@ -866,6 +867,137 @@ async function captureUrlFirstCandidateDetail(page, captureOptions = {}) {
   });
 }
 
+async function captureUrlFirstDraftMyFlowLanding(page) {
+  await page.setViewportSize(viewport);
+  await resetStorage(page);
+  await lookupUrlFirstInput(page, 'https://example.com/p20-draft-source?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  const form = result.getByTestId('flow-url-supply-candidate-form');
+  await form.waitFor({ state: 'visible' });
+  await form.locator('input').fill('주말 준비 초안 요청');
+  await form.locator('textarea').fill('저장 후 내 일정에 맞게 손볼 메모');
+  await form.locator('button[type="submit"]').click();
+  await settle(page);
+
+  const candidateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: '주말 준비 초안 요청' })
+    .first();
+  await candidateCard.waitFor({ state: 'visible' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.waitFor({ state: 'visible' });
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('주말 준비 초안');
+  await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
+  await draftEditor.getByTestId('flow-url-miss-draft-item-title').fill('원문에서 필요한 단계 정리하기');
+  await draftEditor.getByTestId('flow-url-miss-draft-item-memo').fill('저장 후 내 일정에 맞게 손볼 메모');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+  await page.waitForURL(/\/my/);
+  await settle(page);
+
+  await page.getByTestId('my-flow-view-flow').click();
+  await settle(page);
+  const mobileDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]').first();
+  await mobileDraftFlow.waitFor({ state: 'visible' });
+  await mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  let settings = mobileDraftFlow.getByTestId('my-flow-personal-copy-settings');
+  await settings.waitFor({ state: 'visible' });
+  await settings.getByTestId('my-flow-personal-copy-start-date-input').fill('2026-07-25');
+  await settings.locator('button[type="submit"]').click();
+  await settle(page);
+
+  if ((await mobileDraftFlow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
+    await mobileDraftFlow.getByTestId('my-flow-mobile-structure-open').click();
+    await settle(page);
+  }
+  await mobileDraftFlow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  const mobileDetail = mobileDraftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  await mobileDetail.waitFor({ state: 'visible' });
+  const readSummary = mobileDetail.getByTestId('my-flow-detail-read-summary');
+  if (await readSummary.locator('summary').count()) {
+    await readSummary.locator('summary').click();
+    await settle(page);
+  }
+  await captureCurrent(page, '39a-url-first-draft-item-edit-entry-mobile.png', 'URL-first draft item edit entry in My Flow', {
+    category: 'saved-state',
+    route: '/my',
+  });
+  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await mobileDetail.getByTestId('my-flow-detail-title-input').fill('내 일정에 맞춘 첫 단계');
+  await mobileDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-27');
+  await mobileDetail.getByTestId('my-flow-detail-memo').fill('초안에서 직접 고친 사용자 메모');
+  await mobileDetail.getByTestId('my-flow-detail-save-changes').click();
+  await settle(page);
+
+  await mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  settings = mobileDraftFlow.getByTestId('my-flow-personal-copy-settings');
+  await settings.waitFor({ state: 'visible' });
+  await settings.getByTestId('my-flow-personal-copy-start-date-input').fill('2026-07-30');
+  await settings.locator('button[type="submit"]').click();
+  await settle(page);
+
+  await mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  await mobileDraftFlow.getByTestId('my-flow-personal-copy-settings').waitFor({ state: 'visible' });
+  await captureCurrent(page, '39b-url-first-draft-anchor-edit-mobile.png', 'URL-first draft anchor edit policy in My Flow mobile', {
+    category: 'saved-state',
+    route: '/my',
+  });
+
+  await page.setViewportSize(wideViewport);
+  await page.goto('/my');
+  await settle(page);
+  await page.getByTestId('my-flow-view-flow').click();
+  await settle(page);
+  const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]').first();
+  await wideDraftFlow.waitFor({ state: 'visible' });
+  await wideDraftFlow.getByTestId('my-flow-personal-copy-settings-open').click();
+  await wideDraftFlow.getByTestId('my-flow-personal-copy-settings').waitFor({ state: 'visible' });
+  await captureCurrent(page, '39c-url-first-draft-anchor-edit-wide.png', 'URL-first draft anchor edit policy in My Flow wide', {
+    category: 'saved-state',
+    route: '/my',
+    wideViewport: true,
+  });
+
+  await page.setViewportSize(viewport);
+  await page.goto('/calendar');
+  await settle(page);
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  await settle(page);
+  const overriddenEvent = page.locator('.fc-daygrid-day[data-date="2026-07-27"] .fc-event').first();
+  await overriddenEvent.waitFor({ state: 'visible' });
+  await overriddenEvent.click();
+  await settle(page);
+  const calendarDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
+  await calendarDetail.waitFor({ state: 'visible' });
+  const portableExport = calendarDetail.getByTestId('my-flow-detail-portable-export');
+  const portableExportSummary = portableExport.locator('summary');
+  if ((await portableExportSummary.count()) > 0) {
+    await portableExportSummary.click();
+    await settle(page);
+  }
+  await calendarDetail.getByTestId('my-flow-detail-copy-portable-text').click();
+  const copiedDraftText = await page.evaluate(() => navigator.clipboard.readText());
+  const draftFlowCalendarProjectionUpdated = await overriddenEvent.isVisible()
+    && copiedDraftText.includes('내 일정에 맞춘 첫 단계')
+    && copiedDraftText.includes('초안에서 직접 고친 사용자 메모');
+  const draftFlowExportProjectionUpdated = copiedDraftText.includes('내 일정에 맞춘 첫 단계')
+    && copiedDraftText.includes('초안에서 직접 고친 사용자 메모')
+    && !/source-backed|handoff|Canonical URL|\bStep\b/u.test(copiedDraftText);
+  await captureCurrent(page, '39d-url-first-draft-calendar-export-mobile.png', 'URL-first draft Calendar and export projection', {
+    category: 'saved-state',
+    route: '/calendar',
+    selectedDate: '2026-07-27',
+    draftFlowCalendarProjectionUpdated,
+    draftFlowExportProjectionUpdated,
+    draftFlowExportSampleLength: copiedDraftText.length,
+    draftFlowExportSampleHash: crypto.createHash('sha256').update(copiedDraftText).digest('hex'),
+  });
+}
+
 async function collectUrlFirstCandidateUserCopyEvidence(page, candidateCard, candidateFixture) {
   await candidateCard.getByTestId('flow-url-supply-user-summary-copy').click();
   await candidateCard.getByText('초안 요청 정리본 복사됨').waitFor({ state: 'visible' });
@@ -1299,6 +1431,45 @@ async function scanPage(page, options = {}) {
       };
     };
     const rowDateTextPattern = /\d{1,2}\s*월\s*\d{1,2}\s*일/u;
+    const collectDraftFlowMarkers = () => {
+      const draftRoots = Array.from(document.querySelectorAll('[data-flow-slug^="url-draft-"]'))
+        .filter((element) => isVisible(element));
+      const settingsOpenEntries = draftRoots.flatMap((root) =>
+        Array.from(root.querySelectorAll('[data-testid="my-flow-personal-copy-settings-open"]')),
+      ).filter((element) => isVisibleInteractiveElement(element));
+      const visibleSettings = draftRoots
+        .flatMap((root) => Array.from(root.querySelectorAll('[data-testid="my-flow-personal-copy-settings"]')))
+        .find((element) => isVisible(element)) ?? null;
+      const anchorEditEntry = visibleSettings?.querySelector('[data-testid="my-flow-anchor-edit-entry"]') ?? null;
+      const policy = visibleSettings?.querySelector('[data-testid="my-flow-draft-anchor-policy"]') ?? null;
+      const itemEditEntries = draftRoots.flatMap((root) =>
+        Array.from(root.querySelectorAll('[data-my-flow-item-edit-entry="true"]')),
+      ).filter((element) => isVisibleInteractiveElement(element));
+
+      return {
+        landingVisible: draftRoots.length > 0,
+        rootCount: draftRoots.length,
+        rootSurfaces: draftRoots.slice(0, 5).map((element) => getElementTestId(element)).filter(Boolean),
+        editEntryVisible: settingsOpenEntries.length > 0,
+        editEntryLabels: settingsOpenEntries
+          .slice(0, 5)
+          .map((element) => normalizeLine(element.textContent ?? ''))
+          .filter(Boolean),
+        anchorEditVisible: settingsOpenEntries.length > 0 || Boolean(anchorEditEntry && isVisible(anchorEditEntry)),
+        anchorEditLabel: normalizeLine(anchorEditEntry?.textContent ?? ''),
+        itemEditEntryVisible: itemEditEntries.length > 0,
+        itemEditAccessibleNameSample: itemEditEntries
+          .slice(0, 5)
+          .map((element) => normalizeLine(getAccessibleNameCandidate(element)))
+          .filter(Boolean),
+        anchorOverrideConflictPolicyVisible: Boolean(policy && isVisible(policy)),
+        anchorOverrideConflictPolicyText: normalizeLine(policy?.textContent ?? ''),
+        calendarProjectionUpdated: Boolean(payload.options.draftFlowCalendarProjectionUpdated),
+        exportProjectionUpdated: Boolean(payload.options.draftFlowExportProjectionUpdated),
+        exportSampleLength: payload.options.draftFlowExportSampleLength ?? 0,
+        exportSampleHash: payload.options.draftFlowExportSampleHash ?? null,
+      };
+    };
     const rowTimingTextPattern = /\bD(?:-\d+|\+\d+|-Day)\b/u;
     const summarizeRowMeta = (row) => {
       const text = collectElementLines(row).join(' ');
@@ -1971,6 +2142,7 @@ async function scanPage(page, options = {}) {
         taskCompletionControls: collectTaskCompletionControlPatterns(),
         postSaveConfirmation: collectPostSaveConfirmation(),
         dateAnchor: collectDateAnchorMarkers(),
+        draftFlow: collectDraftFlowMarkers(),
         agendaGroupMeta: collectAgendaGroupMeta(),
         calendarMyFlowRoleLabels: collectCalendarMyFlowRoleLabels(),
         rowControlAccessibleNames: getRowControlAccessibleNames(),
@@ -2367,6 +2539,22 @@ function summarizeEvidence(records) {
       || entry.itemDateOverrideLabel
       || entry.anchorVsItemOverrideCopyPresent
       || entry.itemEditEntryVisible
+    );
+  const draftFlowEvidence = normal
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      viewportWidth: record.viewportWidth,
+      ...(record.markers?.draftFlow ?? {}),
+    }))
+    .filter((entry) =>
+      entry.landingVisible
+      || entry.editEntryVisible
+      || entry.anchorEditVisible
+      || entry.itemEditEntryVisible
+      || entry.anchorOverrideConflictPolicyVisible
+      || entry.calendarProjectionUpdated
+      || entry.exportProjectionUpdated
     );
   const urlFirstCandidateResolvedHitScenarios = urlFirst
     .map((record) => ({
@@ -2914,6 +3102,18 @@ function summarizeEvidence(records) {
       };
       return acc;
     }, {}),
+    draftFlowMyFlowLandingVisible: draftFlowEvidence.some((entry) => entry.landingVisible),
+    draftFlowEditEntryVisible: draftFlowEvidence.some((entry) => entry.editEntryVisible),
+    draftFlowAnchorEditVisibleByViewport: draftFlowEvidence.reduce((acc, entry) => {
+      const viewportKey = String(entry.viewportWidth ?? viewport.width);
+      acc[viewportKey] = (acc[viewportKey] ?? 0) + (entry.anchorEditVisible ? 1 : 0);
+      return acc;
+    }, {}),
+    draftFlowItemEditEntryVisible: draftFlowEvidence.some((entry) => entry.itemEditEntryVisible),
+    draftFlowAnchorOverrideConflictPolicyVisible: draftFlowEvidence.some((entry) => entry.anchorOverrideConflictPolicyVisible),
+    draftFlowCalendarProjectionUpdated: draftFlowEvidence.some((entry) => entry.calendarProjectionUpdated),
+    draftFlowExportProjectionUpdated: draftFlowEvidence.some((entry) => entry.exportProjectionUpdated),
+    draftFlowEvidence,
     urlFirstMarkerVisibleCount: urlFirst.filter((record) => record.markers?.urlFirst?.resultVisible || record.markers?.urlFirst?.candidateListVisible).length,
     prototypeReleasePreviewRouteCount: releasePreviewPrototypes.length,
     prototypeReleasePreviewGuardrailHitCount: releasePreviewPrototypes.reduce(
@@ -3198,6 +3398,13 @@ P19-07 keeps the post-save editing model discoverable without moving full editin
 - My Flow item edit entry visible: ${evidence.summary.myFlowItemEditEntryVisible ? 'yes' : 'no'}
 - My Flow item edit accessible names: ${JSON.stringify(evidence.summary.myFlowItemEditAccessibleNameSamples)}
 - Edit entry visible by viewport: ${JSON.stringify(evidence.summary.editEntryVisibleByViewport)}
+- Draft Flow My Flow landing visible: ${evidence.summary.draftFlowMyFlowLandingVisible ? 'yes' : 'no'}
+- Draft Flow edit entry visible: ${evidence.summary.draftFlowEditEntryVisible ? 'yes' : 'no'}
+- Draft Flow anchor edit visible by viewport: ${JSON.stringify(evidence.summary.draftFlowAnchorEditVisibleByViewport)}
+- Draft Flow item edit entry visible: ${evidence.summary.draftFlowItemEditEntryVisible ? 'yes' : 'no'}
+- Draft Flow anchor/override policy visible: ${evidence.summary.draftFlowAnchorOverrideConflictPolicyVisible ? 'yes' : 'no'}
+- Draft Flow Calendar projection updated: ${evidence.summary.draftFlowCalendarProjectionUpdated ? 'yes' : 'no'}
+- Draft Flow export projection updated: ${evidence.summary.draftFlowExportProjectionUpdated ? 'yes' : 'no'}
 - Normal route row control accessible name samples: ${evidence.summary.normalRouteRowControlAccessibleNameSampleCount}
 - Normal route row control samples with context: ${evidence.summary.normalRouteRowControlAccessibleNameContextCount}
 - Wide viewport evidence count: ${evidence.summary.wideViewportEvidenceCount}
