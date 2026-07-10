@@ -13,6 +13,8 @@ test('timeline text export includes calculated dates when anchor exists', () => 
   assert.match(text, /이사일: 2026-07-15/);
   assert.match(text, /\[D-30 \/ 2026-06-15\]/);
   assert.match(text, /이사 방식 정하기/);
+  assert.match(text, /설명:/);
+  assert.doesNotMatch(text, /\?\?:/);
 });
 
 test('plank challenge exports preserve the original 30-day source table cues', () => {
@@ -281,7 +283,7 @@ test('study calendar export keeps each dated item executable', () => {
   const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
   assert.ok(study);
 
-  const ics = buildIcsCalendar(study, {}, '2026-06-22');
+  const ics = buildIcsCalendar(study, {}, '2026-06-22').replaceAll('\r\n ', '');
 
   assert.match(ics, /SUMMARY:컴퓨터활용능력 D-30 학습 Flow - 필기와 실기 시험 범위 나누기/);
   assert.match(ics, /실행:/);
@@ -473,7 +475,7 @@ test('ics export omits skipped dated flow items', () => {
 
   const ics = buildIcsCalendar(wedding, { [first.id]: true }, '2026-09-15', {
     [second.id]: { skipped: true },
-  });
+  }).replaceAll('\r\n ', '');
 
   assert.match(ics, /예식 날짜와 예상 하객 규모 정하기/);
   assert.doesNotMatch(ics, /웨딩홀 후보와 예산 범위 비교하기/);
@@ -671,6 +673,27 @@ test('ics export creates all-day calendar events from dated flow items', () => {
   assert.match(ics, /END:VCALENDAR$/);
 });
 
+test('calendar export carries item notes with user-facing Korean labels', () => {
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  assert.ok(moving);
+  const first = moving.items.find((item) => item.day_offset !== undefined);
+  assert.ok(first);
+
+  const rawIcs = buildIcsCalendar(moving, {}, '2026-07-15', {
+    [first.id]: { note: '오전 중 견적 후보 두 곳에 연락' },
+  });
+  const ics = rawIcs.replaceAll('\r\n ', '');
+
+  assert.match(ics, /구간:/);
+  assert.match(ics, /기준:/);
+  assert.match(ics, /완료 기준:/);
+  assert.match(ics, /내 메모: 오전 중 견적 후보 두 곳에 연락/);
+  assert.doesNotMatch(ics, /Section:|Timing:|Done when:|Caution:|Links:/);
+  for (const line of rawIcs.split('\r\n')) {
+    assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `ICS line exceeds 75 UTF-8 bytes: ${line}`);
+  }
+});
+
 test('ics export expands multi-day meal slots into calendar ranges', () => {
   const baby = seedBundles.find((bundle) => bundle.flow.slug === 'baby-food-menu-recipe');
   assert.ok(baby);
@@ -762,7 +785,8 @@ test('repeated workout video calendar export keeps each reminder executable', ()
     const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
     assert.ok(bundle, slug);
 
-    const ics = buildCalendarIcs(bundle, '2026-05-25', ['월', '수', '금']);
+    const rawIcs = buildCalendarIcs(bundle, '2026-05-25', ['월', '수', '금']);
+    const ics = rawIcs.replaceAll('\r\n ', '');
 
     assert.match(ics, /RRULE:FREQ=WEEKLY/, `${slug} should export a weekly reminder`);
     assert.match(ics, /캘린더 알림/, `${slug} reminder needs standalone guidance`);
@@ -772,5 +796,8 @@ test('repeated workout video calendar export keeps each reminder executable', ()
     assert.match(ics, /원본 영상:/, `${slug} reminder needs source-video handoff`);
     assert.match(ics, /youtube\.com\/watch\?v=/, `${slug} reminder needs original video URL`);
     assert.match(ics, /중단|전문가/, `${slug} reminder needs stop or consult condition`);
+    for (const line of rawIcs.split('\r\n')) {
+      assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `${slug} ICS line exceeds 75 UTF-8 bytes`);
+    }
   }
 });

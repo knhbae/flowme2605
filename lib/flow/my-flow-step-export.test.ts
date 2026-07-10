@@ -66,7 +66,8 @@ test('tool handoff exports create checklist text and one spreadsheet row', () =>
 });
 
 test('Step ICS uses edited date time repeat location memo and source URL', () => {
-  const ics = buildMyFlowStepIcs(baseInput);
+  const rawIcs = buildMyFlowStepIcs(baseInput);
+  const ics = rawIcs.replaceAll('\r\n ', '');
 
   assert.match(ics, /BEGIN:VCALENDAR/);
   assert.match(ics, /PRODID:-\/\/FLOW MVP\/\/My Flow Step Export\/\/KO/);
@@ -78,6 +79,9 @@ test('Step ICS uses edited date time repeat location memo and source URL', () =>
   assert.match(ics, /DESCRIPTION:.*견적 후보 3곳과 포함 범위만 메모/s);
   assert.match(ics, /URL:https:\/\/example\.com\/moving/);
   assert.match(ics, /END:VCALENDAR/);
+  for (const line of rawIcs.split('\r\n')) {
+    assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `ICS line exceeds 75 UTF-8 bytes: ${line}`);
+  }
 });
 
 test('Step ICS creates all-day event when time is empty', () => {

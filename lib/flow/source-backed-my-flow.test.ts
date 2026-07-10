@@ -423,7 +423,7 @@ test('source-backed moving D-30 keeps one Step as one dated FlowItem with item t
   assert.match(first.textFallback.items?.join('\n') ?? '', /견적/);
   assert.match(first.textFallback.doneWhen ?? '', /후보/);
 
-  const ics = buildIcsCalendar(moving, {}, '2026-07-22');
+  const ics = buildIcsCalendar(moving, {}, '2026-07-22').replaceAll('\r\n ', '');
   assert.match(ics, /SUMMARY:원룸 이사 D-30 준비 - 이사 방식과 견적 후보 정하기/);
   assert.match(ics, /DTSTART;VALUE=DATE:20260622/);
   assert.match(ics, /이사 방식/);

@@ -1,6 +1,7 @@
 import { addDays, formatDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
 import { getComparisonConfig, getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
+import { foldIcsContentLine } from './ics';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
@@ -576,7 +577,7 @@ export function buildText(
       // unchecked with a (스킵) label since those apps have no skip state.
       const checkbox = checks[item.id] ? '[x]' : '[ ]';
       lines.push(`- ${checkbox} ${item.title}${state?.skipped ? ' (스킵)' : ''}`);
-      if (item.description?.trim()) lines.push(`  ??: ${item.description.trim()}`);
+      if (item.description?.trim()) lines.push(`  설명: ${item.description.trim()}`);
       if (state?.note?.trim()) lines.push(`  메모: ${state.note.trim()}`);
       const detail = getItemDetail(bundle, item.id);
       const done = completionCriteria(detail);
@@ -624,19 +625,6 @@ function escapeIcsText(value: string): string {
     .replaceAll(';', '\\;');
 }
 
-function foldIcsLine(line: string): string {
-  const limit = 74;
-  if (line.length <= limit) return line;
-  const chunks = [];
-  let cursor = line;
-  while (cursor.length > limit) {
-    chunks.push(cursor.slice(0, limit));
-    cursor = ` ${cursor.slice(limit)}`;
-  }
-  chunks.push(cursor);
-  return chunks.join('\r\n');
-}
-
 function buildIcsDescription(
   bundle: FlowBundle,
   sectionTitle = '',
@@ -645,6 +633,7 @@ function buildIcsDescription(
   completionCriteria?: string,
   links?: string,
   dateWindow?: IcsEntry['dateWindow'],
+  userMemo?: string,
 ): string {
   const exactVideoDetail = sectionTitle ? undefined : bundle.itemDetails?.[0];
   return [
@@ -653,14 +642,15 @@ function buildIcsDescription(
     exactVideoDetail?.how,
     sectionTitle && actionGuide ? actionGuide : '',
     exactVideoDetail?.completion_criteria,
-    sectionTitle ? `Section: ${sectionTitle}` : '',
-    timing ? `Timing: ${timing}` : '',
+    sectionTitle ? `구간: ${sectionTitle}` : '',
+    timing ? `기준: ${timing}` : '',
     dateWindow ? `공식 기간: ${dateWindow.label}` : '',
     dateWindow ? `예상 기간: ${dateWindow.startDate} ~ ${dateWindow.endDate}` : '',
-    completionCriteria ? `Done when: ${completionCriteria}` : '',
-    bundle.flow.warning ? `Caution: ${bundle.flow.warning}` : '',
-    links ? `Links:\n${links}` : '',
-    bundle.flow.source_url ? `영상: ${bundle.flow.source_url}` : '',
+    completionCriteria ? `완료 기준: ${completionCriteria}` : '',
+    userMemo?.trim() ? `내 메모: ${userMemo.trim()}` : '',
+    bundle.flow.warning ? `주의: ${bundle.flow.warning}` : '',
+    links ? `링크:\n${links}` : '',
+    bundle.flow.source_url ? `원문: ${bundle.flow.source_url}` : '',
   ]
     .filter(Boolean)
     .join('\n');
@@ -755,6 +745,7 @@ export function buildIcsCalendar(
       entry.completionCriteria,
       entry.links,
       entry.dateWindow,
+      itemStates[entry.id]?.note,
     );
     lines.push(
       'BEGIN:VEVENT',
@@ -771,7 +762,7 @@ export function buildIcsCalendar(
   }
 
   lines.push('END:VCALENDAR');
-  return lines.map(foldIcsLine).join('\r\n');
+  return lines.map(foldIcsContentLine).join('\r\n');
 }
 
 export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: string[] = []): string {
@@ -803,7 +794,7 @@ export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: s
   }
   if (bundle.flow.source_url) lines.push(`URL:${bundle.flow.source_url}`);
   lines.push('END:VEVENT', 'END:VCALENDAR');
-  return `${lines.join('\r\n')}\r\n`;
+  return `${lines.map(foldIcsContentLine).join('\r\n')}\r\n`;
 }
 
 export function buildWorkbookSheets(

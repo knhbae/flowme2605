@@ -1,3 +1,5 @@
+import { foldIcsContentLine } from './ics';
+
 export type MyFlowStepRepeatPreset = '' | 'daily' | 'weekly' | 'monthly';
 
 export type MyFlowPortableStepExportInput = {
@@ -44,19 +46,6 @@ function escapeIcsText(value: string): string {
     .replaceAll(/\r?\n/g, '\\n')
     .replaceAll(',', '\\,')
     .replaceAll(';', '\\;');
-}
-
-function foldIcsLine(line: string): string {
-  const limit = 74;
-  if (line.length <= limit) return line;
-  const chunks = [];
-  let cursor = line;
-  while (cursor.length > limit) {
-    chunks.push(cursor.slice(0, limit));
-    cursor = ` ${cursor.slice(limit)}`;
-  }
-  chunks.push(cursor);
-  return chunks.join('\r\n');
 }
 
 function formatTimedIcsDate(date: string, time: string): string {
@@ -219,5 +208,5 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
   if (clean(input.sourceUrl)) lines.push(`URL:${clean(input.sourceUrl)}`);
   lines.push('END:VEVENT', 'END:VCALENDAR');
 
-  return `${lines.map(foldIcsLine).join('\r\n')}\r\n`;
+  return `${lines.map(foldIcsContentLine).join('\r\n')}\r\n`;
 }
