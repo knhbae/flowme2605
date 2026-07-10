@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P21 단계별 실행 보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2228;
+      --muted: #5f6873;
+      --line: #d9dee5;
+      --surface: #f5f7f9;
+      --blue: #2356a8;
+      --green: #246b54;
+      --amber: #8a5a00;
+      --red: #a43a2c;
+      --gray: #68717d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    article {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.25; letter-spacing: 0; }
+    h1 { font-size: 30px; }
+    h2 {
+      margin-top: 38px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      font-size: 21px;
+    }
+    h3 { font-size: 17px; }
+    p { margin: 8px 0 0; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    code {
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: #edf1f5;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.92em;
+    }
+    .meta { margin-top: 12px; color: var(--muted); font-size: 14px; }
+    .lead {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      background: #eef4fb;
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .metric {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+    }
+    .metric strong { display: block; font-size: 24px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; }
+    .sequence {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .phase {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-left-width: 4px;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+    .phase.done { border-left-color: var(--green); }
+    .phase.next { border-left-color: var(--red); }
+    .phase.pending { border-left-color: var(--amber); }
+    .phase.review { border-left-color: var(--blue); }
+    .phase.conditional { border-left-color: var(--gray); }
+    .phase .status {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .phase ul { margin: 10px 0 0; padding-left: 19px; }
+    .phase li + li { margin-top: 5px; }
+    .phase .done-when {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: #3f4852;
+      font-size: 13px;
+    }
+    table {
+      width: 100%;
+      margin-top: 16px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--surface); }
+    .gate {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .gate section {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+    .gate .go { background: #eef8f3; border-color: #b9d9ca; }
+    .gate .stop { background: #fff5ec; border-color: #e5c6a8; }
+    .checklist { columns: 2; column-gap: 34px; margin-top: 14px; padding-left: 20px; }
+    .checklist li { break-inside: avoid; margin-bottom: 7px; }
+    .next-action {
+      margin-top: 30px;
+      padding: 18px;
+      border: 1px solid #d5b7b1;
+      border-left: 5px solid var(--red);
+      background: #fff6f4;
+    }
+    .small { color: var(--muted); font-size: 13px; }
+    @media (max-width: 820px) {
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sequence { grid-template-columns: 1fr; }
+      .gate { grid-template-columns: 1fr; }
+      .checklist { columns: 1; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      tbody { display: grid; gap: 10px; }
+      tr {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      td {
+        display: grid;
+        grid-template-columns: 74px minmax(0, 1fr);
+        gap: 8px;
+        padding: 5px 0;
+        border: 0;
+      }
+      td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+    }
+    @media (max-width: 440px) {
+      article { padding: 24px 16px 48px; }
+      h1 { font-size: 26px; }
+      .summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>FlowMe P21 단계별 실행 보드</h1>
+      <p class="meta">기준일: 2026-07-11 · 원문 P21-01~P21-05 · 현재 main 기준</p>
+      <div class="lead">
+        <strong>핵심 결정</strong>
+        <p>P21은 번호순이 아니라 <strong>P21-04 → 조건부 복구 → P21-02 → P21-05 → 사용자 눈검토 → final review</strong> 순서로 닫는다. P21-01과 P21-03은 이미 완료됐다.</p>
+      </div>
+      <nav class="links" aria-label="관련 문서">
+        <a href="./2026-07-11-claude-design-p21-execution-plan-ko.md">상세 실행 계획</a>
+        <a href="./2026-07-11-claude-design-p21-goals-ko.md">복붙용 /goal 모음</a>
+        <a href="./2026-07-10-claude-design-p21-feedback-intake-ko.md">P21 피드백 접수</a>
+        <a href="./2026-07-10-claude-design-p21-01-draft-content-evidence/README.md">P21-01 evidence</a>
+      </nav>
+    </header>
+
+    <div class="summary" aria-label="P21 상태 요약">
+      <div class="metric"><strong>2</strong><span>완료: P21-01, P21-03</span></div>
+      <div class="metric"><strong>3</strong><span>남은 원문 항목</span></div>
+      <div class="metric"><strong>1</strong><span>조건부 복구 slice</span></div>
+      <div class="metric"><strong>0</strong><span>현재 Blocking</span></div>
+    </div>
+
+    <h2>실행 순서</h2>
+    <div class="sequence">
+      <section class="phase done">
+        <div class="status">완료</div>
+        <h3>P21-01 + P21-03</h3>
+        <p>URL/메모를 3~7개 실행 항목으로 제안하고 구조형 사용자 문구 hit를 0으로 닫았다.</p>
+        <p class="done-when"><code>suggestedItemCount ≥ 3</code> · dates from anchor · live AI false · normal/wide structural hit 0</p>
+      </section>
+
+      <section class="phase next">
+        <div class="status">다음 실행</div>
+        <h3>P21-04 상태 evidence</h3>
+        <p>failure, duplicate, empty, completed-zero, offline 상태를 390/1024px matrix로 만든다.</p>
+        <p class="done-when">각 상태의 captured 여부, 복구 행동, 내부어 hit를 JSON에서 판정</p>
+      </section>
+
+      <section class="phase conditional">
+        <div class="status">조건부</div>
+        <h3>P21-04B 최소 복구</h3>
+        <p>P21-04에서 실제 사용자 dead end가 확인될 때만 연다.</p>
+        <p class="done-when">입력 보존 · 한 가지 복구 행동 · 성공 오인 없음</p>
+      </section>
+
+      <section class="phase pending">
+        <div class="status">대기</div>
+        <h3>P21-02 AI gate spec</h3>
+        <p>실제 AI 없이 입력/출력 계약, 검토 gate, 안전·실패·비용·fallback 정책을 문서화한다.</p>
+        <p class="done-when">AI 제안은 자동 저장·발행·완료되지 않으며 P21-01 fallback 유지</p>
+      </section>
+
+      <section class="phase pending">
+        <div class="status">대기</div>
+        <h3>P21-05 소규모 polish</h3>
+        <p>홈 separator는 먼저 no-op 여부를 확인하고, Calendar 주요 2개 label의 식별성만 최소 조정한다.</p>
+        <p class="done-when">홈 붙음 0 · grid label 식별 가능 · `외 N개`와 agenda full detail 유지</p>
+      </section>
+
+      <section class="phase review">
+        <div class="status">마감 전 확인</div>
+        <h3>Vercel 눈검토 + final</h3>
+        <p>사용자가 실제 흐름을 확인한 뒤 P21 final package와 P22 요청 prompt를 만든다.</p>
+        <p class="done-when">사용자 correction 반영 여부 확정 · final screenshot/evidence/prompt push</p>
+      </section>
+    </div>
+
+    <h2>단계별 산출물</h2>
+    <table>
+      <thead>
+        <tr><th>순서</th><th>산출물</th><th>앱 수정</th><th>필수 검증</th></tr>
+      </thead>
+      <tbody>
+        <tr><td data-label="순서">1</td><td data-label="산출물">P21-04 state evidence package</td><td data-label="앱 수정">원칙적으로 없음</td><td data-label="필수 검증">상태 E2E, capture, docs, test, build</td></tr>
+        <tr><td data-label="순서">1-B</td><td data-label="산출물">조건부 recovery UI/evidence</td><td data-label="앱 수정">dead end에 필요한 최소 범위</td><td data-label="필수 검증">실패 입력 보존과 실제 recovery E2E</td></tr>
+        <tr><td data-label="순서">2</td><td data-label="산출물">AI draft gate durable spec</td><td data-label="앱 수정">없음</td><td data-label="필수 검증">docs:check, runtime/package/env diff 0</td></tr>
+        <tr><td data-label="순서">3</td><td data-label="산출물">Home/Calendar polish evidence</td><td data-label="앱 수정">최소 copy/layout</td><td data-label="필수 검증">390/1024 visual, targeted E2E, build</td></tr>
+        <tr><td data-label="순서">4</td><td data-label="산출물">Vercel preview와 사용자 체크리스트</td><td data-label="앱 수정">없음</td><td data-label="필수 검증">배포 성공과 route sanity</td></tr>
+        <tr><td data-label="순서">5</td><td data-label="산출물">P21 final review package</td><td data-label="앱 수정">없음</td><td data-label="필수 검증">전체 marker, screenshot matrix, P22 prompt</td></tr>
+      </tbody>
+    </table>
+
+    <h2>P21-04 분기 기준</h2>
+    <div class="gate">
+      <section class="go">
+        <h3>바로 P21-02로 이동</h3>
+        <p>상태가 재현되고, 사용자에게 복구 경로나 명확한 종료 상태가 있으며, 데이터 손실과 성공 오인이 없다.</p>
+      </section>
+      <section class="stop">
+        <h3>P21-04B 먼저 실행</h3>
+        <p>저장 실패 후 입력이 사라지거나, 중복이 무한히 쌓이거나, 오프라인 행동이 성공처럼 표시되는 실제 dead end가 있다.</p>
+      </section>
+    </div>
+
+    <h2>계속 유지할 기준선</h2>
+    <ul class="checklist">
+      <li>4탭 IA 유지</li>
+      <li>public `/f` save/setup-first 유지</li>
+      <li>Studio는 보조 표면</li>
+      <li>source 원본과 personal overlay 분리</li>
+      <li>저장/실행/export 스키마 유지</li>
+      <li>완료 체크박스 1종 유지</li>
+      <li>Calendar 주요 2개 + 외 N개 유지</li>
+      <li>selected-day agenda full detail 유지</li>
+      <li>live AI implied false</li>
+      <li>normal/internal/structural hit 0</li>
+      <li>visible Markdown hit 0</li>
+      <li>horizontal overflow 0</li>
+    </ul>
+
+    <div class="next-action">
+      <h2 style="margin:0; padding:0; border:0;">바로 다음 행동</h2>
+      <p><strong>P21-04 draft lifecycle evidence</strong>부터 실행한다. 복붙용 목표는 <a href="./2026-07-11-claude-design-p21-goals-ko.md">목표 모음 문서의 1번</a>에 있다.</p>
+      <p class="small">각 단계는 별도 커밋과 push로 닫고, 다음 단계는 바로 자동 실행하지 않는다.</p>
+    </div>
+  </article>
+</body>
+</html>
