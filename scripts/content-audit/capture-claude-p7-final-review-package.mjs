@@ -924,7 +924,7 @@ async function captureUrlFirstCandidateDetail(page, captureOptions = {}) {
   const candidateList = page.getByTestId('flow-url-supply-candidate-list');
   await candidateList.waitFor({ state: 'visible' });
   const pendingCandidateCard = candidateList.locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' });
-  await pendingCandidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
+  await pendingCandidateCard.getByRole('button', { name: '원문·메모 보기' }).click();
   await settle(page);
   const urlFirstCandidateUserCopyEvidence = await collectUrlFirstCandidateUserCopyEvidence(page, pendingCandidateCard, pendingCandidateFixture);
   const draftOpen = pendingCandidateCard.getByTestId('flow-url-miss-draft-open');
@@ -1123,9 +1123,9 @@ async function prepareUrlFirstDraftEditor(page, {
   const result = page.getByTestId('flow-url-lookup-result');
   const form = result.getByTestId('flow-url-supply-candidate-form');
   await form.waitFor({ state: 'visible' });
-  await form.getByLabel('요청 제목').fill(requestTitle);
-  await form.getByLabel('요청 메모').fill(requestMemo);
-  await form.getByRole('button', { name: '초안 요청 저장' }).click();
+  await form.getByLabel('Flow 이름').fill(requestTitle);
+  await form.getByLabel('원하는 결과').fill(requestMemo);
+  await form.getByRole('button', { name: '초안 준비하기' }).click();
   await settle(page);
 
   const candidateCard = page
@@ -2273,6 +2273,7 @@ async function scanPage(page, options = {}) {
       const supplyForm = document.querySelector('[data-testid="flow-url-supply-candidate-form"]');
       const supplyRequest = document.querySelector('[data-testid="flow-url-supply-request"]');
       const missDraftGate = document.querySelector('[data-testid="flow-url-miss-draft-gate"]');
+      const missPrimaryAction = document.querySelector('[data-testid="flow-url-miss-primary-action"]');
       const missDraftEntry = document.querySelector('[data-testid="flow-url-miss-draft-entry"]');
       const missDraftOpen = document.querySelector('[data-testid="flow-url-miss-draft-open"]');
       const missDraftEditor = document.querySelector('[data-testid="flow-url-miss-draft-editor"]');
@@ -2316,6 +2317,9 @@ async function scanPage(page, options = {}) {
       const missDraftLiveAiLines = missDraftGateLines.filter((line) =>
         /AI가|AI로|자동\s*생성|바로\s*생성|생성\s*중|실시간\s*생성|지금\s*만들어/u.test(line),
       );
+      const missLegacyOperationalStateLines = urlFirstLines.filter((line) =>
+        ['아직 없음', '저장 대기', '초안 요청 가능', '아직 실행 가능한 Flow 아님'].some((term) => line.includes(term)),
+      );
       const missDraftCta = supplyForm?.querySelector('button[type="submit"]') ?? null;
       const missDraftFlowLines = uniqueLines([missDraftEntry, missDraftEditor].filter(Boolean).flatMap((root) => collectElementLines(root)));
       const missDraftFlowLiveAiLines = missDraftFlowLines.filter((line) =>
@@ -2338,6 +2342,9 @@ async function scanPage(page, options = {}) {
         missDraftGate: {
           visible: Boolean(missDraftGate && isVisible(missDraftGate)),
           ctaLabel: normalizeLine(missDraftCta?.textContent ?? ''),
+          primaryActionCount: missPrimaryAction && isVisible(missPrimaryAction) ? 1 : 0,
+          legacyOperationalStateHitCount: missLegacyOperationalStateLines.length,
+          legacyOperationalStateLines: missLegacyOperationalStateLines,
           copyLines: missDraftGateLines.slice(0, 12),
           impliesLiveAi: missDraftLiveAiLines.length > 0,
           liveAiLines: missDraftLiveAiLines,
@@ -3622,6 +3629,17 @@ function summarizeEvidence(records) {
     urlFirstCandidateResolvedHitScenarios,
     urlFirstMissDraftGateVisible: urlFirstMissDraftGateEvidence.some((entry) => entry.visible),
     urlFirstMissDraftCtaLabel: urlFirstMissDraftGateEvidence.find((entry) => entry.ctaLabel)?.ctaLabel ?? '',
+    urlFirstMissPrimaryActionCount: urlFirstMissDraftGateEvidence.reduce(
+      (max, entry) => Math.max(max, entry.primaryActionCount ?? 0),
+      0,
+    ),
+    urlFirstMissLegacyOperationalStateHitCount: urlFirstMissDraftGateEvidence.reduce(
+      (sum, entry) => sum + (entry.legacyOperationalStateHitCount ?? 0),
+      0,
+    ),
+    urlFirstMissLegacyOperationalStateLines: uniqueLines(
+      urlFirstMissDraftGateEvidence.flatMap((entry) => entry.legacyOperationalStateLines ?? []),
+    ),
     urlFirstMissDraftEntryVisible: urlFirstMissDraftFlowEvidence.some((entry) => entry.entryVisible),
     urlFirstMissDraftEditableItemCount: urlFirstMissDraftFlowEvidence.reduce(
       (sum, entry) => sum + (entry.editableItemCount ?? 0),
@@ -4115,6 +4133,8 @@ P21-05 keeps the Home URL/memo separator explicit and adds a stable one-characte
 - URL-first candidate resolved-hit scenario status: ${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}
 - URL-first miss draft gate visible: ${evidence.summary.urlFirstMissDraftGateVisible ? 'yes' : 'no'}
 - URL-first miss draft CTA label: ${evidence.summary.urlFirstMissDraftCtaLabel}
+- URL-first miss primary action count: ${evidence.summary.urlFirstMissPrimaryActionCount}
+- URL-first miss legacy operational-state hits: ${evidence.summary.urlFirstMissLegacyOperationalStateHitCount}
 - URL-first miss draft in-app entry visible: ${evidence.summary.urlFirstMissDraftEntryVisible ? 'yes' : 'no'}
 - URL-first miss draft editable item count: ${evidence.summary.urlFirstMissDraftEditableItemCount}
 - URL-first miss draft suggested item count: ${evidence.summary.urlFirstMissDraftSuggestedItemCount}
@@ -4586,6 +4606,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}</b><span>resolved candidate status</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftGateVisible ? 'yes' : 'no'}</b><span>miss draft gate</span></div>
       <div class="stat"><b>${escapeHtml(evidence.summary.urlFirstMissDraftCtaLabel ?? '-')}</b><span>miss draft CTA</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissPrimaryActionCount}</b><span>miss primary actions</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissLegacyOperationalStateHitCount}</b><span>miss legacy state hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftEntryVisible ? 'yes' : 'no'}</b><span>miss draft entry</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftEditableItemCount}</b><span>miss draft editable items</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftSuggestedItemCount}</b><span>miss draft suggested items</span></div>

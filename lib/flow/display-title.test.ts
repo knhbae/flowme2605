@@ -315,6 +315,8 @@ test('capture script exposes URL-first miss draft gate markers', () => {
   assert.ok(script.includes('flow-url-miss-draft-gate'));
   assert.ok(script.includes('urlFirstMissDraftGateVisible'));
   assert.ok(script.includes('urlFirstMissDraftCtaLabel'));
+  assert.ok(script.includes('urlFirstMissPrimaryActionCount'));
+  assert.ok(script.includes('urlFirstMissLegacyOperationalStateHitCount'));
   assert.ok(script.includes('urlFirstMissDraftImpliesLiveAi'));
   assert.ok(script.includes('urlFirstMissCandidateCopyInternalHitCount'));
 });

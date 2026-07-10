@@ -1281,15 +1281,11 @@ function getUrlLookupStatusLabel(result: UrlFirstLookupResult): string {
   if (result.status === 'hit' && result.sourceStatus === 'needs_review') return '원문 확인 필요';
   if (result.status === 'hit') return '기존 콘텐츠';
   if (result.status === 'needs_review') return '원문 확인 필요';
-  return '아직 없음';
+  return '준비된 Flow 없음';
 }
 
 function getUrlSupplyCandidateStatusLabel(candidate: UrlFirstSupplyCandidate): string {
-  return candidate.status === 'needs_review_request' ? '원문 확인 요청' : '초안 요청';
-}
-
-function getUrlSupplyCandidateQueueLabel(candidate: UrlFirstSupplyCandidate): string {
-  return candidate.status === 'needs_review_request' ? '원문 확인 중' : '초안 준비 중';
+  return candidate.status === 'needs_review_request' ? '원문 확인' : '내 초안';
 }
 
 function getUrlSupplyCandidateAvailabilityLabel(candidate: UrlFirstSupplyCandidate): string {
@@ -1444,7 +1440,7 @@ function FlowUrlLookupResult({
     const upserted = onSaveSupplyCandidate(candidate);
     setCandidateTitle(upserted.candidate.title);
     setCandidateMemo(upserted.candidate.memo);
-    setCandidateFeedback(upserted.created ? '초안 요청 저장됨' : '이미 저장한 초안 요청입니다');
+    setCandidateFeedback(upserted.created ? '초안 준비를 저장했어요' : '이미 저장한 초안이에요');
   };
 
   return (
@@ -1456,12 +1452,12 @@ function FlowUrlLookupResult({
         <span className="rounded-full border border-[#BFD9B8] bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">
           {getUrlLookupStatusLabel(result)}
         </span>
-        <span className="text-xs font-semibold text-[#6E6B64]">이미 만든 준비가 있는지 먼저 찾아봤어요</span>
+        {result.status !== 'miss' ? <span className="text-xs font-semibold text-[#6E6B64]">이미 만든 준비가 있는지 먼저 찾아봤어요</span> : null}
       </div>
       <h2 className="mt-2 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{result.title}</h2>
       <p className="mt-1 break-keep leading-6 text-[#5F6A5A]">{result.summary}</p>
 
-      <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+      {result.status !== 'miss' ? <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-[#6E6B64]">옮길 수 있는 형태</p>
           <div className="mt-1 flex flex-wrap gap-1.5">
@@ -1496,7 +1492,7 @@ function FlowUrlLookupResult({
             {primaryActionLabel}
           </span>
         )}
-      </div>
+      </div> : null}
 
       {canStart ? (
         <div data-testid="flow-url-start-panel" className="mt-3 grid gap-3 rounded-xl border border-[#DDE6D8] bg-white p-3 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,0.8fr)_auto] sm:items-end">
@@ -1627,19 +1623,19 @@ function FlowUrlLookupResult({
 
       {canRequestSupplyCandidate ? (
         <section data-testid="flow-url-supply-request" className="mt-3 rounded-xl border border-[#E7E4DD] bg-white p-3">
-          <div data-testid="flow-url-miss-draft-gate" className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm font-semibold text-[#1B1A17]">초안 준비 요청</p>
-            <span className="rounded-full bg-[#FFF7E0] px-2.5 py-1 text-[11px] font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님</span>
+          <div data-testid="flow-url-miss-draft-gate">
+            <p className="text-sm font-semibold text-[#1B1A17]">직접 손볼 초안 준비하기</p>
+            <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
+              원하는 결과를 여러 할 일로 나눈 뒤 저장 전 살펴볼 수 있어요.
+            </p>
           </div>
-          <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
-            URL과 메모를 저장해 두면 초안으로 만들 때 제목, 날짜, 메모를 손볼 기준으로 씁니다. 지금 바로 Flow를 만들지는 않습니다.
-          </p>
           {existingSupplyCandidate ? (
             <div data-testid="flow-url-supply-existing" className="mt-3 rounded-lg bg-[#F7FBF4] px-3 py-2 text-xs leading-5 text-[#5F6A5A]">
-              <p className="font-semibold text-[#176D5D]">이미 저장한 초안 요청</p>
+              <p className="font-semibold text-[#176D5D]">저장한 초안이 있어요</p>
               <p className="mt-1 font-semibold text-[#1B1A17]">{existingSupplyCandidate.title}</p>
-              {existingSupplyCandidate.memo ? <p className="mt-1">{existingSupplyCandidate.memo}</p> : null}
-              <p className="mt-1 font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님 · {getUrlSupplyCandidateStatusLabel(existingSupplyCandidate)}</p>
+              <a className="mt-2 inline-flex min-h-9 items-center rounded-lg bg-[#176D5D] px-3 py-1.5 font-semibold text-white" href="#flow-url-supply-candidate-list">
+                초안 열기
+              </a>
             </div>
           ) : (
             <form
@@ -1651,9 +1647,9 @@ function FlowUrlLookupResult({
               }}
             >
               <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
-                요청 제목
+                Flow 이름
                 <input
-                  aria-label="요청 제목"
+                  aria-label="Flow 이름"
                   className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
                   value={candidateTitle}
                   maxLength={80}
@@ -1662,24 +1658,25 @@ function FlowUrlLookupResult({
                 />
               </label>
               <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
-                요청 메모
+                원하는 결과
                 <textarea
-                  aria-label="요청 메모"
-                  className="min-h-20 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  aria-label="원하는 결과"
+                  className="min-h-16 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
                   value={candidateMemo}
                   maxLength={240}
-                  placeholder="원문에서 따라 하고 싶은 부분이나 필요한 결과물을 적어두세요."
+                  placeholder="원문에서 따라 하고 싶은 순서나 필요한 결과를 적어두세요."
                   onChange={(event) => setCandidateMemo(event.target.value)}
                 />
               </label>
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="submit"
+                  data-testid="flow-url-miss-primary-action"
                   className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
                 >
-                  초안 요청 저장
+                  초안 준비하기
                 </button>
-                <span className="text-xs font-semibold text-[#6E6B64]">브라우저에만 저장</span>
+                <span className="text-xs font-semibold text-[#6E6B64]">이 기기에 임시 저장돼요</span>
               </div>
             </form>
           )}
@@ -1687,7 +1684,7 @@ function FlowUrlLookupResult({
         </section>
       ) : null}
 
-      {result.gate ? (
+      {result.gate && !canRequestSupplyCandidate ? (
         <p className="mt-3 rounded-xl bg-white px-3 py-2 text-xs font-semibold leading-5 text-[#8A6B18]">
           {result.gate.reason}
         </p>
@@ -1772,7 +1769,7 @@ function FlowUrlSupplyCandidateCard({
   const userSummaryMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
   const productionStatusNote = executable
     ? '이미 Flow로 준비됐어요. Flow 결과로 이동해 바로 시작할 수 있어요.'
-    : '원문과 요청 내용을 보관했어요. 초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.';
+    : '원문과 원하는 결과를 보관했어요. 초안을 직접 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.';
 
   useEffect(() => {
     setEditTitle(candidate.title);
@@ -1846,17 +1843,15 @@ function FlowUrlSupplyCandidateCard({
   return (
     <article className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2">
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#176D5D]">{getUrlSupplyCandidateStatusLabel(candidate)}</span>
-        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${executable ? 'bg-[#E7F6EC] text-[#176D5D]' : 'bg-[#FFF7E0] text-[#8A6B18]'}`}>
-          {getUrlSupplyCandidateAvailabilityLabel(candidate)}
+        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${executable ? 'bg-[#E7F6EC] text-[#176D5D]' : 'bg-white text-[#176D5D]'}`}>
+          {executable ? 'Flow 준비됨' : getUrlSupplyCandidateStatusLabel(candidate)}
         </span>
         <span className="text-[11px] font-semibold text-[#8A857B]">{formatKoreanShortDate(candidate.savedAt)}</span>
       </div>
       <p className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">{displayTitle}</p>
       {displayMemo ? <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#6E6B64]">{displayMemo}</p> : null}
-      <p className="mt-1 text-[11px] font-semibold text-[#8A857B]">원문 URL 저장됨</p>
-      <p className="mt-1 text-[11px] font-semibold text-[#8A6B18]">
-        {executable ? '이미 Flow로 준비됨 · Flow 결과로 이동해 바로 시작할 수 있어요.' : `아직 실행 가능한 Flow 아님 · ${getUrlSupplyCandidateQueueLabel(candidate)}`}
+      <p className={`mt-1 text-[11px] font-semibold ${executable ? 'text-[#176D5D]' : 'text-[#6E6B64]'}`}>
+        {executable ? '바로 시작할 수 있는 Flow가 준비됐어요.' : '직접 손볼 초안으로 이어갈 수 있어요.'}
       </p>
 
       {!executable ? (
@@ -2004,6 +1999,15 @@ function FlowUrlSupplyCandidateCard({
         </form>
       ) : (
         <div className="mt-3 flex flex-wrap gap-2">
+          {executable ? (
+            <button
+              type="button"
+              className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
+              onClick={() => onRequeryCandidate(candidate)}
+            >
+              Flow 결과로 이동
+            </button>
+          ) : null}
           <button
             type="button"
             className="min-h-9 rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
@@ -2012,39 +2016,7 @@ function FlowUrlSupplyCandidateCard({
               setFeedback('');
             }}
           >
-            {showProductionInfo ? '요청 내용 닫기' : '요청 내용 보기'}
-          </button>
-          <a
-            className="inline-flex min-h-9 items-center rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
-            href={candidate.originalUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            원 URL 열기
-          </a>
-          <button
-            type="button"
-            className="min-h-9 rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
-            onClick={() => onRequeryCandidate(candidate)}
-          >
-            {executable ? 'Flow 결과로 이동' : '다시 조회'}
-          </button>
-          <button
-            type="button"
-            className="min-h-9 rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#6E6B64]"
-            onClick={() => {
-              setIsEditing(true);
-              setFeedback('');
-            }}
-          >
-            제목/메모 수정
-          </button>
-          <button
-            type="button"
-            className="min-h-9 rounded-lg border border-[#F0D1C6] bg-white px-3 py-1.5 text-xs font-semibold text-[#A64224]"
-            onClick={removeCandidate}
-          >
-            삭제
+            {showProductionInfo ? '원문·메모 닫기' : '원문·메모 보기'}
           </button>
         </div>
       )}
@@ -2071,14 +2043,50 @@ function FlowUrlSupplyCandidateCard({
             </div>
           </dl>
           <p className="mt-2 rounded-lg bg-[#FAFAF8] px-2.5 py-2 text-[11px] font-semibold leading-5 text-[#6E6B64]">{productionStatusNote}</p>
-          <button
-            type="button"
-            className="mt-3 min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
-            data-testid="flow-url-supply-user-summary-copy"
-            onClick={copyUserSummaryMarkdown}
-          >
-            초안 요청 정리본 복사
-          </button>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <a
+              className="inline-flex min-h-9 items-center rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+              href={candidate.originalUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              원 URL 열기
+            </a>
+            {!executable ? (
+              <button
+                type="button"
+                className="min-h-9 rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+                onClick={() => onRequeryCandidate(candidate)}
+              >
+                다시 조회
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className="min-h-9 rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#6E6B64]"
+              onClick={() => {
+                setIsEditing(true);
+                setFeedback('');
+              }}
+            >
+              제목/메모 수정
+            </button>
+            <button
+              type="button"
+              className="min-h-9 rounded-lg border border-[#F0D1C6] bg-white px-3 py-1.5 text-xs font-semibold text-[#A64224]"
+              onClick={removeCandidate}
+            >
+              삭제
+            </button>
+            <button
+              type="button"
+              className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
+              data-testid="flow-url-supply-user-summary-copy"
+              onClick={copyUserSummaryMarkdown}
+            >
+              초안 요청 정리본 복사
+            </button>
+          </div>
         </div>
       ) : null}
       {feedback ? (
@@ -2116,12 +2124,12 @@ function FlowUrlSupplyCandidateList({
   if (candidates.length === 0) return null;
 
   return (
-    <section data-testid="flow-url-supply-candidate-list" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3.5">
+    <section id="flow-url-supply-candidate-list" data-testid="flow-url-supply-candidate-list" className="mb-4 scroll-mt-4 rounded-2xl border border-[#E7E4DD] bg-white p-3.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-[#1B1A17]">내 초안 요청</h2>
-        <span className="rounded-full bg-[#FFF7E0] px-2.5 py-1 text-[11px] font-semibold text-[#8A6B18]">아직 실행 가능한 Flow 아님</span>
+        <h2 className="text-sm font-semibold text-[#1B1A17]">내 초안</h2>
+        <span className="text-[11px] font-semibold text-[#8A857B]">{candidates.length}개</span>
       </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+      <div className={`mt-3 grid gap-2 ${candidates.length > 1 ? 'sm:grid-cols-2' : ''}`}>
         {candidates.map((candidate) => (
           <FlowUrlSupplyCandidateCard
             key={candidate.canonicalUrl}

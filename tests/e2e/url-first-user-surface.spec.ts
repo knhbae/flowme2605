@@ -198,22 +198,24 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   await lookupUrl(page, 'https://example.com/source-to-convert?utm_source=review');
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await expect(result).toContainText('아직 Flow화되지 않은 URL입니다');
-  await expect(result).toContainText('이미 만든 준비가 있는지 먼저 찾아봤어요');
+  await expect(result).toContainText('바로 시작할 Flow를 찾지 못했어요');
+  await expect(result).not.toContainText('이미 만든 준비가 있는지 먼저 찾아봤어요');
   await expect(result.getByTestId('flow-url-miss-draft-gate')).toBeVisible();
-  await expect(result).toContainText('초안 준비 요청');
-  await expect(result).toContainText('지금 바로 Flow를 만들지는 않습니다');
+  await expect(result).toContainText('직접 손볼 초안 준비하기');
+  await expect(result).toContainText('원하는 결과를 여러 할 일로 나눈 뒤 저장 전 살펴볼 수 있어요');
+  await expect(result).not.toContainText(/아직 없음|저장 대기|초안 요청 가능|아직 실행 가능한 Flow 아님/);
   await expect(result).not.toContainText('AI 자동 생성 없이 먼저 찾아봤어요');
   await expect(result).not.toContainText(/AI가|자동 생성|바로 생성|생성 중/);
   await expectCleanUrlFirstUserSurface(result);
 
-  await result.getByLabel('요청 제목').fill('새로 보고 싶은 준비 체크리스트');
-  await result.getByLabel('요청 메모').fill('URL에서 따라 할 순서만 남겨두고 싶음');
-  await result.getByRole('button', { name: '초안 요청 저장' }).click();
+  await result.getByLabel('Flow 이름').fill('새로 보고 싶은 준비 체크리스트');
+  await result.getByLabel('원하는 결과').fill('URL에서 따라 할 순서만 남겨두고 싶음');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
 
   const candidateList = page.getByTestId('flow-url-supply-candidate-list');
   await expect(candidateList).toBeVisible();
-  await expect(candidateList).toContainText('내 초안 요청');
+  await expect(candidateList).toContainText('내 초안');
+  await expect(candidateList).not.toContainText(/아직 실행 가능한 Flow 아님|저장 대기|초안 요청 가능/);
   await expect(candidateList).not.toContainText('내가 요청한 후보');
   const candidateCard = candidateList.locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' });
   await expect(candidateCard).toBeVisible();
@@ -243,11 +245,11 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   await page.goto('/flows');
   await expect(page.getByTestId('flow-url-supply-candidate-list')).toBeVisible();
   const copiedCandidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: '새로 보고 싶은 준비 체크리스트' });
-  await copiedCandidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
+  await copiedCandidateCard.getByRole('button', { name: '원문·메모 보기' }).click();
   await expect(copiedCandidateCard.getByTestId('flow-url-supply-production-handoff')).toBeVisible();
   await expect(copiedCandidateCard).toContainText('내가 쓴 제목·메모');
   await expect(copiedCandidateCard).toContainText('마지막 확인');
-  await expect(copiedCandidateCard).toContainText('초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요');
+  await expect(copiedCandidateCard).toContainText('초안을 직접 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요');
   await expect(copiedCandidateCard).not.toContainText('사용자 제목/메모');
   await expect(copiedCandidateCard).not.toContainText('마지막 다시 조회');
   await expectCleanUrlFirstUserSurface(copiedCandidateCard);
@@ -267,9 +269,9 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   await lookupUrl(page, 'https://example.com/weekend-draft-source?utm_source=review');
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await result.getByLabel('요청 제목').fill('주말 준비 초안 요청');
-  await result.getByLabel('요청 메모').fill('링크에서 따라 할 부분만 정리하고 싶음');
-  await result.getByRole('button', { name: '초안 요청 저장' }).click();
+  await result.getByLabel('Flow 이름').fill('주말 준비 초안 요청');
+  await result.getByLabel('원하는 결과').fill('링크에서 따라 할 부분만 정리하고 싶음');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
 
   const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: '주말 준비 초안 요청' });
   await expect(candidateCard.getByTestId('flow-url-miss-draft-entry')).toBeVisible();
@@ -379,9 +381,9 @@ test('URL-first draft preserves input on storage failure and reuses the canonica
   await lookupUrl(page, sourceUrl);
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await result.getByLabel('요청 제목').fill(requestTitle);
-  await result.getByLabel('요청 메모').fill('준비물 확인, 일정 정리, 마지막 점검');
-  await result.getByRole('button', { name: '초안 요청 저장' }).click();
+  await result.getByLabel('Flow 이름').fill(requestTitle);
+  await result.getByLabel('원하는 결과').fill('준비물 확인, 일정 정리, 마지막 점검');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
 
   let candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: requestTitle });
   await candidateCard.getByTestId('flow-url-miss-draft-open').click();
@@ -448,9 +450,9 @@ test('URL-first miss draft appears in Studio draft shelf and returns to My Flow 
   await lookupUrl(page, 'https://example.com/studio-draft-source?utm_source=review');
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await result.getByLabel('요청 제목').fill('스튜디오 초안 요청');
-  await result.getByLabel('요청 메모').fill('스튜디오에서 이어서 손볼 초안');
-  await result.getByRole('button', { name: '초안 요청 저장' }).click();
+  await result.getByLabel('Flow 이름').fill('스튜디오 초안 요청');
+  await result.getByLabel('원하는 결과').fill('스튜디오에서 이어서 손볼 초안');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
 
   const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: '스튜디오 초안 요청' });
   await expect(candidateCard.getByTestId('flow-url-miss-draft-entry')).toBeVisible();
@@ -488,14 +490,14 @@ test('URL-first resolved candidate cards hide legacy state-machine wording', asy
 
   const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').first();
   await expect(candidateCard).toBeVisible();
-  await expect(candidateCard).toContainText('이미 Flow로 준비됨');
-  await expect(candidateCard).toContainText('Flow 결과로 이동해 바로 시작할 수 있어요');
+  await expect(candidateCard).toContainText('Flow 준비됨');
+  await expect(candidateCard).toContainText('바로 시작할 수 있는 Flow가 준비됐어요');
   await expect(candidateCard).not.toContainText('이제 실행 가능한 수학 후보');
   await expect(candidateCard).not.toContainText('후보가 기존 콘텐츠로 닫힌 상태');
   await expect(candidateCard).not.toContainText(/닫힌 상태|실행 가능한 .*후보/);
   await expectCleanUrlFirstUserSurface(candidateCard);
 
-  await candidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
+  await candidateCard.getByRole('button', { name: '원문·메모 보기' }).click();
   await expect(candidateCard.getByTestId('flow-url-supply-production-handoff')).toBeVisible();
   await expect(candidateCard).not.toContainText('이제 실행 가능한 수학 후보');
   await expect(candidateCard).not.toContainText('후보가 기존 콘텐츠로 닫힌 상태');

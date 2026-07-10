@@ -209,6 +209,8 @@ test('unknown URL stays a miss with user-facing disabled-generation copy', () =>
   assert.equal(result.sourceStatus, 'missing');
   assert.deepEqual(result.exportModes, []);
   assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.title, '바로 시작할 Flow를 찾지 못했어요');
+  assert.equal(result.summary, '제목과 메모를 남기면 직접 손볼 수 있는 초안을 준비할 수 있어요.');
   assert.equal(result.aiGeneration.enabled, false);
   assert.match(result.aiGeneration.reason, /기존 Flow를 먼저 찾아보고/);
   assert.doesNotMatch(result.aiGeneration.reason, /\bP\d+\b/);
