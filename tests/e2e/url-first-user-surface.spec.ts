@@ -355,9 +355,13 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   const overriddenEvent = page.locator('.fc-daygrid-day[data-date="2026-07-27"] .fc-event').first();
   await expect(overriddenEvent).toBeVisible();
   await overriddenEvent.click();
-  const calendarDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
-  await expect(calendarDetail).toContainText('내 일정에 맞춘 첫 단계');
-  await expect(calendarDetail).toContainText('초안에서 직접 고친 사용자 메모');
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  const calendarDetail = selectedDay.getByTestId('my-flow-item-detail');
+  await expect(selectedDay).toContainText('내 일정에 맞춘 첫 단계');
+  await expect(calendarDetail).not.toContainText('내 일정에 맞춘 첫 단계');
+  const calendarReadSummary = calendarDetail.getByTestId('my-flow-detail-read-summary');
+  await calendarReadSummary.locator('summary').click();
+  await expect(calendarReadSummary).toContainText('초안에서 직접 고친 사용자 메모');
 
   const portableExport = calendarDetail.getByTestId('my-flow-detail-portable-export');
   const portableExportSummary = portableExport.locator('summary');

@@ -6537,7 +6537,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const editorDraft = getMyFlowRowEditorDraft(row);
     const hasEditorChanges = hasMyFlowEditingDraft(row);
     const isDrawerMode = mode === 'drawer' || mode === 'panel';
-    const isInlineMobileMode = mode === 'inline' && isMyFlowMobileViewport;
+    const isInlineMode = mode === 'inline';
+    const isInlineMobileMode = isInlineMode && isMyFlowMobileViewport;
     const isFlowTabInlineMobileMode = isInlineMobileMode && surfaceContext === 'flow';
     const isRoutineRow = row.flow.bundle.flow.structure_type === 'routine';
     const isProgressFlow = Boolean(row.flow.bundle.flow.tags?.includes('progress-flow'));
@@ -6545,7 +6546,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const detailSection = getMyFlowRowDisplaySectionLabel(row);
     const visibleDetailSection = isProgressFlow ? '' : detailSection;
     const detailFlowChipLabel = getMyFlowFlowChipLabel(row.flow);
-    const showDetailFlowChip = Boolean(detailFlowChipLabel) && !isInlineMobileMode;
+    const showDetailFlowChip = Boolean(detailFlowChipLabel) && !isInlineMode;
     const routineKey = getMyFlowRowInstanceKey(row);
     const isRoutineRepeatExpanded = myFlowExpandedRoutineKey === routineKey;
     const isAdvancedExpanded = myFlowExpandedAdvancedKey === routineKey;
@@ -6554,7 +6555,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const decisionDraft = getMyFlowDecisionDraft(row);
     const isDecisionRow = row.itemType?.primary === 'decision_hold' || Boolean(row.itemType?.secondary.includes('decision_hold'));
     const isLogRow = row.itemType?.primary === 'log_entry' || Boolean(row.itemType?.secondary.includes('log_entry'));
-    const showTypeSummary = !isDrawerMode && !isProgressFlow && !isInlineMobileMode;
+    const showTypeSummary = !isDrawerMode && !isProgressFlow && !isInlineMode;
     const showOccurrenceFields = !isDrawerMode || isProgressFlow || Boolean(row.calendarKey);
     const showRoutineRepeatSettings = !isDrawerMode;
     const logDraft = getMyFlowLogDraft(row);
@@ -6572,10 +6573,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const primaryLink = links[0];
     const advancedLinks = primaryLink ? links.slice(1) : links;
     const hasAdvancedMeta = Boolean(attachmentLabel || advancedLinks.length > 0);
-    const shouldCollapsePortableExport = isInlineMobileMode;
+    const shouldCollapseReadSummary = isInlineMode;
+    const shouldCollapsePortableExport = isInlineMode;
     const portableExportKey = getMyFlowRowInstanceKey(row);
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
-    const useReadonlyTitleHeader = isDrawerMode || (isInlineMobileMode && !isDetailEditing);
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
     const portableExportInput: MyFlowPortableStepExportInput = {
       flowTitle: getMyFlowPortableExportFlowTitle(row.flow),
@@ -6608,7 +6609,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const itemDateOverrideLabel = getSourceBackedFlowMapDateAnchorCopy().itemOverrideLabel;
     const itemEditButtonLabel = canEditDate ? '제목·날짜·메모 수정' : '제목·메모 수정';
     const itemEditButtonAriaLabel = `${editorDraft.title} ${itemEditButtonLabel}`;
-    const itemEditCancelAriaLabel = `${editorDraft.title} ${itemEditButtonLabel} 취소`;
+    const itemEditCancelAriaLabel = `${editorDraft.title} 수정 취소`;
     const showTimeLocationFields = !isProgressFlow || Boolean(row.calendarKey);
     const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
     const scheduleSummaryRows = [
@@ -6785,6 +6786,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <section
         data-testid="my-flow-item-detail"
         data-item-type={row.itemType?.primary ?? 'check_task'}
+        data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
+        data-default-primary-action-count={isDetailEditing ? undefined : '2'}
         className={
           mode === 'inline'
             ? 'mt-2 rounded-lg border border-blue-100 bg-blue-50 p-3'
@@ -6795,22 +6798,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       >
         <div className={isInlineMobileMode ? 'grid gap-3' : 'flex flex-wrap items-start justify-between gap-3'}>
           <div className={isInlineMobileMode ? 'min-w-0' : 'min-w-0 flex-1'}>
-            {useReadonlyTitleHeader || !isDetailEditing ? (
-              <div>
-                {isInlineMobileMode && hasDetailChecklistItems ? null : (
-                  <p className="text-xs font-semibold text-blue-700">{isInlineMobileMode ? inlineDetailHeaderLabel : '확인할 항목'}</p>
-                )}
-                {isInlineMobileMode ? (
-                  <>
-                    {hasDetailChecklistItems ? (
-                      <p className="mt-1 text-xs font-semibold text-slate-600">필요한 항목만 체크하고 완료로 표시하세요.</p>
-                    ) : null}
-                  </>
-                ) : (
-                  <h3 className={`mt-1 font-semibold text-slate-950 ${isInlineMobileMode ? 'text-base leading-6' : 'text-lg leading-6'}`}>{editorDraft.title}</h3>
-                )}
-              </div>
-            ) : (
+            {isDetailEditing ? (
               <label className="block text-xs font-semibold text-slate-600">
                 제목
                 <input
@@ -6820,13 +6808,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   onChange={(event) => updateMyFlowEditingDraft(row, { title: event.target.value })}
                 />
               </label>
-            )}
-            <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-600">
-              {row.date ? <span>{formatMyFlowDisplayDate(row.date)}</span> : null}
-              {!isRoutineRow && timing ? <span data-testid="my-flow-detail-timing-chip" aria-label={getMyFlowTimingChipLabel(timing)} title={getMyFlowTimingChipLabel(timing)} className="rounded bg-white px-1.5 py-0.5 text-[10px] text-slate-600">{formatMyFlowTimingChip(timing)}</span> : null}
-              {visibleDetailSection ? <span data-testid="my-flow-detail-section-label">{visibleDetailSection}</span> : null}
-              {showDetailFlowChip ? <span data-testid="my-flow-detail-flow-chip" className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{detailFlowChipLabel}</span> : null}
-            </p>
+            ) : isInlineMobileMode ? (
+              <div>
+                {hasDetailChecklistItems ? (
+                  <p className="text-xs font-semibold text-slate-600">필요한 항목만 체크하고 완료로 표시하세요.</p>
+                ) : (
+                  <p className="text-xs font-semibold text-blue-700">{inlineDetailHeaderLabel}</p>
+                )}
+              </div>
+            ) : !isInlineMode ? (
+              <div>
+                <p className="text-xs font-semibold text-blue-700">확인할 항목</p>
+                <h3 className="mt-1 text-lg font-semibold leading-6 text-slate-950">{editorDraft.title}</h3>
+              </div>
+            ) : null}
+            {!isInlineMode ? (
+              <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-600">
+                {row.date ? <span>{formatMyFlowDisplayDate(row.date)}</span> : null}
+                {!isRoutineRow && timing ? <span data-testid="my-flow-detail-timing-chip" aria-label={getMyFlowTimingChipLabel(timing)} title={getMyFlowTimingChipLabel(timing)} className="rounded bg-white px-1.5 py-0.5 text-[10px] text-slate-600">{formatMyFlowTimingChip(timing)}</span> : null}
+                {visibleDetailSection ? <span data-testid="my-flow-detail-section-label">{visibleDetailSection}</span> : null}
+                {showDetailFlowChip ? <span data-testid="my-flow-detail-flow-chip" className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{detailFlowChipLabel}</span> : null}
+              </p>
+            ) : null}
             {primaryLink && !shouldCollapsePortableExport ? (
               <a
                 data-testid="my-flow-detail-source-link"
@@ -6840,57 +6843,47 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
           <div data-testid="my-flow-routine-action-group" className={`flex flex-wrap gap-2 ${isInlineMobileMode ? 'justify-start' : 'shrink-0 justify-end'}`}>
-            {isRoutineRow ? (
+            {isRoutineRow && !isDetailEditing ? (
               <span data-testid="my-flow-routine-progress-pill" className="inline-flex min-h-8 items-center rounded-md bg-emerald-50 px-2 text-xs font-black text-emerald-700">
                 {routineProgressLabel}
               </span>
             ) : null}
-            {renderTaskCompletionCheckbox({
+            {!isDetailEditing ? renderTaskCompletionCheckbox({
               title: editorDraft.title,
               checked,
               routine: isRoutineRow,
               detail: true,
               onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
-            })}
-            {!isDrawerMode && !isInlineMobileMode ? (
+            }) : null}
+            {!isDrawerMode && isDetailEditing ? (
               <button
-                className={`rounded-md px-3 py-2 text-xs font-semibold ${
-                  isFlowTabInlineMobileMode
-                    ? isDetailEditing
-                      ? 'bg-white text-slate-700 ring-1 ring-slate-200'
-                      : 'text-blue-700 hover:bg-white'
-                    : isDetailEditing
-                      ? 'border border-slate-200 bg-white text-slate-700'
-                      : 'border border-blue-100 bg-white text-blue-700 hover:border-blue-300'
-                }`}
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                 type="button"
                 data-testid="my-flow-detail-edit-toggle"
                 data-my-flow-item-edit-entry="true"
-                aria-pressed={isDetailEditing}
-                aria-label={isDetailEditing ? itemEditCancelAriaLabel : itemEditButtonAriaLabel}
+                aria-pressed="true"
+                aria-label={itemEditCancelAriaLabel}
                 onClick={() => {
-                  if (isDetailEditing) {
-                    cancelMyFlowEditingDraft(row);
-                    setMyFlowEditingDetailKey('');
-                    return;
-                  }
-                  setMyFlowEditingDetailKey(portableExportKey);
+                  cancelMyFlowEditingDraft(row);
+                  setMyFlowEditingDetailKey('');
                 }}
               >
-                {isDetailEditing ? '수정 취소' : itemEditButtonLabel}
+                수정 취소
               </button>
             ) : null}
-            <button
-              className={`rounded-md px-3 py-2 text-xs font-semibold ${
-                isFlowTabInlineMobileMode
-                  ? 'text-slate-600 hover:bg-white'
-                  : 'border border-slate-200 bg-white text-slate-700'
-              }`}
-              type="button"
-              onClick={closeMyFlowRowDetail}
-            >
-              닫기
-            </button>
+            {!isDetailEditing ? (
+              <button
+                className={`rounded-md px-3 py-2 text-xs font-semibold ${
+                  isFlowTabInlineMobileMode
+                    ? 'text-slate-600 hover:bg-white'
+                    : 'border border-slate-200 bg-white text-slate-700'
+                }`}
+                type="button"
+                onClick={closeMyFlowRowDetail}
+              >
+                닫기
+              </button>
+            ) : null}
           </div>
         </div>
         {canUndoRoutineCompletion ? (
@@ -6910,37 +6903,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </button>
           </div>
         ) : null}
-        {isInlineMobileMode && inlineActionHint ? (
+        {isInlineMobileMode && inlineActionHint && !isDetailEditing ? (
           <section data-testid="my-flow-inline-action-hint" className="mt-3 rounded-md bg-white px-3 py-3">
             <p className="text-xs font-semibold text-slate-500">바로 할 일</p>
             <p className="mt-1 text-sm font-semibold leading-6 text-slate-800">{inlineActionHint}</p>
           </section>
-        ) : null}
-        {hasEditorChanges ? (
-          <div className="mt-3 flex flex-col gap-2 rounded-md border border-blue-100 bg-white px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs font-semibold text-slate-600">{isDrawerMode ? '메모 변경은 저장해야 반영됩니다.' : '저장 전까지 캘린더와 목록에는 반영되지 않습니다.'}</p>
-            <div className="flex gap-2">
-              <button
-                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-                type="button"
-                data-testid="my-flow-detail-cancel-changes"
-                onClick={() => cancelMyFlowEditingDraft(row)}
-              >
-                변경 취소
-              </button>
-              <button
-                className="rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white"
-                type="button"
-                data-testid="my-flow-detail-save-changes"
-                onClick={() => {
-                  saveMyFlowEditingDraft(row);
-                  setMyFlowEditingDetailKey('');
-                }}
-              >
-                변경 저장
-              </button>
-            </div>
-          </div>
         ) : null}
         {typeSummary && showTypeSummary ? (
           <section
@@ -6962,7 +6929,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {typeSummary.text ? <p className="mt-2 leading-5 text-slate-600">{typeSummary.text}</p> : null}
           </section>
         ) : null}
-        {detailChecklistItems.length > 0 ? (
+        {!isDetailEditing && detailChecklistItems.length > 0 ? (
           <section data-testid="my-flow-item-checklist" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-semibold text-slate-600">{detailChecklistLabel}</p>
@@ -6988,8 +6955,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </div>
           </section>
         ) : null}
-        {!showEditableDetailFields && (scheduleSummaryRows.length > 0 || editorDraft.memo.trim()) ? (
-          isInlineMobileMode ? (
+        {!showEditableDetailFields && (isInlineMode || scheduleSummaryRows.length > 0 || editorDraft.memo.trim()) ? (
+          shouldCollapseReadSummary ? (
             <details data-testid="my-flow-detail-read-summary" className="mt-3 rounded-md bg-white px-3 py-3">
               <summary className="cursor-pointer text-xs font-semibold text-slate-700">메모·일정</summary>
               <div className="mt-3 grid gap-2">
@@ -7129,8 +7096,34 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {isMemoExpanded ? '메모 작게 보기' : '메모 크게 보기'}
           </button>
         ) : null}
+        {isDetailEditing || (isDrawerMode && hasEditorChanges) ? (
+          <div data-testid="my-flow-detail-edit-actions" className="mt-3 flex flex-col gap-2 rounded-md border border-blue-100 bg-white px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-semibold text-slate-600">
+              {hasEditorChanges
+                ? isDrawerMode
+                  ? '메모 변경은 저장해야 반영됩니다.'
+                  : '저장하면 캘린더와 목록에도 함께 반영됩니다.'
+                : '제목·날짜·메모를 바꾼 뒤 저장하세요.'}
+            </p>
+            <div className="flex gap-2">
+              <button
+                className={`rounded-md px-3 py-2 text-xs font-semibold ${hasEditorChanges ? 'bg-blue-700 text-white' : 'cursor-not-allowed bg-slate-100 text-slate-400'}`}
+                type="button"
+                disabled={!hasEditorChanges}
+                data-testid="my-flow-detail-save-changes"
+                onClick={() => {
+                  if (!hasEditorChanges) return;
+                  saveMyFlowEditingDraft(row);
+                  setMyFlowEditingDetailKey('');
+                }}
+              >
+                변경 저장
+              </button>
+            </div>
+          </div>
+        ) : null}
         {shouldCollapsePortableExport ? (
-          <details data-testid="my-flow-detail-portable-export" className="mt-3 rounded-md bg-white px-3 py-3">
+          <details data-testid="my-flow-detail-portable-export" className={isDetailEditing ? 'hidden' : 'mt-3 rounded-md bg-white px-3 py-3'}>
             <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·내 도구</summary>
             {primaryLink ? (
               <a
