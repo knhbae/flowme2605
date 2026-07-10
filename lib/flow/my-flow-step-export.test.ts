@@ -58,7 +58,7 @@ test('tool handoff exports create checklist text and one spreadsheet row', () =>
   assert.doesNotMatch(checklist, /완료 기준:/);
 
   const [header, row] = sheetRow.trimEnd().split('\n');
-  assert.equal(header, 'Flow\tStep\t구간\t날짜\t시간\t반복\t장소\t체크리스트\t메모\t완료 기준\t주의\t원문');
+  assert.equal(header, 'Flow\t할 일\t구간\t날짜\t시간\t반복\t장소\t체크리스트\t메모\t완료 기준\t주의\t원문');
   assert.match(row, /^원룸 이사 D-30 준비\t이사 방식과 견적 후보 정하기\tD-30 범위 쪼개기\t2026-06-24\t09:30\t매주\t집\t/);
   assert.match(row, /\[x\] 포장\/반포장\/용달 중 하나 정하기 \| \[ \] 견적 후보 2~3곳 열기/);
   assert.match(row, /첫 줄 \/ 둘째 줄/);
@@ -91,4 +91,22 @@ test('Step ICS creates all-day event when time is empty', () => {
   assert.match(ics, /DTSTART;VALUE=DATE:20260624/);
   assert.match(ics, /DTEND;VALUE=DATE:20260625/);
   assert.doesNotMatch(ics, /DTSTART:20260624T/);
+});
+
+test('portable Step outputs keep structural words out of user-facing fallbacks', () => {
+  const input = { ...baseInput, stepTitle: '' };
+  const visibleIcs = buildMyFlowStepIcs(input)
+    .replaceAll('\r\n ', '')
+    .split(/\r?\n/u)
+    .filter((line) => !line.startsWith('PRODID:') && !line.startsWith('UID:'))
+    .join('\n');
+  const output = [
+    buildMyFlowStepChecklistText(input),
+    buildMyFlowStepPortableText(input),
+    buildMyFlowStepSheetTsv(input),
+    visibleIcs,
+  ].join('\n');
+
+  assert.match(output, /할 일/);
+  assert.doesNotMatch(output, /\bStep\b|\bItem\b|Markdown|sourceTrace|source-backed/iu);
 });

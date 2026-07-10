@@ -84,7 +84,7 @@ function formatSchedule(date?: string, time?: string): string {
 
 function formatChecklistItems(input: MyFlowPortableStepExportInput): string[] {
   const items = (input.items ?? []).map(clean).filter(Boolean);
-  if (items.length === 0) return [`- [ ] ${clean(input.stepTitle) || 'Flow Step'}`];
+  if (items.length === 0) return [`- [ ] ${clean(input.stepTitle) || '할 일'}`];
   return items.map((item, index) => `- [${input.checkedItems?.[String(index)] ? 'x' : ' '}] ${item}`);
 }
 
@@ -97,7 +97,7 @@ export function canBuildMyFlowStepIcs(input: MyFlowPortableStepExportInput): boo
 }
 
 export function buildMyFlowStepChecklistText(input: MyFlowPortableStepExportInput): string {
-  const title = clean(input.stepTitle) || 'Flow Step';
+  const title = clean(input.stepTitle) || '할 일';
   const flowTitle = clean(input.flowTitle);
   const schedule = formatSchedule(input.date, input.time);
   const location = clean(input.location);
@@ -117,7 +117,7 @@ export function buildMyFlowStepChecklistText(input: MyFlowPortableStepExportInpu
 export function buildMyFlowStepSheetTsv(input: MyFlowPortableStepExportInput): string {
   const checklist = formatChecklistItems(input).map((line) => line.replace(/^- /, '')).join(' | ');
   const source = [clean(input.sourceLabel), clean(input.sourceUrl)].filter(Boolean).join(' ');
-  const header = ['Flow', 'Step', '구간', '날짜', '시간', '반복', '장소', '체크리스트', '메모', '완료 기준', '주의', '원문'];
+  const header = ['Flow', '할 일', '구간', '날짜', '시간', '반복', '장소', '체크리스트', '메모', '완료 기준', '주의', '원문'];
   const row = [
     input.flowTitle,
     input.stepTitle,
@@ -137,7 +137,7 @@ export function buildMyFlowStepSheetTsv(input: MyFlowPortableStepExportInput): s
 }
 
 export function buildMyFlowStepPortableText(input: MyFlowPortableStepExportInput): string {
-  const title = clean(input.stepTitle) || 'Flow Step';
+  const title = clean(input.stepTitle) || '할 일';
   const flowTitle = clean(input.flowTitle);
   const sectionTitle = clean(input.sectionTitle);
   const date = clean(input.date);
@@ -198,7 +198,7 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
   }
 
   lines.push(
-    `SUMMARY:${escapeIcsText(clean(input.stepTitle) || 'Flow Step')}`,
+    `SUMMARY:${escapeIcsText(clean(input.stepTitle) || '할 일')}`,
     `DESCRIPTION:${escapeIcsText(buildMyFlowStepPortableText(input))}`,
   );
 
