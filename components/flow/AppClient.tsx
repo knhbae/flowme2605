@@ -1130,6 +1130,124 @@ function useBundles() {
   return { bundles, persist };
 }
 
+type UrlFirstDraftFlowInput = {
+  flowTitle: string;
+  anchorDate: string;
+  itemEnabled: boolean;
+  itemTitle: string;
+  itemMemo: string;
+};
+
+type UrlFirstDraftFlowSaveResult = {
+  saved: boolean;
+  slug?: string;
+  targetHref?: string;
+  error?: string;
+};
+
+type UrlFirstDraftFlowPackage = {
+  bundle: FlowBundle;
+  anchor?: string;
+  itemStates: Record<string, FlowItemState>;
+};
+
+function normalizeDraftText(value: string, fallback: string): string {
+  const text = value.replace(/\s+/g, ' ').trim();
+  return text || fallback;
+}
+
+function isIsoDateString(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function createDraftFlowId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return `flow-${crypto.randomUUID()}`;
+  return `flow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowPackage {
+  const now = new Date().toISOString();
+  const id = createDraftFlowId();
+  const slug = `url-draft-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const sectionId = `${id}-draft-section`;
+  const itemId = `${id}-draft-item`;
+  const title = normalizeDraftText(input.flowTitle, `${getUrlSupplyCandidateDisplayTitle(candidate)} 초안`);
+  const itemTitle = normalizeDraftText(input.itemTitle, title);
+  const itemMemo = input.itemMemo.trim();
+  const anchor = isIsoDateString(input.anchorDate) ? input.anchorDate : undefined;
+
+  const item: FlowItem = {
+    id: itemId,
+    flow_id: id,
+    section_id: sectionId,
+    title: itemTitle,
+    ...(itemMemo ? { description: itemMemo } : {}),
+    type: anchor ? 'calendar' : 'todo',
+    ...(anchor ? { day_offset: 0, duration_days: 1 } : {}),
+    source_type: 'reference',
+    risk_level: 'low',
+    order: 0,
+  };
+
+  return {
+    bundle: {
+      flow: {
+        id,
+        slug,
+        title,
+        description: '사용자가 넣은 링크와 메모로 직접 손볼 첫 초안입니다.',
+        category: '내 초안',
+        structure_type: 'checklist',
+        content_type: 'default',
+        anchor_type: anchor ? 'start_date' : 'none',
+        status: 'draft',
+        source_title: '사용자가 넣은 링크',
+        source_url: candidate.originalUrl,
+        source_status: 'preview',
+        source_precision: 'broad',
+        primary_destination: anchor ? 'calendar' : 'hybrid',
+        owner_user_id: getCurrentUser().id,
+        creator_name: getCurrentUser().name,
+        creator_role: getCurrentUser().role,
+        creator_note: getCurrentUser().bio,
+        usage_count: 0,
+        copy_count: 0,
+        tags: ['내 초안'],
+        raw_text: `# ${title}\n\n## 직접 손볼 첫 할 일\n- ${itemTitle}${itemMemo ? `\n\n메모: ${itemMemo}` : ''}`,
+        created_at: now,
+        updated_at: now,
+      },
+      sections: [
+        {
+          id: sectionId,
+          flow_id: id,
+          title: '직접 손볼 첫 할 일',
+          order: 0,
+        },
+      ],
+      items: [item],
+      itemDetails: [
+        {
+          item_id: itemId,
+          why: '준비된 Flow가 없을 때 앱 안에서 바로 손볼 수 있게 만든 초안입니다.',
+          how: itemMemo || 'My Flow에서 제목, 날짜, 메모를 다시 바꿀 수 있습니다.',
+          completion_criteria: '필요한 내용을 확인하고 다음 행동을 정리하면 완료합니다.',
+          links: [
+            {
+              label: '원문 링크',
+              url: candidate.originalUrl,
+              type: 'reference',
+            },
+          ],
+        },
+      ],
+      warnings: [],
+    },
+    ...(anchor ? { anchor } : {}),
+    itemStates: input.itemEnabled ? {} : { [itemId]: { skipped: true } },
+  };
+}
+
 const urlFirstExportModeLabels: Record<UrlFirstExportMode, string> = {
   calendar: '캘린더',
   markdown: '메모 문서',
@@ -1603,11 +1721,13 @@ function FlowUrlSupplyCandidateCard({
   onRequeryCandidate,
   onUpdateCandidate,
   onRemoveCandidate,
+  onSaveDraftFlow,
 }: {
   candidate: UrlFirstSupplyCandidate;
   onRequeryCandidate: (candidate: UrlFirstSupplyCandidate) => void;
   onUpdateCandidate: (canonicalUrl: string, input: UrlFirstSupplyCandidateUpdateInput) => UrlFirstSupplyCandidateUpdateResult;
   onRemoveCandidate: (canonicalUrl: string) => UrlFirstSupplyCandidateRemoveResult;
+  onSaveDraftFlow: (candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
 }) {
   const availability = getUrlFirstSupplyCandidateAvailability(candidate);
   const [isEditing, setIsEditing] = useState(false);
@@ -1618,6 +1738,12 @@ function FlowUrlSupplyCandidateCard({
   const executable = availability.state === 'executable';
   const displayTitle = getUrlSupplyCandidateDisplayTitle(candidate);
   const displayMemo = getUrlSupplyCandidateDisplayMemo(candidate);
+  const [showDraftEditor, setShowDraftEditor] = useState(false);
+  const [draftTitle, setDraftTitle] = useState(displayTitle);
+  const [draftAnchorDate, setDraftAnchorDate] = useState('');
+  const [draftItemEnabled, setDraftItemEnabled] = useState(true);
+  const [draftItemTitle, setDraftItemTitle] = useState(displayTitle);
+  const [draftItemMemo, setDraftItemMemo] = useState(displayMemo);
   const userSummaryMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
   const productionStatusNote = executable
     ? '이미 Flow로 준비됐어요. Flow 결과로 이동해 바로 시작할 수 있어요.'
@@ -1626,8 +1752,14 @@ function FlowUrlSupplyCandidateCard({
   useEffect(() => {
     setEditTitle(candidate.title);
     setEditMemo(candidate.memo);
+    setDraftTitle(getUrlSupplyCandidateDisplayTitle(candidate));
+    setDraftAnchorDate('');
+    setDraftItemEnabled(true);
+    setDraftItemTitle(getUrlSupplyCandidateDisplayTitle(candidate));
+    setDraftItemMemo(getUrlSupplyCandidateDisplayMemo(candidate));
     setFeedback('');
     setIsEditing(false);
+    setShowDraftEditor(false);
   }, [candidate.canonicalUrl, candidate.title, candidate.memo]);
 
   const copyUserSummaryMarkdown = async () => {
@@ -1668,6 +1800,22 @@ function FlowUrlSupplyCandidateCard({
     if (!removed.removed) setFeedback('삭제할 후보를 찾지 못했습니다.');
   };
 
+  const saveDraftFlow = () => {
+    const saved = onSaveDraftFlow(candidate, {
+      flowTitle: draftTitle,
+      anchorDate: draftAnchorDate,
+      itemEnabled: draftItemEnabled,
+      itemTitle: draftItemTitle,
+      itemMemo: draftItemMemo,
+    });
+    if (!saved.saved) {
+      setFeedback(saved.error ?? '초안을 저장하지 못했습니다.');
+      return;
+    }
+    setFeedback('내 Flow에 초안 저장됨');
+    if (typeof window !== 'undefined') window.location.href = saved.targetHref ?? '/my';
+  };
+
   return (
     <article className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2">
       <div className="flex flex-wrap items-center gap-1.5">
@@ -1683,6 +1831,111 @@ function FlowUrlSupplyCandidateCard({
       <p className="mt-1 text-[11px] font-semibold text-[#8A6B18]">
         {executable ? '이미 Flow로 준비됨 · Flow 결과로 이동해 바로 시작할 수 있어요.' : `아직 실행 가능한 Flow 아님 · ${getUrlSupplyCandidateQueueLabel(candidate)}`}
       </p>
+
+      {!executable ? (
+        <section data-testid="flow-url-miss-draft-entry" className="mt-3 rounded-lg border border-[#DDE6D8] bg-white p-3">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-[#176D5D]">앱 안에서 이어가기</p>
+              <h3 className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">직접 손볼 초안으로 시작</h3>
+              <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
+                지금은 내가 쓴 제목과 메모로 첫 할 일을 만들고, 저장 후 My Flow에서 날짜와 메모를 다시 고칩니다.
+              </p>
+            </div>
+            <button
+              type="button"
+              data-testid="flow-url-miss-draft-open"
+              className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
+              onClick={() => {
+                setShowDraftEditor((current) => !current);
+                setFeedback('');
+              }}
+            >
+              초안 편집 시작
+            </button>
+          </div>
+          {showDraftEditor ? (
+            <form
+              data-testid="flow-url-miss-draft-editor"
+              className="mt-3 grid gap-2 rounded-lg border border-[#E7E4DD] bg-[#FAFAF8] p-3"
+              onSubmit={(event) => {
+                event.preventDefault();
+                saveDraftFlow();
+              }}
+            >
+              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+                초안 제목
+                <input
+                  data-testid="flow-url-miss-draft-flow-title"
+                  aria-label="초안 제목"
+                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  value={draftTitle}
+                  maxLength={80}
+                  onChange={(event) => setDraftTitle(event.target.value)}
+                />
+              </label>
+              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+                기준일
+                <input
+                  data-testid="flow-url-miss-draft-anchor-date"
+                  aria-label="초안 기준일"
+                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  type="date"
+                  value={draftAnchorDate}
+                  onChange={(event) => setDraftAnchorDate(event.target.value)}
+                />
+                <span className="break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+                  날짜를 넣으면 캘린더에 첫 할 일이 표시됩니다. 저장 후 My Flow에서 다시 바꿀 수 있습니다.
+                </span>
+              </label>
+              <div data-testid="flow-url-miss-draft-item" className="grid gap-2 rounded-lg bg-white p-2">
+                <label className="flex items-start gap-2 text-xs font-semibold leading-5 text-[#1B1A17]">
+                  <input
+                    data-testid="flow-url-miss-draft-item-enabled"
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    type="checkbox"
+                    checked={draftItemEnabled}
+                    onChange={(event) => setDraftItemEnabled(event.target.checked)}
+                  />
+                  <span>첫 할 일을 My Flow에 포함</span>
+                </label>
+                <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+                  첫 할 일 제목
+                  <input
+                    data-testid="flow-url-miss-draft-item-title"
+                    aria-label="첫 할 일 제목"
+                    className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                    value={draftItemTitle}
+                    maxLength={100}
+                    onChange={(event) => setDraftItemTitle(event.target.value)}
+                  />
+                </label>
+                <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+                  첫 할 일 메모
+                  <textarea
+                    data-testid="flow-url-miss-draft-item-memo"
+                    aria-label="첫 할 일 메모"
+                    className="min-h-20 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                    value={draftItemMemo}
+                    maxLength={240}
+                    onChange={(event) => setDraftItemMemo(event.target.value)}
+                  />
+                </label>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="submit"
+                  data-testid="flow-url-miss-draft-save"
+                  className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+                >
+                  내 Flow에 초안 저장
+                </button>
+                <span className="text-xs font-semibold text-[#6E6B64]">직접 입력한 초안으로 저장</span>
+              </div>
+            </form>
+          ) : null}
+        </section>
+      ) : null}
 
       {isEditing ? (
         <form
@@ -1819,11 +2072,13 @@ function FlowUrlSupplyCandidateList({
   onRequeryCandidate,
   onUpdateCandidate,
   onRemoveCandidate,
+  onSaveDraftFlow,
 }: {
   candidates: UrlFirstSupplyCandidate[];
   onRequeryCandidate: (candidate: UrlFirstSupplyCandidate) => void;
   onUpdateCandidate: (canonicalUrl: string, input: UrlFirstSupplyCandidateUpdateInput) => UrlFirstSupplyCandidateUpdateResult;
   onRemoveCandidate: (canonicalUrl: string) => UrlFirstSupplyCandidateRemoveResult;
+  onSaveDraftFlow: (candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
 }) {
   if (candidates.length === 0) return null;
 
@@ -1841,6 +2096,7 @@ function FlowUrlSupplyCandidateList({
             onRequeryCandidate={onRequeryCandidate}
             onUpdateCandidate={onUpdateCandidate}
             onRemoveCandidate={onRemoveCandidate}
+            onSaveDraftFlow={onSaveDraftFlow}
           />
         ))}
       </div>
@@ -1849,7 +2105,7 @@ function FlowUrlSupplyCandidateList({
 }
 
 export function FlowList() {
-  const { bundles } = useBundles();
+  const { bundles, persist } = useBundles();
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') ?? '전체';
   const initialTag = searchParams.get('tag') ?? '전체';
@@ -1946,6 +2202,26 @@ export function FlowList() {
     return removed;
   }
 
+  function handleSaveDraftFlowFromCandidate(candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowSaveResult {
+    const draftPackage = createUrlFirstDraftFlowPackage(candidate, input);
+    const nextBundles = [
+      ...bundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
+      draftPackage.bundle,
+    ];
+    persist(nextBundles);
+    saveFlowRecord(draftPackage.bundle.flow.slug, {
+      selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
+      ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
+    });
+    if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
+    if (Object.keys(draftPackage.itemStates).length > 0) saveItemStates(draftPackage.bundle.flow.slug, draftPackage.itemStates);
+    return {
+      saved: true,
+      slug: draftPackage.bundle.flow.slug,
+      targetHref: '/my',
+    };
+  }
+
   return (
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-8">
       <div className="mx-auto max-w-6xl">
@@ -1974,6 +2250,7 @@ export function FlowList() {
           onRequeryCandidate={handleRequerySupplyCandidate}
           onUpdateCandidate={handleUpdateSupplyCandidate}
           onRemoveCandidate={handleRemoveSupplyCandidate}
+          onSaveDraftFlow={handleSaveDraftFlowFromCandidate}
         />
         <div className="mb-3 grid gap-2">
           <label>

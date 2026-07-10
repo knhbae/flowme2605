@@ -839,6 +839,11 @@ async function captureUrlFirstCandidateDetail(page, captureOptions = {}) {
   await pendingCandidateCard.getByRole('button', { name: '요청 내용 보기' }).click();
   await settle(page);
   const urlFirstCandidateUserCopyEvidence = await collectUrlFirstCandidateUserCopyEvidence(page, pendingCandidateCard, pendingCandidateFixture);
+  const draftOpen = pendingCandidateCard.getByTestId('flow-url-miss-draft-open');
+  if (await draftOpen.count()) {
+    await draftOpen.click();
+    await settle(page);
+  }
   const resolvedCandidateAvailability = getUrlFirstSupplyCandidateAvailability(resolvedCandidateFixture);
   const urlFirstCandidateResolvedHitScenario = {
     captured: true,
@@ -1664,6 +1669,11 @@ async function scanPage(page, options = {}) {
       const supplyForm = document.querySelector('[data-testid="flow-url-supply-candidate-form"]');
       const supplyRequest = document.querySelector('[data-testid="flow-url-supply-request"]');
       const missDraftGate = document.querySelector('[data-testid="flow-url-miss-draft-gate"]');
+      const missDraftEntry = document.querySelector('[data-testid="flow-url-miss-draft-entry"]');
+      const missDraftOpen = document.querySelector('[data-testid="flow-url-miss-draft-open"]');
+      const missDraftEditor = document.querySelector('[data-testid="flow-url-miss-draft-editor"]');
+      const missDraftSave = document.querySelector('[data-testid="flow-url-miss-draft-save"]');
+      const missDraftEditableItems = Array.from(document.querySelectorAll('[data-testid="flow-url-miss-draft-item"]')).filter((element) => isVisible(element));
       const candidateList = document.querySelector('[data-testid="flow-url-supply-candidate-list"]');
       const requestDetail = document.querySelector('[data-testid="flow-url-supply-production-handoff"]');
       const resultText = normalizeLine(lookupResult?.textContent ?? '');
@@ -1698,6 +1708,10 @@ async function scanPage(page, options = {}) {
         /AI가|AI로|자동\s*생성|바로\s*생성|생성\s*중|실시간\s*생성|지금\s*만들어/u.test(line),
       );
       const missDraftCta = supplyForm?.querySelector('button[type="submit"]') ?? null;
+      const missDraftFlowLines = uniqueLines([missDraftEntry, missDraftEditor].filter(Boolean).flatMap((root) => collectElementLines(root)));
+      const missDraftFlowLiveAiLines = missDraftFlowLines.filter((line) =>
+        /AI가|AI로\s*자동\s*생성|바로\s*생성|생성\s*중|실시간\s*생성|지금\s*만들/u.test(line),
+      );
       const startDateInput = lookupResult?.querySelector('[data-testid="url-first-start-date-input"]')
         ?? document.querySelector('[data-testid="url-first-start-date-input"]');
       const startDateInputValue = startDateInput && 'value' in startDateInput ? startDateInput.value : '';
@@ -1718,6 +1732,17 @@ async function scanPage(page, options = {}) {
           copyLines: missDraftGateLines.slice(0, 12),
           impliesLiveAi: missDraftLiveAiLines.length > 0,
           liveAiLines: missDraftLiveAiLines,
+        },
+        missDraftFlow: {
+          entryVisible: Boolean(missDraftEntry && isVisible(missDraftEntry)),
+          editorVisible: Boolean(missDraftEditor && isVisible(missDraftEditor)),
+          ctaLabel: normalizeLine(missDraftOpen?.textContent ?? ''),
+          editableItemCount: missDraftEditableItems.length,
+          savePathVisible: Boolean(missDraftSave && isVisible(missDraftSave)),
+          savePathLabel: normalizeLine(missDraftSave?.textContent ?? ''),
+          copyLines: missDraftFlowLines.slice(0, 24),
+          impliesLiveAi: missDraftFlowLiveAiLines.length > 0,
+          liveAiLines: missDraftFlowLiveAiLines,
         },
         visibleMarkdownHitCount: visibleMarkdownLines.length,
         visibleMarkdownLines,
@@ -2044,6 +2069,7 @@ async function scanPage(page, options = {}) {
     destinationTier: getStudioNavDestinationTier(destination),
   }));
   const candidateCardLines = record.markers?.urlFirst?.candidateCardTextLines ?? [];
+  const missDraftFlowLines = record.markers?.urlFirst?.missDraftFlow?.copyLines ?? [];
   const candidateCardLegacyPatternLabels = new Set([
     '기존 콘텐츠로 닫힌 상태',
     '실행 가능한 후보 상태문',
@@ -2053,6 +2079,17 @@ async function scanPage(page, options = {}) {
     primaryLines: candidateCardLines,
     sourceSlugSignals,
   });
+  const missDraftFlowGuardrails = scanUserSurfaceGuardrails({
+    primaryLines: missDraftFlowLines,
+    sourceSlugSignals,
+  });
+  const missDraftFlowInternalHits = [
+    ...missDraftFlowGuardrails.internalCopyHits.map((hit) => ({ type: 'internalCopy', ...hit })),
+    ...missDraftFlowGuardrails.sourceSlugHits.map((hit) => ({ type: 'sourceSlug', ...hit })),
+    ...missDraftFlowGuardrails.structuralDisplayHits.map((line) => ({ type: 'structuralDisplay', line })),
+    ...missDraftFlowGuardrails.trailingFlowSuffixHits.map((line) => ({ type: 'trailingFlowSuffix', line })),
+    ...missDraftFlowGuardrails.rawIsoDateHits.map((line) => ({ type: 'rawIsoDate', line })),
+  ];
   const candidateCardLegacyStatusHits = candidateCardGuardrails.internalCopyHits
     .filter((hit) => candidateCardLegacyPatternLabels.has(hit.pattern));
   const firstTaskRepetitionHits = firstTaskTitle
@@ -2069,6 +2106,13 @@ async function scanPage(page, options = {}) {
       urlFirst: record.markers?.urlFirst
         ? {
             ...record.markers.urlFirst,
+            missDraftFlow: record.markers.urlFirst.missDraftFlow
+              ? {
+                  ...record.markers.urlFirst.missDraftFlow,
+                  internalHitCount: missDraftFlowInternalHits.length,
+                  internalHits: missDraftFlowInternalHits,
+                }
+              : record.markers.urlFirst.missDraftFlow,
             candidateCardTextScanned: candidateCardLines.length > 0,
             candidateCardLegacyStatusHitCount: candidateCardLegacyStatusHits.length,
             candidateCardLegacyStatusHits,
@@ -2267,6 +2311,15 @@ function summarizeEvidence(records) {
       ...(record.markers?.urlFirst?.missDraftGate ?? {}),
     }))
     .filter((entry) => entry.visible || entry.ctaLabel);
+  const urlFirstMissDraftFlowEvidence = urlFirst
+    .map((record) => ({
+      recordId: record.id,
+      route: record.route,
+      state: record.urlFirstState,
+      scenarioName: record.urlFirstScenarioName ?? record.markers?.urlFirst?.scenarioName ?? null,
+      ...(record.markers?.urlFirst?.missDraftFlow ?? {}),
+    }))
+    .filter((entry) => entry.entryVisible || entry.ctaLabel || entry.savePathVisible);
   const urlFirstScenarioTriggers = urlFirst
     .map((record) => ({
       recordId: record.id,
@@ -2812,8 +2865,23 @@ function summarizeEvidence(records) {
     urlFirstCandidateResolvedHitScenarios,
     urlFirstMissDraftGateVisible: urlFirstMissDraftGateEvidence.some((entry) => entry.visible),
     urlFirstMissDraftCtaLabel: urlFirstMissDraftGateEvidence.find((entry) => entry.ctaLabel)?.ctaLabel ?? '',
-    urlFirstMissDraftImpliesLiveAi: urlFirstMissDraftGateEvidence.some((entry) => entry.impliesLiveAi),
+    urlFirstMissDraftEntryVisible: urlFirstMissDraftFlowEvidence.some((entry) => entry.entryVisible),
+    urlFirstMissDraftEditableItemCount: urlFirstMissDraftFlowEvidence.reduce(
+      (sum, entry) => sum + (entry.editableItemCount ?? 0),
+      0,
+    ),
+    urlFirstMissDraftSavePathVisible: urlFirstMissDraftFlowEvidence.some((entry) => entry.savePathVisible),
+    urlFirstMissDraftInternalHitCount: urlFirstMissDraftFlowEvidence.reduce(
+      (sum, entry) => sum + (entry.internalHitCount ?? 0),
+      0,
+    ),
+    urlFirstMissDraftFlowEvidence,
+    urlFirstMissDraftImpliesLiveAi: urlFirstMissDraftGateEvidence.some((entry) => entry.impliesLiveAi)
+      || urlFirstMissDraftFlowEvidence.some((entry) => entry.impliesLiveAi),
     urlFirstMissDraftLiveAiHitCount: urlFirstMissDraftGateEvidence.reduce(
+      (sum, entry) => sum + (entry.liveAiLines?.length ?? 0),
+      0,
+    ) + urlFirstMissDraftFlowEvidence.reduce(
       (sum, entry) => sum + (entry.liveAiLines?.length ?? 0),
       0,
     ),
@@ -3196,6 +3264,10 @@ P19-07 keeps the post-save editing model discoverable without moving full editin
 - URL-first candidate resolved-hit scenario status: ${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}
 - URL-first miss draft gate visible: ${evidence.summary.urlFirstMissDraftGateVisible ? 'yes' : 'no'}
 - URL-first miss draft CTA label: ${evidence.summary.urlFirstMissDraftCtaLabel}
+- URL-first miss draft in-app entry visible: ${evidence.summary.urlFirstMissDraftEntryVisible ? 'yes' : 'no'}
+- URL-first miss draft editable item count: ${evidence.summary.urlFirstMissDraftEditableItemCount}
+- URL-first miss draft save path visible: ${evidence.summary.urlFirstMissDraftSavePathVisible ? 'yes' : 'no'}
+- URL-first miss draft internal hits: ${evidence.summary.urlFirstMissDraftInternalHitCount}
 - URL-first miss draft implies live AI: ${evidence.summary.urlFirstMissDraftImpliesLiveAi ? 'yes' : 'no'}
 - URL-first miss draft live-AI copy hits: ${evidence.summary.urlFirstMissDraftLiveAiHitCount}
 - URL-first miss/candidate user-copy internal hits: ${evidence.summary.urlFirstMissCandidateCopyInternalHitCount}
@@ -3590,6 +3662,10 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.urlFirstCandidateResolvedHitScenarioStatus}</b><span>resolved candidate status</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftGateVisible ? 'yes' : 'no'}</b><span>miss draft gate</span></div>
       <div class="stat"><b>${escapeHtml(evidence.summary.urlFirstMissDraftCtaLabel ?? '-')}</b><span>miss draft CTA</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftEntryVisible ? 'yes' : 'no'}</b><span>miss draft entry</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftEditableItemCount}</b><span>miss draft editable items</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftSavePathVisible ? 'yes' : 'no'}</b><span>miss draft save path</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftInternalHitCount}</b><span>miss draft internal hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftLiveAiHitCount}</b><span>miss live-AI copy hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstNormalInputRawIsoExemptCount}</b><span>URL-first input ISO exempt</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstStartDateInputVisibleCount}</b><span>URL-first date inputs</span></div>
