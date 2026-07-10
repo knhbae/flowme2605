@@ -3610,9 +3610,18 @@ type MyFlowRoutineCalendarIcon = {
   color: string;
   iconKind: MyFlowRoutineIconKind;
 };
+type MyFlowScheduleFlowGridGroup = {
+  key: string;
+  title: string;
+  shortTitle: string;
+  color: string;
+  rows: MyFlowCalendarRow[];
+};
 
 const MY_FLOW_ROUTINE_ICON_LIMIT = 2;
 const MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT = 2;
+const MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT = 2;
+const MY_FLOW_CALENDAR_GRID_COMPACT_FLOW_THRESHOLD = 3;
 const MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT = 5;
 type MyFlowRoutineIconKind = 'study' | 'running' | 'workout' | 'meal' | 'maintenance' | 'routine';
 
@@ -4548,6 +4557,30 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     groups.set(row.date, rows);
     return groups;
   }, new Map<string, MyFlowCalendarRow[]>());
+  const myFlowScheduleFlowGroupIndexByDate = calendarScopedScheduleRows.reduce<Map<string, Map<string, MyFlowScheduleFlowGridGroup>>>((dateGroups, row) => {
+    if (!row.date) return dateGroups;
+    const flowMarker = getMyFlowCalendarFlowMarker(row.flow);
+    const flowGroups = dateGroups.get(row.date) ?? new Map<string, MyFlowScheduleFlowGridGroup>();
+    const existing = flowGroups.get(flowMarker.key);
+    if (existing) {
+      existing.rows.push(row);
+    } else {
+      flowGroups.set(flowMarker.key, {
+        key: flowMarker.key,
+        title: flowMarker.title,
+        shortTitle: flowMarker.shortTitle,
+        color: flowMarker.color,
+        rows: [row],
+      });
+    }
+    dateGroups.set(row.date, flowGroups);
+    return dateGroups;
+  }, new Map<string, Map<string, MyFlowScheduleFlowGridGroup>>());
+  const myFlowScheduleFlowGroupsByDate = new Map(
+    Array.from(myFlowScheduleFlowGroupIndexByDate.entries()).map(([date, flowGroups]) => [date, Array.from(flowGroups.values())]),
+  );
+  const isMyFlowCalendarCompactGridDate = (date?: string): boolean =>
+    Boolean(date && (myFlowScheduleFlowGroupsByDate.get(date)?.length ?? 0) >= MY_FLOW_CALENDAR_GRID_COMPACT_FLOW_THRESHOLD);
   const myFlowRoutineRowsByDate = calendarScopedRoutineRows.reduce<Map<string, MyFlowCalendarRow[]>>((groups, row) => {
     if (!row.date) return groups;
     const rows = groups.get(row.date) ?? [];
@@ -4908,6 +4941,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
   const myFlowCalendarScheduleRows = calendarScopedScheduleRows.filter((row) => {
     if (!row.date) return true;
+    if (isMyFlowCalendarCompactGridDate(row.date)) {
+      const visibleFlowGroups = (myFlowScheduleFlowGroupsByDate.get(row.date) ?? []).slice(0, MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT);
+      return visibleFlowGroups.some((group) => group.rows[0] === row);
+    }
     const sameDateRows = myFlowScheduleRowsByDate.get(row.date) ?? [];
     const scheduleLimit = myFlowRoutineRowsByDate.has(row.date)
       ? MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT
@@ -4950,6 +4987,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           : MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT + 2;
         return { date, rows, scheduleLimit };
       })
+      .filter(({ date }) => !isMyFlowCalendarCompactGridDate(date))
       .filter(({ rows, scheduleLimit }) => rows.length > scheduleLimit)
       .map(({ date, rows, scheduleLimit }) => ({
         id: `schedule-overflow-${date}`,
@@ -4963,6 +5001,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         extendedProps: {
           kind: 'scheduleOverflow',
           hiddenCount: rows.length - scheduleLimit,
+        },
+      })),
+    ...Array.from(myFlowScheduleFlowGroupsByDate.entries())
+      .filter(([, groups]) => groups.length >= MY_FLOW_CALENDAR_GRID_COMPACT_FLOW_THRESHOLD)
+      .map(([date, groups]) => ({
+        id: `schedule-flow-overflow-${date}`,
+        title: `외 ${groups.length - MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT}개`,
+        start: date,
+        allDay: true,
+        editable: false,
+        backgroundColor: '#F8FAFC',
+        borderColor: '#E2E8F0',
+        textColor: '#475569',
+        extendedProps: {
+          kind: 'scheduleFlowOverflow',
+          hiddenCount: groups.length - MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT,
+          totalFlowCount: groups.length,
+          visibleFlowCount: MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT,
+          hiddenFlowTitles: groups.slice(MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT).map((group) => group.title),
         },
       })),
     ...Array.from(myFlowRoutineRowsByDate.entries()).map(([date, rows]) => {
@@ -6087,6 +6144,49 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </span>
       );
     }
+    if (kind === 'scheduleFlowOverflow') {
+      const hiddenCount = Number(info.event.extendedProps.hiddenCount ?? 0);
+      const totalFlowCount = Number(info.event.extendedProps.totalFlowCount ?? 0);
+      const hiddenFlowTitles = ((info.event.extendedProps.hiddenFlowTitles ?? []) as string[])
+        .filter(Boolean)
+        .join(', ');
+      const eventDate = info.event.startStr;
+      const selectOverflowDate = () => {
+        if (!eventDate) return;
+        setMyFlowSelectedDate(eventDate);
+        setMyFlowRoutineOverflowDate('');
+        setMyFlowScheduleOverflowDate('');
+        setMyFlowActiveRowKey('');
+        setMyFlowEditingDrafts({});
+        setMyFlowExpandedRoutineKey('');
+        setMyFlowExpandedAdvancedKey('');
+        setMyFlowExpandedMemoKey('');
+        setMyFlowEditingDetailKey('');
+        setMyFlowDetailOpen(false);
+        scrollMyFlowSelectedDayOnMobile();
+      };
+      return (
+        <span
+          data-testid="my-flow-calendar-grid-overflow-summary"
+          role="button"
+          tabIndex={0}
+          aria-label={`${eventDate} Flow ${totalFlowCount}개 중 ${hiddenCount}개 더 보기${hiddenFlowTitles ? `: ${hiddenFlowTitles}` : ''}`}
+          className="block rounded-md bg-slate-100 px-0.5 py-0.5 text-[10px] font-black text-slate-600 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          onClick={(event) => {
+            event.stopPropagation();
+            selectOverflowDate();
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            event.stopPropagation();
+            selectOverflowDate();
+          }}
+        >
+          외 {hiddenCount}개
+        </span>
+      );
+    }
     const checked = Boolean(info.event.extendedProps.checked);
     const color = String(info.event.extendedProps.color ?? '#2563EB');
     const flowMarkerTitle = String(info.event.extendedProps.flowMarkerTitle ?? '');
@@ -6200,7 +6300,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       info.el.style.setProperty('box-shadow', 'none', 'important');
       return;
     }
-    if (kind === 'scheduleOverflow') {
+    if (kind === 'scheduleOverflow' || kind === 'scheduleFlowOverflow') {
       info.el.classList.add('my-flow-schedule-overflow-event');
       info.el.style.setProperty('border-color', 'transparent', 'important');
       info.el.style.setProperty('background', 'transparent', 'important');

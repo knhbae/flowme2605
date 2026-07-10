@@ -2912,6 +2912,60 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
   expect(calendarHeadingCount).toBe(1);
 });
 
+test('calendar route compacts three-plus same-date flow labels in the month grid', async ({ page }) => {
+  const seedSameDateFlowStack = () => {
+    const savedAt = '2026-07-03T00:00:00.000Z';
+    const saveFlow = (slug: string, anchor: string) => {
+      localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+        slug,
+        savedAt,
+        selectedArtifactMode: 'calendar',
+        anchor,
+      }));
+      localStorage.setItem(`flow:${slug}:anchorDate`, JSON.stringify({
+        mode: 'custom',
+        anchor,
+      }));
+    };
+    saveFlow('computer-skills-d30-study', '2026-07-03');
+    saveFlow('study-exam-d30-plan', '2026-07-03');
+    saveFlow('overseas-travel-d14', '2026-06-17');
+    saveFlow('japan-esim-setup-before-departure', '2026-06-06');
+  };
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
+  await page.addInitScript(seedSameDateFlowStack);
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  const mobileDateCell = page.locator('.fc-daygrid-day[data-date="2026-06-03"]');
+  await mobileDateCell.getByTestId('my-flow-calendar-date-button').click();
+
+  await expect(mobileDateCell.getByTestId('my-flow-calendar-flow-label')).toHaveCount(2);
+  await expect(mobileDateCell.getByTestId('my-flow-calendar-grid-overflow-summary')).toContainText('외 2개');
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay.getByTestId('my-flow-selected-date-group')).toHaveCount(4);
+  await expect(selectedDay.getByTestId('my-flow-selected-date-flow-marker')).toHaveCount(4);
+  const selectedDayGroupText = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
+  expect(selectedDayGroupText).toContain('컴퓨터활용능력 학습');
+  expect(selectedDayGroupText).toContain('시험 공부 계획');
+  expect(selectedDayGroupText).toContain('해외여행 출국 준비');
+  expect(selectedDayGroupText).toContain('일본 eSIM 출국 전 등록 체크');
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  const wideDateCell = page.locator('.fc-daygrid-day[data-date="2026-06-03"]');
+  await wideDateCell.getByTestId('my-flow-calendar-date-button').click();
+
+  await expect(wideDateCell.getByTestId('my-flow-calendar-flow-label')).toHaveCount(2);
+  await expect(wideDateCell.getByTestId('my-flow-calendar-grid-overflow-summary')).toContainText('외 2개');
+  await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-selected-date-group')).toHaveCount(4);
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+});
+
 test('calendar route keeps the first agenda and light day cells in the mobile viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
@@ -4133,7 +4187,7 @@ test('my flow ux12 calendar collapses dense days and opens recurring routine edi
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('5월 27일');
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toHaveAttribute('data-schedule-overflow-date', '2026-05-27');
   await expect(page.getByTestId('my-flow-selected-day-schedule-overflow-note')).toContainText('+2');
-  await expect(page.getByTestId('my-flow-selected-day-schedule-overflow-note')).toContainText('일정 포함');
+  await expect(page.getByTestId('my-flow-selected-day-schedule-overflow-note')).toContainText('날짜 항목 포함');
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail')).toHaveCount(0);
 
   await page.getByTestId('my-flow-month-picker').fill('2026-06');

@@ -76,6 +76,12 @@ const savedFixtures = {
     { slug: 'moving-d30-basic', selectedArtifactMode: 'calendar', anchor: '2026-06-02' },
     { slug: 'computer-skills-d30-study', selectedArtifactMode: 'calendar', anchor: '2026-07-03' },
   ],
+  calendarSameDateFlowStack: [
+    { slug: 'computer-skills-d30-study', selectedArtifactMode: 'calendar', anchor: '2026-07-03' },
+    { slug: 'study-exam-d30-plan', selectedArtifactMode: 'calendar', anchor: '2026-07-03' },
+    { slug: 'overseas-travel-d14', selectedArtifactMode: 'calendar', anchor: '2026-06-17' },
+    { slug: 'japan-esim-setup-before-departure', selectedArtifactMode: 'calendar', anchor: '2026-06-06' },
+  ],
   longList: [
     { slug: 'moving-d30-basic', selectedArtifactMode: 'calendar', anchor: '2026-06-26' },
     { slug: 'computer-skills-d30-study', selectedArtifactMode: 'calendar', anchor: '2026-06-27' },
@@ -152,6 +158,12 @@ async function main() {
     await captureCalendarSameDateFlows(page, '43-calendar-same-date-multi-flow-mobile.png', 'Calendar same-date multi-Flow markers mobile', {
       category: 'calendar-same-date-flow',
       selectedDate: '2026-06-03',
+    });
+    await captureCalendarSameDateFlows(page, '43b-calendar-grid-flow-stack-mobile.png', 'Calendar grid compact same-date Flow stack mobile', {
+      category: 'calendar-grid-flow-stack',
+      selectedDate: '2026-06-03',
+      fixture: savedFixtures.calendarSameDateFlowStack,
+      p20CalendarGridCompactFixture: true,
     });
 
     await saveFlowMapThroughUi(page, '/flow-maps/middle-school-math-1', 'middle-school-math-1');
@@ -487,6 +499,13 @@ async function captureWideViewportEvidence(page) {
     wideViewport: true,
     selectedDate: '2026-06-03',
   });
+  await captureCalendarSameDateFlows(page, '44b-calendar-grid-flow-stack-wide.png', 'Calendar grid compact same-date Flow stack wide', {
+    category: 'calendar-grid-flow-stack',
+    wideViewport: true,
+    selectedDate: '2026-06-03',
+    fixture: savedFixtures.calendarSameDateFlowStack,
+    p20CalendarGridCompactFixture: true,
+  });
   await saveFlowMapThroughUi(page, '/flow-maps/moving-d30', 'moving-d30', '2026-07-22');
   await captureCurrent(page, '36-post-save-my-moving-wide.png', 'Post-save My Flow wide viewport spot check', {
     category: 'wide-viewport',
@@ -523,7 +542,7 @@ async function captureWideViewportEvidence(page) {
 }
 
 async function captureCalendarSameDateFlows(page, file, label, options = {}) {
-  await setSavedFlows(page, savedFixtures.calendarSameDateFlows);
+  await setSavedFlows(page, options.fixture ?? savedFixtures.calendarSameDateFlows);
   await page.goto('/calendar');
   await settle(page);
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
@@ -535,6 +554,7 @@ async function captureCalendarSameDateFlows(page, file, label, options = {}) {
     route: '/calendar',
     selectedDate: '2026-06-03',
     p18CalendarSameDateFlowFixture: true,
+    p20CalendarGridCompactFixture: Boolean(options.p20CalendarGridCompactFixture),
   });
 }
 
@@ -1670,6 +1690,14 @@ async function scanPage(page, options = {}) {
         .map((element) => normalizeLine(element.textContent ?? ''))
         .filter(Boolean);
       const selectedDateGridDistinctFlowLabels = Array.from(new Set(selectedDateGridFlowLabels));
+      const selectedDateGridOverflowSummaryLabels = Array.from(selectedDateCell?.querySelectorAll('[data-testid="my-flow-calendar-grid-overflow-summary"]') ?? [])
+        .filter((element) => isVisible(element))
+        .map((element) => normalizeLine(element.textContent ?? ''))
+        .filter(Boolean);
+      const selectedDateGridHiddenFlowSummaryCount = selectedDateGridOverflowSummaryLabels.reduce((sum, label) => {
+        const match = /(\d+)/u.exec(label);
+        return sum + (match ? Number(match[1]) : 0);
+      }, 0);
       const statusRoot = document.querySelector('[data-testid="my-flow-status-sheet"]');
       const statusGroups = Array.from(statusRoot?.querySelectorAll('[data-testid="my-flow-status-sheet-group"]') ?? [])
         .filter((element) => isVisible(element))
@@ -1687,6 +1715,9 @@ async function scanPage(page, options = {}) {
           agendaGroupByFlow: calendarGroups.length > 0 && calendarGroups.every((group) => group.flowMarkerVisible && Boolean(group.flowMarkerLabel)),
           selectedDateGridFlowLabels,
           selectedDateGridDistinctFlowLabelCount: selectedDateGridDistinctFlowLabels.length,
+          selectedDateGridOverflowSummaryLabels,
+          selectedDateGridOverflowSummaryVisible: selectedDateGridOverflowSummaryLabels.length > 0,
+          selectedDateGridHiddenFlowSummaryCount,
           groups: calendarGroups,
         },
         myFlowStatusSheet: {
@@ -2594,6 +2625,9 @@ function summarizeEvidence(records) {
   const calendarSameDateFlowRecords = records.filter((record) =>
     record.p18CalendarSameDateFlowFixture || record.category === 'calendar-same-date-flow',
   );
+  const calendarGridFlowStackRecords = records.filter((record) =>
+    record.p20CalendarGridCompactFixture || record.category === 'calendar-grid-flow-stack',
+  );
   const countAgendaGroupRows = (record, field) =>
     getAgendaGroups(record).reduce((sum, group) => sum + (group[field] ?? 0), 0);
   const countCalendarSelectedDayGroupRows = (record, field) =>
@@ -2988,6 +3022,43 @@ function summarizeEvidence(records) {
       distinctFlowMarkerCount: getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0,
       selectedDateGridFlowLabels: getCalendarSelectedDayMeta(record).selectedDateGridFlowLabels ?? [],
       agendaGroupByFlow: Boolean(getCalendarSelectedDayMeta(record).agendaGroupByFlow),
+    })),
+    calendarGridSameDateFlowCount: Math.max(
+      0,
+      ...calendarGridFlowStackRecords.map((record) => getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0),
+    ),
+    calendarGridVisibleFlowLabelCount: Math.max(
+      0,
+      ...calendarGridFlowStackRecords.map((record) => getCalendarSelectedDayMeta(record).selectedDateGridDistinctFlowLabelCount ?? 0),
+    ),
+    calendarGridOverflowSummaryVisible: calendarGridFlowStackRecords.some((record) =>
+      Boolean(getCalendarSelectedDayMeta(record).selectedDateGridOverflowSummaryVisible),
+    ),
+    calendarGridHiddenFlowSummaryCount: Math.max(
+      0,
+      ...calendarGridFlowStackRecords.map((record) => getCalendarSelectedDayMeta(record).selectedDateGridHiddenFlowSummaryCount ?? 0),
+    ),
+    calendarGridHorizontalOverflowCount: calendarGridFlowStackRecords.reduce((sum, record) =>
+      sum + (record.noHorizontalOverflow ? 0 : 1),
+    0),
+    calendarSelectedDayAgendaShowsAllFlows: calendarGridFlowStackRecords.some((record) => {
+      const meta = getCalendarSelectedDayMeta(record);
+      return (meta.distinctFlowMarkerCount ?? 0) >= 3
+        && (meta.groupCount ?? 0) >= (meta.distinctFlowMarkerCount ?? 0)
+        && Boolean(meta.agendaGroupByFlow);
+    }),
+    calendarGridFlowStackEvidence: calendarGridFlowStackRecords.map((record) => ({
+      id: record.id,
+      route: record.url,
+      viewportWidth: record.viewportWidth,
+      selectedDate: record.selectedDate,
+      sameDateFlowCount: getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0,
+      visibleFlowLabelCount: getCalendarSelectedDayMeta(record).selectedDateGridDistinctFlowLabelCount ?? 0,
+      overflowSummaryVisible: Boolean(getCalendarSelectedDayMeta(record).selectedDateGridOverflowSummaryVisible),
+      hiddenFlowSummaryCount: getCalendarSelectedDayMeta(record).selectedDateGridHiddenFlowSummaryCount ?? 0,
+      overflowSummaryLabels: getCalendarSelectedDayMeta(record).selectedDateGridOverflowSummaryLabels ?? [],
+      selectedDayAgendaShowsAllFlows: (getCalendarSelectedDayMeta(record).groupCount ?? 0) >= (getCalendarSelectedDayMeta(record).distinctFlowMarkerCount ?? 0),
+      noHorizontalOverflow: record.noHorizontalOverflow,
     })),
     calendarTitleContainsMyFlowCount: normal.reduce((sum, record) =>
       sum + (getRoleLabelMeta(record).calendarTitleContainsMyFlowCount ?? 0),
@@ -3539,6 +3610,8 @@ P19-06 makes the Home URL/memo entry discoverable without adding a second lookup
 
 P19-07 keeps the post-save editing model discoverable without moving full editing into URL-first. My Flow personal copies expose Flow-wide anchor/name editing as a contextual button such as \`이사일·이름 바꾸기\`, item detail edit entries expose title/date/memo editing with row-title accessible names, and the evidence records anchor-vs-item edit entry visibility by viewport.
 
+P20-05 keeps the Calendar month grid compact when three or more Flows land on the same date. The grid records visible Flow labels plus an overflow summary such as \`외 N개\`, while the selected-day agenda still records every Flow marker/group as full detail.
+
 ## Files
 
 - [audit.md](./audit.md)
@@ -3571,6 +3644,12 @@ P19-07 keeps the post-save editing model discoverable without moving full editin
 - Calendar same-date distinct Flow groups: ${evidence.summary.calendarSameDateDistinctFlowGroupCount}
 - Calendar same-date grid Flow labels: ${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}
 - Calendar agenda grouped by Flow: ${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}
+- Calendar grid same-date Flow count: ${evidence.summary.calendarGridSameDateFlowCount}
+- Calendar grid visible Flow labels: ${evidence.summary.calendarGridVisibleFlowLabelCount}
+- Calendar grid overflow summary visible: ${evidence.summary.calendarGridOverflowSummaryVisible ? 'yes' : 'no'}
+- Calendar grid hidden Flow summary count: ${evidence.summary.calendarGridHiddenFlowSummaryCount}
+- Calendar grid horizontal overflow count: ${evidence.summary.calendarGridHorizontalOverflowCount}
+- Calendar selected-day agenda shows all Flows: ${evidence.summary.calendarSelectedDayAgendaShowsAllFlows ? 'yes' : 'no'}
 - Calendar title contains My Flow count: ${evidence.summary.calendarTitleContainsMyFlowCount}
 - Calendar primary generic type label count: ${evidence.summary.calendarPrimaryGenericTypeLabelCount}
 - Calendar heading duplicate count: ${evidence.summary.calendarHeadingDuplicateCount}
@@ -3797,6 +3876,8 @@ P18-02 merges My Flow's today execution/status framing. The package records \`my
 P18-03 keeps public share \`/f\` save/export/item responsibilities auditable. The summary records Flow-level save primary count, one secondary export entry per public share route, export format option count, item-level export-like label count, and pre-save preview control counts.
 
 P20-04 closes the public share pre-save to post-save boundary. Public \`/f\` keeps pre-save item checkboxes in the preview/selection bucket, and a representative saved public Flow is captured after entering My Flow so the same content shows an active task-completion checkbox pattern instead of an item-level save/export affordance.
+
+P20-05 keeps the Calendar month grid compact when three or more Flows share one date. The grid should show at most two Flow labels plus an \`외 N개\` summary, while selected-day agenda groups still expose every Flow and task with markers.
 
 P18-04/P18-06 separate Calendar and My Flow role language. Calendar should read as the date-first execution surface, My Flow as the task-first execution hub, and primary labels should not fall back to generic type copy such as \`월간 일정\`, \`저장한 일정\`, or \`일정 흐름\`.
 
@@ -4105,6 +4186,10 @@ function renderHtml(evidence) {
       <div class="stat"><b>${evidence.summary.calendarSameDateDistinctFlowGroupCount}</b><span>calendar same-date Flow groups</span></div>
       <div class="stat"><b>${evidence.summary.calendarSameDateGridDistinctFlowLabelCount}</b><span>calendar grid Flow labels</span></div>
       <div class="stat"><b>${evidence.summary.calendarAgendaGroupByFlow ? 'yes' : 'no'}</b><span>calendar grouped by Flow</span></div>
+      <div class="stat"><b>${evidence.summary.calendarGridSameDateFlowCount}</b><span>grid stack Flow count</span></div>
+      <div class="stat"><b>${evidence.summary.calendarGridVisibleFlowLabelCount}</b><span>grid visible Flow labels</span></div>
+      <div class="stat"><b>${evidence.summary.calendarGridOverflowSummaryVisible ? 'yes' : 'no'}</b><span>grid overflow summary</span></div>
+      <div class="stat"><b>${evidence.summary.calendarSelectedDayAgendaShowsAllFlows ? 'yes' : 'no'}</b><span>agenda shows all Flows</span></div>
       <div class="stat"><b>${evidence.summary.calendarTitleContainsMyFlowCount}</b><span>calendar title My Flow hits</span></div>
       <div class="stat"><b>${evidence.summary.calendarPrimaryGenericTypeLabelCount}</b><span>calendar generic labels</span></div>
       <div class="stat"><b>${evidence.summary.calendarHeadingDuplicateCount}</b><span>calendar duplicate headings</span></div>
