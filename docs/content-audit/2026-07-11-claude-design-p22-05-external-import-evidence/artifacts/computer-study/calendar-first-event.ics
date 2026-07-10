@@ -1,0 +1,33 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:컴퓨터활용능력 D-30 학습 Flow
+BEGIN:VEVENT
+UID:flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-1@fl
+ ow-mvp
+DTSTAMP:20260710T211717Z
+DTSTART;VALUE=DATE:20260806
+DTEND;VALUE=DATE:20260807
+SUMMARY:컴퓨터활용능력 D-30 학습 Flow - 매일 공부 가능한 
+ 시간 블록 정하기
+DESCRIPTION:필기와 실기 범위를 나누고 기출 회독\, 실기 환
+ 경 점검\, 실전 전환을 30일 단위로 진행합니다. D-30 일정
+ 은 FLOW가 시험일 기준으로 변환한 실행표이며\, 교재 페
+ 이지가 30일 커리큘럼을 그대로 제공한다는 뜻은 아닙니
+ 다.\n시험일 역산 캘린더는 실제 공부 가능한 시간이 있
+ 어야 밀리지 않습니다. 이 결과는 D-30 캘린더와 실행 항
+ 목 메모에 남길 값과 연결됩니다.\n실행: 평일 공부 시간
+  1개와 주말 보충 시간 1개를 정합니다. 기록: 캘린더 expo
+ rt 후 일정 제목이나 실행 항목 메모에 공부 시간대를 남
+ 깁니다. 확인한 값은 D-30 캘린더와 실행 항목 메모의 메
+ 모나 상태 칸에 적습니다.\n구간: D-30 범위 쪼개기\n기준:
+  D-30\n완료 기준: 평일/주말 공부 시간 블록이 정해졌고 
+ 캘린더 일정으로 옮길 수 있습니다. D-30 캘린더와 실행 
+ 항목 메모에도 같은 상태를 기록했다.\n원문: https://www.gi
+ lbut.co.kr/m/book/view?bookcode=BN004603
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

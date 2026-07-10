@@ -1,0 +1,382 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:이사 D-30 준비 Flow
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-0@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260716
+DTEND;VALUE=DATE:20260717
+SUMMARY:이사 D-30 준비 Flow - 이사 방식 정하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-30 큰 
+ 준비\n기준: D-30\n내 메모: 오전 중 견적 후보 두 곳에 연
+ 락하고 포함 범위를 확인\n원문: https://www.ajd.co.kr/contents/
+ basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PD
+ F_노션_notion_첨부-23363
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-3@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260716
+DTEND;VALUE=DATE:20260717
+SUMMARY:이사 D-30 준비 Flow - 이사/청소 업체 견적 받고 예약
+ 하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-30 큰 
+ 준비\n기준: D-30\n원문: https://www.ajd.co.kr/contents/basic-tip/det
+ ail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_noti
+ on_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-1@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260716
+DTEND;VALUE=DATE:20260717
+SUMMARY:이사 D-30 준비 Flow - 이사할 집 하자 점검하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n입주 후 발견
+ 한 하자는 책임 소재가 애매해질 수 있어 이사 전 기록
+ 이 중요합니다.\n현관\, 욕실\, 주방\, 창문\, 콘센트\, 보
+ 일러 주변을 사진과 짧은 메모로 남깁니다.\n구간: D-30 
+ 큰 준비\n기준: D-30\n완료 기준: 주요 공간 사진과 하자 
+ 목록을 집주인 또는 중개인에게 공유했다.\n원문: https://
+ www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완
+ 벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-2@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260716
+DTEND;VALUE=DATE:20260717
+SUMMARY:이사 D-30 준비 Flow - 필요 없는 물건 정리하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-30 큰 
+ 준비\n기준: D-30\n원문: https://www.ajd.co.kr/contents/basic-tip/det
+ ail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_noti
+ on_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-6@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+SUMMARY:이사 D-30 준비 Flow - 대형폐기물 배출 신고와 수거
+ 일 확인하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n대형폐기물은 
+ 당일 배출이 어려운 경우가 많아 이사 일정과 충돌할 수
+  있습니다.\n거주지 지자체 대형폐기물 신고 페이지에서
+  품목\, 배출 장소\, 수거일을 확인합니다.\n구간: D-10 생
+ 활 이전 준비\n기준: D-10\n완료 기준: 배출 신고 번호와 
+ 수거 예정일을 기록했다.\n원문: https://www.ajd.co.kr/contents/
+ basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PD
+ F_노션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-7@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+SUMMARY:이사 D-30 준비 Flow - 엘리베이터 또는 사다리차 사
+ 용 예약하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-10 생활
+  이전 준비\n기준: D-10\n원문: https://www.ajd.co.kr/contents/basic
+ -tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-4@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+SUMMARY:이사 D-30 준비 Flow - 우편물/카드/은행 주소 변경하
+ 기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-10 생활
+  이전 준비\n기준: D-10\n원문: https://www.ajd.co.kr/contents/basic
+ -tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-8@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+SUMMARY:이사 D-30 준비 Flow - 인터넷/정수기 이전 설치 예약
+ 하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-10 생활
+  이전 준비\n기준: D-10\n원문: https://www.ajd.co.kr/contents/basic
+ -tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-5@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+SUMMARY:이사 D-30 준비 Flow - 정기 배달 서비스 중지 요청하
+ 기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-10 생활
+  이전 준비\n기준: D-10\n원문: https://www.ajd.co.kr/contents/basic
+ -tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-12@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+SUMMARY:이사 D-30 준비 Flow - 관리사무소에 이사 시간과 차
+ 량 동선 공유하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-3 필수 
+ 예약 확인\n기준: D-3\n원문: https://www.ajd.co.kr/contents/basic-t
+ ip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-9@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+SUMMARY:이사 D-30 준비 Flow - 도시가스 철거/설치 예약하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-3 필수 
+ 예약 확인\n기준: D-3\n원문: https://www.ajd.co.kr/contents/basic-t
+ ip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-11@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+SUMMARY:이사 D-30 준비 Flow - 이사 당일 사용할 물건 따로 포
+ 장하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-3 필수 
+ 예약 확인\n기준: D-3\n원문: https://www.ajd.co.kr/contents/basic-t
+ ip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-10@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+SUMMARY:이사 D-30 준비 Flow - 자동이체 해지 또는 변경 확인
+ 하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-3 필수 
+ 예약 확인\n기준: D-3\n원문: https://www.ajd.co.kr/contents/basic-t
+ ip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-15@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+SUMMARY:이사 D-30 준비 Flow - 귀중품과 중요 서류 별도 보관
+ 하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-1 최종 
+ 점검\n기준: D-1\n원문: https://www.ajd.co.kr/contents/basic-tip/deta
+ il/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notio
+ n_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-16@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+SUMMARY:이사 D-30 준비 Flow - 냉장고 음식과 쓰레기 최종 정
+ 리하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-1 최종 
+ 점검\n기준: D-1\n원문: https://www.ajd.co.kr/contents/basic-tip/deta
+ il/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notio
+ n_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-13@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+SUMMARY:이사 D-30 준비 Flow - 이사 업체와 일정 최종 확인하
+ 기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-1 최종 
+ 점검\n기준: D-1\n원문: https://www.ajd.co.kr/contents/basic-tip/deta
+ il/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notio
+ n_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-14@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+SUMMARY:이사 D-30 준비 Flow - 이체 한도 증액 확인하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-1 최종 
+ 점검\n기준: D-1\n원문: https://www.ajd.co.kr/contents/basic-tip/deta
+ il/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notio
+ n_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-19@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+SUMMARY:이사 D-30 준비 Flow - 계량기와 집 상태 사진 남기기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-Day 이
+ 사 당일\n기준: D-Day\n원문: https://www.ajd.co.kr/contents/basic-ti
+ p/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션
+ _notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-20@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+SUMMARY:이사 D-30 준비 Flow - 열쇠\, 출입카드\, 주차등록 인
+ 수인계하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-Day 이
+ 사 당일\n기준: D-Day\n원문: https://www.ajd.co.kr/contents/basic-ti
+ p/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션
+ _notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-18@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+SUMMARY:이사 D-30 준비 Flow - 이삿짐 분실/파손 확인하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-Day 이
+ 사 당일\n기준: D-Day\n원문: https://www.ajd.co.kr/contents/basic-ti
+ p/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션
+ _notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-17@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+SUMMARY:이사 D-30 준비 Flow - 전기/가스/수도/관리비 정산하
+ 기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-Day 이
+ 사 당일\n기준: D-Day\n원문: https://www.ajd.co.kr/contents/basic-ti
+ p/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션
+ _notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-21@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+SUMMARY:이사 D-30 준비 Flow - 전입신고와 확정일자 확인하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n주소 이전과 
+ 임대차 계약 관련 권리 확인에 직접 연결되는 행정 절차
+ 입니다.\n전입신고는 정부24 또는 주민센터\, 확정일자는
+  인터넷등기소 또는 주민센터에서 확인합니다.\n구간: D-
+ Day 이사 당일\n기준: D-Day\n완료 기준: 전입신고 접수 상
+ 태와 확정일자 부여 여부를 각각 확인했다.\n링크:\n정부
+ 24 전입신고: https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=1310
+ 0000016\n인터넷등기소: https://www.iros.go.kr\n원문: https://www.a
+ jd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정
+ 리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-23@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260816
+DTEND;VALUE=DATE:20260817
+SUMMARY:이사 D-30 준비 Flow - 임대차 계약 확정일자 부여 여
+ 부 확인하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n임대차 계약 
+ 관련 권리 확인에서 날짜와 신청 상태가 중요합니다.\n
+ 인터넷등기소 또는 주민센터에서 계약서 기준 확정일자
+  부여 여부를 확인합니다.\n구간: D+1 행정 마무리\n기준: 
+ D+1\n완료 기준: 확정일자 부여일과 계약서 보관 위치를 
+ 기록했다.\n링크:\n인터넷등기소: https://www.iros.go.kr\n원문
+ : https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-22@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260816
+DTEND;VALUE=DATE:20260817
+SUMMARY:이사 D-30 준비 Flow - 정부24 전입신고 처리 결과 확
+ 인하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n신청만 하고 
+ 끝내면 세대주 확인이나 보완 요청을 놓칠 수 있습니다.
+ \n정부24 MyGOV 또는 신청 내역에서 처리 상태를 확인합니
+ 다.\n구간: D+1 행정 마무리\n기준: D+1\n완료 기준: 처리 완
+ 료 또는 보완 필요 상태를 확인하고 캡처/메모를 남겼다
+ .\n링크:\n정부24: https://www.gov.kr\n원문: https://www.ajd.co.kr/co
+ ntents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀
+ _Xls_PDF_노션_notion_첨부-23363
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

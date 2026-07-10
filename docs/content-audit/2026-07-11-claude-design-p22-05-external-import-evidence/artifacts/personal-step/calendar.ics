@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//My Flow Step Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:url-draft-weekend-prep-step-1-2026-07-27-09:30@flowme.local
+DTSTAMP:20260710T211717Z
+DTSTART:20260727T093000
+DTEND:20260727T100000
+SUMMARY:내 일정에 맞춘 첫 단계
+DESCRIPTION:내 일정에 맞춘 첫 단계\nFlow: 주말 이사 준비 초
+ 안\n구간: 이번 주 준비\n일정: 2026-07-27 09:30\n장소: 집\n\n
+ 체크:\n- [x] 견적 후보 두 곳에 연락\n- [ ] 포함 범위 메모
+ \n\n완료 기준: 견적 후보와 포함 범위를 메모했다.\n\n메
+ 모: 초안에서 직접 고친 사용자 메모\n\n원문: 원문 링크 
+ https://example.com/weekend-moving-source\n
+LOCATION:집
+URL:https://example.com/weekend-moving-source
+END:VEVENT
+END:VCALENDAR

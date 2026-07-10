@@ -1,0 +1,184 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:냉장고 파먹기 7일 재고 소진 Flow
+BEGIN:VEVENT
+UID:flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-
+ 0@flow-mvp
+DTSTAMP:20260710T211717Z
+DTSTART;VALUE=DATE:20260720
+DTEND;VALUE=DATE:20260721
+SUMMARY:냉장고 파먹기 7일 재고 소진 Flow - 냉장고 지도에
+ 서 우선 소진 재료 3개 고르기
+DESCRIPTION:장보기 전에 냉장고 지도\, 우선 소진 재료 3개\,
+  이번 주 메뉴 후보\, 장보기 보류 상태를 7일 재고표로 
+ 가볍게 정리합니다.\n원문은 냉장고를 구역별로 적어 재
+ 료를 눈에 보이게 만드는 것에서 시작합니다. FlowMe에서
+ 는 전체 재고 관리가 아니라 이번 주 우선 재료 3개를 고
+ 르는 행동으로 줄입니다.\n냉장실\, 냉동실\, 실온을 각
+ 각 1분씩 보고 유통기한이 가깝거나 이미 뜯은 재료를 
+ 적습니다. 먹어도 되는지 애매한 재료는 소진 후보가 아
+ 니라 폐기/확인 메모로 분리합니다.\n구간: 시작일 냉장
+ 고 지도\n기준: D-Day\n완료 기준: 이번 주 우선 소진 재료 
+ 3개가 시트 첫 줄에 적혔습니다.\n내 메모: 우유와 애호
+ 박을 먼저 쓰고 남은 재료는 냉동\n주의: 상했거나 안전
+ 이 의심되는 식재료는 먹지 말고 폐기하세요. FlowMe는 식
+ 비 절약\, 영양 균형\, 식품 안전\, 다이어트 결과를 보장
+ 하지 않습니다.\n링크:\n냉장고 지도와 7일 플랜 원문: htt
+ ps://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9
+ D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%
+ 9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%
+ 8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA
+ %B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8\n냉장고 재고 루틴 참고: https
+ ://aruma16.tistory.com/126\n원문: https://smilellama.tistory.com/entry/%
+ EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A
+ 0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%
+ 8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%
+ EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-
+ 1@flow-mvp
+DTSTAMP:20260710T211717Z
+DTSTART;VALUE=DATE:20260720
+DTEND;VALUE=DATE:20260721
+SUMMARY:냉장고 파먹기 7일 재고 소진 Flow - 이번 주 메인 재
+ 료와 메뉴 후보 묶기
+DESCRIPTION:장보기 전에 냉장고 지도\, 우선 소진 재료 3개\,
+  이번 주 메뉴 후보\, 장보기 보류 상태를 7일 재고표로 
+ 가볍게 정리합니다.\n원문은 메인 요리 2~3개를 먼저 고
+ 르고 추가 구매 목록을 제한합니다. 이 Flow는 메뉴 확정
+ 이 아니라 메뉴 후보와 장보기 보류를 한 줄에 남기는 
+ 데 집중합니다.\n우선 재료 3개 옆에 만들 수 있는 메뉴 
+ 후보를 적습니다. 없는 재료를 바로 장바구니에 넣지 말
+ 고 대체 가능\, 꼭 필요\, 보류 중 하나로 표시합니다.\n
+ 구간: 시작일 냉장고 지도\n기준: D-Day\n완료 기준: 메뉴 
+ 후보와 장보기 보류 항목이 시트에 들어갔습니다.\n주의
+ : 상했거나 안전이 의심되는 식재료는 먹지 말고 폐기하
+ 세요. FlowMe는 식비 절약\, 영양 균형\, 식품 안전\, 다이
+ 어트 결과를 보장하지 않습니다.\n원문: https://smilellama.ti
+ story.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%
+ 88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E
+ %A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED
+ %94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%
+ ED%8F%AC%ED%95%A8
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-
+ 2@flow-mvp
+DTSTAMP:20260710T211717Z
+DTSTART;VALUE=DATE:20260721
+DTEND;VALUE=DATE:20260722
+SUMMARY:냉장고 파먹기 7일 재고 소진 Flow - 1~2일차 신선 재
+ 료 먼저 쓰기
+DESCRIPTION:장보기 전에 냉장고 지도\, 우선 소진 재료 3개\,
+  이번 주 메뉴 후보\, 장보기 보류 상태를 7일 재고표로 
+ 가볍게 정리합니다.\n원문 7일 플랜은 초반에 신선 재료
+ 를 먼저 쓰는 흐름입니다. 사용자는 날짜별로 메뉴 후보
+ 와 실제 소진 여부만 적으면 됩니다.\n오늘과 내일 먹을 
+ 메뉴 후보를 고르고\, 신선 재료 칸에 실제로 쓴 재료를 
+ 적습니다. 애매한 재료는 먹기보다 폐기/확인 메모로 남
+ 깁니다.\n구간: D+1~D+6 재고 소진\n기준: D+1\n완료 기준: 1~2
+ 일차에 쓸 신선 재료와 메뉴 후보가 기록됐습니다.\n주
+ 의: 상했거나 안전이 의심되는 식재료는 먹지 말고 폐기
+ 하세요. FlowMe는 식비 절약\, 영양 균형\, 식품 안전\, 다
+ 이어트 결과를 보장하지 않습니다.\n원문: https://smilellama
+ .tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%
+ A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC
+ %9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-
+ %ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%8
+ 1-%ED%8F%AC%ED%95%A8
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-
+ 3@flow-mvp
+DTSTAMP:20260710T211717Z
+DTSTART;VALUE=DATE:20260723
+DTEND;VALUE=DATE:20260724
+SUMMARY:냉장고 파먹기 7일 재고 소진 Flow - 3~4일차 남은 요
+ 리와 재료 변형하기
+DESCRIPTION:장보기 전에 냉장고 지도\, 우선 소진 재료 3개\,
+  이번 주 메뉴 후보\, 장보기 보류 상태를 7일 재고표로 
+ 가볍게 정리합니다.\n원문은 중간 날짜에 남은 요리와 
+ 재료를 변형하는 흐름을 제안합니다. FlowMe는 레시피를 
+ 새로 만들지 않고 변형 후보만 기록합니다.\n남은 요리
+ 와 자투리 재료를 보고 한 번 더 쓸 수 있는 메뉴 후보를
+  적습니다. 보관 기간이 애매하면 먹지 않고 폐기/확인
+ 으로 표시합니다.\n구간: D+1~D+6 재고 소진\n기준: D+3\n완
+ 료 기준: 3~4일차 변형 메뉴 후보와 실제 사용 재료가 적
+ 혔습니다.\n주의: 상했거나 안전이 의심되는 식재료는 
+ 먹지 말고 폐기하세요. FlowMe는 식비 절약\, 영양 균형\, 
+ 식품 안전\, 다이어트 결과를 보장하지 않습니다.\n원문:
+  https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%
+ 8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED
+ %95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-
+ %EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B
+ 4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-
+ 4@flow-mvp
+DTSTAMP:20260710T211717Z
+DTSTART;VALUE=DATE:20260725
+DTEND;VALUE=DATE:20260726
+SUMMARY:냉장고 파먹기 7일 재고 소진 Flow - 5~6일차 냉동실
+ 과 기본 재료로 이어가기
+DESCRIPTION:장보기 전에 냉장고 지도\, 우선 소진 재료 3개\,
+  이번 주 메뉴 후보\, 장보기 보류 상태를 7일 재고표로 
+ 가볍게 정리합니다.\n원문 후반부는 냉동실과 기본 재료
+ 를 활용해 추가 구매를 줄이는 흐름입니다. FlowMe는 냉동
+ 실 재고를 전체 관리하지 않고 이번 주 사용할 후보만 
+ 적게 합니다.\n냉동실에서 이번 주에 꺼낼 재료 1~2개를 
+ 고르고 기본 재료와 묶습니다. 새로 사야 할 재료는 꼭 
+ 필요할 때만 표시합니다.\n구간: D+1~D+6 재고 소진\n기준: 
+ D+5\n완료 기준: 5~6일차에 쓸 냉동실/기본 재료 후보가 정
+ 리됐습니다.\n주의: 상했거나 안전이 의심되는 식재료는
+  먹지 말고 폐기하세요. FlowMe는 식비 절약\, 영양 균형\, 
+ 식품 안전\, 다이어트 결과를 보장하지 않습니다.\n원문:
+  https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%
+ 8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED
+ %95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-
+ %EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B
+ 4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-
+ 5@flow-mvp
+DTSTAMP:20260710T211717Z
+DTSTART;VALUE=DATE:20260727
+DTEND;VALUE=DATE:20260728
+SUMMARY:냉장고 파먹기 7일 재고 소진 Flow - 7일차 남은 재료
+  처리와 장보기 보류 결정하기
+DESCRIPTION:장보기 전에 냉장고 지도\, 우선 소진 재료 3개\,
+  이번 주 메뉴 후보\, 장보기 보류 상태를 7일 재고표로 
+ 가볍게 정리합니다.\n원문 7일차는 장보기 없이 남은 재
+ 료를 비우는 흐름입니다. FlowMe에서는 “다 먹기”가 아
+ 니라 다음 장보기 전에 보류/필요를 분리하는 결정을 남
+ 깁니다.\n남은 재료를 시트에 보고 처리 가능\, 폐기/확
+ 인\, 다음 주 보류\, 구매 필요 중 하나로 표시합니다. 구
+ 매 필요 항목만 장보기 메모로 옮깁니다.\n구간: D+7 장보
+ 기 전\n기준: D+7\n완료 기준: 장보기 보류 항목과 실제 구
+ 매 필요 항목이 분리됐습니다.\n주의: 상했거나 안전이 
+ 의심되는 식재료는 먹지 말고 폐기하세요. FlowMe는 식비 
+ 절약\, 영양 균형\, 식품 안전\, 다이어트 결과를 보장하
+ 지 않습니다.\n원문: https://smilellama.tistory.com/entry/%EC%9B%94-
+ 10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B
+ 0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%
+ A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%
+ EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

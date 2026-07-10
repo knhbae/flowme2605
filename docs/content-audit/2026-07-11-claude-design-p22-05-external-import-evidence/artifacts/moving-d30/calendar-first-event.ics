@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:이사 D-30 준비 Flow
+BEGIN:VEVENT
+UID:flow-moving-flow-moving-item-0@flow-mvp
+DTSTAMP:20260710T211716Z
+DTSTART;VALUE=DATE:20260716
+DTEND;VALUE=DATE:20260717
+SUMMARY:이사 D-30 준비 Flow - 이사 방식 정하기
+DESCRIPTION:이사일을 기준으로 D-30부터 당일과 행정 마무리
+ 까지 필요한 일을 날짜별로 실행합니다.\n구간: D-30 큰 
+ 준비\n기준: D-30\n내 메모: 오전 중 견적 후보 두 곳에 연
+ 락하고 포함 범위를 확인\n원문: https://www.ajd.co.kr/contents/
+ basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PD
+ F_노션_notion_첨부-23363
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR
