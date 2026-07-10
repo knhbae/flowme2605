@@ -1,0 +1,2200 @@
+{
+  "generatedAt": "2026-07-10T18:00:53.070Z",
+  "packageName": "2026-07-11-flowme-longitudinal-user-journey-review-package",
+  "artifactType": "evidence-grounded-longitudinal-persona-simulation",
+  "simulationDisclaimer": "가상 페르소나 기반 휴리스틱 시뮬레이션이며 실제 사용자 조사나 관찰 세션이 아니다.",
+  "repository": "knhbae/flowme2605",
+  "branch": "main",
+  "currentMainCommit": "83f8461",
+  "uiBaselineCommit": "5762ee7",
+  "sourcePackage": "2026-07-11-claude-design-p21-final-review-package",
+  "sourcePackageCommit": "0a626ab",
+  "vercelUrl": "https://flowme2605.vercel.app",
+  "supportTaxonomy": {
+    "verified": {
+      "label": "확인됨",
+      "tone": "good"
+    },
+    "partial": {
+      "label": "부분 지원",
+      "tone": "partial"
+    },
+    "missing": {
+      "label": "미구현",
+      "tone": "missing"
+    },
+    "evidence_gap": {
+      "label": "evidence 부족",
+      "tone": "gap"
+    },
+    "deferred": {
+      "label": "의도적 보류",
+      "tone": "deferred"
+    }
+  },
+  "lifecycle": [
+    {
+      "id": "discover",
+      "label": "발견",
+      "status": "verified",
+      "note": "홈 URL/메모 진입과 public 공유 진입이 존재한다."
+    },
+    {
+      "id": "convert",
+      "label": "Flow 변환",
+      "status": "verified",
+      "note": "URL hit와 miss 결정론적 초안이 분리된다."
+    },
+    {
+      "id": "save",
+      "label": "저장",
+      "status": "verified",
+      "note": "public, source-backed, draft 모두 My Flow 저장 경로가 있다."
+    },
+    {
+      "id": "personalize",
+      "label": "개인화",
+      "status": "verified",
+      "note": "기준일, 제목, 항목 날짜, 메모 overlay가 있다."
+    },
+    {
+      "id": "execute",
+      "label": "실행",
+      "status": "verified",
+      "note": "My Flow는 할 일, Calendar는 날짜 중심으로 실행한다."
+    },
+    {
+      "id": "complete",
+      "label": "완료",
+      "status": "verified",
+      "note": "행 왼쪽 완료 체크와 완료 취소가 있다."
+    },
+    {
+      "id": "return",
+      "label": "재방문",
+      "status": "partial",
+      "note": "동일 브라우저 로컬 상태와 오프라인 행동은 확인했지만 계정 간 연속성은 없다."
+    },
+    {
+      "id": "review",
+      "label": "리뷰",
+      "status": "missing",
+      "note": "완료 후 유용성·정확성·만족도를 남기는 사용자 표면이 없다."
+    },
+    {
+      "id": "request_revision",
+      "label": "수정 요청",
+      "status": "missing",
+      "note": "개인 수정과 원본/제작자 개선 요청을 분리한 경로가 없다."
+    },
+    {
+      "id": "reuse",
+      "label": "재사용",
+      "status": "partial",
+      "note": "기존 draft 재사용은 되지만 버전 업데이트·반복 사용 성과는 충분히 증명되지 않았다."
+    }
+  ],
+  "summary": {
+    "personaCount": 6,
+    "sessionCount": 18,
+    "stepCount": 58,
+    "screenshotCount": 33,
+    "supportCounts": {
+      "verified": 36,
+      "partial": 5,
+      "missing": 10,
+      "evidence_gap": 6,
+      "deferred": 1
+    },
+    "coreLoopVerifiedThroughCompletion": true,
+    "postCompletionReviewVisible": false,
+    "sourceCorrectionRequestVisible": false,
+    "externalToolRoundTripCaptured": false,
+    "realUserValidationClaimed": false
+  },
+  "sourceMarkers": {
+    "normalRouteInternalHitCount": 0,
+    "normalRouteStructuralDisplayHitCount": 0,
+    "urlFirstVisibleMarkdownHitCount": 0,
+    "urlFirstCandidateUserCopyInternalHitCount": 0,
+    "urlFirstMissDraftImpliesLiveAi": false,
+    "urlFirstMissDraftSuggestedItemCount": 3,
+    "draftSaveFailureInputPreserved": true,
+    "draftDuplicateCreatesExtraSavedFlow": false,
+    "draftCompletedRemainingCount": 0,
+    "draftOfflineLocalActionsAvailable": true,
+    "myFlowTodayFrameCount": 1,
+    "myFlowTodayInlineCompleteControlCount": 6,
+    "taskCompleteButtonCount": 0,
+    "taskCompleteMixedControlCount": 0,
+    "calendarGridSameDateFlowCount": 4,
+    "calendarGridVisibleFlowLabelCount": 2,
+    "calendarGridHiddenFlowSummaryCount": 2,
+    "calendarSelectedDayAgendaShowsAllFlows": true,
+    "publicPreSaveCheckboxCompletionLikeLabelCount": 0,
+    "publicPostSaveCompletionControlActive": true
+  },
+  "personas": [
+    {
+      "id": "moving-planner",
+      "name": "이사 준비 사용자",
+      "profile": "한 달 뒤 이사를 앞두고 검색한 원문을 자기 일정으로 바꾸려는 모바일 중심 사용자",
+      "goal": "이사일을 기준으로 준비 항목을 저장하고, 일부 날짜와 메모를 자기 상황에 맞춰 바꾼 뒤 매일 실행한다.",
+      "preliminary": "핵심 실행 loop는 연결되지만 완료 후 평가·원본 수정 요청이 끊긴다.",
+      "sessions": [
+        {
+          "id": "moving-session-1",
+          "label": "세션 1 · 발견과 기준 설정",
+          "timing": "이사 30일 전",
+          "steps": [
+            {
+              "id": "moving-home-entry",
+              "title": "홈에서 URL/메모 진입 찾기",
+              "phase": "discover",
+              "status": "verified",
+              "route": "/",
+              "expected": "Flow 찾기 입구를 첫 화면에서 찾는다.",
+              "observed": "URL이나 메모로 Flow 찾기 입구가 추천보다 먼저 보인다.",
+              "evidenceIds": [
+                "01-home-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "01-home-mobile",
+                  "file": "screenshots/01-home-mobile.png",
+                  "route": "/",
+                  "label": "Home entry and lightweight recommendations",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "moving-url-hit",
+              "title": "이사 원문 URL로 준비된 Flow 찾기",
+              "phase": "convert",
+              "status": "verified",
+              "route": "/flows",
+              "expected": "기존 준비가 있으면 재사용 가능한 결과를 기대한다.",
+              "observed": "canonical hit 결과가 준비된 Flow로 연결된다.",
+              "evidenceIds": [
+                "27-url-first-hit-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "27-url-first-hit-mobile",
+                  "file": "screenshots/27-url-first-hit-mobile.png",
+                  "route": "/flows",
+                  "label": "URL-first hit result on Flow finding",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "moving-date-context",
+              "title": "시작일이 아닌 이사일로 일정 맞추기",
+              "phase": "personalize",
+              "status": "verified",
+              "route": "/flows",
+              "expected": "입력 날짜가 무엇을 뜻하는지 알고 싶다.",
+              "observed": "이사일 라벨과 D-30 일정 설명이 보인다.",
+              "evidenceIds": [
+                "28b-url-first-moving-custom-start-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "28b-url-first-moving-custom-start-mobile",
+                  "file": "screenshots/28b-url-first-moving-custom-start-mobile.png",
+                  "route": "/flows",
+                  "label": "URL-first moving custom start with contextual move date",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "moving-session-2",
+          "label": "세션 2 · 저장 직후 개인화",
+          "timing": "같은 날",
+          "steps": [
+            {
+              "id": "moving-save-land",
+              "title": "My Flow에 저장됐는지 확인",
+              "phase": "save",
+              "status": "verified",
+              "route": "/my?savedMap=moving-d30",
+              "expected": "저장 완료와 다음 행동을 바로 확인한다.",
+              "observed": "post-save 확인과 첫 실행 항목이 같은 실행 허브에 나타난다.",
+              "evidenceIds": [
+                "13-post-save-my-moving-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "13-post-save-my-moving-mobile",
+                  "file": "screenshots/13-post-save-my-moving-mobile.png",
+                  "route": "/my?savedMap=moving-d30",
+                  "label": "Post-save My Flow for moving map",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "moving-anchor-edit",
+              "title": "이사일과 이름 다시 바꾸기",
+              "phase": "personalize",
+              "status": "verified",
+              "route": "/my?savedMap=curated-ajd-moving-d30",
+              "expected": "한 번 정한 전체 기준일을 다시 바꾸고 싶다.",
+              "observed": "Flow 전체 기준일·이름 수정 입구가 보인다.",
+              "evidenceIds": [
+                "13b-my-moving-personal-anchor-settings-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "13b-my-moving-personal-anchor-settings-mobile",
+                  "file": "screenshots/13b-my-moving-personal-anchor-settings-mobile.png",
+                  "route": "/my?savedMap=curated-ajd-moving-d30",
+                  "label": "My Flow moving personal copy anchor edit entry",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "moving-item-edit",
+              "title": "한 할 일만 날짜와 메모 바꾸기",
+              "phase": "personalize",
+              "status": "verified",
+              "route": "/my?savedMap=curated-ajd-moving-d30",
+              "expected": "전체 일정은 유지하고 한 항목만 늦춘다.",
+              "observed": "항목 날짜 override와 제목·날짜·메모 수정 입구가 분리된다.",
+              "evidenceIds": [
+                "13c-my-moving-personal-step-date-override-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "13c-my-moving-personal-step-date-override-mobile",
+                  "file": "screenshots/13c-my-moving-personal-step-date-override-mobile.png",
+                  "route": "/my?savedMap=curated-ajd-moving-d30",
+                  "label": "My Flow moving personal copy item date override label",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "moving-session-3",
+          "label": "세션 3 · 실행, 완료, 회고",
+          "timing": "며칠 뒤",
+          "steps": [
+            {
+              "id": "moving-calendar",
+              "title": "Calendar에서 오늘 일정 실행",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/calendar",
+              "expected": "수정한 날짜에 맞춰 할 일을 확인한다.",
+              "observed": "날짜 agenda와 Flow 구분 marker가 저장 상태를 읽는다.",
+              "evidenceIds": [
+                "14-calendar-after-moving-save-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "14-calendar-after-moving-save-mobile",
+                  "file": "screenshots/14-calendar-after-moving-save-mobile.png",
+                  "route": "/calendar",
+                  "label": "Calendar agenda-first after moving save",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "moving-complete-return",
+              "title": "완료 후 다시 열고 완료 취소하기",
+              "phase": "complete",
+              "status": "partial",
+              "route": "/my",
+              "expected": "실수로 완료했을 때 되돌리고 싶다.",
+              "observed": "완료 0개 남음과 완료 취소 패턴은 확인됐지만 이사 Flow의 연속 장면은 별도 캡처가 없다.",
+              "evidenceIds": [
+                "48-draft-completed-zero-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "48-draft-completed-zero-mobile",
+                  "file": "screenshots/48-draft-completed-zero-mobile.png",
+                  "route": "/my",
+                  "label": "Draft completed with zero remaining mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "moving-review",
+              "title": "이 Flow가 실제로 도움됐는지 리뷰 남기기",
+              "phase": "review",
+              "status": "missing",
+              "route": "/my",
+              "expected": "완료 경험과 빠진 준비를 남기고 싶다.",
+              "observed": "완료 뒤 유용성·만족도·한줄 리뷰 입력 표면이 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "moving-correction",
+              "title": "틀린 날짜나 준비 항목 수정 요청",
+              "phase": "request_revision",
+              "status": "missing",
+              "route": "/my",
+              "expected": "개인 수정과 별개로 원본 개선을 요청하고 싶다.",
+              "observed": "개인 overlay는 있으나 원본/제작자에게 보내는 수정 요청 경로가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            }
+          ]
+        }
+      ],
+      "supportCounts": {
+        "verified": 7,
+        "partial": 1,
+        "missing": 2,
+        "evidence_gap": 0,
+        "deferred": 0
+      }
+    },
+    {
+      "id": "miss-draft-user",
+      "name": "준비된 Flow가 없는 사용자",
+      "profile": "검색 중 찾은 낯선 URL이나 개인 메모를 바로 실행 가능한 초안으로 바꾸려는 사용자",
+      "goal": "miss 상태에서도 앱 밖으로 나가지 않고 초안을 저장·수정·실행하고, 품질 문제를 나중에 피드백한다.",
+      "preliminary": "초안 생성부터 실행까지 가장 길게 연결됐지만 품질 회고와 실제 AI 경계가 다음 과제다.",
+      "sessions": [
+        {
+          "id": "miss-session-1",
+          "label": "세션 1 · miss와 초안 준비",
+          "timing": "첫 방문",
+          "steps": [
+            {
+              "id": "miss-detected",
+              "title": "준비된 Flow가 없음을 이해",
+              "phase": "convert",
+              "status": "verified",
+              "route": "/flows",
+              "expected": "찾지 못했을 때 다음 선택지를 알고 싶다.",
+              "observed": "miss가 요청 저장과 초안 준비 흐름으로 이어진다.",
+              "evidenceIds": [
+                "29-url-first-miss-candidate-form-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "29-url-first-miss-candidate-form-mobile",
+                  "file": "screenshots/29-url-first-miss-candidate-form-mobile.png",
+                  "route": "/flows",
+                  "label": "URL-first miss candidate form",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-request-detail",
+              "title": "요청 제목·메모와 원 URL 확인",
+              "phase": "convert",
+              "status": "verified",
+              "route": "/flows",
+              "expected": "내가 남긴 요청을 다시 확인하고 고친다.",
+              "observed": "candidate detail에서 제목·메모·원 URL을 확인한다.",
+              "evidenceIds": [
+                "30-url-first-candidate-detail-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "30-url-first-candidate-detail-mobile",
+                  "file": "screenshots/30-url-first-candidate-detail-mobile.png",
+                  "route": "/flows",
+                  "label": "URL-first saved candidate request detail",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-suggestions",
+              "title": "3개 이상 실행 항목 초안 확인",
+              "phase": "convert",
+              "status": "verified",
+              "route": "/flows",
+              "expected": "빈 placeholder가 아니라 손볼 수 있는 시작점을 기대한다.",
+              "observed": "결정론적 제안 항목과 기준일 날짜가 보인다.",
+              "evidenceIds": [
+                "45-draft-save-failure-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "45-draft-save-failure-mobile",
+                  "file": "screenshots/45-draft-save-failure-mobile.png",
+                  "route": "/flows",
+                  "label": "Draft save failure with preserved input mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-live-ai",
+              "title": "실제 AI 자동 생성 기대 관리",
+              "phase": "convert",
+              "status": "deferred",
+              "route": "/flows",
+              "expected": "자동 생성인지 수동 초안인지 알고 싶다.",
+              "observed": "현재는 결정론적 초안이며 live AI로 과장하지 않는다.",
+              "evidenceIds": [
+                "29-url-first-miss-candidate-form-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "29-url-first-miss-candidate-form-mobile",
+                  "file": "screenshots/29-url-first-miss-candidate-form-mobile.png",
+                  "route": "/flows",
+                  "label": "URL-first miss candidate form",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "miss-session-2",
+          "label": "세션 2 · 저장, 수정, 투영",
+          "timing": "같은 날",
+          "steps": [
+            {
+              "id": "miss-studio-shelf",
+              "title": "Studio 초안 선반에서 다시 찾기",
+              "phase": "return",
+              "status": "verified",
+              "route": "/u/my-flow-studio",
+              "expected": "저장한 초안을 잃지 않고 다시 찾는다.",
+              "observed": "Studio 초안 탭에 같은 draft가 보인다.",
+              "evidenceIds": [
+                "39e-url-first-draft-studio-shelf-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "39e-url-first-draft-studio-shelf-mobile",
+                  "file": "screenshots/39e-url-first-draft-studio-shelf-mobile.png",
+                  "route": "/u/my-flow-studio",
+                  "label": "URL-first draft in Studio draft shelf mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-item-edit",
+              "title": "항목 제목·날짜·메모 수정",
+              "phase": "personalize",
+              "status": "verified",
+              "route": "/my",
+              "expected": "제안 항목을 내 말과 날짜로 고친다.",
+              "observed": "항목별 편집 입구와 사용자 메모가 있다.",
+              "evidenceIds": [
+                "39a-url-first-draft-item-edit-entry-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "39a-url-first-draft-item-edit-entry-mobile",
+                  "file": "screenshots/39a-url-first-draft-item-edit-entry-mobile.png",
+                  "route": "/my",
+                  "label": "URL-first draft item edit entry in My Flow",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-anchor-edit",
+              "title": "Flow 전체 기준일 다시 계산",
+              "phase": "personalize",
+              "status": "verified",
+              "route": "/my",
+              "expected": "전체 날짜를 한 번에 이동한다.",
+              "observed": "기준일 변경과 개별 override 유지 정책이 보인다.",
+              "evidenceIds": [
+                "39b-url-first-draft-anchor-edit-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "39b-url-first-draft-anchor-edit-mobile",
+                  "file": "screenshots/39b-url-first-draft-anchor-edit-mobile.png",
+                  "route": "/my",
+                  "label": "URL-first draft anchor edit policy in My Flow mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-calendar-export",
+              "title": "Calendar와 export가 수정본 읽기",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/calendar",
+              "expected": "수정한 결과가 모든 목적지에서 같기를 기대한다.",
+              "observed": "Calendar와 export projection evidence가 연결된다.",
+              "evidenceIds": [
+                "39d-url-first-draft-calendar-export-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "39d-url-first-draft-calendar-export-mobile",
+                  "file": "screenshots/39d-url-first-draft-calendar-export-mobile.png",
+                  "route": "/calendar",
+                  "label": "URL-first draft Calendar and export projection",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "miss-session-3",
+          "label": "세션 3 · 실패 복구와 반복 사용",
+          "timing": "며칠 뒤",
+          "steps": [
+            {
+              "id": "miss-save-failure",
+              "title": "저장 실패 뒤 입력 보존과 재시도",
+              "phase": "return",
+              "status": "verified",
+              "route": "/flows",
+              "expected": "실패해도 작성한 내용을 잃지 않는다.",
+              "observed": "입력 보존, 오류 설명, 재시도 행동이 있다.",
+              "evidenceIds": [
+                "45-draft-save-failure-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "45-draft-save-failure-mobile",
+                  "file": "screenshots/45-draft-save-failure-mobile.png",
+                  "route": "/flows",
+                  "label": "Draft save failure with preserved input mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-duplicate",
+              "title": "같은 URL 중복 저장 방지",
+              "phase": "reuse",
+              "status": "verified",
+              "route": "/flows",
+              "expected": "같은 초안을 여러 개 만들지 않고 기존 것을 연다.",
+              "observed": "중복 생성 없이 기존 My Flow 초안으로 이어진다.",
+              "evidenceIds": [
+                "46-draft-duplicate-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "46-draft-duplicate-mobile",
+                  "file": "screenshots/46-draft-duplicate-mobile.png",
+                  "route": "/flows",
+                  "label": "Duplicate draft returns to existing saved draft mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-completed-zero",
+              "title": "모든 항목 완료 후 상태 확인",
+              "phase": "complete",
+              "status": "verified",
+              "route": "/my",
+              "expected": "남은 일이 0임을 이해하고 필요하면 되돌린다.",
+              "observed": "전체 완료, 남은 0, 완료 취소 가능 상태가 보인다.",
+              "evidenceIds": [
+                "48-draft-completed-zero-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "48-draft-completed-zero-mobile",
+                  "file": "screenshots/48-draft-completed-zero-mobile.png",
+                  "route": "/my",
+                  "label": "Draft completed with zero remaining mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-offline",
+              "title": "이미 연 화면에서 오프라인 로컬 행동",
+              "phase": "return",
+              "status": "verified",
+              "route": "/my",
+              "expected": "네트워크가 끊겨도 현재 체크를 이어간다.",
+              "observed": "이미 열린 My Flow의 로컬 완료 행동이 유지된다.",
+              "evidenceIds": [
+                "49-draft-offline-local-action-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "49-draft-offline-local-action-mobile",
+                  "file": "screenshots/49-draft-offline-local-action-mobile.png",
+                  "route": "/my",
+                  "label": "Already-open draft local action while offline mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "miss-quality-review",
+              "title": "초안 품질과 빠진 항목 피드백",
+              "phase": "review",
+              "status": "missing",
+              "route": "/my",
+              "expected": "초안이 유용했는지와 틀린 부분을 남긴다.",
+              "observed": "draft 품질 리뷰나 개선 요청의 사용자 경로가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            }
+          ]
+        }
+      ],
+      "supportCounts": {
+        "verified": 11,
+        "partial": 0,
+        "missing": 1,
+        "evidence_gap": 0,
+        "deferred": 1
+      }
+    },
+    {
+      "id": "public-share-recipient",
+      "name": "공유 Flow를 받은 사용자",
+      "profile": "메신저나 검색 결과로 public /f 링크를 열고 저장 여부를 빠르게 판단하는 사용자",
+      "goal": "원문과 실행 항목을 신뢰할 수 있는지 보고 통째로 저장하거나 export한 뒤 개인 실행으로 전환한다.",
+      "preliminary": "저장 전후 경계는 명확해졌지만 개인 수정·외부 도구 왕복·콘텐츠 리뷰 연결이 부족하다.",
+      "sessions": [
+        {
+          "id": "public-session-1",
+          "label": "세션 1 · 공유 링크 평가",
+          "timing": "처음 링크를 받은 순간",
+          "steps": [
+            {
+              "id": "public-shell",
+              "title": "저장 전 Flow 전체 가치 판단",
+              "phase": "discover",
+              "status": "verified",
+              "route": "/f/vehicle-inspection-prep",
+              "expected": "무엇을 받게 되는지 먼저 본다.",
+              "observed": "공유 shell이 저장/setup을 첫 행동으로 둔다.",
+              "evidenceIds": [
+                "06-public-vehicle-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "06-public-vehicle-mobile",
+                  "file": "screenshots/06-public-vehicle-mobile.png",
+                  "route": "/f/vehicle-inspection-prep",
+                  "label": "Public share save screen",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "public-preview",
+              "title": "저장 전 항목 preview 확인",
+              "phase": "discover",
+              "status": "verified",
+              "route": "/f/moving-d30-basic",
+              "expected": "체크가 완료가 아니라 포함 preview임을 이해한다.",
+              "observed": "저장 전 선택과 저장 후 완료가 분리된다.",
+              "evidenceIds": [
+                "07-public-moving-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "07-public-moving-mobile",
+                  "file": "screenshots/07-public-moving-mobile.png",
+                  "route": "/f/moving-d30-basic",
+                  "label": "Public moving share screen",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "public-export",
+              "title": "Flow 단위 export 형식 판단",
+              "phase": "save",
+              "status": "verified",
+              "route": "/f/moving-d30-basic",
+              "expected": "전체 Flow를 Calendar·시트·메모로 가져간다.",
+              "observed": "export는 본문 secondary이며 sticky 저장보다 뒤에 있다.",
+              "evidenceIds": [
+                "08-public-moving-bottom-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "08-public-moving-bottom-mobile",
+                  "file": "screenshots/08-public-moving-bottom-mobile.png",
+                  "route": "/f/moving-d30-basic",
+                  "label": "Public moving bottom sticky clearance",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "public-session-2",
+          "label": "세션 2 · 저장 후 개인 실행",
+          "timing": "저장 직후",
+          "steps": [
+            {
+              "id": "public-post-save",
+              "title": "My Flow 완료 체크 활성화",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/my",
+              "expected": "저장 뒤 preview가 실제 실행 상태로 바뀐다.",
+              "observed": "같은 콘텐츠가 row-left 완료 체크 패턴으로 전환된다.",
+              "evidenceIds": [
+                "12b-public-new-car-post-save-my-flow-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "12b-public-new-car-post-save-my-flow-mobile",
+                  "file": "screenshots/12b-public-new-car-post-save-my-flow-mobile.png",
+                  "route": "/my",
+                  "label": "Public share post-save My Flow completion boundary",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "public-source-detail",
+              "title": "원문 근거와 세부 확인",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/f/new-car-delivery-check",
+              "expected": "항목을 실행할 때 출처 맥락을 다시 본다.",
+              "observed": "반복 source link 없이 공통 source 접근과 항목 detail이 유지된다.",
+              "evidenceIds": [
+                "25-workbench-new-car-open-details-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "25-workbench-new-car-open-details-mobile",
+                  "file": "screenshots/25-workbench-new-car-open-details-mobile.png",
+                  "route": "/f/new-car-delivery-check",
+                  "label": "New car checklist row details without repeated source links",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "public-personal-edit",
+              "title": "공유 Flow를 내 상황에 맞게 수정",
+              "phase": "personalize",
+              "status": "evidence_gap",
+              "route": "/my",
+              "expected": "저장한 공개 Flow도 제목·날짜·메모를 고치고 싶다.",
+              "observed": "overlay 모델은 있으나 public 저장 직후 같은 Flow를 편집하는 종단 capture가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "public-export-roundtrip",
+              "title": "외부 Calendar/메모에서 실제 사용",
+              "phase": "execute",
+              "status": "evidence_gap",
+              "route": "external-tool",
+              "expected": "내보낸 파일이 목적지에서 실사용 가능한지 확인한다.",
+              "observed": "export 생성은 검증됐지만 외부 도구 import·실행·재진입은 package가 증명하지 않는다.",
+              "evidenceIds": [],
+              "evidence": []
+            }
+          ]
+        },
+        {
+          "id": "public-session-3",
+          "label": "세션 3 · 재방문과 신뢰 피드백",
+          "timing": "실행 후",
+          "steps": [
+            {
+              "id": "public-return",
+              "title": "저장한 Flow 다시 이어서 실행",
+              "phase": "return",
+              "status": "partial",
+              "route": "/my",
+              "expected": "공유 링크가 아니라 내 실행 기록으로 돌아온다.",
+              "observed": "로컬 재방문은 가능하지만 계정·기기 간 연속성은 없다.",
+              "evidenceIds": [
+                "49-draft-offline-local-action-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "49-draft-offline-local-action-mobile",
+                  "file": "screenshots/49-draft-offline-local-action-mobile.png",
+                  "route": "/my",
+                  "label": "Already-open draft local action while offline mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "public-review",
+              "title": "공유 Flow 유용성 리뷰",
+              "phase": "review",
+              "status": "missing",
+              "route": "/my",
+              "expected": "다른 사용자와 제작자에게 도움이 된 정도를 남긴다.",
+              "observed": "public Flow 리뷰 표면이 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "public-report",
+              "title": "틀린 항목이나 원문 불일치 신고",
+              "phase": "request_revision",
+              "status": "missing",
+              "route": "/my",
+              "expected": "잘못된 실행 항목을 원본 개선 요청으로 보낸다.",
+              "observed": "개인 수정과 콘텐츠 오류 신고를 분리한 경로가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            }
+          ]
+        }
+      ],
+      "supportCounts": {
+        "verified": 5,
+        "partial": 1,
+        "missing": 2,
+        "evidence_gap": 2,
+        "deferred": 0
+      }
+    },
+    {
+      "id": "multi-flow-worker",
+      "name": "여러 Flow를 동시에 쓰는 직장인",
+      "profile": "이사·여행·공부 준비가 겹쳐 오늘 할 일과 같은 날짜 여러 Flow를 함께 관리하는 사용자",
+      "goal": "복잡한 목록에서도 오늘 할 일을 먼저 끝내고 Calendar에서 Flow를 구분해 날짜를 조정한다.",
+      "preliminary": "밀도와 구분은 개선됐지만 대량 관리, 일괄 정리, 장기 회고 evidence가 약하다.",
+      "sessions": [
+        {
+          "id": "multi-session-1",
+          "label": "세션 1 · 여러 Flow 저장 후 우선순위 확인",
+          "timing": "월요일 아침",
+          "steps": [
+            {
+              "id": "multi-today",
+              "title": "오늘·지난·다음 큐에서 지금 할 일 찾기",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/my",
+              "expected": "몇 번 들어가지 않고 오늘 일을 본다.",
+              "observed": "오늘 1프레임과 inline 완료가 우선한다.",
+              "evidenceIds": [
+                "16-my-multi-queue-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "16-my-multi-queue-mobile",
+                  "file": "screenshots/16-my-multi-queue-mobile.png",
+                  "route": "/my",
+                  "label": "My Flow with today overdue next queues",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "multi-inventory",
+              "title": "5개 이상 저장 목록 훑기",
+              "phase": "return",
+              "status": "verified",
+              "route": "/my",
+              "expected": "저장한 Flow가 많아도 마지막 항목까지 접근한다.",
+              "observed": "긴 목록 top/bottom과 fixed nav clearance가 확보된다.",
+              "evidenceIds": [
+                "18-my-long-list-top-mobile",
+                "20-my-long-list-inventory-bottom-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "18-my-long-list-top-mobile",
+                  "file": "screenshots/18-my-long-list-top-mobile.png",
+                  "route": "/my",
+                  "label": "My Flow 5+ saved list top",
+                  "noHorizontalOverflow": true
+                },
+                {
+                  "sourceScenarioId": "20-my-long-list-inventory-bottom-mobile",
+                  "file": "screenshots/20-my-long-list-inventory-bottom-mobile.png",
+                  "route": "/my",
+                  "label": "My Flow 5+ inventory sheet bottom clearance",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "multi-session-2",
+          "label": "세션 2 · 같은 날짜 여러 Flow 실행",
+          "timing": "일정이 겹친 날",
+          "steps": [
+            {
+              "id": "multi-grid",
+              "title": "월간 grid에서 3~5개 Flow 구분",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/calendar",
+              "expected": "날짜 셀은 compact하게 보고 전체는 agenda에서 본다.",
+              "observed": "주요 2개 marker와 외 N개 요약이 보인다.",
+              "evidenceIds": [
+                "43b-calendar-grid-flow-stack-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "43b-calendar-grid-flow-stack-mobile",
+                  "file": "screenshots/43b-calendar-grid-flow-stack-mobile.png",
+                  "route": "/calendar",
+                  "label": "Calendar grid compact same-date Flow stack mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "multi-agenda",
+              "title": "선택일 agenda에서 전체 Flow 확인",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/calendar",
+              "expected": "같은 날짜 모든 Flow와 할 일을 본다.",
+              "observed": "Flow별 group과 전체 항목이 표시된다.",
+              "evidenceIds": [
+                "43-calendar-same-date-multi-flow-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "43-calendar-same-date-multi-flow-mobile",
+                  "file": "screenshots/43-calendar-same-date-multi-flow-mobile.png",
+                  "route": "/calendar",
+                  "label": "Calendar same-date multi-Flow markers mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "multi-wide",
+              "title": "wide 화면에서도 밀도 유지",
+              "phase": "execute",
+              "status": "verified",
+              "route": "/calendar",
+              "expected": "데스크톱에서 날짜와 agenda를 동시에 비교한다.",
+              "observed": "grid와 agenda 2열이 overflow 없이 유지된다.",
+              "evidenceIds": [
+                "44b-calendar-grid-flow-stack-wide"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "44b-calendar-grid-flow-stack-wide",
+                  "file": "screenshots/44b-calendar-grid-flow-stack-wide.png",
+                  "route": "/calendar",
+                  "label": "Calendar grid compact same-date Flow stack wide",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "multi-session-3",
+          "label": "세션 3 · 밀린 일 복구와 장기 관리",
+          "timing": "일주일 뒤",
+          "steps": [
+            {
+              "id": "multi-overdue",
+              "title": "지난 할 일 중복 없이 열기",
+              "phase": "return",
+              "status": "verified",
+              "route": "/my",
+              "expected": "밀린 일만 모아 다시 처리한다.",
+              "observed": "overdue sheet가 중복 row 없이 열린다.",
+              "evidenceIds": [
+                "17-my-multi-queue-overdue-sheet-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "17-my-multi-queue-overdue-sheet-mobile",
+                  "file": "screenshots/17-my-multi-queue-overdue-sheet-mobile.png",
+                  "route": "/my",
+                  "label": "My Flow overdue sheet dedupe evidence",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "multi-reschedule",
+              "title": "한 항목 날짜만 이동",
+              "phase": "personalize",
+              "status": "partial",
+              "route": "/my",
+              "expected": "다른 Flow 일정은 건드리지 않고 한 일만 미룬다.",
+              "observed": "항목 date override는 확인됐지만 다중 Flow 전환 장면은 별도 evidence가 없다.",
+              "evidenceIds": [
+                "13c-my-moving-personal-step-date-override-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "13c-my-moving-personal-step-date-override-mobile",
+                  "file": "screenshots/13c-my-moving-personal-step-date-override-mobile.png",
+                  "route": "/my?savedMap=curated-ajd-moving-d30",
+                  "label": "My Flow moving personal copy item date override label",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "multi-offline",
+              "title": "출근길 오프라인 완료 체크",
+              "phase": "return",
+              "status": "partial",
+              "route": "/my",
+              "expected": "이미 연 목록에서 체크를 이어간다.",
+              "observed": "로컬 행동은 되지만 동기화·충돌 복구는 없다.",
+              "evidenceIds": [
+                "49-draft-offline-local-action-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "49-draft-offline-local-action-mobile",
+                  "file": "screenshots/49-draft-offline-local-action-mobile.png",
+                  "route": "/my",
+                  "label": "Already-open draft local action while offline mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "multi-archive",
+              "title": "끝난 Flow 정리와 성과 회고",
+              "phase": "reuse",
+              "status": "evidence_gap",
+              "route": "/my",
+              "expected": "완료한 Flow를 보관하고 다시 쓸지 판단한다.",
+              "observed": "완료 0 상태는 있으나 archive/reuse history 종단 evidence가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "multi-review",
+              "title": "장기 사용 후 개선 의견 남기기",
+              "phase": "review",
+              "status": "missing",
+              "route": "/my",
+              "expected": "어떤 부분이 반복해서 불편했는지 남긴다.",
+              "observed": "사용 경험 리뷰 경로가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            }
+          ]
+        }
+      ],
+      "supportCounts": {
+        "verified": 6,
+        "partial": 2,
+        "missing": 1,
+        "evidence_gap": 1,
+        "deferred": 0
+      }
+    },
+    {
+      "id": "study-repeater",
+      "name": "학습·워크시트 반복 사용자",
+      "profile": "교재나 학습 자료를 저장해 매일 조금씩 공부하고 진행 맥락을 확인하는 사용자",
+      "goal": "날짜가 없거나 반복되는 학습 항목을 부담 없이 저장하고, 진행 숫자의 의미를 이해하며 다시 공부한다.",
+      "preliminary": "저장과 기본 실행은 가능하지만 반복 재사용·학습 기록·피드백의 종단 evidence가 적다.",
+      "sessions": [
+        {
+          "id": "study-session-1",
+          "label": "세션 1 · 학습 콘텐츠 선택과 저장",
+          "timing": "학습 시작일",
+          "steps": [
+            {
+              "id": "study-map",
+              "title": "학습 Flow 구조와 원문 확인",
+              "phase": "discover",
+              "status": "verified",
+              "route": "/flow-maps/middle-school-math-1",
+              "expected": "교재 범위가 실행 항목으로 옮겨졌는지 본다.",
+              "observed": "source-backed 학습 Flow Map이 저장 경로를 제공한다.",
+              "evidenceIds": [
+                "05-flow-map-math-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "05-flow-map-math-mobile",
+                  "file": "screenshots/05-flow-map-math-mobile.png",
+                  "route": "/flow-maps/middle-school-math-1",
+                  "label": "Math source-backed map screen",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "study-save",
+              "title": "날짜 없는 학습 Flow My Flow 착지",
+              "phase": "save",
+              "status": "verified",
+              "route": "/my?savedMap=middle-school-math-1",
+              "expected": "캘린더 강제 없이 바로 공부 항목을 본다.",
+              "observed": "undated content가 My Flow 할 일 중심으로 저장된다.",
+              "evidenceIds": [
+                "15-post-save-my-math-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "15-post-save-my-math-mobile",
+                  "file": "screenshots/15-post-save-my-math-mobile.png",
+                  "route": "/my?savedMap=middle-school-math-1",
+                  "label": "Post-save My Flow for undated math content",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "study-session-2",
+          "label": "세션 2 · 공부와 진행 확인",
+          "timing": "다음 날",
+          "steps": [
+            {
+              "id": "study-complete",
+              "title": "학습 항목 inline 완료",
+              "phase": "complete",
+              "status": "verified",
+              "route": "/my",
+              "expected": "상세를 열지 않고 공부한 항목을 체크한다.",
+              "observed": "완료 control은 checkbox 한 종류로 유지된다.",
+              "evidenceIds": [
+                "15-post-save-my-math-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "15-post-save-my-math-mobile",
+                  "file": "screenshots/15-post-save-my-math-mobile.png",
+                  "route": "/my?savedMap=middle-school-math-1",
+                  "label": "Post-save My Flow for undated math content",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "study-progress",
+              "title": "진행 숫자의 범위 이해",
+              "phase": "execute",
+              "status": "partial",
+              "route": "/my",
+              "expected": "전체 진도와 확인 항목 진도를 구분한다.",
+              "observed": "진행 숫자 맥락화 marker는 있으나 장기 학습 변화 화면은 제한적이다.",
+              "evidenceIds": [
+                "15-post-save-my-math-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "15-post-save-my-math-mobile",
+                  "file": "screenshots/15-post-save-my-math-mobile.png",
+                  "route": "/my?savedMap=middle-school-math-1",
+                  "label": "Post-save My Flow for undated math content",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "study-session-3",
+          "label": "세션 3 · 반복 학습과 개선",
+          "timing": "일주일 뒤",
+          "steps": [
+            {
+              "id": "study-edit",
+              "title": "학습 제목·날짜·메모 수정",
+              "phase": "personalize",
+              "status": "evidence_gap",
+              "route": "/my",
+              "expected": "내 교재 표현과 복습일로 바꾼다.",
+              "observed": "overlay 모델은 공통이지만 학습 Flow 편집 장면이 package에 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "study-reuse",
+              "title": "다음 단원이나 다음 주에 재사용",
+              "phase": "reuse",
+              "status": "evidence_gap",
+              "route": "/my",
+              "expected": "완료 기록을 남기고 같은 구조를 다시 쓴다.",
+              "observed": "반복 복제·새 주기 시작·이전 기록 비교가 증명되지 않는다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "study-notes",
+              "title": "학습 결과와 틀린 구조 피드백",
+              "phase": "review",
+              "status": "missing",
+              "route": "/my",
+              "expected": "이해가 안 된 부분과 잘못 나눈 단원을 남긴다.",
+              "observed": "학습 결과 리뷰나 콘텐츠 수정 요청 경로가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            }
+          ]
+        }
+      ],
+      "supportCounts": {
+        "verified": 3,
+        "partial": 1,
+        "missing": 1,
+        "evidence_gap": 2,
+        "deferred": 0
+      }
+    },
+    {
+      "id": "creator-curator",
+      "name": "제작·수정에 관심 있는 사용자",
+      "profile": "자기 초안을 정리하고 다른 사람에게 공개할 수 있는지 확인하려는 보조 Studio 사용자",
+      "goal": "초안을 다시 찾고 수정한 뒤, 향후 공개·버전 업데이트·사용자 피드백 반영 가능성을 판단한다.",
+      "preliminary": "초안 선반과 공개 profile은 있지만 제작→발행→리뷰→개정 loop는 아직 제품 경계 밖이다.",
+      "sessions": [
+        {
+          "id": "creator-session-1",
+          "label": "세션 1 · Studio와 공개 profile 이해",
+          "timing": "첫 제작 시도",
+          "steps": [
+            {
+              "id": "creator-studio",
+              "title": "내 Studio를 보조 표면으로 열기",
+              "phase": "discover",
+              "status": "verified",
+              "route": "/u/my-flow-studio",
+              "expected": "5번째 탭이 아닌 제작 보조 공간임을 이해한다.",
+              "observed": "filled Studio가 모바일에서 접근 가능하다.",
+              "evidenceIds": [
+                "39-creator-profile-my-flow-studio-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "39-creator-profile-my-flow-studio-mobile",
+                  "file": "screenshots/39-creator-profile-my-flow-studio-mobile.png",
+                  "route": "/u/my-flow-studio",
+                  "label": "Creator profile studio mobile surface with filled local content",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "creator-profile",
+              "title": "공개 creator profile 확인",
+              "phase": "discover",
+              "status": "verified",
+              "route": "/u/flow-curation-team",
+              "expected": "공개 콘텐츠와 개인 실행 공간을 구분한다.",
+              "observed": "public creator profile이 별도 사용자 표면으로 보인다.",
+              "evidenceIds": [
+                "41-creator-profile-flow-curation-team-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "41-creator-profile-flow-curation-team-mobile",
+                  "file": "screenshots/41-creator-profile-flow-curation-team-mobile.png",
+                  "route": "/u/flow-curation-team",
+                  "label": "Filled public creator profile mobile surface",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "creator-session-2",
+          "label": "세션 2 · 초안 재발견과 수정",
+          "timing": "며칠 뒤",
+          "steps": [
+            {
+              "id": "creator-shelf",
+              "title": "URL-first draft를 초안 탭에서 찾기",
+              "phase": "return",
+              "status": "verified",
+              "route": "/u/my-flow-studio",
+              "expected": "예전에 만든 초안을 다시 연다.",
+              "observed": "Studio draft shelf에 local draft card가 나타난다.",
+              "evidenceIds": [
+                "39e-url-first-draft-studio-shelf-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "39e-url-first-draft-studio-shelf-mobile",
+                  "file": "screenshots/39e-url-first-draft-studio-shelf-mobile.png",
+                  "route": "/u/my-flow-studio",
+                  "label": "URL-first draft in Studio draft shelf mobile",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            },
+            {
+              "id": "creator-edit",
+              "title": "같은 My Flow 편집 방으로 이동",
+              "phase": "personalize",
+              "status": "verified",
+              "route": "/my",
+              "expected": "별도 에디터가 아니라 검증된 수정 모델을 쓴다.",
+              "observed": "Studio card가 My Flow item edit path로 이어진다.",
+              "evidenceIds": [
+                "39a-url-first-draft-item-edit-entry-mobile"
+              ],
+              "evidence": [
+                {
+                  "sourceScenarioId": "39a-url-first-draft-item-edit-entry-mobile",
+                  "file": "screenshots/39a-url-first-draft-item-edit-entry-mobile.png",
+                  "route": "/my",
+                  "label": "URL-first draft item edit entry in My Flow",
+                  "noHorizontalOverflow": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "creator-session-3",
+          "label": "세션 3 · 공개, 리뷰, 개정",
+          "timing": "공개를 고려할 때",
+          "steps": [
+            {
+              "id": "creator-publish",
+              "title": "개인 초안을 공개 Flow로 발행",
+              "phase": "save",
+              "status": "missing",
+              "route": "/u/my-flow-studio",
+              "expected": "검토 후 공개 링크를 만든다.",
+              "observed": "사용자용 publish/version gate가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "creator-correction",
+              "title": "사용자 수정 요청 받기",
+              "phase": "request_revision",
+              "status": "missing",
+              "route": "/u/my-flow-studio",
+              "expected": "틀린 항목 제보를 원본 개선 요청으로 받는다.",
+              "observed": "수정 요청 inbox나 항목 단위 연결이 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "creator-review-response",
+              "title": "리뷰에 답하고 새 버전 알리기",
+              "phase": "review",
+              "status": "missing",
+              "route": "/u/my-flow-studio",
+              "expected": "리뷰를 보고 개정 후 사용자에게 알린다.",
+              "observed": "리뷰·답변·changelog·업데이트 알림이 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            },
+            {
+              "id": "creator-source-update",
+              "title": "source-backed 새 버전 적용",
+              "phase": "reuse",
+              "status": "evidence_gap",
+              "route": "/my",
+              "expected": "원본이 바뀌면 개인 수정과 충돌 없이 업데이트한다.",
+              "observed": "update review 로직 테스트는 있으나 이번 사용자 여정 package의 시각 evidence가 없다.",
+              "evidenceIds": [],
+              "evidence": []
+            }
+          ]
+        }
+      ],
+      "supportCounts": {
+        "verified": 4,
+        "partial": 0,
+        "missing": 3,
+        "evidence_gap": 1,
+        "deferred": 0
+      }
+    }
+  ],
+  "preliminaryFindings": [
+    {
+      "severity": "High",
+      "title": "실행 뒤 리뷰·수정 요청 loop가 비어 있다",
+      "detail": "발견→저장→개인화→실행→완료는 연결되지만 완료 경험을 콘텐츠 개선으로 되돌리는 사용자 표면이 없다."
+    },
+    {
+      "severity": "High",
+      "title": "개인 수정과 원본 개선의 소유권 경계가 UI에 없다",
+      "detail": "personal overlay는 강하지만 사용자가 틀린 원본을 발견했을 때 자기 사본만 고칠지 제작자에게 요청할지 선택할 수 없다."
+    },
+    {
+      "severity": "High",
+      "title": "export는 생성되지만 외부 도구 왕복 실행은 evidence 밖이다",
+      "detail": "Calendar·시트·메모 파일 생성은 검증됐지만 실제 import, 사용, 완료, FLOW 재진입은 시뮬레이션되지 않았다."
+    },
+    {
+      "severity": "Medium",
+      "title": "동일 브라우저 재방문은 되지만 계정·기기 연속성은 없다",
+      "detail": "오프라인 로컬 행동은 강점이지만 상용 반복 사용에서 기기 변경과 저장 손실 복구가 정의되지 않았다."
+    },
+    {
+      "severity": "Medium",
+      "title": "Studio의 보조 역할과 향후 발행 역할 사이가 비어 있다",
+      "detail": "초안 선반은 유용하지만 사용자에게 공개·버전·리뷰를 약속하지 않는 현재 경계를 유지할지 결정이 필요하다."
+    }
+  ],
+  "openQuestions": [
+    "완료 후 리뷰는 Flow 전체 만족도, 개별 항목 정확성, 실제 실행 결과 중 무엇을 먼저 물어야 하는가?",
+    "개인 overlay 수정과 원본/제작자 수정 요청을 어떤 카피와 데이터 경계로 나눌 것인가?",
+    "리뷰·오류 신고 입구는 My Flow 완료 상태, 항목 detail, public /f, Studio 중 어디가 가장 자연스러운가?",
+    "커뮤니티를 만들지 않고도 가능한 최소 feedback slice는 무엇인가?",
+    "외부 Calendar/메모/시트로 export한 뒤 실제 실행과 완료를 FLOW가 어디까지 다시 받아야 하는가?",
+    "localStorage 기반 재방문을 상용서비스 연속성으로 볼 수 있는가, 계정·기기 동기화가 언제 필요한가?",
+    "creator/studio를 보조 표면으로 유지하면서도 수정 요청과 버전 개정을 처리할 수 있는가?",
+    "실제 AI는 어떤 사용자 행동 데이터와 review gate가 생긴 뒤에 열어야 하는가?"
+  ],
+  "codexAssessment": {
+    "method": "P21 screenshot, route-evidence, E2E marker를 같은 페르소나의 다회차 여정으로 재배열한 독립 휴리스틱 평가",
+    "verdict": {
+      "level": "Conditional",
+      "label": "조건부 사용 가능",
+      "detail": "한 기기·한 브라우저에서 개인 Flow를 찾고 저장·수정·실행·완료하는 private beta는 가능하다. 계정·기기 연속성, 완료 후 피드백, 원본 수정 요청, 외부 도구 왕복이 닫히지 않아 반복 상용 서비스로는 아직 준비되지 않았다."
+    },
+    "recommendedDirection": {
+      "title": "새 표면을 늘리기보다 실행 후 학습 loop를 닫는다",
+      "detail": "P22는 완료 이후의 짧은 회고와 원본 오류 알리기, 반복 사용의 신뢰를 먼저 다룬다. 공개 리뷰 커뮤니티, Studio 발행, live AI는 이 데이터 경계가 확인될 때까지 보류한다."
+    },
+    "scorecards": [
+      {
+        "id": "home-entry",
+        "label": "홈 발견과 URL/메모 진입",
+        "value": 4,
+        "max": 5,
+        "rationale": "핵심 진입이 첫 viewport에서 보이고 추천보다 앞선다.",
+        "evidenceIds": [
+          "01-home-mobile"
+        ]
+      },
+      {
+        "id": "url-hit",
+        "label": "URL hit와 기준일 설정",
+        "value": 4,
+        "max": 5,
+        "rationale": "준비된 Flow 재사용과 이사일 맥락은 명확하다.",
+        "evidenceIds": [
+          "27-url-first-hit-mobile",
+          "28b-url-first-moving-custom-start-mobile"
+        ]
+      },
+      {
+        "id": "url-miss",
+        "label": "URL miss와 초안 전환",
+        "value": 2.5,
+        "max": 5,
+        "rationale": "작동 범위는 넓지만 miss·후보·요청·초안·저장 상태가 한 화면에 겹쳐 첫 결정이 무겁다.",
+        "evidenceIds": [
+          "29-url-first-miss-candidate-form-mobile",
+          "30-url-first-candidate-detail-mobile",
+          "45-draft-save-failure-mobile"
+        ]
+      },
+      {
+        "id": "public-save",
+        "label": "public 공유 저장 경계",
+        "value": 3.5,
+        "max": 5,
+        "rationale": "sticky 저장 우선과 저장 전 preview 경계는 명확하지만 외부 export의 실제 사용 장면은 없다.",
+        "evidenceIds": [
+          "06-public-vehicle-mobile",
+          "08-public-moving-bottom-mobile",
+          "12b-public-new-car-post-save-my-flow-mobile"
+        ]
+      },
+      {
+        "id": "my-flow",
+        "label": "My Flow 실행과 개인화",
+        "value": 3,
+        "max": 5,
+        "rationale": "오늘 행동과 완료는 분명하지만 상세 편집 화면은 중첩 패널과 메타가 많아 실행 모드와 수정 모드가 다시 섞인다.",
+        "evidenceIds": [
+          "13-post-save-my-moving-mobile",
+          "39a-url-first-draft-item-edit-entry-mobile",
+          "39b-url-first-draft-anchor-edit-mobile"
+        ]
+      },
+      {
+        "id": "calendar",
+        "label": "Calendar 다중 Flow 실행",
+        "value": 3,
+        "max": 5,
+        "rationale": "Flow 구분과 compact grid는 작동하지만 모바일 선택일 상세와 wide agenda의 정보 밀도가 높다.",
+        "evidenceIds": [
+          "43-calendar-same-date-multi-flow-mobile",
+          "44b-calendar-grid-flow-stack-wide"
+        ]
+      },
+      {
+        "id": "completion-return",
+        "label": "완료와 재방문 복구",
+        "value": 3,
+        "max": 5,
+        "rationale": "완료 0, 취소, 중복 방지, 저장 실패, 열린 화면 오프라인 행동은 확인됐다. 계정·기기 연속성은 없다.",
+        "evidenceIds": [
+          "45-draft-save-failure-mobile",
+          "46-draft-duplicate-mobile",
+          "48-draft-completed-zero-mobile",
+          "49-draft-offline-local-action-mobile"
+        ]
+      },
+      {
+        "id": "review-correction",
+        "label": "리뷰와 원본 수정 요청",
+        "value": 1,
+        "max": 5,
+        "rationale": "완료 경험을 평가하거나 개인 수정과 원본 개선 요청을 나누는 사용자 표면이 없다.",
+        "evidenceIds": []
+      },
+      {
+        "id": "external-round-trip",
+        "label": "외부 export 왕복",
+        "value": 2,
+        "max": 5,
+        "rationale": "파일 생성 projection은 확인됐지만 실제 Calendar·시트·메모 import와 재진입은 evidence 밖이다.",
+        "evidenceIds": [
+          "08-public-moving-bottom-mobile",
+          "39d-url-first-draft-calendar-export-mobile"
+        ]
+      },
+      {
+        "id": "studio",
+        "label": "Studio와 creator 보조 표면",
+        "value": 2.5,
+        "max": 5,
+        "rationale": "초안 선반과 공개 profile은 구분되지만 발행·버전·리뷰 loop는 의도적으로 비어 있다.",
+        "evidenceIds": [
+          "39e-url-first-draft-studio-shelf-mobile",
+          "41-creator-profile-flow-curation-team-mobile"
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "severity": "Blocking",
+        "title": "한 기기 localStorage를 상용 연속성으로 오해하면 안 된다",
+        "detail": "완료·수정·초안이 모두 브라우저 로컬 상태에 기대므로 기기 변경, 데이터 손실, 복구 약속이 없다. private beta 범위와 상용 출시 조건을 분리해야 한다.",
+        "evidenceIds": [
+          "48-draft-completed-zero-mobile",
+          "49-draft-offline-local-action-mobile"
+        ]
+      },
+      {
+        "severity": "High",
+        "title": "완료 뒤 제품이 학습하지 않는다",
+        "detail": "사용자는 완료 후 유용성, 빠진 항목, 틀린 날짜를 남길 수 없다. 이 때문에 Flow 품질 개선과 반복 사용의 이유가 생기지 않는다.",
+        "evidenceIds": [
+          "48-draft-completed-zero-mobile"
+        ]
+      },
+      {
+        "severity": "High",
+        "title": "개인 수정과 원본 수정 요청의 소유권 경계가 없다",
+        "detail": "제목·날짜·메모 overlay는 강하지만 내 사본만 고치는 행동과 다른 사용자에게도 필요한 원본 정정을 구분할 수 없다.",
+        "evidenceIds": [
+          "13c-my-moving-personal-step-date-override-mobile",
+          "39a-url-first-draft-item-edit-entry-mobile"
+        ]
+      },
+      {
+        "severity": "High",
+        "title": "URL miss 화면은 기능보다 상태 설명이 먼저 보인다",
+        "detail": "아직 없음, 저장 대기, 초안 요청 가능, 실행 불가 상태가 중첩되어 사용자의 첫 선택이 흐려진다.",
+        "evidenceIds": [
+          "29-url-first-miss-candidate-form-mobile",
+          "30-url-first-candidate-detail-mobile"
+        ]
+      },
+      {
+        "severity": "High",
+        "title": "실행과 편집 상세의 정보 밀도가 높다",
+        "detail": "My Flow와 Calendar에서 실행 행은 간결하지만 상세를 열면 날짜·기준·상태·메모·원문 도구가 여러 패널로 겹쳐 상용 서비스의 안정된 편집 경험으로 보기 어렵다.",
+        "evidenceIds": [
+          "39a-url-first-draft-item-edit-entry-mobile",
+          "43-calendar-same-date-multi-flow-mobile"
+        ]
+      },
+      {
+        "severity": "Medium",
+        "title": "export의 진짜 가치가 앱 밖에서 검증되지 않았다",
+        "detail": "생성 파일의 존재만으로 사용자가 자기 Calendar·시트·메모에서 실제로 실행할 수 있다고 결론낼 수 없다.",
+        "evidenceIds": [
+          "08-public-moving-bottom-mobile",
+          "39d-url-first-draft-calendar-export-mobile"
+        ]
+      },
+      {
+        "severity": "Medium",
+        "title": "완료 뒤 재사용과 새 버전 반영의 기준이 없다",
+        "detail": "중복 저장 방지는 되지만 지난 실행을 복제할지, 날짜만 다시 잡을지, 원본 업데이트를 받을지 선택하는 반복 사용 모델이 없다.",
+        "evidenceIds": [
+          "46-draft-duplicate-mobile",
+          "48-draft-completed-zero-mobile"
+        ]
+      }
+    ],
+    "backlog": [
+      {
+        "id": "P22-00",
+        "priority": "Blocking",
+        "title": "실제 종단 사용 관찰과 저장 연속성 출시 gate",
+        "personas": [
+          "모든 페르소나"
+        ],
+        "problem": "시뮬레이션은 동작 연결만 증명하며 습관 형성과 기기 간 신뢰를 증명하지 못한다.",
+        "minimumScope": "3~7일 동안 신규·반복·Calendar-heavy 사용자 관찰을 진행하고, local-only private beta와 account-backed 상용 출시 조건을 문서로 분리한다.",
+        "doNotExpand": "새 기능을 먼저 만들거나 가상 페르소나 결과를 실제 사용자 데이터로 표현하지 않는다.",
+        "acceptanceCriteria": [
+          "최소 5명, 3회차 이상 관찰 기록",
+          "발견→완료 drop-off와 재방문 이유 기록",
+          "데이터 손실·기기 변경 기대를 명시",
+          "출시 등급과 persistence gate 승인"
+        ],
+        "evidenceIds": [
+          "현재 package 전체"
+        ]
+      },
+      {
+        "id": "P22-01",
+        "priority": "High",
+        "title": "완료 후 최소 회고·오류 알리기 모델",
+        "personas": [
+          "이사 준비 사용자",
+          "miss draft 사용자",
+          "학습 반복 사용자"
+        ],
+        "problem": "완료 뒤 유용성·정확성·빠진 항목을 남길 표면이 없다.",
+        "minimumScope": "완료 상태에서 비공개 2갈래 행동만 설계한다: 내 실행 회고 남기기, 원본 내용 알리기. spec과 fixture로 먼저 검증한다.",
+        "doNotExpand": "별점 공개, 댓글, 인기 순위, 커뮤니티 피드, creator inbox 전체를 만들지 않는다.",
+        "acceptanceCriteria": [
+          "Flow 전체와 항목 단위 맥락 구분",
+          "개인 메모와 원본 정정 요청 저장 경계 명시",
+          "완료 행동을 방해하지 않는 진입점",
+          "실제 공개 리뷰로 오해되는 문구 0"
+        ],
+        "evidenceIds": [
+          "48-draft-completed-zero-mobile"
+        ]
+      },
+      {
+        "id": "P22-02",
+        "priority": "High",
+        "title": "개인 overlay와 원본 정정 요청 경계 구현",
+        "personas": [
+          "공유 Flow 사용자",
+          "creator/curator"
+        ],
+        "problem": "현재 수정은 내 사본에만 반영되고 원본 문제 제보가 없다.",
+        "minimumScope": "항목 detail에서 내 Flow만 수정과 원본 내용 알리기를 분리하고, 요청에는 Flow·항목·원 URL·사용자 설명만 보존한다.",
+        "doNotExpand": "자동 원본 수정, 공개 투표, source-backed 원본 덮어쓰기를 하지 않는다.",
+        "acceptanceCriteria": [
+          "두 행동의 결과 카피가 다름",
+          "원본 요청이 personal overlay를 변경하지 않음",
+          "내 수정이 public Flow를 변경하지 않음",
+          "내부 제작어 0"
+        ],
+        "evidenceIds": [
+          "13c-my-moving-personal-step-date-override-mobile",
+          "25-workbench-new-car-open-details-mobile"
+        ]
+      },
+      {
+        "id": "P22-03",
+        "priority": "High",
+        "title": "URL miss 첫 결정과 초안 상태 압축",
+        "personas": [
+          "준비된 Flow가 없는 사용자"
+        ],
+        "problem": "한 화면에 miss·candidate·request·draft 상태 설명이 겹친다.",
+        "minimumScope": "첫 viewport는 준비된 Flow 없음과 초안 살펴보기 한 행동에 집중하고, 요청 관리·원 URL·재조회는 접힌 보조 영역으로 내린다.",
+        "doNotExpand": "live AI 생성처럼 표현하거나 candidate 운영 상태를 다시 노출하지 않는다.",
+        "acceptanceCriteria": [
+          "첫 viewport primary action 1개",
+          "실행 불가·저장 대기 상태 문구 중복 0",
+          "요청 정보는 손실 없이 보조 영역에서 접근",
+          "저장 실패·중복 복구 유지"
+        ],
+        "evidenceIds": [
+          "29-url-first-miss-candidate-form-mobile",
+          "30-url-first-candidate-detail-mobile",
+          "45-draft-save-failure-mobile"
+        ]
+      },
+      {
+        "id": "P22-04",
+        "priority": "High",
+        "title": "My Flow·Calendar 실행 모드와 편집 상세 밀도 분리",
+        "personas": [
+          "이사 준비 사용자",
+          "다중 Flow 사용자"
+        ],
+        "problem": "행은 간결하지만 상세 안에 실행·편집·근거 패널이 동시에 열린다.",
+        "minimumScope": "기본 상세는 할 일·완료·짧은 메모 중심으로 두고, 제목·날짜·원문 도구 편집은 명시적 편집 상태에서만 연다.",
+        "doNotExpand": "별도 5번째 탭이나 full-screen Studio editor를 만들지 않는다.",
+        "acceptanceCriteria": [
+          "기본 상세의 1차 행동 2개 이하",
+          "편집 상태 진입·취소·저장 명확",
+          "Calendar group/완료 checkbox 기준 유지",
+          "390/1024 overflow 0"
+        ],
+        "evidenceIds": [
+          "39a-url-first-draft-item-edit-entry-mobile",
+          "39b-url-first-draft-anchor-edit-mobile",
+          "43-calendar-same-date-multi-flow-mobile"
+        ]
+      },
+      {
+        "id": "P22-05",
+        "priority": "Medium",
+        "title": "외부 Calendar·시트·메모 왕복 검증",
+        "personas": [
+          "공유 Flow 사용자",
+          "다중 Flow 사용자"
+        ],
+        "problem": "export payload는 검증됐지만 실제 외부 도구 사용 결과가 없다.",
+        "minimumScope": "대표 Flow 3개를 실제 Calendar·시트·메모에 import하고 제목·날짜·메모·중복·재생성 결과를 기록한다.",
+        "doNotExpand": "검증 전 provider 연동이나 양방향 sync를 구현하지 않는다.",
+        "acceptanceCriteria": [
+          "대표 형식별 import 성공",
+          "날짜·제목·메모 fidelity 기록",
+          "중복 import 정책 확인",
+          "실패 시 사용자 복구 문구 제안"
+        ],
+        "evidenceIds": [
+          "08-public-moving-bottom-mobile",
+          "39d-url-first-draft-calendar-export-mobile"
+        ]
+      },
+      {
+        "id": "P22-06",
+        "priority": "Medium",
+        "title": "완료 Flow 재사용·버전 갱신 정책 spec",
+        "personas": [
+          "학습 반복 사용자",
+          "creator/curator"
+        ],
+        "problem": "완료 후 새 주기 시작과 원본 업데이트 수용 기준이 없다.",
+        "minimumScope": "그대로 다시 쓰기, 날짜만 새로 잡기, 새 버전 검토의 세 경우를 source/personal overlay 충돌 규칙과 함께 문서화한다.",
+        "doNotExpand": "자동 병합이나 복잡한 버전 트리를 구현하지 않는다.",
+        "acceptanceCriteria": [
+          "완료 기록 보존",
+          "새 실행과 과거 실행 분리",
+          "personal overlay 충돌 시 명시적 선택",
+          "Studio를 핵심 탭으로 승격하지 않음"
+        ],
+        "evidenceIds": [
+          "46-draft-duplicate-mobile",
+          "48-draft-completed-zero-mobile",
+          "39e-url-first-draft-studio-shelf-mobile"
+        ]
+      },
+      {
+        "id": "P22-07",
+        "priority": "Low",
+        "title": "Studio 발행·공개 리뷰 확장 보류",
+        "personas": [
+          "creator/curator"
+        ],
+        "problem": "초안 선반은 유용하지만 발행과 공개 리뷰를 받을 근거가 없다.",
+        "minimumScope": "P22-00~P22-02 결과가 쌓일 때까지 Studio는 초안 보조 선반으로 유지하고 승격 조건만 기록한다.",
+        "doNotExpand": "publish, follower, 공개 별점, 댓글을 만들지 않는다.",
+        "acceptanceCriteria": [
+          "4탭 IA 유지",
+          "Studio secondary tier 유지",
+          "승격 조건을 실제 사용·정정 요청 데이터로 정의"
+        ],
+        "evidenceIds": [
+          "39e-url-first-draft-studio-shelf-mobile",
+          "41-creator-profile-flow-curation-team-mobile"
+        ]
+      }
+    ],
+    "deferred": [
+      "live AI 자동 생성: miss draft의 수동 편집·품질 피드백 데이터가 생길 때까지 보류",
+      "공개 리뷰·별점·댓글: 실제 실행과 정정 요청의 최소 loop가 검증될 때까지 보류",
+      "Studio 발행과 creator 운영 도구: 개인 실행 허브와 correction ownership이 먼저",
+      "양방향 Calendar sync: 파일 import 왕복 검증이 먼저"
+    ]
+  },
+  "copiedScreenshots": [
+    {
+      "id": "01-home-mobile",
+      "file": "screenshots/01-home-mobile.png",
+      "route": "/",
+      "label": "Home entry and lightweight recommendations",
+      "sourceScenarioId": "01-home-mobile",
+      "sha256": "5a329102d1c7bc2f5de9ac5d17ae8c73d4d60b3382e47e94bc41e28cccf2d8f3",
+      "bytes": 32268,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "27-url-first-hit-mobile",
+      "file": "screenshots/27-url-first-hit-mobile.png",
+      "route": "/flows",
+      "label": "URL-first hit result on Flow finding",
+      "sourceScenarioId": "27-url-first-hit-mobile",
+      "sha256": "b67b335b39113dc3ae2f856011679f194bbe8747b5a542b0d925d0326c2c70dc",
+      "bytes": 39159,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "28b-url-first-moving-custom-start-mobile",
+      "file": "screenshots/28b-url-first-moving-custom-start-mobile.png",
+      "route": "/flows",
+      "label": "URL-first moving custom start with contextual move date",
+      "sourceScenarioId": "28b-url-first-moving-custom-start-mobile",
+      "sha256": "937298cba28abdcb019bc3b0009830f48996e0bc84a5ce942612b11152313063",
+      "bytes": 39006,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "13-post-save-my-moving-mobile",
+      "file": "screenshots/13-post-save-my-moving-mobile.png",
+      "route": "/my?savedMap=moving-d30",
+      "label": "Post-save My Flow for moving map",
+      "sourceScenarioId": "13-post-save-my-moving-mobile",
+      "sha256": "0f209687cb6dc123967ffc395cd702e20220f86e4ee6359d640423ac00e0e21b",
+      "bytes": 30241,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "13b-my-moving-personal-anchor-settings-mobile",
+      "file": "screenshots/13b-my-moving-personal-anchor-settings-mobile.png",
+      "route": "/my?savedMap=curated-ajd-moving-d30",
+      "label": "My Flow moving personal copy anchor edit entry",
+      "sourceScenarioId": "13b-my-moving-personal-anchor-settings-mobile",
+      "sha256": "c9601ce5f597c3f5f88ce2d2ddc34102882fe49583d66b4d665051898617a64f",
+      "bytes": 33630,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "13c-my-moving-personal-step-date-override-mobile",
+      "file": "screenshots/13c-my-moving-personal-step-date-override-mobile.png",
+      "route": "/my?savedMap=curated-ajd-moving-d30",
+      "label": "My Flow moving personal copy item date override label",
+      "sourceScenarioId": "13c-my-moving-personal-step-date-override-mobile",
+      "sha256": "76697be07403b8ffc6849c49811a0f3a76648d2f3d4b77771f0e2204d9e16b32",
+      "bytes": 27153,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "14-calendar-after-moving-save-mobile",
+      "file": "screenshots/14-calendar-after-moving-save-mobile.png",
+      "route": "/calendar",
+      "label": "Calendar agenda-first after moving save",
+      "sourceScenarioId": "14-calendar-after-moving-save-mobile",
+      "sha256": "c7f4a5841b8d9eec63faf2e4a57b940c5876456e4e090a51a9dafe864c248c43",
+      "bytes": 35558,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "48-draft-completed-zero-mobile",
+      "file": "screenshots/48-draft-completed-zero-mobile.png",
+      "route": "/my",
+      "label": "Draft completed with zero remaining mobile",
+      "sourceScenarioId": "48-draft-completed-zero-mobile",
+      "sha256": "e3f0f73baddf21ac2075a533059ed89bc20c3d0e475d0b3d05986262c49c5691",
+      "bytes": 25169,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "29-url-first-miss-candidate-form-mobile",
+      "file": "screenshots/29-url-first-miss-candidate-form-mobile.png",
+      "route": "/flows",
+      "label": "URL-first miss candidate form",
+      "sourceScenarioId": "29-url-first-miss-candidate-form-mobile",
+      "sha256": "13cc0b055122695f4559e3e7089fd042ecc49dfd7c4b2d1cd24b89010920310f",
+      "bytes": 43526,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "30-url-first-candidate-detail-mobile",
+      "file": "screenshots/30-url-first-candidate-detail-mobile.png",
+      "route": "/flows",
+      "label": "URL-first saved candidate request detail",
+      "sourceScenarioId": "30-url-first-candidate-detail-mobile",
+      "sha256": "42f31bb639ff368fd7538c7d19fc753c6fcc5353269d57759c3edda467c8c4e8",
+      "bytes": 41276,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "45-draft-save-failure-mobile",
+      "file": "screenshots/45-draft-save-failure-mobile.png",
+      "route": "/flows",
+      "label": "Draft save failure with preserved input mobile",
+      "sourceScenarioId": "45-draft-save-failure-mobile",
+      "sha256": "992e77179cbe15ae838678219bd6bc532fcc3e6eb5d9f3373d73b87cf6e8b209",
+      "bytes": 40556,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "39e-url-first-draft-studio-shelf-mobile",
+      "file": "screenshots/39e-url-first-draft-studio-shelf-mobile.png",
+      "route": "/u/my-flow-studio",
+      "label": "URL-first draft in Studio draft shelf mobile",
+      "sourceScenarioId": "39e-url-first-draft-studio-shelf-mobile",
+      "sha256": "a8f7d1d688017a07bf83ab24b4775433a53940af821e2ae1344cb16af8d55b38",
+      "bytes": 35826,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "39a-url-first-draft-item-edit-entry-mobile",
+      "file": "screenshots/39a-url-first-draft-item-edit-entry-mobile.png",
+      "route": "/my",
+      "label": "URL-first draft item edit entry in My Flow",
+      "sourceScenarioId": "39a-url-first-draft-item-edit-entry-mobile",
+      "sha256": "a742ebd7acc9d97b5e5442580bb29230bcd7a315009c6f7695201e9b7aa641a4",
+      "bytes": 33428,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "39b-url-first-draft-anchor-edit-mobile",
+      "file": "screenshots/39b-url-first-draft-anchor-edit-mobile.png",
+      "route": "/my",
+      "label": "URL-first draft anchor edit policy in My Flow mobile",
+      "sourceScenarioId": "39b-url-first-draft-anchor-edit-mobile",
+      "sha256": "65a24760d598f57cbf17eb9a149a404aca4ae04978a5fe8629a30d23191f4d3c",
+      "bytes": 35319,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "39d-url-first-draft-calendar-export-mobile",
+      "file": "screenshots/39d-url-first-draft-calendar-export-mobile.png",
+      "route": "/calendar",
+      "label": "URL-first draft Calendar and export projection",
+      "sourceScenarioId": "39d-url-first-draft-calendar-export-mobile",
+      "sha256": "558864d7083383061fd65d40c94183db9fb1c7445b015ae5f0ddccd74186f34f",
+      "bytes": 33307,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "46-draft-duplicate-mobile",
+      "file": "screenshots/46-draft-duplicate-mobile.png",
+      "route": "/flows",
+      "label": "Duplicate draft returns to existing saved draft mobile",
+      "sourceScenarioId": "46-draft-duplicate-mobile",
+      "sha256": "36aa0faa27d61ad3dd234d9f870aa9a7b840bd64f7a9f37b97c80c8a7959f5cb",
+      "bytes": 39656,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "49-draft-offline-local-action-mobile",
+      "file": "screenshots/49-draft-offline-local-action-mobile.png",
+      "route": "/my",
+      "label": "Already-open draft local action while offline mobile",
+      "sourceScenarioId": "49-draft-offline-local-action-mobile",
+      "sha256": "fcab290460dc8397294f2f58a507fc2883defdfcf3b6f2d624ed6f90128efeee",
+      "bytes": 34146,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "06-public-vehicle-mobile",
+      "file": "screenshots/06-public-vehicle-mobile.png",
+      "route": "/f/vehicle-inspection-prep",
+      "label": "Public share save screen",
+      "sourceScenarioId": "06-public-vehicle-mobile",
+      "sha256": "8049f1277dfcfb7928026fcdaf3a0b23b97e825ced5fb61fabfc2007cd6fe585",
+      "bytes": 36807,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "07-public-moving-mobile",
+      "file": "screenshots/07-public-moving-mobile.png",
+      "route": "/f/moving-d30-basic",
+      "label": "Public moving share screen",
+      "sourceScenarioId": "07-public-moving-mobile",
+      "sha256": "da04393e58476222c9b500b4bfb8c3a3a950c245133fa4c108757474ffef11ad",
+      "bytes": 35359,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "08-public-moving-bottom-mobile",
+      "file": "screenshots/08-public-moving-bottom-mobile.png",
+      "route": "/f/moving-d30-basic",
+      "label": "Public moving bottom sticky clearance",
+      "sourceScenarioId": "08-public-moving-bottom-mobile",
+      "sha256": "e24d762a79cc7a4a406d52bbce74106c0ebbeeaa44aa21af7563fa16060e3ea0",
+      "bytes": 25890,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "12b-public-new-car-post-save-my-flow-mobile",
+      "file": "screenshots/12b-public-new-car-post-save-my-flow-mobile.png",
+      "route": "/my",
+      "label": "Public share post-save My Flow completion boundary",
+      "sourceScenarioId": "12b-public-new-car-post-save-my-flow-mobile",
+      "sha256": "99a5d23d1b4ce1ef0cb9e59d6510420a2221df2b097a12efedcdfdfd09f4e1e5",
+      "bytes": 21996,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "25-workbench-new-car-open-details-mobile",
+      "file": "screenshots/25-workbench-new-car-open-details-mobile.png",
+      "route": "/f/new-car-delivery-check",
+      "label": "New car checklist row details without repeated source links",
+      "sourceScenarioId": "25-workbench-new-car-open-details-mobile",
+      "sha256": "803929b2f66a56878469a9df913e473b2f6a8c0fb23bb44ebdd844b79d3ecb87",
+      "bytes": 43787,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "16-my-multi-queue-mobile",
+      "file": "screenshots/16-my-multi-queue-mobile.png",
+      "route": "/my",
+      "label": "My Flow with today overdue next queues",
+      "sourceScenarioId": "16-my-multi-queue-mobile",
+      "sha256": "150e661703004e7e5f480934c8a86ff143b81bfa1ca7c204503c7e7d22f0b7c0",
+      "bytes": 30889,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "18-my-long-list-top-mobile",
+      "file": "screenshots/18-my-long-list-top-mobile.png",
+      "route": "/my",
+      "label": "My Flow 5+ saved list top",
+      "sourceScenarioId": "18-my-long-list-top-mobile",
+      "sha256": "7040e7a8f41590e3c3af20ea88c8f7a06402b33b3a3cb2c7c5179987438167b9",
+      "bytes": 33619,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "20-my-long-list-inventory-bottom-mobile",
+      "file": "screenshots/20-my-long-list-inventory-bottom-mobile.png",
+      "route": "/my",
+      "label": "My Flow 5+ inventory sheet bottom clearance",
+      "sourceScenarioId": "20-my-long-list-inventory-bottom-mobile",
+      "sha256": "41d0585b971d8d32af266c850f19fd2a03047e93cf2ef156c967677e70723fb5",
+      "bytes": 32133,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "43b-calendar-grid-flow-stack-mobile",
+      "file": "screenshots/43b-calendar-grid-flow-stack-mobile.png",
+      "route": "/calendar",
+      "label": "Calendar grid compact same-date Flow stack mobile",
+      "sourceScenarioId": "43b-calendar-grid-flow-stack-mobile",
+      "sha256": "725fbeacca5d09c7acf0f8506cc2ea9fe5440646da5181dc13db7fcf3a8edc1a",
+      "bytes": 37292,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "43-calendar-same-date-multi-flow-mobile",
+      "file": "screenshots/43-calendar-same-date-multi-flow-mobile.png",
+      "route": "/calendar",
+      "label": "Calendar same-date multi-Flow markers mobile",
+      "sourceScenarioId": "43-calendar-same-date-multi-flow-mobile",
+      "sha256": "24b29571998d5f3b959bd8e33510c1faa85202723bf33301212eba99edd459f2",
+      "bytes": 41060,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "44b-calendar-grid-flow-stack-wide",
+      "file": "screenshots/44b-calendar-grid-flow-stack-wide.png",
+      "route": "/calendar",
+      "label": "Calendar grid compact same-date Flow stack wide",
+      "sourceScenarioId": "44b-calendar-grid-flow-stack-wide",
+      "sha256": "abf561fc7780647d14c2b206f9ff23f3fcf10a547a35e53ed90c00cc4a7c9734",
+      "bytes": 93352,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "17-my-multi-queue-overdue-sheet-mobile",
+      "file": "screenshots/17-my-multi-queue-overdue-sheet-mobile.png",
+      "route": "/my",
+      "label": "My Flow overdue sheet dedupe evidence",
+      "sourceScenarioId": "17-my-multi-queue-overdue-sheet-mobile",
+      "sha256": "81a1bda53e176200703dc1b68357f006890cbb9cd6bee0827b8ef9a1bff97a51",
+      "bytes": 27436,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "05-flow-map-math-mobile",
+      "file": "screenshots/05-flow-map-math-mobile.png",
+      "route": "/flow-maps/middle-school-math-1",
+      "label": "Math source-backed map screen",
+      "sourceScenarioId": "05-flow-map-math-mobile",
+      "sha256": "8d534411a5863730c7943f376840f5e029fc33569417e182ba60b632ba3d8cae",
+      "bytes": 35765,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "15-post-save-my-math-mobile",
+      "file": "screenshots/15-post-save-my-math-mobile.png",
+      "route": "/my?savedMap=middle-school-math-1",
+      "label": "Post-save My Flow for undated math content",
+      "sourceScenarioId": "15-post-save-my-math-mobile",
+      "sha256": "5fff46abf6e61b3e7affe646cbdbd404b5f8fc30b56c7a3e93f34ed148545f96",
+      "bytes": 28048,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "39-creator-profile-my-flow-studio-mobile",
+      "file": "screenshots/39-creator-profile-my-flow-studio-mobile.png",
+      "route": "/u/my-flow-studio",
+      "label": "Creator profile studio mobile surface with filled local content",
+      "sourceScenarioId": "39-creator-profile-my-flow-studio-mobile",
+      "sha256": "a283e6fc4606bcf43ec8dc623ae44cd4d2ac820154a70c46d129a4507d104736",
+      "bytes": 26637,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    },
+    {
+      "id": "41-creator-profile-flow-curation-team-mobile",
+      "file": "screenshots/41-creator-profile-flow-curation-team-mobile.png",
+      "route": "/u/flow-curation-team",
+      "label": "Filled public creator profile mobile surface",
+      "sourceScenarioId": "41-creator-profile-flow-curation-team-mobile",
+      "sha256": "9e129cae6d2b9423faa630c4c1c53901684315832108319f76e7e30036f569da",
+      "bytes": 30322,
+      "noHorizontalOverflow": true,
+      "internalHitCount": 0
+    }
+  ]
+}
