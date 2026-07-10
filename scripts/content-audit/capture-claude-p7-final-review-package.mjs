@@ -1,17 +1,30 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync, spawn } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import crypto from 'node:crypto';
 import { chromium } from '@playwright/test';
-import { tsImport } from 'tsx/esm/api';
+import { register } from 'tsx/esm/api';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..', '..');
-const guardrailModule = await tsImport(
+if (!process.env.FLOWME_EVIDENCE_TSX_RUNTIME) {
+  const tsxCli = path.join(repoRoot, 'node_modules', 'tsx', 'dist', 'cli.mjs');
+  const child = spawnSync(process.execPath, [tsxCli, fileURLToPath(import.meta.url)], {
+    cwd: repoRoot,
+    env: { ...process.env, FLOWME_EVIDENCE_TSX_RUNTIME: '1' },
+    stdio: 'inherit',
+    windowsHide: true,
+  });
+  if (child.error) throw child.error;
+  process.exit(child.status ?? 1);
+}
+const tsxRuntime = register({ namespace: 'flowme-evidence-capture' });
+const guardrailModule = await tsxRuntime.import(
   pathToFileURL(path.join(repoRoot, 'lib', 'flow', 'user-surface-guardrails.ts')).href,
   import.meta.url,
 );
+const guardrailExports = guardrailModule.default ?? guardrailModule;
 const {
   findFirstTaskRepetitionHits,
   findInternalCopyHits,
@@ -21,15 +34,17 @@ const {
   scanPrototypeRouteGuardrails,
   scanUserFacingOutputGuardrails,
   scanUserSurfaceGuardrails,
-} = guardrailModule;
-const supplyQueueModule = await tsImport(
+} = guardrailExports;
+const supplyQueueModule = await tsxRuntime.import(
   pathToFileURL(path.join(repoRoot, 'lib', 'flow', 'url-first-supply-queue.ts')).href,
   import.meta.url,
 );
+const supplyQueueExports = supplyQueueModule.default ?? supplyQueueModule;
 const {
   buildUrlFirstSupplyCandidateProductionMarkdown,
   getUrlFirstSupplyCandidateAvailability,
-} = supplyQueueModule;
+} = supplyQueueExports;
+await tsxRuntime.unregister();
 const packageName = process.env.FLOWME_EVIDENCE_PACKAGE_NAME || '2026-07-05-claude-design-p7-final-review-package';
 const packageCycleMatch = packageName.match(/-p(\d+)-/i);
 const inferredReviewCycle = packageCycleMatch ? `P${packageCycleMatch[1]}` : 'P7';
@@ -905,6 +920,8 @@ async function captureUrlFirstCandidateDetail(page, captureOptions = {}) {
   const draftOpen = pendingCandidateCard.getByTestId('flow-url-miss-draft-open');
   if (await draftOpen.count()) {
     await draftOpen.click();
+    const draftAnchorInput = pendingCandidateCard.getByTestId('flow-url-miss-draft-anchor-date');
+    if (await draftAnchorInput.count()) await draftAnchorInput.fill('2026-07-18');
     await settle(page);
   }
   const resolvedCandidateAvailability = getUrlFirstSupplyCandidateAvailability(resolvedCandidateFixture);
@@ -953,8 +970,6 @@ async function captureUrlFirstDraftMyFlowLanding(page) {
   await draftEditor.waitFor({ state: 'visible' });
   await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('주말 준비 초안');
   await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
-  await draftEditor.getByTestId('flow-url-miss-draft-item-title').fill('원문에서 필요한 단계 정리하기');
-  await draftEditor.getByTestId('flow-url-miss-draft-item-memo').fill('저장 후 내 일정에 맞게 손볼 메모');
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
   await page.waitForURL(/\/my/);
   await settle(page);
@@ -2005,6 +2020,11 @@ async function scanPage(page, options = {}) {
       const missDraftEditor = document.querySelector('[data-testid="flow-url-miss-draft-editor"]');
       const missDraftSave = document.querySelector('[data-testid="flow-url-miss-draft-save"]');
       const missDraftEditableItems = Array.from(document.querySelectorAll('[data-testid="flow-url-miss-draft-item"]')).filter((element) => isVisible(element));
+      const missDraftItemOffsets = missDraftEditableItems
+        .map((element) => Number(element.getAttribute('data-draft-day-offset')))
+        .filter((value) => Number.isFinite(value));
+      const missDraftAnchorInput = document.querySelector('[data-testid="flow-url-miss-draft-anchor-date"]');
+      const missDraftAnchorValue = missDraftAnchorInput && 'value' in missDraftAnchorInput ? missDraftAnchorInput.value : '';
       const candidateList = document.querySelector('[data-testid="flow-url-supply-candidate-list"]');
       const requestDetail = document.querySelector('[data-testid="flow-url-supply-production-handoff"]');
       const resultText = normalizeLine(lookupResult?.textContent ?? '');
@@ -2069,6 +2089,11 @@ async function scanPage(page, options = {}) {
           editorVisible: Boolean(missDraftEditor && isVisible(missDraftEditor)),
           ctaLabel: normalizeLine(missDraftOpen?.textContent ?? ''),
           editableItemCount: missDraftEditableItems.length,
+          suggestedItemCount: missDraftEditableItems.length,
+          itemDayOffsets: missDraftItemOffsets,
+          draftStepDatesFromAnchor: /^20\d{2}-\d{2}-\d{2}$/u.test(missDraftAnchorValue)
+            && missDraftEditableItems.length >= 3
+            && missDraftItemOffsets.length === missDraftEditableItems.length,
           savePathVisible: Boolean(missDraftSave && isVisible(missDraftSave)),
           savePathLabel: normalizeLine(missDraftSave?.textContent ?? ''),
           copyLines: missDraftFlowLines.slice(0, 24),
@@ -3301,6 +3326,11 @@ function summarizeEvidence(records) {
       (sum, entry) => sum + (entry.editableItemCount ?? 0),
       0,
     ),
+    urlFirstMissDraftSuggestedItemCount: urlFirstMissDraftFlowEvidence.reduce(
+      (sum, entry) => sum + (entry.suggestedItemCount ?? 0),
+      0,
+    ),
+    urlFirstMissDraftStepDatesFromAnchor: urlFirstMissDraftFlowEvidence.some((entry) => entry.draftStepDatesFromAnchor),
     urlFirstMissDraftSavePathVisible: urlFirstMissDraftFlowEvidence.some((entry) => entry.savePathVisible),
     urlFirstMissDraftInternalHitCount: urlFirstMissDraftFlowEvidence.reduce(
       (sum, entry) => sum + (entry.internalHitCount ?? 0),
@@ -3762,6 +3792,8 @@ P20-05 keeps the Calendar month grid compact when three or more Flows land on th
 - URL-first miss draft CTA label: ${evidence.summary.urlFirstMissDraftCtaLabel}
 - URL-first miss draft in-app entry visible: ${evidence.summary.urlFirstMissDraftEntryVisible ? 'yes' : 'no'}
 - URL-first miss draft editable item count: ${evidence.summary.urlFirstMissDraftEditableItemCount}
+- URL-first miss draft suggested item count: ${evidence.summary.urlFirstMissDraftSuggestedItemCount}
+- URL-first miss draft dates from anchor: ${evidence.summary.urlFirstMissDraftStepDatesFromAnchor ? 'yes' : 'no'}
 - URL-first miss draft save path visible: ${evidence.summary.urlFirstMissDraftSavePathVisible ? 'yes' : 'no'}
 - URL-first miss draft internal hits: ${evidence.summary.urlFirstMissDraftInternalHitCount}
 - URL-first miss draft implies live AI: ${evidence.summary.urlFirstMissDraftImpliesLiveAi ? 'yes' : 'no'}
@@ -4164,6 +4196,8 @@ function renderHtml(evidence) {
       <div class="stat"><b>${escapeHtml(evidence.summary.urlFirstMissDraftCtaLabel ?? '-')}</b><span>miss draft CTA</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftEntryVisible ? 'yes' : 'no'}</b><span>miss draft entry</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftEditableItemCount}</b><span>miss draft editable items</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftSuggestedItemCount}</b><span>miss draft suggested items</span></div>
+      <div class="stat"><b>${evidence.summary.urlFirstMissDraftStepDatesFromAnchor ? 'yes' : 'no'}</b><span>draft dates from anchor</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftSavePathVisible ? 'yes' : 'no'}</b><span>miss draft save path</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftInternalHitCount}</b><span>miss draft internal hits</span></div>
       <div class="stat"><b>${evidence.summary.urlFirstMissDraftLiveAiHitCount}</b><span>miss live-AI copy hits</span></div>

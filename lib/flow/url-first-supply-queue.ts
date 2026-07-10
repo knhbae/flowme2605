@@ -61,6 +61,12 @@ export type UrlFirstSupplyCandidateAvailability = {
   lookup: UrlFirstLookupResult;
 };
 
+export type UrlFirstDraftItemSuggestion = {
+  title: string;
+  memo: string;
+  dayOffset: number;
+};
+
 export const URL_FIRST_SUPPLY_CANDIDATE_PRODUCTION_CHECKLIST = [
   '원문이 계획/절차형 콘텐츠인지 확인',
   '날짜/상대일/반복 규칙이 있는지 확인',
@@ -71,6 +77,65 @@ export const URL_FIRST_SUPPLY_CANDIDATE_PRODUCTION_CHECKLIST = [
 
 function clean(value?: string): string {
   return (value ?? '').trim();
+}
+
+function getUrlFirstDraftTopic(candidate: UrlFirstSupplyCandidate): string {
+  const title = clean(candidate.title)
+    .replace(/(?:초안\s*)?요청$/u, '')
+    .replace(/체크리스트$/u, '')
+    .replace(/^새로\s+보고\s+싶은\s*/u, '')
+    .trim();
+  return title.length >= 2 ? title : '이번 준비';
+}
+
+function splitUrlFirstDraftRequestLines(value: string): string[] {
+  return value
+    .replace(/\r/gu, '\n')
+    .split(/\n+|[.!?;]+|\s*(?:→|->)\s*/u)
+    .map((line) => line.replace(/^\s*(?:[-*•·]|\d+[.)])\s*/u, '').replace(/\s+/gu, ' ').trim())
+    .filter((line) => line.length >= 2);
+}
+
+function toUrlFirstDraftActionTitle(value: string): string {
+  const text = value
+    .replace(/https?:\/\/\S+/giu, '')
+    .replace(/\s+/gu, ' ')
+    .trim()
+    .replace(/고\s*싶(?:어요|습니다|음)$/u, '기')
+    .replace(/해야\s*(?:해요|합니다|함)$/u, '하기')
+    .replace(/해\s*주세요$/u, '하기');
+  if (!text) return '';
+  if (/(?:기|하기|보기|두기|정하기|고르기|나누기|적기|챙기기|확인하기)$/u.test(text)) return text;
+  if (/(?:확인|정리|비교|준비|선택|점검|기록|실행|완료)$/u.test(text)) return `${text}하기`;
+  return `${text} 정리하기`;
+}
+
+export function buildUrlFirstDraftItemSuggestions(candidate: UrlFirstSupplyCandidate): UrlFirstDraftItemSuggestion[] {
+  const topic = getUrlFirstDraftTopic(candidate);
+  const suggestions: Omit<UrlFirstDraftItemSuggestion, 'dayOffset'>[] = [];
+  const seen = new Set<string>();
+  const addSuggestion = (title: string, memo: string) => {
+    const normalizedTitle = clean(title);
+    if (!normalizedTitle || seen.has(normalizedTitle) || suggestions.length >= 7) return;
+    seen.add(normalizedTitle);
+    suggestions.push({ title: normalizedTitle, memo });
+  };
+
+  addSuggestion(`${topic} 범위 정하기`, '내가 쓴 제목에서 제안한 항목입니다. 저장 후 제목과 메모를 다시 바꿀 수 있어요.');
+  splitUrlFirstDraftRequestLines(candidate.memo).slice(0, 5).forEach((line) => {
+    const actionTitle = toUrlFirstDraftActionTitle(line);
+    if (actionTitle) addSuggestion(actionTitle, '내가 남긴 메모에서 제안한 항목입니다.');
+  });
+  if (suggestions.length < 2) {
+    addSuggestion('원문에서 꼭 따라 할 내용 고르기', '원문 링크를 열어 실제로 필요한 내용만 남겨보세요.');
+  }
+  addSuggestion(`${topic} 실행 순서를 기준일에 맞춰 나누기`, '기준일을 바꾸면 따로 조정하지 않은 날짜가 함께 다시 맞춰집니다.');
+
+  while (suggestions.length < 3) {
+    addSuggestion(`${topic} 첫 행동 시작하기`, '저장 후 My Flow에서 날짜와 메모를 내 상황에 맞게 손볼 수 있어요.');
+  }
+
+  return suggestions.map((suggestion, dayOffset) => ({ ...suggestion, dayOffset }));
 }
 
 function getCandidateStatus(result: UrlFirstLookupResult): UrlFirstSupplyCandidateStatus | undefined {

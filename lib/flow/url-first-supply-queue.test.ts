@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { lookupUrlFirstP0Input } from './url-first-lookup';
 import {
+  buildUrlFirstDraftItemSuggestions,
   buildUrlFirstSupplyCandidateProductionMarkdown,
   buildUrlFirstSupplyCandidateUserSummaryMarkdown,
   buildUrlFirstSupplyCandidate,
@@ -13,6 +14,44 @@ import {
   upsertUrlFirstSupplyCandidate,
   URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY,
 } from './url-first-supply-queue';
+
+test('URL-first draft suggestions deterministically expand title and memo into dated actions', () => {
+  const candidate = {
+    canonicalUrl: 'https://example.com/moving-plan',
+    originalUrl: 'https://example.com/moving-plan?utm_source=user',
+    title: '이사 준비 체크리스트',
+    memo: '전입신고 준비. 업체 견적 비교하고 싶음\n짐 정리 순서 정하기',
+    status: 'miss_request' as const,
+    savedAt: '2026-07-10T12:00:00.000Z',
+  };
+
+  const suggestions = buildUrlFirstDraftItemSuggestions(candidate);
+
+  assert.equal(suggestions.length, 5);
+  assert.deepEqual(suggestions.map((suggestion) => suggestion.dayOffset), [0, 1, 2, 3, 4]);
+  assert.equal(suggestions[0].title, '이사 준비 범위 정하기');
+  assert.ok(suggestions.some((suggestion) => suggestion.title === '전입신고 준비하기'));
+  assert.ok(suggestions.some((suggestion) => suggestion.title === '업체 견적 비교하기'));
+  assert.ok(suggestions.some((suggestion) => suggestion.title === '짐 정리 순서 정하기'));
+  assert.equal(suggestions.at(-1)?.title, '이사 준비 실행 순서를 기준일에 맞춰 나누기');
+});
+
+test('URL-first draft suggestions keep a sparse request at a useful three-action minimum', () => {
+  const candidate = {
+    canonicalUrl: 'https://example.com/weekend',
+    originalUrl: 'https://example.com/weekend',
+    title: '주말 준비 초안 요청',
+    memo: '',
+    status: 'miss_request' as const,
+    savedAt: '2026-07-10T12:00:00.000Z',
+  };
+
+  const suggestions = buildUrlFirstDraftItemSuggestions(candidate);
+
+  assert.equal(suggestions.length, 3);
+  assert.deepEqual(suggestions.map((suggestion) => suggestion.dayOffset), [0, 1, 2]);
+  assert.ok(suggestions.every((suggestion) => suggestion.title.length > 0 && suggestion.memo.length > 0));
+});
 
 test('miss URL lookup can be saved as a local production candidate request', () => {
   const result = lookupUrlFirstP0Input('https://example.com/some-plan?utm_source=newsletter');
