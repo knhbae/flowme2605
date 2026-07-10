@@ -769,17 +769,28 @@ function FlowCard({
   bundle,
   variant = 'default',
   editable = false,
+  titleHref,
+  primaryHref,
+  primaryLabel,
+  primaryTestId,
   onCopy,
 }: {
   bundle: FlowBundle;
   variant?: 'default' | 'compact';
   editable?: boolean;
+  titleHref?: string;
+  primaryHref?: string;
+  primaryLabel?: string;
+  primaryTestId?: string;
   onCopy?: (bundle: FlowBundle) => void;
 }) {
   const displayTitle = toContentDisplayTitle(bundle.flow.title);
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
   const previewItems = getFlowPreviewItems(bundle, variant === 'compact' ? 3 : 4);
+  const cardTitleHref = titleHref ?? `/f/${bundle.flow.slug}`;
+  const cardPrimaryHref = primaryHref ?? `/f/${bundle.flow.slug}`;
+  const cardPrimaryLabel = primaryLabel ?? '시작하기';
 
   return (
     <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
@@ -802,7 +813,7 @@ function FlowCard({
         </div>
         <div>
           <h2 className="text-lg font-semibold leading-snug text-gray-950">
-            <Link className="underline-offset-4 hover:text-blue-700 hover:underline" href={`/f/${bundle.flow.slug}`}>
+            <Link className="underline-offset-4 hover:text-blue-700 hover:underline" href={cardTitleHref}>
               {displayTitle}
             </Link>
           </h2>
@@ -842,8 +853,12 @@ function FlowCard({
         {variant === 'default' ? <p className="text-sm font-medium text-gray-600">{getAnchorLabel(bundle)}</p> : null}
       </div>
       <div className="mt-5 flex flex-wrap gap-2">
-        <Link className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white" href={`/f/${bundle.flow.slug}`}>
-          시작하기
+        <Link
+          data-testid={primaryTestId}
+          className="rounded-md bg-[#2563EB] px-3 py-2 text-sm font-semibold text-white"
+          href={cardPrimaryHref}
+        >
+          {cardPrimaryLabel}
         </Link>
         {editable ? (
           <Link className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-800" href={`/flows/${bundle.flow.id}/edit`}>
@@ -9079,6 +9094,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   );
 }
 
+type CreatorProfileSourceFilter = 'all' | 'real' | 'preview' | 'draft';
+
+function isUrlFirstDraftBundle(bundle: FlowBundle): boolean {
+  return bundle.flow.status === 'draft' && bundle.flow.slug.startsWith('url-draft-');
+}
+
 export function CreatorProfile({ slug }: { slug: string }) {
   const { bundles } = useBundles();
   const normalized = normalizeCreatorSlug(slug);
@@ -9091,7 +9112,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
   }).sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
   const allCategoryLabel = '모든 주제';
   const [categoryFilter, setCategoryFilter] = useState(allCategoryLabel);
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'real' | 'preview'>('all');
+  const [sourceFilter, setSourceFilter] = useState<CreatorProfileSourceFilter>('all');
   const [libraryQuery, setLibraryQuery] = useState('');
   const first = creatorBundles[0];
   const profile = user ?? (first ? getCreatorUser(first) : undefined);
@@ -9105,6 +9126,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
     .filter((bundle) => {
       if (sourceFilter === 'real') return bundle.flow.source_status === 'real';
       if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
+      if (sourceFilter === 'draft') return bundle.flow.status === 'draft';
       return true;
     })
     .filter((bundle) => {
@@ -9243,16 +9265,18 @@ export function CreatorProfile({ slug }: { slug: string }) {
             ['all', '모두 보기'],
             ['real', '원문 확인'],
             ['preview', '샘플'],
+            ['draft', '초안'],
           ].map(([key, label]) => (
             <button
               key={key}
+              data-testid={key === 'draft' ? 'creator-profile-draft-tab' : undefined}
               className={`rounded-md border px-3 py-2 text-sm font-semibold ${
                 sourceFilter === key
                   ? 'border-blue-600 bg-blue-50 text-blue-700'
                   : 'border-gray-200 bg-white text-gray-700'
               }`}
               type="button"
-              onClick={() => setSourceFilter(key as 'all' | 'real' | 'preview')}
+              onClick={() => setSourceFilter(key as CreatorProfileSourceFilter)}
             >
               {label}
             </button>
@@ -9275,11 +9299,25 @@ export function CreatorProfile({ slug }: { slug: string }) {
           ))}
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {visibleCreatorBundles.map((bundle) => (
-            <div key={bundle.flow.id} data-testid="creator-profile-content-card" data-flow-status={bundle.flow.status}>
-              <FlowCard bundle={bundle} />
-            </div>
-          ))}
+          {visibleCreatorBundles.map((bundle) => {
+            const isUrlFirstDraft = isUrlFirstDraftBundle(bundle);
+            return (
+              <div
+                key={bundle.flow.id}
+                data-testid="creator-profile-content-card"
+                data-flow-origin={isUrlFirstDraft ? 'url-first-draft' : undefined}
+                data-flow-status={bundle.flow.status}
+              >
+                <FlowCard
+                  bundle={bundle}
+                  primaryHref={isUrlFirstDraft ? '/my' : undefined}
+                  primaryLabel={isUrlFirstDraft ? '내 Flow에서 수정' : undefined}
+                  primaryTestId={isUrlFirstDraft ? 'creator-profile-draft-edit-link' : undefined}
+                  titleHref={isUrlFirstDraft ? '/my' : undefined}
+                />
+              </div>
+            );
+          })}
         </div>
       </section>
     </main>

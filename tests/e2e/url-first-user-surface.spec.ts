@@ -358,6 +358,46 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   expect(copiedDraftText).not.toContain('Step');
 });
 
+test('URL-first miss draft appears in Studio draft shelf and returns to My Flow edit room', async ({ page }) => {
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/studio-draft-source?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('요청 제목').fill('스튜디오 초안 요청');
+  await result.getByLabel('요청 메모').fill('스튜디오에서 이어서 손볼 초안');
+  await result.getByRole('button', { name: '초안 요청 저장' }).click();
+
+  const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: '스튜디오 초안 요청' });
+  await expect(candidateCard.getByTestId('flow-url-miss-draft-entry')).toBeVisible();
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('스튜디오에서 이어갈 초안');
+  await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
+  await draftEditor.getByTestId('flow-url-miss-draft-item-title').fill('스튜디오에서 다시 확인할 첫 단계');
+  await draftEditor.getByTestId('flow-url-miss-draft-item-memo').fill('My Flow에서 이어서 손볼 메모');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  await page.goto('/u/my-flow-studio');
+  await expect(page.getByTestId('creator-profile-surface')).toBeVisible();
+  await expect(page.getByTestId('creator-profile-draft-tab')).toBeVisible();
+  await page.getByTestId('creator-profile-draft-tab').click();
+
+  const draftCard = page.locator('[data-testid="creator-profile-content-card"][data-flow-origin="url-first-draft"]').filter({ hasText: '스튜디오에서 이어갈 초안' });
+  await expect(draftCard).toBeVisible();
+  await expect(draftCard).toHaveAttribute('data-flow-status', 'draft');
+  await expect(draftCard.getByTestId('creator-profile-draft-edit-link')).toHaveAttribute('href', '/my');
+  await expect(draftCard.getByTestId('creator-profile-draft-edit-link')).not.toContainText(/AI가|자동 생성|바로 생성|생성 중/);
+
+  await draftCard.getByTestId('creator-profile-draft-edit-link').click();
+  await expect(page).toHaveURL(/\/my/);
+  await page.getByTestId('my-flow-view-flow').click();
+  const mobileDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await expect(mobileDraftFlow).toBeVisible();
+  await expect(mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
+});
+
 test('URL-first resolved candidate cards hide legacy state-machine wording', async ({ page }) => {
   await openFlowFinding(page);
   await seedResolvedUrlFirstCandidate(page);

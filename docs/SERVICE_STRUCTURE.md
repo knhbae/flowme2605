@@ -121,6 +121,7 @@ Use this as the next product-route baseline until user evidence reopens it.
 - When no content is saved, `/my` and `/calendar` use a true empty state with one primary action, `콘텐츠 고르러 가기`. Do not show a dummy calendar, creator shortcut, or secondary create CTA before the user has saved content.
 - Hide internal hierarchy words from normal discovery copy. `Flow Map`, `Step`, and `Item` can exist in source contracts, creator tools, tests, and reports, but user-facing discovery should say `콘텐츠`, `항목`, `일정`, `체크`, or `진도표` when that is enough. User-route regression scans cover `/`, `/flows`, `/flow-maps/*`, `/f/*`, `/my`, and `/calendar`; internal status words such as demo/review/audit/source-backed/sourceTrace/readiness and candidate-state labels stay in creator or review routes.
 - Home should explain the service and show the URL/memo-to-Flow entry plus one representative starting point and a small number of secondary starts. `/flows` owns catalog browsing and URL-first result states.
+- `/u/my-flow-studio` remains a secondary creator-profile surface outside the 4-tab IA. URL-first miss drafts may appear in its `초안` shelf, but the continue/edit path returns to `/my` so My Flow remains the execution and personal-edit room.
 - Reopen the 4-tab decision only if observed users treat `캘린더` as redundant with `/my`, or if dated saved content remains too sparse for a global schedule entry.
 
 ### Creator Publish Gate v1 Baseline

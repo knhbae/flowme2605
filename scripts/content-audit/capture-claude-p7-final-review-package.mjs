@@ -443,6 +443,22 @@ async function captureMyStudioProfileRoute(page, file, label, options = {}) {
   await captureRoute(page, '/u/my-flow-studio', file, label, options);
 }
 
+async function captureMyStudioDraftShelf(page, file, label, options = {}) {
+  await page.goto('/u/my-flow-studio');
+  await settle(page);
+  const draftTab = page.getByTestId('creator-profile-draft-tab');
+  if (await draftTab.count()) {
+    await draftTab.click();
+    await settle(page);
+  }
+  await captureCurrent(page, file, label, {
+    category: 'creator-profile',
+    creatorProfileTier: 'creator-profile',
+    creatorProfileKind: 'current-user-studio-draft-shelf',
+    ...options,
+  });
+}
+
 async function captureCleanRoute(page, route, file, label, options = {}) {
   await resetStorage(page);
   await captureRoute(page, route, file, label, { category: 'normal-user-route', ...options });
@@ -921,6 +937,30 @@ async function captureUrlFirstDraftMyFlowLanding(page) {
   await draftEditor.getByTestId('flow-url-miss-draft-item-memo').fill('저장 후 내 일정에 맞게 손볼 메모');
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
   await page.waitForURL(/\/my/);
+  await settle(page);
+
+  await captureMyStudioDraftShelf(
+    page,
+    '39e-url-first-draft-studio-shelf-mobile.png',
+    'URL-first draft in Studio draft shelf mobile',
+    {
+      route: '/u/my-flow-studio',
+      scrollPurpose: 'studio-draft-shelf-mobile',
+    },
+  );
+  await page.setViewportSize(wideViewport);
+  await captureMyStudioDraftShelf(
+    page,
+    '39f-url-first-draft-studio-shelf-wide.png',
+    'URL-first draft in Studio draft shelf wide',
+    {
+      route: '/u/my-flow-studio',
+      wideViewport: true,
+      scrollPurpose: 'studio-draft-shelf-wide',
+    },
+  );
+  await page.setViewportSize(viewport);
+  await page.goto('/my');
   await settle(page);
 
   await page.getByTestId('my-flow-view-flow').click();
@@ -2141,6 +2181,27 @@ async function scanPage(page, options = {}) {
     const creatorProfileContentStatuses = creatorProfileContentCards
       .map((element) => normalizeLine(element.getAttribute('data-flow-status') ?? ''))
       .filter(Boolean);
+    const creatorProfileUrlFirstDraftCards = creatorProfileContentCards.filter((element) =>
+      element.getAttribute('data-flow-origin') === 'url-first-draft',
+    );
+    const creatorProfileDraftEditLinks = Array.from(document.querySelectorAll('[data-testid="creator-profile-draft-edit-link"]'))
+      .map((element) => {
+        const anchor = element instanceof HTMLAnchorElement ? element : element.closest('a');
+        if (!anchor) return null;
+        const href = anchor.getAttribute('href') ?? '';
+        let pathname = href;
+        try {
+          pathname = new URL(anchor.href, window.location.origin).pathname;
+        } catch {
+          pathname = href;
+        }
+        return {
+          label: normalizeLine(anchor.textContent ?? ''),
+          href,
+          pathname,
+        };
+      })
+      .filter(Boolean);
     const creatorProfileHeading = normalizeLine(document.querySelector('[data-testid="creator-profile-surface"] h1')?.textContent ?? '');
     const creatorProfileEmptySummaryVisible = isCreatorProfileRoute && /0개\s*표시\s*\/\s*전체\s*0개/u.test(document.body.innerText);
 
@@ -2270,8 +2331,12 @@ async function scanPage(page, options = {}) {
           noindex: /noindex/i.test(metaRobots),
           heading: creatorProfileHeading,
           contentCardCount: creatorProfileContentCards.length,
+          draftTabVisible: hasVisibleElement('[data-testid="creator-profile-draft-tab"]'),
           draftContentCardCount: creatorProfileContentStatuses.filter((status) => status === 'draft').length,
           publishedContentCardCount: creatorProfileContentStatuses.filter((status) => status === 'published').length,
+          urlFirstDraftCardCount: creatorProfileUrlFirstDraftCards.length,
+          draftEditPathVisible: creatorProfileDraftEditLinks.some((entry) => entry.pathname === '/my'),
+          draftEditDestinations: creatorProfileDraftEditLinks,
           emptySummaryVisible: creatorProfileEmptySummaryVisible,
           policy: 'user-facing secondary surface outside the 4-tab IA; normal user-surface guardrails apply',
         } : null,
@@ -2485,8 +2550,12 @@ function summarizeEvidence(records) {
     surfaceVisible: Boolean(record.markers?.creatorProfile?.surfaceVisible),
     heading: record.markers?.creatorProfile?.heading ?? '',
     contentCardCount: record.markers?.creatorProfile?.contentCardCount ?? 0,
+    draftTabVisible: Boolean(record.markers?.creatorProfile?.draftTabVisible),
     draftContentCardCount: record.markers?.creatorProfile?.draftContentCardCount ?? 0,
     publishedContentCardCount: record.markers?.creatorProfile?.publishedContentCardCount ?? 0,
+    urlFirstDraftCardCount: record.markers?.creatorProfile?.urlFirstDraftCardCount ?? 0,
+    draftEditPathVisible: Boolean(record.markers?.creatorProfile?.draftEditPathVisible),
+    draftEditDestinations: record.markers?.creatorProfile?.draftEditDestinations ?? [],
     emptySummaryVisible: Boolean(record.markers?.creatorProfile?.emptySummaryVisible),
     internalHitCount: record.internalHits.length,
     sourceSlugHitCount: record.sourceSlugHits.length,
@@ -2761,8 +2830,17 @@ function summarizeEvidence(records) {
     creatorProfileFilledRouteCount: creatorProfileEvidence.filter((entry) => entry.contentCardCount > 0).length,
     creatorProfileEmptyRouteCount: creatorProfileEvidence.filter((entry) => entry.contentCardCount === 0 || entry.emptySummaryVisible).length,
     creatorProfileContentCardCount: creatorProfileEvidence.reduce((sum, entry) => sum + entry.contentCardCount, 0),
+    creatorProfileDraftTabVisible: creatorProfileEvidence.some((entry) => entry.draftTabVisible),
     creatorProfileDraftContentCardCount: creatorProfileEvidence.reduce((sum, entry) => sum + entry.draftContentCardCount, 0),
     creatorProfilePublishedContentCardCount: creatorProfileEvidence.reduce((sum, entry) => sum + entry.publishedContentCardCount, 0),
+    creatorProfileUrlFirstDraftCardCount: creatorProfileEvidence.reduce((sum, entry) => sum + entry.urlFirstDraftCardCount, 0),
+    creatorProfileDraftEditPathVisible: creatorProfileEvidence.some((entry) => entry.draftEditPathVisible),
+    creatorProfileDraftEditDestinations: Array.from(
+      new Map(creatorProfileEvidence.flatMap((entry) => entry.draftEditDestinations).map((destination) => [
+        `${destination.pathname}|${destination.label}`,
+        destination,
+      ])).values(),
+    ),
     creatorProfileGuardrailHitCount: creatorProfileEvidence.reduce((sum, entry) =>
       sum
       + entry.internalHitCount
@@ -3563,7 +3641,11 @@ P19-07 keeps the post-save editing model discoverable without moving full editin
 - Creator profile filled route count: ${evidence.summary.creatorProfileFilledRouteCount}
 - Creator profile empty route count: ${evidence.summary.creatorProfileEmptyRouteCount}
 - Creator profile content card count: ${evidence.summary.creatorProfileContentCardCount}
+- Creator profile draft tab visible: ${evidence.summary.creatorProfileDraftTabVisible ? 'yes' : 'no'}
 - Creator profile draft content card count: ${evidence.summary.creatorProfileDraftContentCardCount}
+- Creator profile URL-first draft card count: ${evidence.summary.creatorProfileUrlFirstDraftCardCount}
+- Creator profile draft edit path visible: ${evidence.summary.creatorProfileDraftEditPathVisible ? 'yes' : 'no'}
+- Creator profile draft edit destinations: ${JSON.stringify(evidence.summary.creatorProfileDraftEditDestinations)}
 - Creator profile policy: ${evidence.summary.creatorProfilePolicy}
 - User nav leak scan route count: ${evidence.summary.userNavLeakScanRouteCount}
 - User nav leak scan viewports: ${JSON.stringify(evidence.summary.userNavLeakScanViewports)}
@@ -4047,6 +4129,9 @@ function renderHtml(evidence) {
       <div class="stat"><b>${escapeHtml(evidence.summary.studioNavDestinationTier ?? '-')}</b><span>studio destination tier</span></div>
       <div class="stat"><b>${evidence.summary.creatorProfileRouteCount}</b><span>creator profile captures</span></div>
       <div class="stat"><b>${evidence.summary.creatorProfileGuardrailHitCount}</b><span>creator profile hits</span></div>
+      <div class="stat"><b>${evidence.summary.creatorProfileDraftTabVisible ? 'yes' : 'no'}</b><span>studio draft tab</span></div>
+      <div class="stat"><b>${evidence.summary.creatorProfileUrlFirstDraftCardCount}</b><span>URL-first draft cards</span></div>
+      <div class="stat"><b>${evidence.summary.creatorProfileDraftEditPathVisible ? 'yes' : 'no'}</b><span>draft edit path</span></div>
       <div class="stat"><b>${escapeHtml(JSON.stringify(evidence.summary.studioEntryReachableByViewport))}</b><span>studio reachable by viewport</span></div>
       <div class="stat"><b>${evidence.summary.userNavLeakScanRouteCount}</b><span>nav leak scan rows</span></div>
       <div class="stat"><b>${evidence.summary.postSaveConfirmationVisible ? 'yes' : 'no'}</b><span>post-save confirmation</span></div>
