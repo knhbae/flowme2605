@@ -4036,33 +4036,28 @@ function renderPrompt(evidence) {
   return `아래 GitHub 소스/문서/screenshot만 보고 FlowMe ${reviewCycle} 마감 상태를 다시 검토해주세요. Vercel preview는 볼 수 없다는 전제로 검토해주세요.
 
 검토 기준:
-1. P4~P9 기준선이 P10 이후에도 실제 화면 기준으로 유지되는지 확인
-2. P10-01 guardrail/capture 정본 단일화가 충분한지 확인
-3. P10-02 공개 /f workbench primary save/setup path evidence가 충분한지 확인
-   - \`내 Flow에 저장\` 또는 입력/setup path가 visible/focusable primary인지
-   - \`콘텐츠 더 보기\`가 접근 가능하지만 primary 뒤의 보조 탐색인지
-4. P10-03 My Flow \`지금 이어하기\`가 explanation-only card로 보이지 않는지 확인
-5. P10-04 Calendar selected-day agenda에서 같은 날짜의 공통 metadata/chip이 과하게 반복되지 않는지 확인
-6. P10-05 restart/My Flow row control label이 짧게 보이고 aria-label에는 전체 맥락이 보존되는지 확인
-7. P10-06 GitHub link base가 실제 repository path에서 열리는지 확인
-8. P10-07 raw ISO evidence가 visible text, user-visible input hit, native date input exemption을 올바르게 분리하는지 확인
-9. 정상 사용자 route에서 아래 회귀가 다시 생길 위험이 있는지 확인
-   - seed/source metadata에서 동적으로 추출되는 source slug가 제목/부제/주요 문구로 노출
-   - 콘텐츠 제목 끝 Flow 접미
-   - 일정 지도, 저장한 지도 같은 내부 구조형 표현
-   - raw ISO 날짜
-   - non-date input value의 raw ISO 날짜
-   - My Flow 첫 할 일 제목 반복
-   - 모바일 390px 좌우 overflow
-   - 하단 fixed/sticky가 마지막 버튼/행/agenda를 가림
-10. prototype tier 분리가 충분한지 확인
-   - /restart/moving-d30 = release-preview, display gate 0
-   - /flow-lab/url-first-p0 = internal-console, noindex + user nav link 0 + 내부 콘솔 맥락 visible
-   - internal-console hit가 정상 route 또는 release-preview hit와 섞이지 않는지
-11. P8-09 field checklist workbench source-density guardrail이 충분한지 확인
-   - new-car / used-car row detail source link count가 0인지
-   - source/reference access link count가 0보다 크게 유지되는지
-12. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
+1. P20-01 URL-first miss 상태가 "복사하고 끝"이 아니라 앱 안 초안 Flow 흐름으로 이어지는지 확인
+   - 실제 AI API가 연결된 것처럼 과장하지 않는지
+   - miss/candidate copy에 내부 제작어가 다시 노출되지 않는지
+2. P20-02 초안 Flow가 My Flow에서 자연스럽게 착지하고 수정되는지 확인
+   - 기준일/항목 날짜 override/제목 alias/사용자 메모가 My Flow, Calendar, export에 일관되게 반영되는지
+   - 모바일 390px과 wide 1024px에서 수정入口가 보이는지
+3. P20-03 \`/u/my-flow-studio\` 초안 탭이 URL-first draft의 보조 선반으로만 작동하는지 확인
+   - Studio가 5번째 탭으로 승격되지 않았는지
+   - draft card의 edit/save path가 My Flow 모델과 이어지는지
+4. P20-04 public \`/f/[slug]\` 저장 전 preview 체크와 저장 후 My Flow 완료 체크의 경계가 명확한지 확인
+   - 저장 전 체크는 preview/선택으로 읽히는지
+   - 저장 후에는 실제 완료 checkbox가 활성화되는지
+   - Flow 단위 저장과 Flow 단위 export 위계가 유지되는지
+5. P20-05 Calendar 월간 grid에서 같은 날짜 3개 이상 Flow가 compact summary로 보이고, selected-day agenda는 full detail을 유지하는지 확인
+   - grid는 최대 2개 Flow label + \`외 N개\` summary인지
+   - agenda에서는 모든 Flow group/할 일이 보이는지
+   - 모바일/wide horizontal overflow가 없는지
+6. P18/P19 기준선이 함께 유지되는지 확인
+   - Calendar Flow 구별, My Flow 오늘 실행 통합, 완료 checkbox 1종, 진행 숫자 맥락화
+   - Home URL/memo entry, My Flow 수정入口, public share CTA order, workbench source density
+   - URL-first visible Markdown 0, candidate user-copy internal hit 0, normal user-route internal hit 0
+7. 단순 평가로 끝내지 말고, 필요하면 다음 backlog를 Blocking/High/Medium/Low로 작성
 
 주요 링크:
 - ${reviewCycle} review package README: ${githubBase}/docs/content-audit/${packageName}/README.md
