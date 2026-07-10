@@ -6,11 +6,14 @@ import {
   clearFlowLocalProgress,
   getActiveFlowProgress,
   getBundles,
+  getMyFlowCompletionFeedback,
   getMyFlowStepItemChecks,
   getSavedFlowMapIndexByFlowSlug,
   mergeSeedBundles,
+  normalizeMyFlowCompletionFeedback,
   normalizeSavedFlowMapSnapshot,
   normalizeSavedFlowRecord,
+  saveMyFlowCompletionFeedback,
   saveMyFlowStepItemChecks,
 } from './storage';
 import { FlowBundle } from './types';
@@ -372,6 +375,7 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
       'flow_builder_mvp_comparison_moving-d30-basic',
       'flow_builder_mvp_workbench_moving-d30-basic',
       'flow_builder_mvp_reactions_moving-d30-basic',
+      'flow:my-flow:completion-feedback:moving-d30-basic',
     ];
     keys.forEach((key) => localStorage.setItem(key, 'value'));
     localStorage.setItem('flow:my-flow:step-item-checks', JSON.stringify({
@@ -385,6 +389,87 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
     assert.deepEqual(JSON.parse(localStorage.getItem('flow:my-flow:step-item-checks') || '{}'), {
       'other-flow::first::none': { '0': true },
     });
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('completion feedback keeps private reflection separate from an unsent source correction draft', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    assert.equal(normalizeMyFlowCompletionFeedback({ flowSlug: 'moving-d30-basic' }), undefined);
+    assert.equal(
+      normalizeMyFlowCompletionFeedback({
+        flowSlug: 'moving-d30-basic',
+        sourceCorrectionDraft: {
+          scope: 'item',
+          note: '날짜가 잘못됐어요.',
+          updatedAt: '2026-07-11T00:00:00.000Z',
+        },
+      }),
+      undefined,
+    );
+
+    const saved = saveMyFlowCompletionFeedback('moving-d30-basic', {
+      reflection: {
+        outcome: 'helpful',
+        note: '이사 당일 확인 순서가 유용했어요.',
+        updatedAt: '2026-07-11T00:00:00.000Z',
+      },
+      sourceCorrectionDraft: {
+        scope: 'item',
+        itemId: 'moving-address-change',
+        itemTitle: '주소 이전 신청하기',
+        note: '신청 가능 시간을 함께 알려주세요.',
+        sourceUrl: 'https://example.com/moving',
+        updatedAt: '2026-07-11T00:01:00.000Z',
+      },
+    });
+
+    assert.deepEqual(saved, {
+      flowSlug: 'moving-d30-basic',
+      reflection: {
+        outcome: 'helpful',
+        note: '이사 당일 확인 순서가 유용했어요.',
+        updatedAt: '2026-07-11T00:00:00.000Z',
+      },
+      sourceCorrectionDraft: {
+        scope: 'item',
+        itemId: 'moving-address-change',
+        itemTitle: '주소 이전 신청하기',
+        note: '신청 가능 시간을 함께 알려주세요.',
+        sourceUrl: 'https://example.com/moving',
+        updatedAt: '2026-07-11T00:01:00.000Z',
+      },
+    });
+    assert.deepEqual(getMyFlowCompletionFeedback('moving-d30-basic'), saved);
   } finally {
     Object.defineProperty(globalThis, 'window', {
       configurable: true,

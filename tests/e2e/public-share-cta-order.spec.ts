@@ -277,7 +277,9 @@ test.describe('public share shell secondary browse order', () => {
     await expect(postSaveComplete).toHaveAttribute('aria-label', /완료/);
     await expect(nowSection.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 
-    await postSaveComplete.check();
-    await expect(postSaveComplete).toBeChecked();
+    await postSaveComplete.click();
+    await expect.poll(() => page.evaluate(() =>
+      Object.values(JSON.parse(window.localStorage.getItem('flow_builder_mvp_checks_new-car-delivery-check') || '{}')).some(Boolean),
+    )).toBe(true);
   });
 });

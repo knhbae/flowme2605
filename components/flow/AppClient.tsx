@@ -78,6 +78,7 @@ import {
   getChecks,
   getComparisonState,
   getItemStates,
+  getMyFlowCompletionFeedback,
   getMyFlowStepItemChecks,
   getReactionLogs,
   getSavedFlowMapIndexByFlowSlug,
@@ -92,10 +93,12 @@ import {
   saveComparisonState,
   saveFlowRecord,
   saveItemStates,
+  saveMyFlowCompletionFeedback,
   saveMyFlowStepItemChecks,
   saveReactionLogs,
   saveStoredAnchor,
   saveWorkbenchState,
+  type MyFlowCompletionFeedback,
   type MyFlowStepItemChecks,
   type SavedFlowMapSnapshot,
 } from '@/lib/flow/storage';
@@ -2885,6 +2888,15 @@ type MyFlowRoutineCompletionUndo = {
   date: string;
   originalDate: string;
 };
+type MyFlowCompletionFeedbackDraft = {
+  flowSlug: string;
+  mode: 'reflection' | 'correction';
+  outcome: 'helpful' | 'needs_changes';
+  reflectionNote: string;
+  correctionScope: string;
+  correctionNote: string;
+  status: string;
+};
 const MY_FLOW_ITEM_DRAFTS_STORAGE_KEY = 'flow:my-flow:item-drafts';
 const MY_FLOW_DATE_OVERRIDES_STORAGE_KEY = 'flow:my-flow:date-overrides';
 const MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY = 'flow:my-flow:hidden-flows';
@@ -3899,6 +3911,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowItemDrafts, setMyFlowItemDrafts] = useState<Record<string, MyFlowItemDraft>>({});
   const [myFlowEditingDrafts, setMyFlowEditingDrafts] = useState<Record<string, MyFlowItemDraft>>({});
   const [myFlowStepItemChecks, setMyFlowStepItemChecks] = useState<MyFlowStepItemChecks>({});
+  const [myFlowCompletionFeedbackBySlug, setMyFlowCompletionFeedbackBySlug] = useState<Record<string, MyFlowCompletionFeedback>>({});
+  const [myFlowCompletionFeedbackDraft, setMyFlowCompletionFeedbackDraft] = useState<MyFlowCompletionFeedbackDraft | null>(null);
   const [myFlowRoutineRuleDrafts, setMyFlowRoutineRuleDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
   const [myFlowRoutineRuleEditorDrafts, setMyFlowRoutineRuleEditorDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
   const [myFlowExpandedRoutineKey, setMyFlowExpandedRoutineKey] = useState('');
@@ -4069,6 +4083,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setChecksBySlug(Object.fromEntries(progress.map((item) => [item.slug, getChecks(item.slug)])));
     setSavedFlowMapBySlug(getSavedFlowMapIndexByFlowSlug());
     setMyFlowStepItemChecks(getMyFlowStepItemChecks());
+    setMyFlowCompletionFeedbackBySlug(
+      Object.fromEntries(
+        progress.flatMap((item) => {
+          const feedback = getMyFlowCompletionFeedback(item.slug);
+          return feedback ? [[item.slug, feedback] as const] : [];
+        }),
+      ),
+    );
   };
 
   useEffect(() => {
@@ -4200,7 +4222,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const showFlowInventory = !shouldCollapseFlowInventory || myFlowInventoryOpen;
   const showMyFlowScopeControl = !isMyFlowMobileViewport && savedFlows.length > 1;
   const getSavedFlowNextRow = (flow: MySavedFlow) =>
-    flow.rows.find((row) => !isMyFlowRowChecked(flow, row)) ?? flow.rows[0];
+    flow.rows.find((row) => !isMyFlowRowChecked(flow, row));
   const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
     isUrlFirstDraftSavedFlow(flow)
       ? myFlowDateOverrides[getMyFlowDraftItemOverlayKey(flow.progress.slug, rowId)]
@@ -5378,6 +5400,71 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
     saveChecks(flow.progress.slug, nextChecks);
     refreshSavedFlowState();
+  };
+
+  const openMyFlowCompletionFeedback = (flow: MySavedFlow, mode: MyFlowCompletionFeedbackDraft['mode']) => {
+    const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug] ?? getMyFlowCompletionFeedback(flow.progress.slug);
+    setMyFlowCompletionFeedbackDraft({
+      flowSlug: flow.progress.slug,
+      mode,
+      outcome: savedFeedback?.reflection?.outcome ?? 'helpful',
+      reflectionNote: savedFeedback?.reflection?.note ?? '',
+      correctionScope:
+        savedFeedback?.sourceCorrectionDraft?.scope === 'item' && savedFeedback.sourceCorrectionDraft.itemId
+          ? savedFeedback.sourceCorrectionDraft.itemId
+          : 'flow',
+      correctionNote: savedFeedback?.sourceCorrectionDraft?.note ?? '',
+      status: '',
+    });
+  };
+
+  const updateMyFlowCompletionFeedbackDraft = (patch: Partial<Omit<MyFlowCompletionFeedbackDraft, 'flowSlug'>>) => {
+    setMyFlowCompletionFeedbackDraft((current) => (current ? { ...current, ...patch, status: patch.status ?? '' } : current));
+  };
+
+  const saveMyFlowCompletionReflection = (flow: MySavedFlow) => {
+    if (myFlowCompletionFeedbackDraft?.flowSlug !== flow.progress.slug) return;
+    const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug] ?? getMyFlowCompletionFeedback(flow.progress.slug);
+    const nextFeedback = saveMyFlowCompletionFeedback(flow.progress.slug, {
+      ...(savedFeedback?.sourceCorrectionDraft ? { sourceCorrectionDraft: savedFeedback.sourceCorrectionDraft } : {}),
+      reflection: {
+        outcome: myFlowCompletionFeedbackDraft.outcome,
+        ...(myFlowCompletionFeedbackDraft.reflectionNote.trim()
+          ? { note: myFlowCompletionFeedbackDraft.reflectionNote.trim() }
+          : {}),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    if (!nextFeedback) return;
+    setMyFlowCompletionFeedbackBySlug((current) => ({ ...current, [flow.progress.slug]: nextFeedback }));
+    updateMyFlowCompletionFeedbackDraft({ status: '내 회고를 이 기기에 저장했어요.' });
+  };
+
+  const saveMyFlowSourceCorrectionDraft = (flow: MySavedFlow) => {
+    if (myFlowCompletionFeedbackDraft?.flowSlug !== flow.progress.slug) return;
+    const correctionNote = myFlowCompletionFeedbackDraft.correctionNote.trim();
+    if (!correctionNote) {
+      updateMyFlowCompletionFeedbackDraft({ status: '알릴 내용을 적어 주세요.' });
+      return;
+    }
+
+    const itemRow = flow.rows.find((row) => baseStateId(row.id) === myFlowCompletionFeedbackDraft.correctionScope);
+    const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug] ?? getMyFlowCompletionFeedback(flow.progress.slug);
+    const nextFeedback = saveMyFlowCompletionFeedback(flow.progress.slug, {
+      ...(savedFeedback?.reflection ? { reflection: savedFeedback.reflection } : {}),
+      sourceCorrectionDraft: {
+        scope: itemRow ? 'item' : 'flow',
+        note: correctionNote,
+        updatedAt: new Date().toISOString(),
+        ...(itemRow
+          ? { itemId: baseStateId(itemRow.id), itemTitle: getMyFlowRowDisplayTitle({ ...itemRow, flow }) }
+          : {}),
+        ...(flow.bundle.flow.source_url ? { sourceUrl: flow.bundle.flow.source_url } : {}),
+      },
+    });
+    if (!nextFeedback) return;
+    setMyFlowCompletionFeedbackBySlug((current) => ({ ...current, [flow.progress.slug]: nextFeedback }));
+    updateMyFlowCompletionFeedbackDraft({ status: '전송 전 메모를 이 기기에 저장했어요.' });
   };
 
   const renderTaskCompletionCheckbox = ({
@@ -7489,6 +7576,178 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderMyFlowCompletionFeedback = (flow: MySavedFlow) => {
+    const executionComplete = flow.rows.length > 0 && flow.rows.every((row) => isMyFlowRowChecked(flow, row));
+    if (isMyFlowScenarioDemo || !executionComplete) return null;
+
+    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
+    const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug];
+    const activeDraft = myFlowCompletionFeedbackDraft?.flowSlug === flow.progress.slug
+      ? myFlowCompletionFeedbackDraft
+      : null;
+    const correctionRows = Array.from(
+      new Map(flow.rows.map((row) => [baseStateId(row.id), row] as const)).values(),
+    );
+
+    return (
+      <section data-testid="my-flow-completion-feedback" className="mt-4 border-t border-slate-200 pt-4">
+        <p className="text-xs font-semibold text-emerald-700">완료 후 기록</p>
+        <h4 className="mt-1 text-base font-semibold text-slate-950">이번 실행을 짧게 남겨보세요</h4>
+        <p className="mt-1 text-xs leading-5 text-slate-600">
+          내 회고는 나만 보고, 원본에서 고칠 점은 전송 전 메모로 따로 저장합니다.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-testid="my-flow-reflection-open"
+            aria-pressed={activeDraft?.mode === 'reflection'}
+            className={`min-h-9 rounded-md border px-3 py-2 text-sm font-semibold ${
+              activeDraft?.mode === 'reflection'
+                ? 'border-blue-600 bg-blue-50 text-blue-800'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'
+            }`}
+            onClick={() => openMyFlowCompletionFeedback(flow, 'reflection')}
+          >
+            내 실행 회고
+          </button>
+          <button
+            type="button"
+            data-testid="my-flow-source-correction-open"
+            aria-pressed={activeDraft?.mode === 'correction'}
+            className={`min-h-9 rounded-md border px-3 py-2 text-sm font-semibold ${
+              activeDraft?.mode === 'correction'
+                ? 'border-blue-600 bg-blue-50 text-blue-800'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'
+            }`}
+            onClick={() => openMyFlowCompletionFeedback(flow, 'correction')}
+          >
+            원본 내용 알릴 점
+          </button>
+        </div>
+        {!activeDraft && (savedFeedback?.reflection || savedFeedback?.sourceCorrectionDraft) ? (
+          <p data-testid="my-flow-completion-feedback-saved-summary" className="mt-2 text-xs font-semibold text-slate-500">
+            {[savedFeedback.reflection ? '내 회고 저장됨' : '', savedFeedback.sourceCorrectionDraft ? '전송 전 메모 저장됨' : '']
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        ) : null}
+        {activeDraft?.mode === 'reflection' ? (
+          <div data-testid="my-flow-reflection-editor" className="mt-3 border-t border-slate-100 pt-3">
+            <p className="text-sm font-semibold text-slate-900">이번 Flow는 어땠나요?</p>
+            <div className="mt-2 grid grid-cols-2 gap-2" role="group" aria-label={`${flowTitle} 실행 결과`}>
+              {([
+                ['helpful', '도움됐어요'],
+                ['needs_changes', '고칠 점이 있어요'],
+              ] as const).map(([outcome, label]) => (
+                <button
+                  key={outcome}
+                  type="button"
+                  aria-pressed={activeDraft.outcome === outcome}
+                  className={`min-h-10 rounded-md border px-3 py-2 text-sm font-semibold ${
+                    activeDraft.outcome === outcome
+                      ? 'border-blue-600 bg-blue-50 text-blue-800'
+                      : 'border-slate-200 bg-white text-slate-700'
+                  }`}
+                  onClick={() => updateMyFlowCompletionFeedbackDraft({ outcome })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <label className="mt-3 block text-sm font-semibold text-slate-800">
+              내 메모 <span className="font-medium text-slate-500">(선택)</span>
+              <textarea
+                data-testid="my-flow-reflection-note"
+                className="mt-1 min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                value={activeDraft.reflectionNote}
+                placeholder="다음에 다시 쓸 때 기억할 점"
+                onChange={(event) => updateMyFlowCompletionFeedbackDraft({ reflectionNote: event.target.value })}
+              />
+            </label>
+            <p className="mt-1 text-xs text-slate-500">이 기기에만 저장됩니다.</p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                data-testid="my-flow-reflection-save"
+                className="min-h-9 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
+                onClick={() => saveMyFlowCompletionReflection(flow)}
+              >
+                내 회고 저장
+              </button>
+              <button
+                type="button"
+                className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"
+                onClick={() => setMyFlowCompletionFeedbackDraft(null)}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {activeDraft?.mode === 'correction' ? (
+          <div data-testid="my-flow-source-correction-editor" className="mt-3 border-t border-slate-100 pt-3">
+            <p className="text-sm font-semibold text-slate-900">원본에서 고칠 내용을 정리하세요</p>
+            <p className="mt-1 text-xs leading-5 text-slate-600">
+              다른 사용자에게도 필요한 수정 내용을 적습니다. 아직 누구에게도 전송되지 않아요.
+            </p>
+            <label className="mt-3 block text-sm font-semibold text-slate-800">
+              어디를 고칠까요?
+              <select
+                data-testid="my-flow-source-correction-scope"
+                className="mt-1 min-h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                value={activeDraft.correctionScope}
+                onChange={(event) => updateMyFlowCompletionFeedbackDraft({ correctionScope: event.target.value })}
+              >
+                <option value="flow">Flow 전체</option>
+                {correctionRows.map((row) => (
+                  <option key={baseStateId(row.id)} value={baseStateId(row.id)}>
+                    {getMyFlowRowDisplayTitle({ ...row, flow })}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="mt-3 block text-sm font-semibold text-slate-800">
+              알릴 내용
+              <textarea
+                data-testid="my-flow-source-correction-note"
+                className="mt-1 min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                value={activeDraft.correctionNote}
+                placeholder="빠진 내용이나 잘못된 순서·날짜를 적어 주세요"
+                onChange={(event) => updateMyFlowCompletionFeedbackDraft({ correctionNote: event.target.value })}
+              />
+            </label>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                data-testid="my-flow-source-correction-save"
+                className="min-h-9 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
+                onClick={() => saveMyFlowSourceCorrectionDraft(flow)}
+              >
+                전송 전 메모 저장
+              </button>
+              <button
+                type="button"
+                className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"
+                onClick={() => setMyFlowCompletionFeedbackDraft(null)}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {activeDraft?.status ? (
+          <p
+            data-testid="my-flow-completion-feedback-status"
+            className={`mt-2 text-xs font-semibold ${activeDraft.status.startsWith('알릴 내용을') ? 'text-amber-700' : 'text-emerald-700'}`}
+            role="status"
+          >
+            {activeDraft.status}
+          </p>
+        ) : null}
+      </section>
+    );
+  };
+
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
@@ -7587,6 +7846,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {renderMyFlowPersonalCopySettings(flow)}
+        {renderMyFlowCompletionFeedback(flow)}
         {flowExpanded ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
@@ -7798,6 +8058,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="h-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
           </div>
         </div>
+        {renderMyFlowCompletionFeedback(flow)}
         {renderMyFlowExcludedSteps(flow)}
         <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
           <Link className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300" href={sourceHref}>

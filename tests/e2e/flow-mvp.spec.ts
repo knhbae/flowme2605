@@ -2609,9 +2609,10 @@ test('my flow today exposes inline completion without a separate today status fr
   await expect(completeCheckbox).toHaveAttribute('aria-label', /완료 체크$/);
   await expect(firstRunnableRow.getByTestId('my-flow-mobile-continuation-flow-context')).not.toContainText(/\d+\/\d+\s*완료/);
 
-  await completeCheckbox.check();
+  await completeCheckbox.click();
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-today-completed-list')).toBeVisible();
+  await expect(page.getByTestId('my-flow-today-completed-toggle')).toContainText('오늘 완료 1개 보기');
 });
 
 test('my flow today dedupes rows when today overdue and next queues coexist on mobile', async ({ page }, testInfo) => {
@@ -3638,8 +3639,12 @@ test('P19 task completion controls use one checkbox pattern in My Flow and Calen
   const nowComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
   await expect(nowComplete).toHaveAttribute('type', 'checkbox');
   await expect(nowComplete).toHaveAttribute('aria-label', /완료/);
-  await nowComplete.check();
-  await expect(nowComplete).toBeChecked();
+  await nowComplete.click();
+  await expect.poll(() => page.evaluate(() =>
+    Object.keys(window.localStorage)
+      .filter((key) => key.startsWith('flow_builder_mvp_checks_'))
+      .some((key) => Object.values(JSON.parse(window.localStorage.getItem(key) || '{}')).some(Boolean)),
+  )).toBe(true);
 
   await page.getByTestId('my-flow-post-save-open-first').click();
   const inlineDetail = nowSection.getByTestId('my-flow-inline-detail');
@@ -6137,6 +6142,93 @@ test('promoted maintenance mobile routes show the date checklist before the next
     expect(checklistTop).toBeLessThan(nextCardTop);
     await expect(page.getByTestId('maintenance-routine-checklist-card').getByLabel(/저장 전 미리보기 선택:/).first()).toBeVisible();
   }
+});
+
+test('completed My Flow separates private reflection from an unsent source correction draft', async ({ page }) => {
+  const movingBundle = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  expect(movingBundle).toBeTruthy();
+  const completedChecks = Object.fromEntries((movingBundle?.items ?? []).map((item) => [item.id, true]));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(({ checks }) => {
+    if (window.sessionStorage.getItem('completion-feedback-seeded') === 'true') return;
+    window.sessionStorage.setItem('completion-feedback-seeded', 'true');
+    window.localStorage.clear();
+    window.localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt: '2026-07-11T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-08-10',
+    }));
+    window.localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({ mode: 'custom', anchor: '2026-08-10' }));
+    window.localStorage.setItem('flow_builder_mvp_checks_moving-d30-basic', JSON.stringify(checks));
+  }, { checks: completedChecks });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const mobileFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]');
+  const feedback = mobileFlow.getByTestId('my-flow-completion-feedback');
+  await expect(feedback).toBeVisible();
+  await expect(mobileFlow).toContainText('남은 항목이 없습니다.');
+  await expect(mobileFlow).not.toContainText('다음 할 일');
+  await expect(feedback).toContainText('내 회고는 나만 보고, 원본에서 고칠 점은 전송 전 메모로 따로 저장합니다.');
+  await expect(feedback).not.toContainText(/공개 리뷰|별점|제작자에게 전송됨/);
+  await expectNoInternalUserSurfaceCopy(feedback);
+  await expectNoUserFacingRawIsoDate(feedback);
+  await expectNoUserFacingDisplayLeakage(feedback);
+
+  await feedback.getByTestId('my-flow-reflection-open').click();
+  await expect(feedback.getByTestId('my-flow-reflection-editor')).toBeVisible();
+  await feedback.getByRole('button', { name: '도움됐어요' }).click();
+  await feedback.getByTestId('my-flow-reflection-note').fill('다음 이사에도 같은 순서로 확인하고 싶어요.');
+  await feedback.getByTestId('my-flow-reflection-save').click();
+  await expect(feedback.getByTestId('my-flow-completion-feedback-status')).toHaveText('내 회고를 이 기기에 저장했어요.');
+
+  await feedback.getByTestId('my-flow-source-correction-open').click();
+  const correctionEditor = feedback.getByTestId('my-flow-source-correction-editor');
+  await expect(correctionEditor).toContainText('아직 누구에게도 전송되지 않아요.');
+  await correctionEditor.getByTestId('my-flow-source-correction-scope').selectOption({ index: 1 });
+  await correctionEditor.getByTestId('my-flow-source-correction-note').fill('이 단계는 관리사무소 운영 시간을 먼저 확인해야 해요.');
+  await correctionEditor.getByTestId('my-flow-source-correction-save').click();
+  await expect(feedback.getByTestId('my-flow-completion-feedback-status')).toHaveText('전송 전 메모를 이 기기에 저장했어요.');
+
+  const stored = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:my-flow:completion-feedback:moving-d30-basic') || 'null'));
+  expect(stored.reflection).toMatchObject({
+    outcome: 'helpful',
+    note: '다음 이사에도 같은 순서로 확인하고 싶어요.',
+  });
+  expect(stored.sourceCorrectionDraft).toMatchObject({
+    scope: 'item',
+    note: '이 단계는 관리사무소 운영 시간을 먼저 확인해야 해요.',
+  });
+  expect(stored.sourceCorrectionDraft.itemId).toBeTruthy();
+  expect(stored.sourceCorrectionDraft.itemTitle).toBeTruthy();
+  expect(stored.sourceCorrectionDraft.sourceUrl).toContain('ajd.co.kr');
+  expect(await page.evaluate(() => Object.values(JSON.parse(window.localStorage.getItem('flow_builder_mvp_checks_moving-d30-basic') || '{}')).every(Boolean))).toBe(true);
+  await expectNoHorizontalOverflow(page);
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('my-flow-completion-feedback-saved-summary')).toContainText('내 회고 저장됨');
+  await expect(page.getByTestId('my-flow-completion-feedback-saved-summary')).toContainText('전송 전 메모 저장됨');
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
+  await expect(wideFlow.getByTestId('my-flow-completion-feedback')).toBeVisible();
+  await expect(wideFlow).toContainText('남은 실행 항목이 없습니다.');
+  await expectNoHorizontalOverflow(page);
+
+  await page.evaluate(() => {
+    const checks = JSON.parse(window.localStorage.getItem('flow_builder_mvp_checks_moving-d30-basic') || '{}') as Record<string, boolean>;
+    const firstCheckId = Object.keys(checks)[0];
+    checks[firstCheckId] = false;
+    window.localStorage.setItem('flow_builder_mvp_checks_moving-d30-basic', JSON.stringify(checks));
+  });
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
 });
 
 test('content flows studio brings representative artifacts into the first mobile viewport', async ({ page }) => {

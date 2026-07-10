@@ -23,6 +23,7 @@ const NOTICE_KEY = 'flow_builder_mvp_storage_notice_dismissed';
 const SAVED_FLOW_KEY_PREFIX = 'flow:saved:';
 const SAVED_FLOW_MAP_KEY_PREFIX = 'flow:map:saved:';
 const MY_FLOW_STEP_ITEM_CHECKS_KEY = 'flow:my-flow:step-item-checks';
+const MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX = 'flow:my-flow:completion-feedback:';
 
 export type StoredAnchor = {
   mode: string;
@@ -52,6 +53,27 @@ export type SavedFlowMapSnapshot = {
 };
 
 export type MyFlowStepItemChecks = Record<string, Record<string, boolean>>;
+
+export type MyFlowCompletionReflection = {
+  outcome: 'helpful' | 'needs_changes';
+  note?: string;
+  updatedAt: string;
+};
+
+export type MyFlowSourceCorrectionDraft = {
+  scope: 'flow' | 'item';
+  note: string;
+  updatedAt: string;
+  itemId?: string;
+  itemTitle?: string;
+  sourceUrl?: string;
+};
+
+export type MyFlowCompletionFeedback = {
+  flowSlug: string;
+  reflection?: MyFlowCompletionReflection;
+  sourceCorrectionDraft?: MyFlowSourceCorrectionDraft;
+};
 
 export type ActiveFlowProgress = {
   slug: string;
@@ -348,6 +370,78 @@ export function saveMyFlowStepItemChecks(value: MyFlowStepItemChecks): void {
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
 }
 
+function normalizeCompletionReflection(value: unknown): MyFlowCompletionReflection | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const reflection = value as Partial<MyFlowCompletionReflection>;
+  if (reflection.outcome !== 'helpful' && reflection.outcome !== 'needs_changes') return undefined;
+  if (typeof reflection.updatedAt !== 'string' || !reflection.updatedAt.trim()) return undefined;
+  const note = typeof reflection.note === 'string' && reflection.note.trim() ? reflection.note.trim() : undefined;
+  return {
+    outcome: reflection.outcome,
+    ...(note ? { note } : {}),
+    updatedAt: reflection.updatedAt,
+  };
+}
+
+function normalizeSourceCorrectionDraft(value: unknown): MyFlowSourceCorrectionDraft | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const correction = value as Partial<MyFlowSourceCorrectionDraft>;
+  if (correction.scope !== 'flow' && correction.scope !== 'item') return undefined;
+  if (typeof correction.note !== 'string' || !correction.note.trim()) return undefined;
+  if (typeof correction.updatedAt !== 'string' || !correction.updatedAt.trim()) return undefined;
+
+  const itemId = typeof correction.itemId === 'string' && correction.itemId.trim() ? correction.itemId.trim() : undefined;
+  const itemTitle = typeof correction.itemTitle === 'string' && correction.itemTitle.trim() ? correction.itemTitle.trim() : undefined;
+  const sourceUrl = typeof correction.sourceUrl === 'string' && correction.sourceUrl.trim() ? correction.sourceUrl.trim() : undefined;
+  if (correction.scope === 'item' && (!itemId || !itemTitle)) return undefined;
+
+  return {
+    scope: correction.scope,
+    note: correction.note.trim(),
+    updatedAt: correction.updatedAt,
+    ...(correction.scope === 'item' && itemId && itemTitle ? { itemId, itemTitle } : {}),
+    ...(sourceUrl ? { sourceUrl } : {}),
+  };
+}
+
+export function normalizeMyFlowCompletionFeedback(value: unknown): MyFlowCompletionFeedback | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const feedback = value as Partial<MyFlowCompletionFeedback>;
+  if (typeof feedback.flowSlug !== 'string' || !feedback.flowSlug.trim()) return undefined;
+  const reflection = normalizeCompletionReflection(feedback.reflection);
+  const sourceCorrectionDraft = normalizeSourceCorrectionDraft(feedback.sourceCorrectionDraft);
+  if (!reflection && !sourceCorrectionDraft) return undefined;
+
+  return {
+    flowSlug: feedback.flowSlug.trim(),
+    ...(reflection ? { reflection } : {}),
+    ...(sourceCorrectionDraft ? { sourceCorrectionDraft } : {}),
+  };
+}
+
+export function getMyFlowCompletionFeedback(flowSlug: string): MyFlowCompletionFeedback | undefined {
+  if (!canUseStorage()) return undefined;
+  try {
+    return normalizeMyFlowCompletionFeedback(
+      JSON.parse(localStorage.getItem(`${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`) || 'null'),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+export function saveMyFlowCompletionFeedback(
+  flowSlug: string,
+  value: Omit<MyFlowCompletionFeedback, 'flowSlug'>,
+): MyFlowCompletionFeedback | undefined {
+  if (!canUseStorage()) return undefined;
+  const normalized = normalizeMyFlowCompletionFeedback({ flowSlug, ...value });
+  if (!normalized) return undefined;
+  localStorage.setItem(`${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`, JSON.stringify(normalized));
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+  return normalized;
+}
+
 export function clearFlowLocalProgress(slug: string): void {
   if (!canUseStorage()) return;
   [
@@ -358,6 +452,7 @@ export function clearFlowLocalProgress(slug: string): void {
     `${COMPARISON_KEY_PREFIX}${slug}`,
     `${WORKBENCH_KEY_PREFIX}${slug}`,
     `${REACTIONS_KEY_PREFIX}${slug}`,
+    `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${slug}`,
   ].forEach((key) => localStorage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();
   const nextStepItemChecks = Object.fromEntries(
