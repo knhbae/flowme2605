@@ -1,0 +1,173 @@
+﻿{
+    "packageId":  "2026-07-11-claude-design-p22-05-external-import-evidence",
+    "observedAt":  "2026-07-11",
+    "environment":  {
+                        "excelVersion":  "16.0.20131.20112",
+                        "wordVersion":  "16.0.20131.20112",
+                        "outlookVersion":  "16.0.20131.20112"
+                    },
+    "excel":  [
+                  {
+                      "id":  "moving-d30",
+                      "application":  "Microsoft Excel",
+                      "openedReadOnly":  true,
+                      "sheetNames":  [
+                                         "실행 요약",
+                                         "실행표",
+                                         "주간 보기",
+                                         "월간 보기",
+                                         "상세"
+                                     ],
+                      "executionDataRowCount":  24,
+                      "expectedExecutionDataRowCount":  24,
+                      "matchingMemoRow":  2,
+                      "observedTitle":  "이사 방식 정하기",
+                      "expectedTitle":  "이사 방식 정하기",
+                      "observedDate":  "2026-07-16",
+                      "expectedDate":  "2026-07-16",
+                      "titleFidelity":  true,
+                      "dateFidelity":  true,
+                      "memoFidelity":  true
+                  },
+                  {
+                      "id":  "computer-study",
+                      "application":  "Microsoft Excel",
+                      "openedReadOnly":  true,
+                      "sheetNames":  [
+                                         "실행 요약",
+                                         "실행표",
+                                         "주간 보기",
+                                         "월간 보기",
+                                         "상세"
+                                     ],
+                      "executionDataRowCount":  9,
+                      "expectedExecutionDataRowCount":  9,
+                      "matchingMemoRow":  2,
+                      "observedTitle":  "필기와 실기 시험 범위 나누기",
+                      "expectedTitle":  "필기와 실기 시험 범위 나누기",
+                      "observedDate":  "2026-08-06",
+                      "expectedDate":  "2026-08-06",
+                      "titleFidelity":  true,
+                      "dateFidelity":  true,
+                      "memoFidelity":  true
+                  },
+                  {
+                      "id":  "fridge-cleanout",
+                      "application":  "Microsoft Excel",
+                      "openedReadOnly":  true,
+                      "sheetNames":  [
+                                         "실행 요약",
+                                         "실행표",
+                                         "주간 보기",
+                                         "월간 보기",
+                                         "상세"
+                                     ],
+                      "executionDataRowCount":  6,
+                      "expectedExecutionDataRowCount":  6,
+                      "matchingMemoRow":  2,
+                      "observedTitle":  "냉장고 지도에서 우선 소진 재료 3개 고르기",
+                      "expectedTitle":  "냉장고 지도에서 우선 소진 재료 3개 고르기",
+                      "observedDate":  "2026-07-20",
+                      "expectedDate":  "2026-07-20",
+                      "titleFidelity":  true,
+                      "dateFidelity":  true,
+                      "memoFidelity":  true
+                  }
+              ],
+    "memo":  [
+                 {
+                     "id":  "moving-d30",
+                     "application":  "Microsoft Word",
+                     "openedReadOnly":  true,
+                     "characterCount":  2010,
+                     "titleFidelity":  true,
+                     "memoFidelity":  true,
+                     "brokenDescriptionLabelCount":  0
+                 },
+                 {
+                     "id":  "computer-study",
+                     "application":  "Microsoft Word",
+                     "openedReadOnly":  true,
+                     "characterCount":  1775,
+                     "titleFidelity":  true,
+                     "memoFidelity":  true,
+                     "brokenDescriptionLabelCount":  0
+                 },
+                 {
+                     "id":  "fridge-cleanout",
+                     "application":  "Microsoft Word",
+                     "openedReadOnly":  true,
+                     "characterCount":  1508,
+                     "titleFidelity":  true,
+                     "memoFidelity":  true,
+                     "brokenDescriptionLabelCount":  0
+                 }
+             ],
+    "calendarPayloadProjection":  [
+                                      {
+                                          "id":  "moving-d30",
+                                          "expectedEventCount":  24,
+                                          "titleProjectionPresent":  true,
+                                          "dateProjectionPresent":  true,
+                                          "memoProjectionPresent":  true,
+                                          "stableUidOnRegeneration":  true
+                                      },
+                                      {
+                                          "id":  "computer-study",
+                                          "expectedEventCount":  9,
+                                          "titleProjectionPresent":  true,
+                                          "dateProjectionPresent":  true,
+                                          "memoProjectionPresent":  true,
+                                          "stableUidOnRegeneration":  true
+                                      },
+                                      {
+                                          "id":  "fridge-cleanout",
+                                          "expectedEventCount":  6,
+                                          "titleProjectionPresent":  true,
+                                          "dateProjectionPresent":  true,
+                                          "memoProjectionPresent":  true,
+                                          "stableUidOnRegeneration":  true
+                                      }
+                                  ],
+    "outlook":  {
+                    "application":  "Microsoft Outlook",
+                    "status":  "blocked",
+                    "reason":  "Outlook rejected both a minimal control and the generated fixture; local MAPI profile import is unavailable",
+                    "generatedFixture":  {
+                                             "status":  "failed",
+                                             "pathExists":  true,
+                                             "hresult":  "0x80020009",
+                                             "reason":  "경로 또는 URL이 잘못되었습니다.",
+                                             "defaultCalendarWritePerformed":  false
+                                         },
+                    "minimalControl":  {
+                                           "status":  "failed",
+                                           "pathExists":  true,
+                                           "hresult":  "0x80004005",
+                                           "reason":  "작업을 수행하지 못했습니다.",
+                                           "defaultCalendarWritePerformed":  false
+                                       },
+                    "defaultCalendarWritePerformed":  false
+                },
+    "duplicatePolicy":  {
+                            "calendar":  "같은 Flow 재생성은 UID를 유지한다. 외부 캘린더의 중복 병합은 보장하지 않으므로 다시 가져오기 전에 이전 전용 캘린더를 지우거나 새 전용 캘린더에 가져온다.",
+                            "spreadsheet":  "재생성 파일로 기존 파일을 교체한다. 기존 시트에 다시 붙이면 중복될 수 있다.",
+                            "memo":  "기존 문서 블록을 새 내보내기 내용으로 교체한다. 같은 문서에 반복해서 붙이지 않는다."
+                        },
+    "recoveryCopy":  {
+                         "calendar":  "가져오기가 안 되면 캘린더 앱의 가져오기 메뉴에서 .ics 파일을 직접 선택하세요. 다시 가져올 때는 이전에 만든 Flow 캘린더를 먼저 지워 중복을 피하세요.",
+                         "spreadsheet":  "파일이 열리지 않으면 다운로드한 .xlsx 파일을 Excel에서 직접 여세요. 다시 받았다면 이전 파일 대신 새 파일을 사용하세요.",
+                         "memo":  "문서가 깨져 보이면 UTF-8로 다시 열고, 기존 내용에 덧붙이지 말고 새 내용으로 교체하세요."
+                     },
+    "summary":  {
+                    "representativeFlowCount":  3,
+                    "excelReadOnlyImportPassCount":  3,
+                    "memoReadOnlyImportPassCount":  3,
+                    "calendarPayloadProjectionPassCount":  3,
+                    "calendarExternalImportObserved":  false,
+                    "calendarExternalImportBlocked":  true,
+                    "defaultCalendarWritePerformed":  false,
+                    "duplicatePolicyDocumented":  true,
+                    "recoveryCopyDocumented":  true
+                }
+}

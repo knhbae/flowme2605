@@ -1,0 +1,323 @@
+{
+  "packageId": "2026-07-11-claude-design-p22-05-external-import-evidence",
+  "generatedAt": "2026-07-11",
+  "representativeFlowCount": 3,
+  "representativeFlows": [
+    {
+      "id": "moving-d30",
+      "slug": "moving-d30-basic",
+      "title": "이사 D-30 준비 Flow",
+      "anchor": "2026-08-15",
+      "expectedEventCount": 24,
+      "expectedExecutionRowCount": 24,
+      "firstItem": {
+        "id": "flow-moving-item-0",
+        "title": "이사 방식 정하기",
+        "expectedDate": "2026-07-16",
+        "memo": "오전 중 견적 후보 두 곳에 연락하고 포함 범위를 확인"
+      },
+      "files": {
+        "calendar": "artifacts/moving-d30/calendar.ics",
+        "calendarFirstEvent": "artifacts/moving-d30/calendar-first-event.ics",
+        "sheet": "artifacts/moving-d30/sheet.xlsx",
+        "memo": "artifacts/moving-d30/memo.txt"
+      },
+      "generatedHashes": {
+        "calendarSha256": "1d9e530dce34b154ffcb348eebb561b8c683d7105952cbf70709d4c8fa8a942a",
+        "sheetSha256": "4a0db2f6b5855bfd7e48fbca8c4380f35a2a5f73c6b4c71546798a0e39b2a1e4",
+        "memoSha256": "5445432ea6b1e089d60143105119eefa5bee2a6e7f6b0de0440cee13d3b948ad"
+      },
+      "expectedFields": {
+        "calendarSubjects": [
+          "이사 D-30 준비 Flow - 이사 방식 정하기",
+          "이사 D-30 준비 Flow - 이사/청소 업체 견적 받고 예약하기",
+          "이사 D-30 준비 Flow - 이사할 집 하자 점검하기",
+          "이사 D-30 준비 Flow - 필요 없는 물건 정리하기",
+          "이사 D-30 준비 Flow - 대형폐기물 배출 신고와 수거일 확인하기",
+          "이사 D-30 준비 Flow - 엘리베이터 또는 사다리차 사용 예약하기",
+          "이사 D-30 준비 Flow - 우편물/카드/은행 주소 변경하기",
+          "이사 D-30 준비 Flow - 인터넷/정수기 이전 설치 예약하기",
+          "이사 D-30 준비 Flow - 정기 배달 서비스 중지 요청하기",
+          "이사 D-30 준비 Flow - 관리사무소에 이사 시간과 차량 동선 공유하기",
+          "이사 D-30 준비 Flow - 도시가스 철거/설치 예약하기",
+          "이사 D-30 준비 Flow - 이사 당일 사용할 물건 따로 포장하기",
+          "이사 D-30 준비 Flow - 자동이체 해지 또는 변경 확인하기",
+          "이사 D-30 준비 Flow - 귀중품과 중요 서류 별도 보관하기",
+          "이사 D-30 준비 Flow - 냉장고 음식과 쓰레기 최종 정리하기",
+          "이사 D-30 준비 Flow - 이사 업체와 일정 최종 확인하기",
+          "이사 D-30 준비 Flow - 이체 한도 증액 확인하기",
+          "이사 D-30 준비 Flow - 계량기와 집 상태 사진 남기기",
+          "이사 D-30 준비 Flow - 열쇠\\, 출입카드\\, 주차등록 인수인계하기",
+          "이사 D-30 준비 Flow - 이삿짐 분실/파손 확인하기",
+          "이사 D-30 준비 Flow - 전기/가스/수도/관리비 정산하기",
+          "이사 D-30 준비 Flow - 전입신고와 확정일자 확인하기",
+          "이사 D-30 준비 Flow - 임대차 계약 확정일자 부여 여부 확인하기",
+          "이사 D-30 준비 Flow - 정부24 전입신고 처리 결과 확인하기"
+        ],
+        "calendarDates": [
+          "20260716",
+          "20260716",
+          "20260716",
+          "20260716",
+          "20260805",
+          "20260805",
+          "20260805",
+          "20260805",
+          "20260805",
+          "20260812",
+          "20260812",
+          "20260812",
+          "20260812",
+          "20260814",
+          "20260814",
+          "20260814",
+          "20260814",
+          "20260815",
+          "20260815",
+          "20260815",
+          "20260815",
+          "20260815",
+          "20260816",
+          "20260816"
+        ],
+        "calendarUids": [
+          "flow-moving-flow-moving-item-0@flow-mvp",
+          "flow-moving-flow-moving-item-3@flow-mvp",
+          "flow-moving-flow-moving-item-1@flow-mvp",
+          "flow-moving-flow-moving-item-2@flow-mvp",
+          "flow-moving-flow-moving-item-6@flow-mvp",
+          "flow-moving-flow-moving-item-7@flow-mvp",
+          "flow-moving-flow-moving-item-4@flow-mvp",
+          "flow-moving-flow-moving-item-8@flow-mvp",
+          "flow-moving-flow-moving-item-5@flow-mvp",
+          "flow-moving-flow-moving-item-12@flow-mvp",
+          "flow-moving-flow-moving-item-9@flow-mvp",
+          "flow-moving-flow-moving-item-11@flow-mvp",
+          "flow-moving-flow-moving-item-10@flow-mvp",
+          "flow-moving-flow-moving-item-15@flow-mvp",
+          "flow-moving-flow-moving-item-16@flow-mvp",
+          "flow-moving-flow-moving-item-13@flow-mvp",
+          "flow-moving-flow-moving-item-14@flow-mvp",
+          "flow-moving-flow-moving-item-19@flow-mvp",
+          "flow-moving-flow-moving-item-20@flow-mvp",
+          "flow-moving-flow-moving-item-18@flow-mvp",
+          "flow-moving-flow-moving-item-17@flow-mvp",
+          "flow-moving-flow-moving-item-21@flow-mvp",
+          "flow-moving-flow-moving-item-23@flow-mvp",
+          "flow-moving-flow-moving-item-22@flow-mvp"
+        ],
+        "calendarContainsUserMemo": true,
+        "sheetNames": [
+          "실행 요약",
+          "실행표",
+          "주간 보기",
+          "월간 보기",
+          "상세"
+        ],
+        "sheetContainsUserMemo": true,
+        "memoContainsTitle": true,
+        "memoContainsUserMemo": true,
+        "memoContainsBrokenDescriptionLabel": false
+      },
+      "regeneration": {
+        "calendarBusinessPayloadStable": true,
+        "calendarUidSetStable": true,
+        "sheetProjectionStable": true,
+        "memoPayloadStable": true
+      },
+      "outputGuardrail": {
+        "calendarInternalHitCount": 0,
+        "sheetInternalHitCount": 0,
+        "memoInternalHitCount": 0,
+        "internalHits": []
+      }
+    },
+    {
+      "id": "computer-study",
+      "slug": "computer-skills-d30-study",
+      "title": "컴퓨터활용능력 D-30 학습 Flow",
+      "anchor": "2026-09-05",
+      "expectedEventCount": 9,
+      "expectedExecutionRowCount": 9,
+      "firstItem": {
+        "id": "flow-computer-skills-d30-study-item-0",
+        "title": "필기와 실기 시험 범위 나누기",
+        "expectedDate": "2026-08-06",
+        "memo": "필기 취약 단원과 실기 반복 구간을 먼저 표시"
+      },
+      "files": {
+        "calendar": "artifacts/computer-study/calendar.ics",
+        "calendarFirstEvent": "artifacts/computer-study/calendar-first-event.ics",
+        "sheet": "artifacts/computer-study/sheet.xlsx",
+        "memo": "artifacts/computer-study/memo.txt"
+      },
+      "generatedHashes": {
+        "calendarSha256": "7316f4e6edd429f3230c84a032e71a266dffdc95ec0bc981966b7607b8139d14",
+        "sheetSha256": "e334bda55d8f1dd5307ca87722b1794eb06f2a00ed7fedc9f6689ed3be44a159",
+        "memoSha256": "a07ccfd9e6c1dc5e761025e79b323c87b45cd0031e8fc92efd980ecb53c2f54f"
+      },
+      "expectedFields": {
+        "calendarSubjects": [
+          "컴퓨터활용능력 D-30 학습 Flow - 매일 공부 가능한 시간 블록 정하기",
+          "컴퓨터활용능력 D-30 학습 Flow - 필기와 실기 시험 범위 나누기",
+          "컴퓨터활용능력 D-30 학습 Flow - 기출 회독 목표 정하기",
+          "컴퓨터활용능력 D-30 학습 Flow - 핵심 이론 1회독 시작하기",
+          "컴퓨터활용능력 D-30 학습 Flow - 자주 틀리는 기능 목록 만들기",
+          "컴퓨터활용능력 D-30 학습 Flow - 실기 프로그램 환경 점검하기",
+          "컴퓨터활용능력 D-30 학습 Flow - 제한 시간 맞춰 모의 문제 풀기",
+          "컴퓨터활용능력 D-30 학습 Flow - 오답을 유형별로 정리하기",
+          "컴퓨터활용능력 D-30 학습 Flow - 시험장 준비물과 이동 시간 확인하기"
+        ],
+        "calendarDates": [
+          "20260806",
+          "20260806",
+          "20260808",
+          "20260815",
+          "20260818",
+          "20260822",
+          "20260829",
+          "20260831",
+          "20260904"
+        ],
+        "calendarUids": [
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-1@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-0@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-2@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-3@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-4@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-5@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-6@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-7@flow-mvp",
+          "flow-computer-skills-d30-study-flow-computer-skills-d30-study-item-8@flow-mvp"
+        ],
+        "calendarContainsUserMemo": true,
+        "sheetNames": [
+          "실행 요약",
+          "실행표",
+          "주간 보기",
+          "월간 보기",
+          "상세"
+        ],
+        "sheetContainsUserMemo": true,
+        "memoContainsTitle": true,
+        "memoContainsUserMemo": true,
+        "memoContainsBrokenDescriptionLabel": false
+      },
+      "regeneration": {
+        "calendarBusinessPayloadStable": true,
+        "calendarUidSetStable": true,
+        "sheetProjectionStable": true,
+        "memoPayloadStable": true
+      },
+      "outputGuardrail": {
+        "calendarInternalHitCount": 0,
+        "sheetInternalHitCount": 0,
+        "memoInternalHitCount": 0,
+        "internalHits": []
+      }
+    },
+    {
+      "id": "fridge-cleanout",
+      "slug": "fridge-cleanout-weekly-plan",
+      "title": "냉장고 파먹기 7일 재고 소진 Flow",
+      "anchor": "2026-07-20",
+      "expectedEventCount": 6,
+      "expectedExecutionRowCount": 6,
+      "firstItem": {
+        "id": "flow-fridge-cleanout-weekly-plan-item-0",
+        "title": "냉장고 지도에서 우선 소진 재료 3개 고르기",
+        "expectedDate": "2026-07-20",
+        "memo": "우유와 애호박을 먼저 쓰고 남은 재료는 냉동"
+      },
+      "files": {
+        "calendar": "artifacts/fridge-cleanout/calendar.ics",
+        "calendarFirstEvent": "artifacts/fridge-cleanout/calendar-first-event.ics",
+        "sheet": "artifacts/fridge-cleanout/sheet.xlsx",
+        "memo": "artifacts/fridge-cleanout/memo.txt"
+      },
+      "generatedHashes": {
+        "calendarSha256": "f4c4ca886b35ac54466e2e61f5a66e2277bb2eb812c3a3ee7a3a00dfa2ef908f",
+        "sheetSha256": "8b290e7919b05d76bd97166d037bb5de3760b34362ca67e4bfd87618e34482a0",
+        "memoSha256": "85d16f904ab31de15a8b9e655d96a4a174ab6d0d9058b6fa3c7ad7d6c124d3d2"
+      },
+      "expectedFields": {
+        "calendarSubjects": [
+          "냉장고 파먹기 7일 재고 소진 Flow - 냉장고 지도에서 우선 소진 재료 3개 고르기",
+          "냉장고 파먹기 7일 재고 소진 Flow - 이번 주 메인 재료와 메뉴 후보 묶기",
+          "냉장고 파먹기 7일 재고 소진 Flow - 1~2일차 신선 재료 먼저 쓰기",
+          "냉장고 파먹기 7일 재고 소진 Flow - 3~4일차 남은 요리와 재료 변형하기",
+          "냉장고 파먹기 7일 재고 소진 Flow - 5~6일차 냉동실과 기본 재료로 이어가기",
+          "냉장고 파먹기 7일 재고 소진 Flow - 7일차 남은 재료 처리와 장보기 보류 결정하기"
+        ],
+        "calendarDates": [
+          "20260720",
+          "20260720",
+          "20260721",
+          "20260723",
+          "20260725",
+          "20260727"
+        ],
+        "calendarUids": [
+          "flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-0@flow-mvp",
+          "flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-1@flow-mvp",
+          "flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-2@flow-mvp",
+          "flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-3@flow-mvp",
+          "flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-4@flow-mvp",
+          "flow-fridge-cleanout-weekly-plan-flow-fridge-cleanout-weekly-plan-item-5@flow-mvp"
+        ],
+        "calendarContainsUserMemo": true,
+        "sheetNames": [
+          "실행 요약",
+          "실행표",
+          "주간 보기",
+          "월간 보기",
+          "상세"
+        ],
+        "sheetContainsUserMemo": true,
+        "memoContainsTitle": true,
+        "memoContainsUserMemo": true,
+        "memoContainsBrokenDescriptionLabel": false
+      },
+      "regeneration": {
+        "calendarBusinessPayloadStable": true,
+        "calendarUidSetStable": true,
+        "sheetProjectionStable": true,
+        "memoPayloadStable": true
+      },
+      "outputGuardrail": {
+        "calendarInternalHitCount": 0,
+        "sheetInternalHitCount": 0,
+        "memoInternalHitCount": 0,
+        "internalHits": []
+      }
+    }
+  ],
+  "personalStep": {
+    "title": "내 일정에 맞춘 첫 단계",
+    "date": "2026-07-27",
+    "memo": "초안에서 직접 고친 사용자 메모",
+    "files": {
+      "calendar": "artifacts/personal-step/calendar.ics",
+      "sheet": "artifacts/personal-step/sheet.tsv",
+      "memo": "artifacts/personal-step/memo.txt",
+      "checklist": "artifacts/personal-step/checklist.txt"
+    },
+    "expectedFields": {
+      "calendarUid": "url-draft-weekend-prep-step-1-2026-07-27-09:30@flowme.local",
+      "calendarSubject": "내 일정에 맞춘 첫 단계",
+      "calendarDate": "20260727T093000",
+      "calendarContainsMemo": true,
+      "sheetContainsMemo": true,
+      "memoContainsMemo": true
+    },
+    "outputGuardrail": {
+      "internalHitCount": 0,
+      "internalHits": []
+    }
+  },
+  "duplicatePolicyInputs": {
+    "calendarUsesStableUid": true,
+    "spreadsheetHasStableItemIdColumn": false,
+    "memoHasStableExportBlockId": false
+  }
+}

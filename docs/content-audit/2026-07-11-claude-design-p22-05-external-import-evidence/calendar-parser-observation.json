@@ -1,0 +1,62 @@
+{
+  "packageId": "2026-07-11-claude-design-p22-05-external-import-evidence",
+  "observedAt": "2026-07-11",
+  "parser": {
+    "name": "ical.js",
+    "version": "2.2.1",
+    "source": "temporary isolated install outside the repository"
+  },
+  "representativeFlows": [
+    {
+      "id": "moving-d30",
+      "parser": "ical.js 2.2.1",
+      "eventCount": 24,
+      "expectedEventCount": 24,
+      "titleFidelity": true,
+      "dateFidelity": true,
+      "memoFidelity": true,
+      "uniqueUidCount": 24,
+      "stableUidProjectionCount": 24,
+      "physicalLineOverflowCount": 0
+    },
+    {
+      "id": "computer-study",
+      "parser": "ical.js 2.2.1",
+      "eventCount": 9,
+      "expectedEventCount": 9,
+      "titleFidelity": true,
+      "dateFidelity": true,
+      "memoFidelity": true,
+      "uniqueUidCount": 9,
+      "stableUidProjectionCount": 9,
+      "physicalLineOverflowCount": 0
+    },
+    {
+      "id": "fridge-cleanout",
+      "parser": "ical.js 2.2.1",
+      "eventCount": 6,
+      "expectedEventCount": 6,
+      "titleFidelity": true,
+      "dateFidelity": true,
+      "memoFidelity": true,
+      "uniqueUidCount": 6,
+      "stableUidProjectionCount": 6,
+      "physicalLineOverflowCount": 0
+    }
+  ],
+  "personalStep": {
+    "parser": "ical.js 2.2.1",
+    "eventCount": 1,
+    "titleFidelity": true,
+    "dateFidelity": true,
+    "memoFidelity": true,
+    "uidFidelity": true,
+    "physicalLineOverflowCount": 0
+  },
+  "summary": {
+    "representativeFlowCount": 3,
+    "externalParserImportPassCount": 3,
+    "personalStepExternalParserImportPassed": true,
+    "physicalLineOverflowCount": 0
+  }
+}

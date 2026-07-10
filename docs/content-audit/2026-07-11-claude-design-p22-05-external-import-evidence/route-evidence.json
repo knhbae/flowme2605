@@ -1,0 +1,115 @@
+{
+  "packageId": "2026-07-11-claude-design-p22-05-external-import-evidence",
+  "capturedAt": "2026-07-11",
+  "status": "conditional",
+  "implementationCommits": [
+    "73adff0",
+    "9caec3c",
+    "40ffa8f"
+  ],
+  "representativeFlows": [
+    {
+      "id": "moving-d30",
+      "title": "이사 D-30 준비 Flow",
+      "anchor": "2026-08-15",
+      "calendarEventCount": 24,
+      "sheetExecutionRowCount": 24,
+      "sampleDate": "2026-07-16",
+      "excelTitleDateMemoFidelity": true,
+      "wordTitleMemoFidelity": true,
+      "calendarParserTitleDateMemoFidelity": true,
+      "outputInternalHitCount": 0
+    },
+    {
+      "id": "computer-study",
+      "title": "컴퓨터활용능력 D-30 학습 Flow",
+      "anchor": "2026-09-05",
+      "calendarEventCount": 9,
+      "sheetExecutionRowCount": 9,
+      "sampleDate": "2026-08-06",
+      "excelTitleDateMemoFidelity": true,
+      "wordTitleMemoFidelity": true,
+      "calendarParserTitleDateMemoFidelity": true,
+      "outputInternalHitCount": 0
+    },
+    {
+      "id": "fridge-cleanout",
+      "title": "냉장고 파먹기 7일 재고 소진 Flow",
+      "anchor": "2026-07-20",
+      "calendarEventCount": 6,
+      "sheetExecutionRowCount": 6,
+      "sampleDate": "2026-07-20",
+      "excelTitleDateMemoFidelity": true,
+      "wordTitleMemoFidelity": true,
+      "calendarParserTitleDateMemoFidelity": true,
+      "outputInternalHitCount": 0
+    }
+  ],
+  "personalStep": {
+    "title": "내 일정에 맞춘 첫 단계",
+    "date": "2026-07-27 09:30",
+    "location": "집",
+    "calendarParserPassed": true,
+    "calendarSheetMemoChecklistInternalHitCount": 0
+  },
+  "externalToolObservation": {
+    "excel": {
+      "applicationVersion": "16.0.20131.20112",
+      "readOnlyImportPassCount": 3
+    },
+    "word": {
+      "applicationVersion": "16.0.20131.20112",
+      "readOnlyImportPassCount": 3
+    },
+    "calendarParser": {
+      "name": "ical.js",
+      "version": "2.2.1",
+      "representativeImportPassCount": 3,
+      "personalStepImportPassed": true,
+      "physicalLineOverflowCount": 0
+    },
+    "outlook": {
+      "applicationVersion": "16.0.20131.20112",
+      "status": "blocked",
+      "generatedFixtureOpened": false,
+      "minimalControlOpened": false,
+      "defaultCalendarWritePerformed": false,
+      "reason": "Local MAPI profile import rejected both the generated fixture and a minimal control."
+    }
+  },
+  "duplicatePolicy": {
+    "calendarStableUidOnRegenerationCount": 3,
+    "calendarProviderDedupeGuaranteed": false,
+    "spreadsheetPolicy": "replace regenerated file; do not append",
+    "memoPolicy": "replace previous block; do not paste twice"
+  },
+  "summary": {
+    "representativeFlowCount": 3,
+    "excelReadOnlyImportPassCount": 3,
+    "memoReadOnlyImportPassCount": 3,
+    "calendarExternalParserImportPassCount": 3,
+    "calendarActualAppImportPassCount": 0,
+    "calendarActualAppImportBlockedCount": 1,
+    "personalStepExternalParserImportPassed": true,
+    "calendarPhysicalLineOverflowCount": 0,
+    "representativeOutputInternalHitCount": 0,
+    "personalOutputInternalHitCount": 0,
+    "duplicatePolicyDocumented": true,
+    "recoveryCopyDocumented": true,
+    "defaultCalendarWritePerformed": false,
+    "remainingManualCalendarImportCount": 1,
+    "reviewScreenshotCount": 2,
+    "reviewHorizontalOverflowCount": 0
+  },
+  "verification": {
+    "targetedExportTestsPassed": 87,
+    "relatedE2eTestsPassed": 36,
+    "unitTestsPassed": 382,
+    "docsCheckPassed": true,
+    "buildPassed": true,
+    "fixtureGeneratorPassed": true,
+    "calendarParserVerificationPassed": true,
+    "officeObservationScriptPassed": true,
+    "reviewHtmlPlaywrightPassed": true
+  }
+}
