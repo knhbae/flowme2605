@@ -1,0 +1,271 @@
+{
+  "packageId": "2026-07-11-claude-design-p22-04-execution-edit-detail-evidence",
+  "capturedAt": "2026-07-11",
+  "implementationCommit": "97c6250ca5d890d6ffd6434ca1c2341e2956efe9",
+  "scenarios": [
+    {
+      "id": "my-flow-execute-mobile",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "execute",
+      "surface": "my-flow",
+      "screenshot": "screenshots/01-my-flow-execute-mobile.png",
+      "sha256": "5beb9482a6971a7c60f49fbe24ff0da6976ebfb280788ab8af31abc392f2f380"
+    },
+    {
+      "id": "my-flow-edit-mobile",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "edit",
+      "surface": "my-flow",
+      "screenshot": "screenshots/02-my-flow-edit-mobile.png",
+      "sha256": "f5b98755f8aacff8dbc80bda4d494ee4ab5f888111cf52216f6fb49dd9115e94"
+    },
+    {
+      "id": "my-flow-execute-wide",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "state": "execute",
+      "surface": "my-flow",
+      "screenshot": "screenshots/03-my-flow-execute-wide.png",
+      "sha256": "298d105666dd96a1a03e412ce12a87bfdac1a19b2292b57e691b70daff9291e8"
+    },
+    {
+      "id": "my-flow-edit-wide",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "state": "edit",
+      "surface": "my-flow",
+      "screenshot": "screenshots/04-my-flow-edit-wide.png",
+      "sha256": "9841db04a8c9fb9165054e1443017286a9a1a3742e62758242522054e3d709ef"
+    },
+    {
+      "id": "calendar-execute-mobile",
+      "route": "/calendar?demo=ux12",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "execute",
+      "surface": "calendar",
+      "screenshot": "screenshots/05-calendar-execute-mobile.png",
+      "sha256": "ea476a3b0bb129c394c6130dfabe7470fce96b49a67d43f47f02115236e4a703"
+    },
+    {
+      "id": "calendar-edit-mobile",
+      "route": "/calendar?demo=ux12",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "edit",
+      "surface": "calendar",
+      "screenshot": "screenshots/06-calendar-edit-mobile.png",
+      "sha256": "9d07b7b6768be5eb7bbd8ef970387a7219fad86e30426bbd20029c3d6d00a3fa"
+    },
+    {
+      "id": "calendar-execute-wide",
+      "route": "/calendar?demo=ux12",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "state": "execute",
+      "surface": "calendar",
+      "screenshot": "screenshots/07-calendar-execute-wide.png",
+      "sha256": "3cf52e02b440e18bd06d26d04f284a3d73b437c209720b884a58415a3c925c9e"
+    },
+    {
+      "id": "calendar-edit-wide",
+      "route": "/calendar?demo=ux12",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "state": "edit",
+      "surface": "calendar",
+      "screenshot": "screenshots/08-calendar-edit-wide.png",
+      "sha256": "44eeeb7d445817d1a97a10ab3f405500f301e8836a123766eb73dc3a46696a29"
+    }
+  ],
+  "measurements": [
+    {
+      "id": "my-flow-execute-mobile",
+      "detailMode": "execute",
+      "declaredPrimaryActionCount": 2,
+      "visibleCompletionCount": 1,
+      "visibleCloseCount": 1,
+      "visibleEditEntryCount": 0,
+      "visibleTitleInputCount": 0,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 0,
+      "visibleSaveCount": 0,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "my-flow-edit-mobile",
+      "detailMode": "edit",
+      "declaredPrimaryActionCount": 0,
+      "visibleCompletionCount": 0,
+      "visibleCloseCount": 0,
+      "visibleEditEntryCount": 1,
+      "visibleTitleInputCount": 1,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 1,
+      "visibleSaveCount": 1,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "my-flow-execute-wide",
+      "detailMode": "execute",
+      "declaredPrimaryActionCount": 2,
+      "visibleCompletionCount": 1,
+      "visibleCloseCount": 1,
+      "visibleEditEntryCount": 0,
+      "visibleTitleInputCount": 0,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 0,
+      "visibleSaveCount": 0,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "my-flow-edit-wide",
+      "detailMode": "edit",
+      "declaredPrimaryActionCount": 0,
+      "visibleCompletionCount": 0,
+      "visibleCloseCount": 0,
+      "visibleEditEntryCount": 1,
+      "visibleTitleInputCount": 1,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 1,
+      "visibleSaveCount": 1,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "calendar-execute-mobile",
+      "detailMode": "execute",
+      "declaredPrimaryActionCount": 2,
+      "visibleCompletionCount": 1,
+      "visibleCloseCount": 1,
+      "visibleEditEntryCount": 0,
+      "visibleTitleInputCount": 0,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 0,
+      "visibleSaveCount": 0,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "calendar-edit-mobile",
+      "detailMode": "edit",
+      "declaredPrimaryActionCount": 0,
+      "visibleCompletionCount": 0,
+      "visibleCloseCount": 0,
+      "visibleEditEntryCount": 1,
+      "visibleTitleInputCount": 1,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 1,
+      "visibleSaveCount": 1,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "calendar-execute-wide",
+      "detailMode": "execute",
+      "declaredPrimaryActionCount": 2,
+      "visibleCompletionCount": 1,
+      "visibleCloseCount": 1,
+      "visibleEditEntryCount": 0,
+      "visibleTitleInputCount": 0,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 0,
+      "visibleSaveCount": 0,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "calendar-edit-wide",
+      "detailMode": "edit",
+      "declaredPrimaryActionCount": 0,
+      "visibleCompletionCount": 0,
+      "visibleCloseCount": 0,
+      "visibleEditEntryCount": 1,
+      "visibleTitleInputCount": 1,
+      "visibleSourceLinkCount": 0,
+      "visibleExportActionCount": 0,
+      "visibleCancelCount": 1,
+      "visibleSaveCount": 1,
+      "saveDisabled": false,
+      "horizontalOverflow": false
+    }
+  ],
+  "editTransitions": [
+    {
+      "id": "my-flow-edit-mobile",
+      "saveDisabledBeforeChanges": true,
+      "saveEnabledAfterChanges": true
+    },
+    {
+      "id": "my-flow-edit-wide",
+      "saveDisabledBeforeChanges": true,
+      "saveEnabledAfterChanges": true
+    },
+    {
+      "id": "calendar-edit-mobile",
+      "saveDisabledBeforeChanges": true,
+      "saveEnabledAfterChanges": true
+    },
+    {
+      "id": "calendar-edit-wide",
+      "saveDisabledBeforeChanges": true,
+      "saveEnabledAfterChanges": true
+    }
+  ],
+  "summary": {
+    "detailScenarioCount": 8,
+    "executeScenarioCount": 4,
+    "editScenarioCount": 4,
+    "defaultPrimaryActionMax": 2,
+    "executeVisibleTitleInputCount": 0,
+    "executeVisibleDirectEditEntryCount": 0,
+    "executeVisibleSourceToolCount": 0,
+    "editVisibleCompletionCount": 0,
+    "editCancelVisibleScenarioCount": 4,
+    "editSaveVisibleScenarioCount": 4,
+    "editSaveDisabledBeforeChangeScenarioCount": 4,
+    "editSaveEnabledAfterChangeScenarioCount": 4,
+    "calendarGroupCompletionPreserved": true,
+    "horizontalOverflowCount": 0
+  },
+  "verification": {
+    "focusedExecutionEditE2EPassed": 1,
+    "relatedDetailE2EPassed": 15,
+    "unitTestsPassed": 380,
+    "buildPassed": true,
+    "docsCheckPassed": true,
+    "captureScriptPassed": true
+  }
+}
