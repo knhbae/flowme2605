@@ -133,6 +133,12 @@ async function main() {
     await captureCleanRoute(page, '/f/used-car-buying-check', '12-workbench-used-car-mobile.png', 'Used car checklist workbench');
     await captureWorkbenchOpenDetails(page, '/f/new-car-delivery-check', '25-workbench-new-car-open-details-mobile.png', 'New car checklist row details without repeated source links');
     await captureWorkbenchOpenDetails(page, '/f/used-car-buying-check', '26-workbench-used-car-open-details-mobile.png', 'Used car checklist row details without repeated source links');
+    await savePublicFlowThroughUi(page, '/f/new-car-delivery-check', 'new-car-delivery-check');
+    await captureCurrent(page, '12b-public-new-car-post-save-my-flow-mobile.png', 'Public share post-save My Flow completion boundary', {
+      category: 'public-post-save',
+      route: '/my',
+      publicPostSaveOriginSlug: 'new-car-delivery-check',
+    });
 
     await saveFlowMapThroughUi(page, '/flow-maps/moving-d30', 'moving-d30', '2026-07-22');
     await captureCurrent(page, '13-post-save-my-moving-mobile.png', 'Post-save My Flow for moving map', {
@@ -605,6 +611,26 @@ async function saveFlowMapThroughUi(page, route, mapId, anchor = '') {
     : mobileSaveButton;
   await saveButton.click();
   await page.waitForURL(`**/my?savedMap=${mapId}`, { timeout: 15_000 });
+  await settle(page);
+}
+
+async function savePublicFlowThroughUi(page, route, slug) {
+  await resetStorage(page);
+  await page.goto(route);
+  await settle(page);
+  const setup = page.getByTestId('public-flow-primary-setup');
+  await setup.waitFor({ state: 'visible' });
+  const saveButton = setup.locator('button').first();
+  await saveButton.click();
+  await settle(page);
+  const myFlowLink = setup.locator('a[href="/my"]').first();
+  await myFlowLink.click();
+  await page.waitForURL('**/my', { timeout: 15_000 });
+  await page.getByTestId('my-flow-workspace').waitFor({ state: 'visible' });
+  const savedRow = page.locator(`[data-flow-slug="${slug}"]`).first();
+  if (await savedRow.count()) {
+    await savedRow.scrollIntoViewIfNeeded();
+  }
   await settle(page);
 }
 
@@ -1383,6 +1409,69 @@ async function scanPage(page, options = {}) {
         subChecklistCheckboxCount: subChecklistCheckboxes.length,
       };
     };
+    const collectPublicPostSaveCompletionBoundary = () => {
+      const originSlug = payload.options.publicPostSaveOriginSlug ?? '';
+      if (!originSlug) {
+        return {
+          originSlug,
+          visible: false,
+          pattern: 'none',
+          active: false,
+          checkboxCount: 0,
+          activeCheckboxCount: 0,
+          buttonCount: 0,
+          checkboxSamples: [],
+          buttonSamples: [],
+        };
+      }
+
+      const flowRoots = Array.from(document.querySelectorAll('[data-flow-slug]'))
+        .filter((element) => element instanceof HTMLElement && element.dataset.flowSlug === originSlug);
+      const roots = flowRoots.length > 0
+        ? flowRoots
+        : Array.from(document.querySelectorAll('[data-testid="my-flow-workspace"]'));
+      const taskCompleteCheckboxes = roots.flatMap((root) =>
+        Array.from(root.querySelectorAll('[data-testid="my-flow-task-complete-control"]')),
+      ).filter((element) => isVisibleInteractiveElement(element));
+      const taskCompleteButtonKeywords = ['완료', '취소', '이번 항목'];
+      const taskCompleteButtons = roots.flatMap((root) =>
+        Array.from(root.querySelectorAll('button')),
+      )
+        .filter((element) => isVisibleInteractiveElement(element))
+        .filter((element) => {
+          const visibleLabel = getVisibleLabel(element);
+          const accessibleName = getAccessibleNameCandidate(element);
+          return taskCompleteButtonKeywords.some((keyword) =>
+            visibleLabel.includes(keyword) || accessibleName.includes(keyword),
+          );
+        });
+      const activeCheckboxes = taskCompleteCheckboxes.filter((element) =>
+        !element.hasAttribute('disabled') && element.getAttribute('aria-disabled') !== 'true',
+      );
+
+      return {
+        originSlug,
+        visible: taskCompleteCheckboxes.length > 0,
+        pattern: taskCompleteButtons.length > 0
+          ? (taskCompleteCheckboxes.length > 0 ? 'mixed' : 'button')
+          : (taskCompleteCheckboxes.length > 0 ? 'checkbox' : 'none'),
+        active: activeCheckboxes.length > 0,
+        checkboxCount: taskCompleteCheckboxes.length,
+        activeCheckboxCount: activeCheckboxes.length,
+        buttonCount: taskCompleteButtons.length,
+        checkboxSamples: taskCompleteCheckboxes.slice(0, 5).map((element) => ({
+          surface: getSurfaceName(element),
+          accessibleName: getAccessibleNameCandidate(element),
+          checked: Boolean(element.checked),
+        })),
+        buttonSamples: taskCompleteButtons.slice(0, 5).map((element) => ({
+          surface: getSurfaceName(element),
+          visibleLabel: getVisibleLabel(element),
+          accessibleName: getAccessibleNameCandidate(element),
+          testId: getElementTestId(element),
+        })),
+      };
+    };
     const collectPostSaveConfirmation = () => {
       const element = document.querySelector('[data-testid="my-flow-post-save-confirmation"]');
       const text = normalizeLine(element?.textContent ?? '');
@@ -2060,6 +2149,7 @@ async function scanPage(page, options = {}) {
       prototypeBucket: Boolean(payload.options.prototypeBucket),
       prototypeTier: payload.options.prototypeTier ?? null,
       creatorProfileTier: payload.options.creatorProfileTier ?? (isCreatorProfileRoute ? 'creator-profile' : null),
+      publicPostSaveOriginSlug: payload.options.publicPostSaveOriginSlug ?? null,
       urlFirstScenarioName: payload.options.urlFirstScenarioName ?? null,
       urlFirstState: payload.options.urlFirstState ?? null,
       urlFirstTriggerUrl: payload.options.urlFirstTriggerUrl ?? null,
@@ -2140,6 +2230,7 @@ async function scanPage(page, options = {}) {
         continuationActionable: collectContinuationActionable(),
         myFlowTodayFrame: collectMyFlowTodayFrame(),
         taskCompletionControls: collectTaskCompletionControlPatterns(),
+        publicPostSaveCompletionBoundary: collectPublicPostSaveCompletionBoundary(),
         postSaveConfirmation: collectPostSaveConfirmation(),
         dateAnchor: collectDateAnchorMarkers(),
         draftFlow: collectDraftFlowMarkers(),
@@ -2336,6 +2427,9 @@ function summarizeEvidence(records) {
   const restart = prototypes.filter((record) => record.category === 'prototype-restart');
   const flowLab = prototypes.filter((record) => record.category === 'prototype-flow-lab');
   const publicShareRoutes = normal.filter((record) => record.publicShellVisible);
+  const publicPostSaveRecords = normal.filter((record) =>
+    Boolean(record.publicPostSaveOriginSlug || record.markers?.publicPostSaveCompletionBoundary?.originSlug),
+  );
   const wideViewportRecords = records.filter((record) => record.wideViewport || record.category === 'wide-viewport');
   const wideMyFlowRecords = wideViewportRecords.filter((record) => record.url.startsWith('/my'));
   const creatorProfileRecords = normal.filter((record) =>
@@ -3208,6 +3302,40 @@ function summarizeEvidence(records) {
     publicFlowPreSavePreviewControlCount: publicShareRoutes.reduce((sum, record) =>
       sum + (record.markers.publicWorkbenchExportLabels?.preSavePreviewControlCount ?? 0),
     0),
+    publicPostSaveCompletionControlVisible: publicPostSaveRecords.length > 0
+      && publicPostSaveRecords.every((record) => Boolean(record.markers?.publicPostSaveCompletionBoundary?.visible)),
+    publicPostSaveCompletionControlPattern: publicPostSaveRecords.length === 0
+      ? 'none'
+      : (
+          publicPostSaveRecords.every((record) => record.markers?.publicPostSaveCompletionBoundary?.pattern === 'checkbox')
+            ? 'checkbox'
+            : publicPostSaveRecords.map((record) => record.markers?.publicPostSaveCompletionBoundary?.pattern ?? 'none').join(',')
+        ),
+    publicPostSaveCompletionControlActive: publicPostSaveRecords.length > 0
+      && publicPostSaveRecords.every((record) => Boolean(record.markers?.publicPostSaveCompletionBoundary?.active)),
+    publicPostSaveCompletionCheckboxCount: publicPostSaveRecords.reduce((sum, record) =>
+      sum + (record.markers?.publicPostSaveCompletionBoundary?.checkboxCount ?? 0),
+    0),
+    publicPostSaveCompletionActiveCheckboxCount: publicPostSaveRecords.reduce((sum, record) =>
+      sum + (record.markers?.publicPostSaveCompletionBoundary?.activeCheckboxCount ?? 0),
+    0),
+    publicPostSaveCompletionButtonCount: publicPostSaveRecords.reduce((sum, record) =>
+      sum + (record.markers?.publicPostSaveCompletionBoundary?.buttonCount ?? 0),
+    0),
+    publicPostSaveCompletionEvidence: publicPostSaveRecords.map((record) => ({
+      id: record.id,
+      route: record.url,
+      originSlug: record.publicPostSaveOriginSlug ?? record.markers?.publicPostSaveCompletionBoundary?.originSlug ?? '',
+      viewportWidth: record.viewportWidth,
+      visible: Boolean(record.markers?.publicPostSaveCompletionBoundary?.visible),
+      pattern: record.markers?.publicPostSaveCompletionBoundary?.pattern ?? 'none',
+      active: Boolean(record.markers?.publicPostSaveCompletionBoundary?.active),
+      checkboxCount: record.markers?.publicPostSaveCompletionBoundary?.checkboxCount ?? 0,
+      activeCheckboxCount: record.markers?.publicPostSaveCompletionBoundary?.activeCheckboxCount ?? 0,
+      buttonCount: record.markers?.publicPostSaveCompletionBoundary?.buttonCount ?? 0,
+      checkboxSamples: record.markers?.publicPostSaveCompletionBoundary?.checkboxSamples ?? [],
+      buttonSamples: record.markers?.publicPostSaveCompletionBoundary?.buttonSamples ?? [],
+    })),
     publicWorkbenchStickyFirstActionNonPrimaryLabels: publicShareRoutes
       .filter((record) =>
         record.markers.publicWorkbenchExportLabels?.stickyFirstAction
@@ -3510,6 +3638,11 @@ P19-07 keeps the post-save editing model discoverable without moving full editin
 - Public pre-save checkbox count: ${evidence.summary.publicPreSaveCheckboxCount}
 - Public pre-save completion-like checkbox label count: ${evidence.summary.publicPreSaveCheckboxCompletionLikeLabelCount}
 - Public pre-save preview checkbox label count: ${evidence.summary.publicPreSaveCheckboxPreviewLabelCount}
+- Public post-save completion control visible: ${evidence.summary.publicPostSaveCompletionControlVisible ? 'yes' : 'no'}
+- Public post-save completion control pattern: ${evidence.summary.publicPostSaveCompletionControlPattern}
+- Public post-save completion control active: ${evidence.summary.publicPostSaveCompletionControlActive ? 'yes' : 'no'}
+- Public post-save completion checkbox count: ${evidence.summary.publicPostSaveCompletionCheckboxCount}
+- Public post-save completion button count: ${evidence.summary.publicPostSaveCompletionButtonCount}
 - Public share route count: ${evidence.summary.publicShareRouteCount}
 - Public share secondary browse focusable count: ${evidence.summary.publicShareSecondaryBrowseFocusableCount}
 - Public share secondary browse after-primary count: ${evidence.summary.publicShareSecondaryBrowseAfterPrimaryCount}
@@ -3580,6 +3713,8 @@ P18-01 adds a same-date multi-Flow Calendar fixture. The selected date agenda re
 P18-02 merges My Flow's today execution/status framing. The package records \`myFlowTodayFrameCount\`, \`myFlowTodayRemainingCountSourceCount\`, \`myFlowTodayInlineCompleteControlCount\`, \`myFlowTodayOpenBeforeCompleteRequired\`, and \`myFlowTodayGenericMetaChipCount\` so Claude Design can verify that today's work has one count source and can be completed inline without opening detail first.
 
 P18-03 keeps public share \`/f\` save/export/item responsibilities auditable. The summary records Flow-level save primary count, one secondary export entry per public share route, export format option count, item-level export-like label count, and pre-save preview control counts.
+
+P20-04 closes the public share pre-save to post-save boundary. Public \`/f\` keeps pre-save item checkboxes in the preview/selection bucket, and a representative saved public Flow is captured after entering My Flow so the same content shows an active task-completion checkbox pattern instead of an item-level save/export affordance.
 
 P18-04/P18-06 separate Calendar and My Flow role language. Calendar should read as the date-first execution surface, My Flow as the task-first execution hub, and primary labels should not fall back to generic type copy such as \`월간 일정\`, \`저장한 일정\`, or \`일정 흐름\`.
 

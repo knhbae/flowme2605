@@ -267,5 +267,17 @@ test.describe('public share shell secondary browse order', () => {
     await myFlowLink.click();
     await expect(page).toHaveURL(/\/my/);
     await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
+
+    const nowSection = page.getByTestId('my-flow-now-section');
+    await expect(nowSection).toBeVisible();
+
+    const postSaveComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
+    await expect(postSaveComplete).toBeVisible();
+    await expect(postSaveComplete).toHaveAttribute('type', 'checkbox');
+    await expect(postSaveComplete).toHaveAttribute('aria-label', /완료/);
+    await expect(nowSection.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
+
+    await postSaveComplete.check();
+    await expect(postSaveComplete).toBeChecked();
   });
 });
