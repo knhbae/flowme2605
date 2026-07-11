@@ -2,12 +2,63 @@ import type { FlowBundle } from './types';
 
 export const GENERATED_PREVIEW_FLOW_ID_PREFIX = 'flow-preview-';
 
-export const RUNTIME_ARCHIVED_FLOW_SLUGS = [
-  'digital-detox-weekly',
-  'new-hobby-30day',
-  'real-fitvely-weekly-body-check',
-  'skin-weekly-check',
-] as const;
+export type RuntimeArchiveReason =
+  | 'explicit_public_hide'
+  | 'source_mismatch'
+  | 'superseded_duplicate'
+  | 'unsupported_source_claims';
+
+export type RuntimeArchivedFlowPolicy = {
+  slug: string;
+  reason: RuntimeArchiveReason;
+  evidence: string;
+  replacementSlug?: string;
+};
+
+export const RUNTIME_ARCHIVED_FLOW_POLICIES: readonly RuntimeArchivedFlowPolicy[] = [
+  {
+    slug: 'digital-detox-weekly',
+    reason: 'unsupported_source_claims',
+    evidence: '원문이 삭제되었고 현재 Flow의 효과 문구를 뒷받침할 수 없습니다.',
+  },
+  {
+    slug: 'new-hobby-30day',
+    reason: 'unsupported_source_claims',
+    evidence: '플랫폼 홈페이지만으로 30일 실행 행을 근거화할 수 없습니다.',
+  },
+  {
+    slug: 'real-fitvely-weekly-body-check',
+    reason: 'source_mismatch',
+    evidence: '넓은 채널 출처가 주간 신체 체크 실행 구조를 직접 뒷받침하지 않습니다.',
+  },
+  {
+    slug: 'skin-weekly-check',
+    reason: 'explicit_public_hide',
+    evidence: '기존 source-fit 감사에서 공개 카탈로그 숨김으로 확정했습니다.',
+  },
+  {
+    slug: 'real-pet-health-visit-routine',
+    reason: 'source_mismatch',
+    evidence: '현재 원문은 서울시 취약계층 반려동물 의료비 지원 사업이며 일반 병원 방문 기록과 다릅니다.',
+    replacementSlug: 'pet-health-observation',
+  },
+  {
+    slug: 'book-finish-one',
+    reason: 'source_mismatch',
+    evidence: '원문은 읽기 습관 팁이며 한 권 완독일과 일일 페이지 계획을 제공하지 않습니다.',
+    replacementSlug: 'reading-habit-30day',
+  },
+  {
+    slug: 'real-gov24-resident-register-copy',
+    reason: 'superseded_duplicate',
+    evidence: '같은 정부24 원문을 더 구체적으로 다루는 등본·초본 발급 Flow가 이미 있습니다.',
+    replacementSlug: 'resident-register-copy-issue',
+  },
+];
+
+export const RUNTIME_ARCHIVED_FLOW_SLUGS = RUNTIME_ARCHIVED_FLOW_POLICIES.map(
+  (policy) => policy.slug,
+);
 
 const runtimeArchivedFlowSlugSet = new Set<string>(RUNTIME_ARCHIVED_FLOW_SLUGS);
 
@@ -17,6 +68,10 @@ export function isGeneratedPreviewBundle(bundle: FlowBundle): boolean {
 
 export function isRuntimeArchivedBundle(bundle: FlowBundle): boolean {
   return bundle.flow.status === 'published' && runtimeArchivedFlowSlugSet.has(bundle.flow.slug);
+}
+
+export function getRuntimeArchivedFlowPolicy(slug: string): RuntimeArchivedFlowPolicy | undefined {
+  return RUNTIME_ARCHIVED_FLOW_POLICIES.find((policy) => policy.slug === slug);
 }
 
 export function isRuntimeExcludedBundle(bundle: FlowBundle): boolean {

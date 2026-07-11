@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-11T18:40:15.674Z",
+  "generatedAt": "2026-07-11T19:18:28.893Z",
   "baseUrl": "http://127.0.0.1:3112",
   "summary": {
     "canonicalSeedBundleCount": 153,
-    "runtimeSeedBundleCount": 149,
+    "runtimeSeedBundleCount": 146,
     "sourceBackedProjectionCount": 24,
-    "runtimePublishedRouteCount": 173,
+    "runtimePublishedRouteCount": 170,
     "publicIndexableCount": 77,
-    "publicReviewGatedCount": 96,
+    "publicReviewGatedCount": 93,
     "internalSeedInventoryCount": 593,
     "internalPublishedInventoryCount": 617,
     "generatedPreviewInternalIdCount": 440,
@@ -15,12 +15,14 @@
     "generatedPreviewRuntimeCount": 0,
     "generatedPreviewPublicRouteStatus": 404,
     "normalRouteGeneratedPreviewLinkCount": 0,
-    "archivedRuntimeFlowCount": 4,
-    "archivedRuntimePublicRoute404Count": 4,
+    "archivedRuntimeFlowCount": 7,
+    "archivedRuntimePublicRoute404Count": 7,
+    "archivedReplacementRoute200Count": 3,
     "normalRouteArchivedFlowLinkCount": 0,
     "legacyPreviewMigrationRemainingCount": 0,
     "archivedRuntimeMigrationRemainingCount": 0,
     "userDraftMigrationPreserved": true,
+    "deferredRetirementCandidateCount": 3,
     "approvedPublicRouteStatus": 200,
     "approvedPublicRouteNoindex": false,
     "approvedPublicSaveActionCount": 1,
@@ -28,11 +30,11 @@
     "reviewGatedRouteNoindex": true,
     "reviewGatedPanelCount": 1,
     "reviewGatedSaveActionCount": 0,
-    "normalSourceCurrentCount": 130,
+    "normalSourceCurrentCount": 129,
     "normalSourceReviewDueCount": 0,
     "normalSourceStaleCount": 0,
     "normalSourceMissingMetadataCount": 0,
-    "screenshotCount": 14,
+    "screenshotCount": 15,
     "horizontalOverflowCount": 0
   },
   "policy": {
@@ -45,8 +47,8 @@
     "runtimeSourceStatus": {
       "unclassified": 9,
       "preview": 12,
-      "needs_review": 35,
-      "real": 93
+      "needs_review": 34,
+      "real": 91
     },
     "internalSourceStatus": {
       "unclassified": 9,
@@ -56,13 +58,13 @@
     },
     "publicIndexingReason": {
       "manual_source_fit_approved": 46,
-      "source_fit_review_required": 84,
+      "source_fit_review_required": 81,
       "source_review_pending": 12,
       "exact_real_source": 31
     },
     "runtimeLifecycle": {
       "keep": 46,
-      "fix": 103,
+      "fix": 100,
       "preview_only": 0,
       "hide": 0,
       "remove_candidate": 0
@@ -75,7 +77,7 @@
       "remove_candidate": 0
     },
     "runtimeInventoryLevels": {
-      "manual_source_fit": 130,
+      "manual_source_fit": 127,
       "derived_real_source": 0,
       "curated_source_app_seed": 19,
       "source_needs_review": 0,
@@ -89,10 +91,16 @@
       "source_needs_review": 0,
       "generated_preview_candidate": 442,
       "legacy_accessible": 0
+    },
+    "archivedRuntimeReasons": {
+      "unsupported_source_claims": 2,
+      "source_mismatch": 3,
+      "explicit_public_hide": 1,
+      "superseded_duplicate": 1
     }
   },
   "migrationResult": {
-    "storedCount": 150,
+    "storedCount": 147,
     "generatedPreviewRemainingCount": 0,
     "archivedRuntimeRemainingCount": 0,
     "userDraftPreserved": true
@@ -264,22 +272,112 @@
     {
       "slug": "digital-detox-weekly",
       "status": 404,
+      "policy": {
+        "slug": "digital-detox-weekly",
+        "reason": "unsupported_source_claims",
+        "evidence": "원문이 삭제되었고 현재 Flow의 효과 문구를 뒷받침할 수 없습니다."
+      },
       "screenshot": "screenshots/archived-flow-404-mobile.png"
     },
     {
       "slug": "new-hobby-30day",
       "status": 404,
+      "policy": {
+        "slug": "new-hobby-30day",
+        "reason": "unsupported_source_claims",
+        "evidence": "플랫폼 홈페이지만으로 30일 실행 행을 근거화할 수 없습니다."
+      },
       "screenshot": null
     },
     {
       "slug": "real-fitvely-weekly-body-check",
       "status": 404,
+      "policy": {
+        "slug": "real-fitvely-weekly-body-check",
+        "reason": "source_mismatch",
+        "evidence": "넓은 채널 출처가 주간 신체 체크 실행 구조를 직접 뒷받침하지 않습니다."
+      },
       "screenshot": null
     },
     {
       "slug": "skin-weekly-check",
       "status": 404,
+      "policy": {
+        "slug": "skin-weekly-check",
+        "reason": "explicit_public_hide",
+        "evidence": "기존 source-fit 감사에서 공개 카탈로그 숨김으로 확정했습니다."
+      },
       "screenshot": null
+    },
+    {
+      "slug": "real-pet-health-visit-routine",
+      "status": 404,
+      "policy": {
+        "slug": "real-pet-health-visit-routine",
+        "reason": "source_mismatch",
+        "evidence": "현재 원문은 서울시 취약계층 반려동물 의료비 지원 사업이며 일반 병원 방문 기록과 다릅니다.",
+        "replacementSlug": "pet-health-observation"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "book-finish-one",
+      "status": 404,
+      "policy": {
+        "slug": "book-finish-one",
+        "reason": "source_mismatch",
+        "evidence": "원문은 읽기 습관 팁이며 한 권 완독일과 일일 페이지 계획을 제공하지 않습니다.",
+        "replacementSlug": "reading-habit-30day"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "real-gov24-resident-register-copy",
+      "status": 404,
+      "policy": {
+        "slug": "real-gov24-resident-register-copy",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 정부24 원문을 더 구체적으로 다루는 등본·초본 발급 Flow가 이미 있습니다.",
+        "replacementSlug": "resident-register-copy-issue"
+      },
+      "screenshot": null
+    }
+  ],
+  "archivedReplacementRoutes": [
+    {
+      "archivedSlug": "real-pet-health-visit-routine",
+      "replacementSlug": "pet-health-observation",
+      "status": 200,
+      "screenshot": "screenshots/archive-replacement-pet-health-mobile.png"
+    },
+    {
+      "archivedSlug": "book-finish-one",
+      "replacementSlug": "reading-habit-30day",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "real-gov24-resident-register-copy",
+      "replacementSlug": "resident-register-copy-issue",
+      "status": 200,
+      "screenshot": null
+    }
+  ],
+  "deferredRetirementCandidates": [
+    {
+      "slug": "study-exam-d30-plan",
+      "blocker": "Calendar 다중 Flow fixture와 과거 저장 record가 이 slug를 사용합니다.",
+      "nextAction": "현재 source와 맞는 학습 Flow로 fixture를 바꾸고 저장 slug 이관 정책을 먼저 구현합니다."
+    },
+    {
+      "slug": "real-sinagong-computer-d30-study",
+      "blocker": "canonical 컴활 Flow가 기존 챕터 진도와 오답 기록표를 아직 받지 못했습니다.",
+      "nextAction": "기록표를 canonical Flow에 합치고 과거 저장 record를 이관한 뒤 중복 route를 archive합니다."
+    },
+    {
+      "slug": "real-thankyou-bubu-video-full-body-no-jump",
+      "blocker": "제작자 프로필과 export 시나리오가 이 exact-video route를 대표로 사용합니다.",
+      "nextAction": "동일 영상 Flow 중 canonical 하나를 정하고 profile 링크와 저장 record를 이관합니다."
     }
   ],
   "reviewGatedRoutes": [
@@ -718,13 +816,6 @@
       "indexingReason": "source_fit_review_required"
     },
     {
-      "slug": "real-gov24-resident-register-copy",
-      "title": "정부24 주민등록등본 발급 Flow",
-      "sourceStatus": "real",
-      "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
-    },
-    {
       "slug": "real-childcare-vaccination-visit-prep",
       "title": "아이사랑 영유아 검진/접종 방문 준비 Flow",
       "sourceStatus": "real",
@@ -734,13 +825,6 @@
     {
       "slug": "real-childcare-support-application-check",
       "title": "아이사랑 시간제보육 신청 Flow",
-      "sourceStatus": "real",
-      "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
-    },
-    {
-      "slug": "real-pet-health-visit-routine",
-      "title": "반려동물 병원 방문 기록 Flow",
       "sourceStatus": "real",
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required"
@@ -834,13 +918,6 @@
       "title": "월급날 재정 루틴 Flow",
       "sourceStatus": "real",
       "sourceCheckedAt": "2026-07-12",
-      "indexingReason": "source_fit_review_required"
-    },
-    {
-      "slug": "book-finish-one",
-      "title": "책 한 권 완독 실천 Flow",
-      "sourceStatus": "needs_review",
-      "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required"
     },
     {

@@ -67,8 +67,8 @@ test('current canonical seed has no missing or overdue normal user source checks
   const runtimeBundles = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
   const summary = summarizeFlowSourceFreshness(runtimeBundles, new Date());
 
-  assert.ok(summary.normalUserRouteCount >= 130);
-  assert.ok(summary.previewOrHiddenCount >= 18);
+  assert.ok(summary.normalUserRouteCount >= 120);
+  assert.ok(summary.previewOrHiddenCount >= 15);
   assert.equal(summary.missingMetadataCount, 0);
   assert.equal(summary.reviewDueCount, 0);
   assert.equal(summary.staleCount, 0);

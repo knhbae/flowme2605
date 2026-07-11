@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
+import { RUNTIME_ARCHIVED_FLOW_SLUGS } from '../../lib/flow/runtime-content-policy';
 import {
   scanPrototypeRouteGuardrails,
   scanUserFacingOutputGuardrails,
@@ -525,10 +526,7 @@ test('old review and stateful workspace routes stay out of indexing and public n
     'a[href="/creators"]',
     'a[href="/content-flows"]',
     'a[href^="/f/channel-"]',
-    'a[href="/f/digital-detox-weekly"]',
-    'a[href="/f/new-hobby-30day"]',
-    'a[href="/f/real-fitvely-weekly-body-check"]',
-    'a[href="/f/skin-weekly-check"]',
+    ...RUNTIME_ARCHIVED_FLOW_SLUGS.map((slug) => `a[href="/f/${slug}"]`),
     'a[href^="/ia-compare"]',
     'a[href^="/restart/"]',
     'a[href^="/flow-maps/"][href$="/creator"]',

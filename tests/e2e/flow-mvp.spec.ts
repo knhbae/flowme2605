@@ -1,6 +1,10 @@
 ﻿import fs from 'node:fs';
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import { FLOW_EXPORT_LABELS } from '../../lib/flow/export-labels';
+import {
+  RUNTIME_ARCHIVED_FLOW_POLICIES,
+  RUNTIME_ARCHIVED_FLOW_SLUGS,
+} from '../../lib/flow/runtime-content-policy';
 import { seedBundles } from '../../lib/flow/seed-flows';
 import { getCuratedSourceAppSeedFlowMaps, getSourceBackedHomepageFlowMaps } from '../../lib/flow/source-backed-my-flow';
 import {
@@ -6344,7 +6348,6 @@ test('current source freshness audit keeps corrected routes executable and stale
     { route: '/f/dog-walk-routine', decision: 'reshape_before_featured' },
     { route: '/f/morning-routine-30day', decision: 'reshape_before_featured' },
     { route: '/f/morning-skincare-routine', decision: 'reshape_before_featured' },
-    { route: '/f/book-finish-one', decision: 'catalog_preview_only' },
     { route: '/f/recipe-video-execute', decision: 'catalog_preview_only' },
   ];
   for (const { route, decision } of gatedRoutes) {
@@ -6361,18 +6364,22 @@ test('current source freshness audit keeps corrected routes executable and stale
     await expect(page.locator('body')).not.toContainText('�');
   }
 
-  for (const route of [
-    '/f/digital-detox-weekly',
-    '/f/new-hobby-30day',
-    '/f/real-fitvely-weekly-body-check',
-    '/f/skin-weekly-check',
-  ]) {
+  for (const route of RUNTIME_ARCHIVED_FLOW_SLUGS.map((slug) => `/f/${slug}`)) {
     const response = await page.goto(route);
     expect(response?.status(), route).toBe(404);
     await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
     await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
     await expect(page.getByRole('link', { name: '홈으로' })).toHaveAttribute('href', '/');
+  }
+
+  for (const policy of RUNTIME_ARCHIVED_FLOW_POLICIES.filter(
+    (candidate) => candidate.replacementSlug,
+  )) {
+    const route = `/f/${policy.replacementSlug}`;
+    const response = await page.goto(route);
+    expect(response?.status(), route).toBe(200);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   }
 });
 

@@ -8,6 +8,7 @@ import { getPublicFlowIndexingPolicy } from '../../lib/flow/route-indexing-polic
 import {
   isGeneratedPreviewBundle,
   isRuntimeExcludedBundle,
+  RUNTIME_ARCHIVED_FLOW_POLICIES,
   RUNTIME_ARCHIVED_FLOW_SLUGS,
 } from '../../lib/flow/runtime-content-policy';
 import { seedBundles } from '../../lib/flow/seed-flows';
@@ -88,6 +89,24 @@ const screenshotScenarios = [
   { id: 'internal-inventory-wide', route: '/creators', width: 1024, height: 768, label: '내부 재고 wide' },
 ] as const;
 
+const deferredRetirementCandidates = [
+  {
+    slug: 'study-exam-d30-plan',
+    blocker: 'Calendar 다중 Flow fixture와 과거 저장 record가 이 slug를 사용합니다.',
+    nextAction: '현재 source와 맞는 학습 Flow로 fixture를 바꾸고 저장 slug 이관 정책을 먼저 구현합니다.',
+  },
+  {
+    slug: 'real-sinagong-computer-d30-study',
+    blocker: 'canonical 컴활 Flow가 기존 챕터 진도와 오답 기록표를 아직 받지 못했습니다.',
+    nextAction: '기록표를 canonical Flow에 합치고 과거 저장 record를 이관한 뒤 중복 route를 archive합니다.',
+  },
+  {
+    slug: 'real-thankyou-bubu-video-full-body-no-jump',
+    blocker: '제작자 프로필과 export 시나리오가 이 exact-video route를 대표로 사용합니다.',
+    nextAction: '동일 영상 Flow 중 canonical 하나를 정하고 profile 링크와 저장 record를 이관합니다.',
+  },
+] as const;
+
 async function main() {
   const browser = await chromium.launch({
     executablePath:
@@ -152,6 +171,28 @@ try {
   await boundaryPage.goto(`${baseUrl}/f/digital-detox-weekly`, { waitUntil: 'domcontentloaded' });
   await boundaryPage.screenshot({
     path: path.join(screenshotDirectory, 'archived-flow-404-mobile.png'),
+    fullPage: true,
+  });
+  const archivedReplacementRouteResults: Array<{
+    archivedSlug: string;
+    replacementSlug: string;
+    status: number | null;
+  }> = [];
+  for (const policy of RUNTIME_ARCHIVED_FLOW_POLICIES.filter(
+    (candidate) => candidate.replacementSlug,
+  )) {
+    const response = await boundaryPage.goto(`${baseUrl}/f/${policy.replacementSlug}`, {
+      waitUntil: 'domcontentloaded',
+    });
+    archivedReplacementRouteResults.push({
+      archivedSlug: policy.slug,
+      replacementSlug: policy.replacementSlug as string,
+      status: response?.status() ?? null,
+    });
+  }
+  await boundaryPage.goto(`${baseUrl}/f/pet-health-observation`, { waitUntil: 'domcontentloaded' });
+  await boundaryPage.screenshot({
+    path: path.join(screenshotDirectory, 'archive-replacement-pet-health-mobile.png'),
     fullPage: true,
   });
   await boundaryContext.close();
@@ -264,10 +305,14 @@ try {
     normalRouteGeneratedPreviewLinkCount: normalRoutePreviewLinkCount,
     archivedRuntimeFlowCount: RUNTIME_ARCHIVED_FLOW_SLUGS.length,
     archivedRuntimePublicRoute404Count: archivedRouteResults.filter((route) => route.status === 404).length,
+    archivedReplacementRoute200Count: archivedReplacementRouteResults.filter(
+      (route) => route.status === 200,
+    ).length,
     normalRouteArchivedFlowLinkCount: normalRouteArchivedLinkCount,
     legacyPreviewMigrationRemainingCount: migrationResult.generatedPreviewRemainingCount,
     archivedRuntimeMigrationRemainingCount: migrationResult.archivedRuntimeRemainingCount,
     userDraftMigrationPreserved: migrationResult.userDraftPreserved,
+    deferredRetirementCandidateCount: deferredRetirementCandidates.length,
     approvedPublicRouteStatus: approvedResponse?.status() ?? null,
     approvedPublicRouteNoindex: Boolean(approvedRobots?.includes('noindex')),
     approvedPublicSaveActionCount: approvedSaveActionCount,
@@ -279,7 +324,7 @@ try {
     normalSourceReviewDueCount: sourceFreshness.reviewDueCount,
     normalSourceStaleCount: sourceFreshness.staleCount,
     normalSourceMissingMetadataCount: sourceFreshness.missingMetadataCount,
-    screenshotCount: capturedScenarios.length + 2,
+    screenshotCount: capturedScenarios.length + 3,
     horizontalOverflowCount: capturedScenarios.filter((scenario) => scenario.horizontalOverflow).length,
   };
 
@@ -301,6 +346,7 @@ try {
       internalLifecycle: internalLifecycle.bucketCounts,
       runtimeInventoryLevels: runtimeInventory.levelCounts,
       internalInventoryLevels: internalInventory.levelCounts,
+      archivedRuntimeReasons: countBy(RUNTIME_ARCHIVED_FLOW_POLICIES, (policy) => policy.reason),
     },
     migrationResult,
     scenarios: capturedScenarios,
@@ -311,8 +357,20 @@ try {
     },
     archivedRuntimeRoutes: archivedRouteResults.map((route) => ({
       ...route,
-      screenshot: route.slug === 'digital-detox-weekly' ? 'screenshots/archived-flow-404-mobile.png' : null,
+      policy: RUNTIME_ARCHIVED_FLOW_POLICIES.find((policy) => policy.slug === route.slug) ?? null,
+      screenshot:
+        route.slug === 'digital-detox-weekly'
+          ? 'screenshots/archived-flow-404-mobile.png'
+          : null,
     })),
+    archivedReplacementRoutes: archivedReplacementRouteResults.map((route) => ({
+      ...route,
+      screenshot:
+        route.replacementSlug === 'pet-health-observation'
+          ? 'screenshots/archive-replacement-pet-health-mobile.png'
+          : null,
+    })),
+    deferredRetirementCandidates,
     reviewGatedRoutes: reviewGatedBundles.map((bundle) => ({
       slug: bundle.flow.slug,
       title: bundle.flow.title,
@@ -337,10 +395,12 @@ try {
     `- 내부 생성 샘플: ${summary.generatedPreviewInternalIdCount}개, 정상 runtime ${summary.generatedPreviewRuntimeCount}개\n` +
     `- 생성 샘플 공개 URL: HTTP ${summary.generatedPreviewPublicRouteStatus}\n` +
     `- archive Flow: ${summary.archivedRuntimeFlowCount}개, direct URL 404: ${summary.archivedRuntimePublicRoute404Count}개\n` +
+    `- archive 대체 route HTTP 200: ${summary.archivedReplacementRoute200Count}개\n` +
     `- 기존 저장소 생성 샘플/archive 잔존: ${summary.legacyPreviewMigrationRemainingCount}/${summary.archivedRuntimeMigrationRemainingCount}개, 사용자 draft 보존: ${summary.userDraftMigrationPreserved}\n` +
+    `- 저장/기능 이관 후 재검토할 archive 후보: ${summary.deferredRetirementCandidateCount}개\n` +
     `- 정상 출처 stale/review-due/missing: ${summary.normalSourceStaleCount}/${summary.normalSourceReviewDueCount}/${summary.normalSourceMissingMetadataCount}\n\n` +
     `## 판정\n\n` +
-    `생성형 샘플과 명시적 archive 4개는 삭제하지 않고 내부 검토 재고에 보존했다. 정상 사용자 seed와 localStorage에는 들어가지 않으며, 과거 direct public URL은 한국어 복귀 경로가 있는 서비스용 404다. ` +
+    `생성형 샘플과 명시적 archive ${summary.archivedRuntimeFlowCount}개는 삭제하지 않고 내부 검토 재고에 보존했다. 정상 사용자 seed와 localStorage에는 들어가지 않으며, 과거 direct public URL은 한국어 복귀 경로가 있는 서비스용 404다. ` +
     `검토 게이트 ${summary.publicReviewGatedCount}개는 공개 승인 콘텐츠로 세지 않으며 noindex와 행동 차단을 유지한다.\n\n` +
     `## 파일\n\n- [audit.md](./audit.md)\n- [review.html](./review.html)\n- [route-evidence.json](./route-evidence.json)\n- [screenshots/](./screenshots/)\n`;
   writeFileSync(path.join(outputDirectory, 'README.md'), readme, 'utf8');
@@ -351,15 +411,26 @@ try {
     `## 조치\n\n` +
     `1. 정상 seed에서 flow-preview-* 생성 샘플을 제거했다.\n` +
     `2. 내부 /creators와 /content-flows만 별도 internalReviewBundles를 읽는다.\n` +
-    `3. 기존 localStorage 마이그레이션은 flow-preview-*와 명시적 archive 4개만 제거하고 사용자 draft를 보존한다.\n` +
+    `3. 기존 localStorage 마이그레이션은 flow-preview-*와 명시적 archive ${summary.archivedRuntimeFlowCount}개만 제거하고 사용자 draft를 보존한다.\n` +
     `4. 생성 샘플과 archive direct /f URL은 다른 Flow 찾기와 홈 복귀가 가능한 한국어 서비스용 404로 닫았다.\n` +
-    `5. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.\n\n` +
+    `5. 대체 Flow가 지정된 archive는 replacement route가 계속 열리는지 확인한다.\n` +
+    `6. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.\n\n` +
     `## 오래된 콘텐츠 해석\n\n` +
     `- 공개 승인 ${summary.publicIndexableCount}개: 정상 실행과 index 허용.\n` +
     `- 검토 게이트 ${summary.publicReviewGatedCount}개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않는다.\n` +
     `- 생성 샘플 ${summary.generatedPreviewInternalIdCount}개: 실제 콘텐츠가 아닌 구조 검토 재고. runtime과 public route에서 제거.\n` +
     `- 명시적 archive ${summary.archivedRuntimeFlowCount}개: 출처 불충분 또는 공개 숨김 판정이 확정되어 runtime과 public route에서 제거.\n` +
+    RUNTIME_ARCHIVED_FLOW_POLICIES.map(
+      (policy) =>
+        `  - ${policy.slug}: ${policy.reason} · ${policy.evidence}${policy.replacementSlug ? ` · 대체 ${policy.replacementSlug}` : ''}`,
+    ).join('\n') +
+    `\n` +
     `- 정상 source freshness: current ${summary.normalSourceCurrentCount}, stale ${summary.normalSourceStaleCount}, review-due ${summary.normalSourceReviewDueCount}, missing ${summary.normalSourceMissingMetadataCount}.\n\n` +
+    `## archive 보류 후보\n\n` +
+    deferredRetirementCandidates
+      .map((candidate) => `- ${candidate.slug}: ${candidate.blocker} 다음: ${candidate.nextAction}`)
+      .join('\n') +
+    `\n\n` +
     `## 남은 리스크\n\n` +
     `- 검토 게이트 ${summary.publicReviewGatedCount}개는 아직 runtime 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-gated / archive를 계속 결정해야 한다.\n` +
     `- 정상 4탭 route는 여전히 큰 AppClient client bundle을 공유한다. 생성 객체 제거와 별개로 route/component split이 필요하다.\n` +
@@ -389,7 +460,7 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
   <div class="metric">생성 URL 상태<strong>${summary.generatedPreviewPublicRouteStatus}</strong></div>
 </section>
 <section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지한다. 생성 샘플과 명시적 archive는 내부 재고에서만 보고 사용자 draft는 마이그레이션에서 보존한다.</p></section>
-<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>출처 불충분 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article></section>
+<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>지원 근거가 끊긴 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article><article><h2>원문 불일치 Flow의 대체 실행 화면</h2><p>대체 route는 HTTP 200으로 유지</p><img src="screenshots/archive-replacement-pet-health-mobile.png" alt="반려동물 건강 관찰 대체 Flow"></article></section>
 </main></body></html>`;
   writeFileSync(path.join(outputDirectory, 'review.html'), reviewHtml, 'utf8');
 } finally {
