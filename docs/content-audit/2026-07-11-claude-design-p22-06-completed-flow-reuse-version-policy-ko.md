@@ -2,7 +2,7 @@
 
 작성일: 2026-07-11
 
-상태: **정책 확정, 구현 전**
+상태: **정책 확정, Slice A 저장 계약 구현 완료**
 
 범위: 완료된 Flow의 재사용, 새 실행 분리, 원본 버전 갱신과 개인 수정본 충돌 처리
 
@@ -342,6 +342,25 @@ P22-06 정책의 첫 구현 slice로 Flow 실행 인스턴스와 완료 기록 �
 | 그대로 다시 쓰기 / 날짜만 새로 잡기 / 새 버전 검토 구분 | 충족 |
 | Studio 핵심 탭 승격 금지 | 충족 |
 | 자동 병합·복잡한 버전 트리 비확장 | 충족 |
-| 실제 구현 | 미실행, 다음 slice로 분리 |
+| Slice A 실행 인스턴스·완료 snapshot | 구현 완료 |
+| 사용자-facing 재사용 흐름 | 미구현, Slice B~D로 분리 |
 
-P22-06은 **spec 기준 완료**다. 실제 제품 기준 완료는 Slice A의 실행 인스턴스와 완료 기록 보존이 구현된 뒤 판정한다.
+P22-06은 **정책과 Slice A 저장 계약 기준 완료**다. 실제 제품 기준 완료는 Slice B~D의 날짜 재설정, 버전 검토, 사용자-facing 재사용 흐름까지 검증된 뒤 판정한다.
+
+## 16. 2026-07-11 Slice A 구현 결과
+
+`lib/flow/storage.ts`에 기존 화면 projection을 바꾸지 않는 opt-in run registry를 추가했다.
+
+- `flow:run-registry:<slug>` versioned registry
+- legacy slug 상태를 첫 active run으로 승격하는 `ensureLegacyActiveFlowRun()`
+- 완료 당시 상태를 snapshot으로 고정하는 `completeActiveFlowRun()`
+- 완료 기록을 남기고 새 current state만 비우는 `startFlowRunFromCompleted()`
+- 완료 뒤 작성한 회고·원본 내용 알리기 초안을 최근 완료 run에 동기화
+- source version, personal copy, anchor, 결과물 형식 보존
+- 완료 체크, 항목 상태, 하위 확인, 비교표, workbench, reaction log, 완료 feedback 보존
+- `new_anchor` mode에서 새 기준일이 없으면 시작을 거부
+- 명시적 저장 기록 삭제 시 run registry도 함께 삭제
+
+현재 My Flow·Calendar·export 호출부는 run API를 아직 사용하지 않는다. 따라서 기존 사용자 상태가 자동 migration되거나 화면에 `다시 쓰기`가 나타나지는 않는다. 이 경계는 데이터 모델을 먼저 검증하고 사용자 흐름을 나중에 여는 의도된 순서다.
+
+검증 evidence는 [P22-06A Flow run storage evidence](./2026-07-11-claude-design-p22-06a-flow-run-storage-evidence/README.md)에 기록했다.

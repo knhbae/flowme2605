@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-07-11",
+  "scope": "storage-only",
+  "routeEvidence": [],
+  "summary": {
+    "flowRunRegistrySchemaVersion": 1,
+    "legacyMigrationAdapterImplemented": true,
+    "completedRunSnapshotImplemented": true,
+    "completedAndActiveRunIdsSeparated": true,
+    "completedFeedbackSyncAfterCompletion": true,
+    "newRunCompletionChecksCopied": false,
+    "newRunCompletionFeedbackCopied": false,
+    "newRunSourceCorrectionDraftCopied": false,
+    "sourceVersionPreserved": true,
+    "personalCopySnapshotPreserved": true,
+    "newAnchorRequiredForNewAnchorMode": true,
+    "currentProjectionCallSiteChangeCount": 0,
+    "userFacingReuseUiVisible": false,
+    "focusedStorageTestCount": 10,
+    "fullUnitTestCount": 383,
+    "targetedE2eCount": 36,
+    "nextTypecheckPassed": true,
+    "productionBuildPassed": true,
+    "newScreenshotCount": 0
+  }
+}

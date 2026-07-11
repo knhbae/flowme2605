@@ -25,7 +25,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 | P22-03 URL miss 압축 | 구현 완료 | 첫 행동 1개, 운영 상태 문구 0, live AI 오해 false | 실제 신규 사용자의 이해 관찰 |
 | P22-04 실행/편집 상세 분리 | 구현 완료 | 기본 직접 행동 최대 2, 편집 취소·저장 4/4, overflow 0 | 긴 편집 폼의 반복 사용성 관찰 |
 | P22-05 외부 도구 왕복 | 조건부 완료 | Excel 3/3, Word 3/3, iCalendar parser 3/3+개인 1/1 | 설정된 Calendar 앱 import·중복 import 1회 |
-| P22-06 완료 Flow 재사용·버전 정책 | spec 완료 | 세 재사용 경우와 충돌 규칙 확정 | runId 기반 완료 기록 모델 구현 |
+| P22-06 완료 Flow 재사용·버전 정책 | 정책·Slice A 완료 | 세 재사용 경우, runId, 완료 snapshot, legacy adapter 구현 | 날짜 재설정·버전 비교·사용자 흐름 Slice B~D |
 | P22-07 Studio·공개 리뷰 확장 | 의도적 보류 | Studio secondary tier 유지 | 실제 사용·정정 요청 데이터가 쌓일 때 재검토 |
 
 ## 여정별 변화
@@ -68,8 +68,9 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 - 중복 저장 방지는 있으나 지난 실행과 새 실행을 분리하는 모델은 없다.
 - 현재 slug key 초기화는 완료 기록과 회고를 지울 수 있다.
 - P22-06에서 실행 인스턴스, 날짜 재설정, 버전 충돌 규칙을 문서화했다.
+- Slice A에서 기존 slug 상태를 별도 run으로 보존하고 새 실행의 현재 상태만 초기화하는 저장 계약을 구현했다.
 
-판정: **정책은 닫혔고 구현은 아직이다. 다음 자동 구현의 최우선 후보다.**
+판정: **정책과 저장 계약은 닫혔다. 날짜 재설정과 사용자-facing 재사용 흐름은 아직이다.**
 
 ## 출시 gate
 
@@ -87,7 +88,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 3. 완료 후 2차 실행 또는 재방문 이유 기록
 4. local-only, 계정 저장, 기기 변경·복구 정책 결정
 5. 실제 Calendar 앱 import와 중복 처리 확인
-6. 완료 기록을 보존하는 runId 기반 실행 모델
+6. runId 기반 실행 모델을 실제 My Flow 재사용 흐름에 연결
 
 ## 지금 하지 않을 것
 
@@ -101,15 +102,19 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 ## 다음 구현 선택
 
-### 추천: P22-06 Slice A
+### 완료: P22-06 Slice A
 
-실행 인스턴스와 완료 기록 보존을 먼저 구현한다. 화면의 `다시 쓰기`는 아직 추가하지 않는다.
+실행 인스턴스와 완료 기록 보존 저장 계약을 구현했다. 화면의 `다시 쓰기`는 아직 추가하지 않았다.
 
 이유:
 
-- 현재 slug 기반 초기화는 과거 기록 손실 위험이 있다.
-- UI부터 만들면 버튼은 작동해 보여도 완료 회고와 개인 수정본이 덮어써질 수 있다.
-- runId와 완료 snapshot을 먼저 만들면 이후 `그대로 다시 쓰기`, `날짜만 새로 잡기`, `새 내용 검토`를 같은 데이터 경계 위에 올릴 수 있다.
+- legacy 상태 승격, 완료 snapshot, 새 active run 분리가 unit test로 고정됐다.
+- 완료 뒤 작성한 회고도 과거 run에 동기화된다.
+- 기존 My Flow·Calendar·export 호출부는 바뀌지 않았다.
+
+### 다음 자동 구현 후보: P22-06 Slice B
+
+`날짜만 새로 잡기`의 순수 정책 함수를 먼저 구현한다. 상대 일정은 새 기준일로 재계산하고, 개별 고정 날짜가 있으면 `새 기준일에 맞추기 / 기존 날짜 유지`를 명시적으로 선택하도록 한다. 사용자-facing sheet는 이 함수와 migration 경계가 검증된 뒤 연다.
 
 ### 병행 수동 gate
 
@@ -132,6 +137,7 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [P22-04 실행/편집 상세 분리 evidence](./2026-07-11-claude-design-p22-04-execution-edit-detail-evidence/README.md)
 - [P22-05 외부 import evidence](./2026-07-11-claude-design-p22-05-external-import-evidence/README.md)
 - [P22-06 완료 Flow 재사용·버전 정책](./2026-07-11-claude-design-p22-06-completed-flow-reuse-version-policy-ko.md)
+- [P22-06A Flow run storage evidence](./2026-07-11-claude-design-p22-06a-flow-run-storage-evidence/README.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 
 ## 다음 `/goal` 후보
@@ -141,13 +147,13 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 D:\flowme2605\flow-mvp 기준으로 진행해줘.
 
 목표:
-P22-06 정책의 Slice A를 구현한다. 기존 slug 기반 My Flow 상태를 잃지 않으면서 실행 인스턴스와 완료 기록 snapshot을 도입하고, 같은 Flow의 새 실행이 과거 완료·회고·원본 알리기 기록을 덮어쓰지 않게 한다. 사용자-facing `다시 쓰기` UI, 새 버전 비교 UI, Studio 확장은 이번 slice에 포함하지 않는다.
+P22-06 정책의 Slice B를 구현한다. 완료 Flow의 새 실행에서 `날짜만 새로 잡기`를 안전하게 계산하고, Flow 기준일 변경과 개별 고정 날짜 override가 충돌하면 `새 기준일에 맞추기 / 기존 날짜 유지`를 명시적으로 선택하게 한다. 사용자-facing sheet와 새 버전 비교 UI는 이번 slice에 포함하지 않는다.
 
 완료 기준:
-- legacy slug 상태를 첫 실행으로 읽는 migration adapter
-- active/completed runId 분리
-- 완료 당시 source version과 personal copy snapshot 보존
-- 새 실행의 완료 체크·회고·원본 알리기 미복사
-- 기존 My Flow/Calendar/export 동작 회귀 없음
-- 저장 unit test와 targeted E2E 통과
+- 새 기준일 없는 `new_anchor` 실행 거부 유지
+- 상대 일정의 새 기준일 재계산
+- 고정 날짜 override 유지/초기화 두 정책 분리
+- 원본과 완료 run snapshot 불변
+- Calendar/export projection용 결과가 같은 날짜를 읽음
+- 저장 unit test와 기존 E2E 회귀 통과
 ```

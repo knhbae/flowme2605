@@ -24,6 +24,7 @@ const SAVED_FLOW_KEY_PREFIX = 'flow:saved:';
 const SAVED_FLOW_MAP_KEY_PREFIX = 'flow:map:saved:';
 const MY_FLOW_STEP_ITEM_CHECKS_KEY = 'flow:my-flow:step-item-checks';
 const MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX = 'flow:my-flow:completion-feedback:';
+const FLOW_RUN_REGISTRY_KEY_PREFIX = 'flow:run-registry:';
 
 export type StoredAnchor = {
   mode: string;
@@ -84,6 +85,63 @@ export type ActiveFlowProgress = {
   anchor?: string;
   anchorMode?: string;
   lastVisited?: string;
+};
+
+export type FlowRunReuseMode = 'legacy' | 'same_copy' | 'new_anchor' | 'reviewed_version';
+
+export type FlowRunCompletionSnapshot = {
+  checks: Record<string, boolean>;
+  itemStates: Record<string, FlowItemState>;
+  stepItemChecks: MyFlowStepItemChecks;
+  comparisonState: FlowComparisonState;
+  workbenchState: FlowWorkbenchState;
+  reactionLogs: Record<string, ReactionLog>;
+  completionFeedback?: MyFlowCompletionFeedback;
+};
+
+export type FlowRunRecord = {
+  schemaVersion: 1;
+  runId: string;
+  flowSlug: string;
+  status: 'active' | 'completed';
+  startedAt: string;
+  completedAt?: string;
+  anchor?: string;
+  selectedArtifactMode?: SavedFlowArtifactMode;
+  mapId?: string;
+  sourceVersion?: string;
+  previousRunId?: string;
+  reuseMode?: FlowRunReuseMode;
+  personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
+  completionSnapshot?: FlowRunCompletionSnapshot;
+};
+
+export type FlowRunRegistry = {
+  schemaVersion: 1;
+  activeRunId?: string;
+  runs: FlowRunRecord[];
+};
+
+export type EnsureLegacyFlowRunOptions = {
+  runId?: string;
+  startedAt?: string;
+  mapSnapshot?: SavedFlowMapSnapshot;
+};
+
+export type CompleteActiveFlowRunOptions = EnsureLegacyFlowRunOptions & {
+  completedAt?: string;
+};
+
+export type StartFlowRunFromCompletedOptions = {
+  runId?: string;
+  startedAt?: string;
+  previousRunId?: string;
+  reuseMode: Exclude<FlowRunReuseMode, 'legacy'>;
+  anchor?: string;
+  selectedArtifactMode?: SavedFlowArtifactMode;
+  mapId?: string;
+  sourceVersion?: string;
+  personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
 };
 
 function canUseStorage(): boolean {
@@ -438,6 +496,7 @@ export function saveMyFlowCompletionFeedback(
   const normalized = normalizeMyFlowCompletionFeedback({ flowSlug, ...value });
   if (!normalized) return undefined;
   localStorage.setItem(`${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`, JSON.stringify(normalized));
+  syncCompletionFeedbackToLatestCompletedFlowRun(flowSlug, normalized);
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
   return normalized;
 }
@@ -453,6 +512,7 @@ export function clearFlowLocalProgress(slug: string): void {
     `${WORKBENCH_KEY_PREFIX}${slug}`,
     `${REACTIONS_KEY_PREFIX}${slug}`,
     `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${slug}`,
+    `${FLOW_RUN_REGISTRY_KEY_PREFIX}${slug}`,
   ].forEach((key) => localStorage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();
   const nextStepItemChecks = Object.fromEntries(
@@ -577,4 +637,416 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
   }
 
   return progress;
+}
+
+function cloneStorageValue<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function normalizeBooleanRecord(value: unknown): Record<string, boolean> {
+  if (!value || typeof value !== 'object') return {};
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).filter(
+      (entry): entry is [string, boolean] => Boolean(entry[0].trim()) && typeof entry[1] === 'boolean',
+    ),
+  );
+}
+
+function normalizeFlowRunItemStates(value: unknown): Record<string, FlowItemState> {
+  if (!value || typeof value !== 'object') return {};
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).flatMap(([itemId, itemState]) => {
+      if (!itemId.trim() || !itemState || typeof itemState !== 'object') return [];
+      const source = itemState as Partial<FlowItemState>;
+      const normalized: FlowItemState = {};
+      if (typeof source.skipped === 'boolean') normalized.skipped = source.skipped;
+      if (typeof source.note === 'string' && source.note.trim()) normalized.note = source.note;
+      return [[itemId, normalized] as const];
+    }),
+  );
+}
+
+function normalizeFlowRunStepItemChecks(value: unknown): MyFlowStepItemChecks {
+  if (!value || typeof value !== 'object') return {};
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).flatMap(([rowKey, checks]) => {
+      if (!rowKey.trim()) return [];
+      const normalized = normalizeBooleanRecord(checks);
+      return Object.keys(normalized).length > 0 ? [[rowKey, normalized] as const] : [];
+    }),
+  );
+}
+
+function normalizeFlowRunComparisonState(value: unknown): FlowComparisonState {
+  if (!value || typeof value !== 'object') return { candidates: [], notes: {} };
+  const source = value as Partial<FlowComparisonState>;
+  const candidates = Array.isArray(source.candidates)
+    ? source.candidates.flatMap((candidate) => {
+        if (!candidate || typeof candidate !== 'object') return [];
+        const row = candidate as { id?: unknown; name?: unknown };
+        return typeof row.id === 'string' && row.id.trim() && typeof row.name === 'string'
+          ? [{ id: row.id, name: row.name }]
+          : [];
+      })
+    : [];
+  const notes = source.notes && typeof source.notes === 'object'
+    ? Object.fromEntries(
+        Object.entries(source.notes).flatMap(([rowId, noteRecord]) => {
+          if (!rowId.trim() || !noteRecord || typeof noteRecord !== 'object') return [];
+          const normalizedNotes = Object.fromEntries(
+            Object.entries(noteRecord as Record<string, unknown>).filter(
+              (entry): entry is [string, string] => Boolean(entry[0].trim()) && typeof entry[1] === 'string',
+            ),
+          );
+          return [[rowId, normalizedNotes] as const];
+        }),
+      )
+    : {};
+  return { candidates, notes };
+}
+
+function normalizeFlowRunReactionLogs(value: unknown): Record<string, ReactionLog> {
+  if (!value || typeof value !== 'object') return {};
+  const fields: (keyof ReactionLog)[] = [
+    'amount',
+    'fedAt',
+    'skin',
+    'vomitingOrDiarrhea',
+    'stool',
+    'sleep',
+    'preferenceNote',
+  ];
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).flatMap(([rowId, rawLog]) => {
+      if (!rowId.trim() || !rawLog || typeof rawLog !== 'object') return [];
+      const source = rawLog as Partial<ReactionLog>;
+      const normalized = fields.reduce<ReactionLog>((log, field) => {
+        if (typeof source[field] === 'string') log[field] = source[field];
+        return log;
+      }, {});
+      return [[rowId, normalized] as const];
+    }),
+  );
+}
+
+function normalizeFlowRunCompletionSnapshot(value: unknown, flowSlug: string): FlowRunCompletionSnapshot | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const source = value as Partial<FlowRunCompletionSnapshot>;
+  const completionFeedback = normalizeMyFlowCompletionFeedback(source.completionFeedback);
+  return {
+    checks: normalizeBooleanRecord(source.checks),
+    itemStates: normalizeFlowRunItemStates(source.itemStates),
+    stepItemChecks: normalizeFlowRunStepItemChecks(source.stepItemChecks),
+    comparisonState: normalizeFlowRunComparisonState(source.comparisonState),
+    workbenchState: normalizeWorkbenchState(source.workbenchState),
+    reactionLogs: normalizeFlowRunReactionLogs(source.reactionLogs),
+    ...(completionFeedback?.flowSlug === flowSlug ? { completionFeedback } : {}),
+  };
+}
+
+function isFlowRunReuseMode(value: unknown): value is FlowRunReuseMode {
+  return value === 'legacy' || value === 'same_copy' || value === 'new_anchor' || value === 'reviewed_version';
+}
+
+export function normalizeFlowRunRecord(value: unknown): FlowRunRecord | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const source = value as Partial<FlowRunRecord>;
+  if (source.schemaVersion !== 1) return undefined;
+  if (typeof source.runId !== 'string' || !source.runId.trim()) return undefined;
+  if (typeof source.flowSlug !== 'string' || !source.flowSlug.trim()) return undefined;
+  if (source.status !== 'active' && source.status !== 'completed') return undefined;
+  if (typeof source.startedAt !== 'string' || !source.startedAt.trim()) return undefined;
+
+  const completedAt = typeof source.completedAt === 'string' && source.completedAt.trim() ? source.completedAt : undefined;
+  const completionSnapshot = normalizeFlowRunCompletionSnapshot(source.completionSnapshot, source.flowSlug);
+  if (source.status === 'completed' && (!completedAt || !completionSnapshot)) return undefined;
+  const personalCopySnapshot = normalizeSavedFlowMapPersonalCopy(source.personalCopySnapshot);
+
+  return {
+    schemaVersion: 1,
+    runId: source.runId.trim(),
+    flowSlug: source.flowSlug.trim(),
+    status: source.status,
+    startedAt: source.startedAt,
+    ...(source.status === 'completed' && completedAt && completionSnapshot
+      ? { completedAt, completionSnapshot }
+      : {}),
+    ...(typeof source.anchor === 'string' && source.anchor.trim() ? { anchor: source.anchor.trim() } : {}),
+    ...(isSavedFlowArtifactMode(source.selectedArtifactMode)
+      ? { selectedArtifactMode: source.selectedArtifactMode }
+      : {}),
+    ...(typeof source.mapId === 'string' && source.mapId.trim() ? { mapId: source.mapId.trim() } : {}),
+    ...(typeof source.sourceVersion === 'string' && source.sourceVersion.trim()
+      ? { sourceVersion: source.sourceVersion.trim() }
+      : {}),
+    ...(typeof source.previousRunId === 'string' && source.previousRunId.trim()
+      ? { previousRunId: source.previousRunId.trim() }
+      : {}),
+    ...(isFlowRunReuseMode(source.reuseMode) ? { reuseMode: source.reuseMode } : {}),
+    ...(personalCopySnapshot ? { personalCopySnapshot } : {}),
+  };
+}
+
+export function normalizeFlowRunRegistry(flowSlug: string, value: unknown): FlowRunRegistry {
+  if (!value || typeof value !== 'object') return { schemaVersion: 1, runs: [] };
+  const source = value as Partial<FlowRunRegistry>;
+  if (source.schemaVersion !== 1 || !Array.isArray(source.runs)) return { schemaVersion: 1, runs: [] };
+  const seen = new Set<string>();
+  const runs = source.runs.flatMap((rawRun) => {
+    const run = normalizeFlowRunRecord(rawRun);
+    if (!run || run.flowSlug !== flowSlug || seen.has(run.runId)) return [];
+    seen.add(run.runId);
+    return [run];
+  });
+  const declaredActiveRunId =
+    typeof source.activeRunId === 'string' &&
+    runs.some((run) => run.runId === source.activeRunId && run.status === 'active')
+      ? source.activeRunId
+      : undefined;
+  const activeRuns = runs.filter((run) => run.status === 'active');
+  const activeRunId = declaredActiveRunId ?? (activeRuns.length === 1 ? activeRuns[0].runId : undefined);
+  const normalizedRuns = runs.filter((run) => run.status === 'completed' || run.runId === activeRunId);
+  return {
+    schemaVersion: 1,
+    ...(activeRunId ? { activeRunId } : {}),
+    runs: normalizedRuns,
+  };
+}
+
+export function getFlowRunRegistry(flowSlug: string): FlowRunRegistry {
+  if (!canUseStorage()) return { schemaVersion: 1, runs: [] };
+  try {
+    return normalizeFlowRunRegistry(
+      flowSlug,
+      JSON.parse(localStorage.getItem(`${FLOW_RUN_REGISTRY_KEY_PREFIX}${flowSlug}`) || 'null'),
+    );
+  } catch {
+    return { schemaVersion: 1, runs: [] };
+  }
+}
+
+function saveFlowRunRegistry(flowSlug: string, registry: FlowRunRegistry): FlowRunRegistry | undefined {
+  if (!canUseStorage()) return undefined;
+  const normalized = normalizeFlowRunRegistry(flowSlug, registry);
+  localStorage.setItem(`${FLOW_RUN_REGISTRY_KEY_PREFIX}${flowSlug}`, JSON.stringify(normalized));
+  return normalized;
+}
+
+export function getActiveFlowRun(flowSlug: string): FlowRunRecord | undefined {
+  const registry = getFlowRunRegistry(flowSlug);
+  return registry.runs.find((run) => run.runId === registry.activeRunId && run.status === 'active');
+}
+
+export function getCompletedFlowRuns(flowSlug: string): FlowRunRecord[] {
+  return getFlowRunRegistry(flowSlug).runs
+    .filter((run) => run.status === 'completed')
+    .sort((a, b) => (b.completedAt ?? '').localeCompare(a.completedAt ?? ''));
+}
+
+function createFlowRunId(flowSlug: string): string {
+  const randomId =
+    typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.randomUUID === 'function'
+      ? globalThis.crypto.randomUUID()
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  return `run-${flowSlug}-${randomId}`;
+}
+
+function getFlowRunMapSnapshot(flowSlug: string, snapshot?: SavedFlowMapSnapshot): SavedFlowMapSnapshot | undefined {
+  return snapshot ?? getSavedFlowMapIndexByFlowSlug()[flowSlug];
+}
+
+function hasLegacyFlowRunState(flowSlug: string, mapSnapshot?: SavedFlowMapSnapshot): boolean {
+  if (getSavedFlowRecord(flowSlug) || mapSnapshot) return true;
+  if (Object.keys(getChecks(flowSlug)).length > 0 || Object.keys(getItemStates(flowSlug)).length > 0) return true;
+  if (getStoredAnchor(flowSlug).anchor || getMyFlowCompletionFeedback(flowSlug)) return true;
+  if (Object.keys(getMyFlowStepItemChecks()).some((key) => key.startsWith(`${flowSlug}::`))) return true;
+  const comparisonState = getComparisonState(flowSlug);
+  if (comparisonState.candidates.length > 0 || Object.keys(comparisonState.notes).length > 0) return true;
+  if (hasWorkbenchProgress(getWorkbenchState(flowSlug))) return true;
+  try {
+    return Object.keys(getReactionLogs(flowSlug)).length > 0;
+  } catch {
+    return false;
+  }
+}
+
+export function ensureLegacyActiveFlowRun(
+  flowSlug: string,
+  options: EnsureLegacyFlowRunOptions = {},
+): FlowRunRecord | undefined {
+  if (!canUseStorage() || !flowSlug.trim()) return undefined;
+  const registry = getFlowRunRegistry(flowSlug);
+  const active = registry.runs.find((run) => run.runId === registry.activeRunId && run.status === 'active');
+  if (active) return active;
+  if (registry.runs.length > 0) return undefined;
+
+  const mapSnapshot = getFlowRunMapSnapshot(flowSlug, options.mapSnapshot);
+  if (!hasLegacyFlowRunState(flowSlug, mapSnapshot)) return undefined;
+  const savedRecord = getSavedFlowRecord(flowSlug);
+  const storedAnchor = getStoredAnchor(flowSlug).anchor;
+  const runId = options.runId?.trim() || createFlowRunId(flowSlug);
+  const startedAt = options.startedAt?.trim() || savedRecord?.savedAt || new Date().toISOString();
+  const run: FlowRunRecord = {
+    schemaVersion: 1,
+    runId,
+    flowSlug,
+    status: 'active',
+    startedAt,
+    ...(storedAnchor || savedRecord?.anchor ? { anchor: storedAnchor || savedRecord?.anchor } : {}),
+    ...(savedRecord ? { selectedArtifactMode: savedRecord.selectedArtifactMode } : {}),
+    ...(mapSnapshot?.mapId ? { mapId: mapSnapshot.mapId } : {}),
+    ...(mapSnapshot?.version ? { sourceVersion: mapSnapshot.version } : {}),
+    ...(mapSnapshot?.personalCopy ? { personalCopySnapshot: cloneStorageValue(mapSnapshot.personalCopy) } : {}),
+    reuseMode: 'legacy',
+  };
+  const saved = saveFlowRunRegistry(flowSlug, { schemaVersion: 1, activeRunId: runId, runs: [run] });
+  return saved?.runs.find((entry) => entry.runId === runId);
+}
+
+export function captureCurrentFlowRunCompletionSnapshot(flowSlug: string): FlowRunCompletionSnapshot {
+  const stepItemChecks = Object.fromEntries(
+    Object.entries(getMyFlowStepItemChecks()).filter(([key]) => key.startsWith(`${flowSlug}::`)),
+  );
+  let reactionLogs: Record<string, ReactionLog> = {};
+  try {
+    reactionLogs = getReactionLogs(flowSlug);
+  } catch {
+    reactionLogs = {};
+  }
+  const completionFeedback = getMyFlowCompletionFeedback(flowSlug);
+  return cloneStorageValue({
+    checks: getChecks(flowSlug),
+    itemStates: getItemStates(flowSlug),
+    stepItemChecks,
+    comparisonState: getComparisonState(flowSlug),
+    workbenchState: getWorkbenchState(flowSlug),
+    reactionLogs,
+    ...(completionFeedback ? { completionFeedback } : {}),
+  });
+}
+
+export function completeActiveFlowRun(
+  flowSlug: string,
+  options: CompleteActiveFlowRunOptions = {},
+): FlowRunRecord | undefined {
+  if (!canUseStorage()) return undefined;
+  const active = getActiveFlowRun(flowSlug) ?? ensureLegacyActiveFlowRun(flowSlug, options);
+  if (!active) return undefined;
+  const registry = getFlowRunRegistry(flowSlug);
+  const completedAt = options.completedAt?.trim() || new Date().toISOString();
+  const completed: FlowRunRecord = {
+    ...active,
+    status: 'completed',
+    completedAt,
+    completionSnapshot: captureCurrentFlowRunCompletionSnapshot(flowSlug),
+  };
+  const saved = saveFlowRunRegistry(flowSlug, {
+    schemaVersion: 1,
+    runs: registry.runs.map((run) => (run.runId === active.runId ? completed : run)),
+  });
+  return saved?.runs.find((run) => run.runId === active.runId && run.status === 'completed');
+}
+
+function syncCompletionFeedbackToLatestCompletedFlowRun(
+  flowSlug: string,
+  feedback: MyFlowCompletionFeedback,
+): FlowRunRecord | undefined {
+  const registry = getFlowRunRegistry(flowSlug);
+  if (registry.activeRunId) return undefined;
+  const latestCompleted = registry.runs
+    .filter((run) => run.status === 'completed')
+    .sort((a, b) => (b.completedAt ?? '').localeCompare(a.completedAt ?? ''))[0];
+  if (!latestCompleted?.completionSnapshot) return undefined;
+  const updated: FlowRunRecord = {
+    ...latestCompleted,
+    completionSnapshot: {
+      ...latestCompleted.completionSnapshot,
+      completionFeedback: cloneStorageValue(feedback),
+    },
+  };
+  const saved = saveFlowRunRegistry(flowSlug, {
+    ...registry,
+    runs: registry.runs.map((run) => (run.runId === updated.runId ? updated : run)),
+  });
+  return saved?.runs.find((run) => run.runId === updated.runId);
+}
+
+function resetCurrentFlowExecutionState(flowSlug: string): void {
+  [
+    `${CHECKS_KEY_PREFIX}${flowSlug}`,
+    `${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`,
+    `${ITEM_STATE_KEY_PREFIX}${flowSlug}`,
+    `${COMPARISON_KEY_PREFIX}${flowSlug}`,
+    `${WORKBENCH_KEY_PREFIX}${flowSlug}`,
+    `${REACTIONS_KEY_PREFIX}${flowSlug}`,
+    `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`,
+  ].forEach((key) => localStorage.removeItem(key));
+  const stepItemChecks = getMyFlowStepItemChecks();
+  localStorage.setItem(
+    MY_FLOW_STEP_ITEM_CHECKS_KEY,
+    JSON.stringify(
+      Object.fromEntries(Object.entries(stepItemChecks).filter(([key]) => !key.startsWith(`${flowSlug}::`))),
+    ),
+  );
+}
+
+export function startFlowRunFromCompleted(
+  flowSlug: string,
+  options: StartFlowRunFromCompletedOptions,
+): FlowRunRecord | undefined {
+  if (!canUseStorage() || !flowSlug.trim()) return undefined;
+  if (options.reuseMode === 'new_anchor' && !options.anchor?.trim()) return undefined;
+  const registry = getFlowRunRegistry(flowSlug);
+  if (registry.activeRunId) return undefined;
+  const previous = options.previousRunId
+    ? registry.runs.find((run) => run.runId === options.previousRunId && run.status === 'completed')
+    : getCompletedFlowRuns(flowSlug)[0];
+  if (!previous) return undefined;
+
+  const runId = options.runId?.trim() || createFlowRunId(flowSlug);
+  if (registry.runs.some((run) => run.runId === runId)) return undefined;
+  const startedAt = options.startedAt?.trim() || new Date().toISOString();
+  const selectedArtifactMode =
+    options.selectedArtifactMode ?? previous.selectedArtifactMode ?? getSavedFlowRecord(flowSlug)?.selectedArtifactMode ?? 'calendar';
+  const hasPersonalCopyOption = Object.prototype.hasOwnProperty.call(options, 'personalCopySnapshot');
+  const personalCopySnapshot = hasPersonalCopyOption
+    ? normalizeSavedFlowMapPersonalCopy(options.personalCopySnapshot)
+    : previous.personalCopySnapshot;
+  const mapId = options.mapId?.trim() || previous.mapId;
+  const sourceVersion = options.sourceVersion?.trim() || previous.sourceVersion;
+  const anchor = options.anchor?.trim();
+
+  resetCurrentFlowExecutionState(flowSlug);
+  const savedRecord: SavedFlowRecord = {
+    slug: flowSlug,
+    savedAt: startedAt,
+    selectedArtifactMode,
+    ...(anchor ? { anchor } : {}),
+  };
+  localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${flowSlug}`, JSON.stringify(savedRecord));
+  if (anchor) {
+    localStorage.setItem(`${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor }));
+  }
+  localStorage.setItem('flow:meta:last-visit', startedAt);
+
+  const active: FlowRunRecord = {
+    schemaVersion: 1,
+    runId,
+    flowSlug,
+    status: 'active',
+    startedAt,
+    previousRunId: previous.runId,
+    reuseMode: options.reuseMode,
+    selectedArtifactMode,
+    ...(anchor ? { anchor } : {}),
+    ...(mapId ? { mapId } : {}),
+    ...(sourceVersion ? { sourceVersion } : {}),
+    ...(personalCopySnapshot ? { personalCopySnapshot: cloneStorageValue(personalCopySnapshot) } : {}),
+  };
+  const saved = saveFlowRunRegistry(flowSlug, {
+    schemaVersion: 1,
+    activeRunId: runId,
+    runs: [...registry.runs, active],
+  });
+  return saved?.runs.find((run) => run.runId === runId && run.status === 'active');
 }
