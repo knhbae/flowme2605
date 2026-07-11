@@ -16,19 +16,19 @@
   },
   "inventory": {
     "publishedBundleCount": 617,
-    "normalUserRouteCount": 161,
-    "normalUserRouteSourceCheckedAtCount": 161,
+    "normalUserRouteCount": 155,
+    "normalUserRouteSourceCheckedAtCount": 155,
     "normalUserRouteMissingSourceCheckedAtCount": 0,
-    "normalUserRouteExactSourceCount": 156,
-    "normalUserRouteBroadSourceCount": 5,
-    "normalUserRouteNeedsReviewCount": 86,
-    "previewOrHiddenCount": 456,
+    "normalUserRouteExactSourceCount": 149,
+    "normalUserRouteBroadSourceCount": 6,
+    "normalUserRouteNeedsReviewCount": 80,
+    "previewOrHiddenCount": 462,
     "exposureCounts": {
       "representative": 5,
-      "source_review": 70,
-      "catalog_preview": 456,
+      "source_review": 66,
+      "catalog_preview": 462,
       "migration_candidate": 35,
-      "legacy_accessible": 51
+      "legacy_accessible": 49
     }
   },
   "refreshedSources": {
@@ -73,11 +73,12 @@
     "userSurfaceGuardrailHitCount": 0
   },
   "validation": {
-    "seedFlowUnitTestsPassed": 56,
+    "seedFlowUnitTestsPassed": 57,
     "sourceFreshnessTargetedTestsPassed": 4,
-    "fullUnitTestsPassed": 395,
+    "fullUnitTestsPassed": 397,
     "creatorProfileTargetedE2ePassed": 1,
     "integratedRegressionE2ePassed": 234,
+    "currentSourceTargetedE2ePassed": 53,
     "buildPassed": true,
     "observedUserSessionCount": 0
   }

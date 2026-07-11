@@ -19,6 +19,7 @@
 3. 외부 원문이 바뀌었거나 Flow 문구가 현재 원문과 맞지 않으면 사용성 실패와 섞지 않고 `source/page freshness issue`로 별도 기록한다.
 4. 공개 사용자 표면의 자동 최신성 기준은 [공개 콘텐츠 최신성 evidence](./2026-07-11-flowme-content-freshness-evidence/README.md)를 따른다. 이 기준은 실제 사용자 관찰이나 모든 외부 원문의 영구적 최신성을 보장하지 않는다.
 5. 관찰 중 오래된 페이지나 콘텐츠가 발견되면 원문 URL, 현재 화면 문구, 기대한 최신 상태, 사용자 행동 영향을 함께 남긴다.
+6. 정상 사용자 콘텐츠의 URL 생존 기준은 [출처 도달성 evidence](./2026-07-11-flowme-live-source-reachability-evidence/README.md)를 따른다. 자동 접근 차단은 404와 분리하고, 연도 고정 자료와 정책 수치는 HTTP 상태와 별도로 확인한다.
 
 ## 대체된 주소
 

@@ -36,6 +36,7 @@ type RealSourceSpec = {
   source_url: string;
   source_type: SourceType;
   source_precision: SourcePrecision;
+  source_checked_at?: string;
   primary_destination?: PrimaryDestination;
   risk_level: RiskLevel;
   conversion_note: string;
@@ -134,7 +135,7 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       primary_destination: spec.primary_destination,
       source_title: spec.source_title,
       source_url: spec.source_url,
-      source_checked_at: checkedAt,
+      source_checked_at: spec.source_checked_at ?? checkedAt,
       conversion_note: spec.conversion_note,
       risk_level: spec.risk_level,
       warning: spec.warning,
@@ -1283,9 +1284,10 @@ const realSourceSpecs: RealSourceSpec[] = [
     structure_type: 'timeline',
     anchor_type: 'end_date',
     source_title: '질병관리청 해외여행 전 건강정보',
-    source_url: 'https://www.kdca.go.kr/menu.es?mid=a20102060200',
+    source_url: 'https://kdca.go.kr/kdca/4916/subview.do',
     source_type: 'official',
     source_precision: 'exact',
+    source_checked_at: '2026-07-11',
     risk_level: 'medical_sensitive',
     conversion_note: '해외여행 전 건강정보를 감염병 확인, 예방접종 상담, 귀국 후 관찰 루틴으로 전환했습니다.',
     warning: '예방접종, 약 복용, 진료 판단은 의료진 상담을 우선하세요.',
@@ -1380,9 +1382,10 @@ const realSourceSpecs: RealSourceSpec[] = [
     structure_type: 'checklist',
     anchor_type: 'none',
     source_title: '한국도로교통공단 운전면허증 발급 가이드',
-    source_url: 'https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111o',
+    source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide18.do?menuCd=MN-PO-12111',
     source_type: 'official',
     source_precision: 'exact',
+    source_checked_at: '2026-07-11',
     risk_level: 'medium',
     conversion_note: '운전면허증 발급 가이드를 갱신 대상 확인, 준비물, 신청 후 기록 체크로 전환했습니다.',
     tags: ['자동차', '면허', '공식출처'],

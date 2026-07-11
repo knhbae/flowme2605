@@ -223,7 +223,8 @@ const specs: BatchSpec[] = [
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
       source_title: '소상공인시장진흥공단 – 정책자금 신청 안내',
-      source_url: 'https://www.semas.or.kr/web/SUP01/SUP0103/SUP010301.kmdc',
+      source_url: 'https://ols.semas.or.kr/ols/man/SMAN010M/page.do',
+      source_checked_at: '2026-07-11',
       warning: '지원 대상, 한도, 금리, 신청기간은 사업과 연도마다 다릅니다. 공식 공고와 상담(1533-0100)으로 확인하세요.',
     },
     text: `## 1. 대상 확인
@@ -231,13 +232,13 @@ const specs: BatchSpec[] = [
   why: 정책자금은 상시근로자 5명 미만(제조·건설·운수·광업은 10명 미만) 소상공인을 대상으로 합니다.
   how: 소상공인시장진흥공단 공지에서 현재 모집 중인 사업과 요건을 봅니다.
   done: 해당될 것 같은 지원사업을 적었다.
-  link: 소상공인시장진흥공단 정책자금 신청 안내 | https://www.semas.or.kr/web/SUP01/SUP0103/SUP010301.kmdc | official
-  caution: 정책자금 금리는 분기별로 고시됩니다(2026년 2분기 기준 약 3.44% 수준, 사업·신용도별 상이). 일반 운전자금 최대 1억원, 시설자금 최대 5억원 이내이며 사업 유형에 따라 한도가 달라집니다. 정확한 금리·한도는 공고문에서 확인하세요.
+  link: 소상공인 정책자금 신청 안내 | https://ols.semas.or.kr/ols/man/SMAN010M/page.do | official
+  caution: 접수 중인 자금, 금리, 한도, 신청 기간은 수시로 달라지므로 신청 화면과 최신 공고문에서 다시 확인합니다.
 
 ## 2. 준비
 - 사업자등록증·매출 증빙·재무 자료 정리하기
 - 교육 이수 요건 있는지 확인하기
-  caution: 일부 정책자금은 사전 교육 이수가 조건입니다. 신청 시작과 동시에 접수자가 몰리므로 1월 초 신청이 유리합니다.
+  caution: 일부 정책자금은 추가 서류나 사전 확인이 필요할 수 있으므로 선택한 자금의 신청 안내를 따릅니다.
 
 ## 3. 신청
 - 모집기간·접수 방식(온라인/지역센터) 확인하고 신청하기
@@ -257,22 +258,23 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '고용보험 – 구직급여 수급신청 안내(찾기쉬운 생활법령정보)',
-      source_url: 'https://www.ei.go.kr/ei/eih/eg/eb/ebPersonBnef/retrieveEb010101.do',
+      source_title: '고용24 – 실업급여 신청 안내',
+      source_url: 'https://ei.work24.go.kr/ei/eih/cp/cc/ccEminsrFollow/retrieveCc200Info.do',
+      source_checked_at: '2026-07-11',
       warning: '수급 자격, 이직 사유 인정, 금액·기간은 개인 상황에 따라 다릅니다. 고용보험과 고용센터 안내를 우선 확인하세요.',
     },
     text: `## 1. 자격·서류
 - 피보험단위기간·이직 사유 등 수급 요건 확인하기
   why: 이직일 이전 18개월 내 피보험 단위기간 180일 이상이어야 하며, 자발적 이직 등 사유에 따라 수급이 제한될 수 있어 먼저 확인해야 합니다.
-  how: 고용보험 실업급여 안내에서 수급 요건을 확인합니다.
+  how: 고용24 실업급여 신청 안내에서 수급 요건과 신청 순서를 확인합니다.
   done: 수급 가능성과 확인이 필요한 점을 메모했다.
-  link: 고용보험 실업급여 수급 안내 | https://www.ei.go.kr/ei/eih/eg/eb/ebPersonBnef/retrieveEb010101.do | official
+  link: 고용24 실업급여 신청 안내 | https://ei.work24.go.kr/ei/eih/cp/cc/ccEminsrFollow/retrieveCc200Info.do | official
 - 전 직장에 이직확인서 처리 요청하기
   caution: 사업주는 근로자 요청 시 10일 이내 이직확인서를 고용센터에 제출해야 합니다. 미발급 시 고용센터에 '이직확인서 발급 요청서'를 제출하세요.
 
 ## 2. 신청
-- 워크넷(www.work.go.kr) 구직등록하기
-  done: 워크넷 구직등록이 완료되었다.
+- 고용24에서 구직 신청하기
+  done: 고용24 구직 신청이 완료되었다.
 - 수급자격 신청자 온라인 교육 이수하기
 - 고용센터 방문해 수급자격 신청하기
   done: 수급자격 인정 여부를 확인했다.
@@ -327,7 +329,8 @@ const specs: BatchSpec[] = [
       risk_level: 'low',
       primary_destination: 'memo',
       source_title: '국민연금공단 전자민원 – 개인 가입내역·예상연금 조회',
-      source_url: 'https://minwon.nps.or.kr/jsppage/service/personal/inquiry/memberDetail_list.jsp',
+      source_url: 'https://nps.or.kr/elctcvlcpt/comm/getOHAC0000M3.do?menuId=MN24001727',
+      source_checked_at: '2026-07-11',
       warning: '예상연금액은 가정에 따른 추정치이며 실제 수령액과 다를 수 있습니다. 국민연금공단(1355) 안내로 확인하세요.',
     },
     text: `## 1. 현황 확인
@@ -335,7 +338,7 @@ const specs: BatchSpec[] = [
   why: 노령연금은 최소 가입기간 10년을 채워야 수급 자격이 생기고, 가입기간이 길수록 연금액이 늘어납니다.
   how: 국민연금공단 전자민원(공동인증서·간편인증 로그인)에서 가입내역·예상연금을 조회합니다. '내 곁에 국민연금' 앱이나 정부24에서도 조회할 수 있습니다.
   done: 총 가입기간과 예상연금액을 메모했다.
-  link: 국민연금공단 전자민원 가입내역 조회 | https://minwon.nps.or.kr/jsppage/service/personal/inquiry/memberDetail_list.jsp | official
+  link: 국민연금공단 전자민원 가입내역 조회 | https://nps.or.kr/elctcvlcpt/comm/getOHAC0000M3.do?menuId=MN24001727 | official
 - 납부 예외·미납 기간 있는지 확인하기
 
 ## 2. 보완 검토
@@ -358,17 +361,18 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '국민건강보험공단 – 피부양자 자격 취득 모의계산',
-      source_url: 'https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do',
+      source_title: '국민건강보험공단 – 피부양자 자격 신고서',
+      source_url: 'https://www.nhis.or.kr/static/html/wbdb/f/wbdbf.html',
+      source_checked_at: '2026-07-11',
       warning: '피부양자 소득·재산·부양 요건은 기준이 바뀔 수 있습니다. 국민건강보험공단 안내로 확인하세요.',
     },
     text: `## 1. 자격 확인
 - 대상자의 소득·재산·부양 요건 확인하기
   why: 소득·재산 기준 초과 시 피부양자에서 제외되어 지역가입자가 됩니다.
-  how: 국민건강보험공단 피부양자 자격 모의계산 또는 안내를 확인합니다.
+  how: 국민건강보험공단 안내에서 자격 기준을 확인하고, 피부양자 자격 신고서의 준비 항목을 봅니다.
   done: 등록 가능 여부와 확인할 점을 메모했다.
-  link: 건강보험공단 피부양자 자격 모의계산 | https://www.nhis.or.kr/nhis/policy/wbhada07500m01.do | official
-  caution: 2026년 기준 연소득 2,000만원 이하 + 재산세 과세표준 5억4천만원 이하이어야 합니다. 사업자등록 없는 프리랜서 소득은 연 500만원 이하여야 합니다. 공단은 매년 11월 전년도 소득·재산으로 자격을 재심사합니다.
+  link: 건강보험공단 피부양자 자격 신고서 | https://www.nhis.or.kr/static/html/wbdb/f/wbdbf.html | official
+  caution: 소득·재산·부양 요건과 적용 시점은 개인 상황과 최신 기준에 따라 달라질 수 있으므로 공단 안내에서 다시 확인합니다.
 
 ## 2. 서류·신청
 - 가족관계 증빙 등 필요 서류 준비하기
@@ -392,6 +396,7 @@ const specs: BatchSpec[] = [
       primary_destination: 'calendar',
       source_title: '국민건강보험공단 – 영유아 건강검진 안내 및 검진일자 조회',
       source_url: 'https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do',
+      source_checked_at: '2026-07-11',
       warning: '검진 시기·항목·발달평가 결과는 의료진 안내를 우선하세요. 이 Flow는 방문 일정을 챙기는 준비용입니다.',
     },
     text: `## 영유아 건강검진 (일반 8회)
@@ -437,8 +442,10 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medical_sensitive',
       primary_destination: 'memo',
-      source_title: '질병관리청 예방접종도우미 – 성인·어르신 예방접종 안내',
-      source_url: 'https://nip.kdca.go.kr/irgd/introduce.do',
+      source_title: '질병관리청 예방접종도우미 – 2026 예방접종 자료',
+      source_url: 'https://nip.kdca.go.kr/irhp/mngm/goFormBrdList.do',
+      source_precision: 'broad',
+      source_checked_at: '2026-07-11',
       warning: '접종 권장 대상, 무료 지원, 금기사항은 개인 건강상태에 따라 다릅니다. 질병관리청 안내와 의료진 상담을 우선하세요.',
     },
     text: `## 1. 대상 확인
@@ -446,8 +453,8 @@ const specs: BatchSpec[] = [
   why: 폐렴구균·대상포진·인플루엔자 등은 연령·질환별로 권장과 지원이 다릅니다.
   how: 질병관리청 예방접종도우미에서 권장 일정과 국가지원 대상을 확인합니다.
   done: 나에게 권장되는 접종과 지원 여부를 메모했다.
-  link: 예방접종도우미 성인·어르신 예방접종 안내 | https://nip.kdca.go.kr/irgd/introduce.do | official
-  caution: 65세 이상은 폐렴구균(PPSV23) 무료 접종(위탁의료기관), 인플루엔자 무료 접종 대상입니다. 대상포진은 50세 이상 권장(비급여)이며, 만성질환자는 의료진 상담을 먼저 받으세요.
+  link: 예방접종도우미 2026 예방접종 자료 | https://nip.kdca.go.kr/irhp/mngm/goFormBrdList.do | official
+  caution: 지원 대상과 권장 시기는 연도와 건강 상태에 따라 달라질 수 있으므로 최신 일정표와 의료진 안내를 함께 확인합니다.
 - 과거 접종 이력·금기사항 정리하기
   caution: 금기·주의 대상은 접종 전 의료진과 상담합니다.
 
@@ -532,7 +539,9 @@ const specs: BatchSpec[] = [
       risk_level: 'medium',
       primary_destination: 'memo',
       source_title: '외교부 해외안전여행(0404) – 여행경보·동행등록·영사콜센터',
-      source_url: 'https://www.0404.go.kr/dev/main.mofa',
+      source_url: 'https://0404.go.kr/app/main/mainPage',
+      source_checked_at: '2026-07-11',
+      conversion_note: '외교부 해외안전여행의 현재 메인에서 여행경보, 안전공지, 동행서비스, 영사콜센터 확인 동선을 점검했습니다.',
       warning: '여행경보 단계와 입국 요건은 수시로 바뀝니다. 외교부 해외안전여행 공지를 출발 직전 다시 확인하세요.',
     },
     text: `## 1. 위험 정보
@@ -540,7 +549,7 @@ const specs: BatchSpec[] = [
   why: 경보 단계(여행유의·여행자제·여행제한·여행금지 4단계)에 따라 여행 자제·철수 권고가 달라집니다.
   how: 외교부 해외안전여행(0404.go.kr)에서 국가별 여행경보와 안전공지를 봅니다.
   done: 방문국 경보 단계와 주의사항을 메모했다.
-  link: 외교부 해외안전여행 여행경보 | https://www.0404.go.kr/dev/main.mofa | official
+  link: 외교부 해외안전여행 여행경보 | https://0404.go.kr/app/main/mainPage | official
 
 ## 2. 비상 대비
 - 현지 대사관·영사관 연락처와 영사콜센터(02-3210-0404, 24시간) 저장하기

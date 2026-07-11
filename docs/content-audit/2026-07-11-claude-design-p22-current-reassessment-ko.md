@@ -51,11 +51,12 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 ### 콘텐츠 최신성과 공개 제작자 기본 노출
 
-- 의도적 채널 미리보기/hidden 456개와 정상 사용자 실행 후보 161개를 같은 최신성 분모로 계산하지 않는다.
-- 정상 사용자 실행 후보 161개는 원문 URL, 출처 정밀도, 원문 확인일을 모두 갖도록 회귀 기준을 추가했다.
+- 의도적 채널 미리보기/hidden 462개와 정상 사용자 실행 후보 155개를 같은 최신성 분모로 계산하지 않는다.
+- 정상 사용자 실행 후보 155개는 원문 URL, 출처 정밀도, 원문 확인일을 모두 갖도록 회귀 기준을 추가했다.
 - 기존 확인일 누락 8개는 2026-07-11 원문 생존/주제 적합성을 다시 확인하고 `exact` 5개, `broad` 3개로 기록했다.
 - 공개 `/u/flow-curation-team`은 75개 전체를 기본 노출하지 않고, 실제 원문 7개와 대표 Flow 1개만 먼저 보여준다. 검토 중 60개와 샘플 6개는 명시적 필터를 선택해야 보인다.
 - 개인 `/u/my-flow-studio`는 초안 선반이므로 기존 전체/초안 기본 동작을 유지한다.
+- live URL 감사에서 최초 404 6개와 redirect 5개를 0으로 줄였다. 삭제·불안정·source row 미확인 콘텐츠 6개는 preview로 이동했고, 2016/2025 고정 자료와 시점 고정 정책 수치는 현재 공식 안내로 교체했다.
 
 판정: **기본 공개 표면의 오래된/미검토 콘텐츠 혼입은 자동 QA 기준 개선 완료. 외부 원문 변경을 잡는 주기적 재확인은 계속 필요.**
 
@@ -209,6 +210,7 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [자동 회귀 기준선 복구 감사](./2026-07-11-flowme-automated-regression-recovery-audit-ko.md)
 - [public 공유 save-first 일관성 evidence](./2026-07-11-flowme-public-save-first-consistency-evidence/README.md)
 - [공개 콘텐츠 최신성·기본 노출 evidence](./2026-07-11-flowme-content-freshness-evidence/README.md)
+- [정상 사용자 콘텐츠 출처 도달성 evidence](./2026-07-11-flowme-live-source-reachability-evidence/README.md)
 - [route lifecycle·indexing evidence](./2026-07-11-flowme-route-lifecycle-indexing-evidence/README.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 

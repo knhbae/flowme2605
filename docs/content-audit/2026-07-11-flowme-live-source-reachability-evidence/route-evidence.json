@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-11",
+  "policy": {
+    "routeScope": "published normal-user routes only; catalog_preview and hidden excluded",
+    "hardBrokenBuckets": ["not_found"],
+    "redirectRequiresCanonicalRefresh": true,
+    "blockedOrNetworkErrorRequiresManualReview": true,
+    "networkReachabilityDoesNotProveSemanticFreshness": true
+  },
+  "before": {
+    "normalUserRouteCount": 161,
+    "uniqueSourceUrlCount": 140,
+    "reachableCount": 120,
+    "redirectedCount": 5,
+    "notFoundCount": 6,
+    "accessBlockedCount": 2,
+    "networkErrorCount": 7,
+    "manualReviewCount": 20
+  },
+  "after": {
+    "normalUserRouteCount": 155,
+    "uniqueSourceUrlCount": 133,
+    "domainCount": 77,
+    "reachableCount": 126,
+    "redirectedCount": 0,
+    "notFoundCount": 0,
+    "serverErrorCount": 0,
+    "requestErrorCount": 0,
+    "timeoutCount": 0,
+    "accessBlockedCount": 2,
+    "networkErrorCount": 5,
+    "hardBrokenCount": 0,
+    "manualReviewCount": 7
+  },
+  "previewDemotions": {
+    "count": 6,
+    "slugs": [
+      "digital-detox-weekly",
+      "japan-esim-setup-before-departure",
+      "kids-dino-footprint-art",
+      "new-apartment-precheck",
+      "new-hobby-30day",
+      "picture-book-reading-routine"
+    ]
+  },
+  "semanticFreshnessCorrections": {
+    "fixedYearHealthGuideRemoved": true,
+    "fixedQuarterPolicyFundNumbersRemoved": true,
+    "unsupportedDigitalDetoxMedicalClaimRemoved": true,
+    "oldWorknetCopyRemoved": true
+  },
+  "manualVerification": {
+    "urlCount": 7,
+    "verifiedBy": "web open/search on 2026-07-11",
+    "hardBrokenAfterManualReview": 0,
+    "observedUserSessionCount": 0
+  },
+  "validation": {
+    "sourceReachabilityStrictPassed": true,
+    "sourceFreshnessAuditPassed": true,
+    "seedFlowTargetedTestsPassed": 57,
+    "fullUnitTestsPassed": 397,
+    "targetedE2ePassed": 53,
+    "docsCheckPassed": true,
+    "buildPassed": true,
+    "mobileVisualChecksPassed": 3,
+    "wideVisualChecksPassed": 1,
+    "visualHorizontalOverflowCount": 0
+  }
+}

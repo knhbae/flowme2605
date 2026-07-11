@@ -10,6 +10,11 @@ import { inferPrimaryDestination } from './destination';
 import { normalizeExecutionModel } from './execution-model';
 import { seedBundles } from './seed-flows';
 import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
+import {
+  classifySourceReachability,
+  sourceReachabilityIsHardBroken,
+  sourceReachabilityNeedsManualReview,
+} from './source-reachability';
 import { virtualUsers } from './users';
 
 const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMap((bundle) =>
@@ -1166,6 +1171,37 @@ test('standard source freshness gate rejects future and malformed review metadat
   ]);
 });
 
+test('source reachability policy separates hard link rot from redirects and external blocking', () => {
+  assert.equal(
+    classifySourceReachability({
+      sourceUrl: 'https://example.com/source',
+      finalUrl: 'https://example.com/source',
+      status: 200,
+    }),
+    'reachable',
+  );
+  assert.equal(
+    classifySourceReachability({
+      sourceUrl: 'https://example.com/source',
+      finalUrl: 'https://example.org/current',
+      status: 200,
+    }),
+    'redirected',
+  );
+  assert.equal(
+    classifySourceReachability({ sourceUrl: 'https://example.com/source', status: 403 }),
+    'access_blocked',
+  );
+  assert.equal(
+    classifySourceReachability({ sourceUrl: 'https://example.com/source', status: 404 }),
+    'not_found',
+  );
+  assert.equal(sourceReachabilityIsHardBroken('not_found'), true);
+  assert.equal(sourceReachabilityIsHardBroken('access_blocked'), false);
+  assert.equal(sourceReachabilityNeedsManualReview('redirected'), true);
+  assert.equal(sourceReachabilityNeedsManualReview('reachable'), false);
+});
+
 test('published user routes record source freshness while preview library stays separate', () => {
   const published = seedBundles.filter((bundle) => bundle.flow.status === 'published');
   const userRoutes = published.filter((bundle) => {
@@ -1177,8 +1213,22 @@ test('published user routes record source freshness while preview library stays 
     return exposure === 'catalog_preview' || exposure === 'hidden';
   });
 
-  assert.ok(userRoutes.length >= 140);
+  assert.ok(userRoutes.length >= 130);
   assert.ok(previewOrHidden.length >= 400);
+
+  const demotedPreviewSlugs = [
+    'digital-detox-weekly',
+    'japan-esim-setup-before-departure',
+    'kids-dino-footprint-art',
+    'new-apartment-precheck',
+    'new-hobby-30day',
+    'picture-book-reading-routine',
+  ];
+  for (const slug of demotedPreviewSlugs) {
+    const bundle = published.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, `${slug} missing`);
+    assert.equal(normalizeExecutionModel(bundle).exposureStatus, 'catalog_preview', slug);
+  }
 
   for (const bundle of userRoutes) {
     assert.ok(bundle.flow.source_url?.startsWith('https://'), `${bundle.flow.slug} missing source_url`);

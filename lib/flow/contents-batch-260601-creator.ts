@@ -297,7 +297,8 @@ const specs: BatchSpec[] = [
       risk_level: 'financial_sensitive',
       primary_destination: 'sheet',
       source_title: '토스피드 – 통장쪼개기로 적정소비하는 법',
-      source_url: 'https://blog.toss.im/article/bank-account-divide',
+      source_url: 'https://toss.im/tossfeed/article/bank-account-divide',
+      source_checked_at: '2026-07-11',
       conversion_note: '토스피드 통장 쪼개기 가이드(선 이체·후 소비, 급여·생활비·저축·비상금 4개 통장)를 월급날 루틴 체크리스트로 전환했습니다. (이전 howtomanage-salary URL은 확인 불가로 검증된 통장쪼개기 글로 교체)',
       warning: '이 Flow는 지출 분리와 기록 습관을 돕는 체크리스트이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.',
       tags: ['재테크', '월급', '재무루틴', 'reference'],
@@ -308,7 +309,7 @@ const specs: BatchSpec[] = [
 - 월급 입금 확인하고 실수령액 기록하기
   why: 세후 실수령액을 기록해야 이번 달 가용 예산을 정확하게 알 수 있습니다.
   done: 실수령액을 시트에 기록했다.
-  link: 토스피드 통장 쪼개기 가이드 | https://blog.toss.im/article/bank-account-divide | reference
+  link: 토스피드 통장 쪼개기 가이드 | https://toss.im/tossfeed/article/bank-account-divide | reference
   caution: 투자·금융상품 선택은 이 Flow에서 다루지 않습니다. 기록과 분리가 목적입니다.
 
 ## 2. 고정지출·저축 이체
@@ -645,11 +646,14 @@ const specs: BatchSpec[] = [
       structure_type: 'timeline',
       anchor_type: 'start_date',
       status: 'published',
+      source_status: 'preview',
+      source_precision: 'broad',
+      source_checked_at: '2026-07-11',
       risk_level: 'low',
       primary_destination: 'calendar',
       source_title: '클래스101 – 취미 클래스 / 90일 습관 챌린지 가이드',
-      source_url: 'https://class101.net',
-      conversion_note: '클래스101 취미 클래스와, WebSearch로 확인되는 습관 형성 연구(행동 자동화 평균 약 66일, 개인차 18~254일)를 30일 실행 계획으로 전환했습니다. (출처 미상 블로그의 "완주율 23%·체크리스트 3.2배" 수치는 검증 불가로 제거)',
+      source_url: 'https://class101.net/ko',
+      conversion_note: '현재 출처는 취미 클래스 플랫폼의 넓은 랜딩으로 30일 실행 행을 직접 뒷받침하지 못합니다. 구체적인 커리큘럼 출처를 연결하기 전까지 preview로 유지합니다.',
       tags: ['취미', '자기계발', '클래스', 'reference'],
     },
     text: `## 시작 전 준비
@@ -657,7 +661,7 @@ const specs: BatchSpec[] = [
   why: 막연하게 시작하면 첫 주에 방향을 잃기 쉽습니다. 행동이 습관으로 자동화되는 데는 평균 약 66일(개인차 18~254일)이 걸리므로, 30일은 "완성"이 아니라 흐름을 만드는 출발 구간으로 잡습니다.
   how: 클래스101 등에서 커리큘럼과 난이도를 보고 하나를 선택합니다. '최소 실행 기준'(예: 하루 10분)을 먼저 정하고 완벽함 대신 무조건 실행을 원칙으로 삼습니다.
   done: 취미 종류와 사용할 강의·자료를 결정했다.
-  link: 클래스101 | https://class101.net | reference
+  link: 클래스101 | https://class101.net/ko | reference
 - 최소 재료·도구만 파악해 준비하기 D+0~D+1
   why: 처음부터 많이 사면 쓰지 않을 수 있습니다. 기본 도구만 먼저 준비합니다.
   done: 최소 준비물을 구매하거나 준비했다.
@@ -819,12 +823,15 @@ const specs: BatchSpec[] = [
       structure_type: 'routine',
       anchor_type: 'start_date',
       status: 'published',
+      source_status: 'preview',
+      source_precision: 'broad',
+      source_checked_at: '2026-07-11',
       risk_level: 'low',
       primary_destination: 'calendar',
       routine_duration_days: 28,
       source_title: 'honeulstudio – 디지털 디톡스가 필요한 이유(스마트폰 의존 줄이는 현실적인 방법)',
       source_url: 'https://honeulstudio.com/%EB%94%94%EC%A7%80%ED%84%B8-%EB%94%94%ED%86%A1%EC%8A%A4%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%9C-%EC%9D%B4%EC%9C%A0-%EC%8A%A4%EB%A7%88%ED%8A%B8%ED%8F%B0-%EC%9D%98%EC%A1%B4-%EC%A4%84%EC%9D%B4%EB%8A%94/',
-      conversion_note: '디지털 디톡스 가이드(점진적 접근·시간 제한·대체 활동)를 주간 디톡스 루틴으로 전환했습니다.',
+      conversion_note: '기존 원문이 404로 확인되어 공개 노출을 중단했습니다. 대체 출처에서 시간 제한·대체 활동 행을 다시 확인하기 전까지 preview로 유지합니다.',
       tags: ['디지털', '디톡스', '생활습관', 'reference'],
     },
     text: `@주 1회 점검
@@ -832,7 +839,7 @@ const specs: BatchSpec[] = [
 
 ## 매일 실천
 - 취침 1시간 전 스마트폰 알림 끄기
-  why: 잠들기 1~2시간 전 화면을 멀리하면 멜라토닌 분비가 정상화돼 숙면에 도움이 됩니다. 2주간 디지털 디톡스를 실천한 사람은 항우울제에 준하는 행복감·만족감 개선 효과를 보였다는 보고가 있습니다.
+  why: 취침 전에 알림과 화면 사용을 줄이면 정해 둔 취침 루틴을 방해하는 자극을 낮추는 데 도움이 될 수 있습니다.
   done: 오늘 취침 1시간 전 알림을 껐다.
   link: honeulstudio 디지털 디톡스 가이드 | https://honeulstudio.com/%EB%94%94%EC%A7%80%ED%84%B8-%EB%94%94%ED%86%A1%EC%8A%A4%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%9C-%EC%9D%B4%EC%9C%A0-%EC%8A%A4%EB%A7%88%ED%8A%B8%ED%8F%B0-%EC%9D%98%EC%A1%B4-%EC%A4%84%EC%9D%B4%EB%8A%94/ | reference
 - SNS 사용 시간 하루 총 X분 이하로 목표 설정하기

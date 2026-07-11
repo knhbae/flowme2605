@@ -129,8 +129,8 @@ test('content lab exposes source-fit audit summary for representative cleanup', 
   assert.equal(summary.sourceFitAuditedCount, 90);
   assert.ok(summary.sourceFitAverageScore >= 70);
   assert.equal(summary.sourceFitDecisionCounts.keep_representative, 15);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 70);
-  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 5);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 66);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 9);
 });
 
 test('content lab exposes full content inventory coverage', () => {
@@ -145,10 +145,10 @@ test('content lab exposes full content inventory coverage', () => {
     summary.sourceBackedInventoryReviewedCount,
     summary.manualSourceFitAuditedCount + summary.derivedRealSourceReviewedCount + summary.sourceNeedsReviewInventoryCount,
   );
-  assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount);
-  assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 440);
-  // 2026-06-01 공식출처(24개) + 크리에이터·블로그(20개) = 44개가 needs_review로 추가됨(audit 전, 보강 필요).
-  assert.equal(summary.sourceNeedsReviewInventoryCount, 44);
+  // Two broad batch sources moved beside the generated preview library.
+  assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount + 2);
+  assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 442);
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 42);
   assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
@@ -176,10 +176,10 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
   assert.equal(countSum, seedBundles.length);
   assert.equal(summary.lifecycleBucketCounts.keep, 15);
   assert.equal(summary.lifecycleBucketCounts.hide, 1);
-  assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount);
+  assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount + 2);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  // Merged branch adds the 260601 official/creator batches on top of the current source-fit queue.
-  assert.equal(summary.lifecycleBucketCounts.fix, 118 + summary.curatedSourceAppSeedInventoryCount);
+  // Two broad batch sources moved from fix to preview after the live-source audit.
+  assert.equal(summary.lifecycleBucketCounts.fix, 116 + summary.curatedSourceAppSeedInventoryCount);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
@@ -189,15 +189,14 @@ test('content lab tracks the 2026-06-01 official batch as the next source review
   const summary = getContentLabSummary(seedBundles);
   const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
 
-  // 공식출처(24개) + 크리에이터·블로그(20개) = 44개가 needs_review audit 큐를 채운다.
-  // 비민감 30개 → audit_now, 재무민감 14개 → risk_review.
-  assert.equal(summary.sourceReviewPriorityTotalCount, 44);
-  assert.equal(countSum, 44);
-  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 30);
-  assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 0);
-  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 14);
+  // The remaining review queue excludes the two sources demoted to preview.
+  assert.equal(summary.sourceReviewPriorityTotalCount, 42);
+  assert.equal(countSum, 42);
+  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 28);
+  assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 1);
+  assert.equal(summary.sourceReviewPriorityCounts.risk_review, 13);
   assert.equal(summary.sourceReviewPriorityCounts.content_backlog, 0);
-  assert.equal(summary.sourceReviewPriorityItems.length, 44);
+  assert.equal(summary.sourceReviewPriorityItems.length, 42);
 });
 
 test('content lab exposes broad real-source guardrails', () => {

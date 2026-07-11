@@ -93,8 +93,8 @@ test('source-fit summary captures keep, reshape, and preview decisions', () => {
   assert.equal(summary.auditedCount, 90);
   assert.ok(summary.averageScore >= 70);
   assert.equal(summary.decisionCounts.keep_representative, 15);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 70);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 5);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 66);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 9);
 });
 
 test('computer skills final QA promotes the route to representative source fit', () => {
@@ -183,8 +183,6 @@ test('source-fit audit covers promoted category representative routes', () => {
     'chiangmai-solo-trip-packing',
     'lease-contract-report-deadline',
     'jeonse-contract-precheck-docs',
-    'picture-book-reading-routine',
-    'kids-dino-footprint-art',
     'banana-peanut-recipe-video',
   ];
 
@@ -198,5 +196,17 @@ test('source-fit audit covers promoted category representative routes', () => {
     assert.ok(audit.currentGap.length > 0, slug);
     assert.ok(audit.contentAction.length > 0, slug);
     assert.ok(audit.uxAction.length > 0, slug);
+  }
+
+  for (const slug of [
+    'new-apartment-precheck',
+    'japan-esim-setup-before-departure',
+    'picture-book-reading-routine',
+    'kids-dino-footprint-art',
+  ]) {
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit, slug);
+    assert.equal(audit.sourcePrecision, 'broad', slug);
+    assert.equal(audit.decision, 'catalog_preview_only', slug);
   }
 });

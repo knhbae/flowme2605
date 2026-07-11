@@ -490,7 +490,7 @@ export const koreanFlowContentCandidates: KoreanFlowContentCandidate[] = [
     category: '육아/행정',
     fitScore: 4.5,
     sourceTitle: '국민건강보험 건강iN 영유아 건강검진 웹 서비스 안내',
-    sourceUrl: 'https://www.nhis.or.kr/magazin/mobile/201604/c09.html',
+    sourceUrl: 'https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do',
     sourceType: 'official',
     demandSignal: '검진 기간, 기관 예약, 문진표/발달선별 작성, 등록번호 전달처럼 부모가 방문 전에 놓치기 쉬운 준비 행동이 있다.',
     sourceSignal: '원문은 검진 시기 확인, 웹 문진표/발달선별검사지 작성, 등록번호 저장, 검진기관 예약과 방문 절차를 순서대로 안내한다.',

@@ -301,9 +301,9 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-kdca-travel-health-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '질병관리청 해외여행 전 건강정보',
-    sourceUrl: 'https://www.kdca.go.kr/menu.es?mid=a20102060200',
+    sourceUrl: 'https://kdca.go.kr/kdca/4916/subview.do',
     sourceEvidence: [
       '질병관리청 페이지는 국가별 위험요인 확인, 예방접종/예방약/구급약 준비, 필요 시 의사 상담을 안내한다.',
       '예방접종은 여행 직전이 아니라 여유 있게 준비해야 하므로 출국일 기준 건강 준비 달력이 자연스럽다.',
@@ -1288,7 +1288,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
     slug: 'real-safe-driving-license-renewal',
     checkedAt: '2026-05-22',
     sourceTitle: '한국도로교통공단 운전면허증 발급 가이드',
-    sourceUrl: 'https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111o',
+    sourceUrl: 'https://www.safedriving.or.kr/diGuide/selectDiGuide18.do?menuCd=MN-PO-12111',
     sourceEvidence: [
       '안전운전 통합민원은 적성검사와 갱신, 재발급, 국제운전면허증 등 유형별 수수료와 준비물, 인터넷/대리접수 가능 여부를 구분해 안내한다.',
       '적성검사는 운전면허증, 6개월 이내 여권용 사진 2매, 건강검진결과 활용 가능성, 신체검사장 유무 같은 조건이 필요하다.',

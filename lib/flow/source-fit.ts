@@ -396,8 +396,8 @@ export const sourceFitAudits: SourceFitAudit[] = [
   defineAudit({
     slug: 'used-car-buying-check',
     checkedAt: '2026-07-11',
-    sourceTitle: '중고차 구매 체크리스트 완벽 가이드',
-    sourceUrl: 'https://www.drive-insight.net/posts/used-car-buying-checklist-ko/',
+    sourceTitle: '자동차365 중고차 구매가이드',
+    sourceUrl: 'https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y',
     sourcePrecision: 'exact',
     sourceUsefulness: '원본은 구매 전 조사, 방문 준비, 현장 검사, 계약 전 확인이 단계화되어 있어 체크리스트와 비교표에 적합하다.',
     idealReconstruction: '차량 후보별 비교표, 현장 체크리스트, 증거 사진/메모, 계약 전 확인표로 재구성한다.',
@@ -1368,9 +1368,9 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'national-health-checkup-d7',
-    checkedAt: '2026-05-23',
-    sourceTitle: '국민건강보험 2025년 건강검진 안내',
-    sourceUrl: 'https://www.nhis.or.kr/static/html/wbma/c/wbhaca04500_2025_1.pdf',
+    checkedAt: '2026-07-11',
+    sourceTitle: '국민건강보험 일반건강검진 안내',
+    sourceUrl: 'https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do',
     sourcePrecision: 'exact',
     sourceUsefulness: '검진 전 예약, 금식, 문진표, 수면내시경 이동 주의가 명확해 D-7 준비 달력으로 적합하지만 의료 판단은 분리해야 한다.',
     idealReconstruction: '검진일, 예약기관, 내시경 여부, 복용약 여부, 이동방법을 받아 준비 달력과 의료진 확인 질문 memo를 만든다.',
@@ -1473,10 +1473,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'new-apartment-precheck',
-    checkedAt: '2026-06-04',
+    checkedAt: '2026-07-11',
     sourceTitle: '신축 아파트 입주 사전점검 체크리스트 참고',
     sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=juniorhome&logNo=223358772350',
-    sourcePrecision: 'exact',
+    sourcePrecision: 'broad',
     sourceUsefulness:
       '입주 사전점검은 준비물, 공간별 하자 확인, 보수 요청 목록 전달이라는 실행 단위가 분명해서 체크리스트 Flow stress fixture로 적합하다. 다만 사용자가 원문을 수동 확인하기 전까지는 대표 콘텐츠로 확정하지 않는다.',
     idealReconstruction:
@@ -1509,7 +1509,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
       '사용자가 원문을 확인한 뒤 실제 글에 없는 상세 문구를 제거하고 준비물/공간별 점검/보수 요청만 남긴다.',
     uxAction:
       '체크리스트 Flow에서 첨부, 하자 사진, 위치 기록은 더보기 또는 선택 메모로 내려 입력 복잡도를 낮춘다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 13,
       temporalStructure: 10,
@@ -1523,10 +1523,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'japan-esim-setup-before-departure',
-    checkedAt: '2026-06-04',
+    checkedAt: '2026-07-11',
     sourceTitle: '일본 eSIM 사용 후기와 설치 순서 참고',
     sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=travelnote_jp&logNo=223529001204',
-    sourcePrecision: 'exact',
+    sourcePrecision: 'broad',
     sourceUsefulness:
       'eSIM은 구매, 기기 지원 확인, QR 설치, 공항 도착 후 회선 전환이라는 단계가 날짜와 강하게 연결되어 calendar+memo Flow 검증에 적합하다. 원문 수동 확인 전까지는 보강 대상으로 둔다.',
     idealReconstruction:
@@ -1559,7 +1559,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
       '사용자 원문 확인 후 구매/설치/회선 전환에 직접 연결되지 않는 설명을 제거하고 링크 메모 중심으로 정리한다.',
     uxAction:
       '여행 준비 Flow에서는 장소/첨부보다 날짜, 링크, 메모를 우선 노출하고 나머지는 더보기로 내린다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 13,
       temporalStructure: 14,
@@ -2026,9 +2026,9 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'infant-health-checkup-prep',
-    checkedAt: '2026-06-08',
-    sourceTitle: '국민건강보험 건강iN 영유아 건강검진 웹 서비스 안내',
-    sourceUrl: 'https://www.nhis.or.kr/magazin/mobile/201604/c09.html',
+    checkedAt: '2026-07-11',
+    sourceTitle: '국민건강보험 영유아 건강검진 안내',
+    sourceUrl: 'https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do',
     sourcePrecision: 'exact',
     sourceUsefulness:
       '검진 가능 기간, 검진기관 예약, 웹 문진표와 발달선별검사지, 등록번호 전달처럼 방문 전 준비 행동이 공식 안내에 분리되어 있다.',
@@ -2247,11 +2247,11 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'picture-book-reading-routine',
-    checkedAt: '2026-06-08',
+    checkedAt: '2026-07-11',
     sourceTitle: '토토북 그림책 독서 지도안',
     sourceUrl:
       'https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf',
-    sourcePrecision: 'exact',
+    sourcePrecision: 'broad',
     sourceUsefulness:
       '그림책 표지 보기, 질문 카드, 함께 읽기, 아이가 고른 장면 짚기처럼 독서 루틴 안에서 바로 쓸 수 있는 상호작용 단서가 있다.',
     idealReconstruction:
@@ -2278,7 +2278,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
       '질문은 1개씩만 노출하고 점수, 평가, 발달 기록 필드는 추가하지 않는다.',
     uxAction:
       '루틴 상세에서 오늘 질문 카드와 읽기 완료가 먼저 보이고 원문 PDF 링크는 참고로 둔다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 11,
       temporalStructure: 12,
@@ -2292,11 +2292,11 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'kids-dino-footprint-art',
-    checkedAt: '2026-06-08',
+    checkedAt: '2026-07-11',
     sourceTitle: '유아 공룡 놀이 자료 참고',
     sourceUrl:
       'https://info.childcare.go.kr/info/pnis/search/PnisFileDownload.jsp?STCODE_POP=41480000016&filetype=YUPLOADU&flag=DNGB&schoolyear=2026&wkyear=202604',
-    sourcePrecision: 'exact',
+    sourcePrecision: 'broad',
     sourceUsefulness:
       '공룡 놀이 준비물, 발자국 찍기, 이야기 만들기, 다음 놀이 고르기처럼 주말 놀이 실행 순서로 줄일 수 있는 단서가 있다.',
     idealReconstruction:
@@ -2323,7 +2323,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
       '준비물, 놀이, 한 줄 메모, 정리만 유지하고 사진 증빙/발달 평가/교육 효과 문구를 제거한다.',
     uxAction:
       '체크리스트 표면에서 준비물과 당일 실행을 먼저 보이고 기록은 선택 메모로 둔다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 11,
       temporalStructure: 9,
