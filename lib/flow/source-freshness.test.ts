@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { getPreviewFlowBundles } from './creator-channel-preview';
+import { isRuntimeExcludedBundle } from './runtime-content-policy';
 import { seedBundles } from './seed-flows';
 import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
 import type { FlowBundle } from './types';
@@ -63,10 +64,11 @@ test('preview library is excluded from normal user route freshness failures', ()
 });
 
 test('current canonical seed has no missing or overdue normal user source checks', () => {
-  const summary = summarizeFlowSourceFreshness(seedBundles, new Date());
+  const runtimeBundles = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
+  const summary = summarizeFlowSourceFreshness(runtimeBundles, new Date());
 
   assert.ok(summary.normalUserRouteCount >= 130);
-  assert.ok(summary.previewOrHiddenCount >= 20);
+  assert.ok(summary.previewOrHiddenCount >= 18);
   assert.equal(summary.missingMetadataCount, 0);
   assert.equal(summary.reviewDueCount, 0);
   assert.equal(summary.staleCount, 0);

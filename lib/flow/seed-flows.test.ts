@@ -10,6 +10,7 @@ import { internalReviewBundles } from './internal-review-inventory';
 import { inferPrimaryDestination } from './destination';
 import { normalizeExecutionModel } from './execution-model';
 import { getPublicFlowIndexingPolicy } from './route-indexing-policy';
+import { isRuntimeExcludedBundle, RUNTIME_ARCHIVED_FLOW_SLUGS } from './runtime-content-policy';
 import { seedBundles } from './seed-flows';
 import { mergeSourceBackedMyFlowBundles } from './source-backed-my-flow';
 import {
@@ -31,6 +32,7 @@ const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMa
   bundle.flows.map((flow) => flow.slug),
 );
 const previewFlowBundles = getPreviewFlowBundles();
+const runtimeSeedBundles = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
   assert.ok(seedBundles.length >= 150);
@@ -98,6 +100,14 @@ test('curated source app seed bundles are part of the canonical seed pack', () =
     assert.equal(recommended.itemDetails?.length, recommended.items.length, contentBundle.bundleId);
     assert.ok(recommended.items.length >= 1, contentBundle.bundleId);
   }
+});
+
+test('runtime content policy archives unsupported public routes without deleting canonical review records', () => {
+  const canonicalSlugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
+  const runtimeSlugs = new Set(runtimeSeedBundles.map((bundle) => bundle.flow.slug));
+
+  assert.deepEqual(RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => !canonicalSlugs.has(slug)), []);
+  assert.deepEqual(RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => runtimeSlugs.has(slug)), []);
 });
 
 test('baby food seed keeps meal slots, recipes, caution, and reaction-log affordance data', () => {
@@ -1208,7 +1218,7 @@ test('source reachability policy separates hard link rot from redirects and exte
 });
 
 test('source reachability targets include user-facing item detail links', () => {
-  const published = mergeSourceBackedMyFlowBundles(seedBundles).filter(
+  const published = mergeSourceBackedMyFlowBundles(runtimeSeedBundles).filter(
     (bundle) => bundle.flow.status === 'published',
   );
   const userRoutes = published.filter((bundle) => {
@@ -1259,7 +1269,7 @@ test('manual source-fit approval clears stale source review status', () => {
 });
 
 test('public Flow indexing exposes only source-fit approved or exact real-source pages', () => {
-  const published = mergeSourceBackedMyFlowBundles(seedBundles).filter(
+  const published = mergeSourceBackedMyFlowBundles(runtimeSeedBundles).filter(
     (bundle) => bundle.flow.status === 'published',
   );
   const indexable = published.filter((bundle) => getPublicFlowIndexingPolicy(bundle).indexable);
@@ -1267,7 +1277,7 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
   assert.equal(indexable.length, 77);
-  assert.equal(reviewOnly.length, 100);
+  assert.equal(reviewOnly.length, 96);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
@@ -1284,7 +1294,10 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('payday-finance-routine')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('health-insurance-dependent')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('book-finish-one')!).indexable, false);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('skin-weekly-check')!).indexable, false);
+  assert.deepEqual(RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => bySlug.has(slug)), []);
+  const archivedSkin = seedBundles.find((bundle) => bundle.flow.slug === 'skin-weekly-check');
+  assert.ok(archivedSkin);
+  assert.equal(getPublicFlowIndexingPolicy(archivedSkin).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('citizen-secretary-alerts')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('domestic-trip-d7')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-baby-vaccination-schedule')!).indexable, false);

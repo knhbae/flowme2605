@@ -1,12 +1,13 @@
 {
-  "generatedAt": "2026-07-11T17:45:39.664Z",
+  "generatedAt": "2026-07-11T18:40:15.674Z",
   "baseUrl": "http://127.0.0.1:3112",
   "summary": {
-    "runtimeSeedBundleCount": 153,
+    "canonicalSeedBundleCount": 153,
+    "runtimeSeedBundleCount": 149,
     "sourceBackedProjectionCount": 24,
-    "runtimePublishedRouteCount": 177,
+    "runtimePublishedRouteCount": 173,
     "publicIndexableCount": 77,
-    "publicReviewGatedCount": 100,
+    "publicReviewGatedCount": 96,
     "internalSeedInventoryCount": 593,
     "internalPublishedInventoryCount": 617,
     "generatedPreviewInternalIdCount": 440,
@@ -14,7 +15,11 @@
     "generatedPreviewRuntimeCount": 0,
     "generatedPreviewPublicRouteStatus": 404,
     "normalRouteGeneratedPreviewLinkCount": 0,
+    "archivedRuntimeFlowCount": 4,
+    "archivedRuntimePublicRoute404Count": 4,
+    "normalRouteArchivedFlowLinkCount": 0,
     "legacyPreviewMigrationRemainingCount": 0,
+    "archivedRuntimeMigrationRemainingCount": 0,
     "userDraftMigrationPreserved": true,
     "approvedPublicRouteStatus": 200,
     "approvedPublicRouteNoindex": false,
@@ -27,20 +32,21 @@
     "normalSourceReviewDueCount": 0,
     "normalSourceStaleCount": 0,
     "normalSourceMissingMetadataCount": 0,
-    "screenshotCount": 13,
+    "screenshotCount": 14,
     "horizontalOverflowCount": 0
   },
   "policy": {
     "publicApproved": "indexable and executable public Flow",
     "reviewGated": "direct-access noindex route with save and export actions disabled until review approval",
+    "runtimeArchived": "explicit hide or unsupported-source preview; internal inventory preserved, runtime storage and public route removed",
     "internalGeneratedPreview": "internal review inventory only; excluded from runtime seed, browser storage, and public routes"
   },
   "counts": {
     "runtimeSourceStatus": {
       "unclassified": 9,
-      "preview": 14,
-      "needs_review": 36,
-      "real": 94
+      "preview": 12,
+      "needs_review": 35,
+      "real": 93
     },
     "internalSourceStatus": {
       "unclassified": 9,
@@ -50,15 +56,15 @@
     },
     "publicIndexingReason": {
       "manual_source_fit_approved": 46,
-      "source_fit_review_required": 86,
-      "source_review_pending": 14,
+      "source_fit_review_required": 84,
+      "source_review_pending": 12,
       "exact_real_source": 31
     },
     "runtimeLifecycle": {
       "keep": 46,
       "fix": 103,
-      "preview_only": 2,
-      "hide": 2,
+      "preview_only": 0,
+      "hide": 0,
       "remove_candidate": 0
     },
     "internalLifecycle": {
@@ -69,11 +75,11 @@
       "remove_candidate": 0
     },
     "runtimeInventoryLevels": {
-      "manual_source_fit": 132,
+      "manual_source_fit": 130,
       "derived_real_source": 0,
       "curated_source_app_seed": 19,
       "source_needs_review": 0,
-      "generated_preview_candidate": 2,
+      "generated_preview_candidate": 0,
       "legacy_accessible": 0
     },
     "internalInventoryLevels": {
@@ -86,8 +92,9 @@
     }
   },
   "migrationResult": {
-    "storedCount": 154,
+    "storedCount": 150,
     "generatedPreviewRemainingCount": 0,
+    "archivedRuntimeRemainingCount": 0,
     "userDraftPreserved": true
   },
   "scenarios": [
@@ -100,6 +107,7 @@
       "status": 200,
       "robots": null,
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-mobile.png"
     },
@@ -112,6 +120,7 @@
       "status": 200,
       "robots": null,
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-wide.png"
     },
@@ -124,6 +133,7 @@
       "status": 200,
       "robots": null,
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-mobile.png"
     },
@@ -136,6 +146,7 @@
       "status": 200,
       "robots": null,
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-wide.png"
     },
@@ -148,6 +159,7 @@
       "status": 200,
       "robots": "index, follow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-mobile.png"
     },
@@ -160,6 +172,7 @@
       "status": 200,
       "robots": "index, follow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-wide.png"
     },
@@ -172,6 +185,7 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/review-gate-mobile.png"
     },
@@ -184,6 +198,7 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/review-gate-wide.png"
     },
@@ -196,6 +211,7 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-mobile.png"
     },
@@ -208,6 +224,7 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-wide.png"
     },
@@ -220,6 +237,7 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-mobile.png"
     },
@@ -232,6 +250,7 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-wide.png"
     }
@@ -241,6 +260,28 @@
     "status": 404,
     "screenshot": "screenshots/generated-preview-404-mobile.png"
   },
+  "archivedRuntimeRoutes": [
+    {
+      "slug": "digital-detox-weekly",
+      "status": 404,
+      "screenshot": "screenshots/archived-flow-404-mobile.png"
+    },
+    {
+      "slug": "new-hobby-30day",
+      "status": 404,
+      "screenshot": null
+    },
+    {
+      "slug": "real-fitvely-weekly-body-check",
+      "status": 404,
+      "screenshot": null
+    },
+    {
+      "slug": "skin-weekly-check",
+      "status": 404,
+      "screenshot": null
+    }
+  ],
   "reviewGatedRoutes": [
     {
       "slug": "new-apartment-precheck",
@@ -656,13 +697,6 @@
       "indexingReason": "source_fit_review_required"
     },
     {
-      "slug": "real-fitvely-weekly-body-check",
-      "title": "FITVELY 주간 바디 체크 Flow",
-      "sourceStatus": "real",
-      "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
-    },
-    {
       "slug": "real-sinagong-computer-d30-study",
       "title": "시나공 컴활 D-30 학습 Flow",
       "sourceStatus": "real",
@@ -817,13 +851,6 @@
       "indexingReason": "source_fit_review_required"
     },
     {
-      "slug": "skin-weekly-check",
-      "title": "주간 피부 상태 관찰 Flow",
-      "sourceStatus": "needs_review",
-      "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
-    },
-    {
       "slug": "domestic-trip-d7",
       "title": "국내여행 짐 준비 Flow",
       "sourceStatus": "real",
@@ -831,25 +858,11 @@
       "indexingReason": "source_fit_review_required"
     },
     {
-      "slug": "new-hobby-30day",
-      "title": "새 취미 30일 시작 Flow",
-      "sourceStatus": "preview",
-      "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_review_pending"
-    },
-    {
       "slug": "morning-routine-30day",
       "title": "나만의 아침 루틴 시작 Flow",
       "sourceStatus": "needs_review",
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required"
-    },
-    {
-      "slug": "digital-detox-weekly",
-      "title": "디지털 디톡스 주간 루틴 Flow",
-      "sourceStatus": "preview",
-      "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_review_pending"
     },
     {
       "slug": "dog-walk-routine",

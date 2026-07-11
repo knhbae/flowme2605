@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
+import { isRuntimeExcludedBundle } from './runtime-content-policy';
 import { seedBundles } from './seed-flows';
 import {
   getFlowRouteIndexingTier,
@@ -464,7 +465,7 @@ test('prototype guardrail helpers lock positive and negative display cases', () 
 
 test('canonical seed and source-backed user-facing text pass display guardrails without route registration', () => {
   const subjects = [
-    ...seedBundles,
+    ...seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle)),
     ...getSourceBackedHomepageFlowMaps(),
     ...getCuratedSourceAppSeedFlowMaps(),
   ];

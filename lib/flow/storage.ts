@@ -1,5 +1,5 @@
 import { seedBundles } from './seed-flows';
-import { isGeneratedPreviewBundle } from './runtime-content-policy';
+import { isRuntimeExcludedBundle } from './runtime-content-policy';
 import {
   buildSourceBackedFlowMapPersistenceRecordUpdate,
   getSourceBackedFlowMapPersistenceStorageKey,
@@ -172,13 +172,13 @@ function canUseStorage(): boolean {
 }
 
 export function cloneSeedBundles(): FlowBundle[] {
-  return JSON.parse(JSON.stringify(seedBundles)) as FlowBundle[];
+  return JSON.parse(JSON.stringify(seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle)))) as FlowBundle[];
 }
 
 export function mergeSeedBundles(stored: FlowBundle[], seeds: FlowBundle[]): FlowBundle[] {
   const seedIds = new Set(seeds.map((bundle) => bundle.flow.id));
   const localOnly = stored.filter(
-    (bundle) => !seedIds.has(bundle.flow.id) && !isGeneratedPreviewBundle(bundle),
+    (bundle) => !seedIds.has(bundle.flow.id) && !isRuntimeExcludedBundle(bundle),
   );
   return [...seeds, ...localOnly];
 }

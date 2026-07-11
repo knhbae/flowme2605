@@ -6346,7 +6346,6 @@ test('current source freshness audit keeps corrected routes executable and stale
     { route: '/f/morning-skincare-routine', decision: 'reshape_before_featured' },
     { route: '/f/book-finish-one', decision: 'catalog_preview_only' },
     { route: '/f/recipe-video-execute', decision: 'catalog_preview_only' },
-    { route: '/f/skin-weekly-check', decision: 'hide_from_public_catalog' },
   ];
   for (const { route, decision } of gatedRoutes) {
     await page.goto(route);
@@ -6360,6 +6359,20 @@ test('current source freshness audit keeps corrected routes executable and stale
     await expect(page.getByRole('checkbox')).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('??');
     await expect(page.locator('body')).not.toContainText('�');
+  }
+
+  for (const route of [
+    '/f/digital-detox-weekly',
+    '/f/new-hobby-30day',
+    '/f/real-fitvely-weekly-body-check',
+    '/f/skin-weekly-check',
+  ]) {
+    const response = await page.goto(route);
+    expect(response?.status(), route).toBe(404);
+    await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
+    await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
+    await expect(page.getByRole('link', { name: '홈으로' })).toHaveAttribute('href', '/');
   }
 });
 

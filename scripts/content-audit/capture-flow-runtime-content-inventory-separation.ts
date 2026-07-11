@@ -5,7 +5,11 @@ import { summarizeContentInventory } from '../../lib/flow/content-inventory';
 import { summarizeFlowLifecycle } from '../../lib/flow/content-lifecycle';
 import { internalReviewBundles } from '../../lib/flow/internal-review-inventory';
 import { getPublicFlowIndexingPolicy } from '../../lib/flow/route-indexing-policy';
-import { isGeneratedPreviewBundle } from '../../lib/flow/runtime-content-policy';
+import {
+  isGeneratedPreviewBundle,
+  isRuntimeExcludedBundle,
+  RUNTIME_ARCHIVED_FLOW_SLUGS,
+} from '../../lib/flow/runtime-content-policy';
 import { seedBundles } from '../../lib/flow/seed-flows';
 import { mergeSourceBackedMyFlowBundles } from '../../lib/flow/source-backed-my-flow';
 import { summarizeFlowSourceFreshness } from '../../lib/flow/source-freshness';
@@ -22,7 +26,8 @@ const baseUrl = process.env.FLOW_CAPTURE_BASE_URL ?? 'http://127.0.0.1:3112';
 
 mkdirSync(screenshotDirectory, { recursive: true });
 
-const runtimePublishedBundles = mergeSourceBackedMyFlowBundles(seedBundles).filter(
+const runtimeSeedBundles = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
+const runtimePublishedBundles = mergeSourceBackedMyFlowBundles(runtimeSeedBundles).filter(
   (bundle) => bundle.flow.status === 'published',
 );
 const internalPublishedBundles = mergeSourceBackedMyFlowBundles(internalReviewBundles).filter(
@@ -35,12 +40,12 @@ const reviewGatedBundles = runtimePublishedBundles.filter(
   (bundle) => !getPublicFlowIndexingPolicy(bundle).indexable,
 );
 const generatedPreviewBundles = internalReviewBundles.filter(isGeneratedPreviewBundle);
-const sourceBackedProjectionCount = runtimePublishedBundles.length - seedBundles.length;
-const runtimeInventory = summarizeContentInventory(seedBundles);
+const sourceBackedProjectionCount = runtimePublishedBundles.length - runtimeSeedBundles.length;
+const runtimeInventory = summarizeContentInventory(runtimeSeedBundles);
 const internalInventory = summarizeContentInventory(internalReviewBundles);
-const runtimeLifecycle = summarizeFlowLifecycle(seedBundles);
+const runtimeLifecycle = summarizeFlowLifecycle(runtimeSeedBundles);
 const internalLifecycle = summarizeFlowLifecycle(internalReviewBundles);
-const sourceFreshness = summarizeFlowSourceFreshness(seedBundles, new Date());
+const sourceFreshness = summarizeFlowSourceFreshness(runtimeSeedBundles, new Date());
 
 function countBy<T>(items: T[], getKey: (item: T) => string): Record<string, number> {
   const counts: Record<string, number> = {};
@@ -63,6 +68,11 @@ async function countGeneratedPreviewLinks(page: Page): Promise<number> {
   return page.locator('a[href^="/f/channel-"]').count();
 }
 
+async function countArchivedRuntimeLinks(page: Page): Promise<number> {
+  const selector = RUNTIME_ARCHIVED_FLOW_SLUGS.map((slug) => `a[href="/f/${slug}"]`).join(', ');
+  return page.locator(selector).count();
+}
+
 const screenshotScenarios = [
   { id: 'home-mobile', route: '/', width: 390, height: 844, label: '홈 모바일' },
   { id: 'home-wide', route: '/', width: 1024, height: 768, label: '홈 wide' },
@@ -79,11 +89,13 @@ const screenshotScenarios = [
 ] as const;
 
 async function main() {
-const browser = await chromium.launch({
-  executablePath:
-    process.env.PLAYWRIGHT_CHROME_EXECUTABLE_PATH ??
-    (process.platform === 'win32' ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : undefined),
-});
+  const browser = await chromium.launch({
+    executablePath:
+      process.env.PLAYWRIGHT_CHROME_EXECUTABLE_PATH ??
+      (process.platform === 'win32'
+        ? 'C:/Program Files/Google/Chrome/Application/chrome.exe'
+        : undefined),
+  });
 
 const capturedScenarios: Array<Record<string, unknown>> = [];
 try {
@@ -102,6 +114,7 @@ try {
       status: response?.status() ?? null,
       robots,
       generatedPreviewLinkCount: await countGeneratedPreviewLinks(page),
+      archivedRuntimeLinkCount: await countArchivedRuntimeLinks(page),
       horizontalOverflow: await page.evaluate(
         () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
       ),
@@ -131,6 +144,16 @@ try {
     path: path.join(screenshotDirectory, 'generated-preview-404-mobile.png'),
     fullPage: true,
   });
+  const archivedRouteResults: Array<{ slug: string; status: number | null }> = [];
+  for (const slug of RUNTIME_ARCHIVED_FLOW_SLUGS) {
+    const response = await boundaryPage.goto(`${baseUrl}/f/${slug}`, { waitUntil: 'domcontentloaded' });
+    archivedRouteResults.push({ slug, status: response?.status() ?? null });
+  }
+  await boundaryPage.goto(`${baseUrl}/f/digital-detox-weekly`, { waitUntil: 'domcontentloaded' });
+  await boundaryPage.screenshot({
+    path: path.join(screenshotDirectory, 'archived-flow-404-mobile.png'),
+    fullPage: true,
+  });
   await boundaryContext.close();
 
   const migrationContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -138,6 +161,23 @@ try {
     localStorage.setItem(
       'flow_builder_mvp_bundles_v11',
       JSON.stringify([
+        {
+          flow: {
+            id: 'flow-digital-detox',
+            slug: 'digital-detox-weekly',
+            title: 'Archived published Flow',
+            description: 'Archived published Flow',
+            category: '생활습관',
+            structure_type: 'routine',
+            anchor_type: 'start_date',
+            status: 'published',
+            source_status: 'preview',
+            created_at: '2026-06-01T00:00:00.000Z',
+            updated_at: '2026-07-11T00:00:00.000Z',
+          },
+          sections: [],
+          items: [],
+        },
         {
           flow: {
             id: 'flow-preview-samsung-service-1',
@@ -176,24 +216,41 @@ try {
   });
   const migrationPage = await migrationContext.newPage();
   await migrationPage.goto(`${baseUrl}/flows`, { waitUntil: 'domcontentloaded' });
-  await migrationPage.waitForTimeout(250);
-  const migrationResult = await migrationPage.evaluate(() => {
+  await migrationPage.waitForFunction(
+    (archivedSlugs) => {
+      const stored = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') ?? '[]') as Array<{
+        flow?: { id?: string; slug?: string };
+      }>;
+      return (
+        stored.length > 100 &&
+        stored.every((bundle) => !bundle.flow?.id?.startsWith('flow-preview-')) &&
+        stored.every((bundle) => !archivedSlugs.includes(bundle.flow?.slug ?? ''))
+      );
+    },
+    [...RUNTIME_ARCHIVED_FLOW_SLUGS],
+  );
+  const migrationResult = await migrationPage.evaluate((archivedSlugs) => {
     const stored = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') ?? '[]') as Array<{
-      flow?: { id?: string };
+      flow?: { id?: string; slug?: string };
     }>;
     return {
       storedCount: stored.length,
       generatedPreviewRemainingCount: stored.filter((bundle) => bundle.flow?.id?.startsWith('flow-preview-')).length,
+      archivedRuntimeRemainingCount: stored.filter((bundle) => archivedSlugs.includes(bundle.flow?.slug ?? '')).length,
       userDraftPreserved: stored.some((bundle) => bundle.flow?.id === 'flow-user-draft-preserved'),
     };
-  });
+  }, [...RUNTIME_ARCHIVED_FLOW_SLUGS]);
   await migrationContext.close();
 
   const normalRoutePreviewLinkCount = capturedScenarios
     .filter((scenario) => !String(scenario.route).startsWith('/creators'))
     .reduce((sum, scenario) => sum + Number(scenario.generatedPreviewLinkCount ?? 0), 0);
+  const normalRouteArchivedLinkCount = capturedScenarios
+    .filter((scenario) => !String(scenario.route).startsWith('/creators'))
+    .reduce((sum, scenario) => sum + Number(scenario.archivedRuntimeLinkCount ?? 0), 0);
   const summary = {
-    runtimeSeedBundleCount: seedBundles.length,
+    canonicalSeedBundleCount: seedBundles.length,
+    runtimeSeedBundleCount: runtimeSeedBundles.length,
     sourceBackedProjectionCount,
     runtimePublishedRouteCount: runtimePublishedBundles.length,
     publicIndexableCount: indexableBundles.length,
@@ -202,10 +259,14 @@ try {
     internalPublishedInventoryCount: internalPublishedBundles.length,
     generatedPreviewInternalIdCount: generatedPreviewBundles.length,
     generatedPreviewCandidateInventoryCount: internalInventory.generatedPreviewCandidateCount,
-    generatedPreviewRuntimeCount: seedBundles.filter(isGeneratedPreviewBundle).length,
+    generatedPreviewRuntimeCount: runtimeSeedBundles.filter(isGeneratedPreviewBundle).length,
     generatedPreviewPublicRouteStatus: generatedPreviewResponse?.status() ?? null,
     normalRouteGeneratedPreviewLinkCount: normalRoutePreviewLinkCount,
+    archivedRuntimeFlowCount: RUNTIME_ARCHIVED_FLOW_SLUGS.length,
+    archivedRuntimePublicRoute404Count: archivedRouteResults.filter((route) => route.status === 404).length,
+    normalRouteArchivedFlowLinkCount: normalRouteArchivedLinkCount,
     legacyPreviewMigrationRemainingCount: migrationResult.generatedPreviewRemainingCount,
+    archivedRuntimeMigrationRemainingCount: migrationResult.archivedRuntimeRemainingCount,
     userDraftMigrationPreserved: migrationResult.userDraftPreserved,
     approvedPublicRouteStatus: approvedResponse?.status() ?? null,
     approvedPublicRouteNoindex: Boolean(approvedRobots?.includes('noindex')),
@@ -218,7 +279,7 @@ try {
     normalSourceReviewDueCount: sourceFreshness.reviewDueCount,
     normalSourceStaleCount: sourceFreshness.staleCount,
     normalSourceMissingMetadataCount: sourceFreshness.missingMetadataCount,
-    screenshotCount: capturedScenarios.length + 1,
+    screenshotCount: capturedScenarios.length + 2,
     horizontalOverflowCount: capturedScenarios.filter((scenario) => scenario.horizontalOverflow).length,
   };
 
@@ -229,10 +290,11 @@ try {
     policy: {
       publicApproved: 'indexable and executable public Flow',
       reviewGated: 'direct-access noindex route with save and export actions disabled until review approval',
+      runtimeArchived: 'explicit hide or unsupported-source preview; internal inventory preserved, runtime storage and public route removed',
       internalGeneratedPreview: 'internal review inventory only; excluded from runtime seed, browser storage, and public routes',
     },
     counts: {
-      runtimeSourceStatus: countBy(seedBundles, (bundle) => bundle.flow.source_status ?? 'unclassified'),
+      runtimeSourceStatus: countBy(runtimeSeedBundles, (bundle) => bundle.flow.source_status ?? 'unclassified'),
       internalSourceStatus: countBy(internalReviewBundles, (bundle) => bundle.flow.source_status ?? 'unclassified'),
       publicIndexingReason: countBy(runtimePublishedBundles, (bundle) => getPublicFlowIndexingPolicy(bundle).reason),
       runtimeLifecycle: runtimeLifecycle.bucketCounts,
@@ -247,6 +309,10 @@ try {
       status: generatedPreviewResponse?.status() ?? null,
       screenshot: 'screenshots/generated-preview-404-mobile.png',
     },
+    archivedRuntimeRoutes: archivedRouteResults.map((route) => ({
+      ...route,
+      screenshot: route.slug === 'digital-detox-weekly' ? 'screenshots/archived-flow-404-mobile.png' : null,
+    })),
     reviewGatedRoutes: reviewGatedBundles.map((bundle) => ({
       slug: bundle.flow.slug,
       title: bundle.flow.title,
@@ -270,10 +336,11 @@ try {
     `- 내부 전체 재고: ${summary.internalPublishedInventoryCount}개\n` +
     `- 내부 생성 샘플: ${summary.generatedPreviewInternalIdCount}개, 정상 runtime ${summary.generatedPreviewRuntimeCount}개\n` +
     `- 생성 샘플 공개 URL: HTTP ${summary.generatedPreviewPublicRouteStatus}\n` +
-    `- 기존 저장소 생성 샘플 잔존: ${summary.legacyPreviewMigrationRemainingCount}개, 사용자 draft 보존: ${summary.userDraftMigrationPreserved}\n` +
+    `- archive Flow: ${summary.archivedRuntimeFlowCount}개, direct URL 404: ${summary.archivedRuntimePublicRoute404Count}개\n` +
+    `- 기존 저장소 생성 샘플/archive 잔존: ${summary.legacyPreviewMigrationRemainingCount}/${summary.archivedRuntimeMigrationRemainingCount}개, 사용자 draft 보존: ${summary.userDraftMigrationPreserved}\n` +
     `- 정상 출처 stale/review-due/missing: ${summary.normalSourceStaleCount}/${summary.normalSourceReviewDueCount}/${summary.normalSourceMissingMetadataCount}\n\n` +
     `## 판정\n\n` +
-    `생성형 샘플은 삭제하지 않고 내부 검토 재고로 이동했다. 정상 사용자 seed와 localStorage에는 들어가지 않으며, 과거 direct public URL은 404다. ` +
+    `생성형 샘플과 명시적 archive 4개는 삭제하지 않고 내부 검토 재고에 보존했다. 정상 사용자 seed와 localStorage에는 들어가지 않으며, 과거 direct public URL은 한국어 복귀 경로가 있는 서비스용 404다. ` +
     `검토 게이트 ${summary.publicReviewGatedCount}개는 공개 승인 콘텐츠로 세지 않으며 noindex와 행동 차단을 유지한다.\n\n` +
     `## 파일\n\n- [audit.md](./audit.md)\n- [review.html](./review.html)\n- [route-evidence.json](./route-evidence.json)\n- [screenshots/](./screenshots/)\n`;
   writeFileSync(path.join(outputDirectory, 'README.md'), readme, 'utf8');
@@ -284,16 +351,17 @@ try {
     `## 조치\n\n` +
     `1. 정상 seed에서 flow-preview-* 생성 샘플을 제거했다.\n` +
     `2. 내부 /creators와 /content-flows만 별도 internalReviewBundles를 읽는다.\n` +
-    `3. 기존 localStorage 마이그레이션은 flow-preview-*만 제거하고 사용자 draft를 보존한다.\n` +
-    `4. 생성 샘플 direct /f URL은 404로 닫았다.\n` +
+    `3. 기존 localStorage 마이그레이션은 flow-preview-*와 명시적 archive 4개만 제거하고 사용자 draft를 보존한다.\n` +
+    `4. 생성 샘플과 archive direct /f URL은 다른 Flow 찾기와 홈 복귀가 가능한 한국어 서비스용 404로 닫았다.\n` +
     `5. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.\n\n` +
     `## 오래된 콘텐츠 해석\n\n` +
     `- 공개 승인 ${summary.publicIndexableCount}개: 정상 실행과 index 허용.\n` +
     `- 검토 게이트 ${summary.publicReviewGatedCount}개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않는다.\n` +
     `- 생성 샘플 ${summary.generatedPreviewInternalIdCount}개: 실제 콘텐츠가 아닌 구조 검토 재고. runtime과 public route에서 제거.\n` +
+    `- 명시적 archive ${summary.archivedRuntimeFlowCount}개: 출처 불충분 또는 공개 숨김 판정이 확정되어 runtime과 public route에서 제거.\n` +
     `- 정상 source freshness: current ${summary.normalSourceCurrentCount}, stale ${summary.normalSourceStaleCount}, review-due ${summary.normalSourceReviewDueCount}, missing ${summary.normalSourceMissingMetadataCount}.\n\n` +
     `## 남은 리스크\n\n` +
-    `- 검토 게이트 ${summary.publicReviewGatedCount}개는 아직 코드 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-gated / archive를 결정해야 한다.\n` +
+    `- 검토 게이트 ${summary.publicReviewGatedCount}개는 아직 runtime 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-gated / archive를 계속 결정해야 한다.\n` +
     `- 정상 4탭 route는 여전히 큰 AppClient client bundle을 공유한다. 생성 객체 제거와 별개로 route/component split이 필요하다.\n` +
     `- 자동 QA는 실제 사용자 검증을 대신하지 않는다.\n`;
   writeFileSync(path.join(outputDirectory, 'audit.md'), audit, 'utf8');
@@ -316,18 +384,19 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
   <div class="metric">검토 게이트<strong>${summary.publicReviewGatedCount}</strong></div>
   <div class="metric">내부 생성 샘플<strong>${summary.generatedPreviewInternalIdCount}</strong></div>
   <div class="metric">runtime 생성 샘플<strong>${summary.generatedPreviewRuntimeCount}</strong></div>
+  <div class="metric">archive route<strong>${summary.archivedRuntimeFlowCount}</strong></div>
   <div class="metric">legacy 잔존<strong>${summary.legacyPreviewMigrationRemainingCount}</strong></div>
   <div class="metric">생성 URL 상태<strong>${summary.generatedPreviewPublicRouteStatus}</strong></div>
 </section>
-<section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지하고, 생성 샘플은 내부 재고에서만 본다. 사용자 draft는 마이그레이션에서 보존한다.</p></section>
-<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article></section>
+<section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지한다. 생성 샘플과 명시적 archive는 내부 재고에서만 보고 사용자 draft는 마이그레이션에서 보존한다.</p></section>
+<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>출처 불충분 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article></section>
 </main></body></html>`;
   writeFileSync(path.join(outputDirectory, 'review.html'), reviewHtml, 'utf8');
 } finally {
   await browser.close();
 }
 
-console.log(JSON.stringify({ outputDirectory, runtimeSeed: seedBundles.length, internalReview: internalPublishedBundles.length }, null, 2));
+console.log(JSON.stringify({ outputDirectory, runtimeSeed: runtimeSeedBundles.length, internalReview: internalPublishedBundles.length }, null, 2));
 }
 
 void main().catch((error: unknown) => {

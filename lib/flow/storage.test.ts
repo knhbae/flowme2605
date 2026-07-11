@@ -12,6 +12,7 @@ import {
   type FlowMeStorageLike,
 } from './local-data-backup';
 import { getFlowScopedMyFlowPersonalExecutionState } from './my-flow-personal-state';
+import { RUNTIME_ARCHIVED_FLOW_SLUGS } from './runtime-content-policy';
 import {
   cloneSeedBundles,
   clearFlowLocalProgress,
@@ -121,6 +122,16 @@ test('storage merge removes legacy generated previews without removing user draf
   assert.deepEqual(merged.map((entry) => entry.flow.id), ['flow-local-draft']);
 });
 
+test('storage merge removes archived published routes while preserving a user draft with the same slug', () => {
+  const archived = bundle('flow-archived', 'digital-detox-weekly', 'Archived published Flow');
+  const userDraft = bundle('flow-local-draft', 'digital-detox-weekly', 'My local draft');
+  userDraft.flow.status = 'draft';
+
+  const merged = mergeSeedBundles([archived, userDraft], []);
+
+  assert.deepEqual(merged.map((entry) => entry.flow.id), ['flow-local-draft']);
+});
+
 test('getBundles migrates curated source app seed flows into existing local storage', () => {
   const store = new Map<string, string>();
   const localStorage = {
@@ -148,6 +159,7 @@ test('getBundles migrates curated source app seed flows into existing local stor
       'flow_builder_mvp_bundles_v11',
       JSON.stringify([
         generatedPreviewBundle(),
+        bundle('flow-archived', 'digital-detox-weekly', 'Archived published Flow'),
         bundle('flow-local-draft', 'my-draft', 'My local draft'),
       ]),
     );
@@ -159,6 +171,7 @@ test('getBundles migrates curated source app seed flows into existing local stor
       [],
     );
     assert.ok(migratedSlugs.has('my-draft'));
+    assert.equal(migratedSlugs.has('digital-detox-weekly'), false);
     assert.equal(migrated.some((entry) => entry.flow.id.startsWith('flow-preview-')), false);
 
     const persisted = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as FlowBundle[];
@@ -187,6 +200,10 @@ test('cloneSeedBundles includes curated source app seed flows without source-bac
     [],
   );
   assert.equal(cloned.some((entry) => entry.flow.id.startsWith('flow-preview-')), false);
+  assert.deepEqual(
+    RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => clonedSlugs.has(slug)),
+    [],
+  );
 });
 
 test('saved flow record normalization keeps explicit save metadata', () => {
