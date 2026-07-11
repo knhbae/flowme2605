@@ -29,6 +29,10 @@ import {
 } from '@/lib/flow/my-flow-step-export';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { getPublicFlowIndexingPolicy } from '@/lib/flow/route-indexing-policy';
+import {
+  getRuntimeArchivedFlowPolicy,
+  isRetiredPersonalCopyBundle,
+} from '@/lib/flow/runtime-content-policy';
 import { countFlowRunFixedDateOverrides, type FlowRunFixedDatePolicy } from '@/lib/flow/flow-run-reuse';
 import {
   buildFlowVersionReview,
@@ -3095,11 +3099,20 @@ function getMyFlowFlowProgressLabel(flow: MySavedFlow): string {
 }
 
 function getMyFlowSourceHref(flow: MySavedFlow): string {
+  const retiredPolicy = getRuntimeArchivedFlowPolicy(flow.progress.slug);
+  if (isRetiredPersonalCopyBundle(flow.bundle)) {
+    return retiredPolicy?.replacementSlug ? `/f/${retiredPolicy.replacementSlug}` : '/flows';
+  }
   const sourceBackedMap = getSourceBackedMyFlowMapForBundle(flow.bundle);
   return flow.savedMap ? `/flow-maps/${flow.savedMap.mapId}` : sourceBackedMap ? `/flow-maps/${sourceBackedMap.id}` : `/f/${flow.progress.slug}`;
 }
 
 function getMyFlowSourceLinkLabel(flow: MySavedFlow): string {
+  if (isRetiredPersonalCopyBundle(flow.bundle)) {
+    return getRuntimeArchivedFlowPolicy(flow.progress.slug)?.replacementSlug
+      ? '새 Flow 보기'
+      : '다른 Flow 찾기';
+  }
   return flow.savedMap || getSourceBackedMyFlowMapForBundle(flow.bundle) ? '전체 보기' : 'Flow 보기';
 }
 
@@ -3120,7 +3133,7 @@ function getMyFlowPortableExportFlowTitle(flow: MySavedFlow): string {
 }
 
 type MyFlowContentReadiness = {
-  kind: 'ready' | 'review' | 'preview' | 'legacy';
+  kind: 'ready' | 'review' | 'preview' | 'retired' | 'legacy';
   label: string;
   groupLabel?: string;
 };
@@ -3361,6 +3374,9 @@ function isMyFlowMapUpdateDismissed(
 }
 
 function getMyFlowContentReadiness(flow: MySavedFlow): MyFlowContentReadiness {
+  if (isRetiredPersonalCopyBundle(flow.bundle)) {
+    return { kind: 'retired', label: '이전 저장본', groupLabel: '내 이전 기록' };
+  }
   const sourceStatus = flow.bundle.flow.source_status;
   const sourceBacked = flow.progress.slug.startsWith('source-backed-') || Boolean(flow.bundle.flow.tags?.includes('source-backed'));
   if (flow.savedMap || sourceBacked || sourceStatus === 'real' || serviceCatalogFlowSlugs.has(flow.progress.slug)) return { kind: 'ready', label: '실행 가능' };
@@ -3377,6 +3393,7 @@ function getMyFlowContentReadinessNote(readiness: MyFlowContentReadiness): strin
   if (readiness.kind === 'ready') return '내 Flow에서 실행할 수 있습니다.';
   if (readiness.kind === 'review') return '원문과 할 일을 한 번 확인한 뒤 실행하세요.';
   if (readiness.kind === 'preview') return '원문을 확인한 뒤 내 일정에 맞게 실행하세요.';
+  if (readiness.kind === 'retired') return '공개가 끝난 Flow의 내 기록입니다. 완료 기록과 메모는 이 기기에 남아 있어요.';
   return '예전 저장 방식입니다. 새 콘텐츠와 구분해서 봅니다.';
 }
 
@@ -3386,40 +3403,40 @@ function getMyFlowRoutineDays(bundle: FlowBundle): string[] {
 }
 
 const MY_FLOW_UX12_DEMO_FIXTURES: MyFlowDemoFixture[] = [
-  { slug: 'new-apartment-precheck', anchor: '2026-06-08', completedCount: 0, group: '???P0', note: '입주 체크' },
-  { slug: 'japan-esim-setup-before-departure', anchor: '2026-06-20', completedCount: 0, group: '???P0', note: '여행 준비' },
-  { slug: 'dog-adoption-first-week', anchor: '2026-06-05', completedCount: 0, group: '???P0', note: '반려동물' },
-  { slug: 'moving-d30-basic', anchor: '2026-06-26', completedCount: 2, group: '생활 일정', note: 'D-day 일정' },
-  { slug: 'wedding-d180-basic', anchor: '2026-11-24', completedCount: 5, group: '생활 일정', note: '장기 일정' },
-  { slug: 'computer-skills-d30-study', anchor: '2026-06-27', completedCount: 2, group: '대표 P0', note: '공부 진도표' },
-  { slug: 'samsung-aircon-seasonal-check', anchor: '2026-06-01', completedCount: 1, group: '대표 P0', note: '가전 루틴' },
-  { slug: 'samsung-washer-filter-cleaning', anchor: '2026-06-01', completedCount: 1, group: '대표 P0', note: '가전 루틴' },
-  { slug: 'overseas-travel-d14', anchor: '2026-06-20', completedCount: 3, group: '생활 일정', note: '여행 체크' },
-  { slug: 'passport-renewal-docs', anchor: '2026-06-15', completedCount: 2, group: '생활 일정', note: '서류 메모' },
-  { slug: 'baby-food-menu-recipe', anchor: '2026-05-28', completedCount: 4, group: '반복 루틴', note: '식단 캘린더' },
-  { slug: 'home-workout-20min', anchor: '2026-05-27', completedCount: 4, group: '반복 루틴', note: '운동 루틴' },
-  { slug: 'running-5k-4week', anchor: '2026-05-29', completedCount: 2, group: '반복 루틴', note: '훈련 루틴' },
-  { slug: 'english-study-30day-routine', anchor: '2026-06-02', completedCount: 3, group: '반복 루틴', note: '학습 루틴' },
-  { slug: 'business-registration-basic', anchor: '2026-06-03', completedCount: 1, group: '행정/결정', note: '공식 체크' },
-  { slug: 'year-end-tax-docs', anchor: '2026-12-31', completedCount: 2, group: '행정/결정', note: '세금 서류' },
-  { slug: 'driver-license-renewal-check', anchor: '2026-06-10', completedCount: 1, group: '행정/결정', note: '갱신 체크' },
-  { slug: 'used-car-buying-check', completedCount: 1, group: '행정/결정', note: '결정 체크' },
+  { slug: 'washer-tub-clean-monthly', anchor: '2026-05-27', completedCount: 0, group: '가전', note: '통세척 관리' },
+  { slug: 'travel-packing-list', anchor: '2026-06-20', completedCount: 0, group: '생활 준비', note: '짐 싸기' },
+  { slug: 'pet-health-observation', anchor: '2026-06-05', completedCount: 0, group: '반려동물', note: '건강 상담' },
+  { slug: 'moving-d30-basic', anchor: '2026-06-26', completedCount: 2, group: '이사/결혼', note: 'D-day 일정' },
+  { slug: 'wedding-d180-basic', anchor: '2026-11-24', completedCount: 5, group: '이사/결혼', note: '장기 일정' },
+  { slug: 'computer-skills-d30-study', anchor: '2026-06-27', completedCount: 2, group: '공부', note: '공부 진도표' },
+  { slug: 'samsung-aircon-seasonal-check', anchor: '2026-07-03', completedCount: 1, group: '가전', note: '에어컨 점검' },
+  { slug: 'curated-allblanc-lower-body', anchor: '2026-05-22', completedCount: 1, group: '운동', note: '하체 운동' },
+  { slug: 'vehicle-inspection-prep', anchor: '2026-06-17', completedCount: 3, group: '자동차', note: '검사 준비' },
+  { slug: 'passport-renewal-docs', anchor: '2026-06-15', completedCount: 2, group: '여행/서류', note: '서류 메모' },
+  { slug: 'baby-food-menu-recipe', anchor: '2026-05-28', completedCount: 4, group: '육아', note: '식단 캘린더' },
+  { slug: 'curated-allblanc-morning-workout', anchor: '2026-06-03', completedCount: 1, group: '운동', note: '아침 운동' },
+  { slug: 'curated-allblanc-no-jump-cardio', anchor: '2026-06-02', completedCount: 1, group: '운동', note: '유산소' },
+  { slug: 'english-study-30day-routine', anchor: '2026-06-02', completedCount: 3, group: '공부', note: '학습 루틴' },
+  { slug: 'real-samsung-washer-filter-care', anchor: '2026-06-03', completedCount: 1, group: '가전', note: '세탁기 관리' },
+  { slug: 'tax-refund-find', completedCount: 2, group: '행정/지원', note: '환급 확인' },
+  { slug: 'first-passport-issue', anchor: '2026-06-10', completedCount: 1, group: '여행/서류', note: '신규 발급' },
+  { slug: 'used-car-buying-check', completedCount: 1, group: '자동차', note: '결정 체크' },
 ];
 
 const MY_FLOW_UX20_DEMO_FIXTURES: MyFlowDemoFixture[] = [
   ...MY_FLOW_UX12_DEMO_FIXTURES,
-  { slug: 'job-change-risk-check', completedCount: 1, group: '커리어/결정', note: '이직 리스크' },
-  { slug: 'national-health-checkup-d7', anchor: '2026-06-18', completedCount: 1, group: '건강/공식', note: '검진 준비' },
-  { slug: 'happy-birth-service-check', completedCount: 1, group: '육아/행정', note: '출산 신청' },
-  { slug: 'pet-registration-basic', completedCount: 1, group: '생활/반려동물', note: '등록 준비' },
-  { slug: 'vaccination-certificate-issue', completedCount: 1, group: '생활/증명서', note: '증명 발급' },
-  { slug: 'family-certificate-issue', completedCount: 1, group: '생활/증명서', note: '가족관계' },
-  { slug: 'resident-register-copy-issue', completedCount: 1, group: '생활/증명서', note: '등본 발급' },
-  { slug: 'industrial-accident-claim-docs', completedCount: 1, group: '행정/결정', note: '산재 서류' },
-  { slug: 'study-exam-d30-plan', anchor: '2026-06-27', completedCount: 2, group: '공부/루틴', note: '시험 D-day' },
-  { slug: 'new-car-delivery-check', completedCount: 1, group: '자동차/결정', note: '인수 점검' },
-  { slug: 'car-care-monthly-routine', anchor: '2026-06-01', completedCount: 1, group: '자동차/루틴', note: '월간 관리' },
-  { slug: 'diet-habit-2week', anchor: '2026-06-01', completedCount: 1, group: '건강/루틴', note: '수면 체크' },
+  { slug: 'portfolio-4week', anchor: '2026-07-01', completedCount: 1, group: '커리어', note: '포트폴리오' },
+  { slug: 'adult-vaccine-schedule-check', anchor: '2026-06-18', completedCount: 1, group: '건강', note: '접종 상담' },
+  { slug: 'childcare-fee-support-apply', completedCount: 1, group: '육아', note: '보육료 신청' },
+  { slug: 'pet-registration-basic', completedCount: 1, group: '반려동물', note: '등록 준비' },
+  { slug: 'infant-health-checkup-schedule', completedCount: 1, group: '육아', note: '검진 일정' },
+  { slug: 'safe-inheritance-onestop', completedCount: 1, group: '행정/지원', note: '상속 조회' },
+  { slug: 'welfare-benefit-finder', completedCount: 1, group: '행정/지원', note: '지원 확인' },
+  { slug: 'unemployment-benefit-apply', completedCount: 1, group: '행정/지원', note: '급여 신청' },
+  { slug: 'blog-youtube-start', completedCount: 2, group: '콘텐츠', note: '영상 기획' },
+  { slug: 'new-car-delivery-check', completedCount: 1, group: '자동차', note: '인수 점검' },
+  { slug: 'weekly-meal-plan', anchor: '2026-06-01', completedCount: 1, group: '식단/독서', note: '저녁 계획' },
+  { slug: 'reading-habit-30day', anchor: '2026-06-01', completedCount: 1, group: '식단/독서', note: '읽기 습관' },
 ];
 
 const MY_FLOW_SOURCE_BACKED_DEMO_FIXTURES: MyFlowDemoFixture[] = [
@@ -4234,6 +4251,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const visibleSavedFlows = selectedSavedFlowSlug === 'all'
     ? savedFlows
     : savedFlows.filter((flow) => flow.progress.slug === selectedSavedFlowSlug);
+  const visibleExecutionFlows = visibleSavedFlows.filter(
+    (flow) => getMyFlowContentReadiness(flow).kind !== 'retired',
+  );
   const savedFlowMapSnapshots = Array.from(
     Object.values(savedFlowMapBySlug).reduce((snapshots, snapshot) => snapshots.set(snapshot.mapId, snapshot), new Map<string, SavedFlowMapSnapshot>()).values(),
   );
@@ -4312,7 +4332,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const nextDraft = getMyFlowRoutineEditorDraft(flow);
     updateMyFlowRoutineRuleDraft(flow, nextDraft);
   };
-  const baseCalendarRows: MyFlowCalendarRow[] = visibleSavedFlows.flatMap((flow) =>
+  const baseCalendarRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
     flow.rows
       .filter((row) => row.date)
       .map((row) => {
@@ -4329,7 +4349,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         };
       }),
   );
-  const manuallyScheduledRows: MyFlowCalendarRow[] = visibleSavedFlows.flatMap((flow) =>
+  const manuallyScheduledRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
     flow.rows
       .filter((row) => !row.date)
       .flatMap((row) => {
@@ -4345,7 +4365,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }];
       }),
   );
-  const generatedRoutineRows: MyFlowCalendarRow[] = visibleSavedFlows.flatMap((flow) => {
+  const generatedRoutineRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) => {
     if (flow.bundle.flow.structure_type !== 'routine' || !flow.anchor) return [];
     if (baseCalendarRows.some((row) => row.flow.progress.slug === flow.progress.slug)) return [];
     const nextRow = getSavedFlowNextRow(flow);
@@ -4383,7 +4403,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarAnchor =
     showDemoData && selectedSavedFlowSlug === 'all' && !isCalendarSurface
       ? myFlowTodayDate
-      : calendarRows[0]?.date || visibleSavedFlows[0]?.anchor || myFlowTodayDate;
+      : calendarRows[0]?.date || visibleExecutionFlows[0]?.anchor || myFlowTodayDate;
   const calendarCells = getMyFlowMonthCells(myFlowVisibleMonth);
   const monthAllCalendarRows = calendarRows.filter((row) => row.date?.startsWith(myFlowVisibleMonth.slice(0, 7)));
   const monthCalendarRows = calendarScopedRows.filter((row) => row.date?.startsWith(myFlowVisibleMonth.slice(0, 7)));
@@ -4470,7 +4490,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }, new Map())
       .values(),
   ).slice(0, 3);
-  const myFlowFallbackNextRows: MyFlowCalendarRow[] = visibleSavedFlows
+  const myFlowFallbackNextRows: MyFlowCalendarRow[] = visibleExecutionFlows
     .map((flow) => {
       const row = getSavedFlowNextRow(flow);
       if (!row) return null;
@@ -4515,7 +4535,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? `오늘 예정된 할 일이 없어요. 다음 할 일은 ${formatMyFlowDisplayDate(myFlowNextDatedSummaryRow.date)}이에요.`
           : hasMyFlowContinuationCandidate
             ? '오늘 예정된 일정은 없어요. 먼저 열 항목이 준비되어 있어요.'
-            : visibleSavedFlows.length > 0
+            : visibleExecutionFlows.length > 0
               ? '오늘 예정된 일정은 없어요.'
               : '저장한 콘텐츠가 아직 없어요.';
   const myFlowContinuationRows = [
@@ -4641,7 +4661,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ...buildMyFlowSelectedDateGroups(myFlowSelectedDateRows, 'schedule'),
     ...buildMyFlowSelectedDateGroups(myFlowSelectedDateRoutineRows, 'routine'),
   ];
-  const myFlowAllRows: MyFlowCalendarRow[] = visibleSavedFlows.flatMap((flow) =>
+  const myFlowAllRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
     flow.rows.map((row) => ({ ...row, flow })),
   );
   const myFlowActiveRow =
@@ -4761,9 +4781,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return groups;
     }, new Map()).values(),
   );
-  const myFlowStatusOpenFlowCount = visibleSavedFlows.filter((flow) => flow.done < flow.total).length;
-  const myFlowStatusAveragePercent = visibleSavedFlows.length
-    ? Math.round(visibleSavedFlows.reduce((sum, flow) => sum + flow.percent, 0) / visibleSavedFlows.length)
+  const myFlowStatusOpenFlowCount = visibleExecutionFlows.filter((flow) => flow.done < flow.total).length;
+  const myFlowStatusAveragePercent = visibleExecutionFlows.length
+    ? Math.round(visibleExecutionFlows.reduce((sum, flow) => sum + flow.percent, 0) / visibleExecutionFlows.length)
     : 0;
   const myFlowStatusNextActionCount = myFlowStatusNextRows.length;
   const getMyFlowStatusSheetOpenAriaLabel = (
@@ -5164,8 +5184,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       };
     }),
   ];
-  const routineFlows = visibleSavedFlows.filter((flow) => flow.bundle.flow.structure_type === 'routine');
-  const checklistFlowRows = visibleSavedFlows
+  const routineFlows = visibleExecutionFlows.filter((flow) => flow.bundle.flow.structure_type === 'routine');
+  const checklistFlowRows = visibleExecutionFlows
     .map((flow) => ({
       flow,
       rows: flow.rows.filter((row) => {
@@ -5235,6 +5255,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const mobileFlowSummaryText = `${flowListVisibleFlows.length}개 저장`;
   const flowListReadyFlows = flowListVisibleFlows.filter((flow) => isMyFlowReadyContent(flow));
   const flowListSupportFlows = flowListVisibleFlows.filter((flow) => !isMyFlowReadyContent(flow));
+  const flowListSupportOnlyRetired =
+    flowListSupportFlows.length > 0 &&
+    flowListSupportFlows.every((flow) => getMyFlowContentReadiness(flow).kind === 'retired');
   const shouldSeparateFlowReadiness =
     !isMyFlowScenarioDemo &&
     selectedSavedFlowSlug === 'all' &&
@@ -8217,6 +8240,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
+    const contentReadiness = getMyFlowContentReadiness(flow);
+    const retiredPersonalCopy = contentReadiness.kind === 'retired';
+    const sourceHref = getMyFlowSourceHref(flow);
+    const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
     const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
     const settingsDateAnchorCopy = settingsEditable
@@ -8254,7 +8281,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         key={`compact-${flow.progress.slug}`}
         data-testid="my-flow-mobile-structure-row"
         data-flow-slug={flow.progress.slug}
-        className={`rounded-lg border p-3 shadow-sm ${flowExpanded ? 'border-blue-200 bg-blue-50/70' : 'border-slate-200 bg-white'}`}
+        className={`rounded-lg border p-3 shadow-sm ${retiredPersonalCopy ? 'border-amber-200 bg-amber-50/70' : flowExpanded ? 'border-blue-200 bg-blue-50/70' : 'border-slate-200 bg-white'}`}
       >
         <button
           type="button"
@@ -8269,6 +8296,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold text-slate-950">{flowTitle}</span>
                 <span className="mt-1 block truncate text-xs font-semibold text-slate-500">{structureLabel}</span>
+                {retiredPersonalCopy ? (
+                  <span data-testid="my-flow-content-readiness" className="mt-2 inline-flex w-fit rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
+                    {contentReadiness.label}
+                  </span>
+                ) : null}
               </span>
             </span>
             <span
@@ -8298,6 +8330,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</span>
           ) : null}
         </button>
+        {retiredPersonalCopy ? (
+          <div className="mt-3 rounded-md border border-amber-100 bg-white px-3 py-2">
+            <p className="text-xs font-semibold leading-5 text-amber-900">{getMyFlowContentReadinessNote(contentReadiness)}</p>
+            <Link className="mt-2 inline-flex min-h-8 items-center justify-center rounded-md border border-amber-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-amber-900" href={sourceHref}>
+              {sourceLabel}
+            </Link>
+          </div>
+        ) : null}
         {settingsEditable ? (
           <div className="mt-2 flex flex-wrap gap-2">
             <button
@@ -8312,8 +8352,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {renderMyFlowPersonalCopySettings(flow)}
-        {renderMyFlowCompletionFeedback(flow)}
-        {renderMyFlowReuseNotice(flow)}
+        {!retiredPersonalCopy ? renderMyFlowCompletionFeedback(flow) : null}
+        {!retiredPersonalCopy ? renderMyFlowReuseNotice(flow) : null}
         {flowExpanded ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
@@ -8409,6 +8449,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const sourceHref = getMyFlowSourceHref(flow);
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const contentReadiness = getMyFlowContentReadiness(flow);
+    const retiredPersonalCopy = contentReadiness.kind === 'retired';
     const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
     const hiddenInInventory = hiddenFlowSlugSet.has(flow.progress.slug);
     const showHideToggle = savedFlows.length > 1 && !isMyFlowMobileViewport;
@@ -8525,8 +8566,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="h-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
           </div>
         </div>
-        {renderMyFlowCompletionFeedback(flow)}
-        {renderMyFlowReuseNotice(flow)}
+        {!retiredPersonalCopy ? renderMyFlowCompletionFeedback(flow) : null}
+        {!retiredPersonalCopy ? renderMyFlowReuseNotice(flow) : null}
         {renderMyFlowExcludedSteps(flow)}
         <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
           <Link className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300" href={sourceHref}>
@@ -8754,13 +8795,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <section data-testid="my-flow-review-section" className="rounded-lg border border-amber-200 bg-amber-50/60 p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold text-amber-800">원문 확인</p>
-              <h4 className="text-base font-semibold text-amber-950">확인 후 실행할 콘텐츠</h4>
+              <p className="text-xs font-semibold text-amber-800">{flowListSupportOnlyRetired ? '기록 보존' : '별도 확인'}</p>
+              <h4 className="text-base font-semibold text-amber-950">{flowListSupportOnlyRetired ? '이전 저장 기록' : '확인할 저장 콘텐츠'}</h4>
             </div>
             <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">{flowListSupportFlows.length}개</span>
           </div>
           <p className="mt-1 text-sm font-medium text-amber-900">
-            원문이나 저장 형식 확인이 필요한 콘텐츠는 바로 실행할 콘텐츠와 구분합니다.
+            {flowListSupportOnlyRetired
+              ? '공개가 끝난 Flow는 완료 기록과 메모만 남기고, 새 실행은 대체 Flow에서 시작합니다.'
+              : '원문 확인이 필요하거나 공개가 끝난 기록은 바로 실행할 콘텐츠와 구분합니다.'}
           </p>
           <div className="mt-3">
             {renderFlowInventoryGroups(flowListSupportGroups)}

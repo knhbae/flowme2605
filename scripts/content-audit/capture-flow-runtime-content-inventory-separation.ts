@@ -89,23 +89,11 @@ const screenshotScenarios = [
   { id: 'internal-inventory-wide', route: '/creators', width: 1024, height: 768, label: '내부 재고 wide' },
 ] as const;
 
-const deferredRetirementCandidates = [
-  {
-    slug: 'study-exam-d30-plan',
-    blocker: 'Calendar 다중 Flow fixture와 과거 저장 record가 이 slug를 사용합니다.',
-    nextAction: '현재 source와 맞는 학습 Flow로 fixture를 바꾸고 저장 slug 이관 정책을 먼저 구현합니다.',
-  },
-  {
-    slug: 'real-sinagong-computer-d30-study',
-    blocker: 'canonical 컴활 Flow가 기존 챕터 진도와 오답 기록표를 아직 받지 못했습니다.',
-    nextAction: '기록표를 canonical Flow에 합치고 과거 저장 record를 이관한 뒤 중복 route를 archive합니다.',
-  },
-  {
-    slug: 'real-thankyou-bubu-video-full-body-no-jump',
-    blocker: '제작자 프로필과 export 시나리오가 이 exact-video route를 대표로 사용합니다.',
-    nextAction: '동일 영상 Flow 중 canonical 하나를 정하고 profile 링크와 저장 record를 이관합니다.',
-  },
-] as const;
+const deferredRetirementCandidates: Array<{
+  slug: string;
+  blocker: string;
+  nextAction: string;
+}> = [];
 
 async function main() {
   const browser = await chromium.launch({
@@ -254,33 +242,110 @@ try {
         },
       ]),
     );
+    localStorage.setItem(
+      'flow:saved:book-finish-one',
+      JSON.stringify({
+        slug: 'book-finish-one',
+        savedAt: '2026-07-01T00:00:00.000Z',
+        selectedArtifactMode: 'checklist',
+      }),
+    );
+    localStorage.setItem(
+      'flow_builder_mvp_checks_book-finish-one',
+      JSON.stringify({ 'creator-260601-book-finish-one-item-2': true }),
+    );
+    localStorage.setItem(
+      'flow_builder_mvp_item_state_book-finish-one',
+      JSON.stringify({ 'creator-260601-book-finish-one-item-2': { note: '완독 기록은 보존해야 합니다.' } }),
+    );
   });
   const migrationPage = await migrationContext.newPage();
   await migrationPage.goto(`${baseUrl}/flows`, { waitUntil: 'domcontentloaded' });
   await migrationPage.waitForFunction(
     (archivedSlugs) => {
       const stored = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') ?? '[]') as Array<{
-        flow?: { id?: string; slug?: string };
+        flow?: { id?: string; slug?: string; status?: string; tags?: string[] };
       }>;
+      const retired = stored.find((bundle) => bundle.flow?.slug === 'book-finish-one');
       return (
         stored.length > 100 &&
         stored.every((bundle) => !bundle.flow?.id?.startsWith('flow-preview-')) &&
-        stored.every((bundle) => !archivedSlugs.includes(bundle.flow?.slug ?? ''))
+        stored.every(
+          (bundle) => !archivedSlugs.includes(bundle.flow?.slug ?? '') || bundle.flow?.status !== 'published',
+        ) &&
+        retired?.flow?.status === 'draft' &&
+        retired.flow.tags?.includes('retired-personal-copy')
       );
     },
     [...RUNTIME_ARCHIVED_FLOW_SLUGS],
   );
   const migrationResult = await migrationPage.evaluate((archivedSlugs) => {
     const stored = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') ?? '[]') as Array<{
-      flow?: { id?: string; slug?: string };
+      flow?: { id?: string; slug?: string; status?: string; tags?: string[] };
     }>;
+    const retired = stored.find((bundle) => bundle.flow?.slug === 'book-finish-one');
+    const checks = JSON.parse(localStorage.getItem('flow_builder_mvp_checks_book-finish-one') ?? '{}') as Record<string, boolean>;
+    const itemStates = JSON.parse(localStorage.getItem('flow_builder_mvp_item_state_book-finish-one') ?? '{}') as Record<string, { note?: string }>;
     return {
       storedCount: stored.length,
       generatedPreviewRemainingCount: stored.filter((bundle) => bundle.flow?.id?.startsWith('flow-preview-')).length,
-      archivedRuntimeRemainingCount: stored.filter((bundle) => archivedSlugs.includes(bundle.flow?.slug ?? '')).length,
+      archivedRuntimeRemainingCount: stored.filter(
+        (bundle) => archivedSlugs.includes(bundle.flow?.slug ?? '') && bundle.flow?.status === 'published',
+      ).length,
+      retiredSavedCopyCount: stored.filter((bundle) => bundle.flow?.tags?.includes('retired-personal-copy')).length,
+      retiredSavedCopyPreserved:
+        retired?.flow?.status === 'draft' && Boolean(retired.flow.tags?.includes('retired-personal-copy')),
+      retiredSavedCopyRecoveredFromCanonical: retired?.flow?.id === 'creator-260601-book-finish-one',
+      retiredSavedCopyCompletionPreserved: checks['creator-260601-book-finish-one-item-2'] === true,
+      retiredSavedCopyMemoPreserved:
+        itemStates['creator-260601-book-finish-one-item-2']?.note === '완독 기록은 보존해야 합니다.',
       userDraftPreserved: stored.some((bundle) => bundle.flow?.id === 'flow-user-draft-preserved'),
     };
   }, [...RUNTIME_ARCHIVED_FLOW_SLUGS]);
+
+  await migrationPage.goto(`${baseUrl}/my`, { waitUntil: 'domcontentloaded' });
+  await migrationPage.locator('[data-testid="my-flow-view-flow"]').click();
+  const mobileRetiredCopy = migrationPage.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="book-finish-one"]');
+  await mobileRetiredCopy.waitFor({ state: 'visible' });
+  const retiredSavedCopyUi: {
+    mobileVisible: boolean;
+    mobileReadinessLabel: string | null;
+    replacementHref: string | null;
+    mobileRestartActionCount: number;
+    excludedFromCalendar: boolean;
+    wideVisible: boolean;
+    wideRestartActionCount: number;
+    wideHistoryHeadingVisible: boolean;
+  } = {
+    mobileVisible: await mobileRetiredCopy.isVisible(),
+    mobileReadinessLabel: (await mobileRetiredCopy.locator('[data-testid="my-flow-content-readiness"]').textContent())?.trim() ?? null,
+    replacementHref: await mobileRetiredCopy.locator('a').filter({ hasText: '새 Flow 보기' }).getAttribute('href'),
+    mobileRestartActionCount: await mobileRetiredCopy.getByText('이 Flow 다시 쓰기').count(),
+    excludedFromCalendar: false,
+    wideVisible: false,
+    wideRestartActionCount: 0,
+    wideHistoryHeadingVisible: false,
+  };
+  await migrationPage.screenshot({
+    path: path.join(screenshotDirectory, 'retired-saved-copy-mobile.png'),
+    fullPage: true,
+  });
+
+  await migrationPage.goto(`${baseUrl}/calendar`, { waitUntil: 'domcontentloaded' });
+  retiredSavedCopyUi.excludedFromCalendar = !(await migrationPage.locator('main').innerText()).includes('책 한 권 완독 실천');
+
+  await migrationPage.setViewportSize({ width: 1024, height: 768 });
+  await migrationPage.goto(`${baseUrl}/my`, { waitUntil: 'domcontentloaded' });
+  await migrationPage.locator('[data-testid="my-flow-view-flow"]').click();
+  const wideRetiredCopy = migrationPage.locator('[data-testid="my-flow-overview-card"][data-flow-slug="book-finish-one"]');
+  await wideRetiredCopy.waitFor({ state: 'visible' });
+  retiredSavedCopyUi.wideVisible = await wideRetiredCopy.isVisible();
+  retiredSavedCopyUi.wideRestartActionCount = await wideRetiredCopy.getByText('이 Flow 다시 쓰기').count();
+  retiredSavedCopyUi.wideHistoryHeadingVisible = await migrationPage.getByRole('heading', { name: '이전 저장 기록' }).isVisible();
+  await migrationPage.screenshot({
+    path: path.join(screenshotDirectory, 'retired-saved-copy-wide.png'),
+    fullPage: true,
+  });
   await migrationContext.close();
 
   const normalRoutePreviewLinkCount = capturedScenarios
@@ -311,6 +376,18 @@ try {
     normalRouteArchivedFlowLinkCount: normalRouteArchivedLinkCount,
     legacyPreviewMigrationRemainingCount: migrationResult.generatedPreviewRemainingCount,
     archivedRuntimeMigrationRemainingCount: migrationResult.archivedRuntimeRemainingCount,
+    retiredSavedCopyCount: migrationResult.retiredSavedCopyCount,
+    retiredSavedCopyPreserved: migrationResult.retiredSavedCopyPreserved,
+    retiredSavedCopyRecoveredFromCanonical: migrationResult.retiredSavedCopyRecoveredFromCanonical,
+    retiredSavedCopyCompletionPreserved: migrationResult.retiredSavedCopyCompletionPreserved,
+    retiredSavedCopyMemoPreserved: migrationResult.retiredSavedCopyMemoPreserved,
+    retiredSavedCopyMobileVisible: retiredSavedCopyUi.mobileVisible,
+    retiredSavedCopyWideVisible: retiredSavedCopyUi.wideVisible,
+    retiredSavedCopyExcludedFromCalendar: retiredSavedCopyUi.excludedFromCalendar,
+    retiredSavedCopyReplacementHref: retiredSavedCopyUi.replacementHref,
+    retiredSavedCopyRestartActionCount:
+      retiredSavedCopyUi.mobileRestartActionCount + retiredSavedCopyUi.wideRestartActionCount,
+    retiredSavedCopyHistoryHeadingVisible: retiredSavedCopyUi.wideHistoryHeadingVisible,
     userDraftMigrationPreserved: migrationResult.userDraftPreserved,
     deferredRetirementCandidateCount: deferredRetirementCandidates.length,
     approvedPublicRouteStatus: approvedResponse?.status() ?? null,
@@ -324,7 +401,7 @@ try {
     normalSourceReviewDueCount: sourceFreshness.reviewDueCount,
     normalSourceStaleCount: sourceFreshness.staleCount,
     normalSourceMissingMetadataCount: sourceFreshness.missingMetadataCount,
-    screenshotCount: capturedScenarios.length + 3,
+    screenshotCount: capturedScenarios.length + 5,
     horizontalOverflowCount: capturedScenarios.filter((scenario) => scenario.horizontalOverflow).length,
   };
 
@@ -335,7 +412,7 @@ try {
     policy: {
       publicApproved: 'indexable and executable public Flow',
       reviewGated: 'direct-access noindex route with save and export actions disabled until review approval',
-      runtimeArchived: 'explicit hide or unsupported-source preview; internal inventory preserved, runtime storage and public route removed',
+      runtimeArchived: 'public route removed; unsaved runtime copies removed while saved user history becomes a retired personal copy',
       internalGeneratedPreview: 'internal review inventory only; excluded from runtime seed, browser storage, and public routes',
     },
     counts: {
@@ -349,6 +426,13 @@ try {
       archivedRuntimeReasons: countBy(RUNTIME_ARCHIVED_FLOW_POLICIES, (policy) => policy.reason),
     },
     migrationResult,
+    retiredSavedCopyUi: {
+      ...retiredSavedCopyUi,
+      screenshots: {
+        mobile: 'screenshots/retired-saved-copy-mobile.png',
+        wide: 'screenshots/retired-saved-copy-wide.png',
+      },
+    },
     scenarios: capturedScenarios,
     generatedPreview404: {
       route: '/f/channel-samsung-service-월간-점검-루틴',
@@ -396,25 +480,36 @@ try {
     `- 생성 샘플 공개 URL: HTTP ${summary.generatedPreviewPublicRouteStatus}\n` +
     `- archive Flow: ${summary.archivedRuntimeFlowCount}개, direct URL 404: ${summary.archivedRuntimePublicRoute404Count}개\n` +
     `- archive 대체 route HTTP 200: ${summary.archivedReplacementRoute200Count}개\n` +
-    `- 기존 저장소 생성 샘플/archive 잔존: ${summary.legacyPreviewMigrationRemainingCount}/${summary.archivedRuntimeMigrationRemainingCount}개, 사용자 draft 보존: ${summary.userDraftMigrationPreserved}\n` +
+    `- 기존 저장소 생성 샘플/공개 archive 잔존: ${summary.legacyPreviewMigrationRemainingCount}/${summary.archivedRuntimeMigrationRemainingCount}개, 사용자 draft 보존: ${summary.userDraftMigrationPreserved}\n` +
+    `- 저장된 archive 개인 기록: ${summary.retiredSavedCopyCount}개, canonical 복구: ${summary.retiredSavedCopyRecoveredFromCanonical}, 완료/메모 보존: ${summary.retiredSavedCopyCompletionPreserved}/${summary.retiredSavedCopyMemoPreserved}, 캘린더 제외: ${summary.retiredSavedCopyExcludedFromCalendar}\n` +
     `- 저장/기능 이관 후 재검토할 archive 후보: ${summary.deferredRetirementCandidateCount}개\n` +
     `- 정상 출처 stale/review-due/missing: ${summary.normalSourceStaleCount}/${summary.normalSourceReviewDueCount}/${summary.normalSourceMissingMetadataCount}\n\n` +
     `## 판정\n\n` +
-    `생성형 샘플과 명시적 archive ${summary.archivedRuntimeFlowCount}개는 삭제하지 않고 내부 검토 재고에 보존했다. 정상 사용자 seed와 localStorage에는 들어가지 않으며, 과거 direct public URL은 한국어 복귀 경로가 있는 서비스용 404다. ` +
+    `생성형 샘플과 명시적 archive ${summary.archivedRuntimeFlowCount}개는 삭제하지 않고 내부 검토 재고에 보존했다. 미저장 archive는 runtime에서 제거하고, 사용자가 저장한 archive는 완료·메모를 유지하는 이전 저장본으로 남긴다. 과거 direct public URL은 한국어 복귀 경로가 있는 서비스용 404다. ` +
     `검토 게이트 ${summary.publicReviewGatedCount}개는 공개 승인 콘텐츠로 세지 않으며 noindex와 행동 차단을 유지한다.\n\n` +
     `## 파일\n\n- [audit.md](./audit.md)\n- [review.html](./review.html)\n- [route-evidence.json](./route-evidence.json)\n- [screenshots/](./screenshots/)\n`;
   writeFileSync(path.join(outputDirectory, 'README.md'), readme, 'utf8');
 
+  const deferredRetirementSummary = deferredRetirementCandidates
+    .map((candidate) => `- ${candidate.slug}: ${candidate.blocker} 다음: ${candidate.nextAction}`)
+    .join('\n') || '- 이번 배치에서 확인한 보류 후보는 모두 이관 후 archive했습니다.';
   const audit = `# 런타임 콘텐츠 재고 분리 감사\n\n` +
     `## 문제\n\n` +
     `기존 canonical seed는 정상 사용자 콘텐츠와 생성형 채널 샘플을 함께 담았다. 이 때문에 440개 샘플이 앱 시작 시 생성되고 localStorage 마이그레이션 대상이 되었으며, direct /f URL도 존재했다. 오래된 페이지를 숨겨도 기존 브라우저에는 샘플이 남을 수 있었다.\n\n` +
     `## 조치\n\n` +
     `1. 정상 seed에서 flow-preview-* 생성 샘플을 제거했다.\n` +
     `2. 내부 /creators와 /content-flows만 별도 internalReviewBundles를 읽는다.\n` +
-    `3. 기존 localStorage 마이그레이션은 flow-preview-*와 명시적 archive ${summary.archivedRuntimeFlowCount}개만 제거하고 사용자 draft를 보존한다.\n` +
+    `3. 기존 localStorage 마이그레이션은 flow-preview-*와 미저장 archive를 제거한다. 저장한 archive는 이전 저장본으로 전환해 완료 기록과 메모를 보존한다.\n` +
     `4. 생성 샘플과 archive direct /f URL은 다른 Flow 찾기와 홈 복귀가 가능한 한국어 서비스용 404로 닫았다.\n` +
     `5. 대체 Flow가 지정된 archive는 replacement route가 계속 열리는지 확인한다.\n` +
     `6. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.\n\n` +
+    `## 저장한 archive 처리\n\n` +
+    `- 이전 저장본 ${summary.retiredSavedCopyCount}개를 개인 기록으로 보존했다.\n` +
+    `- 이전 runtime 마이그레이션에서 bundle이 사라진 상태의 canonical 복구: ${summary.retiredSavedCopyRecoveredFromCanonical}.\n` +
+    `- 모바일/와이드 목록 표시: ${summary.retiredSavedCopyMobileVisible}/${summary.retiredSavedCopyWideVisible}.\n` +
+    `- 완료/메모 보존: ${summary.retiredSavedCopyCompletionPreserved}/${summary.retiredSavedCopyMemoPreserved}.\n` +
+    `- 오늘·캘린더 재투영 방지: ${summary.retiredSavedCopyExcludedFromCalendar}.\n` +
+    `- 대체 Flow: ${summary.retiredSavedCopyReplacementHref ?? '없음'}.\n\n` +
     `## 오래된 콘텐츠 해석\n\n` +
     `- 공개 승인 ${summary.publicIndexableCount}개: 정상 실행과 index 허용.\n` +
     `- 검토 게이트 ${summary.publicReviewGatedCount}개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않는다.\n` +
@@ -427,9 +522,7 @@ try {
     `\n` +
     `- 정상 source freshness: current ${summary.normalSourceCurrentCount}, stale ${summary.normalSourceStaleCount}, review-due ${summary.normalSourceReviewDueCount}, missing ${summary.normalSourceMissingMetadataCount}.\n\n` +
     `## archive 보류 후보\n\n` +
-    deferredRetirementCandidates
-      .map((candidate) => `- ${candidate.slug}: ${candidate.blocker} 다음: ${candidate.nextAction}`)
-      .join('\n') +
+    deferredRetirementSummary +
     `\n\n` +
     `## 남은 리스크\n\n` +
     `- 검토 게이트 ${summary.publicReviewGatedCount}개는 아직 runtime 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-gated / archive를 계속 결정해야 한다.\n` +
@@ -459,8 +552,8 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
   <div class="metric">legacy 잔존<strong>${summary.legacyPreviewMigrationRemainingCount}</strong></div>
   <div class="metric">생성 URL 상태<strong>${summary.generatedPreviewPublicRouteStatus}</strong></div>
 </section>
-<section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지한다. 생성 샘플과 명시적 archive는 내부 재고에서만 보고 사용자 draft는 마이그레이션에서 보존한다.</p></section>
-<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>지원 근거가 끊긴 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article><article><h2>원문 불일치 Flow의 대체 실행 화면</h2><p>대체 route는 HTTP 200으로 유지</p><img src="screenshots/archive-replacement-pet-health-mobile.png" alt="반려동물 건강 관찰 대체 Flow"></article></section>
+<section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지한다. 미저장 archive는 runtime에서 제거하고, 저장한 archive는 완료·메모가 남는 이전 저장본으로 보존한다.</p></section>
+<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>지원 근거가 끊긴 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article><article><h2>원문 불일치 Flow의 대체 실행 화면</h2><p>대체 route는 HTTP 200으로 유지</p><img src="screenshots/archive-replacement-pet-health-mobile.png" alt="반려동물 건강 관찰 대체 Flow"></article><article><h2>이전 저장본 · 모바일</h2><p>완료와 메모는 보존하고 새 실행에서는 제외</p><img src="screenshots/retired-saved-copy-mobile.png" alt="이전 저장본 모바일"></article><article><h2>이전 저장본 · wide</h2><p>대체 Flow 링크와 기록 보존 상태 확인</p><img src="screenshots/retired-saved-copy-wide.png" alt="이전 저장본 wide"></article></section>
 </main></body></html>`;
   writeFileSync(path.join(outputDirectory, 'review.html'), reviewHtml, 'utf8');
 } finally {

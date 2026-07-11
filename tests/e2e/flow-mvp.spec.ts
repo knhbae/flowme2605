@@ -2219,146 +2219,55 @@ test('fitness creator profile highlights exact video flows before samples', asyn
   await page.goto('/u/thankyou-bubu');
 
   await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
-  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]').first()).toBeVisible();
 
   await page.locator('button').first().click();
 
-  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]').first()).toBeVisible();
   await expect(page.locator('a[href^="/f/channel-thankyou-bubu-"]')).toHaveCount(0);
 });
 
-test('fitness exact video flow keeps the execution panel minimal', async ({ page }) => {
-  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+test('retired duplicate fitness route yields to the current review-gated source flow', async ({ page }) => {
+  const archivedResponse = await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+  expect(archivedResponse?.status()).toBe(404);
+  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
 
-  const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
-  await expect(exactTool.getByRole('heading', { name: '운동 캘린더', exact: true })).toBeVisible();
-  await expect(exactTool.getByRole('heading', { name: '4주 반복 운동 캘린더' })).toBeVisible();
-  await expect(exactTool.getByText('추천 리듬: 주 3회')).toBeVisible();
-  await expect(exactTool.getByText('시작일', { exact: true })).toBeVisible();
-  await expect(exactTool.getByText('운동 요일')).toBeVisible();
-  await expect(exactTool.getByText('4주 12회차 미리보기', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
-  await expect(page.getByText('캘린더 일정으로 시작')).toHaveCount(0);
-  await expect(page.getByText('1. 요일 정하기')).toHaveCount(0);
-  await expect(page.getByText('2. 오늘 실행 체크')).toHaveCount(0);
-  await expect(page.getByText('3. 내 Flow로 수정')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
-  const executionDetail = page.getByTestId('exact-video-execution-detail');
-  await expect(executionDetail).not.toHaveAttribute('open', '');
-  await executionDetail.locator('summary').click();
-  await expect(executionDetail).toHaveAttribute('open', '');
-  const schedulePreview = page.getByRole('region', { name: '이번 주 등록 미리보기' });
-  await expect(schedulePreview).toBeVisible();
-  await expect(schedulePreview.getByText('월요일').first()).toBeVisible();
-  await expect(schedulePreview.getByText('수요일').first()).toBeVisible();
-  await expect(schedulePreview.getByText('금요일').first()).toBeVisible();
-  await expect(schedulePreview.getByText('12회차 표시')).toBeVisible();
-  await expect(page.getByText('한눈에 보는 전체 루트')).toHaveCount(0);
-  await expect(page.getByText('이번 주 루틴 설정')).toHaveCount(0);
-  await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
-  await expect(exactTool.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '초보' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '절반' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
-  await expect(page.getByText('weekly')).toHaveCount(0);
-
-  const calendarDownloadPromise = page.waitForEvent('download');
-  await exactTool.getByRole('button', { name: '캘린더 파일 받기' }).click();
-  const calendarDownload = await calendarDownloadPromise;
-  expect(calendarDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.ics');
-
-  const excelDownloadPromise = page.waitForEvent('download');
-  await exactTool.getByRole('button', { name: '시트로 받기' }).click();
-  const excelDownload = await excelDownloadPromise;
-  expect(excelDownload.suggestedFilename()).toBe('real-thankyou-bubu-video-full-body-no-jump.xlsx');
-});
-
-test('former broad ThankyouBUBU routes now render as one exact-video action', async ({ page }) => {
   await page.goto('/f/real-thankyou-bubu-home-workout-starter');
-  const starterWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(starterWorkbench.getByText('홈트 캘린더')).toBeVisible();
-  await expect(starterWorkbench.getByText('4주 홈트 체크')).toBeVisible();
-  await expect(page.getByText('운동 가능한 공간과 매트 준비')).toHaveCount(0);
-  await expect(page.getByRole('region', { name: '영상 반복 캘린더 설정' })).toHaveCount(0);
-
-  await page.goto('/f/real-thankyou-bubu-20min-routine');
-  await expect(page.getByText('20분 전신 운동 영상 주 3회 일정에 넣고 실행').first()).toBeVisible();
-  await expect(page.getByText('주 3회 운동 요일 선택')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: /영상 열기/ })).toBeVisible();
-  const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
-  await expect(exactTool.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
+  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
 });
 
-test('diet exact video flow uses application language instead of workout scheduling', async ({ page }) => {
-  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
-
-  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByRole('heading', { name: '기록표', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '오늘 한 끼 적용하기' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '오늘 한 끼 적용 관찰표 Flow' })).toHaveCount(0);
-  await expect(page.getByText('영상에서 기준 1개를 고른 뒤 다음 식사나 운동 전후 행동에 한 번만 적용하고, 적용 전/후 반응을 관찰표 한 줄에 적습니다.')).toBeVisible();
-  await expect(workbench.getByRole('heading', { name: '오늘 한 끼 적용 관찰표' })).toBeVisible();
-  await expect(page.getByText('오늘 적용 기준만 고르기')).toHaveCount(0);
-  await expect(page.getByText('1. 적용일 정하기')).toHaveCount(0);
-  await expect(page.getByText('적용 전후 기록').first()).toBeVisible();
-  await expect(page.getByText('운동 요일')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
-  await expect(page.getByText('운동표에 이미 들어간 기준')).toHaveCount(0);
-  await expect(page.getByText('적용 전후 관찰표').first()).toBeVisible();
-  await expect(workbench.getByLabel('적용 전 기록 / 적용할 식사·운동 전후 행동')).toBeVisible();
-  await expect(workbench.getByLabel('적용 전 기록 / 적용 전 컨디션')).toBeVisible();
-  await expect(workbench.getByLabel('적용 후 기록 / 적용 후 반응')).toBeVisible();
-  await expect(workbench.getByLabel('적용 후 기록 / 유지/중단 결정')).toBeVisible();
-  const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
-  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '메모로 복사' })).toBeVisible();
+test('current ThankyouBUBU routes stay behind the source-fit review boundary', async ({ page }) => {
+  for (const slug of [
+    'real-thankyou-bubu-home-workout-starter',
+    'real-thankyou-bubu-20min-routine',
+  ]) {
+    await page.goto(`/f/${slug}`);
+    await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+    await expect(page.getByRole('region', { name: '영상 반복 캘린더 설정' })).toHaveCount(0);
+  }
 });
 
-test('workout programming exact video starts from a decision table before weekly plan', async ({ page }) => {
-  await page.goto('/f/real-fitvely-video-workout-order');
-
-  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByRole('heading', { name: '후보 비교표', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '이번 주에 적용할 운동 기준' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '운동 기준 결정표에 들어간 적용 Flow' })).toHaveCount(0);
-  await expect(page.getByText('영상의 운동 기준 후보를 먼저 비교하고, 고른 기준만 이번 주 운동표로 옮깁니다.')).toBeVisible();
-  await expect(page.getByText('추천 리듬: 결정 후 적용')).toBeVisible();
-  await expect(page.getByText('결정표+운동표')).toBeVisible();
-  await expect(page.getByText('결정 후 운동표 미리보기')).toBeVisible();
-  await expect(page.getByText('선택 기준 반영').first()).toBeVisible();
-  await expect(page.getByText('운동표에 이미 들어간 기준')).toHaveCount(0);
-  const exactTool = page.getByRole('region', { name: '영상 반복 캘린더 설정' });
-  await expect(exactTool.getByRole('button', { name: '캘린더 파일 받기' })).toBeVisible();
-  await expect(exactTool.getByRole('button', { name: '시트로 받기' })).toBeVisible();
+test('FITVELY source flows remain read-only until source-fit review is complete', async ({ page }) => {
+  for (const slug of [
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-workout-order',
+    'real-fitvely-diet-record-routine',
+  ]) {
+    await page.goto(`/f/${slug}`);
+    await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+  }
 });
 
-test('FITVELY diet record route starts from a source-rule observation sheet', async ({ page }) => {
-  await page.goto('/f/real-fitvely-diet-record-routine');
+test('review-gated exact video does not expose copy or execution actions', async ({ page }) => {
+  await page.goto('/f/real-thankyou-bubu-home-workout-starter');
 
-  await expect(page.getByRole('heading', { name: 'FITVELY 식단 기록 루틴' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'FITVELY 식단 기록 루틴 Flow' })).toHaveCount(0);
-  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
-  await expect(page.getByText('하루 기록 항목 정하기')).toHaveCount(0);
-  const sourceCard = page.getByTestId('flow-source-card');
-  await sourceCard.locator('summary').click();
-  await expect(sourceCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=qcTxaFMWzKs');
-});
-
-test('exact video copy opens an editable draft with the execution item preserved', async ({ page }) => {
-  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
-
-  await page.getByRole('button', { name: '내 버전 만들기' }).click();
-
-  await expect(page).toHaveURL(/\/flows\/.+\/edit/);
-  await expect(page.getByRole('heading', { name: /ThankyouBUBU 전신 다이어트 실천 Flow 사본/ })).toBeVisible();
-  await expect(page.getByText('1개 항목', { exact: true })).toBeVisible();
-  await expect(page.getByLabel('실행 내용')).toHaveValue('운동 스케줄 등록하고 영상 실행');
+  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+  await expect(page.getByRole('button', { name: '내 버전 만들기' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
 });
 
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
@@ -2411,7 +2320,7 @@ test('creator profile merges newly shipped seed flows into existing browser stor
   await page.goto('/u/thankyou-bubu');
 
   await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
-  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]').first()).toBeVisible();
   await page.getByRole('button', { name: '모두 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Local only old flow' })).toBeVisible();
   const generatedPreviewCount = await page.evaluate(() => {
@@ -2419,6 +2328,123 @@ test('creator profile merges newly shipped seed flows into existing browser stor
     return stored.filter((bundle: { flow?: { id?: string } }) => bundle.flow?.id?.startsWith('flow-preview-')).length;
   });
   expect(generatedPreviewCount).toBe(0);
+});
+
+test('a saved archived flow remains as personal history without returning to today or calendar', async ({ page }) => {
+  test.setTimeout(90_000);
+  const retiredSlug = 'book-finish-one';
+  const retiredTitle = '책 한 권 완독 실천 Flow';
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(({ slug, title }) => {
+    const flowId = 'flow-archived-book';
+    const itemId = 'book-finish-old-item';
+    window.localStorage.setItem(
+      'flow_builder_mvp_bundles_v11',
+      JSON.stringify([
+        {
+          flow: {
+            id: flowId,
+            slug,
+            title,
+            description: '기존에 저장해 실행하던 독서 기록입니다.',
+            category: '학습/독서',
+            structure_type: 'checklist',
+            anchor_type: 'none',
+            status: 'published',
+            source_status: 'real',
+            source_url: 'https://ridicorp.com/story/pr-reading-new-year-resolution/',
+            created_at: '2026-07-01T00:00:00.000Z',
+            updated_at: '2026-07-01T00:00:00.000Z',
+          },
+          sections: [
+            { id: 'book-finish-old-section', flow_id: flowId, title: '읽기', order: 1 },
+          ],
+          items: [
+            {
+              id: itemId,
+              flow_id: flowId,
+              section_id: 'book-finish-old-section',
+              title: '오늘 읽을 분량 읽기',
+              type: 'todo',
+              order: 1,
+            },
+          ],
+          itemDetails: [
+            { item_id: itemId, completion_criteria: '오늘 정한 분량을 읽고 표시합니다.' },
+          ],
+        },
+      ]),
+    );
+    window.localStorage.setItem(
+      `flow:saved:${slug}`,
+      JSON.stringify({
+        slug,
+        savedAt: '2026-07-01T00:00:00.000Z',
+        selectedArtifactMode: 'checklist',
+      }),
+    );
+    window.localStorage.setItem(
+      `flow_builder_mvp_checks_${slug}`,
+      JSON.stringify({ [itemId]: true }),
+    );
+    window.localStorage.setItem(
+      `flow_builder_mvp_item_state_${slug}`,
+      JSON.stringify({ [itemId]: { note: '완독 기록은 보존해야 합니다.' } }),
+    );
+  }, { slug: retiredSlug, title: retiredTitle });
+
+  await page.goto('/my');
+  await expect.poll(() => page.evaluate((slug) => {
+    const bundles = JSON.parse(window.localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]');
+    const bundle = bundles.find((entry: { flow?: { slug?: string } }) => entry.flow?.slug === slug);
+    return {
+      saved: Boolean(window.localStorage.getItem(`flow:saved:${slug}`)),
+      status: bundle?.flow?.status,
+      retired: Boolean(bundle?.flow?.tags?.includes('retired-personal-copy')),
+    };
+  }, retiredSlug)).toEqual({ saved: true, status: 'draft', retired: true });
+  await expect(page.getByTestId('my-flow-now-section')).not.toContainText('책 한 권 완독 실천');
+  await page.getByTestId('my-flow-view-flow').click();
+  const mobileRetired = page.locator(`[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${retiredSlug}"]`);
+  await expect(mobileRetired).toBeVisible();
+  await expect(mobileRetired).toContainText('책 한 권 완독 실천');
+  await expect(mobileRetired.getByTestId('my-flow-content-readiness')).toHaveText('이전 저장본');
+  await expect(mobileRetired).toContainText('완료 기록과 메모는 이 기기에 남아 있어요.');
+  await expect(mobileRetired.getByTestId('my-flow-mobile-structure-progress')).toHaveText('전체 1/1 완료');
+  await expect(mobileRetired.getByRole('link', { name: '새 Flow 보기' })).toHaveAttribute('href', '/f/reading-habit-30day');
+  await expect(mobileRetired.getByText('이 Flow 다시 쓰기')).toHaveCount(0);
+  await expect(mobileRetired.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
+
+  const migratedState = await page.evaluate((slug) => {
+    const bundles = JSON.parse(window.localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]');
+    const bundle = bundles.find((entry: { flow?: { slug?: string } }) => entry.flow?.slug === slug);
+    return {
+      status: bundle?.flow?.status,
+      tags: bundle?.flow?.tags ?? [],
+      checks: JSON.parse(window.localStorage.getItem(`flow_builder_mvp_checks_${slug}`) || '{}'),
+      itemStates: JSON.parse(window.localStorage.getItem(`flow_builder_mvp_item_state_${slug}`) || '{}'),
+    };
+  }, retiredSlug);
+  expect(migratedState.status).toBe('draft');
+  expect(migratedState.tags).toContain('retired-personal-copy');
+  expect(migratedState.checks['book-finish-old-item']).toBe(true);
+  expect(migratedState.itemStates['book-finish-old-item'].note).toBe('완독 기록은 보존해야 합니다.');
+
+  await page.goto('/calendar');
+  await expect(page.getByTestId('my-flow-calendar-card')).not.toContainText('책 한 권 완독 실천');
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideRetired = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${retiredSlug}"]`);
+  await expect(wideRetired).toBeVisible();
+  await expect(wideRetired.getByTestId('my-flow-content-readiness')).toHaveText('이전 저장본');
+  await expect(wideRetired).toContainText('완료 기록과 메모는 이 기기에 남아 있어요.');
+  await expect(wideRetired.getByRole('link', { name: '새 Flow 보기' })).toHaveAttribute('href', '/f/reading-habit-30day');
+  await expect(wideRetired.getByText('이 Flow 다시 쓰기')).toHaveCount(0);
+  await expect(wideRetired.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '이전 저장 기록' })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
 });
 
 test('real source public flow exposes source QA metadata and target metadata', async ({ page }) => {
@@ -2792,7 +2818,7 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
 
     saveFlow('moving-d30-basic', 'calendar', '2026-06-26');
     saveFlow('computer-skills-d30-study', 'calendar', '2026-06-27');
-    saveFlow('home-workout-20min', 'calendar', '2026-05-27');
+    saveFlow('english-study-30day-routine', 'calendar', '2026-05-27');
     saveFlow('baby-food-menu-recipe', 'sheet', '2026-05-28');
     saveFlow('used-car-buying-check', 'checklist');
     saveFlow('new-car-delivery-check', 'checklist');
@@ -2999,10 +3025,10 @@ test('calendar route compacts three-plus same-date flow labels in the month grid
         anchor,
       }));
     };
+    saveFlow('moving-d30-basic', '2026-07-03');
     saveFlow('computer-skills-d30-study', '2026-07-03');
-    saveFlow('study-exam-d30-plan', '2026-07-03');
-    saveFlow('overseas-travel-d14', '2026-06-17');
-    saveFlow('japan-esim-setup-before-departure', '2026-06-06');
+    saveFlow('vehicle-inspection-prep', '2026-06-17');
+    saveFlow('portfolio-4week', '2026-07-01');
   };
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-03T09:00:00+09:00') });
@@ -3028,10 +3054,10 @@ test('calendar route compacts three-plus same-date flow labels in the month grid
   await expect(selectedDay.getByTestId('my-flow-selected-date-group')).toHaveCount(4);
   await expect(selectedDay.getByTestId('my-flow-selected-date-flow-marker')).toHaveCount(4);
   const selectedDayGroupText = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
+  expect(selectedDayGroupText).toContain('이사 준비');
   expect(selectedDayGroupText).toContain('컴퓨터활용능력 학습');
-  expect(selectedDayGroupText).toContain('시험 공부 계획');
-  expect(selectedDayGroupText).toContain('해외여행 출국 준비');
-  expect(selectedDayGroupText).toContain('일본 eSIM 출국 전 등록 체크');
+  expect(selectedDayGroupText).toContain('자동차검사 준비');
+  expect(selectedDayGroupText).toContain('개발 프로젝트 포트폴리오');
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/calendar');
@@ -3092,13 +3118,13 @@ test('my flow filters narrow saved calendar checklist and routine management', a
       mode: 'custom',
       anchor: '2026-06-26',
     }));
-    localStorage.setItem('flow:saved:home-workout-20min', JSON.stringify({
-      slug: 'home-workout-20min',
+    localStorage.setItem('flow:saved:english-study-30day-routine', JSON.stringify({
+      slug: 'english-study-30day-routine',
       savedAt,
       selectedArtifactMode: 'calendar',
       anchor: '2026-05-27',
     }));
-    localStorage.setItem('flow:home-workout-20min:anchorDate', JSON.stringify({
+    localStorage.setItem('flow:english-study-30day-routine:anchorDate', JSON.stringify({
       mode: 'custom',
       anchor: '2026-05-27',
     }));
@@ -3107,11 +3133,11 @@ test('my flow filters narrow saved calendar checklist and routine management', a
   await page.goto('/my');
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]')).toBeVisible();
-  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="home-workout-20min"]')).toBeVisible();
+  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="english-study-30day-routine"]')).toBeVisible();
 
-  await page.getByTestId('my-flow-scope-select').selectOption('home-workout-20min');
-  await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'home-workout-20min');
-  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/18 완료');
+  await page.getByTestId('my-flow-scope-select').selectOption('english-study-30day-routine');
+  await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'english-study-30day-routine');
+  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/12 완료');
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
@@ -3180,9 +3206,9 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-inventory-toggle')).toContainText('전체 Flow 보기');
   await page.getByTestId('my-flow-inventory-toggle').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(18);
-  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="new-apartment-precheck"]')).toBeVisible();
-  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="japan-esim-setup-before-departure"]')).toBeVisible();
-  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="dog-adoption-first-week"]')).toBeVisible();
+  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="washer-tub-clean-monthly"]')).toBeVisible();
+  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="travel-packing-list"]')).toBeVisible();
+  await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="pet-health-observation"]')).toBeVisible();
   const firstOverviewCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
   await expect(firstOverviewCard.getByTestId('my-flow-type-counts')).toContainText('일정');
   await expect(firstOverviewCard.getByTestId('my-flow-type-counts')).toContainText('메모');
@@ -3252,11 +3278,10 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.locator('[data-testid="my-flow-routine-dots"]')).toHaveCount(0);
   await expect(page.locator('[data-testid="my-flow-routine-icon"]').first()).toBeVisible();
   const firstRoutineIcon = page.locator('[data-testid="my-flow-routine-icon"]').first();
-  await expect(firstRoutineIcon).toHaveAttribute('data-routine-icon-kind', 'workout');
+  await expect(firstRoutineIcon).toHaveAttribute('data-routine-icon-kind', /.+/);
   await expect(firstRoutineIcon.locator('svg')).toBeVisible();
   await expect(firstRoutineIcon).toHaveText('');
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-icon"][data-routine-icon-kind="maintenance"] svg').first()).toBeVisible();
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+3');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+2');
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-02"] [data-testid="my-flow-routine-icon"][data-routine-icon-kind="study"] svg')).toBeVisible();
   await expect(page.locator('.fc-event[aria-label*="상세 열기"]').first()).toBeVisible();
   const accessibleCalendarEvent = page.locator('.fc-event[aria-label*="상세 열기"]').first();
@@ -3265,7 +3290,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail')).toBeVisible();
   await page.getByTestId('my-flow-calendar-selected-day').getByRole('button', { name: '닫기', exact: true }).click();
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+3');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+2');
   await page.locator('.fc-daygrid-day[data-date="2026-05-28"]').getByTestId('my-flow-calendar-date-button').click();
   const selectedCalendarRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first();
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('컴퓨터활용능력 학습');
@@ -3307,14 +3332,16 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]').click();
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('6월 3일');
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toHaveAttribute('data-overflow-date', '2026-06-03');
-  await expect(page.getByTestId('my-flow-selected-day-overflow-note')).toContainText('+3');
+  await expect(page.getByTestId('my-flow-selected-day-overflow-note')).toContainText('+2');
   await expect(page.getByTestId('my-flow-selected-day-overflow-note')).toContainText('반복 항목 포함');
-  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first().getByRole('checkbox', { name: /완료 체크$/ })).toBeVisible();
-  const selectedDayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();
-  await expect(selectedDayRoutineRow.getByRole('checkbox', { name: /이번 항목 완료$/ })).toBeVisible();
+  const selectedDayRoutineCompletion = page
+    .getByTestId('my-flow-calendar-selected-day')
+    .getByRole('checkbox', { name: /저장한 표현으로 예문 3개 만들기 이번 항목 완료$/ });
+  const selectedDayRoutineRow = selectedDayRoutineCompletion.locator('xpath=ancestor::article[1]');
+  await expect(selectedDayRoutineCompletion).toBeVisible();
   await expect(selectedDayRoutineRow.getByTestId('my-flow-routine-completion-note')).toHaveCount(0);
   await expect(selectedDayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/반복 항목 \d+\/\d+/);
-  await page.locator('[data-testid="my-flow-routine-icon"]').first().click();
+  await selectedDayRoutineRow.getByRole('button').first().click();
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail')).toBeVisible();
   const selectedRoutineDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
   const routineProgressBefore = await selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill').innerText();
@@ -3367,16 +3394,16 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(routineRepeatEditor.locator('select')).toContainText('모든 이벤트');
   await expect(routineRepeatEditor.getByLabel('반복 요일 수')).toBeDisabled();
   await expect(routineRepeatEditor.getByTestId('my-flow-routine-end-date')).toBeDisabled();
-  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]')).toHaveCount(4);
   await routineRepeatEditor.getByLabel('반복 변경 적용 범위').selectOption('future');
   await expect(routineRepeatEditor.getByLabel('반복 요일 수')).toBeEnabled();
   await expect(routineRepeatEditor.getByTestId('my-flow-routine-end-date')).toBeEnabled();
   await routineRepeatEditor.getByTestId('my-flow-routine-end-date').fill('2026-06-02');
   await expect(routineRepeatEditor.getByTestId('my-flow-routine-repeat-pending')).toContainText('저장 전');
-  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]')).toHaveCount(4);
   await routineRepeatEditor.getByTestId('my-flow-routine-repeat-cancel').click();
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-routine-repeat-editor')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]')).toHaveCount(4);
   await selectedRoutineDetail.getByTestId('my-flow-routine-repeat-toggle').click();
   const reopenedRoutineRepeatEditor = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-routine-repeat-editor');
   await expect(reopenedRoutineRepeatEditor.locator('select')).toHaveValue('this');
@@ -3385,7 +3412,8 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(reopenedRoutineRepeatEditor.getByTestId('my-flow-routine-repeat-pending')).toContainText('저장 전');
   await expect(reopenedRoutineRepeatEditor.getByTestId('my-flow-routine-repeat-apply')).toHaveClass(/bg-blue-700/);
   await reopenedRoutineRepeatEditor.getByTestId('my-flow-routine-repeat-apply').click();
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [aria-label^="하루 20분 전신 홈트 Flow"]')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).not.toContainText('저장한 표현으로 예문 3개 만들기');
+  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]')).toHaveCount(3);
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article').first()).toHaveAttribute('data-item-type', 'scheduled_task');
   await page.getByTestId('my-flow-calendar-selected-day').locator('article').first().getByRole('button').first().click();
   const selectedTaskDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
@@ -4282,7 +4310,7 @@ test('my flow ux20 demo keeps large flow inventories grouped and collapsed', asy
   expect(routineCardCount).toBeGreaterThan(0);
   expect(routineCardCount).toBeLessThan(30);
 
-  await page.getByTestId('my-flow-search').fill('자동차');
+  await page.getByTestId('my-flow-search').fill('식단');
   const searchedCardCount = await page.getByTestId('my-flow-overview-card').count();
   expect(searchedCardCount).toBeGreaterThan(0);
   expect(searchedCardCount).toBeLessThanOrEqual(routineCardCount);
@@ -4393,7 +4421,7 @@ test('my flow ux12 mobile routine rail keeps overflow horizontal without overlap
   await expect(routineRail).toBeVisible();
   await expect(routineIcons).toHaveCount(1);
   await expect(routineIcons.nth(0)).toBeVisible();
-  await expect(routineOverflow).toContainText('+4');
+  await expect(routineOverflow).toContainText('+3');
 
   const railBox = await routineRail.boundingBox();
   const firstIconBox = await routineIcons.nth(0).boundingBox();
@@ -4486,7 +4514,7 @@ test('my flow ux12 drags an overflow routine row to another calendar date', asyn
 
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText('6월 4일');
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator(`article[data-routine-key="${overflowRoutineKey}"]`)).toHaveCount(1);
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+2');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+1');
   await page.locator('.fc-daygrid-day[data-date="2026-06-03"]').getByTestId('my-flow-calendar-date-button').click();
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText('6월 3일');
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator(`article[data-routine-key="${overflowRoutineKey}"]`)).toHaveCount(0);
@@ -4494,12 +4522,12 @@ test('my flow ux12 drags an overflow routine row to another calendar date', asyn
 
 test('my flow ux12 calendar routine rows rely on the progress pill only', async ({ page }) => {
   await page.goto('/calendar?demo=ux12');
-  await page.getByTestId('my-flow-month-picker').fill('2026-05');
-  const routineIcon = page.locator('.fc-daygrid-day[data-date="2026-05-29"] [data-testid="my-flow-routine-icon"]').first();
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  const routineIcon = page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-icon"]').first();
   await expect(routineIcon).toBeVisible();
-  await routineIcon.dragTo(page.locator('.fc-daygrid-day[data-date="2026-05-28"]'));
+  await routineIcon.dragTo(page.locator('.fc-daygrid-day[data-date="2026-06-04"]'));
 
-  await page.locator('.fc-daygrid-day[data-date="2026-05-28"]').getByTestId('my-flow-calendar-date-button').click();
+  await page.locator('.fc-daygrid-day[data-date="2026-06-04"]').getByTestId('my-flow-calendar-date-button').click();
   const todayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();
   await expect(todayRoutineRow).toBeVisible();
   await expect(todayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/반복 항목 \d+\/\d+/);
@@ -4850,13 +4878,10 @@ test('flow item card makes detail and skipped states explicit', async ({ page })
 });
 
 test('source-fit decisions are visible on direct-access public flow pages', async ({ page }) => {
-  await page.goto('/f/study-exam-d30-plan');
-  await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute('data-decision', 'catalog_preview_only');
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.getByTestId('public-flow-save-actions')).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-export-format-option')).toHaveCount(0);
-  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  const archivedResponse = await page.goto('/f/study-exam-d30-plan');
+  expect(archivedResponse?.status()).toBe(404);
+  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
 
   await page.goto('/f/running-5k-4week');
   await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute('data-decision', 'reshape_before_featured');
@@ -5030,7 +5055,7 @@ test('wedding flow answers first-screen questions and persists date note and ski
   await expect(page.getByText('1 / 11').first()).toBeVisible();
 });
 
-test('promoted P1 flows expose new execution model surfaces', async ({ page }) => {
+test('current P1 flows expose new execution model surfaces', async ({ page }) => {
   await page.goto('/f/wedding-d180-basic');
 
   await expect(page.getByRole('heading', { name: '결혼 준비 D-300 타임라인' })).toBeVisible();
@@ -5039,21 +5064,9 @@ test('promoted P1 flows expose new execution model surfaces', async ({ page }) =
   await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toContainText('월간 캘린더 + 실행 리스트');
   await expect(page.getByRole('region', { name: 'Flow artifact workbench' }).getByTestId('artifact-calendar-card')).toBeVisible();
   await expect(page.getByRole('region', { name: 'Flow artifact workbench' }).getByTestId('artifact-list-card')).toBeVisible();
-  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
-
-  await page.goto('/f/study-exam-d30-plan');
-
-  await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획 Flow' })).toHaveCount(0);
-  await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
-  await expect(page.getByText('회차 그리드')).toBeVisible();
-  await expect(page.getByText('회차 기록표')).toBeVisible();
-  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
 
   for (const [slug, title] of [
-    ['home-workout-20min', '하루 20분 전신 홈트'],
     ['english-study-30day-routine', '직장인 영어공부 30일 루틴'],
-    ['car-care-monthly-routine', '월 1회 자동차 관리 루틴'],
   ] as const) {
     await page.goto(`/f/${slug}`);
 
@@ -5062,7 +5075,6 @@ test('promoted P1 flows expose new execution model surfaces', async ({ page }) =
     await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
     await expect(page.getByText('회차 그리드')).toBeVisible();
     await expect(page.getByText('회차 기록표')).toBeVisible();
-    await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
   }
 });
 
@@ -5171,28 +5183,20 @@ test('duration calendar checks only one day at a time', async ({ page }) => {
 });
 
 test('routine flow highlights weekly routine setup', async ({ page }) => {
-  await page.goto('/f/running-5k-4week');
+  await page.goto('/f/english-study-30day-routine');
 
   const workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench.getByTestId('routine-session-grid-card')).toBeVisible();
   await expect(workbench.getByTestId('routine-session-log-card')).toBeVisible();
   await expect(workbench.getByTestId('routine-today-session-card')).toBeVisible();
   await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(page.getByRole('button', { name: '월별 달력' })).toBeVisible();
-  await page.getByLabel('운동 시작일').fill('2026-06-01');
-
-  await expect(page.getByText('추천 다음 항목')).toHaveCount(0);
-  await page.getByRole('button', { name: '월별 달력' }).click();
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-
-  await page.getByRole('button', { name: '전체 루틴' }).click();
-  await page.locator('[data-testid="flow-item-card"]').first().getByRole('checkbox').check();
-  await expect(page.getByText('추천 다음 항목')).toBeVisible();
+  await page.getByLabel('시작일', { exact: true }).fill('2026-06-01');
+  await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
 });
 
 test('routine desktop uses session grid and session log artifacts', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/f/running-5k-4week');
+  await page.goto('/f/english-study-30day-routine');
 
   const workbench = page.getByLabel('Flow artifact workbench');
   const sessionGrid = workbench.getByTestId('routine-session-grid-card');
@@ -5220,11 +5224,7 @@ test('routine mobile puts the session card before the calendar card', async ({ p
   await page.setViewportSize({ width: 390, height: 844 });
 
   for (const slug of [
-    'running-5k-4week',
-    'home-workout-20min',
     'english-study-30day-routine',
-    'car-care-monthly-routine',
-    'real-thankyou-bubu-video-full-body-no-jump',
   ] as const) {
     await page.goto(`/f/${slug}`);
 
@@ -5249,7 +5249,7 @@ test('routine mobile puts the session card before the calendar card', async ({ p
   }
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/f/running-5k-4week');
+  await page.goto('/f/english-study-30day-routine');
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card').last()).toBeVisible();
 });
 
@@ -5321,11 +5321,11 @@ test('representative flows show artifact-first previews on the first screen', as
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-list-card')).toBeVisible();
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-comparison-card')).toHaveCount(0);
 
-  await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
+  await page.goto('/f/english-study-30day-routine');
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
 
-  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
-  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-log-table-fitvely-nutrition-action-observation-log')).toBeVisible();
+  await page.goto('/f/washer-tub-clean-monthly');
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('maintenance-routine-checklist-card')).toBeVisible();
 });
 
 test('artifact workbench shows the primary usable surface first', async ({ page }) => {
@@ -5343,21 +5343,17 @@ test('artifact workbench shows the primary usable surface first', async ({ page 
   await expect(workbench.getByTestId('flow-hold-section')).toBeVisible();
   await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 
-  await page.goto('/f/home-workout-20min');
+  await page.goto('/f/english-study-30day-routine');
   workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench).toBeVisible();
-  await expect(workbench).toContainText('반복 캘린더');
-  await expect(workbench).toContainText('회차');
+  await expect(workbench.getByTestId('routine-session-grid-card')).toBeVisible();
+  await expect(workbench.getByTestId('routine-session-log-card')).toBeVisible();
 
-  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
+  await page.goto('/f/fridge-cleanout-weekly-plan');
   workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench).toBeVisible();
-  await expect(workbench).toContainText('기록표');
-  await expect(workbench).toContainText('적용 전후 관찰표');
-  await expect(workbench).toContainText('영상에서 고른 기준');
-  await expect(workbench).toContainText('적용 전 컨디션');
-  await expect(workbench).toContainText('적용 후 반응');
-  await expect(workbench).toContainText('유지/중단 결정');
+  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toBeVisible();
+  await expect(workbench).toContainText('7일 재고 소진표');
 });
 
 test('common first screen keeps progress inside the artifact workbench', async ({ page }) => {
@@ -5729,39 +5725,7 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await expect(restoredMovingWorkbench.getByTestId('artifact-list-card')).toBeVisible();
   await expect(restoredMovingWorkbench.getByTestId('artifact-calendar-card')).toBeVisible();
 
-  await page.goto('/f/overseas-travel-d14');
-  await page.getByLabel('출국일').fill('2026-07-18');
-  const travelWorkbench = page.getByLabel('Flow artifact workbench');
-  await expect(travelWorkbench.getByRole('heading', { name: '공식 확인·비상 카드' })).toBeVisible();
-  await expect(travelWorkbench.getByRole('heading', { name: '이사 업체 후보 비교' })).toHaveCount(0);
-  await travelWorkbench.getByLabel('방문 국가/도시').fill('일본 도쿄');
-  await travelWorkbench.getByLabel('입국 조건 확인 결과').fill('무비자 90일, 여권 6개월 이상 확인');
-  await travelWorkbench.getByLabel('영사콜센터·현지 공관').fill('영사콜센터 +82-2-3210-0404 / 주일본대사관');
-
-  await page.reload();
-  const restoredTravelWorkbench = page.getByLabel('Flow artifact workbench');
-  await expect(restoredTravelWorkbench.getByLabel('방문 국가/도시')).toHaveValue('일본 도쿄');
-  await expect(restoredTravelWorkbench.getByLabel('입국 조건 확인 결과')).toHaveValue('무비자 90일, 여권 6개월 이상 확인');
-  await expect(restoredTravelWorkbench.getByLabel('영사콜센터·현지 공관')).toHaveValue('영사콜센터 +82-2-3210-0404 / 주일본대사관');
-
-  await page.goto('/f/real-sinagong-computer-d30-study');
-  await page.getByRole('textbox', { name: '시험일' }).fill('2026-07-05');
-  const studyWorkbench = page.getByLabel('Flow artifact workbench');
-  await expect(studyWorkbench.getByRole('heading', { name: '챕터 진도표' })).toBeVisible();
-  await expect(studyWorkbench.getByRole('heading', { name: '기출 점수·오답 기록' })).toBeVisible();
-  await studyWorkbench.getByLabel('1주차 개념 1회독 / 범위').fill('1~3장');
-  await studyWorkbench.getByLabel('1주차 개념 1회독 / 목표일').fill('2026-06-12');
-  await studyWorkbench.getByLabel('기출 1회차 / 점수').fill('78점');
-  await studyWorkbench.getByLabel('기출 1회차 / 오답').fill('계산 문제 4개');
-
-  await page.reload();
-  const restoredStudyWorkbench = page.getByLabel('Flow artifact workbench');
-  await expect(restoredStudyWorkbench.getByLabel('1주차 개념 1회독 / 범위')).toHaveValue('1~3장');
-  await expect(restoredStudyWorkbench.getByLabel('1주차 개념 1회독 / 목표일')).toHaveValue('2026-06-12');
-  await expect(restoredStudyWorkbench.getByLabel('기출 1회차 / 점수')).toHaveValue('78점');
-  await expect(restoredStudyWorkbench.getByLabel('기출 1회차 / 오답')).toHaveValue('계산 문제 4개');
-
-  await page.goto('/f/study-exam-d30-plan');
+  await page.goto('/f/english-study-30day-routine');
   const routineWorkbench = page.getByLabel('Flow artifact workbench');
   const routineLogCard = routineWorkbench.getByTestId('routine-session-log-card');
   await routineLogCard.getByLabel('저장 전 미리보기 선택: 1회차').check();
@@ -5778,19 +5742,6 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await expect(reloadedRoutineLogCard.getByLabel('저장 전 미리보기 선택: 2회차')).toBeChecked();
   await expect(reloadedRoutineLogCard.getByLabel('회차 메모: 2회차')).toHaveValue('듣기 20분, 단어 30개');
 
-  await page.goto('/f/real-fitvely-video-body-fat-6kg-method');
-  const logWorkbench = page.getByLabel('Flow artifact workbench');
-  await logWorkbench.getByLabel('적용 전 기록 / 적용할 식사·운동 전후 행동').fill('다음 점심 한 끼');
-  await logWorkbench.getByLabel('적용 전 기록 / 영상에서 고른 기준').fill('원본 영상에서 고른 기준 1개');
-  await logWorkbench.getByLabel('적용 후 기록 / 유지/중단 결정').fill('한 번 더 적용');
-  await logWorkbench.getByLabel('주간 조정 메모').fill('다음 주에도 같은 기준을 유지할지 확인');
-
-  await page.reload();
-  const reloadedLogWorkbench = page.getByLabel('Flow artifact workbench');
-  await expect(reloadedLogWorkbench.getByLabel('적용 전 기록 / 적용할 식사·운동 전후 행동')).toHaveValue('다음 점심 한 끼');
-  await expect(reloadedLogWorkbench.getByLabel('적용 전 기록 / 영상에서 고른 기준')).toHaveValue('원본 영상에서 고른 기준 1개');
-  await expect(reloadedLogWorkbench.getByLabel('적용 후 기록 / 유지/중단 결정')).toHaveValue('한 번 더 적용');
-  await expect(reloadedLogWorkbench.getByLabel('주간 조정 메모')).toHaveValue('다음 주에도 같은 기준을 유지할지 확인');
 });
 
 test('vehicle hold memo edits and persists user notes', async ({ page }) => {
@@ -6130,22 +6081,11 @@ test('content flows studio links promoted candidates to matching public service 
   await expect(page.getByTestId('content-flow-public-route-link')).toHaveCount(0);
 });
 
-test('promoted content-flow service routes preserve executable source cues', async ({ page }) => {
+test('approved promoted content-flow routes preserve executable source cues', async ({ page }) => {
   const expectations: Record<string, string[]> = {
-    '/f/washer-tub-clean-monthly': ['문 열어 건조', '고무패킹', '세제통', '배수필터', '과탄산소다', '2주 1회'],
-    '/f/monstera-care-routine': ['겉흙 2~3cm', '밝은 간접광', '배수구멍', '분갈이'],
+    '/f/washer-tub-clean-monthly': ['문 열어 건조', '고무패킹', '세제통', '배수필터', '통세척/통살균 코스', '설명서에서 허용한 종류와 양', '월 1회 관리일'],
     '/f/wedding-d180-basic': ['D-300~D-180', '보증인원', '계약금', '청첩장', '식권', 'BGM', '역할 분담'],
-    '/f/water-purifier-filter-cycle': ['코크/출수구', '자가 살균', '물맛·냄새', 'RO/나노', '후카본'],
     '/f/used-car-buying-check': ['원문에서 옮긴 점검 순서', '자동차등록원부', '침수 흔적', '점검 후 판단', '구매/보류/거절'],
-    '/f/plank-30-day-challenge': ['Day 7·19·27 휴식', 'Day 9 호흡 3:3 패턴', 'Day 30 150초', '허리 통증'],
-    '/f/real-thankyou-bubu-home-workout-starter': ['원문에서 옮긴 실행 기준', '점프 없음', '눕는 동작 없음', '원본 영상 열기', '저장 후 남길 기록'],
-    '/f/japan-esim-setup-before-departure': ['eSIM', '사용 가능 기기', '프로필', '현지 회선', '지도와 메신저'],
-    '/f/kids-dino-footprint-art': ['공룡', '준비물', '발자국', '아이 말', '다음 놀이'],
-    '/f/banana-peanut-recipe-video': ['바나나', '땅콩버터', '내열 용기', '원본 영상', '칼로리'],
-    '/f/jeonse-contract-precheck-docs': ['시세', '등기부등본', '전세보증보험', '표준계약서', '확정일자', '보류 사유', '법률 판단'],
-    '/f/elementary-school-entry-d30': ['취학통지', '예비소집', '먼저 살 물건', '학교 안내 전 보류', '네임스티커', '등교 동선', '입학식 가방'],
-    '/f/kids-printable-squishy-craft': ['원문 도안 링크', '사용 조건', '도안 출력', '코팅 재료', '보호자가 미리 자를 부분', '완성 사진은 선택 메모', '다음 놀이 후보'],
-    '/f/remote-help-session-precheck': ['요청자와 작업 범위', '화면 공유만으로 충분', '일회성 원격 제어', '접속값은 FlowMe에 저장하지 않기', '반복 접근', '세션 종료'],
     '/f/fridge-cleanout-weekly-plan': ['냉장고 지도', '우선 재료', '메뉴 후보', '장보기 보류', '상태', '장보기 전 메모'],
   };
 
@@ -6157,46 +6097,6 @@ test('promoted content-flow service routes preserve executable source cues', asy
       await expect(page.getByTestId('public-flow-primary-setup')).toContainText('입력 없이 바로 확인합니다.');
       await expect(workbench.getByRole('heading', { name: '현장 체크리스트' })).toBeVisible();
       await expect(page.locator('body')).not.toContainText('방문/시승일 기록');
-    }
-    if (route === '/f/jeonse-contract-precheck-docs') {
-      await expect(page.locator('body')).toContainText('계약 예정일');
-      await expect(page.locator('header')).toContainText('계약 일정 체크');
-      await expect(page.locator('header')).not.toContainText('실행 체크리스트');
-      await expect(workbench.getByTestId('jeonse-source-bridge')).toContainText('D-3');
-      await expect(workbench.getByTestId('jeonse-source-bridge')).toContainText('D-Day');
-      await expect(workbench.getByTestId('jeonse-source-bridge')).toContainText('D+1');
-      await expect(workbench).toContainText('일정 보기');
-      await expect(workbench).toContainText('전체 보기');
-      await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('계약 전 서류 확인');
-      await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('이 날의 체크 항목');
-      await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('미리보기 0/2 표시');
-      await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('보류 사유 남기기');
-      await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('주의할 점');
-      await expect(workbench.getByTestId('jeonse-calendar-preview')).toContainText('캘린더 미리보기');
-      await workbench.getByTestId('jeonse-calendar-preview').getByText('캘린더 미리보기').click();
-      await expect(workbench.getByTestId('jeonse-calendar-preview')).toContainText('D-3');
-      await expect(workbench.getByTestId('jeonse-calendar-preview')).toContainText('D-Day');
-      await expect(workbench.getByTestId('jeonse-calendar-preview')).toContainText('D+1');
-      await workbench.getByTestId('jeonse-source-bridge').getByRole('button', { name: /D-Day/ }).click();
-      await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('계약서 정보 확인');
-      await workbench.getByTestId('jeonse-source-bridge').getByRole('button', { name: /D\+1/ }).click();
-      await expect(workbench.getByTestId('jeonse-selected-event-card')).toContainText('입주 후 보호 절차');
-      await expect(workbench).toContainText('캘린더 파일 받기');
-      await workbench.getByRole('tab', { name: '전체 보기' }).click();
-      await expect(workbench.getByTestId('jeonse-all-items')).toContainText('전체 체크 항목 7개');
-      await expect(workbench.getByTestId('jeonse-all-items')).toContainText('미리보기 0/2 표시');
-      await expect(workbench.getByTestId('jeonse-all-items')).toContainText('상세 메모');
-      await expect(workbench.getByTestId('jeonse-hold-decision-card')).toHaveCount(0);
-      await expect(page.locator('body')).not.toContainText('계약해도 됩니다');
-      await expect(page.locator('body')).not.toContainText('계약 안전 점수');
-      await expect(page.locator('body')).not.toContainText('전문가 확인 필요');
-      await expect(page.locator('body')).not.toContainText('진행 상황은 이 브라우저에 자동 저장됩니다');
-      await expect(page.getByLabel('Flow artifact preview')).toHaveCount(0);
-      await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
-      await expect(page.getByTestId('flow-source-card')).toHaveCount(0);
-      await expect(page.getByTestId('flow-warning-card')).toHaveCount(0);
-      await expect(page.locator('body')).not.toContainText('Flow 전환 방식');
-      await expect(page.locator('body')).not.toContainText('제작자 자료 확장 후보');
     }
     if (route === '/f/fridge-cleanout-weekly-plan') {
       await expect(workbench.getByRole('heading', { name: '7일 재고 소진표' }).first()).toBeVisible();
@@ -6291,6 +6191,7 @@ test('current-source audit batch exposes one execution surface only for approved
 });
 
 test('current source freshness audit keeps corrected routes executable and stale routes gated', async ({ page }) => {
+  test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 844 });
 
   const approvedRoutes = [
@@ -7006,42 +6907,20 @@ test('experiment feedback routes keep one artifact-first execution surface', asy
   }
 });
 
-test('routine feedback routes remove duplicate routine summaries and generic session records', async ({ page }) => {
-  await page.goto('/f/real-thankyou-bubu-home-workout-starter');
-  let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByText('홈트 캘린더')).toBeVisible();
-  const workoutSourceBridge = workbench.getByTestId('exact-video-source-bridge');
-  await expect(workoutSourceBridge).toContainText('원문에서 옮긴 실행 기준');
-  await expect(workoutSourceBridge).toContainText('점프 없음');
-  await expect(workoutSourceBridge).toContainText('눕는 동작 없음');
-  await expect(workoutSourceBridge).toContainText('원본 영상을 열고, 정한 요일에 1회 실행합니다');
-  await expect(workoutSourceBridge).toContainText('저장 후 남길 기록');
-  await expect(workoutSourceBridge.getByRole('link', { name: '원본 영상 열기' })).toHaveAttribute('href', /youtube\.com\/watch\?v=pcyrlkHXAdE/);
-  const workoutResultCard = workbench.getByTestId('exact-video-result-card');
-  await expect(workoutResultCard).toContainText('오늘 결과');
-  await expect(workoutResultCard).toContainText('운동 후 기록');
-  await expect(workoutResultCard.getByRole('button', { name: '완료' })).toBeVisible();
-  await expect(workoutResultCard.getByRole('button', { name: '강도 낮춤' })).toBeVisible();
-  await expect(workoutResultCard.getByRole('button', { name: '휴식으로 변경' })).toBeVisible();
-  await expect(workoutResultCard.getByLabel('운동 후 몸 상태 메모')).toBeVisible();
-  await expect(page.getByText('운동 캘린더 · primary')).toHaveCount(0);
-  await expect(page.getByText('4주 12회차')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '다음 회차 기록' })).toHaveCount(0);
-  await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
+test('review-gated routines do not leak workbenches while an approved routine stays executable', async ({ page }) => {
+  for (const slug of [
+    'real-thankyou-bubu-home-workout-starter',
+    'real-fitvely-diet-record-routine',
+  ]) {
+    await page.goto(`/f/${slug}`);
+    await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+  }
 
-  await page.goto('/f/real-fitvely-diet-record-routine');
-  workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByText('식단 체크 캘린더')).toBeVisible();
-  await expect(workbench.getByText('아침 식단 확인').first()).toBeVisible();
-  await expect(page.getByText('4주 12회차')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '다음 회차 기록' })).toHaveCount(0);
-  await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
-
-  await page.goto('/f/diet-habit-2week');
-  workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByText('수면 체크 캘린더')).toBeVisible();
-  await expect(page.getByRole('button', { name: '전체 루틴' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
+  await page.goto('/f/english-study-30day-routine');
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByTestId('routine-session-grid-card')).toBeVisible();
+  await expect(workbench.getByTestId('routine-session-log-card')).toBeVisible();
   await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
 });
 

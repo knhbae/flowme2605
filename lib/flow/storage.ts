@@ -1,5 +1,9 @@
 import { seedBundles } from './seed-flows';
-import { isRuntimeExcludedBundle } from './runtime-content-policy';
+import {
+  getRuntimeArchivedFlowPolicy,
+  isRuntimeExcludedBundle,
+  RETIRED_PERSONAL_COPY_TAG,
+} from './runtime-content-policy';
 import {
   buildSourceBackedFlowMapPersistenceRecordUpdate,
   getSourceBackedFlowMapPersistenceStorageKey,
@@ -183,6 +187,42 @@ export function mergeSeedBundles(stored: FlowBundle[], seeds: FlowBundle[]): Flo
   return [...seeds, ...localOnly];
 }
 
+function toRetiredPersonalCopy(bundle: FlowBundle): FlowBundle {
+  return {
+    ...bundle,
+    flow: {
+      ...bundle.flow,
+      status: 'draft',
+      tags: Array.from(new Set([...(bundle.flow.tags ?? []), RETIRED_PERSONAL_COPY_TAG])),
+    },
+  };
+}
+
+function preserveSavedArchivedBundles(stored: FlowBundle[]): FlowBundle[] {
+  const migrated = stored.map((bundle) => {
+    const policy = getRuntimeArchivedFlowPolicy(bundle.flow.slug);
+    if (
+      !policy ||
+      bundle.flow.status !== 'published' ||
+      !localStorage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)
+    ) {
+      return bundle;
+    }
+    return toRetiredPersonalCopy(bundle);
+  });
+  const storedSlugs = new Set(migrated.map((bundle) => bundle.flow.slug));
+  const recovered = seedBundles
+    .filter((bundle) => (
+      Boolean(getRuntimeArchivedFlowPolicy(bundle.flow.slug)) &&
+      Boolean(localStorage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)) &&
+      !storedSlugs.has(bundle.flow.slug)
+    ))
+    .map((bundle) => JSON.parse(JSON.stringify(bundle)) as FlowBundle)
+    .map(toRetiredPersonalCopy);
+
+  return [...migrated, ...recovered];
+}
+
 export function getBundles(): FlowBundle[] {
   if (!canUseStorage()) return cloneSeedBundles();
 
@@ -199,16 +239,17 @@ export function getBundles(): FlowBundle[] {
           return [];
         }
       })
-    const migrated = mergeSeedBundles(previous, seeds);
+    const migrated = mergeSeedBundles(preserveSavedArchivedBundles(previous), seeds);
     localStorage.setItem(BUNDLES_KEY, JSON.stringify(migrated));
     return migrated;
   }
 
   try {
-    const stored = JSON.parse(raw) as FlowBundle[];
+    const stored = preserveSavedArchivedBundles(JSON.parse(raw) as FlowBundle[]);
     const merged = mergeSeedBundles(stored, seeds);
-    if (merged.length !== stored.length) {
-      localStorage.setItem(BUNDLES_KEY, JSON.stringify(merged));
+    const serialized = JSON.stringify(merged);
+    if (serialized !== raw) {
+      localStorage.setItem(BUNDLES_KEY, serialized);
     }
     return merged;
   } catch {

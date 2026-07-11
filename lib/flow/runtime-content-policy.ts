@@ -1,6 +1,7 @@
 import type { FlowBundle } from './types';
 
 export const GENERATED_PREVIEW_FLOW_ID_PREFIX = 'flow-preview-';
+export const RETIRED_PERSONAL_COPY_TAG = 'retired-personal-copy';
 
 export type RuntimeArchiveReason =
   | 'explicit_public_hide'
@@ -54,6 +55,23 @@ export const RUNTIME_ARCHIVED_FLOW_POLICIES: readonly RuntimeArchivedFlowPolicy[
     evidence: '같은 정부24 원문을 더 구체적으로 다루는 등본·초본 발급 Flow가 이미 있습니다.',
     replacementSlug: 'resident-register-copy-issue',
   },
+  {
+    slug: 'study-exam-d30-plan',
+    reason: 'source_mismatch',
+    evidence: '원문은 영어 홈학습 팁이며 범용 시험 D-30 일정과 12개 시험 준비 항목을 직접 뒷받침하지 않습니다.',
+  },
+  {
+    slug: 'real-sinagong-computer-d30-study',
+    reason: 'superseded_duplicate',
+    evidence: '같은 2026 시나공 컴활 교재를 더 넓은 D-30 실행 순서로 다루는 대표 학습 Flow가 이미 있습니다.',
+    replacementSlug: 'computer-skills-d30-study',
+  },
+  {
+    slug: 'real-thankyou-bubu-video-full-body-no-jump',
+    reason: 'superseded_duplicate',
+    evidence: '같은 ThankyouBUBU 영상을 사용하는 홈트 시작 Flow와 실행 구조가 중복됩니다.',
+    replacementSlug: 'real-thankyou-bubu-home-workout-starter',
+  },
 ];
 
 export const RUNTIME_ARCHIVED_FLOW_SLUGS = RUNTIME_ARCHIVED_FLOW_POLICIES.map(
@@ -72,6 +90,10 @@ export function isRuntimeArchivedBundle(bundle: FlowBundle): boolean {
 
 export function getRuntimeArchivedFlowPolicy(slug: string): RuntimeArchivedFlowPolicy | undefined {
   return RUNTIME_ARCHIVED_FLOW_POLICIES.find((policy) => policy.slug === slug);
+}
+
+export function isRetiredPersonalCopyBundle(bundle: FlowBundle): boolean {
+  return Boolean(bundle.flow.tags?.includes(RETIRED_PERSONAL_COPY_TAG));
 }
 
 export function isRuntimeExcludedBundle(bundle: FlowBundle): boolean {

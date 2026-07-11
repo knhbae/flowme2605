@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import { prepareFlowRunNewAnchor } from './flow-run-reuse';
+import { seedBundles } from './seed-flows';
 import {
   buildFlowMeLocalBackup,
   FlowMeLocalBackupError,
@@ -12,7 +13,10 @@ import {
   type FlowMeStorageLike,
 } from './local-data-backup';
 import { getFlowScopedMyFlowPersonalExecutionState } from './my-flow-personal-state';
-import { RUNTIME_ARCHIVED_FLOW_SLUGS } from './runtime-content-policy';
+import {
+  RETIRED_PERSONAL_COPY_TAG,
+  RUNTIME_ARCHIVED_FLOW_SLUGS,
+} from './runtime-content-policy';
 import {
   cloneSeedBundles,
   clearFlowLocalProgress,
@@ -204,6 +208,119 @@ test('cloneSeedBundles includes curated source app seed flows without source-bac
     RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => clonedSlugs.has(slug)),
     [],
   );
+});
+
+test('getBundles preserves a saved archived flow as a retired personal copy', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: { localStorage } });
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: localStorage });
+
+  try {
+    const archived = bundle('flow-archived-book', 'book-finish-one', '책 한 권 완독 실천 Flow');
+    archived.items = [
+      {
+        id: 'book-finish-old-item',
+        flow_id: archived.flow.id,
+        title: '매일 목표 페이지까지 읽기',
+        type: 'todo',
+        order: 1,
+      },
+    ];
+    localStorage.setItem('flow_builder_mvp_bundles_v11', JSON.stringify([archived]));
+    localStorage.setItem(
+      'flow:saved:book-finish-one',
+      JSON.stringify({
+        slug: 'book-finish-one',
+        savedAt: '2026-07-01T00:00:00.000Z',
+        selectedArtifactMode: 'checklist',
+      }),
+    );
+    localStorage.setItem(
+      'flow_builder_mvp_checks_book-finish-one',
+      JSON.stringify({ 'book-finish-old-item': true }),
+    );
+
+    const migrated = getBundles();
+    const retired = migrated.find((entry) => entry.flow.slug === 'book-finish-one');
+    assert.ok(retired);
+    assert.equal(retired.flow.status, 'draft');
+    assert.ok(retired.flow.tags?.includes(RETIRED_PERSONAL_COPY_TAG));
+    const persisted = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as FlowBundle[];
+    const persistedRetired = persisted.find((entry) => entry.flow.slug === 'book-finish-one');
+    assert.equal(persistedRetired?.flow.status, 'draft');
+    assert.ok(persistedRetired?.flow.tags?.includes(RETIRED_PERSONAL_COPY_TAG));
+    assert.deepEqual(
+      getActiveFlowProgress(migrated).find((entry) => entry.slug === 'book-finish-one'),
+      {
+        slug: 'book-finish-one',
+        title: '책 한 권 완독 실천 Flow',
+        done: 1,
+        total: 1,
+        skipped: 0,
+        anchor: undefined,
+        anchorMode: 'custom',
+        lastVisited: '2026-07-01T00:00:00.000Z',
+      },
+    );
+  } finally {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('getBundles recovers a saved archived flow after an earlier runtime migration removed its bundle', () => {
+  const localStorage = memoryStorage({
+    flow_builder_mvp_bundles_v11: '[]',
+    'flow:saved:book-finish-one': JSON.stringify({
+      slug: 'book-finish-one',
+      savedAt: '2026-07-01T00:00:00.000Z',
+      selectedArtifactMode: 'checklist',
+    }),
+  });
+  const archivedSeed = seedBundles.find((entry) => entry.flow.slug === 'book-finish-one');
+  assert.ok(archivedSeed);
+  const firstItemId = archivedSeed.items[0]?.id;
+  assert.ok(firstItemId);
+  localStorage.setItem(
+    'flow_builder_mvp_checks_book-finish-one',
+    JSON.stringify({ [firstItemId]: true }),
+  );
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: { localStorage } });
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: localStorage });
+
+  try {
+    const migrated = getBundles();
+    const retired = migrated.find((entry) => entry.flow.slug === 'book-finish-one');
+    assert.ok(retired);
+    assert.equal(retired.flow.status, 'draft');
+    assert.ok(retired.flow.tags?.includes(RETIRED_PERSONAL_COPY_TAG));
+    assert.equal(
+      getActiveFlowProgress(migrated).find((entry) => entry.slug === 'book-finish-one')?.done,
+      1,
+    );
+  } finally {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
 });
 
 test('saved flow record normalization keeps explicit save metadata', () => {

@@ -22,7 +22,7 @@ const APPROVED_PUBLIC_SHARE_ROUTES = [
 ];
 
 const REVIEW_ONLY_PUBLIC_SHARE_ROUTES = [
-  '/f/real-thankyou-bubu-video-full-body-no-jump',
+  '/f/real-thankyou-bubu-home-workout-starter',
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 

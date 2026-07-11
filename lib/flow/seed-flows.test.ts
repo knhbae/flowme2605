@@ -1300,7 +1300,7 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
   assert.equal(indexable.length, 77);
-  assert.equal(reviewOnly.length, 93);
+  assert.equal(reviewOnly.length, 90);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
