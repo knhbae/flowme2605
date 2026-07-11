@@ -169,6 +169,9 @@ export function ContentLab() {
           FLOW
         </Link>
         <div className="flex flex-wrap gap-2 text-sm">
+          <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/flow-lab/p22-observation">
+            P22 관찰 준비
+          </Link>
           <Link className="rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-white" href="/flows">
             공개 Flow
           </Link>

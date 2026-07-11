@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-07-11T00:00:00.000Z",
+  "scope": "P22-00 observed repeated-user gate preparation",
+  "status": "prepared_not_observed",
+  "summary": {
+    "participantTargetCount": 5,
+    "roundTargetCountPerParticipant": 3,
+    "sessionTargetCount": 15,
+    "observedSessionCount": 0,
+    "calendarAppImportObserved": false,
+    "crossDeviceExpectationObserved": false,
+    "internalSetupRoute": "/flow-lab/p22-observation",
+    "internalSetupNoindex": true,
+    "internalSetupNofollow": true,
+    "internalSetupLinkedFromNormalUserRoutes": 0,
+    "normalUserRouteCountScanned": 6,
+    "versionConflictScenarioPrepared": true,
+    "versionAddedItemScenarioPrepared": true,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "workboardMobileHorizontalOverflowCount": 0,
+    "workboardWideHorizontalOverflowCount": 0,
+    "automatedQaCountsAsUserValidation": false
+  },
+  "artifacts": {
+    "workboard": "../2026-07-11-flowme-p22-00-observed-user-gate-kit-ko.html",
+    "sessionTemplate": "../../validation-sessions/2026-07-11-flowme-p22-00-session-template.md",
+    "screenshots": [
+      "screenshots/01-setup-mobile.png",
+      "screenshots/02-setup-wide.png",
+      "screenshots/03-workboard-mobile.png",
+      "screenshots/04-workboard-wide.png"
+    ]
+  }
+}

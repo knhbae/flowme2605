@@ -527,6 +527,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     await page.setViewportSize(viewport);
     for (const route of userRoutes) {
       await page.goto(route);
+      await expect(page.locator('a[href="/flow-lab"], a[href^="/flow-lab/"]')).toHaveCount(0);
       await expect(page.locator('a[href="/flow-lab/url-first-p0"], a[href^="/flow-lab/url-first-p0?"]')).toHaveCount(0);
       await expect(page.locator('a[href*="source-backed-manual-registration"]')).toHaveCount(0);
     }
@@ -589,6 +590,27 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
   await expect(page.getByTestId('url-first-p0-lab-internal-console-context')).toContainText('내부 실험 콘솔');
   await expect(page.getByTestId('url-first-p0-lab-internal-console-context')).toContainText('정상 사용자 메뉴에 연결하지 않는');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+
+  await page.goto('/flow-lab');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+  await expect(page.locator('a[href="/flow-lab/p22-observation"]')).toHaveCount(1);
+
+  await page.goto('/flow-lab/p22-observation');
+  const observationSetup = page.getByTestId('p22-observation-setup');
+  await expect(observationSetup).toBeVisible();
+  await expect(observationSetup).toContainText('내부 관찰 준비 도구');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+  await observationSetup.getByTestId('p22-observation-prepare-version-review').click();
+  await expect(page).toHaveURL('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const updateReview = page.getByTestId('my-flow-map-update-review');
+  await expect(updateReview).toBeVisible();
+  await updateReview.getByTestId('my-flow-map-update-toggle').click();
+  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('내 수정과 겹침');
+  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('새 할 일');
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeEnabled();
+  await updateReview.getByTestId('my-flow-map-update-apply').click();
+  await expect(page.getByTestId('my-flow-version-review')).toBeVisible();
 
   await page.goto('/restart/moving-d30');
   const restartBodyLines = await getLocatorLines(page.locator('body'));

@@ -4,6 +4,8 @@ This folder stores observed user-session notes for Stage 0 export-first validati
 
 Use [TEMPLATE.md](./TEMPLATE.md) for every session. Keep raw notes factual: what the user did, where they hesitated, what they exported, and what they said they would do next.
 
+For the P22 repeated-use gate, use [the P22-00 three-round template](./2026-07-11-flowme-p22-00-session-template.md) and the [Korean observation workboard](../content-audit/2026-07-11-flowme-p22-00-observed-user-gate-kit-ko.html).
+
 Flow Lab also has an observed-session note intake panel that drafts a markdown note for the current export-first candidate routes. The same panel can download a moderator run sheet before the session. Save generated notes in this folder after the session; its downloaded note filenames follow the session-numbered pattern below.
 
 ## Rules

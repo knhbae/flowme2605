@@ -145,6 +145,10 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 아래 세 번을 관찰해야 한다.
 
+진행자용 [P22-00 실제 반복 사용자 관찰 보드](./2026-07-11-flowme-p22-00-observed-user-gate-kit-ko.html)와 [세션 기록 양식](../validation-sessions/2026-07-11-flowme-p22-00-session-template.md)을 준비했다. 내부 `/flow-lab/p22-observation`에서 완료 Flow·새 원문 비교 상태를 만든 뒤 참가자에게는 정상 `/my` 화면만 넘긴다. 이는 관찰 실행 준비이며 사용자 검증 결과가 아니다.
+
+준비 상태와 모바일·wide 판정은 [P22-00 관찰 gate 준비 evidence](./2026-07-11-flowme-p22-00-observation-gate-evidence/README.md)에 기록했다.
+
 1. 첫 진입: URL/메모로 Flow를 찾고 저장
 2. 실행 중: 날짜·제목·메모 수정, 완료 체크, Calendar 확인
 3. 재방문: 완료 회고, 다시 사용할 의향, 파일 export 사용 결과
