@@ -1239,11 +1239,10 @@ test('special public workbench routes keep the FlowMe visual rhythm', async ({ p
   await expect(babyFoodWorkbench.getByTestId('meal-source-bridge')).toHaveCSS('border-radius', '16px');
 
   await page.goto('/f/real-thankyou-bubu-home-workout-starter');
-  const exactVideoWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(exactVideoWorkbench.getByTestId('exact-video-source-bridge')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
-  await expect(exactVideoWorkbench.getByTestId('exact-video-source-bridge')).toHaveCSS('border-radius', '16px');
-  await expect(exactVideoWorkbench.getByTestId('exact-video-result-card')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
-  await expect(exactVideoWorkbench.getByTestId('exact-video-result-card')).toHaveCSS('border-radius', '16px');
+  const exactVideoReviewGate = page.getByTestId('public-flow-review-only-gate');
+  await expect(exactVideoReviewGate).toHaveCSS('border-color', 'rgb(240, 216, 174)');
+  await expect(exactVideoReviewGate).toHaveCSS('border-radius', '16px');
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
 
   await page.goto('/f/washer-tub-clean-monthly');
   const maintenanceWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
@@ -4825,10 +4824,32 @@ test('flow item card makes detail and skipped states explicit', async ({ page })
 
 test('source-fit decisions are visible on direct-access public flow pages', async ({ page }) => {
   await page.goto('/f/study-exam-d30-plan');
-  await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'catalog_preview_only');
+  await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute('data-decision', 'catalog_preview_only');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+  await expect(page.getByTestId('public-flow-save-actions')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-export-format-option')).toHaveCount(0);
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
 
   await page.goto('/f/running-5k-4week');
-  await expect(page.getByTestId('source-fit-status')).toHaveAttribute('data-decision', 'reshape_before_featured');
+  await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute('data-decision', 'reshape_before_featured');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+
+  await page.goto('/f/vehicle-inspection-prep');
+  await expect(page.getByTestId('source-fit-status')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
+  const currentFlowRobots = await page.locator('meta[name="robots"]').getAttribute('content');
+  expect(currentFlowRobots ?? '').not.toMatch(/noindex/i);
+
+  for (const slug of ['new-car-delivery-check', 'fridge-cleanout-weekly-plan', 'washer-tub-clean-monthly']) {
+    await page.goto(`/f/${slug}`);
+    await expect(page.getByTestId('source-fit-status')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
+  }
 });
 
 test('computer skills final QA exports checklist and calendar without study progress tables', async ({ page }) => {
@@ -5578,10 +5599,11 @@ test('mobile workbench keeps destination export at the flow level', async ({ pag
   await expect(studyCalendarCard.getByTestId('mobile-artifact-export-calendar')).toHaveCount(0);
   await expect(workbench.getByTestId('public-flow-export-secondary-entry')).toBeVisible();
 
-  await page.goto('/f/diet-habit-2week');
+  await page.goto('/f/washer-tub-clean-monthly');
   workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
+  await expect(workbench.getByTestId('maintenance-routine-next-card')).toBeVisible();
+  await expect(workbench.getByTestId('public-flow-export-secondary-entry')).toBeVisible();
 
   await page.goto('/f/new-car-delivery-check');
   workbench = page.getByLabel('Flow artifact workbench');
@@ -6170,68 +6192,30 @@ test('promoted content-flow service routes preserve executable source cues', asy
 });
 
 test('promoted maintenance routes use source-specific artifact workbenches', async ({ page }) => {
-  for (const route of ['/f/washer-tub-clean-monthly', '/f/monstera-care-routine']) {
-    await page.goto(route);
-    const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-
-    await expect(workbench.getByRole('heading', { name: '관리 캘린더' })).toBeVisible();
-    await expect(workbench).toContainText('관리일');
-    await expect(workbench.getByTestId('maintenance-source-bridge')).toContainText('원문에서 옮긴 실행 단서');
-    await expect(workbench.getByTestId('maintenance-source-bridge').getByRole('link', { name: '원문 보기' })).toBeVisible();
-    await expect(workbench).not.toContainText('반복 요일');
-    await expect(workbench).not.toContainText('회차');
-    await expect(workbench.getByTestId('maintenance-routine-checklist-card')).toBeVisible();
-    await expect(workbench.getByTestId('maintenance-routine-next-card')).toBeVisible();
-    await expect(workbench.getByTestId('routine-session-log-card')).toHaveCount(0);
-    await expect(workbench.getByTestId('routine-today-session-card')).toHaveCount(0);
-    await expect(page.locator('body')).toContainText('반복 주기');
-    await expect(page.locator('body')).not.toContainText('반복 요일');
-    await expect(page.locator('body')).not.toContainText('회차 메모');
-    await expect(page.locator('body')).not.toContainText('운동·습관 크리에이터');
-    await expect(page.getByTestId('source-fit-status')).toHaveCount(0);
-  }
-
   await page.goto('/f/washer-tub-clean-monthly');
-  await expect(page.getByTestId('maintenance-source-bridge')).toContainText('통세척/통살균 코스');
-  await expect(page.getByTestId('maintenance-source-bridge')).toContainText('월 1회 관리일');
-  await expect(page.getByTestId('maintenance-source-bridge')).toContainText('과탄산소다');
-  await expect(page.getByTestId('maintenance-source-bridge')).toContainText('2주 1회');
-
-  await page.goto('/f/monstera-care-routine');
-  await expect(page.getByTestId('maintenance-source-bridge')).toContainText('겉흙 2~3cm');
-  await expect(page.getByTestId('maintenance-source-bridge')).toContainText('상태 확인일');
-  await expect(page.getByTestId('maintenance-result-selector')).toContainText('오늘 결과');
-  await expect(page.getByTestId('maintenance-result-selector')).toContainText('물주기 완료');
-  await expect(page.getByTestId('maintenance-result-selector')).toContainText('오늘은 보류');
-  await expect(page.getByTestId('maintenance-result-selector')).toContainText('관찰 메모');
-  await page.getByTestId('maintenance-result-selector').getByRole('button', { name: '오늘은 보류' }).click();
-  await expect(page.getByTestId('maintenance-result-selector').getByRole('button', { name: '오늘은 보류' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('body')).toContainText('1~2년마다');
-  await expect(page.locator('body')).not.toContainText('6개월마다');
-
-  await page.goto('/f/water-purifier-filter-cycle');
   const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByRole('heading', { name: '관리 캘린더' })).toBeVisible();
+  await expect(workbench).toContainText('관리일');
+  await expect(workbench.getByTestId('maintenance-source-bridge')).toContainText('원문에서 옮긴 실행 단서');
+  await expect(workbench.getByTestId('maintenance-source-bridge').getByRole('link', { name: '원문 보기' })).toBeVisible();
+  await expect(workbench.getByTestId('maintenance-routine-checklist-card')).toBeVisible();
+  await expect(workbench.getByTestId('maintenance-routine-next-card')).toBeVisible();
+  await expect(workbench.getByTestId('maintenance-source-bridge')).toContainText('통세척/통살균 코스');
+  await expect(workbench.getByTestId('maintenance-source-bridge')).toContainText('월 1회 관리일');
+  await expect(workbench.getByTestId('maintenance-source-bridge')).toContainText('설명서에서 허용한 종류와 양');
+  await expect(workbench).not.toContainText('과탄산소다 100g');
+  await expect(workbench).not.toContainText('2주 1회');
 
-  await expect(page.getByRole('heading', { name: '정수기 필터 교체 주기표' })).toBeVisible();
-  await expect(page.locator('body')).toContainText('실행 시트');
-  await expect(page.locator('body')).toContainText('6개 행');
-  await expect(page.getByTestId('public-flow-primary-setup')).toContainText('입력 없이 바로 확인합니다.');
-  await expect(workbench.getByTestId('public-flow-export-secondary-entry')).toContainText('이 Flow 통째로 가져가기');
-  await expect(page.locator('body')).not.toContainText('바로 체크 시작');
-  await expect(page.locator('body')).not.toContainText('체크리스트 6개 항목');
-  await expect(page.locator('body')).not.toContainText('가전 관리 · 실행 체크리스트');
-  await expect(page.locator('body')).not.toContainText('날짜 입력 없이 바로 확인합니다.');
-  await expect(page.locator('body')).not.toContainText('아래 항목을 하나씩 확인하고 완료한 것은 체크하세요.');
-  await expect(workbench.getByTestId('artifact-log-table-water-purifier-filter-cycle-log')).toBeVisible();
-  await expect(workbench.getByTestId('artifact-log-table-water-purifier-filter-cycle-log')).toContainText('후카본');
-  await expect(workbench.getByTestId('water-purifier-source-bridge')).toContainText('후카본');
-  await expect(workbench.getByTestId('water-purifier-source-bridge')).toContainText('원문 9~12개월');
-  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
-  await expect(page.getByTestId('source-fit-status')).toHaveCount(0);
-  await expect(page.locator('body')).not.toContainText('반복 리마인더');
-  await expect(page.locator('body')).not.toContainText('측정, 운동, 리뷰');
-  await expect(page.locator('body')).not.toContainText('MOBILE SUMMARY');
-  await expect(page.locator('body')).toContainText('가장 먼저 확인할 필터');
+  for (const route of ['/f/monstera-care-routine', '/f/water-purifier-filter-cycle']) {
+    await page.goto(route);
+    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute(
+      'data-decision',
+      'reshape_before_featured',
+    );
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+    await expect(page.getByRole('checkbox')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+  }
 });
 
 test('plank challenge public route lets users compare the source table with the execution calendar', async ({ page }) => {

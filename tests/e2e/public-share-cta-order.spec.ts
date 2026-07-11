@@ -12,13 +12,16 @@ type StickyPrimaryEntry = {
   testId: string;
 };
 
-const PUBLIC_SHARE_ROUTES = [
+const APPROVED_PUBLIC_SHARE_ROUTES = [
   '/f/vehicle-inspection-prep',
   '/f/moving-d30-basic',
   '/f/fridge-cleanout-weekly-plan',
   '/f/washer-tub-clean-monthly',
   '/f/new-car-delivery-check',
   '/f/used-car-buying-check',
+];
+
+const REVIEW_ONLY_PUBLIC_SHARE_ROUTES = [
   '/f/real-thankyou-bubu-video-full-body-no-jump',
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
@@ -175,7 +178,7 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
 test.describe('public share shell secondary browse order', () => {
   test.describe.configure({ timeout: 60_000 });
 
-  for (const route of PUBLIC_SHARE_ROUTES) {
+  for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} exposes one save-oriented primary before scrolling`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
@@ -191,7 +194,7 @@ test.describe('public share shell secondary browse order', () => {
     });
   }
 
-  for (const route of PUBLIC_SHARE_ROUTES) {
+  for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} keeps browse navigation reachable after the save path`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
@@ -239,7 +242,7 @@ test.describe('public share shell secondary browse order', () => {
     });
   }
 
-  for (const route of PUBLIC_SHARE_ROUTES) {
+  for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} keeps export as a flow-level secondary action`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
@@ -253,7 +256,7 @@ test.describe('public share shell secondary browse order', () => {
     });
   }
 
-  for (const route of PUBLIC_SHARE_ROUTES) {
+  for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} treats pre-save item checkboxes as preview selection, not completion`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
@@ -263,6 +266,22 @@ test.describe('public share shell secondary browse order', () => {
       if (hierarchy.preSaveCheckboxCount > 0) {
         expect(hierarchy.preSaveCheckboxPreviewLabelCount).toBe(hierarchy.preSaveCheckboxCount);
       }
+    });
+  }
+
+  for (const route of REVIEW_ONLY_PUBLIC_SHARE_ROUTES) {
+    test(`${route} stays read-only until source-fit review is complete`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(route);
+
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+      await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+      await expect(page.getByRole('link', { name: '현재 원문 확인하기' })).toBeVisible();
+      await expect(page.getByTestId('flow-public-secondary-browse-link')).toBeVisible();
+      await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+      await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
+      await expect(page.getByTestId('mobile-export-bar')).toHaveCount(0);
+      await expect(page.getByRole('checkbox')).toHaveCount(0);
     });
   }
 

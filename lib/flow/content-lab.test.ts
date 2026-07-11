@@ -128,8 +128,8 @@ test('content lab exposes source-fit audit summary for representative cleanup', 
 
   assert.equal(summary.sourceFitAuditedCount, 90);
   assert.ok(summary.sourceFitAverageScore >= 70);
-  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 15);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 66);
+  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 18);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 63);
   assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 9);
 });
 
@@ -155,7 +155,7 @@ test('content lab exposes full content inventory coverage', () => {
 test('content lab exposes natural artifact audit coverage for real-source flows', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 40);
+  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 50);
   assert.equal(summary.naturalArtifactRealSourceRemainingCount, 0);
   assert.ok(summary.naturalArtifactDecisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.naturalArtifactDecisionCounts.reshape_content_or_ux >= 1);
@@ -174,12 +174,12 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
 
   assert.equal(summary.lifecycleTotalCount, seedBundles.length);
   assert.equal(countSum, seedBundles.length);
-  assert.equal(summary.lifecycleBucketCounts.keep, 15);
+  assert.equal(summary.lifecycleBucketCounts.keep, 18);
   assert.equal(summary.lifecycleBucketCounts.hide, 1);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount + 2);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  // Two broad batch sources moved from fix to preview after the live-source audit.
-  assert.equal(summary.lifecycleBucketCounts.fix, 116 + summary.curatedSourceAppSeedInventoryCount);
+  // Three manually refreshed routes moved from fix to keep in the current-source pass.
+  assert.equal(summary.lifecycleBucketCounts.fix, 113 + summary.curatedSourceAppSeedInventoryCount);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
@@ -208,7 +208,7 @@ test('content lab exposes broad real-source guardrails', () => {
   assert.deepEqual(summary.broadRealSourceRepresentativeLeakSlugs, []);
 });
 
-test('source-risk representative review keeps only the final QA route promoted', () => {
+test('source-risk representative review preserves earlier decisions after later source-fit promotion', () => {
   const summary = getContentLabSummary(seedBundles);
   const readiness = summarizeRepresentativeReadinessReviews(seedBundles);
 
@@ -228,7 +228,7 @@ test('source-risk representative review keeps only the final QA route promoted',
   assert.equal(getRepresentativeReadinessReview('diet-habit-2week')?.decision, 'public_mvp_candidate');
 
   assert.equal(summary.lifecycleKeepSlugs.includes('computer-skills-d30-study'), true);
-  assert.equal(summary.lifecycleFixSlugs.includes('new-car-delivery-check'), true);
+  assert.equal(summary.lifecycleKeepSlugs.includes('new-car-delivery-check'), true);
   assert.equal(summary.lifecycleFixSlugs.includes('diet-habit-2week'), true);
 });
 
@@ -268,7 +268,7 @@ test('export-first simulation review records user artifacts and UX gaps for the 
   assert.ok(diet.riskBoundary.includes('observation log'));
 });
 
-test('risk-boundary QA records public MVP fixes without representative promotion', () => {
+test('risk-boundary QA records the review stage before later representative promotion', () => {
   const summary = getContentLabSummary(seedBundles);
   const qa = summarizeRiskBoundaryQaReviews(seedBundles);
 
@@ -293,9 +293,9 @@ test('risk-boundary QA records public MVP fixes without representative promotion
   assert.ok(diet.contentUxFix.includes('observation-first'));
   assert.ok(diet.riskBoundary.includes('does not prescribe'));
 
-  assert.equal(summary.lifecycleFixSlugs.includes('new-car-delivery-check'), true);
+  assert.equal(summary.lifecycleFixSlugs.includes('new-car-delivery-check'), false);
   assert.equal(summary.lifecycleFixSlugs.includes('diet-habit-2week'), true);
-  assert.equal(summary.lifecycleKeepSlugs.includes('new-car-delivery-check'), false);
+  assert.equal(summary.lifecycleKeepSlugs.includes('new-car-delivery-check'), true);
   assert.equal(summary.lifecycleKeepSlugs.includes('diet-habit-2week'), false);
 });
 

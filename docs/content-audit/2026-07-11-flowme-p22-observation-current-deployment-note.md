@@ -21,6 +21,7 @@
 5. 관찰 중 오래된 페이지나 콘텐츠가 발견되면 원문 URL, 현재 화면 문구, 기대한 최신 상태, 사용자 행동 영향을 함께 남긴다.
 6. 정상 사용자 콘텐츠의 URL 생존 기준은 [출처 도달성 evidence](./2026-07-11-flowme-live-source-reachability-evidence/README.md)를 따른다. 자동 접근 차단은 404와 분리하고, 연도 고정 자료와 정책 수치는 HTTP 상태와 별도로 확인한다.
 7. 민감 콘텐츠의 연도 고정 정책 문구와 내부 provenance 비노출 기준은 [시점 의존 문구 evidence](./2026-07-11-flowme-semantic-claim-freshness-evidence/README.md)를 따른다. 후속 [숫자 source-fit evidence](./2026-07-11-flowme-numeric-claim-source-fit-evidence/README.md)에서 원문 불일치·서비스 혼합 3건을 제거했고, 현재 남은 숫자는 공식 기한 7개와 비교용 예시 1개다. 관찰 중 이해와 신뢰 영향을 별도로 기록한다.
+8. 후속 [public 콘텐츠 최신성·행동 게이트 evidence](./2026-07-11-flowme-public-content-currentness-evidence/README.md)는 사용자-facing 항목 상세 링크까지 검사하고, 승인 전 `/f` route를 `noindex` 읽기 전용으로 둔다. 관찰 중 `원문 재확인 중` 화면이 나오면 저장 과제로 계속 진행하지 말고 URL과 기대 콘텐츠를 freshness issue로 기록한 뒤 승인 route로 전환한다.
 
 ## 대체된 주소
 

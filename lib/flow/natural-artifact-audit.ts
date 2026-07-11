@@ -1649,11 +1649,15 @@ export function getNaturalArtifactAudit(slug: string): RealSourceNaturalArtifact
 
 export function summarizeNaturalArtifactAuditCoverage(
   bundles: FlowBundle[],
+  additionalAuditedSlugs: Iterable<string> = [],
 ): NaturalArtifactAuditCoverageSummary {
   const realSourceBundles = bundles.filter(
     (bundle) => bundle.flow.source_status === 'real' && !isCuratedSourceAppSeedBundle(bundle),
   );
-  const auditedSlugs = new Set(realSourceNaturalArtifactAudits.map((audit) => audit.slug));
+  const auditedSlugs = new Set([
+    ...realSourceNaturalArtifactAudits.map((audit) => audit.slug),
+    ...additionalAuditedSlugs,
+  ]);
   const auditedCategoryCounts: Record<string, number> = {};
   const decisionCounts: DecisionCounts = { ...emptyDecisionCounts };
 

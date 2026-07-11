@@ -1,5 +1,5 @@
 import { AnchorType, FlowBundle, StructureType } from './types';
-import { getSourceFitSummary } from './source-fit';
+import { getSourceFitSummary, sourceFitAudits } from './source-fit';
 import { summarizeContentInventory } from './content-inventory';
 import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import {
@@ -369,7 +369,10 @@ export function getContentLabSummary(bundles: FlowBundle[]) {
   );
   const sourceFitSummary = getSourceFitSummary();
   const inventorySummary = summarizeContentInventory(bundles);
-  const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(bundles);
+  const naturalArtifactSummary = summarizeNaturalArtifactAuditCoverage(
+    bundles,
+    sourceFitAudits.filter((audit) => audit.naturalArtifacts.length > 0).map((audit) => audit.slug),
+  );
   const lifecycleSummary = summarizeFlowLifecycle(bundles);
   const sourceReviewPrioritySummary = summarizeSourceNeedsReviewPriority(bundles);
   const representativeReadinessSummary = summarizeRepresentativeReadinessReviews(bundles);

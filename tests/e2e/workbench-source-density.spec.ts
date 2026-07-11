@@ -18,6 +18,19 @@ async function openAllWorkbenchDetails(page: import('@playwright/test').Page) {
   return listCard;
 }
 
+async function expectReviewOnlySourceRoute(
+  page: import('@playwright/test').Page,
+  sourceUrl: string,
+) {
+  const gate = page.getByTestId('public-flow-review-only-gate');
+  await expect(gate).toBeVisible();
+  await expect(gate).toHaveAttribute('data-review-reason', 'source_review_pending');
+  await expect(gate.getByRole('link', { name: '현재 원문 확인하기' })).toHaveAttribute('href', sourceUrl);
+  await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+}
+
 test.describe('field checklist workbench source density', () => {
   for (const route of ['/f/new-car-delivery-check', '/f/used-car-buying-check']) {
     test(`${route} keeps source access out of repeated checklist row details`, async ({ page }) => {
@@ -69,10 +82,11 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/birth-registration-prep');
 
-    await openAllWorkbenchDetails(page);
+    await expectReviewOnlySourceRoute(
+      page,
+      'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001',
+    );
     const body = page.locator('body');
-    await expect(body).toContainText('온라인 신고 참여 병원');
-    await expect(body).toContainText('전자가족관계등록시스템');
     await expect(body).not.toContainText(/정부24\s*\(온라인\)[^\n]{0,80}출생신고/u);
     await expect(body).not.toContainText(/부모급여[^\n]{0,80}60일/u);
   });
@@ -81,9 +95,8 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/payday-finance-routine');
 
-    await openAllWorkbenchDetails(page);
+    await expectReviewOnlySourceRoute(page, 'https://toss.im/tossfeed/article/bank-account-divide');
     const body = page.locator('body');
-    await expect(body).toContainText(/비율[^\n]{0,100}직접 정/u);
     await expect(body).not.toContainText(/생활비\s*40%[^\n]{0,100}비상금\s*20%/u);
   });
 
@@ -91,9 +104,11 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/safe-inheritance-onestop');
 
-    await openAllWorkbenchDetails(page);
+    await expectReviewOnlySourceRoute(
+      page,
+      'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02',
+    );
     const body = page.locator('body');
-    await expect(body).toContainText(/말일부터\s*1년\s*이내/u);
     await expect(body).not.toContainText(/일부 재산[^\n]{0,100}6개월/u);
   });
 

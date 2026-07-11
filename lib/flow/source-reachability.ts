@@ -1,3 +1,5 @@
+import type { FlowBundle } from './types';
+
 export type SourceReachabilityBucket =
   | 'reachable'
   | 'redirected'
@@ -14,6 +16,53 @@ export type SourceReachabilityInput = {
   status?: number;
   errorKind?: 'timeout' | 'network';
 };
+
+export type SourceLinkRole = 'flow_source' | 'item_detail';
+
+export type SourceReachabilityTarget = {
+  sourceUrl: string;
+  slugs: string[];
+  titles: string[];
+  linkRoles: SourceLinkRole[];
+};
+
+export function collectSourceReachabilityTargets(
+  bundles: FlowBundle[],
+): SourceReachabilityTarget[] {
+  const byUrl = new Map<string, SourceReachabilityTarget>();
+
+  const addTarget = (bundle: FlowBundle, sourceUrl: string | undefined, role: SourceLinkRole) => {
+    if (!sourceUrl) return;
+    const current = byUrl.get(sourceUrl) ?? {
+      sourceUrl,
+      slugs: [],
+      titles: [],
+      linkRoles: [],
+    };
+    current.slugs.push(bundle.flow.slug);
+    current.titles.push(bundle.flow.title);
+    current.linkRoles.push(role);
+    byUrl.set(sourceUrl, current);
+  };
+
+  for (const bundle of bundles) {
+    addTarget(bundle, bundle.flow.source_url, 'flow_source');
+    for (const detail of bundle.itemDetails ?? []) {
+      for (const link of detail.links ?? []) {
+        addTarget(bundle, link.url, 'item_detail');
+      }
+    }
+  }
+
+  return [...byUrl.values()]
+    .map((target) => ({
+      ...target,
+      slugs: [...new Set(target.slugs)].sort(),
+      titles: [...new Set(target.titles)].sort(),
+      linkRoles: [...new Set(target.linkRoles)].sort(),
+    }))
+    .sort((a, b) => a.sourceUrl.localeCompare(b.sourceUrl));
+}
 
 function normalizeComparableUrl(value: string) {
   try {

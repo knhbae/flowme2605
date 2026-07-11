@@ -42,10 +42,11 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 ### 공개 공유 화면에서 저장으로
 
-- 일부 대표 `/f` route에만 즉시 보이던 저장 행동을 모든 비-export-first public Flow의 공통 계약으로 넓혔다.
+- 저장 행동은 최신 원문과 source-fit 기준을 통과한 승인 `/f` route에만 연다.
 - 모바일은 첫 스크롤 전 고정 `내 Flow에 저장` CTA 1개, wide는 hero 저장 CTA 1개만 보인다.
 - 스크롤 뒤 나타나던 진행률+저장 bar는 공통 save-first route에서 제거하고, 파일 export는 본문 Flow 단위 2차 행동으로 유지했다.
 - exact-video의 긴 source-derived 실행 기준은 짧은 요약 아래에서 기본 접힘으로 두고 필요할 때 펼친다.
+- 승인 전 route는 원문과 최대 5개 항목만 미리 보여주고 `noindex`, 저장 0, export 0, checkbox 0인 읽기 전용 화면으로 둔다.
 
 판정: **공유 shell 일관성은 자동 QA 기준 개선 완료. 실제 공유 수신자의 저장 이해도는 관찰 필요.**
 
@@ -57,6 +58,9 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 - 공개 `/u/flow-curation-team`은 75개 전체를 기본 노출하지 않고, 실제 원문 7개와 대표 Flow 1개만 먼저 보여준다. 검토 중 60개와 샘플 6개는 명시적 필터를 선택해야 보인다.
 - 개인 `/u/my-flow-studio`는 초안 선반이므로 기존 전체/초안 기본 동작을 유지한다.
 - live URL 감사에서 최초 404 6개와 redirect 5개를 0으로 줄였다. 삭제·불안정·source row 미확인 콘텐츠 6개는 preview로 이동했고, 2016/2025 고정 자료와 시점 고정 정책 수치는 현재 공식 안내로 교체했다.
+- 후속 감사는 대표 원문뿐 아니라 사용자-facing 항목 상세 링크까지 범위를 넓혔다. 정상 사용자 route 155개의 고유 URL 156개 중 상세에만 있던 링크가 23개였고, 폐기된 전기차 링크와 일반 홈/리다이렉트 링크를 현재 경로로 교체해 hard-broken 0, redirect 1로 정리했다.
+- 공개 번들 617개는 승인 49개와 읽기 전용 568개로 분리했다. source-fit 수동 승인 18개와 상태가 충돌하는 route는 0개다.
+- 세탁기 통세척 화면의 임의 `과탄산소다 100g`, `2주 1회` 사본을 제거하고 모델 설명서가 허용한 종류·양과 서비스 안내를 우선하도록 고쳤다.
 - 연도가 붙지 않은 숫자도 다시 대조해 Toss 원문과 다른 40/40/20 비율, 출생신고와 행복출산의 온라인 경로 혼합, 안심상속의 근거 없는 6개월 문구를 제거했다. 현재 숫자 attention은 공식 기한 7개와 비교용 예시 1개이며 알려진 source contradiction은 0개다.
 
 판정: **기본 공개 표면의 오래된/미검토 콘텐츠 혼입은 자동 QA 기준 개선 완료. 외부 원문 변경을 잡는 주기적 재확인은 계속 필요.**
@@ -67,6 +71,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 - `/content-flows`, `/creators`, `/ia-compare*`, `/restart/*`, `/flow-lab*`는 direct-only internal/release-preview route로 분리하고 `noindex`를 적용했다.
 - `/my`, `/calendar`, `/flows/new`, `/flows/[id]/edit`, `/flow-maps/[map]/creator`, `/u/my-flow-studio`는 브라우저 저장 상태 또는 개인 편집을 다루므로 `noindex`다.
 - preview creator channel과 존재하지 않는 `/u/*` profile은 `noindex`; 확인된 non-preview public creator profile만 indexable이다.
+- `/f/[slug]`도 콘텐츠 상태를 읽어 승인 route만 `index, follow`로 두고, source-fit 또는 source review가 남은 route는 `noindex, nofollow`와 읽기 전용 게이트를 적용한다.
 - 모바일 390px과 wide 1024px 정상 route에서 `/creators`와 internal/release-preview 링크는 0이다.
 
 판정: **과거 실험·검토 페이지가 정상 nav나 검색 결과에서 현재 제품처럼 보이는 경로를 자동 QA 기준으로 차단했다. 직접 URL 개발 접근은 유지한다.**
@@ -213,6 +218,7 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [공개 콘텐츠 최신성·기본 노출 evidence](./2026-07-11-flowme-content-freshness-evidence/README.md)
 - [정상 사용자 콘텐츠 출처 도달성 evidence](./2026-07-11-flowme-live-source-reachability-evidence/README.md)
 - [숫자·서비스 경계 source-fit evidence](./2026-07-11-flowme-numeric-claim-source-fit-evidence/README.md)
+- [public 콘텐츠 최신성·행동 게이트 evidence](./2026-07-11-flowme-public-content-currentness-evidence/README.md)
 - [route lifecycle·indexing evidence](./2026-07-11-flowme-route-lifecycle-indexing-evidence/README.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 

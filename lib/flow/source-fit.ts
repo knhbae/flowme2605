@@ -963,32 +963,32 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'samsung-washer-filter-cleaning',
-    checkedAt: '2026-05-23',
-    sourceTitle: '삼성전자서비스 세탁기 배수필터 청소 안내',
-    sourceUrl: 'https://www.samsungsvc.co.kr/solution/1978102',
+    checkedAt: '2026-07-11',
+    sourceTitle: '삼성전자서비스 미세플라스틱 저감장치 필터 청소 안내',
+    sourceUrl: 'https://www.samsungsvc.co.kr/solution/1477182',
     sourcePrecision: 'exact',
-    sourceUsefulness: '공식 안내가 배수필터 청소, 잔수 제거, 재조립, 누수 확인을 설명해 반복 루틴과 당일 체크리스트에 적합하다.',
-    idealReconstruction: '시작일과 반복 요일을 받아 주 1회 청소 루틴, 준비물, 안전 확인, 다음 청소일로 재구성한다.',
+    sourceUsefulness: '공식 안내가 필터 LED 신호, 전원 차단, 분리 방향, 물세척 금지, 재조립과 3초 리셋을 순서대로 설명해 상태 기반 체크리스트에 적합하다.',
+    idealReconstruction: '고정 주기를 만들지 않고 필터 LED가 깜빡일 때 공식 순서대로 전원 차단, 분리, 마른 이물 제거, 재조립과 리셋을 확인한다.',
     naturalArtifacts: [
       {
-        kind: 'routine_calendar',
-        artifactTitle: '주 1회 배수필터 청소 루틴',
-        simulatedInputs: ['시작일=2026-06-06', '반복=매주 토요일', '제품=비스포크 AI 콤보', '주의=잔수 제거'],
-        expectedOutput: ['매주 토요일 배수필터 청소', '잔수 제거', '필터 청소', '재조립/잠김 확인', '누수 확인'],
-        currentFlowMatch: '현재 루틴 항목은 공식 절차와 잘 맞는다.',
-        currentUxSupport: '반복 달력은 맞지만 안전 주의와 누수 확인이 더 강하게 표시되어야 한다.',
-        gap: '반복 루틴 카드에 공식 주기와 안전 주의가 함께 보여야 한다.',
+        kind: 'checklist',
+        artifactTitle: '필터 LED 점등 시 청소 체크리스트',
+        simulatedInputs: ['청소 신호=필터 LED 깜빡임', '제품=미세플라스틱 저감장치', '주의=필터 물세척 금지'],
+        expectedOutput: ['필터 LED 확인', '제품과 세탁기 전원 끄기', '필터 분리', '물세척 없이 이물 제거', '재조립', '필터 버튼 3초 리셋'],
+        currentFlowMatch: '현재 Flow가 공식 페이지의 10개 순서와 물세척 금지 경계를 그대로 보존한다.',
+        currentUxSupport: '상태 신호부터 리셋까지 한 체크리스트로 실행하고 완료 상태를 저장할 수 있다.',
+        gap: '없음. 반복 날짜보다 제품의 필터 LED 신호를 시작 조건으로 유지한다.',
       },
     ],
     userJourney: [
-      '세탁기 배수 오류나 냄새를 보고 공식 청소 안내를 연다.',
-      'FLOW에서 시작일과 반복 요일을 정한다.',
-      '매주 청소 체크와 누수 확인을 완료한다.',
-      '다음 청소일과 이상 증상을 메모한다.',
+      '필터 LED가 깜빡이는지 확인한다.',
+      '제품과 연결된 세탁기의 전원을 끈다.',
+      '공식 순서대로 필터를 분리해 물세척 없이 이물질을 제거한다.',
+      '필터를 재조립하고 버튼을 3초간 눌러 리셋한다.',
     ],
-    currentGap: '반복 루틴은 적합하지만 안전 주의와 고장 증상 메모가 일반 체크에 묻힌다.',
-    contentAction: '잔수 제거, 재조립, 잠김, 누수 확인을 완료 기준으로 더 명확히 적는다.',
-    uxAction: 'routine Flow의 월간 달력 preview에 반복 주기와 주의 배지를 포함한다.',
+    currentGap: '현재 bundle은 source-specific 상태 신호와 안전 경계를 보존한다.',
+    contentAction: '고정 주기나 배수필터 절차를 섞지 않고 미세플라스틱 저감장치 공식 순서만 유지한다.',
+    uxAction: '필터 LED 상태와 물세척 금지를 첫 실행 맥락으로 유지한다.',
     scores: {
       actionDensity: 14,
       temporalStructure: 14,
@@ -1121,7 +1121,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'new-car-delivery-check',
-    checkedAt: '2026-05-23',
+    checkedAt: '2026-07-11',
     sourceTitle: '겟차 신차 검수 체크리스트 가이드',
     sourceUrl: 'https://web.getcha.kr/blog/new-car-inspection-checklist-complete-guide-2026',
     sourcePrecision: 'exact',
@@ -1133,16 +1133,16 @@ export const sourceFitAudits: SourceFitAudit[] = [
         artifactTitle: '신차 인수 전 검수·하자 기록표',
         simulatedInputs: ['인수일=2026-06-20', '차량=아반떼 하이브리드', '옵션=선루프/HUD', '장소=딜리버리센터'],
         expectedOutput: ['영역, 점검항목, 정상/하자, 사진파일명, 딜러 확인, 인수 보류 여부 열이 있는 sheet'],
-        currentFlowMatch: '외관과 기능 점검 item은 맞지만 사진 증빙과 인수 보류 판단 기록이 약하다.',
-        currentUxSupport: '체크리스트는 있으나 하자 사진과 딜러 확인 메모를 export하기 어렵다.',
-        gap: '돈이 걸린 인수 Flow는 체크 완료보다 증거 기록과 인수 전 판단표가 중요하다.',
+        currentFlowMatch: '외관·기능 점검과 함께 사진 파일명, 딜러 확인, 인수 보류 사유가 한 현장 기록표에 분리되어 있다.',
+        currentUxSupport: '모바일 체크리스트와 보류 메모를 같은 sheet export에 보존한다.',
+        gap: '없음. FLOW가 인수 결정을 대신하지 않는 경계를 유지한다.',
       },
     ],
     userJourney: ['인수 전 체크리스트를 열고 계약 옵션을 확인한다.', 'FLOW에 차량 모델과 인수일을 입력한다.', '현장에서 외관/실내/기능을 체크하고 사진 파일명을 기록한다.', '하자가 있으면 인수 서명 전 딜러 확인 상태를 sheet로 남긴다.'],
-    currentGap: '현재 Flow는 중고차 source에서 갈라져 나온 형태라 신차 인수 전 증빙 흐름이 부족했다.',
-    contentAction: 'source를 신차 검수 exact article로 교체하고 인수 전 사진/하자/딜러 확인 기준을 보강한다.',
-    uxAction: 'vehicle purchase Flow에 evidence sheet preview와 하자 발견 시 인수 보류 memo를 추가한다.',
-    decision: 'reshape_before_featured',
+    currentGap: '현재 Flow는 신차 exact article와 인수 전 증빙·보류 경계를 반영한다.',
+    contentAction: '차량·모델별 차이를 확정하지 말고 현장 확인과 서면 기록 범위만 유지한다.',
+    uxAction: '체크리스트보다 증거표와 인수 보류 메모가 약해지지 않게 유지한다.',
+    decision: 'keep_representative',
     scores: {
       actionDensity: 14,
       temporalStructure: 8,
@@ -1623,9 +1623,9 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'washer-tub-clean-monthly',
-    checkedAt: '2026-06-06',
-    sourceTitle: '세탁기 통세척 월간 관리 참고',
-    sourceUrl: 'https://raga.tistory.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EB%B0%8F-%EA%B4%80%EB%A6%AC%EB%B2%95',
+    checkedAt: '2026-07-11',
+    sourceTitle: '세탁기 통세척 방법 완벽 가이드',
+    sourceUrl: 'https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C',
     sourcePrecision: 'exact',
     sourceUsefulness:
       '세탁조 청소, 문 열어 건조, 고무패킹, 세제통, 배수필터처럼 반복 관리로 옮길 수 있는 실행 단서가 분명하다. 다만 제조사/모델별 차이는 원문 참고와 사용자 메모로 분리해야 한다.',
@@ -1641,9 +1641,9 @@ export const sourceFitAudits: SourceFitAudit[] = [
           '상세 체크리스트: 통세척, 문 열어 건조, 고무패킹, 세제통, 배수필터',
           '다음 관리일 자동 유지',
         ],
-        currentFlowMatch: 'public route와 content-flow 후보 모두 calendar-first routine 구조로 맞다.',
-        currentUxSupport: '캘린더 날짜에서 내부 체크리스트가 바로 보여야 사용자가 루틴 전체 완료와 세부 항목 완료를 구분할 수 있다.',
-        gap: '대표 노출 전에는 모델별 주의와 원문 링크 위치를 더 가볍게 정리해야 한다.',
+        currentFlowMatch: '월간 reminder와 통세척·건조·고무패킹·세제통·배수필터 확인이 한 루틴으로 정리되어 있다.',
+        currentUxSupport: '세부 체크와 원문 링크를 유지하면서 모델 설명서가 세제·코스·관리 주기보다 우선한다고 안내한다.',
+        gap: '없음. 월간 일정은 확인 reminder이며 모델별 공식 주기를 대체하지 않는다.',
       },
     ],
     userJourney: [
@@ -1652,13 +1652,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
       '통세척 실행 후 문 열어 건조, 고무패킹, 세제통, 배수필터를 체크한다.',
       '특이사항만 메모하고 다음 달 반복 일정은 유지한다.',
     ],
-    currentGap:
-      '실제 사용성 검증의 핵심은 루틴 일정 안에 세부 체크리스트가 보이는지이며, 과한 사진/증빙 입력은 P0 범위를 넘는다.',
-    contentAction:
-      '통세척 루틴은 월간 일정과 4개 안팎의 세부 체크리스트만 남기고 제조사별 차이는 원문 링크/메모로 분리한다.',
-    uxAction:
-      '루틴 캘린더 item을 열면 전체 완료 버튼보다 먼저 세부 체크리스트와 다음 반복일을 보여준다.',
-    decision: 'reshape_before_featured',
+    currentGap: '현재 Flow는 세 항목만 유지하고 사진 증빙이나 임의 화학제품 용량을 요구하지 않는다.',
+    contentAction: '모델별 설명서 우선 원칙과 세탁물 없이 실행하는 주의를 유지한다.',
+    uxAction: '월간 reminder와 세부 확인 항목을 같은 완료 수준으로 혼동하지 않게 유지한다.',
+    decision: 'keep_representative',
     scores: {
       actionDensity: 12,
       temporalStructure: 12,
@@ -1929,7 +1926,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'fridge-cleanout-weekly-plan',
-    checkedAt: '2026-06-18',
+    checkedAt: '2026-07-11',
     sourceTitle: 'Creator fridge cleanout 7-day meal-plan post',
     sourceUrl:
       'https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8',
@@ -1954,7 +1951,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
         currentUxSupport:
           'The setup hint and warning make it clear that FLOW is not evaluating food safety, nutrition balance, or savings outcomes.',
         gap:
-          'The route needs continued copy restraint so it does not turn creator budgeting context into a guaranteed savings or diet planner.',
+          'No blocking gap. The route keeps creator budgeting claims out of FLOW and retains only inventory and menu-option records.',
       },
     ],
     userJourney: [
@@ -1963,12 +1960,12 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
       'The user decides what to use, hold, buy, or discard outside FLOW judgment.',
     ],
     currentGap:
-      'Strong enough as a practical inventory artifact, but promotion should wait until the first screen keeps safety and nutrition boundaries obvious.',
+      'The first screen and export keep food safety, nutrition, and savings judgments outside FLOW.',
     contentAction:
       'Keep priority ingredients, menu options, hold/buy rows, and discard notes. Remove savings guarantees, nutrition balancing, and food-safety conclusions.',
     uxAction:
       'Show the inventory sheet first and keep safety warnings close to ingredient rows.',
-    decision: 'reshape_before_featured',
+    decision: 'keep_representative',
     scores: {
       actionDensity: 12,
       temporalStructure: 12,

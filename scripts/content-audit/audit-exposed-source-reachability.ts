@@ -3,8 +3,10 @@ import path from 'node:path';
 import { normalizeExecutionModel } from '../../lib/flow/execution-model';
 import {
   classifySourceReachability,
+  collectSourceReachabilityTargets,
   sourceReachabilityIsHardBroken,
   sourceReachabilityNeedsManualReview,
+  type SourceLinkRole,
   type SourceReachabilityBucket,
 } from '../../lib/flow/source-reachability';
 import { mergeSourceBackedMyFlowBundles } from '../../lib/flow/source-backed-my-flow';
@@ -15,6 +17,7 @@ type AuditTarget = {
   slugs: string[];
   titles: string[];
   exposureStatuses: string[];
+  linkRoles: SourceLinkRole[];
 };
 
 type AuditResult = AuditTarget & {
@@ -34,37 +37,21 @@ const timeoutMs = Number(process.env.FLOW_SOURCE_AUDIT_TIMEOUT_MS ?? 12_000);
 const concurrency = Math.max(1, Number(process.env.FLOW_SOURCE_AUDIT_CONCURRENCY ?? 8));
 
 function buildTargets(): AuditTarget[] {
-  const byUrl = new Map<string, AuditTarget>();
   const bundles = mergeSourceBackedMyFlowBundles(cloneSeedBundles()).filter((bundle) => {
     if (bundle.flow.status !== 'published') return false;
     const exposureStatus = normalizeExecutionModel(bundle).exposureStatus;
     return exposureStatus !== 'catalog_preview' && exposureStatus !== 'hidden';
   });
+  const exposureBySlug = new Map(
+    bundles.map((bundle) => [bundle.flow.slug, normalizeExecutionModel(bundle).exposureStatus]),
+  );
 
-  for (const bundle of bundles) {
-    const sourceUrl = bundle.flow.source_url;
-    if (!sourceUrl) continue;
-    const exposureStatus = normalizeExecutionModel(bundle).exposureStatus;
-    const current = byUrl.get(sourceUrl) ?? {
-      sourceUrl,
-      slugs: [],
-      titles: [],
-      exposureStatuses: [],
-    };
-    current.slugs.push(bundle.flow.slug);
-    current.titles.push(bundle.flow.title);
-    current.exposureStatuses.push(exposureStatus);
-    byUrl.set(sourceUrl, current);
-  }
-
-  return [...byUrl.values()]
-    .map((target) => ({
-      ...target,
-      slugs: [...new Set(target.slugs)].sort(),
-      titles: [...new Set(target.titles)].sort(),
-      exposureStatuses: [...new Set(target.exposureStatuses)].sort(),
-    }))
-    .sort((a, b) => a.sourceUrl.localeCompare(b.sourceUrl));
+  return collectSourceReachabilityTargets(bundles).map((target) => ({
+    ...target,
+    exposureStatuses: [
+      ...new Set(target.slugs.map((slug) => exposureBySlug.get(slug)).filter(Boolean)),
+    ].sort() as string[],
+  }));
 }
 
 async function checkTarget(target: AuditTarget): Promise<AuditResult> {
@@ -144,6 +131,7 @@ async function main() {
     generatedAt: new Date().toISOString(),
     policy: {
       routeScope: 'published normal-user routes only; catalog_preview and hidden excluded',
+      linkScope: 'primary flow sources plus user-facing item detail links',
       timeoutMs,
       concurrency,
       networkReachabilityDoesNotProveSemanticFreshness: true,
@@ -152,6 +140,12 @@ async function main() {
     summary: {
       routeCount: new Set(results.flatMap((result) => result.slugs)).size,
       uniqueSourceUrlCount: results.length,
+      primarySourceUrlCount: results.filter((result) => result.linkRoles.includes('flow_source')).length,
+      itemDetailUrlCount: results.filter((result) => result.linkRoles.includes('item_detail')).length,
+      itemDetailOnlyUrlCount: results.filter(
+        (result) =>
+          result.linkRoles.includes('item_detail') && !result.linkRoles.includes('flow_source'),
+      ).length,
       domainCount: new Set(results.map((result) => new URL(result.sourceUrl).hostname)).size,
       buckets,
       hardBrokenCount: results.filter((result) => sourceReachabilityIsHardBroken(result.bucket)).length,

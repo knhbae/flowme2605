@@ -8,6 +8,7 @@ import {
 } from './creator-channel-preview';
 import { inferPrimaryDestination } from './destination';
 import { normalizeExecutionModel } from './execution-model';
+import { getPublicFlowIndexingPolicy } from './route-indexing-policy';
 import { seedBundles } from './seed-flows';
 import { mergeSourceBackedMyFlowBundles } from './source-backed-my-flow';
 import {
@@ -16,8 +17,10 @@ import {
   findYearStampedSensitiveClaims,
 } from './source-claim-freshness';
 import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
+import { getSourceFitAudit, sourceFitAudits } from './source-fit';
 import {
   classifySourceReachability,
+  collectSourceReachabilityTargets,
   sourceReachabilityIsHardBroken,
   sourceReachabilityNeedsManualReview,
 } from './source-reachability';
@@ -216,7 +219,7 @@ test('promoted content-flow candidates ship as public executable seed routes', (
     {
       slug: 'washer-tub-clean-monthly',
       destination: 'calendar',
-      terms: ['문 열어 건조', '고무패킹', '세제통', '배수필터', '과탄산소다', '2주'],
+      terms: ['문 열어 건조', '고무패킹', '세제통', '배수필터', '설명서에서 허용한 종류와 양'],
     },
     {
       slug: 'monstera-care-routine',
@@ -1077,27 +1080,20 @@ test('existing pilot flows use upgraded source metadata and matching detail link
   }
 });
 
-test('source-backed legacy flows are normalized as needs-review inventory', () => {
+test('unapproved legacy flows remain in needs-review inventory', () => {
   const needsReviewSlugs = [
     'job-change-risk-check',
     'year-end-tax-docs',
-    'passport-renewal-docs',
     'national-health-checkup-d7',
     'business-registration-basic',
     'driver-license-renewal-check',
     'happy-birth-service-check',
-    'pet-registration-basic',
     'vaccination-certificate-issue',
     'family-certificate-issue',
     'resident-register-copy-issue',
     'industrial-accident-claim-docs',
-    'new-car-delivery-check',
     'diet-habit-2week',
-    'samsung-aircon-seasonal-check',
-    'samsung-washer-filter-cleaning',
-    'vehicle-inspection-prep',
     'qnet-exam-application-prep',
-    'computer-skills-d30-study',
     'diet-meal-exercise-log',
     'diet-reset-2week',
   ];
@@ -1206,6 +1202,74 @@ test('source reachability policy separates hard link rot from redirects and exte
   assert.equal(sourceReachabilityIsHardBroken('access_blocked'), false);
   assert.equal(sourceReachabilityNeedsManualReview('redirected'), true);
   assert.equal(sourceReachabilityNeedsManualReview('reachable'), false);
+});
+
+test('source reachability targets include user-facing item detail links', () => {
+  const published = mergeSourceBackedMyFlowBundles(seedBundles).filter(
+    (bundle) => bundle.flow.status === 'published',
+  );
+  const userRoutes = published.filter((bundle) => {
+    const exposure = normalizeExecutionModel(bundle).exposureStatus;
+    return exposure !== 'catalog_preview' && exposure !== 'hidden';
+  });
+  const targets = collectSourceReachabilityTargets(userRoutes);
+  const primaryTargets = targets.filter((target) => target.linkRoles.includes('flow_source'));
+  const detailTargets = targets.filter((target) => target.linkRoles.includes('item_detail'));
+  const eFamily = targets.find(
+    (target) =>
+      target.sourceUrl ===
+      'https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y',
+  );
+  const washer = targets.find(
+    (target) =>
+      target.sourceUrl ===
+      'https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C',
+  );
+
+  assert.ok(detailTargets.length > 0);
+  assert.ok(targets.length > primaryTargets.length);
+  assert.deepEqual(eFamily?.linkRoles, ['item_detail']);
+  assert.ok(eFamily?.slugs.includes('birth-registration-prep'));
+  assert.deepEqual(washer?.linkRoles, ['flow_source', 'item_detail']);
+});
+
+test('source-fit audit links stay aligned with the current public source', () => {
+  const bundlesBySlug = new Map(
+    mergeSourceBackedMyFlowBundles(seedBundles).map((bundle) => [bundle.flow.slug, bundle]),
+  );
+  const mismatches = sourceFitAudits.flatMap((audit) => {
+    const bundle = bundlesBySlug.get(audit.slug);
+    if (!bundle?.flow.source_url || bundle.flow.source_url === audit.sourceUrl) return [];
+    return [{ slug: audit.slug, bundleUrl: bundle.flow.source_url, auditUrl: audit.sourceUrl }];
+  });
+
+  assert.deepEqual(mismatches, []);
+});
+
+test('manual source-fit approval clears stale source review status', () => {
+  const staleApproved = mergeSourceBackedMyFlowBundles(seedBundles)
+    .filter((bundle) => getSourceFitAudit(bundle.flow.slug)?.decision === 'keep_representative')
+    .filter((bundle) => bundle.flow.source_status === 'needs_review')
+    .map((bundle) => bundle.flow.slug);
+
+  assert.deepEqual(staleApproved, []);
+});
+
+test('public Flow indexing exposes only source-fit approved or exact real-source pages', () => {
+  const published = mergeSourceBackedMyFlowBundles(seedBundles).filter(
+    (bundle) => bundle.flow.status === 'published',
+  );
+  const indexable = published.filter((bundle) => getPublicFlowIndexingPolicy(bundle).indexable);
+  const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
+  const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
+
+  assert.equal(indexable.length, 49);
+  assert.equal(reviewOnly.length, 568);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-baby-vaccination-schedule')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-apartment-precheck')!).indexable, false);
 });
 
 test('published user routes record source freshness while preview library stays separate', () => {
@@ -1337,7 +1401,10 @@ test('real source-backed channel batch covers every preview channel', () => {
 
 test('real source-backed flows include precision and tailored executable details', () => {
   const real = seedBundles.filter(
-    (bundle) => bundle.flow.source_status === 'real' && !bundle.flow.tags?.includes('curated-source-app-seed'),
+    (bundle) =>
+      bundle.flow.source_status === 'real' &&
+      bundle.flow.id.startsWith('flow-real-') &&
+      !bundle.flow.tags?.includes('curated-source-app-seed'),
   );
   assert.ok(real.length >= 20);
   const customRealSourceItemCounts = new Map<string, number>([

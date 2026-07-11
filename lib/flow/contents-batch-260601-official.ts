@@ -688,7 +688,7 @@ const specs: BatchSpec[] = [
   why: 충전 인프라 없이 전기차를 구매하면 일상 사용이 불편해집니다. 사전에 충전 환경을 파악해야 합니다.
   how: 거주지 주차장 완속충전기 설치 가능 여부를 확인합니다(아파트는 관리사무소 또는 입주자 대표회의 승인 필요). 주변 급속충전소 위치와 요금도 확인합니다.
   done: 집 근처 충전 환경(완속·급속)을 확인하고 충전 계획을 세웠다.
-  link: 환경부 전기차 충전소 찾기 | https://www.ev.or.kr/evcharger | official`,
+  link: 무공해차 통합누리집 충전소 조회 | https://ev.or.kr/ | official`,
   },
   {
     flow: {
@@ -785,7 +785,7 @@ const specs: BatchSpec[] = [
 - 출생신고 접수하기 D+7
   how: 출산 병원이 온라인 신고 참여 병원이면 법원 전자가족관계등록시스템에서 신고하고, 그렇지 않으면 공식 안내에서 관할 신고기관을 확인해 방문합니다.
   done: 출생신고 접수를 확인했다.
-  link: 법원 전자가족관계등록시스템 | https://efamily.scourt.go.kr/index.jsp | official
+  link: 법원 전자가족관계등록시스템 출생신고 안내 | https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y | official
 - 행복출산 원스톱 등 함께 신청 가능한 서비스 확인하기 D+7
   how: 행복출산 통합신청은 출생신고와 함께 또는 출생신고 이후 정부24나 주민센터에서 신청합니다.
   caution: 부모급여 등 서비스마다 신청 시점과 소급 기준이 다를 수 있으므로 현재 정부24·복지로 안내를 확인합니다.

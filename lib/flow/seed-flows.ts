@@ -248,7 +248,7 @@ function tagMeta(tags: string[]): Pick<Flow, 'tags'> {
   return { tags };
 }
 
-const sourceNeedsReviewMeta: Record<
+const sourceReviewMeta: Record<
   string,
   Pick<Flow, 'source_status' | 'source_precision' | 'source_checked_at' | 'conversion_note' | 'primary_destination'>
 > = {
@@ -267,10 +267,10 @@ const sourceNeedsReviewMeta: Record<
     primary_destination: 'sheet',
   },
   'passport-renewal-docs': {
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
     source_checked_at: '2026-07-11',
-    conversion_note: '외교부 여권 재발급 안내의 대상, 신청 경로, 사진과 구비서류를 다시 확인했습니다. 사용자 여정 확인 전 검토 대기 상태입니다.',
+    conversion_note: '외교부 여권 재발급 안내의 대상, 신청 경로, 사진과 구비서류를 다시 확인해 준비 순서로 옮겼습니다.',
     primary_destination: 'memo',
   },
   'national-health-checkup-d7': {
@@ -302,10 +302,10 @@ const sourceNeedsReviewMeta: Record<
     primary_destination: 'memo',
   },
   'pet-registration-basic': {
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '정부24 동물등록 안내 기반 Flow입니다. 등록번호 보관 산출물 검토가 필요합니다.',
+    conversion_note: '정부24 동물등록 안내를 등록 전 확인, 신청, 등록번호 보관 순서로 옮겼습니다.',
     primary_destination: 'memo',
   },
   'vaccination-certificate-issue': {
@@ -337,9 +337,9 @@ const sourceNeedsReviewMeta: Record<
     primary_destination: 'sheet',
   },
   'new-car-delivery-check': {
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
+    source_checked_at: '2026-07-11',
     conversion_note: '신차 검수 체크리스트 기반 Flow입니다. 인수 전 사진/하자 기록 산출물 중심으로 구성했습니다.',
     primary_destination: 'sheet',
   },
@@ -351,21 +351,21 @@ const sourceNeedsReviewMeta: Record<
     primary_destination: 'calendar',
   },
   'samsung-aircon-seasonal-check': {
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '공식 가전관리 Flow입니다. 실제 원본 배치 승격 전 상담/예약 메모 gap 검토가 필요합니다.',
+    conversion_note: '삼성전자서비스 안내를 계절 전 점검과 상담·예약 메모로 옮긴 공식 가전관리 Flow입니다.',
     primary_destination: 'calendar',
   },
   'samsung-washer-filter-cleaning': {
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '공식 가전관리 루틴 Flow입니다. 반복 주기와 안전 경고 UX 확인 후 승격합니다.',
+    conversion_note: '삼성전자서비스의 필터 LED 확인, 전원 차단, 물세척 금지, 재조립과 리셋 순서를 옮겼습니다.',
     primary_destination: 'calendar',
   },
   'vehicle-inspection-prep': {
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
     conversion_note: 'TS 자동차검사 안내 기반 Flow입니다. 검사 예약, 준비 서류, 결과표, 후속 정비 메모를 분리했습니다.',
@@ -379,7 +379,7 @@ const sourceNeedsReviewMeta: Record<
     primary_destination: 'hybrid',
   },
   'computer-skills-d30-study': {
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
     conversion_note: '시나공 컴활 1급 필기+실기 교재 페이지 기반 Flow입니다. 시험일 역산 학습표와 오답 기록 산출물 중심으로 구성했습니다.',
@@ -1657,7 +1657,7 @@ const babyFoodBundle: FlowBundle = {
     risk_level: 'medical_sensitive',
     source_title: '초기 이유식 식단표 참고',
     source_url: 'https://kimstar1021.tistory.com/63',
-    source_status: 'needs_review',
+    source_status: 'real',
     source_precision: 'exact',
     source_checked_at: '2026-06-07',
     conversion_note:
@@ -2247,7 +2247,7 @@ const washerTubCleanMonthlyText = `@매월 1회
 - 세제통과 배수필터 확인하기`;
 
 const washerTubCleanLink = {
-  label: '세탁기 통세척 방법 참고',
+  label: '세탁기 통세척 방법 완벽 가이드',
   url: 'https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C',
   type: 'reference' as const,
 };
@@ -2256,7 +2256,7 @@ const washerTubCleanMonthlyDetails: Parameters<typeof withItemDetails>[1] = {
   '통세척 코스 돌리고 문 열어 건조하기': {
     description: '월 1회 통세척 코스를 실행하고 세탁조 안쪽 습기를 빼는 루틴입니다.',
     why: '세탁조 안쪽 습기와 잔여 세제는 냄새와 오염감의 반복 원인이 되므로, 세척보다 건조까지 끝내야 루틴이 완성됩니다.',
-    how: '세탁물 없이 통세척/통살균 코스를 실행한 뒤 문을 열어 내부 물기를 말립니다. 드럼은 과탄산소다 100g 또는 액상 전용 클리너, 통돌이는 뜰채와 세탁조 클리너/과탄산소다처럼 내 모델에 맞는 준비물을 메모합니다.',
+    how: '세탁물 없이 내 모델 설명서의 통세척/통살균 코스를 실행한 뒤 문을 열어 내부 물기를 말립니다. 세제나 클리너는 설명서에서 허용한 종류와 양만 사용합니다.',
     completion_criteria: '통세척 코스가 끝났고 세탁기 문을 열어 내부 건조 상태로 두었습니다.',
     caution: '세제 사용량, 고온 코스 가능 여부, 무세제 통세척 지원 여부는 세탁기 모델 설명서를 우선합니다.',
     links: [washerTubCleanLink],
@@ -2275,7 +2275,7 @@ const washerTubCleanMonthlyDetails: Parameters<typeof withItemDetails>[1] = {
   '세제통과 배수필터 확인하기': {
     description: '세제통 분리 세척과 배수필터 이물 확인을 같은 월간 루틴으로 묶습니다.',
     why: '세제통과 배수필터는 사용자가 잊기 쉬운 관리 지점이라 통세척일에 같이 처리해야 반복 관리가 쉽습니다.',
-    how: '세제통을 분리해 헹구고 말립니다. 배수필터는 물받이를 준비한 뒤 모델 설명서 순서에 따라 이물질을 확인합니다. 사용량이 많거나 냄새가 반복되면 월 1회보다 짧은 2주 간격으로 임시 조정합니다.',
+    how: '세제통을 분리해 헹구고 말립니다. 배수필터는 물받이를 준비한 뒤 모델 설명서 순서에 따라 이물질을 확인하고, 다음 확인 시점도 설명서나 제품 알림에 맞춥니다.',
     completion_criteria: '세제통을 원위치했고 배수필터 이물 확인을 마쳤습니다.',
     caution: '배수필터 분리 전에는 물이 흐를 수 있으니 수건이나 물받이를 준비합니다.',
     links: [washerTubCleanLink],
@@ -2589,15 +2589,15 @@ const creatorInspiredBundles: FlowBundle[] = [
         anchor_type: 'start_date',
         status: 'published',
         risk_level: 'low',
-        source_title: '세탁기 통세척 방법 참고',
+        source_title: '세탁기 통세척 방법 완벽 가이드',
         source_url: washerTubCleanLink.url,
-        source_status: 'needs_review',
+        source_status: 'real',
         source_precision: 'exact',
-        source_checked_at: '2026-06-06',
+        source_checked_at: '2026-07-11',
         conversion_note: '통세척 방법 글에서 반복 실행 가능한 월간 관리 항목만 추려 루틴 Flow로 승격했습니다. 사진 증빙은 기본값으로 요구하지 않습니다.',
         primary_destination: 'calendar',
-        ...creatorMeta('생활 루틴 코치', '생활 관리 큐레이터', '반복 관리가 필요한 생활 콘텐츠를 캘린더 루틴으로 바꾸는 검증 후보입니다.', 1560, 214),
-        ...tagMeta(['가전 관리', '세탁기', '월간 루틴', 'P0 검증']),
+        ...creatorMeta('생활 루틴 코치', '생활 관리 큐레이터', '반복 관리가 필요한 생활 콘텐츠를 가벼운 캘린더 루틴으로 정리합니다.', 1560, 214),
+        ...tagMeta(['가전 관리', '세탁기', '월간 루틴', '원문 따라하기']),
       },
       washerTubCleanMonthlyText,
     ),
@@ -3271,7 +3271,7 @@ function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
 
 function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
   const category = bundle.flow.category;
-  const needsReviewMeta = sourceNeedsReviewMeta[bundle.flow.slug];
+  const reviewMeta = sourceReviewMeta[bundle.flow.slug];
   const creatorByCategory = category.includes('자동차')
     ? creatorMeta('차근차근 모빌리티', '자동차 생활 크리에이터', '구매와 관리에서 놓치기 쉬운 확인 순서를 정리합니다.', 420 + index * 37, 88 + index * 9)
     : category.includes('자격증') || category.includes('공부')
@@ -3290,7 +3290,7 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
     ...bundle,
     flow: {
       ...bundle.flow,
-      ...needsReviewMeta,
+      ...reviewMeta,
       ...(bundle.flow.creator_name ? {} : creatorByCategory),
       tags: bundle.flow.tags ?? buildSeedTags(bundle),
     },
@@ -4773,9 +4773,9 @@ const baseSeedBundles: FlowBundle[] = [
         source_title: '냉장고 파먹기 7일 식단 플랜 creator blog',
         source_url:
           'https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8',
-        source_status: 'needs_review',
+        source_status: 'real',
         source_precision: 'exact',
-        source_checked_at: '2026-06-10',
+        source_checked_at: '2026-07-11',
         conversion_note:
           'creator blog의 절약 경험과 7일 메뉴 예시를 그대로 보장하지 않고, 냉장고 지도 작성, 우선 소진 재료 선택, 신선 재료-남은 요리-냉동실 재료 순서, 장보기 보류 판단만 실행 가능한 재고표로 변환했습니다. FlowMe는 식비 절약액, 영양 균형, 식품 안전, 다이어트 결과를 판단하거나 보장하지 않습니다.',
         primary_destination: 'sheet',
@@ -4786,7 +4786,7 @@ const baseSeedBundles: FlowBundle[] = [
         ...creatorMeta(
           'FLOW 큐레이션',
           '식재료 실행 Flow 큐레이터',
-          '온라인 냉장고 파먹기 글이 절약/식단 앱이 아니라 가벼운 재고 소진표로 바뀔 수 있는지 확인하는 public 검증 샘플입니다.',
+          '온라인 냉장고 파먹기 경험을 절약 보장이 아닌 가벼운 재고 소진표로 정리합니다.',
           690,
           81,
         ),
@@ -5136,8 +5136,8 @@ const baseSeedBundles: FlowBundle[] = [
         caution: '실업급여 가능 여부는 퇴사 사유와 개인 이력에 따라 달라집니다.',
         links: [
           {
-            label: '고용보험',
-            url: 'https://www.ei.go.kr',
+            label: '고용24 구직급여 안내',
+            url: 'https://ei.work24.go.kr/ei/eih/eg/pb/pbPersonBnef/retrievePb0201Info.do',
             type: 'official',
           },
         ],
@@ -5196,7 +5196,7 @@ const baseSeedBundles: FlowBundle[] = [
         links: [
           {
             label: '해외안전여행',
-            url: 'https://www.0404.go.kr',
+            url: 'https://www.0404.go.kr/main/mainPage',
             type: 'official',
           },
         ],
@@ -5211,7 +5211,7 @@ const baseSeedBundles: FlowBundle[] = [
         links: [
           {
             label: '한국공항공사',
-            url: 'https://www.airport.co.kr',
+            url: 'https://www.airport.co.kr/www/index.do',
             type: 'official',
           },
         ],

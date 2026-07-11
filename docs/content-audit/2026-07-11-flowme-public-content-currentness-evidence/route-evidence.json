@@ -1,0 +1,163 @@
+{
+  "generatedAt": "2026-07-11T13:11:14.570Z",
+  "scope": {
+    "route": "/f/[slug]",
+    "viewports": [390, 1024],
+    "linkScope": "primary flow sources plus user-facing item detail links",
+    "networkReachabilityDoesNotProveSemanticFreshness": true
+  },
+  "summary": {
+    "publishedBundleCount": 617,
+    "normalUserRouteCount": 155,
+    "publicFlowIndexableCount": 49,
+    "publicFlowReviewOnlyCount": 568,
+    "normalNeedsReviewCount": 70,
+    "sourceFitAuditCount": 90,
+    "sourceFitApprovedCount": 18,
+    "sourceFitReshapeCount": 63,
+    "sourceFitPreviewOnlyCount": 9,
+    "staleApprovedSourceStatusCount": 0,
+    "naturalArtifactEffectiveCoverageCount": 50,
+    "naturalArtifactRemainingCount": 0,
+    "sourceReachabilityRouteCount": 155,
+    "sourceReachabilityUniqueUrlCount": 156,
+    "sourceReachabilityPrimaryUrlCount": 133,
+    "sourceReachabilityItemDetailUrlCount": 151,
+    "sourceReachabilityItemDetailOnlyUrlCount": 23,
+    "sourceReachabilityHardBrokenCount": 0,
+    "sourceReachabilityRedirectedCount": 1,
+    "sourceReachabilityManualReviewCount": 10,
+    "reviewOnlySaveActionCount": 0,
+    "reviewOnlyExportFormatOptionCount": 0,
+    "reviewOnlyCheckboxCount": 0,
+    "reviewOnlyMobileExportBarCount": 0,
+    "approvedWasherForbiddenLegacyCopyCount": 0,
+    "horizontalOverflowCount": 0,
+    "observedUserSessionCount": 0,
+    "observedUserSessionTarget": 15
+  },
+  "sourceLinkFixes": [
+    {
+      "slug": "ev-subsidy-apply",
+      "from": "https://www.ev.or.kr/evcharger",
+      "to": "https://ev.or.kr/"
+    },
+    {
+      "slug": "birth-registration-prep",
+      "from": "https://efamily.scourt.go.kr/index.jsp",
+      "to": "https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y"
+    },
+    {
+      "slug": "unemployment-benefit-apply",
+      "from": "https://www.ei.go.kr",
+      "to": "https://ei.work24.go.kr/ei/eih/eg/pb/pbPersonBnef/retrievePb0201Info.do"
+    },
+    {
+      "slug": "overseas-safety-register",
+      "from": "https://www.0404.go.kr",
+      "to": "https://www.0404.go.kr/main/mainPage"
+    },
+    {
+      "slug": "domestic-trip-d7",
+      "from": "https://www.airport.co.kr",
+      "to": "https://www.airport.co.kr/www/index.do"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "approved-new-car-mobile",
+      "route": "/f/new-car-delivery-check",
+      "viewport": 390,
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "visiblePrimarySaveCount": 1,
+      "exportFormatOptionCount": 2,
+      "checkboxCount": 10,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/01-new-car-approved-mobile.png"
+    },
+    {
+      "name": "approved-fridge-mobile",
+      "route": "/f/fridge-cleanout-weekly-plan",
+      "viewport": 390,
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "visiblePrimarySaveCount": 1,
+      "exportFormatOptionCount": 3,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/02-fridge-approved-mobile.png"
+    },
+    {
+      "name": "approved-washer-mobile",
+      "route": "/f/washer-tub-clean-monthly",
+      "viewport": 390,
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "visiblePrimarySaveCount": 1,
+      "exportFormatOptionCount": 3,
+      "checkboxCount": 7,
+      "forbiddenLegacyCopyCount": 0,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/03-washer-approved-mobile.png"
+    },
+    {
+      "name": "source-fit-review-mobile",
+      "route": "/f/running-5k-4week",
+      "viewport": 390,
+      "robots": "noindex, nofollow",
+      "reviewReason": "source_fit_review_required",
+      "reviewDecision": "reshape_before_featured",
+      "reviewGateCount": 1,
+      "saveActionCount": 0,
+      "exportFormatOptionCount": 0,
+      "checkboxCount": 0,
+      "mobileExportBarCount": 0,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/04-running-review-only-mobile.png"
+    },
+    {
+      "name": "source-review-pending-mobile",
+      "route": "/f/birth-registration-prep",
+      "viewport": 390,
+      "robots": "noindex, nofollow",
+      "reviewReason": "source_review_pending",
+      "reviewGateCount": 1,
+      "saveActionCount": 0,
+      "exportFormatOptionCount": 0,
+      "checkboxCount": 0,
+      "mobileExportBarCount": 0,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/05-birth-review-only-mobile.png"
+    },
+    {
+      "name": "approved-new-car-wide",
+      "route": "/f/new-car-delivery-check",
+      "viewport": 1024,
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/06-new-car-approved-wide.png"
+    },
+    {
+      "name": "source-fit-review-wide",
+      "route": "/f/running-5k-4week",
+      "viewport": 1024,
+      "robots": "noindex, nofollow",
+      "reviewGateCount": 1,
+      "saveActionCount": 0,
+      "exportFormatOptionCount": 0,
+      "checkboxCount": 0,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/07-running-review-only-wide.png"
+    }
+  ],
+  "verification": {
+    "targetedUnitTests": "126 passed",
+    "urlFirstE2e": "8 passed",
+    "publicShareE2e": "33 passed",
+    "workbenchSourceDensityE2e": "9 passed",
+    "flowMvpCurrentnessTargetedE2e": "9 passed",
+    "strictSourceReachability": "passed",
+    "build": "passed"
+  }
+}

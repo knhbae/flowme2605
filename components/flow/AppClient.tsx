@@ -29,6 +29,7 @@ import {
 } from '@/lib/flow/my-flow-step-export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
+import { getPublicFlowIndexingPolicy } from '@/lib/flow/route-indexing-policy';
 import { countFlowRunFixedDateOverrides, type FlowRunFixedDatePolicy } from '@/lib/flow/flow-run-reuse';
 import {
   buildFlowVersionReview,
@@ -1286,6 +1287,58 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
     ...(anchor ? { anchor } : {}),
     itemStates: {},
   };
+}
+
+function PublicFlowReviewOnlyPanel({ bundle }: { bundle: FlowBundle }) {
+  const indexingPolicy = getPublicFlowIndexingPolicy(bundle);
+  const audit = getSourceFitAudit(bundle.flow.slug);
+  const previewTitles = getFlowPreviewStepTitles(bundle).slice(0, 5);
+
+  return (
+    <section
+      data-testid="public-flow-review-only-gate"
+      data-review-reason={indexingPolicy.reason}
+      data-decision={audit?.decision ?? ''}
+      className="my-6 rounded-2xl border border-[#F0D8AE] bg-[#FFF7E8] p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)] md:p-5"
+    >
+      <p className="text-sm font-semibold text-[#9A5A16]">원문 재확인 중</p>
+      <h2 className="mt-1 text-xl font-semibold text-[#1B1A17]">지금은 내용만 미리 볼 수 있어요</h2>
+      <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">
+        원문과 실행 항목을 다시 확인하고 있습니다. 확인이 끝날 때까지 저장, 완료 표시, 파일 받기는 열지 않습니다.
+      </p>
+      {previewTitles.length > 0 ? (
+        <div className="mt-4 rounded-xl border border-[#E7E4DD] bg-white p-3">
+          <p className="text-xs font-semibold text-[#8A857B]">확인 중인 실행 항목</p>
+          <ul className="mt-2 grid gap-2 text-sm text-[#4A4842]">
+            {previewTitles.map((title) => (
+              <li key={title} className="flex gap-2">
+                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C28A48]" />
+                <span>{title}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {bundle.flow.source_url ? (
+          <a
+            className="inline-flex min-h-10 items-center rounded-xl border border-[#D8D5CD] bg-white px-3 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]"
+            href={bundle.flow.source_url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            현재 원문 확인하기
+          </a>
+        ) : null}
+        <Link
+          className="inline-flex min-h-10 items-center rounded-xl bg-[#3654FF] px-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+          href="/flows"
+        >
+          다른 Flow 찾기
+        </Link>
+      </div>
+    </section>
+  );
 }
 
 function findExistingUrlFirstDraftBundle(
@@ -11082,6 +11135,8 @@ export function PublicFlow({ slug }: { slug: string }) {
   if (!bundle) return <main className="p-8">Flow를 찾을 수 없습니다.</main>;
 
   const publicDisplayTitle = toContentDisplayTitle(bundle.flow.title);
+  const publicFlowIndexingPolicy = getPublicFlowIndexingPolicy(bundle);
+  const isPublicReviewOnly = !publicFlowIndexingPolicy.indexable;
   const displayAnchor = getPreviewAnchor(bundle, anchorMode, anchor);
   const views = getPublicViews(bundle, Boolean(displayAnchor));
   const activeView = views.some((item) => item.id === view) ? view : 'list';
@@ -11097,14 +11152,17 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
-  const showPublicSaveAction = !showExportFirstHero;
-  const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
+  const showPublicSaveAction = !showExportFirstHero && !isPublicReviewOnly;
+  const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction && !isPublicReviewOnly;
   const primaryDestination = inferPrimaryDestination(bundle);
   const publicHeroInput = getAnchorLabel(bundle);
   const publicHeroArtifact = getCatalogDestinationLabel(bundle);
-  const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
+  const publicHeroPromise = isPublicReviewOnly
+    ? '원문과 실행 항목을 다시 확인하고 있습니다.'
+    : getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
   const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
   const showPublicHeroSetup =
+    !isPublicReviewOnly &&
     !showTodayExecution &&
     !showExportFirstHero &&
     (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none');
@@ -11364,11 +11422,11 @@ export function PublicFlow({ slug }: { slug: string }) {
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-3">
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">입력</p>
+                  <p className="text-[11px] font-semibold text-[#8A857B]">{isPublicReviewOnly ? '필요한 기준' : '입력'}</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroInput}</p>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">저장 결과</p>
+                  <p className="text-[11px] font-semibold text-[#8A857B]">{isPublicReviewOnly ? '예상 결과' : '저장 결과'}</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroArtifact}</p>
                 </div>
                 <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
@@ -11383,13 +11441,21 @@ export function PublicFlow({ slug }: { slug: string }) {
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">D-3 / D-Day / D+1</span>
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">7개 체크</span>
-              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700">출처 확인됨</span>
+              <span className={`rounded-md border px-2.5 py-1 ${isPublicReviewOnly ? 'border-[#F0D8AE] bg-[#FFF7E8] text-[#9A5A16]' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`}>
+                {isPublicReviewOnly ? '원문 재확인 중' : '출처 확인됨'}
+              </span>
             </div>
           ) : (
             <>
               <FlowHeroMeta bundle={bundle} hideAnchorStart={showPublicHeroSetup || showMobileWorkbenchFirst} />
               <div className="mt-3 md:mt-4">
-                <FlowBadges bundle={bundle} />
+                {isPublicReviewOnly ? (
+                  <span className="inline-flex rounded-md border border-[#F0D8AE] bg-[#FFF7E8] px-2.5 py-1 text-xs font-semibold text-[#9A5A16]">
+                    원문 재확인 중
+                  </span>
+                ) : (
+                  <FlowBadges bundle={bundle} />
+                )}
               </div>
             </>
           )}
@@ -11398,7 +11464,9 @@ export function PublicFlow({ slug }: { slug: string }) {
           ) : null}
         </header>
 
-      {showDesktopReferenceRail ? (
+      {isPublicReviewOnly ? (
+        <PublicFlowReviewOnlyPanel bundle={bundle} />
+      ) : showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className={showMobileWorkbenchFirst ? 'flex min-w-0 flex-col lg:block' : 'min-w-0'}>
             <div className={showMobileWorkbenchFirst ? 'order-3 lg:hidden' : 'lg:hidden'}>
@@ -11471,7 +11539,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </>
       )}
 
-      {showStorageNotice ? (
+      {!isPublicReviewOnly && showStorageNotice ? (
         <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <p>
@@ -11490,9 +11558,9 @@ export function PublicFlow({ slug }: { slug: string }) {
         </section>
       ) : null}
 
-      {!shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
+      {!isPublicReviewOnly && !shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
 
-      {showTodayExecution && !shouldUseSimplifiedFeedbackLayout(bundle) ? (
+      {!isPublicReviewOnly && showTodayExecution && !shouldUseSimplifiedFeedbackLayout(bundle) ? (
         <ExactVideoToolPreview
           bundle={bundle}
           anchor={anchor}
@@ -11513,7 +11581,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         />
       ) : null}
 
-      {shouldUseSimplifiedFeedbackLayout(bundle) ? null : showTodayExecution ? (
+      {isPublicReviewOnly || shouldUseSimplifiedFeedbackLayout(bundle) ? null : showTodayExecution ? (
         shouldHideExactVideoExecutionCard(bundle) ? null : <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
         <>
@@ -11569,7 +11637,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </>
       ) : null}
 
-      {showMobileExportSheet && !compactJeonsePage ? (
+      {!isPublicReviewOnly && showMobileExportSheet && !compactJeonsePage ? (
         <div className="fixed inset-0 z-30 md:hidden" data-testid="mobile-export-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-export-title">
           <button className="absolute inset-0 bg-slate-950/35" aria-label="배경" onClick={() => setShowMobileExportSheet(false)} />
           <section className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-[#E7E4DD] bg-white p-5 shadow-[0_-16px_40px_rgba(27,26,23,0.16)]">
@@ -11631,38 +11699,40 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       ) : null}
 
-      <div
-        data-testid="mobile-export-bar"
-        aria-hidden={!showMobileExportActions}
-        className={`fixed inset-x-4 bottom-[calc(9.75rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
-      >
-        <div className="mx-auto max-w-5xl">
-          <div className="flex items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="font-medium text-[#6E6B64]">진행률</span>
-                <span className="font-semibold">{done} / {executableCount}</span>
+      {!isPublicReviewOnly ? (
+        <div
+          data-testid="mobile-export-bar"
+          aria-hidden={!showMobileExportActions}
+          className={`fixed inset-x-4 bottom-[calc(9.75rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
+        >
+          <div className="mx-auto max-w-5xl">
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex items-center justify-between text-sm">
+                  <span className="font-medium text-[#6E6B64]">진행률</span>
+                  <span className="font-semibold">{done} / {executableCount}</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-[#E7E4DD]">
+                  <div className="h-full bg-[#3654FF]" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
+                </div>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[#E7E4DD]">
-                <div className="h-full bg-[#3654FF]" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
-              </div>
+              {savedFlowAt ? (
+                <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+                  내 Flow에서 보기
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm"
+                  onClick={saveToMyFlow}
+                >
+                  내 Flow에 저장
+                </button>
+              )}
             </div>
-            {savedFlowAt ? (
-              <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
-                내 Flow에서 보기
-              </Link>
-            ) : (
-              <button
-                type="button"
-                className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm"
-                onClick={saveToMyFlow}
-              >
-                내 Flow에 저장
-              </button>
-            )}
           </div>
         </div>
-      </div>
+      ) : null}
       {!savedFlowAt ? <PublicFlowSecondaryBrowseLink /> : null}
       </div>
     </main>

@@ -6,6 +6,7 @@ import {
   summarizeNaturalArtifactAuditCoverage,
 } from './natural-artifact-audit';
 import { seedBundles } from './seed-flows';
+import { sourceFitAudits } from './source-fit';
 
 function bundleBySlug(slug: string) {
   const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
@@ -54,10 +55,13 @@ test('first real-source artifact batch covers core output kinds', () => {
 });
 
 test('real-source natural artifact coverage summary tracks remaining work', () => {
-  const summary = summarizeNaturalArtifactAuditCoverage(seedBundles);
+  const summary = summarizeNaturalArtifactAuditCoverage(
+    seedBundles,
+    sourceFitAudits.filter((audit) => audit.naturalArtifacts.length > 0).map((audit) => audit.slug),
+  );
 
-  assert.equal(summary.realSourceCount, 40);
-  assert.equal(summary.auditedRealSourceCount, realSourceNaturalArtifactAudits.length);
+  assert.equal(summary.realSourceCount, 50);
+  assert.equal(summary.auditedRealSourceCount, 50);
   assert.equal(summary.remainingRealSourceCount, 0);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);

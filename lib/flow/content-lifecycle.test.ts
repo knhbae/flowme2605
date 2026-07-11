@@ -40,14 +40,15 @@ test('lifecycle classification applies manual source-fit decisions to real-sourc
   assert.equal(fitvelyWeekly.auditDecision, 'replace_or_hide_source');
 });
 
-test('final promotion QA keeps only the computer skills route representative eligible', () => {
+test('final promotion QA keeps manually approved representative routes eligible', () => {
   const computer = classifyFlowLifecycle(bundleBySlug('computer-skills-d30-study'));
   const newCar = classifyFlowLifecycle(bundleBySlug('new-car-delivery-check'));
   const diet = classifyFlowLifecycle(bundleBySlug('diet-habit-2week'));
 
   assert.equal(computer.bucket, 'keep');
   assert.equal(computer.auditDecision, 'keep_representative');
-  assert.equal(newCar.bucket, 'fix');
+  assert.equal(newCar.bucket, 'keep');
+  assert.equal(newCar.auditDecision, 'keep_representative');
   assert.equal(diet.bucket, 'fix');
 });
 
