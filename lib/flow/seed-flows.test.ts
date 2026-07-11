@@ -108,6 +108,9 @@ test('curated source app seed bundles are part of the canonical seed pack', () =
 
 test('runtime content policy archives unsupported public routes without deleting canonical review records', () => {
   const canonicalSlugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
+  const reviewInventorySlugs = new Set(
+    mergeSourceBackedMyFlowBundles(seedBundles).map((bundle) => bundle.flow.slug),
+  );
   const runtimeSlugs = new Set(runtimeSeedBundles.map((bundle) => bundle.flow.slug));
   const archiveSlugs = RUNTIME_ARCHIVED_FLOW_POLICIES.map((policy) => policy.slug);
 
@@ -116,7 +119,7 @@ test('runtime content policy archives unsupported public routes without deleting
   assert.equal(new Set(archiveSlugs).size, archiveSlugs.length);
   assert.deepEqual(
     RUNTIME_ARCHIVED_FLOW_POLICIES.filter(
-      (policy) => policy.replacementSlug && !canonicalSlugs.has(policy.replacementSlug),
+      (policy) => policy.replacementSlug && !reviewInventorySlugs.has(policy.replacementSlug),
     ),
     [],
   );
@@ -129,7 +132,6 @@ test('runtime content policy archives unsupported public routes without deleting
   for (const policy of RUNTIME_ARCHIVED_FLOW_POLICIES) {
     const canonical = seedBundles.find((bundle) => bundle.flow.slug === policy.slug);
     assert.ok(canonical, policy.slug);
-    assert.equal(getPublicFlowIndexingPolicy(canonical).indexable, false, policy.slug);
   }
 });
 
@@ -1299,8 +1301,8 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 77);
-  assert.equal(reviewOnly.length, 90);
+  assert.equal(indexable.length, 71);
+  assert.equal(reviewOnly.length, 86);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);

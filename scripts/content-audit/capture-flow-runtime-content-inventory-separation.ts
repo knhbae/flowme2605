@@ -12,7 +12,12 @@ import {
   RUNTIME_ARCHIVED_FLOW_SLUGS,
 } from '../../lib/flow/runtime-content-policy';
 import { seedBundles } from '../../lib/flow/seed-flows';
-import { mergeSourceBackedMyFlowBundles } from '../../lib/flow/source-backed-my-flow';
+import {
+  getCuratedSourceAppSeedFlowMaps,
+  getPublicCatalogSourceBackedFlowMaps,
+  isUrlFirstLookupableSourceBackedFlowMap,
+  mergeSourceBackedMyFlowBundles,
+} from '../../lib/flow/source-backed-my-flow';
 import { summarizeFlowSourceFreshness } from '../../lib/flow/source-freshness';
 
 const root = process.cwd();
@@ -41,6 +46,11 @@ const reviewGatedBundles = runtimePublishedBundles.filter(
   (bundle) => !getPublicFlowIndexingPolicy(bundle).indexable,
 );
 const generatedPreviewBundles = internalReviewBundles.filter(isGeneratedPreviewBundle);
+const currentPublicCatalogFlowMaps = getPublicCatalogSourceBackedFlowMaps();
+const disabledLegacyFlowMaps = getCuratedSourceAppSeedFlowMaps().filter(
+  (map) => !isUrlFirstLookupableSourceBackedFlowMap(map),
+);
+const disabledLegacyFlowMapIds = disabledLegacyFlowMaps.map((map) => map.id);
 const sourceBackedProjectionCount = runtimePublishedBundles.length - runtimeSeedBundles.length;
 const runtimeInventory = summarizeContentInventory(runtimeSeedBundles);
 const internalInventory = summarizeContentInventory(internalReviewBundles);
@@ -72,6 +82,13 @@ async function countGeneratedPreviewLinks(page: Page): Promise<number> {
 async function countArchivedRuntimeLinks(page: Page): Promise<number> {
   const selector = RUNTIME_ARCHIVED_FLOW_SLUGS.map((slug) => `a[href="/f/${slug}"]`).join(', ');
   return page.locator(selector).count();
+}
+
+async function countDisabledLegacyFlowMapLinks(page: Page): Promise<number> {
+  const selector = disabledLegacyFlowMapIds
+    .map((mapId) => `a[href="/flow-maps/${mapId}"]`)
+    .join(', ');
+  return selector ? page.locator(selector).count() : 0;
 }
 
 const screenshotScenarios = [
@@ -122,6 +139,7 @@ try {
       robots,
       generatedPreviewLinkCount: await countGeneratedPreviewLinks(page),
       archivedRuntimeLinkCount: await countArchivedRuntimeLinks(page),
+      disabledLegacyFlowMapLinkCount: await countDisabledLegacyFlowMapLinks(page),
       horizontalOverflow: await page.evaluate(
         () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
       ),
@@ -183,6 +201,49 @@ try {
     path: path.join(screenshotDirectory, 'archive-replacement-pet-health-mobile.png'),
     fullPage: true,
   });
+
+  const disabledLegacyFlowMapRouteResults: Array<{ mapId: string; status: number | null }> = [];
+  for (const map of disabledLegacyFlowMaps) {
+    const response = await boundaryPage.goto(`${baseUrl}/flow-maps/${map.id}`, {
+      waitUntil: 'domcontentloaded',
+    });
+    disabledLegacyFlowMapRouteResults.push({ mapId: map.id, status: response?.status() ?? null });
+  }
+  const legacyFlowMapForScreenshot = disabledLegacyFlowMaps[0] ?? null;
+  if (legacyFlowMapForScreenshot) {
+    await boundaryPage.goto(`${baseUrl}/flow-maps/${legacyFlowMapForScreenshot.id}`, {
+      waitUntil: 'domcontentloaded',
+    });
+    await boundaryPage.screenshot({
+      path: path.join(screenshotDirectory, 'legacy-flow-map-404-mobile.png'),
+      fullPage: true,
+    });
+  }
+
+  const currentPublicFlowMapRouteResults: Array<{ mapId: string; status: number | null }> = [];
+  for (const map of currentPublicCatalogFlowMaps) {
+    const response = await boundaryPage.goto(`${baseUrl}/flow-maps/${map.id}`, {
+      waitUntil: 'domcontentloaded',
+    });
+    currentPublicFlowMapRouteResults.push({ mapId: map.id, status: response?.status() ?? null });
+  }
+  const currentFlowMapForScreenshot =
+    currentPublicCatalogFlowMaps.find((map) => map.id === 'curated-ajd-moving-d30') ??
+    currentPublicCatalogFlowMaps[0] ??
+    null;
+  let currentFlowMapHorizontalOverflow = false;
+  if (currentFlowMapForScreenshot) {
+    await boundaryPage.goto(`${baseUrl}/flow-maps/${currentFlowMapForScreenshot.id}`, {
+      waitUntil: 'domcontentloaded',
+    });
+    currentFlowMapHorizontalOverflow = await boundaryPage.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+    );
+    await boundaryPage.screenshot({
+      path: path.join(screenshotDirectory, 'current-flow-map-mobile.png'),
+      fullPage: true,
+    });
+  }
   await boundaryContext.close();
 
   const migrationContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -354,6 +415,9 @@ try {
   const normalRouteArchivedLinkCount = capturedScenarios
     .filter((scenario) => !String(scenario.route).startsWith('/creators'))
     .reduce((sum, scenario) => sum + Number(scenario.archivedRuntimeLinkCount ?? 0), 0);
+  const normalRouteDisabledLegacyFlowMapLinkCount = capturedScenarios
+    .filter((scenario) => !String(scenario.route).startsWith('/creators'))
+    .reduce((sum, scenario) => sum + Number(scenario.disabledLegacyFlowMapLinkCount ?? 0), 0);
   const summary = {
     canonicalSeedBundleCount: seedBundles.length,
     runtimeSeedBundleCount: runtimeSeedBundles.length,
@@ -374,6 +438,16 @@ try {
       (route) => route.status === 200,
     ).length,
     normalRouteArchivedFlowLinkCount: normalRouteArchivedLinkCount,
+    currentPublicFlowMapCatalogCount: currentPublicCatalogFlowMaps.length,
+    currentPublicFlowMapRoute200Count: currentPublicFlowMapRouteResults.filter(
+      (route) => route.status === 200,
+    ).length,
+    disabledLegacyFlowMapCount: disabledLegacyFlowMaps.length,
+    disabledLegacyFlowMapRoute404Count: disabledLegacyFlowMapRouteResults.filter(
+      (route) => route.status === 404,
+    ).length,
+    normalRouteDisabledLegacyFlowMapLinkCount,
+    currentFlowMapHorizontalOverflowCount: currentFlowMapHorizontalOverflow ? 1 : 0,
     legacyPreviewMigrationRemainingCount: migrationResult.generatedPreviewRemainingCount,
     archivedRuntimeMigrationRemainingCount: migrationResult.archivedRuntimeRemainingCount,
     retiredSavedCopyCount: migrationResult.retiredSavedCopyCount,
@@ -401,7 +475,7 @@ try {
     normalSourceReviewDueCount: sourceFreshness.reviewDueCount,
     normalSourceStaleCount: sourceFreshness.staleCount,
     normalSourceMissingMetadataCount: sourceFreshness.missingMetadataCount,
-    screenshotCount: capturedScenarios.length + 5,
+    screenshotCount: capturedScenarios.length + 7,
     horizontalOverflowCount: capturedScenarios.filter((scenario) => scenario.horizontalOverflow).length,
   };
 
@@ -454,6 +528,19 @@ try {
           ? 'screenshots/archive-replacement-pet-health-mobile.png'
           : null,
     })),
+    currentPublicFlowMaps: {
+      mapIds: currentPublicCatalogFlowMaps.map((map) => map.id),
+      routes: currentPublicFlowMapRouteResults,
+      screenshotMapId: currentFlowMapForScreenshot?.id ?? null,
+      horizontalOverflow: currentFlowMapHorizontalOverflow,
+      screenshot: currentFlowMapForScreenshot ? 'screenshots/current-flow-map-mobile.png' : null,
+    },
+    disabledLegacyFlowMaps: {
+      mapIds: disabledLegacyFlowMapIds,
+      routes: disabledLegacyFlowMapRouteResults,
+      screenshotMapId: legacyFlowMapForScreenshot?.id ?? null,
+      screenshot: legacyFlowMapForScreenshot ? 'screenshots/legacy-flow-map-404-mobile.png' : null,
+    },
     deferredRetirementCandidates,
     reviewGatedRoutes: reviewGatedBundles.map((bundle) => ({
       slug: bundle.flow.slug,
@@ -480,13 +567,15 @@ try {
     `- 생성 샘플 공개 URL: HTTP ${summary.generatedPreviewPublicRouteStatus}\n` +
     `- archive Flow: ${summary.archivedRuntimeFlowCount}개, direct URL 404: ${summary.archivedRuntimePublicRoute404Count}개\n` +
     `- archive 대체 route HTTP 200: ${summary.archivedReplacementRoute200Count}개\n` +
+    `- 현재 public Flow Map: ${summary.currentPublicFlowMapCatalogCount}개, 정상 route 200: ${summary.currentPublicFlowMapRoute200Count}개\n` +
+    `- 공개 중단 구형 Flow Map: ${summary.disabledLegacyFlowMapCount}개, direct URL 404: ${summary.disabledLegacyFlowMapRoute404Count}개, 정상 route 링크: ${summary.normalRouteDisabledLegacyFlowMapLinkCount}개\n` +
     `- 기존 저장소 생성 샘플/공개 archive 잔존: ${summary.legacyPreviewMigrationRemainingCount}/${summary.archivedRuntimeMigrationRemainingCount}개, 사용자 draft 보존: ${summary.userDraftMigrationPreserved}\n` +
     `- 저장된 archive 개인 기록: ${summary.retiredSavedCopyCount}개, canonical 복구: ${summary.retiredSavedCopyRecoveredFromCanonical}, 완료/메모 보존: ${summary.retiredSavedCopyCompletionPreserved}/${summary.retiredSavedCopyMemoPreserved}, 캘린더 제외: ${summary.retiredSavedCopyExcludedFromCalendar}\n` +
     `- 저장/기능 이관 후 재검토할 archive 후보: ${summary.deferredRetirementCandidateCount}개\n` +
     `- 정상 출처 stale/review-due/missing: ${summary.normalSourceStaleCount}/${summary.normalSourceReviewDueCount}/${summary.normalSourceMissingMetadataCount}\n\n` +
     `## 판정\n\n` +
     `생성형 샘플과 명시적 archive ${summary.archivedRuntimeFlowCount}개는 삭제하지 않고 내부 검토 재고에 보존했다. 미저장 archive는 runtime에서 제거하고, 사용자가 저장한 archive는 완료·메모를 유지하는 이전 저장본으로 남긴다. 과거 direct public URL은 한국어 복귀 경로가 있는 서비스용 404다. ` +
-    `검토 게이트 ${summary.publicReviewGatedCount}개는 공개 승인 콘텐츠로 세지 않으며 noindex와 행동 차단을 유지한다.\n\n` +
+    `검토 게이트 ${summary.publicReviewGatedCount}개는 공개 승인 콘텐츠로 세지 않으며 noindex와 행동 차단을 유지한다. 구형 Flow Map ${summary.disabledLegacyFlowMapCount}개는 현재 대표 Map으로 카탈로그를 교체하고 direct route도 닫았다.\n\n` +
     `## 파일\n\n- [audit.md](./audit.md)\n- [review.html](./review.html)\n- [route-evidence.json](./route-evidence.json)\n- [screenshots/](./screenshots/)\n`;
   writeFileSync(path.join(outputDirectory, 'README.md'), readme, 'utf8');
 
@@ -502,7 +591,8 @@ try {
     `3. 기존 localStorage 마이그레이션은 flow-preview-*와 미저장 archive를 제거한다. 저장한 archive는 이전 저장본으로 전환해 완료 기록과 메모를 보존한다.\n` +
     `4. 생성 샘플과 archive direct /f URL은 다른 Flow 찾기와 홈 복귀가 가능한 한국어 서비스용 404로 닫았다.\n` +
     `5. 대체 Flow가 지정된 archive는 replacement route가 계속 열리는지 확인한다.\n` +
-    `6. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.\n\n` +
+    `6. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.\n` +
+    `7. 품질 게이트에서 직접 노출이 중단된 구형 Flow Map은 카탈로그에서 현재 대표 Map으로 교체하고 direct route를 404로 닫았다.\n\n` +
     `## 저장한 archive 처리\n\n` +
     `- 이전 저장본 ${summary.retiredSavedCopyCount}개를 개인 기록으로 보존했다.\n` +
     `- 이전 runtime 마이그레이션에서 bundle이 사라진 상태의 canonical 복구: ${summary.retiredSavedCopyRecoveredFromCanonical}.\n` +
@@ -520,6 +610,8 @@ try {
         `  - ${policy.slug}: ${policy.reason} · ${policy.evidence}${policy.replacementSlug ? ` · 대체 ${policy.replacementSlug}` : ''}`,
     ).join('\n') +
     `\n` +
+    `- 현재 public Flow Map ${summary.currentPublicFlowMapCatalogCount}개: 카탈로그와 direct route를 허용하고 대표 모바일 화면 overflow ${summary.currentFlowMapHorizontalOverflowCount}건.\n` +
+    `- 공개 중단 구형 Flow Map ${summary.disabledLegacyFlowMapCount}개: direct route 404 ${summary.disabledLegacyFlowMapRoute404Count}개, 정상 사용자 route 링크 ${summary.normalRouteDisabledLegacyFlowMapLinkCount}개.\n` +
     `- 정상 source freshness: current ${summary.normalSourceCurrentCount}, stale ${summary.normalSourceStaleCount}, review-due ${summary.normalSourceReviewDueCount}, missing ${summary.normalSourceMissingMetadataCount}.\n\n` +
     `## archive 보류 후보\n\n` +
     deferredRetirementSummary +
@@ -549,11 +641,13 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
   <div class="metric">내부 생성 샘플<strong>${summary.generatedPreviewInternalIdCount}</strong></div>
   <div class="metric">runtime 생성 샘플<strong>${summary.generatedPreviewRuntimeCount}</strong></div>
   <div class="metric">archive route<strong>${summary.archivedRuntimeFlowCount}</strong></div>
+  <div class="metric">현재 Flow Map<strong>${summary.currentPublicFlowMapCatalogCount}</strong></div>
+  <div class="metric">닫힌 구형 Map<strong>${summary.disabledLegacyFlowMapCount}</strong></div>
   <div class="metric">legacy 잔존<strong>${summary.legacyPreviewMigrationRemainingCount}</strong></div>
   <div class="metric">생성 URL 상태<strong>${summary.generatedPreviewPublicRouteStatus}</strong></div>
 </section>
 <section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지한다. 미저장 archive는 runtime에서 제거하고, 저장한 archive는 완료·메모가 남는 이전 저장본으로 보존한다.</p></section>
-<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>지원 근거가 끊긴 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article><article><h2>원문 불일치 Flow의 대체 실행 화면</h2><p>대체 route는 HTTP 200으로 유지</p><img src="screenshots/archive-replacement-pet-health-mobile.png" alt="반려동물 건강 관찰 대체 Flow"></article><article><h2>이전 저장본 · 모바일</h2><p>완료와 메모는 보존하고 새 실행에서는 제외</p><img src="screenshots/retired-saved-copy-mobile.png" alt="이전 저장본 모바일"></article><article><h2>이전 저장본 · wide</h2><p>대체 Flow 링크와 기록 보존 상태 확인</p><img src="screenshots/retired-saved-copy-wide.png" alt="이전 저장본 wide"></article></section>
+<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>지원 근거가 끊긴 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article><article><h2>원문 불일치 Flow의 대체 실행 화면</h2><p>대체 route는 HTTP 200으로 유지</p><img src="screenshots/archive-replacement-pet-health-mobile.png" alt="반려동물 건강 관찰 대체 Flow"></article><article><h2>현재 대표 Flow Map</h2><p>카탈로그와 direct route에서 현재 source-backed Map을 사용</p><img src="screenshots/current-flow-map-mobile.png" alt="현재 대표 Flow Map 모바일"></article><article><h2>공개 중단 구형 Flow Map</h2><p>정상 사용자 진입점에서 제거하고 direct route는 HTTP 404</p><img src="screenshots/legacy-flow-map-404-mobile.png" alt="구형 Flow Map 404"></article><article><h2>이전 저장본 · 모바일</h2><p>완료와 메모는 보존하고 새 실행에서는 제외</p><img src="screenshots/retired-saved-copy-mobile.png" alt="이전 저장본 모바일"></article><article><h2>이전 저장본 · wide</h2><p>대체 Flow 링크와 기록 보존 상태 확인</p><img src="screenshots/retired-saved-copy-wide.png" alt="이전 저장본 wide"></article></section>
 </main></body></html>`;
   writeFileSync(path.join(outputDirectory, 'review.html'), reviewHtml, 'utf8');
 } finally {

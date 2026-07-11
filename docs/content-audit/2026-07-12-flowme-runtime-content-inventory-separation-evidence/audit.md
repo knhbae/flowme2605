@@ -12,6 +12,7 @@
 4. 생성 샘플과 archive direct /f URL은 다른 Flow 찾기와 홈 복귀가 가능한 한국어 서비스용 404로 닫았다.
 5. 대체 Flow가 지정된 archive는 replacement route가 계속 열리는지 확인한다.
 6. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.
+7. 품질 게이트에서 직접 노출이 중단된 구형 Flow Map은 카탈로그에서 현재 대표 Map으로 교체하고 direct route를 404로 닫았다.
 
 ## 저장한 archive 처리
 
@@ -24,10 +25,10 @@
 
 ## 오래된 콘텐츠 해석
 
-- 공개 승인 77개: 정상 실행과 index 허용.
-- 검토 게이트 90개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않는다.
+- 공개 승인 71개: 정상 실행과 index 허용.
+- 검토 게이트 86개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않는다.
 - 생성 샘플 440개: 실제 콘텐츠가 아닌 구조 검토 재고. runtime과 public route에서 제거.
-- 명시적 archive 10개: 출처 불충분 또는 공개 숨김 판정이 확정되어 runtime과 public route에서 제거.
+- 명시적 archive 20개: 출처 불충분 또는 공개 숨김 판정이 확정되어 runtime과 public route에서 제거.
   - digital-detox-weekly: unsupported_source_claims · 원문이 삭제되었고 현재 Flow의 효과 문구를 뒷받침할 수 없습니다.
   - new-hobby-30day: unsupported_source_claims · 플랫폼 홈페이지만으로 30일 실행 행을 근거화할 수 없습니다.
   - real-fitvely-weekly-body-check: source_mismatch · 넓은 채널 출처가 주간 신체 체크 실행 구조를 직접 뒷받침하지 않습니다.
@@ -38,7 +39,19 @@
   - study-exam-d30-plan: source_mismatch · 원문은 영어 홈학습 팁이며 범용 시험 D-30 일정과 12개 시험 준비 항목을 직접 뒷받침하지 않습니다.
   - real-sinagong-computer-d30-study: superseded_duplicate · 같은 2026 시나공 컴활 교재를 더 넓은 D-30 실행 순서로 다루는 대표 학습 Flow가 이미 있습니다. · 대체 computer-skills-d30-study
   - real-thankyou-bubu-video-full-body-no-jump: superseded_duplicate · 같은 ThankyouBUBU 영상을 사용하는 홈트 시작 Flow와 실행 구조가 중복됩니다. · 대체 real-thankyou-bubu-home-workout-starter
-- 정상 source freshness: current 127, stale 0, review-due 0, missing 0.
+  - infant-health-checkup-prep: superseded_duplicate · 같은 NHIS 원문을 생년월일과 검진 차수 기준으로 더 완전하게 계산하는 영유아 건강검진 일정 Flow가 있습니다. · 대체 infant-health-checkup-schedule
+  - real-ts-vehicle-inspection-prep: superseded_duplicate · 같은 TS 공식 원문을 D-14 준비부터 검사 결과 후속까지 더 구체적으로 다루는 대표 자동차검사 Flow가 있습니다. · 대체 vehicle-inspection-prep
+  - moving-dday: superseded_duplicate · 같은 AJD 원문과 다섯 개 마일스톤을 명확한 D-30 일정으로 보존한 정본 Flow가 있습니다. · 대체 curated-ajd-moving-d30
+  - wedding-timeline: superseded_duplicate · 같은 원문과 타임라인을 더 구체적인 D-month 일정으로 보존한 정본 Flow가 있습니다. · 대체 curated-wedding-naver-timeline
+  - opic-2w: superseded_duplicate · 같은 원문 XLSX의 14일 코스를 날짜별로 보존한 정본 Flow가 있습니다. · 대체 curated-opic-single-mock-review
+  - opic-1m: superseded_duplicate · 같은 원문 XLSX의 한 달 반복 계획을 주차별로 보존한 정본 Flow가 있습니다. · 대체 curated-opic-course-row-import
+  - new-car-7-step: superseded_duplicate · 같은 겟차 원문의 일곱 단계 구매 절차를 견적 메모와 함께 다루는 정본 Flow가 있습니다. · 대체 curated-new-car-basic
+  - reading-book-finish: superseded_duplicate · 같은 원문을 월 4권과 주간 기록으로 구체화한 정본 Flow가 있으며 예전 변환본은 같은 행동을 반복합니다. · 대체 curated-reading-monthly-log
+  - homefit-morning-2w: superseded_duplicate · 채널 홈 대신 정확한 Allblanc 아침 운동 영상과 반복 요일을 사용하는 정본 Flow가 있습니다. · 대체 curated-allblanc-morning-workout
+  - homefit-video-queue: superseded_duplicate · 채널 홈에서 일반 행동을 반복한 예전 큐 대신 정확한 영상 기반 운동 Flow를 사용합니다. · 대체 curated-allblanc-morning-workout
+- 현재 public Flow Map 11개: 카탈로그와 direct route를 허용하고 대표 모바일 화면 overflow 0건.
+- 공개 중단 구형 Flow Map 8개: direct route 404 8개, 정상 사용자 route 링크 0개.
+- 정상 source freshness: current 120, stale 0, review-due 0, missing 0.
 
 ## archive 보류 후보
 
@@ -46,6 +59,6 @@
 
 ## 남은 리스크
 
-- 검토 게이트 90개는 아직 runtime 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-gated / archive를 계속 결정해야 한다.
+- 검토 게이트 86개는 아직 runtime 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-gated / archive를 계속 결정해야 한다.
 - 정상 4탭 route는 여전히 큰 AppClient client bundle을 공유한다. 생성 객체 제거와 별개로 route/component split이 필요하다.
 - 자동 QA는 실제 사용자 검증을 대신하지 않는다.

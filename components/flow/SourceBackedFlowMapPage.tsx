@@ -115,7 +115,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
         </div>
         <div className="mt-4 grid gap-4">
           {publicSurface.childFlows.map((flow) => (
-            <article key={flow.slug} className="rounded-2xl border border-[#E7E4DD] bg-white p-4">
+            <article key={flow.slug} className="min-w-0 rounded-2xl border border-[#E7E4DD] bg-white p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">{toContentDisplayTitle(flow.title)}</h3>
@@ -132,7 +132,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
               </div>
               <div className="mt-3 grid gap-2">
                 {flow.steps.map((step) => (
-                  <div key={step.id} className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-3">
+                  <div key={step.id} className="min-w-0 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-3">
                     {step.stepTitle ? <p className="text-xs font-semibold text-[#6E6B64]">{toUserFacingSourceTitle(step.stepTitle)}</p> : null}
                     <p className="mt-1 text-sm font-semibold text-slate-950">{step.title}</p>
                     {step.detailItems.length > 0 ? (
@@ -156,11 +156,11 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
                       <p className="mt-1 text-xs font-semibold text-slate-500">하위 체크 {step.detailItemCount}개</p>
                     )}
                     {step.memo || step.sourceTrace || step.sourceUrl ? (
-                      <details className="mt-2 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5">
+                      <details className="mt-2 min-w-0 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5">
                         <summary className="cursor-pointer text-xs font-semibold text-slate-600">메모 · 원문</summary>
                         {step.memo ? <p className="mt-2 whitespace-pre-wrap break-words text-[13px] leading-5 text-slate-700">{step.memo}</p> : null}
                         {step.sourceTrace ? (
-                          <p className="mt-2 whitespace-pre-wrap break-words text-[12px] font-medium leading-5 text-slate-500">
+                          <p className="mt-2 max-w-full whitespace-pre-wrap break-all text-[12px] font-medium leading-5 text-slate-500">
                             원문 근거: {step.sourceTrace}
                           </p>
                         ) : null}

@@ -464,10 +464,13 @@ test('prototype guardrail helpers lock positive and negative display cases', () 
 });
 
 test('canonical seed and source-backed user-facing text pass display guardrails without route registration', () => {
+  const runtimeSeedSubjects = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
+  const homepageMapSubjects = getSourceBackedHomepageFlowMaps();
+  const curatedMapSubjects = getCuratedSourceAppSeedFlowMaps();
   const subjects = [
-    ...seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle)),
-    ...getSourceBackedHomepageFlowMaps(),
-    ...getCuratedSourceAppSeedFlowMaps(),
+    ...runtimeSeedSubjects,
+    ...homepageMapSubjects,
+    ...curatedMapSubjects,
   ];
   const sourceSlugSignals = collectSourceSlugSignals(subjects);
   const failures = subjects.flatMap((subject) => {
@@ -483,7 +486,13 @@ test('canonical seed and source-backed user-facing text pass display guardrails 
     ];
   });
 
-  assert.ok(subjects.length > 150);
+  assert.ok(runtimeSeedSubjects.length > 100);
+  assert.ok(homepageMapSubjects.length > 0);
+  assert.ok(curatedMapSubjects.length > 0);
+  assert.equal(
+    subjects.length,
+    runtimeSeedSubjects.length + homepageMapSubjects.length + curatedMapSubjects.length,
+  );
   assert.deepEqual(failures, []);
 });
 

@@ -72,6 +72,66 @@ export const RUNTIME_ARCHIVED_FLOW_POLICIES: readonly RuntimeArchivedFlowPolicy[
     evidence: '같은 ThankyouBUBU 영상을 사용하는 홈트 시작 Flow와 실행 구조가 중복됩니다.',
     replacementSlug: 'real-thankyou-bubu-home-workout-starter',
   },
+  {
+    slug: 'infant-health-checkup-prep',
+    reason: 'superseded_duplicate',
+    evidence: '같은 NHIS 원문을 생년월일과 검진 차수 기준으로 더 완전하게 계산하는 영유아 건강검진 일정 Flow가 있습니다.',
+    replacementSlug: 'infant-health-checkup-schedule',
+  },
+  {
+    slug: 'real-ts-vehicle-inspection-prep',
+    reason: 'superseded_duplicate',
+    evidence: '같은 TS 공식 원문을 D-14 준비부터 검사 결과 후속까지 더 구체적으로 다루는 대표 자동차검사 Flow가 있습니다.',
+    replacementSlug: 'vehicle-inspection-prep',
+  },
+  {
+    slug: 'moving-dday',
+    reason: 'superseded_duplicate',
+    evidence: '같은 AJD 원문과 다섯 개 마일스톤을 명확한 D-30 일정으로 보존한 정본 Flow가 있습니다.',
+    replacementSlug: 'curated-ajd-moving-d30',
+  },
+  {
+    slug: 'wedding-timeline',
+    reason: 'superseded_duplicate',
+    evidence: '같은 원문과 타임라인을 더 구체적인 D-month 일정으로 보존한 정본 Flow가 있습니다.',
+    replacementSlug: 'curated-wedding-naver-timeline',
+  },
+  {
+    slug: 'opic-2w',
+    reason: 'superseded_duplicate',
+    evidence: '같은 원문 XLSX의 14일 코스를 날짜별로 보존한 정본 Flow가 있습니다.',
+    replacementSlug: 'curated-opic-single-mock-review',
+  },
+  {
+    slug: 'opic-1m',
+    reason: 'superseded_duplicate',
+    evidence: '같은 원문 XLSX의 한 달 반복 계획을 주차별로 보존한 정본 Flow가 있습니다.',
+    replacementSlug: 'curated-opic-course-row-import',
+  },
+  {
+    slug: 'new-car-7-step',
+    reason: 'superseded_duplicate',
+    evidence: '같은 겟차 원문의 일곱 단계 구매 절차를 견적 메모와 함께 다루는 정본 Flow가 있습니다.',
+    replacementSlug: 'curated-new-car-basic',
+  },
+  {
+    slug: 'reading-book-finish',
+    reason: 'superseded_duplicate',
+    evidence: '같은 원문을 월 4권과 주간 기록으로 구체화한 정본 Flow가 있으며 예전 변환본은 같은 행동을 반복합니다.',
+    replacementSlug: 'curated-reading-monthly-log',
+  },
+  {
+    slug: 'homefit-morning-2w',
+    reason: 'superseded_duplicate',
+    evidence: '채널 홈 대신 정확한 Allblanc 아침 운동 영상과 반복 요일을 사용하는 정본 Flow가 있습니다.',
+    replacementSlug: 'curated-allblanc-morning-workout',
+  },
+  {
+    slug: 'homefit-video-queue',
+    reason: 'superseded_duplicate',
+    evidence: '채널 홈에서 일반 행동을 반복한 예전 큐 대신 정확한 영상 기반 운동 Flow를 사용합니다.',
+    replacementSlug: 'curated-allblanc-morning-workout',
+  },
 ];
 
 export const RUNTIME_ARCHIVED_FLOW_SLUGS = RUNTIME_ARCHIVED_FLOW_POLICIES.map(

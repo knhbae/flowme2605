@@ -7,6 +7,7 @@ import {
   buildFlowVersionReviewPersonalCopy,
 } from './flow-version-review';
 import { seedBundles } from './seed-flows';
+import { isRuntimeExcludedBundle, RUNTIME_ARCHIVED_FLOW_SLUGS } from './runtime-content-policy';
 import {
   SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST,
   assessProgressStepNeed,
@@ -23,6 +24,7 @@ import {
   buildSourceBackedMyFlowRows,
   getSourceBackedFlowMapDateAnchorCopy,
   getSourceBackedFlowMapQualityDecision,
+  getPublicCatalogSourceBackedFlowMaps,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedFlowMapPersistenceStorageKey,
   getSourceBackedFlowMapSnapshotStorageKey,
@@ -1262,6 +1264,38 @@ test('curated source app seed preserves sourceTrace internally while exports kee
   const workbookText = sheets.flatMap((sheet) => sheet.rows.flat()).map(String).join('\n');
   assert.doesNotMatch(workbookText, /sourceTrace|AJD D-30 table rows/);
   assert.match(workbookText, /D-30 원문|AJD/);
+});
+
+test('runtime source-backed merge does not reintroduce archived duplicate flows', () => {
+  const runtimeSeeds = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
+  const merged = mergeSourceBackedMyFlowBundles(runtimeSeeds);
+  const mergedSlugs = new Set(merged.map((bundle) => bundle.flow.slug));
+
+  assert.deepEqual(
+    RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => mergedSlugs.has(slug)),
+    [],
+  );
+});
+
+test('public Flow Map catalog uses current direct routes instead of parked legacy maps', () => {
+  const ids = getPublicCatalogSourceBackedFlowMaps().map((map) => map.id);
+
+  assert.deepEqual(ids, [
+    'moving-d30',
+    'middle-school-math-1',
+    'baby-health-schedule',
+    'curated-opic-mock-course',
+    'curated-reading-routine-log',
+    'curated-new-car-purchase-guide',
+    'curated-child-vaccination-schedule',
+    'curated-ajd-moving-d30',
+    'curated-wedding-checklist-family',
+    'curated-allblanc-workout-park',
+    'baby-food-map',
+  ]);
+  assert.ok(!ids.includes('moving-map'));
+  assert.ok(!ids.includes('new-car-map'));
+  assert.ok(!ids.includes('homefit-map'));
 });
 
 test('curated source expansion preserves source-specific row counts and sensitive boundaries', () => {

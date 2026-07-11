@@ -170,8 +170,11 @@ test('getBundles migrates curated source app seed flows into existing local stor
 
     const migrated = getBundles();
     const migratedSlugs = new Set(migrated.map((entry) => entry.flow.slug));
+    const activeCuratedSourceAppSeedFlowSlugs = curatedSourceAppSeedFlowSlugs.filter(
+      (slug) => !RUNTIME_ARCHIVED_FLOW_SLUGS.includes(slug),
+    );
     assert.deepEqual(
-      curatedSourceAppSeedFlowSlugs.filter((slug) => !migratedSlugs.has(slug)),
+      activeCuratedSourceAppSeedFlowSlugs.filter((slug) => !migratedSlugs.has(slug)),
       [],
     );
     assert.ok(migratedSlugs.has('my-draft'));
@@ -181,7 +184,7 @@ test('getBundles migrates curated source app seed flows into existing local stor
     const persisted = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as FlowBundle[];
     const persistedSlugs = new Set(persisted.map((entry) => entry.flow.slug));
     assert.deepEqual(
-      curatedSourceAppSeedFlowSlugs.filter((slug) => !persistedSlugs.has(slug)),
+      activeCuratedSourceAppSeedFlowSlugs.filter((slug) => !persistedSlugs.has(slug)),
       [],
     );
   } finally {
@@ -196,11 +199,14 @@ test('getBundles migrates curated source app seed flows into existing local stor
   }
 });
 
-test('cloneSeedBundles includes curated source app seed flows without source-backed merge', () => {
+test('cloneSeedBundles includes active curated source app seed flows without source-backed merge', () => {
   const cloned = cloneSeedBundles();
   const clonedSlugs = new Set(cloned.map((entry) => entry.flow.slug));
+  const activeCuratedSourceAppSeedFlowSlugs = curatedSourceAppSeedFlowSlugs.filter(
+    (slug) => !RUNTIME_ARCHIVED_FLOW_SLUGS.includes(slug),
+  );
   assert.deepEqual(
-    curatedSourceAppSeedFlowSlugs.filter((slug) => !clonedSlugs.has(slug)),
+    activeCuratedSourceAppSeedFlowSlugs.filter((slug) => !clonedSlugs.has(slug)),
     [],
   );
   assert.equal(cloned.some((entry) => entry.flow.id.startsWith('flow-preview-')), false);

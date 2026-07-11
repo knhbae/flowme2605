@@ -23,6 +23,7 @@ import {
   curatedSourceAppSeedFlowMapQualityDecisions,
   curatedSourceAppSeedFlowMaps,
 } from './curated-source-app-seed';
+import { isRuntimeExcludedBundle } from './runtime-content-policy';
 
 export type SourceBackedStepDestination = 'calendar' | 'todo' | 'checklist' | 'sheet' | 'memo' | 'progress';
 export type SourceBackedFlowMapCreatorEditableField =
@@ -1070,7 +1071,9 @@ export const sourceBackedMyFlowBundles: FlowBundle[] = [
 
 export function mergeSourceBackedMyFlowBundles(bundles: FlowBundle[]): FlowBundle[] {
   const existingSlugs = new Set(bundles.map((bundle) => bundle.flow.slug));
-  const additions = sourceBackedMyFlowBundles.filter((bundle) => !existingSlugs.has(bundle.flow.slug));
+  const additions = sourceBackedMyFlowBundles.filter(
+    (bundle) => !existingSlugs.has(bundle.flow.slug) && !isRuntimeExcludedBundle(bundle),
+  );
   return [...bundles, ...additions];
 }
 
@@ -1130,6 +1133,19 @@ export function getUrlFirstLookupableSourceBackedFlowMaps(
 ): SourceBackedMyFlowMap[] {
   const maps = options.maps ?? sourceBackedMyFlowMaps;
   return maps.filter((map) => isUrlFirstLookupableSourceBackedFlowMap(map, { decisions: options.decisions }));
+}
+
+export function isPublicCatalogSourceBackedFlowMap(map: SourceBackedMyFlowMap): boolean {
+  const decision = getSourceBackedFlowMapQualityDecision(map.id);
+  return (
+    isUrlFirstLookupableSourceBackedFlowMap(map) &&
+    decision.status !== 'park' &&
+    decision.productScore >= 5
+  );
+}
+
+export function getPublicCatalogSourceBackedFlowMaps(): SourceBackedMyFlowMap[] {
+  return getUrlFirstLookupableSourceBackedFlowMaps().filter(isPublicCatalogSourceBackedFlowMap);
 }
 
 export function assessSourceBackedManualRegistrationReadiness(

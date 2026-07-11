@@ -61,7 +61,7 @@ import {
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedFlowMapReviewedVersion,
   getSourceBackedFlowMapDateAnchorCopy,
-  getCuratedSourceAppSeedFlowMaps,
+  getPublicCatalogSourceBackedFlowMaps,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedMyFlowMapForBundle,
   getSourceBackedFlowMapPersistenceStorageKey,
@@ -2572,7 +2572,7 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
   };
 });
 
-const curatedSourceAppSeedCatalogLinks = getCuratedSourceAppSeedFlowMaps().map((map) => {
+const currentSourceBackedCatalogLinks = getPublicCatalogSourceBackedFlowMaps().map((map) => {
   const publishPackage = buildSourceBackedFlowMapPublishPackage(map.id);
   const childFlows = publishPackage?.public.childFlows ?? [];
   const recommendedFlowSlug = map.recommendedFlowSlug ?? map.flowSlugs[0] ?? map.id;
@@ -2584,7 +2584,7 @@ const curatedSourceAppSeedCatalogLinks = getCuratedSourceAppSeedFlowMaps().map((
       .slice(0, 3);
   return {
     id: map.id,
-    title: toContentDisplayTitle(map.title),
+    title: toUserFacingMapTitle(map.title),
     summary: map.summary,
     categoryLabel: map.categoryLabel ?? '콘텐츠',
     userFacingStatus: map.userFacingStatus ?? '확인 가능',
@@ -2607,7 +2607,7 @@ const curatedSourceAppSeedCatalogLinks = getCuratedSourceAppSeedFlowMaps().map((
 
 const flowMapCatalogLinks = [
   ...homeFlowMapBaselineLinks,
-  ...curatedSourceAppSeedCatalogLinks.filter(
+  ...currentSourceBackedCatalogLinks.filter(
     (item) => !homeFlowMapBaselineLinks.some((homeItem) => homeItem.id === item.id),
   ),
 ];
@@ -8266,7 +8266,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       myFlowDetailSurface === 'flow' && myFlowActiveRow && myFlowDetailOpen && myFlowActiveRow.flow.progress.slug === flow.progress.slug
         ? myFlowActiveRow
         : null;
-    const activeCompactKey = activeCompactRow ? getMyFlowRowInstanceKey(activeCompactRow) : '';
     const flowExpanded = myFlowExpandedStructureSlug === flow.progress.slug || Boolean(activeCompactRow);
     const stepRows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
     const stepEntries = stepRows.map((row, index) => ({ row, index }));
@@ -8357,8 +8356,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {flowExpanded ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
-              const stepKey = getMyFlowRowInstanceKey(stepRow);
-              const stepOpen = activeCompactKey === stepKey;
+              const stepOpen = Boolean(activeCompactRow && activeCompactRow.id === stepRow.id);
               const stepChecked = isMyFlowRowChecked(flow, stepRow);
               return (
                 <div key={`step-${flow.progress.slug}-${stepRow.id}-${stepRow.date ?? index}`} className="rounded-md bg-white ring-1 ring-blue-100">

@@ -124,49 +124,49 @@ const duplicateCanonicalUrlLookupHoldNotes: Record<string, { reason: string; nex
   'funmom-study-routine-map': {
     reason: 'Source import required map shares a broad canonical URL with a more specific curated source-backed map.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup until sourceUrl is narrowed or merged into the canonical representative.',
+      'Keep the canonical review record and creator workspace, but remove the parked map from the public catalog and direct public route until it is merged or re-sourced.',
   },
   'opic-plan-map': {
     reason:
       'Legacy curated source app seed shares the same canonical source URL and execution shape with the stronger curated-opic-mock-course map.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup so curated-opic-mock-course owns the canonical default hit.',
+      'Keep the canonical review record and creator workspace, but let curated-opic-mock-course own the public catalog and direct public route.',
   },
   'reading-routine-map': {
     reason:
       'Legacy reading routine app seed shares the same Naver source URL with the stronger curated-reading-routine-log monthly execution structure.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup so curated-reading-routine-log owns the canonical reading routine default hit while sourceTrace cleanup remains separate.',
+      'Keep the canonical review record and creator workspace, but let curated-reading-routine-log own the public catalog and direct public route while sourceTrace cleanup remains separate.',
   },
   'new-car-map': {
     reason:
       'Legacy curated source app seed shares the same Getcha source URL and 7-step purchase shape with the stronger curated-new-car-purchase-guide map.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup so curated-new-car-purchase-guide owns the canonical default hit.',
+      'Keep the canonical review record and creator workspace, but let curated-new-car-purchase-guide own the public catalog and direct public route.',
   },
   'homefit-map': {
     reason:
       'Legacy Allblanc channel map shares a broad YouTube channel URL with the stronger curated-allblanc-workout-park exact-video map.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup so curated-allblanc-workout-park owns the broad channel default hit.',
+      'Keep the canonical review record and creator workspace, but let curated-allblanc-workout-park own the public catalog and direct public route.',
   },
   'moving-map': {
     reason:
       'Legacy moving app seed shares the same AJD source URL and D-day moving checklist job with the stronger curated-ajd-moving-d30 map.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup so curated-ajd-moving-d30 owns the canonical AJD moving default hit.',
+      'Keep the canonical review record and creator workspace, but let curated-ajd-moving-d30 own the public catalog and direct public route.',
   },
   'vaccination-map': {
     reason:
       'Legacy vaccination app seed shares the same official KHMS source URL and medical-sensitive baby vaccination schedule job with the stronger curated-child-vaccination-schedule map.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup so curated-child-vaccination-schedule owns the official vaccination default hit with review-before-apply handling.',
+      'Keep the canonical review record and creator workspace, but let curated-child-vaccination-schedule own the public catalog and direct public route with review-before-apply handling.',
   },
   'wedding-map': {
     reason:
       'Legacy wedding app seed shares the same Naver source URL with the stronger curated-wedding-checklist-family map and its separated timeline/checklist child Flows.',
     nextAction:
-      'Keep the published map available by direct route, but hold URL lookup so curated-wedding-checklist-family owns the canonical wedding default hit while sourceTrace cleanup remains separate.',
+      'Keep the canonical review record and creator workspace, but let curated-wedding-checklist-family own the public catalog and direct public route while sourceTrace cleanup remains separate.',
   },
 };
 

@@ -68,9 +68,9 @@ test.describe('field checklist workbench source density', () => {
     expect(await exportEntry.getByTestId('public-flow-export-format-option').count()).toBeGreaterThanOrEqual(2);
   });
 
-  test('/f/new-car-7-step keeps internal source trace out of expanded user details', async ({ page }) => {
+  test('/f/curated-new-car-basic keeps internal source trace out of expanded user details', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/new-car-7-step');
+    await page.goto('/f/curated-new-car-basic');
 
     const listCard = await openAllWorkbenchDetails(page);
     await expect(listCard.locator('details[open]')).not.toHaveCount(0);

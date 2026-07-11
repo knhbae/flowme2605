@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-11T20:55:50.246Z",
-  "baseUrl": "http://127.0.0.1:3104",
+  "generatedAt": "2026-07-11T23:23:00.092Z",
+  "baseUrl": "http://127.0.0.1:3112",
   "summary": {
     "canonicalSeedBundleCount": 153,
-    "runtimeSeedBundleCount": 143,
+    "runtimeSeedBundleCount": 133,
     "sourceBackedProjectionCount": 24,
-    "runtimePublishedRouteCount": 167,
-    "publicIndexableCount": 77,
-    "publicReviewGatedCount": 90,
+    "runtimePublishedRouteCount": 157,
+    "publicIndexableCount": 71,
+    "publicReviewGatedCount": 86,
     "internalSeedInventoryCount": 593,
     "internalPublishedInventoryCount": 617,
     "generatedPreviewInternalIdCount": 440,
@@ -15,10 +15,16 @@
     "generatedPreviewRuntimeCount": 0,
     "generatedPreviewPublicRouteStatus": 404,
     "normalRouteGeneratedPreviewLinkCount": 0,
-    "archivedRuntimeFlowCount": 10,
-    "archivedRuntimePublicRoute404Count": 10,
-    "archivedReplacementRoute200Count": 5,
+    "archivedRuntimeFlowCount": 20,
+    "archivedRuntimePublicRoute404Count": 20,
+    "archivedReplacementRoute200Count": 15,
     "normalRouteArchivedFlowLinkCount": 0,
+    "currentPublicFlowMapCatalogCount": 11,
+    "currentPublicFlowMapRoute200Count": 11,
+    "disabledLegacyFlowMapCount": 8,
+    "disabledLegacyFlowMapRoute404Count": 8,
+    "normalRouteDisabledLegacyFlowMapLinkCount": 0,
+    "currentFlowMapHorizontalOverflowCount": 0,
     "legacyPreviewMigrationRemainingCount": 0,
     "archivedRuntimeMigrationRemainingCount": 0,
     "retiredSavedCopyCount": 1,
@@ -41,11 +47,11 @@
     "reviewGatedRouteNoindex": true,
     "reviewGatedPanelCount": 1,
     "reviewGatedSaveActionCount": 0,
-    "normalSourceCurrentCount": 127,
+    "normalSourceCurrentCount": 120,
     "normalSourceReviewDueCount": 0,
     "normalSourceStaleCount": 0,
     "normalSourceMissingMetadataCount": 0,
-    "screenshotCount": 17,
+    "screenshotCount": 19,
     "horizontalOverflowCount": 0
   },
   "policy": {
@@ -57,9 +63,9 @@
   "counts": {
     "runtimeSourceStatus": {
       "unclassified": 8,
-      "preview": 12,
-      "needs_review": 34,
-      "real": 89
+      "preview": 9,
+      "needs_review": 33,
+      "real": 83
     },
     "internalSourceStatus": {
       "unclassified": 9,
@@ -68,14 +74,14 @@
       "real": 94
     },
     "publicIndexingReason": {
-      "manual_source_fit_approved": 46,
-      "source_fit_review_required": 78,
-      "source_review_pending": 12,
-      "exact_real_source": 31
+      "manual_source_fit_approved": 45,
+      "source_fit_review_required": 77,
+      "source_review_pending": 9,
+      "exact_real_source": 26
     },
     "runtimeLifecycle": {
-      "keep": 46,
-      "fix": 97,
+      "keep": 45,
+      "fix": 88,
       "preview_only": 0,
       "hide": 0,
       "remove_candidate": 0
@@ -88,9 +94,9 @@
       "remove_candidate": 0
     },
     "runtimeInventoryLevels": {
-      "manual_source_fit": 124,
+      "manual_source_fit": 122,
       "derived_real_source": 0,
-      "curated_source_app_seed": 19,
+      "curated_source_app_seed": 11,
       "source_needs_review": 0,
       "generated_preview_candidate": 0,
       "legacy_accessible": 0
@@ -107,11 +113,11 @@
       "unsupported_source_claims": 2,
       "source_mismatch": 4,
       "explicit_public_hide": 1,
-      "superseded_duplicate": 3
+      "superseded_duplicate": 13
     }
   },
   "migrationResult": {
-    "storedCount": 145,
+    "storedCount": 135,
     "generatedPreviewRemainingCount": 0,
     "archivedRuntimeRemainingCount": 0,
     "retiredSavedCopyCount": 1,
@@ -146,6 +152,7 @@
       "robots": null,
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-mobile.png"
     },
@@ -159,6 +166,7 @@
       "robots": null,
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-wide.png"
     },
@@ -172,6 +180,7 @@
       "robots": null,
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-mobile.png"
     },
@@ -185,6 +194,7 @@
       "robots": null,
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-wide.png"
     },
@@ -198,6 +208,7 @@
       "robots": "index, follow",
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-mobile.png"
     },
@@ -211,6 +222,7 @@
       "robots": "index, follow",
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-wide.png"
     },
@@ -224,6 +236,7 @@
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/review-gate-mobile.png"
     },
@@ -237,6 +250,7 @@
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/review-gate-wide.png"
     },
@@ -250,6 +264,7 @@
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-mobile.png"
     },
@@ -263,6 +278,7 @@
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-wide.png"
     },
@@ -275,7 +291,8 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
-      "archivedRuntimeLinkCount": 0,
+      "archivedRuntimeLinkCount": 1,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-mobile.png"
     },
@@ -288,7 +305,8 @@
       "status": 200,
       "robots": "noindex, nofollow",
       "generatedPreviewLinkCount": 0,
-      "archivedRuntimeLinkCount": 0,
+      "archivedRuntimeLinkCount": 1,
+      "disabledLegacyFlowMapLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-wide.png"
     }
@@ -403,6 +421,116 @@
         "replacementSlug": "real-thankyou-bubu-home-workout-starter"
       },
       "screenshot": null
+    },
+    {
+      "slug": "infant-health-checkup-prep",
+      "status": 404,
+      "policy": {
+        "slug": "infant-health-checkup-prep",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 NHIS 원문을 생년월일과 검진 차수 기준으로 더 완전하게 계산하는 영유아 건강검진 일정 Flow가 있습니다.",
+        "replacementSlug": "infant-health-checkup-schedule"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "real-ts-vehicle-inspection-prep",
+      "status": 404,
+      "policy": {
+        "slug": "real-ts-vehicle-inspection-prep",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 TS 공식 원문을 D-14 준비부터 검사 결과 후속까지 더 구체적으로 다루는 대표 자동차검사 Flow가 있습니다.",
+        "replacementSlug": "vehicle-inspection-prep"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "moving-dday",
+      "status": 404,
+      "policy": {
+        "slug": "moving-dday",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 AJD 원문과 다섯 개 마일스톤을 명확한 D-30 일정으로 보존한 정본 Flow가 있습니다.",
+        "replacementSlug": "curated-ajd-moving-d30"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "wedding-timeline",
+      "status": 404,
+      "policy": {
+        "slug": "wedding-timeline",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 원문과 타임라인을 더 구체적인 D-month 일정으로 보존한 정본 Flow가 있습니다.",
+        "replacementSlug": "curated-wedding-naver-timeline"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "opic-2w",
+      "status": 404,
+      "policy": {
+        "slug": "opic-2w",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 원문 XLSX의 14일 코스를 날짜별로 보존한 정본 Flow가 있습니다.",
+        "replacementSlug": "curated-opic-single-mock-review"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "opic-1m",
+      "status": 404,
+      "policy": {
+        "slug": "opic-1m",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 원문 XLSX의 한 달 반복 계획을 주차별로 보존한 정본 Flow가 있습니다.",
+        "replacementSlug": "curated-opic-course-row-import"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "new-car-7-step",
+      "status": 404,
+      "policy": {
+        "slug": "new-car-7-step",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 겟차 원문의 일곱 단계 구매 절차를 견적 메모와 함께 다루는 정본 Flow가 있습니다.",
+        "replacementSlug": "curated-new-car-basic"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "reading-book-finish",
+      "status": 404,
+      "policy": {
+        "slug": "reading-book-finish",
+        "reason": "superseded_duplicate",
+        "evidence": "같은 원문을 월 4권과 주간 기록으로 구체화한 정본 Flow가 있으며 예전 변환본은 같은 행동을 반복합니다.",
+        "replacementSlug": "curated-reading-monthly-log"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "homefit-morning-2w",
+      "status": 404,
+      "policy": {
+        "slug": "homefit-morning-2w",
+        "reason": "superseded_duplicate",
+        "evidence": "채널 홈 대신 정확한 Allblanc 아침 운동 영상과 반복 요일을 사용하는 정본 Flow가 있습니다.",
+        "replacementSlug": "curated-allblanc-morning-workout"
+      },
+      "screenshot": null
+    },
+    {
+      "slug": "homefit-video-queue",
+      "status": 404,
+      "policy": {
+        "slug": "homefit-video-queue",
+        "reason": "superseded_duplicate",
+        "evidence": "채널 홈에서 일반 행동을 반복한 예전 큐 대신 정확한 영상 기반 운동 Flow를 사용합니다.",
+        "replacementSlug": "curated-allblanc-morning-workout"
+      },
+      "screenshot": null
     }
   ],
   "archivedReplacementRoutes": [
@@ -435,8 +563,180 @@
       "replacementSlug": "real-thankyou-bubu-home-workout-starter",
       "status": 200,
       "screenshot": null
+    },
+    {
+      "archivedSlug": "infant-health-checkup-prep",
+      "replacementSlug": "infant-health-checkup-schedule",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "real-ts-vehicle-inspection-prep",
+      "replacementSlug": "vehicle-inspection-prep",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "moving-dday",
+      "replacementSlug": "curated-ajd-moving-d30",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "wedding-timeline",
+      "replacementSlug": "curated-wedding-naver-timeline",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "opic-2w",
+      "replacementSlug": "curated-opic-single-mock-review",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "opic-1m",
+      "replacementSlug": "curated-opic-course-row-import",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "new-car-7-step",
+      "replacementSlug": "curated-new-car-basic",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "reading-book-finish",
+      "replacementSlug": "curated-reading-monthly-log",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "homefit-morning-2w",
+      "replacementSlug": "curated-allblanc-morning-workout",
+      "status": 200,
+      "screenshot": null
+    },
+    {
+      "archivedSlug": "homefit-video-queue",
+      "replacementSlug": "curated-allblanc-morning-workout",
+      "status": 200,
+      "screenshot": null
     }
   ],
+  "currentPublicFlowMaps": {
+    "mapIds": [
+      "moving-d30",
+      "middle-school-math-1",
+      "baby-health-schedule",
+      "curated-opic-mock-course",
+      "curated-reading-routine-log",
+      "curated-new-car-purchase-guide",
+      "curated-child-vaccination-schedule",
+      "curated-ajd-moving-d30",
+      "curated-wedding-checklist-family",
+      "curated-allblanc-workout-park",
+      "baby-food-map"
+    ],
+    "routes": [
+      {
+        "mapId": "moving-d30",
+        "status": 200
+      },
+      {
+        "mapId": "middle-school-math-1",
+        "status": 200
+      },
+      {
+        "mapId": "baby-health-schedule",
+        "status": 200
+      },
+      {
+        "mapId": "curated-opic-mock-course",
+        "status": 200
+      },
+      {
+        "mapId": "curated-reading-routine-log",
+        "status": 200
+      },
+      {
+        "mapId": "curated-new-car-purchase-guide",
+        "status": 200
+      },
+      {
+        "mapId": "curated-child-vaccination-schedule",
+        "status": 200
+      },
+      {
+        "mapId": "curated-ajd-moving-d30",
+        "status": 200
+      },
+      {
+        "mapId": "curated-wedding-checklist-family",
+        "status": 200
+      },
+      {
+        "mapId": "curated-allblanc-workout-park",
+        "status": 200
+      },
+      {
+        "mapId": "baby-food-map",
+        "status": 200
+      }
+    ],
+    "screenshotMapId": "curated-ajd-moving-d30",
+    "horizontalOverflow": false,
+    "screenshot": "screenshots/current-flow-map-mobile.png"
+  },
+  "disabledLegacyFlowMaps": {
+    "mapIds": [
+      "funmom-study-routine-map",
+      "opic-plan-map",
+      "reading-routine-map",
+      "new-car-map",
+      "vaccination-map",
+      "moving-map",
+      "wedding-map",
+      "homefit-map"
+    ],
+    "routes": [
+      {
+        "mapId": "funmom-study-routine-map",
+        "status": 404
+      },
+      {
+        "mapId": "opic-plan-map",
+        "status": 404
+      },
+      {
+        "mapId": "reading-routine-map",
+        "status": 404
+      },
+      {
+        "mapId": "new-car-map",
+        "status": 404
+      },
+      {
+        "mapId": "vaccination-map",
+        "status": 404
+      },
+      {
+        "mapId": "moving-map",
+        "status": 404
+      },
+      {
+        "mapId": "wedding-map",
+        "status": 404
+      },
+      {
+        "mapId": "homefit-map",
+        "status": 404
+      }
+    ],
+    "screenshotMapId": "funmom-study-routine-map",
+    "screenshot": "screenshots/legacy-flow-map-404-mobile.png"
+  },
   "deferredRetirementCandidates": [],
   "reviewGatedRoutes": [
     {
@@ -458,13 +758,6 @@
       "title": "알뜰폰 SK7 셀프개통 체크 Flow",
       "sourceStatus": "needs_review",
       "sourceCheckedAt": "2026-06-08",
-      "indexingReason": "source_fit_review_required"
-    },
-    {
-      "slug": "infant-health-checkup-prep",
-      "title": "영유아 건강검진 예약 준비 Flow",
-      "sourceStatus": "needs_review",
-      "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required"
     },
     {
@@ -1007,13 +1300,6 @@
       "indexingReason": "source_review_pending"
     },
     {
-      "slug": "reading-book-finish",
-      "title": "책 1권 완독 루틴",
-      "sourceStatus": "preview",
-      "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
-    },
-    {
       "slug": "reading-morning-routine",
       "title": "아침 읽고 쓰기 루틴",
       "sourceStatus": "preview",
@@ -1023,20 +1309,6 @@
     {
       "slug": "vaccination-official",
       "title": "월령별 예방접종 확인",
-      "sourceStatus": "preview",
-      "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
-    },
-    {
-      "slug": "homefit-morning-2w",
-      "title": "아침 5분 홈트 2주 루틴",
-      "sourceStatus": "preview",
-      "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
-    },
-    {
-      "slug": "homefit-video-queue",
-      "title": "홈트 영상 큐",
       "sourceStatus": "preview",
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
       "indexingReason": "source_review_pending"
