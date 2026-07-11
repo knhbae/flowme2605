@@ -7,6 +7,7 @@ import {
   previewFlowBundles,
 } from './creator-channel-preview';
 import { inferPrimaryDestination } from './destination';
+import { normalizeExecutionModel } from './execution-model';
 import { seedBundles } from './seed-flows';
 import { virtualUsers } from './users';
 
@@ -1127,6 +1128,30 @@ test('generated preview flows are executable and source-backed', () => {
     assert.ok(bundle.flow.source_url?.startsWith('https://'), bundle.flow.slug);
     assert.ok(bundle.items.length >= 4, bundle.flow.slug);
     assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), bundle.flow.slug);
+  }
+});
+
+test('published user routes record source freshness while preview library stays separate', () => {
+  const published = seedBundles.filter((bundle) => bundle.flow.status === 'published');
+  const userRoutes = published.filter((bundle) => {
+    const exposure = normalizeExecutionModel(bundle).exposureStatus;
+    return exposure !== 'catalog_preview' && exposure !== 'hidden';
+  });
+  const previewOrHidden = published.filter((bundle) => {
+    const exposure = normalizeExecutionModel(bundle).exposureStatus;
+    return exposure === 'catalog_preview' || exposure === 'hidden';
+  });
+
+  assert.ok(userRoutes.length >= 140);
+  assert.ok(previewOrHidden.length >= 400);
+
+  for (const bundle of userRoutes) {
+    assert.ok(bundle.flow.source_url?.startsWith('https://'), `${bundle.flow.slug} missing source_url`);
+    assert.ok(bundle.flow.source_checked_at, `${bundle.flow.slug} missing source_checked_at`);
+    assert.ok(
+      bundle.flow.source_precision === 'exact' || bundle.flow.source_precision === 'broad',
+      `${bundle.flow.slug} missing source_precision`,
+    );
   }
 });
 

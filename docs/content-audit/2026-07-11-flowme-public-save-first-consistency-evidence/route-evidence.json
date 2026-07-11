@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-07-11T16:30:00+09:00",
+  "scope": "public-share-save-first-consistency",
+  "status": "automated_qa_only",
+  "summary": {
+    "publicRouteScannedCount": 8,
+    "exactVideoRouteScannedCount": 2,
+    "mobilePreScrollVisibleSavePrimaryMinCount": 1,
+    "mobilePreScrollVisibleSavePrimaryMaxCount": 1,
+    "publicMobileLegacyProgressSaveBarVisibleCount": 0,
+    "publicFlowExportSecondaryEntryViolationCount": 0,
+    "publicPreSaveCompletionLikeLabelCount": 0,
+    "exactVideoExecutionDetailCollapsedByDefault": true,
+    "exactVideoExecutionDetailExpandable": true,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "publicShareE2ePassedCount": 41,
+    "exactVideoTargetedE2ePassedCount": 2,
+    "integratedRegressionE2ePassedCount": 234,
+    "observedUserSessionCount": 0
+  },
+  "routes": [
+    "/f/vehicle-inspection-prep",
+    "/f/moving-d30-basic",
+    "/f/fridge-cleanout-weekly-plan",
+    "/f/washer-tub-clean-monthly",
+    "/f/new-car-delivery-check",
+    "/f/used-car-buying-check",
+    "/f/real-thankyou-bubu-video-full-body-no-jump",
+    "/f/real-fitvely-video-body-fat-6kg-method"
+  ],
+  "scenarios": [
+    {
+      "name": "exact-video-save-first-mobile",
+      "route": "/f/real-fitvely-video-body-fat-6kg-method",
+      "viewport": { "width": 390, "height": 844 },
+      "screenshot": "screenshots/01-exact-video-save-first-mobile.png",
+      "visibleSavePrimaryCount": 1,
+      "mobileFixedSaveVisible": true,
+      "legacyProgressSaveBarVisible": false,
+      "executionDetailCollapsedByDefault": true,
+      "horizontalOverflow": false
+    },
+    {
+      "name": "exact-video-save-first-mobile-full",
+      "route": "/f/real-fitvely-video-body-fat-6kg-method",
+      "viewport": { "width": 390, "height": 844 },
+      "screenshot": "screenshots/02-exact-video-save-first-mobile-full.png",
+      "flowLevelExportSecondaryVisible": true,
+      "executionDetailExpandable": true,
+      "horizontalOverflow": false
+    },
+    {
+      "name": "input-free-save-first-mobile",
+      "route": "/f/new-car-delivery-check",
+      "viewport": { "width": 390, "height": 844 },
+      "screenshot": "screenshots/03-input-free-save-first-mobile.png",
+      "visibleSavePrimaryCount": 1,
+      "duplicateHeroSaveCount": 0,
+      "mobileFixedSaveVisible": true,
+      "horizontalOverflow": false
+    },
+    {
+      "name": "exact-video-save-first-wide",
+      "route": "/f/real-fitvely-video-body-fat-6kg-method",
+      "viewport": { "width": 1024, "height": 900 },
+      "screenshot": "screenshots/04-exact-video-save-first-wide.png",
+      "visibleSavePrimaryCount": 1,
+      "mobileFixedSaveVisible": false,
+      "desktopHeroSaveVisible": true,
+      "horizontalOverflow": false
+    }
+  ],
+  "interpretation": "This proves public-share save-first and exact-video disclosure behavior through automated browser QA. It does not prove observed-user understanding or external-tool import success."
+}

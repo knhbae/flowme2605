@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-07-11",
+  "policy": {
+    "normalUserRouteExposureStatuses": [
+      "representative",
+      "source_review",
+      "migration_candidate",
+      "legacy_accessible"
+    ],
+    "separatePreviewOrHiddenStatuses": [
+      "catalog_preview",
+      "hidden"
+    ],
+    "publicCreatorDefaultFilter": "real_or_representative",
+    "personalStudioDefaultFilter": "all"
+  },
+  "inventory": {
+    "publishedBundleCount": 617,
+    "normalUserRouteCount": 161,
+    "normalUserRouteSourceCheckedAtCount": 161,
+    "normalUserRouteMissingSourceCheckedAtCount": 0,
+    "normalUserRouteExactSourceCount": 156,
+    "normalUserRouteBroadSourceCount": 5,
+    "normalUserRouteNeedsReviewCount": 86,
+    "previewOrHiddenCount": 456,
+    "exposureCounts": {
+      "representative": 5,
+      "source_review": 70,
+      "catalog_preview": 456,
+      "migration_candidate": 35,
+      "legacy_accessible": 51
+    }
+  },
+  "refreshedSources": {
+    "count": 8,
+    "checkedAt": "2026-07-11",
+    "exactCount": 5,
+    "broadCount": 3,
+    "slugs": [
+      "moving-d30-basic",
+      "home-workout-20min",
+      "overseas-travel-d14",
+      "english-study-30day-routine",
+      "used-car-buying-check",
+      "car-care-monthly-routine",
+      "wedding-d180-basic",
+      "running-5k-4week"
+    ]
+  },
+  "publicCreatorProfile": {
+    "route": "/u/flow-curation-team",
+    "totalContentCount": 75,
+    "defaultVisibleContentCount": 8,
+    "defaultRealSourceCount": 7,
+    "defaultRepresentativeCount": 1,
+    "defaultNeedsReviewLeakCount": 0,
+    "defaultPreviewLeakCount": 0,
+    "allContentStillReachable": true,
+    "sampleFilterStillReachable": true,
+    "mobileViewport": 390,
+    "wideViewport": 1024,
+    "horizontalOverflowCount": 0,
+    "userSurfaceGuardrailHitCount": 0
+  },
+  "validation": {
+    "seedFlowUnitTestsPassed": 54,
+    "fullUnitTestsPassed": 393,
+    "creatorProfileTargetedE2ePassed": 1,
+    "integratedRegressionE2ePassed": 234,
+    "buildPassed": true,
+    "observedUserSessionCount": 0
+  }
+}

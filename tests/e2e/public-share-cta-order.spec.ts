@@ -19,6 +19,8 @@ const PUBLIC_SHARE_ROUTES = [
   '/f/washer-tub-clean-monthly',
   '/f/new-car-delivery-check',
   '/f/used-car-buying-check',
+  '/f/real-thankyou-bubu-video-full-body-no-jump',
+  '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 
 async function collectFocusableEntries(page: Page) {
@@ -171,6 +173,24 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
 }
 
 test.describe('public share shell secondary browse order', () => {
+  test.describe.configure({ timeout: 60_000 });
+
+  for (const route of PUBLIC_SHARE_ROUTES) {
+    test(`${route} exposes one save-oriented primary before scrolling`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(route);
+
+      const visibleSaveActions = await page.getByRole('button', { name: '내 Flow에 저장' }).evaluateAll((elements) =>
+        elements.filter((element) => {
+          const style = window.getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+        }).length,
+      );
+      expect(visibleSaveActions).toBe(1);
+    });
+  }
+
   for (const route of PUBLIC_SHARE_ROUTES) {
     test(`${route} keeps browse navigation reachable after the save path`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
@@ -256,16 +276,19 @@ test.describe('public share shell secondary browse order', () => {
     await expect(setup).toBeVisible();
     await expect(setup.locator('input[type="date"]')).toHaveCount(0);
 
-    const saveButton = setup.getByRole('button', { name: '내 Flow에 저장' });
+    const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
+    const saveButton = mobileSave.getByRole('button', { name: '내 Flow에 저장' });
     await expect(saveButton).toBeVisible();
     await saveButton.focus();
     await expect(saveButton).toBeFocused();
     await saveButton.click();
 
-    const myFlowLink = setup.getByRole('link', { name: '내 Flow에서 보기' });
+    const myFlowLink = mobileSave.getByRole('link', { name: '내 Flow에서 보기' });
     await expect(myFlowLink).toBeVisible();
-    await myFlowLink.click();
-    await expect(page).toHaveURL(/\/my/);
+    await Promise.all([
+      page.waitForURL(/\/my/, { timeout: 15_000 }),
+      myFlowLink.click(),
+    ]);
     await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
 
     const nowSection = page.getByTestId('my-flow-now-section');

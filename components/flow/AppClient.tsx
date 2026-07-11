@@ -245,7 +245,7 @@ const flowCreatorDisplayOverrideSlugs = new Set([
 const serviceCatalogFlowSlugs = new Set([
   'jeonse-contract-precheck-docs',
 ]);
-const publicSaveActionFlowSlugs = new Set([
+const publicHeroSetupFlowSlugs = new Set([
   ...serviceCatalogFlowSlugs,
   'vehicle-inspection-prep',
 ]);
@@ -10051,7 +10051,9 @@ export function CreatorProfile({ slug }: { slug: string }) {
   }).sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
   const allCategoryLabel = '모든 주제';
   const [categoryFilter, setCategoryFilter] = useState(allCategoryLabel);
-  const [sourceFilter, setSourceFilter] = useState<CreatorProfileSourceFilter>('all');
+  const [sourceFilter, setSourceFilter] = useState<CreatorProfileSourceFilter>(
+    user?.is_current_user ? 'all' : 'real',
+  );
   const [libraryQuery, setLibraryQuery] = useState('');
   const first = creatorBundles[0];
   const profile = user ?? (first ? getCreatorUser(first) : undefined);
@@ -10063,7 +10065,12 @@ export function CreatorProfile({ slug }: { slug: string }) {
   const visibleCreatorBundles = creatorBundles
     .filter((bundle) => (categoryFilter === allCategoryLabel ? true : bundle.flow.category === categoryFilter))
     .filter((bundle) => {
-      if (sourceFilter === 'real') return bundle.flow.source_status === 'real';
+      if (sourceFilter === 'real') {
+        return (
+          bundle.flow.source_status === 'real' ||
+          normalizeExecutionModel(bundle).exposureStatus === 'representative'
+        );
+      }
       if (sourceFilter === 'preview') return bundle.flow.source_status === 'preview';
       if (sourceFilter === 'draft') return bundle.flow.status === 'draft';
       return true;
@@ -10191,7 +10198,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
         <div className="mb-3 flex flex-wrap gap-2">
           {[
             ['all', '모두 보기'],
-            ['real', '원문 확인'],
+            ['real', '확인된 콘텐츠'],
             ['preview', '샘플'],
             ['draft', '초안'],
           ].map(([key, label]) => (
@@ -10235,6 +10242,8 @@ export function CreatorProfile({ slug }: { slug: string }) {
                 data-testid="creator-profile-content-card"
                 data-flow-origin={isUrlFirstDraft ? 'url-first-draft' : undefined}
                 data-flow-status={bundle.flow.status}
+                data-source-status={bundle.flow.source_status ?? 'unclassified'}
+                data-exposure-status={normalizeExecutionModel(bundle).exposureStatus}
               >
                 <FlowCard
                   bundle={bundle}
@@ -11090,14 +11099,17 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
-  const showPublicSaveAction = publicSaveActionFlowSlugs.has(bundle.flow.slug) && !showExportFirstHero;
+  const showPublicSaveAction = !showExportFirstHero;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
   const publicHeroInput = getAnchorLabel(bundle);
   const publicHeroArtifact = getCatalogDestinationLabel(bundle);
   const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
   const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
-  const showPublicHeroSetup = !showTodayExecution && !showExportFirstHero && (showPublicSaveAction || bundle.flow.anchor_type === 'none');
+  const showPublicHeroSetup =
+    !showTodayExecution &&
+    !showExportFirstHero &&
+    (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none');
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
 
   const toggle = (id: string) => {
@@ -11264,24 +11276,6 @@ export function PublicFlow({ slug }: { slug: string }) {
         <div data-testid="public-flow-primary-setup" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD]">
           <p className="text-[11px] font-semibold text-[#8A857B]">필요한 입력</p>
           <p className="mt-1 text-sm font-semibold text-[#1B1A17]">입력 없이 바로 확인합니다.</p>
-          <div data-testid="public-flow-save-actions" className="mt-3">
-            {savedFlowAt ? (
-              <Link
-                className="inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
-                href="/my"
-              >
-                내 Flow에서 보기
-              </Link>
-            ) : (
-              <button
-                type="button"
-                className="min-h-10 w-full rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
-                onClick={saveToMyFlow}
-              >
-                내 Flow에 저장
-              </button>
-            )}
-          </div>
         </div>
       );
     }
@@ -13769,7 +13763,18 @@ function ExactVideoRenderer({
               <DetailPreview detail={detail} />
             </span>
           </label>
-          <ItemDetailContent detail={detail} />
+          <details data-testid="exact-video-execution-detail" className="group mt-3 border-t border-gray-200 pt-3">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-gray-700">
+              <span>실행 기준 보기</span>
+              <span aria-hidden="true" className="text-xs text-gray-500">
+                <span className="group-open:hidden">펼치기</span>
+                <span className="hidden group-open:inline">접기</span>
+              </span>
+            </summary>
+            <div className="mt-3">
+              <ItemDetailContent detail={detail} />
+            </div>
+          </details>
         </div>
       </section>
     </div>

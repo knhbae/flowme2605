@@ -509,6 +509,8 @@ test('URL-first resolved candidate cards hide legacy state-machine wording', asy
 });
 
 test('URL-first lab stays prototype-gated and absent from user navigation', async ({ page }) => {
+  test.setTimeout(60_000);
+
   const userRoutes = [
     '/',
     '/flows',
@@ -576,13 +578,28 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     await expectNoHorizontalOverflow(page);
   }
 
-  await page.goto('/u/flow-curation-team');
-  await expect(page.getByTestId('creator-profile-surface')).toBeVisible();
-  const publicCreatorRobots = await page.locator('meta[name="robots"]').getAttribute('content');
-  expect(publicCreatorRobots ?? '').not.toMatch(/noindex/i);
-  expect(await page.getByTestId('creator-profile-content-card').count()).toBeGreaterThanOrEqual(3);
-  await expect(page.getByText('채널 콘텐츠')).toHaveCount(0);
-  await expectCleanCreatorProfileSurface(page.locator('body'));
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1024, height: 768 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/u/flow-curation-team');
+    await expect(page.getByTestId('creator-profile-surface')).toBeVisible();
+    const publicCreatorRobots = await page.locator('meta[name="robots"]').getAttribute('content');
+    expect(publicCreatorRobots ?? '').not.toMatch(/noindex/i);
+    const verifiedFilter = page.getByRole('button', { name: '확인된 콘텐츠', exact: true });
+    await expect(verifiedFilter).toHaveClass(/border-blue-600/);
+    const verifiedCards = page.getByTestId('creator-profile-content-card');
+    const verifiedCardCount = await verifiedCards.count();
+    expect(verifiedCardCount).toBeGreaterThanOrEqual(3);
+    await expect(page.locator('[data-testid="creator-profile-content-card"][data-source-status="preview"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="creator-profile-content-card"][data-source-status="needs_review"]')).toHaveCount(0);
+    await expectNoHorizontalOverflow(page);
+    await page.getByRole('button', { name: '모두 보기', exact: true }).click();
+    expect(await page.getByTestId('creator-profile-content-card').count()).toBeGreaterThan(verifiedCardCount);
+    await expect(page.getByText('채널 콘텐츠')).toHaveCount(0);
+    await expectCleanCreatorProfileSurface(page.locator('body'));
+  }
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-lab/url-first-p0');

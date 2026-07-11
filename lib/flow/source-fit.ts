@@ -192,7 +192,7 @@ const realSourceManualSourceFitAudits: SourceFitAudit[] = realSourceNaturalArtif
 export const sourceFitAudits: SourceFitAudit[] = [
   defineAudit({
     slug: 'moving-d30-basic',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부)',
     sourceUrl:
       'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
@@ -246,7 +246,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'wedding-d180-basic',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '오프린트미 결혼식 준비 체크리스트',
     sourceUrl: 'https://www.ohprint.me/blog/wedding-checklist',
     sourcePrecision: 'exact',
@@ -347,7 +347,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'english-study-30day-routine',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '영어공부 혼자하기 — 직장인 30일 독학 루틴',
     sourceUrl: 'https://www.new1eng.com/blog/adult-english-30day-self-study',
     sourcePrecision: 'exact',
@@ -395,7 +395,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'used-car-buying-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '중고차 구매 체크리스트 완벽 가이드',
     sourceUrl: 'https://www.drive-insight.net/posts/used-car-buying-checklist-ko/',
     sourcePrecision: 'exact',
@@ -443,7 +443,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'car-care-monthly-routine',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '타이어 공기압 TPMS·블랙박스 셀프정비 2026 완벽 체크리스트',
     sourceUrl: 'https://gnsl0879.tistory.com/717',
     sourcePrecision: 'exact',
@@ -491,7 +491,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'home-workout-20min',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: 'ThankyouBUBU 홈트 루틴 콘텐츠 참고',
     sourceUrl: 'https://www.youtube.com/@ThankyouBUBU',
     sourcePrecision: 'broad',
@@ -539,7 +539,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'overseas-travel-d14',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '외교부·여권안내·공항 반입 규정 참고',
     sourceUrl: 'https://passport.go.kr/home/kor/contents.do?menuPos=48',
     sourcePrecision: 'broad',
@@ -592,7 +592,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'running-5k-4week',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-11',
     sourceTitle: '런데이',
     sourceUrl: 'https://www.runday.co.kr/',
     sourcePrecision: 'broad',

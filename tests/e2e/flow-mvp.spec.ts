@@ -2191,6 +2191,8 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
   await expect(channelHeader).not.toContainText('1차 분류');
   await expect(page.getByText('만든 콘텐츠')).toBeVisible();
   await expect(page.getByLabel('콘텐츠 검색')).toBeVisible();
+  await page.getByRole('button', { name: '샘플', exact: true }).click();
+  expect(await page.getByTestId('creator-profile-content-card').count()).toBeGreaterThanOrEqual(20);
   await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
   await page.getByLabel('콘텐츠 검색').fill('비상 상황');
   await expect(page.getByRole('link', { name: /가전관리 비상 상황 대응표/ })).toBeVisible();
@@ -2200,9 +2202,9 @@ test('preview creator channel supports browsing 20+ flowified entries', async ({
 test('creator channel can filter real source-backed flows', async ({ page }) => {
   await page.goto('/u/samsung-service');
 
-  await expect(page.getByText('원문 확인').first()).toBeVisible();
+  await expect(page.getByText('원문 확인됨').first()).toBeVisible();
   await expect(page.getByText('대표 항목:')).toHaveCount(0);
-  await page.getByRole('button', { name: '원문 확인' }).click();
+  await expect(page.getByRole('button', { name: '확인된 콘텐츠', exact: true })).toHaveClass(/border-blue-600/);
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
   await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
@@ -2236,6 +2238,10 @@ test('fitness exact video flow keeps the execution panel minimal', async ({ page
   await expect(page.getByText('2. 오늘 실행 체크')).toHaveCount(0);
   await expect(page.getByText('3. 내 Flow로 수정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '실행 항목' })).toBeVisible();
+  const executionDetail = page.getByTestId('exact-video-execution-detail');
+  await expect(executionDetail).not.toHaveAttribute('open', '');
+  await executionDetail.locator('summary').click();
+  await expect(executionDetail).toHaveAttribute('open', '');
   const schedulePreview = page.getByRole('region', { name: '이번 주 등록 미리보기' });
   await expect(schedulePreview).toBeVisible();
   await expect(schedulePreview.getByText('월요일').first()).toBeVisible();
@@ -2383,6 +2389,7 @@ test('creator profile merges newly shipped seed flows into existing browser stor
 
   await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
   await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
+  await page.getByRole('button', { name: '모두 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Local only old flow' })).toBeVisible();
 });
 

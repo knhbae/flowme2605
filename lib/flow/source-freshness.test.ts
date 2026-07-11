@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { seedBundles } from './seed-flows';
+import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
+import type { FlowBundle } from './types';
+
+function withCheckedAt(bundle: FlowBundle, checkedAt: string): FlowBundle {
+  return {
+    ...bundle,
+    flow: {
+      ...bundle.flow,
+      source_checked_at: checkedAt,
+    },
+  };
+}
+
+test('source freshness separates current, review-due, and stale user routes', () => {
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  assert.ok(moving);
+  const asOf = new Date('2026-07-11T00:00:00+09:00');
+
+  assert.equal(classifyFlowSourceFreshness(withCheckedAt(moving, '2026-06-11'), asOf).bucket, 'current');
+  assert.equal(classifyFlowSourceFreshness(withCheckedAt(moving, '2026-03-31'), asOf).bucket, 'review_due');
+  assert.equal(classifyFlowSourceFreshness(withCheckedAt(moving, '2026-01-01'), asOf).bucket, 'stale');
+});
+
+test('preview library is excluded from normal user route freshness failures', () => {
+  const preview = seedBundles.find((bundle) => bundle.flow.source_status === 'preview');
+  assert.ok(preview);
+  assert.equal(
+    classifyFlowSourceFreshness(preview, new Date('2026-07-11T00:00:00+09:00')).bucket,
+    'preview_or_hidden',
+  );
+});
+
+test('current canonical seed has no missing or overdue normal user source checks', () => {
+  const summary = summarizeFlowSourceFreshness(seedBundles, new Date('2026-07-11T00:00:00+09:00'));
+
+  assert.ok(summary.normalUserRouteCount >= 140);
+  assert.ok(summary.previewOrHiddenCount >= 400);
+  assert.equal(summary.missingMetadataCount, 0);
+  assert.equal(summary.reviewDueCount, 0);
+  assert.equal(summary.staleCount, 0);
+});
