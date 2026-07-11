@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-07-11",
+  "scope": "policy-and-storage",
+  "routeEvidence": [],
+  "summary": {
+    "newAnchorIsoRequired": true,
+    "fixedDateConflictRequiresExplicitPolicy": true,
+    "keepFixedDatesPolicyImplemented": true,
+    "resetToAnchorPolicyImplemented": true,
+    "titleAliasPreservedWhenResettingDates": true,
+    "userMemoPreservedWhenResettingDates": true,
+    "emptyOverrideRemovedAfterDateReset": true,
+    "sourcePersonalCopyMutated": false,
+    "completedRunSnapshotMutated": false,
+    "activeMapProjectionUpdated": true,
+    "calendarAndExportProjectionUseActiveMap": true,
+    "userFacingReuseUiVisible": false,
+    "focusedTestCount": 11,
+    "fullUnitTestCount": 384,
+    "nextTypecheckPassed": true,
+    "productionBuildPassed": true,
+    "newScreenshotCount": 0
+  }
+}

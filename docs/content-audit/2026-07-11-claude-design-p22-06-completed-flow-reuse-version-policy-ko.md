@@ -2,7 +2,7 @@
 
 작성일: 2026-07-11
 
-상태: **정책 확정, Slice A 저장 계약 구현 완료**
+상태: **정책 확정, Slice A·B 저장/날짜 계약 구현 완료**
 
 범위: 완료된 Flow의 재사용, 새 실행 분리, 원본 버전 갱신과 개인 수정본 충돌 처리
 
@@ -343,9 +343,10 @@ P22-06 정책의 첫 구현 slice로 Flow 실행 인스턴스와 완료 기록 �
 | Studio 핵심 탭 승격 금지 | 충족 |
 | 자동 병합·복잡한 버전 트리 비확장 | 충족 |
 | Slice A 실행 인스턴스·완료 snapshot | 구현 완료 |
-| 사용자-facing 재사용 흐름 | 미구현, Slice B~D로 분리 |
+| Slice B 새 기준일·고정 날짜 충돌 정책 | 구현 완료 |
+| 사용자-facing 재사용 흐름 | 미구현, Slice C~D로 분리 |
 
-P22-06은 **정책과 Slice A 저장 계약 기준 완료**다. 실제 제품 기준 완료는 Slice B~D의 날짜 재설정, 버전 검토, 사용자-facing 재사용 흐름까지 검증된 뒤 판정한다.
+P22-06은 **정책과 Slice A·B 계약 기준 완료**다. 실제 제품 기준 완료는 Slice C~D의 버전 검토와 사용자-facing 재사용 흐름까지 검증된 뒤 판정한다.
 
 ## 16. 2026-07-11 Slice A 구현 결과
 
@@ -364,3 +365,19 @@ P22-06은 **정책과 Slice A 저장 계약 기준 완료**다. 실제 제품 �
 현재 My Flow·Calendar·export 호출부는 run API를 아직 사용하지 않는다. 따라서 기존 사용자 상태가 자동 migration되거나 화면에 `다시 쓰기`가 나타나지는 않는다. 이 경계는 데이터 모델을 먼저 검증하고 사용자 흐름을 나중에 여는 의도된 순서다.
 
 검증 evidence는 [P22-06A Flow run storage evidence](./2026-07-11-claude-design-p22-06a-flow-run-storage-evidence/README.md)에 기록했다.
+
+## 17. 2026-07-11 Slice B 구현 결과
+
+`lib/flow/flow-run-reuse.ts`에 새 기준일 conflict policy를 순수 함수로 분리했다.
+
+- 고정 날짜 override 수 계산
+- `keep_fixed_dates`: 사용자가 직접 정한 날짜 유지
+- `reset_to_anchor`: 고정 날짜만 제거하고 제목 alias·사용자 메모 유지
+- 날짜만 있던 override는 제거하고 빈 override record를 남기지 않음
+- 원본 personal copy 불변
+- ISO 기준일이 아니면 계획 생성 거부
+- 고정 날짜가 있는데 정책 선택이 없으면 새 실행 거부
+
+`startFlowRunFromCompleted()`은 이 정책 결과를 active run과 saved Map snapshot에 함께 반영한다. 완료 run의 personal copy snapshot은 바뀌지 않는다. 따라서 현재 Calendar와 export가 읽는 active projection과 과거 실행 기록이 분리된다.
+
+검증 evidence는 [P22-06B New Anchor Policy Evidence](./2026-07-11-claude-design-p22-06b-new-anchor-policy-evidence/README.md)에 기록했다.

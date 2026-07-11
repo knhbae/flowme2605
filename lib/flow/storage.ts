@@ -1,5 +1,6 @@
 import { seedBundles } from './seed-flows';
 import type { SourceBackedFlowMapPersonalCopy, SourceBackedFlowMapPersonalCopyStepOverride } from './source-backed-my-flow';
+import { prepareFlowRunNewAnchor, type FlowRunFixedDatePolicy } from './flow-run-reuse';
 import { FlowBundle, FlowComparisonState, FlowItemState, FlowWorkbenchState, ReactionLog } from './types';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
@@ -112,6 +113,7 @@ export type FlowRunRecord = {
   sourceVersion?: string;
   previousRunId?: string;
   reuseMode?: FlowRunReuseMode;
+  fixedDatePolicy?: FlowRunFixedDatePolicy;
   personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
   completionSnapshot?: FlowRunCompletionSnapshot;
 };
@@ -141,6 +143,7 @@ export type StartFlowRunFromCompletedOptions = {
   selectedArtifactMode?: SavedFlowArtifactMode;
   mapId?: string;
   sourceVersion?: string;
+  fixedDatePolicy?: FlowRunFixedDatePolicy;
   personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
 };
 
@@ -748,6 +751,10 @@ function isFlowRunReuseMode(value: unknown): value is FlowRunReuseMode {
   return value === 'legacy' || value === 'same_copy' || value === 'new_anchor' || value === 'reviewed_version';
 }
 
+function isFlowRunFixedDatePolicy(value: unknown): value is FlowRunFixedDatePolicy {
+  return value === 'keep_fixed_dates' || value === 'reset_to_anchor';
+}
+
 export function normalizeFlowRunRecord(value: unknown): FlowRunRecord | undefined {
   if (!value || typeof value !== 'object') return undefined;
   const source = value as Partial<FlowRunRecord>;
@@ -783,6 +790,7 @@ export function normalizeFlowRunRecord(value: unknown): FlowRunRecord | undefine
       ? { previousRunId: source.previousRunId.trim() }
       : {}),
     ...(isFlowRunReuseMode(source.reuseMode) ? { reuseMode: source.reuseMode } : {}),
+    ...(isFlowRunFixedDatePolicy(source.fixedDatePolicy) ? { fixedDatePolicy: source.fixedDatePolicy } : {}),
     ...(personalCopySnapshot ? { personalCopySnapshot } : {}),
   };
 }
@@ -990,6 +998,36 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
   );
 }
 
+function updateSavedFlowMapProjectionForRun(
+  flowSlug: string,
+  value: {
+    mapId?: string;
+    sourceVersion?: string;
+    savedAt: string;
+    anchor?: string;
+    personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
+  },
+): SavedFlowMapSnapshot | undefined {
+  if (!value.mapId) return undefined;
+  const current = getSavedFlowMapSnapshots().find(
+    (snapshot) => snapshot.mapId === value.mapId && snapshot.flowSlugs.includes(flowSlug),
+  );
+  if (!current) return undefined;
+  const next: SavedFlowMapSnapshot = {
+    ...current,
+    version: value.sourceVersion || current.version,
+    savedAt: value.savedAt,
+    ...(value.anchor ? { anchor: value.anchor } : {}),
+    ...(value.personalCopySnapshot ? { personalCopy: cloneStorageValue(value.personalCopySnapshot) } : {}),
+  };
+  if (!value.anchor) delete next.anchor;
+  if (!value.personalCopySnapshot) delete next.personalCopy;
+  const normalized = normalizeSavedFlowMapSnapshot(next);
+  if (!normalized) return undefined;
+  localStorage.setItem(`${SAVED_FLOW_MAP_KEY_PREFIX}${value.mapId}`, JSON.stringify(normalized));
+  return normalized;
+}
+
 export function startFlowRunFromCompleted(
   flowSlug: string,
   options: StartFlowRunFromCompletedOptions,
@@ -1009,12 +1047,17 @@ export function startFlowRunFromCompleted(
   const selectedArtifactMode =
     options.selectedArtifactMode ?? previous.selectedArtifactMode ?? getSavedFlowRecord(flowSlug)?.selectedArtifactMode ?? 'calendar';
   const hasPersonalCopyOption = Object.prototype.hasOwnProperty.call(options, 'personalCopySnapshot');
-  const personalCopySnapshot = hasPersonalCopyOption
+  let personalCopySnapshot = hasPersonalCopyOption
     ? normalizeSavedFlowMapPersonalCopy(options.personalCopySnapshot)
     : previous.personalCopySnapshot;
   const mapId = options.mapId?.trim() || previous.mapId;
   const sourceVersion = options.sourceVersion?.trim() || previous.sourceVersion;
   const anchor = options.anchor?.trim();
+  if (options.reuseMode === 'new_anchor') {
+    const newAnchorPlan = prepareFlowRunNewAnchor(personalCopySnapshot, anchor ?? '', options.fixedDatePolicy);
+    if (!newAnchorPlan) return undefined;
+    personalCopySnapshot = newAnchorPlan.personalCopySnapshot;
+  }
 
   resetCurrentFlowExecutionState(flowSlug);
   const savedRecord: SavedFlowRecord = {
@@ -1027,6 +1070,13 @@ export function startFlowRunFromCompleted(
   if (anchor) {
     localStorage.setItem(`${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor }));
   }
+  updateSavedFlowMapProjectionForRun(flowSlug, {
+    mapId,
+    sourceVersion,
+    savedAt: startedAt,
+    ...(anchor ? { anchor } : {}),
+    ...(personalCopySnapshot ? { personalCopySnapshot } : {}),
+  });
   localStorage.setItem('flow:meta:last-visit', startedAt);
 
   const active: FlowRunRecord = {
@@ -1037,6 +1087,9 @@ export function startFlowRunFromCompleted(
     startedAt,
     previousRunId: previous.runId,
     reuseMode: options.reuseMode,
+    ...(options.reuseMode === 'new_anchor' && options.fixedDatePolicy
+      ? { fixedDatePolicy: options.fixedDatePolicy }
+      : {}),
     selectedArtifactMode,
     ...(anchor ? { anchor } : {}),
     ...(mapId ? { mapId } : {}),

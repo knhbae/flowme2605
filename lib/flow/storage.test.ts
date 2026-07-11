@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
+import { prepareFlowRunNewAnchor } from './flow-run-reuse';
 import {
   cloneSeedBundles,
   clearFlowLocalProgress,
@@ -356,6 +357,65 @@ test('saved flow map snapshots index child flows back to their parent map', () =
   }
 });
 
+test('new anchor preparation requires an explicit policy for fixed personal dates', () => {
+  const personalCopy = {
+    source: 'url_first_custom_start' as const,
+    includedStepIdsByFlow: {
+      'source-backed-moving-d30': ['moving-method-quotes', 'moving-address-change', 'moving-utility-transfer'],
+    },
+    excludedStepIdsByFlow: {
+      'source-backed-moving-d30': [],
+    },
+    stepOverridesByFlow: {
+      'source-backed-moving-d30': {
+        'moving-method-quotes': {
+          title: '내 견적 비교',
+          schedule: { mode: 'fixed_date' as const, date: '2026-07-05' },
+          userMemo: '두 업체만 비교',
+        },
+        'moving-address-change': {
+          schedule: { mode: 'fixed_date' as const, date: '2026-07-20' },
+        },
+        'moving-utility-transfer': {
+          title: '전기와 가스 이전',
+        },
+      },
+    },
+  };
+
+  assert.equal(prepareFlowRunNewAnchor(personalCopy, '2026-09-15'), undefined);
+  assert.equal(prepareFlowRunNewAnchor(personalCopy, '2026/09/15', 'keep_fixed_dates'), undefined);
+
+  const keepPlan = prepareFlowRunNewAnchor(personalCopy, '2026-09-15', 'keep_fixed_dates');
+  assert.ok(keepPlan);
+  assert.equal(keepPlan.fixedDateOverrideCount, 2);
+  assert.equal(keepPlan.retainedFixedDateOverrideCount, 2);
+  assert.equal(keepPlan.resetFixedDateOverrideCount, 0);
+  assert.deepEqual(keepPlan.personalCopySnapshot, personalCopy);
+  assert.notEqual(keepPlan.personalCopySnapshot, personalCopy);
+
+  const resetPlan = prepareFlowRunNewAnchor(personalCopy, '2026-09-15', 'reset_to_anchor');
+  assert.ok(resetPlan);
+  assert.equal(resetPlan.fixedDateOverrideCount, 2);
+  assert.equal(resetPlan.retainedFixedDateOverrideCount, 0);
+  assert.equal(resetPlan.resetFixedDateOverrideCount, 2);
+  assert.deepEqual(resetPlan.personalCopySnapshot?.stepOverridesByFlow, {
+    'source-backed-moving-d30': {
+      'moving-method-quotes': {
+        title: '내 견적 비교',
+        userMemo: '두 업체만 비교',
+      },
+      'moving-utility-transfer': {
+        title: '전기와 가스 이전',
+      },
+    },
+  });
+  assert.equal(
+    personalCopy.stepOverridesByFlow['source-backed-moving-d30']['moving-method-quotes'].schedule.date,
+    '2026-07-05',
+  );
+});
+
 test('flow run registry preserves a completed legacy run before starting a clean new execution', () => {
   assert.equal(
     normalizeFlowRunRecord({
@@ -542,30 +602,58 @@ test('flow run registry preserves a completed legacy run before starting a clean
     );
     assert.deepEqual(getChecks(flowSlug), { 'moving-method-quotes': true, 'moving-address-change': true });
 
+    assert.equal(
+      startFlowRunFromCompleted(flowSlug, {
+        runId: 'invalid-run-without-fixed-date-policy',
+        startedAt: '2026-08-01T00:00:00.000Z',
+        reuseMode: 'new_anchor',
+        anchor: '2026-09-15',
+      }),
+      undefined,
+    );
+    assert.deepEqual(getChecks(flowSlug), { 'moving-method-quotes': true, 'moving-address-change': true });
+
     const nextRun = startFlowRunFromCompleted(flowSlug, {
       runId: 'run-moving-second',
       startedAt: '2026-08-01T00:00:00.000Z',
       reuseMode: 'new_anchor',
       anchor: '2026-09-15',
+      fixedDatePolicy: 'reset_to_anchor',
     });
 
     assert.ok(nextRun);
     assert.equal(nextRun.status, 'active');
     assert.equal(nextRun.previousRunId, completedWithFeedback.runId);
     assert.equal(nextRun.anchor, '2026-09-15');
+    assert.equal(nextRun.fixedDatePolicy, 'reset_to_anchor');
     assert.equal(nextRun.sourceVersion, completedWithFeedback.sourceVersion);
-    assert.deepEqual(nextRun.personalCopySnapshot, completedWithFeedback.personalCopySnapshot);
+    assert.deepEqual(nextRun.personalCopySnapshot?.stepOverridesByFlow, {
+      [flowSlug]: {
+        'moving-method-quotes': {
+          title: '내 견적 후보 비교',
+          userMemo: '두 업체만 비교',
+        },
+      },
+    });
     assert.deepEqual(getChecks(flowSlug), {});
     assert.deepEqual(getItemStates(flowSlug), {});
     assert.equal(getMyFlowCompletionFeedback(flowSlug), undefined);
     assert.deepEqual(getMyFlowStepItemChecks(), { 'other-flow::first::none': { '0': true } });
     assert.equal(getStoredAnchor(flowSlug).anchor, '2026-09-15');
     assert.equal(getSavedFlowRecord(flowSlug)?.savedAt, '2026-08-01T00:00:00.000Z');
+    const activeMapSnapshot = getSavedFlowMapIndexByFlowSlug()[flowSlug];
+    assert.equal(activeMapSnapshot.anchor, '2026-09-15');
+    assert.equal(activeMapSnapshot.savedAt, '2026-08-01T00:00:00.000Z');
+    assert.deepEqual(activeMapSnapshot.personalCopy, nextRun.personalCopySnapshot);
 
     const completedHistory = getCompletedFlowRuns(flowSlug);
     assert.equal(completedHistory.length, 1);
     assert.equal(completedHistory[0].runId, 'run-moving-legacy');
     assert.equal(completedHistory[0].completionSnapshot?.completionFeedback?.reflection?.note, '이사 준비 순서를 놓치지 않았어요.');
+    assert.equal(
+      completedHistory[0].personalCopySnapshot?.stepOverridesByFlow?.[flowSlug]?.['moving-method-quotes']?.schedule?.date,
+      '2026-07-05',
+    );
     const registry = getFlowRunRegistry(flowSlug);
     assert.equal(registry.activeRunId, 'run-moving-second');
     assert.deepEqual(registry.runs.map((run) => [run.runId, run.status]), [
