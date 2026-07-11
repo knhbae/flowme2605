@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 민감 콘텐츠 최신성 감사</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #5d6678;
+      --line: #d9dee8;
+      --surface: #ffffff;
+      --page: #f4f6f8;
+      --blue: #3156d9;
+      --green: #18794e;
+      --green-bg: #eaf8f1;
+      --amber: #8a4b08;
+      --amber-bg: #fff4dd;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); font-family: Pretendard, "Noto Sans KR", Arial, sans-serif; line-height: 1.55; letter-spacing: 0; }
+    main { width: min(1440px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
+    header { padding: 0 0 28px; border-bottom: 1px solid var(--line); }
+    h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 46px); line-height: 1.15; }
+    h2 { margin: 42px 0 16px; font-size: 24px; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 0; }
+    .lead { max-width: 920px; color: var(--muted); font-size: 17px; }
+    .meta { margin-top: 14px; color: var(--muted); font-size: 14px; }
+    .metrics { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: 24px; }
+    .metric { min-height: 94px; padding: 15px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+    .metric strong { display: block; font-size: 26px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; }
+    .ok { color: var(--green); }
+    .warn { color: var(--amber); }
+    .decision-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+    .decision { padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+    .decision.keep { border-left: 5px solid var(--green); }
+    .decision.review { border-left: 5px solid #d78b18; }
+    ul { margin: 10px 0 0; padding-left: 20px; }
+    li + li { margin-top: 5px; }
+    code { padding: 1px 5px; background: #eef1f5; border-radius: 4px; font-size: .92em; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eef1f5; font-size: 13px; }
+    td { font-size: 14px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .badge.keep { color: var(--green); background: var(--green-bg); }
+    .badge.review { color: var(--amber); background: var(--amber-bg); }
+    .shot-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    figure img { display: block; width: 100%; height: auto; background: #fff; }
+    figcaption { padding: 10px 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .wide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    .note { margin-top: 18px; padding: 16px; border: 1px solid #c9d4ec; border-radius: 8px; background: #eef4ff; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    nav a { color: var(--blue); text-decoration: none; font-weight: 700; }
+    @media (max-width: 1050px) {
+      .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .shot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      main { width: min(100% - 20px, 1440px); padding-top: 24px; }
+      .metrics, .decision-grid, .shot-grid, .wide-grid { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>민감 콘텐츠 최신성 감사</h1>
+    <p class="lead">남아 있던 14개 source review route를 현재 공식 원문, 콘텐츠 범위, 공개 게이트, 모바일·wide 화면으로 다시 판정했습니다. 링크 생존과 공개 승인은 별도 기준입니다.</p>
+    <p class="meta">2026-07-12 · 모바일 390px · wide 1024px · 자동 검증은 실제 사용자 관찰을 대체하지 않음</p>
+    <nav>
+      <a href="./README.md">README</a>
+      <a href="./audit.md">감사 상세</a>
+      <a href="./route-evidence.json">route evidence</a>
+      <a href="./source-reachability.json">source reachability</a>
+    </nav>
+  </header>
+
+  <section class="metrics" aria-label="감사 요약">
+    <div class="metric"><strong>14</strong><span>이번 감사 route</span></div>
+    <div class="metric"><strong class="ok">11</strong><span>대표 공개 유지</span></div>
+    <div class="metric"><strong class="warn">3</strong><span>재구성 전 제한</span></div>
+    <div class="metric"><strong>21</strong><span>모바일·wide 캡처</span></div>
+    <div class="metric"><strong class="ok">0</strong><span>게이트·decision 불일치</span></div>
+    <div class="metric"><strong class="ok">0</strong><span>명시적 404</span></div>
+  </section>
+
+  <h2>공개 판단</h2>
+  <section class="decision-grid">
+    <article class="decision keep">
+      <h3>대표 공개 실행 유지 11</h3>
+      <p>공식 원문이 실행 순서를 지지하고 개인 결과를 조회·상담에 남기는 route입니다.</p>
+      <ul>
+        <li>전기차 보조금, 영유아 검진, 국가장학금, 지방세, 안심상속</li>
+        <li>실업급여, 전세보증, 국민취업지원, 소상공인 정책자금</li>
+        <li>중고차 이전등록, 성인 예방접종 이력·상담</li>
+      </ul>
+    </article>
+    <article class="decision review">
+      <h3>재구성 전 검토 전용 3</h3>
+      <p>출처는 살아 있지만 범위나 조언 경계가 대표 공개 기준에 미달합니다.</p>
+      <ul>
+        <li>주택청약 공고 자격 확인</li>
+        <li>월간 가계부 시작</li>
+        <li>월급날 재정 루틴</li>
+      </ul>
+    </article>
+  </section>
+
+  <h2>핵심 교정</h2>
+  <table>
+    <thead><tr><th>Route</th><th>이전 문제</th><th>현재 기준</th><th>상태</th></tr></thead>
+    <tbody>
+      <tr><td><code>ev-subsidy-apply</code></td><td>계약 전 지원확인서가 필수라는 잘못된 순서</td><td>계약 → 판매점 신청 → 선정 → 출고·등록 → 지급신청</td><td><span class="badge keep">공개</span></td></tr>
+      <tr><td><code>adult-vaccine-schedule-check</code></td><td>연령별 접종·무료지원 판정</td><td>이력 조회 → 누락 문의 → 의료진 상담 → 기록</td><td><span class="badge keep">공개</span></td></tr>
+      <tr><td><code>used-car-ownership-transfer</code></td><td>낡은 정부24 URL과 처리기간 단정</td><td>자동차365·법령, 15일 기한, 처리시간 비고정</td><td><span class="badge keep">공개</span></td></tr>
+      <tr><td><code>small-business-fund-check</code></td><td>고정 인원수·교육 요건</td><td>현재 공고의 대상·제외업종·대출방식·자료</td><td><span class="badge keep">공개</span></td></tr>
+      <tr><td><code>property-local-tax-pay</code></td><td>연납·절세까지 broad하게 확장</td><td>현재 부과내역 조회·납부·영수증</td><td><span class="badge keep">공개</span></td></tr>
+      <tr><td><code>housing-subscription-account</code></td><td>고정 가점과 여러 공급유형 혼합</td><td>관심 공고 하나의 자격·일정 확인, 추후 분리</td><td><span class="badge review">검토 전용</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>모바일 390px</h2>
+  <section class="shot-grid" aria-label="모바일 캡처">
+    <figure><img src="./screenshots/01-ev-subsidy-apply-390.png" alt="전기차 구매보조금 모바일"><figcaption>01 · 전기차 보조금 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/02-housing-subscription-account-390.png" alt="주택청약 검토 전용 모바일"><figcaption>02 · 주택청약 · 검토 전용</figcaption></figure>
+    <figure><img src="./screenshots/03-infant-health-checkup-schedule-390.png" alt="영유아 건강검진 모바일"><figcaption>03 · 영유아 건강검진 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/04-monthly-household-budget-390.png" alt="월간 가계부 검토 전용 모바일"><figcaption>04 · 월간 가계부 · 검토 전용</figcaption></figure>
+    <figure><img src="./screenshots/05-national-scholarship-apply-390.png" alt="국가장학금 모바일"><figcaption>05 · 국가장학금 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/06-payday-finance-routine-390.png" alt="월급날 재정 루틴 검토 전용 모바일"><figcaption>06 · 월급날 루틴 · 검토 전용</figcaption></figure>
+    <figure><img src="./screenshots/07-property-local-tax-pay-390.png" alt="지방세 조회 납부 모바일"><figcaption>07 · 지방세 조회·납부 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/08-safe-inheritance-onestop-390.png" alt="안심상속 모바일"><figcaption>08 · 안심상속 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/09-unemployment-benefit-apply-390.png" alt="실업급여 모바일"><figcaption>09 · 실업급여 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/10-jeonse-guarantee-apply-390.png" alt="전세보증 모바일"><figcaption>10 · 전세보증 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/11-job-seeker-allowance-apply-390.png" alt="국민취업지원 모바일"><figcaption>11 · 국민취업지원 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/12-small-business-fund-check-390.png" alt="소상공인 정책자금 모바일"><figcaption>12 · 소상공인 정책자금 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/13-used-car-ownership-transfer-390.png" alt="자동차 이전등록 모바일"><figcaption>13 · 자동차 이전등록 · 공개</figcaption></figure>
+    <figure><img src="./screenshots/14-adult-vaccine-schedule-check-390.png" alt="성인 예방접종 이력 상담 모바일"><figcaption>14 · 성인 예방접종 · 공개</figcaption></figure>
+  </section>
+
+  <h2>Wide 1024px</h2>
+  <section class="wide-grid" aria-label="wide 캡처">
+    <figure><img src="./screenshots/15-ev-subsidy-apply-1024.png" alt="전기차 구매보조금 wide"><figcaption>15 · 전기차 보조금</figcaption></figure>
+    <figure><img src="./screenshots/16-housing-subscription-account-1024.png" alt="주택청약 검토 전용 wide"><figcaption>16 · 주택청약 검토 게이트</figcaption></figure>
+    <figure><img src="./screenshots/17-monthly-household-budget-1024.png" alt="월간 가계부 검토 전용 wide"><figcaption>17 · 월간 가계부 검토 게이트</figcaption></figure>
+    <figure><img src="./screenshots/18-payday-finance-routine-1024.png" alt="월급날 재정 루틴 검토 전용 wide"><figcaption>18 · 월급날 루틴 검토 게이트</figcaption></figure>
+    <figure><img src="./screenshots/19-small-business-fund-check-1024.png" alt="소상공인 정책자금 wide"><figcaption>19 · 소상공인 정책자금</figcaption></figure>
+    <figure><img src="./screenshots/20-used-car-ownership-transfer-1024.png" alt="자동차 이전등록 wide"><figcaption>20 · 자동차 이전등록</figcaption></figure>
+    <figure><img src="./screenshots/21-adult-vaccine-schedule-check-1024.png" alt="성인 예방접종 이력 상담 wide"><figcaption>21 · 성인 예방접종</figcaption></figure>
+  </section>
+
+  <div class="note">
+    <strong>판정 경계</strong>
+    <p>source review queue 0은 모든 콘텐츠의 공개 승인을 뜻하지 않습니다. 3개 route는 감사 결과에 따라 계속 제한되며, 540개 review-only Flow의 장기 축소·통합은 별도 포트폴리오 과제입니다.</p>
+  </div>
+</main>
+</body>
+</html>
