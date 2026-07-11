@@ -5,9 +5,9 @@
 ## 현재 관찰 기준
 
 - 관찰 진입 주소: <https://flowme2605-knhbae-3510-flowme.vercel.app/>
-- 현재 resolved preview: <https://flowme2605-rh3abvcts-flowme.vercel.app/>
-- Vercel deployment: `dpl_9tZrdWRpdC8X8ymoQ6YpkjvzEXZY`
-- Git commit: `f92510af91bd31d84767eb92d5d0dfe8bd5d6f8b`
+- 현재 resolved preview: <https://flowme2605-ihsyeyj13-flowme.vercel.app/>
+- Vercel deployment: `dpl_3qbM1UrMJGnzLhQYb4pT3dLF11F4`
+- Git commit: `1be82ce7c19a7934b1a133e926e13b56413875ae`
 - 상태: Vercel `Ready`
 
 관찰 키트는 일회성 preview 주소 대신 현재 `main` preview를 가리키는 branch alias를 사용한다. 세션 시작 전에 alias가 위 resolved preview와 commit을 가리키는지 확인하고, 실제 확인값을 세션 기록 양식에 남긴다.
@@ -20,6 +20,7 @@
 4. 공개 사용자 표면의 자동 최신성 기준은 [공개 콘텐츠 최신성 evidence](./2026-07-11-flowme-content-freshness-evidence/README.md)를 따른다. 이 기준은 실제 사용자 관찰이나 모든 외부 원문의 영구적 최신성을 보장하지 않는다.
 5. 관찰 중 오래된 페이지나 콘텐츠가 발견되면 원문 URL, 현재 화면 문구, 기대한 최신 상태, 사용자 행동 영향을 함께 남긴다.
 6. 정상 사용자 콘텐츠의 URL 생존 기준은 [출처 도달성 evidence](./2026-07-11-flowme-live-source-reachability-evidence/README.md)를 따른다. 자동 접근 차단은 404와 분리하고, 연도 고정 자료와 정책 수치는 HTTP 상태와 별도로 확인한다.
+7. 민감 콘텐츠의 연도 고정 정책 문구와 내부 provenance 비노출 기준은 [시점 의존 문구 evidence](./2026-07-11-flowme-semantic-claim-freshness-evidence/README.md)를 따른다. 남은 공식 기한·예시 비율 9개는 관찰 중 이해와 신뢰 영향을 별도로 기록한다.
 
 ## 대체된 주소
 
