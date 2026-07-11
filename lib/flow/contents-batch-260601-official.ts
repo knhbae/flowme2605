@@ -512,6 +512,7 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '외교부 여권안내 – 여권 최초 발급 기본사항 안내',
       source_url: 'https://www.passport.go.kr/home/kor/contents.do?menuPos=2',
+      source_checked_at: '2026-07-11',
       warning: '사진 규격, 미성년자·대리 신청, 수수료, 처리 기간은 공식 기준을 따릅니다. 외교부 여권안내로 확인하세요.',
     },
     text: `## 1. 사진·서류
@@ -766,8 +767,10 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'calendar',
-      source_title: '정부24 – 행복출산 원스톱서비스(출생신고 통합 신청)',
-      source_url: 'https://www.gov.kr/portal/onestopSvc/happyBirth',
+      source_title: '정부24 – 행복출산 통합신청 안내',
+      source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001',
+      source_checked_at: '2026-07-11',
+      conversion_note: '출생신고는 법원 전자가족관계등록시스템 또는 신고기관, 출산지원 통합신청은 정부24 행복출산이라는 서비스 경계를 현재 공식 안내로 재확인했습니다.',
       warning: '신고기한, 필요 서류, 동시 신청 서비스는 변경될 수 있습니다. 정부24와 전자가족관계등록 안내로 확인하세요.',
     },
     text: `## D+0 서류 준비
@@ -780,10 +783,12 @@ const specs: BatchSpec[] = [
 
 ## D+7 신고·연계
 - 출생신고 접수하기 D+7
-  how: 정부24(온라인) 또는 주민센터 방문으로 신고합니다. 신청인은 출산자 본인 또는 배우자이며 대리인은 온라인 신청 불가합니다.
+  how: 출산 병원이 온라인 신고 참여 병원이면 법원 전자가족관계등록시스템에서 신고하고, 그렇지 않으면 공식 안내에서 관할 신고기관을 확인해 방문합니다.
   done: 출생신고 접수를 확인했다.
+  link: 법원 전자가족관계등록시스템 | https://efamily.scourt.go.kr/index.jsp | official
 - 행복출산 원스톱 등 함께 신청 가능한 서비스 확인하기 D+7
-  caution: 부모급여는 출생일 포함 60일 이내 신청 시 출생월부터 소급 지급됩니다. 양육·출산 지원은 거주지·가구 조건에 따라 달라 공식 확인이 필요합니다.
+  how: 행복출산 통합신청은 출생신고와 함께 또는 출생신고 이후 정부24나 주민센터에서 신청합니다.
+  caution: 부모급여 등 서비스마다 신청 시점과 소급 기준이 다를 수 있으므로 현재 정부24·복지로 안내를 확인합니다.
 
 ## D+25 기한 점검
 - 신고기한 내 완료 여부 최종 확인하기 D+25
@@ -802,7 +807,9 @@ const specs: BatchSpec[] = [
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
       source_title: '정부24 – 안심상속 원스톱서비스(사망자 재산조회)',
-      source_url: 'https://www.gov.kr/portal/onestopSvc/safeInheritance',
+      source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02',
+      source_checked_at: '2026-07-11',
+      conversion_note: '정부24 현재 민원 안내의 신청 시기, 온라인·방문 신청자격, 통합 조회 범위를 재확인하고 근거가 없는 6개월 우대 문구는 제거했습니다.',
       warning: '신청 자격(상속인 등), 기한, 상속 처리(승인·포기)는 법적 판단이 필요합니다. 정부24 안내와 전문가 상담을 우선하세요.',
     },
     text: `## 1. 자격·서류
@@ -810,8 +817,8 @@ const specs: BatchSpec[] = [
   why: 상속 재산·채무 파악이 늦으면 한정승인·포기 결정 시점을 놓칠 수 있습니다.
   how: 정부24 안심상속 원스톱서비스 안내에서 자격·서류·기한을 확인합니다.
   done: 신청 자격과 기한을 메모했다.
-  link: 정부24 안심상속 원스톱서비스 | https://www.gov.kr/portal/onestopSvc/safeInheritance | official
-  caution: 안심상속 원스톱 서비스는 사망일이 속한 달의 말일부터 1년 이내 신청합니다. 신청 자격은 1·2·3순위 상속인 및 대습상속인·후견인이며, 온라인(정부24) 신청은 1·2순위 상속인에 한합니다. 일부 재산은 사망 후 6개월 내 조회가 유리하니 가급적 빨리 신청하세요. 문의: 정부24 콜센터 1588-2188.
+  link: 정부24 안심상속 원스톱서비스 | https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02 | official
+  caution: 안심상속 원스톱 서비스는 사망일이 속한 달의 말일부터 1년 이내 신청합니다. 온라인과 방문의 신청 가능 대상이 다르므로 현재 정부24 자격 안내를 확인하세요.
 - 사망신고·가족관계 서류, 신청인 신분증 준비하기
   caution: 대리 신청 시 상속인 위임장과 인감증명서(또는 본인서명사실확인서)가 추가로 필요합니다.
 

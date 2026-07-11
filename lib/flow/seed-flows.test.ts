@@ -10,7 +10,11 @@ import { inferPrimaryDestination } from './destination';
 import { normalizeExecutionModel } from './execution-model';
 import { seedBundles } from './seed-flows';
 import { mergeSourceBackedMyFlowBundles } from './source-backed-my-flow';
-import { findYearStampedSensitiveClaims } from './source-claim-freshness';
+import {
+  collectUserFacingClaimText,
+  findLegacySourceClaimCopy,
+  findYearStampedSensitiveClaims,
+} from './source-claim-freshness';
 import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
 import {
   classifySourceReachability,
@@ -1263,6 +1267,62 @@ test('normal sensitive routes keep year-stamped policy values out of user-facing
     },
   };
   assert.equal(findYearStampedSensitiveClaims([synthetic]).length, 1);
+});
+
+test('normal routes keep known source contradictions out of user-facing copy', () => {
+  const published = mergeSourceBackedMyFlowBundles(seedBundles).filter(
+    (bundle) => bundle.flow.status === 'published',
+  );
+  const userRoutes = published.filter((bundle) => {
+    const exposure = normalizeExecutionModel(bundle).exposureStatus;
+    return exposure !== 'catalog_preview' && exposure !== 'hidden';
+  });
+
+  assert.deepEqual(findLegacySourceClaimCopy(userRoutes), []);
+
+  const sample = userRoutes.find((bundle) => bundle.flow.slug === 'payday-finance-routine');
+  assert.ok(sample);
+  const synthetic = {
+    ...sample,
+    flow: {
+      ...sample.flow,
+      description: '생활비 40% / 저축·투자 40% / 비상금 20%로 나눕니다.',
+    },
+  };
+  assert.equal(findLegacySourceClaimCopy([synthetic]).length, 1);
+});
+
+test('reviewed numeric claims preserve official deadlines without service or source mismatch', () => {
+  const bySlug = (slug: string) => {
+    const bundle = mergeSourceBackedMyFlowBundles(seedBundles).find(
+      (entry) => entry.flow.slug === slug,
+    );
+    assert.ok(bundle, `missing ${slug}`);
+    return {
+      bundle,
+      copy: collectUserFacingClaimText(bundle).join('\n'),
+    };
+  };
+
+  const birth = bySlug('birth-registration-prep');
+  assert.match(birth.copy, /온라인 신고 참여 병원/u);
+  assert.match(birth.copy, /전자가족관계등록시스템/u);
+  assert.doesNotMatch(birth.copy, /정부24\s*\(온라인\)[^\n]{0,80}출생신고/u);
+
+  const inheritance = bySlug('safe-inheritance-onestop');
+  assert.match(inheritance.copy, /말일부터 1년 이내/u);
+  assert.doesNotMatch(inheritance.copy, /일부 재산[^\n]{0,80}6개월/u);
+
+  const payday = bySlug('payday-finance-routine');
+  assert.match(payday.copy, /비율[^\n]{0,80}직접 정/u);
+  assert.doesNotMatch(payday.copy, /생활비\s*40%[^\n]{0,80}비상금\s*20%/u);
+
+  const passport = bySlug('passport-renewal-docs');
+  assert.equal(
+    passport.bundle.flow.source_url,
+    'https://www.passport.go.kr/home/kor/contents.do?menuPos=7',
+  );
+  assert.equal(passport.bundle.flow.source_checked_at, '2026-07-11');
 });
 
 test('real source-backed channel batch covers every preview channel', () => {

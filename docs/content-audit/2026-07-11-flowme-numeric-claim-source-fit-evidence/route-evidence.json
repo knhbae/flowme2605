@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-07-11",
+  "policy": {
+    "officialExecutionDeadline": "retain only with current primary-source confirmation",
+    "volatilePolicyAmountOrRate": "do not hardcode",
+    "creatorFinanceRatio": "contextual example only, never a default recommendation",
+    "serviceBoundary": "birth registration and benefit bundle application remain separate",
+    "observedUserValidation": false
+  },
+  "before": {
+    "numericAttentionRouteCount": 9,
+    "knownSourceContradictionCount": 3,
+    "yearStampedClaimCount": 0
+  },
+  "after": {
+    "numericAttentionRouteCount": 8,
+    "verifiedOfficialDeadlineRouteCount": 7,
+    "contextualizedHeuristicRouteCount": 1,
+    "knownSourceContradictionCount": 0,
+    "yearStampedClaimCount": 0,
+    "missingSensitiveSourceCheckedAtCount": 0
+  },
+  "correctedRoutes": [
+    "passport-renewal-docs",
+    "lease-contract-report-deadline",
+    "birth-registration-prep",
+    "safe-inheritance-onestop",
+    "monthly-household-budget",
+    "payday-finance-routine"
+  ],
+  "preservedOfficialDeadlineRoutes": [
+    "lease-contract-report-deadline",
+    "passport-renewal-docs",
+    "unemployment-benefit-apply",
+    "first-passport-issue",
+    "used-car-ownership-transfer",
+    "birth-registration-prep",
+    "safe-inheritance-onestop"
+  ],
+  "validation": {
+    "strictAuditPassed": true,
+    "targetedUnitTestsPassed": 75,
+    "fullUnitTestsPassed": 401,
+    "targetedE2ePassed": 58,
+    "docsCheckPassed": true,
+    "buildPassed": true,
+    "mobileVisualChecksPassed": 3,
+    "wideVisualChecksPassed": 1,
+    "horizontalOverflowCount": 0,
+    "legacyCopyVisibleHitCount": 0,
+    "sourceTraceVisibleHitCount": 0,
+    "observedUserSessionCount": 0
+  }
+}

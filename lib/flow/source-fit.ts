@@ -688,9 +688,9 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'passport-renewal-docs',
-    checkedAt: '2026-05-23',
-    sourceTitle: '정부24 여권 발급 민원 안내',
-    sourceUrl: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=12600000001&tp_seq=',
+    checkedAt: '2026-07-11',
+    sourceTitle: '외교부 여권안내 – 유효기간 만료에 따른 재발급',
+    sourceUrl: 'https://www.passport.go.kr/home/kor/contents.do?menuPos=7',
     sourcePrecision: 'exact',
     sourceUsefulness: '여권 재발급은 신청 가능 대상, 사진, 수수료, 수령 경로가 분명해 체크리스트와 증빙 메모로 재구성하기 좋다.',
     idealReconstruction: '여행 예정일 또는 신청 목표일을 기준으로 사진 준비, 온라인/방문 신청, 접수 상태, 수령 확인 메모로 재구성한다.',
@@ -2114,7 +2114,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'lease-contract-report-deadline',
-    checkedAt: '2026-06-08',
+    checkedAt: '2026-07-11',
     sourceTitle: '부동산거래관리시스템 주택임대차신고 서비스 안내',
     sourceUrl: 'https://rtms.molit.go.kr/main/serviceInfo.do',
     sourcePrecision: 'exact',

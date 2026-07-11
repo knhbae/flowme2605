@@ -62,3 +62,5 @@ npx.cmd tsx scripts/content-audit/audit-exposed-source-claims.ts `
 ```
 
 `--strict`는 정상 사용자 route의 medium/medical/financial 사용자 문구에 `20xx년`, `20xx학년도`, `20xx년도`가 남거나 출처 확인일이 누락되면 실패한다. 출처 제목과 내부 provenance는 검사 대상 사용자 문구에서 분리한다.
+
+후속 숫자·서비스 경계 재검토 결과는 [숫자 source-fit evidence](../2026-07-11-flowme-numeric-claim-source-fit-evidence/README.md)에 기록했다. 이 후속 감사에서 원문 불일치와 서비스 혼합 3건을 0건으로 줄였다.

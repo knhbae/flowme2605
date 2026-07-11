@@ -3,6 +3,7 @@ import path from 'node:path';
 import { normalizeExecutionModel } from '../../lib/flow/execution-model';
 import {
   collectUserFacingClaimText,
+  findLegacySourceClaimCopy,
   findYearStampedSensitiveClaims,
 } from '../../lib/flow/source-claim-freshness';
 import { mergeSourceBackedMyFlowBundles } from '../../lib/flow/source-backed-my-flow';
@@ -13,8 +14,8 @@ const outputArgIndex = args.indexOf('--output');
 const outputPath = outputArgIndex >= 0 ? args[outputArgIndex + 1] : undefined;
 const strict = args.includes('--strict');
 
-const MONEY_OR_RATE_PATTERN = /(?:\d+(?:\.\d+)?\s*%|\d[\d,]*(?:만|억)원|미화\s*\d[\d,]*달러)/u;
-const DEADLINE_PATTERN = /\d+(?:일|개월|년)\s*(?:이내|이상|이하)/u;
+const MONEY_OR_RATE_PATTERN = /(?:\d+(?:\.\d+)?\s*%|\d[\d,]*(?:만|억)원|미화\s*\d[\d,]*달러|\b\d{1,2}\s*\/\s*\d{1,2}\s*\/\s*\d{1,2}\b)/u;
+const DEADLINE_PATTERN = /\d+(?:일|개월|년)(?:\s*\([^\n)]{1,24}\))?\s*(?:이내|이상|이하)/u;
 
 function main() {
   const normalUserRoutes = mergeSourceBackedMyFlowBundles(cloneSeedBundles()).filter((bundle) => {
@@ -26,6 +27,7 @@ function main() {
     (bundle) => (bundle.flow.risk_level ?? 'low') !== 'low',
   );
   const yearStampedClaims = findYearStampedSensitiveClaims(normalUserRoutes);
+  const legacySourceClaimCopy = findLegacySourceClaimCopy(normalUserRoutes);
   const numericAttention = sensitiveRoutes.flatMap((bundle) => {
     const texts = collectUserFacingClaimText(bundle);
     const moneyOrRate = texts.filter((text) => MONEY_OR_RATE_PATTERN.test(text));
@@ -49,6 +51,7 @@ function main() {
       sourceTitlesAndProvenanceLinks: 'excluded from user-copy year scan',
       volatileNumbers: 'manual review; not automatically invalid',
       sourceCheckedAtStillRequired: true,
+      knownSourceContradictions: 'forbidden',
     },
     summary: {
       normalUserRouteCount: normalUserRoutes.length,
@@ -59,8 +62,10 @@ function main() {
       missingSensitiveSourceCheckedAtCount: sensitiveRoutes.filter(
         (bundle) => !bundle.flow.source_checked_at,
       ).length,
+      legacySourceClaimHitCount: legacySourceClaimCopy.length,
     },
     yearStampedClaims,
+    legacySourceClaimCopy,
     numericAttention,
   };
 
@@ -72,7 +77,11 @@ function main() {
   }
   console.log(json.trimEnd());
 
-  if (strict && (yearStampedClaims.length > 0 || payload.summary.missingSensitiveSourceCheckedAtCount > 0)) {
+  if (strict && (
+    yearStampedClaims.length > 0
+    || payload.summary.missingSensitiveSourceCheckedAtCount > 0
+    || legacySourceClaimCopy.length > 0
+  )) {
     process.exitCode = 1;
   }
 }

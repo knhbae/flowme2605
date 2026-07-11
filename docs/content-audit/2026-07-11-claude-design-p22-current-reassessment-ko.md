@@ -57,6 +57,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 - 공개 `/u/flow-curation-team`은 75개 전체를 기본 노출하지 않고, 실제 원문 7개와 대표 Flow 1개만 먼저 보여준다. 검토 중 60개와 샘플 6개는 명시적 필터를 선택해야 보인다.
 - 개인 `/u/my-flow-studio`는 초안 선반이므로 기존 전체/초안 기본 동작을 유지한다.
 - live URL 감사에서 최초 404 6개와 redirect 5개를 0으로 줄였다. 삭제·불안정·source row 미확인 콘텐츠 6개는 preview로 이동했고, 2016/2025 고정 자료와 시점 고정 정책 수치는 현재 공식 안내로 교체했다.
+- 연도가 붙지 않은 숫자도 다시 대조해 Toss 원문과 다른 40/40/20 비율, 출생신고와 행복출산의 온라인 경로 혼합, 안심상속의 근거 없는 6개월 문구를 제거했다. 현재 숫자 attention은 공식 기한 7개와 비교용 예시 1개이며 알려진 source contradiction은 0개다.
 
 판정: **기본 공개 표면의 오래된/미검토 콘텐츠 혼입은 자동 QA 기준 개선 완료. 외부 원문 변경을 잡는 주기적 재확인은 계속 필요.**
 
@@ -211,6 +212,7 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [public 공유 save-first 일관성 evidence](./2026-07-11-flowme-public-save-first-consistency-evidence/README.md)
 - [공개 콘텐츠 최신성·기본 노출 evidence](./2026-07-11-flowme-content-freshness-evidence/README.md)
 - [정상 사용자 콘텐츠 출처 도달성 evidence](./2026-07-11-flowme-live-source-reachability-evidence/README.md)
+- [숫자·서비스 경계 source-fit evidence](./2026-07-11-flowme-numeric-claim-source-fit-evidence/README.md)
 - [route lifecycle·indexing evidence](./2026-07-11-flowme-route-lifecycle-indexing-evidence/README.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 

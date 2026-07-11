@@ -8,7 +8,25 @@ export type YearStampedSensitiveClaim = {
   text: string;
 };
 
+export type LegacySourceClaimCopy = YearStampedSensitiveClaim & {
+  rule: string;
+};
+
 const YEAR_STAMP_PATTERN = /20\d{2}(?:년|학년도|년도)/u;
+const LEGACY_SOURCE_CLAIM_PATTERNS = [
+  {
+    rule: 'payday-source-ratio-mismatch',
+    pattern: /생활비\s*40%\s*[/·]\s*저축[·ㆍ]?투자\s*40%\s*[/·]\s*비상금\s*20%/u,
+  },
+  {
+    rule: 'birth-registration-government24-conflation',
+    pattern: /출생신고[^\n]{0,80}정부24\s*\(온라인\)|정부24\s*\(온라인\)[^\n]{0,80}출생신고/u,
+  },
+  {
+    rule: 'inheritance-unsupported-six-month-advantage',
+    pattern: /일부 재산[^\n]{0,80}6개월[^\n]{0,80}유리/u,
+  },
+] as const;
 
 function pushText(target: string[], value?: string) {
   const visible = stripUserFacingInternalLines(value);
@@ -80,5 +98,22 @@ export function findYearStampedSensitiveClaims(
         riskLevel,
         text,
       }));
+  });
+}
+
+export function findLegacySourceClaimCopy(bundles: FlowBundle[]): LegacySourceClaimCopy[] {
+  return bundles.flatMap((bundle) => {
+    const riskLevel = bundle.flow.risk_level ?? 'low';
+    return collectUserFacingClaimText(bundle).flatMap((text) =>
+      LEGACY_SOURCE_CLAIM_PATTERNS
+        .filter(({ pattern }) => pattern.test(text))
+        .map(({ rule }) => ({
+          slug: bundle.flow.slug,
+          title: bundle.flow.title,
+          riskLevel,
+          rule,
+          text,
+        })),
+    );
   });
 }
