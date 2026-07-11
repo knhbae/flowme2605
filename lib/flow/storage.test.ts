@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import { prepareFlowRunNewAnchor } from './flow-run-reuse';
+import { getFlowScopedMyFlowPersonalExecutionState } from './my-flow-personal-state';
 import {
   cloneSeedBundles,
   clearFlowLocalProgress,
@@ -25,6 +26,7 @@ import {
   normalizeMyFlowCompletionFeedback,
   normalizeSavedFlowMapSnapshot,
   normalizeSavedFlowRecord,
+  recordFlowCompletionState,
   saveMyFlowCompletionFeedback,
   saveMyFlowStepItemChecks,
   startFlowRunFromCompleted,
@@ -507,12 +509,29 @@ test('flow run registry preserves a completed legacy run before starting a clean
         savedAt: legacyStartedAt,
         anchor: '2026-07-31',
         flowSlugs: [flowSlug],
+        stepCountsByFlow: { [flowSlug]: 2 },
+        riskLevelsByFlow: { [flowSlug]: 'low' },
+        sourceCheckedAtByFlow: { [flowSlug]: '2026-06-24' },
         personalCopy,
       }),
     );
     localStorage.setItem(
       `flow_builder_mvp_checks_${flowSlug}`,
       JSON.stringify({ 'moving-method-quotes': true, 'moving-address-change': true }),
+    );
+    localStorage.setItem(
+      'flow:my-flow:item-drafts',
+      JSON.stringify({
+        [`${flowSlug}::moving-method-quotes::2026-07-05`]: { memo: '실행 중 비교표를 다시 확인' },
+        'other-flow::first::none': { memo: '다른 Flow 메모' },
+      }),
+    );
+    localStorage.setItem(
+      'flow:my-flow:date-overrides',
+      JSON.stringify({
+        [`${flowSlug}::moving-address-change::2026-07-20`]: '2026-07-21',
+        'other-flow::first::none': '2026-08-01',
+      }),
     );
     localStorage.setItem(
       `flow_builder_mvp_item_state_${flowSlug}`,
@@ -550,10 +569,12 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.deepEqual(getChecks(flowSlug), { 'moving-method-quotes': true, 'moving-address-change': true });
     assert.equal(getStoredAnchor(flowSlug).anchor, '2026-07-31');
 
-    const completedRun = completeActiveFlowRun(flowSlug, { completedAt: legacyCompletedAt });
+    recordFlowCompletionState(flowSlug, true, legacyCompletedAt);
+    const completedRun = completeActiveFlowRun(flowSlug);
 
     assert.ok(completedRun);
     assert.equal(completedRun.status, 'completed');
+    assert.equal(completedRun.completedAt, legacyCompletedAt);
     assert.equal(getActiveFlowRun(flowSlug), undefined);
     assert.deepEqual(completedRun.completionSnapshot?.checks, {
       'moving-method-quotes': true,
@@ -568,6 +589,14 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.equal(completedRun.completionSnapshot?.workbenchState.occurrences.first.note, '통화 완료');
     assert.equal(completedRun.completionSnapshot?.reactionLogs.first.preferenceNote, '다음에도 같은 순서 사용');
     assert.equal(completedRun.completionSnapshot?.completionFeedback, undefined);
+    assert.deepEqual(completedRun.personalExecutionStateSnapshot, {
+      itemDrafts: {
+        [`${flowSlug}::moving-method-quotes::2026-07-05`]: { memo: '실행 중 비교표를 다시 확인' },
+      },
+      dateOverrides: {
+        [`${flowSlug}::moving-address-change::2026-07-20`]: '2026-07-21',
+      },
+    });
 
     saveMyFlowCompletionFeedback(flowSlug, {
       reflection: {
@@ -635,9 +664,25 @@ test('flow run registry preserves a completed legacy run before starting a clean
         },
       },
     });
+    assert.deepEqual(nextRun.personalExecutionStateSnapshot, {
+      itemDrafts: {
+        [`${flowSlug}::moving-method-quotes::draft-overlay`]: { memo: '실행 중 비교표를 다시 확인' },
+      },
+      dateOverrides: {},
+    });
+    assert.deepEqual(getFlowScopedMyFlowPersonalExecutionState(flowSlug), nextRun.personalExecutionStateSnapshot);
+    assert.equal(
+      JSON.parse(localStorage.getItem('flow:my-flow:item-drafts') || '{}')['other-flow::first::none'].memo,
+      '다른 Flow 메모',
+    );
+    assert.equal(
+      JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}')['other-flow::first::none'],
+      '2026-08-01',
+    );
     assert.deepEqual(getChecks(flowSlug), {});
     assert.deepEqual(getItemStates(flowSlug), {});
     assert.equal(getMyFlowCompletionFeedback(flowSlug), undefined);
+    assert.equal(localStorage.getItem(`flow:completion-detected-at:${flowSlug}`), null);
     assert.deepEqual(getMyFlowStepItemChecks(), { 'other-flow::first::none': { '0': true } });
     assert.equal(getStoredAnchor(flowSlug).anchor, '2026-09-15');
     assert.equal(getSavedFlowRecord(flowSlug)?.savedAt, '2026-08-01T00:00:00.000Z');
@@ -645,6 +690,11 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.equal(activeMapSnapshot.anchor, '2026-09-15');
     assert.equal(activeMapSnapshot.savedAt, '2026-08-01T00:00:00.000Z');
     assert.deepEqual(activeMapSnapshot.personalCopy, nextRun.personalCopySnapshot);
+    const activePersistenceRecord = JSON.parse(
+      localStorage.getItem('flow:map:persistence:moving-d30') || 'null',
+    );
+    assert.equal(activePersistenceRecord.saved.anchor, '2026-09-15');
+    assert.deepEqual(activePersistenceRecord.personalCopy, nextRun.personalCopySnapshot);
 
     const completedHistory = getCompletedFlowRuns(flowSlug);
     assert.equal(completedHistory.length, 1);
@@ -653,6 +703,10 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.equal(
       completedHistory[0].personalCopySnapshot?.stepOverridesByFlow?.[flowSlug]?.['moving-method-quotes']?.schedule?.date,
       '2026-07-05',
+    );
+    assert.equal(
+      completedHistory[0].personalExecutionStateSnapshot?.dateOverrides[`${flowSlug}::moving-address-change::2026-07-20`],
+      '2026-07-21',
     );
     const registry = getFlowRunRegistry(flowSlug);
     assert.equal(registry.activeRunId, 'run-moving-second');
@@ -705,11 +759,20 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
       'flow_builder_mvp_reactions_moving-d30-basic',
       'flow:my-flow:completion-feedback:moving-d30-basic',
       'flow:run-registry:moving-d30-basic',
+      'flow:completion-detected-at:moving-d30-basic',
     ];
     keys.forEach((key) => localStorage.setItem(key, 'value'));
     localStorage.setItem('flow:my-flow:step-item-checks', JSON.stringify({
       'moving-d30-basic::moving-method-quotes::2026-05-28': { '0': true },
       'other-flow::first::none': { '0': true },
+    }));
+    localStorage.setItem('flow:my-flow:item-drafts', JSON.stringify({
+      'moving-d30-basic::moving-method-quotes::draft-overlay': { memo: '삭제할 메모' },
+      'other-flow::first::none': { memo: '남길 메모' },
+    }));
+    localStorage.setItem('flow:my-flow:date-overrides', JSON.stringify({
+      'moving-d30-basic::moving-method-quotes::2026-05-28': '2026-05-29',
+      'other-flow::first::none': '2026-06-01',
     }));
 
     clearFlowLocalProgress('moving-d30-basic');
@@ -717,6 +780,12 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
     keys.forEach((key) => assert.equal(localStorage.getItem(key), null));
     assert.deepEqual(JSON.parse(localStorage.getItem('flow:my-flow:step-item-checks') || '{}'), {
       'other-flow::first::none': { '0': true },
+    });
+    assert.deepEqual(JSON.parse(localStorage.getItem('flow:my-flow:item-drafts') || '{}'), {
+      'other-flow::first::none': { memo: '남길 메모' },
+    });
+    assert.deepEqual(JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'), {
+      'other-flow::first::none': '2026-06-01',
     });
   } finally {
     Object.defineProperty(globalThis, 'window', {

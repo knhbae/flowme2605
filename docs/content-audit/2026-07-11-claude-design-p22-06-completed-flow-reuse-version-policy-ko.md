@@ -2,7 +2,7 @@
 
 작성일: 2026-07-11
 
-상태: **정책 확정, Slice A·B 저장/날짜 계약 구현 완료**
+상태: **정책 확정, Slice A·B·D 저장/날짜/사용자 흐름 구현 완료**
 
 범위: 완료된 Flow의 재사용, 새 실행 분리, 원본 버전 갱신과 개인 수정본 충돌 처리
 
@@ -344,9 +344,10 @@ P22-06 정책의 첫 구현 slice로 Flow 실행 인스턴스와 완료 기록 �
 | 자동 병합·복잡한 버전 트리 비확장 | 충족 |
 | Slice A 실행 인스턴스·완료 snapshot | 구현 완료 |
 | Slice B 새 기준일·고정 날짜 충돌 정책 | 구현 완료 |
-| 사용자-facing 재사용 흐름 | 미구현, Slice C~D로 분리 |
+| 사용자-facing 재사용 흐름 | Slice D 구현 완료 |
+| 원본 새 버전 비교 | 미구현, Slice C |
 
-P22-06은 **정책과 Slice A·B 계약 기준 완료**다. 실제 제품 기준 완료는 Slice C~D의 버전 검토와 사용자-facing 재사용 흐름까지 검증된 뒤 판정한다.
+P22-06은 **정책과 Slice A·B·D 기준 완료**다. 실제 제품 기준 완료는 남은 Slice C 원본 새 버전 검토와 실제 반복 사용자 관찰까지 확인한 뒤 판정한다.
 
 ## 16. 2026-07-11 Slice A 구현 결과
 
@@ -381,3 +382,22 @@ P22-06은 **정책과 Slice A·B 계약 기준 완료**다. 실제 제품 기준
 `startFlowRunFromCompleted()`은 이 정책 결과를 active run과 saved Map snapshot에 함께 반영한다. 완료 run의 personal copy snapshot은 바뀌지 않는다. 따라서 현재 Calendar와 export가 읽는 active projection과 과거 실행 기록이 분리된다.
 
 검증 evidence는 [P22-06B New Anchor Policy Evidence](./2026-07-11-claude-design-p22-06b-new-anchor-policy-evidence/README.md)에 기록했다.
+
+## 18. 2026-07-11 Slice D 구현 결과
+
+완료된 My Flow의 회고 아래에 `이 Flow 다시 쓰기`를 보조 행동으로 연결했다.
+
+- 날짜형 Flow: 새 이사일·시험일·시작일 필수
+- 개인 고정 날짜 존재 시 `새 기준일에 맞추기 / 내가 바꾼 날짜 유지` 선택 필수
+- 날짜 없는 Flow: 현재 항목과 개인 수정만 유지하고 바로 새 실행 시작
+- 새 실행의 완료 체크·하위 확인·회고·원본 알리기 초안 초기화
+- 지난 실행과 새 실행의 runId 분리
+- 완료일은 재사용 클릭 시각이 아니라 마지막 완료 체크 시각 사용
+- URL 초안·일반 Flow의 제목·메모·날짜도 완료 snapshot에 고정
+- 새 실행에는 제목·사용자 메모를 안정 항목 키로 복사하고 일회성 로그·결정 상태는 미복사
+- source-backed saved snapshot과 persistence record 동시 갱신
+- 지난 실행 요약을 모바일·wide Flow 카드에서 접어 확인 가능
+
+검증 evidence는 [P22-06D Completed Flow Reuse Evidence](./2026-07-11-claude-design-p22-06d-flow-reuse-evidence/README.md)에 기록했다.
+
+P22-06의 남은 구현은 Slice C 원본 새 버전 검토다. 실제 버전 차이가 없으면 해당 진입을 노출하지 않는다.

@@ -1,0 +1,91 @@
+{
+  "generatedAt": "2026-07-11",
+  "scope": "user-facing-completed-flow-reuse",
+  "routeEvidence": [
+    {
+      "scenarioName": "completed-dated-flow-reuse",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "state": "reuse-panel-with-new-anchor-and-fixed-date-policy",
+      "screenshot": "screenshots/01-completed-flow-reuse-mobile.png",
+      "markers": {
+        "reuseEntryVisible": true,
+        "reuseEntrySecondary": true,
+        "newAnchorRequired": true,
+        "dateAnchorLabel": "새 이사일",
+        "fixedDateOverrideCount": 1,
+        "fixedDatePolicyRequired": true,
+        "horizontalOverflowCount": 0
+      }
+    },
+    {
+      "scenarioName": "new-run-started",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "state": "active-new-run-with-completed-history",
+      "screenshot": "screenshots/02-new-run-started-mobile.png",
+      "markers": {
+        "activeRunCompletionCount": 0,
+        "completedRunCount": 1,
+        "newAnchorVisibleInStatus": true,
+        "pastRunSummaryVisible": true,
+        "horizontalOverflowCount": 0
+      }
+    },
+    {
+      "scenarioName": "new-run-history-wide",
+      "route": "/my",
+      "viewport": { "width": 1024, "height": 900 },
+      "state": "active-new-run-with-expanded-past-run-summary",
+      "screenshot": "screenshots/03-new-run-history-wide.png",
+      "markers": {
+        "pastRunSummaryVisible": true,
+        "reuseEntryVisibleWhileActive": false,
+        "horizontalOverflowCount": 0
+      }
+    },
+    {
+      "scenarioName": "completed-date-free-flow-reuse",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "state": "reuse-panel-without-date-input",
+      "screenshot": "screenshots/04-date-free-reuse-mobile.png",
+      "markers": {
+        "reuseEntryVisible": true,
+        "newAnchorInputCount": 0,
+        "sameCopyMode": true,
+        "horizontalOverflowCount": 0
+      }
+    }
+  ],
+  "summary": {
+    "userFacingReuseUiVisible": true,
+    "reuseVisibleOnlyWhenCompleted": true,
+    "reuseActionSecondaryToCompletionFeedback": true,
+    "datedFlowNewAnchorRequired": true,
+    "fixedDateConflictRequiresExplicitPolicy": true,
+    "dateFreeFlowStartsWithoutDateInput": true,
+    "previousRunSnapshotPreserved": true,
+    "newRunUsesDistinctRunId": true,
+    "newRunCompletionStateReset": true,
+    "completionFeedbackCopiedToNewRun": false,
+    "completionTimestampUsesDetectedCompletion": true,
+    "titleAliasPreservedByStableItemKey": true,
+    "userMemoPreservedByStableItemKey": true,
+    "oneTimeExecutionStateCopied": false,
+    "sourceBackedSnapshotAndPersistenceUpdatedTogether": true,
+    "calendarAndExportProjectionUseActiveRun": true,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "newScreenshotCount": 4,
+    "focusedUnitTestCount": 11,
+    "fullUnitTestCount": 384,
+    "targetedE2eCount": 6,
+    "regressionE2eCount": 36,
+    "nextTypecheckPassed": true,
+    "productionBuildPassed": true,
+    "docsCheckPassed": true,
+    "docsLocalLinkCount": 1833,
+    "realRepeatedUserValidationCompleted": false
+  }
+}

@@ -2,6 +2,10 @@ import type {
   SourceBackedFlowMapPersonalCopy,
   SourceBackedFlowMapPersonalCopyStepOverride,
 } from './source-backed-my-flow';
+import {
+  prepareMyFlowPersonalExecutionStateForReuse,
+  type MyFlowPersonalExecutionState,
+} from './my-flow-personal-state';
 
 export type FlowRunFixedDatePolicy = 'keep_fixed_dates' | 'reset_to_anchor';
 
@@ -12,6 +16,7 @@ export type FlowRunNewAnchorPlan = {
   retainedFixedDateOverrideCount: number;
   resetFixedDateOverrideCount: number;
   personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
+  personalExecutionStateSnapshot?: MyFlowPersonalExecutionState;
 };
 
 function clonePersonalCopy(personalCopy: SourceBackedFlowMapPersonalCopy): SourceBackedFlowMapPersonalCopy {
@@ -48,13 +53,21 @@ function clonePersonalCopy(personalCopy: SourceBackedFlowMapPersonalCopy): Sourc
   };
 }
 
-function countFixedDateOverrides(personalCopy?: SourceBackedFlowMapPersonalCopy): number {
+function countPersonalCopyFixedDateOverrides(personalCopy?: SourceBackedFlowMapPersonalCopy): number {
   if (!personalCopy?.stepOverridesByFlow) return 0;
   return Object.values(personalCopy.stepOverridesByFlow).reduce(
     (count, stepOverrides) =>
       count + Object.values(stepOverrides).filter((stepOverride) => stepOverride.schedule?.mode === 'fixed_date').length,
     0,
   );
+}
+
+export function countFlowRunFixedDateOverrides(
+  personalCopy?: SourceBackedFlowMapPersonalCopy,
+  personalExecutionState?: MyFlowPersonalExecutionState,
+): number {
+  return countPersonalCopyFixedDateOverrides(personalCopy)
+    + Object.keys(personalExecutionState?.dateOverrides ?? {}).length;
 }
 
 function resetFixedDateOverrides(personalCopy: SourceBackedFlowMapPersonalCopy): SourceBackedFlowMapPersonalCopy {
@@ -87,14 +100,15 @@ export function prepareFlowRunNewAnchor(
   personalCopy: SourceBackedFlowMapPersonalCopy | undefined,
   anchor: string,
   fixedDatePolicy?: FlowRunFixedDatePolicy,
+  personalExecutionState?: MyFlowPersonalExecutionState,
 ): FlowRunNewAnchorPlan | undefined {
   const normalizedAnchor = anchor.trim();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedAnchor)) return undefined;
 
-  const fixedDateOverrideCount = countFixedDateOverrides(personalCopy);
+  const fixedDateOverrideCount = countFlowRunFixedDateOverrides(personalCopy, personalExecutionState);
   if (fixedDateOverrideCount > 0 && !fixedDatePolicy) return undefined;
 
-  if (!personalCopy) {
+  if (!personalCopy && !personalExecutionState) {
     return {
       anchor: normalizedAnchor,
       fixedDateOverrideCount: 0,
@@ -113,6 +127,15 @@ export function prepareFlowRunNewAnchor(
     fixedDatePolicy: resolvedPolicy,
     retainedFixedDateOverrideCount: shouldReset ? 0 : fixedDateOverrideCount,
     resetFixedDateOverrideCount: shouldReset ? fixedDateOverrideCount : 0,
-    personalCopySnapshot: shouldReset ? resetFixedDateOverrides(personalCopy) : clonePersonalCopy(personalCopy),
+    ...(personalCopy
+      ? { personalCopySnapshot: shouldReset ? resetFixedDateOverrides(personalCopy) : clonePersonalCopy(personalCopy) }
+      : {}),
+    ...(personalExecutionState
+      ? {
+          personalExecutionStateSnapshot: shouldReset
+            ? prepareMyFlowPersonalExecutionStateForReuse(personalExecutionState, { keepFixedDates: false })
+            : prepareMyFlowPersonalExecutionStateForReuse(personalExecutionState, { keepFixedDates: true }),
+        }
+      : {}),
   };
 }

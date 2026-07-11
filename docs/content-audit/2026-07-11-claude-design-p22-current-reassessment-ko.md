@@ -25,7 +25,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 | P22-03 URL miss 압축 | 구현 완료 | 첫 행동 1개, 운영 상태 문구 0, live AI 오해 false | 실제 신규 사용자의 이해 관찰 |
 | P22-04 실행/편집 상세 분리 | 구현 완료 | 기본 직접 행동 최대 2, 편집 취소·저장 4/4, overflow 0 | 긴 편집 폼의 반복 사용성 관찰 |
 | P22-05 외부 도구 왕복 | 조건부 완료 | Excel 3/3, Word 3/3, iCalendar parser 3/3+개인 1/1 | 설정된 Calendar 앱 import·중복 import 1회 |
-| P22-06 완료 Flow 재사용·버전 정책 | 정책·Slice A·B 완료 | runId, 완료 snapshot, 새 기준일과 고정 날짜 충돌 정책 구현 | 버전 비교·사용자 흐름 Slice C~D |
+| P22-06 완료 Flow 재사용·버전 정책 | 정책·Slice A·B·D 완료 | runId, 완료 snapshot, 새 기준일 충돌 정책, 완료 Flow 재사용 UI 구현 | 원본 새 버전 비교 Slice C |
 | P22-07 Studio·공개 리뷰 확장 | 의도적 보류 | Studio secondary tier 유지 | 실제 사용·정정 요청 데이터가 쌓일 때 재검토 |
 
 ## 여정별 변화
@@ -65,12 +65,13 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 ### 반복 사용
 
-- 중복 저장 방지는 있으나 지난 실행과 새 실행을 분리하는 모델은 없다.
+- 완료한 Flow에서 지난 실행을 기록으로 남기고 새 실행을 시작할 수 있다.
 - 현재 slug key 초기화는 완료 기록과 회고를 지울 수 있다.
 - P22-06에서 실행 인스턴스, 날짜 재설정, 버전 충돌 규칙을 문서화했다.
 - Slice A에서 기존 slug 상태를 별도 run으로 보존하고 새 실행의 현재 상태만 초기화하는 저장 계약을 구현했다.
+- Slice D에서 날짜형 Flow의 새 기준일·고정 날짜 선택과 날짜 없는 Flow의 같은 사본 재사용을 My Flow에 연결했다.
 
-판정: **정책, 저장 계약, 날짜 재설정은 닫혔다. 버전 비교와 사용자-facing 재사용 흐름은 아직이다.**
+판정: **정책, 저장 계약, 날짜 재설정, 사용자-facing 재사용 흐름은 닫혔다. 원본 새 버전 비교와 실제 반복 사용자 관찰은 아직이다.**
 
 ## 출시 gate
 
@@ -116,9 +117,21 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 `날짜만 새로 잡기`의 순수 정책 함수와 active Map projection 갱신을 구현했다. 개별 고정 날짜가 있으면 `새 기준일에 맞추기 / 기존 날짜 유지`를 선택하지 않고는 새 실행이 시작되지 않는다.
 
-### 다음 자동 구현 후보: P22-06 Slice D
+### 완료: P22-06 Slice D
 
 완료된 My Flow에서 `이 Flow 다시 쓰기`를 보조 행동으로 열고, 날짜형 Flow에는 새 기준일과 고정 날짜 처리 선택을 한 sheet에서 받는다. 새 버전이 실제로 있을 때만 Slice C 검토 경로를 별도로 노출한다.
+
+- URL 초안·일반 Flow의 제목·메모·날짜도 완료 실행 snapshot에 고정
+- 새 실행에는 제목·사용자 메모만 안정 항목 키로 복사하고 일회성 로그는 미복사
+- 마지막 완료 체크 시각을 실제 완료일로 기록
+- source-backed saved snapshot과 persistence record 동시 갱신
+- 모바일 390px, wide 1024px overflow 0
+
+검증 evidence는 [P22-06D 완료 Flow 재사용 evidence](./2026-07-11-claude-design-p22-06d-flow-reuse-evidence/README.md)에 기록했다.
+
+### 다음 자동 구현 후보: P22-06 Slice C
+
+실제 발행 버전 차이가 있는 fixture에서만 `새 내용 검토`를 연다. 안정 항목 ID 기준 changed/added/removed 분류와 개인 수정 충돌을 먼저 순수 로직·단위 테스트로 고정하고, 업데이트가 없는 Flow에는 진입을 노출하지 않는다.
 
 ### 병행 수동 gate
 
@@ -143,6 +156,7 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [P22-06 완료 Flow 재사용·버전 정책](./2026-07-11-claude-design-p22-06-completed-flow-reuse-version-policy-ko.md)
 - [P22-06A Flow run storage evidence](./2026-07-11-claude-design-p22-06a-flow-run-storage-evidence/README.md)
 - [P22-06B new anchor policy evidence](./2026-07-11-claude-design-p22-06b-new-anchor-policy-evidence/README.md)
+- [P22-06D completed Flow reuse evidence](./2026-07-11-claude-design-p22-06d-flow-reuse-evidence/README.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 
 ## 다음 `/goal` 후보
@@ -152,13 +166,13 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 D:\flowme2605\flow-mvp 기준으로 진행해줘.
 
 목표:
-P22-06 정책의 Slice D를 구현한다. 완료된 My Flow에서 과거 실행을 보존한 채 새 실행을 시작할 수 있는 사용자 흐름을 연다. 날짜형 Flow는 새 이사일·시험일·시작일과 고정 날짜 처리 방식을 명시적으로 받고, 날짜 없는 Flow는 현재 개인 사본으로 새 실행을 시작한다. 새 버전 비교와 Studio 확장은 별도 경로로 유지한다.
+P22-06 정책의 Slice C를 구현한다. 실제 원본 새 버전이 있는 완료 Flow에서만 변경 항목을 검토하고, 개인 수정과 충돌하지 않는 선택 결과로 새 실행을 시작하게 한다. 업데이트가 없는 Flow에는 `새 내용 검토`를 노출하지 않고 Studio 확장은 하지 않는다.
 
 완료 기준:
-- 완료 상태에서만 `이 Flow 다시 쓰기` visible
-- 날짜형 Flow의 새 기준일 필수
-- 고정 날짜가 있으면 유지/새 기준 맞춤 선택 필수
-- 새 실행 후 완료 체크·회고 0, 과거 run snapshot 보존
-- My Flow·Calendar가 새 기준일과 personal copy를 읽음
-- 390/1024 overflow 0, targeted E2E 통과
+- stable item ID 기준 changed/added/removed 분류
+- alias·메모·날짜가 있는 항목은 자동 병합 금지
+- 공식·민감 Flow는 항상 사용자 확인
+- 완료 run의 sourceVersion/personal snapshot 불변
+- 선택 결과로 새 active run 생성
+- 실제 update fixture, unit, targeted E2E 통과
 ```

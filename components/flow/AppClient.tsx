@@ -28,6 +28,15 @@ import {
 } from '@/lib/flow/my-flow-step-export';
 import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
+import { countFlowRunFixedDateOverrides, type FlowRunFixedDatePolicy } from '@/lib/flow/flow-run-reuse';
+import {
+  getFlowScopedMyFlowPersonalExecutionState,
+  getStoredMyFlowDateOverrides,
+  getStoredMyFlowItemDrafts,
+  saveStoredMyFlowDateOverrides,
+  saveStoredMyFlowItemDrafts,
+  type StoredMyFlowItemDraft,
+} from '@/lib/flow/my-flow-personal-state';
 import {
   assessSourceBackedFlowMapUpdate,
   buildSourceBackedFlowMapPersonalCopyAdjustment,
@@ -72,10 +81,12 @@ import {
 } from '@/lib/flow/url-first-supply-queue';
 import {
   clearFlowLocalProgress,
+  completeActiveFlowRun,
   type ActiveFlowProgress,
   getBundles,
   getActiveFlowProgress,
   getChecks,
+  getCompletedFlowRuns,
   getComparisonState,
   getItemStates,
   getMyFlowCompletionFeedback,
@@ -96,8 +107,10 @@ import {
   saveMyFlowCompletionFeedback,
   saveMyFlowStepItemChecks,
   saveReactionLogs,
+  recordFlowCompletionState,
   saveStoredAnchor,
   saveWorkbenchState,
+  startFlowRunFromCompleted,
   type MyFlowCompletionFeedback,
   type MyFlowStepItemChecks,
   type SavedFlowMapSnapshot,
@@ -2865,17 +2878,7 @@ const MY_FLOW_ITEM_TYPE_OVERVIEW_ORDER: MyFlowExecutionItemType[] = [
   'memo_evidence',
   'decision_hold',
 ];
-type MyFlowItemDraft = Pick<Partial<FlowItemDetail>, 'why' | 'how' | 'completion_criteria' | 'caution'> & {
-  title?: string;
-  date?: string;
-  repeatPreset?: string;
-  memo?: string;
-  location?: string;
-  time?: string;
-  logValue?: string;
-  decisionStatus?: 'undecided' | 'buy' | 'hold' | 'reject';
-  nextReviewDate?: string;
-};
+type MyFlowItemDraft = StoredMyFlowItemDraft;
 type MyFlowRoutineRuleDraft = {
   weekdays?: string[];
   endDate?: string;
@@ -2897,46 +2900,21 @@ type MyFlowCompletionFeedbackDraft = {
   correctionNote: string;
   status: string;
 };
-const MY_FLOW_ITEM_DRAFTS_STORAGE_KEY = 'flow:my-flow:item-drafts';
-const MY_FLOW_DATE_OVERRIDES_STORAGE_KEY = 'flow:my-flow:date-overrides';
+type MyFlowReuseDraft = {
+  flowSlug: string;
+  anchor: string;
+  fixedDatePolicy: FlowRunFixedDatePolicy | '';
+  fixedDateOverrideCount: number;
+  status: string;
+};
+type MyFlowReuseNotice = {
+  flowSlug: string;
+  message: string;
+};
 const MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY = 'flow:my-flow:hidden-flows';
 const MY_FLOW_WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
 type FlowListFilter = 'all' | 'open' | 'routine' | 'done' | 'hidden';
-
-function getStoredMyFlowItemDrafts(): Record<string, MyFlowItemDraft> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = window.localStorage.getItem(MY_FLOW_ITEM_DRAFTS_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveStoredMyFlowItemDrafts(drafts: Record<string, MyFlowItemDraft>): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(MY_FLOW_ITEM_DRAFTS_STORAGE_KEY, JSON.stringify(drafts));
-}
-
-function getStoredMyFlowDateOverrides(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = window.localStorage.getItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveStoredMyFlowDateOverrides(overrides: Record<string, string>): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(overrides));
-}
 
 function getStoredMyFlowHiddenFlowSlugs(): string[] {
   if (typeof window === 'undefined') return [];
@@ -3913,6 +3891,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStepItemChecks, setMyFlowStepItemChecks] = useState<MyFlowStepItemChecks>({});
   const [myFlowCompletionFeedbackBySlug, setMyFlowCompletionFeedbackBySlug] = useState<Record<string, MyFlowCompletionFeedback>>({});
   const [myFlowCompletionFeedbackDraft, setMyFlowCompletionFeedbackDraft] = useState<MyFlowCompletionFeedbackDraft | null>(null);
+  const [myFlowReuseDraft, setMyFlowReuseDraft] = useState<MyFlowReuseDraft | null>(null);
+  const [myFlowReuseNotice, setMyFlowReuseNotice] = useState<MyFlowReuseNotice | null>(null);
   const [myFlowRoutineRuleDrafts, setMyFlowRoutineRuleDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
   const [myFlowRoutineRuleEditorDrafts, setMyFlowRoutineRuleEditorDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
   const [myFlowExpandedRoutineKey, setMyFlowExpandedRoutineKey] = useState('');
@@ -4112,6 +4092,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowItemDrafts({});
       setMyFlowEditingDrafts({});
       setMyFlowStepItemChecks({});
+      setMyFlowReuseDraft(null);
+      setMyFlowReuseNotice(null);
       setMyFlowRoutineRuleDrafts({});
       setMyFlowRoutineRuleEditorDrafts({});
       setMyFlowExpandedRoutineKey('');
@@ -4145,6 +4127,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowDismissedMapUpdates(getMyFlowDismissedMapUpdates());
     setMyFlowExpandedMapUpdateId('');
     setMyFlowAppliedMapUpdateId('');
+    setMyFlowReuseDraft(null);
+    setMyFlowReuseNotice(null);
     refreshSavedFlowState();
   }, [initialView, myFlowBundles]);
 
@@ -4504,9 +4488,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? '다음 할 일'
           : '먼저 할 일';
   const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => ({
-    ...(isUrlFirstDraftSavedFlow(row.flow)
-      ? (myFlowItemDrafts[getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id)] ?? {})
-      : {}),
+    ...(myFlowItemDrafts[getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id)] ?? {}),
     ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
     ...getMyFlowPersonalCopyStepDraft(row),
   });
@@ -4939,7 +4921,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }
       }
     } else {
-      if (Object.keys(itemDraft).length > 0) updateMyFlowItemDraft(row, itemDraft);
+      const { title, memo, ...executionDraft } = itemDraft;
+      if (title !== undefined || memo !== undefined) {
+        updateMyFlowItemDraftByKey(getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id), {
+          ...(title !== undefined ? { title } : {}),
+          ...(memo !== undefined ? { memo } : {}),
+        });
+      }
+      if (Object.keys(executionDraft).length > 0) updateMyFlowItemDraft(row, executionDraft);
       const manualScheduleKey = !row.date ? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id) : '';
       const scheduleKey = row.calendarKey ?? manualScheduleKey;
       if (scheduleKey && date !== undefined) {
@@ -5325,6 +5314,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     });
   }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, calendarScopedDateSignature, myFlowTodayDate]);
 
+  const recordMyFlowCompletionState = (flow: MySavedFlow, checks: Record<string, boolean>) => {
+    const completed = flow.rows.length > 0 && flow.rows.every((row) => {
+      const checkIds = getMyFlowCheckIds(flow.bundle, row.id, flow.anchor);
+      return checkIds.length > 0 && checkIds.every((id) => checks[id]);
+    });
+    recordFlowCompletionState(flow.progress.slug, completed);
+  };
+
   const toggleSavedFlowItem = (flow: MySavedFlow, rowId: string, rowContext?: MyFlowCalendarRow) => {
     const checkIds = getMyFlowCheckIds(flow.bundle, rowId, flow.anchor);
     const nextChecked = !checkIds.every((id) => flow.checks[id]);
@@ -5360,6 +5357,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
     saveChecks(flow.progress.slug, nextChecks);
+    recordMyFlowCompletionState(flow, nextChecks);
     refreshSavedFlowState();
   };
 
@@ -5382,6 +5380,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
     saveChecks(flow.progress.slug, nextChecks);
+    recordMyFlowCompletionState(flow, nextChecks);
     refreshSavedFlowState();
   };
 
@@ -5399,6 +5398,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
     saveChecks(flow.progress.slug, nextChecks);
+    recordMyFlowCompletionState(flow, nextChecks);
     refreshSavedFlowState();
   };
 
@@ -5465,6 +5465,76 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (!nextFeedback) return;
     setMyFlowCompletionFeedbackBySlug((current) => ({ ...current, [flow.progress.slug]: nextFeedback }));
     updateMyFlowCompletionFeedbackDraft({ status: '전송 전 메모를 이 기기에 저장했어요.' });
+  };
+
+  const openMyFlowReuse = (flow: MySavedFlow) => {
+    const personalExecutionState = getFlowScopedMyFlowPersonalExecutionState(flow.progress.slug);
+    setMyFlowCompletionFeedbackDraft(null);
+    setMyFlowReuseNotice(null);
+    setMyFlowReuseDraft({
+      flowSlug: flow.progress.slug,
+      anchor: '',
+      fixedDatePolicy: '',
+      fixedDateOverrideCount: countFlowRunFixedDateOverrides(
+        flow.savedMap?.personalCopy,
+        personalExecutionState,
+      ),
+      status: '',
+    });
+  };
+
+  const updateMyFlowReuseDraft = (patch: Partial<Omit<MyFlowReuseDraft, 'flowSlug' | 'fixedDateOverrideCount'>>) => {
+    setMyFlowReuseDraft((current) => (current ? { ...current, ...patch, status: patch.status ?? '' } : current));
+  };
+
+  const startMyFlowReuse = (flow: MySavedFlow) => {
+    if (myFlowReuseDraft?.flowSlug !== flow.progress.slug) return;
+    const requiresAnchor = flow.bundle.flow.anchor_type !== 'none';
+    const anchor = myFlowReuseDraft.anchor.trim();
+    if (requiresAnchor && !/^\d{4}-\d{2}-\d{2}$/.test(anchor)) {
+      updateMyFlowReuseDraft({ status: `${getAnchorInputLabel(flow.bundle)}을 선택해 주세요.` });
+      return;
+    }
+    if (requiresAnchor && myFlowReuseDraft.fixedDateOverrideCount > 0 && !myFlowReuseDraft.fixedDatePolicy) {
+      updateMyFlowReuseDraft({ status: '따로 바꾼 날짜를 어떻게 처리할지 선택해 주세요.' });
+      return;
+    }
+
+    const completedRun = completeActiveFlowRun(flow.progress.slug, { mapSnapshot: flow.savedMap })
+      ?? getCompletedFlowRuns(flow.progress.slug)[0];
+    if (!completedRun) {
+      updateMyFlowReuseDraft({ status: '지난 실행을 보관하지 못했습니다. 다시 시도해 주세요.' });
+      return;
+    }
+
+    const nextRun = startFlowRunFromCompleted(flow.progress.slug, {
+      previousRunId: completedRun.runId,
+      reuseMode: requiresAnchor ? 'new_anchor' : 'same_copy',
+      ...(requiresAnchor ? { anchor } : {}),
+      ...(requiresAnchor && myFlowReuseDraft.fixedDatePolicy
+        ? { fixedDatePolicy: myFlowReuseDraft.fixedDatePolicy }
+        : {}),
+    });
+    if (!nextRun) {
+      updateMyFlowReuseDraft({ status: '새 실행을 시작하지 못했습니다. 날짜와 선택을 확인해 주세요.' });
+      return;
+    }
+
+    setMyFlowReuseDraft(null);
+    setMyFlowCompletionFeedbackDraft(null);
+    setMyFlowPersonalCopySettingsDraft(null);
+    setMyFlowItemDrafts(getStoredMyFlowItemDrafts());
+    setMyFlowDateOverrides(getStoredMyFlowDateOverrides());
+    setMyFlowReuseNotice({
+      flowSlug: flow.progress.slug,
+      message: requiresAnchor
+        ? `새 ${getAnchorInputLabel(flow.bundle)} ${formatMyFlowDisplayDate(anchor)}로 시작했어요. 지난 실행은 기록으로 남아 있어요.`
+        : '새 실행을 시작했어요. 지난 실행은 기록으로 남아 있어요.',
+    });
+    setSelectedSavedFlowSlug('all');
+    setSavedView('today');
+    resetMyFlowRowDetailState();
+    refreshSavedFlowState();
   };
 
   const renderTaskCompletionCheckbox = ({
@@ -7569,6 +7639,49 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderMyFlowRunHistory = (flow: MySavedFlow) => {
+    const completedRuns = getCompletedFlowRuns(flow.progress.slug);
+    if (completedRuns.length === 0) return null;
+    const anchorLabel = getAnchorInputLabel(flow.bundle);
+    return (
+      <details data-testid="my-flow-past-runs" className="mt-3 border-t border-slate-100 pt-3 text-sm">
+        <summary className="cursor-pointer font-semibold text-slate-700">지난 실행 {completedRuns.length}회</summary>
+        <ul className="mt-2 grid gap-2">
+          {completedRuns.slice(0, 3).map((run) => {
+            const completedDate = run.completedAt?.slice(0, 10);
+            const completedCount = Object.values(run.completionSnapshot?.checks ?? {}).filter(Boolean).length;
+            const totalCount = Object.keys(run.completionSnapshot?.checks ?? {}).length;
+            return (
+              <li key={run.runId} className="rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-600">
+                <span className="block text-slate-800">
+                  {completedDate ? `${formatMyFlowDisplayDate(completedDate)} 완료` : '완료한 실행'}
+                </span>
+                <span className="block">
+                  {[
+                    run.anchor ? `${anchorLabel} ${formatMyFlowDisplayDate(run.anchor)}` : '',
+                    totalCount > 0 ? `전체 ${completedCount}/${totalCount} 완료` : '',
+                  ].filter(Boolean).join(' · ')}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </details>
+    );
+  };
+
+  const renderMyFlowReuseNotice = (flow: MySavedFlow) => {
+    if (myFlowReuseNotice?.flowSlug !== flow.progress.slug) return renderMyFlowRunHistory(flow);
+    return (
+      <>
+        <div data-testid="my-flow-reuse-status" className="mt-3 rounded-md bg-emerald-50 px-3 py-2 text-sm font-semibold leading-5 text-emerald-800" role="status">
+          {myFlowReuseNotice.message}
+        </div>
+        {renderMyFlowRunHistory(flow)}
+      </>
+    );
+  };
+
   const renderMyFlowCompletionFeedback = (flow: MySavedFlow) => {
     const executionComplete = flow.rows.length > 0 && flow.rows.every((row) => isMyFlowRowChecked(flow, row));
     if (isMyFlowScenarioDemo || !executionComplete) return null;
@@ -7578,6 +7691,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const activeDraft = myFlowCompletionFeedbackDraft?.flowSlug === flow.progress.slug
       ? myFlowCompletionFeedbackDraft
       : null;
+    const activeReuseDraft = myFlowReuseDraft?.flowSlug === flow.progress.slug
+      ? myFlowReuseDraft
+      : null;
+    const requiresAnchor = flow.bundle.flow.anchor_type !== 'none';
+    const anchorLabel = getAnchorInputLabel(flow.bundle);
+    const newAnchorLabel = `새 ${anchorLabel}`;
     const correctionRows = Array.from(
       new Map(flow.rows.map((row) => [baseStateId(row.id), row] as const)).values(),
     );
@@ -7737,6 +7856,101 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {activeDraft.status}
           </p>
         ) : null}
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-900">같은 준비를 다시 시작하나요?</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">
+                지난 실행은 기록으로 남기고 완료 상태만 새로 시작합니다.
+              </p>
+            </div>
+            <button
+              type="button"
+              data-testid="my-flow-reuse-open"
+              aria-expanded={Boolean(activeReuseDraft)}
+              className="min-h-9 shrink-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300"
+              onClick={() => (activeReuseDraft ? setMyFlowReuseDraft(null) : openMyFlowReuse(flow))}
+            >
+              {activeReuseDraft ? '접기' : '이 Flow 다시 쓰기'}
+            </button>
+          </div>
+          {activeReuseDraft ? (
+            <div data-testid="my-flow-reuse-panel" className="mt-3 grid gap-3 rounded-md border border-blue-100 bg-blue-50/60 p-3">
+              {requiresAnchor ? (
+                <label className="grid gap-1 text-sm font-semibold text-slate-800">
+                  {newAnchorLabel}
+                  <input
+                    data-testid="my-flow-reuse-anchor-input"
+                    aria-label={newAnchorLabel}
+                    className="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    type="date"
+                    value={activeReuseDraft.anchor}
+                    onChange={(event) => updateMyFlowReuseDraft({ anchor: event.target.value })}
+                  />
+                  <span className="text-xs font-medium leading-5 text-slate-600">
+                    {newAnchorLabel}에 맞춰 전체 일정을 다시 계산합니다.
+                  </span>
+                </label>
+              ) : (
+                <p className="text-sm leading-6 text-slate-700">
+                  현재 항목과 내가 고친 내용은 유지하고 완료 체크만 비웁니다.
+                </p>
+              )}
+              {requiresAnchor && activeReuseDraft.fixedDateOverrideCount > 0 ? (
+                <fieldset data-testid="my-flow-reuse-fixed-date-policy" className="grid gap-2">
+                  <legend className="text-sm font-semibold text-slate-900">
+                    따로 바꾼 날짜 {activeReuseDraft.fixedDateOverrideCount}개
+                  </legend>
+                  <p className="text-xs leading-5 text-slate-600">새 실행에서 이 날짜를 어떻게 쓸지 선택해 주세요.</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {([
+                      ['reset_to_anchor', `${newAnchorLabel}에 맞추기`, '따로 정한 날짜를 지우고 전체 일정을 다시 맞춰요.'],
+                      ['keep_fixed_dates', '내가 바꾼 날짜 유지', '따로 정한 날짜는 그대로 두고 나머지만 다시 맞춰요.'],
+                    ] as const).map(([value, label, help]) => (
+                      <label key={value} className={`flex min-h-16 cursor-pointer items-start gap-2 rounded-md border bg-white px-3 py-2 ${activeReuseDraft.fixedDatePolicy === value ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200'}`}>
+                        <input
+                          className="mt-1 h-4 w-4 shrink-0"
+                          type="radio"
+                          name={`my-flow-reuse-fixed-date-${flow.progress.slug}`}
+                          value={value}
+                          checked={activeReuseDraft.fixedDatePolicy === value}
+                          onChange={() => updateMyFlowReuseDraft({ fixedDatePolicy: value })}
+                        />
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold text-slate-900">{label}</span>
+                          <span className="mt-0.5 block text-xs leading-5 text-slate-600">{help}</span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
+              {activeReuseDraft.status ? (
+                <p data-testid="my-flow-reuse-error" className="text-xs font-semibold text-amber-700" role="status">
+                  {activeReuseDraft.status}
+                </p>
+              ) : null}
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+                <button
+                  type="button"
+                  data-testid="my-flow-reuse-cancel"
+                  className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"
+                  onClick={() => setMyFlowReuseDraft(null)}
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  data-testid="my-flow-reuse-start"
+                  className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
+                  onClick={() => startMyFlowReuse(flow)}
+                >
+                  새 실행 시작
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
       </section>
     );
   };
@@ -7840,6 +8054,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         {renderMyFlowPersonalCopySettings(flow)}
         {renderMyFlowCompletionFeedback(flow)}
+        {renderMyFlowReuseNotice(flow)}
         {flowExpanded ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
@@ -8052,6 +8267,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         </div>
         {renderMyFlowCompletionFeedback(flow)}
+        {renderMyFlowReuseNotice(flow)}
         {renderMyFlowExcludedSteps(flow)}
         <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
           <Link className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300" href={sourceHref}>

@@ -1,6 +1,20 @@
 import { seedBundles } from './seed-flows';
-import type { SourceBackedFlowMapPersonalCopy, SourceBackedFlowMapPersonalCopyStepOverride } from './source-backed-my-flow';
+import {
+  buildSourceBackedFlowMapPersistenceRecordUpdate,
+  getSourceBackedFlowMapPersistenceStorageKey,
+  type SourceBackedFlowMapSavedSnapshot,
+  type SourceBackedFlowMapPersonalCopy,
+  type SourceBackedFlowMapPersonalCopyStepOverride,
+} from './source-backed-my-flow';
 import { prepareFlowRunNewAnchor, type FlowRunFixedDatePolicy } from './flow-run-reuse';
+import {
+  getFlowScopedMyFlowPersonalExecutionState,
+  hasMyFlowPersonalExecutionState,
+  normalizeMyFlowPersonalExecutionState,
+  prepareMyFlowPersonalExecutionStateForReuse,
+  replaceFlowScopedMyFlowPersonalExecutionState,
+  type MyFlowPersonalExecutionState,
+} from './my-flow-personal-state';
 import { FlowBundle, FlowComparisonState, FlowItemState, FlowWorkbenchState, ReactionLog } from './types';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
@@ -26,6 +40,7 @@ const SAVED_FLOW_MAP_KEY_PREFIX = 'flow:map:saved:';
 const MY_FLOW_STEP_ITEM_CHECKS_KEY = 'flow:my-flow:step-item-checks';
 const MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX = 'flow:my-flow:completion-feedback:';
 const FLOW_RUN_REGISTRY_KEY_PREFIX = 'flow:run-registry:';
+const FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX = 'flow:completion-detected-at:';
 
 export type StoredAnchor = {
   mode: string;
@@ -115,6 +130,7 @@ export type FlowRunRecord = {
   reuseMode?: FlowRunReuseMode;
   fixedDatePolicy?: FlowRunFixedDatePolicy;
   personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
+  personalExecutionStateSnapshot?: MyFlowPersonalExecutionState;
   completionSnapshot?: FlowRunCompletionSnapshot;
 };
 
@@ -145,6 +161,7 @@ export type StartFlowRunFromCompletedOptions = {
   sourceVersion?: string;
   fixedDatePolicy?: FlowRunFixedDatePolicy;
   personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
+  personalExecutionStateSnapshot?: MyFlowPersonalExecutionState;
 };
 
 function canUseStorage(): boolean {
@@ -504,6 +521,29 @@ export function saveMyFlowCompletionFeedback(
   return normalized;
 }
 
+export function getFlowCompletionDetectedAt(flowSlug: string): string | undefined {
+  if (!canUseStorage()) return undefined;
+  const value = localStorage.getItem(`${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${flowSlug}`)?.trim();
+  return value || undefined;
+}
+
+export function recordFlowCompletionState(
+  flowSlug: string,
+  completed: boolean,
+  completedAt = new Date().toISOString(),
+): string | undefined {
+  if (!canUseStorage() || !flowSlug.trim()) return undefined;
+  const key = `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${flowSlug}`;
+  if (!completed) {
+    localStorage.removeItem(key);
+    return undefined;
+  }
+  const existing = localStorage.getItem(key)?.trim();
+  if (existing) return existing;
+  localStorage.setItem(key, completedAt);
+  return completedAt;
+}
+
 export function clearFlowLocalProgress(slug: string): void {
   if (!canUseStorage()) return;
   [
@@ -516,12 +556,14 @@ export function clearFlowLocalProgress(slug: string): void {
     `${REACTIONS_KEY_PREFIX}${slug}`,
     `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${slug}`,
     `${FLOW_RUN_REGISTRY_KEY_PREFIX}${slug}`,
+    `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${slug}`,
   ].forEach((key) => localStorage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();
   const nextStepItemChecks = Object.fromEntries(
     Object.entries(stepItemChecks).filter(([key]) => !key.startsWith(`${slug}::`)),
   );
   localStorage.setItem(MY_FLOW_STEP_ITEM_CHECKS_KEY, JSON.stringify(nextStepItemChecks));
+  replaceFlowScopedMyFlowPersonalExecutionState(slug);
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
 }
 
@@ -768,6 +810,7 @@ export function normalizeFlowRunRecord(value: unknown): FlowRunRecord | undefine
   const completionSnapshot = normalizeFlowRunCompletionSnapshot(source.completionSnapshot, source.flowSlug);
   if (source.status === 'completed' && (!completedAt || !completionSnapshot)) return undefined;
   const personalCopySnapshot = normalizeSavedFlowMapPersonalCopy(source.personalCopySnapshot);
+  const personalExecutionStateSnapshot = normalizeMyFlowPersonalExecutionState(source.personalExecutionStateSnapshot);
 
   return {
     schemaVersion: 1,
@@ -792,6 +835,9 @@ export function normalizeFlowRunRecord(value: unknown): FlowRunRecord | undefine
     ...(isFlowRunReuseMode(source.reuseMode) ? { reuseMode: source.reuseMode } : {}),
     ...(isFlowRunFixedDatePolicy(source.fixedDatePolicy) ? { fixedDatePolicy: source.fixedDatePolicy } : {}),
     ...(personalCopySnapshot ? { personalCopySnapshot } : {}),
+    ...(personalExecutionStateSnapshot && hasMyFlowPersonalExecutionState(personalExecutionStateSnapshot)
+      ? { personalExecutionStateSnapshot }
+      : {}),
   };
 }
 
@@ -892,6 +938,7 @@ export function ensureLegacyActiveFlowRun(
   if (!hasLegacyFlowRunState(flowSlug, mapSnapshot)) return undefined;
   const savedRecord = getSavedFlowRecord(flowSlug);
   const storedAnchor = getStoredAnchor(flowSlug).anchor;
+  const personalExecutionState = getFlowScopedMyFlowPersonalExecutionState(flowSlug);
   const runId = options.runId?.trim() || createFlowRunId(flowSlug);
   const startedAt = options.startedAt?.trim() || savedRecord?.savedAt || new Date().toISOString();
   const run: FlowRunRecord = {
@@ -905,6 +952,9 @@ export function ensureLegacyActiveFlowRun(
     ...(mapSnapshot?.mapId ? { mapId: mapSnapshot.mapId } : {}),
     ...(mapSnapshot?.version ? { sourceVersion: mapSnapshot.version } : {}),
     ...(mapSnapshot?.personalCopy ? { personalCopySnapshot: cloneStorageValue(mapSnapshot.personalCopy) } : {}),
+    ...(hasMyFlowPersonalExecutionState(personalExecutionState)
+      ? { personalExecutionStateSnapshot: cloneStorageValue(personalExecutionState) }
+      : {}),
     reuseMode: 'legacy',
   };
   const saved = saveFlowRunRegistry(flowSlug, { schemaVersion: 1, activeRunId: runId, runs: [run] });
@@ -941,13 +991,25 @@ export function completeActiveFlowRun(
   const active = getActiveFlowRun(flowSlug) ?? ensureLegacyActiveFlowRun(flowSlug, options);
   if (!active) return undefined;
   const registry = getFlowRunRegistry(flowSlug);
-  const completedAt = options.completedAt?.trim() || new Date().toISOString();
+  const completedAt = options.completedAt?.trim() || getFlowCompletionDetectedAt(flowSlug) || new Date().toISOString();
+  const mapSnapshot = getFlowRunMapSnapshot(flowSlug, options.mapSnapshot);
+  const personalExecutionState = getFlowScopedMyFlowPersonalExecutionState(flowSlug);
   const completed: FlowRunRecord = {
     ...active,
     status: 'completed',
     completedAt,
+    ...(mapSnapshot?.mapId ? { mapId: mapSnapshot.mapId } : {}),
+    ...(mapSnapshot?.version ? { sourceVersion: mapSnapshot.version } : {}),
+    ...(mapSnapshot?.personalCopy
+      ? { personalCopySnapshot: cloneStorageValue(mapSnapshot.personalCopy) }
+      : {}),
+    ...(hasMyFlowPersonalExecutionState(personalExecutionState)
+      ? { personalExecutionStateSnapshot: cloneStorageValue(personalExecutionState) }
+      : {}),
     completionSnapshot: captureCurrentFlowRunCompletionSnapshot(flowSlug),
   };
+  if (mapSnapshot && !mapSnapshot.personalCopy) delete completed.personalCopySnapshot;
+  if (!hasMyFlowPersonalExecutionState(personalExecutionState)) delete completed.personalExecutionStateSnapshot;
   const saved = saveFlowRunRegistry(flowSlug, {
     schemaVersion: 1,
     runs: registry.runs.map((run) => (run.runId === active.runId ? completed : run)),
@@ -988,6 +1050,7 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
     `${WORKBENCH_KEY_PREFIX}${flowSlug}`,
     `${REACTIONS_KEY_PREFIX}${flowSlug}`,
     `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`,
+    `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${flowSlug}`,
   ].forEach((key) => localStorage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();
   localStorage.setItem(
@@ -1025,6 +1088,23 @@ function updateSavedFlowMapProjectionForRun(
   const normalized = normalizeSavedFlowMapSnapshot(next);
   if (!normalized) return undefined;
   localStorage.setItem(`${SAVED_FLOW_MAP_KEY_PREFIX}${value.mapId}`, JSON.stringify(normalized));
+  const sourceBackedSnapshot = normalized.stepCountsByFlow
+    && normalized.riskLevelsByFlow
+    && normalized.sourceCheckedAtByFlow
+    ? normalized as SourceBackedFlowMapSavedSnapshot
+    : undefined;
+  const persistenceRecord = sourceBackedSnapshot
+    ? buildSourceBackedFlowMapPersistenceRecordUpdate(sourceBackedSnapshot, {
+        savedAt: normalized.savedAt,
+        ...(normalized.anchor ? { anchor: normalized.anchor } : {}),
+      })
+    : undefined;
+  if (persistenceRecord) {
+    localStorage.setItem(
+      getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId),
+      JSON.stringify(persistenceRecord),
+    );
+  }
   return normalized;
 }
 
@@ -1050,16 +1130,32 @@ export function startFlowRunFromCompleted(
   let personalCopySnapshot = hasPersonalCopyOption
     ? normalizeSavedFlowMapPersonalCopy(options.personalCopySnapshot)
     : previous.personalCopySnapshot;
+  const hasPersonalExecutionStateOption = Object.prototype.hasOwnProperty.call(options, 'personalExecutionStateSnapshot');
+  let personalExecutionStateSnapshot = hasPersonalExecutionStateOption
+    ? normalizeMyFlowPersonalExecutionState(options.personalExecutionStateSnapshot)
+    : previous.personalExecutionStateSnapshot ?? getFlowScopedMyFlowPersonalExecutionState(flowSlug);
   const mapId = options.mapId?.trim() || previous.mapId;
   const sourceVersion = options.sourceVersion?.trim() || previous.sourceVersion;
   const anchor = options.anchor?.trim();
   if (options.reuseMode === 'new_anchor') {
-    const newAnchorPlan = prepareFlowRunNewAnchor(personalCopySnapshot, anchor ?? '', options.fixedDatePolicy);
+    const newAnchorPlan = prepareFlowRunNewAnchor(
+      personalCopySnapshot,
+      anchor ?? '',
+      options.fixedDatePolicy,
+      personalExecutionStateSnapshot,
+    );
     if (!newAnchorPlan) return undefined;
     personalCopySnapshot = newAnchorPlan.personalCopySnapshot;
+    personalExecutionStateSnapshot = newAnchorPlan.personalExecutionStateSnapshot;
+  } else if (personalExecutionStateSnapshot) {
+    personalExecutionStateSnapshot = prepareMyFlowPersonalExecutionStateForReuse(
+      personalExecutionStateSnapshot,
+      { keepFixedDates: true },
+    );
   }
 
   resetCurrentFlowExecutionState(flowSlug);
+  replaceFlowScopedMyFlowPersonalExecutionState(flowSlug, personalExecutionStateSnapshot);
   const savedRecord: SavedFlowRecord = {
     slug: flowSlug,
     savedAt: startedAt,
@@ -1095,6 +1191,9 @@ export function startFlowRunFromCompleted(
     ...(mapId ? { mapId } : {}),
     ...(sourceVersion ? { sourceVersion } : {}),
     ...(personalCopySnapshot ? { personalCopySnapshot: cloneStorageValue(personalCopySnapshot) } : {}),
+    ...(personalExecutionStateSnapshot && hasMyFlowPersonalExecutionState(personalExecutionStateSnapshot)
+      ? { personalExecutionStateSnapshot: cloneStorageValue(personalExecutionStateSnapshot) }
+      : {}),
   };
   const saved = saveFlowRunRegistry(flowSlug, {
     schemaVersion: 1,

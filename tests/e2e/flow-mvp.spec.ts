@@ -1091,7 +1091,7 @@ test('my flow personal copy step detail exports current copy to memo checklist c
 
   await exportPanel.getByTestId('my-flow-detail-copy-sheet-row').click();
   copied = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copied).toContain('Flow\tStep\t구간\t날짜');
+  expect(copied).toContain('Flow\t할 일\t구간\t날짜');
   expect(copied).toContain('8월 이사 준비 사본\t견적 후보만 먼저 확인\tD-30\t2026-07-07');
   expect(copied).toContain('오전 중 후보 2곳만 확인');
   expect(copied).not.toContain('주소 변경');
@@ -6298,6 +6298,172 @@ test('completed My Flow separates private reflection from an unsent source corre
   await page.reload();
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
+});
+
+test('completed My Flow starts a new dated run without overwriting the previous execution', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_REUSE_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  const flowSlug = 'moving-d30-basic';
+  const movingBundle = seedBundles.find((bundle) => bundle.flow.slug === flowSlug);
+  expect(movingBundle).toBeTruthy();
+  const anchor = '2026-08-10';
+  const firstItem = movingBundle?.items[0];
+  expect(firstItem).toBeTruthy();
+  const firstItemDate = new Date(`${anchor}T00:00:00.000Z`);
+  firstItemDate.setUTCDate(firstItemDate.getUTCDate() + Number(firstItem?.day_offset ?? 0));
+  const firstDate = firstItemDate.toISOString().slice(0, 10);
+  const firstDraftKey = `${flowSlug}::${firstItem?.id}::${firstDate}`;
+  const completedChecks = Object.fromEntries((movingBundle?.items ?? []).map((item) => [item.id, true]));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(({ slug, initialAnchor, checks, draftKey, movedDate }) => {
+    if (window.sessionStorage.getItem('flow-reuse-seeded') === 'true') return;
+    window.sessionStorage.setItem('flow-reuse-seeded', 'true');
+    window.localStorage.clear();
+    window.localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+      slug,
+      savedAt: '2026-07-11T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      anchor: initialAnchor,
+    }));
+    window.localStorage.setItem(`flow:${slug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor: initialAnchor }));
+    window.localStorage.setItem(`flow_builder_mvp_checks_${slug}`, JSON.stringify(checks));
+    window.localStorage.setItem('flow:my-flow:item-drafts', JSON.stringify({
+      [draftKey]: {
+        title: '견적 후보 다시 확인',
+        memo: '이번에는 후보 두 곳만 비교',
+        logValue: '지난 실행에서만 쓰는 기록',
+      },
+    }));
+    window.localStorage.setItem('flow:my-flow:date-overrides', JSON.stringify({ [draftKey]: movedDate }));
+  }, {
+    slug: flowSlug,
+    initialAnchor: anchor,
+    checks: completedChecks,
+    draftKey: firstDraftKey,
+    movedDate: '2026-07-15',
+  });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const mobileFlow = page.locator(`[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`);
+  const feedback = mobileFlow.getByTestId('my-flow-completion-feedback');
+  await expect(feedback).toBeVisible();
+  await feedback.getByTestId('my-flow-reuse-open').click();
+  const reusePanel = feedback.getByTestId('my-flow-reuse-panel');
+  await expect(feedback).toContainText('지난 실행은 기록으로 남기고 완료 상태만 새로 시작합니다.');
+  await expect(reusePanel.getByTestId('my-flow-reuse-anchor-input')).toHaveAccessibleName('새 이사일');
+  await expect(reusePanel.getByTestId('my-flow-reuse-fixed-date-policy')).toContainText('따로 바꾼 날짜 1개');
+  await expectNoInternalUserSurfaceCopy(reusePanel);
+  await expectNoUserFacingRawIsoDate(reusePanel);
+  await expectNoUserFacingDisplayLeakage(reusePanel);
+
+  await reusePanel.getByTestId('my-flow-reuse-start').click();
+  await expect(reusePanel.getByTestId('my-flow-reuse-error')).toHaveText('이사일을 선택해 주세요.');
+  await reusePanel.getByTestId('my-flow-reuse-anchor-input').fill('2026-10-20');
+  await reusePanel.getByTestId('my-flow-reuse-start').click();
+  await expect(reusePanel.getByTestId('my-flow-reuse-error')).toHaveText('따로 바꾼 날짜를 어떻게 처리할지 선택해 주세요.');
+  await reusePanel.getByLabel('새 이사일에 맞추기').check();
+  if (evidenceDir) {
+    await reusePanel.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${evidenceDir}/01-completed-flow-reuse-mobile.png` });
+  }
+  await reusePanel.getByTestId('my-flow-reuse-start').click();
+
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(mobileFlow.getByTestId('my-flow-reuse-status')).toContainText('새 이사일 10월 20일로 시작했어요. 지난 실행은 기록으로 남아 있어요.');
+  await expect(mobileFlow.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
+  const pastRuns = mobileFlow.getByTestId('my-flow-past-runs');
+  await expect(pastRuns.locator('summary')).toHaveText('지난 실행 1회');
+  await pastRuns.locator('summary').click();
+  await expect(pastRuns).toContainText('이사일 8월 10일');
+  await expect(pastRuns).toContainText(`전체 ${movingBundle?.items.length}/${movingBundle?.items.length} 완료`);
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/02-new-run-started-mobile.png`, fullPage: true });
+  }
+
+  const state = await page.evaluate(({ slug, originalDraftKey }) => ({
+    registry: JSON.parse(window.localStorage.getItem(`flow:run-registry:${slug}`) || 'null'),
+    checks: JSON.parse(window.localStorage.getItem(`flow_builder_mvp_checks_${slug}`) || '{}'),
+    anchor: JSON.parse(window.localStorage.getItem(`flow:${slug}:anchorDate`) || 'null'),
+    itemDrafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+    dateOverrides: JSON.parse(window.localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
+    originalDraftKey,
+  }), { slug: flowSlug, originalDraftKey: firstDraftKey });
+  expect(state.registry.runs).toHaveLength(2);
+  const completedRun = state.registry.runs.find((run: { status: string }) => run.status === 'completed');
+  const activeRun = state.registry.runs.find((run: { status: string }) => run.status === 'active');
+  expect(completedRun.runId).not.toBe(activeRun.runId);
+  expect(completedRun.anchor).toBe('2026-08-10');
+  expect(completedRun.personalExecutionStateSnapshot.dateOverrides[firstDraftKey]).toBe('2026-07-15');
+  expect(activeRun.anchor).toBe('2026-10-20');
+  expect(activeRun.fixedDatePolicy).toBe('reset_to_anchor');
+  expect(state.checks).toEqual({});
+  expect(state.anchor.anchor).toBe('2026-10-20');
+  expect(state.dateOverrides).toEqual({});
+  expect(state.itemDrafts[`${flowSlug}::${firstItem?.id}::draft-overlay`]).toEqual({
+    title: '견적 후보 다시 확인',
+    memo: '이번에는 후보 두 곳만 비교',
+  });
+  expect(state.itemDrafts[state.originalDraftKey]).toBeUndefined();
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideFlow = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`);
+  await expect(wideFlow.getByTestId('my-flow-past-runs').locator('summary')).toHaveText('지난 실행 1회');
+  await wideFlow.getByTestId('my-flow-past-runs').locator('summary').click();
+  await expect(wideFlow.getByTestId('my-flow-reuse-open')).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/03-new-run-history-wide.png`, fullPage: true });
+  }
+});
+
+test('completed date-free My Flow reuses the current copy without asking for a date', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_REUSE_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  const flowSlug = 'passport-renewal-docs';
+  const flowBundle = seedBundles.find((bundle) => bundle.flow.slug === flowSlug);
+  expect(flowBundle?.flow.anchor_type).toBe('none');
+  const completedChecks = Object.fromEntries((flowBundle?.items ?? []).map((item) => [item.id, true]));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(({ slug, checks }) => {
+    window.localStorage.clear();
+    window.localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+      slug,
+      savedAt: '2026-07-11T00:00:00.000Z',
+      selectedArtifactMode: 'checklist',
+    }));
+    window.localStorage.setItem(`flow_builder_mvp_checks_${slug}`, JSON.stringify(checks));
+  }, { slug: flowSlug, checks: completedChecks });
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const flowCard = page.locator(`[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`);
+  const feedback = flowCard.getByTestId('my-flow-completion-feedback');
+  await feedback.getByTestId('my-flow-reuse-open').click();
+  const reusePanel = feedback.getByTestId('my-flow-reuse-panel');
+  await expect(reusePanel.getByTestId('my-flow-reuse-anchor-input')).toHaveCount(0);
+  await expect(reusePanel).toContainText('현재 항목과 내가 고친 내용은 유지하고 완료 체크만 비웁니다.');
+  if (evidenceDir) {
+    await reusePanel.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${evidenceDir}/04-date-free-reuse-mobile.png` });
+  }
+  await reusePanel.getByTestId('my-flow-reuse-start').click();
+
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(flowCard.getByTestId('my-flow-reuse-status')).toContainText('새 실행을 시작했어요. 지난 실행은 기록으로 남아 있어요.');
+  await expect(flowCard.getByTestId('my-flow-past-runs').locator('summary')).toHaveText('지난 실행 1회');
+  const runRegistry = await page.evaluate((slug) => JSON.parse(window.localStorage.getItem(`flow:run-registry:${slug}`) || 'null'), flowSlug);
+  expect(runRegistry.runs.map((run: { status: string; reuseMode?: string }) => [run.status, run.reuseMode])).toEqual([
+    ['completed', 'legacy'],
+    ['active', 'same_copy'],
+  ]);
+  expect(await page.evaluate((slug) => JSON.parse(window.localStorage.getItem(`flow_builder_mvp_checks_${slug}`) || '{}'), flowSlug)).toEqual({});
+  await expectNoHorizontalOverflow(page);
 });
 
 test('content flows studio brings representative artifacts into the first mobile viewport', async ({ page }) => {
