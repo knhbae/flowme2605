@@ -6,7 +6,7 @@ import {
   summarizeFlowLifecycle,
 } from './content-lifecycle';
 import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
-import { seedBundles } from './seed-flows';
+import { internalReviewBundles as seedBundles } from './internal-review-inventory';
 import { getSourceFitAudit } from './source-fit';
 
 function bundleBySlug(slug: string) {

@@ -5,7 +5,7 @@ import {
   summarizeContentInventory,
 } from './content-inventory';
 import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
-import { seedBundles } from './seed-flows';
+import { internalReviewBundles as seedBundles } from './internal-review-inventory';
 
 function bundleBySlug(slug: string) {
   const bundle = seedBundles.find((entry) => entry.flow.slug === slug);

@@ -14,7 +14,7 @@ import {
   SOURCE_REVIEW_PRIORITY_LABELS,
   type SourceReviewPriority,
 } from '@/lib/flow/source-review-priority';
-import { seedBundles } from '@/lib/flow/seed-flows';
+import { internalReviewBundles } from '@/lib/flow/internal-review-inventory';
 import { sourceFitAudits, type SourceFitDecision } from '@/lib/flow/source-fit';
 import {
   realSourceNaturalArtifactAudits,
@@ -22,7 +22,7 @@ import {
 } from '@/lib/flow/natural-artifact-audit';
 import { ObservedSessionNoteIntake } from './ObservedSessionNoteIntake';
 
-type SeedBundle = (typeof seedBundles)[number];
+type SeedBundle = (typeof internalReviewBundles)[number];
 
 function targetLabel(value: string): string {
   const labels: Record<string, string> = {
@@ -156,8 +156,8 @@ function isSeedBundle(bundle: SeedBundle | undefined): bundle is SeedBundle {
 }
 
 export function ContentLab() {
-  const summary = getContentLabSummary(seedBundles);
-  const bundleBySlug = new Map(seedBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const summary = getContentLabSummary(internalReviewBundles);
+  const bundleBySlug = new Map(internalReviewBundles.map((bundle) => [bundle.flow.slug, bundle]));
   const convertedPilotBundles = convertedPilotSlugs
     .map((slug) => bundleBySlug.get(slug))
     .filter(isSeedBundle);

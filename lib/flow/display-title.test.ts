@@ -482,7 +482,7 @@ test('canonical seed and source-backed user-facing text pass display guardrails 
     ];
   });
 
-  assert.ok(subjects.length > 200);
+  assert.ok(subjects.length > 150);
   assert.deepEqual(failures, []);
 });
 

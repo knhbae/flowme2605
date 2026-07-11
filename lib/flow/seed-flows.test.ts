@@ -3,9 +3,10 @@ import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import {
   getCreatorChannelSummaries,
+  getPreviewFlowBundles,
   previewCreatorChannels,
-  previewFlowBundles,
 } from './creator-channel-preview';
+import { internalReviewBundles } from './internal-review-inventory';
 import { inferPrimaryDestination } from './destination';
 import { normalizeExecutionModel } from './execution-model';
 import { getPublicFlowIndexingPolicy } from './route-indexing-policy';
@@ -29,9 +30,11 @@ import { virtualUsers } from './users';
 const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMap((bundle) =>
   bundle.flows.map((flow) => flow.slug),
 );
+const previewFlowBundles = getPreviewFlowBundles();
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
-  assert.ok(seedBundles.length >= 231);
+  assert.ok(seedBundles.length >= 150);
+  assert.equal(seedBundles.some((bundle) => bundle.flow.id.startsWith('flow-preview-')), false);
   const slugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
   const originalSlugs = [
     'baby-food-menu-recipe',
@@ -1115,7 +1118,7 @@ test('creator channel preview exposes 10 channels and 400+ published flows', () 
   assert.ok(previewFlowBundles.length >= 400);
   assert.ok(previewFlowBundles.every((bundle) => bundle.flow.status === 'published'));
 
-  const summaries = getCreatorChannelSummaries(seedBundles);
+  const summaries = getCreatorChannelSummaries(internalReviewBundles);
   const previewSummaries = summaries.filter((summary) => summary.is_preview_channel);
 
   assert.ok(previewSummaries.length >= 10);
@@ -1125,7 +1128,7 @@ test('creator channel preview exposes 10 channels and 400+ published flows', () 
 });
 
 test('generated preview flows are executable and source-backed', () => {
-  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+  const generated = previewFlowBundles;
 
   assert.ok(generated.length >= 400);
   for (const bundle of generated) {
@@ -1264,7 +1267,7 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
   assert.equal(indexable.length, 77);
-  assert.equal(reviewOnly.length, 540);
+  assert.equal(reviewOnly.length, 100);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
@@ -1367,7 +1370,7 @@ test('published user routes record source freshness while preview library stays 
   });
 
   assert.ok(userRoutes.length >= 130);
-  assert.ok(previewOrHidden.length >= 400);
+  assert.ok(previewOrHidden.length >= 20);
 
   const demotedPreviewSlugs = [
     'digital-detox-weekly',
@@ -1882,13 +1885,13 @@ test('fitness exact video flow titles preserve the original content premise', ()
 });
 
 test('preview-generated creator channel flows are explicitly marked preview', () => {
-  const generated = seedBundles.filter((bundle) => bundle.flow.id.startsWith('flow-preview-'));
+  const generated = previewFlowBundles;
   assert.ok(generated.length >= 400);
   assert.ok(generated.every((bundle) => bundle.flow.source_status === 'preview'));
 });
 
 test('creator channel summaries separate sample candidates from reviewed source inventory', () => {
-  const summaries = getCreatorChannelSummaries(seedBundles);
+  const summaries = getCreatorChannelSummaries(internalReviewBundles);
   const samsung = summaries.find((summary) => summary.slug === 'samsung-service');
   const fitvely = summaries.find((summary) => summary.slug === 'fitvely');
 

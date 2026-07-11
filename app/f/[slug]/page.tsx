@@ -6,6 +6,7 @@ import {
 } from '@/lib/flow/route-indexing-policy';
 import { mergeSourceBackedMyFlowBundles } from '@/lib/flow/source-backed-my-flow';
 import { cloneSeedBundles } from '@/lib/flow/storage';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 function decodeSlug(slug: string) {
@@ -50,5 +51,7 @@ export async function generateMetadata({
 
 export default async function P({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return <PublicFlow slug={decodeSlug(slug)} />;
+  const decodedSlug = decodeSlug(slug);
+  if (!findPublicFlow(decodedSlug)) notFound();
+  return <PublicFlow slug={decodedSlug} />;
 }

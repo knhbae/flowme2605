@@ -524,6 +524,7 @@ test('old review and stateful workspace routes stay out of indexing and public n
   const oldOrInternalLinkSelector = [
     'a[href="/creators"]',
     'a[href="/content-flows"]',
+    'a[href^="/f/channel-"]',
     'a[href^="/ia-compare"]',
     'a[href^="/restart/"]',
     'a[href^="/flow-maps/"][href$="/creator"]',

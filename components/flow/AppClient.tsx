@@ -27,7 +27,6 @@ import {
   canBuildMyFlowStepIcs,
   type MyFlowPortableStepExportInput,
 } from '@/lib/flow/my-flow-step-export';
-import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { getPublicFlowIndexingPolicy } from '@/lib/flow/route-indexing-policy';
 import { countFlowRunFixedDateOverrides, type FlowRunFixedDatePolicy } from '@/lib/flow/flow-run-reuse';
@@ -2491,15 +2490,6 @@ export function FlowList() {
   );
 }
 
-function StatCard({ label, value, compact = false }: { label: string; value: string; compact?: boolean }) {
-  return (
-    <div className={`rounded-lg bg-gray-50 ${compact ? 'p-3' : 'p-4'}`}>
-      <p className="text-xs font-medium text-gray-500">{label}</p>
-      <p className={`${compact ? 'text-lg' : 'text-2xl'} mt-1 font-semibold text-gray-950`}>{value}</p>
-    </div>
-  );
-}
-
 function getSourceStatusLabel(bundle: FlowBundle) {
   if (bundle.flow.source_status === 'real') return '실제 원본';
   if (bundle.flow.source_status === 'preview') return '샘플 후보';
@@ -2522,98 +2512,6 @@ function getCreatorBundlePriority(bundle: FlowBundle): number {
   if (bundle.flow.source_status === 'real') return 1;
   if (bundle.flow.source_status === 'needs_review') return 2;
   return 3;
-}
-
-export function CreatorDirectory() {
-  const { bundles } = useBundles();
-  const summaries = getCreatorChannelSummaries(bundles);
-  const totalFlows = summaries.reduce((sum, item) => sum + item.flow_count, 0);
-  const totalRealFlows = summaries.reduce((sum, item) => sum + item.real_flow_count, 0);
-  const totalSampleCandidates = summaries.reduce((sum, item) => sum + item.sample_candidate_count, 0);
-  const totalSourceReviewFlows = summaries.reduce((sum, item) => sum + item.source_review_count, 0);
-  const categories = Array.from(new Set(summaries.flatMap((item) => item.specialty_tags))).slice(0, 10);
-
-  return (
-    <main className="mx-auto max-w-7xl px-5 py-8">
-      <PlatformNav />
-      <header className="border-b border-gray-200 pb-6">
-        <p className="text-sm font-semibold text-blue-700">Creator Channels</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">제작자 채널</h1>
-        <p className="mt-3 max-w-3xl leading-7 text-gray-600">
-          채널별 콘텐츠가 실제 실행 Flow로 얼마나 잘 전환되는지 확인하는 미리보기입니다.
-        </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-5">
-          <StatCard label="채널" value={`${summaries.length}`} />
-          <StatCard label="Flow 후보" value={`${totalFlows}+`} />
-          <StatCard label="실제 원본" value={`${totalRealFlows}`} />
-          <StatCard label="샘플 후보" value={`${totalSampleCandidates}`} />
-          <StatCard label="원본 검토" value={`${totalSourceReviewFlows}`} />
-        </div>
-        <div className="mt-5 flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <span key={category} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
-              {category}
-            </span>
-          ))}
-        </div>
-      </header>
-      <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {summaries.map((channel) => {
-          const representativeFlows = bundles
-            .filter((bundle) => bundle.flow.owner_user_id === channel.id)
-            .sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b))
-            .slice(0, 3);
-
-          return (
-          <article
-            key={channel.id}
-            className="rounded-lg border border-gray-200 bg-white p-5 hover:border-blue-300"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-blue-700">{channel.channel_type}</p>
-                <h2 className="mt-1 text-xl font-semibold">
-                  <Link className="underline-offset-4 hover:text-blue-700 hover:underline" href={`/u/${channel.slug}`}>
-                    {channel.name}
-                  </Link>
-                </h2>
-                <p className="mt-1 text-sm text-gray-600">{channel.role}</p>
-              </div>
-              <span className="rounded-md bg-blue-50 px-2 py-1 text-sm font-semibold text-blue-700">
-                {channel.real_flow_count} 실제 · {channel.sample_candidate_count} 샘플
-              </span>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-gray-600">{channel.bio}</p>
-            <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
-              <StatCard label="실제 원본" value={`${channel.real_flow_count}`} compact />
-              <StatCard label="샘플 후보" value={`${channel.sample_candidate_count}`} compact />
-              <StatCard label="원본 검토" value={`${channel.source_review_count}`} compact />
-            </div>
-            <p className="mt-3 rounded-md bg-gray-50 px-3 py-2 text-xs font-medium leading-5 text-gray-600">
-              {channel.next_content_action}
-            </p>
-            {representativeFlows.length ? (
-              <div className="mt-4 border-t border-gray-100 pt-4">
-                <p className="text-xs font-semibold text-gray-500">대표 Flow</p>
-                <div className="mt-2 space-y-2">
-                  {representativeFlows.map((bundle) => (
-                    <Link
-                      key={bundle.flow.id}
-                      className="block rounded-md bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700"
-                      href={`/f/${bundle.flow.slug}`}
-                    >
-                      {toContentDisplayTitle(bundle.flow.title)}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </article>
-          );
-        })}
-      </section>
-    </main>
-  );
 }
 
 const homeFlowMapDisplay: Record<string, { title: string; summary: string; note: string; reason: string }> = {

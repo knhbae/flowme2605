@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { getPreviewFlowBundles } from './creator-channel-preview';
 import { seedBundles } from './seed-flows';
 import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
 import type { FlowBundle } from './types';
@@ -53,7 +54,7 @@ test('source freshness rejects future and malformed source review metadata', () 
 });
 
 test('preview library is excluded from normal user route freshness failures', () => {
-  const preview = seedBundles.find((bundle) => bundle.flow.source_status === 'preview');
+  const preview = getPreviewFlowBundles()[0];
   assert.ok(preview);
   assert.equal(
     classifyFlowSourceFreshness(preview, new Date('2026-07-11T00:00:00+09:00')).bucket,
@@ -64,8 +65,8 @@ test('preview library is excluded from normal user route freshness failures', ()
 test('current canonical seed has no missing or overdue normal user source checks', () => {
   const summary = summarizeFlowSourceFreshness(seedBundles, new Date());
 
-  assert.ok(summary.normalUserRouteCount >= 140);
-  assert.ok(summary.previewOrHiddenCount >= 400);
+  assert.ok(summary.normalUserRouteCount >= 130);
+  assert.ok(summary.previewOrHiddenCount >= 20);
   assert.equal(summary.missingMetadataCount, 0);
   assert.equal(summary.reviewDueCount, 0);
   assert.equal(summary.staleCount, 0);

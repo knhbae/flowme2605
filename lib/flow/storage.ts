@@ -1,4 +1,5 @@
 import { seedBundles } from './seed-flows';
+import { isGeneratedPreviewBundle } from './runtime-content-policy';
 import {
   buildSourceBackedFlowMapPersistenceRecordUpdate,
   getSourceBackedFlowMapPersistenceStorageKey,
@@ -176,7 +177,9 @@ export function cloneSeedBundles(): FlowBundle[] {
 
 export function mergeSeedBundles(stored: FlowBundle[], seeds: FlowBundle[]): FlowBundle[] {
   const seedIds = new Set(seeds.map((bundle) => bundle.flow.id));
-  const localOnly = stored.filter((bundle) => !seedIds.has(bundle.flow.id));
+  const localOnly = stored.filter(
+    (bundle) => !seedIds.has(bundle.flow.id) && !isGeneratedPreviewBundle(bundle),
+  );
   return [...seeds, ...localOnly];
 }
 

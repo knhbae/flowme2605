@@ -2157,46 +2157,47 @@ test('creator profile aggregates creator flows from byline links', async ({ page
   await expect(page.getByRole('heading', { name: '결혼 준비 D-300 타임라인 Flow' })).toHaveCount(0);
 });
 
-test('creator directory exposes channel-scale preview library', async ({ page }) => {
+test('creator directory keeps generated samples inside the internal review inventory', async ({ page }) => {
   await page.goto('/creators');
 
-  await expect(page.getByRole('heading', { name: '제작자 채널' })).toBeVisible();
-  await expect(page.getByText(/4\d{2}\+/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: '제작자 채널 재고' })).toBeVisible();
+  await expect(page.getByText('전체 검토 재고')).toBeVisible();
   await expect(page.locator('header').getByText('실제 원본')).toBeVisible();
-  await expect(page.locator('header').getByText('샘플 후보')).toBeVisible();
+  await expect(page.locator('header').getByText('내부 샘플')).toBeVisible();
   await expect(page.locator('header').getByText('원본 검토')).toBeVisible();
+  await expect(page.locator('header')).toContainText('정상 사용자 저장소와 공개 Flow에 포함되지 않습니다');
   await expect(page.getByRole('link', { name: /삼성전자서비스/ })).toBeVisible();
   await expect(page.getByRole('link', { name: 'ThankyouBUBU', exact: true })).toBeVisible();
   await expect(page.getByText('실행성 점수')).toHaveCount(0);
+  await expect(page.locator('a[href^="/f/channel-"]')).toHaveCount(0);
 });
 
 test('creator directory exposes representative creator content links', async ({ page }) => {
   await page.goto('/creators');
 
-  await expect(page.getByText('대표 Flow').first()).toBeVisible();
-  await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
-  await expect(page.locator('a[href="/f/real-fitvely-video-body-fat-6kg-method"]').first()).toBeVisible();
+  await expect(page.getByText('공개 승인 Flow').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-samsung-washer-filter-care"]').first()).toBeVisible();
+  await expect(page.locator('a[href^="/f/channel-"]')).toHaveCount(0);
 });
 
-test('preview creator channel supports browsing 20+ flowified entries', async ({ page }) => {
+test('preview creator channel profile excludes generated sample entries from runtime', async ({ page }) => {
   await page.goto('/u/samsung-service');
 
   await expect(page.getByRole('heading', { name: '삼성전자서비스' })).toBeVisible();
   const channelHeader = page.locator('header');
   await expect(channelHeader).toContainText('콘텐츠');
-  await expect(channelHeader.getByText(/4\d/).first()).toBeVisible();
+  await expect(channelHeader.getByText('2', { exact: true }).first()).toBeVisible();
   await expect(channelHeader).toContainText('총 실행');
   await expect(channelHeader).toContainText('총 복사');
   await expect(channelHeader).not.toContainText('수동 검토');
   await expect(channelHeader).not.toContainText('1차 분류');
   await expect(page.getByText('만든 콘텐츠')).toBeVisible();
   await expect(page.getByLabel('콘텐츠 검색')).toBeVisible();
+  await expect(page.locator('[data-testid="creator-profile-content-card"][data-source-status="preview"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
   await page.getByRole('button', { name: '샘플', exact: true }).click();
-  expect(await page.getByTestId('creator-profile-content-card').count()).toBeGreaterThanOrEqual(20);
-  await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).toBeVisible();
-  await page.getByLabel('콘텐츠 검색').fill('비상 상황');
-  await expect(page.getByRole('link', { name: /가전관리 비상 상황 대응표/ })).toBeVisible();
-  await expect(page.getByRole('link', { name: /가전관리 월간 점검 루틴/ })).not.toBeVisible();
+  await expect(page.getByTestId('creator-profile-content-card')).toHaveCount(0);
 });
 
 test('creator channel can filter real source-backed flows', async ({ page }) => {
@@ -2363,6 +2364,24 @@ test('creator profile merges newly shipped seed flows into existing browser stor
       JSON.stringify([
         {
           flow: {
+            id: 'flow-preview-thankyou-bubu-1',
+            slug: 'channel-thankyou-bubu-legacy-preview',
+            title: 'Legacy generated preview',
+            description: 'Must be removed during runtime migration',
+            category: '운동/홈트',
+            structure_type: 'routine',
+            anchor_type: 'start_date',
+            status: 'published',
+            source_status: 'preview',
+            owner_user_id: 'channel-thankyou-bubu',
+            created_at: '2026-05-20T00:00:00.000Z',
+            updated_at: '2026-05-20T00:00:00.000Z',
+          },
+          sections: [],
+          items: [],
+        },
+        {
+          flow: {
             id: 'flow-local-only',
             slug: 'local-only',
             title: 'Local only old flow',
@@ -2391,6 +2410,11 @@ test('creator profile merges newly shipped seed flows into existing browser stor
   await expect(page.locator('a[href="/f/real-thankyou-bubu-video-full-body-no-jump"]').first()).toBeVisible();
   await page.getByRole('button', { name: '모두 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Local only old flow' })).toBeVisible();
+  const generatedPreviewCount = await page.evaluate(() => {
+    const stored = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') ?? '[]');
+    return stored.filter((bundle: { flow?: { id?: string } }) => bundle.flow?.id?.startsWith('flow-preview-')).length;
+  });
+  expect(generatedPreviewCount).toBe(0);
 });
 
 test('real source public flow exposes source QA metadata and target metadata', async ({ page }) => {
@@ -2417,12 +2441,11 @@ test('vehicle inspection route keeps reservation and result memo beside the time
   await expect(workbench.getByText('검사 결과 후속 memo gap 검토가 필요합니다.')).toHaveCount(0);
 });
 
-test('preview creator flow route opens encoded Korean slug', async ({ page }) => {
-  await page.goto('/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4');
+test('generated preview creator flow route is not public', async ({ page }) => {
+  const response = await page.goto('/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4');
 
-  await expect(page).toHaveURL(/\/f\/channel-samsung-service-/);
-  await expect(page.locator('main.p-8')).toHaveCount(0);
-  await expect(page.locator('h1')).toHaveCount(1);
+  expect(response?.status()).toBe(404);
+  await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
 });
 
 test('new flow creation starts from pasted content and a human pattern choice', async ({ page }) => {

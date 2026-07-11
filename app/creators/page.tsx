@@ -1,4 +1,4 @@
-import { CreatorDirectory } from '@/components/flow/AppClient';
+import { CreatorDirectory } from '@/components/flow/CreatorDirectory';
 import { NON_INDEXABLE_ROUTE_ROBOTS } from '@/lib/flow/route-indexing-policy';
 
 export const metadata = {

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlowMe 런타임 콘텐츠 재고 분리</title>
+<style>
+body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",sans-serif;letter-spacing:0}main{max-width:1240px;margin:auto;padding:32px 20px 64px}header{border-bottom:1px solid #d9dde4;padding-bottom:24px}h1{font-size:clamp(28px,4vw,48px);margin:8px 0 12px}p{line-height:1.65}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:24px 0}.metric{background:#fff;border:1px solid #d9dde4;padding:16px;border-radius:6px}.metric strong{display:block;font-size:28px;margin-top:6px}.policy{background:#fff;border-left:4px solid #2563eb;padding:16px;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-top:28px}article{background:#fff;border:1px solid #d9dde4;border-radius:6px;padding:16px}article h2{font-size:18px;margin:0 0 4px}img{display:block;width:100%;height:auto;border:1px solid #e5e7eb;margin-top:12px}code{font-size:12px}@media(max-width:420px){main{padding:20px 12px}.grid{grid-template-columns:1fr}}
+</style></head><body><main>
+<header><p>2026-07-12 · 현재 소스 기준</p><h1>공개 실행 재고와 내부 샘플 분리</h1><p>오래된 페이지를 단순 삭제하지 않고 공개 승인, 검토 게이트, 내부 생성 샘플로 나눠 실제 사용자 노출 경계를 확인합니다.</p></header>
+<section class="metrics">
+  <div class="metric">공개 승인<strong>77</strong></div>
+  <div class="metric">검토 게이트<strong>100</strong></div>
+  <div class="metric">내부 생성 샘플<strong>440</strong></div>
+  <div class="metric">runtime 생성 샘플<strong>0</strong></div>
+  <div class="metric">legacy 잔존<strong>0</strong></div>
+  <div class="metric">생성 URL 상태<strong>404</strong></div>
+</section>
+<section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지하고, 생성 샘플은 내부 재고에서만 본다. 사용자 draft는 마이그레이션에서 보존한다.</p></section>
+<section class="grid">
+    <article>
+      <h2>홈 모바일</h2>
+      <p><code>/</code> · 390px · HTTP 200</p>
+      <img src="screenshots/home-mobile.png" alt="홈 모바일" loading="lazy">
+    </article>
+    <article>
+      <h2>홈 wide</h2>
+      <p><code>/</code> · 1024px · HTTP 200</p>
+      <img src="screenshots/home-wide.png" alt="홈 wide" loading="lazy">
+    </article>
+    <article>
+      <h2>Flow 찾기 모바일</h2>
+      <p><code>/flows</code> · 390px · HTTP 200</p>
+      <img src="screenshots/flows-mobile.png" alt="Flow 찾기 모바일" loading="lazy">
+    </article>
+    <article>
+      <h2>Flow 찾기 wide</h2>
+      <p><code>/flows</code> · 1024px · HTTP 200</p>
+      <img src="screenshots/flows-wide.png" alt="Flow 찾기 wide" loading="lazy">
+    </article>
+    <article>
+      <h2>공개 승인 Flow 모바일</h2>
+      <p><code>/f/vehicle-inspection-prep</code> · 390px · HTTP 200</p>
+      <img src="screenshots/approved-public-mobile.png" alt="공개 승인 Flow 모바일" loading="lazy">
+    </article>
+    <article>
+      <h2>공개 승인 Flow wide</h2>
+      <p><code>/f/vehicle-inspection-prep</code> · 1024px · HTTP 200</p>
+      <img src="screenshots/approved-public-wide.png" alt="공개 승인 Flow wide" loading="lazy">
+    </article>
+    <article>
+      <h2>검토 게이트 Flow 모바일</h2>
+      <p><code>/f/housing-subscription-account</code> · 390px · HTTP 200</p>
+      <img src="screenshots/review-gate-mobile.png" alt="검토 게이트 Flow 모바일" loading="lazy">
+    </article>
+    <article>
+      <h2>검토 게이트 Flow wide</h2>
+      <p><code>/f/housing-subscription-account</code> · 1024px · HTTP 200</p>
+      <img src="screenshots/review-gate-wide.png" alt="검토 게이트 Flow wide" loading="lazy">
+    </article>
+    <article>
+      <h2>제작자 프로필 모바일</h2>
+      <p><code>/u/samsung-service</code> · 390px · HTTP 200</p>
+      <img src="screenshots/creator-profile-mobile.png" alt="제작자 프로필 모바일" loading="lazy">
+    </article>
+    <article>
+      <h2>제작자 프로필 wide</h2>
+      <p><code>/u/samsung-service</code> · 1024px · HTTP 200</p>
+      <img src="screenshots/creator-profile-wide.png" alt="제작자 프로필 wide" loading="lazy">
+    </article>
+    <article>
+      <h2>내부 재고 모바일</h2>
+      <p><code>/creators</code> · 390px · HTTP 200</p>
+      <img src="screenshots/internal-inventory-mobile.png" alt="내부 재고 모바일" loading="lazy">
+    </article>
+    <article>
+      <h2>내부 재고 wide</h2>
+      <p><code>/creators</code> · 1024px · HTTP 200</p>
+      <img src="screenshots/internal-inventory-wide.png" alt="내부 재고 wide" loading="lazy">
+    </article><article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article></section>
+</main></body></html>

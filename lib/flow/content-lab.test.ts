@@ -32,7 +32,7 @@ import {
   observedSessionNoteDecisionOptions,
 } from './observed-session-note-intake';
 import { observedSessionEvidenceDecisionOptions } from './observed-session-evidence';
-import { seedBundles } from './seed-flows';
+import { internalReviewBundles as seedBundles } from './internal-review-inventory';
 
 const expectedConvertedPilotSlugs = [
   'samsung-aircon-seasonal-check',

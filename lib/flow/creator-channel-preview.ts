@@ -318,9 +318,14 @@ function makePreviewBundle(channel: PreviewChannel, topicIndex: number): FlowBun
   };
 }
 
-export const previewFlowBundles: FlowBundle[] = previewCreatorChannels.flatMap((channel) =>
-  topicTemplates.map((_, topicIndex) => makePreviewBundle(channel, topicIndex)),
-);
+let previewFlowBundlesCache: FlowBundle[] | undefined;
+
+export function getPreviewFlowBundles(): FlowBundle[] {
+  previewFlowBundlesCache ??= previewCreatorChannels.flatMap((channel) =>
+    topicTemplates.map((_, topicIndex) => makePreviewBundle(channel, topicIndex)),
+  );
+  return previewFlowBundlesCache;
+}
 
 export type CreatorChannelSummary = {
   id: string;

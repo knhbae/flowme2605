@@ -1,5 +1,4 @@
 import { parseTextFlow } from './parser';
-import { previewFlowBundles } from './creator-channel-preview';
 import { realContentPilotBundles } from './real-content-pilot-flows';
 import { realSourceChannelBundles } from './real-source-channel-batch';
 import { contentsBatch260601OfficialBundles } from './contents-batch-260601-official';
@@ -5294,7 +5293,6 @@ const baseSeedBundles: FlowBundle[] = [
   ...contentsBatch260601OfficialBundles,
   ...contentsBatch260601CreatorBundles,
   ...curatedSourceAppSeedFlowBundles,
-  ...previewFlowBundles,
 ];
 
 export const seedBundles: FlowBundle[] = baseSeedBundles.map((bundle, index) => polishSourceRiskItemCopy(enrichSeedMeta(bundle, index)));

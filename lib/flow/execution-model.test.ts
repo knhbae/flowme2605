@@ -4,6 +4,7 @@ import {
   getRepresentativeFlowSlugs,
   normalizeExecutionModel,
 } from './execution-model';
+import { getPreviewFlowBundles } from './creator-channel-preview';
 import { seedBundles } from './seed-flows';
 
 function bySlug(slug: string) {
@@ -78,7 +79,7 @@ test('execution model maps representative flows to the correct UX views', () => 
 });
 
 test('preview and exact-video flows do not pollute representative landing set', () => {
-  const preview = seedBundles.find((bundle) => bundle.flow.source_status === 'preview');
+  const preview = getPreviewFlowBundles()[0];
   assert.ok(preview);
   assert.equal(normalizeExecutionModel(preview).exposureStatus, 'catalog_preview');
 
