@@ -36,6 +36,8 @@
 ## 회귀 기준
 
 - canonical seed의 published normal user route는 `source_url`, `source_checked_at`, `source_precision`을 모두 가져야 한다.
+- `source_url`은 유효한 HTTPS 주소, `source_checked_at`은 실제 달력 날짜 또는 유효한 ISO timestamp이자 서울 기준 미래가 아닌 시점이어야 한다.
+- 90일을 넘긴 `review_due`부터 표준 unit suite와 수동 freshness audit를 실패시킨다.
 - `catalog_preview`와 `hidden`은 정상 사용자 freshness gate와 분리한다.
 - 공개 creator profile 기본값에는 `needs_review`와 preview sample이 없어야 한다.
 - 공개 creator profile은 390px/1024px에서 user-surface guardrail과 horizontal overflow 0을 유지한다.

@@ -47,6 +47,16 @@
       "running-5k-4week"
     ]
   },
+  "freshnessGate": {
+    "clockPolicy": "runtime_seoul_date",
+    "reviewDueAfterDays": 90,
+    "staleAfterDays": 180,
+    "reviewDueFailsAudit": true,
+    "futureCheckedAtRejected": true,
+    "malformedSourceMetadataRejected": true,
+    "standardUnitSuiteCovered": true,
+    "standardUnitSuiteFile": "lib/flow/seed-flows.test.ts"
+  },
   "publicCreatorProfile": {
     "route": "/u/flow-curation-team",
     "totalContentCount": 75,
@@ -63,8 +73,9 @@
     "userSurfaceGuardrailHitCount": 0
   },
   "validation": {
-    "seedFlowUnitTestsPassed": 54,
-    "fullUnitTestsPassed": 393,
+    "seedFlowUnitTestsPassed": 56,
+    "sourceFreshnessTargetedTestsPassed": 4,
+    "fullUnitTestsPassed": 395,
     "creatorProfileTargetedE2ePassed": 1,
     "integratedRegressionE2ePassed": 234,
     "buildPassed": true,

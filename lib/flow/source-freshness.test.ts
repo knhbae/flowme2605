@@ -24,6 +24,34 @@ test('source freshness separates current, review-due, and stale user routes', ()
   assert.equal(classifyFlowSourceFreshness(withCheckedAt(moving, '2026-01-01'), asOf).bucket, 'stale');
 });
 
+test('source freshness rejects future and malformed source review metadata', () => {
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  assert.ok(moving);
+  const asOf = new Date('2026-07-11T12:00:00+09:00');
+
+  assert.deepEqual(
+    classifyFlowSourceFreshness(withCheckedAt(moving, '2026-07-12'), asOf).missingFields,
+    ['source_checked_at_future'],
+  );
+  assert.deepEqual(
+    classifyFlowSourceFreshness(withCheckedAt(moving, '2026-02-30'), asOf).missingFields,
+    ['source_checked_at'],
+  );
+
+  const invalidSource = {
+    ...moving,
+    flow: {
+      ...moving.flow,
+      source_url: 'javascript:alert(1)',
+      source_precision: 'unknown',
+    },
+  } as unknown as FlowBundle;
+  assert.deepEqual(
+    classifyFlowSourceFreshness(invalidSource, asOf).missingFields,
+    ['source_url', 'source_precision'],
+  );
+});
+
 test('preview library is excluded from normal user route freshness failures', () => {
   const preview = seedBundles.find((bundle) => bundle.flow.source_status === 'preview');
   assert.ok(preview);
@@ -34,7 +62,7 @@ test('preview library is excluded from normal user route freshness failures', ()
 });
 
 test('current canonical seed has no missing or overdue normal user source checks', () => {
-  const summary = summarizeFlowSourceFreshness(seedBundles, new Date('2026-07-11T00:00:00+09:00'));
+  const summary = summarizeFlowSourceFreshness(seedBundles, new Date());
 
   assert.ok(summary.normalUserRouteCount >= 140);
   assert.ok(summary.previewOrHiddenCount >= 400);

@@ -9,6 +9,7 @@ import {
 import { inferPrimaryDestination } from './destination';
 import { normalizeExecutionModel } from './execution-model';
 import { seedBundles } from './seed-flows';
+import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
 import { virtualUsers } from './users';
 
 const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMap((bundle) =>
@@ -1129,6 +1130,40 @@ test('generated preview flows are executable and source-backed', () => {
     assert.ok(bundle.items.length >= 4, bundle.flow.slug);
     assert.ok(bundle.itemDetails?.some((detail) => detail.completion_criteria), bundle.flow.slug);
   }
+});
+
+test('normal user routes fail the standard suite when source review is due', () => {
+  const summary = summarizeFlowSourceFreshness(seedBundles, new Date());
+  const attention = summary.attention
+    .slice(0, 20)
+    .map((entry) => `${entry.slug}:${entry.bucket}:${entry.checkedAt ?? 'missing'}`)
+    .join(', ');
+
+  assert.equal(summary.missingMetadataCount, 0, attention);
+  assert.equal(summary.reviewDueCount, 0, attention);
+  assert.equal(summary.staleCount, 0, attention);
+});
+
+test('standard source freshness gate rejects future and malformed review metadata', () => {
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  assert.ok(moving);
+  const asOf = new Date('2026-07-11T12:00:00+09:00');
+  const future = {
+    ...moving,
+    flow: { ...moving.flow, source_checked_at: '2026-07-12' },
+  };
+  const malformed = {
+    ...moving,
+    flow: { ...moving.flow, source_url: 'not-a-url', source_precision: undefined },
+  };
+
+  assert.deepEqual(classifyFlowSourceFreshness(future, asOf).missingFields, [
+    'source_checked_at_future',
+  ]);
+  assert.deepEqual(classifyFlowSourceFreshness(malformed, asOf).missingFields, [
+    'source_url',
+    'source_precision',
+  ]);
 });
 
 test('published user routes record source freshness while preview library stays separate', () => {

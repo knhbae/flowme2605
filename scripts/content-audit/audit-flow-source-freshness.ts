@@ -9,6 +9,10 @@ const summary = summarizeFlowSourceFreshness(
 
 console.log(JSON.stringify(summary, null, 2));
 
-if (summary.missingMetadataCount > 0 || summary.staleCount > 0) {
+if (
+  summary.missingMetadataCount > 0 ||
+  summary.reviewDueCount > 0 ||
+  summary.staleCount > 0
+) {
   process.exitCode = 1;
 }
