@@ -3,6 +3,7 @@ import type {
   FlowBundle,
   FlowItem,
   FlowItemDetail,
+  FlowSection,
   PrimaryDestination,
   RiskLevel,
   SourceType,
@@ -125,11 +126,12 @@ export type SourceBackedFlowMapSavedSnapshot = {
 };
 
 export type SourceBackedFlowMapPersonalCopy = {
-  source: 'url_first_custom_start';
+  source: 'url_first_custom_start' | 'version_review';
   originalTitle?: string;
   includedStepIdsByFlow: Record<string, string[]>;
   excludedStepIdsByFlow: Record<string, string[]>;
   stepOverridesByFlow?: Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>>;
+  retainedStepsByFlow?: Record<string, Record<string, SourceBackedFlowMapStepBinding>>;
 };
 
 export type SourceBackedFlowMapPersonalCopyStepOverride = {
@@ -1347,6 +1349,28 @@ function pickSourceBackedPersonalCopyStepOverrides(
   return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 }
 
+function pickSourceBackedPersonalCopyRetainedSteps(
+  personalCopy: SourceBackedFlowMapPersonalCopy,
+  includedStepIdsByFlow: Record<string, string[]>,
+): Record<string, Record<string, SourceBackedFlowMapStepBinding>> | undefined {
+  const sourceRetainedSteps = personalCopy.retainedStepsByFlow;
+  if (!sourceRetainedSteps) return undefined;
+
+  const entries = Object.entries(includedStepIdsByFlow).flatMap(([flowSlug, stepIds]) => {
+    const retainedSteps = sourceRetainedSteps[flowSlug];
+    if (!retainedSteps) return [];
+    const picked = Object.fromEntries(
+      stepIds.flatMap((stepId) => {
+        const retainedStep = retainedSteps[stepId];
+        return retainedStep ? [[stepId, retainedStep] as const] : [];
+      }),
+    );
+    return Object.keys(picked).length > 0 ? [[flowSlug, picked] as const] : [];
+  });
+
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+}
+
 function projectSourceBackedSnapshotForPersonalCopy(
   snapshot: SourceBackedFlowMapSavedSnapshot,
   personalCopy?: SourceBackedFlowMapPersonalCopy,
@@ -1369,7 +1393,8 @@ function projectSourceBackedSnapshotForPersonalCopy(
   const excludedStepIdsByFlow: Record<string, string[]> = {};
 
   publishPackage.public.childFlows.forEach((flow) => {
-    const currentStepIds = flow.steps.map((step) => step.id);
+    const retainedStepIds = Object.keys(personalCopy.retainedStepsByFlow?.[flow.slug] ?? {});
+    const currentStepIds = Array.from(new Set([...flow.steps.map((step) => step.id), ...retainedStepIds]));
     const currentStepIdSet = new Set(currentStepIds);
     const includedStepIds = (personalCopy.includedStepIdsByFlow[flow.slug] ?? [])
       .filter((stepId) => currentStepIdSet.has(stepId));
@@ -1382,6 +1407,7 @@ function projectSourceBackedSnapshotForPersonalCopy(
     excludedStepIdsByFlow[flow.slug] = excludedStepIds;
   });
   const stepOverridesByFlow = pickSourceBackedPersonalCopyStepOverrides(personalCopy, includedStepIdsByFlow);
+  const retainedStepsByFlow = pickSourceBackedPersonalCopyRetainedSteps(personalCopy, includedStepIdsByFlow);
 
   return {
     ...snapshot,
@@ -1396,6 +1422,7 @@ function projectSourceBackedSnapshotForPersonalCopy(
       includedStepIdsByFlow,
       excludedStepIdsByFlow,
       ...(stepOverridesByFlow ? { stepOverridesByFlow } : {}),
+      ...(retainedStepsByFlow ? { retainedStepsByFlow } : {}),
     },
   };
 }
@@ -1420,7 +1447,16 @@ function projectSourceBackedPersistenceRecordForPersonalCopy(
   const childFlows = record.childFlows
     .map((child) => {
       const includedStepIds = new Set(personalCopy.includedStepIdsByFlow[child.slug] ?? []);
-      const steps = child.steps.filter((step) => includedStepIds.has(step.stepId));
+      const retainedSteps = personalCopy.retainedStepsByFlow?.[child.slug] ?? {};
+      const currentStepIds = new Set(child.steps.map((step) => step.stepId));
+      const steps = [
+        ...child.steps
+          .filter((step) => includedStepIds.has(step.stepId))
+          .map((step) => retainedSteps[step.stepId] ?? step),
+        ...Object.values(retainedSteps).filter(
+          (step) => includedStepIds.has(step.stepId) && !currentStepIds.has(step.stepId),
+        ),
+      ];
       return {
         ...child,
         stepCount: steps.length,
@@ -1537,17 +1573,34 @@ export function buildSourceBackedFlowMapPersistenceRecord(
 
 export function buildSourceBackedFlowMapPersistenceRecordUpdate(
   saved: SourceBackedFlowMapSavedSnapshot,
-  options: { savedAt?: string; anchor?: string } = {},
+  options: {
+    savedAt?: string;
+    anchor?: string;
+    baselineRecord?: SourceBackedFlowMapPersistenceRecord;
+  } = {},
 ): SourceBackedFlowMapPersistenceRecord | undefined {
-  const record = buildSourceBackedFlowMapPersistenceRecord(saved.mapId, {
+  const record = options.baselineRecord ?? buildSourceBackedFlowMapPersistenceRecord(saved.mapId, {
     savedAt: options.savedAt,
     anchor: options.anchor ?? saved.anchor,
   });
   if (!record) return undefined;
 
-  return projectSourceBackedPersistenceRecordForPersonalCopy(record, saved.personalCopy, {
+  const projected = projectSourceBackedPersistenceRecordForPersonalCopy(record, saved.personalCopy, {
     title: saved.personalCopy ? saved.title : record.map.title,
   });
+  const anchor = options.anchor ?? saved.anchor;
+  return {
+    ...projected,
+    map: {
+      ...projected.map,
+      title: saved.personalCopy ? saved.title : projected.map.title,
+    },
+    saved: {
+      ...projected.saved,
+      savedAt: options.savedAt ?? saved.savedAt,
+      ...(anchor ? { anchor } : {}),
+    },
+  };
 }
 
 export function buildSourceBackedFlowMapPersonalCopyAdjustment(
@@ -1558,6 +1611,7 @@ export function buildSourceBackedFlowMapPersonalCopyAdjustment(
     savedAt?: string;
     includedStepIdsByFlow: Record<string, string[]>;
     stepOverridesByFlow?: Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>>;
+    baselineRecord?: SourceBackedFlowMapPersistenceRecord;
   },
 ): SourceBackedFlowMapPersonalCopyAdjustment | undefined {
   if (!saved.personalCopy) return undefined;
@@ -1565,12 +1619,63 @@ export function buildSourceBackedFlowMapPersonalCopyAdjustment(
   const hasAnchorOption = Object.prototype.hasOwnProperty.call(options, 'anchor');
   const nextTitle = options.title?.trim() || saved.title;
   const nextAnchor = hasAnchorOption ? options.anchor?.trim() : saved.anchor;
+  const storedBaselineRecord = options.baselineRecord ?? buildSourceBackedFlowMapPersistenceRecord(saved.mapId, {
+    savedAt: options.savedAt,
+    anchor: nextAnchor,
+  });
+  if (!storedBaselineRecord) return undefined;
+  const currentRecord = buildSourceBackedFlowMapPersistenceRecord(saved.mapId, {
+    savedAt: options.savedAt,
+    anchor: nextAnchor,
+  });
+  const baselineRecord = structuredClone(storedBaselineRecord);
+  currentRecord?.childFlows.forEach((currentFlow) => {
+    const baselineFlow = baselineRecord.childFlows.find((flow) => flow.slug === currentFlow.slug);
+    if (!baselineFlow) return;
+    const requestedIds = new Set(options.includedStepIdsByFlow[currentFlow.slug] ?? []);
+    const baselineIds = new Set(baselineFlow.stepIds);
+    currentFlow.steps.forEach((step) => {
+      if (!requestedIds.has(step.stepId) || baselineIds.has(step.stepId)) return;
+      baselineFlow.steps.push(structuredClone(step));
+      baselineFlow.stepIds.push(step.stepId);
+      baselineIds.add(step.stepId);
+    });
+    baselineFlow.stepCount = baselineFlow.steps.length;
+    baselineFlow.itemFallbackCount = baselineFlow.steps.reduce(
+      (total, step) => total + (step.textFallback.items?.length ?? 0),
+      0,
+    );
+  });
+  const getAvailableStepIds = (flow: SourceBackedFlowMapChildBinding): string[] => Array.from(new Set([
+    ...flow.stepIds,
+    ...(saved.personalCopy?.includedStepIdsByFlow[flow.slug] ?? []),
+    ...(saved.personalCopy?.excludedStepIdsByFlow[flow.slug] ?? []),
+    ...Object.keys(saved.personalCopy?.retainedStepsByFlow?.[flow.slug] ?? {}),
+  ]));
+  const includedStepIdsByFlow = Object.fromEntries(
+    baselineRecord.childFlows.flatMap((flow) => {
+      const availableStepIds = getAvailableStepIds(flow);
+      const requestedIds = new Set(options.includedStepIdsByFlow[flow.slug] ?? []);
+      const includedIds = availableStepIds.filter((stepId) => requestedIds.has(stepId));
+      return includedIds.length > 0 ? [[flow.slug, includedIds] as const] : [];
+    }),
+  );
+  const excludedStepIdsByFlow = Object.fromEntries(
+    baselineRecord.childFlows.flatMap((flow) => {
+      const availableStepIds = getAvailableStepIds(flow);
+      const includedIds = new Set(includedStepIdsByFlow[flow.slug] ?? []);
+      return includedIds.size > 0
+        ? [[flow.slug, availableStepIds.filter((stepId) => !includedIds.has(stepId))] as const]
+        : [];
+    }),
+  );
   const draft: SourceBackedFlowMapSavedSnapshot = {
     ...saved,
     title: nextTitle,
     personalCopy: {
       ...saved.personalCopy,
-      includedStepIdsByFlow: options.includedStepIdsByFlow,
+      includedStepIdsByFlow,
+      excludedStepIdsByFlow,
       ...(options.stepOverridesByFlow !== undefined
         ? { stepOverridesByFlow: options.stepOverridesByFlow }
         : saved.personalCopy.stepOverridesByFlow
@@ -1584,22 +1689,183 @@ export function buildSourceBackedFlowMapPersonalCopyAdjustment(
     delete draft.anchor;
   }
 
-  const snapshot = buildSourceBackedFlowMapSavedSnapshotUpdate(draft, {
-    savedAt: options.savedAt,
+  const savedAt = options.savedAt ?? saved.savedAt;
+  const persistenceRecord = buildSourceBackedFlowMapPersistenceRecordUpdate(draft, {
+    savedAt,
     ...(hasAnchorOption ? { anchor: nextAnchor } : {}),
-  });
-  if (!snapshot || snapshot.flowSlugs.length === 0) return undefined;
-
-  const persistenceRecord = buildSourceBackedFlowMapPersistenceRecordUpdate(snapshot, {
-    savedAt: snapshot.savedAt,
-    ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+    baselineRecord,
   });
   if (!persistenceRecord || persistenceRecord.childFlows.length === 0) return undefined;
+  const flowSlugs = persistenceRecord.childFlows.map((flow) => flow.slug);
+  const snapshot: SourceBackedFlowMapSavedSnapshot = {
+    ...draft,
+    savedAt,
+    flowSlugs,
+    stepCountsByFlow: Object.fromEntries(persistenceRecord.childFlows.map((flow) => [flow.slug, flow.stepCount])),
+    riskLevelsByFlow: pickSourceBackedRecordValues(draft.riskLevelsByFlow, flowSlugs),
+    sourceCheckedAtByFlow: pickSourceBackedRecordValues(draft.sourceCheckedAtByFlow, flowSlugs),
+    ...(persistenceRecord.personalCopy ? { personalCopy: persistenceRecord.personalCopy } : {}),
+  };
 
   return {
     snapshot,
     persistenceRecord,
   };
+}
+
+export function buildSourceBackedFlowMapReviewedVersion(
+  saved: SourceBackedFlowMapSavedSnapshot,
+  personalCopy: SourceBackedFlowMapPersonalCopy,
+  options: { savedAt?: string; anchor?: string } = {},
+): SourceBackedFlowMapPersonalCopyAdjustment | undefined {
+  const current = buildSourceBackedFlowMapSavedSnapshot(saved.mapId, {
+    savedAt: options.savedAt,
+    anchor: options.anchor ?? saved.anchor,
+  });
+  if (!current) return undefined;
+  const snapshot = projectSourceBackedSnapshotForPersonalCopy(current, personalCopy, {
+    title: saved.title,
+  });
+  const persistenceRecord = buildSourceBackedFlowMapPersistenceRecordUpdate(snapshot, {
+    savedAt: snapshot.savedAt,
+    ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+  });
+  if (!persistenceRecord) return undefined;
+  return { snapshot, persistenceRecord };
+}
+
+function retainedStepToItem(
+  bundle: FlowBundle,
+  step: SourceBackedFlowMapStepBinding,
+  existing?: FlowItem,
+): FlowItem {
+  const item: FlowItem = {
+    ...(existing ?? {
+      id: step.stepId,
+      flow_id: bundle.flow.id,
+      type: step.calendar.mode === 'none' ? 'todo' : 'calendar',
+      order: bundle.items.length + 1,
+    }),
+    id: step.stepId,
+    flow_id: bundle.flow.id,
+    title: step.title,
+    description: step.textFallback.description,
+    type: step.calendar.mode === 'none' ? 'todo' : 'calendar',
+    source_type: step.sourceType,
+    risk_level: step.riskLevel,
+  };
+  if (step.calendar.mode === 'anchor_offset' && typeof step.calendar.dayOffset === 'number') {
+    item.day_offset = step.calendar.dayOffset;
+  } else {
+    delete item.day_offset;
+  }
+  if (step.calendar.window) {
+    item.date_window = {
+      label: step.calendar.window.label,
+      start_day_offset: step.calendar.window.startDayOffset,
+      end_day_offset: step.calendar.window.endDayOffset,
+    };
+  } else {
+    delete item.date_window;
+  }
+  if (step.calendar.repeatRule) item.repeat_rule = step.calendar.repeatRule;
+  else delete item.repeat_rule;
+  return item;
+}
+
+function retainedStepToDetail(step: SourceBackedFlowMapStepBinding): FlowItemDetail {
+  return {
+    item_id: step.stepId,
+    ...(step.textFallback.description ? { why: step.textFallback.description } : {}),
+    ...(step.textFallback.items?.length ? { how: step.textFallback.items.join('\n') } : {}),
+    ...(step.textFallback.doneWhen ? { completion_criteria: step.textFallback.doneWhen } : {}),
+    ...(step.sourceUrl
+      ? {
+          links: [{
+            label: '참고 원문',
+            url: step.sourceUrl,
+            type: step.sourceType === 'official' ? 'official' : step.sourceType === 'creator_experience' ? 'creator' : 'reference',
+          }],
+        }
+      : {}),
+  };
+}
+
+export function applySourceBackedPersonalCopyToBundle(
+  bundle: FlowBundle,
+  personalCopy?: SourceBackedFlowMapPersonalCopy,
+): FlowBundle {
+  const retainedSteps = personalCopy?.retainedStepsByFlow?.[bundle.flow.slug];
+  if (!retainedSteps || Object.keys(retainedSteps).length === 0) return bundle;
+
+  const retainedIds = new Set(Object.keys(retainedSteps));
+  const existingIds = new Set(bundle.items.map((item) => item.id));
+  const needsPersonalSection = Object.keys(retainedSteps).some((stepId) => !existingIds.has(stepId));
+  const personalSectionId = `${bundle.flow.id}-personal-retained`;
+  const sections: FlowSection[] = needsPersonalSection && !bundle.sections.some((section) => section.id === personalSectionId)
+    ? [...bundle.sections, { id: personalSectionId, flow_id: bundle.flow.id, title: '내가 유지한 할 일', order: bundle.sections.length + 1 }]
+    : bundle.sections;
+  const items = [
+    ...bundle.items.map((item) => retainedSteps[item.id] ? retainedStepToItem(bundle, retainedSteps[item.id], item) : item),
+    ...Object.values(retainedSteps)
+      .filter((step) => !existingIds.has(step.stepId))
+      .map((step, index) => ({
+        ...retainedStepToItem(bundle, step),
+        section_id: personalSectionId,
+        order: bundle.items.length + index + 1,
+      })),
+  ];
+  const existingDetails = new Map((bundle.itemDetails ?? []).map((detail) => [detail.item_id, detail]));
+  retainedIds.forEach((stepId) => existingDetails.set(stepId, retainedStepToDetail(retainedSteps[stepId])));
+
+  return {
+    ...bundle,
+    sections,
+    items,
+    itemDetails: Array.from(existingDetails.values()),
+  };
+}
+
+export function applySourceBackedPersistenceRecordToBundle(
+  bundle: FlowBundle,
+  record?: SourceBackedFlowMapPersistenceRecord,
+  personalCopy?: SourceBackedFlowMapPersonalCopy,
+): FlowBundle {
+  const child = record?.childFlows.find((flow) => flow.slug === bundle.flow.slug);
+  if (!child) return applySourceBackedPersonalCopyToBundle(bundle, personalCopy);
+
+  const currentItemsById = new Map(bundle.items.map((item) => [item.id, item]));
+  const excludedIds = new Set(personalCopy?.excludedStepIdsByFlow[bundle.flow.slug] ?? []);
+  const savedIds = new Set(child.steps.map((step) => step.stepId));
+  const personalSectionId = `${bundle.flow.id}-saved-version`;
+  const needsSavedSection = child.steps.some((step) => !currentItemsById.has(step.stepId));
+  const sections: FlowSection[] = needsSavedSection && !bundle.sections.some((section) => section.id === personalSectionId)
+    ? [...bundle.sections, { id: personalSectionId, flow_id: bundle.flow.id, title: '저장한 내용', order: bundle.sections.length + 1 }]
+    : bundle.sections;
+  const items = [
+    ...child.steps.map((step, index) => ({
+      ...retainedStepToItem(bundle, step, currentItemsById.get(step.stepId)),
+      ...(!currentItemsById.has(step.stepId) ? { section_id: personalSectionId } : {}),
+      order: currentItemsById.get(step.stepId)?.order ?? index + 1,
+    })),
+    ...bundle.items.filter((item) => excludedIds.has(item.id) && !savedIds.has(item.id)),
+  ];
+  const detailsById = new Map((bundle.itemDetails ?? []).map((detail) => [detail.item_id, detail]));
+  child.steps.forEach((step) => {
+    const currentItem = currentItemsById.get(step.stepId);
+    const matchesCurrentSource = currentItem?.title === step.title
+      && (currentItem.description ?? '') === step.textFallback.description;
+    if (!matchesCurrentSource || !detailsById.has(step.stepId)) {
+      detailsById.set(step.stepId, retainedStepToDetail(step));
+    }
+  });
+  const projected = {
+    ...bundle,
+    sections,
+    items,
+    itemDetails: Array.from(detailsById.values()).filter((detail) => items.some((item) => item.id === detail.item_id)),
+  };
+  return applySourceBackedPersonalCopyToBundle(projected, personalCopy);
 }
 
 export function assessSourceBackedFlowMapUpdate(saved: SourceBackedFlowMapSavedSnapshot): SourceBackedFlowMapUpdateAssessment {

@@ -30,6 +30,14 @@ import { getCreatorChannelSummaries } from '@/lib/flow/creator-channel-preview';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { countFlowRunFixedDateOverrides, type FlowRunFixedDatePolicy } from '@/lib/flow/flow-run-reuse';
 import {
+  buildFlowVersionReview,
+  buildFlowVersionReviewPersonalCopy,
+  type FlowVersionReview,
+  type FlowVersionReviewItem,
+  type FlowVersionReviewSelection,
+  type FlowVersionReviewSelections,
+} from '@/lib/flow/flow-version-review';
+import {
   getFlowScopedMyFlowPersonalExecutionState,
   getStoredMyFlowDateOverrides,
   getStoredMyFlowItemDrafts,
@@ -39,12 +47,14 @@ import {
 } from '@/lib/flow/my-flow-personal-state';
 import {
   assessSourceBackedFlowMapUpdate,
+  applySourceBackedPersistenceRecordToBundle,
   buildSourceBackedFlowMapPersonalCopyAdjustment,
   buildSourceBackedFlowMapPersistenceRecordUpdate,
   buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapSavedSnapshotUpdate,
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
+  buildSourceBackedFlowMapReviewedVersion,
   getSourceBackedFlowMapDateAnchorCopy,
   getCuratedSourceAppSeedFlowMaps,
   getSourceBackedHomepageFlowMaps,
@@ -55,6 +65,7 @@ import {
   type SourceBackedFlowMapUpdateAssessment,
   type SourceBackedFlowMapSavedSnapshot,
   type SourceBackedFlowMapPersonalCopyStepOverride,
+  type SourceBackedFlowMapPersistenceRecord,
 } from '@/lib/flow/source-backed-my-flow';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
@@ -2905,6 +2916,9 @@ type MyFlowReuseDraft = {
   anchor: string;
   fixedDatePolicy: FlowRunFixedDatePolicy | '';
   fixedDateOverrideCount: number;
+  versionMode: 'current' | 'latest';
+  versionSelections: FlowVersionReviewSelections;
+  sensitiveReviewConfirmed: boolean;
   status: string;
 };
 type MyFlowReuseNotice = {
@@ -3170,6 +3184,9 @@ type MyFlowMapUpdateNotice = {
   savedVersion: string;
   currentVersion?: string;
   anchor?: string;
+  savedRecord?: SourceBackedFlowMapPersistenceRecord;
+  currentRecord?: SourceBackedFlowMapPersistenceRecord;
+  versionReview?: FlowVersionReview;
 };
 
 type MyFlowMapUpdateComparisonRow = {
@@ -3204,6 +3221,18 @@ function getMyFlowDismissedMapUpdates(): MyFlowDismissedMapUpdates {
 function saveMyFlowDismissedMapUpdates(value: MyFlowDismissedMapUpdates): void {
   if (typeof window === 'undefined') return;
   window.localStorage.setItem(MY_FLOW_DISMISSED_MAP_UPDATES_KEY, JSON.stringify(value));
+}
+
+function getStoredMyFlowMapPersistenceRecord(mapId: string): SourceBackedFlowMapPersistenceRecord | undefined {
+  if (typeof window === 'undefined') return undefined;
+  try {
+    const parsed = JSON.parse(
+      window.localStorage.getItem(getSourceBackedFlowMapPersistenceStorageKey(mapId)) || 'null',
+    ) as SourceBackedFlowMapPersistenceRecord | null;
+    return parsed?.recordType === 'saved_source_backed_flow_map' && parsed.map?.id === mapId ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function toSourceBackedSavedSnapshot(snapshot: SavedFlowMapSnapshot): SourceBackedFlowMapSavedSnapshot {
@@ -3260,7 +3289,10 @@ function buildMyFlowMapUpdateComparisonRows(
     .filter((row) => row.changeLabels.length > 0);
 }
 
-function getMyFlowMapUpdateNotice(snapshot: SavedFlowMapSnapshot): MyFlowMapUpdateNotice | undefined {
+function getMyFlowMapUpdateNotice(
+  snapshot: SavedFlowMapSnapshot,
+  storedRecord?: SourceBackedFlowMapPersistenceRecord,
+): MyFlowMapUpdateNotice | undefined {
   const sourceSnapshot = toSourceBackedSavedSnapshot(snapshot);
   const currentSnapshot = buildSourceBackedFlowMapSavedSnapshotUpdate(sourceSnapshot, {
     savedAt: snapshot.savedAt,
@@ -3271,6 +3303,24 @@ function getMyFlowMapUpdateNotice(snapshot: SavedFlowMapSnapshot): MyFlowMapUpda
   const affectedCount = Math.max(assessment.affectedFlows.length, snapshot.flowSlugs.length);
   const reasons = assessment.reasons.map(formatMyFlowMapUpdateReason);
   const comparisonRows = buildMyFlowMapUpdateComparisonRows(sourceSnapshot, currentSnapshot);
+  const currentRecord = buildSourceBackedFlowMapPersistenceRecord(snapshot.mapId, {
+    savedAt: snapshot.savedAt,
+    ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+  });
+  const savedRecord = storedRecord ?? (currentRecord
+    ? {
+        ...structuredClone(currentRecord),
+        map: { ...currentRecord.map, version: snapshot.version },
+      }
+    : undefined);
+  const versionReview = savedRecord && currentRecord
+    ? buildFlowVersionReview({
+        savedRecord,
+        currentRecord,
+        savedVersion: snapshot.version,
+        personalCopy: snapshot.personalCopy,
+      })
+    : undefined;
 
   if (assessment.status === 'map_missing') {
     return {
@@ -3287,6 +3337,9 @@ function getMyFlowMapUpdateNotice(snapshot: SavedFlowMapSnapshot): MyFlowMapUpda
       savedVersion: assessment.savedVersion,
       ...(assessment.currentVersion ? { currentVersion: assessment.currentVersion } : {}),
       ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+      ...(savedRecord ? { savedRecord } : {}),
+      ...(currentRecord ? { currentRecord } : {}),
+      ...(versionReview ? { versionReview } : {}),
     };
   }
 
@@ -3304,7 +3357,43 @@ function getMyFlowMapUpdateNotice(snapshot: SavedFlowMapSnapshot): MyFlowMapUpda
     savedVersion: assessment.savedVersion,
     ...(assessment.currentVersion ? { currentVersion: assessment.currentVersion } : {}),
     ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+    ...(savedRecord ? { savedRecord } : {}),
+    ...(currentRecord ? { currentRecord } : {}),
+    ...(versionReview ? { versionReview } : {}),
   };
+}
+
+function getFlowVersionReviewItemLabel(item: FlowVersionReviewItem): string {
+  if (item.kind === 'added') return '새 할 일';
+  if (item.kind === 'removed') return '빠진 할 일';
+  return item.hasPersonalConflict ? '내 수정과 겹침' : '내용 바뀜';
+}
+
+function getFlowVersionReviewItemChoices(
+  item: FlowVersionReviewItem,
+): [FlowVersionReviewSelection, string, string][] {
+  if (item.kind === 'added') {
+    return [
+      ['include', '새 실행에 추가', '새로 생긴 할 일을 이번 실행에 넣어요.'],
+      ['exclude', '이번에는 제외', '새 내용은 확인했지만 이번 실행에는 넣지 않아요.'],
+    ];
+  }
+  if (item.kind === 'removed') {
+    return [
+      ['keep_removed', '내 할 일로 유지', '원문에서 빠져도 내 사본에는 그대로 남겨요.'],
+      ['exclude', '새 실행에서 제외', '지난 실행 기록에만 남기고 새 실행에서는 빼요.'],
+    ];
+  }
+  return item.hasPersonalConflict
+    ? [
+        ['use_latest_keep_personal', '새 내용에 내 수정 유지', '바뀐 원문을 쓰되 내가 정한 제목·메모·날짜를 이어가요.'],
+        ['use_latest', '새 내용만 사용', '겹치는 내 수정을 지우고 새 원문 기준으로 시작해요.'],
+        ['keep_current', '현재 내용 유지', '이번 새 실행도 지금 쓰던 원문 내용으로 시작해요.'],
+      ]
+    : [
+        ['use_latest', '새 내용 사용', '바뀐 원문 기준으로 새 실행을 시작해요.'],
+        ['keep_current', '현재 내용 유지', '이번 새 실행도 지금 쓰던 내용으로 시작해요.'],
+      ];
 }
 
 function isMyFlowMapUpdateDismissed(
@@ -3884,6 +3973,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [flowListQuery, setFlowListQuery] = useState('');
   const [checksBySlug, setChecksBySlug] = useState<Record<string, Record<string, boolean>>>({});
   const [savedFlowMapBySlug, setSavedFlowMapBySlug] = useState<Record<string, SavedFlowMapSnapshot>>({});
+  const [savedFlowMapPersistenceById, setSavedFlowMapPersistenceById] = useState<Record<string, SourceBackedFlowMapPersistenceRecord>>({});
   const [myFlowDateOverrides, setMyFlowDateOverrides] = useState<Record<string, string>>({});
   const [myFlowHiddenFlowSlugs, setMyFlowHiddenFlowSlugs] = useState<string[]>([]);
   const [myFlowItemDrafts, setMyFlowItemDrafts] = useState<Record<string, MyFlowItemDraft>>({});
@@ -3916,7 +4006,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowLargeInventoryOpen, setMyFlowLargeInventoryOpen] = useState(false);
   const [myFlowDismissedMapUpdates, setMyFlowDismissedMapUpdates] = useState<MyFlowDismissedMapUpdates>({});
   const [myFlowExpandedMapUpdateId, setMyFlowExpandedMapUpdateId] = useState('');
-  const [myFlowAppliedMapUpdateId, setMyFlowAppliedMapUpdateId] = useState('');
   const [myFlowHandledSavedMapId, setMyFlowHandledSavedMapId] = useState('');
   const [myFlowPostSaveWorkspaceOpen, setMyFlowPostSaveWorkspaceOpen] = useState(false);
   const [myFlowStepCopiedKey, setMyFlowStepCopiedKey] = useState('');
@@ -4059,9 +4148,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const refreshSavedFlowState = () => {
     const progress = getActiveFlowProgress(myFlowBundles);
+    const mapIndex = getSavedFlowMapIndexByFlowSlug();
     setActiveProgress(progress);
     setChecksBySlug(Object.fromEntries(progress.map((item) => [item.slug, getChecks(item.slug)])));
-    setSavedFlowMapBySlug(getSavedFlowMapIndexByFlowSlug());
+    setSavedFlowMapBySlug(mapIndex);
+    setSavedFlowMapPersistenceById(
+      Object.fromEntries(
+        Array.from(new Set(Object.values(mapIndex).map((snapshot) => snapshot.mapId))).flatMap((mapId) => {
+          const record = getStoredMyFlowMapPersistenceRecord(mapId);
+          return record ? [[mapId, record] as const] : [];
+        }),
+      ),
+    );
     setMyFlowStepItemChecks(getMyFlowStepItemChecks());
     setMyFlowCompletionFeedbackBySlug(
       Object.fromEntries(
@@ -4081,6 +4179,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setActiveProgress(demoState.progress);
       setChecksBySlug(demoState.checksBySlug);
       setSavedFlowMapBySlug(demoState.savedFlowMapBySlug);
+      setSavedFlowMapPersistenceById({});
       setSelectedSavedFlowSlug('all');
       setSavedView(initialView);
       setMyFlowVisibleMonth(getMyFlowMonthStart('2026-05-28'));
@@ -4116,7 +4215,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowPostSaveWorkspaceOpen(false);
       setMyFlowDismissedMapUpdates({});
       setMyFlowExpandedMapUpdateId('');
-      setMyFlowAppliedMapUpdateId('');
       setMyFlowPersonalCopySettingsDraft(null);
       return;
     }
@@ -4126,7 +4224,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowHiddenFlowSlugs(getStoredMyFlowHiddenFlowSlugs());
     setMyFlowDismissedMapUpdates(getMyFlowDismissedMapUpdates());
     setMyFlowExpandedMapUpdateId('');
-    setMyFlowAppliedMapUpdateId('');
     setMyFlowReuseDraft(null);
     setMyFlowReuseNotice(null);
     refreshSavedFlowState();
@@ -4141,12 +4238,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const anchor = progress.anchor ?? '';
       const checks = checksBySlug[progress.slug] ?? {};
       const itemStates = getItemStates(progress.slug);
-      const allRows = getMyFlowRows(progressBundle, anchor);
+      const savedMap = savedFlowMapBySlug[progress.slug];
+      const effectiveBundle = applySourceBackedPersistenceRecordToBundle(
+        progressBundle,
+        savedMap ? savedFlowMapPersistenceById[savedMap.mapId] : undefined,
+        savedMap?.personalCopy,
+      );
+      const allRows = getMyFlowRows(effectiveBundle, anchor);
       const excludedRows = allRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
       const rows = allRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
-      const executableIds = getExecutableCheckIds(progressBundle, anchor);
-      const savedMap = savedFlowMapBySlug[progress.slug];
-      const total = Math.max(executableIds.filter((id) => !isItemStateSkipped(itemStates, id)).length, progress.total);
+      const executableIds = getExecutableCheckIds(effectiveBundle, anchor);
+      const executableTotal = executableIds.filter((id) => !isItemStateSkipped(itemStates, id)).length;
+      const total = savedMap ? executableTotal : Math.max(executableTotal, progress.total);
       const done = executableIds.filter((id) => checks[id] && !isItemStateSkipped(itemStates, id)).length;
       const anchorDisplay = getMyFlowAnchorDisplay(progressBundle, anchor, myFlowDemoMode);
       const meta = [
@@ -4156,7 +4259,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ].filter(Boolean).join(' · ');
       items.push({
         progress,
-        bundle: progressBundle,
+        bundle: effectiveBundle,
         anchor,
         checks,
         itemStates,
@@ -4185,7 +4288,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     Object.values(savedFlowMapBySlug).reduce((snapshots, snapshot) => snapshots.set(snapshot.mapId, snapshot), new Map<string, SavedFlowMapSnapshot>()).values(),
   );
   const myFlowMapUpdateNotices = savedFlowMapSnapshots.flatMap((snapshot) => {
-    const notice = getMyFlowMapUpdateNotice(snapshot);
+    const notice = getMyFlowMapUpdateNotice(snapshot, savedFlowMapPersistenceById[snapshot.mapId]);
     if (notice && isMyFlowMapUpdateDismissed(notice, myFlowDismissedMapUpdates)) return [];
     return notice ? [notice] : [];
   });
@@ -4872,6 +4975,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       savedAt: new Date().toISOString(),
       includedStepIdsByFlow: sourceSnapshot.personalCopy.includedStepIdsByFlow,
       stepOverridesByFlow: nextOverridesByFlow,
+      baselineRecord: savedFlowMapPersistenceById[sourceSnapshot.mapId],
     });
     if (!adjusted) return false;
 
@@ -5385,7 +5489,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const completeSavedFlow = (flow: MySavedFlow) => {
-    const executableIds = getExecutableCheckIds(flow.bundle, flow.anchor);
+    const executableIds = getExecutableCheckIds(flow.bundle, flow.anchor)
+      .filter((id) => !isItemStateSkipped(flow.itemStates, id));
     const nextChecks = executableIds.reduce(
       (next, id) => ({
         ...next,
@@ -5467,8 +5572,41 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     updateMyFlowCompletionFeedbackDraft({ status: '전송 전 메모를 이 기기에 저장했어요.' });
   };
 
-  const openMyFlowReuse = (flow: MySavedFlow) => {
+  const getMyFlowVersionNoticeForFlow = (flow: MySavedFlow) => flow.savedMap
+    ? getMyFlowMapUpdateNotice(flow.savedMap, savedFlowMapPersistenceById[flow.savedMap.mapId])
+    : undefined;
+
+  const getDefaultFlowVersionSelections = (
+    review: FlowVersionReview | undefined,
+    flowSlug: string,
+  ): FlowVersionReviewSelections => Object.fromEntries(
+    (review?.items ?? []).flatMap((item) => (
+      item.flowSlug === flowSlug && item.kind === 'changed' && !item.hasPersonalConflict
+        ? [[item.key, 'use_latest'] as const]
+        : []
+    )),
+  );
+
+  const getMyFlowReuseAnchorContext = (flow: MySavedFlow) => {
+    const publishPackage = flow.savedMap?.mapId
+      ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId)
+      : undefined;
+    const anchorCopy = publishPackage
+      ? getSourceBackedFlowMapDateAnchorCopy(publishPackage)
+      : getSourceBackedFlowMapDateAnchorCopy();
+    return {
+      required: flow.bundle.flow.anchor_type !== 'none'
+        || Boolean(publishPackage?.map.setupInput)
+        || Boolean(flow.savedMap?.anchor),
+      label: publishPackage && (publishPackage.map.setupInput || flow.savedMap?.anchor)
+        ? anchorCopy.label
+        : getAnchorInputLabel(flow.bundle),
+    };
+  };
+
+  const openMyFlowReuse = (flow: MySavedFlow, versionMode: 'current' | 'latest' = 'current') => {
     const personalExecutionState = getFlowScopedMyFlowPersonalExecutionState(flow.progress.slug);
+    const versionNotice = getMyFlowVersionNoticeForFlow(flow);
     setMyFlowCompletionFeedbackDraft(null);
     setMyFlowReuseNotice(null);
     setMyFlowReuseDraft({
@@ -5479,6 +5617,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         flow.savedMap?.personalCopy,
         personalExecutionState,
       ),
+      versionMode,
+      versionSelections: versionMode === 'latest'
+        ? getDefaultFlowVersionSelections(versionNotice?.versionReview, flow.progress.slug)
+        : {},
+      sensitiveReviewConfirmed: false,
       status: '',
     });
   };
@@ -5487,16 +5630,58 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowReuseDraft((current) => (current ? { ...current, ...patch, status: patch.status ?? '' } : current));
   };
 
+  const updateMyFlowVersionSelection = (item: FlowVersionReviewItem, selection: FlowVersionReviewSelection) => {
+    setMyFlowReuseDraft((current) => current ? {
+      ...current,
+      versionSelections: { ...current.versionSelections, [item.key]: selection },
+      status: '',
+    } : current);
+  };
+
   const startMyFlowReuse = (flow: MySavedFlow) => {
     if (myFlowReuseDraft?.flowSlug !== flow.progress.slug) return;
-    const requiresAnchor = flow.bundle.flow.anchor_type !== 'none';
+    const anchorContext = getMyFlowReuseAnchorContext(flow);
+    const requiresAnchor = anchorContext.required;
     const anchor = myFlowReuseDraft.anchor.trim();
     if (requiresAnchor && !/^\d{4}-\d{2}-\d{2}$/.test(anchor)) {
-      updateMyFlowReuseDraft({ status: `${getAnchorInputLabel(flow.bundle)}을 선택해 주세요.` });
+      updateMyFlowReuseDraft({ status: `${anchorContext.label}을 선택해 주세요.` });
       return;
     }
     if (requiresAnchor && myFlowReuseDraft.fixedDateOverrideCount > 0 && !myFlowReuseDraft.fixedDatePolicy) {
       updateMyFlowReuseDraft({ status: '따로 바꾼 날짜를 어떻게 처리할지 선택해 주세요.' });
+      return;
+    }
+
+    const versionNotice = getMyFlowVersionNoticeForFlow(flow);
+    const sourceSnapshot = flow.savedMap ? toSourceBackedSavedSnapshot(flow.savedMap) : undefined;
+    const versionResult = myFlowReuseDraft.versionMode === 'latest'
+      && versionNotice?.versionReview
+      && versionNotice.savedRecord
+      && sourceSnapshot
+      ? buildFlowVersionReviewPersonalCopy({
+          review: versionNotice.versionReview,
+          savedRecord: versionNotice.savedRecord,
+          personalCopy: sourceSnapshot.personalCopy,
+          selections: myFlowReuseDraft.versionSelections,
+          flowSlug: flow.progress.slug,
+        })
+      : undefined;
+    if (myFlowReuseDraft.versionMode === 'latest' && !versionResult?.personalCopy) {
+      updateMyFlowReuseDraft({ status: versionResult?.unresolvedKeys.length ? '바뀐 할 일의 처리 방법을 모두 선택해 주세요.' : '새 내용을 불러오지 못했습니다.' });
+      return;
+    }
+    if (myFlowReuseDraft.versionMode === 'latest' && versionNotice?.versionReview?.sensitive && !myFlowReuseDraft.sensitiveReviewConfirmed) {
+      updateMyFlowReuseDraft({ status: '공식·민감 일정의 변경 내용을 확인해 주세요.' });
+      return;
+    }
+    const reviewedVersion = myFlowReuseDraft.versionMode === 'latest' && sourceSnapshot && versionResult?.personalCopy
+      ? buildSourceBackedFlowMapReviewedVersion(sourceSnapshot, versionResult.personalCopy, {
+          savedAt: new Date().toISOString(),
+          ...(requiresAnchor ? { anchor } : {}),
+        })
+      : undefined;
+    if (myFlowReuseDraft.versionMode === 'latest' && !reviewedVersion) {
+      updateMyFlowReuseDraft({ status: '선택한 새 내용을 저장하지 못했습니다.' });
       return;
     }
 
@@ -5507,12 +5692,32 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
 
+    if (reviewedVersion && typeof window !== 'undefined') {
+      window.localStorage.setItem(
+        getSourceBackedFlowMapSnapshotStorageKey(reviewedVersion.snapshot.mapId),
+        JSON.stringify(reviewedVersion.snapshot),
+      );
+      window.localStorage.setItem(
+        getSourceBackedFlowMapPersistenceStorageKey(reviewedVersion.snapshot.mapId),
+        JSON.stringify(reviewedVersion.persistenceRecord),
+      );
+    }
+
     const nextRun = startFlowRunFromCompleted(flow.progress.slug, {
       previousRunId: completedRun.runId,
-      reuseMode: requiresAnchor ? 'new_anchor' : 'same_copy',
+      reuseMode: myFlowReuseDraft.versionMode === 'latest'
+        ? 'reviewed_version'
+        : requiresAnchor ? 'new_anchor' : 'same_copy',
       ...(requiresAnchor ? { anchor } : {}),
       ...(requiresAnchor && myFlowReuseDraft.fixedDatePolicy
         ? { fixedDatePolicy: myFlowReuseDraft.fixedDatePolicy }
+        : {}),
+      ...(reviewedVersion
+        ? {
+            mapId: reviewedVersion.snapshot.mapId,
+            sourceVersion: reviewedVersion.snapshot.version,
+            personalCopySnapshot: reviewedVersion.snapshot.personalCopy,
+          }
         : {}),
     });
     if (!nextRun) {
@@ -5527,9 +5732,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowDateOverrides(getStoredMyFlowDateOverrides());
     setMyFlowReuseNotice({
       flowSlug: flow.progress.slug,
-      message: requiresAnchor
-        ? `새 ${getAnchorInputLabel(flow.bundle)} ${formatMyFlowDisplayDate(anchor)}로 시작했어요. 지난 실행은 기록으로 남아 있어요.`
-        : '새 실행을 시작했어요. 지난 실행은 기록으로 남아 있어요.',
+      message: myFlowReuseDraft.versionMode === 'latest'
+        ? `${requiresAnchor ? `새 ${anchorContext.label} ${formatMyFlowDisplayDate(anchor)}로 ` : ''}새 내용을 반영해 시작했어요. 지난 실행은 이전 내용 그대로 남아 있어요.`
+        : requiresAnchor
+          ? `새 ${anchorContext.label} ${formatMyFlowDisplayDate(anchor)}로 시작했어요. 지난 실행은 기록으로 남아 있어요.`
+          : '새 실행을 시작했어요. 지난 실행은 기록으로 남아 있어요.',
     });
     setSelectedSavedFlowSlug('all');
     setSavedView('today');
@@ -5833,6 +6040,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ...sourceSnapshot.personalCopy?.includedStepIdsByFlow,
         [flow.progress.slug]: includedStepIds,
       },
+      baselineRecord: savedFlowMapPersistenceById[sourceSnapshot.mapId],
     });
     if (!adjusted) {
       updateMyFlowPersonalCopySettingsDraft({ feedback: '저장할 수 있는 Step을 확인해 주세요.' });
@@ -7694,9 +7902,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const activeReuseDraft = myFlowReuseDraft?.flowSlug === flow.progress.slug
       ? myFlowReuseDraft
       : null;
-    const requiresAnchor = flow.bundle.flow.anchor_type !== 'none';
-    const anchorLabel = getAnchorInputLabel(flow.bundle);
+    const anchorContext = getMyFlowReuseAnchorContext(flow);
+    const requiresAnchor = anchorContext.required;
+    const anchorLabel = anchorContext.label;
     const newAnchorLabel = `새 ${anchorLabel}`;
+    const versionNotice = getMyFlowVersionNoticeForFlow(flow);
+    const versionReviewItems = versionNotice?.versionReview?.items.filter(
+      (item) => item.flowSlug === flow.progress.slug,
+    ) ?? [];
     const correctionRows = Array.from(
       new Map(flow.rows.map((row) => [baseStateId(row.id), row] as const)).values(),
     );
@@ -7876,6 +8089,102 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
           {activeReuseDraft ? (
             <div data-testid="my-flow-reuse-panel" className="mt-3 grid gap-3 rounded-md border border-blue-100 bg-blue-50/60 p-3">
+              {versionNotice?.status !== 'map_missing' && versionNotice?.currentVersion ? (
+                <fieldset data-testid="my-flow-version-mode" className="grid gap-2">
+                  <legend className="text-sm font-semibold text-slate-900">어떤 내용으로 시작할까요?</legend>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      ['current', '현재 내용', '지금 쓰는 구성과 내 수정을 그대로 이어가요.'],
+                      ['latest', '새 내용 검토', '바뀐 원문을 확인하고 새 실행에 반영해요.'],
+                    ] as const).map(([value, label, help]) => (
+                      <label key={value} className={`cursor-pointer border-b-2 bg-white px-3 py-2 ${activeReuseDraft.versionMode === value ? 'border-blue-600' : 'border-slate-200'}`}>
+                        <span className="flex items-start gap-2">
+                          <input
+                            className="mt-1 h-4 w-4 shrink-0"
+                            type="radio"
+                            name={`my-flow-version-mode-${flow.progress.slug}`}
+                            value={value}
+                            checked={activeReuseDraft.versionMode === value}
+                            onChange={() => updateMyFlowReuseDraft({
+                              versionMode: value,
+                              versionSelections: value === 'latest'
+                                ? getDefaultFlowVersionSelections(versionNotice.versionReview, flow.progress.slug)
+                                : {},
+                              sensitiveReviewConfirmed: false,
+                            })}
+                          />
+                          <span className="min-w-0">
+                            <span className="block text-sm font-semibold text-slate-900">{label}</span>
+                            <span className="mt-0.5 block text-xs leading-5 text-slate-600">{help}</span>
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
+              {activeReuseDraft.versionMode === 'latest' && versionNotice?.versionReview ? (
+                <section data-testid="my-flow-version-review" className="border-y border-slate-200 bg-white px-3 py-1">
+                  <div className="py-2">
+                    <p className="text-sm font-semibold text-slate-950">새 내용 {versionNotice.currentVersion}</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-600">
+                      바뀜 {versionReviewItems.filter((item) => item.kind === 'changed').length}개 · 새로 생김 {versionReviewItems.filter((item) => item.kind === 'added').length}개 · 빠짐 {versionReviewItems.filter((item) => item.kind === 'removed').length}개
+                    </p>
+                  </div>
+                  {versionReviewItems.length > 0 ? (
+                    <div className="divide-y divide-slate-200">
+                      {versionReviewItems.map((item) => {
+                        const itemTitle = item.current?.title ?? item.previous?.title ?? '제목 없는 할 일';
+                        return (
+                          <fieldset key={item.key} data-testid="my-flow-version-review-item" className="py-3">
+                            <legend className="w-full">
+                              <span className="flex flex-wrap items-start justify-between gap-2">
+                                <span className="min-w-0 text-sm font-semibold text-slate-950">{toUserFacingSourceTitle(itemTitle)}</span>
+                                <span className="shrink-0 bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">{getFlowVersionReviewItemLabel(item)}</span>
+                              </span>
+                            </legend>
+                            {item.kind === 'changed' && item.previous?.title !== item.current?.title ? (
+                              <p className="mt-1 text-xs leading-5 text-slate-600">이전: {toUserFacingSourceTitle(item.previous?.title ?? '')}</p>
+                            ) : null}
+                            <div className="mt-2 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+                              {getFlowVersionReviewItemChoices(item).map(([value, label, help]) => (
+                                <label key={value} className="flex cursor-pointer items-start gap-2 py-1">
+                                  <input
+                                    className="mt-1 h-4 w-4 shrink-0"
+                                    type="radio"
+                                    name={`my-flow-version-choice-${item.key}`}
+                                    value={value}
+                                    checked={activeReuseDraft.versionSelections[item.key] === value}
+                                    onChange={() => updateMyFlowVersionSelection(item, value)}
+                                  />
+                                  <span className="min-w-0">
+                                    <span className="block text-sm font-semibold text-slate-800">{label}</span>
+                                    <span className="block text-xs leading-5 text-slate-500">{help}</span>
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </fieldset>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="border-t border-slate-200 py-3 text-xs leading-5 text-slate-600">항목 내용은 같고 원문 확인 정보만 새로 발행됐습니다.</p>
+                  )}
+                  {versionNotice.versionReview.sensitive ? (
+                    <label className="flex cursor-pointer items-start gap-2 border-t border-slate-200 py-3 text-sm font-semibold text-slate-800">
+                      <input
+                        data-testid="my-flow-version-sensitive-confirm"
+                        className="mt-1 h-4 w-4 shrink-0"
+                        type="checkbox"
+                        checked={activeReuseDraft.sensitiveReviewConfirmed}
+                        onChange={(event) => updateMyFlowReuseDraft({ sensitiveReviewConfirmed: event.target.checked })}
+                      />
+                      <span>공식 일정의 변경 내용을 확인했습니다.</span>
+                    </label>
+                  ) : null}
+                </section>
+              ) : null}
               {requiresAnchor ? (
                 <label className="grid gap-1 text-sm font-semibold text-slate-800">
                   {newAnchorLabel}
@@ -7945,7 +8254,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
                   onClick={() => startMyFlowReuse(flow)}
                 >
-                  새 실행 시작
+                  {activeReuseDraft.versionMode === 'latest' ? '선택한 새 내용으로 시작' : '새 실행 시작'}
                 </button>
               </div>
             </div>
@@ -8340,73 +8649,27 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     });
   };
 
-  const applyMyFlowMapUpdateNotice = (notice: MyFlowMapUpdateNotice) => {
-    if (typeof window === 'undefined' || notice.status === 'map_missing') return;
-
-    const savedAt = new Date().toISOString();
-    const storedSnapshot = (() => {
-      try {
-        const raw = window.localStorage.getItem(getSourceBackedFlowMapSnapshotStorageKey(notice.mapId));
-        return raw ? toSourceBackedSavedSnapshot(JSON.parse(raw) as SavedFlowMapSnapshot) : undefined;
-      } catch {
-        return undefined;
-      }
-    })();
-    const snapshot = storedSnapshot
-      ? buildSourceBackedFlowMapSavedSnapshotUpdate(storedSnapshot, {
-          savedAt,
-          ...(notice.anchor ? { anchor: notice.anchor } : {}),
-        })
-      : buildSourceBackedFlowMapSavedSnapshot(notice.mapId, {
-      savedAt,
-      ...(notice.anchor ? { anchor: notice.anchor } : {}),
-        });
-    if (!snapshot) return;
-
-    window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(notice.mapId), JSON.stringify(snapshot));
-    const persistenceRecord = storedSnapshot
-      ? buildSourceBackedFlowMapPersistenceRecordUpdate(storedSnapshot, {
-          savedAt,
-          ...(notice.anchor ? { anchor: notice.anchor } : {}),
-        })
-      : buildSourceBackedFlowMapPersistenceRecord(notice.mapId, {
-          savedAt,
-          ...(notice.anchor ? { anchor: notice.anchor } : {}),
-        });
-    if (persistenceRecord) {
-      window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(notice.mapId), JSON.stringify(persistenceRecord));
+  const openMyFlowMapUpdateReview = (notice: MyFlowMapUpdateNotice) => {
+    const completedFlow = savedFlows.find(
+      (flow) => flow.savedMap?.mapId === notice.mapId
+        && flow.rows.length > 0
+        && flow.rows.every((row) => isMyFlowRowChecked(flow, row)),
+    );
+    if (!completedFlow) return;
+    setSavedView('flow');
+    setSelectedSavedFlowSlug(completedFlow.progress.slug);
+    setMyFlowExpandedStructureSlug(completedFlow.progress.slug);
+    openMyFlowReuse(completedFlow, 'latest');
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => {
+        document.querySelector(`[data-flow-slug="${completedFlow.progress.slug}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 0);
     }
-    snapshot.flowSlugs.forEach((slug) => {
-      if (getSavedFlowRecord(slug)) return;
-      saveFlowRecord(slug, {
-        selectedArtifactMode: 'calendar',
-        ...(notice.anchor ? { anchor: notice.anchor } : {}),
-      });
-    });
-
-    setMyFlowDismissedMapUpdates((current) => {
-      const next = { ...current };
-      delete next[notice.mapId];
-      if (!isMyFlowScenarioDemo) saveMyFlowDismissedMapUpdates(next);
-      return next;
-    });
-    setMyFlowExpandedMapUpdateId('');
-    setMyFlowAppliedMapUpdateId(notice.mapId);
-    refreshSavedFlowState();
   };
 
   const getMyFlowUpdateRowTitle = (slug: string) => toContentDisplayTitle(myFlowBundles.find((entry) => entry.flow.slug === slug)?.flow.title ?? slug);
 
   const renderMyFlowMapUpdateNotices = () => {
-    if (myFlowMapUpdateNotices.length === 0 && myFlowAppliedMapUpdateId) {
-      return (
-        <section data-testid="my-flow-map-update-applied" className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-          <p className="text-sm font-semibold text-emerald-900">새 기준으로 표시했습니다.</p>
-          <p className="mt-1 text-xs font-medium text-emerald-800">기존 체크와 메모는 유지하고, 새로 추가된 Flow만 목록에 더합니다.</p>
-        </section>
-      );
-    }
-
     return myFlowMapUpdateNotices.length > 0 ? (
       <section data-testid="my-flow-map-update-review" className="rounded-lg border border-amber-200 bg-amber-50/70 p-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -8420,6 +8683,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <div className="mt-3 grid gap-2">
           {myFlowMapUpdateNotices.map((notice) => {
             const expanded = myFlowExpandedMapUpdateId === notice.mapId;
+            const completedFlowAvailable = savedFlows.some(
+              (flow) => flow.savedMap?.mapId === notice.mapId
+                && flow.rows.length > 0
+                && flow.rows.every((row) => isMyFlowRowChecked(flow, row)),
+            );
             return (
               <article key={notice.mapId} data-testid="my-flow-map-update-notice" className="rounded-md border border-amber-100 bg-white p-3">
                 <div className="flex flex-wrap items-start justify-between gap-2">
@@ -8429,7 +8697,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     </span>
                     <h5 className="mt-2 text-sm font-semibold text-slate-950">{toUserFacingMapTitle(notice.title)}</h5>
                     <p className="mt-1 text-xs font-semibold text-slate-500">
-                      영향 Flow {notice.affectedCount}개 · {notice.canApplyAutomatically ? '확인 후 바로 반영 가능' : '검토 후 반영'}
+                      영향 Flow {notice.affectedCount}개 · 현재 실행은 그대로 유지
                     </p>
                   </div>
                   <div className="grid w-full grid-cols-2 gap-1.5 sm:w-auto sm:flex sm:shrink-0 sm:flex-wrap">
@@ -8446,10 +8714,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       type="button"
                       data-testid="my-flow-map-update-apply"
                       className="inline-flex min-h-8 items-center justify-center rounded-md border border-emerald-100 bg-emerald-50 px-2.5 text-xs font-semibold text-emerald-800 hover:border-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={notice.status === 'map_missing'}
-                      onClick={() => applyMyFlowMapUpdateNotice(notice)}
+                      disabled={notice.status === 'map_missing' || !completedFlowAvailable}
+                      onClick={() => openMyFlowMapUpdateReview(notice)}
                     >
-                      새 기준으로 표시
+                      {completedFlowAvailable ? '완료 Flow에서 검토' : '완료 후 검토'}
                     </button>
                     <Link className="inline-flex min-h-8 items-center justify-center rounded-md border border-amber-100 bg-amber-50 px-2.5 text-xs font-semibold text-amber-900 hover:border-amber-300" href={`/flow-maps/${notice.mapId}`}>
                       전체 보기
@@ -8465,7 +8733,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </div>
                 </div>
                 <p className="mt-2 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900">
-                  자동 반영 안 함. 기존 체크와 메모는 유지하고, 새 Flow가 있으면 목록에만 추가합니다. 제외된 Flow는 삭제하지 않습니다.
+                  자동 반영 안 함. 지금 실행은 저장한 내용 그대로 두고, 새 내용은 다음 실행에서만 선택합니다.
                 </p>
                 {notice.reasons.length > 0 ? (
                   <ul className="mt-2 grid gap-1 text-xs font-medium text-amber-900">
@@ -8481,11 +8749,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       {notice.currentVersion ? <span className="rounded bg-white px-2 py-1 ring-1 ring-slate-200">현재 {notice.currentVersion}</span> : null}
                     </div>
                     <div className="mt-3 grid gap-2">
-                      {notice.comparisonRows.map((row) => (
-                        <div key={row.slug} data-testid="my-flow-map-update-comparison-row" className="rounded-md border border-slate-200 bg-white p-2">
+                      {notice.versionReview?.items.length ? notice.versionReview.items.map((item) => (
+                        <div key={item.key} data-testid="my-flow-map-update-item" className="border-b border-slate-200 bg-white px-2 py-2 last:border-b-0">
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <p className="text-xs font-semibold text-slate-950">{toUserFacingSourceTitle(item.current?.title ?? item.previous?.title ?? '')}</p>
+                            <span className="bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
+                              {getFlowVersionReviewItemLabel(item)}
+                            </span>
+                          </div>
+                          {item.hasPersonalConflict ? <p className="mt-1 text-[11px] font-semibold text-amber-700">내가 바꾼 내용과 겹쳐 선택이 필요합니다.</p> : null}
+                        </div>
+                      )) : notice.comparisonRows.map((row) => (
+                        <div key={row.slug} data-testid="my-flow-map-update-comparison-row" className="border-b border-slate-200 bg-white px-2 py-2 last:border-b-0">
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <p className="text-xs font-semibold text-slate-950">{getMyFlowUpdateRowTitle(row.slug)}</p>
-                            <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
+                            <span className="bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
                               {row.changeLabels.join(' · ')}
                             </span>
                           </div>
@@ -9090,7 +9368,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
                 </>
               ) : (
-                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                <div className={`grid gap-3 ${myFlowReuseDraft?.versionMode === 'latest' ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
                   {visibleSavedFlows.map((flow) => renderSavedFlowOverviewCard(flow))}
                 </div>
               )}

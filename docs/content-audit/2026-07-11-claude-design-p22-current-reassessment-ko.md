@@ -25,7 +25,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 | P22-03 URL miss 압축 | 구현 완료 | 첫 행동 1개, 운영 상태 문구 0, live AI 오해 false | 실제 신규 사용자의 이해 관찰 |
 | P22-04 실행/편집 상세 분리 | 구현 완료 | 기본 직접 행동 최대 2, 편집 취소·저장 4/4, overflow 0 | 긴 편집 폼의 반복 사용성 관찰 |
 | P22-05 외부 도구 왕복 | 조건부 완료 | Excel 3/3, Word 3/3, iCalendar parser 3/3+개인 1/1 | 설정된 Calendar 앱 import·중복 import 1회 |
-| P22-06 완료 Flow 재사용·버전 정책 | 정책·Slice A·B·D 완료 | runId, 완료 snapshot, 새 기준일 충돌 정책, 완료 Flow 재사용 UI 구현 | 원본 새 버전 비교 Slice C |
+| P22-06 완료 Flow 재사용·버전 정책 | Slice A·B·C·D 구현 완료 | runId, 완료 snapshot, 새 기준일 충돌 정책, 항목 단위 버전 검토, 완료 Flow 재사용 UI | 실제 반복 사용자 이해도 관찰 |
 | P22-07 Studio·공개 리뷰 확장 | 의도적 보류 | Studio secondary tier 유지 | 실제 사용·정정 요청 데이터가 쌓일 때 재검토 |
 
 ## 여정별 변화
@@ -71,7 +71,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 - Slice A에서 기존 slug 상태를 별도 run으로 보존하고 새 실행의 현재 상태만 초기화하는 저장 계약을 구현했다.
 - Slice D에서 날짜형 Flow의 새 기준일·고정 날짜 선택과 날짜 없는 Flow의 같은 사본 재사용을 My Flow에 연결했다.
 
-판정: **정책, 저장 계약, 날짜 재설정, 사용자-facing 재사용 흐름은 닫혔다. 원본 새 버전 비교와 실제 반복 사용자 관찰은 아직이다.**
+판정: **정책, 저장 계약, 날짜 재설정, 새 버전 비교, 사용자-facing 재사용 흐름은 닫혔다. 실제 반복 사용자 관찰은 아직이다.**
 
 ## 출시 gate
 
@@ -129,9 +129,11 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 검증 evidence는 [P22-06D 완료 Flow 재사용 evidence](./2026-07-11-claude-design-p22-06d-flow-reuse-evidence/README.md)에 기록했다.
 
-### 다음 자동 구현 후보: P22-06 Slice C
+### 완료: P22-06 Slice C
 
-실제 발행 버전 차이가 있는 fixture에서만 `새 내용 검토`를 연다. 안정 항목 ID 기준 changed/added/removed 분류와 개인 수정 충돌을 먼저 순수 로직·단위 테스트로 고정하고, 업데이트가 없는 Flow에는 진입을 노출하지 않는다.
+실제 발행 버전 차이가 있는 fixture에서만 `새 내용 검토`를 열고, 안정 항목 ID 기준 changed/added/removed 분류와 개인 수정 충돌을 순수 로직·단위 테스트로 고정했다. 진행 중 실행은 저장 당시 발행본을 유지하고, 선택 결과는 새 run에만 반영한다. 새 실행의 진행 분모와 완료 대상도 사용자가 포함한 항목만 읽는다.
+
+검증 evidence는 [P22-06C 새 버전 검토 evidence](./2026-07-11-claude-design-p22-06c-version-review-evidence/README.md)에 기록했다.
 
 ### 병행 수동 gate
 
@@ -139,7 +141,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 - 같은 파일을 두 번 import해 중복 동작을 기록한다.
 - 이 결과는 코드 구현과 분리해 evidence에 추가한다.
 
-### 사용자 관찰 gate
+### 다음 핵심 단계: 사용자 관찰 gate
 
 P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 아래 세 번을 관찰해야 한다.
 
@@ -156,6 +158,7 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [P22-06 완료 Flow 재사용·버전 정책](./2026-07-11-claude-design-p22-06-completed-flow-reuse-version-policy-ko.md)
 - [P22-06A Flow run storage evidence](./2026-07-11-claude-design-p22-06a-flow-run-storage-evidence/README.md)
 - [P22-06B new anchor policy evidence](./2026-07-11-claude-design-p22-06b-new-anchor-policy-evidence/README.md)
+- [P22-06C version review evidence](./2026-07-11-claude-design-p22-06c-version-review-evidence/README.md)
 - [P22-06D completed Flow reuse evidence](./2026-07-11-claude-design-p22-06d-flow-reuse-evidence/README.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 
@@ -166,13 +169,12 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 D:\flowme2605\flow-mvp 기준으로 진행해줘.
 
 목표:
-P22-06 정책의 Slice C를 구현한다. 실제 원본 새 버전이 있는 완료 Flow에서만 변경 항목을 검토하고, 개인 수정과 충돌하지 않는 선택 결과로 새 실행을 시작하게 한다. 업데이트가 없는 Flow에는 `새 내용 검토`를 노출하지 않고 Studio 확장은 하지 않는다.
+P22-00 실제 종단 관찰을 실행한다. 최소 5명이 첫 저장, 실행 중 수정·완료, 재방문·다시 쓰기를 3회차까지 수행하게 하고, 새 버전 검토 선택을 이해하는지 기록한다. 자동화 결과를 실제 사용자 검증으로 대체하지 않는다.
 
 완료 기준:
-- stable item ID 기준 changed/added/removed 분류
-- alias·메모·날짜가 있는 항목은 자동 병합 금지
-- 공식·민감 Flow는 항상 사용자 확인
-- 완료 run의 sourceVersion/personal snapshot 불변
-- 선택 결과로 새 active run 생성
-- 실제 update fixture, unit, targeted E2E 통과
+- 최소 5명·3회차 관찰
+- URL/메모 진입부터 첫 완료까지 drop-off 기록
+- 완료 후 다시 쓰기와 새 버전 검토 이해도 기록
+- Calendar import 실제 앱 1건과 중복 import 기록
+- 계정·기기 간 저장 연속성 정책 결정
 ```

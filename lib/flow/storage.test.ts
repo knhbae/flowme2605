@@ -477,7 +477,7 @@ test('flow run registry preserves a completed legacy run before starting a clean
         [flowSlug]: ['moving-method-quotes', 'moving-address-change'],
       },
       excludedStepIdsByFlow: {
-        [flowSlug]: [],
+        [flowSlug]: ['moving-utility-transfer'],
       },
       stepOverridesByFlow: {
         [flowSlug]: {
@@ -680,7 +680,9 @@ test('flow run registry preserves a completed legacy run before starting a clean
       '2026-08-01',
     );
     assert.deepEqual(getChecks(flowSlug), {});
-    assert.deepEqual(getItemStates(flowSlug), {});
+    assert.deepEqual(getItemStates(flowSlug), {
+      'moving-utility-transfer': { skipped: true, note: 'excluded_on_start' },
+    });
     assert.equal(getMyFlowCompletionFeedback(flowSlug), undefined);
     assert.equal(localStorage.getItem(`flow:completion-detected-at:${flowSlug}`), null);
     assert.deepEqual(getMyFlowStepItemChecks(), { 'other-flow::first::none': { '0': true } });

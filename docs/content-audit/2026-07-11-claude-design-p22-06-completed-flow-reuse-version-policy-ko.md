@@ -2,7 +2,7 @@
 
 작성일: 2026-07-11
 
-상태: **정책 확정, Slice A·B·D 저장/날짜/사용자 흐름 구현 완료**
+상태: **정책 및 Slice A·B·C·D 구현 완료**
 
 범위: 완료된 Flow의 재사용, 새 실행 분리, 원본 버전 갱신과 개인 수정본 충돌 처리
 
@@ -345,9 +345,9 @@ P22-06 정책의 첫 구현 slice로 Flow 실행 인스턴스와 완료 기록 �
 | Slice A 실행 인스턴스·완료 snapshot | 구현 완료 |
 | Slice B 새 기준일·고정 날짜 충돌 정책 | 구현 완료 |
 | 사용자-facing 재사용 흐름 | Slice D 구현 완료 |
-| 원본 새 버전 비교 | 미구현, Slice C |
+| 원본 새 버전 비교 | Slice C 구현 완료 |
 
-P22-06은 **정책과 Slice A·B·D 기준 완료**다. 실제 제품 기준 완료는 남은 Slice C 원본 새 버전 검토와 실제 반복 사용자 관찰까지 확인한 뒤 판정한다.
+P22-06은 **정책과 Slice A·B·C·D 구현 기준 완료**다. 실제 상용 제품 판정은 반복 사용자 관찰과 계정·기기 간 저장 정책을 확인한 뒤 내린다.
 
 ## 16. 2026-07-11 Slice A 구현 결과
 
@@ -400,4 +400,21 @@ P22-06은 **정책과 Slice A·B·D 기준 완료**다. 실제 제품 기준 완
 
 검증 evidence는 [P22-06D Completed Flow Reuse Evidence](./2026-07-11-claude-design-p22-06d-flow-reuse-evidence/README.md)에 기록했다.
 
-P22-06의 남은 구현은 Slice C 원본 새 버전 검토다. 실제 버전 차이가 없으면 해당 진입을 노출하지 않는다.
+Slice C까지 구현되어 실제 버전 차이가 없으면 `새 내용 검토` 진입을 노출하지 않고, 차이가 있는 완료 Flow에서만 다음 실행 선택을 연다.
+
+## 19. 2026-07-11 Slice C 구현 결과
+
+저장 당시 persistence record와 최신 발행 record를 안정 항목 ID로 비교하는 순수 계약을 추가했다.
+
+- `changed / added / removed` 항목 분류
+- 제목·설명·일정·결과물 목적지·출처 변화 분리
+- 개인 제목 alias·메모·고정 날짜 충돌 표시
+- `새 내용에 내 수정 유지 / 새 내용만 사용 / 현재 내용 유지` 명시적 선택
+- 삭제 항목을 개인 할 일로 유지할 수 있는 `retainedStepsByFlow`
+- 의료·금융 민감 콘텐츠의 명시적 확인
+- 진행 중 실행의 저장 당시 원문 기준 보존
+- 선택 결과를 `reviewed_version` 새 run에만 반영
+- 지난 완료 run의 이전 `sourceVersion`과 개인 사본 snapshot 불변
+- 새 실행 초기화 뒤 개인 사본의 제외 목록을 다시 투영해 진행 분모와 전체 완료 대상을 포함 항목으로 제한
+
+검증 evidence는 [P22-06C 새 버전 검토 evidence](./2026-07-11-claude-design-p22-06c-version-review-evidence/README.md)에 기록했다.

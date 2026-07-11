@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-07-11T00:00:00.000Z",
+  "scope": "P22-06C completed Flow source version review",
+  "summary": {
+    "stableItemIdDiffEnabled": true,
+    "changedItemCount": 1,
+    "addedItemCount": 1,
+    "removedItemUnitCovered": true,
+    "personalConflictCount": 1,
+    "personalConflictAutomaticMerge": false,
+    "sensitiveContentExplicitReviewRequired": true,
+    "activeRunSourceVersionPreserved": true,
+    "updateAppliedToCurrentRun": false,
+    "reviewedVersionCreatesNewRun": true,
+    "completedRunSourceVersionPreserved": true,
+    "reviewedRunReuseMode": "reviewed_version",
+    "reviewedRunAnchor": "2026-09-01",
+    "reviewedRunFixedDatePolicy": "keep_fixed_dates",
+    "reviewedPersonalCopySource": "version_review",
+    "reviewedRunExecutableItemCount": 1,
+    "reviewedRunExcludedItemStateRestored": true,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "visibleInternalTermHitCount": 0
+  },
+  "scenarios": [
+    {
+      "name": "active-flow-update-held",
+      "viewport": 390,
+      "route": "/my",
+      "updateActionLabel": "완료 후 검토",
+      "updateActionEnabled": false,
+      "savedSourceVersionPreserved": true
+    },
+    {
+      "name": "completed-flow-item-review-mobile",
+      "viewport": 390,
+      "route": "/my",
+      "visibleChangeKinds": ["내 수정과 겹침", "새 할 일"],
+      "requiredSelectionsResolved": true,
+      "screenshot": "screenshots/02-version-review-mobile.png"
+    },
+    {
+      "name": "completed-flow-item-review-wide",
+      "viewport": 1024,
+      "route": "/my",
+      "fullWidthReviewLayout": true,
+      "screenshot": "screenshots/03-version-review-wide.png"
+    },
+    {
+      "name": "reviewed-version-new-run",
+      "viewport": 390,
+      "route": "/my",
+      "previousVersion": "2026-01-01.old",
+      "currentVersion": "2026-06-24.1",
+      "previousRunReadOnly": true,
+      "newRunCompletionCount": 0,
+      "newRunExecutableItemCount": 1,
+      "newRunProgressLabel": "전체 0/1 완료",
+      "screenshot": "screenshots/04-reviewed-run-mobile.png"
+    }
+  ]
+}

@@ -863,8 +863,8 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   await page.getByTestId('my-flow-view-flow').click();
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await expect(updateReview).toBeVisible();
-  await updateReview.getByTestId('my-flow-map-update-apply').click();
-  await expect(page.getByTestId('my-flow-map-update-applied')).toContainText('새 기준으로 표시했습니다');
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeDisabled();
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toHaveText('완료 후 검토');
 
   const updatedState = await page.evaluate(() => ({
     snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'),
@@ -873,6 +873,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   }));
   expect(updatedState.snapshot.title).toBe('시험 전 소인수분해만');
   expect(updatedState.snapshot.stepCountsByFlow['source-backed-middle-school-math-1']).toBe(1);
+  expect(updatedState.snapshot.version).toBe('2026-01-01.old');
   expect(updatedState.snapshot.personalCopy.source).toBe('url_first_custom_start');
   expect(updatedState.persistence.map.title).toBe('시험 전 소인수분해만');
   expect(updatedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-prime-factorization']);
@@ -881,7 +882,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
 
   await page.reload();
   await page.getByTestId('my-flow-view-flow').click();
-  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-map-update-review')).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });
 
@@ -970,14 +971,20 @@ test('my flow personal copy settings can readjust saved title date and included 
   expect(savedState.savedRecord.anchor).toBe('2026-08-01');
 
   await page.evaluate(() => {
-    const key = 'flow:map:saved:middle-school-math-1';
-    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
+    const snapshotKey = 'flow:map:saved:middle-school-math-1';
+    const persistenceKey = 'flow:map:persistence:middle-school-math-1';
+    const snapshot = JSON.parse(window.localStorage.getItem(snapshotKey) || 'null');
+    const persistence = JSON.parse(window.localStorage.getItem(persistenceKey) || 'null');
     snapshot.version = '2026-01-01.old';
-    window.localStorage.setItem(key, JSON.stringify(snapshot));
+    persistence.map.version = '2026-01-01.old';
+    window.localStorage.setItem(snapshotKey, JSON.stringify(snapshot));
+    window.localStorage.setItem(persistenceKey, JSON.stringify(persistence));
   });
   await page.reload();
   await page.getByTestId('my-flow-view-flow').click();
-  await page.getByTestId('my-flow-map-update-review').getByTestId('my-flow-map-update-apply').click();
+  const updateReview = page.getByTestId('my-flow-map-update-review');
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeDisabled();
+  await expect(updateReview).toContainText('현재 실행은 그대로 유지');
 
   const updatedState = await page.evaluate(() => ({
     snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'),
@@ -985,9 +992,11 @@ test('my flow personal copy settings can readjust saved title date and included 
     itemStates: JSON.parse(window.localStorage.getItem('flow_builder_mvp_item_state_source-backed-middle-school-math-1') || '{}'),
   }));
   expect(updatedState.snapshot.title).toBe('1학기 앞부분 복습');
+  expect(updatedState.snapshot.version).toBe('2026-01-01.old');
   expect(updatedState.snapshot.anchor).toBe('2026-08-01');
   expect(updatedState.snapshot.personalCopy.includedStepIdsByFlow['source-backed-middle-school-math-1']).toEqual(['math-integers-rationals']);
   expect(updatedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-integers-rationals']);
+  expect(updatedState.persistence.map.version).toBe('2026-01-01.old');
   expect(updatedState.itemStates['math-prime-factorization'].skipped).toBe(true);
   expect(updatedState.itemStates['math-integers-rationals']).toBeUndefined();
   await expectNoHorizontalOverflow(page);
@@ -3783,7 +3792,8 @@ test('my flow shows update review notice for changed source-backed saved maps', 
   await expect(updateReview).not.toContainText('영유아 검진·접종 일정 지도');
   await expect(updateReview).toContainText('업데이트 확인 필요');
   await expect(updateReview).toContainText('자동 반영 안 함');
-  await expect(updateReview).toContainText('기존 체크와 메모는 유지');
+  await expect(updateReview).toContainText('지금 실행은 저장한 내용 그대로');
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeDisabled();
   await expect(updateReview).toContainText('원문 기준 정보가 새로 발행되었습니다');
   await expect(updateReview).toContainText('검진/접종처럼 공식 일정은 자동으로 바꾸지 않습니다');
   await updateReview.getByTestId('my-flow-map-update-toggle').click();
@@ -3800,19 +3810,52 @@ test('my flow shows update review notice for changed source-backed saved maps', 
   await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
 });
 
-test('my flow update review can apply a new source-backed snapshot without changing saved child flows', async ({ page }) => {
-  await page.goto('/flow-maps/baby-health-schedule');
+test('completed personal Flow reviews item changes before starting a new source version', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_VERSION_REVIEW_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+  await page.evaluate(() => window.localStorage.clear());
 
-  await page.getByLabel('아이 생년월일').fill('2026-01-15');
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
-  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
+  const lookup = page.getByTestId('flow-url-lookup-entry');
+  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=version-review');
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByRole('button', { name: '조금 고쳐 시작' }).click();
+  const customPanel = result.getByTestId('flow-url-custom-start-panel');
+  const stepBoxes = customPanel.locator('input[type="checkbox"]');
+  const stepCount = await stepBoxes.count();
+  for (let index = 1; index < stepCount; index += 1) await stepBoxes.nth(index).uncheck();
+  await result.getByLabel('학습 시작일').fill('2026-07-15');
+  await result.getByRole('button', { name: '시작하기' }).click();
+  await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
 
   await page.evaluate(() => {
-    const key = 'flow:map:saved:baby-health-schedule';
-    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
+    const mapKey = 'flow:map:saved:middle-school-math-1';
+    const persistenceKey = 'flow:map:persistence:middle-school-math-1';
+    const flowSlug = 'source-backed-middle-school-math-1';
+    const stepId = 'math-prime-factorization';
+    const snapshot = JSON.parse(window.localStorage.getItem(mapKey) || 'null');
+    const persistence = JSON.parse(window.localStorage.getItem(persistenceKey) || 'null');
     snapshot.version = '2026-01-01.old';
-    snapshot.stepCountsByFlow['source-backed-baby-health-checkups'] = 11;
-    window.localStorage.setItem(key, JSON.stringify(snapshot));
+    snapshot.personalCopy.excludedStepIdsByFlow[flowSlug] = snapshot.personalCopy.excludedStepIdsByFlow[flowSlug]
+      .filter((id: string) => id !== 'math-integers-rationals');
+    snapshot.personalCopy.stepOverridesByFlow = {
+      [flowSlug]: {
+        [stepId]: {
+          title: '내 시험용 소인수분해',
+          userMemo: '내 풀이 순서를 유지',
+          schedule: { mode: 'fixed_date', date: '2026-07-18' },
+        },
+      },
+    };
+    persistence.map.version = '2026-01-01.old';
+    persistence.childFlows[0].steps[0].title = '이전 소인수분해';
+    persistence.childFlows[0].steps[0].textFallback.description = '이전 설명';
+    persistence.personalCopy = snapshot.personalCopy;
+    window.localStorage.setItem(mapKey, JSON.stringify(snapshot));
+    window.localStorage.setItem(persistenceKey, JSON.stringify(persistence));
+    window.localStorage.setItem(`flow_builder_mvp_checks_${flowSlug}`, JSON.stringify({ [stepId]: true }));
   });
 
   await page.goto('/my');
@@ -3820,23 +3863,54 @@ test('my flow update review can apply a new source-backed snapshot without chang
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await expect(updateReview).toBeVisible();
   await updateReview.getByTestId('my-flow-map-update-toggle').click();
-  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('항목 11 → 12');
-
+  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('내 수정과 겹침');
+  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('새 할 일');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-update-notice-mobile.png`, fullPage: true });
   await updateReview.getByTestId('my-flow-map-update-apply').click();
-  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-map-update-applied')).toContainText('새 기준으로 표시했습니다');
-  const savedState = await page.evaluate(() => ({
-    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:baby-health-schedule') || 'null'),
-    checkups: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-health-checkups') || 'null'),
-    vaccinations: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-vaccination-schedule') || 'null'),
-  }));
-  expect(savedState.snapshot.version).toBe('2026-06-23.1');
-  expect(savedState.snapshot.stepCountsByFlow['source-backed-baby-health-checkups']).toBe(12);
-  expect(savedState.checkups.anchor).toBe('2026-01-15');
-  expect(savedState.vaccinations.anchor).toBe('2026-01-15');
+
+  const reusePanel = page.getByTestId('my-flow-reuse-panel');
+  await expect(reusePanel.getByTestId('my-flow-version-review')).toBeVisible();
+  await reusePanel.getByTestId('my-flow-reuse-anchor-input').fill('2026-09-01');
+  await reusePanel.getByLabel('내가 바꾼 날짜 유지').check();
+  const changedItem = reusePanel.getByTestId('my-flow-version-review-item').filter({ hasText: '소인수분해' });
+  await changedItem.getByLabel('새 내용에 내 수정 유지').check();
+  const addedItem = reusePanel.getByTestId('my-flow-version-review-item').filter({ hasText: '정수와 유리수' });
+  await addedItem.getByLabel('이번에는 제외').check();
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/02-version-review-mobile.png`, fullPage: true });
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await page.screenshot({ path: `${evidenceDir}/03-version-review-wide.png`, fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+  }
+  await reusePanel.getByTestId('my-flow-reuse-start').click();
+  await page.getByTestId('my-flow-view-flow').click();
+  const reviewedFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-middle-school-math-1"]');
+  await expect(reviewedFlow.getByTestId('my-flow-reuse-status')).toContainText('새 내용을 반영해 시작했어요');
+  await expect(reviewedFlow).toContainText('전체 0/1 완료');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-reviewed-run-mobile.png`, fullPage: true });
+
+  const savedState = await page.evaluate(() => {
+    const flowSlug = 'source-backed-middle-school-math-1';
+    return {
+      snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:middle-school-math-1') || 'null'),
+      persistence: JSON.parse(window.localStorage.getItem('flow:map:persistence:middle-school-math-1') || 'null'),
+      runs: JSON.parse(window.localStorage.getItem(`flow:run-registry:${flowSlug}`) || 'null'),
+    };
+  });
+  expect(savedState.snapshot.version).not.toBe('2026-01-01.old');
+  expect(savedState.snapshot.personalCopy.source).toBe('version_review');
+  expect(savedState.snapshot.personalCopy.stepOverridesByFlow['source-backed-middle-school-math-1']['math-prime-factorization'].title).toBe('내 시험용 소인수분해');
+  expect(savedState.snapshot.personalCopy.excludedStepIdsByFlow['source-backed-middle-school-math-1']).toContain('math-integers-rationals');
+  expect(savedState.persistence.map.version).toBe(savedState.snapshot.version);
+  const completedRun = savedState.runs.runs.find((run: { status: string }) => run.status === 'completed');
+  const activeRun = savedState.runs.runs.find((run: { status: string }) => run.status === 'active');
+  expect(completedRun.sourceVersion).toBe('2026-01-01.old');
+  expect(activeRun.sourceVersion).toBe(savedState.snapshot.version);
+  expect(activeRun.runId).not.toBe(completedRun.runId);
+  expect(activeRun.reuseMode).toBe('reviewed_version');
 });
 
-test('my flow update apply adds missing child flow records without deleting existing progress', async ({ page }) => {
+test('active source update does not add missing child Flow before the current execution is complete', async ({ page }) => {
   await page.goto('/flow-maps/baby-health-schedule');
 
   await page.getByLabel('아이 생년월일').fill('2026-01-15');
@@ -3857,16 +3931,16 @@ test('my flow update apply adds missing child flow records without deleting exis
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await updateReview.getByTestId('my-flow-map-update-toggle').click();
   await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('새로 추가');
-  await updateReview.getByTestId('my-flow-map-update-apply').click();
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeDisabled();
 
   const savedState = await page.evaluate(() => ({
     snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:baby-health-schedule') || 'null'),
     checkups: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-health-checkups') || 'null'),
     vaccinations: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-baby-vaccination-schedule') || 'null'),
   }));
-  expect(savedState.snapshot.flowSlugs).toContain('source-backed-baby-vaccination-schedule');
+  expect(savedState.snapshot.flowSlugs).not.toContain('source-backed-baby-vaccination-schedule');
   expect(savedState.checkups.anchor).toBe('2026-01-15');
-  expect(savedState.vaccinations.anchor).toBe('2026-01-15');
+  expect(savedState.vaccinations).toBeNull();
 });
 
 test('source-backed flow map creator page shows publish structure without mixing user execution', async ({ page }) => {

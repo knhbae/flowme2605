@@ -5,6 +5,8 @@ import {
   type SourceBackedFlowMapSavedSnapshot,
   type SourceBackedFlowMapPersonalCopy,
   type SourceBackedFlowMapPersonalCopyStepOverride,
+  type SourceBackedFlowMapPersistenceRecord,
+  type SourceBackedFlowMapStepBinding,
 } from './source-backed-my-flow';
 import { prepareFlowRunNewAnchor, type FlowRunFixedDatePolicy } from './flow-run-reuse';
 import {
@@ -358,25 +360,56 @@ function normalizeSavedFlowMapPersonalCopyStepOverrides(
   return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 }
 
+function normalizeSavedFlowMapRetainedStep(value: unknown): SourceBackedFlowMapStepBinding | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const step = value as Partial<SourceBackedFlowMapStepBinding>;
+  const destinations = new Set(['calendar', 'todo', 'checklist', 'sheet', 'memo', 'progress']);
+  const calendarModes = new Set(['absolute', 'anchor_offset', 'routine', 'none']);
+  if (typeof step.stepId !== 'string' || !step.stepId.trim()) return undefined;
+  if (typeof step.title !== 'string' || !step.title.trim()) return undefined;
+  if (typeof step.destination !== 'string' || !destinations.has(step.destination)) return undefined;
+  if (!step.calendar || typeof step.calendar !== 'object' || !calendarModes.has(step.calendar.mode)) return undefined;
+  if (!step.textFallback || typeof step.textFallback !== 'object') return undefined;
+  if (typeof step.textFallback.title !== 'string' || typeof step.textFallback.description !== 'string') return undefined;
+  return JSON.parse(JSON.stringify(step)) as SourceBackedFlowMapStepBinding;
+}
+
+function normalizeSavedFlowMapRetainedSteps(
+  value: unknown,
+): Record<string, Record<string, SourceBackedFlowMapStepBinding>> | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const flows = Object.entries(value as Record<string, unknown>).flatMap(([flowSlug, flowValue]) => {
+    if (!flowSlug.trim() || !flowValue || typeof flowValue !== 'object' || Array.isArray(flowValue)) return [];
+    const steps = Object.entries(flowValue as Record<string, unknown>).flatMap(([stepId, stepValue]) => {
+      const step = normalizeSavedFlowMapRetainedStep(stepValue);
+      return step && step.stepId === stepId ? [[stepId, step] as const] : [];
+    });
+    return steps.length > 0 ? [[flowSlug, Object.fromEntries(steps)] as const] : [];
+  });
+  return flows.length > 0 ? Object.fromEntries(flows) : undefined;
+}
+
 function normalizeSavedFlowMapPersonalCopy(value: unknown): SourceBackedFlowMapPersonalCopy | undefined {
   if (!value || typeof value !== 'object') return undefined;
 
   const personalCopy = value as Partial<SourceBackedFlowMapPersonalCopy>;
-  if (personalCopy.source !== 'url_first_custom_start') return undefined;
+  if (personalCopy.source !== 'url_first_custom_start' && personalCopy.source !== 'version_review') return undefined;
 
   const includedStepIdsByFlow = normalizeStringListRecord(personalCopy.includedStepIdsByFlow);
   const excludedStepIdsByFlow = normalizeStringListRecord(personalCopy.excludedStepIdsByFlow);
   const stepOverridesByFlow = normalizeSavedFlowMapPersonalCopyStepOverrides(personalCopy.stepOverridesByFlow);
+  const retainedStepsByFlow = normalizeSavedFlowMapRetainedSteps(personalCopy.retainedStepsByFlow);
   if (!includedStepIdsByFlow || !excludedStepIdsByFlow) return undefined;
 
   return {
-    source: 'url_first_custom_start',
+    source: personalCopy.source,
     ...(typeof personalCopy.originalTitle === 'string' && personalCopy.originalTitle.trim()
       ? { originalTitle: personalCopy.originalTitle }
       : {}),
     includedStepIdsByFlow,
     excludedStepIdsByFlow,
     ...(stepOverridesByFlow ? { stepOverridesByFlow } : {}),
+    ...(retainedStepsByFlow ? { retainedStepsByFlow } : {}),
   };
 }
 
@@ -1061,6 +1094,21 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
   );
 }
 
+function restorePersonalCopyExcludedItemStates(
+  flowSlug: string,
+  personalCopy?: SourceBackedFlowMapPersonalCopy,
+): void {
+  const excludedStepIds = personalCopy?.excludedStepIdsByFlow[flowSlug] ?? [];
+  if (excludedStepIds.length === 0) return;
+  localStorage.setItem(
+    `${ITEM_STATE_KEY_PREFIX}${flowSlug}`,
+    JSON.stringify(Object.fromEntries(excludedStepIds.map((stepId) => [
+      stepId,
+      { skipped: true, note: 'excluded_on_start' } satisfies FlowItemState,
+    ]))),
+  );
+}
+
 function updateSavedFlowMapProjectionForRun(
   flowSlug: string,
   value: {
@@ -1097,6 +1145,15 @@ function updateSavedFlowMapProjectionForRun(
     ? buildSourceBackedFlowMapPersistenceRecordUpdate(sourceBackedSnapshot, {
         savedAt: normalized.savedAt,
         ...(normalized.anchor ? { anchor: normalized.anchor } : {}),
+        ...(() => {
+          try {
+            const raw = localStorage.getItem(getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId));
+            const baselineRecord = raw ? JSON.parse(raw) as SourceBackedFlowMapPersistenceRecord : undefined;
+            return baselineRecord?.recordType === 'saved_source_backed_flow_map' ? { baselineRecord } : {};
+          } catch {
+            return {};
+          }
+        })(),
       })
     : undefined;
   if (persistenceRecord) {
@@ -1137,7 +1194,7 @@ export function startFlowRunFromCompleted(
   const mapId = options.mapId?.trim() || previous.mapId;
   const sourceVersion = options.sourceVersion?.trim() || previous.sourceVersion;
   const anchor = options.anchor?.trim();
-  if (options.reuseMode === 'new_anchor') {
+  if (options.reuseMode === 'new_anchor' || (options.reuseMode === 'reviewed_version' && anchor)) {
     const newAnchorPlan = prepareFlowRunNewAnchor(
       personalCopySnapshot,
       anchor ?? '',
@@ -1155,6 +1212,7 @@ export function startFlowRunFromCompleted(
   }
 
   resetCurrentFlowExecutionState(flowSlug);
+  restorePersonalCopyExcludedItemStates(flowSlug, personalCopySnapshot);
   replaceFlowScopedMyFlowPersonalExecutionState(flowSlug, personalExecutionStateSnapshot);
   const savedRecord: SavedFlowRecord = {
     slug: flowSlug,
@@ -1183,7 +1241,7 @@ export function startFlowRunFromCompleted(
     startedAt,
     previousRunId: previous.runId,
     reuseMode: options.reuseMode,
-    ...(options.reuseMode === 'new_anchor' && options.fixedDatePolicy
+    ...((options.reuseMode === 'new_anchor' || options.reuseMode === 'reviewed_version') && options.fixedDatePolicy
       ? { fixedDatePolicy: options.fixedDatePolicy }
       : {}),
     selectedArtifactMode,

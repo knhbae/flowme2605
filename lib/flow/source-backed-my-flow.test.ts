@@ -2,18 +2,24 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import { buildIcsCalendar, buildText, buildWorkbookSheets } from './export';
+import {
+  buildFlowVersionReview,
+  buildFlowVersionReviewPersonalCopy,
+} from './flow-version-review';
 import { seedBundles } from './seed-flows';
 import {
   SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST,
   assessProgressStepNeed,
   assessSourceBackedManualRegistrationReadiness,
   assessSourceBackedFlowMapUpdate,
+  applySourceBackedPersonalCopyToBundle,
   buildSourceBackedFlowMapPersonalCopyAdjustment,
   buildSourceBackedFlowMapPersistenceRecordUpdate,
   buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapSavedSnapshotUpdate,
   buildSourceBackedFlowMapSavedSnapshot,
   buildSourceBackedFlowMapPublishPackage,
+  buildSourceBackedFlowMapReviewedVersion,
   buildSourceBackedMyFlowRows,
   getSourceBackedFlowMapDateAnchorCopy,
   getSourceBackedFlowMapQualityDecision,
@@ -1663,6 +1669,10 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
     },
   };
 
+  const baselineRecord = buildSourceBackedFlowMapPersistenceRecordUpdate(personalSnapshot);
+  assert.ok(baselineRecord);
+  assert.deepEqual(baselineRecord.childFlows[0]?.stepIds, ['math-prime-factorization']);
+
   const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(personalSnapshot, {
     title: 'Chapter 1 and 2 review',
     anchor: '2026-08-01',
@@ -1683,6 +1693,7 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
         },
       },
     },
+    baselineRecord,
   });
 
   assert.ok(adjusted);
@@ -1782,4 +1793,198 @@ test('source-backed Flow Map update assessment requires review for official sens
   assert.equal(assessment.canApplyAutomatically, false);
   assert.ok(assessment.reasons.some((reason) => reason.includes('공식/민감')));
   assert.ok(assessment.reasons.some((reason) => reason.includes('Step 수')));
+});
+
+test('Flow version review classifies stable-id changes and personal conflicts', () => {
+  const current = buildSourceBackedFlowMapPersistenceRecord('middle-school-math-1', {
+    anchor: '2026-08-01',
+    savedAt: '2026-07-11T01:00:00.000Z',
+  });
+  assert.ok(current);
+  const saved = structuredClone(current);
+  saved.map.version = '2026-01-01.old';
+  const flow = saved.childFlows[0];
+  const changed = flow.steps[0];
+  changed.title = '이전 소인수분해';
+  changed.textFallback.description = '이전 설명';
+  changed.calendar = { ...changed.calendar, dayOffset: 3 };
+  const newlyAdded = flow.steps[1];
+  flow.steps = flow.steps.filter((step) => step.stepId !== newlyAdded.stepId);
+  flow.stepIds = flow.steps.map((step) => step.stepId);
+  const removed = {
+    ...structuredClone(changed),
+    stepId: 'removed-personal-step',
+    title: '이전 개인 할 일',
+  };
+  flow.steps.push(removed);
+  flow.stepIds.push(removed.stepId);
+
+  const personalCopy = {
+    source: 'url_first_custom_start' as const,
+    includedStepIdsByFlow: {
+      [flow.slug]: flow.stepIds,
+    },
+    excludedStepIdsByFlow: {
+      [flow.slug]: [],
+    },
+    stepOverridesByFlow: {
+      [flow.slug]: {
+        [changed.stepId]: {
+          title: '내 소인수분해',
+          userMemo: '내 풀이 순서를 유지',
+          schedule: { mode: 'fixed_date' as const, date: '2026-08-05' },
+        },
+        [removed.stepId]: {
+          userMemo: '삭제돼도 내 할 일로 유지',
+        },
+      },
+    },
+  };
+  const review = buildFlowVersionReview({
+    savedRecord: saved,
+    currentRecord: current,
+    savedVersion: saved.map.version,
+    personalCopy,
+  });
+
+  assert.equal(review.changedCount, 1);
+  assert.equal(review.addedCount, 1);
+  assert.equal(review.removedCount, 1);
+  assert.equal(review.conflictCount, 2);
+  const changedReview = review.items.find((item) => item.stepId === changed.stepId);
+  assert.ok(changedReview);
+  assert.deepEqual(changedReview.conflictFields.sort(), ['date', 'memo', 'title']);
+  assert.equal(review.items.find((item) => item.stepId === newlyAdded.stepId)?.kind, 'added');
+  assert.equal(review.items.find((item) => item.stepId === removed.stepId)?.kind, 'removed');
+});
+
+test('Flow version review preserves selected old content and strips only explicitly replaced personal fields', () => {
+  const current = buildSourceBackedFlowMapPersistenceRecord('middle-school-math-1', {
+    anchor: '2026-08-01',
+    savedAt: '2026-07-11T01:00:00.000Z',
+  });
+  assert.ok(current);
+  const saved = structuredClone(current);
+  saved.map.version = '2026-01-01.old';
+  const flow = saved.childFlows[0];
+  const changed = flow.steps[0];
+  changed.title = '이전 소인수분해';
+  changed.textFallback.description = '이전 설명';
+  const removed = {
+    ...structuredClone(flow.steps[1]),
+    stepId: 'removed-personal-step',
+    title: '없어진 개인 할 일',
+  };
+  flow.steps.push(removed);
+  flow.stepIds.push(removed.stepId);
+  const personalCopy = {
+    source: 'url_first_custom_start' as const,
+    includedStepIdsByFlow: { [flow.slug]: flow.stepIds },
+    excludedStepIdsByFlow: { [flow.slug]: [] },
+    stepOverridesByFlow: {
+      [flow.slug]: {
+        [changed.stepId]: { title: '내 제목', userMemo: '내 메모' },
+        [removed.stepId]: { userMemo: '유지할 메모' },
+      },
+    },
+  };
+  const review = buildFlowVersionReview({ savedRecord: saved, currentRecord: current, personalCopy });
+  const selections = Object.fromEntries(review.items.map((item) => [
+    item.key,
+    item.kind === 'changed' ? 'use_latest' : item.kind === 'removed' ? 'keep_removed' : 'include',
+  ] as const));
+  const result = buildFlowVersionReviewPersonalCopy({ review, savedRecord: saved, personalCopy, selections });
+
+  assert.deepEqual(result.unresolvedKeys, []);
+  assert.ok(result.personalCopy);
+  assert.equal(result.personalCopy.source, 'version_review');
+  assert.equal(result.personalCopy.stepOverridesByFlow?.[flow.slug]?.[changed.stepId], undefined);
+  assert.equal(result.personalCopy.retainedStepsByFlow?.[flow.slug]?.[removed.stepId].title, '없어진 개인 할 일');
+  assert.ok(result.personalCopy.includedStepIdsByFlow[flow.slug].includes(removed.stepId));
+
+  const savedSnapshot = buildSourceBackedFlowMapSavedSnapshot('middle-school-math-1', {
+    anchor: '2026-08-01',
+    savedAt: '2026-07-11T01:00:00.000Z',
+  });
+  assert.ok(savedSnapshot);
+  const reviewed = buildSourceBackedFlowMapReviewedVersion(savedSnapshot, result.personalCopy, {
+    anchor: '2026-08-01',
+    savedAt: '2026-07-11T02:00:00.000Z',
+  });
+  assert.ok(reviewed);
+  assert.ok(reviewed.snapshot.personalCopy?.retainedStepsByFlow?.[flow.slug]?.[removed.stepId]);
+  assert.ok(reviewed.persistenceRecord.childFlows[0].steps.some((step) => step.stepId === removed.stepId));
+
+  const bundle = bundleBySlug(flow.slug);
+  const projectedBundle = applySourceBackedPersonalCopyToBundle(bundle, reviewed.snapshot.personalCopy);
+  assert.ok(projectedBundle.items.some((item) => item.id === removed.stepId && item.title === '없어진 개인 할 일'));
+
+  const keepCurrentSelections = Object.fromEntries(review.items.map((item) => [
+    item.key,
+    item.kind === 'changed' ? 'keep_current' : 'exclude',
+  ] as const));
+  const keepCurrent = buildFlowVersionReviewPersonalCopy({
+    review,
+    savedRecord: saved,
+    personalCopy,
+    selections: keepCurrentSelections,
+  });
+  assert.equal(
+    keepCurrent.personalCopy?.retainedStepsByFlow?.[flow.slug]?.[changed.stepId].title,
+    '이전 소인수분해',
+  );
+});
+
+test('personal edits keep the saved source baseline until a reviewed version starts', () => {
+  const currentSnapshot = buildSourceBackedFlowMapSavedSnapshot('middle-school-math-1', {
+    anchor: '2026-08-01',
+    savedAt: '2026-07-11T01:00:00.000Z',
+  });
+  const currentRecord = buildSourceBackedFlowMapPersistenceRecord('middle-school-math-1', {
+    anchor: '2026-08-01',
+    savedAt: '2026-07-11T01:00:00.000Z',
+  });
+  assert.ok(currentSnapshot);
+  assert.ok(currentRecord);
+  const flowSlug = currentRecord.childFlows[0].slug;
+  const stepId = currentRecord.childFlows[0].steps[0].stepId;
+  const baselineRecord = structuredClone(currentRecord);
+  baselineRecord.map.version = '2026-01-01.old';
+  baselineRecord.childFlows[0].steps[0].title = '저장 당시 제목';
+  const savedSnapshot = {
+    ...currentSnapshot,
+    version: baselineRecord.map.version,
+    personalCopy: {
+      source: 'url_first_custom_start' as const,
+      includedStepIdsByFlow: { [flowSlug]: [stepId] },
+      excludedStepIdsByFlow: { [flowSlug]: currentRecord.childFlows[0].stepIds.slice(1) },
+    },
+  };
+
+  const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(savedSnapshot, {
+    title: '내 시험 준비',
+    anchor: '2026-08-03',
+    includedStepIdsByFlow: { [flowSlug]: [stepId] },
+    stepOverridesByFlow: { [flowSlug]: { [stepId]: { userMemo: '내 메모' } } },
+    baselineRecord,
+  });
+
+  assert.ok(adjusted);
+  assert.equal(adjusted.snapshot.version, '2026-01-01.old');
+  assert.equal(adjusted.persistenceRecord.map.version, '2026-01-01.old');
+  assert.equal(adjusted.persistenceRecord.childFlows[0].steps[0].title, '저장 당시 제목');
+  assert.equal(adjusted.snapshot.personalCopy?.stepOverridesByFlow?.[flowSlug]?.[stepId].userMemo, '내 메모');
+});
+
+test('official or sensitive source versions always require explicit review', () => {
+  const current = buildSourceBackedFlowMapPersistenceRecord('baby-health-schedule', {
+    anchor: '2026-01-15',
+  });
+  assert.ok(current);
+  const saved = structuredClone(current);
+  saved.map.version = '2026-01-01.old';
+  const review = buildFlowVersionReview({ savedRecord: saved, currentRecord: current });
+  assert.equal(review.sensitive, true);
+  assert.equal(review.items.length, 0);
+  assert.notEqual(review.savedVersion, review.currentVersion);
 });
