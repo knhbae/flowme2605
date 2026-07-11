@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 현재 원문·콘텐츠 최신성 감사</title>
+  <style>
+    :root { color-scheme: light; --ink:#171717; --muted:#666; --line:#ddd; --paper:#fff; --wash:#f5f6f8; --blue:#3155e7; --green:#08785d; --amber:#9a5a16; --red:#a53030; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); font-family:Inter,"Pretendard",system-ui,sans-serif; line-height:1.55; letter-spacing:0; }
+    header, main, footer { width:min(1180px, calc(100% - 32px)); margin-inline:auto; }
+    header { padding:48px 0 28px; }
+    h1 { margin:0; font-size:clamp(30px,4vw,52px); line-height:1.12; }
+    h2 { margin:0 0 14px; font-size:24px; }
+    p { margin:8px 0; }
+    a { color:var(--blue); }
+    .lede { max-width:820px; margin-top:14px; color:var(--muted); font-size:17px; }
+    .kpis { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:1px; border:1px solid var(--line); background:var(--line); }
+    .kpi { background:var(--paper); padding:18px; min-height:112px; }
+    .kpi b { display:block; font-size:30px; }
+    .kpi span { color:var(--muted); font-size:13px; }
+    section { margin:30px 0; padding:24px 0; border-top:1px solid var(--line); }
+    .policy { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 36px; }
+    .policy article { border-left:4px solid var(--blue); padding-left:14px; }
+    .decision-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 24px; padding:0; list-style:none; }
+    .decision-list li { display:grid; grid-template-columns:110px 1fr; gap:10px; border-bottom:1px solid var(--line); padding:10px 0; }
+    .tag { width:max-content; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:700; }
+    .keep { background:#dff5ec; color:var(--green); }
+    .reshape { background:#fff0d9; color:var(--amber); }
+    .preview { background:#e8ecff; color:#3b4ba5; }
+    .hide { background:#ffe5e5; color:var(--red); }
+    .gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+    figure { margin:0; background:var(--paper); border:1px solid var(--line); overflow:hidden; }
+    figure img { width:100%; height:420px; object-fit:cover; object-position:top; display:block; background:#eee; }
+    figure.wide img { height:360px; }
+    figcaption { padding:12px 14px; border-top:1px solid var(--line); }
+    figcaption strong { display:block; overflow-wrap:anywhere; }
+    figcaption span { color:var(--muted); font-size:13px; }
+    .files { display:flex; flex-wrap:wrap; gap:12px; }
+    .files a { border:1px solid var(--line); background:var(--paper); padding:10px 12px; text-decoration:none; }
+    footer { padding:12px 0 50px; color:var(--muted); }
+    @media (max-width:900px) { .kpis { grid-template-columns:repeat(3,1fr); } .gallery { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:620px) { header,main,footer { width:min(100% - 20px,1180px); } header{padding-top:30px}.kpis,.policy,.decision-list,.gallery{grid-template-columns:1fr}.decision-list li{grid-template-columns:96px 1fr}figure img,figure.wide img{height:auto;max-height:620px;object-fit:cover;object-position:top}.kpi{min-height:0} }
+  </style>
+</head>
+<body>
+  <header>
+    <p>FLOW · source freshness audit · 2026-07-11</p>
+    <h1>페이지가 열리는 것과<br />콘텐츠가 지금도 맞는 것은 다릅니다.</h1>
+    <p class="lede">남아 있던 23개 원문을 다시 읽고, 현재 행을 정확히 지지하는 14개만 실행판으로 열었습니다. 원문 범위가 부족하거나 민감한 9개는 직접 URL에서도 저장·완료·내보내기를 막았습니다.</p>
+  </header>
+  <main>
+    <div class="kpis" aria-label="감사 요약">
+      <div class="kpi"><b>23</b><span>이번 원문 감사</span></div>
+      <div class="kpi"><b>14</b><span>공개 실행 유지</span></div>
+      <div class="kpi"><b>9</b><span>재구성·미리보기·숨김</span></div>
+      <div class="kpi"><b>0</b><span>과거 문구 hit</span></div>
+      <div class="kpi"><b>0</b><span>보류 행동 누출</span></div>
+      <div class="kpi"><b>0</b><span>손상 문자열·overflow</span></div>
+    </div>
+
+    <section>
+      <h2>판정 원칙</h2>
+      <div class="policy">
+        <article><strong>현재성</strong><p>제도·의료·재무·안전은 현재 공식 원문과 적용 범위를 함께 확인합니다.</p></article>
+        <article><strong>정확성</strong><p>오래된 글도 고정 메뉴·순서처럼 지금 Flow가 그대로 재현할 수 있으면 한계를 표시해 유지합니다.</p></article>
+        <article><strong>실행 가치</strong><p>원문 링크만 있는 것이 아니라 저장 후 체크·캘린더·메모로 이어지는 자연 산출물이 있어야 합니다.</p></article>
+        <article><strong>공개 게이트</strong><p>승인 외 결정은 noindex와 읽기 전용 미리보기로 두고 실행 행동을 열지 않습니다.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>23개 결정</h2>
+      <ul class="decision-list" id="decisions"></ul>
+    </section>
+
+    <section>
+      <h2>모바일 390px · 23개 전체</h2>
+      <div class="gallery" id="mobile-gallery"></div>
+    </section>
+
+    <section>
+      <h2>Wide 1024px · 대표 7개</h2>
+      <div class="gallery" id="wide-gallery"></div>
+    </section>
+
+    <section>
+      <h2>근거 파일</h2>
+      <div class="files">
+        <a href="./README.md">README</a>
+        <a href="./audit.md">상세 감사</a>
+        <a href="./route-evidence.json">Route evidence JSON</a>
+        <a href="./source-reachability.json">Source reachability JSON</a>
+      </div>
+    </section>
+  </main>
+  <footer>자동 검사 통과는 실사용 검증 완료를 뜻하지 않습니다. 외부 차단과 네트워크 오류는 원문 삭제와 구분합니다.</footer>
+  <script>
+    const routes = [
+      ['birth-registration-prep','출생신고 준비','reshape'],
+      ['childcare-fee-support-apply','어린이집 보육료 지원','keep'],
+      ['seal-or-signature-certificate','인감·본인서명 발급','reshape'],
+      ['customs-traveler-declare','여행자 휴대품 신고','keep'],
+      ['health-insurance-dependent','건강보험 피부양자 등록','reshape'],
+      ['military-exam-prep','병역판정검사 준비','keep'],
+      ['overseas-safety-register','해외안전여행 준비','keep'],
+      ['pension-estimate-check','국민연금 조회','keep'],
+      ['tax-refund-find','국세 미수령 환급금','keep'],
+      ['welfare-benefit-finder','복지멤버십 신청·확인','keep'],
+      ['blog-youtube-start','블로그 글 영상 전환','keep'],
+      ['book-finish-one','책 한 권 완독','preview'],
+      ['dog-walk-routine','강아지 산책 루틴','reshape'],
+      ['home-cafe-daily','아이스 커피 한 잔','keep'],
+      ['kitchen-reset-organize','냉장고 식재료 정리','keep'],
+      ['morning-routine-30day','나만의 아침 루틴','reshape'],
+      ['morning-skincare-routine','아침 스킨케어','reshape'],
+      ['pet-health-observation','강아지 건강검진 상담 준비','keep'],
+      ['reading-habit-30day','매일 15분 읽기','keep'],
+      ['skin-weekly-check','주간 피부 상태 관찰','hide'],
+      ['travel-packing-list','여행 짐 싸기','keep'],
+      ['weekly-meal-plan','평일 5일 저녁 식단','keep'],
+      ['recipe-video-execute','레시피 영상 실행','preview']
+    ];
+    const labels = { keep:'공개 실행', reshape:'재구성', preview:'미리보기', hide:'공개 숨김' };
+    document.querySelector('#decisions').innerHTML = routes.map(([slug,title,decision]) => `<li><span class="tag ${decision}">${labels[decision]}</span><span><strong>${title}</strong><br><code>${slug}</code></span></li>`).join('');
+    document.querySelector('#mobile-gallery').innerHTML = routes.map(([slug,title,decision],i) => `<figure><a href="./screenshots/${String(i+1).padStart(2,'0')}-${slug}-390.png"><img src="./screenshots/${String(i+1).padStart(2,'0')}-${slug}-390.png" alt="${title} 모바일 화면" /></a><figcaption><strong>${title}</strong><span>${labels[decision]} · 390px</span></figcaption></figure>`).join('');
+    const wide = ['birth-registration-prep','health-insurance-dependent','tax-refund-find','pet-health-observation','reading-habit-30day','weekly-meal-plan','recipe-video-execute'];
+    document.querySelector('#wide-gallery').innerHTML = wide.map((slug,i) => { const route=routes.find(item=>item[0]===slug); return `<figure class="wide"><a href="./screenshots/${String(i+24).padStart(2,'0')}-${slug}-1024.png"><img src="./screenshots/${String(i+24).padStart(2,'0')}-${slug}-1024.png" alt="${route[1]} wide 화면" /></a><figcaption><strong>${route[1]}</strong><span>${labels[route[2]]} · 1024px</span></figcaption></figure>`; }).join('');
+  </script>
+</body>
+</html>
