@@ -9,6 +9,16 @@ Device and viewport:
 Browser:
 Recording location:
 
+## Build And Content Baseline
+
+- Observation entry URL:
+- Resolved deployment URL:
+- Tested commit:
+- Content or source URL used:
+- Source/page freshness issue observed: yes / no
+- Observed outdated text or state:
+- Expected current text or state:
+
 ## Consent And Data Boundary
 
 - [ ] 참가자는 제품 관찰이며 전문 조언이 아니라는 점을 안다.
@@ -87,6 +97,7 @@ Recording location:
 - Misread copy:
 - Wrong destination:
 - Unexpected data change:
+- Outdated page or content encountered:
 - Direct quote:
 
 ## Severity
