@@ -123,6 +123,25 @@ test('water purifier route exposes filter-cycle log rows instead of generic dail
   );
 });
 
+test('current creator artifacts keep source-specific Korean fields without stale tracking models', () => {
+  const weeklyMeal = getLogTables(bundle('weekly-meal-plan'))[0];
+  assert.ok(weeklyMeal);
+  assert.deepEqual(weeklyMeal.rows.map((row) => row.label), [
+    '월요일',
+    '화요일',
+    '수요일',
+    '목요일',
+    '금요일',
+  ]);
+  assert.equal(weeklyMeal.rows[0]?.defaultValues?.menu, '양배추참치덮밥·단무지무침');
+
+  assert.deepEqual(getLogTables(bundle('pet-health-observation')), []);
+  assert.deepEqual(
+    getMemoCardFields(bundle('pet-health-observation')).map((field) => field.label),
+    ['병원에 전달할 생활 정보', '복용 중인 약·보조제', '수의사에게 물을 내용', '검사 결과·다음 일정'],
+  );
+});
+
 test('workout programming routes expose source-rule decision rows', () => {
   const slugs = [
     'real-fitvely-video-bulk-up-method',

@@ -56,9 +56,9 @@ test('memo text export renders a checkbox checklist with done criteria and offic
   // Markdown checkboxes so the pasted memo is an interactive checklist in Notion/메모앱.
   assert.match(text, /- \[ \] 복지로에서 맞춤형급여안내\(복지멤버십\) 신청하기/);
   // Non-generic completion criteria travel into the memo so the user knows when to check the box.
-  assert.match(text, /완료 기준: 받을 수 있을 것 같은 서비스를 목록으로 적었다\./);
+  assert.match(text, /완료 기준: 복지멤버십 신청 상태를 확인했다\./);
   // The official handoff link (복지로) is carried into the memo as the action target.
-  assert.match(text, /링크: 복지로 서비스 신청 - https:\/\/www\.bokjiro\.go\.kr\//);
+  assert.match(text, /링크: 복지로 맞춤형급여안내 - https:\/\/www\.bokjiro\.go\.kr\//);
 
   // A completed item flips the checkbox to [x] rather than appending "(완료)".
   const firstId = welfare.items[0].id;
@@ -736,17 +736,6 @@ test('calendar export creates a portable weekly event for exact video flows', ()
 });
 
 test('fixed-length routines bound the recurring calendar event with UNTIL', () => {
-  // 30-day challenge starting Monday 2026-06-08 → UNTIL = 2026-07-07 (start + 29 days).
-  const reading = seedBundles.find((bundle) => bundle.flow.slug === 'reading-habit-30day');
-  assert.ok(reading);
-  assert.equal(reading.flow.routine_duration_days, 30);
-  const readingIcs = buildCalendarIcs(reading, '2026-06-08', ['월', '수', '금']);
-  assert.match(readingIcs, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260707/);
-
-  const morning = seedBundles.find((bundle) => bundle.flow.slug === 'morning-routine-30day');
-  assert.ok(morning);
-  assert.match(buildCalendarIcs(morning, '2026-06-08', ['월', '수', '금']), /UNTIL=20260707/);
-
   // 28-day weekly routine → UNTIL = start + 27 days.
   const detox = seedBundles.find((bundle) => bundle.flow.slug === 'digital-detox-weekly');
   assert.ok(detox);
@@ -755,7 +744,13 @@ test('fixed-length routines bound the recurring calendar event with UNTIL', () =
 });
 
 test('open-ended daily habits keep recurring without an UNTIL bound', () => {
-  for (const slug of ['morning-skincare-routine', 'home-cafe-daily', 'dog-walk-routine']) {
+  for (const slug of [
+    'reading-habit-30day',
+    'morning-routine-30day',
+    'morning-skincare-routine',
+    'home-cafe-daily',
+    'dog-walk-routine',
+  ]) {
     const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
     assert.ok(bundle, slug);
     assert.equal(bundle.flow.routine_duration_days, undefined, `${slug} should stay open-ended`);

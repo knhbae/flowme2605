@@ -89,9 +89,9 @@ test('lifecycle summary covers every seed bundle exactly once', () => {
   assert.ok(summary.bucketCounts.keep >= 5);
   assert.ok(summary.bucketCounts.fix >= 40);
   assert.ok(summary.bucketCounts.preview_only >= 400);
-  assert.equal(summary.bucketCounts.hide, 1);
+  assert.equal(summary.bucketCounts.hide, 2);
   assert.equal(summary.bucketCounts.remove_candidate, 0);
-  assert.deepEqual(summary.hideSlugs, ['real-fitvely-weekly-body-check']);
+  assert.deepEqual(summary.hideSlugs, ['real-fitvely-weekly-body-check', 'skin-weekly-check']);
   assert.equal(summary.keepSlugs.length, summary.bucketCounts.keep);
   assert.equal(summary.removeCandidateSlugs.length, summary.bucketCounts.remove_candidate);
 });

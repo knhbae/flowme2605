@@ -90,11 +90,35 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 95);
+  assert.equal(summary.auditedCount, 118);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 21);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 64);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 10);
+  assert.equal(summary.decisionCounts.keep_representative, 35);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 70);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 12);
+  assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
+});
+
+test('current source freshness pass separates usable, stale, preview, and hidden routes', () => {
+  const decisions = new Map(
+    [
+      'childcare-fee-support-apply',
+      'weekly-meal-plan',
+      'health-insurance-dependent',
+      'book-finish-one',
+      'skin-weekly-check',
+    ].map((slug) => [slug, getSourceFitAudit(slug)]),
+  );
+
+  assert.equal(decisions.get('childcare-fee-support-apply')?.decision, 'keep_representative');
+  assert.equal(decisions.get('weekly-meal-plan')?.decision, 'keep_representative');
+  assert.equal(decisions.get('health-insurance-dependent')?.decision, 'reshape_before_featured');
+  assert.equal(decisions.get('book-finish-one')?.decision, 'catalog_preview_only');
+  assert.equal(decisions.get('skin-weekly-check')?.decision, 'hide_from_public_catalog');
+
+  for (const audit of decisions.values()) {
+    assert.ok(audit);
+    assert.equal(audit.checkedAt, '2026-07-11');
+  }
 });
 
 test('computer skills final QA promotes the route to representative source fit', () => {

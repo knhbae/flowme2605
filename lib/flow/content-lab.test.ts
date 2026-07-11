@@ -126,11 +126,12 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
 test('content lab exposes source-fit audit summary for representative cleanup', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.sourceFitAuditedCount, 95);
+  assert.equal(summary.sourceFitAuditedCount, 118);
   assert.ok(summary.sourceFitAverageScore >= 70);
-  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 21);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 64);
-  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 10);
+  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 35);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 70);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 12);
+  assert.equal(summary.sourceFitDecisionCounts.hide_from_public_catalog, 1);
 });
 
 test('content lab exposes full content inventory coverage', () => {
@@ -138,7 +139,7 @@ test('content lab exposes full content inventory coverage', () => {
 
   assert.equal(summary.inventoryTotalCount, seedBundles.length);
   assert.equal(summary.realSourceInventoryReviewedCount, summary.realSourceFlowCount);
-  assert.equal(summary.manualSourceFitAuditedCount, 95);
+  assert.equal(summary.manualSourceFitAuditedCount, 118);
   assert.equal(summary.derivedRealSourceReviewedCount, 0);
   assert.equal(summary.curatedSourceAppSeedInventoryCount, 19);
   assert.equal(
@@ -148,14 +149,14 @@ test('content lab exposes full content inventory coverage', () => {
   // Two broad batch sources moved beside the generated preview library.
   assert.equal(summary.previewCandidateFlowCount, summary.previewGeneratedFlowCount + 2);
   assert.ok(summary.inventoryPublicHandlingCounts.preview_candidate >= 442);
-  assert.equal(summary.sourceNeedsReviewInventoryCount, 37);
+  assert.equal(summary.sourceNeedsReviewInventoryCount, 14);
   assert.equal(summary.legacyAccessibleFlowCount, 0);
 });
 
 test('content lab exposes natural artifact audit coverage for real-source flows', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 55);
+  assert.equal(summary.naturalArtifactRealSourceAuditedCount, 69);
   assert.equal(summary.naturalArtifactRealSourceRemainingCount, 0);
   assert.ok(summary.naturalArtifactDecisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.naturalArtifactDecisionCounts.reshape_content_or_ux >= 1);
@@ -174,13 +175,12 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
 
   assert.equal(summary.lifecycleTotalCount, seedBundles.length);
   assert.equal(countSum, seedBundles.length);
-  assert.equal(summary.lifecycleBucketCounts.keep, 21);
-  assert.equal(summary.lifecycleBucketCounts.hide, 1);
+  assert.equal(summary.lifecycleBucketCounts.keep, 35);
+  assert.equal(summary.lifecycleBucketCounts.hide, 2);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount + 2);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  // Six manually refreshed routes moved from fix to keep across the current-source passes.
-  assert.equal(summary.lifecycleBucketCounts.fix, 110 + summary.curatedSourceAppSeedInventoryCount);
-  assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check']);
+  assert.equal(summary.lifecycleBucketCounts.fix, 114);
+  assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check', 'skin-weekly-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
 });
@@ -189,14 +189,14 @@ test('content lab tracks the 2026-06-01 official batch as the next source review
   const summary = getContentLabSummary(seedBundles);
   const countSum = Object.values(summary.sourceReviewPriorityCounts).reduce((sum, count) => sum + count, 0);
 
-  // The remaining review queue excludes the two sources demoted to preview.
-  assert.equal(summary.sourceReviewPriorityTotalCount, 37);
-  assert.equal(countSum, 37);
-  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 23);
+  // All audit-now routes now have explicit decisions; only risk and source replacement work remains.
+  assert.equal(summary.sourceReviewPriorityTotalCount, 14);
+  assert.equal(countSum, 14);
+  assert.equal(summary.sourceReviewPriorityCounts.audit_now, 0);
   assert.equal(summary.sourceReviewPriorityCounts.source_replacement, 1);
   assert.equal(summary.sourceReviewPriorityCounts.risk_review, 13);
   assert.equal(summary.sourceReviewPriorityCounts.content_backlog, 0);
-  assert.equal(summary.sourceReviewPriorityItems.length, 37);
+  assert.equal(summary.sourceReviewPriorityItems.length, 14);
 });
 
 test('content lab exposes broad real-source guardrails', () => {

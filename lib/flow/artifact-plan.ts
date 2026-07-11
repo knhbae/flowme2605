@@ -87,10 +87,9 @@ const creatorSpreadsheetSlugs = new Set([
   'weekly-meal-plan',
   'monthly-household-budget',
   'skin-weekly-check',
-  'pet-health-observation',
 ]);
-// 월급날 재정 분리는 결과를 한 장으로 남기는 memo_card.
-const creatorMemoSlugs = new Set(['payday-finance-routine']);
+// 월급날 재정 분리와 병원 상담 준비는 결과를 한 장으로 남기는 memo_card.
+const creatorMemoSlugs = new Set(['payday-finance-routine', 'pet-health-observation']);
 
 function hasArtifact(bundle: FlowBundle, kind: string) {
   const audit = getNaturalArtifactAudit(bundle.flow.slug);

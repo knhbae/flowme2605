@@ -157,7 +157,7 @@ test('artifact plan maps creator sequential-stage flows to step progress surface
 });
 
 test('artifact plan maps creator record-table flows to spreadsheet log surface', () => {
-  const slugs = ['weekly-meal-plan', 'monthly-household-budget', 'skin-weekly-check', 'pet-health-observation'];
+  const slugs = ['weekly-meal-plan', 'monthly-household-budget', 'skin-weekly-check'];
 
   for (const slug of slugs) {
     const plan = getArtifactPlan(bundle(slug));
@@ -180,6 +180,13 @@ test('artifact plan keeps creator flows on source-aligned structure surfaces', (
     assert.equal(getArtifactPlan(bundle(slug)).primarySurface, 'timeline_calendar', slug);
   }
   assert.equal(getArtifactPlan(bundle('domestic-trip-d7')).primarySurface, 'checklist');
+});
+
+test('artifact plan maps veterinary consultation prep to a memo instead of a stale weekly tracker', () => {
+  const plan = getArtifactPlan(bundle('pet-health-observation'));
+
+  assert.equal(plan.primarySurface, 'memo_card');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
 });
 
 test('artifact plan maps official document issue routes to memo cards first except passport', () => {

@@ -21,10 +21,11 @@ async function openAllWorkbenchDetails(page: import('@playwright/test').Page) {
 async function expectReviewOnlySourceRoute(
   page: import('@playwright/test').Page,
   sourceUrl: string,
+  reviewReason = 'source_review_pending',
 ) {
   const gate = page.getByTestId('public-flow-review-only-gate');
   await expect(gate).toBeVisible();
-  await expect(gate).toHaveAttribute('data-review-reason', 'source_review_pending');
+  await expect(gate).toHaveAttribute('data-review-reason', reviewReason);
   await expect(gate.getByRole('link', { name: '현재 원문 확인하기' })).toHaveAttribute('href', sourceUrl);
   await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
@@ -85,6 +86,7 @@ test.describe('field checklist workbench source density', () => {
     await expectReviewOnlySourceRoute(
       page,
       'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001',
+      'source_fit_review_required',
     );
     const body = page.locator('body');
     await expect(body).not.toContainText(/정부24\s*\(온라인\)[^\n]{0,80}출생신고/u);

@@ -1263,14 +1263,18 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 52);
-  assert.equal(reviewOnly.length, 565);
+  assert.equal(indexable.length, 66);
+  assert.equal(reviewOnly.length, 551);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('first-passport-issue')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('closet-organize-1day')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('portfolio-4week')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('weekly-meal-plan')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('health-insurance-dependent')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('book-finish-one')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('skin-weekly-check')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('citizen-secretary-alerts')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('domestic-trip-d7')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-baby-vaccination-schedule')!).indexable, false);

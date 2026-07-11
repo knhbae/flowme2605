@@ -182,36 +182,37 @@ const specs: BatchSpec[] = [
     flow: {
       id: 'official-260601-welfare-finder',
       slug: 'welfare-benefit-finder',
-      title: '맞춤형 복지서비스 찾기 Flow',
-      description: '복지로 기준으로 내 상황(가구·소득·생애주기)에 맞는 받을 수 있는 복지서비스를 빠뜨리지 않게 점검합니다.',
+      title: '복지멤버십 신청·확인 Flow',
+      description: '복지로 맞춤형급여안내를 신청하고, 안내받은 복지서비스의 별도 신청 필요 여부를 정리합니다.',
       category: '복지/지원',
       structure_type: 'checklist',
       anchor_type: 'none',
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '복지로 – 복지서비스 신청(온라인 민원 신청)',
+      source_title: '복지로 – 맞춤형급여안내(복지멤버십)',
       source_url: 'https://www.bokjiro.go.kr/ssis-tbu/twatza/wmAplyMng/selectWmGdnc.do',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-11',
+      conversion_note: '복지멤버십 가입과 안내 결과 확인까지만 다루고, 개별 복지서비스의 수급 자격 판정은 각 서비스 안내로 남겼습니다.',
       warning: '지원 대상과 금액은 가구 소득·재산·지역에 따라 다릅니다. 복지로와 주민센터에서 직접 확인하세요.',
     },
-    text: `## 1. 내 상황 정리
-- 가구 구성·생애주기(임신·출산·취업·노년 등) 적어보기
-  why: 복지서비스는 상황별로 나뉘어 있어 내 상황을 먼저 정의해야 검색이 됩니다.
-  done: 내 가구·생애주기 키워드를 메모했다.
-
-## 2. 검색·확인
+    text: `## 1. 신청
 - 복지로에서 맞춤형급여안내(복지멤버십) 신청하기
-  how: 복지로 복지멤버십에 가입하면 가구 특성·연령 기준으로 받을 수 있는 복지서비스를 맞춤형으로 안내받습니다. 공동인증서 또는 간편인증으로 로그인 후 신청하거나, 신분증을 가지고 읍·면·동 주민센터를 방문해 신청합니다.
-  done: 받을 수 있을 것 같은 서비스를 목록으로 적었다.
-  link: 복지로 서비스 신청 | https://www.bokjiro.go.kr/ssis-tbu/twatza/wmAplyMng/selectWmGdnc.do | official
-  caution: 복지멤버십은 가입 후 가구 특성 기반 1차 안내를 받고, 금융정보 제공에 동의하면 소득·재산을 반영한 정밀 안내를 추가로 받습니다. 안내를 받았다고 자동 지급되는 것은 아니며, 각 서비스를 별도로 신청해야 심사가 진행됩니다.
-- 각 서비스의 신청 방법(온라인/주민센터) 확인하기
-  how: 온라인 신청은 복지로에서, 서류 제출이 필요하거나 어려운 경우 읍·면·동 행정복지센터를 방문합니다.
+  why: 내가 일일이 찾지 않아도 가구 상황을 바탕으로 받을 가능성이 있는 서비스를 안내받을 수 있습니다.
+  how: 복지로에 로그인해 맞춤형급여안내를 신청하거나, 신분증을 가지고 읍·면·동 행정복지센터에서 신청합니다.
+  done: 복지멤버십 신청 상태를 확인했다.
+  link: 복지로 맞춤형급여안내 | https://www.bokjiro.go.kr/ssis-tbu/twatza/wmAplyMng/selectWmGdnc.do | official
+  caution: 안내 대상이 되었다고 지원이 자동 지급되는 것은 아닙니다.
 
-## 3. 신청
-- 신청 가능한 것부터 서류 준비해 신청하기
-  caution: 대상 여부가 애매하면 주민센터에 확인 후 신청합니다.
-- 신청 결과·지급 시점 메모하기`,
+## 2. 안내 결과 확인
+- 안내받은 복지서비스 후보 저장하기
+  how: 복지로 알림이나 안내 결과에서 서비스 이름과 신청 기한을 메모합니다.
+  done: 확인할 서비스 후보와 신청 기한을 적었다.
+- 각 서비스의 자격·신청 방법 다시 확인하기
+  caution: 실제 지원 여부는 서비스별 심사에서 결정됩니다. 온라인 신청 여부와 필요한 서류는 각 서비스의 현재 안내를 확인하세요.
+  done: 바로 신청할 서비스와 추가 확인할 서비스를 나눴다.`,
   },
   {
     flow: {
@@ -334,7 +335,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '국민연금공단 전자민원 – 개인 가입내역·예상연금 조회',
       source_url: 'https://nps.or.kr/elctcvlcpt/comm/getOHAC0000M3.do?menuId=MN24001727',
+      source_status: 'real',
+      source_precision: 'exact',
       source_checked_at: '2026-07-11',
+      conversion_note: '가입내역과 예상연금 조회 결과를 저장하고, 추납·임의가입은 공단 상담 질문으로만 남겼습니다.',
       warning: '예상연금액은 가정에 따른 추정치이며 실제 수령액과 다를 수 있습니다. 국민연금공단(1355) 안내로 확인하세요.',
     },
     text: `## 1. 현황 확인
@@ -350,8 +354,9 @@ const specs: BatchSpec[] = [
   caution: 추납·임의가입은 본인 상황에 따라 유불리가 달라 공단 상담(1355)이 필요합니다.
 
 ## 3. 정리
-- 예상연금과 노후 목표를 비교 메모하기
-  done: 부족분과 다음 확인 사항을 적었다.`,
+- 조회 결과와 공단에 물어볼 내용 정리하기
+  how: 가입기간, 납부 예외·미납 기간, 예상연금액과 추납·임의가입 질문을 한 메모에 정리합니다.
+  done: 조회 결과와 1355 상담 질문을 적었다.`,
   },
   {
     flow: {
@@ -367,7 +372,9 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '국민건강보험공단 – 피부양자 자격 신고서',
       source_url: 'https://www.nhis.or.kr/static/html/wbdb/f/wbdbf.html',
+      source_precision: 'broad',
       source_checked_at: '2026-07-11',
+      conversion_note: '현재 원문은 신고서 작성 항목은 확인할 수 있지만 소득·재산·부양 인정기준 전체를 설명하는 단일 사용자 안내가 아니므로 공개 승인 전 정확한 기준 안내 연결이 필요합니다.',
       warning: '피부양자 소득·재산·부양 요건은 기준이 바뀔 수 있습니다. 국민건강보험공단 안내로 확인하세요.',
     },
     text: `## 1. 자격 확인
@@ -560,6 +567,8 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '외교부 해외안전여행(0404) – 여행경보·동행등록·영사콜센터',
       source_url: 'https://0404.go.kr/app/main/mainPage',
+      source_status: 'real',
+      source_precision: 'exact',
       source_checked_at: '2026-07-11',
       conversion_note: '외교부 해외안전여행의 현재 메인에서 여행경보, 안전공지, 동행서비스, 영사콜센터 확인 동선을 점검했습니다.',
       warning: '여행경보 단계와 입국 요건은 수시로 바뀝니다. 외교부 해외안전여행 공지를 출발 직전 다시 확인하세요.',
@@ -593,6 +602,8 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '관세청 – 여행자 휴대품 통관 안내',
       source_url: 'https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&cntntsId=829',
+      source_status: 'real',
+      source_precision: 'exact',
       source_checked_at: '2026-07-11',
       warning: '면세범위, 신고 대상, 반입금지·제한 품목은 변경될 수 있습니다. 관세청 공식 안내를 확인하세요.',
     },
@@ -742,26 +753,28 @@ const specs: BatchSpec[] = [
     flow: {
       id: 'official-260601-tax-refund',
       slug: 'tax-refund-find',
-      title: '미환급 세금·환급금 찾기 Flow',
-      description: '홈택스·정부24 기준으로 못 받은 국세 환급금과 미환급금을 조회해 신청합니다.',
+      title: '국세 미수령 환급금 확인 Flow',
+      description: '홈택스에서 아직 받지 못한 국세 환급금을 조회하고, 수령 계좌와 처리 상태를 확인합니다.',
       category: '세금/환급',
       structure_type: 'checklist',
       anchor_type: 'none',
       status: 'published',
       risk_level: 'low',
       primary_destination: 'memo',
-      source_title: '국세청 홈택스 – 국세환급금 찾기·원클릭 환급 서비스',
+      source_title: '국세청 홈택스 – 국세환급금 찾기',
       source_url: 'https://hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index_pp.xml&tmIdx=42&tm2lIdx=4203000000&tm3lIdx=4203010000',
-      warning: '환급 대상·금액은 개인 납세 이력에 따라 다릅니다. 홈택스·정부24 공식 조회로 확인하세요.',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-11',
+      conversion_note: '홈택스 원문의 국세 미수령 환급금 조회, 수령 계좌 확인, 처리 상태 기록 순서로 정리했습니다.',
+      warning: '환급 대상·금액은 개인 납세 이력에 따라 다릅니다. 홈택스 공식 조회로 확인하세요.',
     },
     text: `## 1. 조회
 - 홈택스에서 국세 환급금 조회하기
   why: 신고 정정·과오납 등으로 받지 못한 환급금이 남아 있을 수 있습니다. 미수령 환급금은 최초 지급요구일부터 5년이 지나면 국고로 귀속됩니다.
-  how: 홈택스 [납부·고지·환급] → [국세환급금 찾기]에서 조회합니다. 또는 국세청 원클릭 환급 서비스(AI가 미리 계산한 환급 예상액 확인 후 신청)를 이용합니다.
+  how: 홈택스 [납부·고지·환급] → [국세환급금 찾기]에서 조회합니다.
   done: 환급 대상 금액을 메모했다.
   link: 국세청 홈택스 국세환급금 찾기 | https://hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index_pp.xml&tmIdx=42&tm2lIdx=4203000000&tm3lIdx=4203010000 | official
-- 지방세 환급금·미수령금도 위택스에서 확인하기
-
 ## 2. 신청·수령
 - 환급 계좌 정보 홈택스에 등록하고 신청하기
   how: 홈택스 또는 손택스에 환급받을 계좌를 등록하면 자동으로 입금됩니다. 통지서가 있으면 우체국 방문 수령도 가능합니다.
@@ -784,6 +797,7 @@ const specs: BatchSpec[] = [
       primary_destination: 'calendar',
       source_title: '정부24 – 행복출산 통합신청 안내',
       source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001',
+      source_precision: 'broad',
       source_checked_at: '2026-07-11',
       conversion_note: '출생신고는 법원 전자가족관계등록시스템 또는 신고기관, 출산지원 통합신청은 정부24 행복출산이라는 서비스 경계를 현재 공식 안내로 재확인했습니다.',
       warning: '신고기한, 필요 서류, 동시 신청 서비스는 변경될 수 있습니다. 정부24와 전자가족관계등록 안내로 확인하세요.',
@@ -791,22 +805,23 @@ const specs: BatchSpec[] = [
     text: `## D+0 서류 준비
 - 출생증명서 등 신고 서류 확인하기 D+0
   why: 출생신고는 신고기한이 있어 서류를 일찍 준비하는 게 좋습니다.
-  how: 정부24 행복출산 원스톱서비스 또는 읍·면·동 주민센터에서 출생신고 절차와 서류를 확인합니다.
+  how: 법원 전자가족관계등록시스템의 출생신고 안내에서 신고인, 신고 장소와 첨부 서류를 확인합니다.
   done: 필요 서류를 모았다.
-  link: 정부24 행복출산 원스톱서비스 | https://www.gov.kr/portal/onestopSvc/happyBirth | official
+  link: 법원 전자가족관계등록시스템 출생신고 안내 | https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y | official
 - 아이 이름·등록기준지 정하기
 
-## D+7 신고·연계
-- 출생신고 접수하기 D+7
+## D+0~30 신고·연계
+- 출생신고 접수하기 D+0
   how: 출산 병원이 온라인 신고 참여 병원이면 법원 전자가족관계등록시스템에서 신고하고, 그렇지 않으면 공식 안내에서 관할 신고기관을 확인해 방문합니다.
   done: 출생신고 접수를 확인했다.
   link: 법원 전자가족관계등록시스템 출생신고 안내 | https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y | official
-- 행복출산 원스톱 등 함께 신청 가능한 서비스 확인하기 D+7
+- 행복출산 통합신청 대상 서비스 확인하기 D+0
   how: 행복출산 통합신청은 출생신고와 함께 또는 출생신고 이후 정부24나 주민센터에서 신청합니다.
+  link: 정부24 행복출산 통합신청 | https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001 | official
   caution: 부모급여 등 서비스마다 신청 시점과 소급 기준이 다를 수 있으므로 현재 정부24·복지로 안내를 확인합니다.
 
-## D+25 기한 점검
-- 신고기한 내 완료 여부 최종 확인하기 D+25
+## D+30 기한 점검
+- 신고기한 내 완료 여부 최종 확인하기 D+30
   caution: 출생 후 1개월(30일) 이내 신고가 원칙이며, 신고기한을 넘기면 과태료가 부과될 수 있습니다.`,
   },
   {
@@ -860,6 +875,9 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '정부24 – 인감증명서 발급 안내',
       source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000025',
+      source_precision: 'broad',
+      source_checked_at: '2026-07-11',
+      conversion_note: '인감증명서, 본인서명사실확인서, 전자본인서명확인서는 발급 방식과 제출 가능 범위가 달라 하나의 일반 발급 경로로 단정하지 않았습니다.',
       warning: '발급 방식(방문/온라인), 용도별 요건은 다를 수 있습니다. 정부24와 주민센터 안내로 확인하세요.',
     },
     text: `## 1. 용도·종류
@@ -869,43 +887,49 @@ const specs: BatchSpec[] = [
   done: 필요한 서류 종류와 통수를 메모했다.
   link: 정부24 인감증명서 발급 안내 | https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000025 | official
 - 부동산 매도용 등 특정 용도 요건 확인하기
-  caution: 부동산 매도용 인감증명서는 온라인 발급 불가이며 시군구청·주민센터를 방문해야 합니다. 매수인의 이름·주민번호·주소를 정확히 기재해야 하며, 유효기간은 발행일로부터 3개월입니다.
+  caution: 부동산 매도용 등 온라인 발급 제외 용도는 방문 발급이 필요합니다. 제출처와 정부24의 현재 용도 제한을 함께 확인하세요.
 
 ## 2. 발급
-- 발급 방법(주민센터 방문 또는 정부24 온라인) 확인하고 발급받기
-  how: 부동산 매도용·대출용은 방문 발급만 가능합니다. 신분증을 가지고 주소지 무관 시군구청·주민센터를 방문합니다.
+- 용도에 맞는 발급 방법 확인하고 발급받기
+  how: 일반용 인감증명서는 본인에 한해 정부24 온라인 발급이 가능한 범위가 있고, 본인서명사실확인서는 본인이 주민센터를 방문해 발급합니다. 전자본인서명확인서는 제출 가능한 기관 범위가 제한되므로 제출처에 먼저 확인합니다.
+  link: 정부24 본인서명사실확인서 발급 | https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13110000047&HighCtgCD=A01008 | official
   done: 발급 완료와 보관 위치를 기록했다.`,
   },
   {
     flow: {
       id: 'official-260601-childcare-fee-support',
       slug: 'childcare-fee-support-apply',
-      title: '보육료·양육수당 지원 신청 Flow',
-      description: '복지로·아이사랑 기준으로 어린이집·가정양육에 따른 보육료/양육수당 지원 신청을 준비합니다.',
+      title: '어린이집 보육료 지원 신청 Flow',
+      description: '복지로 기준으로 어린이집 이용 전 보육료 지원 신청과 보육서비스 변경 시점을 확인합니다.',
       category: '육아/지원',
       structure_type: 'checklist',
       anchor_type: 'none',
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '정부24 – 보육료 및 양육수당 지원신청(변경) 안내',
-      source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13510000024',
+      source_title: '복지로 – 영유아 보육료 지원 안내',
+      source_url: 'https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01',
+      source_status: 'real',
+      source_precision: 'exact',
       source_checked_at: '2026-07-11',
-      warning: '지원 종류·금액·중복 여부는 아이 연령과 보육 형태(어린이집/가정양육)에 따라 다릅니다. 복지로·아이사랑으로 확인하세요.',
+      conversion_note: '복지로 원문의 어린이집 보육료 지원 신청과 서비스 변경 시점 확인 순서로 정리했습니다.',
+      warning: '지원 시작 시점과 변경 기준은 아이 연령, 입소일, 기존 서비스에 따라 다릅니다. 복지로의 현재 안내로 확인하세요.',
     },
-    text: `## 1. 대상 확인
-- 아이 연령·보육형태에 맞는 지원(보육료/양육수당/부모급여) 확인하기
-  why: 어린이집 이용과 가정양육은 받는 지원이 달라 형태를 먼저 정해야 합니다.
-  how: 복지로(bokjiro.go.kr) 또는 정부24에서 연령·형태별 지원을 확인합니다.
-  done: 우리 아이에게 맞는 지원 항목을 메모했다.
-  link: 정부24 보육료·양육수당 신청 안내 | https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13510000024 | official
-  caution: 지원 종류·금액·중복 가능 여부는 아이 연령, 보육 형태, 신청 시점에 따라 달라집니다. 복지로의 현재 판정 결과를 기준으로 선택하세요.
+    text: `## 1. 입소 전 확인
+- 입소일과 현재 받고 있는 보육서비스 확인하기
+  why: 신청일과 어린이집 입소일이 다르면 일부 기간에 본인 부담이 생길 수 있습니다.
+  how: 복지로 보육료 지원 안내에서 아이 연령과 현재 서비스, 입소 예정일에 맞는 신청 시점을 확인합니다.
+  done: 입소일과 신청할 서비스를 메모했다.
+  link: 복지로 영유아 보육료 지원 | https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01 | official
+  caution: 현재 받는 서비스에서 보육료로 바꾸는 경우 변경 기준일을 반드시 확인하세요.
 
 ## 2. 신청
 - 신청 방법(복지로 온라인/주민센터) 확인하고 신청하기
   how: 온라인 신청은 복지로에서, 방문 신청은 주소지 읍·면·동 주민센터에서 합니다. 예상 처리 기간과 보완 서류는 접수 화면에서 확인합니다.
-- 보육형태 변경(어린이집↔가정) 시 자격 변경 신고하기
-  done: 신청 결과와 지원 시작 시점을 확인했다.`,
+- 신청 결과와 지원 시작월 확인하기
+  done: 신청 결과와 지원 시작 시점을 확인했다.
+- 어린이집 이용 형태가 바뀌면 서비스 변경일 다시 확인하기
+  caution: 서비스 변경 시 소급 여부와 본인 부담 기간이 달라질 수 있으므로 변경 전에 복지로 또는 주민센터에 확인합니다.`,
   },
   {
     flow: {
@@ -919,9 +943,12 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'medium',
       primary_destination: 'memo',
-      source_title: '병무청 – 병역판정검사 대상자 안내',
-      source_url: 'https://www.mma.go.kr/contents.do?mc=usr0000167',
+      source_title: '병무청 – 병역판정검사 과정 및 지참물',
+      source_url: 'https://www.mma.go.kr/minwon/contents.do?mc=mma0000975',
+      source_status: 'real',
+      source_precision: 'exact',
       source_checked_at: '2026-07-11',
+      conversion_note: '통지서 일시·장소, 사진이 부착된 신분증, 질환별 구비서류 확인과 검사 후 다음 일정 기록만 남겼습니다.',
       warning: '검사 일정·준비물·연기 사유는 개인 상황에 따라 다릅니다. 병무청 공식 안내와 통지서를 우선 확인하세요.',
     },
     text: `## 1. 일정·서류
@@ -929,8 +956,10 @@ const specs: BatchSpec[] = [
   why: 정당한 사유 없이 검사에 응하지 않으면 불이익이 있습니다.
   how: 병무청 안내와 통지서에서 일정·준비물을 확인하고, 희망 일정 선택이 가능한지는 병무민원에서 현재 상태를 확인합니다.
   done: 검사일과 장소를 캘린더에 등록했다.
-  link: 병무청 병역판정검사 대상자 안내 | https://www.mma.go.kr/contents.do?mc=usr0000167 | official
-- 신분증 등 준비물·사전 문진 확인하기
+  link: 병무청 병역판정검사 과정 및 지참물 | https://www.mma.go.kr/minwon/contents.do?mc=mma0000975 | official
+- 사진이 부착된 신분증과 필요한 서류 준비하기
+  how: 모든 대상자는 사진이 부착된 신분증을 준비하고, 질환·치료 이력이 있다면 병무청의 과목·질환별 구비서류 안내를 별도로 확인합니다.
+  done: 신분증과 내 상황에 필요한 서류를 챙겼다.
 
 ## 2. 사전 점검
 - 기존 질환·치료 이력 관련 서류 준비 여부 확인하기

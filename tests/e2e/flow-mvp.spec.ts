@@ -6263,6 +6263,83 @@ test('current-source audit batch exposes one execution surface only for approved
   }
 });
 
+test('current source freshness audit keeps corrected routes executable and stale routes gated', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const approvedRoutes = [
+    '/f/childcare-fee-support-apply',
+    '/f/customs-traveler-declare',
+    '/f/military-exam-prep',
+    '/f/overseas-safety-register',
+    '/f/pension-estimate-check',
+    '/f/tax-refund-find',
+    '/f/welfare-benefit-finder',
+    '/f/blog-youtube-start',
+    '/f/home-cafe-daily',
+    '/f/kitchen-reset-organize',
+    '/f/pet-health-observation',
+    '/f/reading-habit-30day',
+    '/f/travel-packing-list',
+    '/f/weekly-meal-plan',
+  ];
+  for (const route of approvedRoutes) {
+    await page.goto(route);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
+    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+    await expect(page.locator('body')).not.toContainText('??');
+    await expect(page.locator('body')).not.toContainText('�');
+  }
+
+  await page.goto('/f/tax-refund-find');
+  await expect(page.locator('body')).toContainText('국세');
+  await expect(page.locator('body')).not.toContainText('지방세 환급');
+  await expect(page.locator('body')).not.toContainText('AI 자동 계산');
+
+  await page.goto('/f/weekly-meal-plan');
+  await expect(page.locator('body')).toContainText('평일 5일');
+  await expect(page.locator('body')).not.toContainText('23% 절약');
+  const weeklyMealTable = page.getByTestId('artifact-log-table-weekly-meal-plan-table');
+  await expect(weeklyMealTable).toContainText('양배추참치덮밥·단무지무침');
+  await expect(weeklyMealTable.getByLabel('금요일 / 메뉴')).toHaveValue('연어 포케');
+  await expect(weeklyMealTable).not.toContainText('토요일');
+
+  await page.goto('/f/pet-health-observation');
+  await expect(page.getByRole('heading', { name: '건강검진 상담 준비', exact: true })).toBeVisible();
+  await expect(page.getByLabel('병원에 전달할 생활 정보')).toBeVisible();
+  await expect(page.getByTestId('artifact-log-table-pet-health-table')).toHaveCount(0);
+
+  await page.goto('/f/reading-habit-30day');
+  await expect(page.locator('body')).toContainText('15분');
+  await expect(page.locator('body')).not.toContainText('66일');
+
+  const gatedRoutes = [
+    { route: '/f/birth-registration-prep', decision: 'reshape_before_featured' },
+    { route: '/f/seal-or-signature-certificate', decision: 'reshape_before_featured' },
+    { route: '/f/health-insurance-dependent', decision: 'reshape_before_featured' },
+    { route: '/f/dog-walk-routine', decision: 'reshape_before_featured' },
+    { route: '/f/morning-routine-30day', decision: 'reshape_before_featured' },
+    { route: '/f/morning-skincare-routine', decision: 'reshape_before_featured' },
+    { route: '/f/book-finish-one', decision: 'catalog_preview_only' },
+    { route: '/f/recipe-video-execute', decision: 'catalog_preview_only' },
+    { route: '/f/skin-weekly-check', decision: 'hide_from_public_catalog' },
+  ];
+  for (const { route, decision } of gatedRoutes) {
+    await page.goto(route);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute(
+      'data-decision',
+      decision,
+    );
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+    await expect(page.getByRole('checkbox')).toHaveCount(0);
+    await expect(page.locator('body')).not.toContainText('??');
+    await expect(page.locator('body')).not.toContainText('�');
+  }
+});
+
 test('plank challenge public route lets users compare the source table with the execution calendar', async ({ page }) => {
   await page.goto('/f/plank-30-day-challenge');
 

@@ -740,54 +740,52 @@ const fitvelyNutritionActionObservationLogTables: ArtifactLogTable[] = [
 const waterPurifierFilterLogTables: ArtifactLogTable[] = [
   {
     id: 'water-purifier-filter-cycle-log',
-    eyebrow: '?? ???',
-    title: '??? ?? ?? ???',
-    description: '???? ??? ? ?? ?????? ?? ??? ???, ???? ??? ???? ?? ???? ????.',
+    eyebrow: '필터 관리표',
+    title: '필터별 교체·확인 기록',
+    description: '모델 설명서에 적힌 필터 이름과 교체 기준을 옮기고, 마지막 교체일과 다음 확인일을 기록합니다.',
     rows: [
-      { id: 'sediment-filter', label: '?? ??', defaultValues: { cycle: '?? 3~6??', sourceMemo: '??????? ? ? ??? 1? ??' } },
-      { id: 'pre-carbon-filter', label: '???? ??', defaultValues: { cycle: '?? 6~12??', sourceMemo: '?????????? ??' } },
-      { id: 'ro-nano-filter', label: 'RO/?? ??', defaultValues: { cycle: '?? 12~24??', sourceMemo: '?? ?????? ? ?? ?? ??' } },
-      { id: 'post-carbon-filter', label: '??? ??', defaultValues: { cycle: '?? 9~12??', sourceMemo: '?? ??? ??? ????? ??' } },
-      { id: 'outlet-self-clean', label: '??/??? ?? ??' },
-      { id: 'taste-smell-check', label: '????? ??' },
+      { id: 'sediment-filter', label: '침전 필터' },
+      { id: 'pre-carbon-filter', label: '프리카본 필터' },
+      { id: 'ro-nano-filter', label: 'RO·나노 필터' },
+      { id: 'post-carbon-filter', label: '포스트카본 필터' },
+      { id: 'outlet-self-clean', label: '코크·출수구 위생 확인' },
+      { id: 'taste-smell-check', label: '물맛·냄새 변화 확인' },
     ],
     columns: [
-      { id: 'lastChangedAt', label: '??? ???', placeholder: '?: 2026-06-01' },
-      { id: 'cycle', label: '?? ??', placeholder: '?: 6?? / ?? ?? ??' },
-      { id: 'nextCheckAt', label: '?? ???', placeholder: '?: 2026-12-01' },
-      { id: 'conditionMemo', label: '?? ??', placeholder: '?: ????? ?? ??' },
-      { id: 'sourceMemo', label: '??/?? ??', placeholder: '?: ??? ??? ?? ?? ??' },
+      { id: 'lastChangedAt', label: '마지막 교체일', placeholder: '예: 2026-06-01' },
+      { id: 'cycle', label: '제조사 권장 주기', placeholder: '예: 설명서의 교체 기준' },
+      { id: 'nextCheckAt', label: '다음 확인일', placeholder: '예: 2026-12-01' },
+      { id: 'conditionMemo', label: '상태 메모', placeholder: '예: 물맛·냄새 변화 없음' },
+      { id: 'sourceMemo', label: '모델·설명서 근거', placeholder: '예: 모델명과 설명서 페이지' },
     ],
   },
 ];
 
-// ????????? 2026-06-01 ????????? ??: ????? ?? ?/?? ?????????
+// 2026-06-01 크리에이터·블로그 배치의 사용자 산출물 필드.
 const weeklyMealPlanSlugs = new Set(['weekly-meal-plan']);
 const monthlyBudgetSlugs = new Set(['monthly-household-budget']);
 const skinWeeklySlugs = new Set(['skin-weekly-check']);
-const petHealthSlugs = new Set(['pet-health-observation']);
 const paydayFinanceSlugs = new Set(['payday-finance-routine']);
+const petHealthSlugs = new Set(['pet-health-observation']);
 
 const weeklyMealPlanLogTables: ArtifactLogTable[] = [
   {
     id: 'weekly-meal-plan-table',
-    eyebrow: '?? ???',
-    title: '??? ?????? ?',
-    description: '??? ??? ?? ???, ??? ???? ?? ?? ???? ????.',
+    eyebrow: '한 주 식단표',
+    title: '평일 5일 저녁 식단',
+    description: '원문에 있는 월요일부터 금요일까지의 메뉴와 필요한 재료, 이번 주 조정 메모를 한 표에 적습니다.',
     rows: [
-      { id: 'meal-mon', label: '?' },
-      { id: 'meal-tue', label: '?' },
-      { id: 'meal-wed', label: '?' },
-      { id: 'meal-thu', label: '?' },
-      { id: 'meal-fri', label: '?' },
-      { id: 'meal-sat', label: '?' },
-      { id: 'meal-sun', label: '?' },
+      { id: 'meal-mon', label: '월요일', defaultValues: { menu: '양배추참치덮밥·단무지무침' } },
+      { id: 'meal-tue', label: '화요일', defaultValues: { menu: '버섯샐러드' } },
+      { id: 'meal-wed', label: '수요일', defaultValues: { menu: '토마토 야채수프' } },
+      { id: 'meal-thu', label: '목요일', defaultValues: { menu: '굴무솥밥·무된장국' } },
+      { id: 'meal-fri', label: '금요일', defaultValues: { menu: '연어 포케' } },
     ],
     columns: [
-      { id: 'menu', label: '??', placeholder: '?: ????, ????' },
-      { id: 'ingredients', label: '???', placeholder: '?: ??, ???, ??' },
-      { id: 'toBuy', label: '?? ?', placeholder: '?: ?? 1?, ??? 1?' },
-      { id: 'memo', label: '??', placeholder: '?: ?? ?? / ???' },
+      { id: 'menu', label: '메뉴', placeholder: '예: 원문 메뉴 또는 제외' },
+      { id: 'ingredients', label: '필요한 재료', placeholder: '예: 원문에서 확인한 재료' },
+      { id: 'toBuy', label: '살 재료', placeholder: '예: 집에 없는 재료만' },
+      { id: 'memo', label: '조정 메모', placeholder: '예: 알레르기로 제외 / 재료 변경' },
     ],
   },
 ];
@@ -795,22 +793,22 @@ const weeklyMealPlanLogTables: ArtifactLogTable[] = [
 const monthlyBudgetLogTables: ArtifactLogTable[] = [
   {
     id: 'monthly-budget-table',
-    eyebrow: '?? ???',
-    title: '????? ??????',
-    description: '????? ??? ?? ??, ? ? ??? ??? ?? ?? ?????. ?? ??? ?? ?? ??????.',
+    eyebrow: '월간 가계부',
+    title: '이번 달 예산·지출표',
+    description: '카테고리별 예산과 실제 지출을 나눠 적고, 다음 달에 조정할 항목만 메모합니다.',
     rows: [
-      { id: 'budget-fixed', label: '????(????????)' },
-      { id: 'budget-food', label: '??' },
-      { id: 'budget-transport', label: '??' },
-      { id: 'budget-shopping', label: '?????' },
-      { id: 'budget-saving', label: '??????' },
-      { id: 'budget-etc', label: '??' },
+      { id: 'budget-fixed', label: '고정비' },
+      { id: 'budget-food', label: '식비' },
+      { id: 'budget-transport', label: '교통비' },
+      { id: 'budget-shopping', label: '생활·쇼핑' },
+      { id: 'budget-saving', label: '저축·상환' },
+      { id: 'budget-etc', label: '기타' },
     ],
     columns: [
-      { id: 'budget', label: '??', placeholder: '?: 50??' },
-      { id: 'spent', label: '??', placeholder: '?: 43??' },
-      { id: 'balance', label: '??', placeholder: '?: +7??' },
-      { id: 'memo', label: '??', placeholder: '?: ?? ? ?? ??' },
+      { id: 'budget', label: '예산', placeholder: '예: 500,000원' },
+      { id: 'spent', label: '지출', placeholder: '예: 430,000원' },
+      { id: 'balance', label: '차이', placeholder: '예: 70,000원 남음' },
+      { id: 'memo', label: '다음 조정', placeholder: '예: 외식 횟수 한 번 줄이기' },
     ],
   },
 ];
@@ -818,58 +816,51 @@ const monthlyBudgetLogTables: ArtifactLogTable[] = [
 const skinWeeklyLogTables: ArtifactLogTable[] = [
   {
     id: 'skin-weekly-table',
-    eyebrow: '?? ?? ???',
-    title: '??? ?? ?? ??',
-    description: '??? ?? ??? ?? ??, ??? ?? ?? ?? ?? ??? ?????. ?? ??? ?? ?? ?????.',
+    eyebrow: '주간 반응 기록',
+    title: '제품 사용 후 피부 반응 메모',
+    description: '피부 타입을 진단하지 않고 사용 제품과 관찰한 반응만 기록합니다. 이상 반응은 전문가에게 확인합니다.',
     rows: [
-      { id: 'skin-week-1', label: '1??' },
-      { id: 'skin-week-2', label: '2??' },
-      { id: 'skin-week-3', label: '3??' },
-      { id: 'skin-week-4', label: '4??' },
+      { id: 'skin-week-1', label: '1주차' },
+      { id: 'skin-week-2', label: '2주차' },
+      { id: 'skin-week-3', label: '3주차' },
+      { id: 'skin-week-4', label: '4주차' },
     ],
     columns: [
-      { id: 'condition', label: '?? ??', placeholder: '?: ?? ??, ??? 2?' },
-      { id: 'products', label: '?? ??', placeholder: '?: A??, B??' },
-      { id: 'reaction', label: '??', placeholder: '?: ? ?? ? ??? ??' },
-      { id: 'adjust', label: '?? ??', placeholder: '?: ?? ? ???' },
+      { id: 'condition', label: '관찰한 상태', placeholder: '예: 당김, 붉어짐' },
+      { id: 'products', label: '사용 제품', placeholder: '예: 제품명과 사용 횟수' },
+      { id: 'reaction', label: '반응 메모', placeholder: '예: 사용 직후 따가움' },
+      { id: 'adjust', label: '다음 행동', placeholder: '예: 사용 중단 후 전문가 확인' },
     ],
   },
 ];
 
-const petHealthLogTables: ArtifactLogTable[] = [
+const petHealthMemoFields: ArtifactMemoField[] = [
   {
-    id: 'pet-health-table',
-    eyebrow: '?? ?? ???',
-    title: '??? ???? ?? ??',
-    description: '??????????? ??? ???? ?? ?? ??? ??? ?????. ??? ???? ?? ? ????? ?????.',
-    rows: [
-      { id: 'pet-week-1', label: '1??' },
-      { id: 'pet-week-2', label: '2??' },
-      { id: 'pet-week-3', label: '3??' },
-      { id: 'pet-week-4', label: '4??' },
-    ],
-    columns: [
-      { id: 'appetite', label: '??', placeholder: '?: ??? ??' },
-      { id: 'stool', label: '??', placeholder: '?: ??, 1? 2?' },
-      { id: 'activity', label: '??/??', placeholder: '?: ??, ?? ??' },
-      { id: 'abnormal', label: '?? ??', placeholder: '?: ?? / ?? ?? ??' },
-    ],
+    id: 'pet-health-lifestyle',
+    label: '병원에 전달할 생활 정보',
+    placeholder: '예: 식사, 간식, 산책, 예방접종, 최근 달라진 점',
+    groupEyebrow: '진료 전 메모',
+    groupTitle: '건강검진 상담 준비',
+    groupDescription: '진단하지 않고 수의사에게 전달할 사실과 질문, 검사 결과를 분리해 적습니다.',
   },
+  { id: 'pet-health-medication', label: '복용 중인 약·보조제', placeholder: '예: 이름, 복용 횟수, 시작일' },
+  { id: 'pet-health-questions', label: '수의사에게 물을 내용', placeholder: '예: 필요한 검사와 그 이유' },
+  { id: 'pet-health-result', label: '검사 결과·다음 일정', placeholder: '예: 수의사 설명과 다음 방문일' },
 ];
 
 const paydayFinanceMemoFields: ArtifactMemoField[] = [
   {
     id: 'payday-net-income',
-    label: '?? ? ????',
-    placeholder: '?: ?? 290??',
-    groupEyebrow: '??? ?? ??',
-    groupTitle: '??? ????? ??',
-    groupDescription: '?? ??? ???, ????? ???? ???????????? ?? ??? ??? ? ?? ????.',
+    label: '이번 달 실수령액',
+    placeholder: '예: 급여 명세서에서 확인한 금액',
+    groupEyebrow: '월급날 정리',
+    groupTitle: '이번 달 돈의 흐름 메모',
+    groupDescription: '급여, 자동이체, 저축·상환, 생활비를 분리하고 다음 달 조정할 내용만 남깁니다.',
   },
-  { id: 'payday-auto-transfer', label: '???? ?? ??', placeholder: '?: ???????? ??, ??? ?? ??' },
-  { id: 'payday-savings', label: '?????? ??', placeholder: '?: 50?? ?? ?? ?? ??' },
-  { id: 'payday-living-budget', label: '??? ??', placeholder: '?: ??? 80?? ?? ??/??' },
-  { id: 'payday-adjustment', label: '?? ? ?? ??', placeholder: '?: ??? ??? ?? 20?? ???' },
+  { id: 'payday-auto-transfer', label: '자동이체 확인', placeholder: '예: 주거비·통신비 납부 확인' },
+  { id: 'payday-savings', label: '저축·상환', placeholder: '예: 이번 달 이체한 금액' },
+  { id: 'payday-living-budget', label: '생활비 한도', placeholder: '예: 남은 기간에 쓸 금액' },
+  { id: 'payday-adjustment', label: '다음 달 조정', placeholder: '예: 구독 한 건 정리하기' },
 ];
 
 export function getComparisonRows(bundle: FlowBundle): ArtifactComparisonRow[] {
@@ -923,6 +914,7 @@ export function getMemoCardFields(bundle: FlowBundle): ArtifactMemoField[] {
   if (usedCarSlugs.has(bundle.flow.slug)) return [];
   if (vehicleInspectionSlugs.has(bundle.flow.slug)) return [];
   if (paydayFinanceSlugs.has(bundle.flow.slug)) return paydayFinanceMemoFields;
+  if (petHealthSlugs.has(bundle.flow.slug)) return petHealthMemoFields;
   return [];
 }
 
@@ -970,6 +962,5 @@ export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (weeklyMealPlanSlugs.has(bundle.flow.slug)) return weeklyMealPlanLogTables;
   if (monthlyBudgetSlugs.has(bundle.flow.slug)) return monthlyBudgetLogTables;
   if (skinWeeklySlugs.has(bundle.flow.slug)) return skinWeeklyLogTables;
-  if (petHealthSlugs.has(bundle.flow.slug)) return petHealthLogTables;
   return [];
 }
