@@ -7,6 +7,7 @@ import {
   getSourceFitSummary,
   scoreSourceFit,
   sourceFitAudits,
+  type SourceFitDecision,
 } from './source-fit';
 import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import { seedBundles } from './seed-flows';
@@ -90,12 +91,39 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 118);
+  assert.equal(summary.auditedCount, 132);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 35);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 70);
+  assert.equal(summary.decisionCounts.keep_representative, 46);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 73);
   assert.equal(summary.decisionCounts.catalog_preview_only, 12);
   assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
+});
+
+test('sensitive current-source pass separates exact execution routes from broad advice', () => {
+  const expected = new Map<string, SourceFitDecision>([
+    ['ev-subsidy-apply', 'keep_representative'],
+    ['housing-subscription-account', 'reshape_before_featured'],
+    ['infant-health-checkup-schedule', 'keep_representative'],
+    ['monthly-household-budget', 'reshape_before_featured'],
+    ['national-scholarship-apply', 'keep_representative'],
+    ['payday-finance-routine', 'reshape_before_featured'],
+    ['property-local-tax-pay', 'keep_representative'],
+    ['safe-inheritance-onestop', 'keep_representative'],
+    ['unemployment-benefit-apply', 'keep_representative'],
+    ['jeonse-guarantee-apply', 'keep_representative'],
+    ['job-seeker-allowance-apply', 'keep_representative'],
+    ['small-business-fund-check', 'keep_representative'],
+    ['used-car-ownership-transfer', 'keep_representative'],
+    ['adult-vaccine-schedule-check', 'keep_representative'],
+  ]);
+
+  for (const [slug, decision] of expected) {
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit, slug);
+    assert.equal(audit.checkedAt, '2026-07-12', slug);
+    assert.equal(audit.decision, decision, slug);
+    assert.ok(audit.naturalArtifacts.length > 0, slug);
+  }
 });
 
 test('current source freshness pass separates usable, stale, preview, and hidden routes', () => {

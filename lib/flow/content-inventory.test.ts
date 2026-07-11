@@ -86,11 +86,11 @@ test('inventory summary covers all current seed bundles', () => {
     summary.sourceBackedReviewedCount,
     summary.manualSourceFitCount + summary.derivedRealSourceCount + summary.sourceNeedsReviewCount,
   );
-  assert.equal(summary.manualSourceFitCount, 118);
+  assert.equal(summary.manualSourceFitCount, 132);
   assert.equal(summary.derivedRealSourceCount, 0);
   assert.equal(summary.curatedSourceAppSeedCount, 19);
-  // The current-source pass classified all 23 audit-now routes and left only risk/source replacement work.
-  assert.equal(summary.sourceNeedsReviewCount, 14);
+  // The current-source pass now classifies every remaining source replacement and risk route.
+  assert.equal(summary.sourceNeedsReviewCount, 0);
   assert.equal(summary.legacyAccessibleCount, 0);
   assert.equal(summary.generatedPreviewCandidateCount, 442);
   // Four manually audited routes also moved to preview without becoming generated candidates.

@@ -1263,8 +1263,8 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 66);
-  assert.equal(reviewOnly.length, 551);
+  assert.equal(indexable.length, 77);
+  assert.equal(reviewOnly.length, 540);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
@@ -1272,6 +1272,13 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('closet-organize-1day')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('portfolio-4week')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('weekly-meal-plan')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('ev-subsidy-apply')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('adult-vaccine-schedule-check')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('used-car-ownership-transfer')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('small-business-fund-check')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('housing-subscription-account')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('monthly-household-budget')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('payday-finance-routine')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('health-insurance-dependent')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('book-finish-one')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('skin-weekly-check')!).indexable, false);
@@ -1279,6 +1286,40 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('domestic-trip-d7')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-baby-vaccination-schedule')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-apartment-precheck')!).indexable, false);
+});
+
+test('sensitive source refresh keeps current official procedure and removes unsupported advice', () => {
+  const bySlug = new Map(seedBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const ev = bySlug.get('ev-subsidy-apply')!;
+  const adultVaccine = bySlug.get('adult-vaccine-schedule-check')!;
+  const usedCar = bySlug.get('used-car-ownership-transfer')!;
+  const smallBusiness = bySlug.get('small-business-fund-check')!;
+  const propertyTax = bySlug.get('property-local-tax-pay')!;
+
+  assert.equal(ev.flow.source_checked_at, '2026-07-12');
+  assert.equal(ev.flow.updated_at, '2026-07-12T00:00:00.000Z');
+  assert.match(ev.flow.raw_text ?? '', /구매계약 후 제조사·수입사가 구매 지원신청서를/);
+  assert.doesNotMatch(ev.flow.raw_text ?? '', /지원 확인서.*계약 전 필수|지원 확인서 없이 차량 계약/);
+
+  assert.equal(adultVaccine.flow.title, '성인 예방접종 이력·상담 준비 Flow');
+  assert.match(adultVaccine.flow.source_url ?? '', /goVcntMngm/);
+  assert.match(adultVaccine.flow.raw_text ?? '', /본인 접종 이력 확인하기/);
+  assert.doesNotMatch(adultVaccine.flow.raw_text ?? '', /나에게 권장되는 접종과 지원 여부/);
+
+  assert.match(usedCar.flow.source_url ?? '', /car365\.go\.kr/);
+  assert.match(usedCar.flow.raw_text ?? '', /자동차관리법 시행령 이전등록 기한/);
+  assert.doesNotMatch(usedCar.flow.raw_text ?? '', /2~3 영업일|당일 처리 가능/);
+
+  assert.doesNotMatch(smallBusiness.flow.raw_text ?? '', /5명 미만|10명 미만|교육 이수 요건/);
+  assert.match(smallBusiness.flow.raw_text ?? '', /현재 접수 중인 자금과 신청기간/);
+
+  assert.equal(propertyTax.flow.title, '지방세 조회·납부 Flow');
+  assert.doesNotMatch(propertyTax.flow.raw_text ?? '', /절세|연납 할인|공제율/);
+
+  const housing = bySlug.get('housing-subscription-account')!;
+  assert.equal(housing.flow.title, '주택청약 공고 자격 확인 준비 Flow');
+  assert.doesNotMatch(housing.flow.raw_text ?? '', /최대 35점|최대 32점|최대 17점|만 30세/);
+  assert.match(housing.flow.raw_text ?? '', /공고에서 청약통장 종류·가입기간/);
 });
 
 test('current source-fit batch removes stale and source-invented user copy', () => {

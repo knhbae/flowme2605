@@ -97,7 +97,11 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/payday-finance-routine');
 
-    await expectReviewOnlySourceRoute(page, 'https://toss.im/tossfeed/article/bank-account-divide');
+    await expectReviewOnlySourceRoute(
+      page,
+      'https://toss.im/tossfeed/article/bank-account-divide',
+      'source_fit_review_required',
+    );
     const body = page.locator('body');
     await expect(body).not.toContainText(/생활비\s*40%[^\n]{0,100}비상금\s*20%/u);
   });
@@ -106,12 +110,66 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/safe-inheritance-onestop');
 
-    await expectReviewOnlySourceRoute(
-      page,
+    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
+    await expect(page.getByTestId('flow-source-card').locator('a[href]').first()).toHaveAttribute(
+      'href',
       'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02',
     );
+    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
     const body = page.locator('body');
+    await expect(body).toContainText('1년 이내');
     await expect(body).not.toContainText(/일부 재산[^\n]{0,100}6개월/u);
+  });
+
+  test('remaining broad advice routes stay review-only after source freshness audit', async ({ page }) => {
+    const routes = [
+      {
+        route: '/f/housing-subscription-account',
+        sourceUrl: 'https://www.applyhome.co.kr/co/coa/selectMainView.do',
+      },
+      {
+        route: '/f/monthly-household-budget',
+        sourceUrl: 'https://eknowhow.kr/budgeting-50-30-20-rule/',
+      },
+    ];
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const route of routes) {
+      await page.goto(route.route);
+      await expectReviewOnlySourceRoute(page, route.sourceUrl, 'source_fit_review_required');
+    }
+  });
+
+  test('corrected official routes expose current source and save actions', async ({ page }) => {
+    const routes = [
+      {
+        route: '/f/ev-subsidy-apply',
+        sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do',
+      },
+      {
+        route: '/f/adult-vaccine-schedule-check',
+        sourceUrl: 'https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=32&menuLv=3',
+      },
+      {
+        route: '/f/used-car-ownership-transfer',
+        sourceUrl: 'https://www.car365.go.kr/ccpt/cmmn/menu/redirectMenu.do?menuId=M610201004',
+      },
+      {
+        route: '/f/small-business-fund-check',
+        sourceUrl: 'https://ols.semas.or.kr/ols/man/SMAN010M/page.do',
+      },
+    ];
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const route of routes) {
+      await page.goto(route.route);
+      await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
+      await expect(page.getByTestId('flow-source-card').locator('a[href]').first()).toHaveAttribute(
+        'href',
+        route.sourceUrl,
+      );
+      await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+    }
   });
 
   test('/f/passport-renewal-docs uses the current foreign ministry source', async ({ page }) => {

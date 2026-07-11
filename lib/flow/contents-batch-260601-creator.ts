@@ -32,6 +32,9 @@ type BatchSpec = {
 
 function build(spec: BatchSpec): FlowBundle {
   const parsed = parseTextFlow(spec.text, spec.flow.id);
+  const updatedAt = spec.flow.source_checked_at
+    ? `${spec.flow.source_checked_at}T00:00:00.000Z`
+    : now;
   return {
     flow: {
       ...spec.flow,
@@ -40,7 +43,7 @@ function build(spec: BatchSpec): FlowBundle {
       source_precision: spec.flow.source_precision ?? 'exact',
       source_checked_at: spec.flow.source_checked_at ?? '2026-06-01',
       created_at: now,
-      updated_at: now,
+      updated_at: updatedAt,
       raw_text: spec.text,
     },
     ...parsed,
@@ -252,8 +255,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'sheet',
       source_title: '가계 예산 50/30/20 법칙 – 가계부 작성 가이드',
       source_url: 'https://eknowhow.kr/budgeting-50-30-20-rule/',
-      source_checked_at: '2026-07-11',
-      conversion_note: '특정 유튜브 가계부 재생목록(슈카월드)이 가계부 주제 영상으로 검증되지 않아, WebSearch로 확인되는 보편적 가계부 방법론(50/30/20 법칙, 고정·변동·금융지출 분류)을 다루는 가이드로 출처를 일반화했습니다. 투자 조언이 아닌 기록 출발점입니다.',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 연결된 2차 가계부 가이드의 50/30/20 예시와 고정·변동·금융지출 분류를 기록 출발점으로만 사용합니다. 대표 공개 Flow로 쓰기에는 출처 권위와 개인화 경계가 부족해 재구성이 필요합니다.',
       warning: '이 Flow는 지출 기록과 파악을 돕는 도구이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.',
       tags: ['재테크', '가계부', '재무', 'reference'],
     },
@@ -273,7 +278,7 @@ const specs: BatchSpec[] = [
 ## 2. 매일 기록 루틴
 - 하루 기록 습관: 자기 전 5분 그날 지출 입력하기
   why: 당일 입력하지 않으면 기억이 흐려지고 누락이 생깁니다.
-  how: 카드 앱이나 카카오페이·토스 내역을 확인해 카테고리별로 시트에 입력합니다.
+  how: 카드·은행 앱의 결제 내역을 확인해 카테고리별로 시트에 입력합니다.
   done: 오늘 지출을 시트에 기록했다.
 
 ## 3. 월말 정산
@@ -300,8 +305,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'sheet',
       source_title: '토스피드 – 통장쪼개기로 적정소비하는 법',
       source_url: 'https://toss.im/tossfeed/article/bank-account-divide',
-      source_checked_at: '2026-07-11',
-      conversion_note: '토스피드 통장 쪼개기 가이드의 예산 선배분과 비상예비자금·예비비·재테크·생활비 4개 통장 구분을 월급날 루틴으로 전환했습니다. 출처의 개인 예시 비율은 사용자 권장값으로 옮기지 않습니다. (이전 howtomanage-salary URL은 확인 불가로 교체)',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 토스피드 글의 예산 선배분과 목적별 통장 분리 사례를 월급날 기록 루틴으로 옮겼습니다. 개인 사례와 금융상품 선택을 권장값으로 오해할 수 있어 대표 공개 Flow로 승격하기 전 재구성이 필요합니다.',
       warning: '이 Flow는 지출 분리와 기록 습관을 돕는 체크리스트이며 투자·재무 조언이 아닙니다. 금융 결정은 공인 전문가와 상담하세요.',
       tags: ['재테크', '월급', '재무루틴', 'reference'],
     },

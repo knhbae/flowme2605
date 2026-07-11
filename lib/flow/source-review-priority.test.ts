@@ -37,18 +37,17 @@ test('source review priority keeps sensitive exact flows in risk review', () => 
   assert.equal(tax, undefined);
 });
 
-test('source review priority summary covers every needs-review flow', () => {
+test('source review priority summary closes the audited needs-review queue', () => {
   const summary = summarizeSourceNeedsReviewPriority(seedBundles);
   const countSum = Object.values(summary.priorityCounts).reduce((sum, count) => sum + count, 0);
 
-  // The freshness pass closes audit-now while preserving explicit risk and replacement queues.
-  assert.equal(summary.totalCount, 14);
-  assert.equal(countSum, 14);
+  assert.equal(summary.totalCount, 0);
+  assert.equal(countSum, 0);
   assert.equal(summary.priorityCounts.audit_now, 0);
-  assert.equal(summary.priorityCounts.source_replacement, 1);
-  assert.equal(summary.priorityCounts.risk_review, 13);
+  assert.equal(summary.priorityCounts.source_replacement, 0);
+  assert.equal(summary.priorityCounts.risk_review, 0);
   assert.equal(summary.priorityCounts.content_backlog, 0);
-  assert.equal(summary.items.length, 14);
+  assert.equal(summary.items.length, 0);
   assert.deepEqual(
     summary.items.map((item) => item.score),
     [...summary.items.map((item) => item.score)].sort((a, b) => b - a),

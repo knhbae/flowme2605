@@ -39,6 +39,9 @@ type BatchSpec = {
 
 function build(spec: BatchSpec): FlowBundle {
   const parsed = parseTextFlow(spec.text, spec.flow.id);
+  const updatedAt = spec.flow.source_checked_at
+    ? `${spec.flow.source_checked_at}T00:00:00.000Z`
+    : now;
   return {
     flow: {
       ...spec.flow,
@@ -47,7 +50,7 @@ function build(spec: BatchSpec): FlowBundle {
       source_precision: spec.flow.source_precision ?? 'exact',
       source_checked_at: spec.flow.source_checked_at ?? '2026-06-01',
       created_at: now,
-      updated_at: now,
+      updated_at: updatedAt,
       raw_text: spec.text,
     },
     // 공식 정보 기반 배치이므로 모든 항목을 official로 표시한다.
@@ -72,7 +75,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'calendar',
       source_title: '한국장학재단 – 국가장학금 Ⅰ유형(학생직접지원형) 안내',
       source_url: 'https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_12_01_01',
-      source_checked_at: '2026-07-11',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 한국장학재단 안내의 학기별 신청기간 확인, 본인 신청, 가구원 동의, 필요 서류 확인 순서로 유지하고 변동 금액은 고정하지 않습니다.',
       warning: '신청기간, 소득분위 기준, 지원 금액은 학기·연도마다 달라집니다. 한국장학재단 공식 공지를 반드시 확인하세요.',
     },
     text: `## D-14 신청 전 확인
@@ -105,8 +111,8 @@ const specs: BatchSpec[] = [
     flow: {
       id: 'official-260601-housing-subscription',
       slug: 'housing-subscription-account',
-      title: '주택청약 자격·통장 준비 Flow',
-      description: '청약홈 기준으로 청약통장, 무주택·세대주 요건, 가점 항목을 미리 정리해 청약 전 자격을 점검합니다.',
+      title: '주택청약 공고 자격 확인 준비 Flow',
+      description: '청약홈에서 관심 공고를 고른 뒤 그 공고의 통장, 세대, 공급유형과 제출 일정을 확인합니다.',
       category: '주거/청약',
       structure_type: 'checklist',
       anchor_type: 'none',
@@ -115,30 +121,32 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '청약홈(한국부동산원) – 청약 안내·자격 확인',
       source_url: 'https://www.applyhome.co.kr/co/coa/selectMainView.do',
-      source_checked_at: '2026-07-11',
+      source_status: 'real',
+      source_precision: 'broad',
+      source_checked_at: '2026-07-12',
+      conversion_note: '청약통장, 무주택·세대 구성, 가점, 특별공급을 한 Flow에 합친 현재 범위는 공급유형별 공고와 규칙을 충분히 대표하지 못하므로 공개 승격 전 분리가 필요합니다.',
       warning: '청약 자격, 가점, 특별공급 요건은 공급 유형과 지역마다 다릅니다. 청약홈 공고문과 공식 안내로 직접 확인하세요.',
     },
-    text: `## 1. 통장·기본 자격
-- 청약통장 종류·납입 회차·예치금 확인하기
-  why: 주택 유형·지역별 예치금 기준을 못 맞추면 청약 자체가 제한됩니다.
-  how: 청약홈에서 내 청약통장 가입내역과 납입 인정 회차를 확인합니다.
-  done: 납입 회차와 예치금 상태를 메모했다.
+    text: `## 1. 관심 공고 확인
+- 청약홈에서 신청할 공고 하나 고르기
+  why: 통장·세대·소득·자산 요건은 지역과 공급유형, 공고마다 달라 먼저 공고를 정해야 합니다.
+  how: 청약홈에서 지역·주택·공급유형과 접수 일정을 확인합니다.
+  done: 확인할 공고와 접수일을 메모했다.
   link: 청약홈 | https://www.applyhome.co.kr/co/coa/selectMainView.do | official
-  caution: 월 납입 인정 금액과 회차 기준은 제도·공급 유형에 따라 달라질 수 있으므로 청약홈 공고와 가입 은행에서 현재 값을 확인하세요.
-- 무주택 기간·세대주 여부 확인하기
-  caution: 세대 구성원의 주택 소유도 무주택 요건에 영향을 줍니다. 무주택 기간은 만 30세 또는 혼인신고일 중 빠른 날부터 산정합니다.
+  caution: 공고별 신청자격과 일정이 최종 기준이며 이전 공고의 숫자를 그대로 쓰지 않습니다.
 
-## 2. 가점·유형
-- 청약가점(무주택기간·부양가족·통장기간) 계산해 보기
-  how: 민영주택 가점은 부양가족 수(최대 35점) + 무주택기간(최대 32점) + 청약통장 가입기간(최대 17점)으로 산정합니다.
-  done: 내 가점 총점을 계산해 메모했다.
-- 일반공급/특별공급(신혼·생애최초 등) 해당 여부 확인하기
-  done: 내가 노릴 공급 유형을 정했다.
+## 2. 공고별 자격 확인
+- 공고에서 청약통장 종류·가입기간·납입 또는 예치 기준 확인하기
+  done: 내 통장 정보와 공고 기준을 나란히 적었다.
+- 세대 구성·무주택·거주지·소득·자산 요건 확인하기
+  caution: 적용되는 항목은 공급유형마다 다릅니다. 모호하면 청약홈 안내나 사업주체 문의처로 확인합니다.
+- 일반공급과 특별공급 중 확인할 유형 고르기
+  done: 신청을 검토할 공급유형과 추가 확인 질문을 적었다.
 
-## 3. 공고 대응
-- 관심 지역 입주자모집공고 알림 설정하기
-- 공고문에서 청약일·서류·계약금 일정 메모하기
-  caution: 공고문 기준이 우선이며, 부적격 당첨 시 불이익이 있습니다.`,
+## 3. 신청 일정 준비
+- 공고문에서 접수일·서류제출·당첨자 발표·계약 일정 적기
+  done: 놓치면 안 되는 날짜와 제출자료를 정리했다.
+  caution: 실제 신청 전 공고문 원문을 다시 열어 자격과 제출자료를 최종 확인합니다.`,
   },
   {
     flow: {
@@ -154,7 +162,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '주택도시보증공사(HUG) – 전세보증금반환보증 상품 개요',
       source_url: 'https://www.khug.or.kr/hug/web/ig/dr/igdr000001.jsp',
-      source_checked_at: '2026-07-11',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 HUG 안내의 가입 대상 확인, 계약기간의 절반이 지나기 전 신청, 방문·은행·모바일 신청 경로와 갱신 확인 순서로 정리했습니다.',
       warning: '가입 가능 대상, 보증료, 신청 기한은 물건·계약 조건마다 다릅니다. HUG 공식 안내(1566-9009)와 상담으로 확인하세요.',
     },
     text: `## 1. 가입 가능 여부
@@ -228,24 +239,28 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '소상공인시장진흥공단 – 정책자금 신청 안내',
       source_url: 'https://ols.semas.or.kr/ols/man/SMAN010M/page.do',
-      source_checked_at: '2026-07-11',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 접수 중인 정책자금의 신청기간과 공고별 대상·제외업종·대출방식·제출자료를 직접 확인하는 순서로 좁혔습니다. 공고마다 달라지는 인원수나 교육 요건은 고정하지 않습니다.',
       warning: '지원 대상, 한도, 금리, 신청기간은 사업과 연도마다 다릅니다. 공식 공고와 상담(1533-0100)으로 확인하세요.',
     },
-    text: `## 1. 대상 확인
-- 사업자 요건(업력·매출·업종·근로자 수) 확인하기
-  why: 정책자금은 상시근로자 5명 미만(제조·건설·운수·광업은 10명 미만) 소상공인을 대상으로 합니다.
-  how: 소상공인시장진흥공단 공지에서 현재 모집 중인 사업과 요건을 봅니다.
-  done: 해당될 것 같은 지원사업을 적었다.
+    text: `## 1. 현재 공고 확인
+- 접수 중인 정책자금과 신청기간 확인하기
+  why: 자금별 접수기간과 예산 소진 시점이 다르므로 현재 신청할 수 있는 공고부터 골라야 합니다.
+  how: 소상공인 정책자금 사이트에서 현재 접수 중인 자금과 신청기간을 확인합니다.
+  done: 지금 신청 가능한 자금과 마감일을 적었다.
   link: 소상공인 정책자금 신청 안내 | https://ols.semas.or.kr/ols/man/SMAN010M/page.do | official
   caution: 접수 중인 자금, 금리, 한도, 신청 기간은 수시로 달라지므로 신청 화면과 최신 공고문에서 다시 확인합니다.
+- 선택한 공고의 대상·제외업종·대출방식 확인하기
+  done: 내 사업이 공고 대상에 맞는지와 직접대출·대리대출 방식을 확인했다.
 
 ## 2. 준비
-- 사업자등록증·매출 증빙·재무 자료 정리하기
-- 교육 이수 요건 있는지 확인하기
-  caution: 일부 정책자금은 추가 서류나 사전 확인이 필요할 수 있으므로 선택한 자금의 신청 안내를 따릅니다.
+- 공고가 요구하는 사업·매출·재무 자료 준비하기
+  caution: 필요한 서류와 사전 확인 절차는 자금마다 다르므로 선택한 공고의 신청 안내를 따릅니다.
 
 ## 3. 신청
-- 모집기간·접수 방식(온라인/지역센터) 확인하고 신청하기
+- 온라인으로 신청하고 진행 상태 확인하기
   done: 신청 접수번호 또는 상태를 저장했다.`,
   },
 
@@ -264,7 +279,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '고용24 – 실업급여 신청 안내',
       source_url: 'https://ei.work24.go.kr/ei/eih/cp/cc/ccEminsrFollow/retrieveCc200Info.do',
-      source_checked_at: '2026-07-11',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 고용24의 이직확인서 확인, 구직 신청, 온라인 교육, 수급자격 신청과 이후 실업인정 순서를 따릅니다. 개인 수급 가능성이나 금액은 판정하지 않습니다.',
       warning: '수급 자격, 이직 사유 인정, 금액·기간은 개인 상황에 따라 다릅니다. 고용보험과 고용센터 안내를 우선 확인하세요.',
     },
     text: `## 1. 자격·서류
@@ -301,7 +319,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '고용24 – 국민취업지원제도 취업지원신청 안내',
       source_url: 'https://www.work24.go.kr/ua/z/z/1300/selectEmssRqutIntro.do',
-      source_checked_at: '2026-07-11',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 고용24 안내의 유형 확인, 신청, 상담과 취업활동계획 수립 순서를 유지하며 지원 유형·수당을 사용자 대신 확정하지 않습니다.',
       warning: '지원 유형(Ⅰ·Ⅱ), 소득·재산 요건, 수당은 개인 상황에 따라 다릅니다. 고용24와 고용센터에서 확인하세요.',
     },
     text: `## 1. 대상 확인
@@ -407,7 +428,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'calendar',
       source_title: '국민건강보험공단 – 영유아 건강검진 안내 및 검진일자 조회',
       source_url: 'https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do',
-      source_checked_at: '2026-07-11',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 국민건강보험공단의 일반검진 8회와 구강검진 4회 시기를 그대로 일정화하고, 검진 결과 해석은 의료진에게 남깁니다.',
       warning: '검진 시기·항목·발달평가 결과는 의료진 안내를 우선하세요. 이 Flow는 방문 일정을 챙기는 준비용입니다.',
     },
     text: `## 영유아 건강검진 (일반 8회)
@@ -445,32 +469,38 @@ const specs: BatchSpec[] = [
     flow: {
       id: 'official-260601-adult-vaccine',
       slug: 'adult-vaccine-schedule-check',
-      title: '성인·어르신 예방접종 일정 확인 Flow',
-      description: '질병관리청 예방접종도우미 기준으로 연령·기저질환별 권장 접종과 무료지원 대상을 확인합니다.',
+      title: '성인 예방접종 이력·상담 준비 Flow',
+      description: '질병관리청 예방접종도우미에서 접종 이력을 확인하고, 필요한 접종을 의료진과 상의할 준비를 합니다.',
       category: '건강/예방접종',
       structure_type: 'checklist',
       anchor_type: 'none',
       status: 'published',
       risk_level: 'medical_sensitive',
       primary_destination: 'memo',
-      source_title: '질병관리청 예방접종도우미 – 2026 예방접종 자료',
-      source_url: 'https://nip.kdca.go.kr/irhp/mngm/goFormBrdList.do',
-      source_precision: 'broad',
-      source_checked_at: '2026-07-11',
-      warning: '접종 권장 대상, 무료 지원, 금기사항은 개인 건강상태에 따라 다릅니다. 질병관리청 안내와 의료진 상담을 우선하세요.',
+      source_title: '질병관리청 예방접종도우미 – 본인 예방접종 내역조회',
+      source_url: 'https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=32&menuLv=3',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '개인의 권장 접종이나 무료지원 여부를 대신 판정하지 않고, 공식 접종 이력 확인→누락 기록 문의→의료진 상담→기관 확인→접종 기록 순서로 좁혔습니다.',
+      warning: '온라인 이력에 과거 접종 기록이 모두 보이지 않을 수 있습니다. 필요한 접종과 지원 여부는 연령·건강상태에 따라 달라지므로 의료진과 공식 안내를 우선하세요.',
     },
-    text: `## 1. 대상 확인
-- 연령·기저질환별 권장 접종 항목 확인하기
-  why: 폐렴구균·대상포진·인플루엔자 등은 연령·질환별로 권장과 지원이 다릅니다.
-  how: 질병관리청 예방접종도우미에서 권장 일정과 국가지원 대상을 확인합니다.
-  done: 나에게 권장되는 접종과 지원 여부를 메모했다.
-  link: 예방접종도우미 2026 예방접종 자료 | https://nip.kdca.go.kr/irhp/mngm/goFormBrdList.do | official
-  caution: 지원 대상과 권장 시기는 연도와 건강 상태에 따라 달라질 수 있으므로 최신 일정표와 의료진 안내를 함께 확인합니다.
-- 과거 접종 이력·금기사항 정리하기
-  caution: 금기·주의 대상은 접종 전 의료진과 상담합니다.
+    text: `## 1. 이력 확인
+- 예방접종도우미에서 본인 접종 이력 확인하기
+  why: 이미 받은 접종과 기록이 없는 접종을 구분해야 의료진에게 정확히 물어볼 수 있습니다.
+  how: 본인 인증 후 예방접종 내역을 조회하고 접종명·접종일·기관을 확인합니다.
+  done: 확인되는 접종 이력을 메모했다.
+  link: 예방접종도우미 본인 예방접종 내역조회 | https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=32&menuLv=3 | official
+  caution: 의료기관이 전산 등록에 참여하기 전의 접종은 조회되지 않을 수 있습니다.
+- 누락된 과거 기록은 접종기관에 등록 가능 여부 문의하기
+  done: 조회되지 않는 접종과 문의할 기관을 적었다.
 
-## 2. 예약·접종
-- 지정 의료기관(질병관리청 예방접종도우미 위탁기관 조회) 확인하고 예약하기
+## 2. 상담·예약
+- 연령·기저질환·임신·치료 상태를 알리고 필요한 접종 확인하기
+  caution: 접종 필요 여부와 시기는 의료진이 개인 건강상태를 확인해 결정합니다.
+- 안내받은 접종의 위탁의료기관을 확인하고 예약하기
+
+## 3. 접종 후 기록
 - 접종일·접종기관·이상반응 기록하기
   caution: 접종 후 이상반응이 지속되면 의료기관에 연락합니다.`,
   },
@@ -628,24 +658,27 @@ const specs: BatchSpec[] = [
       id: 'official-260601-car-transfer',
       slug: 'used-car-ownership-transfer',
       title: '자동차 이전등록(명의이전) 준비 Flow',
-      description: '자동차민원 대국민포털 기준으로 중고차 명의이전 서류와 기한, 보험·세금을 정리합니다.',
+      description: '자동차365와 현행 자동차관리법령을 기준으로 중고차 명의이전 기한, 준비 정보, 보험·세금을 정리합니다.',
       category: '자동차/등록',
       structure_type: 'checklist',
       anchor_type: 'none',
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '정부24 – 자동차 이전등록 신청 안내',
-      source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?HighCtgCD=A09006&CappBizCD=15000000370',
-      source_checked_at: '2026-07-11',
-      warning: '이전등록 기한, 취득세, 필요 서류는 거래 형태·지역마다 다릅니다. 자동차민원 포털과 관할 기관으로 확인하세요.',
+      source_title: '자동차365 – 자동차 이전등록 신청',
+      source_url: 'https://www.car365.go.kr/ccpt/cmmn/menu/redirectMenu.do?menuId=M610201004',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '현재 동작하지 않는 정부24 상세 URL을 자동차365 이전등록 신청 경로로 교체하고, 법령의 매매 이전등록 15일 기한만 별도 근거로 연결했습니다. 처리기간 단정은 제거했습니다.',
+      warning: '이전등록 기한, 취득세, 필요 서류는 거래 형태·지역마다 다릅니다. 자동차365 신청 화면과 관할 기관으로 확인하세요.',
     },
     text: `## 1. 서류·기한
 - 이전등록 기한(매수일 기준 15일 이내) 확인하기
   why: 기한을 넘기면 과태료가 부과될 수 있습니다.
-  how: 정부24 또는 자동차민원 대국민포털에서 이전등록 절차와 기한을 확인합니다.
+  how: 자동차관리법령에서 매매 이전등록 기한을 확인하고, 자동차365에서 신청 경로를 확인합니다.
   done: 이전등록 마감일을 캘린더에 표시했다.
-  link: 정부24 자동차 이전등록 신청 | https://www.gov.kr/mw/AA020InfoCappView.do?HighCtgCD=A09006&CappBizCD=15000000370 | official
+  link: 자동차관리법 시행령 이전등록 기한 | https://law.go.kr/lsLinkCommonInfo.do?lspttninfSeq=118237 | official
   caution: 이전등록 기한은 매수일로부터 15일 이내입니다. 취득세 신고·납부 기한, 세율, 감면은 차종·용도·지역에 따라 다르므로 위택스와 관할 지자체에서 현재 값을 확인하세요.
 - 양도증명·자동차등록증·신분증·인감증명서(개인 간 거래) 등 서류 준비하기
 
@@ -656,7 +689,8 @@ const specs: BatchSpec[] = [
 
 ## 3. 등록
 - 이전등록 신청하고 새 등록증 확인하기
-  how: 정부24 온라인 신청(2~3 영업일 소요) 또는 관할 기관 방문 신청(당일 처리 가능)합니다.
+  how: 자동차365에 로그인해 온라인 신청 가능 여부와 표시되는 서류·비용을 확인하거나 관할 등록기관을 방문합니다.
+  link: 자동차365 자동차 이전등록 신청 | https://www.car365.go.kr/ccpt/cmmn/menu/redirectMenu.do?menuId=M610201004 | official
   done: 이전등록 완료와 등록증을 확인했다.`,
   },
   {
@@ -673,12 +707,16 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '무공해차 통합누리집 – 전기차 구매보조금 지급현황·대상 차종',
       source_url: 'https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '2026년 무공해차 통합누리집의 실제 절차에 맞춰 구매계약→제조·수입사의 지원신청→대상자 선정→출고·등록→보조금 지급신청 순서로 바로잡았습니다.',
       warning: '보조금 금액, 잔여물량, 지원 조건은 연도·지자체마다 다르고 조기 소진될 수 있습니다. 공식 누리집으로 확인하세요.',
     },
     text: `## 1. 대상·물량 확인
 - 구매 예정 차종의 국고·지자체 보조금 확인하기
-  why: 보조금은 지자체별로 다르고 물량이 소진되면 받을 수 없습니다. 예산이 상반기에 조기 소진되는 경향이 있어 공고 직후 빠르게 움직여야 합니다.
-  how: 무공해차 통합누리집에서 차종별 보조금과 거주 지자체 잔여물량을 실시간으로 확인합니다. 국고보조금 + 지자체보조금 + (노후차 폐차 시 전환지원금) 세 항목을 합산해 총액을 파악합니다.
+  why: 지원 차종, 금액과 남은 물량은 지자체 공고마다 다르고 예산이 소진될 수 있습니다.
+  how: 무공해차 통합누리집에서 지원 차종과 거주 지자체 공고·남은 물량을 확인합니다.
   done: 차종별 보조금 금액과 거주지 잔여물량을 메모했다.
   link: 무공해차 통합누리집 전기차 보조금 | https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do | official
   caution: 보조금 금액과 항목은 연도·지자체마다 변경됩니다. 정확한 금액은 반드시 공식 누리집에서 확인하세요.
@@ -687,27 +725,22 @@ const specs: BatchSpec[] = [
   how: 거주 지자체 보조금 공고문에서 신청 자격 조건과 우선순위 항목을 확인합니다. 법인·사업자와 개인 조건이 다를 수 있으므로 해당 유형을 확인하세요.
   done: 거주지 신청 자격을 확인하고 우선순위 해당 여부를 파악했다.
 
-## 2. 계약 전: 보조금 지원 확인서 신청
-- 보조금 지원 확인서 신청하기(계약 전 필수)
-  why: 전기차 보조금은 반드시 지원 확인서를 받은 후 차량을 계약해야 합니다. 계약 먼저 하면 보조금 대상에서 제외될 수 있습니다.
-  how: 거주 지자체 또는 자동차 제조사 딜러를 통해 보조금 지원 확인서를 신청합니다. 신청 후 확인서 발급까지 수일이 걸릴 수 있으므로 미리 신청합니다.
-  done: 보조금 지원 확인서를 신청했고 발급 예정일을 확인했다.
-  caution: 지원 확인서 없이 차량 계약부터 하면 보조금을 받을 수 없습니다. 이 순서는 반드시 지켜야 합니다.
-- 취득세 감면 적용 여부 확인하기
-  why: 전기차는 취득세 감면 혜택이 있으며, 이를 미리 확인해야 계약 시 세금 처리가 정확하게 이루어집니다.
-  how: 지방세특례제한법 기준으로 전기차 취득세 감면 한도를 확인합니다. 딜러 또는 거주 지자체 세무과에 문의하면 정확한 감면 금액을 안내받을 수 있습니다.
-  done: 적용 가능한 취득세 감면 금액을 확인했다.
+## 2. 계약·지원 신청
+- 자동차 제조사·수입사 또는 판매점과 구매계약하기
+  why: 공식 절차는 구매계약 후 제조사·수입사가 구매 지원신청서를 지자체에 제출하는 순서입니다.
+  done: 계약서와 출고 예정일을 확인했다.
+- 판매점이 구매 지원신청을 제출했는지 확인하기
+  how: 판매점에 신청일과 접수 상태를 확인하고, 지자체가 요구하는 추가 자료가 있으면 준비합니다.
+  done: 지원신청 접수 상태를 확인했다.
 
-## 3. 계약·출고
-- 보조금 지원 확인서 발급 후 차량 계약하기
-  why: 지원 확인서 발급 후 정해진 기간 내에 계약·출고해야 보조금이 유지됩니다.
-  how: 딜러와 계약 시 보조금 대리신청 여부, 출고 예정일, 계약 기한을 명확히 확인합니다. 대부분의 경우 딜러가 보조금 신청을 대리합니다.
-  done: 차량 계약서를 작성했고 출고 예정일을 확인했다.
-  caution: 계약 후 지원 확인서 유효기간 내에 출고가 이루어져야 합니다. 기한을 초과하면 보조금이 취소될 수 있습니다.
-- 출고 후 보조금 정산 확인하기
-  why: 출고 후 실제 입금된 보조금이 사전 확인한 금액과 일치하는지 확인해야 합니다.
-  how: 출고 완료 후 지자체 또는 딜러를 통해 보조금 정산 내역을 확인합니다. 차량 등록 및 취득세 납부 영수증도 함께 보관합니다.
-  done: 보조금 입금 금액과 취득세 감면 내역을 확인하고 영수증을 보관했다.
+## 3. 선정·출고·정산
+- 보조금 지원 대상자 선정 여부를 출고·등록 전에 확인하기
+  caution: 선정 방식과 출고 기한은 지자체 공고에 따라 다르므로 선정 통보와 공고 조건을 함께 확인합니다.
+  done: 대상자 선정 여부와 출고 기한을 확인했다.
+- 차량 출고·등록 후 판매점의 보조금 지급신청 확인하기
+  why: 공식 절차상 제조사·수입사가 출고·등록 뒤 보조금 지급을 신청하고 지자체가 지급합니다.
+  how: 판매점에 차량 등록과 지급신청 상태, 최종 정산 내역을 확인합니다.
+  done: 차량 등록과 보조금 정산 내역을 확인했다.
 
 ## 4. 충전 환경 준비
 - 충전 환경(완속/급속) 미리 점검하기
@@ -720,8 +753,8 @@ const specs: BatchSpec[] = [
     flow: {
       id: 'official-260601-property-tax',
       slug: 'property-local-tax-pay',
-      title: '지방세(재산세·자동차세) 납부 Flow',
-      description: '위택스 기준으로 부과 시기에 맞춰 지방세를 확인·납부하고 절세(연납 등)를 검토합니다.',
+      title: '지방세 조회·납부 Flow',
+      description: '위택스에서 현재 부과된 지방세와 납부기한을 확인하고 영수증까지 챙깁니다.',
       category: '세금/납부',
       structure_type: 'checklist',
       anchor_type: 'none',
@@ -730,8 +763,11 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '위택스(WeTax) – 지방세 조회·납부',
       source_url: 'https://www.wetax.go.kr/main/',
-      source_checked_at: '2026-07-11',
-      warning: '부과·납부 기한과 감면 제도는 지자체·연도마다 다릅니다. 위택스와 관할 지자체 안내로 확인하세요.',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '위택스가 직접 지원하는 현재 부과내역 조회·납부·영수증 확인으로 범위를 좁히고, 단일 홈 화면이 충분히 설명하지 않는 연납·공제 검토는 제거했습니다.',
+      warning: '부과 세목·금액·납부기한은 개인과 지자체마다 다릅니다. 위택스의 현재 조회 결과와 관할 지자체 안내로 확인하세요.',
     },
     text: `## 1. 확인
 - 부과된 지방세 항목·금액·납부기한 확인하기
@@ -740,12 +776,7 @@ const specs: BatchSpec[] = [
   done: 항목별 금액과 기한을 메모·캘린더에 적었다.
   link: 위택스 지방세 조회·납부 | https://www.wetax.go.kr/main/ | official
 
-## 2. 절세 검토
-- 자동차세 연납 할인 등 절세 제도 확인하기
-  how: 위택스 또는 관할 지자체 공지에서 현재 연납 신청 기간과 공제율을 확인합니다.
-  caution: 신청 가능 월과 공제율은 연도·지자체에 따라 달라질 수 있으므로 이전 연도의 수치를 그대로 사용하지 않습니다.
-
-## 3. 납부
+## 2. 납부
 - 기한 내 납부하고 영수증 보관하기
   done: 납부 완료와 영수증을 저장했다.`,
   },
@@ -838,8 +869,10 @@ const specs: BatchSpec[] = [
       primary_destination: 'memo',
       source_title: '정부24 – 안심상속 원스톱서비스(사망자 재산조회)',
       source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02',
-      source_checked_at: '2026-07-11',
-      conversion_note: '정부24 현재 민원 안내의 신청 시기, 온라인·방문 신청자격, 통합 조회 범위를 재확인하고 근거가 없는 6개월 우대 문구는 제거했습니다.',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-12',
+      conversion_note: '정부24 현재 민원 안내의 사망일이 속한 달의 말일부터 1년 이내 신청, 온라인·방문 신청자격과 통합 조회 범위를 확인하고 근거가 없는 6개월 우대 문구를 제거했습니다.',
       warning: '신청 자격(상속인 등), 기한, 상속 처리(승인·포기)는 법적 판단이 필요합니다. 정부24 안내와 전문가 상담을 우선하세요.',
     },
     text: `## 1. 자격·서류

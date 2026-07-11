@@ -60,8 +60,8 @@ test('real-source natural artifact coverage summary tracks remaining work', () =
     sourceFitAudits.filter((audit) => audit.naturalArtifacts.length > 0).map((audit) => audit.slug),
   );
 
-  assert.equal(summary.realSourceCount, 69);
-  assert.equal(summary.auditedRealSourceCount, 69);
+  assert.equal(summary.realSourceCount, 83);
+  assert.equal(summary.auditedRealSourceCount, 83);
   assert.equal(summary.remainingRealSourceCount, 0);
   assert.ok(summary.decisionCounts.promote_to_manual_source_fit >= 1);
   assert.ok(summary.decisionCounts.reshape_content_or_ux >= 1);

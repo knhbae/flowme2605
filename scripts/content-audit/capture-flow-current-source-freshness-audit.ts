@@ -9,9 +9,12 @@ import { getSourceFitAudit, getSourceFitSummary, type SourceFitDecision } from '
 import { summarizeSourceNeedsReviewPriority } from '../../lib/flow/source-review-priority';
 
 const baseUrl = process.env.FLOWME_CAPTURE_BASE_URL ?? 'http://127.0.0.1:3016';
+const auditSlice = process.env.FLOWME_SOURCE_AUDIT_SLICE ?? 'current';
 const outputDir = path.resolve(
   process.cwd(),
-  'docs/content-audit/2026-07-11-flowme-current-source-freshness-audit-evidence',
+  auditSlice === 'sensitive'
+    ? 'docs/content-audit/2026-07-12-flowme-sensitive-source-freshness-audit-evidence'
+    : 'docs/content-audit/2026-07-11-flowme-current-source-freshness-audit-evidence',
 );
 const screenshotDir = path.join(outputDir, 'screenshots');
 
@@ -22,7 +25,7 @@ type RouteAudit = {
   currentTerms: string[];
 };
 
-const routeAudits: RouteAudit[] = [
+const currentRouteAudits: RouteAudit[] = [
   {
     slug: 'birth-registration-prep',
     expectedDecision: 'reshape_before_featured',
@@ -163,7 +166,7 @@ const routeAudits: RouteAudit[] = [
   },
 ];
 
-const wideSlugs = new Set([
+const currentWideSlugs = new Set([
   'birth-registration-prep',
   'health-insurance-dependent',
   'tax-refund-find',
@@ -172,6 +175,106 @@ const wideSlugs = new Set([
   'pet-health-observation',
   'recipe-video-execute',
 ]);
+
+const sensitiveRouteAudits: RouteAudit[] = [
+  {
+    slug: 'ev-subsidy-apply',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['계약 전 필수', '지원 확인서 없이 차량 계약', '상반기에 조기 소진되는 경향'],
+    currentTerms: ['구매계약', '구매 지원신청'],
+  },
+  {
+    slug: 'housing-subscription-account',
+    expectedDecision: 'reshape_before_featured',
+    staleTerms: ['최대 35점', '최대 32점', '최대 17점', '만 30세'],
+    currentTerms: ['주택청약', '공고'],
+  },
+  {
+    slug: 'infant-health-checkup-schedule',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['발달 결과 자동 판정'],
+    currentTerms: ['영유아 건강검진', '구강검진'],
+  },
+  {
+    slug: 'monthly-household-budget',
+    expectedDecision: 'reshape_before_featured',
+    staleTerms: ['카카오페이·토스', '투자 자동 추천'],
+    currentTerms: ['가계부', '50/30/20'],
+  },
+  {
+    slug: 'national-scholarship-apply',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['지원금 자동 계산'],
+    currentTerms: ['국가장학금', '가구원 동의'],
+  },
+  {
+    slug: 'payday-finance-routine',
+    expectedDecision: 'reshape_before_featured',
+    staleTerms: ['생활비 40%', '비상금 20%'],
+    currentTerms: ['월급날', '통장'],
+  },
+  {
+    slug: 'property-local-tax-pay',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['절세', '연납 할인', '공제율'],
+    currentTerms: ['지방세', '영수증'],
+  },
+  {
+    slug: 'safe-inheritance-onestop',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['6개월 우대'],
+    currentTerms: ['안심상속', '재산'],
+  },
+  {
+    slug: 'unemployment-benefit-apply',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['수급 가능 확정'],
+    currentTerms: ['실업급여', '수급자격'],
+  },
+  {
+    slug: 'jeonse-guarantee-apply',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['가입 가능 확정'],
+    currentTerms: ['전세보증금', 'HUG'],
+  },
+  {
+    slug: 'job-seeker-allowance-apply',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['수당 지급 확정'],
+    currentTerms: ['국민취업지원제도', '취업활동계획'],
+  },
+  {
+    slug: 'small-business-fund-check',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['5명 미만', '10명 미만', '교육 이수 요건'],
+    currentTerms: ['정책자금', '신청기간'],
+  },
+  {
+    slug: 'used-car-ownership-transfer',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['2~3 영업일', '당일 처리 가능'],
+    currentTerms: ['이전등록', '자동차365'],
+  },
+  {
+    slug: 'adult-vaccine-schedule-check',
+    expectedDecision: 'keep_representative',
+    staleTerms: ['무료지원 대상', '나에게 권장되는 접종', '2026 예방접종 자료'],
+    currentTerms: ['예방접종 이력', '의료진'],
+  },
+];
+
+const sensitiveWideSlugs = new Set([
+  'ev-subsidy-apply',
+  'housing-subscription-account',
+  'monthly-household-budget',
+  'payday-finance-routine',
+  'small-business-fund-check',
+  'used-car-ownership-transfer',
+  'adult-vaccine-schedule-check',
+]);
+
+const routeAudits = auditSlice === 'sensitive' ? sensitiveRouteAudits : currentRouteAudits;
+const wideSlugs = auditSlice === 'sensitive' ? sensitiveWideSlugs : currentWideSlugs;
 
 const allBundles = mergeSourceBackedMyFlowBundles(seedBundles);
 const publishedBundles = allBundles.filter((bundle) => bundle.flow.status === 'published');
@@ -208,10 +311,17 @@ async function captureRoute(page: Page, routeAudit: RouteAudit, width: 390 | 102
   const staleCopyHits = findTerms(bodyText, routeAudit.staleTerms);
   const currentCopyHits = findTerms(bodyText, routeAudit.currentTerms);
   const decisionMatches = audit?.decision === routeAudit.expectedDecision;
+  const sourceUrlMatchesAudit = audit?.sourceUrl === bundle.flow.source_url;
   const approved = routeAudit.expectedDecision === 'keep_representative';
+  const reviewGateCount = await reviewGate.count();
+  const reviewReason = reviewGateCount ? await reviewGate.getAttribute('data-review-reason') : null;
   const publicPolicyMatches = approved
-    ? indexingPolicy.indexable && workbenchCount === 1 && saveActionCount > 0
-    : !indexingPolicy.indexable && workbenchCount === 0 && saveActionCount === 0;
+    ? indexingPolicy.indexable && workbenchCount === 1 && saveActionCount > 0 && reviewGateCount === 0
+    : !indexingPolicy.indexable &&
+      workbenchCount === 0 &&
+      saveActionCount === 0 &&
+      reviewGateCount === 1 &&
+      reviewReason === 'source_fit_review_required';
 
   await page.screenshot({
     path: path.join(screenshotDir, screenshotName),
@@ -228,15 +338,20 @@ async function captureRoute(page: Page, routeAudit: RouteAudit, width: 390 | 102
     sourceTitle: bundle.flow.source_title,
     sourceUrl: bundle.flow.source_url,
     sourceCheckedAt: bundle.flow.source_checked_at,
+    contentUpdatedAt: bundle.flow.updated_at,
+    contentUpdateMatchesSourceCheck:
+      bundle.flow.updated_at.slice(0, 10) === bundle.flow.source_checked_at,
     sourceStatus: bundle.flow.source_status,
     sourcePrecision: bundle.flow.source_precision,
     expectedDecision: routeAudit.expectedDecision,
     actualDecision: audit?.decision ?? null,
     decisionMatches,
+    sourceUrlMatchesAudit,
     indexingPolicy,
     robots: (await page.locator('meta[name="robots"]').getAttribute('content')) ?? '',
-    reviewGateCount: await reviewGate.count(),
-    reviewDecision: (await reviewGate.count()) ? await reviewGate.getAttribute('data-decision') : null,
+    reviewGateCount,
+    reviewReason,
+    reviewDecision: reviewGateCount ? await reviewGate.getAttribute('data-decision') : null,
     workbenchCount,
     saveActionCount,
     exportFormatOptionCount,
@@ -324,6 +439,7 @@ async function main() {
     generatedAt: new Date().toISOString(),
     scope: {
       baseUrl,
+      auditSlice,
       auditedRouteCount: routeAudits.length,
       mobileRouteCount: routeAudits.length,
       wideRouteCount: wideSlugs.size,
@@ -349,6 +465,10 @@ async function main() {
       capturedApprovedScenarioCount: approved.length,
       capturedGatedScenarioCount: gated.length,
       decisionMismatchCount: scenarios.filter((scenario) => !scenario.decisionMatches).length,
+      sourceUrlMismatchCount: scenarios.filter((scenario) => !scenario.sourceUrlMatchesAudit).length,
+      contentUpdateDateMismatchCount: scenarios.filter(
+        (scenario) => !scenario.contentUpdateMatchesSourceCheck,
+      ).length,
       publicPolicyMismatchCount: scenarios.filter((scenario) => !scenario.publicPolicyMatches).length,
       staleCopyHitCount: scenarios.reduce((sum, scenario) => sum + scenario.staleCopyHitCount, 0),
       approvedCurrentCopyMissingCount: approved.reduce(
