@@ -4,9 +4,9 @@
 
 ## 판정
 
-P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 FlowMe는 한 브라우저 안에서 URL/메모 발견, 저장, 개인 수정, My Flow·Calendar 실행, 완료, 비공개 회고, 외부 파일 생성까지 이어지는 private beta 흐름을 갖췄다.
+P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 FlowMe는 한 브라우저 안에서 URL/메모 발견, 저장, 개인 수정, My Flow·Calendar 실행, 완료, 비공개 회고, 외부 파일 생성까지 이어지는 private beta 흐름을 갖췄다. My Flow 전체 기록을 버전형 JSON으로 백업하고 빈 브라우저에 복원하는 수동 복구 경로도 추가됐다.
 
-다만 **상용 서비스 준비 완료로 판정할 수는 없다.** 실제 반복 사용자 관찰, 계정·기기 간 저장 연속성, 실제 Calendar 앱 import, 완료 Flow의 과거 실행 보존이 남아 있다.
+다만 **상용 서비스 준비 완료로 판정할 수는 없다.** 실제 반복 사용자 관찰, 계정 기반 자동 동기화 여부 결정, 실제 Calendar 앱 import가 남아 있다. 백업·복원은 수동 복구 수단이지 계정 저장이나 자동 동기화가 아니다.
 
 따라서 다음 원칙을 적용한다.
 
@@ -27,6 +27,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 | P22-05 외부 도구 왕복 | 조건부 완료 | Excel 3/3, Word 3/3, iCalendar parser 3/3+개인 1/1 | 설정된 Calendar 앱 import·중복 import 1회 |
 | P22-06 완료 Flow 재사용·버전 정책 | Slice A·B·C·D 구현 완료 | runId, 완료 snapshot, 새 기준일 충돌 정책, 항목 단위 버전 검토, 완료 Flow 재사용 UI | 실제 반복 사용자 이해도 관찰 |
 | P22-07 Studio·공개 리뷰 확장 | 의도적 보류 | Studio secondary tier 유지 | 실제 사용·정정 요청 데이터가 쌓일 때 재검토 |
+| P22-00 지원 slice · 로컬 백업/복원 | 구현 완료 | 허용 키 기반 v1 백업, 빈 My Flow 복원, 실패 rollback, 내부 키 제외 | 실제 기기 이동 1건과 자동 sync 기대 관찰 |
 
 ## 여정별 변화
 
@@ -46,6 +47,16 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 - 실행 상태와 편집 상태가 같은 화면에서 동시에 경쟁하지 않는다.
 
 판정: **구조 개선 완료. 긴 편집 폼의 사용 빈도는 관찰 전 미확정.**
+
+### 로컬 기록 복구
+
+- 빈 My Flow에서도 `데이터 관리`를 열 수 있다.
+- 저장한 Flow, 개인 수정, 완료 실행, 회고, URL 요청을 허용 키 기반 v1 JSON으로 백업한다.
+- 데모 인증, 내부 검토, 업데이트 dismiss 같은 비실행 키는 백업에서 제외한다.
+- 복원 전 날짜와 기록 수를 확인하고, 복원 실패 시 기존 실행 기록을 되돌린다.
+- 화면에서 `현재 브라우저에만 보관`과 `자동으로 맞춰지지 않음`을 명시한다.
+
+판정: **수동 복구 기능은 자동 QA 기준 완료. 계정 저장·자동 sync와 실제 기기 이동 성공을 뜻하지 않는다.**
 
 ### 완료 후 학습
 
@@ -79,6 +90,7 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 - 한 기기·한 브라우저 사용
 - 데이터 초기화 가능성을 사전에 알림
+- 필요하면 My Flow 백업 파일로 수동 복구
 - 공개 리뷰·원본 수정 전송·실시간 AI·양방향 sync를 약속하지 않음
 - 파일 export는 제공하되 Calendar provider별 import 성공을 보장하지 않음
 
@@ -87,9 +99,9 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 1. 최소 5명의 3회차 이상 종단 관찰
 2. URL/메모 진입부터 첫 완료까지 drop-off 기록
 3. 완료 후 2차 실행 또는 재방문 이유 기록
-4. local-only, 계정 저장, 기기 변경·복구 정책 결정
+4. local-only 수동 백업 이후 계정 저장·자동 동기화 정책 결정
 5. 실제 Calendar 앱 import와 중복 처리 확인
-6. runId 기반 실행 모델을 실제 My Flow 재사용 흐름에 연결
+6. 실제 다른 브라우저에서 백업·복원 1건과 사용자 이해 확인
 
 ## 지금 하지 않을 것
 
@@ -164,6 +176,8 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [P22-06B new anchor policy evidence](./2026-07-11-claude-design-p22-06b-new-anchor-policy-evidence/README.md)
 - [P22-06C version review evidence](./2026-07-11-claude-design-p22-06c-version-review-evidence/README.md)
 - [P22-06D completed Flow reuse evidence](./2026-07-11-claude-design-p22-06d-flow-reuse-evidence/README.md)
+- [P22 local 백업·복원 evidence](./2026-07-11-flowme-local-backup-restore-evidence/README.md)
+- [자동 회귀 기준선 복구 감사](./2026-07-11-flowme-automated-regression-recovery-audit-ko.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 
 ## 다음 `/goal` 후보

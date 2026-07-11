@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
+import { MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
@@ -8833,15 +8834,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : '오늘, 다음, 지난 할 일을 먼저 봅니다.'}
           </p>
         </div>
-        {savedFlows.length > 0 ? (
+        {savedFlows.length > 0 || !isCalendarSurface ? (
           <div className="flex flex-wrap gap-2">
-            <Link
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800"
-              data-testid="my-flow-studio-link"
-              href={`/u/${currentUser.slug}`}
-            >
-              스튜디오
-            </Link>
+            {savedFlows.length > 0 ? (
+              <Link
+                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800"
+                data-testid="my-flow-studio-link"
+                href={`/u/${currentUser.slug}`}
+              >
+                스튜디오
+              </Link>
+            ) : null}
+            {!isCalendarSurface ? <MyFlowDataManager /> : null}
           </div>
         ) : null}
       </div>
@@ -10040,7 +10044,6 @@ export function CreatorProfile({ slug }: { slug: string }) {
   const { bundles } = useBundles();
   const normalized = normalizeCreatorSlug(slug);
   const user = findVirtualUserBySlug(normalized);
-  const previewSummary = getCreatorChannelSummaries(bundles).find((item) => item.slug === normalized);
   const creatorBundles = bundles.filter((bundle) => {
     const creator = getCreatorUser(bundle);
     if (user) return creator?.id === user.id;
@@ -10133,17 +10136,6 @@ export function CreatorProfile({ slug }: { slug: string }) {
             <span key={category} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">{category}</span>
           ))}
         </div>
-        {previewSummary ? (
-          <section className="mt-5 grid gap-3 sm:grid-cols-7">
-            <StatCard label="콘텐츠 준비" value={`${previewSummary.flow_count}`} compact />
-            <StatCard label="원문 확인" value={`${previewSummary.real_flow_count}`} compact />
-            <StatCard label="샘플 준비" value={`${previewSummary.sample_candidate_count}`} compact />
-            <StatCard label="실행 항목" value={`${previewSummary.executable_item_count}`} compact />
-            <StatCard label="원본 검토" value={`${previewSummary.source_review_count}`} compact />
-            <StatCard label="수동 검토" value={`${previewSummary.manual_source_fit_count}`} compact />
-            <StatCard label="1차 분류" value={`${previewSummary.derived_source_review_count}`} compact />
-          </section>
-        ) : null}
       </header>
 
       {recommendedBundles.length ? (
@@ -10936,7 +10928,7 @@ function MealPlanEditor({ bundle, onSave }: { bundle: FlowBundle; onSave: (bundl
         <section className="mt-5 rounded-lg border border-gray-200 bg-white p-5">
           <div className="mb-4">
             <p className="text-sm font-medium text-gray-500">공개 페이지 미리보기</p>
-            <h2 className="text-xl font-semibold">{draft.flow.title}</h2>
+            <h2 className="text-xl font-semibold">{toContentDisplayTitle(draft.flow.title)}</h2>
           </div>
           {draft.flow.warning ? <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{draft.flow.warning}</div> : null}
           <MealPlanRenderer bundle={draft} anchor="" checks={{}} onToggle={() => undefined} reactionLogs={{}} onReactionChange={() => undefined} />
@@ -10963,7 +10955,7 @@ function EditorHeader({
             <FlowBadges bundle={bundle} showStatus />
           </div>
           <p className="text-sm text-gray-500">붙여넣기 → 실행 항목 다듬기 → 발행</p>
-          <h1 className="mt-1 text-3xl font-semibold">{bundle.flow.title}</h1>
+          <h1 className="mt-1 text-3xl font-semibold">{toContentDisplayTitle(bundle.flow.title)}</h1>
         </div>
         <div className="flex gap-2">
           <Link className="rounded-md border px-3 py-2 text-sm" href={`/f/${bundle.flow.slug}`}>
@@ -11491,7 +11483,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <p>
-              <span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 보거나 백업하려면 시트 파일을 받아두세요.
+              <span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 이어서 보려면 저장 후 내 Flow의 데이터 관리에서 백업 파일을 받아두세요.
             </p>
             <button
               className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700"
@@ -12150,7 +12142,7 @@ function getEmbeddedToolCopy(destination: PrimaryDestination): {
     };
   }
   return {
-    title: '식사 체크표에 이미 들어간 적용 Flow',
+    title: '식사 체크표에 넣어둔 적용 기준',
     description: '영상의 원칙을 오늘부터 일별 체크표에 넣어둡니다. 필요하면 적용일과 요일만 가볍게 바꿉니다.',
     rhythm: '매일',
     tool: '체크표',
@@ -12168,7 +12160,7 @@ const workoutProgrammingExactVideoSlugs = new Set([
 function getExactVideoToolCopy(bundle: FlowBundle, destination: PrimaryDestination): ReturnType<typeof getEmbeddedToolCopy> {
   if (destination === 'hybrid' && workoutProgrammingExactVideoSlugs.has(bundle.flow.slug)) {
     return {
-      title: '운동 기준 결정표에 들어간 적용 Flow',
+      title: '이번 주에 적용할 운동 기준',
       description: '영상의 운동 기준 후보를 먼저 비교하고, 고른 기준만 이번 주 운동표로 옮깁니다.',
       rhythm: '결정 후 적용',
       tool: '결정표+운동표',
@@ -12183,7 +12175,7 @@ function getExactVideoToolCopy(bundle: FlowBundle, destination: PrimaryDestinati
     bundle.flow.category.includes('다이어트')
   ) {
     return {
-      title: '오늘 한 끼 적용 관찰표 Flow',
+      title: '오늘 한 끼 적용하기',
       description:
         '영상에서 기준 1개를 고른 뒤 다음 식사나 운동 전후 행동에 한 번만 적용하고, 적용 전/후 반응을 관찰표 한 줄에 적습니다.',
       rhythm: '한 번 적용 후 기록',

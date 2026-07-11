@@ -35,6 +35,7 @@ Recording location:
 - Export attempted: calendar / sheet / memo / none
 - Outside app actually opened:
 - Return path used:
+- Backup/restore attempted: yes / no
 - Moderator help count:
 
 ## Round Checks
@@ -61,6 +62,7 @@ Recording location:
 - [ ] 같은 사본 재사용 또는 새 기준일을 선택했다.
 - [ ] 새 원문 검토에서 현재 내용, 새 내용, 내 수정 유지 차이를 설명했다.
 - [ ] 이전 실행이 바뀌지 않는다고 이해했다.
+- [ ] 백업 파일을 받고 빈 브라우저에서 기록을 복원했다.
 
 ## Calendar Import Gate
 
@@ -74,6 +76,8 @@ Recording location:
 
 - 새 기기에서도 자동으로 보일 것이라고 예상했는가:
 - 현재 local-only 안내를 본 뒤 이해했는가:
+- 백업 파일로 수동 복원할 수 있다는 점을 이해했는가:
+- 빈 브라우저에서 백업 복원 결과가 기대와 같았는가:
 - 계정 로그인이 필요하다고 예상했는가:
 - 데이터가 없을 때 손실로 인식했는가:
 

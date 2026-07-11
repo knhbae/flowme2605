@@ -2,6 +2,15 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import { prepareFlowRunNewAnchor } from './flow-run-reuse';
+import {
+  buildFlowMeLocalBackup,
+  FlowMeLocalBackupError,
+  getFlowMeLocalBackupFilename,
+  parseFlowMeLocalBackup,
+  restoreFlowMeLocalBackup,
+  serializeFlowMeLocalBackup,
+  type FlowMeStorageLike,
+} from './local-data-backup';
 import { getFlowScopedMyFlowPersonalExecutionState } from './my-flow-personal-state';
 import {
   cloneSeedBundles,
@@ -53,6 +62,23 @@ function bundle(id: string, slug: string, title: string): FlowBundle {
     },
     sections: [],
     items: [],
+  };
+}
+
+function memoryStorage(initial: Record<string, string> = {}): FlowMeStorageLike {
+  const store = new Map(Object.entries(initial));
+  return {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      store.set(key, value);
+    },
+    removeItem: (key: string) => {
+      store.delete(key);
+    },
   };
 }
 
@@ -922,4 +948,115 @@ test('my flow step item checks are persisted separately from step completion', (
       value: previousLocalStorage,
     });
   }
+});
+
+test('FlowMe local backup includes execution records and excludes internal browser state', () => {
+  const storage = memoryStorage({
+    'flow:saved:moving-d30-basic': JSON.stringify({ slug: 'moving-d30-basic' }),
+    'flow:moving-d30-basic:anchorDate': JSON.stringify({ mode: 'custom', anchor: '2026-08-15' }),
+    'flow_builder_mvp_checks_moving-d30-basic': JSON.stringify({ moving_box: true }),
+    'flow:run-registry:moving-d30-basic': JSON.stringify({
+      schemaVersion: 1,
+      runs: [
+        { schemaVersion: 1, runId: 'run-1', flowSlug: 'moving-d30-basic', status: 'completed', startedAt: '2026-07-01', completedAt: '2026-07-02' },
+      ],
+    }),
+    'flow:url-first:supply-candidates': JSON.stringify([{ canonicalUrl: 'https://example.com/a' }]),
+    'flow:auth:demo-user': 'true',
+    'flow:map:update:dismissed': JSON.stringify({ moving: true }),
+    'content-lab:review:internal': 'operator-only',
+  });
+
+  const backup = buildFlowMeLocalBackup(storage, '2026-07-11T09:00:00.000Z');
+  assert.equal(backup.schemaVersion, 1);
+  assert.equal(backup.summary.savedFlowRecordCount, 1);
+  assert.equal(backup.summary.completedRunCount, 1);
+  assert.equal(backup.summary.requestRecordCount, 1);
+  assert.ok(backup.entries['flow:saved:moving-d30-basic']);
+  assert.equal(backup.entries['flow:auth:demo-user'], undefined);
+  assert.equal(backup.entries['flow:map:update:dismissed'], undefined);
+  assert.equal(backup.entries['content-lab:review:internal'], undefined);
+  assert.equal(getFlowMeLocalBackupFilename(backup.exportedAt), 'flowme-backup-2026-07-11.json');
+
+  const parsed = parseFlowMeLocalBackup(serializeFlowMeLocalBackup(backup));
+  assert.deepEqual(parsed, backup);
+});
+
+test('FlowMe local backup rejects unsupported keys instead of importing arbitrary browser data', () => {
+  const serialized = JSON.stringify({
+    format: 'flowme-local-backup',
+    schemaVersion: 1,
+    exportedAt: '2026-07-11T09:00:00.000Z',
+    entries: {
+      'flow:auth:demo-user': 'true',
+    },
+  });
+
+  assert.throws(
+    () => parseFlowMeLocalBackup(serialized),
+    (error: unknown) => error instanceof FlowMeLocalBackupError && error.code === 'invalid_entry',
+  );
+});
+
+test('FlowMe local restore replaces execution records but preserves unrelated browser state', () => {
+  const storage = memoryStorage({
+    'flow:saved:old-flow': JSON.stringify({ slug: 'old-flow' }),
+    'flow_builder_mvp_checks_old-flow': JSON.stringify({ old: true }),
+    'flow:auth:demo-user': 'true',
+  });
+  const backup = parseFlowMeLocalBackup(JSON.stringify({
+    format: 'flowme-local-backup',
+    schemaVersion: 1,
+    exportedAt: '2026-07-11T09:00:00.000Z',
+    entries: {
+      'flow:saved:moving-d30-basic': JSON.stringify({ slug: 'moving-d30-basic' }),
+      'flow:moving-d30-basic:anchorDate': JSON.stringify({ mode: 'custom', anchor: '2026-08-15' }),
+    },
+  }));
+
+  restoreFlowMeLocalBackup(storage, backup);
+
+  assert.equal(storage.getItem('flow:saved:old-flow'), null);
+  assert.equal(storage.getItem('flow_builder_mvp_checks_old-flow'), null);
+  assert.ok(storage.getItem('flow:saved:moving-d30-basic'));
+  assert.equal(storage.getItem('flow:auth:demo-user'), 'true');
+});
+
+test('FlowMe local restore rolls back existing execution records when writing fails', () => {
+  const base = memoryStorage({
+    'flow:saved:old-flow': JSON.stringify({ slug: 'old-flow' }),
+    'flow:auth:demo-user': 'true',
+  });
+  let shouldFail = true;
+  const storage: FlowMeStorageLike = {
+    get length() {
+      return base.length;
+    },
+    key: (index) => base.key(index),
+    getItem: (key) => base.getItem(key),
+    removeItem: (key) => base.removeItem(key),
+    setItem: (key, value) => {
+      if (shouldFail && key === 'flow:saved:new-flow') {
+        shouldFail = false;
+        throw new Error('quota exceeded');
+      }
+      base.setItem(key, value);
+    },
+  };
+  const backup = parseFlowMeLocalBackup(JSON.stringify({
+    format: 'flowme-local-backup',
+    schemaVersion: 1,
+    exportedAt: '2026-07-11T09:00:00.000Z',
+    entries: {
+      'flow:saved:new-flow': JSON.stringify({ slug: 'new-flow' }),
+    },
+  }));
+
+  assert.throws(
+    () => restoreFlowMeLocalBackup(storage, backup),
+    (error: unknown) => error instanceof FlowMeLocalBackupError && error.code === 'restore_failed',
+  );
+  assert.ok(storage.getItem('flow:saved:old-flow'));
+  assert.equal(storage.getItem('flow:saved:new-flow'), null);
+  assert.equal(storage.getItem('flow:auth:demo-user'), 'true');
 });

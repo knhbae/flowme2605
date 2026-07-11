@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-07-11T15:00:00+09:00",
+  "scope": "p22-local-data-continuity-mitigation",
+  "status": "automated_qa_only",
+  "summary": {
+    "backupFormat": "flowme-local-backup",
+    "backupSchemaVersion": 1,
+    "backupUsesExecutionKeyAllowlist": true,
+    "backupInternalOrDemoKeyCount": 0,
+    "backupAvailableOnEmptyMyFlow": true,
+    "restoreRequiresPreviewAndExplicitApply": true,
+    "restoreRollbackTested": true,
+    "restorePreservesUnrelatedStorage": true,
+    "automaticCrossDeviceSync": false,
+    "accountPersistence": false,
+    "observedUserSessionCount": 0,
+    "physicalCrossDeviceRestoreObserved": false,
+    "flowMvpRegressionE2ePassedCount": 179,
+    "integratedRegressionE2ePassedCount": 218,
+    "unitTestPassedCount": 392,
+    "documentationLocalLinkPassedCount": 1873,
+    "productionBuildRouteCount": 17,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0
+  },
+  "scenarios": [
+    {
+      "name": "empty-my-flow-data-management-mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "screenshot": "screenshots/01-empty-my-flow-data-manager-mobile.png",
+      "dataManagerVisible": true,
+      "localOnlyCopyVisible": true,
+      "automaticSyncClaimCount": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "name": "backup-import-preview-mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "screenshot": "screenshots/02-import-preview-mobile.png",
+      "backupSummaryVisible": true,
+      "replaceWarningVisible": true,
+      "explicitApplyRequired": true,
+      "horizontalOverflow": false
+    },
+    {
+      "name": "restored-my-flow-mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "screenshot": "screenshots/03-restored-my-flow-mobile.png",
+      "restoreFeedbackVisible": true,
+      "restoredWorkspaceVisible": true,
+      "horizontalOverflow": false
+    },
+    {
+      "name": "saved-my-flow-data-management-wide",
+      "route": "/my",
+      "viewport": { "width": 1024, "height": 900 },
+      "screenshot": "screenshots/04-saved-my-flow-data-manager-wide.png",
+      "dataManagerVisible": true,
+      "fixedOverlap": false,
+      "horizontalOverflow": false
+    }
+  ],
+  "interpretation": "This proves local backup and restore behavior through automated QA. It does not prove account persistence, automatic sync, physical cross-device success, or observed-user understanding."
+}
