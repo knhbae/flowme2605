@@ -5,9 +5,9 @@
 ## 현재 관찰 기준
 
 - 관찰 진입 주소: <https://flowme2605-knhbae-3510-flowme.vercel.app/>
-- 현재 resolved preview: <https://flowme2605-t93v5a533-flowme.vercel.app/>
-- Vercel deployment: `dpl_EazR12wpWZMSdPXSMonsZKLknpca`
-- Git commit: `53aba4866036589ea364abfcd0b3a9bf47015f30`
+- 현재 resolved preview: <https://flowme2605-9d7bx3zvq-flowme.vercel.app/>
+- Vercel deployment: `dpl_5KXwjiH5zZX1ie8d2P6MkYLoi4YF`
+- Git commit: `dd7834b046ce0ab82525147cc4a071629eb5a812`
 - 상태: Vercel `Ready`
 
 관찰 키트는 일회성 preview 주소 대신 현재 `main` preview를 가리키는 branch alias를 사용한다. 세션 시작 전에 alias가 위 resolved preview와 commit을 가리키는지 확인하고, 실제 확인값을 세션 기록 양식에 남긴다.

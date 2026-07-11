@@ -1,5 +1,12 @@
 {
   "generatedAt": "2026-07-11",
+  "deployment": {
+    "commit": "dd7834b046ce0ab82525147cc4a071629eb5a812",
+    "id": "dpl_5KXwjiH5zZX1ie8d2P6MkYLoi4YF",
+    "previewUrl": "https://flowme2605-9d7bx3zvq-flowme.vercel.app",
+    "stableObservationAlias": "https://flowme2605-knhbae-3510-flowme.vercel.app",
+    "status": "READY"
+  },
   "policy": {
     "sourceOfTruth": "lib/flow/route-indexing-policy.ts",
     "publicDiscoveryIndexable": true,

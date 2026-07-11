@@ -16,6 +16,7 @@
 - unknown creator `/u/not-a-real-profile`: noindex
 - verified public creator `/u/flow-curation-team`: indexable 유지
 - `/restart/moving-d30`: release-preview display gate와 noindex 동시 유지
+- 최신 preview: <https://flowme2605-9d7bx3zvq-flowme.vercel.app/> (`dd7834b`)
 
 ## 산출물
 
