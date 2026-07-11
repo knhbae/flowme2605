@@ -13228,6 +13228,8 @@ function shouldCollapseSecondaryExecutionSections(bundle: FlowBundle) {
 }
 
 function shouldUseSimplifiedFeedbackLayout(bundle: FlowBundle) {
+  if (getSourceFitAudit(bundle.flow.slug)?.decision === 'keep_representative') return true;
+
   return (
     bundle.flow.slug === 'computer-skills-d30-study' ||
     bundle.flow.slug === 'diet-habit-2week' ||

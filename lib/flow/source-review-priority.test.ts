@@ -42,13 +42,13 @@ test('source review priority summary covers every needs-review flow', () => {
   const countSum = Object.values(summary.priorityCounts).reduce((sum, count) => sum + count, 0);
 
   // Two broad sources moved to preview; the remaining queue stays explicitly classified.
-  assert.equal(summary.totalCount, 42);
-  assert.equal(countSum, 42);
-  assert.equal(summary.priorityCounts.audit_now, 28);
+  assert.equal(summary.totalCount, 37);
+  assert.equal(countSum, 37);
+  assert.equal(summary.priorityCounts.audit_now, 23);
   assert.equal(summary.priorityCounts.source_replacement, 1);
   assert.equal(summary.priorityCounts.risk_review, 13);
   assert.equal(summary.priorityCounts.content_backlog, 0);
-  assert.equal(summary.items.length, 42);
+  assert.equal(summary.items.length, 37);
   assert.deepEqual(
     summary.items.map((item) => item.score),
     [...summary.items.map((item) => item.score)].sort((a, b) => b - a),

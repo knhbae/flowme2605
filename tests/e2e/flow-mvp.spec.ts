@@ -6218,6 +6218,51 @@ test('promoted maintenance routes use source-specific artifact workbenches', asy
   }
 });
 
+test('current-source audit batch exposes one execution surface only for approved routes', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const route of [
+    '/f/first-passport-issue',
+    '/f/closet-organize-1day',
+    '/f/portfolio-4week',
+  ]) {
+    await page.goto(route);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
+    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
+    await expect(page.getByLabel('Flow artifact preview')).toHaveCount(0);
+    await expect(page.getByText('전체 흐름', { exact: true })).toHaveCount(0);
+    await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).not.toContainText('??');
+  }
+
+  await page.goto('/f/first-passport-issue');
+  await expect(page.locator('body')).toContainText('가로 3.5cm×세로 4.5cm');
+  await expect(page.locator('body')).not.toContainText('413×531');
+
+  await page.goto('/f/closet-organize-1day');
+  await expect(page.getByRole('heading', { name: '단계별 실행' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toContainText(
+    '단계 순서대로 확인하고, 지금 할 일과 다음 단계를 한눈에 봅니다.',
+  );
+
+  for (const { route, decision } of [
+    { route: '/f/citizen-secretary-alerts', decision: 'catalog_preview_only' },
+    { route: '/f/domestic-trip-d7', decision: 'reshape_before_featured' },
+  ]) {
+    await page.goto(route);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute(
+      'data-decision',
+      decision,
+    );
+    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+    await expect(page.getByRole('checkbox')).toHaveCount(0);
+  }
+});
+
 test('plank challenge public route lets users compare the source table with the execution calendar', async ({ page }) => {
   await page.goto('/f/plank-30-day-challenge');
 

@@ -90,11 +90,11 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 90);
+  assert.equal(summary.auditedCount, 95);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 18);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 63);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 9);
+  assert.equal(summary.decisionCounts.keep_representative, 21);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 64);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 10);
 });
 
 test('computer skills final QA promotes the route to representative source fit', () => {
@@ -184,6 +184,11 @@ test('source-fit audit covers promoted category representative routes', () => {
     'lease-contract-report-deadline',
     'jeonse-contract-precheck-docs',
     'banana-peanut-recipe-video',
+    'first-passport-issue',
+    'citizen-secretary-alerts',
+    'closet-organize-1day',
+    'domestic-trip-d7',
+    'portfolio-4week',
   ];
 
   for (const slug of promotedNeedsReviewSlugs) {

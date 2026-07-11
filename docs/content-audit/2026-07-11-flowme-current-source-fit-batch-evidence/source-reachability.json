@@ -1,0 +1,3549 @@
+{
+  "generatedAt": "2026-07-11T14:03:58.332Z",
+  "policy": {
+    "routeScope": "published normal-user routes only; catalog_preview and hidden excluded",
+    "linkScope": "primary flow sources plus user-facing item detail links",
+    "timeoutMs": 12000,
+    "concurrency": 8,
+    "networkReachabilityDoesNotProveSemanticFreshness": true,
+    "hardBrokenBuckets": [
+      "not_found"
+    ]
+  },
+  "summary": {
+    "routeCount": 154,
+    "uniqueSourceUrlCount": 157,
+    "primarySourceUrlCount": 132,
+    "itemDetailUrlCount": 152,
+    "itemDetailOnlyUrlCount": 25,
+    "domainCount": 86,
+    "buckets": {
+      "reachable": 147,
+      "redirected": 1,
+      "access_blocked": 2,
+      "not_found": 0,
+      "server_error": 0,
+      "request_error": 0,
+      "timeout": 0,
+      "network_error": 7
+    },
+    "hardBrokenCount": 0,
+    "manualReviewCount": 10
+  },
+  "attention": [
+    {
+      "sourceUrl": "https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y",
+      "slugs": [
+        "birth-registration-prep"
+      ],
+      "titles": [
+        "출생신고 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "redirected",
+      "status": 200,
+      "finalUrl": "https://efamily.scourt.go.kr/index_ServiceInfo.html?bltnbordId=0000008&guideCd=0000008001&guideYn=Y",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 198
+    },
+    {
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1",
+      "slugs": [
+        "source-backed-baby-vaccination-schedule"
+      ],
+      "titles": [
+        "아이 예방접종 일정 확인"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 69,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/mngm/goFormBrdList.do",
+      "slugs": [
+        "adult-vaccine-schedule-check"
+      ],
+      "titles": [
+        "성인·어르신 예방접종 일정 확인 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 53,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&menuLv=3",
+      "slugs": [
+        "source-backed-baby-vaccination-schedule"
+      ],
+      "titles": [
+        "아이 예방접종 일정 확인"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 40,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://ridicorp.com/story/pr-reading-new-year-resolution/",
+      "slugs": [
+        "book-finish-one"
+      ],
+      "titles": [
+        "책 한 권 완독 실천 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "access_blocked",
+      "status": 403,
+      "finalUrl": "https://ridicorp.com/story/pr-reading-new-year-resolution/",
+      "contentType": "text/html",
+      "elapsedMs": 56
+    },
+    {
+      "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "slugs": [
+        "travel-packing-list"
+      ],
+      "titles": [
+        "여행 짐 싸기 체크리스트 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "access_blocked",
+      "status": 403,
+      "finalUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "contentType": "text/html",
+      "elapsedMs": 40
+    },
+    {
+      "sourceUrl": "https://www.molit.go.kr",
+      "slugs": [
+        "jeonse-contract-precheck-docs"
+      ],
+      "titles": [
+        "전세계약 전 서류 체크 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 1978,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+      "slugs": [
+        "national-health-checkup-d7"
+      ],
+      "titles": [
+        "국가건강검진 D-7 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 49,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+      "slugs": [
+        "infant-health-checkup-prep",
+        "infant-health-checkup-schedule"
+      ],
+      "titles": [
+        "영유아 건강검진 예약 준비 Flow",
+        "영유아 건강검진 일정 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible",
+        "source_review"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 47,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://www.nhis.or.kr/static/html/wbdb/f/wbdbf.html",
+      "slugs": [
+        "health-insurance-dependent"
+      ],
+      "titles": [
+        "건강보험 피부양자 등록 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 43,
+      "error": "TypeError: fetch failed"
+    }
+  ],
+  "results": [
+    {
+      "sourceUrl": "https://0404.go.kr/app/main/mainPage",
+      "slugs": [
+        "overseas-safety-register"
+      ],
+      "titles": [
+        "해외여행 안전정보·영사조력 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://0404.go.kr/app/main/mainPage",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 222
+    },
+    {
+      "sourceUrl": "https://aruma16.tistory.com/126",
+      "slugs": [
+        "fridge-cleanout-weekly-plan"
+      ],
+      "titles": [
+        "냉장고 파먹기 7일 재고 소진 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://aruma16.tistory.com/126",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 450
+    },
+    {
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "slugs": [
+        "baby-150-start",
+        "baby-160-start",
+        "baby-170-start",
+        "baby-180-start",
+        "baby-cube",
+        "curated-baby-food-cube-stock",
+        "curated-baby-food-daily-meal-row"
+      ],
+      "titles": [
+        "150일 시작 초기 이유식",
+        "160일 시작 초기 이유식",
+        "170일 시작 초기 이유식",
+        "180일 시작 초기 이유식",
+        "오늘 이유식 식단 기록",
+        "이유식 큐브 재고 기록",
+        "이유식 큐브 재고 메모"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible",
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://blog.naver.com/01695258757/222768860919",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 90
+    },
+    {
+      "sourceUrl": "https://blog.naver.com/naristyle87/222978131890",
+      "slugs": [
+        "curated-reading-monthly-log"
+      ],
+      "titles": [
+        "월 4권 독서 기록 루틴"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://blog.naver.com/naristyle87/222978131890",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 96
+    },
+    {
+      "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=havelaw&logNo=222863332365",
+      "slugs": [
+        "lease-contract-report-deadline"
+      ],
+      "titles": [
+        "주택 임대차계약 신고 마감 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://blog.naver.com/PostView.naver?blogId=havelaw&logNo=222863332365",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 154
+    },
+    {
+      "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491",
+      "slugs": [
+        "kids-printable-squishy-craft"
+      ],
+      "titles": [
+        "아이 도안 스퀴시 만들기 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 134
+    },
+    {
+      "sourceUrl": "https://blog.naver.com/PostView.nhn?blogId=mat_zip_diary&logNo=223137520451",
+      "slugs": [
+        "chiangmai-solo-trip-packing"
+      ],
+      "titles": [
+        "치앙마이 혼자 여행 준비물 체크 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://blog.naver.com/PostView.nhn?blogId=mat_zip_diary&logNo=223137520451",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 204
+    },
+    {
+      "sourceUrl": "https://blog.naver.com/PostView.nhn?blogId=saljjak-&logNo=223661947600",
+      "slugs": [
+        "alt-phone-sk7-self-activation"
+      ],
+      "titles": [
+        "알뜰폰 SK7 셀프개통 체크 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://blog.naver.com/PostView.nhn?blogId=saljjak-&logNo=223661947600",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 170
+    },
+    {
+      "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+      "slugs": [
+        "curated-wedding-naver-timeline",
+        "wedding-timeline",
+        "wedding-vendor-board"
+      ],
+      "titles": [
+        "결혼 업체 후보 보드",
+        "결혼 준비 1년 타임라인"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://blog.naver.com/wilklove/223518896995",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 62
+    },
+    {
+      "sourceUrl": "https://brunch.co.kr/@pletalk/58",
+      "slugs": [
+        "morning-routine-30day"
+      ],
+      "titles": [
+        "아침 루틴 30일 챌린지 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://brunch.co.kr/@pletalk/58",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 263
+    },
+    {
+      "sourceUrl": "https://brunch.co.kr/@skychang44/346",
+      "slugs": [
+        "blog-youtube-start"
+      ],
+      "titles": [
+        "블로그·유튜브 첫 콘텐츠 시작 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://brunch.co.kr/@skychang44/346",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 265
+    },
+    {
+      "sourceUrl": "https://brunch.co.kr/@woochul4532/3",
+      "slugs": [
+        "reading-habit-30day"
+      ],
+      "titles": [
+        "30일 독서 습관 만들기 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://brunch.co.kr/@woochul4532/3",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 368
+    },
+    {
+      "sourceUrl": "https://contents.kakaopay.com/contents/2056",
+      "slugs": [
+        "jeonse-contract-precheck-docs"
+      ],
+      "titles": [
+        "전세계약 전 서류 체크 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://contents.kakaopay.com/contents/2056",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 130
+    },
+    {
+      "sourceUrl": "https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&cntntsId=829",
+      "slugs": [
+        "customs-traveler-declare"
+      ],
+      "titles": [
+        "해외여행 휴대품 면세범위·신고 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://customs.go.kr/kcs/cm/cntnts/cntntsView.do?mi=2837&cntntsId=829",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 206
+    },
+    {
+      "sourceUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov",
+      "slugs": [
+        "source-backed-baby-health-checkups"
+      ],
+      "titles": [
+        "영유아 건강검진 일정"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 223
+    },
+    {
+      "sourceUrl": "https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y",
+      "slugs": [
+        "birth-registration-prep"
+      ],
+      "titles": [
+        "출생신고 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "redirected",
+      "status": 200,
+      "finalUrl": "https://efamily.scourt.go.kr/index_ServiceInfo.html?bltnbordId=0000008&guideCd=0000008001&guideYn=Y",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 198
+    },
+    {
+      "sourceUrl": "https://ei.work24.go.kr/ei/eih/cp/cc/ccEminsrFollow/retrieveCc200Info.do",
+      "slugs": [
+        "unemployment-benefit-apply"
+      ],
+      "titles": [
+        "실업급여(구직급여) 신청 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ei.work24.go.kr/ei/eih/cp/cc/ccEminsrFollow/retrieveCc200Info.do",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 335
+    },
+    {
+      "sourceUrl": "https://ei.work24.go.kr/ei/eih/eg/pb/pbPersonBnef/retrievePb0201Info.do",
+      "slugs": [
+        "job-change-risk-check"
+      ],
+      "titles": [
+        "이직 전 리스크 점검 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ei.work24.go.kr/ei/eih/eg/pb/pbPersonBnef/retrievePb0201Info.do",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 297
+    },
+    {
+      "sourceUrl": "https://eknowhow.kr/budgeting-50-30-20-rule/",
+      "slugs": [
+        "monthly-household-budget"
+      ],
+      "titles": [
+        "월간 가계부 시작 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://eknowhow.kr/budgeting-50-30-20-rule/",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 251
+    },
+    {
+      "sourceUrl": "https://ev.or.kr/",
+      "slugs": [
+        "ev-subsidy-apply"
+      ],
+      "titles": [
+        "전기차 구매보조금 신청 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ev.or.kr/",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 125
+    },
+    {
+      "sourceUrl": "https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do",
+      "slugs": [
+        "ev-subsidy-apply"
+      ],
+      "titles": [
+        "전기차 구매보조금 신청 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 296
+    },
+    {
+      "sourceUrl": "https://funmom.tistory.com/",
+      "slugs": [
+        "curated-funmom-weekly-print-picker"
+      ],
+      "titles": [
+        "펀맘 월~토 출력 루틴"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://funmom.tistory.com/",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 143
+    },
+    {
+      "sourceUrl": "https://gnsl0879.tistory.com/717",
+      "slugs": [
+        "car-care-monthly-routine"
+      ],
+      "titles": [
+        "월 1회 자동차 관리 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://gnsl0879.tistory.com/717",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 306
+    },
+    {
+      "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+      "slugs": [
+        "curated-wedding-gongysd-atoz"
+      ],
+      "titles": [
+        "결혼 준비 A-to-Z"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 371
+    },
+    {
+      "sourceUrl": "https://hahappa.tistory.com/153",
+      "slugs": [
+        "elementary-school-entry-d30"
+      ],
+      "titles": [
+        "초등학교 입학 D-30 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://hahappa.tistory.com/153",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 110
+    },
+    {
+      "sourceUrl": "https://hanjicenter.kr/%EB%82%B4-%ED%94%BC%EB%B6%80-%ED%83%80%EC%9E%85-%ED%99%95%EC%9D%B8%ED%95%98%EB%8A%94-%EB%B2%95%EA%B3%BC-%EA%B7%B8%EC%97%90-%EB%A7%9E%EB%8A%94-%EB%8D%B0%EC%9D%BC%EB%A6%AC-%EB%A3%A8%ED%8B%B4-%EC%A0%95/",
+      "slugs": [
+        "skin-weekly-check"
+      ],
+      "titles": [
+        "주간 피부 상태 관찰 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://hanjicenter.kr/%EB%82%B4-%ED%94%BC%EB%B6%80-%ED%83%80%EC%9E%85-%ED%99%95%EC%9D%B8%ED%95%98%EB%8A%94-%EB%B2%95%EA%B3%BC-%EA%B7%B8%EC%97%90-%EB%A7%9E%EB%8A%94-%EB%8D%B0%EC%9D%BC%EB%A6%AC-%EB%A3%A8%ED%8B%B4-%EC%A0%95/",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 50
+    },
+    {
+      "sourceUrl": "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=131&utm_medium=kdca&utm_source=kdca",
+      "slugs": [
+        "source-backed-baby-health-checkups"
+      ],
+      "titles": [
+        "영유아 건강검진 일정"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=131&utm_medium=kdca&utm_source=kdca",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 129
+    },
+    {
+      "sourceUrl": "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82",
+      "slugs": [
+        "diet-habit-2week",
+        "diet-meal-exercise-log",
+        "diet-reset-2week"
+      ],
+      "titles": [
+        "2주 수면 체크 Flow",
+        "다이어트 2주 습관 리셋 Flow",
+        "다이어트 식사·운동 기록 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 112
+    },
+    {
+      "sourceUrl": "https://hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index_pp.xml&tmIdx=42&tm2lIdx=4203000000&tm3lIdx=4203010000",
+      "slugs": [
+        "tax-refund-find"
+      ],
+      "titles": [
+        "미환급 세금·환급금 찾기 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://hometax.go.kr/websquare/websquare.html?w2xPath=/ui/pp/index_pp.xml&tmIdx=42&tm2lIdx=4203000000&tm3lIdx=4203010000",
+      "contentType": "text/html",
+      "elapsedMs": 104
+    },
+    {
+      "sourceUrl": "https://jhbd2.tistory.com/178",
+      "slugs": [
+        "monstera-care-routine"
+      ],
+      "titles": [
+        "몬스테라 물주기·분갈이 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://jhbd2.tistory.com/178",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 561
+    },
+    {
+      "sourceUrl": "https://kdca.go.kr/kdca/4916/subview.do",
+      "slugs": [
+        "real-kdca-travel-health-check"
+      ],
+      "titles": [
+        "질병관리청 해외여행 건강 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://kdca.go.kr/kdca/4916/subview.do",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 301
+    },
+    {
+      "sourceUrl": "https://khj2510.tistory.com/entry/%ED%94%8C%EB%9E%AD%ED%81%AC-30%EC%9D%BC-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EA%B3%84%ED%9A%8D%ED%91%9C-%EA%B3%B5%EC%9C%A0",
+      "slugs": [
+        "plank-30-day-challenge"
+      ],
+      "titles": [
+        "30일 플랭크 챌린지 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://khj2510.tistory.com/entry/%ED%94%8C%EB%9E%AD%ED%81%AC-30%EC%9D%BC-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EA%B3%84%ED%9A%8D%ED%91%9C-%EA%B3%B5%EC%9C%A0",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 450
+    },
+    {
+      "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+      "slugs": [
+        "curated-child-vaccination-booster-school-age",
+        "curated-child-vaccination-first-year"
+      ],
+      "titles": [
+        "추가접종과 학령기 일정",
+        "출생~12개월 예방접종 확인"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 80
+    },
+    {
+      "sourceUrl": "https://kimstar1021.tistory.com/63",
+      "slugs": [
+        "baby-food-menu-recipe"
+      ],
+      "titles": [
+        "초기 이유식 메뉴·레시피 Flow"
+      ],
+      "linkRoles": [
+        "flow_source"
+      ],
+      "exposureStatuses": [
+        "representative"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://kimstar1021.tistory.com/63",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 491
+    },
+    {
+      "sourceUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+      "slugs": [
+        "domestic-trip-d7"
+      ],
+      "titles": [
+        "국내여행 짐 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 508
+    },
+    {
+      "sourceUrl": "https://luckysuni-diary.tistory.com/102",
+      "slugs": [
+        "job-change-risk-check"
+      ],
+      "titles": [
+        "이직 전 리스크 점검 Flow"
+      ],
+      "linkRoles": [
+        "flow_source"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://luckysuni-diary.tistory.com/102",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 312
+    },
+    {
+      "sourceUrl": "https://m.gov.kr/mw/AA020InfoCappView.do?CappBizCD=97400000004&HighCtgCD=A01008&tp_seq=01",
+      "slugs": [
+        "family-certificate-issue"
+      ],
+      "titles": [
+        "가족관계증명서 발급 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://m.gov.kr/mw/AA020InfoCappView.do?CappBizCD=97400000004&HighCtgCD=A01008&tp_seq=01",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 236
+    },
+    {
+      "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104",
+      "slugs": [
+        "real-ts-vehicle-inspection-prep",
+        "vehicle-inspection-prep"
+      ],
+      "titles": [
+        "TS 자동차검사 준비 Flow",
+        "자동차검사 D-14 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 130
+    },
+    {
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "slugs": [
+        "curated-opic-course-row-import",
+        "curated-opic-single-mock-review",
+        "opic-1m",
+        "opic-2w"
+      ],
+      "titles": [
+        "오픽 1달 모의고사",
+        "오픽 2주 모의고사",
+        "오픽 모의고사 1달 반복 계획",
+        "오픽 모의고사 2주 계획표"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 119
+    },
+    {
+      "sourceUrl": "https://mathbang.net/13",
+      "slugs": [
+        "source-backed-middle-school-math-1"
+      ],
+      "titles": [
+        "단원별 개념 진도"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://mathbang.net/13",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 117
+    },
+    {
+      "sourceUrl": "https://mob.tbht.hometax.go.kr/jsonAction.do?actionId=UTBABAAB92F001",
+      "slugs": [
+        "business-registration-basic"
+      ],
+      "titles": [
+        "개인 사업자등록 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://mob.tbht.hometax.go.kr/jsonAction.do?actionId=UTBABAAB92F001",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 108
+    },
+    {
+      "sourceUrl": "https://morningwalkcoffee.com/ice-coffee-recipes/",
+      "slugs": [
+        "home-cafe-daily"
+      ],
+      "titles": [
+        "홈카페 루틴 만들기 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://morningwalkcoffee.com/ice-coffee-recipes/",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 324
+    },
+    {
+      "sourceUrl": "https://neultwenties.kr/%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4-%EC%88%9C%EC%84%9C-5%EB%8B%A8%EA%B3%84-%EC%99%84%EB%B2%BD%EA%B0%80%EC%9D%B4%EB%93%9C/",
+      "slugs": [
+        "morning-skincare-routine"
+      ],
+      "titles": [
+        "아침 스킨케어 5분 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://neultwenties.kr/%EC%8A%A4%ED%82%A8%EC%BC%80%EC%96%B4-%EC%88%9C%EC%84%9C-5%EB%8B%A8%EA%B3%84-%EC%99%84%EB%B2%BD%EA%B0%80%EC%9D%B4%EB%93%9C/",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 78
+    },
+    {
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuCd=115&menuLv=1",
+      "slugs": [
+        "source-backed-baby-vaccination-schedule"
+      ],
+      "titles": [
+        "아이 예방접종 일정 확인"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 69,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/mngm/goFormBrdList.do",
+      "slugs": [
+        "adult-vaccine-schedule-check"
+      ],
+      "titles": [
+        "성인·어르신 예방접종 일정 확인 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 53,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=313&menuLv=3",
+      "slugs": [
+        "source-backed-baby-vaccination-schedule"
+      ],
+      "titles": [
+        "아이 예방접종 일정 확인"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 40,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://nps.or.kr/elctcvlcpt/comm/getOHAC0000M3.do?menuId=MN24001727",
+      "slugs": [
+        "pension-estimate-check"
+      ],
+      "titles": [
+        "국민연금 가입내역·예상연금 확인 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://nps.or.kr/elctcvlcpt/comm/getOHAC0000M3.do?menuId=MN24001727",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 152
+    },
+    {
+      "sourceUrl": "https://ohou.se/advices/12199",
+      "slugs": [
+        "real-ohouse-moving-d30-prep"
+      ],
+      "titles": [
+        "오늘의집 원룸 이사 D-30 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ohou.se/advices/12199",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 654
+    },
+    {
+      "sourceUrl": "https://ohou.se/advices/12375",
+      "slugs": [
+        "real-ohouse-movein-cleaning-check"
+      ],
+      "titles": [
+        "오늘의집 입주청소 결정 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ohou.se/advices/12375",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 335
+    },
+    {
+      "sourceUrl": "https://ohou.se/advices/7406",
+      "slugs": [
+        "closet-organize-1day"
+      ],
+      "titles": [
+        "옷장 정리 1일 챌린지 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ohou.se/advices/7406",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 526
+    },
+    {
+      "sourceUrl": "https://ohou.se/advices/8220",
+      "slugs": [
+        "weekly-meal-plan"
+      ],
+      "titles": [
+        "한 주 식단·장보기 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ohou.se/advices/8220",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 369
+    },
+    {
+      "sourceUrl": "https://ohou.se/advices/8631",
+      "slugs": [
+        "kitchen-reset-organize"
+      ],
+      "titles": [
+        "주방 리셋 정리 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ohou.se/advices/8631",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 560
+    },
+    {
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do",
+      "slugs": [
+        "small-business-fund-check"
+      ],
+      "titles": [
+        "소상공인 정책자금·지원 확인 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 94
+    },
+    {
+      "sourceUrl": "https://passport.go.kr/home/kor/contents.do?menuPos=48",
+      "slugs": [
+        "overseas-travel-d14"
+      ],
+      "titles": [
+        "해외여행 출국 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://passport.go.kr/home/kor/contents.do?menuPos=48",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 108
+    },
+    {
+      "sourceUrl": "https://pihamadam.tistory.com/267",
+      "slugs": [
+        "water-purifier-filter-cycle"
+      ],
+      "titles": [
+        "정수기 필터 교체 주기표 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://pihamadam.tistory.com/267",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 384
+    },
+    {
+      "sourceUrl": "https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y",
+      "slugs": [
+        "qnet-exam-application-prep"
+      ],
+      "titles": [
+        "Q-Net 원서접수 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 79
+    },
+    {
+      "sourceUrl": "https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C",
+      "slugs": [
+        "washer-tub-clean-monthly"
+      ],
+      "titles": [
+        "세탁기 통세척 월간 관리 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 141
+    },
+    {
+      "sourceUrl": "https://ridicorp.com/story/pr-reading-new-year-resolution/",
+      "slugs": [
+        "book-finish-one"
+      ],
+      "titles": [
+        "책 한 권 완독 실천 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "access_blocked",
+      "status": 403,
+      "finalUrl": "https://ridicorp.com/story/pr-reading-new-year-resolution/",
+      "contentType": "text/html",
+      "elapsedMs": 56
+    },
+    {
+      "sourceUrl": "https://rtms.molit.go.kr",
+      "slugs": [
+        "jeonse-contract-precheck-docs"
+      ],
+      "titles": [
+        "전세계약 전 서류 체크 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://rtms.molit.go.kr/",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 95
+    },
+    {
+      "sourceUrl": "https://rtms.molit.go.kr/main/serviceInfo.do",
+      "slugs": [
+        "lease-contract-report-deadline"
+      ],
+      "titles": [
+        "주택 임대차계약 신고 마감 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://rtms.molit.go.kr/main/serviceInfo.do",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 94
+    },
+    {
+      "sourceUrl": "https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal",
+      "slugs": [
+        "source-backed-postal-address-transfer"
+      ],
+      "titles": [
+        "주거이전 우편물 전송 확인"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 70
+    },
+    {
+      "sourceUrl": "https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8",
+      "slugs": [
+        "fridge-cleanout-weekly-plan"
+      ],
+      "titles": [
+        "냉장고 파먹기 7일 재고 소진 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 214
+    },
+    {
+      "sourceUrl": "https://toss.im/tossfeed/article/bank-account-divide",
+      "slugs": [
+        "payday-finance-routine"
+      ],
+      "titles": [
+        "월급날 재정 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://toss.im/tossfeed/article/bank-account-divide",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 180
+    },
+    {
+      "sourceUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+      "slugs": [
+        "portfolio-4week"
+      ],
+      "titles": [
+        "개발 프로젝트 포트폴리오 4주 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 359
+    },
+    {
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "slugs": [
+        "curated-new-car-basic",
+        "new-car-7-step"
+      ],
+      "titles": [
+        "신차 구매 7단계",
+        "신차 구매 기본형"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 222
+    },
+    {
+      "sourceUrl": "https://web.getcha.kr/blog/new-car-inspection-checklist-complete-guide-2026",
+      "slugs": [
+        "new-car-delivery-check"
+      ],
+      "titles": [
+        "신차 인수 점검 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://web.getcha.kr/blog/new-car-inspection-checklist-complete-guide-2026",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 419
+    },
+    {
+      "sourceUrl": "https://www.0404.go.kr/main/mainPage",
+      "slugs": [
+        "overseas-travel-d14"
+      ],
+      "titles": [
+        "해외여행 출국 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.0404.go.kr/main/mainPage",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 492
+    },
+    {
+      "sourceUrl": "https://www.0404.go.kr/ntnSafetyInfo/86/detail",
+      "slugs": [
+        "real-mofa-overseas-travel-prep"
+      ],
+      "titles": [
+        "외교부 해외여행 안전 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.0404.go.kr/ntnSafetyInfo/86/detail",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 254
+    },
+    {
+      "sourceUrl": "https://www.airport.co.kr/www/index.do",
+      "slugs": [
+        "overseas-travel-d14"
+      ],
+      "titles": [
+        "해외여행 출국 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.airport.co.kr/www/index.do",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 213
+    },
+    {
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "slugs": [
+        "curated-ajd-moving-d30",
+        "moving-dday"
+      ],
+      "titles": [
+        "이사 D-30 준비",
+        "이사 D-day 준비"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 732
+    },
+    {
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "slugs": [
+        "moving-d30-basic",
+        "source-backed-moving-d30"
+      ],
+      "titles": [
+        "원룸 이사 D-30 준비",
+        "이사 D-30 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate",
+        "representative"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!_%EC%97%91%EC%85%80_Xls_PDF_%EB%85%B8%EC%85%98_notion_%EC%B2%A8%EB%B6%80-23363",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 233
+    },
+    {
+      "sourceUrl": "https://www.animal.go.kr/front/community/show.do?boardId=contents&menuNo=2000000016&seq=+66",
+      "slugs": [
+        "real-pet-registration-check"
+      ],
+      "titles": [
+        "반려동물 등록 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.animal.go.kr/front/community/show.do?boardId=contents&menuNo=2000000016&seq=+66",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 317
+    },
+    {
+      "sourceUrl": "https://www.applyhome.co.kr/co/coa/selectMainView.do",
+      "slugs": [
+        "housing-subscription-account"
+      ],
+      "titles": [
+        "주택청약 자격·통장 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.applyhome.co.kr/co/coa/selectMainView.do",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 141
+    },
+    {
+      "sourceUrl": "https://www.biteme.co.kr/blog/%EA%B0%95%EC%95%84%EC%A7%80-%EC%82%B0%EC%B1%85-%EC%96%B8%EC%A0%9C%EB%B6%80%ED%84%B0-%EA%B0%95%EC%95%84%EC%A7%80-%EC%82%B0%EC%B1%85-%EA%B0%80%EC%9D%B4%EB%93%9C/",
+      "slugs": [
+        "dog-walk-routine"
+      ],
+      "titles": [
+        "강아지 산책 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.biteme.co.kr/blog/%EA%B0%95%EC%95%84%EC%A7%80-%EC%82%B0%EC%B1%85-%EC%96%B8%EC%A0%9C%EB%B6%80%ED%84%B0-%EA%B0%95%EC%95%84%EC%A7%80-%EC%82%B0%EC%B1%85-%EA%B0%80%EC%9D%B4%EB%93%9C/",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 177
+    },
+    {
+      "sourceUrl": "https://www.bokjiro.go.kr/ssis-tbu/twatza/wmAplyMng/selectWmGdnc.do",
+      "slugs": [
+        "welfare-benefit-finder"
+      ],
+      "titles": [
+        "맞춤형 복지서비스 찾기 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.bokjiro.go.kr/ssis-tbu/twatza/wmAplyMng/selectWmGdnc.do",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 72
+    },
+    {
+      "sourceUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+      "slugs": [
+        "used-car-buying-check"
+      ],
+      "titles": [
+        "중고차 구매 현장 점검 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "representative"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 135
+    },
+    {
+      "sourceUrl": "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html",
+      "slugs": [
+        "home-workout-20min"
+      ],
+      "titles": [
+        "하루 20분 전신 홈트 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html",
+      "contentType": "text/html",
+      "elapsedMs": 654
+    },
+    {
+      "sourceUrl": "https://www.childcare.go.kr/?menuno=202",
+      "slugs": [
+        "real-childcare-support-application-check"
+      ],
+      "titles": [
+        "아이사랑 시간제보육 신청 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.childcare.go.kr/?menuno=202",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 110
+    },
+    {
+      "sourceUrl": "https://www.childcare.go.kr/?menuno=439",
+      "slugs": [
+        "real-childcare-vaccination-visit-prep"
+      ],
+      "titles": [
+        "아이사랑 영유아 검진/접종 방문 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.childcare.go.kr/?menuno=439",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 115
+    },
+    {
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-health-checkup",
+      "slugs": [
+        "pet-health-observation"
+      ],
+      "titles": [
+        "반려동물 건강 관찰 기록 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.fitpetmall.com/blog/dog-health-checkup",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 492
+    },
+    {
+      "sourceUrl": "https://www.gilbut.co.kr/m/book/view?bookcode=BN004603",
+      "slugs": [
+        "computer-skills-d30-study",
+        "real-sinagong-computer-d30-study"
+      ],
+      "titles": [
+        "시나공 컴활 D-30 학습 Flow",
+        "컴퓨터활용능력 D-30 학습 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate",
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gilbut.co.kr/m/book/view?bookcode=BN004603",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 212
+    },
+    {
+      "sourceUrl": "https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption",
+      "slugs": [
+        "dog-adoption-first-week"
+      ],
+      "titles": [
+        "강아지 입양 첫 주 체크 Flow"
+      ],
+      "linkRoles": [
+        "flow_source"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 59
+    },
+    {
+      "sourceUrl": "https://www.gov.kr",
+      "slugs": [
+        "jeonse-contract-precheck-docs",
+        "moving-d30-basic",
+        "source-backed-moving-d30",
+        "year-end-tax-docs"
+      ],
+      "titles": [
+        "연말정산 서류 준비 Flow",
+        "원룸 이사 D-30 준비",
+        "이사 D-30 준비 Flow",
+        "전세계약 전 서류 체크 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate",
+        "representative",
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 68
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000015&HighCtgCD=A1004",
+      "slugs": [
+        "real-gov24-resident-register-copy",
+        "resident-register-copy-issue"
+      ],
+      "titles": [
+        "정부24 주민등록등본 발급 Flow",
+        "주민등록등본·초본 발급 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000015&HighCtgCD=A1004",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 200
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016",
+      "slugs": [
+        "moving-d30-basic"
+      ],
+      "titles": [
+        "이사 D-30 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "representative"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 222
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000025",
+      "slugs": [
+        "seal-or-signature-certificate"
+      ],
+      "titles": [
+        "인감증명·본인서명사실확인서 발급 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000025",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 193
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13510000024",
+      "slugs": [
+        "childcare-fee-support-apply"
+      ],
+      "titles": [
+        "보육료·양육수당 지원 신청 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13510000024",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 224
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=14600000398&HighCtgCD=A05004",
+      "slugs": [
+        "vaccination-certificate-issue"
+      ],
+      "titles": [
+        "예방접종증명서 발급 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=14600000398&HighCtgCD=A05004",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 182
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=14900000263&HighCtgCD=A05007&tp_seq=",
+      "slugs": [
+        "industrial-accident-claim-docs"
+      ],
+      "titles": [
+        "산재보험 요양비 청구 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=14900000263&HighCtgCD=A05007&tp_seq=",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 203
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=15410000003&HighCtgCD=A09006",
+      "slugs": [
+        "pet-registration-basic"
+      ],
+      "titles": [
+        "반려견 동물등록 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=15410000003&HighCtgCD=A09006",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 185
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=16130000132&HighCtgCD=A01010",
+      "slugs": [
+        "lease-contract-report-deadline"
+      ],
+      "titles": [
+        "주택 임대차계약 신고 마감 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=16130000132&HighCtgCD=A01010",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 190
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02",
+      "slugs": [
+        "safe-inheritance-onestop"
+      ],
+      "titles": [
+        "안심상속 원스톱 신청 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 160
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001",
+      "slugs": [
+        "birth-registration-prep"
+      ],
+      "titles": [
+        "출생신고 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 222
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001&HighCtgCD=A01004&tp_seq=01",
+      "slugs": [
+        "happy-birth-service-check"
+      ],
+      "titles": [
+        "행복출산 통합신청 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001&HighCtgCD=A01004&tp_seq=01",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 172
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?HighCtgCD=A09006&CappBizCD=15000000370",
+      "slugs": [
+        "used-car-ownership-transfer"
+      ],
+      "titles": [
+        "자동차 이전등록(명의이전) 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?HighCtgCD=A09006&CappBizCD=15000000370",
+      "contentType": "text/html;charset=euc-kr",
+      "elapsedMs": 179
+    },
+    {
+      "sourceUrl": "https://www.gov.kr/portal/onestopSvc/happyBirth",
+      "slugs": [
+        "birth-registration-prep"
+      ],
+      "titles": [
+        "출생신고 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.gov.kr/portal/onestopSvc/happyBirth",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 27
+    },
+    {
+      "sourceUrl": "https://www.hometax.go.kr",
+      "slugs": [
+        "year-end-tax-docs"
+      ],
+      "titles": [
+        "연말정산 서류 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.hometax.go.kr/",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 108
+    },
+    {
+      "sourceUrl": "https://www.iros.go.kr",
+      "slugs": [
+        "jeonse-contract-precheck-docs",
+        "moving-d30-basic",
+        "source-backed-moving-d30"
+      ],
+      "titles": [
+        "원룸 이사 D-30 준비",
+        "이사 D-30 준비 Flow",
+        "전세계약 전 서류 체크 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate",
+        "representative",
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.iros.go.kr/",
+      "contentType": "text/html",
+      "elapsedMs": 65
+    },
+    {
+      "sourceUrl": "https://www.khug.or.kr/hug/web/ig/dr/igdr000001.jsp",
+      "slugs": [
+        "jeonse-guarantee-apply"
+      ],
+      "titles": [
+        "전세보증금 반환보증 가입 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.khug.or.kr/hug/web/ig/dr/igdr000001.jsp",
+      "contentType": "text/html; charset=euc-kr",
+      "elapsedMs": 3185
+    },
+    {
+      "sourceUrl": "https://www.kisa.or.kr/1020601",
+      "slugs": [
+        "source-backed-smishing-response"
+      ],
+      "titles": [
+        "스미싱·큐싱 의심 문자 대응"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.kisa.or.kr/1020601",
+      "contentType": "text/html;charset=utf-8",
+      "elapsedMs": 191
+    },
+    {
+      "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "slugs": [
+        "travel-packing-list"
+      ],
+      "titles": [
+        "여행 짐 싸기 체크리스트 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "access_blocked",
+      "status": 403,
+      "finalUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "contentType": "text/html",
+      "elapsedMs": 40
+    },
+    {
+      "sourceUrl": "https://www.korea.kr/news/policyNewsView.do?newsId=148888119",
+      "slugs": [
+        "lease-contract-report-deadline"
+      ],
+      "titles": [
+        "주택 임대차계약 신고 마감 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.korea.kr/news/policyNewsView.do?newsId=148888119",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 568
+    },
+    {
+      "sourceUrl": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_12_01_01",
+      "slugs": [
+        "national-scholarship-apply"
+      ],
+      "titles": [
+        "국가장학금 신청 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_12_01_01",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 148
+    },
+    {
+      "sourceUrl": "https://www.mfds.go.kr/brd/m_827/view.do?company_cd=&company_nm=&itm_seq_1=0&multi_itm_seq=0&page=2&seq=3608&srchFr=&srchTo=&srchTp=&srchWord=",
+      "slugs": [
+        "source-backed-picnic-food-safety"
+      ],
+      "titles": [
+        "나들이 도시락 식중독 예방"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.mfds.go.kr/brd/m_827/view.do?company_cd=&company_nm=&itm_seq_1=0&multi_itm_seq=0&page=2&seq=3608&srchFr=&srchTo=&srchTp=&srchWord=",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 625
+    },
+    {
+      "sourceUrl": "https://www.mma.go.kr/contents.do?mc=usr0000167",
+      "slugs": [
+        "military-exam-prep"
+      ],
+      "titles": [
+        "병역판정검사 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.mma.go.kr/contents.do?mc=usr0000167",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 3225
+    },
+    {
+      "sourceUrl": "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W",
+      "slugs": [
+        "elementary-school-entry-d30"
+      ],
+      "titles": [
+        "초등학교 입학 D-30 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 380
+    },
+    {
+      "sourceUrl": "https://www.moel.go.kr/retirementpay.do",
+      "slugs": [
+        "job-change-risk-check"
+      ],
+      "titles": [
+        "이직 전 리스크 점검 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.moel.go.kr/retirementpay.do",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 87
+    },
+    {
+      "sourceUrl": "https://www.molit.go.kr",
+      "slugs": [
+        "jeonse-contract-precheck-docs"
+      ],
+      "titles": [
+        "전세계약 전 서류 체크 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 1978,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://www.new1eng.com/blog/adult-english-30day-self-study",
+      "slugs": [
+        "english-study-30day-routine"
+      ],
+      "titles": [
+        "직장인 영어공부 30일 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "representative"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.new1eng.com/blog/adult-english-30day-self-study",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 148
+    },
+    {
+      "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+      "slugs": [
+        "national-health-checkup-d7"
+      ],
+      "titles": [
+        "국가건강검진 D-7 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 49,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+      "slugs": [
+        "infant-health-checkup-prep",
+        "infant-health-checkup-schedule"
+      ],
+      "titles": [
+        "영유아 건강검진 예약 준비 Flow",
+        "영유아 건강검진 일정 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible",
+        "source_review"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 47,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://www.nhis.or.kr/static/html/wbdb/f/wbdbf.html",
+      "slugs": [
+        "health-insurance-dependent"
+      ],
+      "titles": [
+        "건강보험 피부양자 등록 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "network_error",
+      "elapsedMs": 43,
+      "error": "TypeError: fetch failed"
+    },
+    {
+      "sourceUrl": "https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=&nttSn=1347979",
+      "slugs": [
+        "year-end-tax-docs"
+      ],
+      "titles": [
+        "연말정산 서류 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=&nttSn=1347979",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 819
+    },
+    {
+      "sourceUrl": "https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438",
+      "slugs": [
+        "source-backed-year-end-tax-submit"
+      ],
+      "titles": [
+        "연말정산 간소화자료 온라인 제출"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 798
+    },
+    {
+      "sourceUrl": "https://www.ohprint.me/blog/wedding-checklist",
+      "slugs": [
+        "wedding-d180-basic"
+      ],
+      "titles": [
+        "결혼 준비 D-300 타임라인 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "representative"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.ohprint.me/blog/wedding-checklist",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 451
+    },
+    {
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=2",
+      "slugs": [
+        "first-passport-issue"
+      ],
+      "titles": [
+        "여권 신규 발급 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=2",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 107
+    },
+    {
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+      "slugs": [
+        "first-passport-issue"
+      ],
+      "titles": [
+        "여권 신규 발급 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=32",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 103
+    },
+    {
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=41",
+      "slugs": [
+        "first-passport-issue"
+      ],
+      "titles": [
+        "여권 신규 발급 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=41",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 94
+    },
+    {
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+      "slugs": [
+        "passport-renewal-docs"
+      ],
+      "titles": [
+        "여권 재발급 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 98
+    },
+    {
+      "sourceUrl": "https://www.passport.go.kr/home/kor/substitutional/index.do?menuPos=28",
+      "slugs": [
+        "first-passport-issue"
+      ],
+      "titles": [
+        "여권 신규 발급 준비 Flow"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.passport.go.kr/home/kor/substitutional/index.do?menuPos=28",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 102
+    },
+    {
+      "sourceUrl": "https://www.q-net.or.kr/rcv002.do?gSite=L&id=rcv002_identi",
+      "slugs": [
+        "real-qnet-application-examday-check"
+      ],
+      "titles": [
+        "Q-Net 원서접수와 시험당일 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.q-net.or.kr/rcv002.do?gSite=L&id=rcv002_identi",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 77
+    },
+    {
+      "sourceUrl": "https://www.recipio.kr/recipes/WwyL63J3",
+      "slugs": [
+        "banana-peanut-recipe-video"
+      ],
+      "titles": [
+        "바나나 땅콩버터 빵 영상 따라하기 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.recipio.kr/recipes/WwyL63J3",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 74
+    },
+    {
+      "sourceUrl": "https://www.runday.co.kr/",
+      "slugs": [
+        "running-5k-4week"
+      ],
+      "titles": [
+        "초보 러너 5km 4주 완주 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.runday.co.kr/",
+      "contentType": "text/html",
+      "elapsedMs": 75
+    },
+    {
+      "sourceUrl": "https://www.safedriving.or.kr/diGuide/selectDiGuide02.do",
+      "slugs": [
+        "driver-license-renewal-check"
+      ],
+      "titles": [
+        "운전면허 갱신 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.safedriving.or.kr/diGuide/selectDiGuide02.do",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 38
+    },
+    {
+      "sourceUrl": "https://www.safedriving.or.kr/diGuide/selectDiGuide18.do?menuCd=MN-PO-12111",
+      "slugs": [
+        "real-safe-driving-license-renewal"
+      ],
+      "titles": [
+        "안전운전 면허 갱신 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.safedriving.or.kr/diGuide/selectDiGuide18.do?menuCd=MN-PO-12111",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 44
+    },
+    {
+      "sourceUrl": "https://www.samsungsvc.co.kr/info/carePlus",
+      "slugs": [
+        "samsung-aircon-seasonal-check"
+      ],
+      "titles": [
+        "삼성 에어컨 계절 전 점검 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.samsungsvc.co.kr/info/carePlus",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 234
+    },
+    {
+      "sourceUrl": "https://www.samsungsvc.co.kr/info/maintenance",
+      "slugs": [
+        "real-samsung-aircon-seasonal-care"
+      ],
+      "titles": [
+        "삼성 에어컨 계절 세척 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.samsungsvc.co.kr/info/maintenance",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 237
+    },
+    {
+      "sourceUrl": "https://www.samsungsvc.co.kr/solution/1477182",
+      "slugs": [
+        "samsung-washer-filter-cleaning"
+      ],
+      "titles": [
+        "삼성 미세플라스틱 저감장치 필터 청소 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.samsungsvc.co.kr/solution/1477182",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 236
+    },
+    {
+      "sourceUrl": "https://www.samsungsvc.co.kr/solution/1978102",
+      "slugs": [
+        "real-samsung-washer-filter-care"
+      ],
+      "titles": [
+        "삼성 세탁기 배수필터 관리 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.samsungsvc.co.kr/solution/1978102",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 255
+    },
+    {
+      "sourceUrl": "https://www.samsungsvc.co.kr/solution/28524",
+      "slugs": [
+        "source-backed-aircon-filter-cleaning"
+      ],
+      "titles": [
+        "천장형 에어컨 1way 필터 청소"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.samsungsvc.co.kr/solution/28524",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 209
+    },
+    {
+      "sourceUrl": "https://www.wetax.go.kr/main/",
+      "slugs": [
+        "property-local-tax-pay"
+      ],
+      "titles": [
+        "지방세(재산세·자동차세) 납부 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.wetax.go.kr/main/",
+      "contentType": "text/html; charset=UTF-8",
+      "elapsedMs": 91
+    },
+    {
+      "sourceUrl": "https://www.work24.go.kr/ua/z/z/1300/selectEmssRqutIntro.do",
+      "slugs": [
+        "job-seeker-allowance-apply"
+      ],
+      "titles": [
+        "국민취업지원제도 신청 준비 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.work24.go.kr/ua/z/z/1300/selectEmssRqutIntro.do",
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 175
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/@ThankyouBUBU",
+      "slugs": [
+        "home-workout-20min"
+      ],
+      "titles": [
+        "하루 20분 전신 홈트 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/@ThankyouBUBU",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 236
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+      "slugs": [
+        "recipe-video-execute"
+      ],
+      "titles": [
+        "레시피 영상 실전 적용 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "legacy_accessible"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 201
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/playlist?list=PLq3xvPExCrK_-1NmAkyHjr3mNbimxo2ic",
+      "slugs": [
+        "curated-opic-course-row-import",
+        "curated-opic-single-mock-review"
+      ],
+      "titles": [
+        "오픽 모의고사 1달 반복 계획",
+        "오픽 모의고사 2주 계획표"
+      ],
+      "linkRoles": [
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "migration_candidate"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/playlist?list=PLq3xvPExCrK_-1NmAkyHjr3mNbimxo2ic",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 251
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=_h3u30M9ECc",
+      "slugs": [
+        "real-fitvely-video-carb-reason"
+      ],
+      "titles": [
+        "FITVELY 탄수화물을 먹어야 하는 이유 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=_h3u30M9ECc",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 256
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=-GJMwcES45A",
+      "slugs": [
+        "real-fitvely-video-workout-split-science"
+      ],
+      "titles": [
+        "FITVELY 운동루틴 설계 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=-GJMwcES45A",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 237
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=6IUL8-nGetA",
+      "slugs": [
+        "real-thankyou-bubu-video-3min-abs"
+      ],
+      "titles": [
+        "ThankyouBUBU 3분 복근 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=6IUL8-nGetA",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 229
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=73IrtWDDby0",
+      "slugs": [
+        "real-thankyou-bubu-video-arm-back-shoulder"
+      ],
+      "titles": [
+        "ThankyouBUBU 팔뚝 등살 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=73IrtWDDby0",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 231
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=9xxCFu21CLM",
+      "slugs": [
+        "real-thankyou-bubu-video-lower-belly-8min"
+      ],
+      "titles": [
+        "ThankyouBUBU 8분 아랫뱃살 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=9xxCFu21CLM",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 125
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=aob4Lh1Vebk",
+      "slugs": [
+        "real-thankyou-bubu-video-daily-stretch-9min"
+      ],
+      "titles": [
+        "ThankyouBUBU 9분 스트레칭 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=aob4Lh1Vebk",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 184
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=EQcoKqDO8Ds",
+      "slugs": [
+        "real-fitvely-video-body-fat-6kg-method"
+      ],
+      "titles": [
+        "FITVELY 체지방 6kg 감량 비법 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=EQcoKqDO8Ds",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 238
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=gSz5n4sLENI",
+      "slugs": [
+        "real-thankyou-bubu-20min-routine"
+      ],
+      "titles": [
+        "ThankyouBUBU 20분 반복 운동 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=gSz5n4sLENI",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 169
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=hesjApxDlj0",
+      "slugs": [
+        "real-thankyou-bubu-video-no-knee-cardio-strength"
+      ],
+      "titles": [
+        "ThankyouBUBU 무릎부담 낮춘 전신 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=hesjApxDlj0",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 236
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=J8YmqzhPS2Q",
+      "slugs": [
+        "real-fitvely-video-post-workout-nutrition"
+      ],
+      "titles": [
+        "FITVELY 운동직후 섭취 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=J8YmqzhPS2Q",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 234
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=JurCSqpjl5I",
+      "slugs": [
+        "real-fitvely-video-bulk-up-method"
+      ],
+      "titles": [
+        "FITVELY 벌크업 운동표 적용 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=JurCSqpjl5I",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 141
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=k3MznPQvUEk",
+      "slugs": [
+        "real-thankyou-bubu-video-waist-8cm"
+      ],
+      "titles": [
+        "ThankyouBUBU 허리둘레 집중 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=k3MznPQvUEk",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 149
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=Kl9Dmx86Z0Q",
+      "slugs": [
+        "real-thankyou-bubu-video-3min-arm"
+      ],
+      "titles": [
+        "ThankyouBUBU 3분 팔뚝 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=Kl9Dmx86Z0Q",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 142
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=nfdIpPXfIc8",
+      "slugs": [
+        "real-fitvely-video-three-week-check"
+      ],
+      "titles": [
+        "FITVELY 3주 감량 점검 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=nfdIpPXfIc8",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 129
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=O87gkL1cKSc",
+      "slugs": [
+        "real-thankyou-bubu-video-8min-cardio"
+      ],
+      "titles": [
+        "ThankyouBUBU 8분 전신유산소 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=O87gkL1cKSc",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 144
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=oPBA8E_WtXY",
+      "slugs": [
+        "real-fitvely-video-workout-order"
+      ],
+      "titles": [
+        "FITVELY 운동 순서 결정 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=oPBA8E_WtXY",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 148
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=pcyrlkHXAdE",
+      "slugs": [
+        "real-thankyou-bubu-home-workout-starter",
+        "real-thankyou-bubu-video-full-body-no-jump"
+      ],
+      "titles": [
+        "ThankyouBUBU 전신 다이어트 실천 Flow",
+        "ThankyouBUBU 홈트 시작 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=pcyrlkHXAdE",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 229
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=qADmhOJemTs",
+      "slugs": [
+        "real-fitvely-video-weight-class-method"
+      ],
+      "titles": [
+        "FITVELY 체중별 다이어트 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=qADmhOJemTs",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 164
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=qcTxaFMWzKs",
+      "slugs": [
+        "real-fitvely-diet-record-routine"
+      ],
+      "titles": [
+        "FITVELY 식단 기록 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=qcTxaFMWzKs",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 145
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=t630vnDGIWw",
+      "slugs": [
+        "real-fitvely-video-carb-amount-shorts"
+      ],
+      "titles": [
+        "FITVELY 오늘 탄수화물 기록 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=t630vnDGIWw",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 147
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=toAUho9bEw0",
+      "slugs": [
+        "real-thankyou-bubu-video-belly-side-all-in-one"
+      ],
+      "titles": [
+        "ThankyouBUBU 뱃살 옆구리 루틴 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=toAUho9bEw0",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 141
+    },
+    {
+      "sourceUrl": "https://www.youtube.com/watch?v=zipquv7TErU",
+      "slugs": [
+        "real-fitvely-video-after-work-nutrition"
+      ],
+      "titles": [
+        "FITVELY 퇴근후 운동 영양 Flow"
+      ],
+      "linkRoles": [
+        "flow_source",
+        "item_detail"
+      ],
+      "exposureStatuses": [
+        "source_review"
+      ],
+      "bucket": "reachable",
+      "status": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=zipquv7TErU",
+      "contentType": "text/html; charset=utf-8",
+      "elapsedMs": 156
+    }
+  ]
+}

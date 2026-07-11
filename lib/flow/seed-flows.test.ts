@@ -1263,13 +1263,51 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 49);
-  assert.equal(reviewOnly.length, 568);
+  assert.equal(indexable.length, 52);
+  assert.equal(reviewOnly.length, 565);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('first-passport-issue')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('closet-organize-1day')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('portfolio-4week')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('citizen-secretary-alerts')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('domestic-trip-d7')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-baby-vaccination-schedule')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-apartment-precheck')!).indexable, false);
+});
+
+test('current source-fit batch removes stale and source-invented user copy', () => {
+  const bySlug = new Map(seedBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const passport = bySlug.get('first-passport-issue')!;
+  const citizenSecretary = bySlug.get('citizen-secretary-alerts')!;
+  const closet = bySlug.get('closet-organize-1day')!;
+  const domesticTrip = bySlug.get('domestic-trip-d7')!;
+  const portfolio = bySlug.get('portfolio-4week')!;
+
+  assert.match(passport.flow.raw_text ?? '', /3\.5cm×세로 4\.5cm/);
+  assert.doesNotMatch(passport.flow.raw_text ?? '', /413×531/);
+  assert.doesNotMatch(citizenSecretary.flow.raw_text ?? '', /100여 종|PASS·공동인증서/);
+  assert.doesNotMatch(closet.flow.raw_text ?? '', /새 옷 1개|보통 1년 이상/);
+
+  assert.equal(domesticTrip.flow.structure_type, 'checklist');
+  assert.equal(domesticTrip.flow.anchor_type, 'none');
+  assert.equal(domesticTrip.flow.primary_destination, 'memo');
+  assert.ok(domesticTrip.items.every((item) => item.day_offset === undefined));
+  assert.doesNotMatch(domesticTrip.flow.raw_text ?? '', /예약 취소 정책|관광지 운영시간|가스 밸브/);
+
+  assert.equal(portfolio.flow.title, '개발 프로젝트 포트폴리오 4주 Flow');
+  assert.deepEqual(
+    portfolio.items.map((item) => item.day_offset),
+    [-28, -25, -21, -20, -7, -1],
+  );
+  assert.doesNotMatch(portfolio.flow.raw_text ?? '', /STAR|노션·피그마·PDF/);
+
+  assert.equal(getSourceFitAudit('first-passport-issue')?.decision, 'keep_representative');
+  assert.equal(getSourceFitAudit('closet-organize-1day')?.decision, 'keep_representative');
+  assert.equal(getSourceFitAudit('portfolio-4week')?.decision, 'keep_representative');
+  assert.equal(getSourceFitAudit('citizen-secretary-alerts')?.decision, 'catalog_preview_only');
+  assert.equal(getSourceFitAudit('domestic-trip-d7')?.decision, 'reshape_before_featured');
 });
 
 test('published user routes record source freshness while preview library stays separate', () => {

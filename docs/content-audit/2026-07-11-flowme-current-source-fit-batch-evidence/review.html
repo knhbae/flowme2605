@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 오래된 공개 콘텐츠 교정 감사</title>
+  <style>
+    :root { color-scheme: light; --ink:#1b1a17; --muted:#6e6b64; --line:#e7e4dd; --paper:#fff; --bg:#f7f7f4; --blue:#2448ff; --green:#137a4a; --amber:#a65d00; --red:#b42318; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,"Noto Sans KR",sans-serif; letter-spacing:0; }
+    header, section { border-bottom:1px solid var(--line); }
+    .inner { width:min(1180px, calc(100% - 32px)); margin:0 auto; padding:32px 0; }
+    h1 { margin:8px 0 12px; font-size:clamp(28px,4vw,46px); line-height:1.12; }
+    h2 { margin:0 0 18px; font-size:24px; }
+    h3 { margin:0 0 8px; font-size:18px; }
+    p { margin:0; line-height:1.7; }
+    .eyebrow { color:var(--blue); font-size:13px; font-weight:700; }
+    .lede { max-width:820px; color:var(--muted); font-size:16px; }
+    .metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:1px; margin-top:24px; border:1px solid var(--line); background:var(--line); }
+    .metric { min-width:0; background:var(--paper); padding:18px; }
+    .metric strong { display:block; font-size:28px; }
+    .metric span { color:var(--muted); font-size:13px; }
+    table { width:100%; border-collapse:collapse; background:var(--paper); }
+    th, td { padding:14px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; line-height:1.55; }
+    th { color:var(--muted); font-size:12px; }
+    .status { font-weight:700; }
+    .keep { color:var(--green); }
+    .hold { color:var(--amber); }
+    .shots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+    figure { margin:0; min-width:0; border:1px solid var(--line); background:var(--paper); }
+    figure img { display:block; width:100%; height:auto; border-bottom:1px solid var(--line); }
+    figcaption { padding:14px 16px 16px; }
+    figcaption p { color:var(--muted); font-size:14px; }
+    .mobile img { max-height:740px; object-fit:cover; object-position:top; }
+    .wide { grid-column:1 / -1; }
+    .wide img { max-height:680px; object-fit:cover; object-position:top; }
+    .notes { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .note { border-left:4px solid var(--blue); padding:4px 0 4px 16px; }
+    .note.warn { border-color:var(--amber); }
+    ol { margin:0; padding-left:22px; line-height:1.8; }
+    a { color:var(--blue); }
+    footer .inner { padding:24px 0 40px; color:var(--muted); font-size:13px; }
+    @media (max-width:800px) {
+      .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .shots, .notes { grid-template-columns:1fr; }
+      .wide { grid-column:auto; }
+      table, tbody, tr, td { display:block; width:100%; }
+      thead { display:none; }
+      tr { padding:12px 14px; border-bottom:1px solid var(--line); }
+      td { display:grid; grid-template-columns:84px minmax(0,1fr); gap:10px; padding:5px 0; border:0; }
+      td::before { content:attr(data-label); color:var(--muted); font-size:12px; font-weight:700; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="inner">
+      <div class="eyebrow">2026-07-11 · CURRENT SOURCE-FIT BATCH</div>
+      <h1>오래된 페이지를 최신 원문과 다시 맞췄습니다</h1>
+      <p class="lede">링크가 열린다는 이유만으로 공개 승인하지 않았습니다. 현재 원문이 실행 항목을 지지하는지, FlowMe에서 저장·완료·내보내기까지 열 가치가 있는지를 분리해 판단했습니다.</p>
+      <div class="metrics">
+        <div class="metric"><strong>3</strong><span>공개 실행 승인</span></div>
+        <div class="metric"><strong>2</strong><span>최신화 후 검토 유지</span></div>
+        <div class="metric"><strong>52</strong><span>현재 indexable Flow</span></div>
+        <div class="metric"><strong>0</strong><span>공개 visible-copy 손상 route</span></div>
+        <div class="metric"><strong>1/15</strong><span>관찰 사용자 세션</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="inner">
+      <h2>승인과 보류</h2>
+      <table>
+        <thead><tr><th>Flow</th><th>판정</th><th>교정 핵심</th><th>공개 동작</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Flow">여권 신규 발급 준비</td><td data-label="판정" class="status keep">승인</td><td data-label="교정 핵심">인화 사진 규격 3.5×4.5cm, 6개월 이내, 온라인 픽셀 규격 분리</td><td data-label="공개 동작">저장·체크·내보내기</td></tr>
+          <tr><td data-label="Flow">옷장 정리 1일 챌린지</td><td data-label="판정" class="status keep">승인</td><td data-label="교정 핵심">개인별 기준·유예·처리 방식으로 교정, 깨진 단계 안내 복구</td><td data-label="공개 동작">저장·체크·내보내기</td></tr>
+          <tr><td data-label="Flow">개발 프로젝트 포트폴리오 4주</td><td data-label="판정" class="status keep">승인</td><td data-label="교정 핵심">기획→DB/API→개발→배포→한 페이지 포트폴리오로 원문 충실화</td><td data-label="공개 동작">저장·체크·내보내기</td></tr>
+          <tr><td data-label="Flow">국민비서 알림 신청</td><td data-label="판정" class="status hold">미리보기 유지</td><td data-label="교정 핵심">과거 서비스 수·인증 경로 제거, 현재 목록과 앱 기준으로 최신화</td><td data-label="공개 동작">저장·체크·내보내기 차단</td></tr>
+          <tr><td data-label="Flow">국내여행 짐 준비</td><td data-label="판정" class="status hold">재구성 유지</td><td data-label="교정 핵심">출처에 없던 D-7 예약·관광 동선 제거, 조건별 짐 체크로 변경</td><td data-label="공개 동작">저장·체크·내보내기 차단</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner">
+      <h2>390px 사용자 화면</h2>
+      <div class="shots">
+        <figure class="mobile"><img src="screenshots/01-passport-approved-mobile.png" alt="여권 신규 발급 승인 모바일 화면" /><figcaption><h3>여권 신규 발급</h3><p>실행판 하나만 남기고, 현재 공식 규격에 맞춘 4개 행동을 보여줍니다.</p></figcaption></figure>
+        <figure class="mobile"><img src="screenshots/02-closet-approved-mobile.png" alt="옷장 정리 승인 모바일 화면" /><figcaption><h3>옷장 정리</h3><p>사용자 기준과 유예기간을 먼저 정하고 단계별 실행으로 이어집니다.</p></figcaption></figure>
+        <figure class="mobile"><img src="screenshots/03-portfolio-approved-mobile.png" alt="포트폴리오 4주 승인 모바일 화면" /><figcaption><h3>개발 프로젝트 포트폴리오</h3><p>목표일을 넣으면 4주 일정과 실행 목록이 같은 모델로 계산됩니다.</p></figcaption></figure>
+        <figure class="mobile"><img src="screenshots/04-citizen-secretary-review-mobile.png" alt="국민비서 검토 전용 모바일 화면" /><figcaption><h3>국민비서</h3><p>내용은 최신화했지만 반복 실행 가치 검토가 끝날 때까지 읽기만 허용합니다.</p></figcaption></figure>
+        <figure class="mobile"><img src="screenshots/05-domestic-trip-review-mobile.png" alt="국내여행 검토 전용 모바일 화면" /><figcaption><h3>국내여행</h3><p>원문과 맞지 않던 일정 기능을 제거했으며 차별성 검토 전에는 저장을 열지 않습니다.</p></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner">
+      <h2>1024px 확인</h2>
+      <div class="shots">
+        <figure class="wide"><img src="screenshots/06-passport-approved-wide.png" alt="여권 신규 발급 승인 wide 화면" /><figcaption><h3>승인 페이지 wide</h3><p>저장 CTA, 실행 목록, 출처 카드가 한 흐름으로 보이며 중복 본문은 없습니다.</p></figcaption></figure>
+        <figure class="wide"><img src="screenshots/07-portfolio-approved-wide.png" alt="포트폴리오 4주 승인 wide 화면" /><figcaption><h3>캘린더 + 실행 목록</h3><p>원문 순서를 날짜와 실행 항목으로 함께 보되 같은 항목을 별도 본문에서 반복하지 않습니다.</p></figcaption></figure>
+        <figure class="wide"><img src="screenshots/08-domestic-trip-review-wide.png" alt="국내여행 검토 전용 wide 화면" /><figcaption><h3>검토 전용 wide</h3><p>보류 이유와 확인 중인 항목만 보여주고 저장·체크·export는 노출하지 않습니다.</p></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner">
+      <h2>자동 검증이 말하는 것과 말하지 않는 것</h2>
+      <div class="notes">
+        <div class="note"><h3>확인됨</h3><p>공개 52개 visible text 손상 0, 이번 시나리오의 오래된 문구 0, 승인 페이지 중복 실행 표면 0, 검토 전용 저장·export·체크 0, 390px·1024px 가로 넘침 0입니다.</p></div>
+        <div class="note warn"><h3>아직 확인되지 않음</h3><p>링크 감사의 수동 검토 10건과 source review 대기열 37개가 남아 있습니다. 관찰 사용자 세션도 1/15이므로 상용 완성 판단은 아직 이릅니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner">
+      <h2>다음 실행 순서</h2>
+      <ol>
+        <li>원문과 실행 구조가 비교적 분명한 `audit_now` 23개를 작은 배치로 처리합니다.</li>
+        <li>의료·금융 등 13개는 공식 근거와 위험 경계를 함께 검토합니다.</li>
+        <li>broad source 1개를 정확한 원문으로 교체합니다.</li>
+        <li>대표 승인 Flow부터 실제 사용 세션을 누적해 저장·완료·재사용 신호를 확인합니다.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer><div class="inner">근거 데이터: <a href="route-evidence.json">route-evidence.json</a> · <a href="source-reachability.json">source-reachability.json</a> · <a href="audit.md">audit.md</a></div></footer>
+</body>
+</html>

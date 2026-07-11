@@ -172,13 +172,14 @@ test('artifact plan maps payday finance routine to a memo card surface', () => {
   assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['memo_card', 'execution_list']);
 });
 
-test('artifact plan keeps creator routine and timeline flows on their structure surfaces', () => {
+test('artifact plan keeps creator flows on source-aligned structure surfaces', () => {
   for (const slug of ['reading-habit-30day', 'morning-skincare-routine', 'dog-walk-routine']) {
     assert.equal(getArtifactPlan(bundle(slug)).primarySurface, 'routine_calendar', slug);
   }
-  for (const slug of ['domestic-trip-d7', 'new-hobby-30day', 'portfolio-4week']) {
+  for (const slug of ['new-hobby-30day', 'portfolio-4week']) {
     assert.equal(getArtifactPlan(bundle(slug)).primarySurface, 'timeline_calendar', slug);
   }
+  assert.equal(getArtifactPlan(bundle('domestic-trip-d7')).primarySurface, 'checklist');
 });
 
 test('artifact plan maps official document issue routes to memo cards first except passport', () => {

@@ -1,0 +1,453 @@
+{
+  "generatedAt": "2026-07-11T14:41:29.025Z",
+  "scope": {
+    "baseUrl": "http://127.0.0.1:3015",
+    "routes": [
+      "/f/first-passport-issue",
+      "/f/closet-organize-1day",
+      "/f/portfolio-4week",
+      "/f/citizen-secretary-alerts",
+      "/f/domestic-trip-d7"
+    ],
+    "viewports": [
+      390,
+      1024
+    ],
+    "sourceReachabilityDoesNotProveSemanticFreshness": true,
+    "approvalRequiresManualSourceFit": true
+  },
+  "summary": {
+    "publishedBundleCount": 617,
+    "publicFlowIndexableCount": 52,
+    "publicFlowReviewOnlyCount": 565,
+    "sourceFitAuditCount": 95,
+    "sourceFitApprovedCount": 21,
+    "sourceFitReshapeCount": 64,
+    "sourceFitPreviewOnlyCount": 10,
+    "sourceFitHiddenCount": 0,
+    "sourceReviewQueueCount": 37,
+    "sourceReviewAuditNowCount": 23,
+    "sourceReviewReplacementCount": 1,
+    "sourceReviewRiskCount": 13,
+    "sourceReviewBacklogCount": 0,
+    "naturalArtifactEffectiveCoverageCount": 55,
+    "lifecycleKeepCount": 21,
+    "lifecycleFixCount": 129,
+    "lifecyclePreviewOnlyCount": 442,
+    "lifecycleHideCount": 1,
+    "capturedScenarioCount": 8,
+    "approvedScenarioCount": 5,
+    "reviewOnlyScenarioCount": 3,
+    "staleCopyHitCount": 0,
+    "approvedDuplicateExecutionSurfaceCount": 0,
+    "reviewOnlySaveActionCount": 0,
+    "reviewOnlyExportFormatOptionCount": 0,
+    "reviewOnlyCheckboxCount": 0,
+    "horizontalOverflowCount": 0,
+    "indexableVisibleCopyScanRouteCount": 52,
+    "indexableVisibleCopyMojibakeHitRouteCount": 0,
+    "observedUserSessionCount": 1,
+    "observedUserSessionTarget": 15
+  },
+  "decisions": [
+    {
+      "slug": "first-passport-issue",
+      "decision": "keep_representative",
+      "rationale": "Current official issue, photo, agency, and fee pages support an actionable preparation flow."
+    },
+    {
+      "slug": "closet-organize-1day",
+      "decision": "keep_representative",
+      "rationale": "The exact article supports a user-selected threshold, grace period, and disposal sorting flow."
+    },
+    {
+      "slug": "portfolio-4week",
+      "decision": "keep_representative",
+      "rationale": "The exact article provides a four-week development-project sequence with direct artifact value."
+    },
+    {
+      "slug": "citizen-secretary-alerts",
+      "decision": "catalog_preview_only",
+      "rationale": "The current official source is verified, but setup is short and has weak repeat execution value."
+    },
+    {
+      "slug": "domestic-trip-d7",
+      "decision": "reshape_before_featured",
+      "rationale": "The source supports a packing checklist, not the former D-7 reservation and itinerary timeline."
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "passport-approved-mobile",
+      "route": "/f/first-passport-issue",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/01-passport-approved-mobile.png",
+      "title": "여권 신규 발급 준비 Flow",
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=2",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "checklist",
+      "anchorType": "none",
+      "primaryDestination": "memo",
+      "itemCount": 4,
+      "sourceFitDecision": "keep_representative",
+      "sourceFitScore": 80,
+      "indexingPolicy": {
+        "indexable": true,
+        "reason": "manual_source_fit_approved"
+      },
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "reviewReason": null,
+      "reviewDecision": null,
+      "workbenchCount": 1,
+      "saveActionCount": 1,
+      "exportFormatOptionCount": 2,
+      "checkboxCount": 4,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "여권 사진 규격 확인하고 촬영하기",
+        "수수료·처리 기간·수령 방법 확인하기"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "name": "closet-approved-mobile",
+      "route": "/f/closet-organize-1day",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/02-closet-approved-mobile.png",
+      "title": "옷장 정리 1일 챌린지 Flow",
+      "sourceUrl": "https://ohou.se/advices/7406",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "checklist",
+      "anchorType": "none",
+      "primaryDestination": "memo",
+      "itemCount": 6,
+      "sourceFitDecision": "keep_representative",
+      "sourceFitScore": 80,
+      "indexingPolicy": {
+        "indexable": true,
+        "reason": "manual_source_fit_approved"
+      },
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "reviewReason": null,
+      "reviewDecision": null,
+      "workbenchCount": 1,
+      "saveActionCount": 1,
+      "exportFormatOptionCount": 2,
+      "checkboxCount": 6,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "비움 기준과 유예기간 정하기",
+        "비울 옷의 처리 방법과 날짜 정하기"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "name": "portfolio-approved-mobile",
+      "route": "/f/portfolio-4week",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/03-portfolio-approved-mobile.png",
+      "title": "개발 프로젝트 포트폴리오 4주 Flow",
+      "sourceUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "timeline",
+      "anchorType": "end_date",
+      "primaryDestination": "hybrid",
+      "itemCount": 6,
+      "sourceFitDecision": "keep_representative",
+      "sourceFitScore": 92,
+      "indexingPolicy": {
+        "indexable": true,
+        "reason": "manual_source_fit_approved"
+      },
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "reviewReason": null,
+      "reviewDecision": null,
+      "workbenchCount": 1,
+      "saveActionCount": 1,
+      "exportFormatOptionCount": 3,
+      "checkboxCount": 6,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "DB·API",
+        "배포"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "name": "citizen-secretary-review-mobile",
+      "route": "/f/citizen-secretary-alerts",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/04-citizen-secretary-review-mobile.png",
+      "title": "국민비서 알림 신청 Flow",
+      "sourceUrl": "https://www.ips.go.kr/pot/svc/ntcn/selectSvcGuide.do",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "checklist",
+      "anchorType": "none",
+      "primaryDestination": "memo",
+      "itemCount": 3,
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 63,
+      "indexingPolicy": {
+        "indexable": false,
+        "reason": "source_fit_review_required"
+      },
+      "robots": "noindex, nofollow",
+      "reviewGateCount": 1,
+      "reviewReason": "source_fit_review_required",
+      "reviewDecision": "catalog_preview_only",
+      "workbenchCount": 0,
+      "saveActionCount": 0,
+      "exportFormatOptionCount": 0,
+      "checkboxCount": 0,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "필요한 행정 알림 고르기",
+        "선택한 앱에서 신청 상태 확인하기"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "name": "domestic-trip-review-mobile",
+      "route": "/f/domestic-trip-d7",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/05-domestic-trip-review-mobile.png",
+      "title": "국내여행 짐 준비 Flow",
+      "sourceUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "checklist",
+      "anchorType": "none",
+      "primaryDestination": "memo",
+      "itemCount": 7,
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 67,
+      "indexingPolicy": {
+        "indexable": false,
+        "reason": "source_fit_review_required"
+      },
+      "robots": "noindex, nofollow",
+      "reviewGateCount": 1,
+      "reviewReason": "source_fit_review_required",
+      "reviewDecision": "reshape_before_featured",
+      "workbenchCount": 0,
+      "saveActionCount": 0,
+      "exportFormatOptionCount": 0,
+      "checkboxCount": 0,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "계절·동반자·숙박형태·활동 적기",
+        "세면도구·개인 위생용품·평소 쓰는 약 챙기기"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "name": "passport-approved-wide",
+      "route": "/f/first-passport-issue",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "screenshot": "screenshots/06-passport-approved-wide.png",
+      "title": "여권 신규 발급 준비 Flow",
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=2",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "checklist",
+      "anchorType": "none",
+      "primaryDestination": "memo",
+      "itemCount": 4,
+      "sourceFitDecision": "keep_representative",
+      "sourceFitScore": 80,
+      "indexingPolicy": {
+        "indexable": true,
+        "reason": "manual_source_fit_approved"
+      },
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "reviewReason": null,
+      "reviewDecision": null,
+      "workbenchCount": 1,
+      "saveActionCount": 1,
+      "exportFormatOptionCount": 2,
+      "checkboxCount": 4,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "여권 사진 규격 확인하고 촬영하기",
+        "수수료·처리 기간·수령 방법 확인하기"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "name": "portfolio-approved-wide",
+      "route": "/f/portfolio-4week",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "screenshot": "screenshots/07-portfolio-approved-wide.png",
+      "title": "개발 프로젝트 포트폴리오 4주 Flow",
+      "sourceUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "timeline",
+      "anchorType": "end_date",
+      "primaryDestination": "hybrid",
+      "itemCount": 6,
+      "sourceFitDecision": "keep_representative",
+      "sourceFitScore": 92,
+      "indexingPolicy": {
+        "indexable": true,
+        "reason": "manual_source_fit_approved"
+      },
+      "robots": "index, follow",
+      "reviewGateCount": 0,
+      "reviewReason": null,
+      "reviewDecision": null,
+      "workbenchCount": 1,
+      "saveActionCount": 1,
+      "exportFormatOptionCount": 3,
+      "checkboxCount": 6,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "DB·API",
+        "배포"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "name": "domestic-trip-review-wide",
+      "route": "/f/domestic-trip-d7",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "screenshot": "screenshots/08-domestic-trip-review-wide.png",
+      "title": "국내여행 짐 준비 Flow",
+      "sourceUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+      "sourceCheckedAt": "2026-07-11",
+      "sourceStatus": "real",
+      "sourcePrecision": "exact",
+      "structureType": "checklist",
+      "anchorType": "none",
+      "primaryDestination": "memo",
+      "itemCount": 7,
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 67,
+      "indexingPolicy": {
+        "indexable": false,
+        "reason": "source_fit_review_required"
+      },
+      "robots": "noindex, nofollow",
+      "reviewGateCount": 1,
+      "reviewReason": "source_fit_review_required",
+      "reviewDecision": "reshape_before_featured",
+      "workbenchCount": 0,
+      "saveActionCount": 0,
+      "exportFormatOptionCount": 0,
+      "checkboxCount": 0,
+      "duplicateExecutionSurfaceCount": 0,
+      "artifactPreviewCount": 0,
+      "flowItemCardCount": 0,
+      "fullFlowHeadingCount": 0,
+      "staleCopyHitCount": 0,
+      "staleCopyHits": [],
+      "currentCopyExpectedCount": 2,
+      "currentCopyHitCount": 2,
+      "currentCopyHits": [
+        "계절·동반자·숙박형태·활동 적기",
+        "세면도구·개인 위생용품·평소 쓰는 약 챙기기"
+      ],
+      "horizontalOverflow": false
+    }
+  ],
+  "indexableVisibleCopyMojibakeHits": [],
+  "verification": {
+    "targetedUnitTests": "128 passed",
+    "fullUnitTests": "406 passed",
+    "targetedCurrentSourceE2e": "1 passed",
+    "urlFirstE2e": "8 passed",
+    "publicShareE2e": "33 passed",
+    "workbenchSourceDensityE2e": "9 passed",
+    "docsCheck": "passed (1946 local links)",
+    "strictSourceReachability": "passed (154 routes, 157 unique URLs, 0 hard broken, 10 manual review)",
+    "build": "passed"
+  }
+}

@@ -393,7 +393,7 @@ function surfaceTitle(surface: string, bundle: FlowBundle): string {
   }
   if (surface === 'timeline_calendar') return '월간 캘린더 + 실행 리스트';
   if (surface === 'memo_card') return '메모 카드';
-  if (surface === 'step_progress') return '??? ??';
+  if (surface === 'step_progress') return '단계별 실행';
   return '실행 리스트';
 }
 
@@ -417,7 +417,7 @@ function surfaceDescription(surface: string, bundle: FlowBundle): string {
   }
   if (surface === 'timeline_calendar') return '해야 할 일을 리스트로 훑고, 같은 항목이 월간 달력에서 어느 날짜에 걸리는지 봅니다.';
   if (surface === 'memo_card') return '나중에 다시 참고할 기준과 결정 메모를 한 장으로 정리합니다.';
-  if (surface === 'step_progress') return '?? ???? ????, ?? ??? ? ?? ???? ?? ???? ???.';
+  if (surface === 'step_progress') return '단계 순서대로 확인하고, 지금 할 일과 다음 단계를 한눈에 봅니다.';
   return '저장 전에 필요한 항목을 미리 표시하고, 자세히에서 원문 기준과 확인 기준만 봅니다.';
 }
 

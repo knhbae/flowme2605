@@ -472,29 +472,35 @@ const specs: BatchSpec[] = [
       id: 'official-260601-citizen-secretary',
       slug: 'citizen-secretary-alerts',
       title: '국민비서 알림 신청 Flow',
-      description: '국민비서(구삐) 기준으로 건강검진·예방접종·교통과태료 등 놓치기 쉬운 행정 알림을 한 번에 신청합니다.',
+      description: '국민비서 공식 안내에서 필요한 행정 알림과 받을 앱을 고르고 신청 상태를 확인합니다.',
       category: '생활행정',
       structure_type: 'checklist',
       anchor_type: 'none',
       status: 'published',
+      source_status: 'real',
+      source_precision: 'exact',
+      source_checked_at: '2026-07-11',
       risk_level: 'low',
       primary_destination: 'memo',
       source_title: '국민비서(구삐) – 알림서비스 신청·서비스 안내',
       source_url: 'https://www.ips.go.kr/pot/svc/ntcn/selectSvcGuide.do',
-      warning: '제공 알림 항목과 채널(앱/문자/카카오 등)은 변경될 수 있습니다. 국민비서 공식 안내(1577-2558)로 확인하세요.',
+      conversion_note: '현재 국민비서 서비스 목록과 공식 신청 경로를 기준으로 알림 선택→수신 앱 선택→신청 상태 확인의 세 행동만 남겼습니다.',
+      warning: '제공 알림과 수신 앱은 바뀔 수 있습니다. 신청할 때 국민비서 공식 목록과 각 서비스의 발송 대상을 다시 확인하세요.',
     },
     text: `## 1. 항목 선택
-- 받고 싶은 알림(건강검진·예방접종·교통과태료·자동차검사·운전면허 갱신 등) 고르기
-  why: 챙기기 어려운 행정 기한을 알림으로 받으면 과태료·미수령을 줄입니다. 국민비서는 건강검진·예방접종·자동차 검사·운전면허 갱신·과태료·정부 지원금 등 100여 종의 알림을 제공합니다.
-  how: 국민비서 서비스 안내에서 알림 가능한 항목을 확인합니다.
+- 필요한 행정 알림 고르기
+  why: 건강검진, 여권 만료, 자동차 검사처럼 시기를 놓치기 쉬운 안내를 자주 쓰는 앱에서 받을 수 있습니다.
+  how: 국민비서 서비스 안내에서 현재 제공되는 알림과 각 알림의 발송 대상·주기를 확인하고 필요한 것만 고릅니다.
   done: 신청할 알림 항목을 정했다.
   link: 국민비서 알림서비스 안내 | https://www.ips.go.kr/pot/svc/ntcn/selectSvcGuide.do | official
 
 ## 2. 신청
-- 알림 받을 채널(카카오톡·네이버앱·토스) 정하고 신청하기
-  how: 카카오톡에서 '국민비서 구삐' 채널 추가 후 본인 인증(카카오인증서·PASS·공동인증서 중 선택) 완료 후 알림 항목을 선택합니다. 네이버앱(전자문서→국민비서) 또는 토스(전체메뉴→국민비서)로도 신청 가능합니다.
-- 정상 수신되는지 확인하기
-  done: 알림 신청 완료와 수신 채널을 확인했다.`,
+- 알림 받을 앱을 정하고 신청하기
+  how: 국민비서 누리집에서 받을 앱을 선택하거나, 네이버앱·카카오톡·토스 등 자주 쓰는 앱의 국민비서 메뉴에서 신청합니다. 누리집에서 선택 가능한 앱 수와 현재 지원 앱을 다시 확인합니다.
+  done: 알림 받을 앱과 서비스를 선택해 신청했다.
+  link: 국민비서 신청 안내 | https://www.ips.go.kr/pot/ | official
+- 선택한 앱에서 신청 상태 확인하기
+  done: 선택한 앱에서 국민비서 신청 상태와 알림 목록을 확인했다.`,
   },
 
   // ───────────────────────── 여권 / 여행 / 관세 ─────────────────────────
@@ -508,28 +514,37 @@ const specs: BatchSpec[] = [
       structure_type: 'checklist',
       anchor_type: 'none',
       status: 'published',
+      source_status: 'real',
+      source_precision: 'exact',
       risk_level: 'medium',
       primary_destination: 'memo',
       source_title: '외교부 여권안내 – 여권 최초 발급 기본사항 안내',
       source_url: 'https://www.passport.go.kr/home/kor/contents.do?menuPos=2',
       source_checked_at: '2026-07-11',
+      conversion_note: '최초 발급 기본사항, 여권 사진, 국내 접수기관, 수수료의 현재 공식 페이지를 분리해 사진·서류→접수처→신청·수령 순서로 정리했습니다.',
       warning: '사진 규격, 미성년자·대리 신청, 수수료, 처리 기간은 공식 기준을 따릅니다. 외교부 여권안내로 확인하세요.',
     },
     text: `## 1. 사진·서류
 - 여권 사진 규격 확인하고 촬영하기
-  why: 규격에 안 맞는 사진은 접수 단계에서 반려되는 가장 흔한 사유입니다.
-  how: 외교부 여권안내의 사진 규격을 확인하고 촬영합니다. 권장 해상도 413×531픽셀, 접수일 기준 6개월 이내 촬영본이어야 합니다. AI 편집·필터 적용 사진은 불가합니다.
+  why: 규격에 맞지 않거나 편집된 사진은 접수가 지연되거나 반려될 수 있습니다.
+  how: 최초 발급용 인화 사진은 가로 3.5cm×세로 4.5cm, 신청일 전 6개월 이내 촬영본을 준비합니다. 사진 편집·필터·AI 가공은 사용하지 않습니다.
   done: 규격에 맞는 사진을 준비했다.
-  link: 외교부 여권안내 최초 발급 안내 | https://www.passport.go.kr/home/kor/contents.do?menuPos=2 | official
+  link: 외교부 여권 사진 안내 | https://www.passport.go.kr/home/kor/contents.do?menuPos=32 | official
 - 신분증 등 필요 서류 확인하기
+  how: 최초 발급 기본사항에서 공통 구비 서류를 확인하고, 성인·미성년자·병역의무자 중 본인에게 맞는 안내를 다시 봅니다.
+  done: 본인 상황에 필요한 서류를 목록으로 적었다.
+  link: 외교부 여권 최초 발급 안내 | https://www.passport.go.kr/home/kor/contents.do?menuPos=2 | official
   caution: 미성년자·대리 신청은 추가 서류가 필요합니다.
 
 ## 2. 신청·수령
-- 가까운 여권 접수처(구청 등) 확인하고 방문 신청하기
+- 가까운 여권 접수기관 확인하고 방문 신청하기
+  how: 외교부 국내 대행기관 목록에서 주소, 업무시간, 야간민원실 운영 여부를 확인한 뒤 방문합니다.
+  done: 방문할 접수기관과 업무시간을 확인했다.
+  link: 외교부 국내 여권 접수기관 | https://www.passport.go.kr/home/kor/substitutional/index.do?menuPos=28 | official
   caution: 처리 기간은 신청 방식·시기에 따라 다릅니다(성수기에는 더 길어질 수 있음). 출국일에 충분히 여유를 두고 신청하고, 정확한 처리 기간은 접수처에서 확인하세요.
 - 수수료·처리 기간·수령 방법 확인하기
   link: 외교부 여권안내 수수료 안내 | https://www.passport.go.kr/home/kor/contents.do?menuPos=41 | official
-  done: 수령 예정일을 캘린더에 표시했다.`,
+  done: 수수료와 수령 방법, 접수처가 안내한 예상 수령 시점을 기록했다.`,
   },
   {
     flow: {
