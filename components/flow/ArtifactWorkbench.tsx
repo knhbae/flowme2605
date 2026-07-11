@@ -17,6 +17,7 @@ import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/displ
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
+import { stripUserFacingInternalLines } from '@/lib/flow/user-surface-guardrails';
 
 type ArtifactWorkbenchProps = {
   bundle: FlowBundle;
@@ -435,16 +436,21 @@ function WorkbenchDetailDisclosure({
 }) {
   if (!detail) return null;
   const visibleLinks = showSourceLinks ? detail.links ?? [] : [];
-  const caution = detail.caution && detail.caution !== suppressedCaution ? detail.caution : '';
-  if (!detail.why && !detail.how && !detail.completion_criteria && !caution && !visibleLinks.length) return null;
+  const why = stripUserFacingInternalLines(detail.why);
+  const how = stripUserFacingInternalLines(detail.how);
+  const completionCriteria = stripUserFacingInternalLines(detail.completion_criteria);
+  const caution = detail.caution && detail.caution !== suppressedCaution
+    ? stripUserFacingInternalLines(detail.caution)
+    : undefined;
+  if (!why && !how && !completionCriteria && !caution && !visibleLinks.length) return null;
 
   return (
     <details className={FLOWME_DISCLOSURE_CLASS}>
       <summary className="cursor-pointer font-semibold text-[#3654FF]">자세히</summary>
       <div className="mt-2 space-y-2 leading-6 text-[#4A4842]">
-        {detail.how ? <p><b>실행:</b> {detail.how}</p> : null}
-        {detail.completion_criteria ? <p><b>완료:</b> {detail.completion_criteria}</p> : null}
-        {detail.why ? <p><b>이유:</b> {detail.why}</p> : null}
+        {how ? <p><b>실행:</b> {how}</p> : null}
+        {completionCriteria ? <p><b>완료:</b> {completionCriteria}</p> : null}
+        {why ? <p><b>이유:</b> {why}</p> : null}
         {caution ? <p className="text-amber-800"><b>주의:</b> {caution}</p> : null}
         {visibleLinks.length ? (
           <div className="flex flex-wrap gap-2 pt-1">

@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { scanUserSurfaceGuardrails } from './user-surface-guardrails';
+import {
+  scanUserSurfaceGuardrails,
+  stripUserFacingInternalLines,
+} from './user-surface-guardrails';
 
 test('user-surface guardrails catch creator/studio structural labels', () => {
   const result = scanUserSurfaceGuardrails({
@@ -28,4 +31,14 @@ test('creator/studio user copy can describe made content without structural hits
   assert.deepEqual(result.structuralDisplayHits, []);
   assert.deepEqual(result.internalCopyHits, []);
   assert.deepEqual(result.trailingFlowSuffixHits, []);
+});
+
+test('user-facing detail keeps useful copy while removing internal provenance lines', () => {
+  assert.equal(
+    stripUserFacingInternalLines(
+      '예산 범위와 후보 차량을 비교합니다.\nsourceTrace: internal source row\n원문 근거: internal handoff',
+    ),
+    '예산 범위와 후보 차량을 비교합니다.',
+  );
+  assert.equal(stripUserFacingInternalLines('sourceTrace: internal only'), undefined);
 });

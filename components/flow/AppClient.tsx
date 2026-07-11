@@ -71,7 +71,10 @@ import {
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
 import { buildUrlFirstStartPackage, canonicalizeFlowSourceUrl, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
-import { isLegacyUrlFirstCandidateStateCopy } from '@/lib/flow/user-surface-guardrails';
+import {
+  isLegacyUrlFirstCandidateStateCopy,
+  stripUserFacingInternalLines,
+} from '@/lib/flow/user-surface-guardrails';
 import {
   buildUrlFirstDraftItemSuggestions,
   buildUrlFirstSupplyCandidateUserSummaryMarkdown,
@@ -3640,12 +3643,7 @@ function getMyFlowInlineActionHint(detail?: FlowItemDetail, item?: FlowItem): st
 }
 
 function stripMyFlowInternalMemoLines(text?: string): string | undefined {
-  const cleaned = text
-    ?.split(/\r?\n/)
-    .filter((line) => !/^\s*(sourceTrace|source trace|원문 근거)\s*[:：]/i.test(line))
-    .join('\n')
-    .trim();
-  return cleaned || undefined;
+  return stripUserFacingInternalLines(text);
 }
 
 function formatMyFlowDetailMemo(detail: FlowItemDetail, row?: MyFlowRow, item?: FlowItem): string {
@@ -12967,42 +12965,47 @@ function EmptyScheduleMessage() {
 }
 
 function ItemDetailContent({ detail }: { detail?: FlowItemDetail }) {
-  if (!detail?.why && !detail?.how && !detail?.completion_criteria && !detail?.caution && !detail?.links?.length) {
+  const why = stripUserFacingInternalLines(detail?.why);
+  const how = stripUserFacingInternalLines(detail?.how);
+  const completionCriteria = stripUserFacingInternalLines(visibleCompletionCriteria(detail));
+  const caution = stripUserFacingInternalLines(detail?.caution);
+  const links = detail?.links ?? [];
+  if (!why && !how && !completionCriteria && !caution && !links.length) {
     return null;
   }
 
   return (
     <div className="mt-3 rounded-md border border-gray-100 bg-[#FAFAF8] p-3 text-sm">
       <div className="grid gap-3 text-gray-700 md:grid-cols-2">
-        {detail.why ? (
+        {why ? (
           <div>
             <p className="flex items-center gap-1 text-xs font-semibold text-gray-500"><span aria-hidden="true">?</span> 왜 필요한가</p>
-            <p className="mt-1 leading-6">{detail.why}</p>
+            <p className="mt-1 whitespace-pre-line leading-6">{why}</p>
           </div>
         ) : null}
-        {detail.how ? (
+        {how ? (
           <div>
             <p className="flex items-center gap-1 text-xs font-semibold text-gray-500"><span aria-hidden="true">→</span> 어떻게 하나요</p>
-            <p className="mt-1 leading-6">{detail.how}</p>
+            <p className="mt-1 whitespace-pre-line leading-6">{how}</p>
           </div>
         ) : null}
-        {visibleCompletionCriteria(detail) ? (
+        {completionCriteria ? (
           <div>
             <p className="flex items-center gap-1 text-xs font-semibold text-gray-500"><span aria-hidden="true">✓</span> 완료 조건</p>
-            <p className="mt-1 leading-6">{visibleCompletionCriteria(detail)}</p>
+            <p className="mt-1 whitespace-pre-line leading-6">{completionCriteria}</p>
           </div>
         ) : null}
-        {detail.caution ? (
+        {caution ? (
           <div className="text-amber-800">
             <p className="flex items-center gap-1 text-xs font-semibold"><span aria-hidden="true">!</span> 주의</p>
-            <p className="mt-1 leading-6">{detail.caution}</p>
+            <p className="mt-1 whitespace-pre-line leading-6">{caution}</p>
           </div>
         ) : null}
-        {detail.links?.length ? (
+        {links.length ? (
           <div className="md:col-span-2">
             <p className="text-xs font-semibold text-gray-500">바로가기</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {detail.links.map((link) => (
+              {links.map((link) => (
                 <a key={`${link.label}-${link.url}`} className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700" href={link.url} target="_blank" rel="noreferrer">
                   {linkTypeLabels[link.type] ?? '링크'} · {toUserFacingSourceTitle(link.label)}
                 </a>
@@ -13016,7 +13019,9 @@ function ItemDetailContent({ detail }: { detail?: FlowItemDetail }) {
 }
 
 function DetailPreview({ detail }: { detail?: FlowItemDetail }) {
-  const text = detail?.why ?? detail?.how ?? detail?.caution;
+  const text = [detail?.why, detail?.how, detail?.caution]
+    .map((value) => stripUserFacingInternalLines(value))
+    .find(Boolean);
   if (!text) return null;
   return <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{text}</p>;
 }

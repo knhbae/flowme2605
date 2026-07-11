@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-07-11",
+  "policy": {
+    "routeScope": "published normal-user routes only; catalog_preview and hidden excluded",
+    "sensitiveRiskLevels": ["medium", "medical_sensitive", "financial_sensitive"],
+    "fixedCalendarYearInUserCopy": "forbidden",
+    "volatileNumbers": "manual review",
+    "sourceTraceDataPreserved": true,
+    "sourceTraceVisibleToUser": false
+  },
+  "before": {
+    "normalUserRouteCount": 155,
+    "sensitiveRouteCount": 109,
+    "yearStampedRouteCount": 8,
+    "yearStampedClaimCount": 8
+  },
+  "after": {
+    "normalUserRouteCount": 155,
+    "sensitiveRouteCount": 109,
+    "yearStampedRouteCount": 0,
+    "yearStampedClaimCount": 0,
+    "missingSensitiveSourceCheckedAtCount": 0,
+    "numericAttentionRouteCount": 9,
+    "officialDeadlineOrValidityRouteCount": 7,
+    "explicitHeuristicRatioRouteCount": 2
+  },
+  "correctedSlugs": [
+    "national-scholarship-apply",
+    "housing-subscription-account",
+    "jeonse-guarantee-apply",
+    "job-seeker-allowance-apply",
+    "customs-traveler-declare",
+    "property-local-tax-pay",
+    "childcare-fee-support-apply",
+    "military-exam-prep",
+    "used-car-ownership-transfer",
+    "new-car-7-step"
+  ],
+  "validation": {
+    "semanticClaimStrictAuditPassed": true,
+    "seedFlowTargetedTestsPassed": 58,
+    "userSurfaceGuardrailTargetedTestsPassed": 3,
+    "fullUnitTestsPassed": 399,
+    "targetedE2ePassed": 54,
+    "docsCheckPassed": true,
+    "buildPassed": true,
+    "mobileVisualChecksPassed": 3,
+    "wideVisualChecksPassed": 1,
+    "visualHorizontalOverflowCount": 0,
+    "sourceTraceExpandedDetailHitCount": 0,
+    "fixedEstimateVisibleHitCount": 0,
+    "observedUserSessionCount": 0
+  }
+}

@@ -215,6 +215,16 @@ export function normalizeGuardrailLine(line: string): string {
   return line.replace(/\s+/g, ' ').trim();
 }
 
+export function stripUserFacingInternalLines(text?: string): string | undefined {
+  if (!text) return undefined;
+  const visible = text
+    .split(/\r?\n/u)
+    .filter((line) => !/^\s*(sourceTrace|source trace|원문 근거)\s*[:：]/iu.test(line))
+    .join('\n')
+    .trim();
+  return visible || undefined;
+}
+
 export function isLegacyUrlFirstCandidateStateCopy(value: string): boolean {
   const normalized = normalizeGuardrailLine(value);
   if (!normalized) return false;

@@ -1,0 +1,123 @@
+{
+  "generatedAt": "2026-07-11T10:53:01.604Z",
+  "policy": {
+    "routeScope": "published normal-user routes only; catalog_preview and hidden excluded",
+    "fixedCalendarYearInSensitiveUserCopy": "forbidden",
+    "sourceTitlesAndProvenanceLinks": "excluded from user-copy year scan",
+    "volatileNumbers": "manual review; not automatically invalid",
+    "sourceCheckedAtStillRequired": true
+  },
+  "summary": {
+    "normalUserRouteCount": 155,
+    "sensitiveRouteCount": 109,
+    "yearStampedClaimCount": 0,
+    "yearStampedRouteCount": 0,
+    "numericAttentionRouteCount": 9,
+    "missingSensitiveSourceCheckedAtCount": 0
+  },
+  "yearStampedClaims": [],
+  "numericAttention": [
+    {
+      "slug": "lease-contract-report-deadline",
+      "title": "주택 임대차계약 신고 마감 Flow",
+      "riskLevel": "financial_sensitive",
+      "sourceUrl": "https://rtms.molit.go.kr/main/serviceInfo.do",
+      "sourceCheckedAt": "2026-06-08",
+      "moneyOrRate": [],
+      "deadline": [
+        "RTMS는 임대인과 임차인이 계약 체결일로부터 30일 이내 공동신고하는 구조를 안내하며, 신고대상 기준도 지역과 금액에 따라 달라집니다."
+      ]
+    },
+    {
+      "slug": "passport-renewal-docs",
+      "title": "여권 재발급 준비 Flow",
+      "riskLevel": "medium",
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=12600000001&tp_seq=",
+      "sourceCheckedAt": "2026-05-23",
+      "moneyOrRate": [],
+      "deadline": [
+        "최근 6개월 이내 여권 사진 준비하기",
+        "최근 6개월 이내 여권 사진 준비하기에 필요한 준비 여부를 확인했다."
+      ]
+    },
+    {
+      "slug": "unemployment-benefit-apply",
+      "title": "실업급여(구직급여) 신청 준비 Flow",
+      "riskLevel": "financial_sensitive",
+      "sourceUrl": "https://ei.work24.go.kr/ei/eih/cp/cc/ccEminsrFollow/retrieveCc200Info.do",
+      "sourceCheckedAt": "2026-07-11",
+      "moneyOrRate": [],
+      "deadline": [
+        "이직일 이전 18개월 내 피보험 단위기간 180일 이상이어야 하며, 자발적 이직 등 사유에 따라 수급이 제한될 수 있어 먼저 확인해야 합니다.",
+        "사업주는 근로자 요청 시 10일 이내 이직확인서를 고용센터에 제출해야 합니다. 미발급 시 고용센터에 '이직확인서 발급 요청서'를 제출하세요."
+      ]
+    },
+    {
+      "slug": "first-passport-issue",
+      "title": "여권 신규 발급 준비 Flow",
+      "riskLevel": "medium",
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=2",
+      "sourceCheckedAt": "2026-06-01",
+      "moneyOrRate": [],
+      "deadline": [
+        "외교부 여권안내의 사진 규격을 확인하고 촬영합니다. 권장 해상도 413×531픽셀, 접수일 기준 6개월 이내 촬영본이어야 합니다. AI 편집·필터 적용 사진은 불가합니다."
+      ]
+    },
+    {
+      "slug": "used-car-ownership-transfer",
+      "title": "자동차 이전등록(명의이전) 준비 Flow",
+      "riskLevel": "financial_sensitive",
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?HighCtgCD=A09006&CappBizCD=15000000370",
+      "sourceCheckedAt": "2026-07-11",
+      "moneyOrRate": [],
+      "deadline": [
+        "이전등록 기한(매수일 기준 15일 이내) 확인하기",
+        "이전등록 기한은 매수일로부터 15일 이내입니다. 취득세 신고·납부 기한, 세율, 감면은 차종·용도·지역에 따라 다르므로 위택스와 관할 지자체에서 현재 값을 확인하세요."
+      ]
+    },
+    {
+      "slug": "birth-registration-prep",
+      "title": "출생신고 준비 Flow",
+      "riskLevel": "medium",
+      "sourceUrl": "https://www.gov.kr/portal/onestopSvc/happyBirth",
+      "sourceCheckedAt": "2026-06-01",
+      "moneyOrRate": [],
+      "deadline": [
+        "부모급여는 출생일 포함 60일 이내 신청 시 출생월부터 소급 지급됩니다. 양육·출산 지원은 거주지·가구 조건에 따라 달라 공식 확인이 필요합니다."
+      ]
+    },
+    {
+      "slug": "safe-inheritance-onestop",
+      "title": "안심상속 원스톱 신청 준비 Flow",
+      "riskLevel": "financial_sensitive",
+      "sourceUrl": "https://www.gov.kr/portal/onestopSvc/safeInheritance",
+      "sourceCheckedAt": "2026-06-01",
+      "moneyOrRate": [],
+      "deadline": [
+        "안심상속 원스톱 서비스는 사망일이 속한 달의 말일부터 1년 이내 신청합니다. 신청 자격은 1·2·3순위 상속인 및 대습상속인·후견인이며, 온라인(정부24) 신청은 1·2순위 상속인에 한합니다. 일부 재산은 사망 후 6개월 내 조회가 유리하니 가급적 빨리 신청하세요. 문의: 정부24 콜센터 1588-2188."
+      ]
+    },
+    {
+      "slug": "monthly-household-budget",
+      "title": "월간 가계부 시작 Flow",
+      "riskLevel": "financial_sensitive",
+      "sourceUrl": "https://eknowhow.kr/budgeting-50-30-20-rule/",
+      "sourceCheckedAt": "2026-06-01",
+      "moneyOrRate": [
+        "지출을 고정지출(월세·보험·구독), 변동지출(식비·교통·쇼핑), 금융지출(저축·투자·대출상환) 3가지로 크게 나눠 시작합니다. 분배 기준은 50/30/20 법칙(필수 생활비 50%, 여유 생활비 30%, 저축·투자 20%)을 참고합니다."
+      ],
+      "deadline": []
+    },
+    {
+      "slug": "payday-finance-routine",
+      "title": "월급날 재정 루틴 Flow",
+      "riskLevel": "financial_sensitive",
+      "sourceUrl": "https://toss.im/tossfeed/article/bank-account-divide",
+      "sourceCheckedAt": "2026-07-11",
+      "moneyOrRate": [
+        "예금, 적금, ISA, 연금저축 등 목표 금액을 자동이체 또는 즉시 이체합니다. 토스피드가 제시하는 예시 분배 비율은 생활비 40% / 저축·투자 40% / 비상금 20%입니다(상황에 맞게 조정)."
+      ],
+      "deadline": []
+    }
+  ]
+}

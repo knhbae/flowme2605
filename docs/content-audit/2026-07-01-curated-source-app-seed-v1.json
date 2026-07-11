@@ -2870,7 +2870,7 @@
                   "sourceTrace": "Getcha budget section"
                 }
               ],
-              "memo": "세부: 차량 가격, 옵션 200~500만원, 등록비 7~8%, 보험료 연 100~200만원, 유지비, 용도",
+              "memo": "세부: 차량 가격, 선택 옵션, 등록·보험 예상액, 유지비, 용도별 예산 범위",
               "detail": "",
               "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
               "sourceTrace": "Getcha budget section / Getcha 7-step article / preparation / purchase comparison",

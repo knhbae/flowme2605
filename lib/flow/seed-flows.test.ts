@@ -9,6 +9,8 @@ import {
 import { inferPrimaryDestination } from './destination';
 import { normalizeExecutionModel } from './execution-model';
 import { seedBundles } from './seed-flows';
+import { mergeSourceBackedMyFlowBundles } from './source-backed-my-flow';
+import { findYearStampedSensitiveClaims } from './source-claim-freshness';
 import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
 import {
   classifySourceReachability,
@@ -1238,6 +1240,29 @@ test('published user routes record source freshness while preview library stays 
       `${bundle.flow.slug} missing source_precision`,
     );
   }
+});
+
+test('normal sensitive routes keep year-stamped policy values out of user-facing copy', () => {
+  const published = mergeSourceBackedMyFlowBundles(seedBundles).filter(
+    (bundle) => bundle.flow.status === 'published',
+  );
+  const userRoutes = published.filter((bundle) => {
+    const exposure = normalizeExecutionModel(bundle).exposureStatus;
+    return exposure !== 'catalog_preview' && exposure !== 'hidden';
+  });
+
+  assert.deepEqual(findYearStampedSensitiveClaims(userRoutes), []);
+
+  const sample = userRoutes.find((bundle) => bundle.flow.risk_level !== 'low');
+  assert.ok(sample);
+  const synthetic = {
+    ...sample,
+    flow: {
+      ...sample.flow,
+      warning: '2026년 기준 지원금은 10만원입니다.',
+    },
+  };
+  assert.equal(findYearStampedSensitiveClaims([synthetic]).length, 1);
 });
 
 test('real source-backed channel batch covers every preview channel', () => {
