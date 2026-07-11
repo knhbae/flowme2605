@@ -1,6 +1,12 @@
 import { SourceBackedFlowMapCreatorEditor } from '@/components/flow/SourceBackedFlowMapCreatorEditor';
 import { buildSourceBackedFlowMapPublishPackage } from '@/lib/flow/source-backed-my-flow';
+import { NON_INDEXABLE_ROUTE_ROBOTS } from '@/lib/flow/route-indexing-policy';
 import Link from 'next/link';
+
+export const metadata = {
+  title: 'Flow 제작 검토',
+  robots: NON_INDEXABLE_ROUTE_ROBOTS,
+};
 
 function decodeMapId(map: string) {
   try {

@@ -59,6 +59,16 @@ P22의 자동 구현·검증 가능한 범위는 대부분 닫혔다. 현재 Flo
 
 판정: **기본 공개 표면의 오래된/미검토 콘텐츠 혼입은 자동 QA 기준 개선 완료. 외부 원문 변경을 잡는 주기적 재확인은 계속 필요.**
 
+### 오래된 페이지와 검색 노출 경계
+
+- 미리보기 후보와 원본 검토 수치를 보여주던 `/creators`를 정상 secondary nav에서 제거했다. 공개 creator profile은 public Flow의 byline과 직접 profile link로 유지한다.
+- `/content-flows`, `/creators`, `/ia-compare*`, `/restart/*`, `/flow-lab*`는 direct-only internal/release-preview route로 분리하고 `noindex`를 적용했다.
+- `/my`, `/calendar`, `/flows/new`, `/flows/[id]/edit`, `/flow-maps/[map]/creator`, `/u/my-flow-studio`는 브라우저 저장 상태 또는 개인 편집을 다루므로 `noindex`다.
+- preview creator channel과 존재하지 않는 `/u/*` profile은 `noindex`; 확인된 non-preview public creator profile만 indexable이다.
+- 모바일 390px과 wide 1024px 정상 route에서 `/creators`와 internal/release-preview 링크는 0이다.
+
+판정: **과거 실험·검토 페이지가 정상 nav나 검색 결과에서 현재 제품처럼 보이는 경로를 자동 QA 기준으로 차단했다. 직접 URL 개발 접근은 유지한다.**
+
 ### 저장 후 실행과 수정
 
 - My Flow와 Calendar 기본 상세는 완료 체크와 닫기 중심이다.
@@ -199,6 +209,7 @@ P22-00은 Codex나 Claude가 대신 완료할 수 없다. 실제 사람에게 �
 - [자동 회귀 기준선 복구 감사](./2026-07-11-flowme-automated-regression-recovery-audit-ko.md)
 - [public 공유 save-first 일관성 evidence](./2026-07-11-flowme-public-save-first-consistency-evidence/README.md)
 - [공개 콘텐츠 최신성·기본 노출 evidence](./2026-07-11-flowme-content-freshness-evidence/README.md)
+- [route lifecycle·indexing evidence](./2026-07-11-flowme-route-lifecycle-indexing-evidence/README.md)
 - [P22 독립 제품·UX 평가](./2026-07-11-flowme-longitudinal-user-journey-review-package/codex-assessment.md)
 
 ## 다음 `/goal` 후보

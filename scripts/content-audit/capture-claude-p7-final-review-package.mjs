@@ -2799,7 +2799,7 @@ function getStudioNavDestinationTier(destination) {
   const prototypeTier = getPrototypeRouteTier(pathname);
   if (prototypeTier) return prototypeTier;
   if (/source-backed-manual-registration/iu.test(href)) return 'internal-manual-registration';
-  if (pathname.startsWith('/content-flows') || pathname.startsWith('/ia-compare')) return 'internal-review';
+  if (pathname.startsWith('/content-flows') || pathname.startsWith('/creators') || pathname.startsWith('/ia-compare')) return 'internal-review';
   if (pathname.startsWith('/u/')) return 'creator-profile';
   if (pathname.startsWith('/flows/new') || pathname.startsWith('/flows/') && pathname.endsWith('/edit')) return 'creator-tool';
   if (pathname.startsWith('/')) return 'normal-user-route';

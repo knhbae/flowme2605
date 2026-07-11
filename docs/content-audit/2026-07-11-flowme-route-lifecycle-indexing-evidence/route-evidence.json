@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-07-11",
+  "policy": {
+    "sourceOfTruth": "lib/flow/route-indexing-policy.ts",
+    "publicDiscoveryIndexable": true,
+    "personalWorkspaceNoindex": true,
+    "creatorWorkspaceNoindex": true,
+    "releasePreviewNoindex": true,
+    "internalReviewNoindex": true,
+    "internalConsoleNoindex": true,
+    "previewCreatorProfileNoindex": true,
+    "unknownCreatorProfileNoindex": true
+  },
+  "navigation": {
+    "viewports": [390, 1024],
+    "normalRouteCount": 6,
+    "screenshots": [
+      "screenshots/01-home-secondary-menu-mobile.png",
+      "screenshots/02-home-secondary-menu-wide.png"
+    ],
+    "creatorPreviewDirectoryLinkCount": 0,
+    "internalReviewLinkCount": 0,
+    "releasePreviewLinkCount": 0,
+    "creatorReviewLinkCount": 0
+  },
+  "indexing": {
+    "noindexRouteCount": 14,
+    "noindexRoutePassCount": 14,
+    "publicDiscoverySampleCount": 5,
+    "publicDiscoveryIndexablePassCount": 5,
+    "verifiedPublicCreatorIndexable": true,
+    "previewCreatorNoindex": true,
+    "unknownCreatorNoindex": true
+  },
+  "validation": {
+    "routePolicyUnitTestsPassed": 33,
+    "fullUnitTestsPassed": 396,
+    "routeLifecycleTargetedE2ePassed": 2,
+    "buildPassed": true,
+    "observedUserSessionCount": 0
+  }
+}

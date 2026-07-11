@@ -209,7 +209,8 @@ test('home presents FLOW as an executable content platform', async ({ page }) =>
   await expect(page.getByRole('link', { name: '내 Flow', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Flow Lab' })).toHaveCount(0);
   await page.getByLabel('보조 메뉴 열기').click();
-  await expect(page.getByRole('link', { name: /크리에이터 보기/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Flow 만들기' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /크리에이터 보기/ })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '콘텐츠를 일정과 할 일로 저장' })).toBeVisible();
   await expect(page.getByText('서비스 구조')).toHaveCount(0);
   await expect(page.getByText('짧은 단일 Flow')).toHaveCount(0);

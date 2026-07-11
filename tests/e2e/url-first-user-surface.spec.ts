@@ -508,6 +508,81 @@ test('URL-first resolved candidate cards hide legacy state-machine wording', asy
   await expectCleanUrlFirstUserSurface(candidateCard);
 });
 
+test('old review and stateful workspace routes stay out of indexing and public navigation', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+
+  const normalRoutes = [
+    '/',
+    '/flows',
+    '/f/vehicle-inspection-prep',
+    '/flow-maps/moving-d30',
+    '/my',
+    '/calendar',
+  ];
+  const oldOrInternalLinkSelector = [
+    'a[href="/creators"]',
+    'a[href="/content-flows"]',
+    'a[href^="/ia-compare"]',
+    'a[href^="/restart/"]',
+    'a[href^="/flow-maps/"][href$="/creator"]',
+  ].join(', ');
+
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1024, height: 768 },
+  ]) {
+    await page.setViewportSize(viewport);
+    for (const route of normalRoutes) {
+      await page.goto(route);
+      await expect(page.locator(oldOrInternalLinkSelector)).toHaveCount(0);
+    }
+    await page.goto('/');
+    const secondaryMenu = page.getByTestId('platform-nav');
+    await secondaryMenu.locator('summary').click();
+    await expect(secondaryMenu.getByRole('link', { name: 'Flow 만들기' })).toBeVisible();
+    await expect(secondaryMenu.getByRole('link', { name: '크리에이터 보기' })).toHaveCount(0);
+    await expectNoHorizontalOverflow(page);
+  }
+
+  const noindexRoutes = [
+    '/my',
+    '/calendar',
+    '/flows/new',
+    '/flows/not-saved/edit',
+    '/flow-maps/moving-d30/creator',
+    '/u/my-flow-studio',
+    '/u/samsung-service',
+    '/u/not-a-real-profile',
+    '/creators',
+    '/content-flows',
+    '/ia-compare',
+    '/ia-compare/b',
+    '/restart/moving-d30',
+    '/flow-lab',
+  ];
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of noindexRoutes) {
+    await page.goto(route);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+  }
+
+  for (const route of [
+    '/',
+    '/flows',
+    '/f/vehicle-inspection-prep',
+    '/flow-maps/moving-d30',
+    '/u/flow-curation-team',
+  ]) {
+    await page.goto(route);
+    const robotsMeta = page.locator('meta[name="robots"]');
+    const robots = (await robotsMeta.count()) > 0 ? await robotsMeta.getAttribute('content') : '';
+    expect(robots ?? '').not.toMatch(/noindex/i);
+  }
+});
+
 test('URL-first lab stays prototype-gated and absent from user navigation', async ({ page }) => {
   test.setTimeout(60_000);
 

@@ -1,4 +1,5 @@
 import { CreatorProfile } from '@/components/flow/AppClient';
+import { NON_INDEXABLE_ROUTE_ROBOTS } from '@/lib/flow/route-indexing-policy';
 import { findVirtualUserBySlug } from '@/lib/flow/users';
 import type { Metadata } from 'next';
 
@@ -20,17 +21,17 @@ export async function generateMetadata({ params }: { params: Promise<{ creator: 
   const slug = decodeCreatorParam(creator);
   const profile = findVirtualUserBySlug(slug);
   const isCurrentUserStudio = slug === 'my-flow-studio' || Boolean(profile?.is_current_user);
+  const isIndexablePublicProfile = Boolean(profile) && !isCurrentUserStudio && !profile?.is_preview_channel;
 
   return {
     title: `${profile?.name ?? '제작자'} | FlowMe`,
-    robots: isCurrentUserStudio
+    robots: isIndexablePublicProfile
       ? {
-          index: false,
-          follow: false,
-        }
-      : {
           index: true,
           follow: true,
+        }
+      : {
+          ...NON_INDEXABLE_ROUTE_ROBOTS,
         },
   };
 }

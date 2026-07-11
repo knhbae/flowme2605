@@ -197,7 +197,7 @@ export function getPrototypeRouteTierPolicy(tier: PrototypeRouteTier): Prototype
       tier,
       label: '출시 전 미리보기',
       allowInternalDisplayGateHits: false,
-      requiresNoindex: false,
+      requiresNoindex: true,
       requiresNoUserNavLinks: true,
     };
   }

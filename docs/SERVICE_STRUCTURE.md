@@ -30,7 +30,7 @@ If a PR does not update this file, the PR history entry should say why the servi
 | `/my` | User's saved Flow execution hub. Today/next/overdue actions come before inventory; detail owns memo/source/export regeneration, including personal-copy Step memo/checklist/sheet-row and dated `.ics` output. URL-customized starts appear as quiet personal saved copies with the personal title, included Steps in the default execution list, excluded Steps separated from active execution, and original map/source traceability retained. Personal copies can open a small settings adjustment for saved name, start date, and Step include/exclude only. Source-backed map updates may refresh current source metadata, but they must not overwrite the personal title, start date, included/excluded Step choices, or local item state. Dated execution is also exposed through `/calendar`. | `MyFlows` in `components/flow/AppClient.tsx` | `storage`, `source-backed-my-flow`, `my-flow-step-export`, `export`, `artifact-fields` |
 | `/flow-maps/[map]` | Source-backed public save route. Leads with title, input-to-result promise, quiet result chips, required input, first action preview, and save into My Flow execution; source/detail stays in supporting areas. | `SourceBackedFlowMapPublicPage` in `components/flow/SourceBackedFlowMapPage.tsx` | `source-backed-my-flow`, `storage` through save action |
 | `/flow-maps/[map]/creator` | Creator-side publish review and Step contract editing route. | `SourceBackedFlowMapCreatorEditor` | `source-backed-my-flow` |
-| `/creators` | Creator directory. | `CreatorDirectory` in `components/flow/AppClient.tsx` | `creator-channel-preview`, `users` |
+| `/creators` | Internal creator-supply preview directory; direct/noindex until verified public supply is sufficient. | `CreatorDirectory` in `components/flow/AppClient.tsx` | `creator-channel-preview`, `users` |
 | `/u/[creator]` | Creator profile/channel surface. Public profiles open with checked real-source or representative content only; review candidates and generated samples remain available through explicit filters instead of mixing into the default library. `/u/my-flow-studio` keeps its personal all-content/draft shelf behavior. | `CreatorProfile` in `components/flow/AppClient.tsx` | `creator-channel-preview`, `users`, `execution-model`, `source-fit` |
 | `/content-flows` | Internal Korean content conversion and review workbench. Not a public service surface unless promoted. | `KoreanFlowContentStudio` | `korean-flow-content-*`, `flow-content-coverage-axes`, `app/api/content-flow-review` |
 | `/flow-lab` | Internal content QA and review lab. | `ContentLab` | `content-lab`, `content-lifecycle`, `source-review-priority`, `natural-artifact-audit`, `source-fit` |
@@ -52,7 +52,7 @@ This is the user-facing sitemap rule for service-frame work. The route table abo
 | P1 | Understand the service promise | `홈` | `/` | Primary nav item, but not a dense catalog | Home should frame the product and route users to Flow finding or My Flow. It should not become a full content lab. |
 | P1 | Inspect a public Flow before saving | Flow title / `저장 전 보기` / `바로 시작` | `/flow-maps/[map]`, `/f/[slug]` | Deep link from catalog/home/card | These are content detail pages, not global tabs. |
 | P2 | Create from my own content | `만들기` or `제작자` | `/flows/new`, future creator publish path | Secondary action, not always in bottom tabs | Creation is important for the platform, but early user tests should not let it compete with browse and run. |
-| P2 | Browse creators/channels | `제작자` / `채널` | `/creators`, `/u/[creator]` | Secondary nav or menu item | Useful when creator supply is strong. Do not promote ahead of representative Flow quality. |
+| P2 | Browse creators/channels | creator byline / public profile | `/u/[creator]` | Contextual byline or direct profile link | Public profiles remain reachable from their content. `/creators` stays an internal review directory until verified public supply is sufficient. |
 | Internal | Review and convert source content | `콘텐츠 검토`, `Flow Lab` | `/content-flows`, `/flow-lab` | Hidden from public nav | These are planning/QA surfaces and should not appear in the normal service frame. |
 
 ### Recommended Service Frame
@@ -60,7 +60,7 @@ This is the user-facing sitemap rule for service-frame work. The route table abo
 Mobile should use a simple app-like frame:
 
 - Bottom or top primary tabs: `홈`, `Flow 찾기`, `캘린더`, `내 Flow`.
-- Hamburger or secondary menu: `만들기`, `제작자`, `Flow Lab`, `콘텐츠 검토`, docs/debug links.
+- Secondary menu: `만들기`. Public creator profiles are reached from creator bylines; `/creators`, Flow Lab, content review, and docs/debug routes stay out of the normal frame.
 - Keep `캘린더` as a global primary tab. It may reuse the same My Flow calendar component, but the entry point should feel like a schedule-first execution surface rather than an inventory view.
 - Detail pages should keep the same frame but highlight their owning section, except for share-entry public single Flow pages.
   - `/flow-maps/[map]` belongs under `Flow 찾기`.
@@ -84,7 +84,7 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 
 ### Current Navigation Gaps To Resolve
 
-- The service frame now uses primary `홈 / Flow 찾기 / 캘린더 / 내 Flow` navigation, with creation and creator browsing kept in a secondary menu.
+- The service frame now uses primary `홈 / Flow 찾기 / 캘린더 / 내 Flow` navigation, with creation kept as a secondary action. Creator browsing is contextual through verified content bylines rather than the preview directory.
 - Home shows the service promise, one primary URL/memo-to-Flow entry into `/flows`, and a small set of representative starts; it should not become a second full catalog.
 - `/flows` is the catalog. Current exposure is one integrated content catalog with the existing 2 representative maps, 9 source-backed curated maps, and 1 single Flow baseline in the same card grid. It should not carry a duplicate persistent `내 Flow 보기` CTA that competes with the global bottom tab, except in contextual post-save or empty-state moments.
 - `/flows` now distinguishes multi-Flow map candidates and one-Flow candidates inside a single integrated catalog, not by separate curated-source/seed or one-off sections. The catalog has a plain search field, quick situation chips, and compact decision-first cards that lead with an input-to-result promise, then one `먼저 할 일` preview. Category, status, scale, and source are quiet one-line metadata rather than heavy chips. Catalog card controls use one strong `저장 전 보기` action with quieter `바로 시작` and `원문` links. It still needs real usage/trust signals once account-backed use exists.
@@ -105,7 +105,7 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 - Source-backed public Flow Map pages should show the result promise, required input, save action, and first action preview before the source section. Full checklist plus memo/source detail stay behind expanders so users can scan the map before saving without reading every source row at once.
 - Public single Flow detail pages should use the share-entry shell before save and show the result promise, required input or no-input state, first action, and one primary save CTA before source context. Source title, conversion note, memo, and warning context remain available as `원문과 근거` or supporting sections instead of competing with the first action.
 - Export-first public Flow pages should avoid duplicate mobile save pressure. The sticky mobile bar may open a single export sheet, while the inline artifact area keeps save, calendar, sheet, memo, and checklist actions. User-facing export labels should stay outcome-first: `캘린더 파일 받기`, `시트로 받기`, `메모로 복사`, and `체크리스트 복사`.
-- Creator and internal review surfaces need secondary placement until the public creator workflow is ready.
+- Creator editing remains secondary. The preview creator directory and internal review surfaces are direct/noindex until the public creator workflow and verified supply are ready.
 
 - `/my` should treat URL-customized starts as personal saved copies. The active execution list follows the user's included Steps, excluded Steps stay out of the normal run path or in a separate excluded section, Step detail exports use the personal saved title/current date/current Step values for memo/checklist/sheet-row and dated `.ics` output, and map update apply must preserve the personal title, start date, selected Step ids, excluded Step ids, and local item state.
 - `/my` may expose `설정 조정` only for personal saved copies. This adjustment can change the personal saved name, start date, and included/excluded Step set, but cannot edit original Step content, create versions, or write to external calendars/todos.
@@ -135,6 +135,7 @@ Use this as the next product-route baseline until user evidence reopens it.
 
 ### Do Not Expose As Primary Nav Yet
 
+- `/creators`
 - `/content-flows`
 - `/flow-lab`
 - `/flow-lab/url-first-p0`
@@ -145,6 +146,14 @@ Use this as the next product-route baseline until user evidence reopens it.
 
 These may remain directly accessible for testing or development, but they should not shape the normal user's mental model.
 Prototype or restart routes must pass the same display gate before promotion: no raw ISO dates in rendered user text, no duplicated export CTA sets, and no internal review/source-backed labels on the visible surface.
+
+### Route Indexing Policy
+
+- Public discovery routes such as `/`, `/flows`, `/f/[slug]`, public `/flow-maps/[map]`, and verified public `/u/[creator]` may be indexed.
+- Stateful personal routes `/my` and `/calendar` are `noindex`; their useful content depends on the current browser's saved state.
+- Creator workspaces `/flows/new`, `/flows/[id]/edit`, `/flow-maps/[map]/creator`, and `/u/my-flow-studio` are `noindex` even when reachable through a secondary action.
+- `/restart/*`, `/content-flows`, `/creators`, `/ia-compare*`, and `/flow-lab*` are direct-only release-preview or internal routes and must be `noindex` with no normal-route links.
+- Preview creator channels and unknown `/u/*` slugs are `noindex`. Only known, non-preview public creator profiles may opt into indexing.
 
 ## Architecture Map
 
@@ -168,7 +177,7 @@ Prototype or restart routes must pass the same display gate before promotion: no
 - Public routes should stay user-facing and should not expose internal review language unless the user needs it to act safely.
 - Creator routes may show publish readiness, source/risk, and Step contract controls, but they should not become the user's saved execution workspace.
 - My Flow owns saved user state, edited Step details, and regenerated exports.
-- Research surfaces under `/content-flows` and `/flow-lab` remain internal until a spec or decision promotes a behavior into the service tree.
+- Research surfaces under `/content-flows`, `/creators`, `/ia-compare`, and `/flow-lab` remain internal until a spec or decision promotes a behavior into the service tree.
 - Shared domain changes belong in `lib/flow/` tests first. UI changes should consume those contracts rather than duplicating conversion logic in components.
 - Curated source app handoff bundles enter the canonical `seedBundles` path through `seed-flows.ts`. `source-backed-my-flow.ts` keeps Flow Map, publish-package, and saved-map metadata for those same child Flow slugs, and its runtime merge helper should stay a dedupe fallback rather than the only seed attachment path.
 

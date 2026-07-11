@@ -5,6 +5,10 @@ import test from 'node:test';
 import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
 import { seedBundles } from './seed-flows';
 import {
+  getFlowRouteIndexingTier,
+  routeRequiresNoindex,
+} from './route-indexing-policy';
+import {
   getCuratedSourceAppSeedFlowMaps,
   getSourceBackedHomepageFlowMaps,
 } from './source-backed-my-flow';
@@ -246,7 +250,7 @@ test('prototype route tier policy separates release preview from internal consol
     tier: 'release-preview',
     label: '출시 전 미리보기',
     allowInternalDisplayGateHits: false,
-    requiresNoindex: false,
+    requiresNoindex: true,
     requiresNoUserNavLinks: true,
   });
   assert.deepEqual(getPrototypeRouteTierPolicy('internal-console'), {
@@ -304,6 +308,27 @@ test('capture script exposes URL-first user-copy tone markers', () => {
   assert.ok(script.includes('이미 만든 준비가 있는지 먼저 찾아봤어요'));
   assert.ok(script.includes('AI 자동 생성 없이 먼저 찾아봤어요'));
   assert.ok(script.includes('내가 쓴 제목·메모'));
+});
+
+test('route indexing policy keeps public discovery separate from stateful and old review pages', () => {
+  assert.equal(getFlowRouteIndexingTier('/'), 'public-discovery');
+  assert.equal(getFlowRouteIndexingTier('/flows'), 'public-discovery');
+  assert.equal(getFlowRouteIndexingTier('/f/vehicle-inspection-prep'), 'public-discovery');
+  assert.equal(getFlowRouteIndexingTier('/u/flow-curation-team'), 'public-discovery');
+  assert.equal(getFlowRouteIndexingTier('/my'), 'personal-workspace');
+  assert.equal(getFlowRouteIndexingTier('/calendar?date=2026-07-11'), 'personal-workspace');
+  assert.equal(getFlowRouteIndexingTier('/flows/new'), 'creator-workspace');
+  assert.equal(getFlowRouteIndexingTier('/flows/draft-id/edit'), 'creator-workspace');
+  assert.equal(getFlowRouteIndexingTier('/flow-maps/moving-d30/creator'), 'creator-workspace');
+  assert.equal(getFlowRouteIndexingTier('/u/my-flow-studio'), 'creator-workspace');
+  assert.equal(getFlowRouteIndexingTier('/restart/moving-d30'), 'release-preview');
+  assert.equal(getFlowRouteIndexingTier('/content-flows'), 'internal-review');
+  assert.equal(getFlowRouteIndexingTier('/creators'), 'internal-review');
+  assert.equal(getFlowRouteIndexingTier('/ia-compare/b'), 'internal-review');
+  assert.equal(getFlowRouteIndexingTier('/flow-lab'), 'internal-console');
+  assert.equal(routeRequiresNoindex('/flows'), false);
+  assert.equal(routeRequiresNoindex('/creators'), true);
+  assert.equal(routeRequiresNoindex('/restart/moving-d30'), true);
 });
 
 test('capture script exposes URL-first miss draft gate markers', () => {

@@ -31,12 +31,6 @@ const secondaryNavItems: NavItem[] = [
     description: '내 콘텐츠를 실행형 Flow로 정리',
     match: (path) => path === '/flows/new',
   },
-  {
-    href: '/creators',
-    label: '크리에이터 보기',
-    description: '공개된 콘텐츠 제작자 둘러보기',
-    match: (path) => path === '/creators' || path.startsWith('/u/'),
-  },
 ];
 
 function primaryLinkClass(active: boolean) {
