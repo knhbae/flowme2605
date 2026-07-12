@@ -61,6 +61,7 @@ import {
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedFlowMapReviewedVersion,
   getSourceBackedFlowMapDateAnchorCopy,
+  getSourceBackedFlowMapQualityDecision,
   getPublicCatalogSourceBackedFlowMaps,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedMyFlowMapForBundle,
@@ -1551,7 +1552,13 @@ function FlowUrlLookupResult({
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
   onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
 }) {
-  const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow ? '저장 전 보기' : result.routeHref ? '미리보기 열기' : '초안 요청 가능';
+  const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow
+    ? '저장 전 보기'
+    : result.saveMode === 'blocked'
+      ? '최신 내용 확인'
+      : result.routeHref
+        ? '미리보기 열기'
+        : '초안 요청 가능';
   const exportModes = result.exportModes.map((mode) => urlFirstExportModeLabels[mode]);
   const sourceBackedStartPackage = useMemo(
     () => (result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined),
@@ -1583,7 +1590,7 @@ function FlowUrlLookupResult({
   const [candidateMemo, setCandidateMemo] = useState('');
   const [candidateFeedback, setCandidateFeedback] = useState('');
   const canStart = result.status === 'hit' && result.canSaveToMyFlow;
-  const canRequestSupplyCandidate = result.status === 'miss' || result.status === 'needs_review';
+  const canRequestSupplyCandidate = result.status === 'miss' || (result.status === 'needs_review' && result.saveMode !== 'blocked');
 
   useEffect(() => {
     setStartDate('');
@@ -1685,9 +1692,13 @@ function FlowUrlLookupResult({
 
       {result.status !== 'miss' && result.status !== 'memo_draft' ? <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-[#6E6B64]">옮길 수 있는 형태</p>
+          <p className="text-xs font-semibold text-[#6E6B64]">
+            {result.saveMode === 'blocked' ? '현재 확인할 수 있는 것' : '옮길 수 있는 형태'}
+          </p>
           <div className="mt-1 flex flex-wrap gap-1.5">
-            {exportModes.length > 0 ? (
+            {result.saveMode === 'blocked' ? (
+              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">공식 원문</span>
+            ) : exportModes.length > 0 ? (
               exportModes.map((label) => (
                 <span key={label} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF]">
                   {label}
@@ -1698,6 +1709,8 @@ function FlowUrlLookupResult({
             )}
             {result.canSaveToMyFlow ? (
               <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">내 Flow</span>
+            ) : result.saveMode === 'blocked' ? (
+              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">새 저장 중지</span>
             ) : (
               <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">저장 대기</span>
             )}
@@ -3360,6 +3373,7 @@ type MyFlowMapUpdateNotice = {
   savedRecord?: SourceBackedFlowMapPersistenceRecord;
   currentRecord?: SourceBackedFlowMapPersistenceRecord;
   versionReview?: FlowVersionReview;
+  executionHeld?: boolean;
 };
 
 type MyFlowMapUpdateComparisonRow = {
@@ -3467,15 +3481,26 @@ function getMyFlowMapUpdateNotice(
   storedRecord?: SourceBackedFlowMapPersistenceRecord,
 ): MyFlowMapUpdateNotice | undefined {
   const sourceSnapshot = toSourceBackedSavedSnapshot(snapshot);
+  const qualityDecision = getSourceBackedFlowMapQualityDecision(snapshot.mapId);
+  const executionHeld = qualityDecision.publicExecutionEnabled === false;
   const currentSnapshot = buildSourceBackedFlowMapSavedSnapshotUpdate(sourceSnapshot, {
     savedAt: snapshot.savedAt,
     ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
   });
   const assessment = assessSourceBackedFlowMapUpdate(sourceSnapshot);
-  if (assessment.status === 'up_to_date') return undefined;
-  const affectedCount = Math.max(assessment.affectedFlows.length, snapshot.flowSlugs.length);
-  const reasons = assessment.reasons.map(formatMyFlowMapUpdateReason);
-  const comparisonRows = buildMyFlowMapUpdateComparisonRows(sourceSnapshot, currentSnapshot);
+  if (assessment.status === 'up_to_date' && !executionHeld) return undefined;
+  const affectedFlowSlugs = assessment.affectedFlows.length > 0 ? assessment.affectedFlows : snapshot.flowSlugs;
+  const affectedCount = Math.max(affectedFlowSlugs.length, snapshot.flowSlugs.length);
+  const reasons = executionHeld
+    ? [
+        '공식 일정이 최신인지 다시 확인 중입니다.',
+        '저장한 기록은 유지되지만 실행 전 공식 원문을 확인해 주세요.',
+        ...assessment.reasons.map(formatMyFlowMapUpdateReason),
+      ]
+    : assessment.reasons.map(formatMyFlowMapUpdateReason);
+  const comparisonRows = executionHeld && assessment.status === 'up_to_date'
+    ? []
+    : buildMyFlowMapUpdateComparisonRows(sourceSnapshot, currentSnapshot);
   const currentRecord = buildSourceBackedFlowMapPersistenceRecord(snapshot.mapId, {
     savedAt: snapshot.savedAt,
     ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
@@ -3516,6 +3541,27 @@ function getMyFlowMapUpdateNotice(
     };
   }
 
+  if (executionHeld) {
+    return {
+      mapId: snapshot.mapId,
+      title: snapshot.title,
+      label: '최신 일정 확인 필요',
+      tone: 'amber',
+      status: 'review_before_apply',
+      canApplyAutomatically: false,
+      reasons,
+      affectedCount,
+      affectedFlowSlugs,
+      comparisonRows,
+      savedVersion: assessment.savedVersion,
+      ...(assessment.currentVersion ? { currentVersion: assessment.currentVersion } : {}),
+      ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
+      ...(savedRecord ? { savedRecord } : {}),
+      ...(currentRecord ? { currentRecord } : {}),
+      executionHeld: true,
+    };
+  }
+
   return {
     mapId: snapshot.mapId,
     title: snapshot.title,
@@ -3551,6 +3597,7 @@ function getFlowVersionReviewItemChoices(
       ['exclude', '이번에는 제외', '새 내용은 확인했지만 이번 실행에는 넣지 않아요.'],
     ];
   }
+
   if (item.kind === 'removed') {
     return [
       ['keep_removed', '내 할 일로 유지', '원문에서 빠져도 내 사본에는 그대로 남겨요.'],
@@ -4478,7 +4525,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   );
   const myFlowMapUpdateNotices = savedFlowMapSnapshots.flatMap((snapshot) => {
     const notice = getMyFlowMapUpdateNotice(snapshot, savedFlowMapPersistenceById[snapshot.mapId]);
-    if (notice && isMyFlowMapUpdateDismissed(notice, myFlowDismissedMapUpdates)) return [];
+    if (notice && !notice.executionHeld && isMyFlowMapUpdateDismissed(notice, myFlowDismissedMapUpdates)) return [];
     return notice ? [notice] : [];
   });
   const postSaveMap = savedMapIdParam ? savedFlowMapSnapshots.find((snapshot) => snapshot.mapId === savedMapIdParam) : undefined;
@@ -8896,13 +8943,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const getMyFlowUpdateRowTitle = (slug: string) => toContentDisplayTitle(myFlowBundles.find((entry) => entry.flow.slug === slug)?.flow.title ?? slug);
 
   const renderMyFlowMapUpdateNotices = () => {
+    const allExecutionHeld = myFlowMapUpdateNotices.every((notice) => notice.executionHeld);
     return myFlowMapUpdateNotices.length > 0 ? (
       <section data-testid="my-flow-map-update-review" className="rounded-lg border border-amber-200 bg-amber-50/70 p-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold text-amber-800">업데이트 확인</p>
-            <h4 className="text-base font-semibold text-amber-950">저장한 콘텐츠에 다시 볼 내용이 있습니다</h4>
-            <p className="mt-1 text-sm font-medium text-amber-900">기존 항목은 그대로 두고, 원문이나 일정 변경 가능성만 따로 확인합니다.</p>
+            <p className="text-xs font-semibold text-amber-800">{allExecutionHeld ? '공식 일정 재확인' : '업데이트 확인'}</p>
+            <h4 className="text-base font-semibold text-amber-950">
+              {allExecutionHeld ? '실행 전 최신 공식 내용을 확인해 주세요' : '저장한 콘텐츠에 다시 볼 내용이 있습니다'}
+            </h4>
+            <p className="mt-1 text-sm font-medium text-amber-900">
+              {allExecutionHeld
+                ? '저장한 기록은 그대로 남지만, 일정이 달라질 수 있어 공식 원문 확인이 필요합니다.'
+                : '기존 항목은 그대로 두고, 원문이나 일정 변경 가능성만 따로 확인합니다.'}
+            </p>
           </div>
           <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">{myFlowMapUpdateNotices.length}개</span>
         </div>
@@ -8927,39 +8981,47 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     </p>
                   </div>
                   <div className="grid w-full grid-cols-2 gap-1.5 sm:w-auto sm:flex sm:shrink-0 sm:flex-wrap">
-                    <button
-                      type="button"
-                      data-testid="my-flow-map-update-toggle"
-                      aria-expanded={expanded}
-                      className="inline-flex min-h-8 items-center justify-center rounded-md border border-blue-100 bg-blue-50 px-2.5 text-xs font-semibold text-blue-800 hover:border-blue-300"
-                      onClick={() => setMyFlowExpandedMapUpdateId(expanded ? '' : notice.mapId)}
-                    >
-                      {expanded ? '변경 접기' : '변경 보기'}
-                    </button>
-                    <button
-                      type="button"
-                      data-testid="my-flow-map-update-apply"
-                      className="inline-flex min-h-8 items-center justify-center rounded-md border border-emerald-100 bg-emerald-50 px-2.5 text-xs font-semibold text-emerald-800 hover:border-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={notice.status === 'map_missing' || !completedFlowAvailable}
-                      onClick={() => openMyFlowMapUpdateReview(notice)}
-                    >
-                      {completedFlowAvailable ? '완료 Flow에서 검토' : '완료 후 검토'}
-                    </button>
+                    {!notice.executionHeld ? (
+                      <>
+                        <button
+                          type="button"
+                          data-testid="my-flow-map-update-toggle"
+                          aria-expanded={expanded}
+                          className="inline-flex min-h-8 items-center justify-center rounded-md border border-blue-100 bg-blue-50 px-2.5 text-xs font-semibold text-blue-800 hover:border-blue-300"
+                          onClick={() => setMyFlowExpandedMapUpdateId(expanded ? '' : notice.mapId)}
+                        >
+                          {expanded ? '변경 접기' : '변경 보기'}
+                        </button>
+                        <button
+                          type="button"
+                          data-testid="my-flow-map-update-apply"
+                          className="inline-flex min-h-8 items-center justify-center rounded-md border border-emerald-100 bg-emerald-50 px-2.5 text-xs font-semibold text-emerald-800 hover:border-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+                          disabled={notice.status === 'map_missing' || !completedFlowAvailable}
+                          onClick={() => openMyFlowMapUpdateReview(notice)}
+                        >
+                          {completedFlowAvailable ? '완료 Flow에서 검토' : '완료 후 검토'}
+                        </button>
+                      </>
+                    ) : null}
                     <Link className="inline-flex min-h-8 items-center justify-center rounded-md border border-amber-100 bg-amber-50 px-2.5 text-xs font-semibold text-amber-900 hover:border-amber-300" href={`/flow-maps/${notice.mapId}`}>
-                      전체 보기
+                      {notice.executionHeld ? '공식 내용 확인' : '전체 보기'}
                     </Link>
-                    <button
-                      type="button"
-                      data-testid="my-flow-map-update-dismiss"
-                      className="inline-flex min-h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-600 hover:border-slate-300"
-                      onClick={() => dismissMyFlowMapUpdateNotice(notice)}
-                    >
-                      지금은 숨기기
-                    </button>
+                    {!notice.executionHeld ? (
+                      <button
+                        type="button"
+                        data-testid="my-flow-map-update-dismiss"
+                        className="inline-flex min-h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-600 hover:border-slate-300"
+                        onClick={() => dismissMyFlowMapUpdateNotice(notice)}
+                      >
+                        지금은 숨기기
+                      </button>
+                    ) : null}
                   </div>
                 </div>
                 <p className="mt-2 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900">
-                  자동 반영 안 함. 지금 실행은 저장한 내용 그대로 두고, 새 내용은 다음 실행에서만 선택합니다.
+                  {notice.executionHeld
+                    ? '저장한 내용은 자동으로 바꾸지 않습니다. 실행 전 공식 원문에서 최신 일정을 확인해 주세요.'
+                    : '자동 반영 안 함. 지금 실행은 저장한 내용 그대로 두고, 새 내용은 다음 실행에서만 선택합니다.'}
                 </p>
                 {notice.reasons.length > 0 ? (
                   <ul className="mt-2 grid gap-1 text-xs font-medium text-amber-900">
@@ -8968,7 +9030,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     ))}
                   </ul>
                 ) : null}
-                {expanded ? (
+                {expanded && !notice.executionHeld ? (
                   <div data-testid="my-flow-map-update-comparison" className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3">
                     <div className="flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                       <span className="rounded bg-white px-2 py-1 ring-1 ring-slate-200">저장 {notice.savedVersion}</span>

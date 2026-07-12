@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-07-12T05:06:46.248Z",
+  "evidenceSource": "current local production build",
+  "summary": {
+    "healthReviewHoldRouteCount": 2,
+    "healthReviewHoldNoindexCount": 2,
+    "healthReviewHoldSaveControlCount": 0,
+    "healthReviewHoldStaleScheduleRowCount": 0,
+    "healthReviewHoldSourceLinkCount": 2,
+    "healthReviewHoldUrlLookupHitCount": 0,
+    "healthReviewHoldUrlLookupNeedsReviewCount": 2,
+    "healthReviewHoldUrlLookupStartPanelCount": 0,
+    "healthReviewHoldUrlLookupDraftBypassCount": 0,
+    "healthReviewHoldVisibleMarkdownCount": 0,
+    "healthReviewHoldDirectRouteAccessibleCount": 2,
+    "healthReviewHoldPublicExecutionEnabledCount": 0,
+    "existingSavedHealthFlowRowCount": 2,
+    "existingSavedHealthSourceWarningCount": 1,
+    "existingSavedHealthOfficialReviewLinkCount": 1,
+    "horizontalOverflowCount": 0,
+    "normalRepresentativeSavePathPreserved": true
+  },
+  "routes": [
+    {
+      "route": "/flow-maps/baby-health-schedule",
+      "viewport": "390x844",
+      "tier": "review-hold",
+      "reviewHold": true,
+      "saveControlCount": 0,
+      "scheduleRowCount": 0,
+      "sourceLinkCount": 1,
+      "robots": "noindex, nofollow",
+      "horizontalOverflow": false
+    },
+    {
+      "route": "/flow-maps/curated-child-vaccination-schedule",
+      "viewport": "390x844",
+      "tier": "review-hold",
+      "reviewHold": true,
+      "saveControlCount": 0,
+      "scheduleRowCount": 0,
+      "sourceLinkCount": 1,
+      "robots": "noindex, nofollow",
+      "horizontalOverflow": false
+    },
+    {
+      "route": "/flow-maps/baby-health-schedule",
+      "viewport": "1024x900",
+      "tier": "review-hold",
+      "reviewHold": true,
+      "saveControlCount": 0,
+      "scheduleRowCount": 0,
+      "sourceLinkCount": 1,
+      "robots": "noindex, nofollow",
+      "horizontalOverflow": false
+    },
+    {
+      "route": "/flow-maps/moving-d30",
+      "viewport": "1024x900",
+      "tier": "normal-representative",
+      "reviewHold": false,
+      "savePathVisible": true,
+      "robots": "index, follow",
+      "horizontalOverflow": false
+    }
+  ],
+  "urlFirst": [
+    {
+      "sourceKind": "official-baby-health",
+      "lookupStatus": "needs_review",
+      "saveMode": "blocked",
+      "canSave": false,
+      "canExport": false,
+      "startPanelCount": 0,
+      "supplyRequestCount": 0,
+      "routeHref": "/flow-maps/baby-health-schedule"
+    },
+    {
+      "sourceKind": "official-child-vaccination",
+      "lookupStatus": "needs_review",
+      "saveMode": "blocked",
+      "canSave": false,
+      "canExport": false,
+      "startPanelCount": 0,
+      "supplyRequestCount": 0,
+      "routeHref": "/flow-maps/curated-child-vaccination-schedule"
+    }
+  ],
+  "existingSavedRecord": {
+    "fixture": "/my?demo=source-backed&savedMap=baby-health-schedule",
+    "preserved": true,
+    "savedFlowRowCount": 2,
+    "sourceReviewWarningVisible": true,
+    "sourceReviewWarningDismissible": false,
+    "officialReviewLinkVisible": true,
+    "automaticSourceMutation": false
+  },
+  "freshnessFollowUp": [
+    {
+      "mapId": "year-end-tax-submit",
+      "status": "park",
+      "priority": "high",
+      "reason": "tax-sensitive annual procedure needs current-year official verification",
+      "changedInThisSlice": false
+    },
+    {
+      "mapId": "postal-address-transfer",
+      "status": "park",
+      "priority": "high",
+      "reason": "administrative process and service path can change",
+      "changedInThisSlice": false
+    },
+    {
+      "mapId": "curated-funmom-learning-park",
+      "status": "park",
+      "priority": "medium",
+      "reason": "broad category page still needs article-level execution rows",
+      "changedInThisSlice": false
+    },
+    {
+      "mapId": "aircon-filter-cleaning",
+      "status": "park",
+      "priority": "low",
+      "reason": "low-risk utility with low product score needs direct-route purpose review",
+      "changedInThisSlice": false
+    }
+  ],
+  "screenshots": [
+    "screenshots/01-baby-health-review-hold-mobile.png",
+    "screenshots/02-child-vaccination-review-hold-mobile.png",
+    "screenshots/03-url-lookup-review-hold-mobile.png",
+    "screenshots/04-existing-saved-baby-health-mobile.png",
+    "screenshots/05-baby-health-review-hold-wide.png",
+    "screenshots/06-moving-representative-normal-wide.png"
+  ],
+  "validation": {
+    "targetedUnit": "80 passed",
+    "targetedE2E": "5 passed",
+    "fullUnit": "423 passed",
+    "urlFirstE2E": "9 passed",
+    "publicWorkbenchE2E": "44 passed",
+    "flowMvpE2E": "181 passed",
+    "docsCheck": "passed",
+    "build": "passed",
+    "gitDiffCheck": "passed"
+  }
+}

@@ -79,6 +79,7 @@ export type SourceBackedFlowMapQualityDecision = {
   status: SourceBackedFlowMapCandidateStatus;
   homepageEligible: boolean;
   directRouteEnabled: boolean;
+  publicExecutionEnabled?: boolean;
   publicCatalogEligible?: boolean;
   productScore: number;
   reason: string;
@@ -378,7 +379,7 @@ export const SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST = [
   'Step split: split only source-backed actions that a user can actually do, copy, or schedule.',
   'date/relative/repeat: record absolute dates, anchor offsets, date windows, and repeat rules explicitly.',
   'risk/sensitive/execution blocker: reject or hold unsafe, sensitive, one-off, or non-executable content.',
-  'quality decision: directRouteEnabled is required for URL lookup; reject always blocks a hit.',
+  'quality decision: directRouteEnabled keeps an approved direct route; publicExecutionEnabled=false holds new save, export, and URL hits.',
 ];
 
 export type SourceBackedManualRegistrationIssueCode =
@@ -438,6 +439,7 @@ export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlo
     status: 'revise',
     homepageEligible: false,
     directRouteEnabled: true,
+    publicExecutionEnabled: false,
     productScore: 5,
     reason: 'Official schedule can be useful, but current Step actions are shallow and not representative yet.',
     nextAction: 'Rebuild from official schedule/table logic plus practical prep/source detail before homepage exposure.',
@@ -1128,8 +1130,23 @@ export function isUrlFirstLookupableSourceBackedFlowMap(
   map: SourceBackedMyFlowMap,
   options: { decisions?: Record<string, SourceBackedFlowMapQualityDecision> } = {},
 ): boolean {
+  return Boolean(map.sourceUrl?.trim()) && isSourceBackedFlowMapExecutable(map, options);
+}
+
+export function isSourceBackedFlowMapDirectRouteAccessible(
+  map: SourceBackedMyFlowMap,
+  options: { decisions?: Record<string, SourceBackedFlowMapQualityDecision> } = {},
+): boolean {
   const decision = getSourceBackedQualityDecisionForRegistration(map.id, options.decisions);
-  return Boolean(map.sourceUrl?.trim()) && decision.directRouteEnabled && decision.status !== 'reject';
+  return decision.directRouteEnabled && decision.status !== 'reject';
+}
+
+export function isSourceBackedFlowMapExecutable(
+  map: SourceBackedMyFlowMap,
+  options: { decisions?: Record<string, SourceBackedFlowMapQualityDecision> } = {},
+): boolean {
+  const decision = getSourceBackedQualityDecisionForRegistration(map.id, options.decisions);
+  return isSourceBackedFlowMapDirectRouteAccessible(map, options) && decision.publicExecutionEnabled !== false;
 }
 
 export function getUrlFirstLookupableSourceBackedFlowMaps(
@@ -1185,12 +1202,11 @@ export function assessSourceBackedManualRegistrationReadiness(
   }
 
   for (const map of maps) {
-    const decision = getSourceBackedQualityDecisionForRegistration(map.id, options.decisions);
-    const shouldBeLookupable = decision.directRouteEnabled && decision.status !== 'reject';
+    const shouldBeExecutable = isSourceBackedFlowMapExecutable(map, { decisions: options.decisions });
     const childBundles = map.flowSlugs.map((slug) => bundleBySlug.get(slug)).filter((bundle): bundle is FlowBundle => Boolean(bundle));
     const childStepCount = childBundles.reduce((sum, bundle) => sum + bundle.items.length, 0);
 
-    if (shouldBeLookupable && !map.sourceUrl?.trim()) {
+    if (shouldBeExecutable && !map.sourceUrl?.trim()) {
       issues.push({
         code: 'missing_source_url',
         severity: 'error',
@@ -1199,7 +1215,7 @@ export function assessSourceBackedManualRegistrationReadiness(
       });
     }
 
-    if (shouldBeLookupable && childStepCount === 0) {
+    if (shouldBeExecutable && childStepCount === 0) {
       issues.push({
         code: 'empty_registered_steps',
         severity: 'error',
@@ -1216,7 +1232,7 @@ export function assessSourceBackedManualRegistrationReadiness(
       }),
     );
 
-    if (shouldBeLookupable && missingSourceTraceSteps.length > 0) {
+    if (shouldBeExecutable && missingSourceTraceSteps.length > 0) {
       issues.push({
         code: 'missing_source_trace',
         severity: 'error',

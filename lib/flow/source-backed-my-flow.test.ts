@@ -30,6 +30,8 @@ import {
   getSourceBackedFlowMapSnapshotStorageKey,
   getSourceBackedMyFlowMapForBundle,
   getUrlFirstLookupableSourceBackedFlowMaps,
+  isSourceBackedFlowMapDirectRouteAccessible,
+  isSourceBackedFlowMapExecutable,
   listSourceBackedFlowMapQualityDecisions,
   listSourceBackedFlowMapPublishPackages,
   mergeSourceBackedMyFlowBundles,
@@ -1094,7 +1096,7 @@ test('legacy moving app seed map can stay published while the curated AJD map ow
   assert.equal(publishPackage.map.id, 'moving-map');
 });
 
-test('legacy vaccination app seed map can stay published while the curated official schedule owns URL lookup', () => {
+test('vaccination review routes stay accessible while new execution and URL lookup are held', () => {
   const decision = getSourceBackedFlowMapQualityDecision('vaccination-map');
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
   const publishPackage = buildSourceBackedFlowMapPublishPackage('vaccination-map');
@@ -1103,11 +1105,13 @@ test('legacy vaccination app seed map can stay published while the curated offic
   assert.equal(decision.status, 'revise');
   assert.equal(decision.directRouteEnabled, false);
   assert.ok(!lookupableIds.includes('vaccination-map'));
-  assert.ok(lookupableIds.includes('curated-child-vaccination-schedule'));
+  assert.ok(!lookupableIds.includes('curated-child-vaccination-schedule'));
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'vaccination-map');
   assert.ok(curatedPublishPackage);
   assert.equal(curatedPublishPackage.map.updatePolicy, 'review_before_apply');
+  assert.equal(isSourceBackedFlowMapDirectRouteAccessible(curatedPublishPackage.map), true);
+  assert.equal(isSourceBackedFlowMapExecutable(curatedPublishPackage.map), false);
   const curatedRows = [
     ...buildSourceBackedMyFlowRows(bundleBySlug('curated-child-vaccination-first-year')),
     ...buildSourceBackedMyFlowRows(bundleBySlug('curated-child-vaccination-booster-school-age')),
@@ -1131,8 +1135,9 @@ test('curated child vaccination sourceTrace repair keeps official schedule rows 
   assert.equal(publishPackage.map.id, 'curated-child-vaccination-schedule');
   assert.equal(publishPackage.map.updatePolicy, 'review_before_apply');
   assert.equal(getSourceBackedFlowMapQualityDecision('curated-child-vaccination-schedule').directRouteEnabled, true);
+  assert.equal(getSourceBackedFlowMapQualityDecision('curated-child-vaccination-schedule').publicExecutionEnabled, false);
   assert.equal(getSourceBackedFlowMapQualityDecision('vaccination-map').directRouteEnabled, false);
-  assert.ok(lookupableIds.includes('curated-child-vaccination-schedule'));
+  assert.ok(!lookupableIds.includes('curated-child-vaccination-schedule'));
   assert.ok(!lookupableIds.includes('vaccination-map'));
 
   const firstYear = publishPackage.public.childFlows.find((flow) => flow.slug === 'curated-child-vaccination-first-year');
@@ -1300,8 +1305,8 @@ test('public Flow Map catalog shows unique ready routes while preserving direct 
   assert.ok(!ids.includes('homefit-map'));
 
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
-  assert.ok(lookupableIds.includes('baby-health-schedule'));
-  assert.ok(lookupableIds.includes('curated-child-vaccination-schedule'));
+  assert.ok(!lookupableIds.includes('baby-health-schedule'));
+  assert.ok(!lookupableIds.includes('curated-child-vaccination-schedule'));
   assert.ok(lookupableIds.includes('curated-ajd-moving-d30'));
 });
 
@@ -1424,7 +1429,10 @@ test('source-backed baby health sourceTrace repair keeps official schedule rows 
   assert.equal(publishPackage.map.id, 'baby-health-schedule');
   assert.equal(publishPackage.map.updatePolicy, 'review_before_apply');
   assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').directRouteEnabled, true);
-  assert.ok(lookupableIds.includes('baby-health-schedule'));
+  assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').publicExecutionEnabled, false);
+  assert.equal(isSourceBackedFlowMapDirectRouteAccessible(publishPackage.map), true);
+  assert.equal(isSourceBackedFlowMapExecutable(publishPackage.map), false);
+  assert.ok(!lookupableIds.includes('baby-health-schedule'));
 
   const checkups = publishPackage.public.childFlows.find((flow) => flow.slug === 'source-backed-baby-health-checkups');
   const vaccinations = publishPackage.public.childFlows.find(

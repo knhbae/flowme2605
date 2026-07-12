@@ -194,6 +194,32 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
   await expectUrlFirstExportModesAvoidTechnicalFormatLabels(result);
 });
 
+test('outdated medical schedule URLs stop at official-source review without save or draft bypass', async ({ page }) => {
+  await openFlowFinding(page);
+  const cases = [
+    {
+      url: 'https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov',
+      routeHref: '/flow-maps/baby-health-schedule',
+    },
+    {
+      url: 'https://khms.or.kr/healthy_life/prevention/vaccination_child',
+      routeHref: '/flow-maps/curated-child-vaccination-schedule',
+    },
+  ];
+
+  for (const flowCase of cases) {
+    await lookupUrl(page, flowCase.url);
+    const result = page.getByTestId('flow-url-lookup-result');
+    await expect(result).toContainText('최신 공식 내용 확인이 필요해요');
+    await expect(result).toContainText('새 저장 중지');
+    await expect(result.getByRole('link', { name: '최신 내용 확인' })).toHaveAttribute('href', flowCase.routeHref);
+    await expect(result.getByTestId('flow-url-start-panel')).toHaveCount(0);
+    await expect(result.getByTestId('flow-url-supply-request')).toHaveCount(0);
+    await expect(result).not.toContainText('Markdown');
+    await expectCleanUrlFirstUserSurface(result);
+  }
+});
+
 test('URL-first miss and saved-candidate states hide production-only wording from user surface', async ({ page }) => {
   await openFlowFinding(page);
   await lookupUrl(page, 'https://example.com/source-to-convert?utm_source=review');

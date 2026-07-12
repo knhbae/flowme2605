@@ -190,6 +190,7 @@ export const curatedSourceBackedFlowMapQualityDecisions: Record<string, SourceBa
     status: 'revise',
     homepageEligible: false,
     directRouteEnabled: true,
+    publicExecutionEnabled: false,
     productScore: 6,
     reason: 'The official schedule rows are useful, but medical-sensitive copy and current official-row parity need review.',
     nextAction: 'Use only official row labels, birth-date offsets, and clinic-confirmation memo fields.',

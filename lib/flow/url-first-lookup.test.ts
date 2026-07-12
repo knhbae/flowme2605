@@ -153,17 +153,37 @@ test('reading source URL resolves to the curated monthly routine representative 
   assert.equal(result.aiGeneration.enabled, false);
 });
 
-test('official child vaccination source URL resolves to the curated schedule representative only', () => {
+test('official child vaccination source URL resolves to a non-executable review hold', () => {
   const result = lookupUrlFirstP0Input(
     'https://khms.or.kr/healthy_life/prevention/vaccination_child?utm_source=duplicate',
   );
 
-  assert.equal(result.status, 'hit');
+  assert.equal(result.status, 'needs_review');
   assert.equal(result.canonicalUrl, 'https://khms.or.kr/healthy_life/prevention/vaccination_child');
   assert.equal(result.flowMapId, 'curated-child-vaccination-schedule');
   assert.equal(result.routeHref, '/flow-maps/curated-child-vaccination-schedule');
   assert.equal(result.flowSlug, 'curated-child-vaccination-first-year');
-  assert.equal(result.canSaveToMyFlow, true);
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.saveMode, 'blocked');
+  assert.deepEqual(result.preview.calendar, []);
+  assert.deepEqual(result.preview.markdown, []);
+  assert.equal(result.aiGeneration.enabled, false);
+});
+
+test('official baby health source URL resolves to a non-executable review hold', () => {
+  const result = lookupUrlFirstP0Input(
+    'https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=2&csmSeq=1138&popMenu=ov',
+  );
+
+  assert.equal(result.status, 'needs_review');
+  assert.equal(result.flowMapId, 'baby-health-schedule');
+  assert.equal(result.routeHref, '/flow-maps/baby-health-schedule');
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.saveMode, 'blocked');
+  assert.deepEqual(result.preview.calendar, []);
+  assert.deepEqual(result.preview.markdown, []);
   assert.equal(result.aiGeneration.enabled, false);
 });
 

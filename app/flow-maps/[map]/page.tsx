@@ -6,7 +6,7 @@ import { NON_INDEXABLE_ROUTE_ROBOTS } from '@/lib/flow/route-indexing-policy';
 import {
   buildSourceBackedFlowMapPublishPackage,
   isPublicCatalogSourceBackedFlowMap,
-  isUrlFirstLookupableSourceBackedFlowMap,
+  isSourceBackedFlowMapDirectRouteAccessible,
 } from '@/lib/flow/source-backed-my-flow';
 
 function decodeMapId(map: string) {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ map: stri
   const { map } = await params;
   const mapId = decodeMapId(map);
   const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
-  if (!publishPackage || !isUrlFirstLookupableSourceBackedFlowMap(publishPackage.map)) {
+  if (!publishPackage || !isSourceBackedFlowMapDirectRouteAccessible(publishPackage.map)) {
     return {
       title: '콘텐츠를 찾을 수 없습니다 | FlowMe',
       robots: NON_INDEXABLE_ROUTE_ROBOTS,
@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: Promise<{ map: string }
   const { map } = await params;
   const mapId = decodeMapId(map);
   const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
-  if (!publishPackage || !isUrlFirstLookupableSourceBackedFlowMap(publishPackage.map)) {
+  if (!publishPackage || !isSourceBackedFlowMapDirectRouteAccessible(publishPackage.map)) {
     notFound();
   }
   return <SourceBackedFlowMapPublicPage mapId={mapId} />;

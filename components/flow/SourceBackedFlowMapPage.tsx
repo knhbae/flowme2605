@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
-import { buildSourceBackedFlowMapPublishPackage } from '@/lib/flow/source-backed-my-flow';
+import {
+  buildSourceBackedFlowMapPublishPackage,
+  isSourceBackedFlowMapExecutable,
+  type SourceBackedFlowMapPublishPackage,
+} from '@/lib/flow/source-backed-my-flow';
 import { PlatformNav } from './PlatformNav';
 import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
 
@@ -43,9 +47,57 @@ function NotFoundMap() {
   );
 }
 
+function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMapPublishPackage }) {
+  const { map, public: publicSurface } = publishPackage;
+  const displayTitle = toUserFacingMapTitle(publicSurface.title);
+
+  return (
+    <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8">
+      <div className="mx-auto max-w-3xl">
+        <PlatformNav />
+        <section
+          data-testid="flow-map-review-hold"
+          className="border-t-4 border-[#E2A62B] bg-white px-5 py-7 shadow-[0_18px_50px_rgba(31,35,48,0.07)] sm:px-8 sm:py-10"
+        >
+          <p className="text-sm font-semibold text-[#8A5A00]">최신 일정 확인 필요</p>
+          <h1 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+            {displayTitle}
+          </h1>
+          <p className="mt-4 max-w-2xl break-keep text-base font-semibold leading-7 text-slate-800">
+            공식 일정과 현재 표시 내용을 다시 확인하고 있어요.
+          </p>
+          <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-slate-600">
+            일정이 달라질 수 있어 지금은 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 공식 원문에서 최신 내용을 확인해 주세요.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <a
+              data-testid="flow-map-source-link"
+              className="inline-flex min-h-11 items-center justify-center bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#2944DB]"
+              href={map.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              최신 공식 일정 확인
+            </a>
+            <Link
+              className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
+              href="/flows"
+            >
+              다른 Flow 찾기
+            </Link>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
 export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProps) {
   const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
   if (!publishPackage) return <NotFoundMap />;
+  if (!isSourceBackedFlowMapExecutable(publishPackage.map)) {
+    return <ReviewHoldMap publishPackage={publishPackage} />;
+  }
 
   const { map, public: publicSurface } = publishPackage;
   const firstFlow = publicSurface.childFlows[0];

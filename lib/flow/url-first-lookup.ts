@@ -3,7 +3,9 @@ import {
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedFlowMapSavedSnapshot,
   getSourceBackedFlowMapDateAnchorCopy,
-  getUrlFirstLookupableSourceBackedFlowMaps,
+  isSourceBackedFlowMapDirectRouteAccessible,
+  isSourceBackedFlowMapExecutable,
+  sourceBackedMyFlowMaps,
   type SourceBackedFlowMapPersistenceRecord,
   type SourceBackedFlowMapSavedSnapshot,
   type SourceBackedMyFlowMap,
@@ -157,6 +159,13 @@ const memoDraftPreview: UrlFirstPreview = {
   myFlow: ['내 메모에서 만든 개인 초안', '저장 후 제목과 날짜, 메모를 다시 수정'],
 };
 
+const reviewHoldPreview: UrlFirstPreview = {
+  calendar: [],
+  markdown: [],
+  checklist: [],
+  myFlow: ['최신 공식 내용을 확인하기 전에는 저장하지 않아요.'],
+};
+
 function getSourceBackedMapSourceStatus(map: SourceBackedMyFlowMap): UrlFirstSourceStatus {
   if (map.userFacingStatus && !map.userFacingStatus.includes('바로 시작')) return 'needs_review';
   return 'real';
@@ -193,18 +202,35 @@ function buildSourceBackedPreview(map: SourceBackedMyFlowMap): UrlFirstPreview {
 function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLookupTemplate | undefined {
   if (!map.sourceUrl) return undefined;
 
-  const sourceStatus = getSourceBackedMapSourceStatus(map);
-  const canUseDirectly = sourceStatus === 'real';
+  const executionHeld = !isSourceBackedFlowMapExecutable(map);
+  const sourceStatus = executionHeld ? 'needs_review' : getSourceBackedMapSourceStatus(map);
+  const canUseDirectly = !executionHeld && sourceStatus === 'real';
   const sourceLabel = toUserFacingSourceTitle(map.sourceTitle ?? map.userLabel ?? map.title);
-  const displayMapTitle = toUserFacingMapTitle(map.title);
+  const gate = executionHeld
+    ? {
+        title: '최신 공식 내용 확인이 필요해요',
+        reason: '일정이 달라질 수 있어 현재 내용은 새 실행 Flow로 저장하지 않습니다.',
+        requiredAction: '공식 원문에서 최신 내용을 확인해 주세요.',
+      }
+    : {
+        title: '저장과 파일 받기 전에 확인이 필요해요',
+        reason: '원문 내용과 실행 일정이 아직 검토 중이라 바로 일정 파일을 만들지 않습니다.',
+        requiredAction: '출처 내용과 일정 기준을 확인한 뒤 저장과 파일 받기를 열어야 합니다.',
+      };
 
   return {
-    status: 'hit',
+    status: executionHeld ? 'needs_review' : 'hit',
     inputKind: 'url',
-    title: canUseDirectly ? '이미 만들어진 Flow가 있어요' : '기존 Flow가 있지만 확인이 필요해요',
+    title: canUseDirectly
+      ? '이미 만들어진 Flow가 있어요'
+      : executionHeld
+        ? '최신 공식 내용 확인이 필요해요'
+        : '기존 Flow가 있지만 확인이 필요해요',
     summary: canUseDirectly
       ? `${sourceLabel} 기준으로 저장 가능한 콘텐츠를 찾았어요. 필요한 옵션만 바꾸고 저장 전 확인할 수 있습니다.`
-      : `${sourceLabel} 기준의 콘텐츠가 있지만 아직 보강이 필요한 상태입니다. 저장과 export 전에 원문 확인이 필요합니다.`,
+      : executionHeld
+        ? `${sourceLabel} 기반 콘텐츠는 최신 내용을 다시 확인 중이에요. 지금은 저장하지 않고 공식 원문을 확인해 주세요.`
+        : `${sourceLabel} 기준의 콘텐츠가 있지만 아직 보강이 필요한 상태입니다. 저장 전에 원문 확인이 필요합니다.`,
     sourceStatus,
     sourceLabel,
     sourceCheckedAt: formatSourceCheckedAt(map.updatedAt),
@@ -214,23 +240,21 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
     exportModes: canUseDirectly ? ['calendar', 'markdown', 'checklist'] : [],
     canExport: canUseDirectly,
     canSaveToMyFlow: canUseDirectly,
-    saveMode: canUseDirectly ? 'direct' : 'preview_only',
+    saveMode: canUseDirectly ? 'direct' : executionHeld ? 'blocked' : 'preview_only',
     aiGeneration: aiDisabledForP0,
-    preview: buildSourceBackedPreview(map),
+    preview: executionHeld ? reviewHoldPreview : buildSourceBackedPreview(map),
     ...(canUseDirectly
       ? {}
       : {
-          gate: {
-            title: '저장과 export 전에 확인이 필요합니다',
-            reason: '원문 row와 실행 일정이 아직 보강 상태라 바로 캘린더 파일을 만들지 않습니다.',
-            requiredAction: '출처 row, 일정 기준, 위험 문구를 확인한 뒤 저장과 export를 열어야 합니다.',
-          },
+          gate,
         }),
   };
 }
 
 function buildSourceBackedLookupEntries(): Array<[string, UrlFirstLookupTemplate]> {
-  const maps = getUrlFirstLookupableSourceBackedFlowMaps();
+  const maps = sourceBackedMyFlowMaps.filter(
+    (map) => Boolean(map.sourceUrl?.trim()) && isSourceBackedFlowMapDirectRouteAccessible(map),
+  );
   const entries: Array<[string, UrlFirstLookupTemplate]> = [];
 
   for (const map of maps) {

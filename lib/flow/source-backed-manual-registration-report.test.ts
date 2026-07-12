@@ -71,7 +71,7 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
     generatedAt: '2026-07-06T00:00:00.000+09:00',
   });
 
-  assert.equal(report.summary.qaPassCount, 15);
+  assert.equal(report.summary.qaPassCount, 13);
   assert.equal(report.summary.registrationHoldCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 0);
@@ -140,17 +140,17 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
 
   const vaccination = report.rows.find((row) => row.mapId === 'curated-child-vaccination-schedule');
   assert.ok(vaccination);
-  assert.equal(vaccination.lookupEligible, true);
+  assert.equal(vaccination.lookupEligible, false);
   assert.equal(vaccination.qualityStatus, 'revise');
-  assert.equal(vaccination.status, 'qa_pass');
+  assert.equal(vaccination.status, 'lookup_blocked');
   assert.equal(vaccination.missingSourceTraceStepCount, 0);
   assert.deepEqual(vaccination.issueCodes, []);
 
   const babyHealthPass = report.rows.find((row) => row.mapId === 'baby-health-schedule');
   assert.ok(babyHealthPass);
-  assert.equal(babyHealthPass.lookupEligible, true);
+  assert.equal(babyHealthPass.lookupEligible, false);
   assert.equal(babyHealthPass.qualityStatus, 'revise');
-  assert.equal(babyHealthPass.status, 'qa_pass');
+  assert.equal(babyHealthPass.status, 'lookup_blocked');
   assert.equal(babyHealthPass.missingSourceTraceStepCount, 0);
   assert.deepEqual(babyHealthPass.issueCodes, []);
 

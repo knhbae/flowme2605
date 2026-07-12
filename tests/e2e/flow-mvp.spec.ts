@@ -109,6 +109,50 @@ async function expectNoHorizontalOverflow(page: { evaluate: <T>(pageFunction: ()
   expect(hasHorizontalOverflow).toBe(false);
 }
 
+async function seedSavedBabyHealthMap(
+  page: Page,
+  options: { version?: string; includeVaccination?: boolean } = {},
+) {
+  const version = options.version ?? '2026-06-23.1';
+  const includeVaccination = options.includeVaccination ?? true;
+  await page.goto('/my?demo=source-backed&savedMap=baby-health-schedule');
+  await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
+  await page.evaluate(
+    ({ savedVersion, withVaccination }) => {
+      const savedAt = '2026-05-28T03:00:00.000Z';
+      const anchor = '2026-01-15';
+      const checkupSlug = 'source-backed-baby-health-checkups';
+      const vaccinationSlug = 'source-backed-baby-vaccination-schedule';
+      const flowSlugs = withVaccination ? [checkupSlug, vaccinationSlug] : [checkupSlug];
+      window.localStorage.setItem(
+        'flow:map:saved:baby-health-schedule',
+        JSON.stringify({
+          mapId: 'baby-health-schedule',
+          title: '영유아 검진·접종 일정 지도',
+          version: savedVersion,
+          savedAt,
+          anchor,
+          flowSlugs,
+          stepCountsByFlow: {
+            [checkupSlug]: 12,
+            ...(withVaccination ? { [vaccinationSlug]: 6 } : {}),
+          },
+          riskLevelsByFlow: Object.fromEntries(flowSlugs.map((slug) => [slug, 'medical_sensitive'])),
+          sourceCheckedAtByFlow: Object.fromEntries(flowSlugs.map((slug) => [slug, '2026-06-23'])),
+        }),
+      );
+      flowSlugs.forEach((slug) => {
+        window.localStorage.setItem(
+          `flow:saved:${slug}`,
+          JSON.stringify({ slug, savedAt, selectedArtifactMode: 'calendar', anchor }),
+        );
+      });
+      if (!withVaccination) window.localStorage.removeItem(`flow:saved:${vaccinationSlug}`);
+    },
+    { savedVersion: version, withVaccination: includeVaccination },
+  );
+}
+
 async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCount: number) {
   const content = await locator.innerText();
   expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
@@ -1353,27 +1397,27 @@ test('curated source cards are integrated into Flow finding and open the recomme
   const catalog = page.getByTestId('flow-map-catalog-section');
   const curatedCards = catalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]');
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
-  await expect(curatedCards).toHaveCount(9);
+  await expect(curatedCards).toHaveCount(6);
   await expect(catalog).toContainText('오픽 모의고사 2주/1달 계획표');
   await expect(catalog).not.toContainText('펀맘 공부 루틴');
   await expect(catalog).not.toContainText('확인하며 사용');
   await expect(catalog).not.toContainText('자료 보강 후 시작');
   await expect(catalog).toContainText('먼저 할 일');
 
-  const movingCard = curatedCards.filter({ hasText: '이사 D-30 체크리스트' });
-  await expect(movingCard.getByTestId('flow-map-detail-link')).toHaveAttribute('href', '/flow-maps/curated-ajd-moving-d30');
-  await expect(movingCard.getByTestId('flow-card-primary-action')).toHaveText('열어보기');
-  await expectCompactCatalogAction(movingCard, movingCard.getByTestId('flow-map-detail-link'));
-  await expect(movingCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
-  await expect(movingCard.getByTestId('flow-map-source-link')).toHaveCount(0);
+  const opicCard = curatedCards.filter({ hasText: '오픽 모의고사 2주/1달 계획표' });
+  await expect(opicCard.getByTestId('flow-map-detail-link')).toHaveAttribute('href', '/flow-maps/curated-opic-mock-course');
+  await expect(opicCard.getByTestId('flow-card-primary-action')).toHaveText('열어보기');
+  await expectCompactCatalogAction(opicCard, opicCard.getByTestId('flow-map-detail-link'));
+  await expect(opicCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
+  await expect(opicCard.getByTestId('flow-map-source-link')).toHaveCount(0);
 
-  await movingCard.getByTestId('flow-map-detail-link').scrollIntoViewIfNeeded();
+  await opicCard.getByTestId('flow-map-detail-link').scrollIntoViewIfNeeded();
   await Promise.all([
-    page.waitForURL('**/flow-maps/curated-ajd-moving-d30', { timeout: 15_000 }),
-    movingCard.getByTestId('flow-map-detail-link').click(),
+    page.waitForURL('**/flow-maps/curated-opic-mock-course', { timeout: 15_000 }),
+    opicCard.getByTestId('flow-map-detail-link').click(),
   ]);
   await expect(page.getByTestId('flow-map-public')).toBeVisible();
-  await expect(page.getByRole('link', { name: '바로 시작' }).first()).toHaveAttribute('href', '/f/curated-ajd-moving-d30');
+  await expect(page.getByRole('link', { name: '바로 시작' }).first()).toHaveAttribute('href', '/f/curated-opic-single-mock-review');
 
   const staleMapResponse = await page.goto('/flow-maps/moving-map');
   expect(staleMapResponse?.status()).toBe(404);
@@ -1384,8 +1428,8 @@ test('flow finding search and intent chips narrow commercial catalog cards', asy
 
   const catalog = page.getByTestId('flow-map-catalog-section');
   await page.getByTestId('flow-catalog-search').fill('예방접종');
-  await expect(catalog).toContainText('아이 예방접종 일정표');
-  await expect(catalog).not.toContainText('월령별 예방접종 확인');
+  await expect(catalog).toContainText('맞는 콘텐츠가 없습니다');
+  await expect(catalog.getByTestId('flow-map-catalog-card')).toHaveCount(0);
 
   await page.getByTestId('flow-catalog-search').fill('');
   await catalog.getByRole('button', { name: '공부' }).click();
@@ -3814,70 +3858,33 @@ test('P19 task completion controls use one checkbox pattern in My Flow and Calen
   await expect(selectedDateGroup.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 });
 
-test('source-backed baby health map saves input-bearing official schedule flows into My Flow', async ({ page }) => {
-  await page.goto('/flow-maps/baby-health-schedule');
+test('medical review-hold Flow Maps keep official source access without new save or stale schedule rows', async ({ page }) => {
+  const cases = [
+    { mapId: 'baby-health-schedule', title: '영유아 검진·접종 일정' },
+    { mapId: 'curated-child-vaccination-schedule', title: '아이 예방접종 일정표' },
+  ];
 
-  const publicMap = page.getByTestId('flow-map-public');
-  await expect(publicMap.getByRole('heading', { name: '영유아 검진·접종 일정' })).toBeVisible();
-  await expect(publicMap.getByRole('heading', { name: '영유아 검진·접종 일정 지도' })).toHaveCount(0);
-  await expect(publicMap).toContainText('아이 생년월일');
-  await expect(publicMap).toContainText('영유아 건강검진 일정');
-  await expect(publicMap).toContainText('아이 예방접종 일정 확인');
+  for (const flowCase of cases) {
+    await page.goto(`/flow-maps/${flowCase.mapId}`);
 
-  await page.getByLabel('아이 생년월일').fill('2026-01-15');
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
-  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
-  await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
-  const postSavePanel = page.getByTestId('my-flow-post-save-panel');
-  await expect(postSavePanel).toContainText('영유아 검진·접종 일정');
-  await expect(postSavePanel).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(postSavePanel).not.toContainText('18개 할 일');
-  await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(0);
-  await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
-  await postSavePanel.getByTestId('my-flow-post-save-view-flow').click();
-  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
-
-  const babyMapGroup = page.getByTestId('my-flow-map-group');
-  await expect(babyMapGroup).toContainText('영유아 검진·접종 일정');
-  await expect(babyMapGroup).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(babyMapGroup).toContainText('2개 목록');
-  await expect(babyMapGroup.getByTestId('my-flow-map-group-source-link')).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
-  const checkupCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-health-checkups"]');
-  const vaccinationCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-baby-vaccination-schedule"]');
-  await expect(checkupCard).toContainText('영유아 건강검진 일정');
-  await expect(checkupCard.getByTestId('my-flow-map-context')).toContainText('영유아 검진·접종 일정');
-  await expect(checkupCard.getByTestId('my-flow-map-context')).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(checkupCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/12 완료');
-  await expect(checkupCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
-  await expect(vaccinationCard).toContainText('아이 예방접종 일정 확인');
-  await expect(vaccinationCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/6 완료');
-
-  const savedRecords = await page.evaluate(() => {
-    const keys = [
-      'flow:saved:source-backed-baby-health-checkups',
-      'flow:saved:source-backed-baby-vaccination-schedule',
-    ];
-    return Object.fromEntries(keys.map((key) => [key, JSON.parse(localStorage.getItem(key) || 'null')]));
-  });
-  expect(savedRecords['flow:saved:source-backed-baby-health-checkups'].anchor).toBe('2026-01-15');
-  expect(savedRecords['flow:saved:source-backed-baby-vaccination-schedule'].anchor).toBe('2026-01-15');
-  const savedMap = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:saved:baby-health-schedule') || 'null'));
-  expect(savedMap.version).toBe('2026-06-23.1');
-  expect(savedMap.anchor).toBe('2026-01-15');
-  expect(savedMap.stepCountsByFlow).toEqual({
-    'source-backed-baby-health-checkups': 12,
-    'source-backed-baby-vaccination-schedule': 6,
-  });
+    const publicMap = page.getByTestId('flow-map-public');
+    const hold = page.getByTestId('flow-map-review-hold');
+    await expect(publicMap.getByRole('heading', { name: flowCase.title })).toBeVisible();
+    await expect(hold).toContainText('최신 일정 확인 필요');
+    await expect(hold).toContainText('지금은 이 페이지에서 저장하거나 파일로 받지 않습니다');
+    await expect(hold.getByRole('link', { name: '최신 공식 일정 확인' })).toHaveAttribute('target', '_blank');
+    await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
+    await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
+    await expect(page.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  }
 });
 
-test('source-backed baby health map remains visible on mobile Flow tab after save', async ({ page }) => {
+test('an existing saved baby health map remains visible after public execution is held', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flow-maps/baby-health-schedule');
+  await page.goto('/my?demo=source-backed&savedMap=baby-health-schedule');
 
-  await page.getByLabel('아이 생년월일').fill('2026-01-15');
-  await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
+  await expect(page).toHaveURL('/my?demo=source-backed&savedMap=baby-health-schedule');
   await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('영유아 검진·접종 일정');
   await expect(page.getByTestId('my-flow-post-save-panel')).not.toContainText('영유아 검진·접종 일정 지도');
   await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
@@ -3897,47 +3904,34 @@ test('source-backed baby health map remains visible on mobile Flow tab after sav
   await expect(vaccinationMobileCard).not.toContainText('영유아 검진·접종 일정 지도');
   await expect(vaccinationMobileCard.getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 0\/\d+ 완료/);
   await expect(vaccinationMobileCard).not.toContainText('0%');
+  const sourceReview = page.getByTestId('my-flow-map-update-review');
+  await expect(sourceReview).toContainText('실행 전 최신 공식 내용을 확인해 주세요');
+  await expect(sourceReview.getByRole('link', { name: '공식 내용 확인' })).toHaveAttribute(
+    'href',
+    '/flow-maps/baby-health-schedule',
+  );
 });
 
-test('my flow shows update review notice for changed source-backed saved maps', async ({ page }) => {
-  await page.goto('/flow-maps/baby-health-schedule');
-
-  await page.getByLabel('아이 생년월일').fill('2026-01-15');
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
-  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
-
-  await page.evaluate(() => {
-    const key = 'flow:map:saved:baby-health-schedule';
-    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
-    snapshot.version = '2026-01-01.old';
-    window.localStorage.setItem(key, JSON.stringify(snapshot));
-  });
+test('my flow keeps a non-dismissible official-source warning for a held saved map', async ({ page }) => {
+  await seedSavedBabyHealthMap(page, { version: '2026-01-01.old' });
 
   await page.goto('/my');
   await page.getByTestId('my-flow-view-flow').click();
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await expect(updateReview).toBeVisible();
-  await expect(updateReview).toContainText('저장한 콘텐츠에 다시 볼 내용이 있습니다');
+  await expect(updateReview).toContainText('실행 전 최신 공식 내용을 확인해 주세요');
   await expect(updateReview).toContainText('영유아 검진·접종 일정');
   await expect(updateReview).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(updateReview).toContainText('업데이트 확인 필요');
-  await expect(updateReview).toContainText('자동 반영 안 함');
-  await expect(updateReview).toContainText('지금 실행은 저장한 내용 그대로');
-  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeDisabled();
-  await expect(updateReview).toContainText('원문 기준 정보가 새로 발행되었습니다');
-  await expect(updateReview).toContainText('검진/접종처럼 공식 일정은 자동으로 바꾸지 않습니다');
-  await updateReview.getByTestId('my-flow-map-update-toggle').click();
-  const comparison = updateReview.getByTestId('my-flow-map-update-comparison');
-  await expect(comparison).toContainText('저장 2026-01-01.old');
-  await expect(comparison).toContainText('현재 2026-06-23.1');
-  await expect(comparison.getByTestId('my-flow-map-update-comparison-row')).toHaveCount(2);
-  await expect(updateReview.getByRole('link', { name: '전체 보기' })).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
-  await updateReview.getByTestId('my-flow-map-update-dismiss').click();
-  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+  await expect(updateReview).toContainText('최신 일정 확인 필요');
+  await expect(updateReview).toContainText('저장한 내용은 자동으로 바꾸지 않습니다');
+  await expect(updateReview.getByTestId('my-flow-map-update-toggle')).toHaveCount(0);
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toHaveCount(0);
+  await expect(updateReview.getByTestId('my-flow-map-update-dismiss')).toHaveCount(0);
+  await expect(updateReview.getByRole('link', { name: '공식 내용 확인' })).toHaveAttribute('href', '/flow-maps/baby-health-schedule');
 
   await page.reload();
   await page.getByTestId('my-flow-view-flow').click();
-  await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-map-update-review')).toBeVisible();
 });
 
 test('completed personal Flow reviews item changes before starting a new source version', async ({ page }) => {
@@ -4041,27 +4035,14 @@ test('completed personal Flow reviews item changes before starting a new source 
 });
 
 test('active source update does not add missing child Flow before the current execution is complete', async ({ page }) => {
-  await page.goto('/flow-maps/baby-health-schedule');
-
-  await page.getByLabel('아이 생년월일').fill('2026-01-15');
-  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
-  await expect(page).toHaveURL('/my?savedMap=baby-health-schedule');
-
-  await page.evaluate(() => {
-    const key = 'flow:map:saved:baby-health-schedule';
-    const snapshot = JSON.parse(window.localStorage.getItem(key) || 'null');
-    snapshot.version = '2026-01-01.old';
-    snapshot.flowSlugs = ['source-backed-baby-health-checkups'];
-    window.localStorage.setItem(key, JSON.stringify(snapshot));
-    window.localStorage.removeItem('flow:saved:source-backed-baby-vaccination-schedule');
-  });
+  await seedSavedBabyHealthMap(page, { version: '2026-01-01.old', includeVaccination: false });
 
   await page.goto('/my');
   await page.getByTestId('my-flow-view-flow').click();
   const updateReview = page.getByTestId('my-flow-map-update-review');
-  await updateReview.getByTestId('my-flow-map-update-toggle').click();
-  await expect(updateReview.getByTestId('my-flow-map-update-comparison')).toContainText('새로 추가');
-  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeDisabled();
+  await expect(updateReview).toContainText('실행 전 최신 공식 내용을 확인해 주세요');
+  await expect(updateReview.getByTestId('my-flow-map-update-toggle')).toHaveCount(0);
+  await expect(updateReview.getByTestId('my-flow-map-update-apply')).toHaveCount(0);
 
   const savedState = await page.evaluate(() => ({
     snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:baby-health-schedule') || 'null'),
