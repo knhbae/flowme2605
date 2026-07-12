@@ -74,7 +74,7 @@ async function openFlowFinding(page: Page) {
 
 async function lookupUrl(page: Page, url: string) {
   const lookup = page.getByTestId('flow-url-lookup-entry');
-  await lookup.getByLabel('원문 URL').fill(url);
+  await lookup.getByLabel('URL 또는 메모').fill(url);
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   await expect(page.getByTestId('flow-url-lookup-result')).toBeVisible();
 }

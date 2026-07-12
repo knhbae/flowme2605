@@ -146,15 +146,15 @@ const missPreview: UrlFirstPreview = {
 const memoDraftPreview: UrlFirstPreview = {
   calendarFilename: 'private-memo-draft.ics',
   markdownFilename: 'private-memo-draft.md',
-  calendar: ['이번 주 견적 후보 정리', '다음 주 주소 변경 대상 확인', '이사 전날 사진 기록 준비'],
+  calendar: [],
   markdown: [
-    '# 비공개 계획 메모 초안',
-    '- [ ] 이번 주 해야 할 일 분리',
-    '- [ ] 날짜가 필요한 항목만 캘린더 후보로 표시',
-    '- [ ] 원문 URL이 없으므로 공유 Flow 전환은 보류',
+    '# 내 메모 초안',
+    '- [ ] 메모에서 할 일 문장 고르기',
+    '- [ ] 날짜가 필요한 항목에 기준일 정하기',
+    '- [ ] 저장 후 제목과 메모 다시 손보기',
   ],
-  checklist: ['할 일 문장 분리', '날짜 후보 표시', '기존 이사 Flow와 비교', '공유 전 원문/근거 보강'],
-  myFlow: ['저장 전 예상 화면만 표시합니다.', '비공개 초안은 공개 Flow가 되지 않습니다.'],
+  checklist: ['메모에서 할 일 문장 고르기', '실행 순서 정하기', '필요한 날짜 붙이기'],
+  myFlow: ['내 메모에서 만든 개인 초안', '저장 후 제목과 날짜, 메모를 다시 수정'],
 };
 
 function getSourceBackedMapSourceStatus(map: SourceBackedMyFlowMap): UrlFirstSourceStatus {
@@ -393,18 +393,22 @@ export function lookupUrlFirstP0Input(input: string): UrlFirstLookupResult {
 }
 
 export function buildUrlFirstMemoDraft(input: string): UrlFirstLookupResult {
+  const movingIntent = /이사|전입|짐\s*(?:싸기|정리)|주소\s*변경/u.test(input);
   return {
     status: 'memo_draft',
     inputKind: 'memo',
     input,
-    title: '비공개 메모 초안',
-    summary: 'URL 없이 적은 계획 메모를 캘린더와 체크리스트 후보로만 미리 보여줍니다. 공유 Flow로 전환하려면 원문이나 근거가 더 필요합니다.',
+    title: '메모를 실행할 초안으로 정리했어요',
+    summary: '자동으로 내용을 만든 것이 아니라, 내가 쓴 문장에서 할 일의 시작점을 나눴어요. 저장 후 제목과 날짜, 메모를 다시 고칠 수 있습니다.',
     sourceStatus: 'missing',
-    exportModes: ['calendar', 'markdown', 'checklist'],
+    exportModes: [],
     canExport: false,
     canSaveToMyFlow: false,
     saveMode: 'draft_preview',
-    aiGeneration: aiDisabledForP0,
+    aiGeneration: {
+      enabled: false,
+      reason: '메모 문장을 규칙으로 나눈 개인 초안이며, 자동으로 내용을 생성하지 않습니다.',
+    },
     preview: {
       calendar: [...memoDraftPreview.calendar],
       markdown: [...memoDraftPreview.markdown],
@@ -413,12 +417,28 @@ export function buildUrlFirstMemoDraft(input: string): UrlFirstLookupResult {
       calendarFilename: memoDraftPreview.calendarFilename,
       markdownFilename: memoDraftPreview.markdownFilename,
     },
-    recommendation: {
-      title: '원룸 이사 D-30 일정 지도',
-      href: '/flow-maps/moving-d30',
-      reason: '이사 관련 메모라면 이미 검토된 이사 Flow를 먼저 재사용할 수 있습니다.',
-    },
+    ...(movingIntent
+      ? {
+          recommendation: {
+            title: '원룸 이사 D-30 일정 지도',
+            href: '/flow-maps/moving-d30',
+            reason: '이사 관련 메모라면 이미 검토된 이사 Flow를 먼저 재사용할 수 있습니다.',
+          },
+        }
+      : {}),
   };
+}
+
+export function lookupUrlOrMemoP0Input(input: string): UrlFirstLookupResult {
+  const trimmed = input.trim();
+  if (!trimmed) return lookupUrlFirstP0Input(input);
+
+  try {
+    canonicalizeFlowSourceUrl(trimmed);
+    return lookupUrlFirstP0Input(input);
+  } catch {
+    return buildUrlFirstMemoDraft(input);
+  }
 }
 
 function isPlainDate(value: string): boolean {

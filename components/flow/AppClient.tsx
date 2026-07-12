@@ -74,12 +74,13 @@ import {
 } from '@/lib/flow/source-backed-my-flow';
 import { parseTextFlow, serializeTextFlow, timingLabel } from '@/lib/flow/parser';
 import { expandRoutineOccurrences, getRoutineWeekdayLabels } from '@/lib/flow/recurrence';
-import { buildUrlFirstStartPackage, canonicalizeFlowSourceUrl, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
+import { buildUrlFirstStartPackage, canonicalizeFlowSourceUrl, lookupUrlOrMemoP0Input, lookupUrlFirstP0Input, type UrlFirstExportMode, type UrlFirstLookupResult } from '@/lib/flow/url-first-lookup';
 import {
   isLegacyUrlFirstCandidateStateCopy,
   stripUserFacingInternalLines,
 } from '@/lib/flow/user-surface-guardrails';
 import {
+  buildMemoDraftItemSuggestions,
   buildUrlFirstDraftItemSuggestions,
   buildUrlFirstSupplyCandidateUserSummaryMarkdown,
   buildUrlFirstSupplyCandidate,
@@ -1211,6 +1212,20 @@ type UrlFirstDraftFlowPackage = {
   itemStates: Record<string, FlowItemState>;
 };
 
+type PersonalDraftFlowSource =
+  | {
+      kind: 'url';
+      originalUrl: string;
+      defaultTitle: string;
+      suggestions: UrlFirstDraftItemSuggestion[];
+    }
+  | {
+      kind: 'memo';
+      memo: string;
+      defaultTitle: string;
+      suggestions: UrlFirstDraftItemSuggestion[];
+    };
+
 function normalizeDraftText(value: string, fallback: string): string {
   const text = value.replace(/\s+/g, ' ').trim();
   return text || fallback;
@@ -1225,14 +1240,14 @@ function createDraftFlowId(): string {
   return `flow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowPackage {
+function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowPackage {
   const now = new Date().toISOString();
   const id = createDraftFlowId();
   const slug = `url-draft-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const sectionId = `${id}-draft-section`;
-  const title = normalizeDraftText(input.flowTitle, `${getUrlSupplyCandidateDisplayTitle(candidate)} 초안`);
+  const title = normalizeDraftText(input.flowTitle, source.defaultTitle);
   const anchor = isIsoDateString(input.anchorDate) ? input.anchorDate : undefined;
-  const suggestions = (input.items.length > 0 ? input.items : buildUrlFirstDraftItemSuggestions(candidate)).slice(0, 7);
+  const suggestions = (input.items.length > 0 ? input.items : source.suggestions).slice(0, 7);
   const items = suggestions.map<FlowItem>((suggestion, index) => ({
     id: `${id}-draft-item-${index + 1}`,
     flow_id: id,
@@ -1242,7 +1257,7 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
     type: anchor ? 'calendar' : 'todo',
     day_offset: suggestion.dayOffset,
     duration_days: 1,
-    source_type: 'reference',
+    source_type: source.kind === 'memo' ? 'creator_experience' : 'reference',
     risk_level: 'low',
     order: index,
   }));
@@ -1253,14 +1268,14 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
         id,
         slug,
         title,
-        description: '내가 남긴 제목과 메모를 바탕으로 제안한 초안입니다.',
+        description: source.kind === 'memo' ? '내가 붙여넣은 메모에서 직접 손볼 할 일을 나눈 개인 초안입니다.' : '내가 남긴 제목과 메모를 바탕으로 제안한 초안입니다.',
         category: '내 초안',
         structure_type: 'checklist',
         content_type: 'default',
         anchor_type: anchor ? 'start_date' : 'none',
         status: 'draft',
-        source_title: '사용자가 넣은 링크',
-        source_url: candidate.originalUrl,
+        source_title: source.kind === 'memo' ? '내 메모' : '사용자가 넣은 링크',
+        ...(source.kind === 'url' ? { source_url: source.originalUrl } : {}),
         source_status: 'preview',
         source_precision: 'broad',
         primary_destination: anchor ? 'calendar' : 'hybrid',
@@ -1270,8 +1285,8 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
         creator_note: getCurrentUser().bio,
         usage_count: 0,
         copy_count: 0,
-        tags: ['내 초안'],
-        raw_text: `# ${title}\n\n## 손볼 초안 항목\n${items.map((item) => `- ${item.title}${item.description ? `\n  메모: ${item.description}` : ''}`).join('\n')}`,
+        tags: source.kind === 'memo' ? ['내 초안', '내 메모'] : ['내 초안'],
+        raw_text: `# ${title}\n\n## 손볼 초안 항목\n${items.map((item) => `- ${item.title}${item.description ? `\n  메모: ${item.description}` : ''}`).join('\n')}${source.kind === 'memo' ? `\n\n## 처음 붙여넣은 메모\n${source.memo.trim()}` : ''}`,
         created_at: now,
         updated_at: now,
       },
@@ -1284,21 +1299,48 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
         },
       ],
       items,
-      itemDetails: items.map((item) => ({
-        item_id: item.id,
-        links: [
-          {
-            label: '원문 링크',
-            url: candidate.originalUrl,
-            type: 'reference',
-          },
-        ],
-      })),
+      itemDetails:
+        source.kind === 'url'
+          ? items.map((item) => ({
+              item_id: item.id,
+              links: [
+                {
+                  label: '원문 링크',
+                  url: source.originalUrl,
+                  type: 'reference' as const,
+                },
+              ],
+            }))
+          : [],
       warnings: [],
     },
     ...(anchor ? { anchor } : {}),
     itemStates: {},
   };
+}
+
+function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowPackage {
+  return createPersonalDraftFlowPackage(
+    {
+      kind: 'url',
+      originalUrl: candidate.originalUrl,
+      defaultTitle: `${getUrlSupplyCandidateDisplayTitle(candidate)} 초안`,
+      suggestions: buildUrlFirstDraftItemSuggestions(candidate),
+    },
+    input,
+  );
+}
+
+function createMemoDraftFlowPackage(memo: string, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowPackage {
+  return createPersonalDraftFlowPackage(
+    {
+      kind: 'memo',
+      memo,
+      defaultTitle: '내 메모 초안',
+      suggestions: buildMemoDraftItemSuggestions(memo),
+    },
+    input,
+  );
 }
 
 function findExistingUrlFirstDraftBundle(
@@ -1325,6 +1367,7 @@ function getUrlLookupStatusLabel(result: UrlFirstLookupResult): string {
   if (result.status === 'hit' && result.sourceStatus === 'needs_review') return '원문 확인 필요';
   if (result.status === 'hit') return '기존 콘텐츠';
   if (result.status === 'needs_review') return '원문 확인 필요';
+  if (result.status === 'memo_draft') return '내 메모';
   return '준비된 Flow 없음';
 }
 
@@ -1364,14 +1407,138 @@ function getUrlSupplyCandidateDisplayMemo(candidate: UrlFirstSupplyCandidate): s
   return candidate.memo;
 }
 
+function getMemoDraftDefaultTitle(input: string): string {
+  const firstLine = input
+    .replace(/\r/gu, '\n')
+    .split(/\n+|[.!?;]+/u)
+    .map((line) => line.replace(/^\s*(?:[-*•·]|\d+[.)])\s*/u, '').replace(/\s+/gu, ' ').trim())
+    .find(Boolean);
+  if (!firstLine) return '내 메모 초안';
+  return firstLine.length > 38 ? `${firstLine.slice(0, 38).trim()}…` : firstLine;
+}
+
+function FlowMemoDraftPanel({
+  memo,
+  onSaveDraftFlow,
+}: {
+  memo: string;
+  onSaveDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
+}) {
+  const memoItems = useMemo(() => buildMemoDraftItemSuggestions(memo), [memo]);
+  const [draftTitle, setDraftTitle] = useState(() => getMemoDraftDefaultTitle(memo));
+  const [draftAnchorDate, setDraftAnchorDate] = useState('');
+  const [feedback, setFeedback] = useState('');
+
+  useEffect(() => {
+    setDraftTitle(getMemoDraftDefaultTitle(memo));
+    setDraftAnchorDate('');
+    setFeedback('');
+  }, [memo]);
+
+  const saveDraftFlow = () => {
+    const saved = onSaveDraftFlow(memo, {
+      flowTitle: draftTitle,
+      anchorDate: draftAnchorDate,
+      items: memoItems,
+    });
+    if (!saved.saved) {
+      setFeedback(saved.error ?? '메모 초안을 저장하지 못했습니다.');
+      return;
+    }
+    setFeedback('내 Flow에 메모 초안 저장됨');
+    if (typeof window !== 'undefined') window.location.href = saved.targetHref ?? '/my';
+  };
+
+  return (
+    <form
+      data-testid="flow-memo-draft-editor"
+      className="mt-3 grid gap-3 md:grid-cols-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        saveDraftFlow();
+      }}
+    >
+      <div className="md:col-span-2">
+        <p className="text-xs font-semibold text-[#176D5D]">내 메모에서 시작</p>
+        <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
+          자동으로 내용을 덧붙이지 않고, 내가 쓴 문장만 할 일로 나눴어요.
+        </p>
+      </div>
+      <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+        초안 제목
+        <input
+          data-testid="flow-memo-draft-flow-title"
+          aria-label="메모 초안 제목"
+          className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+          value={draftTitle}
+          maxLength={80}
+          onChange={(event) => setDraftTitle(event.target.value)}
+        />
+      </label>
+      <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+        기준일 <span className="font-medium text-[#8A857B]">선택</span>
+        <input
+          data-testid="flow-memo-draft-anchor-date"
+          aria-label="메모 초안 기준일"
+          className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+          type="date"
+          value={draftAnchorDate}
+          onChange={(event) => setDraftAnchorDate(event.target.value)}
+        />
+        <span className="break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+          날짜가 필요할 때만 정하세요. 저장 후 My Flow에서 다시 바꿀 수 있습니다.
+        </span>
+      </label>
+      <div data-testid="flow-memo-draft-suggestion-list" className="grid gap-2 rounded-lg bg-[#F7FBF4] p-2.5 md:col-span-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-[#176D5D]">메모에서 나눈 할 일</p>
+          <span className="text-[11px] font-semibold text-[#8A857B]">{memoItems.length}개 · 저장 후 수정 가능</span>
+        </div>
+        <ol className="grid gap-1.5">
+          {memoItems.map((item, index) => (
+            <li
+              key={`memo-draft-suggestion-${index}`}
+              data-testid="flow-memo-draft-item"
+              className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-2 rounded-md bg-white px-2.5 py-2"
+            >
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#E8F2ED] text-[11px] font-semibold text-[#176D5D]">{index + 1}</span>
+              <div className="min-w-0">
+                <p className="break-keep text-xs font-semibold leading-5 text-[#1B1A17]">{item.title}</p>
+                <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+                  {draftAnchorDate
+                    ? formatKoreanShortDate(addDays(new Date(draftAnchorDate), item.dayOffset), { includeWeekday: true })
+                    : `실행 순서 ${index + 1}`}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 md:col-span-2">
+        <button
+          type="submit"
+          data-testid="flow-memo-draft-save"
+          className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+        >
+          내 Flow에 초안 저장
+        </button>
+        <span className="text-xs font-semibold text-[#6E6B64]">공개되지 않는 개인 초안입니다</span>
+      </div>
+      {feedback ? <p role="status" className="text-xs font-semibold text-[#3654FF] md:col-span-2">{feedback}</p> : null}
+    </form>
+  );
+}
+
 function FlowUrlLookupResult({
   result,
   supplyCandidates,
   onSaveSupplyCandidate,
+  onSaveMemoDraftFlow,
 }: {
   result: UrlFirstLookupResult;
   supplyCandidates: UrlFirstSupplyCandidate[];
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
+  onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
 }) {
   const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow ? '저장 전 보기' : result.routeHref ? '미리보기 열기' : '초안 요청 가능';
   const exportModes = result.exportModes.map((mode) => urlFirstExportModeLabels[mode]);
@@ -1490,18 +1657,22 @@ function FlowUrlLookupResult({
   return (
     <section
       data-testid="flow-url-lookup-result"
-      className="mt-3 rounded-2xl border border-[#DDE6D8] bg-[#F7FBF4] p-3.5 text-sm text-[#1B1A17]"
+      className="mt-3 border-t border-[#DDE6D8] pt-3 text-sm text-[#1B1A17]"
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-full border border-[#BFD9B8] bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">
           {getUrlLookupStatusLabel(result)}
         </span>
-        {result.status !== 'miss' ? <span className="text-xs font-semibold text-[#6E6B64]">이미 만든 준비가 있는지 먼저 찾아봤어요</span> : null}
+        {result.status === 'hit' || result.status === 'needs_review' ? (
+          <span className="text-xs font-semibold text-[#6E6B64]">이미 만든 준비가 있는지 먼저 찾아봤어요</span>
+        ) : null}
       </div>
       <h2 className="mt-2 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{result.title}</h2>
       <p className="mt-1 break-keep leading-6 text-[#5F6A5A]">{result.summary}</p>
 
-      {result.status !== 'miss' ? <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+      {result.status === 'memo_draft' ? <FlowMemoDraftPanel memo={result.input} onSaveDraftFlow={onSaveMemoDraftFlow} /> : null}
+
+      {result.status !== 'miss' && result.status !== 'memo_draft' ? <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-[#6E6B64]">옮길 수 있는 형태</p>
           <div className="mt-1 flex flex-wrap gap-1.5">
@@ -1744,6 +1915,7 @@ function FlowUrlLookupEntry({
   onInputChange,
   onSubmit,
   onSaveSupplyCandidate,
+  onSaveMemoDraftFlow,
 }: {
   input: string;
   result: UrlFirstLookupResult | null;
@@ -1751,6 +1923,7 @@ function FlowUrlLookupEntry({
   onInputChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
+  onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
 }) {
   return (
     <section
@@ -1759,13 +1932,15 @@ function FlowUrlLookupEntry({
     >
       <form className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2" onSubmit={onSubmit}>
         <label className="min-w-0">
-          <span className="text-xs font-semibold text-[#176D5D]">원문 URL</span>
+          <span className="text-xs font-semibold text-[#176D5D]">URL 또는 메모</span>
           <input
+            data-testid="flow-url-lookup-input"
             className="mt-1 min-h-11 w-full rounded-xl border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
             value={input}
             onChange={(event) => onInputChange(event.target.value)}
-            placeholder="블로그, 유튜브, 공식 안내 URL 붙여넣기"
-            type="url"
+            placeholder="링크를 붙여넣거나, 하려는 일을 메모로 적어보세요"
+            type="text"
+            required
           />
         </label>
         <button
@@ -1775,7 +1950,14 @@ function FlowUrlLookupEntry({
           Flow 찾기
         </button>
       </form>
-      {result ? <FlowUrlLookupResult result={result} supplyCandidates={supplyCandidates} onSaveSupplyCandidate={onSaveSupplyCandidate} /> : null}
+      {result ? (
+        <FlowUrlLookupResult
+          result={result}
+          supplyCandidates={supplyCandidates}
+          onSaveSupplyCandidate={onSaveSupplyCandidate}
+          onSaveMemoDraftFlow={onSaveMemoDraftFlow}
+        />
+      ) : null}
     </section>
   );
 }
@@ -2236,7 +2418,33 @@ export function FlowList() {
 
   function handleUrlLookupSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setUrlLookupResult(lookupUrlFirstP0Input(urlLookupInput));
+    setUrlLookupResult(lookupUrlOrMemoP0Input(urlLookupInput));
+  }
+
+  function handleSaveMemoDraftFlow(memo: string, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowSaveResult {
+    try {
+      const draftPackage = createMemoDraftFlowPackage(memo, input);
+      const nextBundles = [
+        ...bundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
+        draftPackage.bundle,
+      ];
+      persist(nextBundles);
+      saveFlowRecord(draftPackage.bundle.flow.slug, {
+        selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
+        ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
+      });
+      if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
+      return {
+        saved: true,
+        slug: draftPackage.bundle.flow.slug,
+        targetHref: '/my',
+      };
+    } catch {
+      return {
+        saved: false,
+        error: '메모 초안을 저장하지 못했습니다. 입력한 메모는 그대로예요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',
+      };
+    }
   }
 
   function persistUrlSupplyCandidates(candidates: UrlFirstSupplyCandidate[]) {
@@ -2337,12 +2545,12 @@ export function FlowList() {
         <div data-testid="flow-catalog-hero" className="mb-3">
           <p className="text-sm font-semibold text-[#6E6B64]">Flow 찾기</p>
           <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-            <h1 className="break-keep text-2xl font-semibold tracking-tight text-[#1B1A17] sm:text-3xl">무엇을 저장할까요?</h1>
+            <h1 className="break-keep text-2xl font-semibold tracking-tight text-[#1B1A17] sm:text-3xl">URL·메모로 Flow 찾기</h1>
             <span data-testid="flow-catalog-count" className="text-sm font-semibold text-[#8A857B]">
               {hasCatalogFilter ? `${visibleCatalogCount}/${totalCatalogCount}개 콘텐츠` : `${totalCatalogCount}개 콘텐츠`}
             </span>
           </div>
-          <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">저장하면 일정과 체크리스트가 생깁니다.</p>
+          <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">준비된 Flow를 찾거나 내 초안으로 이어갑니다.</p>
         </div>
         <FlowUrlLookupEntry
           input={urlLookupInput}
@@ -2351,6 +2559,7 @@ export function FlowList() {
           onInputChange={setUrlLookupInput}
           onSubmit={handleUrlLookupSubmit}
           onSaveSupplyCandidate={handleSaveSupplyCandidate}
+          onSaveMemoDraftFlow={handleSaveMemoDraftFlow}
         />
         <FlowUrlSupplyCandidateList
           candidates={urlSupplyCandidates}

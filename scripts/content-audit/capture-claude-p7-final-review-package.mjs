@@ -700,7 +700,7 @@ async function lookupUrlFirstInput(page, url) {
   await settle(page);
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.waitFor({ state: 'visible' });
-  await lookup.getByLabel('원문 URL').fill(url);
+  await lookup.getByTestId('flow-url-lookup-input').fill(url);
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   await page.getByTestId('flow-url-lookup-result').waitFor({ state: 'visible' });
   await settle(page);

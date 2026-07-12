@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { lookupUrlFirstP0Input } from './url-first-lookup';
 import {
+  buildMemoDraftItemSuggestions,
   buildUrlFirstDraftItemSuggestions,
   buildUrlFirstSupplyCandidateProductionMarkdown,
   buildUrlFirstSupplyCandidateUserSummaryMarkdown,
@@ -14,6 +15,18 @@ import {
   upsertUrlFirstSupplyCandidate,
   URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY,
 } from './url-first-supply-queue';
+
+test('memo draft suggestions use only user-written sentences and stay editable', () => {
+  const suggestions = buildMemoDraftItemSuggestions('이사 견적을 비교한다. 관리사무소에 연락한다. 주소 변경 대상을 확인한다.');
+
+  assert.equal(suggestions.length, 4);
+  assert.deepEqual(suggestions.map((item) => item.dayOffset), [0, 1, 2, 3]);
+  assert.match(suggestions[0].title, /이사 견적/);
+  assert.match(suggestions[1].title, /관리사무소/);
+  assert.ok(suggestions.slice(0, 3).every((item) => item.title.endsWith('하기')));
+  assert.ok(suggestions.every((item) => !item.title.includes('한다 정리하기')));
+  assert.ok(suggestions.every((item) => !/AI|자동 생성|sourceTrace|Step|Item/.test(`${item.title} ${item.memo}`)));
+});
 
 test('URL-first draft suggestions deterministically expand title and memo into dated actions', () => {
   const candidate = {

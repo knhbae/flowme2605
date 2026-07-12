@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe URL·메모 진입 정합성 리뷰</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, Pretendard, "Noto Sans KR", sans-serif; background: #f7f7f4; color: #1b1a17; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { border-bottom: 1px solid #dedbd4; padding-bottom: 24px; }
+    h1 { margin: 8px 0; font-size: clamp(28px, 4vw, 48px); letter-spacing: 0; }
+    h2 { margin: 32px 0 14px; font-size: 22px; }
+    p { line-height: 1.65; color: #5f5b53; }
+    .eyebrow { color: #176d5d; font-weight: 800; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 22px; }
+    .metric { border: 1px solid #dedbd4; background: white; padding: 14px; border-radius: 8px; }
+    .metric strong { display: block; font-size: 24px; color: #176d5d; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+    figure { margin: 0; border: 1px solid #dedbd4; background: white; border-radius: 8px; overflow: hidden; }
+    img { display: block; width: 100%; height: auto; background: #fafaf8; }
+    figcaption { padding: 12px 14px 14px; line-height: 1.5; color: #5f5b53; }
+    code { background: #eceae4; border-radius: 4px; padding: 2px 5px; }
+    .decision { border-left: 4px solid #176d5d; background: #eef6f1; padding: 14px 16px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">2026-07-12 · current production build</div>
+    <h1>URL과 메모가 같은 첫 진입에서 실제로 작동하는가</h1>
+    <p>오래된 리뷰 화면을 현재 근거로 사용하지 않고, 현행 <code>/</code> → <code>/flows</code> → <code>/my</code> 경로를 390px와 1024px에서 다시 캡처했다.</p>
+    <div class="metrics">
+      <div class="metric"><strong>2/2</strong>viewport entry visible</div>
+      <div class="metric"><strong>2/2</strong>memo draft saved</div>
+      <div class="metric"><strong>0</strong>internal term hits</div>
+      <div class="metric"><strong>0</strong>live AI implications</div>
+      <div class="metric"><strong>0</strong>horizontal overflow</div>
+    </div>
+  </header>
+
+  <section>
+    <h2>판단</h2>
+    <p class="decision">홈의 “URL이나 메모” 약속과 `/flows` 런타임이 일치한다. URL은 기존 canonical lookup을 유지하고, 메모는 사용자가 쓴 문장만 나눈 개인 초안으로 저장된다. 저장 후에는 별도 제품 표면을 만들지 않고 My Flow의 기존 편집·실행 경로로 합류한다.</p>
+  </section>
+
+  <section>
+    <h2>모바일 390px</h2>
+    <div class="gallery">
+      <figure><img src="screenshots/01-home-mobile.png" alt="홈 모바일"><figcaption>홈: URL·메모 진입이 첫 행동으로 보인다.</figcaption></figure>
+      <figure><img src="screenshots/02-flows-entry-mobile.png" alt="Flow 찾기 입력 모바일"><figcaption>/flows: URL 또는 메모 한 필드와 처리 차이를 짧게 설명한다.</figcaption></figure>
+      <figure><img src="screenshots/03-memo-draft-mobile.png" alt="메모 초안 모바일"><figcaption>메모 초안: 제목, 선택 기준일, 사용자가 쓴 문장에서 나눈 할 일을 확인한다.</figcaption></figure>
+      <figure><img src="screenshots/04-memo-my-flow-mobile.png" alt="메모 초안 My Flow 모바일"><figcaption>My Flow: 저장한 메모 초안이 다음 할 일로 착지한다.</figcaption></figure>
+      <figure><img src="screenshots/05-url-hit-mobile.png" alt="URL hit 모바일"><figcaption>기존 URL hit canonical lookup과 저장 전 보기는 유지된다.</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Wide 1024px</h2>
+    <div class="gallery">
+      <figure><img src="screenshots/01-home-wide.png" alt="홈 wide"><figcaption>홈 wide.</figcaption></figure>
+      <figure><img src="screenshots/02-flows-entry-wide.png" alt="Flow 찾기 입력 wide"><figcaption>통합 입력은 above-fold에 유지된다.</figcaption></figure>
+      <figure><img src="screenshots/03-memo-draft-wide.png" alt="메모 초안 wide"><figcaption>제목과 기준일은 두 열, 할 일은 전체 폭으로 읽힌다.</figcaption></figure>
+      <figure><img src="screenshots/04-memo-my-flow-wide.png" alt="메모 초안 My Flow wide"><figcaption>wide My Flow에서도 같은 draft가 실행 목록에 합류한다.</figcaption></figure>
+    </div>
+  </section>
+</main>
+</body>
+</html>

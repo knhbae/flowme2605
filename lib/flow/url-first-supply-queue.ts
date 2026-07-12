@@ -103,7 +103,8 @@ function toUrlFirstDraftActionTitle(value: string): string {
     .trim()
     .replace(/고\s*싶(?:어요|습니다|음)$/u, '기')
     .replace(/해야\s*(?:해요|합니다|함)$/u, '하기')
-    .replace(/해\s*주세요$/u, '하기');
+    .replace(/해\s*주세요$/u, '하기')
+    .replace(/한다$/u, '하기');
   if (!text) return '';
   if (/(?:기|하기|보기|두기|정하기|고르기|나누기|적기|챙기기|확인하기)$/u.test(text)) return text;
   if (/(?:확인|정리|비교|준비|선택|점검|기록|실행|완료)$/u.test(text)) return `${text}하기`;
@@ -133,6 +134,32 @@ export function buildUrlFirstDraftItemSuggestions(candidate: UrlFirstSupplyCandi
 
   while (suggestions.length < 3) {
     addSuggestion(`${topic} 첫 행동 시작하기`, '저장 후 My Flow에서 날짜와 메모를 내 상황에 맞게 손볼 수 있어요.');
+  }
+
+  return suggestions.map((suggestion, dayOffset) => ({ ...suggestion, dayOffset }));
+}
+
+export function buildMemoDraftItemSuggestions(input: string): UrlFirstDraftItemSuggestion[] {
+  const suggestions: Omit<UrlFirstDraftItemSuggestion, 'dayOffset'>[] = [];
+  const seen = new Set<string>();
+  const addSuggestion = (title: string, memo: string) => {
+    const normalizedTitle = clean(title);
+    if (!normalizedTitle || seen.has(normalizedTitle) || suggestions.length >= 7) return;
+    seen.add(normalizedTitle);
+    suggestions.push({ title: normalizedTitle, memo });
+  };
+
+  splitUrlFirstDraftRequestLines(input).slice(0, 6).forEach((line) => {
+    const actionTitle = toUrlFirstDraftActionTitle(line);
+    if (actionTitle) addSuggestion(actionTitle, '내가 붙여넣은 메모에서 나눈 할 일입니다.');
+  });
+  if (suggestions.length < 2) {
+    addSuggestion('이번 준비의 범위 정하기', '메모에서 이번에 실제로 할 부분만 남겨보세요.');
+  }
+  addSuggestion('할 일을 실행할 순서 정하기', '저장 후 날짜와 순서를 내 상황에 맞게 다시 바꿀 수 있어요.');
+
+  while (suggestions.length < 3) {
+    addSuggestion('첫 행동 시작하기', '저장 후 My Flow에서 제목과 메모를 다시 손볼 수 있어요.');
   }
 
   return suggestions.map((suggestion, dayOffset) => ({ ...suggestion, dayOffset }));

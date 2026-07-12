@@ -1,0 +1,76 @@
+{
+  "capturedAt": "2026-07-12T03:03:28.413Z",
+  "sourcePolicy": {
+    "runtimeBuildOnly": true,
+    "outdatedReviewScreensUsedAsCurrentEvidence": false,
+    "reviewGatedContentUsedAsSuccessScenario": false
+  },
+  "scenarios": [
+    {
+      "scenario": "url-memo-entry",
+      "viewport": "mobile",
+      "width": 390,
+      "label": "URL 또는 메모",
+      "type": "text",
+      "required": true,
+      "aboveFold": true,
+      "firstCatalogCardTop": 467,
+      "firstCatalogCardTopLimit": 480,
+      "memoDraftVisible": true,
+      "memoDraftItemCount": 4,
+      "internalHitCount": 0,
+      "liveAiImplied": false,
+      "horizontalOverflow": false
+    },
+    {
+      "scenario": "memo-draft-my-flow",
+      "viewport": "mobile",
+      "width": 390,
+      "landingVisible": true,
+      "titleVisible": true,
+      "sourceTitle": "내 메모",
+      "sourceUrlPresent": false,
+      "originalMemoPreserved": true,
+      "itemCount": 4
+    },
+    {
+      "scenario": "url-memo-entry",
+      "viewport": "wide",
+      "width": 1024,
+      "label": "URL 또는 메모",
+      "type": "text",
+      "required": true,
+      "aboveFold": true,
+      "memoDraftVisible": true,
+      "memoDraftItemCount": 4,
+      "internalHitCount": 0,
+      "liveAiImplied": false,
+      "horizontalOverflow": false
+    },
+    {
+      "scenario": "memo-draft-my-flow",
+      "viewport": "wide",
+      "width": 1024,
+      "landingVisible": true,
+      "titleVisible": true,
+      "sourceTitle": "내 메모",
+      "sourceUrlPresent": false,
+      "originalMemoPreserved": true,
+      "itemCount": 4
+    }
+  ],
+  "summary": {
+    "viewportCount": 2,
+    "entryVisibleCount": 2,
+    "memoDraftVisibleCount": 2,
+    "memoDraftSaveLandingCount": 2,
+    "memoDraftInternalHitCount": 0,
+    "memoDraftLiveAiImpliedCount": 0,
+    "horizontalOverflowCount": 0,
+    "originalMemoPreservedCount": 2,
+    "firstCatalogCardWithinBaseline": true,
+    "urlCanonicalLookupPreserved": true,
+    "storageSchemaChanged": false,
+    "publicFlowShellChanged": false
+  }
+}

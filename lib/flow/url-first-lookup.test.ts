@@ -5,6 +5,7 @@ import {
   buildUrlFirstStartPackage,
   buildUrlFirstMemoDraft,
   canonicalizeFlowSourceUrl,
+  lookupUrlOrMemoP0Input,
   lookupUrlFirstP0Input,
 } from './url-first-lookup';
 
@@ -224,8 +225,28 @@ test('memo draft remains private and recommends an existing moving Flow', () => 
   assert.equal(result.sourceStatus, 'missing');
   assert.equal(result.canSaveToMyFlow, false);
   assert.equal(result.recommendation?.href, '/flow-maps/moving-d30');
-  assert.deepEqual(result.exportModes, ['calendar', 'markdown', 'checklist']);
+  assert.deepEqual(result.exportModes, []);
   assert.equal(result.aiGeneration.enabled, false);
+  assert.match(result.aiGeneration.reason, /자동으로 내용을 생성하지 않습니다/);
+});
+
+test('shared URL-or-memo entry keeps URLs on lookup and sends plain text to a private memo draft', () => {
+  const hit = lookupUrlOrMemoP0Input('https://mathbang.net/13?utm_source=share');
+  const memo = lookupUrlOrMemoP0Input('주말에 이사 견적을 비교하고 관리사무소에 연락하기');
+
+  assert.equal(hit.status, 'hit');
+  assert.equal(hit.inputKind, 'url');
+  assert.equal(memo.status, 'memo_draft');
+  assert.equal(memo.inputKind, 'memo');
+  assert.equal(memo.canSaveToMyFlow, false);
+  assert.equal(memo.aiGeneration.enabled, false);
+});
+
+test('memo draft does not recommend an unrelated fixed content route', () => {
+  const result = buildUrlFirstMemoDraft('매주 읽을 책을 고르고 독서 기록을 남기고 싶다.');
+
+  assert.equal(result.status, 'memo_draft');
+  assert.equal(result.recommendation, undefined);
 });
 
 test('hit URL start package saves the selected start date and builds a markdown export', () => {

@@ -350,7 +350,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flows');
 
-  await expect(page.getByRole('heading', { name: '무엇을 저장할까요?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '저장할 실행 콘텐츠' })).toHaveCount(0);
   const flowMapCatalog = page.getByTestId('flow-map-catalog-section');
   await expect(flowMapCatalog).toBeVisible();
@@ -400,7 +400,7 @@ test('flow finding URL lookup reuses existing source-backed Flows first', async 
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await expect(lookup).toBeVisible({ timeout: 15_000 });
-  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=share');
+  await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=share');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
 
   const result = page.getByTestId('flow-url-lookup-result');
@@ -414,19 +414,61 @@ test('flow finding URL lookup reuses existing source-backed Flows first', async 
   await expect(result).toContainText('내 Flow');
   await expect(result).not.toContainText('source-backed');
 
-  await lookup.getByLabel('원문 URL').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
+  await lookup.getByLabel('URL 또는 메모').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   await expect(result).toContainText('원문 확인');
   await expect(result.getByRole('link', { name: '미리보기 열기' })).toHaveAttribute('href', '/f/vehicle-inspection-prep');
   await expect(result).toContainText('저장 대기');
   await expect(result.getByText('내 Flow', { exact: true })).toHaveCount(0);
 
-  await lookup.getByLabel('원문 URL').fill('https://example.com/some-plan?utm_source=newsletter');
+  await lookup.getByLabel('URL 또는 메모').fill('https://example.com/some-plan?utm_source=newsletter');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   await expect(result).toContainText('바로 시작할 Flow를 찾지 못했어요');
   await expect(result).toContainText('직접 손볼 초안 준비하기');
   await expect(result).not.toContainText(/아직 없음|저장 대기|초안 요청 가능|아직 실행 가능한 Flow 아님/);
   await expect(result).not.toContainText('이미 만들어진 Flow가 있어요');
+  await expectNoHorizontalOverflow(page);
+});
+
+test('flow finding turns a plain memo into an editable private draft and lands in My Flow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  const lookup = page.getByTestId('flow-url-lookup-entry');
+  await lookup.getByLabel('URL 또는 메모').fill('이사 견적을 비교한다. 관리사무소에 연락한다. 주소 변경 대상을 확인한다.');
+  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await expect(result).toContainText('내 메모');
+  await expect(result).toContainText('메모를 실행할 초안으로 정리했어요');
+  await expect(result).toContainText('자동으로 내용을 덧붙이지 않고');
+  await expect(result).not.toContainText(/AI가|자동 생성|source-backed|sourceTrace|Markdown/);
+  const editor = result.getByTestId('flow-memo-draft-editor');
+  await expect(editor).toBeVisible();
+  await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(4);
+  await editor.getByLabel('메모 초안 제목').fill('우리 집 이사 준비');
+  await editor.getByLabel('메모 초안 기준일').fill('2026-08-30');
+  await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
+
+  await page.waitForURL(/\/my(?:\?|$)/);
+  const storedDraft = await page.evaluate(() => {
+    const bundles = JSON.parse(window.localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]');
+    return bundles.find((bundle: { flow?: { slug?: string; source_title?: string } }) =>
+      bundle.flow?.slug?.startsWith('url-draft-') && bundle.flow?.source_title === '내 메모',
+    );
+  });
+  expect(storedDraft?.flow).toMatchObject({
+    title: '우리 집 이사 준비',
+    source_title: '내 메모',
+    source_status: 'preview',
+    status: 'draft',
+  });
+  expect(storedDraft?.flow?.source_url).toBeUndefined();
+  expect(storedDraft?.flow?.raw_text).toContain('처음 붙여넣은 메모');
+  expect(storedDraft?.flow?.raw_text).toContain('관리사무소에 연락한다');
+  await expect(page.getByText('우리 집 이사 준비').first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });
 
@@ -438,7 +480,7 @@ test('flow finding URL lookup saves production candidates without AI generation'
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await expect(lookup).toBeVisible({ timeout: 15_000 });
-  await lookup.getByLabel('원문 URL').fill('https://example.com/some-plan?utm_source=newsletter');
+  await lookup.getByLabel('URL 또는 메모').fill('https://example.com/some-plan?utm_source=newsletter');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
 
   const result = page.getByTestId('flow-url-lookup-result');
@@ -468,7 +510,7 @@ test('flow finding URL lookup saves production candidates without AI generation'
   });
   expect(storedCandidates[0].savedAt).toBeTruthy();
 
-  await lookup.getByLabel('원문 URL').fill('https://example.com/some-plan?utm_campaign=again');
+  await lookup.getByLabel('URL 또는 메모').fill('https://example.com/some-plan?utm_campaign=again');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   await expect(result.getByTestId('flow-url-supply-existing')).toContainText('저장한 초안이 있어요');
   await expect(result).toContainText('예시 준비 체크리스트');
@@ -476,7 +518,7 @@ test('flow finding URL lookup saves production candidates without AI generation'
   storedCandidates = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:url-first:supply-candidates') || '[]'));
   expect(storedCandidates).toHaveLength(1);
 
-  await lookup.getByLabel('원문 URL').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
+  await lookup.getByLabel('URL 또는 메모').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   await expect(result).toContainText('원문 확인');
   await expect(result).toContainText('직접 손볼 초안 준비하기');
@@ -545,7 +587,7 @@ test('flow finding production candidates can be revisited edited resolved and re
 
   const updatedManageCard = candidateList.locator('article').filter({ hasText: '수정한 후보 제목' });
   await updatedManageCard.getByRole('button', { name: '다시 조회' }).click();
-  await expect(page.getByLabel('원문 URL')).toHaveValue('https://example.com/manage-me');
+  await expect(page.getByLabel('URL 또는 메모')).toHaveValue('https://example.com/manage-me');
   await expect(page.getByTestId('flow-url-lookup-result')).toContainText('바로 시작할 Flow를 찾지 못했어요');
 
   const reviewCard = candidateList.locator('article').filter({ hasText: '원문 확인 후보' });
@@ -558,7 +600,7 @@ test('flow finding production candidates can be revisited edited resolved and re
   await expect(resolvedCard).toContainText('Flow 준비됨');
   await resolvedCard.getByRole('button', { name: 'Flow 결과로 이동' }).click();
   const result = page.getByTestId('flow-url-lookup-result');
-  await expect(page.getByLabel('원문 URL')).toHaveValue('https://mathbang.net/13');
+  await expect(page.getByLabel('URL 또는 메모')).toHaveValue('https://mathbang.net/13');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
   await expect(result.getByTestId('flow-url-start-panel')).toBeVisible();
 
@@ -609,7 +651,7 @@ test('flow finding manual registered production candidate resolves to a startabl
   await candidateCard.getByRole('button', { name: 'Flow 결과로 이동' }).click();
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await expect(page.getByLabel('원문 URL')).toHaveValue('https://www.samsungsvc.co.kr/solution/28524');
+  await expect(page.getByLabel('URL 또는 메모')).toHaveValue('https://www.samsungsvc.co.kr/solution/28524');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
   await expect(result.getByRole('link', { name: '저장 전 보기' })).toHaveAttribute('href', '/flow-maps/aircon-filter-cleaning');
   await expect(result.getByTestId('flow-url-start-panel')).toBeVisible();
@@ -724,7 +766,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await expect(lookup).toBeVisible({ timeout: 15_000 });
-  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=share');
+  await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=share');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
 
   const result = page.getByTestId('flow-url-lookup-result');
@@ -765,7 +807,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
 
   await page.goto('/flows');
   const lookupAfterSave = page.getByTestId('flow-url-lookup-entry');
-  await lookupAfterSave.getByLabel('원문 URL').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
+  await lookupAfterSave.getByLabel('URL 또는 메모').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
   await lookupAfterSave.getByRole('button', { name: 'Flow 찾기' }).click();
   const blockedResult = page.getByTestId('flow-url-lookup-result');
   await expect(blockedResult).toContainText('저장 대기');
@@ -781,7 +823,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await expect(lookup).toBeVisible({ timeout: 15_000 });
-  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=share');
+  await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=share');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
 
   const result = page.getByTestId('flow-url-lookup-result');
@@ -903,7 +945,7 @@ test('my flow personal copy settings can readjust saved title date and included 
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await expect(lookup).toBeVisible({ timeout: 15_000 });
-  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=share');
+  await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=share');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
 
   const result = page.getByTestId('flow-url-lookup-result');
@@ -1020,7 +1062,7 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await expect(lookup).toBeVisible({ timeout: 15_000 });
   await lookup
-    .getByLabel('원문 URL')
+    .getByLabel('URL 또는 메모')
     .fill('https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
 
@@ -1454,7 +1496,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-view-calendar')).toHaveCount(0);
 
   await page.goto('/flows');
-  await expect(page.getByRole('heading', { name: '무엇을 저장할까요?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
   await expect(page.getByTestId('flow-map-catalog-section').getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText('Flow Map');
   await expect(page.getByText('한 개만 저장').first()).toHaveCount(0);
@@ -2073,7 +2115,7 @@ test('moving restart mobile uses one export entry and friendly date text', async
 test('flow discovery keeps legacy tag queries out of the representative catalog surface', async ({ page }) => {
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
-  await expect(page.getByRole('heading', { name: '무엇을 저장할까요?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
   await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(0);
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByLabel('태그')).toHaveCount(0);
@@ -3882,7 +3924,7 @@ test('completed personal Flow reviews item changes before starting a new source 
   await page.evaluate(() => window.localStorage.clear());
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
-  await lookup.getByLabel('원문 URL').fill('https://mathbang.net/13?utm_source=version-review');
+  await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=version-review');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   const result = page.getByTestId('flow-url-lookup-result');
   await result.getByRole('button', { name: '조금 고쳐 시작' }).click();
