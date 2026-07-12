@@ -158,7 +158,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
     <main data-testid="flow-map-public" className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8 sm:pb-16`}>
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
-      <section data-testid="flow-map-hero" className="rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-6">
+      <section data-testid="flow-map-hero" data-visual-structure="unframed" className="border-y border-[#E7E4DD] py-5 sm:py-7">
         <p className="text-sm font-semibold text-[#3654FF]">{FLOW_ENTRY_DETAIL_CTA_LABEL}</p>
         <h1 className="mt-1 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{displayTitle}</h1>
         <p data-testid="flow-map-result-promise" className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF] sm:text-base">
@@ -179,7 +179,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)] md:items-stretch">
           {chooseChildBeforeSave ? (
-            <div data-testid="flow-map-choose-child" className="rounded-xl border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-3 text-sm leading-6 text-[#2945E8]">
+            <div data-testid="flow-map-choose-child" className="border-y border-[#DDE3FF] bg-[#EEF1FF] px-3 py-3 text-sm leading-6 text-[#2945E8]">
               <p className="font-semibold">{choiceCopy.heading}</p>
               <p className="mt-1">{choiceCopy.body}</p>
             </div>
@@ -194,7 +194,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             />
           )}
           {firstStep ? (
-            <div data-testid="flow-map-first-action-preview" className="rounded-xl bg-[#FAFAF8] px-3 py-3 md:flex md:flex-col md:justify-center">
+            <div data-testid="flow-map-first-action-preview" className="border-l-2 border-[#3654FF] bg-[#FAFAF8] px-3 py-3 md:flex md:flex-col md:justify-center">
               <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 할 일</p>
               <h2 className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-slate-950">{firstStep.title}</h2>
               {firstStepDetail ? <p className="mt-1 line-clamp-2 break-keep text-xs font-medium leading-5 text-slate-600">{firstStepDetail}</p> : null}
@@ -203,7 +203,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
         </div>
       </section>
 
-      <section className="mt-5 rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-5">
+      <section data-testid="flow-map-execution-outline" className="mt-6 border-t border-[#E7E4DD] pt-5 sm:pt-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-[#6E6B64]">원문과 실행 항목</p>
@@ -219,9 +219,9 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             </a>
           </div>
         </div>
-        <div className="mt-4 grid gap-4">
+        <div className={`mt-4 grid gap-4 ${publicSurface.childFlows.length > 1 ? 'md:grid-cols-2' : ''}`}>
           {publicSurface.childFlows.map((flow) => (
-            <article key={flow.slug} className="min-w-0 rounded-2xl border border-[#E7E4DD] bg-white p-4">
+            <article key={flow.slug} className="min-w-0 rounded-lg border border-[#E7E4DD] bg-white p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">{toContentDisplayTitle(flow.title)}</h3>
@@ -257,41 +257,46 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
                 </div>
               ) : (
                 <div className="mt-3 grid gap-2">
-                  {flow.steps.map((step) => (
-                    <div key={step.id} className="min-w-0 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-3">
-                      {step.stepTitle ? <p className="text-xs font-semibold text-[#6E6B64]">{toUserFacingSourceTitle(step.stepTitle)}</p> : null}
-                      <p className="mt-1 text-sm font-semibold text-slate-950">{step.title}</p>
-                      {step.detailItems.length > 0 ? (
-                        <>
-                          <p className="mt-2 rounded-md bg-white px-3 py-2 text-[13px] font-medium leading-5 text-slate-700">
-                            첫 체크: {step.detailItems[0]}
-                          </p>
-                          <details data-testid="flow-map-public-step-items" className="mt-2 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5">
-                            <summary className="cursor-pointer text-xs font-semibold text-slate-600">체크 {step.detailItems.length}개 열기</summary>
-                            <ul className="mt-2 grid gap-1.5 text-[13px] font-medium leading-5 text-slate-700">
-                              {step.detailItems.map((item) => (
-                                <li key={item} className="flex gap-1.5">
-                                  <span className="mt-0.5 shrink-0 text-slate-400" aria-hidden="true">□</span>
-                                  <span>{item}</span>
-                                </li>
-                              ))}
-                            </ul>
+                  {flow.steps.map((step, index) => (
+                    <div key={step.id} data-testid="flow-map-execution-step-row" className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-3 border-t border-[#E7E4DD] py-3 first:border-t-0 first:pt-0">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#EEF1FF] text-xs font-semibold text-[#3654FF]" aria-hidden="true">
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0">
+                        {step.stepTitle ? <p className="text-xs font-semibold text-[#6E6B64]">{toUserFacingSourceTitle(step.stepTitle)}</p> : null}
+                        <p className="mt-1 text-sm font-semibold text-slate-950">{step.title}</p>
+                        {step.detailItems.length > 0 ? (
+                          <>
+                            <p className="mt-2 text-[13px] font-medium leading-5 text-slate-700">
+                              <span className="font-semibold text-slate-500">첫 체크</span> · {step.detailItems[0]}
+                            </p>
+                            <details data-testid="flow-map-public-step-items" className="mt-2 border-y border-[#E7E4DD] py-2.5">
+                              <summary className="cursor-pointer text-xs font-semibold text-slate-600">체크 {step.detailItems.length}개 열기</summary>
+                              <ul className="mt-2 grid gap-1.5 text-[13px] font-medium leading-5 text-slate-700">
+                                {step.detailItems.map((item) => (
+                                  <li key={item} className="flex gap-1.5">
+                                    <span className="mt-0.5 shrink-0 text-slate-400" aria-hidden="true">□</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </details>
+                          </>
+                        ) : (
+                          <p className="mt-1 text-xs font-semibold text-slate-500">하위 체크 {step.detailItemCount}개</p>
+                        )}
+                        {step.memo || step.sourceUrl ? (
+                          <details className="mt-2 min-w-0 border-y border-[#E7E4DD] py-2.5">
+                            <summary className="cursor-pointer text-xs font-semibold text-slate-600">메모 · 원문</summary>
+                            {step.memo ? <p className="mt-2 whitespace-pre-wrap break-words text-[13px] leading-5 text-slate-700">{step.memo}</p> : null}
+                            {step.sourceUrl ? (
+                              <a className="mt-2 inline-flex min-h-8 items-center rounded-md border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={step.sourceUrl} target="_blank" rel="noreferrer">
+                                이 단계 원문 보기
+                              </a>
+                            ) : null}
                           </details>
-                        </>
-                      ) : (
-                        <p className="mt-1 text-xs font-semibold text-slate-500">하위 체크 {step.detailItemCount}개</p>
-                      )}
-                      {step.memo || step.sourceUrl ? (
-                        <details className="mt-2 min-w-0 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5">
-                          <summary className="cursor-pointer text-xs font-semibold text-slate-600">메모 · 원문</summary>
-                          {step.memo ? <p className="mt-2 whitespace-pre-wrap break-words text-[13px] leading-5 text-slate-700">{step.memo}</p> : null}
-                          {step.sourceUrl ? (
-                            <a className="mt-2 inline-flex min-h-8 items-center rounded-md border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={step.sourceUrl} target="_blank" rel="noreferrer">
-                              이 단계 원문 보기
-                            </a>
-                          ) : null}
-                        </details>
-                      ) : null}
+                        ) : null}
+                      </div>
                     </div>
                   ))}
                 </div>

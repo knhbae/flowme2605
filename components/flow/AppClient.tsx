@@ -1962,14 +1962,14 @@ function FlowUrlLookupEntry({
   return (
     <section
       data-testid="flow-url-lookup-entry"
-      className="mb-4 rounded-2xl border border-[#DDE6D8] bg-[#F7FBF4] p-3.5 shadow-[0_8px_20px_rgba(27,26,23,0.04)]"
+      className="mb-4 rounded-lg border border-[#DDE6D8] bg-[#F7FBF4] p-3.5 shadow-[0_8px_20px_rgba(27,26,23,0.04)]"
     >
       <form className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2" onSubmit={onSubmit}>
         <label className="min-w-0">
           <span className="text-xs font-semibold text-[#176D5D]">URL 또는 메모</span>
           <input
             data-testid="flow-url-lookup-input"
-            className="mt-1 min-h-11 w-full rounded-xl border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+            className="mt-1 min-h-11 w-full rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
             value={input}
             onChange={(event) => onInputChange(event.target.value)}
             placeholder="링크를 붙여넣거나, 하려는 일을 메모로 적어보세요"
@@ -1979,7 +1979,7 @@ function FlowUrlLookupEntry({
         </label>
         <button
           type="submit"
-          className="min-h-11 rounded-xl bg-[#176D5D] px-4 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+          className="min-h-11 rounded-lg bg-[#176D5D] px-4 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
         >
           Flow 찾기
         </button>
@@ -2384,7 +2384,7 @@ function FlowUrlSupplyCandidateList({
   if (candidates.length === 0) return null;
 
   return (
-    <section id="flow-url-supply-candidate-list" data-testid="flow-url-supply-candidate-list" className="mb-4 scroll-mt-4 rounded-2xl border border-[#E7E4DD] bg-white p-3.5">
+    <section id="flow-url-supply-candidate-list" data-testid="flow-url-supply-candidate-list" className="mb-4 scroll-mt-4 rounded-lg border border-[#E7E4DD] bg-white p-3.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-[#1B1A17]">내 초안</h2>
         <span className="text-[11px] font-semibold text-[#8A857B]">{candidates.length}개</span>
@@ -2418,6 +2418,7 @@ export function FlowList() {
   const [catalogIntent, setCatalogIntent] = useState<CatalogIntent>('all');
   const [urlLookupInput, setUrlLookupInput] = useState('');
   const [urlLookupResult, setUrlLookupResult] = useState<UrlFirstLookupResult | null>(null);
+  const [catalogBrowseOpenAfterLookup, setCatalogBrowseOpenAfterLookup] = useState(false);
   const [urlSupplyCandidates, setUrlSupplyCandidates] = useState<UrlFirstSupplyCandidate[]>([]);
   const directoryBundles = bundles.filter(isPublicDirectoryBundle);
   const showCatalogFilters = directoryBundles.length > 6;
@@ -2449,10 +2450,12 @@ export function FlowList() {
   const visibleCatalogCount = visibleFlowMapCatalogLinks.length + visibleDirectoryBundles.length;
   const totalCatalogCount = flowMapCatalogLinks.length + filtered.length;
   const hasCatalogFilter = catalogQuery.trim().length > 0 || catalogIntent !== 'all';
+  const catalogBrowseHiddenAfterLookup = Boolean(urlLookupResult) && !catalogBrowseOpenAfterLookup;
 
   function handleUrlLookupSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setUrlLookupResult(lookupUrlOrMemoP0Input(urlLookupInput));
+    setCatalogBrowseOpenAfterLookup(false);
   }
 
   function handleSaveMemoDraftFlow(memo: string, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowSaveResult {
@@ -2602,7 +2605,21 @@ export function FlowList() {
           onRemoveCandidate={handleRemoveSupplyCandidate}
           onSaveDraftFlow={handleSaveDraftFlowFromCandidate}
         />
-        <div className="mb-3 grid gap-2">
+        {urlLookupResult ? (
+          <div className="mb-4 border-y border-[#E7E4DD] py-3">
+            <button
+              type="button"
+              data-testid="flow-catalog-after-lookup-toggle"
+              className="flex min-h-10 w-full items-center justify-between gap-3 text-left text-sm font-semibold text-[#3654FF]"
+              aria-expanded={catalogBrowseOpenAfterLookup}
+              onClick={() => setCatalogBrowseOpenAfterLookup((open) => !open)}
+            >
+              <span>{catalogBrowseOpenAfterLookup ? '다른 Flow 접기' : '다른 Flow 둘러보기'}</span>
+              <span aria-hidden="true">{catalogBrowseOpenAfterLookup ? '−' : '+'}</span>
+            </button>
+          </div>
+        ) : null}
+        <div data-testid="flow-catalog-browse-controls" className={`${catalogBrowseHiddenAfterLookup ? 'hidden' : 'grid'} mb-3 gap-2`}>
           <label>
             <span className="sr-only">검색</span>
             <input
@@ -2629,7 +2646,7 @@ export function FlowList() {
             ))}
           </div>
         </div>
-        {showCatalogFilters ? (
+        {showCatalogFilters && !catalogBrowseHiddenAfterLookup ? (
           <div className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-4">
             <details className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2">
               <summary className="cursor-pointer text-sm font-semibold text-[#1B1A17]">필터 열기</summary>
@@ -2674,7 +2691,7 @@ export function FlowList() {
             </div>
           </div>
         ) : null}
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div data-testid="flow-catalog-browse-results" className={`${catalogBrowseHiddenAfterLookup ? 'hidden' : 'grid'} gap-3 md:grid-cols-2 xl:grid-cols-3`}>
           {visibleFlowMapCatalogLinks.map((item) => (
             <FlowMapCatalogCard key={item.id} item={item} />
           ))}
@@ -2682,7 +2699,7 @@ export function FlowList() {
             <DirectoryFlowCard key={bundle.flow.id} bundle={bundle} />
           ))}
         </div>
-        {visibleCatalogCount === 0 ? (
+        {visibleCatalogCount === 0 && !catalogBrowseHiddenAfterLookup ? (
           <div className="mt-4 rounded-2xl border border-[#E7E4DD] bg-white p-5 text-sm text-[#6E6B64]">
             <p className="font-semibold text-[#1B1A17]">맞는 콘텐츠가 없습니다.</p>
             <p className="mt-1">검색어나 상황 필터를 줄이면 다시 볼 수 있습니다.</p>
@@ -2831,18 +2848,18 @@ function HomeRecommendationCard({ item, variant = 'secondary' }: { item: FlowMap
       data-testid={isPrimary ? 'home-primary-flow-card' : 'home-secondary-flow-card'}
       data-home-recommendation-card="true"
       className={[
-        'block rounded-2xl border border-[#E7E4DD] bg-white transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]',
+        'block rounded-lg border border-[#E7E4DD] bg-white transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]',
         isPrimary ? 'p-4 md:p-5' : 'p-3.5',
       ].join(' ')}
       href={`/flow-maps/${item.id}`}
     >
-      <p className="text-[11px] font-semibold text-[#8A857B]">{item.categoryLabel}</p>
+      <p className="text-[11px] font-semibold text-[#8A857B]">{item.categoryLabel} · {item.sourceSignal}</p>
       <h2 className={isPrimary ? 'mt-2 text-2xl font-semibold leading-snug text-[#1B1A17]' : 'mt-1.5 text-base font-semibold leading-snug text-[#1B1A17]'}>
         {item.title}
       </h2>
       <p
         data-testid={isPrimary ? 'home-primary-flow-promise' : undefined}
-        className={isPrimary ? 'mt-3 rounded-xl bg-[#FAFAF8] px-3 py-2.5 text-sm font-semibold leading-5 text-[#1B1A17]' : 'mt-2 break-keep text-sm font-semibold leading-5 text-[#3654FF]'}
+        className={isPrimary ? 'mt-3 border-y border-[#E7E4DD] py-2.5 text-sm font-semibold leading-5 text-[#1B1A17]' : 'mt-2 break-keep text-sm font-semibold leading-5 text-[#3654FF]'}
       >
         {promise}
       </p>
@@ -2893,7 +2910,7 @@ export function HomeLanding() {
           <div className="mt-5 flex flex-wrap gap-3 md:mt-7">
             <Link
               data-testid="home-url-first-entry"
-              className="inline-flex min-h-12 w-full flex-col items-start justify-center rounded-xl bg-[#3654FF] px-5 py-3 text-left text-sm font-semibold text-white hover:bg-[#2945E8] sm:w-auto sm:min-w-[19rem]"
+              className="inline-flex min-h-12 w-full flex-col items-start justify-center rounded-lg bg-[#3654FF] px-5 py-3 text-left text-sm font-semibold text-white hover:bg-[#2945E8] sm:w-auto sm:min-w-[19rem]"
               href="/flows"
             >
               <span>URL이나 메모로 Flow 찾기</span>
@@ -4752,7 +4769,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? [{ id: 'routine' as const, label: '반복 항목', count: myFlowCalendarScopeMonthCounts.routine }]
       : []),
   ];
-  const showMyFlowCalendarScopeFilter = myFlowCalendarScopeOptions.length > 1;
+  const visibleMyFlowCalendarScopeOptions = isMyFlowMobileViewport
+    ? myFlowCalendarScopeOptions.filter((option) => option.id === 'all' || option.id === myFlowCalendarScope || option.count > 0)
+    : myFlowCalendarScopeOptions;
+  const showMyFlowCalendarScopeFilter = visibleMyFlowCalendarScopeOptions.length > 1;
   const myFlowCalendarScopeLabel = myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? myFlowCalendarAllScopeLabel;
   const moveMyFlowCalendarMonth = (nextMonth: string) => {
     setMyFlowVisibleMonth(nextMonth);
@@ -4941,9 +4961,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowSelectedDateRoutineRows = calendarScopedRoutineRows.filter((row) => row.date === myFlowSelectedDate);
   const myFlowSelectedDateAllRows = [...myFlowSelectedDateRows, ...myFlowSelectedDateRoutineRows];
   const myFlowSelectedDateRoutineOverflowCount = Math.max(0, myFlowSelectedDateRoutineRows.length - myFlowRoutineIconLimit);
-  const myFlowSelectedDateScheduleLimit = myFlowSelectedDateRoutineRows.length > 0
-    ? MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT
-    : MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT + 2;
+  const myFlowSelectedDateScheduleLimit = MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT;
   const myFlowSelectedDateScheduleOverflowCount = Math.max(0, myFlowSelectedDateRows.length - myFlowSelectedDateScheduleLimit);
   const buildMyFlowSelectedDateGroups = (
     rows: MyFlowCalendarRow[],
@@ -4982,7 +5000,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     myFlowAllRows.find((row) => getMyFlowRowInstanceKey(row) === myFlowActiveRowKey) ??
     myFlowSelectedDateAllRows[0];
   const myFlowSelectedDateOpenCount = myFlowSelectedDateAllRows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
-  const myFlowCalendarOpenCount = calendarScopedRows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
   const myFlowScheduleCountByDate = calendarScopedScheduleRows.reduce<Record<string, number>>((counts, row) => {
     if (!row.date) return counts;
     counts[row.date] = (counts[row.date] ?? 0) + 1;
@@ -5387,14 +5404,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
   const myFlowCalendarScheduleRows = calendarScopedScheduleRows.filter((row) => {
     if (!row.date) return true;
-    if (isMyFlowCalendarCompactGridDate(row.date)) {
-      const visibleFlowGroups = (myFlowScheduleFlowGroupsByDate.get(row.date) ?? []).slice(0, MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT);
+    const flowGroups = myFlowScheduleFlowGroupsByDate.get(row.date) ?? [];
+    if (flowGroups.length > 1) {
+      const visibleFlowGroups = flowGroups.slice(0, MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT);
       return visibleFlowGroups.some((group) => group.rows[0] === row);
     }
     const sameDateRows = myFlowScheduleRowsByDate.get(row.date) ?? [];
-    const scheduleLimit = myFlowRoutineRowsByDate.has(row.date)
-      ? MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT
-      : MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT + 2;
+    const scheduleLimit = MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT;
     return sameDateRows.indexOf(row) < scheduleLimit;
   });
   const myFlowCalendarEvents = [
@@ -5429,9 +5445,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }),
     ...Array.from(myFlowScheduleRowsByDate.entries())
       .map(([date, rows]) => {
-        const scheduleLimit = myFlowRoutineRowsByDate.has(date)
-          ? MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT
-          : MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT + 2;
+        const scheduleLimit = MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT;
         return { date, rows, scheduleLimit };
       })
       .filter(({ date }) => !isMyFlowCalendarCompactGridDate(date))
@@ -5625,48 +5639,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     'grid-cols-4';
   const showSavedViewTabs = !isCalendarSurface && visibleSavedViewTabs.length > 0;
   const showMyFlowWorkspaceControls = showMyFlowScopeControl || showSavedViewTabs;
-  const myFlowWorkspaceHeader = (() => {
-    if (showPostSavePanel) {
-      return {
-        eyebrow: '저장됨',
-        title: '먼저 할 일',
-        help: '바로 이어서 실행합니다.',
-      };
-    }
-    if (savedView === 'calendar') {
-      return {
-        eyebrow: '날짜별 실행',
-        title: '캘린더',
-        help: 'Flow별 항목을 날짜 기준으로 보고 필요한 것만 열어봅니다.',
-      };
-    }
-    if (savedView === 'flow') {
-      return {
-        eyebrow: '저장한 목록',
-        title: '저장한 목록',
-        help: '저장한 흐름별 진행률과 다음 항목만 먼저 보고, 필요한 상세는 열어서 확인합니다.',
-      };
-    }
-    if (savedView === 'checklist') {
-      return {
-        eyebrow: '체크 보기',
-        title: '남은 체크',
-        help: 'Flow별 남은 항목을 펼치지 않고 필요한 것부터 확인합니다.',
-      };
-    }
-    if (savedView === 'routine') {
-      return {
-        eyebrow: '루틴 보기',
-        title: '반복 항목',
-        help: '반복되는 항목은 오늘 실행과 다음 날짜 중심으로 봅니다.',
-      };
-    }
-    return {
-      eyebrow: '내 실행 공간',
-      title: '내 할 일',
-      help: '지금 이어할 할 일부터 보고, 전체 구조는 필요할 때 엽니다.',
-    };
-  })();
 
   useEffect(() => {
     if (myFlowCalendarScope === 'all') return;
@@ -6473,8 +6445,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isRoutineExecution = options.kind === 'routine' || row.itemType?.primary === 'routine_session';
     const routineProgressLabel = `반복 항목 ${row.flow.done}/${row.flow.total}`;
     const routineDragKey = getMyFlowRowInstanceKey(row);
-    const rowClassName = `flex min-w-0 items-stretch rounded-md border bg-white text-sm ${options.compact ? 'gap-1 p-1 sm:gap-1.5 sm:p-1.5' : 'gap-2 p-2'} ${isActive ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200'}`;
-    const rowButtonClassName = `flex min-w-0 flex-1 items-start rounded-md text-left hover:bg-blue-50 ${options.compact ? 'gap-1.5 px-0.5 py-0.5 sm:gap-2 sm:py-1' : 'gap-3 px-1 py-1'}`;
+    const rowClassName = options.compact
+      ? `flex min-w-0 items-center gap-2 border-b py-2.5 text-sm ${isActive ? 'border-blue-300 bg-blue-50/50' : 'border-slate-200 bg-transparent'}`
+      : `flex min-w-0 items-center gap-2 rounded-md border bg-white p-2 text-sm ${isActive ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200'}`;
+    const rowButtonClassName = `flex min-w-0 flex-1 items-start text-left transition hover:text-blue-800 ${options.compact ? 'gap-2 py-0.5' : 'gap-3 rounded-md px-1 py-1 hover:bg-blue-50'}`;
     const rowDotClassName = `mt-1 shrink-0 rounded-full ${options.compact ? 'h-1.5 w-1.5 sm:h-2 sm:w-2' : 'h-2.5 w-2.5'}`;
     const startRoutineRowDrag = (dataTransfer?: DataTransfer) => {
       if (!isRoutineExecution) return;
@@ -6512,6 +6486,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }}
           className={rowClassName}
         >
+          <div className="flex shrink-0 items-center justify-center">
+            {renderTaskCompletionCheckbox({
+              title: displayTitle,
+              checked,
+              routine: isRoutineExecution,
+              compact: options.compact,
+              onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
+            })}
+          </div>
           <button
             className={rowButtonClassName}
             type="button"
@@ -6534,27 +6517,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   {displayTitle}
                 </span>
                 {options.showOpenLabel ? (
-                  <span data-testid="my-flow-row-open-label" className="shrink-0 rounded bg-white px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-100">
-                    열기
+                  <span data-testid="my-flow-row-open-label" className="shrink-0 text-[11px] font-semibold text-blue-700">
+                    열기 ›
                   </span>
                 ) : null}
               </span>
             </span>
           </button>
-          <div className="flex shrink-0 flex-col items-end justify-center gap-1">
-            {isRoutineExecution ? (
-              <span data-testid="my-flow-routine-progress-pill" className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
-                {routineProgressLabel}
-              </span>
-            ) : null}
-            {renderTaskCompletionCheckbox({
-              title: displayTitle,
-              checked,
-              routine: isRoutineExecution,
-              compact: options.compact,
-              onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
-            })}
-        </div>
+          {isRoutineExecution ? (
+            <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+              {routineProgressLabel}
+            </span>
+          ) : null}
       </article>
       {activeInlineDetail && myFlowActiveRow ? (
         <div
@@ -6588,6 +6562,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }}
         className={rowClassName}
       >
+        <div className="flex shrink-0 items-center justify-center">
+          {renderTaskCompletionCheckbox({
+            title: displayTitle,
+            checked,
+            routine: isRoutineExecution,
+            compact: options.compact,
+            onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
+          })}
+        </div>
         <button
           className={rowButtonClassName}
           type="button"
@@ -6610,28 +6593,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {displayTitle}
               </span>
               {options.showOpenLabel ? (
-                <span data-testid="my-flow-row-open-label" className="shrink-0 rounded bg-white px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-100">
-                  열기
+                <span data-testid="my-flow-row-open-label" className="shrink-0 text-[11px] font-semibold text-blue-700">
+                  열기 ›
                 </span>
               ) : null}
             </span>
             {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
         </button>
-        <div className="flex shrink-0 flex-col items-end justify-center gap-1">
-          {isRoutineExecution ? (
-            <span data-testid="my-flow-routine-progress-pill" className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
-              {routineProgressLabel}
-            </span>
-          ) : null}
-          {renderTaskCompletionCheckbox({
-            title: displayTitle,
-            checked,
-            routine: isRoutineExecution,
-            compact: options.compact,
-            onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
-          })}
-        </div>
+        {isRoutineExecution ? (
+          <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+            {routineProgressLabel}
+          </span>
+        ) : null}
       </article>
     );
   };
@@ -6658,7 +6632,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ].filter(Boolean).join(' · ');
     const toneClassName = isPrimary || isActive
       ? 'border-blue-200 bg-blue-50/50'
-      : 'border-slate-200 bg-white';
+      : 'border-slate-200 bg-transparent';
 
     return (
       <article
@@ -6666,56 +6640,46 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-testid="my-flow-mobile-continuation-card"
         data-flow-slug={flow.progress.slug}
         data-row-key={rowKey}
-        className={`min-w-0 rounded-lg border px-3 py-3 shadow-sm ${toneClassName}`}
+        className={`min-w-0 border-b px-1 py-3 ${toneClassName}`}
       >
-        <button
-          type="button"
-          data-testid="my-flow-mobile-continuation-open"
-          aria-expanded={isActive}
-          className={`w-full min-w-0 rounded-md px-0 py-0 text-left transition ${
-            isActive
-              ? 'text-slate-950'
-              : isPrimary
-                ? 'text-slate-950'
-                : 'text-slate-900 hover:text-blue-800'
-          }`}
-          onClick={() => toggleMyFlowRowDetail(row, 'today')}
-        >
-          <span className="flex items-start justify-between gap-3">
-            <span className="min-w-0">
-              {options.hideLeadLabel ? null : (
-                <span className="block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 할 일' : options.nextLabel ?? '다음 할 일'}</span>
-              )}
-              <span data-testid="my-flow-mobile-continuation-title" className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
-                {rowTitle}
-              </span>
-              <span className="mt-1 block text-xs font-semibold text-slate-500">
-                {rowMeta || getMyFlowRowDisplaySectionLabel(row) || '날짜 없는 체크 항목'}
-              </span>
-            </span>
-            <span className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold ${
-              checked
-                ? 'bg-emerald-50 text-emerald-700'
-                : isActive
-                  ? 'bg-white text-blue-700 ring-1 ring-blue-100'
-                  : 'bg-slate-100 text-slate-700'
-            }`}>
-              {checked ? '완료' : isActive ? '열림' : '열기'}
-            </span>
-          </span>
-        </button>
-        <div className="mt-3 flex min-w-0 items-center justify-between gap-2">
-          <span data-testid="my-flow-mobile-continuation-complete">
+        <div className="flex min-w-0 items-start gap-3">
+          <span data-testid="my-flow-mobile-continuation-complete" className="mt-0.5 shrink-0">
             {renderTaskCompletionCheckbox({
               title: rowTitle,
               checked,
               onToggle: () => toggleSavedFlowItem(flow, row.id, row),
             })}
           </span>
-        </div>
-        <div data-testid="my-flow-mobile-continuation-flow-context" className="mt-2 flex min-w-0 items-center gap-2 text-[11px] font-semibold text-slate-500">
-          <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-          <span className="min-w-0 truncate">{flowMeta}</span>
+          <button
+            type="button"
+            data-testid="my-flow-mobile-continuation-open"
+            aria-expanded={isActive}
+            className={`min-w-0 flex-1 text-left transition ${
+              isActive || isPrimary ? 'text-slate-950' : 'text-slate-900 hover:text-blue-800'
+            }`}
+            onClick={() => toggleMyFlowRowDetail(row, 'today')}
+          >
+            <span className="flex min-w-0 items-start justify-between gap-3">
+              <span className="min-w-0 flex-1">
+                <span data-testid="my-flow-mobile-continuation-flow-context" className="flex min-w-0 items-center gap-2 text-[11px] font-semibold text-slate-500">
+                  <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                  <span className="min-w-0 truncate">{flowMeta}</span>
+                </span>
+                {options.hideLeadLabel ? null : (
+                  <span className="mt-1 block text-xs font-semibold text-blue-700">{isPrimary ? options.primaryLabel ?? '지금 할 일' : options.nextLabel ?? '다음 할 일'}</span>
+                )}
+                <span data-testid="my-flow-mobile-continuation-title" className={`mt-1 block text-base font-semibold leading-6 ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+                  {rowTitle}
+                </span>
+                <span className="mt-1 block text-xs font-medium text-slate-500">
+                  {rowMeta || getMyFlowRowDisplaySectionLabel(row) || '날짜 없는 체크 항목'}
+                </span>
+              </span>
+              <span className="shrink-0 pt-0.5 text-xs font-semibold text-blue-700">
+                {isActive ? '닫기' : '열기'} ›
+              </span>
+            </span>
+          </button>
         </div>
         {isActive && myFlowActiveRow ? (
           <div
@@ -8643,7 +8607,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </span>
           ) : null}
           {executionReady && nextRow && !flowExpanded ? (
-            <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
+          <span className="mt-3 block border-t border-slate-200 pt-3">
               <span className="block text-xs font-semibold text-blue-700">{getMyFlowRowStatusLabel(nextRow)}</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
@@ -8651,7 +8615,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </span>
             </span>
           ) : executionReady && !nextRow ? (
-            <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</span>
+            <span className="mt-3 block border-t border-slate-200 pt-3 text-sm text-slate-600">남은 항목이 없습니다.</span>
           ) : null}
         </button>
         {!executionReady ? (
@@ -9168,12 +9132,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   );
 
   return (
-    <main className={`mx-auto max-w-6xl px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
+    <main className={`mx-auto max-w-[1240px] px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
       <PlatformNav />
       <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
         <div>
           <p className={isCalendarSurface ? 'text-xs font-semibold text-blue-700' : 'text-sm font-medium text-gray-500'}>{isCalendarSurface ? '날짜별 실행' : '내 실행 공간'}</p>
-          <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold tracking-tight`}>{isCalendarSurface ? '캘린더' : '내 Flow'}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold tracking-tight`}>{isCalendarSurface ? '캘린더' : '내 Flow'}</h1>
+            {!isCalendarSurface && showDemoData ? (
+              <span data-testid="my-flow-demo-badge" className="mt-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
+                {myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
+              </span>
+            ) : null}
+          </div>
           <p className={`${isCalendarSurface ? 'hidden sm:block' : 'sm:mt-2 sm:text-base'} mt-1 text-sm text-gray-600`}>
             {isCalendarSurface
               ? '언제 할지 정해진 항목을 날짜별로 확인합니다.'
@@ -9197,7 +9168,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       </div>
 
       {workspaceSavedFlows.length === 0 ? (
-        <section data-testid="my-flow-empty-state" className="rounded-xl border border-dashed border-slate-300 bg-white p-5 shadow-sm sm:p-6">
+        <section data-testid="my-flow-empty-state" className="border-y border-slate-200 bg-slate-50/70 px-1 py-8 sm:px-6 sm:py-10">
           <p className="text-sm font-semibold text-blue-700">{isCalendarSurface ? '날짜 항목 없음' : '저장한 콘텐츠 없음'}</p>
           <h2 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950">
             {isCalendarSurface ? '날짜가 있는 콘텐츠를 먼저 고르세요' : '저장할 콘텐츠를 먼저 고르세요'}
@@ -9208,7 +9179,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : '하나를 저장하면 오늘, 다음, 지난 할 일이 여기에서 바로 이어집니다.'}
           </p>
           <div className="mt-5">
-            <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto" href="/flows">
+            <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto" href="/flows">
               콘텐츠 고르러 가기
             </Link>
           </div>
@@ -9217,31 +9188,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
       {workspaceSavedFlows.length > 0 ? (
         <section className="mb-6">
-          {!isCalendarSurface ? (
-            <div className="mb-2 hidden flex-wrap items-end justify-between gap-3 sm:mb-3 sm:flex">
-              <div>
-                <p className="text-sm font-semibold text-blue-700">{myFlowWorkspaceHeader.eyebrow}</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-xl font-semibold">{myFlowWorkspaceHeader.title}</h2>
-                  {showDemoData ? (
-                    <span data-testid="my-flow-demo-badge" className="rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
-                      {myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-              <p className="hidden text-sm text-gray-500 sm:block">{myFlowWorkspaceHeader.help}</p>
-            </div>
-          ) : null}
           {showPostSavePanel ? renderPostSavePanel() : null}
           {showMyFlowWorkspace ? (
           <div
             data-testid="my-flow-workspace"
+            data-surface-role={isCalendarSurface ? 'date-first' : 'task-first'}
             ref={myFlowWorkspaceRef}
-            className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]' : ''}`}
+            className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'xl:grid-cols-[280px_minmax(0,1fr)]' : ''}`}
           >
             {showMyFlowSidebar ? (
-              <aside data-testid="my-flow-list" className="hidden self-start rounded-lg border border-slate-200 bg-white p-3 shadow-sm lg:block">
+              <aside data-testid="my-flow-list" className="hidden max-h-[calc(100vh-2rem)] self-start overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-sm xl:sticky xl:top-4 xl:block">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold uppercase text-slate-500">실행 목록</p>
@@ -9268,7 +9224,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
             <div className="min-w-0">
               {showMyFlowWorkspaceControls ? (
-              <div className="mb-4 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:flex sm:items-end sm:justify-between sm:gap-3">
+              <div className="mb-5 border-y border-slate-200 py-3 sm:flex sm:items-end sm:justify-between sm:gap-3">
                 {showMyFlowScopeControl ? (
                   <div className="min-w-0 sm:w-72">
                     <label className="mb-1 block text-xs font-semibold text-slate-500" htmlFor="my-flow-scope">
@@ -9328,8 +9284,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ) : null}
 
               {savedView === 'today' ? (
-                <div className="mb-4 grid min-w-0 gap-4">
-                  <section data-testid="my-flow-now-section" className="grid min-w-0 gap-3 rounded-lg border border-blue-100 bg-white p-3 shadow-sm sm:p-4">
+                <div className="mx-auto mb-4 grid min-w-0 max-w-4xl gap-4">
+                  <section data-testid="my-flow-now-section" className="grid min-w-0 gap-3 border-y border-blue-200 bg-blue-50/40 px-1 py-4 sm:px-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold text-blue-700">{myFlowNowEyebrow}</p>
@@ -9354,7 +9310,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </section>
 
                   {showMyFlowTodaySummary ? (
-                  <section data-testid="my-flow-today-summary" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+                  <section data-testid="my-flow-today-summary" className="min-w-0 border-y border-slate-200 py-4">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                       <div>
                         <p className="text-sm font-semibold text-blue-700">{isMyFlowScenarioDemo ? '데모 기준일' : '오늘 상태'}</p>
@@ -9388,7 +9344,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
 
                   {showTodayOpenSection && !isMyFlowMobileViewport ? (
-                    <section data-testid="my-flow-today-list" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <section data-testid="my-flow-today-list" className="border-y border-slate-200 py-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <h3 className="text-lg font-semibold text-slate-950">오늘 할 일</h3>
@@ -9405,7 +9361,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
 
                   {myFlowSecondaryContinuationRows.length > 0 ? (
-                    <section data-testid="my-flow-upcoming-list" className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <section data-testid="my-flow-upcoming-list" className="min-w-0 border-y border-slate-200 py-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-slate-500">다음 항목</p>
@@ -9422,7 +9378,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
 
                   {overdueRows.length > 0 ? (
-                    <section data-testid="my-flow-overdue-list" className="min-w-0 rounded-lg border border-amber-100 bg-white p-3 shadow-sm">
+                    <section data-testid="my-flow-overdue-list" className="min-w-0 border-y border-amber-200 bg-amber-50/30 px-1 py-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-amber-700">지난 할 일</p>
@@ -9459,7 +9415,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
 
                   {todayCompletedRows.length > 0 ? (
-                    <section data-testid="my-flow-today-completed-list" className="min-w-0 rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+                    <section data-testid="my-flow-today-completed-list" className="min-w-0 border-y border-slate-200 py-3">
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <p className="text-xs font-semibold text-slate-500">보조 상태</p>
@@ -9501,7 +9457,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <>
                   {isMyFlowMobileViewport ? (
                     <div data-testid="my-flow-mobile-flow-hub" className="grid gap-3">
-                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-2xl border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm">
+                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-lg border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm">
                         <div className="flex items-center justify-between gap-3">
                           <p className="shrink-0 text-sm font-semibold text-[#3654FF]">저장한 콘텐츠</p>
                           {mobileFlowSummaryChips.length > 0 ? (
@@ -9727,23 +9683,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
           {savedView === 'calendar' ? (
             <div>
-              <section data-testid="my-flow-calendar-context" className="mb-3 hidden rounded-lg border border-slate-200 bg-white p-4 shadow-sm lg:block">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-blue-700">캘린더 기준</p>
-                    <h3 className="mt-1 truncate text-lg font-semibold text-slate-950">
-                      {selectedSavedFlowSlug === 'all' ? myFlowCalendarAllScopeLabel : getMyFlowExecutionFlowTitle(visibleSavedFlows[0]?.progress.title ?? '')}
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                    <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{visibleSavedFlows.length}개 콘텐츠</span>
-                    {showMyFlowCalendarScopeFilter ? <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">{myFlowCalendarScopeLabel} 표시</span> : null}
-                    <span className="rounded-md bg-blue-50 px-2 py-1 text-blue-700">{myFlowCalendarOpenCount}개 남음</span>
-                  </div>
-                </div>
-              </section>
-              <div className="grid gap-3 pb-0 lg:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.75fr)]">
-              <section ref={myFlowCalendarCardRef} data-testid="my-flow-calendar-card" className="order-2 rounded-lg border border-slate-200 bg-white p-1 shadow-sm sm:p-4 lg:order-1">
+              <div className="grid gap-4 pb-0 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.75fr)] lg:gap-0">
+              <section
+                ref={myFlowCalendarCardRef}
+                data-testid="my-flow-calendar-card"
+                data-calendar-layout="month-overview"
+                className="order-2 min-w-0 py-2 sm:py-3 lg:order-1 lg:pr-5"
+              >
                 <div className="hidden items-start justify-between gap-3 sm:flex">
                   <div>
                     <h3 className="text-lg font-semibold text-slate-950">월간 날짜 보기</h3>
@@ -9760,7 +9706,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     className="mt-2 flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1 sm:mt-3 sm:w-fit"
                     aria-label="캘린더 표시 범위"
                   >
-                    {myFlowCalendarScopeOptions.map((option) => (
+                    {visibleMyFlowCalendarScopeOptions.map((option) => (
                       <button
                         key={option.id}
                         type="button"
@@ -9769,14 +9715,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         className={`min-h-8 shrink-0 rounded-md px-2.5 text-xs font-bold ${myFlowCalendarScope === option.id ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100' : 'text-slate-600'}`}
                         onClick={() => selectMyFlowCalendarScope(option.id)}
                       >
-                        {option.label}
+                        {isMyFlowMobileViewport
+                          ? option.id === 'all'
+                            ? '전체'
+                            : option.id === 'map'
+                              ? '저장'
+                              : option.id === 'schedule'
+                                ? '날짜'
+                                : '반복'
+                          : option.label}
                         <span className="ml-1 text-[10px] font-semibold text-slate-500">{option.count}</span>
                       </button>
                     ))}
                   </div>
                 ) : null}
                 {monthCalendarRows.some((row) => row.flow.bundle.flow.structure_type === 'routine') ? (
-                  <div data-testid="my-flow-routine-legend" className="mt-3 hidden flex-wrap gap-2 rounded-lg bg-slate-50 px-2 py-2 text-xs font-semibold text-slate-600 sm:flex">
+                  <div data-testid="my-flow-routine-legend" className="mt-3 hidden flex-wrap gap-2 border-y border-slate-200 py-2 text-xs font-semibold text-slate-600 sm:flex">
                     {[
                       ['workout', '운동'],
                       ['running', '러닝'],
@@ -9792,7 +9746,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     ))}
                   </div>
                 ) : null}
-                <div className="mt-1 flex items-center justify-between gap-2 rounded-lg bg-slate-50 p-1 sm:mt-4 sm:p-2">
+                <div className="mt-1 flex items-center justify-between gap-2 border-y border-slate-200 py-2 sm:mt-4">
                   <button
                     type="button"
                     aria-label="이전 달"
@@ -9864,7 +9818,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     다음
                   </button>
                 </div>
-                <div className="mt-3 rounded-xl border border-slate-200 bg-white p-0.5 sm:rounded-2xl sm:p-2">
+                <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white p-0.5 sm:p-2">
                   <FullCalendar
                     key={`${myFlowVisibleMonth}-${myFlowSelectedDate}-${myFlowCalendarScope}`}
                     plugins={[dayGridPlugin, interactionPlugin]}
@@ -9896,9 +9850,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <section
                 ref={myFlowSelectedDayRef}
                 data-testid="my-flow-calendar-selected-day"
+                data-calendar-layout="selected-day-execution"
                 data-overflow-date={myFlowRoutineOverflowDate === myFlowSelectedDate ? myFlowRoutineOverflowDate : undefined}
                 data-schedule-overflow-date={myFlowScheduleOverflowDate === myFlowSelectedDate ? myFlowScheduleOverflowDate : undefined}
-                className="order-1 rounded-lg border border-slate-200 bg-white p-2 shadow-sm sm:p-4 lg:order-2"
+                className="order-1 border-y border-slate-200 py-3 sm:py-4 lg:order-2 lg:border-y-0 lg:border-l lg:pl-5"
               >
                 <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
                 {!isMyFlowMobileViewport ? (
@@ -9917,7 +9872,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </p>
                 ) : null}
                 {myFlowSelectedDateAllRows.length > 0 ? (
-                  <div data-testid="my-flow-selected-date-groups" className="mt-4 grid gap-3">
+                  <div data-testid="my-flow-selected-date-groups" className="mt-3 grid">
                     {myFlowSelectedDateGroups.map((group) => {
                       const groupOpenCount = group.rows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
                       const groupHasMultipleFlows = new Set(group.rows.map((row) => row.flow.progress.slug)).size > 1;
@@ -9927,8 +9882,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <section
                           key={group.key}
                           data-testid="my-flow-selected-date-group"
+                          data-density="compact"
                           data-flow-marker-key={flowMarker.key}
-                          className={`rounded-lg border p-2.5 ${group.savedMap ? 'border-blue-100 bg-blue-50/50' : 'border-slate-200 bg-slate-50'}`}
+                          className="border-t border-slate-200 py-3 first:border-t-0 first:pt-0"
                         >
                           <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
                             <div className="flex min-w-0 items-start gap-2">
@@ -9936,18 +9892,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                                 data-testid="my-flow-selected-date-flow-marker"
                                 aria-label={flowMarker.title}
                                 title={flowMarker.title}
-                                className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black text-white shadow-sm ring-1 ring-white"
+                                className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black text-white"
                                 style={{ backgroundColor: flowMarker.color }}
                               >
                                 {flowMarker.initial}
                               </span>
                               <div className="min-w-0">
-                                <p className={`text-xs font-semibold ${group.savedMap ? 'text-blue-700' : 'text-slate-500'}`}>{group.label}</p>
-                                <h4 className="mt-0.5 truncate text-sm font-semibold text-slate-950">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
+                                <h4 className="truncate text-sm font-semibold text-slate-950">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
                               </div>
                             </div>
                             {group.rows.length > 1 || groupOpenCount !== group.rows.length ? (
-                              <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
+                              <span className="text-[11px] font-semibold text-slate-500">
                                 {group.rows.length}개 · {groupOpenCount}개 남음
                               </span>
                             ) : null}
@@ -9959,7 +9914,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                                   data-testid="my-flow-group-timing-chip"
                                   aria-label={sharedMeta.timing.accessibilityLabel}
                                   title={sharedMeta.timing.accessibilityLabel}
-                                  className="rounded bg-white px-1.5 py-0.5 text-slate-600 ring-1 ring-slate-200"
+                                  className="text-slate-600"
                                 >
                                   {sharedMeta.timing.label}
                                 </span>
@@ -10410,8 +10365,6 @@ export function CreatorProfile({ slug }: { slug: string }) {
   const [libraryQuery, setLibraryQuery] = useState('');
   const [visibleContentLimit, setVisibleContentLimit] = useState(CREATOR_PROFILE_PAGE_SIZE);
   const first = creatorBundles[0] ?? profileSeedBundle;
-  const totalUsage = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.usage_count ?? 0), 0);
-  const totalCopies = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.copy_count ?? 0), 0);
   const categories = Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category))).slice(0, 6);
   const allCategories = [allCategoryLabel, ...Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category)))];
   const normalizedLibraryQuery = libraryQuery.trim().toLowerCase();
@@ -10488,9 +10441,9 @@ export function CreatorProfile({ slug }: { slug: string }) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-5 py-8 pb-28 md:pb-8" data-testid="creator-profile-surface">
+    <main className="mx-auto max-w-[1240px] px-5 py-8 pb-28 md:pb-8" data-testid="creator-profile-surface">
       <PlatformNav />
-      <header className="rounded-xl border border-gray-200 bg-white p-6">
+      <header data-metric-policy="inventory-not-outcomes" className="border-y border-gray-200 py-6">
         <div className="flex flex-wrap items-start gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-xl font-semibold text-blue-700">
             {profile?.avatar_initial ?? (first ? getCreatorAvatar(first) : '?')}
@@ -10502,18 +10455,18 @@ export function CreatorProfile({ slug }: { slug: string }) {
             <p className="mt-3 max-w-3xl leading-7 text-gray-600">{profile?.bio ?? (first ? getCreatorNote(first) : '')}</p>
           </div>
         </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg bg-gray-50 p-4">
+        <div className="mt-5 grid grid-cols-3 divide-x divide-gray-200 border-y border-gray-200 bg-gray-50/70">
+          <div className="px-3 py-4 sm:px-4">
             <p className="text-sm text-gray-500">콘텐츠</p>
             <p className="mt-1 text-2xl font-semibold">{creatorBundles.length}</p>
           </div>
-          <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-gray-500">총 실행</p>
-            <p className="mt-1 text-2xl font-semibold">{formatCount(totalUsage)}</p>
+          <div className="px-3 py-4 sm:px-4">
+            <p className="text-sm text-gray-500">원문 확인</p>
+            <p className="mt-1 text-2xl font-semibold">{exactRealBundles.length}</p>
           </div>
-          <div className="rounded-lg bg-gray-50 p-4">
-            <p className="text-sm text-gray-500">총 복사</p>
-            <p className="mt-1 text-2xl font-semibold">{formatCount(totalCopies)}</p>
+          <div className="px-3 py-4 sm:px-4">
+            <p className="text-sm text-gray-500">주제</p>
+            <p className="mt-1 text-2xl font-semibold">{allCategories.length - 1}</p>
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -10602,7 +10555,23 @@ export function CreatorProfile({ slug }: { slug: string }) {
             </button>
           ))}
         </div>
-        <div className="mb-4 flex flex-wrap gap-2">
+        <label className="mb-3 block md:hidden">
+          <span className="text-sm font-semibold text-gray-700">주제</span>
+          <select
+            aria-label="주제 필터"
+            className="mt-1 min-h-11 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800"
+            value={categoryFilter}
+            onChange={(event) => {
+              setCategoryFilter(event.target.value);
+              setVisibleContentLimit(CREATOR_PROFILE_PAGE_SIZE);
+            }}
+          >
+            {allCategories.map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </label>
+        <div className="mb-4 hidden flex-wrap gap-2 md:flex">
           {allCategories.map((category) => (
             <button
               key={category}
@@ -11974,9 +11943,8 @@ export function PublicFlow({ slug }: { slug: string }) {
           <section className="my-5 rounded-lg border border-[#DDE4E0] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <Link className="text-sm font-semibold text-[#1B1A17] underline-offset-2 hover:text-[#3654FF] hover:underline" href={getCreatorPath(bundle)}>
-                  by {getCreatorName(bundle)}
-                </Link>
+                <p className="text-xs font-semibold text-[#8A857B]">제작자 정보</p>
+                <p className="mt-1 text-sm font-semibold text-[#1B1A17]">{getCreatorName(bundle)}</p>
                 {getCreatorRole(bundle) ? <p className="mt-1 text-sm text-[#6E6B64]">{getCreatorRole(bundle)}</p> : null}
                 {getCreatorNote(bundle) ? <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6E6B64]">{getCreatorNote(bundle)}</p> : null}
               </div>

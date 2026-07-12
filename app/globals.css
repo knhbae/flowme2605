@@ -13,7 +13,7 @@
   --flowme-trust: #1f8a5b;
   --flowme-mobile-tab-clearance: calc(6.5rem + env(safe-area-inset-bottom));
   --flowme-mobile-save-clearance: calc(8.5rem + env(safe-area-inset-bottom));
-  --flowme-mobile-map-save-clearance: calc(9rem + env(safe-area-inset-bottom));
+  --flowme-mobile-map-save-clearance: calc(9.25rem + env(safe-area-inset-bottom));
   --flowme-mobile-export-clearance: calc(16rem + env(safe-area-inset-bottom));
 }
 
@@ -217,7 +217,7 @@ body {
 }
 
 .fc .fc-scrollgrid {
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -303,7 +303,7 @@ body {
   }
 
   .fc .fc-daygrid-day-frame {
-    min-height: 52px;
+    min-height: 48px;
     padding: 1px;
   }
 
@@ -319,11 +319,11 @@ body {
 
   .fc .fc-daygrid-event {
     min-height: 28px;
-    padding: 2px 1px;
+    padding: 1px;
   }
 
   .fc .fc-daygrid-event.my-flow-routine-rail-event {
-    min-height: 22px;
+    min-height: 28px;
     padding: 1px 0;
   }
 
@@ -333,7 +333,7 @@ body {
 
   .fc .fc-event-main {
     display: flex;
-    min-height: 18px;
+    min-height: 22px;
     align-items: center;
   }
 }

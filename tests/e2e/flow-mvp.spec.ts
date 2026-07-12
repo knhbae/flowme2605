@@ -399,8 +399,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   const flowMapCatalog = page.getByTestId('flow-map-catalog-section');
   await expect(flowMapCatalog).toBeVisible();
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
-  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(8);
-  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(6);
+  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(7);
+  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(5);
   await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(0);
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
@@ -419,7 +419,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(page.getByTestId('single-flow-catalog-section')).toHaveCount(0);
   const catalogCount = flowMapCatalog.getByTestId('flow-catalog-count');
-  await expect(catalogCount).toContainText('8개 콘텐츠');
+  await expect(catalogCount).toContainText('7개 콘텐츠');
   await expect(catalogCount).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
@@ -1392,7 +1392,7 @@ test('curated source cards are integrated into Flow finding and open the recomme
   const catalog = page.getByTestId('flow-map-catalog-section');
   const curatedCards = catalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]');
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
-  await expect(curatedCards).toHaveCount(6);
+  await expect(curatedCards).toHaveCount(5);
   await expect(catalog).toContainText('오픽 모의고사 2주/1달 계획표');
   await expect(catalog).not.toContainText('펀맘 공부 루틴');
   await expect(catalog).not.toContainText('확인하며 사용');
@@ -2254,7 +2254,10 @@ test('creator profile aggregates creator flows from byline links', async ({ page
 
   await expect(page).toHaveURL(/\/u\//);
   await expect(page.getByRole('heading', { name: '웨딩 체크메이트' })).toBeVisible();
-  await expect(page.getByText('총 실행')).toBeVisible();
+  await expect(page.getByText('원문 확인', { exact: true })).toBeVisible();
+  await expect(page.getByText('총 실행')).toHaveCount(0);
+  await expect(page.getByText('총 복사')).toHaveCount(0);
+  await expect(page.locator('header')).toHaveAttribute('data-metric-policy', 'inventory-not-outcomes');
   await expect(page.getByText('D-Day 준비', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: '결혼 준비 D-300 타임라인' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '결혼 준비 D-300 타임라인 Flow' })).toHaveCount(0);
@@ -2291,8 +2294,10 @@ test('preview creator channel profile excludes generated sample entries from run
   const channelHeader = page.locator('header');
   await expect(channelHeader).toContainText('콘텐츠');
   await expect(channelHeader.getByText('2', { exact: true }).first()).toBeVisible();
-  await expect(channelHeader).toContainText('총 실행');
-  await expect(channelHeader).toContainText('총 복사');
+  await expect(channelHeader).toContainText('원문 확인');
+  await expect(channelHeader).toContainText('주제');
+  await expect(channelHeader).not.toContainText('총 실행');
+  await expect(channelHeader).not.toContainText('총 복사');
   await expect(channelHeader).not.toContainText('수동 검토');
   await expect(channelHeader).not.toContainText('1차 분류');
   await expect(page.getByText('만든 콘텐츠')).toBeVisible();
@@ -2753,7 +2758,7 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('by FLOW 큐레이션팀')).toBeVisible();
   await expect(page.getByText('베타 운영 중').first()).toHaveCount(0);
   await page.getByLabel('이사일').fill('2026-07-15');
-  await expect(page.getByText(/이사일.*7월 15일/)).toBeVisible();
+  await expect(page.getByText('이사일: 7월 15일 (수)', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-list-card')).toBeVisible();
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
@@ -2838,12 +2843,12 @@ test('my flow management uses today and flow locally while calendar is global', 
   await page.getByTestId('moving-save-actions').getByRole('button', { name: '내 Flow에 저장' }).click();
 
   await page.goto('/my');
-  await expect(page.getByRole('heading', { name: '내 할 일' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '내 Flow', exact: true })).toBeVisible();
   await expect(page.getByTestId('my-flow-view-today')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-calendar')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
   await page.getByTestId('my-flow-view-flow').click();
-  await expect(page.getByRole('heading', { name: '저장한 목록' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '필요한 Flow만 열기' })).toBeVisible();
 
   await page.goto('/calendar');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
@@ -3194,14 +3199,14 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
 
   const groupTexts = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
   expect(groupTexts).toContain('이사 준비');
-  expect(groupTexts).toContain('컴퓨터활용능력 학습');
+  expect(groupTexts).toContain('컴퓨터활용능력 1급 학습');
   expect(groupTexts).not.toMatch(/저장한 일정|저장한 루틴|일정 흐름|체크 흐름|반복 흐름/);
 
   const flowMarkers = selectedDay.getByTestId('my-flow-selected-date-flow-marker');
   await expect(flowMarkers).toHaveCount(2);
   const markerLabels = (await flowMarkers.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label') ?? ''))).join(' ');
   expect(markerLabels).toContain('이사 준비');
-  expect(markerLabels).toContain('컴퓨터활용능력 학습');
+  expect(markerLabels).toContain('컴퓨터활용능력 1급 학습');
 
   const dateCell = page.locator('.fc-daygrid-day[data-date="2026-06-03"]');
   const scheduleLabels = (await dateCell.getByTestId('my-flow-calendar-flow-label').allInnerTexts()).join(' ');
@@ -3276,7 +3281,7 @@ test('calendar route compacts three-plus same-date flow labels in the month grid
   await expect(selectedDay.getByTestId('my-flow-selected-date-flow-marker')).toHaveCount(4);
   const selectedDayGroupText = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
   expect(selectedDayGroupText).toContain('이사 준비');
-  expect(selectedDayGroupText).toContain('컴퓨터활용능력 학습');
+  expect(selectedDayGroupText).toContain('컴퓨터활용능력 1급 학습');
   expect(selectedDayGroupText).toContain('자동차검사 준비');
   expect(selectedDayGroupText).toContain('개발 프로젝트 포트폴리오');
 
@@ -3383,9 +3388,9 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-overdue-list')).toContainText('지난 할 일');
   await expect(page.getByTestId('my-flow-overdue-open-sheet')).toBeVisible();
   await expect(page.getByTestId('my-flow-today-completed-list').locator('article')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-today-completed-toggle')).toContainText('오늘 완료 3개 보기');
+  await expect(page.getByTestId('my-flow-today-completed-toggle')).toContainText('오늘 완료 2개 보기');
   await page.getByTestId('my-flow-today-completed-toggle').click();
-  await expect(page.getByTestId('my-flow-today-completed-list').locator('article')).toHaveCount(3);
+  await expect(page.getByTestId('my-flow-today-completed-list').locator('article')).toHaveCount(2);
   const firstCompletedTodayRow = page.getByTestId('my-flow-today-completed-list').locator('article').first();
   await expect(firstCompletedTodayRow.getByTestId('my-flow-row-timing-chip')).toBeVisible();
   await expect(firstCompletedTodayRow).not.toContainText('큰 일정 확정');
@@ -3406,15 +3411,15 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(prioritySection).toContainText('오늘 남음 0');
   await expect(prioritySection).not.toContainText('오늘 4');
   await expect(prioritySection).toContainText('지난 할 일 2');
-  await expect(prioritySection).toContainText('7일 안 3');
+  await expect(prioritySection).toContainText('7일 안 1');
   await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first()).toContainText('다음 7일');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first()).toContainText('컴퓨터활용능력 학습');
+  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first()).toContainText('컴퓨터활용능력 1급 학습');
   const firstPriorityOpen = prioritySection.locator('[data-testid="my-flow-priority-card"]').first().locator('button').filter({ hasText: '열기' });
   await expect(firstPriorityOpen).toHaveText('열기');
   await expect(firstPriorityOpen).toHaveAttribute('aria-label', /.+ 열기$/);
   await expect(firstPriorityOpen).not.toContainText('항목 열기');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('다음 7일');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('초기 이유식 메뉴·레시피');
+  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('지난 할 일');
+  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('이사 준비');
   await firstPriorityOpen.click();
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
   const priorityDetail = prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByTestId('my-flow-priority-inline-detail');
@@ -3454,10 +3459,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
   await expect(page.getByText('색과 라벨로 Flow를 구분하고, 반복 항목은 아이콘으로 표시합니다.')).toBeVisible();
-  await expect(page.getByTestId('my-flow-routine-legend')).toContainText('운동');
-  await expect(page.getByTestId('my-flow-routine-legend')).toContainText('러닝');
-  await expect(page.getByTestId('my-flow-routine-legend')).toContainText('공부');
-  await expect(page.getByTestId('my-flow-routine-legend')).toContainText('식단');
+  await expect(page.getByTestId('my-flow-routine-legend')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-calendar-scope-filter')).toBeVisible();
   await expect(page.getByTestId('my-flow-calendar-scope-all')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('my-flow-calendar-scope-routine').click();
@@ -3514,8 +3516,8 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+2');
   await page.locator('.fc-daygrid-day[data-date="2026-05-28"]').getByTestId('my-flow-calendar-date-button').click();
   const selectedCalendarRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]').first();
-  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('컴퓨터활용능력 학습');
-  await expect(selectedCalendarRow).not.toContainText('컴퓨터활용능력 학습 Flow');
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('컴퓨터활용능력 1급 학습');
+  await expect(selectedCalendarRow).not.toContainText('컴퓨터활용능력 1급 학습 Flow');
   const selectedCalendarGroup = selectedCalendarRow.locator('xpath=ancestor::*[@data-testid="my-flow-selected-date-group"][1]');
   await expect(selectedCalendarGroup.getByTestId('my-flow-group-timing-chip')).toContainText('기준 D-30');
   await expect(selectedCalendarGroup.getByTestId('my-flow-group-timing-chip')).toHaveAttribute('aria-label', 'Flow 기준 D-30');
@@ -3529,7 +3531,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(selectedCalendarDetail.getByTestId('my-flow-detail-section-label')).toHaveCount(0);
   await expect(selectedCalendarDetail.getByText('상세', { exact: true })).toHaveCount(0);
   await expect(selectedCalendarDetail).toContainText('필기 암기와 실기 조작 시간');
-  await expect(selectedCalendarDetail).not.toContainText('컴퓨터활용능력 학습 Flow');
+  await expect(selectedCalendarDetail).not.toContainText('컴퓨터활용능력 1급 학습 Flow');
   await expect(selectedCalendarDetail.getByTestId('my-flow-detail-advanced-content')).toHaveCount(0);
   await expect(selectedCalendarDetail).toHaveAttribute('data-default-primary-action-count', '2');
   await expect(selectedCalendarDetail.getByTestId('my-flow-detail-title-input')).toHaveCount(0);
@@ -3927,7 +3929,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText(/\d{1,2}월 \d{1,2}일/);
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
   await expect(selectedDateGroup).not.toContainText('저장한 일정');
-  await expect(selectedDateGroup).toContainText('날짜 항목');
+  await expect(selectedDateGroup).not.toContainText('날짜 항목');
   await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정');
   await expectNoVisibleSourceBrandSlug(selectedDateGroup);
   await expect(selectedDateGroup).not.toContainText('원룸 이사 D-30 일정 지도');
@@ -4630,17 +4632,17 @@ test('my flow ux20 demo keeps large flow inventories grouped and collapsed', asy
   expect(priorityCardCount).toBeGreaterThan(0);
   expect(priorityCardCount).toBeLessThanOrEqual(4);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-inventory-toggle')).toContainText('30');
+  await expect(page.getByTestId('my-flow-inventory-toggle')).toContainText('29');
 
   await page.getByTestId('my-flow-inventory-toggle').click();
-  await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(30);
-  await expect(page.getByTestId('my-flow-demo-group')).toHaveCount(14);
+  await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(29);
+  await expect(page.getByTestId('my-flow-demo-group')).toHaveCount(15);
 
   await page.getByTestId('my-flow-list-filter-routine').click();
   await expect(page.getByTestId('my-flow-inventory-toggle')).toHaveCount(0);
   const routineCardCount = await page.getByTestId('my-flow-overview-card').count();
   expect(routineCardCount).toBeGreaterThan(0);
-  expect(routineCardCount).toBeLessThan(30);
+  expect(routineCardCount).toBeLessThan(29);
 
   await page.getByTestId('my-flow-search').fill('식단');
   const searchedCardCount = await page.getByTestId('my-flow-overview-card').count();
@@ -4673,7 +4675,7 @@ test('my flow ux12 calendar collapses dense days and opens recurring routine edi
   await page.goto('/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   const denseDateCell = page.locator('.fc-daygrid-day[data-date="2026-05-27"]');
-  await expect(denseDateCell.locator('.fc-event')).toHaveCount(4);
+  await expect(denseDateCell.locator('.fc-event')).toHaveCount(3);
   const scheduleEventPadding = await denseDateCell.locator('.fc-event').first().evaluate((node) => {
     const styles = window.getComputedStyle(node);
     return {
@@ -5184,17 +5186,17 @@ test('my flow mobile ux20 limits large inventory before showing all flows', asyn
   const inventorySheet = page.getByRole('dialog', { name: '전체 Flow 목록' });
   await expect(inventorySheet).toBeVisible();
   await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(8);
-  await expect(inventorySheet.getByTestId('my-flow-mobile-large-inventory-toggle')).toContainText('전체 Flow 보기 30개');
+  await expect(inventorySheet.getByTestId('my-flow-mobile-large-inventory-toggle')).toContainText('전체 Flow 보기 29개');
 
   await inventorySheet.getByTestId('my-flow-mobile-large-inventory-toggle').click();
-  await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(30);
+  await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(29);
   await expect(inventorySheet.getByTestId('my-flow-mobile-large-inventory-toggle')).toHaveCount(0);
 
   await inventorySheet.getByTestId('my-flow-list-filter-routine').click();
   await expect(inventorySheet.getByTestId('my-flow-list-filter-routine')).toHaveAttribute('aria-pressed', 'true');
   const routineRows = await inventorySheet.getByTestId('my-flow-group-row').count();
   expect(routineRows).toBeGreaterThan(0);
-  expect(routineRows).toBeLessThan(30);
+  expect(routineRows).toBeLessThan(29);
 });
 
 test('flow item card makes detail and skipped states explicit', async ({ page }) => {
@@ -5375,7 +5377,7 @@ test('current P1 flows expose new execution model surfaces', async ({ page }) =>
     await expect(page.getByRole('heading', { name: `${title} Flow` })).toHaveCount(0);
     await expect(page.getByText('새 실행모델로 전환 중')).toHaveCount(0);
     await expect(page.getByText('회차 그리드')).toBeVisible();
-    await expect(page.getByText('회차 기록표')).toBeVisible();
+    await expect(page.getByText('회차 기록표', { exact: true })).toBeVisible();
   }
 });
 
@@ -7231,7 +7233,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(artifactAudit.getByText('감사 완료')).toBeVisible();
   await expect(artifactAudit.getByText('83', { exact: true }).first()).toBeVisible();
   await expect(sourceFitAudit.getByText('감사 완료')).toBeVisible();
-  await expect(sourceFitAudit.getByText('카탈로그 미리보기 12')).toBeVisible();
+  await expect(sourceFitAudit.getByText('카탈로그 미리보기 14')).toBeVisible();
   await expect(page.getByRole('link', { name: '시험 D-30 공부 계획 Flow', exact: true })).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
   await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();
@@ -7357,4 +7359,58 @@ test('url-first p0 lab previews hit review miss and memo states without public n
     await expect(page.locator('a[href="/flow-lab/url-first-p0"]')).toHaveCount(0);
     await expect(page.getByText('URL-first P0 실험')).toHaveCount(0);
   }
+});
+
+test('my flow and calendar expose distinct task-first and date-first execution layouts', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/my?demo=ux12');
+  await expect(page.getByTestId('my-flow-workspace')).toHaveAttribute('data-surface-role', 'task-first');
+  const myFlowPrimaryRow = page.getByTestId('my-flow-now-section').getByTestId('my-flow-mobile-continuation-card').first();
+  const myFlowCheckboxBox = await myFlowPrimaryRow.getByTestId('my-flow-task-complete-control').boundingBox();
+  const myFlowOpenBox = await myFlowPrimaryRow.getByTestId('my-flow-mobile-continuation-open').boundingBox();
+  expect(myFlowCheckboxBox).not.toBeNull();
+  expect(myFlowOpenBox).not.toBeNull();
+  expect(myFlowCheckboxBox!.x).toBeLessThan(myFlowOpenBox!.x);
+
+  await page.goto('/calendar?demo=ux12');
+  await expect(page.getByTestId('my-flow-workspace')).toHaveAttribute('data-surface-role', 'date-first');
+  await expect(page.getByTestId('my-flow-calendar-card')).toHaveAttribute('data-calendar-layout', 'month-overview');
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay).toHaveAttribute('data-calendar-layout', 'selected-day-execution');
+  await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toHaveAttribute('data-density', 'compact');
+  const calendarRow = selectedDay.getByTestId('my-flow-execution-row-shell').first();
+  const calendarCheckboxBox = await calendarRow.getByTestId('my-flow-task-complete-control').boundingBox();
+  const calendarOpenBox = await calendarRow.getByRole('button', { name: /열기/ }).boundingBox();
+  expect(calendarCheckboxBox).not.toBeNull();
+  expect(calendarOpenBox).not.toBeNull();
+  expect(calendarCheckboxBox!.x).toBeLessThan(calendarOpenBox!.x);
+});
+
+test('url lookup keeps the result focused and makes the catalog secondary', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+  await page.getByTestId('flow-url-lookup-input').fill('https://blog.naver.com/01695258757/222768860919?utm_source=review');
+  await page.getByRole('button', { name: 'Flow 찾기' }).click();
+
+  await expect(page.getByTestId('flow-url-lookup-result')).toBeVisible();
+  await expect(page.getByTestId('flow-catalog-browse-controls')).toBeHidden();
+  await expect(page.getByTestId('flow-catalog-browse-results')).toBeHidden();
+  const browseToggle = page.getByTestId('flow-catalog-after-lookup-toggle');
+  await expect(browseToggle).toHaveText(/다른 Flow 둘러보기/);
+  await browseToggle.click();
+  await expect(page.getByTestId('flow-catalog-browse-controls')).toBeVisible();
+  await expect(page.getByTestId('flow-catalog-browse-results')).toBeVisible();
+});
+
+test('source-backed flow map uses one unframed promise and a flat execution outline', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/moving-d30');
+
+  await expect(page.getByTestId('flow-map-hero')).toHaveAttribute('data-visual-structure', 'unframed');
+  const outline = page.getByTestId('flow-map-execution-outline');
+  await expect(outline).toBeVisible();
+  await expect(outline.getByTestId('flow-map-execution-step-row')).toHaveCount(5);
+  await expect(page.getByTestId('flow-map-mobile-sticky-save')).toBeVisible();
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });
