@@ -144,6 +144,66 @@ test('runtime content policy archives unsupported public routes without deleting
   }
 });
 
+test('source currentness separates stale duplicates from distinct appliance jobs', () => {
+  const legacyPet = seedBundles.find((bundle) => bundle.flow.slug === 'pet-registration-basic');
+  const currentPet = seedBundles.find((bundle) => bundle.flow.slug === 'real-pet-registration-check');
+  const selfCheckAircon = seedBundles.find((bundle) => bundle.flow.slug === 'samsung-aircon-seasonal-check');
+  const professionalAircon = seedBundles.find((bundle) => bundle.flow.slug === 'real-samsung-aircon-seasonal-care');
+  const comboDrainFilter = seedBundles.find((bundle) => bundle.flow.slug === 'real-samsung-washer-filter-care');
+  const microfiberFilter = seedBundles.find((bundle) => bundle.flow.slug === 'samsung-washer-filter-cleaning');
+
+  assert.ok(legacyPet);
+  assert.ok(currentPet);
+  assert.ok(selfCheckAircon);
+  assert.ok(professionalAircon);
+  assert.ok(comboDrainFilter);
+  assert.ok(microfiberFilter);
+
+  assert.equal(isRuntimeExcludedBundle(legacyPet), true);
+  assert.equal(getSourceFitAudit(legacyPet.flow.slug)?.decision, 'catalog_preview_only');
+  assert.equal(
+    RUNTIME_ARCHIVED_FLOW_POLICIES.find((policy) => policy.slug === legacyPet.flow.slug)?.replacementSlug,
+    currentPet.flow.slug,
+  );
+  assert.equal(currentPet.flow.title, '반려견 동물등록 준비 Flow');
+  assert.equal(currentPet.flow.source_checked_at, '2026-07-12');
+  assert.equal(currentPet.flow.updated_at, '2026-07-12T00:00:00.000Z');
+  assert.match(currentPet.items.find((item) => item.title === '등록 방식과 대행기관 확인')?.description ?? '', /실행할 항목/);
+  assert.doesNotMatch(currentPet.items.map((item) => item.title).join(' '), /인식표 방식/);
+
+  assert.equal(selfCheckAircon.flow.source_url, 'https://www.samsungsvc.co.kr/solution/2002378?assess=N');
+  assert.equal(selfCheckAircon.flow.source_published_at, '2026-02-27');
+  assert.equal(selfCheckAircon.flow.source_checked_at, '2026-07-12');
+  assert.equal(selfCheckAircon.flow.updated_at, '2026-07-12T00:00:00.000Z');
+  assert.equal(selfCheckAircon.flow.structure_type, 'checklist');
+  assert.equal(selfCheckAircon.flow.anchor_type, 'none');
+  assert.equal(selfCheckAircon.flow.primary_destination, 'internal_check');
+  assert.equal(selfCheckAircon.items.length, 5);
+  assert.match(selfCheckAircon.items.map((item) => item.title).join(' '), /18도로 10분 이상/);
+  assert.equal(professionalAircon.flow.title, '삼성 에어컨 전문 세척 예약 준비 Flow');
+  assert.equal(professionalAircon.flow.source_checked_at, '2026-07-12');
+  assert.equal(professionalAircon.flow.updated_at, '2026-07-12T00:00:00.000Z');
+
+  assert.equal(comboDrainFilter.flow.title, '삼성 비스포크 AI 콤보 배수필터 청소 Flow');
+  assert.equal(comboDrainFilter.flow.source_published_at, '2024-03-22');
+  assert.equal(comboDrainFilter.flow.source_checked_at, '2026-07-12');
+  assert.equal(comboDrainFilter.flow.updated_at, '2026-07-12T00:00:00.000Z');
+  assert.match(
+    comboDrainFilter.itemDetails?.find(
+      (detail) => detail.item_id === comboDrainFilter.items.find((item) => item.title === '필터와 내부 이물질 제거')?.id,
+    )?.how ?? '',
+    /부드러운 솔/,
+  );
+  assert.equal(microfiberFilter.flow.title, '삼성 미세플라스틱 저감장치 필터 청소 Flow');
+  assert.equal(microfiberFilter.flow.structure_type, 'checklist');
+  assert.equal(microfiberFilter.flow.anchor_type, 'none');
+  assert.equal(microfiberFilter.flow.primary_destination, 'internal_check');
+  assert.equal(microfiberFilter.flow.source_published_at, '2023-06-14');
+  assert.equal(microfiberFilter.flow.source_checked_at, '2026-07-12');
+  assert.equal(microfiberFilter.flow.updated_at, '2026-07-12T00:00:00.000Z');
+  assert.match(microfiberFilter.items.map((item) => item.title).join(' '), /물세척 없이/);
+});
+
 test('baby food seed keeps meal slots, recipes, caution, and reaction-log affordance data', () => {
   const baby = seedBundles.find((bundle) => bundle.flow.slug === 'baby-food-menu-recipe');
 
@@ -1315,7 +1375,7 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 69);
+  assert.equal(indexable.length, 68);
   assert.equal(reviewOnly.length, 88);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
@@ -1421,7 +1481,7 @@ test('published user routes record source freshness while preview library stays 
     return exposure === 'catalog_preview' || exposure === 'hidden';
   });
 
-  assert.ok(userRoutes.length >= 129);
+  assert.ok(userRoutes.length >= 128);
   assert.ok(previewOrHidden.length >= 20);
 
   const demotedPreviewSlugs = [

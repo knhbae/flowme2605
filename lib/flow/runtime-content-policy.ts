@@ -83,6 +83,13 @@ export const RUNTIME_ARCHIVED_FLOW_POLICIES: readonly RuntimeArchivedFlowPolicy[
     replacementSlug: 'vehicle-inspection-prep',
   },
   {
+    slug: 'pet-registration-basic',
+    reason: 'superseded_duplicate',
+    evidence:
+      '정부24 구형 민원 페이지의 등록인식표 문구가 현재 국가동물보호정보시스템의 내장형·외장형 등록 안내와 맞지 않아 최신 공식 안내 기반 Flow로 대체합니다.',
+    replacementSlug: 'real-pet-registration-check',
+  },
+  {
     slug: 'moving-dday',
     reason: 'superseded_duplicate',
     evidence: '같은 AJD 원문과 다섯 개 마일스톤을 명확한 D-30 일정으로 보존한 정본 Flow가 있습니다.',

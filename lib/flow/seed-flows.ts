@@ -303,8 +303,9 @@ const sourceReviewMeta: Record<
   'pet-registration-basic': {
     source_status: 'real',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '정부24 동물등록 안내를 등록 전 확인, 신청, 등록번호 보관 순서로 옮겼습니다.',
+    source_checked_at: '2026-07-12',
+    conversion_note:
+      '정부24 구형 민원 페이지의 등록인식표 문구가 현재 국가동물보호정보시스템 안내와 맞지 않아 신규 공개 실행을 중단하고 최신 공식 안내 기반 Flow로 연결합니다.',
     primary_destination: 'memo',
   },
   'vaccination-certificate-issue': {
@@ -352,16 +353,16 @@ const sourceReviewMeta: Record<
   'samsung-aircon-seasonal-check': {
     source_status: 'real',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '삼성전자서비스 안내를 계절 전 점검과 상담·예약 메모로 옮긴 공식 가전관리 Flow입니다.',
-    primary_destination: 'calendar',
+    source_checked_at: '2026-07-12',
+    conversion_note: '2026 삼성전자서비스 사전점검 안내의 전원, 리모컨, 실외기 통풍, 필터, 냉방 시험 가동 순서를 옮겼습니다.',
+    primary_destination: 'internal_check',
   },
   'samsung-washer-filter-cleaning': {
     source_status: 'real',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
+    source_checked_at: '2026-07-12',
     conversion_note: '삼성전자서비스의 필터 LED 확인, 전원 차단, 물세척 금지, 재조립과 리셋 순서를 옮겼습니다.',
-    primary_destination: 'calendar',
+    primary_destination: 'internal_check',
   },
   'vehicle-inspection-prep': {
     source_status: 'real',

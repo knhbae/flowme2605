@@ -43,14 +43,14 @@ const emptyDecisionCounts: DecisionCounts = {
 export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] = [
   {
     slug: 'real-samsung-aircon-seasonal-care',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-12',
     sourceTitle: '삼성전자서비스 에어컨 세척 서비스 안내',
     sourceUrl: 'https://www.samsungsvc.co.kr/info/maintenance',
     sourceEvidence: [
       '공식 페이지가 에어컨 세척/유지보수의 필요, 서비스 범위, 세척 과정, 전문 세척 신청 연락처를 제공한다.',
       '세척은 예약과 방문 준비가 필요한 서비스라 사용자가 일정표와 예약 메모를 따로 만들 가능성이 높다.',
     ],
-    userScenario: '사용자는 여름 전 에어컨 냄새와 냉방 약화를 보고 공식 세척 서비스를 예약할지 판단한다.',
+    userScenario: '사용자는 자가 사전점검과 별개로 냄새, 필터 먼지, 냉방 효율 저하를 확인한 뒤 전문 세척을 예약할지 판단한다.',
     naturalArtifacts: [
       {
         kind: 'monthly_calendar',
@@ -85,8 +85,8 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-samsung-washer-filter-care',
-    checkedAt: '2026-05-22',
-    sourceTitle: '삼성전자서비스 세탁기 배수필터 청소 안내',
+    checkedAt: '2026-07-12',
+    sourceTitle: '삼성전자서비스 비스포크 AI 콤보 배수필터 청소 안내',
     sourceUrl: 'https://www.samsungsvc.co.kr/solution/1978102',
     sourceEvidence: [
       '공식 페이지가 배수필터 주 1회 이상 청소, 잔수 제거, 재조립/잠김 확인, 누수 주의를 안내한다.',
@@ -229,7 +229,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-pet-registration-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-07-12',
     sourceTitle: '국가동물보호정보시스템 동물등록제도 안내',
     sourceUrl: 'https://www.animal.go.kr/front/community/show.do?boardId=contents&menuNo=2000000016&seq=+66',
     sourceEvidence: [
@@ -240,7 +240,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
     naturalArtifacts: [
       {
         kind: 'checklist',
-        artifactTitle: '반려동물 등록 방문 준비표',
+        artifactTitle: '반려견 동물등록 방문 준비표',
         simulatedInputs: ['동물=강아지', '월령=3개월', '거주=아파트', '등록방식=내장형 희망'],
         expectedOutput: ['등록 대상 여부 확인', '대행기관 찾기', '반려동물 동반 방문', '소유자 신분/연락처 준비', '등록번호 보관'],
         currentFlowMatch: '등록 대상, 방식, 기관, 소유자 정보, 등록번호 보관이 모두 포함되어 있다.',

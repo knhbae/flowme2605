@@ -10,16 +10,21 @@ type PilotSource = {
   sourceUrl: string;
   sourceType: SourceType;
   riskLevel: RiskLevel;
+  sourcePublishedAt?: string;
+  sourceModifiedAt?: string;
+  sourceCheckedAt?: string;
 };
 
 export const realContentPilotSources: PilotSource[] = [
   {
     slug: 'samsung-aircon-seasonal-check',
     category: '가전관리',
-    sourceTitle: '삼성전자서비스 Samsung Care+ 에어컨 관리 안내',
-    sourceUrl: 'https://www.samsungsvc.co.kr/info/carePlus',
+    sourceTitle: '삼성전자서비스 에어컨 사전점검 안내',
+    sourceUrl: 'https://www.samsungsvc.co.kr/solution/2002378?assess=N',
     sourceType: 'official',
     riskLevel: 'low',
+    sourcePublishedAt: '2026-02-27',
+    sourceCheckedAt: '2026-07-12',
   },
   {
     slug: 'samsung-washer-filter-cleaning',
@@ -28,6 +33,8 @@ export const realContentPilotSources: PilotSource[] = [
     sourceUrl: 'https://www.samsungsvc.co.kr/solution/1477182',
     sourceType: 'official',
     riskLevel: 'low',
+    sourcePublishedAt: '2023-06-14',
+    sourceCheckedAt: '2026-07-12',
   },
   {
     slug: 'vehicle-inspection-prep',
@@ -80,7 +87,7 @@ function makePilotBundle(flow: Omit<Flow, 'created_at' | 'updated_at'>, rawText:
       ...flow,
       content_type: flow.content_type ?? 'default',
       created_at: now,
-      updated_at: now,
+      updated_at: flow.source_checked_at ? `${flow.source_checked_at}T00:00:00.000Z` : now,
       raw_text: rawText,
     },
     ...parsed,
@@ -121,21 +128,16 @@ function withPilotDetails(
   };
 }
 
-const samsungAirconText = `@계절 시작 전 1회
-## 사용 전 자가 점검
-- 전원 연결과 리모컨 배터리 확인하기
-- 실외기 주변 통풍 공간 정리하기
-- 실내기 먼지 필터 분리와 세척하기
-- 냉방 시험 가동하고 냄새와 소음 기록하기
+const samsungAirconText = `## 가동 전 자가 점검
+- 전원 플러그와 전용 차단기 확인하기
+- 리모컨 표시와 배터리 확인하기
+- 실외기 주변과 실외기실 통풍 확보하기
+- 제품별 먼지 필터 확인하고 청소하기
 
-## 사용 중 반복 관리
-- 2주마다 외부 필터 먼지 확인하기
-- 냉방 효율이 떨어졌는지 체감 기록하기
-- 물 맺힘이나 누수 흔적 확인하기
-- 전문 세척 필요 여부 결정하기`;
+## 냉방 상태 확인
+- 냉방 18도로 10분 이상 시험 가동하기`;
 
-const samsungWasherText = `@필터 LED 점등 시
-## 청소 전 확인
+const samsungWasherText = `## 청소 전 확인
 - 미세플라스틱 저감장치 필터 LED 상태 확인하기
 - 본 제품과 연결된 세탁기 전원 끄기
 - 필터 손잡이와 분리 방향 확인하기
@@ -241,41 +243,45 @@ export const realContentPilotBundles: FlowBundle[] = [
         title: '삼성 에어컨 계절 전 점검 Flow',
         description: '계절 시작 전 에어컨 전원, 실외기 주변, 필터, 시험 가동 상태를 순서대로 확인합니다.',
         category: samsungAirconSource.category,
-        structure_type: 'routine',
+        structure_type: 'checklist',
         content_type: 'default',
-        anchor_type: 'start_date',
+        anchor_type: 'none',
         status: 'published',
         risk_level: samsungAirconSource.riskLevel,
         source_title: samsungAirconSource.sourceTitle,
         source_url: samsungAirconSource.sourceUrl,
+        source_published_at: samsungAirconSource.sourcePublishedAt,
+        source_modified_at: samsungAirconSource.sourceModifiedAt,
+        source_checked_at: samsungAirconSource.sourceCheckedAt,
       },
       samsungAirconText,
     ),
     samsungAirconSource,
     {
-      '실외기 주변 통풍 공간 정리하기': {
-        description: '실외기 주변 장애물을 치워 통풍 공간을 확보합니다.',
+      '실외기 주변과 실외기실 통풍 확보하기': {
+        description: '실외기 주변 장애물을 치우고 실외기실 창문을 열어 통풍을 확보합니다.',
         why: '실외기 통풍이 막히면 냉방 효율이 떨어지고 제품 부담이 커질 수 있습니다.',
-        how: '실외기 앞뒤와 주변에 쌓인 물건, 먼지, 낙엽을 치우고 배출 방향을 막지 않게 둡니다.',
-        completion_criteria: '실외기 주변에 바람 흐름을 막는 물건이 없음을 확인했다.',
+        how: '실외기 앞뒤의 물건을 치우고, 실외기실에 설치된 경우 창문을 충분히 엽니다.',
+        completion_criteria: '실외기 주변과 실외기실의 바람길을 확보했다.',
         links: [{ label: samsungAirconSource.sourceTitle, url: samsungAirconSource.sourceUrl, type: 'official' }],
         source_type: samsungAirconSource.sourceType,
         risk_level: samsungAirconSource.riskLevel,
       },
-      '실내기 먼지 필터 분리와 세척하기': {
-        description: '분리 가능한 먼지 필터를 꺼내 먼지를 제거하고 완전히 말립니다.',
+      '제품별 먼지 필터 확인하고 청소하기': {
+        description: '제품 설명서에서 필터 종류와 분리 방법을 확인한 뒤 먼지를 제거합니다.',
         why: '필터 먼지는 냄새와 효율 저하의 흔한 원인이므로 사용 전 확인이 필요합니다.',
-        how: '제품 안내에 맞춰 필터를 분리하고 물세척 가능 여부를 확인한 뒤 그늘에서 말립니다.',
+        how: '극세필터는 진공청소기로 먼지를 제거하고, 물세척한 경우 그늘에서 완전히 말립니다. 다른 필터는 모델별 안내를 우선합니다.',
         completion_criteria: '필터를 청소하고 물기가 남지 않은 상태로 재조립했다.',
         links: [{ label: samsungAirconSource.sourceTitle, url: samsungAirconSource.sourceUrl, type: 'official' }],
         source_type: samsungAirconSource.sourceType,
         risk_level: samsungAirconSource.riskLevel,
       },
-      '전문 세척 필요 여부 결정하기': {
-        description: '냄새, 곰팡이, 누수, 냉방 약화가 반복되면 전문 점검 필요 여부를 판단합니다.',
-        why: '분해 세척이나 내부 점검은 사용자가 직접 처리하기 어려운 범위가 있을 수 있습니다.',
-        how: '자가 점검 기록을 보고 냄새, 소음, 누수, 효율 저하가 계속되는지 확인합니다.',
-        completion_criteria: '자가 관리로 충분한지 또는 서비스 예약이 필요한지 결정했다.',
+      '냉방 18도로 10분 이상 시험 가동하기': {
+        description: '냉방 운전과 18도를 선택하고 10분 이상 기다려 찬바람이 나오는지 확인합니다.',
+        why: '실제 가동 전에 냉방 상태를 확인하면 더운 시기에 발견할 고장을 미리 찾을 수 있습니다.',
+        how: '냉방 모드, 희망 온도 18도로 설정하고 10분 이상 가동한 뒤 찬바람이 나오는지 확인합니다.',
+        completion_criteria: '10분 이상 시험 가동하고 냉방 상태를 확인했다.',
+        links: [{ label: samsungAirconSource.sourceTitle, url: samsungAirconSource.sourceUrl, type: 'official' }],
         source_type: samsungAirconSource.sourceType,
         risk_level: samsungAirconSource.riskLevel,
       },
@@ -289,13 +295,16 @@ export const realContentPilotBundles: FlowBundle[] = [
         title: '삼성 미세플라스틱 저감장치 필터 청소 Flow',
         description: '삼성전자서비스 안내 범위에 맞춰 미세플라스틱 저감장치 필터 분리, 이물질 제거, 재조립, 리셋을 확인합니다.',
         category: samsungWasherSource.category,
-        structure_type: 'routine',
+        structure_type: 'checklist',
         content_type: 'default',
-        anchor_type: 'start_date',
+        anchor_type: 'none',
         status: 'published',
         risk_level: samsungWasherSource.riskLevel,
         source_title: samsungWasherSource.sourceTitle,
         source_url: samsungWasherSource.sourceUrl,
+        source_published_at: samsungWasherSource.sourcePublishedAt,
+        source_modified_at: samsungWasherSource.sourceModifiedAt,
+        source_checked_at: samsungWasherSource.sourceCheckedAt,
       },
       samsungWasherText,
     ),

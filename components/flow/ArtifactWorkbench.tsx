@@ -97,7 +97,11 @@ const checkOnlyRoutineSlugs = new Set([
   'curated-allblanc-no-jump-cardio',
   'curated-allblanc-lower-body',
 ]);
-const maintenanceRoutineSlugs = new Set(['washer-tub-clean-monthly', 'monstera-care-routine']);
+const maintenanceRoutineSlugs = new Set([
+  'washer-tub-clean-monthly',
+  'real-samsung-washer-filter-care',
+  'monstera-care-routine',
+]);
 const FLOWME_SURFACE_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]';
 const FLOWME_WORKBENCH_CARD_CLASS = `${FLOWME_SURFACE_CARD_CLASS} md:p-5`;
 const FLOWME_PANEL_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4';
@@ -2301,29 +2305,50 @@ function MaintenanceRoutineWorkbench({
   exportActions?: ArtifactExportActions;
 }) {
   const startDate = anchor || formatDate(new Date());
-  const isWasher = bundle.flow.slug === 'washer-tub-clean-monthly';
-  const title = isWasher ? '다음 통세척일' : '다음 상태 확인일';
-  const repeatLabel = bundle.repeatRules?.[0] ?? (isWasher ? '월 1회' : '7~10일마다');
-  const memoPlaceholder = isWasher
+  const isTubCleaning = bundle.flow.slug === 'washer-tub-clean-monthly';
+  const isDrainFilter = bundle.flow.slug === 'real-samsung-washer-filter-care';
+  const isPlantCare = !isTubCleaning && !isDrainFilter;
+  const title = isTubCleaning
+    ? '다음 통세척일'
+    : isDrainFilter
+      ? '다음 배수필터 청소일'
+      : '다음 상태 확인일';
+  const repeatLabel = isTubCleaning
+    ? bundle.repeatRules?.[0] ?? '월 1회'
+    : isDrainFilter
+      ? '주 1회'
+      : bundle.repeatRules?.[0] ?? '7~10일마다';
+  const memoPlaceholder = isTubCleaning
     ? '예: 드럼 세탁기 / 액상 전용 클리너 구매 링크 / 세제통 물기 제거 / 배수필터는 다음 주말에 확인'
-    : '예: 겉흙은 말랐고 잎 처짐 없음, 다음 확인일에 화분 방향만 돌리기';
-  const occurrenceDates = isWasher
+    : isDrainFilter
+      ? '예: 5C 표시 없음 / 잔수 제거 완료 / 부드러운 솔로 청소 / 재조립 후 누수 없음'
+      : '예: 겉흙은 말랐고 잎 처짐 없음, 다음 확인일에 화분 방향만 돌리기';
+  const occurrenceDates = isTubCleaning
     ? [0, 1, 2, 3].map((months) => formatDate(addMonths(new Date(startDate), months)))
-    : [0, 10, 20, 30].map((days) => formatDate(addDays(new Date(startDate), days)));
+    : isDrainFilter
+      ? [0, 7, 14, 21].map((days) => formatDate(addDays(new Date(startDate), days)))
+      : [0, 10, 20, 30].map((days) => formatDate(addDays(new Date(startDate), days)));
   const items = getExecutableItems(bundle);
   const maintenanceResult = workbenchState.memoCards.maintenanceResult ?? '';
   const maintenanceResultOptions = ['물주기 완료', '오늘은 보류', '관찰 메모'];
-  const sourceBridge = isWasher
+  const sourceBridge = isTubCleaning
     ? {
         cues: '통세척/통살균 코스, 문 열어 건조, 세제통·고무패킹·배수필터 확인',
         conversion: 'Flow에서는 월 1회 관리일과 날짜 안 체크리스트로 옮겼습니다.',
         prep: '세제나 클리너는 내 모델 설명서에서 허용한 종류와 양만 사용합니다.',
         cadence: '기본 점검은 월 1회로 두고, 냄새나 오염이 반복되면 모델 설명서와 서비스 안내를 다시 확인합니다.',
       }
-    : {
-        cues: '겉흙 2~3cm, 잎 처짐, 밝은 간접광, 배수구멍과 분갈이 조건',
-        conversion: 'Flow에서는 고정 지시가 아니라 상태 확인일과 날짜 안 체크리스트로 옮겼습니다.',
-      };
+    : isDrainFilter
+      ? {
+          cues: '비스포크 AI 콤보, 5C 점검 문자, 잔수 제거, 부드러운 솔 청소, 잠김·누수 확인',
+          conversion: 'Flow에서는 공식 주 1회 청소 권장과 당일 안전 순서를 관리일과 체크리스트로 나눴습니다.',
+          prep: '배수필터를 열기 전에 전원을 끄고 물이 완전히 빠졌는지 먼저 확인합니다.',
+          cadence: '공식 안내의 주 1회 이상 청소 주기를 기본으로 두되, 제품 모델과 사용 상태를 함께 확인합니다.',
+        }
+      : {
+          cues: '겉흙 2~3cm, 잎 처짐, 밝은 간접광, 배수구멍과 분갈이 조건',
+          conversion: 'Flow에서는 고정 지시가 아니라 상태 확인일과 날짜 안 체크리스트로 옮겼습니다.',
+        };
 
   return (
     <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
@@ -2372,14 +2397,20 @@ function MaintenanceRoutineWorkbench({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className={FLOWME_EYEBROW_CLASS}>날짜 안 체크리스트</p>
-            <h3 className={FLOWME_TITLE_CLASS}>{isWasher ? '통세척할 때 확인할 것' : '물 주기 전에 확인할 것'}</h3>
+            <h3 className={FLOWME_TITLE_CLASS}>
+              {isTubCleaning
+                ? '통세척할 때 확인할 것'
+                : isDrainFilter
+                  ? '배수필터를 열기 전에 확인할 것'
+                  : '물 주기 전에 확인할 것'}
+            </h3>
           </div>
           <span className={FLOWME_PROGRESS_CHIP_CLASS}>{items.length}개</span>
         </div>
         <div className="mt-3 grid gap-2">
           {items.map((item) => {
             const detail = getWorkbenchItemDetail(bundle, item.id);
-            const isLongCycle = !isWasher && item.title.includes('분갈이');
+            const isLongCycle = isPlantCare && item.title.includes('분갈이');
             return (
               <div key={item.id} className={FLOWME_INNER_ROW_CLASS}>
                 <label className="flex items-start gap-2">
@@ -2412,7 +2443,7 @@ function MaintenanceRoutineWorkbench({
             </a>
           ) : null}
         </div>
-        {!isWasher ? (
+        {isPlantCare ? (
           <div data-testid="maintenance-result-selector" className={`mt-3 ${FLOWME_SUCCESS_CARD_CLASS}`}>
             <p className="text-xs font-semibold text-[#1F8A5B]">오늘 결과</p>
             <p className="mt-1 text-sm leading-6 text-[#406B55]">체크리스트를 보고 이번 관리일의 결과만 고릅니다. 보류도 정상 결과입니다.</p>

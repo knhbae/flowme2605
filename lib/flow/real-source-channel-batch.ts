@@ -36,6 +36,8 @@ type RealSourceSpec = {
   source_url: string;
   source_type: SourceType;
   source_precision: SourcePrecision;
+  source_published_at?: string;
+  source_modified_at?: string;
   source_checked_at?: string;
   primary_destination?: PrimaryDestination;
   risk_level: RiskLevel;
@@ -135,6 +137,8 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       primary_destination: spec.primary_destination,
       source_title: spec.source_title,
       source_url: spec.source_url,
+      source_published_at: spec.source_published_at,
+      source_modified_at: spec.source_modified_at,
       source_checked_at: spec.source_checked_at ?? checkedAt,
       conversion_note: spec.conversion_note,
       risk_level: spec.risk_level,
@@ -147,7 +151,7 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       copy_count: 0,
       tags: spec.tags,
       created_at: now,
-      updated_at: now,
+      updated_at: spec.source_checked_at ? `${spec.source_checked_at}T00:00:00.000Z` : now,
     },
     sections,
     items,
@@ -521,7 +525,7 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'samsung-service',
     slug: 'real-samsung-aircon-seasonal-care',
-    title: '삼성 에어컨 계절 세척 준비 Flow',
+    title: '삼성 에어컨 전문 세척 예약 준비 Flow',
     category: '가전관리',
     structure_type: 'timeline',
     anchor_type: 'end_date',
@@ -529,8 +533,9 @@ const realSourceSpecs: RealSourceSpec[] = [
     source_url: 'https://www.samsungsvc.co.kr/info/maintenance',
     source_type: 'official',
     source_precision: 'exact',
+    source_checked_at: '2026-07-12',
     risk_level: 'low',
-    conversion_note: '공식 세척 서비스 안내를 계절 전 점검과 예약 준비 순서로 전환했습니다.',
+    conversion_note: '공식 전문 세척 서비스 안내를 필요 신호 확인, 상담과 예약, 방문 후 확인 순서로 전환했습니다.',
     tags: ['가전관리', '공식출처', '에어컨'],
     sections: ['예약 전 확인', '방문 전 실행'],
     actions: [
@@ -541,10 +546,10 @@ const realSourceSpecs: RealSourceSpec[] = [
         completion_criteria: '모델명, 설치 위치, 실내기 개수를 예약 메모에 남겼습니다.',
       },
       {
-        title: '필터 오염과 냉방 상태 점검',
-        why: '단순 필터 청소로 해결되는 문제인지 전문 세척이 필요한 상태인지 먼저 구분해야 합니다.',
-        how: '전원을 끄고 필터 먼지, 냄새, 냉방 약화, 물 맺힘 여부를 체크합니다.',
-        completion_criteria: '필터 오염, 냄새, 냉방 상태를 사진이나 메모로 기록했습니다.',
+        title: '전문 세척 필요 신호 기록',
+        why: '냄새, 필터 먼지, 냉방 효율 저하와 사용 기간을 먼저 기록해야 상담 때 필요한 서비스 범위를 설명하기 쉽습니다.',
+        how: '가동 시 냄새, 외부 필터 먼지, 냉방 효율 저하, 구매 후 사용 기간을 사진이나 메모로 남깁니다.',
+        completion_criteria: '전문 세척 상담에 전달할 상태 신호를 기록했습니다.',
       },
       {
         title: '세척 필요 범위와 비용 확인',
@@ -569,14 +574,16 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'samsung-service',
     slug: 'real-samsung-washer-filter-care',
-    title: '삼성 세탁기 배수필터 관리 Flow',
+    title: '삼성 비스포크 AI 콤보 배수필터 청소 Flow',
     category: '가전관리',
     structure_type: 'routine',
     anchor_type: 'start_date',
-    source_title: '삼성전자서비스 세탁기 배수필터 청소 안내',
+    source_title: '삼성전자서비스 비스포크 AI 콤보 배수필터 청소 안내',
     source_url: 'https://www.samsungsvc.co.kr/solution/1978102',
     source_type: 'official',
     source_precision: 'exact',
+    source_published_at: '2024-03-22',
+    source_checked_at: '2026-07-12',
     risk_level: 'low',
     conversion_note: '배수필터 청소와 잔수 제거 안내를 반복 관리 루틴으로 전환했습니다.',
     tags: ['가전관리', '공식출처', '세탁기'],
@@ -603,8 +610,8 @@ const realSourceSpecs: RealSourceSpec[] = [
       {
         title: '필터와 내부 이물질 제거',
         why: '먼지, 동전, 머리카락은 배수 오류와 냄새의 원인이 될 수 있습니다.',
-        how: '필터를 꺼내 흐르는 물로 씻고 내부에 보이는 이물질을 제거합니다.',
-        completion_criteria: '필터 세척과 내부 이물질 제거를 완료했습니다.',
+        how: '필터를 꺼내 부드러운 솔로 필터와 내부를 청소하고 보이는 이물질을 제거합니다.',
+        completion_criteria: '부드러운 솔로 필터와 내부 청소를 완료했습니다.',
       },
       {
         title: '재조립 후 누수와 오류 코드 확인',
@@ -1039,7 +1046,7 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'pet-care-note',
     slug: 'real-pet-registration-check',
-    title: '반려동물 등록 준비 Flow',
+    title: '반려견 동물등록 준비 Flow',
     category: '반려동물',
     structure_type: 'checklist',
     anchor_type: 'none',
@@ -1047,21 +1054,22 @@ const realSourceSpecs: RealSourceSpec[] = [
     source_url: 'https://www.animal.go.kr/front/community/show.do?boardId=contents&menuNo=2000000016&seq=+66',
     source_type: 'official',
     source_precision: 'exact',
+    source_checked_at: '2026-07-12',
     risk_level: 'medium',
-    conversion_note: '동물등록제도 안내를 등록 대상 확인과 등록 후 관리 체크리스트로 전환했습니다.',
+    conversion_note: '현재 동물등록제도 안내의 2개월 이상 반려견 기준과 내장형·외장형 등록 절차를 준비 체크리스트로 전환했습니다.',
     tags: ['반려동물', '등록', '공식출처'],
     sections: ['등록 대상 확인', '등록 후 관리'],
     actions: [
       {
         title: '등록 대상 동물 여부 확인',
         why: '등록 의무와 방식은 동물 종류와 월령에 따라 달라질 수 있습니다.',
-        how: '동물등록제도 안내에서 등록 대상 기준을 확인하고 반려동물 정보를 대조합니다.',
+        how: '국가동물보호정보시스템에서 주택·준주택 또는 반려 목적으로 기르는 2개월 이상 반려견인지 확인합니다.',
         completion_criteria: '등록 대상 여부와 등록 필요 시점을 확인했습니다.',
       },
       {
         title: '등록 방식과 대행기관 확인',
         why: '내장형, 외장형 등 방식과 대행기관 선택에 따라 방문 준비가 달라집니다.',
-        how: '가까운 대행기관과 가능한 등록 방식을 확인하고 문의가 필요한 내용을 적습니다.',
+        how: '내장형 또는 외장형 중 가능한 방식과 가까운 등록 대행기관을 확인하고, 방문 가능 여부를 미리 문의합니다.',
         completion_criteria: '방문할 기관과 등록 방식을 정했습니다.',
       },
       {

@@ -2537,12 +2537,86 @@ test('a saved archived flow remains as personal history without returning to tod
 test('real source public flow exposes source QA metadata and target metadata', async ({ page }) => {
   await page.goto('/f/real-samsung-aircon-seasonal-care');
 
-  await expect(page.getByText('5월 21일 확인')).toBeVisible();
+  await expect(page.getByTestId('flow-source-card')).toContainText('7월 12일 원문 확인 기록');
   await page.getByTestId('flow-source-card').locator('summary').click();
   await expect(page.getByText('원문에서 옮긴 방식:')).toBeVisible();
-  await expect(page.getByText('정확한 출처 페이지')).toBeVisible();
+  await expect(page.getByText('개별 원문 페이지')).toBeVisible();
   await expect(page.getByText('목표일 입력으로 시작')).toBeVisible();
   await expect(page.getByText('원문과 근거')).toBeVisible();
+});
+
+test('source currentness retires the stale pet duplicate and separates appliance jobs', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_OVERLAP_CURRENTNESS_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await expectPublicFlowRouteClosed(page, '/f/pet-registration-basic');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-retired-pet-legacy-mobile.png`, fullPage: true });
+
+  await page.goto('/f/real-pet-registration-check');
+  await expect(page.locator('h1')).toContainText('반려견 동물등록 준비');
+  await expect(page.locator('body')).toContainText('등록 방식과 대행기관 확인');
+  await expect(page.locator('body')).not.toContainText('인식표 방식');
+  const petSourceCard = page.getByTestId('flow-source-card');
+  await expect(petSourceCard).toContainText('7월 12일 원문 확인 기록');
+  await petSourceCard.locator('summary').click();
+  await expect(petSourceCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute(
+    'href',
+    'https://www.animal.go.kr/front/community/show.do?boardId=contents&menuNo=2000000016&seq=+66',
+  );
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-current-pet-registration-mobile.png`, fullPage: true });
+
+  await page.goto('/f/samsung-aircon-seasonal-check');
+  await expect(page.locator('h1')).toContainText('삼성 에어컨 계절 전 점검');
+  await expect(page.locator('body')).toContainText('냉방 18도로 10분 이상 시험 가동하기');
+  await expect(page.locator('body')).not.toContainText('물 맺힘이나 누수 흔적');
+  const selfCheckSourceCard = page.getByTestId('flow-source-card');
+  await selfCheckSourceCard.locator('summary').click();
+  await expect(selfCheckSourceCard).toContainText('2026년 2월 27일 원문 게시');
+  await expect(selfCheckSourceCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute(
+    'href',
+    'https://www.samsungsvc.co.kr/solution/2002378?assess=N',
+  );
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-aircon-self-check-mobile.png`, fullPage: true });
+
+  await page.goto('/f/real-samsung-aircon-seasonal-care');
+  await expect(page.locator('h1')).toContainText('삼성 에어컨 전문 세척 예약 준비');
+  await expect(page.locator('body')).toContainText('전문 세척 필요 신호 기록');
+  const careSourceCard = page.getByTestId('flow-source-card');
+  await careSourceCard.locator('summary').click();
+  await expect(careSourceCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute(
+    'href',
+    'https://www.samsungsvc.co.kr/info/maintenance',
+  );
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-aircon-professional-care-mobile.png`, fullPage: true });
+
+  await page.goto('/f/real-samsung-washer-filter-care');
+  await expect(page.locator('h1')).toContainText('삼성 비스포크 AI 콤보 배수필터 청소');
+  await expect(page.locator('body')).toContainText('필터와 내부 이물질 제거');
+  await expect(page.getByTestId('maintenance-routine-next-card')).toContainText('주 1회');
+  await expect(page.getByTestId('maintenance-routine-next-card')).toContainText('다음 배수필터 청소일');
+  await expect(page.getByTestId('maintenance-routine-checklist-card')).toContainText('배수필터를 열기 전에 확인할 것');
+  await expect(page.getByTestId('routine-session-grid-card')).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/05-washer-ai-combo-drain-filter-mobile.png`, fullPage: true });
+
+  await page.goto('/f/samsung-washer-filter-cleaning');
+  await expect(page.locator('h1')).toContainText('삼성 미세플라스틱 저감장치 필터 청소');
+  await expect(page.locator('body')).toContainText('필터 LED 확인, 전원 차단, 물세척 금지');
+  await expect(page.getByLabel('시작일')).toHaveCount(0);
+  await expect(page.getByTestId('routine-session-grid-card')).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/06-washer-microfiber-filter-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/u/samsung-service');
+  await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toContainText('전문 세척 예약 준비');
+  await expect(page.locator('a[href="/f/real-samsung-washer-filter-care"]').first()).toContainText('비스포크 AI 콤보');
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/07-samsung-distinct-jobs-wide.png`, fullPage: true });
 });
 
 test('vehicle inspection route keeps reservation and result memo beside the timeline', async ({ page }) => {
@@ -7057,22 +7131,19 @@ test('approved pilot flow executes while review inventory stays out of public ro
   await expect(page.getByRole('heading', { name: '삼성 에어컨 계절 전 점검' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '삼성 에어컨 계절 전 점검 Flow' })).toHaveCount(0);
   await expect(page.getByText('출처와 주의 정보')).toHaveCount(0);
-  await expect(page.getByText('삼성전자서비스 Samsung Care+ 에어컨 관리 안내').first()).toBeVisible();
   const samsungSourceCard = page.getByTestId('flow-source-card');
   await samsungSourceCard.locator('summary').click();
+  await expect(samsungSourceCard.getByRole('heading', { name: '삼성전자서비스 에어컨 사전점검 안내' })).toBeVisible();
   await expect(samsungSourceCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute(
     'href',
-    'https://www.samsungsvc.co.kr/info/carePlus',
+    'https://www.samsungsvc.co.kr/solution/2002378?assess=N',
   );
-  await page.getByLabel('시작일').fill('2026-08-01');
-  await expect(page.getByLabel('시작일')).toHaveValue('2026-08-01');
+  await expect(page.getByLabel('시작일')).toHaveCount(0);
   const samsungWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(samsungWorkbench.getByTestId('routine-session-grid-card')).toBeVisible();
-  await expect(samsungWorkbench.getByTestId('routine-session-log-card')).toBeVisible();
-  await expect(samsungWorkbench.getByTestId('routine-today-session-card')).toBeVisible();
-  const firstSessionPreview = samsungWorkbench.getByLabel('저장 전 미리보기 선택: 1회차').first();
-  await firstSessionPreview.check();
-  await expect(firstSessionPreview).toBeChecked();
+  await expect(samsungWorkbench.getByTestId('routine-session-grid-card')).toHaveCount(0);
+  const firstCheck = samsungWorkbench.getByLabel('저장 전 미리보기 선택: 전원 플러그와 전용 차단기 확인하기');
+  await firstCheck.check();
+  await expect(firstCheck).toBeChecked();
 
   await expectPublicFlowRouteClosed(page, '/f/qnet-exam-application-prep');
 });
