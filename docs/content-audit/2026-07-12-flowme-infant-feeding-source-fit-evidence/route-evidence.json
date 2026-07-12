@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "2026-07-12.infant-feeding-source-fit.1",
+  "generatedAt": "2026-07-12T00:00:00.000Z",
+  "summary": {
+    "publishedFlowCount": 157,
+    "normalUserRouteCount": 141,
+    "freshnessCurrentCount": 141,
+    "manualSourceFitMissingNormalRouteCount": 27,
+    "unauditedPublicExecutableRouteCountBefore": 16,
+    "unauditedPublicExecutableRouteCountAfter": 11,
+    "unauditedHighRiskPublicExecutableRouteCountAfter": 1,
+    "heldInfantFeedingRouteCount": 5,
+    "screenshotCount": 4,
+    "observedUserSessionCount": 0
+  },
+  "sourceDecision": {
+    "mapId": "baby-food-map",
+    "status": "revise",
+    "directRouteEnabled": true,
+    "publicExecutionEnabled": false,
+    "executionHoldReason": "medical_source_fit",
+    "version": "2026-07-12.hold.1",
+    "sourceCheckedAt": "2026-07-12T00:00:00.000Z",
+    "creatorSourceUrl": "https://blog.naver.com/01695258757/222768860919",
+    "officialReviewUrl": "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470",
+    "officialGuidanceSummary": "이유기보충식은 대체로 생후 6개월 무렵 시작",
+    "sourceTracePreserved": true,
+    "existingSavedRecordPreserved": true
+  },
+  "routes": [
+    {
+      "scenario": "flow-map-review-hold-mobile",
+      "route": "/flow-maps/baby-food-map",
+      "viewport": { "width": 390, "height": 844 },
+      "httpStatus": 200,
+      "noindex": true,
+      "saveControlCount": 0,
+      "executionRowCount": 0,
+      "officialGuidanceLinkCount": 1,
+      "creatorReferenceLinkCount": 1,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/01-baby-food-review-hold-mobile.png"
+    },
+    {
+      "scenario": "flow-map-review-hold-wide",
+      "route": "/flow-maps/baby-food-map",
+      "viewport": { "width": 1024, "height": 900 },
+      "httpStatus": 200,
+      "noindex": true,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/02-baby-food-review-hold-wide.png"
+    },
+    {
+      "scenario": "url-first-medical-source-fit-hold",
+      "route": "/flows",
+      "triggerUrl": "https://blog.naver.com/01695258757/222768860919?utm_source=review",
+      "viewport": { "width": 390, "height": 844 },
+      "lookupState": "needs_review",
+      "gateKind": "medical_source_fit",
+      "canSaveToMyFlow": false,
+      "canExport": false,
+      "draftBypassVisible": false,
+      "officialSourceMislabelCount": 0,
+      "visibleMarkdownHitCount": 0,
+      "screenshot": "screenshots/03-baby-food-url-first-blocked-mobile.png"
+    },
+    {
+      "scenario": "existing-save-preserved-with-warning",
+      "route": "/my?demo=source-backed&savedMap=baby-food-map",
+      "viewport": { "width": 390, "height": 844 },
+      "savedRecordVisible": true,
+      "medicalSourceFitWarningVisible": true,
+      "warningDismissControlCount": 0,
+      "sourceTraceVisibleCount": 0,
+      "screenshot": "screenshots/04-baby-food-existing-save-warning-mobile.png"
+    },
+    {
+      "scenario": "direct-child-execution-bypass",
+      "route": "/f/baby-150-start",
+      "httpStatus": 404,
+      "saveControlCount": 0,
+      "exportControlCount": 0
+    }
+  ],
+  "remainingRisk": {
+    "nextSourceFitPriority": "curated-new-car-purchase-guide",
+    "nextHighRiskSlug": "curated-new-car-basic",
+    "sourcePublicationAgeStructured": false,
+    "automatedQaReplacesObservedUse": false
+  }
+}

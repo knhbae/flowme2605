@@ -80,7 +80,7 @@ export type SourceBackedFlowMapQualityDecision = {
   homepageEligible: boolean;
   directRouteEnabled: boolean;
   publicExecutionEnabled?: boolean;
-  executionHoldReason?: 'official_freshness' | 'source_rows';
+  executionHoldReason?: 'official_freshness' | 'source_rows' | 'medical_source_fit';
   publicCatalogEligible?: boolean;
   productScore: number;
   reason: string;

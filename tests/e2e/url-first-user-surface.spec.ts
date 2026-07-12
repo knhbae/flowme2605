@@ -257,6 +257,29 @@ test('broad worksheet category URL stops before an invented weekly schedule or d
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-funmom-url-first-blocked-mobile.png`, fullPage: true });
 });
 
+test('creator infant-feeding URL stops before an outdated start-age schedule or draft bypass', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_INFANT_FEEDING_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://blog.naver.com/01695258757/222768860919?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await expect(result).toContainText('아이 상태에 맞는 확인이 필요해요');
+  await expect(result).toContainText('시작 시기와 메뉴를 아이 상태에 맞게 다시 확인');
+  await expect(result).toContainText('참고 원문');
+  await expect(result).not.toContainText('공식 원문');
+  await expect(result).toContainText('새 저장 중지');
+  await expect(result.getByRole('link', { name: '시작 전 확인' })).toHaveAttribute(
+    'href',
+    '/flow-maps/baby-food-map',
+  );
+  await expect(result.getByTestId('flow-url-start-panel')).toHaveCount(0);
+  await expect(result.getByTestId('flow-url-supply-request')).toHaveCount(0);
+  await expect(result).not.toContainText('Markdown');
+  await expectCleanUrlFirstUserSurface(result);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-baby-food-url-first-blocked-mobile.png`, fullPage: true });
+});
+
 test('URL-first miss and saved-candidate states hide production-only wording from user surface', async ({ page }) => {
   await openFlowFinding(page);
   await lookupUrl(page, 'https://example.com/source-to-convert?utm_source=review');

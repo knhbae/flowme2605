@@ -170,6 +170,34 @@ const duplicateCanonicalUrlLookupHoldNotes: Record<string, { reason: string; nex
   },
 };
 
+type CuratedSourceExecutionHold = {
+  status: SourceBackedFlowMapQualityDecision['status'];
+  reason: string;
+  nextAction: string;
+  reviewUrl: string;
+  version: string;
+  checkedAt: string;
+  userFacingStatus: string;
+  summary: string;
+};
+
+const curatedSourceExecutionHolds: Record<string, CuratedSourceExecutionHold> = {
+  'baby-food-map': {
+    status: 'revise',
+    reason:
+      'A creator meal schedule presents 150, 160, 170, and 180-day start variants, while current official guidance generally places complementary feeding around six months and requires child-specific readiness review.',
+    nextAction:
+      'Keep the creator schedule traceable, but hold new execution until the start-age choices and menu rows are reconciled with current official guidance and a child-specific consultation boundary.',
+    reviewUrl:
+      'https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470',
+    version: '2026-07-12.hold.1',
+    checkedAt: '2026-07-12T00:00:00.000Z',
+    userFacingStatus: '시작 시기 확인 필요',
+    summary:
+      '민간 식단표의 시작 시기와 메뉴를 아이 상태 및 현재 공식 안내와 다시 대조하고 있습니다. 확인 전에는 새 일정으로 저장하거나 파일로 받지 않습니다.',
+  },
+};
+
 function findPrimaryDateSetup(fields: SeedSetupField[] = []): SeedSetupField | undefined {
   return fields.find((field) => field.type === 'date');
 }
@@ -259,6 +287,8 @@ function getSetupInput(bundle: SeedBundle): SourceBackedMyFlowMap['setupInput'] 
 }
 
 function buildMapSummary(bundle: SeedBundle): string {
+  const executionHold = curatedSourceExecutionHolds[bundle.bundleId];
+  if (executionHold) return executionHold.summary;
   const flowLabel = `${bundle.counts.flows}개 묶음`;
   const itemLabel = `${bundle.counts.steps}개 할 일`;
   return `${bundle.userFacingStatus}. ${bundle.categoryLabel} 원문을 ${flowLabel}, ${itemLabel}로 옮겨 저장하고 실행할 수 있습니다.`;
@@ -396,13 +426,17 @@ function buildFlowBundle(bundle: SeedBundle, flow: SeedFlow): FlowBundle {
   const flowSourceUrl = firstStepSourceUrl ?? bundle.sourceUrls[0];
   const sourceType = getSourceType(bundle, flowSourceUrl);
   const hasWeekdaySetup = setupFields.some((field) => field.key === 'targetWeekdays');
+  const executionHold = curatedSourceExecutionHolds[bundle.bundleId];
+  const sourceCheckedAt = executionHold?.checkedAt ?? generatedAt;
 
   return {
     flow: {
       id: `flow-curated-source-app-${flow.flowId}`,
       slug: flow.slug,
       title: flow.title,
-      description: `${bundle.title} 원문에서 ${flow.steps.length}개 할 일을 옮겨 저장한 콘텐츠입니다.`,
+      description: executionHold
+        ? `${bundle.title} 민간 자료를 검토 중입니다. 아이 상태와 현재 공식 안내를 확인하기 전에는 새 실행 일정으로 사용하지 않습니다.`
+        : `${bundle.title} 원문에서 ${flow.steps.length}개 할 일을 옮겨 저장한 콘텐츠입니다.`,
       category: bundle.categoryLabel,
       structure_type: structureType,
       anchor_type: anchorType,
@@ -414,15 +448,18 @@ function buildFlowBundle(bundle: SeedBundle, flow: SeedFlow): FlowBundle {
       primary_destination: primaryDestination,
       setup_anchor_label: setupInput?.label,
       setup_anchor_hint: setupInput ? `${setupInput.label} 기준으로 원문 항목을 배치합니다.` : undefined,
-      source_checked_at: generatedAt,
-      conversion_note: '원문 구조를 할 일과 체크 항목으로 옮겼습니다.',
+      source_checked_at: sourceCheckedAt,
+      conversion_note: executionHold
+        ? '민간 식단표의 시작 시기와 메뉴를 현재 공식 안내 및 아이별 상담 경계와 다시 대조해야 합니다.'
+        : '원문 구조를 할 일과 체크 항목으로 옮겼습니다.',
       risk_level: riskLevel,
-      warning:
-        riskLevel === 'medical_sensitive'
+      warning: executionHold
+        ? '이 식단표는 민간 참고 자료입니다. 시작 시기와 식재료는 아이 상태를 확인하고 공식 정보나 의료진 안내를 우선해 주세요.'
+        : riskLevel === 'medical_sensitive'
           ? '건강·영유아 관련 내용은 관찰 메모용이며, 공식 정보나 전문가 안내를 우선합니다.'
           : undefined,
       created_at: generatedAt,
-      updated_at: generatedAt,
+      updated_at: sourceCheckedAt,
       tags: [
         'source-backed',
         CURATED_SOURCE_APP_SEED_TAG,
@@ -447,43 +484,58 @@ function buildFlowBundle(bundle: SeedBundle, flow: SeedFlow): FlowBundle {
 
 export const curatedSourceAppSeedFlowMapQualityDecisions: Record<string, SourceBackedFlowMapQualityDecision> =
   Object.fromEntries(
-    curatedSourceAppSeed.contentBundles.map((bundle) => [
-      bundle.bundleId,
-      {
-        mapId: bundle.bundleId,
-        status: getQualityStatus(bundle.status),
-        homepageEligible: false,
-        directRouteEnabled: !duplicateCanonicalUrlLookupHoldMapIds.has(bundle.bundleId),
-        productScore: getQualityScore(bundle.status),
-        reason: duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId]
-          ? duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId].reason
-          : `${bundle.userFacingStatus} 상태의 curated source app seed입니다.`,
-        nextAction: duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId]
-          ? duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId].nextAction
-          : '사용자 화면에서는 상태 문구와 원문 링크를 유지하고, 앱 실행 경로로만 노출합니다.',
-      } satisfies SourceBackedFlowMapQualityDecision,
-    ]),
+    curatedSourceAppSeed.contentBundles.map((bundle) => {
+      const executionHold = curatedSourceExecutionHolds[bundle.bundleId];
+      return [
+        bundle.bundleId,
+        {
+          mapId: bundle.bundleId,
+          status: executionHold?.status ?? getQualityStatus(bundle.status),
+          homepageEligible: false,
+          directRouteEnabled: !duplicateCanonicalUrlLookupHoldMapIds.has(bundle.bundleId),
+          ...(executionHold
+            ? { publicExecutionEnabled: false, executionHoldReason: 'medical_source_fit' as const }
+            : {}),
+          productScore: executionHold ? 4 : getQualityScore(bundle.status),
+          reason: executionHold
+            ? executionHold.reason
+            : duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId]
+              ? duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId].reason
+              : `${bundle.userFacingStatus} 상태의 curated source app seed입니다.`,
+          nextAction: executionHold
+            ? executionHold.nextAction
+            : duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId]
+              ? duplicateCanonicalUrlLookupHoldNotes[bundle.bundleId].nextAction
+              : '사용자 화면에서는 상태 문구와 원문 링크를 유지하고, 앱 실행 경로로만 노출합니다.',
+        } satisfies SourceBackedFlowMapQualityDecision,
+      ];
+    }),
   );
 
-export const curatedSourceAppSeedFlowMaps: SourceBackedMyFlowMap[] = curatedSourceAppSeed.contentBundles.map((bundle) => ({
-  id: bundle.bundleId,
-  userLabel: bundle.title,
-  title: bundle.title,
-  version: '2026-07-01.1',
-  updatedAt: generatedAt,
-  updatePolicy: bundle.status === 'ready_draft' ? 'auto_patch_when_safe' : 'review_before_apply',
-  summary: buildMapSummary(bundle),
-  sourceTitle: sourceTitle(bundle),
-  sourceUrl: bundle.sourceUrls[0],
-  artifacts: getArtifacts(bundle),
-  setupInput: getSetupInput(bundle),
-  flowSlugs: bundle.flows.map((flow) => flow.slug),
-  categoryLabel: bundle.categoryLabel,
-  userFacingStatus: bundle.userFacingStatus,
-  recommendedFlowSlug: bundle.recommendedFlowId,
-  counts: bundle.counts,
-  sourceUrlCount: bundle.sourceUrls.length,
-}));
+export const curatedSourceAppSeedFlowMaps: SourceBackedMyFlowMap[] = curatedSourceAppSeed.contentBundles.map((bundle) => {
+  const executionHold = curatedSourceExecutionHolds[bundle.bundleId];
+  return {
+    id: bundle.bundleId,
+    userLabel: bundle.title,
+    title: bundle.title,
+    version: executionHold?.version ?? '2026-07-01.1',
+    updatedAt: executionHold?.checkedAt ?? generatedAt,
+    updatePolicy:
+      executionHold || bundle.status !== 'ready_draft' ? 'review_before_apply' : 'auto_patch_when_safe',
+    summary: buildMapSummary(bundle),
+    sourceTitle: sourceTitle(bundle),
+    sourceUrl: bundle.sourceUrls[0],
+    ...(executionHold ? { reviewUrl: executionHold.reviewUrl } : {}),
+    artifacts: getArtifacts(bundle),
+    setupInput: getSetupInput(bundle),
+    flowSlugs: bundle.flows.map((flow) => flow.slug),
+    categoryLabel: bundle.categoryLabel,
+    userFacingStatus: executionHold?.userFacingStatus ?? bundle.userFacingStatus,
+    recommendedFlowSlug: bundle.recommendedFlowId,
+    counts: bundle.counts,
+    sourceUrlCount: bundle.sourceUrls.length,
+  };
+});
 
 export const curatedSourceAppSeedFlowBundles: FlowBundle[] = curatedSourceAppSeed.contentBundles.flatMap((bundle) =>
   bundle.flows.map((flow) => buildFlowBundle(bundle, flow)),

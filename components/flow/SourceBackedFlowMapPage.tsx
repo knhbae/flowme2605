@@ -53,14 +53,27 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
   const qualityDecision = getSourceBackedFlowMapQualityDecision(map.id);
   const needsSourceRows = qualityDecision.executionHoldReason === 'source_rows';
-  const eyebrow = needsSourceRows ? '실행 항목 준비 중' : '최신 공식 내용 확인 필요';
+  const needsMedicalSourceFit = qualityDecision.executionHoldReason === 'medical_source_fit';
+  const eyebrow = needsSourceRows
+    ? '실행 항목 준비 중'
+    : needsMedicalSourceFit
+      ? '시작 시기 확인 필요'
+      : '최신 공식 내용 확인 필요';
   const lead = needsSourceRows
     ? '원문 자료에서 실제로 실행할 항목을 고르는 중이에요.'
+    : needsMedicalSourceFit
+      ? '아이의 발달과 수유 상태를 확인한 뒤 시작 시기를 정해야 해요.'
     : '공식 원문과 현재 표시 내용을 다시 확인하고 있어요.';
   const description = needsSourceRows
     ? '개별 자료와 난이도를 확인하기 전에는 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 원문 자료를 먼저 둘러보세요.'
+    : needsMedicalSourceFit
+      ? '이 페이지의 150~180일 식단은 민간 참고 자료입니다. 현재 공식 안내는 대체로 생후 6개월 무렵 시작을 권하므로, 아이 상태를 확인하기 전에는 새 일정으로 저장하거나 파일로 받지 않습니다.'
     : '공식 내용이 달라질 수 있어 지금은 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 원문에서 최신 내용을 확인해 주세요.';
-  const sourceLinkLabel = needsSourceRows ? '원문 자료 둘러보기' : '최신 공식 내용 확인';
+  const sourceLinkLabel = needsSourceRows
+    ? '원문 자료 둘러보기'
+    : needsMedicalSourceFit
+      ? '공식 이유식 안내 보기'
+      : '최신 공식 내용 확인';
 
   return (
     <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8">
@@ -90,6 +103,17 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
             >
               {sourceLinkLabel}
             </a>
+            {needsMedicalSourceFit && map.reviewUrl && map.reviewUrl !== map.sourceUrl ? (
+              <a
+                data-testid="flow-map-reference-source-link"
+                className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
+                href={map.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                참고 식단표 원문
+              </a>
+            ) : null}
             <Link
               className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
               href="/flows"

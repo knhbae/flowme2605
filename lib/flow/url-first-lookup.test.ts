@@ -103,6 +103,28 @@ test('broad Funmom category URL stops at source-row review without save, export,
   assert.equal(result.saveMode, 'blocked');
   assert.deepEqual(result.preview.calendar, []);
   assert.deepEqual(result.preview.markdown, []);
+  assert.match(result.preview.myFlow[0] ?? '', /개별 원문 자료/);
+  assert.equal(result.aiGeneration.enabled, false);
+});
+
+test('creator infant-feeding URL stops at medical source-fit review without save, export, or draft bypass', () => {
+  const result = lookupUrlFirstP0Input(
+    'https://blog.naver.com/01695258757/222768860919?utm_source=user',
+  );
+
+  assert.equal(result.status, 'needs_review');
+  assert.equal(result.canonicalUrl, 'https://blog.naver.com/01695258757/222768860919');
+  assert.equal(result.flowMapId, 'baby-food-map');
+  assert.equal(result.routeHref, '/flow-maps/baby-food-map');
+  assert.equal(result.title, '아이 상태에 맞는 확인이 필요해요');
+  assert.match(result.summary, /시작 시기와 메뉴를 아이 상태에 맞게/);
+  assert.equal(result.gate?.kind, 'medical_source_fit');
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.saveMode, 'blocked');
+  assert.deepEqual(result.preview.calendar, []);
+  assert.deepEqual(result.preview.markdown, []);
+  assert.match(result.preview.myFlow[0] ?? '', /민간 식단표와 현재 공식 안내/);
   assert.equal(result.aiGeneration.enabled, false);
 });
 
@@ -143,17 +165,19 @@ test('broad Allblanc channel source URL resolves to the curated exact-video repr
   assert.equal(result.aiGeneration.enabled, false);
 });
 
-test('baby food source URL resolves to the source-traced app seed representative only', () => {
+test('baby food source URL resolves to the held source-traced map without opening execution', () => {
   const result = lookupUrlFirstP0Input(
     'https://blog.naver.com/01695258757/222768860919?utm_source=duplicate',
   );
 
-  assert.equal(result.status, 'hit');
+  assert.equal(result.status, 'needs_review');
   assert.equal(result.canonicalUrl, 'https://blog.naver.com/01695258757/222768860919');
   assert.equal(result.flowMapId, 'baby-food-map');
   assert.equal(result.routeHref, '/flow-maps/baby-food-map');
   assert.equal(result.flowSlug, 'baby-150-start');
-  assert.equal(result.canSaveToMyFlow, true);
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.gate?.kind, 'medical_source_fit');
   assert.equal(result.aiGeneration.enabled, false);
 });
 

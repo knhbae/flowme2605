@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 초기 이유식 source-fit 보류 리뷰</title>
+  <style>
+    :root{color-scheme:light;--bg:#f5f6f7;--paper:#fff;--ink:#16181d;--muted:#626873;--line:#dfe2e7;--blue:#254ee8;--amber:#9a6400;--amber-bg:#fff8df;--green:#0f6d54}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Noto Sans KR",sans-serif;line-height:1.55}main{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:36px 0 64px}header{border-top:5px solid var(--blue);background:var(--paper);padding:28px;border-bottom:1px solid var(--line)}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(26px,4vw,42px);line-height:1.15}h2{font-size:22px;margin-bottom:14px}h3{font-size:17px;margin-bottom:8px}.lead{max-width:840px;color:var(--muted);font-size:17px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}.metric{border:1px solid var(--line);background:#fafbfc;padding:14px}.metric b{display:block;font-size:25px}.metric span{color:var(--muted);font-size:13px}.band{margin-top:20px;background:var(--paper);border:1px solid var(--line);padding:22px}.decision{border-left:5px solid #d99a18;background:var(--amber-bg)}.decision strong{color:var(--amber)}ul{margin:0;padding-left:20px}.shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.shot{margin:0;border:1px solid var(--line);background:var(--paper);padding:12px}.shot img{display:block;width:100%;height:auto;border:1px solid #eceef1;background:#fff}.shot figcaption{padding:10px 2px 2px;color:var(--muted);font-size:14px}.mobile img{max-width:390px;margin:0 auto}.source-list a{color:var(--blue);word-break:break-all}.remaining{border-left:5px solid var(--green)}code{background:#eef0f3;padding:2px 5px}@media(max-width:800px){main{width:min(100% - 20px,1180px);padding-top:16px}header,.band{padding:18px}.metrics,.shots{grid-template-columns:1fr}.metric b{font-size:22px}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p><strong>2026-07-12 source-fit review</strong></p>
+    <h1>초기 이유식 식단표를 새 실행에서 보류했습니다</h1>
+    <p class="lead">최근에 링크를 확인했다는 날짜와 원문의 실제 유효성은 다릅니다. 민간 식단표의 150·160·170·180일 시작안을 현재 공식 안내와 대조한 결과, 아이 상태 확인 없이 캘린더 실행안으로 제공하지 않기로 했습니다.</p>
+    <div class="metrics">
+      <div class="metric"><b>5</b><span>보류한 의료 민감 실행 route</span></div>
+      <div class="metric"><b>16 → 11</b><span>미감사 공개 실행 route</span></div>
+      <div class="metric"><b>1</b><span>남은 고위험 미감사 실행</span></div>
+      <div class="metric"><b>4</b><span>모바일·wide screenshot</span></div>
+    </div>
+  </header>
+
+  <section class="band decision">
+    <h2>판정</h2>
+    <p><strong>원문과 기존 저장본은 보존하고, 새 저장·실행·export만 보류합니다.</strong></p>
+    <ul>
+      <li>Flow Map은 200 + noindex 검토 화면</li>
+      <li>URL-first는 <code>needs_review</code>, save/export false</li>
+      <li>직접 child route <code>/f/baby-150-start</code>는 404</li>
+      <li>기존 저장본은 비해제 경고와 함께 유지</li>
+    </ul>
+  </section>
+
+  <section class="band source-list">
+    <h2>근거 경계</h2>
+    <p>질병관리청과 WHO는 이유기보충식을 대체로 생후 6개월 무렵 시작하도록 안내합니다. 기존 민간 자료는 여러 시작 시점별 식단을 제공하지만, 모든 아이에게 적용할 시작 시기 판정 근거로 사용하지 않습니다.</p>
+    <ul>
+      <li><a href="https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470">질병관리청 국가건강정보포털</a></li>
+      <li><a href="https://www.who.int/publications/i/item/9789240081864">WHO complementary feeding guideline</a></li>
+      <li><a href="https://blog.naver.com/01695258757/222768860919">기존 민간 식단표 원문</a></li>
+    </ul>
+  </section>
+
+  <section class="band">
+    <h2>실제 화면</h2>
+    <div class="shots">
+      <figure class="shot mobile"><img src="screenshots/01-baby-food-review-hold-mobile.png" alt="모바일 이유식 검토 보류 화면"><figcaption>390px: 공식 안내와 민간 참고 원문을 분리하고 저장·export를 노출하지 않습니다.</figcaption></figure>
+      <figure class="shot"><img src="screenshots/02-baby-food-review-hold-wide.png" alt="와이드 이유식 검토 보류 화면"><figcaption>1024px: 같은 판정과 행동 위계를 유지하며 가로 overflow가 없습니다.</figcaption></figure>
+      <figure class="shot mobile"><img src="screenshots/03-baby-food-url-first-blocked-mobile.png" alt="URL-first 이유식 보류 결과"><figcaption>URL-first: 참고 원문으로 정확히 표시하고 새 저장·draft 우회를 차단합니다.</figcaption></figure>
+      <figure class="shot mobile"><img src="screenshots/04-baby-food-existing-save-warning-mobile.png" alt="기존 저장본 경고 화면"><figcaption>기존 저장본: 기록은 남기되 시작 시기 확인 경고를 숨길 수 없습니다.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="band remaining">
+    <h2>다음 위험</h2>
+    <p>현재 수동 source-fit 없이 공개 실행되는 route는 11개입니다. 고위험 잔여는 민간 신차 구매 가이드 기반 <code>curated-new-car-basic</code> 1개이며 다음 우선 감사 대상입니다. 자동 QA는 실제 사용자 또는 전문가 관찰을 대체하지 않습니다.</p>
+  </section>
+</main>
+</body>
+</html>

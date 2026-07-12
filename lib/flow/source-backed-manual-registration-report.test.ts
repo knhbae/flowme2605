@@ -71,10 +71,16 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
     generatedAt: '2026-07-06T00:00:00.000+09:00',
   });
 
-  assert.equal(report.summary.qaPassCount, 11);
+  assert.equal(report.summary.qaPassCount, 10);
   assert.equal(report.summary.registrationHoldCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 0);
+
+  const babyFood = report.rows.find((row) => row.mapId === 'baby-food-map');
+  assert.ok(babyFood);
+  assert.equal(babyFood.lookupEligible, false);
+  assert.equal(babyFood.status, 'lookup_blocked');
+  assert.deepEqual(babyFood.issueCodes, []);
 
   const reading = report.rows.find((row) => row.mapId === 'curated-reading-routine-log');
   assert.ok(reading);

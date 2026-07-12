@@ -3941,6 +3941,53 @@ test('an existing saved Funmom draft remains visible with a non-dismissible sour
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-funmom-existing-save-warning-mobile.png`, fullPage: true });
 });
 
+test('creator infant-feeding schedule is held for current guidance review without deleting an existing save', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_INFANT_FEEDING_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/baby-food-map');
+
+  const hold = page.getByTestId('flow-map-review-hold');
+  await expect(hold.getByRole('heading', { name: '초기 이유식 식단표' })).toBeVisible();
+  await expect(hold).toContainText('시작 시기 확인 필요');
+  await expect(hold).toContainText('150~180일 식단은 민간 참고 자료');
+  await expect(hold).toContainText('생후 6개월 무렵');
+  await expect(hold.getByRole('link', { name: '공식 이유식 안내 보기' })).toHaveAttribute(
+    'href',
+    'https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470',
+  );
+  await expect(hold.getByRole('link', { name: '참고 식단표 원문' })).toHaveAttribute(
+    'href',
+    'https://blog.naver.com/01695258757/222768860919',
+  );
+  await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
+  await expect(page.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-baby-food-review-hold-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-baby-food-review-hold-wide.png`, fullPage: true });
+
+  const directResponse = await page.goto('/f/baby-150-start');
+  expect(directResponse?.status()).toBe(404);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my?demo=source-backed&savedMap=baby-food-map');
+  await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('초기 이유식 식단표');
+  await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+  await page.getByTestId('my-flow-view-flow').click();
+  const sourceReview = page.getByTestId('my-flow-map-update-review');
+  await expect(sourceReview).toContainText('다시 쓰기 전 아이 상태와 공식 안내를 확인해 주세요');
+  await expect(sourceReview).toContainText('저장한 기록은 그대로 남지만');
+  await expect(sourceReview.getByTestId('my-flow-map-update-dismiss')).toHaveCount(0);
+  await expect(sourceReview.getByRole('link', { name: '시작 안내 확인' })).toHaveAttribute(
+    'href',
+    '/flow-maps/baby-food-map',
+  );
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-baby-food-existing-save-warning-mobile.png`, fullPage: true });
+});
+
 test('current Samsung 1way aircon routine keeps its verified cadence and puts model applicability first', async ({ page }) => {
   const evidenceDir = process.env.FLOWME_LEARNING_MAINTENANCE_EVIDENCE_DIR;
   if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });

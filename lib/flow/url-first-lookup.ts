@@ -25,7 +25,7 @@ export type UrlFirstSaveMode = 'direct' | 'preview_only' | 'draft_preview' | 'bl
 export type UrlFirstSavedArtifactMode = 'calendar' | 'checklist' | 'sheet';
 
 export type UrlFirstGate = {
-  kind?: 'official_freshness' | 'source_rows' | 'content_review';
+  kind?: 'official_freshness' | 'source_rows' | 'medical_source_fit' | 'content_review';
   title: string;
   reason: string;
   requiredAction: string;
@@ -168,6 +168,20 @@ const reviewHoldPreview: UrlFirstPreview = {
   myFlow: ['최신 공식 내용을 확인하기 전에는 저장하지 않아요.'],
 };
 
+const sourceRowHoldPreview: UrlFirstPreview = {
+  calendar: [],
+  markdown: [],
+  checklist: [],
+  myFlow: ['개별 원문 자료를 확인하기 전에는 저장하지 않아요.'],
+};
+
+const medicalSourceFitHoldPreview: UrlFirstPreview = {
+  calendar: [],
+  markdown: [],
+  checklist: [],
+  myFlow: ['민간 식단표와 현재 공식 안내를 대조하기 전에는 저장하지 않아요.'],
+};
+
 function getSourceBackedMapSourceStatus(map: SourceBackedMyFlowMap): UrlFirstSourceStatus {
   if (map.userFacingStatus && !map.userFacingStatus.includes('바로 시작')) return 'needs_review';
   return 'real';
@@ -207,6 +221,7 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
   const executionHeld = !isSourceBackedFlowMapExecutable(map);
   const qualityDecision = getSourceBackedFlowMapQualityDecision(map.id);
   const needsSourceRows = qualityDecision.executionHoldReason === 'source_rows';
+  const needsMedicalSourceFit = qualityDecision.executionHoldReason === 'medical_source_fit';
   const sourceStatus = executionHeld ? 'needs_review' : getSourceBackedMapSourceStatus(map);
   const canUseDirectly = !executionHeld && sourceStatus === 'real';
   const sourceLabel = toUserFacingSourceTitle(map.sourceTitle ?? map.userLabel ?? map.title);
@@ -218,6 +233,13 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
           reason: '자료 모음은 확인했지만 실제로 쓸 개별 자료와 난이도를 아직 고르는 중이에요.',
           requiredAction: '원문 자료를 둘러보거나 다른 Flow를 찾아보세요.',
         }
+      : needsMedicalSourceFit
+        ? {
+            kind: 'medical_source_fit',
+            title: '아이 상태에 맞는 확인이 필요해요',
+            reason: '민간 식단표의 시작 시기와 메뉴를 현재 공식 안내와 다시 대조하고 있어요.',
+            requiredAction: '공식 이유식 안내를 확인하고 아이 상태에 맞는 시작 시기를 정해 주세요.',
+          }
       : {
           kind: 'official_freshness',
           title: '최신 공식 내용 확인이 필요해요',
@@ -239,6 +261,8 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
       : executionHeld
         ? needsSourceRows
           ? '실행할 자료를 더 골라야 해요'
+          : needsMedicalSourceFit
+            ? '아이 상태에 맞는 확인이 필요해요'
           : '최신 공식 내용 확인이 필요해요'
         : '기존 Flow가 있지만 확인이 필요해요',
     summary: canUseDirectly
@@ -246,6 +270,8 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
       : executionHeld
         ? needsSourceRows
           ? `${sourceLabel} 자료 모음은 찾았지만 개별 자료와 난이도를 더 확인해야 해요. 지금은 저장하지 않고 원문 자료를 둘러볼 수 있어요.`
+          : needsMedicalSourceFit
+            ? `${sourceLabel} 식단표는 찾았지만 시작 시기와 메뉴를 아이 상태에 맞게 다시 확인해야 해요. 지금은 저장하지 않고 공식 안내와 참고 원문을 확인할 수 있어요.`
           : `${sourceLabel} 기반 콘텐츠는 최신 내용을 다시 확인 중이에요. 지금은 저장하지 않고 공식 원문을 확인해 주세요.`
         : `${sourceLabel} 기준의 콘텐츠가 있지만 아직 보강이 필요한 상태입니다. 저장 전에 원문 확인이 필요합니다.`,
     sourceStatus,
@@ -259,7 +285,13 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
     canSaveToMyFlow: canUseDirectly,
     saveMode: canUseDirectly ? 'direct' : executionHeld ? 'blocked' : 'preview_only',
     aiGeneration: aiDisabledForP0,
-    preview: executionHeld ? reviewHoldPreview : buildSourceBackedPreview(map),
+    preview: executionHeld
+      ? needsSourceRows
+        ? sourceRowHoldPreview
+        : needsMedicalSourceFit
+          ? medicalSourceFitHoldPreview
+          : reviewHoldPreview
+      : buildSourceBackedPreview(map),
     ...(canUseDirectly
       ? {}
       : {

@@ -858,7 +858,10 @@ test('curated source app seed exposes nine source-backed maps without homepage p
     );
     assert.ok(publishPackage, seedBundle.bundleId);
     assert.equal(publishPackage.public.categoryLabel, seedBundle.categoryLabel);
-    assert.equal(publishPackage.public.userFacingStatus, seedBundle.userFacingStatus);
+    assert.equal(
+      publishPackage.public.userFacingStatus,
+      seedBundle.bundleId === 'baby-food-map' ? '시작 시기 확인 필요' : seedBundle.userFacingStatus,
+    );
     assert.equal(publishPackage.public.recommendedFlowSlug, seedBundle.recommendedFlowId);
     assert.deepEqual(publishPackage.public.counts, seedBundle.counts);
     assert.equal(publishPackage.public.childFlows.length, seedBundle.flows.length, seedBundle.bundleId);
@@ -931,6 +934,33 @@ test('curated Funmom category park stays traceable but blocks execution until ex
   assert.doesNotMatch(detailTrace, /학습법|교육 조언|study advice|curriculum advice/i);
 });
 
+test('creator infant-feeding schedules stay traceable but block new execution until current medical source-fit review', () => {
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('baby-food-map');
+  const decision = getSourceBackedFlowMapQualityDecision('baby-food-map');
+  const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
+
+  assert.ok(publishPackage);
+  assert.equal(decision.status, 'revise');
+  assert.equal(decision.directRouteEnabled, true);
+  assert.equal(decision.publicExecutionEnabled, false);
+  assert.equal(decision.executionHoldReason, 'medical_source_fit');
+  assert.ok(!lookupableIds.includes('baby-food-map'));
+  assert.equal(publishPackage.map.version, '2026-07-12.hold.1');
+  assert.equal(publishPackage.map.updatedAt, '2026-07-12T00:00:00.000Z');
+  assert.equal(
+    publishPackage.map.reviewUrl,
+    'https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470',
+  );
+  assert.match(publishPackage.public.summary, /아이 상태 및 현재 공식 안내/);
+
+  for (const slug of ['baby-150-start', 'baby-160-start', 'baby-170-start', 'baby-180-start', 'baby-cube']) {
+    const bundle = bundleBySlug(slug);
+    assert.equal(bundle.flow.source_status, 'real');
+    assert.equal(bundle.flow.source_checked_at, '2026-07-12T00:00:00.000Z');
+    assert.match(bundle.flow.warning ?? '', /민간 참고 자료/);
+  }
+});
+
 test('aircon filter routine keeps current Samsung 1way scope, model check, and official repeat rule', () => {
   const publishPackage = buildSourceBackedFlowMapPublishPackage('aircon-filter-cleaning');
   const bundle = bundleBySlug('source-backed-aircon-filter-cleaning');
@@ -994,7 +1024,7 @@ test('curated OPIC sourceTrace repair moves the Mansour URL representative to QA
   assert.ok(steps.some((step) => step.sourceTrace?.includes('workbook one-month row: opic-1m-w5')));
 });
 
-test('curated baby food meal-log map can stay published while the source-traced app seed owns URL lookup', () => {
+test('curated baby food records stay traceable while both creator schedules remain outside URL execution', () => {
   const decision = getSourceBackedFlowMapQualityDecision('curated-baby-food-meal-log');
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
   const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-baby-food-meal-log');
@@ -1003,7 +1033,7 @@ test('curated baby food meal-log map can stay published while the source-traced 
   assert.equal(decision.status, 'revise');
   assert.equal(decision.directRouteEnabled, false);
   assert.ok(!lookupableIds.includes('curated-baby-food-meal-log'));
-  assert.ok(lookupableIds.includes('baby-food-map'));
+  assert.ok(!lookupableIds.includes('baby-food-map'));
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'curated-baby-food-meal-log');
   assert.ok(defaultHitPackage);
@@ -1326,10 +1356,10 @@ test('public Flow Map catalog shows unique ready routes while preserving direct 
     'curated-new-car-purchase-guide',
     'curated-wedding-checklist-family',
     'curated-allblanc-workout-park',
-    'baby-food-map',
   ]);
   assert.ok(catalogMaps.every((map) => map.categoryLabel && map.categoryLabel !== '콘텐츠'));
   assert.ok(!ids.includes('baby-health-schedule'));
+  assert.ok(!ids.includes('baby-food-map'));
   assert.ok(!ids.includes('curated-child-vaccination-schedule'));
   assert.ok(!ids.includes('curated-ajd-moving-d30'));
   assert.ok(!ids.includes('moving-map'));

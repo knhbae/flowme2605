@@ -4,7 +4,11 @@ import {
   getPublicFlowIndexingPolicy,
   NON_INDEXABLE_ROUTE_ROBOTS,
 } from '@/lib/flow/route-indexing-policy';
-import { mergeSourceBackedMyFlowBundles } from '@/lib/flow/source-backed-my-flow';
+import {
+  getSourceBackedMyFlowMapForBundle,
+  isSourceBackedFlowMapExecutable,
+  mergeSourceBackedMyFlowBundles,
+} from '@/lib/flow/source-backed-my-flow';
 import { cloneSeedBundles } from '@/lib/flow/storage';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -21,7 +25,9 @@ function findPublicFlow(slug: string) {
   const bundle = mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find(
     (bundle) => bundle.flow.slug === decodeSlug(slug),
   );
-  return bundle && getPublicFlowIndexingPolicy(bundle).indexable ? bundle : undefined;
+  if (!bundle || !getPublicFlowIndexingPolicy(bundle).indexable) return undefined;
+  const sourceBackedMap = getSourceBackedMyFlowMapForBundle(bundle);
+  return sourceBackedMap && !isSourceBackedFlowMapExecutable(sourceBackedMap) ? undefined : bundle;
 }
 
 export async function generateMetadata({
