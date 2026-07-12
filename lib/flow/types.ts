@@ -71,6 +71,7 @@ export type Flow = {
    * open-ended daily habits where indefinite recurrence is the intended behavior.
    */
   routine_duration_days?: number;
+  source_published_at?: string;
   source_checked_at?: string;
   conversion_note?: string;
   risk_level?: RiskLevel;

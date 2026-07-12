@@ -1,0 +1,120 @@
+{
+  "packageId": "2026-07-12-flowme-allblanc-workout-source-fit-evidence",
+  "inspectedAt": "2026-07-12",
+  "policy": {
+    "sourceReachableIsNotSourceCurrent": true,
+    "sourcePublishedAtSeparatedFromCheckedAt": true,
+    "semanticFitReviewedSeparately": true,
+    "medicalAdviceGeneratedByFlowMe": false
+  },
+  "sourceChecks": [
+    {
+      "slug": "curated-allblanc-morning-workout",
+      "sourceUrl": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+      "sourcePublishedAt": "2020-03-26",
+      "sourceCheckedAt": "2026-07-12",
+      "durationSeconds": 326,
+      "httpStatus": 200,
+      "playability": "OK",
+      "sourceFitDecision": "keep_representative",
+      "publicRouteStatus": 200,
+      "indexable": true
+    },
+    {
+      "slug": "curated-allblanc-no-jump-cardio",
+      "sourceUrl": "https://www.youtube.com/watch?v=2dail5Imi04",
+      "sourcePublishedAt": "2021-06-23",
+      "sourceCheckedAt": "2026-07-12",
+      "durationSeconds": 609,
+      "httpStatus": 200,
+      "playability": "OK",
+      "sourceFitDecision": "keep_representative",
+      "publicRouteStatus": 200,
+      "indexable": true
+    },
+    {
+      "slug": "curated-allblanc-lower-body",
+      "sourceUrl": "https://www.youtube.com/watch?v=UEPkHmW_2FU",
+      "sourcePublishedAt": "2023-02-21",
+      "sourceCheckedAt": "2026-07-12",
+      "durationSeconds": 615,
+      "httpStatus": 200,
+      "playability": "OK",
+      "sourceFitDecision": "reshape_before_featured",
+      "publicRouteStatus": 404,
+      "indexable": false,
+      "holdReason": "high_intensity_fit_not_closed"
+    }
+  ],
+  "map": {
+    "mapId": "curated-allblanc-workout-park",
+    "version": "2026-07-12.4",
+    "publicExecutionEnabled": true,
+    "publicSaveMode": "choose_child",
+    "publicChildFlowCount": 2,
+    "publicChildFlowSlugs": [
+      "curated-allblanc-morning-workout",
+      "curated-allblanc-no-jump-cardio"
+    ],
+    "publicSaveAllCtaCount": 0,
+    "highIntensityChildVisibleCount": 0
+  },
+  "schedule": {
+    "weekdayCopySourceAuthored": false,
+    "weekdaySelectionVisible": true,
+    "weekdaySelectionPersisted": true,
+    "savedWeekdaySample": ["월", "금", "목"],
+    "fixedWeekdayTitleHitCount": 0,
+    "recommendationRhythmCopyHitCount": 0
+  },
+  "sourceSurface": {
+    "sourcePublishedAtVisible": true,
+    "sourceCheckedAtVisible": true,
+    "officialStartGuidanceLinkCountPerPublicFlow": 1,
+    "marketingWeightLossClaimHitCount": 0,
+    "lowNoiseGuaranteeHitCount": 0,
+    "internalCopyHitCount": 0,
+    "rawIsoVisibleHitCount": 0
+  },
+  "summary": {
+    "manualSourceFitAuditCount": 136,
+    "unauditedPublicFinancialSensitiveFlowCount": 0,
+    "unauditedPublicMedicalSensitiveFlowCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "screenshots": [
+    {
+      "scenario": "map-choose-one",
+      "viewport": "390x844",
+      "file": "screenshots/01-allblanc-map-mobile.png"
+    },
+    {
+      "scenario": "morning-public-user-schedule",
+      "viewport": "390x844",
+      "file": "screenshots/02-allblanc-morning-public-mobile.png"
+    },
+    {
+      "scenario": "morning-public-wide",
+      "viewport": "1024x900",
+      "file": "screenshots/03-allblanc-morning-public-wide.png"
+    },
+    {
+      "scenario": "no-jump-public-user-schedule",
+      "viewport": "390x844",
+      "file": "screenshots/04-allblanc-no-jump-public-mobile.png"
+    }
+  ],
+  "nextAuditQueue": {
+    "priority": "medium-risk public source fit",
+    "flowCount": 5,
+    "mapOrFlowIds": [
+      "source-backed-postal-address-transfer",
+      "source-backed-aircon-filter-cleaning",
+      "curated-ajd-moving-d30",
+      "curated-wedding-naver-timeline",
+      "curated-wedding-gongysd-atoz"
+    ]
+  }
+}

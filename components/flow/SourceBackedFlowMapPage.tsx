@@ -139,13 +139,16 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   const firstStep = firstFlow?.steps[0];
   const firstStepDetail = firstStep?.detailItems[0];
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
+  const chooseChildBeforeSave = publicSurface.saveMode === 'choose_child';
   const resultText = publicSurface.artifacts.join(' + ') || '할 일';
-  const resultPromise = publicSurface.setupInput
+  const resultPromise = chooseChildBeforeSave
+    ? '영상 하나를 고른 뒤 시작일과 요일을 정해 저장합니다.'
+    : publicSurface.setupInput
     ? `${publicSurface.setupInput.label}만 넣으면 저장됩니다: ${resultText}`
     : `바로 저장됩니다: ${resultText}`;
 
   return (
-    <main data-testid="flow-map-public" className="flowme-mobile-map-save-clearance min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8 sm:pb-16">
+    <main data-testid="flow-map-public" className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8 sm:pb-16`}>
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
       <section data-testid="flow-map-hero" className="rounded-2xl border border-[#E7E4DD] bg-white p-4 sm:p-6">
@@ -168,14 +171,21 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
           ) : null}
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)] md:items-stretch">
-          <SourceBackedFlowMapSaveButton
-            mapId={map.id}
-            savedFlows={publicSurface.childFlows.map((flow) => ({
-              slug: flow.slug,
-              artifactMode: flow.destination === 'sheet' ? 'sheet' : flow.destination === 'calendar' || flow.destination === 'hybrid' ? 'calendar' : 'checklist',
-            }))}
-            setupInput={publicSurface.setupInput}
-          />
+          {chooseChildBeforeSave ? (
+            <div data-testid="flow-map-choose-child" className="rounded-xl border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-3 text-sm leading-6 text-[#2945E8]">
+              <p className="font-semibold">먼저 영상 하나를 고르세요.</p>
+              <p className="mt-1">각 영상 화면에서 시작일과 운동 요일을 직접 정한 뒤 내 Flow에 저장합니다.</p>
+            </div>
+          ) : (
+            <SourceBackedFlowMapSaveButton
+              mapId={map.id}
+              savedFlows={publicSurface.childFlows.map((flow) => ({
+                slug: flow.slug,
+                artifactMode: flow.destination === 'sheet' ? 'sheet' : flow.destination === 'calendar' || flow.destination === 'hybrid' ? 'calendar' : 'checklist',
+              }))}
+              setupInput={publicSurface.setupInput}
+            />
+          )}
           {firstStep ? (
             <div data-testid="flow-map-first-action-preview" className="rounded-xl bg-[#FAFAF8] px-3 py-3 md:flex md:flex-col md:justify-center">
               <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 할 일</p>
@@ -194,7 +204,9 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             <p className="mt-1 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">{getUserFacingMapSummary(publicSurface.summary)}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <p className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-xs font-semibold text-[#6E6B64]">{publicSurface.setupInput ? '입력 1개' : '입력 없음'}</p>
+            <p className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-xs font-semibold text-[#6E6B64]">
+              {chooseChildBeforeSave ? '영상별 일정 입력' : publicSurface.setupInput ? '입력 1개' : '입력 없음'}
+            </p>
             <a data-testid="flow-map-source-link" className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={map.sourceUrl} target="_blank" rel="noreferrer">
               원문 보기
             </a>
@@ -213,7 +225,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
                     {destinationLabel[flow.destination] ?? flow.destination}
                   </span>
                   <Link className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={`/f/${flow.slug}`}>
-                    바로 시작
+                    {chooseChildBeforeSave ? '요일 정하고 시작' : '바로 시작'}
                   </Link>
                 </div>
               </div>

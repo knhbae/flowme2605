@@ -1123,30 +1123,49 @@ test('curated Allblanc sourceTrace repair keeps exact video rows source-traced w
 
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'curated-allblanc-workout-park');
+  assert.equal(publishPackage.public.saveMode, 'choose_child');
   assert.equal(getSourceBackedFlowMapQualityDecision('curated-allblanc-workout-park').directRouteEnabled, true);
+  assert.equal(getSourceBackedFlowMapQualityDecision('curated-allblanc-workout-park').publicExecutionEnabled, true);
   assert.equal(getSourceBackedFlowMapQualityDecision('homefit-map').directRouteEnabled, false);
   assert.ok(lookupableIds.includes('curated-allblanc-workout-park'));
   assert.ok(!lookupableIds.includes('homefit-map'));
 
   const morning = publishPackage.public.childFlows.find((flow) => flow.slug === 'curated-allblanc-morning-workout');
   const noJump = publishPackage.public.childFlows.find((flow) => flow.slug === 'curated-allblanc-no-jump-cardio');
-  const lowerBody = publishPackage.public.childFlows.find((flow) => flow.slug === 'curated-allblanc-lower-body');
   assert.ok(morning);
   assert.ok(noJump);
-  assert.ok(lowerBody);
+  assert.ok(!publishPackage.public.childFlows.some((flow) => flow.slug === 'curated-allblanc-lower-body'));
   assert.equal(morning.steps.length, 1);
   assert.equal(noJump.steps.length, 1);
-  assert.equal(lowerBody.steps.length, 1);
+
+  const morningBundle = bundleBySlug(morning.slug);
+  const noJumpBundle = bundleBySlug(noJump.slug);
+  const lowerBodyBundle = bundleBySlug('curated-allblanc-lower-body');
+  assert.equal(morningBundle.flow.source_published_at, '2020-03-26');
+  assert.equal(noJumpBundle.flow.source_published_at, '2021-06-23');
+  assert.equal(lowerBodyBundle.flow.source_published_at, '2023-02-21');
+  assert.ok([morningBundle, noJumpBundle, lowerBodyBundle].every((flow) => flow.flow.source_checked_at === '2026-07-12'));
+  assert.ok([morningBundle, noJumpBundle, lowerBodyBundle].every((flow) => flow.flow.tags?.includes('schedule-user-choice')));
+  assert.ok(!morning.steps.some((step) => /월\/수\/금/u.test(step.title)));
+  assert.ok(!noJump.steps.some((step) => /화\/목/u.test(step.title)));
+  assert.ok(!lowerBodyBundle.items.some((step) => /토요일/u.test(step.title)));
+  assert.match(lowerBodyBundle.flow.title, /고강도/u);
+
+  for (const flow of [morningBundle, noJumpBundle, lowerBodyBundle]) {
+    const links = flow.itemDetails[0]?.links ?? [];
+    assert.ok(links.some((link) => link.type === 'creator' && link.url.includes('youtube.com/watch')));
+    assert.ok(links.some((link) => link.type === 'official' && link.url.includes('cdc.gov/healthy-weight-growth/physical-activity/getting-started')));
+  }
 
   assert.ok(morning.steps.every((step) => step.sourceTrace?.includes('Allblanc exact video source')));
   assert.ok(noJump.steps.every((step) => step.sourceTrace?.includes('Allblanc exact video source')));
-  assert.ok(lowerBody.steps.every((step) => step.sourceTrace?.includes('Allblanc exact video source')));
+  assert.match(lowerBodyBundle.itemDetails[0]?.why ?? '', /Allblanc exact video source/u);
   assert.ok(morning.steps.some((step) => step.sourceTrace?.includes('video row: allblanc-morning-run')));
   assert.ok(noJump.steps.some((step) => step.sourceTrace?.includes('video row: allblanc-no-jump-run')));
-  assert.ok(lowerBody.steps.some((step) => step.sourceTrace?.includes('video row: allblanc-lower-body-run')));
+  assert.match(lowerBodyBundle.itemDetails[0]?.why ?? '', /video row: allblanc-lower-body-run/u);
   assert.ok(morning.steps.every((step) => step.sourceTrace?.includes('https://www.youtube.com/watch?v=fLLScgWQcHc')));
   assert.ok(noJump.steps.every((step) => step.sourceTrace?.includes('https://www.youtube.com/watch?v=2dail5Imi04')));
-  assert.ok(lowerBody.steps.every((step) => step.sourceTrace?.includes('https://www.youtube.com/watch?v=UEPkHmW_2FU')));
+  assert.match(lowerBodyBundle.itemDetails[0]?.why ?? '', /https:\/\/www\.youtube\.com\/watch\?v=UEPkHmW_2FU/u);
 });
 
 test('legacy moving app seed map can stay published while the curated AJD map owns URL lookup', () => {
@@ -1392,7 +1411,6 @@ test('curated source expansion preserves source-specific row counts and sensitiv
     ['curated-wedding-checklist-family', 'curated-wedding-gongysd-atoz', 4],
     ['curated-allblanc-workout-park', 'curated-allblanc-morning-workout', 1],
     ['curated-allblanc-workout-park', 'curated-allblanc-no-jump-cardio', 1],
-    ['curated-allblanc-workout-park', 'curated-allblanc-lower-body', 1],
   ] as const;
 
   for (const [mapId, slug, rowCount] of expectations) {

@@ -61,6 +61,7 @@ export type SavedFlowRecord = {
   savedAt: string;
   selectedArtifactMode: SavedFlowArtifactMode;
   anchor?: string;
+  weekdays?: string[];
 };
 
 export type SavedFlowMapSnapshot = {
@@ -107,6 +108,7 @@ export type ActiveFlowProgress = {
   skipped: number;
   anchor?: string;
   anchorMode?: string;
+  weekdays?: string[];
   lastVisited?: string;
 };
 
@@ -324,12 +326,16 @@ export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | unde
   if (typeof record.slug !== 'string' || !record.slug.trim()) return undefined;
   if (typeof record.savedAt !== 'string' || !record.savedAt.trim()) return undefined;
   const anchor = typeof record.anchor === 'string' && record.anchor.trim() ? record.anchor : undefined;
+  const weekdays = Array.isArray(record.weekdays)
+    ? record.weekdays.filter((day): day is string => typeof day === 'string' && ['월', '화', '수', '목', '금', '토', '일'].includes(day))
+    : undefined;
 
   return {
     slug: record.slug,
     savedAt: record.savedAt,
     selectedArtifactMode: isSavedFlowArtifactMode(record.selectedArtifactMode) ? record.selectedArtifactMode : 'calendar',
     ...(anchor ? { anchor } : {}),
+    ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
   };
 }
 
@@ -344,11 +350,14 @@ export function getSavedFlowRecord(slug: string): SavedFlowRecord | undefined {
 
 export function saveFlowRecord(slug: string, value: Omit<SavedFlowRecord, 'slug' | 'savedAt'>): SavedFlowRecord | undefined {
   if (!canUseStorage()) return undefined;
+  const previous = getSavedFlowRecord(slug);
+  const weekdays = value.weekdays ?? previous?.weekdays;
   const record: SavedFlowRecord = {
     slug,
     savedAt: new Date().toISOString(),
     selectedArtifactMode: value.selectedArtifactMode,
     anchor: value.anchor,
+    ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
   };
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
   localStorage.setItem('flow:meta:last-visit', record.savedAt);
@@ -753,6 +762,7 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
         skipped,
         anchor: storedAnchor.anchor || savedRecord?.anchor,
         anchorMode: storedAnchor.mode,
+        ...(savedRecord?.weekdays?.length ? { weekdays: savedRecord.weekdays } : {}),
         lastVisited: savedRecord?.savedAt ?? lastVisited,
       });
     }

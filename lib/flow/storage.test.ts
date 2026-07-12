@@ -338,12 +338,14 @@ test('saved flow record normalization keeps explicit save metadata', () => {
       savedAt: '2026-05-27T00:00:00.000Z',
       selectedArtifactMode: 'calendar',
       anchor: '2026-06-26',
+      weekdays: ['월', '목', '월', 'bad'],
     }),
     {
       slug: 'moving-d30-basic',
       savedAt: '2026-05-27T00:00:00.000Z',
       selectedArtifactMode: 'calendar',
       anchor: '2026-06-26',
+      weekdays: ['월', '목'],
     },
   );
   assert.deepEqual(

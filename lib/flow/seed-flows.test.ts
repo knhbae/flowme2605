@@ -1310,8 +1310,8 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 71);
-  assert.equal(reviewOnly.length, 86);
+  assert.equal(indexable.length, 70);
+  assert.equal(reviewOnly.length, 87);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
@@ -1323,6 +1323,9 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('adult-vaccine-schedule-check')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('used-car-ownership-transfer')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('small-business-fund-check')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-morning-workout')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-no-jump-cardio')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-lower-body')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('housing-subscription-account')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('monthly-household-budget')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('payday-finance-routine')!).indexable, false);

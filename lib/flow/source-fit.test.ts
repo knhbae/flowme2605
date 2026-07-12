@@ -96,12 +96,30 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 133);
+  assert.equal(summary.auditedCount, 136);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 47);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 73);
+  assert.equal(summary.decisionCounts.keep_representative, 49);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 74);
   assert.equal(summary.decisionCounts.catalog_preview_only, 12);
   assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
+});
+
+test('current Allblanc source fit separates old video publication dates from current link checks and personal schedules', () => {
+  const expected = new Map([
+    ['curated-allblanc-morning-workout', 'keep_representative'],
+    ['curated-allblanc-no-jump-cardio', 'keep_representative'],
+    ['curated-allblanc-lower-body', 'reshape_before_featured'],
+  ] as const);
+
+  for (const [slug, decision] of expected) {
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit, slug);
+    assert.equal(audit.checkedAt, '2026-07-12', slug);
+    assert.equal(audit.decision, decision, slug);
+    assert.match(audit.sourceUsefulness, /게시/u, slug);
+    assert.match(`${audit.contentAction} ${audit.uxAction}`, /요일/u, slug);
+    assert.ok(audit.naturalArtifacts.some((artifact) => artifact.kind === 'routine_calendar'), slug);
+  }
 });
 
 test('current new-car source fit keeps only supported purchase records executable', () => {
@@ -128,6 +146,20 @@ test('no unaudited financial-sensitive source-backed map remains publicly execut
   });
 
   assert.deepEqual(unauditedHighRisk, []);
+});
+
+test('no unaudited medical-sensitive source-backed map remains publicly executable', () => {
+  const auditedSlugs = new Set(sourceFitAudits.map((audit) => audit.slug));
+  const bundleBySlug = new Map(sourceBackedMyFlowBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const unauditedMedical = sourceBackedMyFlowMaps.flatMap((map) => {
+    if (!isSourceBackedFlowMapExecutable(map)) return [];
+    return map.flowSlugs.filter((slug) => {
+      const risk = bundleBySlug.get(slug)?.flow.risk_level;
+      return risk === 'medical_sensitive' && !auditedSlugs.has(slug);
+    });
+  });
+
+  assert.deepEqual(unauditedMedical, []);
 });
 
 test('sensitive current-source pass separates exact execution routes from broad advice', () => {

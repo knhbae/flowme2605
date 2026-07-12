@@ -6403,6 +6403,75 @@ test('current new-car source fit separates the reference journey from official r
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-new-car-official-details-mobile.png`, fullPage: true });
 });
 
+test('current Allblanc source fit separates publication age, personal schedule, and high-intensity review', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_ALLBLANC_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const mapResponse = await page.goto('/flow-maps/curated-allblanc-workout-park');
+  expect(mapResponse?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: 'Allblanc 영상별 홈트 루틴' })).toBeVisible();
+  await expect(page.locator('body')).toContainText('게시 시점과 현재 재생 여부를 따로 확인');
+  await expect(page.locator('body')).not.toContainText('월/수/금 아침 5분 영상 실행');
+  await expect(page.locator('body')).not.toContainText('화/목 노점프 유산소 실행');
+  await expect(page.locator('body')).not.toContainText('토요일 하체 홈트 실행');
+  await expect(page.locator('body')).not.toContainText('Allblanc 고강도 하체 홈트');
+  await expect(page.getByTestId('flow-map-choose-child')).toContainText('영상 하나를 고르세요');
+  await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '요일 정하고 시작' })).toHaveCount(2);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-allblanc-map-mobile.png`, fullPage: true });
+
+  const morningResponse = await page.goto('/f/curated-allblanc-morning-workout');
+  expect(morningResponse?.status()).toBe(200);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
+  await expect(page.getByTestId('public-flow-result-promise')).toContainText('시작일과 요일을 고르면 저장됩니다');
+  await expect(page.locator('body')).toContainText('원문이 정한 운동 처방이 아니라 내 캘린더에 저장할 일정');
+  await expect(page.locator('body')).toContainText('아침 5분 전신 운동 영상 열기');
+  await expect(page.locator('body')).not.toContainText('추천 리듬');
+  const sourceCard = page.getByTestId('flow-source-card');
+  await expect(sourceCard).toContainText('2020년 3월 26일 원문 게시');
+  await expect(sourceCard).toContainText('7월 12일 원문 확인 기록');
+
+  const wednesday = page.getByLabel('수', { exact: true });
+  const thursday = page.getByLabel('목', { exact: true });
+  await expect(wednesday).toBeChecked();
+  await expect(thursday).not.toBeChecked();
+  await wednesday.uncheck();
+  await thursday.check();
+  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '내 Flow에 저장' }).click();
+  const savedWeekdays = await page.evaluate(() => {
+    const record = JSON.parse(window.localStorage.getItem('flow:saved:curated-allblanc-morning-workout') ?? '{}') as { weekdays?: string[] };
+    return record.weekdays ?? [];
+  });
+  expect(savedWeekdays).toEqual(['월', '금', '목']);
+
+  const sourceBridge = page.getByTestId('exact-video-source-bridge');
+  await expect(sourceBridge.locator('a[href*="youtube.com/watch"]')).toHaveCount(1);
+  await expect(sourceBridge.locator('a[href*="cdc.gov/healthy-weight-growth/physical-activity/getting-started"]')).toHaveCount(1);
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  await expectNoUserFacingRawIsoDate(page.locator('body'));
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-allblanc-morning-public-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-allblanc-morning-public-wide.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const noJumpResponse = await page.goto('/f/curated-allblanc-no-jump-cardio');
+  expect(noJumpResponse?.status()).toBe(200);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
+  await expect(page.getByTestId('flow-source-card')).toContainText('2021년 6월 23일 원문 게시');
+  await expect(page.getByTestId('exact-video-source-bridge').locator('a[href*="cdc.gov/healthy-weight-growth/physical-activity/getting-started"]')).toHaveCount(1);
+  await expect(page.locator('body')).not.toContainText('빠르게 살 빠지는');
+  await expect(page.locator('body')).not.toContainText('층간소음 부담이 낮은');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-allblanc-no-jump-public-mobile.png`, fullPage: true });
+
+  const lowerBodyResponse = await page.goto('/f/curated-allblanc-lower-body');
+  expect(lowerBodyResponse?.status()).toBe(404);
+  expect(await page.locator('meta[name="robots"][content*="noindex"]').count()).toBeGreaterThan(0);
+});
+
 test('current source freshness audit keeps corrected routes executable and stale routes gated', async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 844 });

@@ -89,7 +89,14 @@ const fridgeCleanoutColumns = ['우선 재료', '메뉴 후보', '장보기 보�
 
 const mobileArtifactCtaSlugs = new Set(['moving-d30-basic', 'computer-skills-d30-study', 'diet-habit-2week', 'new-car-delivery-check', 'fridge-cleanout-weekly-plan']);
 const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
-const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
+const checkOnlyRoutineSlugs = new Set([
+  'diet-habit-2week',
+  'real-thankyou-bubu-home-workout-starter',
+  'real-fitvely-diet-record-routine',
+  'curated-allblanc-morning-workout',
+  'curated-allblanc-no-jump-cardio',
+  'curated-allblanc-lower-body',
+]);
 const maintenanceRoutineSlugs = new Set(['washer-tub-clean-monthly', 'monstera-care-routine']);
 const FLOWME_SURFACE_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]';
 const FLOWME_WORKBENCH_CARD_CLASS = `${FLOWME_SURFACE_CARD_CLASS} md:p-5`;
@@ -1837,6 +1844,7 @@ function RoutineWorkbench({
   const isCheckOnlyRoutine = checkOnlyRoutineSlugs.has(bundle.flow.slug);
   const isHomeWorkout = bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter';
   const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
+  const isExactVideoRoutine = Boolean(bundle.flow.tags?.includes('exact-video'));
   const sessionItems = bundle.items.slice(0, 5);
   const routineRows = rows.map((row, index) => ({
     ...row,
@@ -1865,7 +1873,7 @@ function RoutineWorkbench({
             />
             <ExactVideoSourceBridge bundle={bundle} />
           </>
-        ) : null}
+        ) : isExactVideoRoutine ? <ExactVideoSourceBridge bundle={bundle} /> : null}
       </div>
     );
   }
@@ -1938,9 +1946,13 @@ function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
   const detail = bundle.itemDetails?.[0];
   const sourceUrl = bundle.flow.source_url;
   const sourceTitle = bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : '원본 영상';
+  const isUserScheduled = Boolean(bundle.flow.tags?.includes('schedule-user-choice'));
+  const supportingLinks = detail?.links?.filter((link) => link.url !== sourceUrl) ?? [];
   const cues =
     bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter'
       ? ['점프 없음', '눕는 동작 없음', '반복 없음', '토크 없음']
+      : isUserScheduled
+        ? ['원본 영상 1개', '요일 직접 선택', '완료 또는 중단 기록']
       : ['원본 영상 1개', '반복 일정', '운동 후 기록'];
 
   return (
@@ -1948,7 +1960,9 @@ function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 실행 기준</p>
-          <h3 className={FLOWME_TITLE_CLASS}>원본 영상을 열고, 정한 요일에 1회 실행합니다</h3>
+          <h3 className={FLOWME_TITLE_CLASS}>
+            {isUserScheduled ? '원본을 확인하고, 내가 고른 요일에 다시 엽니다' : '원본 영상을 열고, 정한 요일에 1회 실행합니다'}
+          </h3>
         </div>
         {sourceUrl ? (
           <a className={FLOWME_LINK_BUTTON_CLASS} href={sourceUrl} target="_blank" rel="noreferrer">
@@ -1964,12 +1978,23 @@ function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
         ))}
       </div>
       <p className="mt-3 text-sm text-[#6E6B64]">
-        Flow는 영상의 동작 순서를 새로 만들지 않습니다. 캘린더에는 운동일만 넣고, 실행할 때는 원본 영상의 자세와 박자를 그대로 확인합니다.
+        {isUserScheduled
+          ? 'Flow는 영상의 동작 순서나 운동 효과를 새로 만들지 않습니다. 체크한 요일은 원문 처방이 아니라 내 캘린더에 저장할 일정입니다.'
+          : 'Flow는 영상의 동작 순서를 새로 만들지 않습니다. 캘린더에는 운동일만 넣고, 실행할 때는 원본 영상의 자세와 박자를 그대로 확인합니다.'}
       </p>
       <p className="mt-2 text-xs text-[#6E6B64]">
         저장 후 남길 기록: {detail?.completion_criteria ?? '완료 여부, 체감 난이도, 통증이나 어지러움, 다음 회차 강도 조정 메모'}
       </p>
       <p className="mt-1 text-xs text-[#3654FF]">출처: {sourceTitle}</p>
+      {supportingLinks.length > 0 ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {supportingLinks.map((link) => (
+            <a key={link.url} className={FLOWME_LINK_BUTTON_CLASS} href={link.url} target="_blank" rel="noreferrer">
+              {toUserFacingSourceTitle(link.label)}
+            </a>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

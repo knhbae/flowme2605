@@ -390,6 +390,7 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
   const hideConversionNote = serviceCatalogFlowSlugs.has(bundle.flow.slug);
   const sourceMeta = [
     domain,
+    bundle.flow.source_published_at ? `${formatSourcePublishedDate(bundle.flow.source_published_at)} 원문 게시` : null,
     bundle.flow.source_checked_at ? `${formatMyFlowDisplayDate(bundle.flow.source_checked_at)} 원문 확인 기록` : null,
     bundle.flow.updated_at ? `${formatMyFlowDisplayDate(formatDate(new Date(bundle.flow.updated_at)))} Flow 정리` : null,
     getSourcePrecisionLabel(bundle),
@@ -3906,6 +3907,13 @@ function stripMyFlowInternalMemoLines(text?: string): string | undefined {
   return stripUserFacingInternalLines(text);
 }
 
+function formatSourcePublishedDate(date: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  if (!match) return date;
+  const [, year, month, day] = match;
+  return `${year}년 ${Number(month)}월 ${Number(day)}일`;
+}
+
 function formatMyFlowDetailMemo(detail: FlowItemDetail, row?: MyFlowRow, item?: FlowItem): string {
   const checklistItems = getMyFlowDetailChecklistItems(detail);
   const parts = [
@@ -4579,7 +4587,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? myFlowDateOverrides[getMyFlowDraftItemOverlayKey(flow.progress.slug, rowId)]
       : undefined;
   const getMyFlowRoutineWeekdays = (flow: MySavedFlow) =>
-    myFlowRoutineRuleDrafts[flow.progress.slug]?.weekdays ?? getRoutineWeekdayLabels(flow.bundle.repeatRules?.[0] ?? '', []);
+    myFlowRoutineRuleDrafts[flow.progress.slug]?.weekdays ??
+    flow.progress.weekdays ??
+    getRoutineWeekdayLabels(flow.bundle.repeatRules?.[0] ?? '', []);
   const getMyFlowRoutineDraft = (flow: MySavedFlow): MyFlowRoutineRuleDraft => ({
     scope: 'this',
     ...myFlowRoutineRuleDrafts[flow.progress.slug],
@@ -4625,6 +4635,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const applyMyFlowRoutineRuleEditorDraft = (flow: MySavedFlow) => {
     const nextDraft = getMyFlowRoutineEditorDraft(flow);
     updateMyFlowRoutineRuleDraft(flow, nextDraft);
+    const savedRecord = getSavedFlowRecord(flow.progress.slug);
+    if (savedRecord && nextDraft.weekdays?.length) {
+      saveFlowRecord(flow.progress.slug, {
+        selectedArtifactMode: savedRecord.selectedArtifactMode,
+        ...(savedRecord.anchor ? { anchor: savedRecord.anchor } : {}),
+        weekdays: nextDraft.weekdays,
+      });
+    }
   };
   const baseCalendarRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
     flow.rows
@@ -11493,14 +11511,18 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showPublicSaveAction = !showExportFirstHero;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
-  const publicHeroInput = getAnchorLabel(bundle);
+  const publicHeroInput = isUserScheduledExactVideo(bundle) ? '시작일과 반복 요일' : getAnchorLabel(bundle);
   const publicHeroArtifact = getCatalogDestinationLabel(bundle);
-  const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
+  const publicHeroPromise = isUserScheduledExactVideo(bundle)
+    ? `시작일과 요일을 고르면 저장됩니다: ${publicHeroArtifact}`
+    : getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
   const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
   const showPublicHeroSetup =
-    !showTodayExecution &&
     !showExportFirstHero &&
-    (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none');
+    (
+      isUserScheduledExactVideo(bundle) ||
+      (!showTodayExecution && (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none'))
+    );
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
 
   const toggle = (id: string) => {
@@ -11604,6 +11626,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     const record = saveFlowRecord(bundle.flow.slug, {
       selectedArtifactMode: canExportCalendar && bundle.flow.primary_destination !== 'internal_check' ? 'calendar' : 'checklist',
       anchor: displayAnchor || undefined,
+      ...(bundle.flow.structure_type === 'routine' ? { weekdays: weekdaySelection } : {}),
     });
     setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
   };
@@ -12457,18 +12480,22 @@ function AnchorInput({
                 <input
                   type="checkbox"
                   checked={weekdays.includes(day)}
-                  onChange={() =>
-                    onWeekdaysChange(
-                      weekdays.includes(day)
-                        ? weekdays.filter((value) => value !== day)
-                        : [...weekdays, day],
-                    )
-                  }
+                  onChange={() => {
+                    const nextWeekdays = weekdays.includes(day)
+                      ? weekdays.filter((value) => value !== day)
+                      : [...weekdays, day];
+                    onWeekdaysChange(nextWeekdays.length > 0 ? nextWeekdays : weekdays);
+                  }}
                 />
                 {day}
               </label>
             ))}
           </div>
+          {bundle.flow.tags?.includes('schedule-user-choice') ? (
+            <p className="mt-2 text-xs font-medium leading-5 text-slate-600">
+              체크된 요일은 원문이 정한 운동 처방이 아니라 내 캘린더에 저장할 일정입니다. 저장 전에 직접 바꿀 수 있어요.
+            </p>
+          ) : null}
         </div>
       ) : bundle.flow.structure_type === 'routine' ? (
         <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
@@ -12544,7 +12571,22 @@ const workoutProgrammingExactVideoSlugs = new Set([
   'real-fitvely-video-workout-split-science',
 ]);
 
+function isUserScheduledExactVideo(bundle: FlowBundle): boolean {
+  return Boolean(bundle.flow.tags?.includes('exact-video') && bundle.flow.tags?.includes('schedule-user-choice'));
+}
+
 function getExactVideoToolCopy(bundle: FlowBundle, destination: PrimaryDestination): ReturnType<typeof getEmbeddedToolCopy> {
+  if (destination === 'calendar' && isUserScheduledExactVideo(bundle)) {
+    return {
+      title: '내가 고른 요일의 운동 캘린더',
+      description: '원본 영상은 그대로 열고, 반복 요일은 영상의 처방이 아니라 내 캘린더에 저장할 일정으로 직접 고릅니다.',
+      rhythm: '요일 직접 선택',
+      tool: '캘린더',
+      previewTitle: '선택한 요일 미리보기',
+      scheduleLabel: '영상 실행',
+    };
+  }
+
   if (destination === 'hybrid' && workoutProgrammingExactVideoSlugs.has(bundle.flow.slug)) {
     return {
       title: '이번 주에 적용할 운동 기준',
@@ -14018,7 +14060,7 @@ function ExactVideoToolPreview({
           <h3 className="mt-1 text-2xl font-semibold text-gray-950">{copy.title}</h3>
           <p className="mt-2 text-sm leading-6 text-gray-600">{copy.description}</p>
           <div className="mt-3 flex flex-wrap gap-2 text-sm">
-            <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">추천 리듬: {copy.rhythm}</span>
+            <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">일정 기준: {copy.rhythm}</span>
             <span className="rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700">{copy.tool}</span>
           </div>
         </div>
@@ -14039,7 +14081,11 @@ function ExactVideoToolPreview({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-semibold text-gray-950">{copy.previewTitle}</h3>
-              <p className="mt-1 text-sm text-gray-600">미리 들어간 내용을 보고 시작일과 요일만 바꿉니다.</p>
+              <p className="mt-1 text-sm text-gray-600">
+                {isUserScheduledExactVideo(bundle)
+                  ? '현재 체크된 요일을 확인하고 내 일정에 맞게 바꿉니다.'
+                  : '미리 들어간 내용을 보고 시작일과 요일만 바꿉니다.'}
+              </p>
             </div>
             <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-gray-700">{preview.length}회차 표시</span>
           </div>
