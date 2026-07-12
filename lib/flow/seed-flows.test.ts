@@ -1124,6 +1124,34 @@ test('real content pilot covers 10 converted flows across five categories', () =
   assert.ok(categories.has('다이어트/기록'));
 });
 
+test('vehicle inspection and computer study pilots expose their current source scope', () => {
+  const vehicle = seedBundles.find((bundle) => bundle.flow.slug === 'vehicle-inspection-prep');
+  const study = seedBundles.find((bundle) => bundle.flow.slug === 'computer-skills-d30-study');
+
+  assert.ok(vehicle);
+  assert.equal(vehicle.flow.source_url, 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200');
+  assert.equal(vehicle.flow.source_checked_at, '2026-07-12');
+  assert.ok(vehicle.items.some((item) => item.title === '차량번호와 예약 정보 확인하기'));
+  assert.ok(vehicle.items.every((item) => !item.title.includes('자동차등록증')));
+
+  assert.ok(study);
+  assert.equal(study.flow.title, '컴퓨터활용능력 1급 D-30 학습 Flow');
+  assert.equal(study.flow.source_published_at, '2025-10-15');
+  assert.equal(study.flow.source_checked_at, '2026-07-12');
+  assert.match(study.flow.warning ?? '', /2026 컴퓨터활용능력 1급/);
+  assert.match(study.flow.warning ?? '', /2027년 이후 시험/);
+  const environmentItem = study.items.find((item) => item.title === '실기 프로그램 환경 점검하기');
+  assert.ok(environmentItem);
+  const environmentDetail = study.itemDetails.find((detail) => detail.item_id === environmentItem.id);
+  assert.ok(environmentDetail?.links.some((link) => link.url === 'https://license.korcham.net/co/examguide.do'));
+
+  const archivedVehicle = seedBundles.find((bundle) => bundle.flow.slug === 'real-ts-vehicle-inspection-prep');
+  assert.ok(archivedVehicle);
+  assert.equal(archivedVehicle.flow.source_url, 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200');
+  assert.equal(archivedVehicle.flow.source_checked_at, '2026-07-12');
+  assert.ok(archivedVehicle.items.some((item) => item.title === '예약 정보와 차량 상태 점검'));
+});
+
 test('official pilot source domains use official tags instead of blog-following tags', () => {
   const officialPilotSources = [
     { slug: 'samsung-aircon-seasonal-check', host: 'samsungsvc.co.kr' },
@@ -1947,6 +1975,9 @@ test('Sinagong study route uses an exact book source without representative prom
   assert.ok(study);
   assert.equal(study.flow.source_precision, 'exact');
   assert.equal(study.flow.source_url, 'https://www.gilbut.co.kr/m/book/view?bookcode=BN004603');
+  assert.equal(study.flow.source_published_at, '2025-10-15');
+  assert.equal(study.flow.source_checked_at, '2026-07-12');
+  assert.match(study.flow.title, /2026 시나공 컴활 1급/);
   assert.ok(study.flow.source_title?.includes('시나공'));
   assert.ok(study.flow.source_title?.includes('컴활'));
   assert.ok(study.itemDetails.every((detail) => detail.links.some((link) => link.url === study.flow.source_url)));

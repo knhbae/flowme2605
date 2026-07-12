@@ -590,7 +590,10 @@ function TimelineWorkbench({
                     <span className="font-mono text-xs font-semibold text-[#3654FF]">{row.startDate ? `${row.timing} · ${row.startDate.slice(5)}` : row.timing}</span>
                     <span className={`font-medium ${getPreSavePreviewTextClass(Boolean(checks[row.id]))}`}>{row.title}</span>
                   </label>
-                  <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} />
+                  <WorkbenchDetailDisclosure
+                    detail={detail}
+                    showSourceLinks={bundle.flow.slug === 'computer-skills-d30-study'}
+                  />
                 </div>
               );
             })}

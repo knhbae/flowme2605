@@ -367,8 +367,8 @@ const sourceReviewMeta: Record<
   'vehicle-inspection-prep': {
     source_status: 'real',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: 'TS 자동차검사 안내 기반 Flow입니다. 검사 예약, 준비 서류, 결과표, 후속 정비 메모를 분리했습니다.',
+    source_checked_at: '2026-07-12',
+    conversion_note: 'TS 정기검사 대상·기준·유효기간 안내 기반 Flow입니다. 검사기간과 예약 정보, 차량 사전점검, 결과표와 후속 정비 메모를 분리했습니다.',
     primary_destination: 'hybrid',
   },
   'qnet-exam-application-prep': {
@@ -381,8 +381,8 @@ const sourceReviewMeta: Record<
   'computer-skills-d30-study': {
     source_status: 'real',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '시나공 컴활 1급 필기+실기 교재 페이지 기반 Flow입니다. 시험일 역산 학습표와 오답 기록 산출물 중심으로 구성했습니다.',
+    source_checked_at: '2026-07-12',
+    conversion_note: '2026 시나공 컴활 1급 필기+실기 교재와 대한상공회의소 2024~2026 시험 기준을 확인한 Flow입니다. 시험일 역산 학습표와 오답 기록 산출물 중심으로 구성했습니다.',
     primary_destination: 'hybrid',
   },
   'diet-meal-exercise-log': {
@@ -2925,7 +2925,7 @@ const validationFixMeta: Record<string, ValidationFixMeta> = {
   },
   'vehicle-inspection-prep': {
     setup_anchor_label: '검사일',
-    setup_anchor_hint: '자동차검사 예약일을 기준으로 준비 서류, 증거 사진, 후속 정비 메모 일정을 계산합니다.',
+    setup_anchor_hint: '자동차검사 예약일을 기준으로 예약 정보, 차량 사전점검, 결과표와 후속 정비 메모 일정을 계산합니다.',
   },
   'real-mofa-overseas-travel-prep': {
     setup_anchor_label: '출국일',
@@ -3017,9 +3017,9 @@ function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
         caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
       },
       '실기 프로그램 환경 점검하기': {
-        description: '실기 파일 열기, 저장, 함수 입력, 피벗/쿼리 작업이 가능한지 확인합니다.',
+        description: '2026년 1급 실기 기준인 MS Office LTSC Professional Plus 2021에서 실기 파일 열기, 저장, 함수 입력, 피벗/쿼리 작업이 가능한지 확인합니다.',
         why: '시험 직전 프로그램 버전이나 저장 위치 문제를 만나면 공부한 내용을 실행하기 어렵습니다.',
-        how: '실행: 실기 프로그램을 열어 예제 파일을 저장하고 함수 입력, 피벗테이블, 쿼리 작업을 한 번씩 확인합니다. 기록: 막힌 기능이나 파일 위치 문제를 실행 항목 메모에 남깁니다.',
+        how: '실행: 대한상공회의소 시험안내에서 현재 수험용 프로그램을 확인한 뒤 MS Office LTSC Professional Plus 2021에서 예제 파일을 저장하고 함수 입력, 피벗테이블, 쿼리 작업을 한 번씩 확인합니다. 기록: 프로그램 버전과 막힌 기능을 실행 항목 메모에 남깁니다.',
         completion_criteria: '실기 파일 열기/저장과 주요 기능 조작이 확인됐고 문제 상황이 있으면 메모됐습니다.',
         caution: '새 범위를 늘리기보다 오답 재풀이, 실기 환경, 시험장 준비를 우선합니다.',
       },

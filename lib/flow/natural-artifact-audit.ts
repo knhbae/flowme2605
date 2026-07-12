@@ -1159,11 +1159,12 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-sinagong-computer-d30-study',
-    checkedAt: '2026-05-25',
+    checkedAt: '2026-07-12',
     sourceTitle: '2026 한 권으로 끝내는 시나공 컴활 1급 필기+실기',
     sourceUrl: 'https://www.gilbut.co.kr/m/book/view?bookcode=BN004603',
     sourceEvidence: [
       'The Gilbut book page is the exact product source already used by the representative `computer-skills-d30-study` route.',
+      'The product page identifies the 2026 first-level edition as published on 2025-10-15; the official 2024-2026 exam criteria remain the applicable boundary for 2026 exams.',
       'This replaces the broad Sinagong site source with one exact book/source boundary for manual study-progress conversion.',
       'The three UX/content test results should be resolved toward source fidelity: do not assume a source-authored 30-day curriculum from the book page.',
     ],
@@ -1245,12 +1246,12 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-ts-vehicle-inspection-prep',
-    checkedAt: '2026-05-22',
-    sourceTitle: 'TS한국교통안전공단 자동차검사 절차 안내',
-    sourceUrl: 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104',
+    checkedAt: '2026-07-12',
+    sourceTitle: 'TS한국교통안전공단 정기검사 대상·기준·유효기간 안내',
+    sourceUrl: 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200',
     sourceEvidence: [
-      'TS 안내는 자동차검사가 관능검사, ABS검사, 하체검사, 전조등 검사, 배출가스 검사, 검사결과 설명으로 시행된다고 설명한다.',
-      '관능검사에는 차대번호, 원동기 형식, 등록번호판, 봉인상태, 불법구조변경, 전자센서, 오일량, 타이어, 브레이크 패드 등이 포함된다.',
+      'TS 정기검사 안내는 차종별 검사 유효기간, 부적합 기준, 재검사기간과 사이버검사소 진입을 함께 제공한다.',
+      '현재 정기검사 기준에는 동일성, 타이어, 제동, 누유, 등화장치, 경고음발생장치 등 실제 사전 확인과 연결되는 항목이 포함된다.',
     ],
     userScenario: '사용자는 자동차 정기검사 예약일을 앞두고 서류, 타이어/등화, 검사소 방문, 결과 후 정비 메모를 준비하려 한다.',
     naturalArtifacts: [
@@ -1260,7 +1261,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         simulatedInputs: ['검사일=2026-06-18', '차량=아반떼 2021', '검사소=성산검사소', '예약=2026-06-18 10:30'],
         expectedOutput: [
           'D-7 검사 기간과 예약 확인',
-          'D-3 등록증/보험/등화/타이어 점검',
+          'D-3 예약 정보/등화/타이어 점검',
           'D-Day 검사소 방문과 결제',
           'D+1 결과표 보관과 정비 필요 항목 등록',
         ],
@@ -1271,7 +1272,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
       {
         kind: 'checklist',
         artifactTitle: '검사 전 자가점검 체크리스트',
-        simulatedInputs: ['확인=등화/타이어/와이퍼/경고등', '서류=자동차등록증', '결제=카드'],
+        simulatedInputs: ['확인=등화/타이어/와이퍼/경고등', '예약=차량번호/검사소/시각', '결제=카드'],
         expectedOutput: ['등록번호판/봉인 확인', '전조등/방향지시등 확인', '타이어 마모 확인', '경고등 확인', '검사 결과표 저장'],
         currentFlowMatch: '기본 자가점검 항목은 포함되어 있다.',
         currentUxSupport: '검사 절차별로 접힘 구분이 약해 사용자가 무엇을 검사소에서 보는지 알기 어렵다.',

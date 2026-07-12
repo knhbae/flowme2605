@@ -337,7 +337,7 @@ test('study calendar export keeps each dated item executable', () => {
 
   const ics = buildIcsCalendar(study, {}, '2026-06-22').replaceAll('\r\n ', '');
 
-  assert.match(ics, /SUMMARY:컴퓨터활용능력 D-30 학습 Flow - 필기와 실기 시험 범위 나누기/);
+  assert.match(ics, /SUMMARY:컴퓨터활용능력 1급 D-30 학습 Flow - 필기와 실기 시험 범위 나누기/);
   assert.match(ics, /실행:/);
   assert.match(ics, /기록:/);
   assert.match(ics, /D-30 캘린더|실행 항목 메모/);

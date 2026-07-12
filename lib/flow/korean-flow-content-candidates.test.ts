@@ -478,10 +478,10 @@ test('third diversification batch covers seasonal food, official admin, vehicle 
     carInspection.sourceBoundary,
     ...carInspection.flowItems.map((item) => `${item.schedule} ${item.title} ${item.memo} ${item.completion}`),
   ].join('\n');
-  for (const cue of ['만료 45일', '관능', 'ABS', '하체', '전조등', '배출가스', '재검사']) {
+  for (const cue of ['만료 90일', '관능', 'ABS', '하체', '전조등', '배출가스', '재검사']) {
     assert.match(carText, new RegExp(cue));
   }
-  assert.doesNotMatch(carText, /정비 견적 산출|검사 통과.*보장/);
+  assert.doesNotMatch(carText, /자동차등록증|정비 견적 산출|검사 통과.*보장/);
 
   const campingText = [
     camping.sourceSignal,

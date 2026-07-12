@@ -238,7 +238,19 @@ test('computer skills final QA promotes the route to representative source fit',
 
   assert.ok(audit);
   assert.equal(audit.decision, 'keep_representative');
+  assert.equal(audit.checkedAt, '2026-07-12');
+  assert.match(audit.sourceUsefulness, /2026년 1급 교재/);
   assert.ok(audit.uxAction.includes('desktop/mobile screenshot QA passed'));
+});
+
+test('vehicle inspection audit uses the current regular-inspection criteria page', () => {
+  const audit = getSourceFitAudit('vehicle-inspection-prep');
+
+  assert.ok(audit);
+  assert.equal(audit.checkedAt, '2026-07-12');
+  assert.equal(audit.sourceUrl, 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200');
+  assert.match(audit.sourceTitle, /정기검사 대상·기준·유효기간/);
+  assert.doesNotMatch(audit.naturalArtifacts.flatMap((artifact) => artifact.expectedOutput).join(' '), /등록증/);
 });
 
 test('source-fit audits cover every real-source route after manual promotion pass', () => {

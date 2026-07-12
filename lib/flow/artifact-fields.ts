@@ -358,12 +358,12 @@ const vehicleInspectionMemoFields: ArtifactMemoField[] = [
     placeholder: '예: 2026-06-18 10:30, 성산검사소, 예약번호/접수 문자',
     groupEyebrow: '예약·결과 증빙',
     groupTitle: '검사 예약·결과 후속 메모',
-    groupDescription: '예약 정보, 준비 서류, 결과표, 후속 정비를 체크 완료와 분리해 보관합니다.',
+    groupDescription: '예약 정보, 차량 식별 정보, 결과표, 후속 정비를 체크 완료와 분리해 보관합니다.',
   },
   {
     id: 'vehicle-inspection-documents',
-    label: '서류/차량 정보',
-    placeholder: '예: 자동차등록증, 보험 상태, 차량번호/차대번호 확인',
+    label: '차량·접수 정보',
+    placeholder: '예: 차량번호, 검사소, 예약 시각, 접수 문자 확인',
   },
   {
     id: 'vehicle-inspection-precheck-evidence',

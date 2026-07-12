@@ -39,10 +39,11 @@ export const realContentPilotSources: PilotSource[] = [
   {
     slug: 'vehicle-inspection-prep',
     category: '자동차/검사',
-    sourceTitle: 'TS한국교통안전공단 자동차검사 절차 안내',
-    sourceUrl: 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104',
+    sourceTitle: 'TS한국교통안전공단 정기검사 대상·기준·유효기간 안내',
+    sourceUrl: 'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200',
     sourceType: 'official',
     riskLevel: 'medium',
+    sourceCheckedAt: '2026-07-12',
   },
   {
     slug: 'qnet-exam-application-prep',
@@ -59,6 +60,8 @@ export const realContentPilotSources: PilotSource[] = [
     sourceUrl: 'https://www.gilbut.co.kr/m/book/view?bookcode=BN004603',
     sourceType: 'reference',
     riskLevel: 'low',
+    sourcePublishedAt: '2025-10-15',
+    sourceCheckedAt: '2026-07-12',
   },
   {
     slug: 'diet-meal-exercise-log',
@@ -154,8 +157,8 @@ const samsungWasherText = `## 청소 전 확인
 - 전원을 연결하고 필터 버튼 3초 리셋하기`;
 
 const vehicleInspectionText = `## D-14 검사 기간 확인
-- 자동차검사 유효기간과 예약 가능일 확인하기 D-14
-- 자동차등록증과 차량 정보 준비하기 D-14
+- 자동차검사 기간과 예약 가능일 확인하기 D-14
+- 차량번호와 예약 정보 확인하기 D-14
 - 가까운 검사소와 수수료 확인하기 D-10
 
 ## D-3 차량 상태 점검
@@ -345,7 +348,7 @@ export const realContentPilotBundles: FlowBundle[] = [
         id: 'flow-vehicle-inspection-prep',
         slug: vehicleInspectionSource.slug,
         title: '자동차검사 D-14 준비 Flow',
-        description: '자동차검사 예약 전 기간, 서류, 차량 상태, 당일 접수와 결과 확인을 단계별로 준비합니다.',
+        description: '자동차검사 가능 기간, 예약 정보, 차량 상태, 당일 접수와 결과 확인을 단계별로 준비합니다.',
         category: vehicleInspectionSource.category,
         structure_type: 'timeline',
         content_type: 'default',
@@ -354,17 +357,29 @@ export const realContentPilotBundles: FlowBundle[] = [
         risk_level: vehicleInspectionSource.riskLevel,
         source_title: vehicleInspectionSource.sourceTitle,
         source_url: vehicleInspectionSource.sourceUrl,
+        source_published_at: vehicleInspectionSource.sourcePublishedAt,
+        source_modified_at: vehicleInspectionSource.sourceModifiedAt,
+        source_checked_at: vehicleInspectionSource.sourceCheckedAt,
         warning: '검사 기간, 수수료, 재검사 기준은 차량과 검사소 상황에 따라 달라질 수 있으므로 공식 안내를 확인하세요.',
       },
       vehicleInspectionText,
     ),
     vehicleInspectionSource,
     {
-      '자동차검사 유효기간과 예약 가능일 확인하기': {
-        description: '검사 유효기간과 예약 가능한 날짜를 먼저 확인합니다.',
+      '자동차검사 기간과 예약 가능일 확인하기': {
+        description: '차량별 검사 가능 기간과 예약 가능한 날짜를 먼저 확인합니다.',
         why: '검사 기간을 놓치면 과태료나 재검사 일정 문제가 생길 수 있습니다.',
-        how: 'TS 자동차검사 안내에서 차량 정보 기준 유효기간과 예약 가능일을 확인합니다.',
-        completion_criteria: '검사 유효기간과 예약 후보일을 기록했다.',
+        how: 'TS 정기검사 안내와 사이버검사소에서 차량별 검사 가능 기간과 예약 가능일을 확인합니다.',
+        completion_criteria: '차량별 검사 가능 기간과 예약 후보일을 기록했다.',
+        links: [{ label: vehicleInspectionSource.sourceTitle, url: vehicleInspectionSource.sourceUrl, type: 'official' }],
+        source_type: vehicleInspectionSource.sourceType,
+        risk_level: vehicleInspectionSource.riskLevel,
+      },
+      '차량번호와 예약 정보 확인하기': {
+        description: '종이 서류를 일괄 준비하기보다 예약에 쓰는 차량번호와 예약자 연락처, 예약 내역을 확인합니다.',
+        why: '검사 종류와 접수 방식에 따라 필요한 정보가 달라질 수 있어 현재 예약 화면을 기준으로 확인하는 편이 정확합니다.',
+        how: '사이버검사소 예약 내역에서 차량번호, 검사 종류, 검사소, 예약 시각, 예약자 연락처를 확인합니다.',
+        completion_criteria: '차량번호와 검사소, 예약 시각을 바로 열 수 있게 저장했다.',
         links: [{ label: vehicleInspectionSource.sourceTitle, url: vehicleInspectionSource.sourceUrl, type: 'official' }],
         source_type: vehicleInspectionSource.sourceType,
         risk_level: vehicleInspectionSource.riskLevel,
@@ -442,9 +457,9 @@ export const realContentPilotBundles: FlowBundle[] = [
       {
         id: 'flow-computer-skills-d30-study',
         slug: computerSkillsSource.slug,
-        title: '컴퓨터활용능력 D-30 학습 Flow',
+        title: '컴퓨터활용능력 1급 D-30 학습 Flow',
         description:
-          '필기와 실기 범위를 나누고 기출 회독, 실기 환경 점검, 실전 전환을 30일 단위로 진행합니다. D-30 일정은 FLOW가 시험일 기준으로 변환한 실행표이며, 교재 페이지가 30일 커리큘럼을 그대로 제공한다는 뜻은 아닙니다.',
+          '2026 시나공 1급 교재를 기준으로 필기와 실기 범위를 나누고 기출 회독, 실기 환경 점검, 실전 전환을 30일 단위로 진행합니다. D-30 일정은 FLOW가 시험일 기준으로 변환한 실행표입니다.',
         category: computerSkillsSource.category,
         structure_type: 'timeline',
         content_type: 'default',
@@ -453,6 +468,10 @@ export const realContentPilotBundles: FlowBundle[] = [
         risk_level: computerSkillsSource.riskLevel,
         source_title: computerSkillsSource.sourceTitle,
         source_url: computerSkillsSource.sourceUrl,
+        source_published_at: computerSkillsSource.sourcePublishedAt,
+        source_modified_at: computerSkillsSource.sourceModifiedAt,
+        source_checked_at: computerSkillsSource.sourceCheckedAt,
+        warning: '이 Flow는 2026 컴퓨터활용능력 1급 교재와 2024~2026 시험 기준에 맞춘 학습표입니다. 2027년 이후 시험은 대한상공회의소의 새 출제기준을 다시 확인하세요.',
       },
       computerSkillsText,
     ),
@@ -500,10 +519,11 @@ export const realContentPilotBundles: FlowBundle[] = [
         risk_level: computerSkillsSource.riskLevel,
       },
       '실기 프로그램 환경 점검하기': {
-        description: '실기 연습에 필요한 프로그램 버전과 파일 실행 환경을 확인합니다.',
+        description: '2026년 1급 실기 기준인 MS Office LTSC Professional Plus 2021과 연습 파일 실행 환경을 확인합니다.',
         why: '실기 시험은 기능 위치와 단축키, 파일 형식에 익숙해지는 시간이 필요합니다.',
-        how: '실행: 실기 연습 파일을 열고 저장, 함수 입력, 피벗 또는 쿼리 작업이 가능한지 확인합니다. 기록: 실기 환경 상태와 막힌 기능을 챕터 진도표 메모에 적습니다.',
+        how: '실행: 대한상공회의소 시험안내에서 현재 수험용 프로그램을 확인한 뒤 실기 연습 파일을 열고 저장, 함수 입력, 피벗 또는 쿼리 작업을 시험합니다. 기록: 프로그램 버전과 막힌 기능을 챕터 진도표 메모에 적습니다.',
         completion_criteria: '실기 연습 파일을 열고 저장까지 테스트했다.',
+        links: [{ label: '대한상공회의소 컴퓨터활용능력 시험안내', url: 'https://license.korcham.net/co/examguide.do', type: 'official' }],
         source_type: computerSkillsSource.sourceType,
         risk_level: computerSkillsSource.riskLevel,
       },

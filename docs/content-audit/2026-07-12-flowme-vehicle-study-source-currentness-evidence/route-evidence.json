@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-07-12T21:55:00+09:00",
+  "scope": "vehicle-and-computer-source-currentness",
+  "summary": {
+    "auditedRouteCount": 2,
+    "keptRouteCount": 2,
+    "archivedRouteCount": 0,
+    "sourcePublicationAgeAutoInvalidated": false,
+    "normalRouteHorizontalOverflowCount": 0,
+    "observedUserSessionCount": 0,
+    "screenshotCount": 4,
+    "wideVisualDesignDebtCount": 1
+  },
+  "vehicleInspection": {
+    "slug": "vehicle-inspection-prep",
+    "decision": "keep_with_current_source_scope",
+    "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+    "sourceCheckedAt": "2026-07-12",
+    "inspectionWindowSourceChecked": true,
+    "staleFortyFiveDayCueCount": 0,
+    "genericRegistrationDocumentCueCount": 0,
+    "reservationInformationCuePresent": true
+  },
+  "computerSkills": {
+    "slug": "computer-skills-d30-study",
+    "decision": "keep_scoped_to_first_level_2026",
+    "sourceUrl": "https://www.gilbut.co.kr/m/book/view?bookcode=BN004603",
+    "sourcePublishedAt": "2025-10-15",
+    "sourceCheckedAt": "2026-07-12",
+    "visibleGradeScope": "1급",
+    "visibleEditionScope": "2026",
+    "officialProgramVersion": "MS Office LTSC Professional Plus 2021",
+    "officialExamGuideLinked": true,
+    "futureCriteriaRecheckBoundaryVisible": true,
+    "futureCriteriaAppliesFrom": "2027-01-01"
+  },
+  "visualReview": {
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "computerWideCalendarListDensityImbalance": true,
+    "publicFlowShellRedesignCompleted": false
+  },
+  "screenshots": [
+    { "scenario": "vehicle-current-source", "viewport": "390x844", "file": "screenshots/01-vehicle-current-source-mobile.png" },
+    { "scenario": "computer-2026-scope", "viewport": "390x844", "file": "screenshots/02-computer-2026-scope-mobile.png" },
+    { "scenario": "vehicle-current-source", "viewport": "1024x900", "file": "screenshots/03-vehicle-current-source-wide.png" },
+    { "scenario": "computer-2026-scope", "viewport": "1024x900", "file": "screenshots/04-computer-2026-scope-wide.png" }
+  ]
+}

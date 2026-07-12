@@ -1921,7 +1921,7 @@ test('public single Flow detail keeps input save and first action in the mobile 
   await expect(hero.getByRole('button', { name: '그냥 예시로 둘러볼게요' })).toBeHidden();
   await expect(page.locator('input[type="date"]')).toHaveCount(1);
   await expect(hero).not.toContainText('검사일 입력으로 시작');
-  await expect(hero.getByTestId('public-flow-first-action-preview')).toContainText('자동차검사 유효기간과 예약 가능일 확인하기');
+  await expect(hero.getByTestId('public-flow-first-action-preview')).toContainText('자동차검사 기간과 예약 가능일 확인하기');
   await expect(hero.getByTestId('public-flow-save-actions')).toBeHidden();
   const stickySave = page.getByTestId('public-flow-mobile-save-cta');
   await expect(stickySave.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
@@ -2617,6 +2617,57 @@ test('source currentness retires the stale pet duplicate and separates appliance
   await expect(page.locator('a[href="/f/real-samsung-washer-filter-care"]').first()).toContainText('비스포크 AI 콤보');
   await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/07-samsung-distinct-jobs-wide.png`, fullPage: true });
+});
+
+test('vehicle inspection and computer study expose current source scope', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_VEHICLE_STUDY_CURRENTNESS_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/vehicle-inspection-prep');
+  await expect(page.locator('body')).toContainText('차량번호와 예약 정보 확인하기');
+  await expect(page.locator('body')).not.toContainText('자동차등록증');
+  const vehicleSource = page.locator('[data-testid="flow-source-card"]:visible').first();
+  await expect(vehicleSource).toContainText('7월 12일 원문 확인 기록');
+  await vehicleSource.locator('summary').click();
+  await expect(vehicleSource.getByRole('heading', { name: 'TS한국교통안전공단 정기검사 대상·기준·유효기간 안내' })).toBeVisible();
+  await expect(vehicleSource.getByRole('link', { name: '원문 보기' })).toHaveAttribute(
+    'href',
+    'https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200',
+  );
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-vehicle-current-source-mobile.png`, fullPage: true });
+
+  await page.goto('/f/computer-skills-d30-study');
+  await expect(page.getByRole('heading', { name: '컴퓨터활용능력 1급 D-30 학습' })).toBeVisible();
+  await expect(page.locator('body')).toContainText('2026 컴퓨터활용능력 1급 교재');
+  await expect(page.locator('body')).toContainText('2027년 이후 시험');
+  const studySource = page.locator('[data-testid="flow-source-card"]:visible').first();
+  await expect(studySource).toContainText('2025년 10월 15일 원문 게시');
+  await expect(studySource).toContainText('7월 12일 원문 확인 기록');
+  const environmentDetail = page
+    .getByTestId('artifact-list-card')
+    .getByText('실기 프로그램 환경 점검하기', { exact: true })
+    .locator('xpath=../..')
+    .locator('details');
+  await environmentDetail.locator('summary').click();
+  await expect(environmentDetail).toContainText('MS Office LTSC Professional Plus 2021');
+  await expect(environmentDetail.getByRole('link', { name: '대한상공회의소 컴퓨터활용능력 시험안내' })).toHaveAttribute(
+    'href',
+    'https://license.korcham.net/co/examguide.do',
+  );
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-computer-2026-scope-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/f/vehicle-inspection-prep');
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-vehicle-current-source-wide.png`, fullPage: true });
+
+  await page.goto('/f/computer-skills-d30-study');
+  await expect(page.locator('body')).toContainText('2027년 이후 시험');
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-computer-2026-scope-wide.png`, fullPage: true });
 });
 
 test('vehicle inspection route keeps reservation and result memo beside the timeline', async ({ page }) => {
@@ -5171,8 +5222,8 @@ test('source-fit decisions keep archived and review-gated flows out of public ro
 test('computer skills final QA exports checklist and calendar without study progress tables', async ({ page }) => {
   await page.goto('/f/computer-skills-d30-study');
 
-  await expect(page.getByRole('heading', { name: '컴퓨터활용능력 D-30 학습' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '컴퓨터활용능력 1급 D-30 학습' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '컴퓨터활용능력 1급 D-30 학습 Flow' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
   await expect(page.getByTestId('artifact-log-table-study-chapter-progress')).toHaveCount(0);
   await expect(page.getByTestId('artifact-log-table-study-mock-scores')).toHaveCount(0);
@@ -7007,7 +7058,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(readiness).toBeVisible();
   await expect(readiness.getByText('대표 후보', { exact: true }).first()).toBeVisible();
   await expect(readiness.getByText('Public MVP 후보', { exact: true }).first()).toBeVisible();
-  await expect(readiness.getByRole('link', { name: '컴퓨터활용능력 D-30 학습 Flow' })).toBeVisible();
+  await expect(readiness.getByRole('link', { name: '컴퓨터활용능력 1급 D-30 학습 Flow' })).toBeVisible();
   await expect(readiness.getByRole('link', { name: '신차 인수 점검 Flow' })).toBeVisible();
   await expect(readiness.getByText('diet-habit-2week')).toBeVisible();
   const representativeUxReview = page.locator('section').filter({ hasText: 'Representative UX Content Review' });
