@@ -2,6 +2,7 @@ import {
   buildSourceBackedFlowMapPersistenceRecord,
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedFlowMapSavedSnapshot,
+  getSourceBackedFlowMapQualityDecision,
   getSourceBackedFlowMapDateAnchorCopy,
   isSourceBackedFlowMapDirectRouteAccessible,
   isSourceBackedFlowMapExecutable,
@@ -24,6 +25,7 @@ export type UrlFirstSaveMode = 'direct' | 'preview_only' | 'draft_preview' | 'bl
 export type UrlFirstSavedArtifactMode = 'calendar' | 'checklist' | 'sheet';
 
 export type UrlFirstGate = {
+  kind?: 'official_freshness' | 'source_rows' | 'content_review';
   title: string;
   reason: string;
   requiredAction: string;
@@ -203,16 +205,27 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
   if (!map.sourceUrl) return undefined;
 
   const executionHeld = !isSourceBackedFlowMapExecutable(map);
+  const qualityDecision = getSourceBackedFlowMapQualityDecision(map.id);
+  const needsSourceRows = qualityDecision.executionHoldReason === 'source_rows';
   const sourceStatus = executionHeld ? 'needs_review' : getSourceBackedMapSourceStatus(map);
   const canUseDirectly = !executionHeld && sourceStatus === 'real';
   const sourceLabel = toUserFacingSourceTitle(map.sourceTitle ?? map.userLabel ?? map.title);
-  const gate = executionHeld
-    ? {
-        title: '최신 공식 내용 확인이 필요해요',
-        reason: '공식 내용이 달라질 수 있어 현재 내용은 새 실행 Flow로 저장하지 않습니다.',
-        requiredAction: '공식 원문에서 최신 내용을 확인해 주세요.',
-      }
+  const gate: UrlFirstGate = executionHeld
+    ? needsSourceRows
+      ? {
+          kind: 'source_rows',
+          title: '실행할 자료를 더 골라야 해요',
+          reason: '자료 모음은 확인했지만 실제로 쓸 개별 자료와 난이도를 아직 고르는 중이에요.',
+          requiredAction: '원문 자료를 둘러보거나 다른 Flow를 찾아보세요.',
+        }
+      : {
+          kind: 'official_freshness',
+          title: '최신 공식 내용 확인이 필요해요',
+          reason: '공식 내용이 달라질 수 있어 현재 내용은 새 실행 Flow로 저장하지 않습니다.',
+          requiredAction: '공식 원문에서 최신 내용을 확인해 주세요.',
+        }
     : {
+        kind: 'content_review',
         title: '저장과 파일 받기 전에 확인이 필요해요',
         reason: '원문 내용과 실행 일정이 아직 검토 중이라 바로 일정 파일을 만들지 않습니다.',
         requiredAction: '출처 내용과 일정 기준을 확인한 뒤 저장과 파일 받기를 열어야 합니다.',
@@ -224,12 +237,16 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
     title: canUseDirectly
       ? '이미 만들어진 Flow가 있어요'
       : executionHeld
-        ? '최신 공식 내용 확인이 필요해요'
+        ? needsSourceRows
+          ? '실행할 자료를 더 골라야 해요'
+          : '최신 공식 내용 확인이 필요해요'
         : '기존 Flow가 있지만 확인이 필요해요',
     summary: canUseDirectly
       ? `${sourceLabel} 기준으로 저장 가능한 콘텐츠를 찾았어요. 필요한 옵션만 바꾸고 저장 전 확인할 수 있습니다.`
       : executionHeld
-        ? `${sourceLabel} 기반 콘텐츠는 최신 내용을 다시 확인 중이에요. 지금은 저장하지 않고 공식 원문을 확인해 주세요.`
+        ? needsSourceRows
+          ? `${sourceLabel} 자료 모음은 찾았지만 개별 자료와 난이도를 더 확인해야 해요. 지금은 저장하지 않고 원문 자료를 둘러볼 수 있어요.`
+          : `${sourceLabel} 기반 콘텐츠는 최신 내용을 다시 확인 중이에요. 지금은 저장하지 않고 공식 원문을 확인해 주세요.`
         : `${sourceLabel} 기준의 콘텐츠가 있지만 아직 보강이 필요한 상태입니다. 저장 전에 원문 확인이 필요합니다.`,
     sourceStatus,
     sourceLabel,

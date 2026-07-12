@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import {
   buildSourceBackedFlowMapPublishPackage,
+  getSourceBackedFlowMapQualityDecision,
   isSourceBackedFlowMapExecutable,
   type SourceBackedFlowMapPublishPackage,
 } from '@/lib/flow/source-backed-my-flow';
@@ -50,6 +51,16 @@ function NotFoundMap() {
 function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMapPublishPackage }) {
   const { map, public: publicSurface } = publishPackage;
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
+  const qualityDecision = getSourceBackedFlowMapQualityDecision(map.id);
+  const needsSourceRows = qualityDecision.executionHoldReason === 'source_rows';
+  const eyebrow = needsSourceRows ? '실행 항목 준비 중' : '최신 공식 내용 확인 필요';
+  const lead = needsSourceRows
+    ? '원문 자료에서 실제로 실행할 항목을 고르는 중이에요.'
+    : '공식 원문과 현재 표시 내용을 다시 확인하고 있어요.';
+  const description = needsSourceRows
+    ? '개별 자료와 난이도를 확인하기 전에는 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 원문 자료를 먼저 둘러보세요.'
+    : '공식 내용이 달라질 수 있어 지금은 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 원문에서 최신 내용을 확인해 주세요.';
+  const sourceLinkLabel = needsSourceRows ? '원문 자료 둘러보기' : '최신 공식 내용 확인';
 
   return (
     <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8">
@@ -59,15 +70,15 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
           data-testid="flow-map-review-hold"
           className="border-t-4 border-[#E2A62B] bg-white px-5 py-7 shadow-[0_18px_50px_rgba(31,35,48,0.07)] sm:px-8 sm:py-10"
         >
-          <p className="text-sm font-semibold text-[#8A5A00]">최신 공식 내용 확인 필요</p>
+          <p className="text-sm font-semibold text-[#8A5A00]">{eyebrow}</p>
           <h1 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
             {displayTitle}
           </h1>
           <p className="mt-4 max-w-2xl break-keep text-base font-semibold leading-7 text-slate-800">
-            공식 원문과 현재 표시 내용을 다시 확인하고 있어요.
+            {lead}
           </p>
           <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-slate-600">
-            공식 내용이 달라질 수 있어 지금은 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 원문에서 최신 내용을 확인해 주세요.
+            {description}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <a
@@ -77,7 +88,7 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
               target="_blank"
               rel="noreferrer"
             >
-              최신 공식 내용 확인
+              {sourceLinkLabel}
             </a>
             <Link
               className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
@@ -207,15 +218,10 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
                     ) : (
                       <p className="mt-1 text-xs font-semibold text-slate-500">하위 체크 {step.detailItemCount}개</p>
                     )}
-                    {step.memo || step.sourceTrace || step.sourceUrl ? (
+                    {step.memo || step.sourceUrl ? (
                       <details className="mt-2 min-w-0 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5">
                         <summary className="cursor-pointer text-xs font-semibold text-slate-600">메모 · 원문</summary>
                         {step.memo ? <p className="mt-2 whitespace-pre-wrap break-words text-[13px] leading-5 text-slate-700">{step.memo}</p> : null}
-                        {step.sourceTrace ? (
-                          <p className="mt-2 max-w-full whitespace-pre-wrap break-all text-[12px] font-medium leading-5 text-slate-500">
-                            원문 근거: {step.sourceTrace}
-                          </p>
-                        ) : null}
                         {step.sourceUrl ? (
                           <a className="mt-2 inline-flex min-h-8 items-center rounded-md border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={step.sourceUrl} target="_blank" rel="noreferrer">
                             이 단계 원문 보기

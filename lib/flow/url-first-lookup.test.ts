@@ -88,6 +88,24 @@ test('manual production registered source-backed Flow resolves from its source U
   assert.match(started.markdownExport?.content ?? '', /aircon-filter-cleaning/);
 });
 
+test('broad Funmom category URL stops at source-row review without save, export, or draft bypass', () => {
+  const result = lookupUrlFirstP0Input('https://funmom.tistory.com/?utm_source=user');
+
+  assert.equal(result.status, 'needs_review');
+  assert.equal(result.canonicalUrl, 'https://funmom.tistory.com/');
+  assert.equal(result.flowMapId, 'curated-funmom-learning-park');
+  assert.equal(result.routeHref, '/flow-maps/curated-funmom-learning-park');
+  assert.equal(result.title, '실행할 자료를 더 골라야 해요');
+  assert.match(result.summary, /개별 자료와 난이도/);
+  assert.equal(result.gate?.title, '실행할 자료를 더 골라야 해요');
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.saveMode, 'blocked');
+  assert.deepEqual(result.preview.calendar, []);
+  assert.deepEqual(result.preview.markdown, []);
+  assert.equal(result.aiGeneration.enabled, false);
+});
+
 test('duplicate opic source URL resolves to the curated source-backed representative only', () => {
   const result = lookupUrlFirstP0Input(
     'https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95?utm_source=duplicate',

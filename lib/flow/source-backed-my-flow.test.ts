@@ -891,7 +891,7 @@ test('source import required duplicate maps can stay published but leave URL loo
   assert.equal(publishPackage.map.id, 'funmom-study-routine-map');
 });
 
-test('curated Funmom sourceTrace repair keeps broad category rows source-traced without study advice', () => {
+test('curated Funmom category park stays traceable but blocks execution until exact worksheet rows are imported', () => {
   const report = assessSourceBackedManualRegistrationReadiness();
   const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-funmom-learning-park');
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
@@ -904,23 +904,48 @@ test('curated Funmom sourceTrace repair keeps broad category rows source-traced 
     ),
   );
   assert.equal(publishPackage.map.id, 'curated-funmom-learning-park');
-  assert.equal(getSourceBackedFlowMapQualityDecision('curated-funmom-learning-park').directRouteEnabled, true);
-  assert.ok(lookupableIds.includes('curated-funmom-learning-park'));
+  const decision = getSourceBackedFlowMapQualityDecision('curated-funmom-learning-park');
+  assert.equal(decision.directRouteEnabled, true);
+  assert.equal(decision.publicExecutionEnabled, false);
+  assert.equal(decision.executionHoldReason, 'source_rows');
+  assert.ok(!lookupableIds.includes('curated-funmom-learning-park'));
   assert.ok(!lookupableIds.includes('funmom-study-routine-map'));
 
   const rows = buildSourceBackedMyFlowRows(bundleBySlug('curated-funmom-weekly-print-picker'));
   assert.equal(rows.length, 6);
   assert.ok(rows.every((row) => row.mapId === 'curated-funmom-learning-park'));
   assert.ok(rows.every((row) => row.riskLevel === 'low'));
+  assert.ok(rows.every((row) => row.sourceType === 'reference'));
   assert.ok(rows.every((row) => row.sourceUrl === 'https://funmom.tistory.com/'));
+  assert.match(bundleBySlug('curated-funmom-weekly-print-picker').flow.description, /개별 활동지 원문을 고르기 전에는 실행하지 않습니다/);
+  assert.equal(publishPackage.map.version, '2026-07-12.hold.1');
+  assert.equal(publishPackage.map.updatedAt, '2026-07-12T00:00:00.000Z');
 
   const detailTrace = bundleBySlug('curated-funmom-weekly-print-picker')
     .itemDetails.map((detail) => detail.why)
     .join('\n');
-  assert.match(detailTrace, /sourceTrace: Funmom learning material category park/);
-  assert.match(detailTrace, /source row: funmom-mon-coloring/);
-  assert.match(detailTrace, /source row: funmom-sat-review/);
+  assert.match(detailTrace, /sourceTrace: Funmom category collection/);
+  assert.match(detailTrace, /FlowMe draft row: funmom-mon-coloring/);
+  assert.match(detailTrace, /exact printable article not imported/);
+  assert.doesNotMatch(detailTrace, /source row:/);
   assert.doesNotMatch(detailTrace, /학습법|교육 조언|study advice|curriculum advice/i);
+});
+
+test('aircon filter routine keeps current Samsung 1way scope, model check, and official repeat rule', () => {
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('aircon-filter-cleaning');
+  const bundle = bundleBySlug('source-backed-aircon-filter-cleaning');
+  const [row] = buildSourceBackedMyFlowRows(bundle);
+
+  assert.ok(publishPackage);
+  assert.equal(publishPackage.map.version, '2026-07-12.1');
+  assert.equal(bundle.flow.source_checked_at, '2026-07-12');
+  assert.equal(bundle.flow.risk_level, 'medium');
+  assert.equal(row.riskLevel, 'medium');
+  assert.equal(row.calendar.repeatRule, 'FREQ=WEEKLY;INTERVAL=2');
+  assert.match(publishPackage.public.title, /천장형 에어컨 1way/);
+  assert.match(publishPackage.public.summary, /천장형 1way 모델/);
+  assert.equal(publishPackage.public.childFlows[0]?.steps[0]?.detailItems[0], '제품이 천장형 1way인지 모델명과 사용설명서 확인');
+  assert.match(bundle.itemDetails[0]?.caution ?? '', /모델별 방법이 다를 수 있으므로 사용설명서/);
 });
 
 test('legacy opic duplicate map can stay published while the curated representative owns URL lookup', () => {

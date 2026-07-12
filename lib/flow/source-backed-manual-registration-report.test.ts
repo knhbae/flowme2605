@@ -71,7 +71,7 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
     generatedAt: '2026-07-06T00:00:00.000+09:00',
   });
 
-  assert.equal(report.summary.qaPassCount, 12);
+  assert.equal(report.summary.qaPassCount, 11);
   assert.equal(report.summary.registrationHoldCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 0);
@@ -156,9 +156,9 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
 
   const funmomPass = report.rows.find((row) => row.mapId === 'curated-funmom-learning-park');
   assert.ok(funmomPass);
-  assert.equal(funmomPass.lookupEligible, true);
+  assert.equal(funmomPass.lookupEligible, false);
   assert.equal(funmomPass.qualityStatus, 'park');
-  assert.equal(funmomPass.status, 'qa_pass');
+  assert.equal(funmomPass.status, 'lookup_blocked');
   assert.equal(funmomPass.missingSourceTraceStepCount, 0);
   assert.deepEqual(funmomPass.issueCodes, []);
 

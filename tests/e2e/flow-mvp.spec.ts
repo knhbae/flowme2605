@@ -1450,7 +1450,9 @@ test('curated source Flow Map stays readable at 390px with step memo and source 
   await expect(publicMap.getByTestId('flow-map-public-step-items').first()).toContainText('이사 방식');
 
   await publicMap.getByText('메모 · 원문').first().click();
-  await expect(publicMap).toContainText('AJD moving checklist article');
+  await expect(publicMap).toContainText('이사 체크리스트는 날짜 기준으로 놓치기 쉬운 생활/행정 항목을 나누는 것이 자연스럽습니다.');
+  await expect(publicMap).not.toContainText('sourceTrace');
+  await expect(publicMap).not.toContainText('AJD moving checklist article');
   await expect(publicMap.getByRole('link', { name: '이 단계 원문 보기' }).first()).toHaveAttribute('href', /ajd\.co\.kr/);
 
   const width = await page.evaluate(() => ({
@@ -3893,6 +3895,81 @@ test('review-hold Flow Maps keep current official source access without new save
       await page.screenshot({ path: `${evidenceDir}/04-tax-review-hold-wide.png`, fullPage: true });
     }
   }
+});
+
+test('broad Funmom category collection stays visible as a source-row hold without an executable weekly schedule', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_LEARNING_MAINTENANCE_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/curated-funmom-learning-park');
+
+  const hold = page.getByTestId('flow-map-review-hold');
+  await expect(hold.getByRole('heading', { name: '펀맘 주간 출력 루틴' })).toBeVisible();
+  await expect(hold).toContainText('실행 항목 준비 중');
+  await expect(hold).toContainText('원문 자료에서 실제로 실행할 항목을 고르는 중이에요');
+  await expect(hold).toContainText('개별 자료와 난이도를 확인하기 전에는');
+  await expect(hold.getByRole('link', { name: '원문 자료 둘러보기' })).toHaveAttribute('href', 'https://funmom.tistory.com/');
+  await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
+  await expect(page.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+  await expect(page.getByText('월: 색칠공부 한 장 출력')).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-funmom-review-hold-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-funmom-review-hold-wide.png`, fullPage: true });
+});
+
+test('an existing saved Funmom draft remains visible with a non-dismissible source-row warning', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_LEARNING_MAINTENANCE_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my?demo=source-backed&savedMap=curated-funmom-learning-park');
+
+  await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('펀맘 주간 출력 루틴');
+  await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+  await page.getByTestId('my-flow-view-flow').click();
+  const sourceReview = page.getByTestId('my-flow-map-update-review');
+  await expect(sourceReview).toContainText('다시 쓰기 전 원문 자료를 확인해 주세요');
+  await expect(sourceReview).toContainText('개별 자료와 난이도를 확인한 뒤');
+  await expect(sourceReview.getByTestId('my-flow-map-update-dismiss')).toHaveCount(0);
+  await expect(sourceReview.getByRole('link', { name: '원문 자료 확인' })).toHaveAttribute(
+    'href',
+    '/flow-maps/curated-funmom-learning-park',
+  );
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-funmom-existing-save-warning-mobile.png`, fullPage: true });
+});
+
+test('current Samsung 1way aircon routine keeps its verified cadence and puts model applicability first', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_LEARNING_MAINTENANCE_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/aircon-filter-cleaning');
+
+  const publicMap = page.getByTestId('flow-map-public');
+  await expect(publicMap.getByRole('heading', { name: '천장형 에어컨 1way 필터 청소 루틴', level: 1 })).toBeVisible();
+  await expect(publicMap).toContainText('천장형 1way 모델인지 먼저 확인하세요');
+  await expect(publicMap).toContainText('약 2주 반복 일정');
+  await expect(publicMap.getByTestId('flow-map-first-action-preview')).toContainText('제품이 천장형 1way인지 모델명과 사용설명서 확인');
+  await expect(publicMap.getByTestId('flow-map-source-link')).toHaveAttribute('href', 'https://www.samsungsvc.co.kr/solution/28524');
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toBeVisible();
+  await expect(publicMap).not.toContainText('sourceTrace');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/05-aircon-direct-mobile.png`, fullPage: true });
+
+  const detailItems = publicMap.getByTestId('flow-map-public-step-items');
+  await detailItems.getByText('체크 7개 열기').click();
+  await expect(detailItems).toContainText('제품이 천장형 1way인지 모델명과 사용설명서 확인');
+  await expect(detailItems).toContainText('운전을 정지하고 보조전원스위치 끄기');
+  await expect(detailItems).toContainText('필터 리셋 또는 알림 해제 실행');
+  await expect(publicMap).not.toContainText('sourceTrace');
+  await page.evaluate(() => window.scrollTo(0, 0));
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/06-aircon-details-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  await expect(page.getByTestId('flow-map-save-all')).toBeVisible();
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/07-aircon-direct-wide.png`, fullPage: true });
 });
 
 test('postal address transfer keeps only the official next-day check and defers variable dates to the service', async ({ page }) => {

@@ -1374,6 +1374,7 @@ const urlFirstExportModeLabels: Record<UrlFirstExportMode, string> = {
 };
 
 function getUrlLookupStatusLabel(result: UrlFirstLookupResult): string {
+  if (result.gate?.kind === 'source_rows') return '자료 확인 필요';
   if (result.status === 'hit' && result.sourceStatus === 'needs_review') return '원문 확인 필요';
   if (result.status === 'hit') return '기존 콘텐츠';
   if (result.status === 'needs_review') return '원문 확인 필요';
@@ -1552,10 +1553,13 @@ function FlowUrlLookupResult({
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
   onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
 }) {
+  const needsSourceRows = result.gate?.kind === 'source_rows';
   const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow
     ? '저장 전 보기'
     : result.saveMode === 'blocked'
-      ? '최신 내용 확인'
+      ? needsSourceRows
+        ? '원문 자료 보기'
+        : '최신 내용 확인'
       : result.routeHref
         ? '미리보기 열기'
         : '초안 요청 가능';
@@ -1697,7 +1701,7 @@ function FlowUrlLookupResult({
           </p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {result.saveMode === 'blocked' ? (
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">공식 원문</span>
+              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">{needsSourceRows ? '원문 자료' : '공식 원문'}</span>
             ) : exportModes.length > 0 ? (
               exportModes.map((label) => (
                 <span key={label} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF]">
@@ -3374,6 +3378,7 @@ type MyFlowMapUpdateNotice = {
   currentRecord?: SourceBackedFlowMapPersistenceRecord;
   versionReview?: FlowVersionReview;
   executionHeld?: boolean;
+  executionHoldReason?: 'official_freshness' | 'source_rows';
 };
 
 type MyFlowMapUpdateComparisonRow = {
@@ -3483,6 +3488,7 @@ function getMyFlowMapUpdateNotice(
   const sourceSnapshot = toSourceBackedSavedSnapshot(snapshot);
   const qualityDecision = getSourceBackedFlowMapQualityDecision(snapshot.mapId);
   const executionHeld = qualityDecision.publicExecutionEnabled === false;
+  const needsSourceRows = qualityDecision.executionHoldReason === 'source_rows';
   const currentSnapshot = buildSourceBackedFlowMapSavedSnapshotUpdate(sourceSnapshot, {
     savedAt: snapshot.savedAt,
     ...(snapshot.anchor ? { anchor: snapshot.anchor } : {}),
@@ -3492,11 +3498,17 @@ function getMyFlowMapUpdateNotice(
   const affectedFlowSlugs = assessment.affectedFlows.length > 0 ? assessment.affectedFlows : snapshot.flowSlugs;
   const affectedCount = Math.max(affectedFlowSlugs.length, snapshot.flowSlugs.length);
   const reasons = executionHeld
-    ? [
-        '공식 원문과 현재 표시 내용이 맞는지 다시 확인 중입니다.',
-        '저장한 기록은 유지되지만 실행 전 공식 원문을 확인해 주세요.',
-        ...assessment.reasons.map(formatMyFlowMapUpdateReason),
-      ]
+    ? needsSourceRows
+      ? [
+          '원문 자료에서 실제로 실행할 개별 항목과 난이도를 고르는 중입니다.',
+          '저장한 기록은 유지되지만 새 일정으로 다시 쓰기 전 원문 자료를 확인해 주세요.',
+          ...assessment.reasons.map(formatMyFlowMapUpdateReason),
+        ]
+      : [
+          '공식 원문과 현재 표시 내용이 맞는지 다시 확인 중입니다.',
+          '저장한 기록은 유지되지만 실행 전 공식 원문을 확인해 주세요.',
+          ...assessment.reasons.map(formatMyFlowMapUpdateReason),
+        ]
     : assessment.reasons.map(formatMyFlowMapUpdateReason);
   const comparisonRows = executionHeld && assessment.status === 'up_to_date'
     ? []
@@ -3545,7 +3557,7 @@ function getMyFlowMapUpdateNotice(
     return {
       mapId: snapshot.mapId,
       title: snapshot.title,
-      label: '최신 공식 내용 확인 필요',
+      label: needsSourceRows ? '실행 항목 준비 중' : '최신 공식 내용 확인 필요',
       tone: 'amber',
       status: 'review_before_apply',
       canApplyAutomatically: false,
@@ -3559,6 +3571,7 @@ function getMyFlowMapUpdateNotice(
       ...(savedRecord ? { savedRecord } : {}),
       ...(currentRecord ? { currentRecord } : {}),
       executionHeld: true,
+      executionHoldReason: qualityDecision.executionHoldReason,
     };
   }
 
@@ -8944,16 +8957,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const renderMyFlowMapUpdateNotices = () => {
     const allExecutionHeld = myFlowMapUpdateNotices.every((notice) => notice.executionHeld);
+    const allSourceRowsHeld = allExecutionHeld && myFlowMapUpdateNotices.every((notice) => notice.executionHoldReason === 'source_rows');
     return myFlowMapUpdateNotices.length > 0 ? (
       <section data-testid="my-flow-map-update-review" className="rounded-lg border border-amber-200 bg-amber-50/70 p-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold text-amber-800">{allExecutionHeld ? '공식 내용 재확인' : '업데이트 확인'}</p>
+            <p className="text-xs font-semibold text-amber-800">{allSourceRowsHeld ? '실행 항목 준비' : allExecutionHeld ? '공식 내용 재확인' : '업데이트 확인'}</p>
             <h4 className="text-base font-semibold text-amber-950">
-              {allExecutionHeld ? '실행 전 최신 공식 내용을 확인해 주세요' : '저장한 콘텐츠에 다시 볼 내용이 있습니다'}
+              {allSourceRowsHeld ? '다시 쓰기 전 원문 자료를 확인해 주세요' : allExecutionHeld ? '실행 전 최신 공식 내용을 확인해 주세요' : '저장한 콘텐츠에 다시 볼 내용이 있습니다'}
             </h4>
             <p className="mt-1 text-sm font-medium text-amber-900">
-              {allExecutionHeld
+              {allSourceRowsHeld
+                ? '저장한 기록은 그대로 남지만, 개별 자료와 난이도를 확인한 뒤 새 일정으로 쓰는 편이 안전합니다.'
+                : allExecutionHeld
                 ? '저장한 기록은 그대로 남지만, 공식 내용이 달라질 수 있어 원문 확인이 필요합니다.'
                 : '기존 항목은 그대로 두고, 원문이나 일정 변경 가능성만 따로 확인합니다.'}
             </p>
@@ -9004,7 +9020,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       </>
                     ) : null}
                     <Link className="inline-flex min-h-8 items-center justify-center rounded-md border border-amber-100 bg-amber-50 px-2.5 text-xs font-semibold text-amber-900 hover:border-amber-300" href={`/flow-maps/${notice.mapId}`}>
-                      {notice.executionHeld ? '공식 내용 확인' : '전체 보기'}
+                      {notice.executionHoldReason === 'source_rows' ? '원문 자료 확인' : notice.executionHeld ? '공식 내용 확인' : '전체 보기'}
                     </Link>
                     {!notice.executionHeld ? (
                       <button
@@ -9020,7 +9036,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 </div>
                 <p className="mt-2 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900">
                   {notice.executionHeld
-                    ? '저장한 내용은 자동으로 바꾸지 않습니다. 실행 전 공식 원문에서 최신 일정을 확인해 주세요.'
+                    ? notice.executionHoldReason === 'source_rows'
+                      ? '저장한 내용은 자동으로 바꾸지 않습니다. 다시 쓰기 전 개별 자료와 난이도를 확인해 주세요.'
+                      : '저장한 내용은 자동으로 바꾸지 않습니다. 실행 전 공식 원문에서 최신 일정을 확인해 주세요.'
                     : '자동 반영 안 함. 지금 실행은 저장한 내용 그대로 두고, 새 내용은 다음 실행에서만 선택합니다.'}
                 </p>
                 {notice.reasons.length > 0 ? (

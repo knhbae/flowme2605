@@ -234,6 +234,29 @@ test('outdated schedule source URLs stop at official-source review without save 
   }
 });
 
+test('broad worksheet category URL stops before an invented weekly schedule or draft bypass', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_LEARNING_MAINTENANCE_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://funmom.tistory.com/?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await expect(result).toContainText('실행할 자료를 더 골라야 해요');
+  await expect(result).toContainText('개별 자료와 난이도를 더 확인해야 해요');
+  await expect(result).toContainText('새 저장 중지');
+  await expect(result.getByRole('link', { name: '원문 자료 보기' })).toHaveAttribute(
+    'href',
+    '/flow-maps/curated-funmom-learning-park',
+  );
+  await expect(result.getByTestId('flow-url-start-panel')).toHaveCount(0);
+  await expect(result.getByTestId('flow-url-supply-request')).toHaveCount(0);
+  await expect(result).not.toContainText('월: 색칠공부 한 장 출력');
+  await expect(result).not.toContainText('공식 원문');
+  await expect(result).not.toContainText('Markdown');
+  await expectCleanUrlFirstUserSurface(result);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-funmom-url-first-blocked-mobile.png`, fullPage: true });
+});
+
 test('URL-first miss and saved-candidate states hide production-only wording from user surface', async ({ page }) => {
   await openFlowFinding(page);
   await lookupUrl(page, 'https://example.com/source-to-convert?utm_source=review');

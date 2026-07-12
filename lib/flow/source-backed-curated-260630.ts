@@ -2,6 +2,7 @@ import type { Flow, FlowBundle, FlowItem, FlowItemDetail, FlowItemLinkType, Risk
 import type { SourceBackedFlowMapQualityDecision, SourceBackedMyFlowMap } from './source-backed-my-flow';
 
 const now = '2026-06-30T00:00:00.000Z';
+const reviewedNow = '2026-07-12T00:00:00.000Z';
 
 const funmomSourceUrl = 'https://funmom.tistory.com/';
 const opicSourceUrl =
@@ -48,8 +49,8 @@ function childVaccinationSourceTrace(stepId: string, rowLabel: string): string {
   return `KHMS child vaccination official schedule ${vaccinationSourceUrl} - schedule row: ${stepId} ${rowLabel}`;
 }
 
-function funmomSourceTrace(stepId: string, rowLabel: string): string {
-  return `Funmom learning material category park ${funmomSourceUrl} - source row: ${stepId} ${rowLabel}`;
+function funmomSourceTrace(stepId: string, categoryLabel: string): string {
+  return `Funmom category collection ${funmomSourceUrl} - FlowMe draft row: ${stepId}; homepage category: ${categoryLabel}; exact printable article not imported`;
 }
 
 type CuratedFlowSeed = Omit<Flow, 'created_at' | 'updated_at' | 'status' | 'content_type'> &
@@ -143,9 +144,11 @@ export const curatedSourceBackedFlowMapQualityDecisions: Record<string, SourceBa
     status: 'park',
     homepageEligible: false,
     directRouteEnabled: true,
+    publicExecutionEnabled: false,
+    executionHoldReason: 'source_rows',
     productScore: 4.5,
-    reason: 'The site has useful category rows, but the homepage is a broad content park rather than one executable source.',
-    nextAction: 'Keep as a direct-route category picker until article-level rows are imported.',
+    reason: 'The current site exposes broad worksheet categories, but the weekly schedule and difficulty choices are not source-defined and exact printable article rows are not imported.',
+    nextAction: 'Keep the source accessible as a review hold and import exact printable article URLs, audience or difficulty, and reuse rights before enabling execution.',
   },
   'curated-opic-mock-course': {
     mapId: 'curated-opic-mock-course',
@@ -230,13 +233,13 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     id: 'curated-funmom-learning-park',
     userLabel: '펀맘 학습자료',
     title: '펀맘 주간 출력 루틴',
-    version: '2026-06-30.3',
-    updatedAt: now,
+    version: '2026-07-12.hold.1',
+    updatedAt: reviewedNow,
     updatePolicy: 'review_before_apply',
-    summary: '월~토 요일별로 색칠, 한글, 수학, 영어, 미로, 복습 자료를 한 장씩 고르게 만든 주간 출력 루틴입니다.',
+    summary: '현재 사이트는 학습자료 카테고리 모음입니다. 개별 활동지 URL과 나이·난이도를 확인하기 전까지 새 일정 저장을 보류합니다.',
     sourceTitle: '펀맘',
     sourceUrl: funmomSourceUrl,
-    artifacts: ['요일별 출력 일정', '자료 URL과 나이/수준 메모', '주말 반응 기록'],
+    artifacts: ['개별 활동지 원문 선택', '나이·난이도 확인'],
     flowSlugs: ['curated-funmom-weekly-print-picker'],
   },
   {
@@ -404,7 +407,7 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       id: funmomFlowId,
       slug: 'curated-funmom-weekly-print-picker',
       title: '펀맘 월~토 출력 루틴',
-      description: '펀맘 카테고리를 요일별로 나눠 매일 한 장씩 고르고 출력, 활동, 반응 메모까지 이어갑니다.',
+      description: '펀맘 카테고리를 바탕으로 FlowMe가 만든 검토용 주간 구성입니다. 개별 활동지 원문을 고르기 전에는 실행하지 않습니다.',
       category: '육아/학습자료',
       structure_type: 'routine',
       anchor_type: 'start_date',
@@ -412,12 +415,12 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       source_url: funmomSourceUrl,
       source_status: 'real',
       source_precision: 'broad',
-      source_checked_at: '2026-06-29',
+      source_checked_at: '2026-07-12',
       primary_destination: 'calendar',
       risk_level: 'low',
       setup_anchor_label: '이번 주 시작일',
       setup_anchor_hint: '월요일 또는 이번 주 첫 학습일을 넣습니다.',
-      tags: tagMap('curated-funmom-learning-park', 'park', 'weekly-print-routine'),
+      tags: tagMap('curated-funmom-learning-park', 'park', 'source-import-required', 'weekly-print-routine'),
     },
     [section(funmomFlowId, 'funmom-week', '요일별 출력 루틴', 0)],
     [
@@ -435,13 +438,13 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       order,
       type: 'calendar' as const,
       dayOffset: Number(dayOffset),
-      sourceType: 'creator_experience' as const,
+      sourceType: 'reference' as const,
       riskLevel: 'low' as const,
-      why: '교육 서비스처럼 매일 할 자료를 queue로 배정해야 부모가 매번 사이트를 다시 탐색하지 않습니다.',
+      why: '요일 배치는 원문 일정이 아니라 FlowMe의 검토용 구성입니다. 실행 전 개별 활동지 원문과 난이도 확인이 필요합니다.',
       how: Array.isArray(how) ? how.map(String) : [String(how)],
       doneWhen: `${String(title)} 활동과 반응 메모가 끝났습니다.`,
       sourceUrl: funmomSourceUrl,
-      sourceTrace: funmomSourceTrace(String(id), String(title)),
+      sourceTrace: funmomSourceTrace(String(id), String(title).replace(/^[월화수목금토]:\s*/, '')),
     })),
   ),
   bundle(

@@ -80,6 +80,7 @@ export type SourceBackedFlowMapQualityDecision = {
   homepageEligible: boolean;
   directRouteEnabled: boolean;
   publicExecutionEnabled?: boolean;
+  executionHoldReason?: 'official_freshness' | 'source_rows';
   publicCatalogEligible?: boolean;
   productScore: number;
   reason: string;
@@ -469,6 +470,7 @@ export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlo
     homepageEligible: false,
     directRouteEnabled: true,
     publicExecutionEnabled: false,
+    executionHoldReason: 'official_freshness',
     productScore: 4,
     reason: 'The exact source is a 2025 video, while employer deadlines vary and the existing D-3/D-1 schedule is not an NTS deadline.',
     nextAction: 'Re-source against the current tax year and rebuild without inferred dates before enabling save or export.',
@@ -479,8 +481,8 @@ export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlo
     homepageEligible: false,
     directRouteEnabled: true,
     productScore: 3,
-    reason: 'Some routine value, but weak as a platform proof and overlaps maintenance patterns already tested.',
-    nextAction: 'Keep only as a low-priority routine backup unless a stronger source-backed user job is selected.',
+    reason: 'The current Samsung 1way guide supports the two-week-or-alert routine, but the job is narrow and overlaps maintenance patterns already tested.',
+    nextAction: 'Keep as a direct-only utility, preserve the 1way model check, and do not present it as a universal air-conditioner routine.',
   },
   'picnic-food-safety': {
     mapId: 'picnic-food-safety',

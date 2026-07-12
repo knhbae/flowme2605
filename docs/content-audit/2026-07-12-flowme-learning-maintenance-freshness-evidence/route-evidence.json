@@ -1,0 +1,149 @@
+{
+  "generatedAt": "2026-07-12T00:00:00+09:00",
+  "scope": "learning-resource-and-maintenance-source-freshness",
+  "sources": [
+    {
+      "contentId": "curated-funmom-learning-park",
+      "url": "https://funmom.tistory.com/",
+      "checkedAt": "2026-07-12",
+      "reachable": true,
+      "sourceShape": "broad_category_collection",
+      "visiblePostCount": 1124,
+      "latestVisiblePostDate": "2021-09-06",
+      "exactImportedWorksheetRowCount": 0,
+      "decision": "review_hold_source_rows"
+    },
+    {
+      "contentId": "aircon-filter-cleaning",
+      "url": "https://www.samsungsvc.co.kr/solution/28524",
+      "sourceRegisteredAt": "2025-01-06",
+      "checkedAt": "2026-07-12",
+      "reachable": true,
+      "sourceShape": "official_model_specific_repeat_procedure",
+      "decision": "keep_verified_direct_utility"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "funmom-review-hold-mobile",
+      "route": "/flow-maps/curated-funmom-learning-park",
+      "viewport": { "width": 390, "height": 844 },
+      "reviewHoldVisible": true,
+      "sourceRowHoldCopyVisible": true,
+      "weeklyExecutionRowCount": 0,
+      "saveControlCount": 0,
+      "exportControlCount": 0,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/01-funmom-review-hold-mobile.png"
+    },
+    {
+      "name": "funmom-review-hold-wide",
+      "route": "/flow-maps/curated-funmom-learning-park",
+      "viewport": { "width": 1024, "height": 900 },
+      "reviewHoldVisible": true,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/02-funmom-review-hold-wide.png"
+    },
+    {
+      "name": "funmom-url-first-blocked",
+      "route": "/flows",
+      "triggerUrl": "https://funmom.tistory.com/",
+      "viewport": { "width": 390, "height": 844 },
+      "lookupStatus": "needs_review",
+      "gateKind": "source_rows",
+      "saveMode": "blocked",
+      "saveBypassCount": 0,
+      "exportBypassCount": 0,
+      "draftBypassCount": 0,
+      "officialSourceLikeLabelCount": 0,
+      "screenshot": "screenshots/03-funmom-url-first-blocked-mobile.png"
+    },
+    {
+      "name": "funmom-existing-save-warning",
+      "route": "/my?demo=source-backed&savedMap=curated-funmom-learning-park",
+      "viewport": { "width": 390, "height": 844 },
+      "savedRecordVisible": true,
+      "sourceRowWarningCount": 1,
+      "warningDismissControlCount": 0,
+      "savedRecordAutomaticallyReplaced": false,
+      "screenshot": "screenshots/04-funmom-existing-save-warning-mobile.png"
+    },
+    {
+      "name": "aircon-verified-mobile",
+      "route": "/flow-maps/aircon-filter-cleaning",
+      "viewport": { "width": 390, "height": 844 },
+      "publicExecutionEnabled": true,
+      "modelScope": "ceiling_1way",
+      "modelCheckFirst": true,
+      "repeatRule": "FREQ=WEEKLY;INTERVAL=2",
+      "alertAndEnvironmentPriorityCopyVisible": true,
+      "publicSourceTraceTextCount": 0,
+      "saveControlVisible": true,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/05-aircon-direct-mobile.png"
+    },
+    {
+      "name": "aircon-details-mobile",
+      "route": "/flow-maps/aircon-filter-cleaning",
+      "viewport": { "width": 390, "height": 844 },
+      "detailCheckCount": 7,
+      "modelCheckFirst": true,
+      "powerOffCheckVisible": true,
+      "filterResetCheckVisible": true,
+      "publicSourceTraceTextCount": 0,
+      "screenshot": "screenshots/06-aircon-details-mobile.png"
+    },
+    {
+      "name": "aircon-verified-wide",
+      "route": "/flow-maps/aircon-filter-cleaning",
+      "viewport": { "width": 1024, "height": 900 },
+      "saveControlVisible": true,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/07-aircon-direct-wide.png"
+    }
+  ],
+  "summary": {
+    "funmomPublicExecutionEnabled": false,
+    "funmomDirectRouteStatus": 200,
+    "funmomDirectRouteNoindex": true,
+    "funmomUrlFirstLookupStatus": "needs_review",
+    "funmomUrlFirstSaveBypassCount": 0,
+    "funmomUrlFirstExportBypassCount": 0,
+    "funmomUrlFirstDraftBypassCount": 0,
+    "funmomPublicInventedWeeklyRowCount": 0,
+    "funmomExistingSavedWarningCount": 1,
+    "funmomExistingSavedWarningDismissCount": 0,
+    "airconPublicExecutionEnabled": true,
+    "airconDirectRouteNoindex": true,
+    "airconModelApplicabilityCheckCount": 1,
+    "airconVerifiedRepeatRuleCount": 1,
+    "airconPublicSourceTraceTextCount": 0,
+    "normalRouteGuardrailHitCount": 0,
+    "urlFirstVisibleMarkdownHitCount": 0,
+    "candidateUserCopyInternalHitCount": 0,
+    "horizontalOverflowCount": 0,
+    "screenshotCount": 7
+  },
+  "validation": {
+    "targetedUnitPassed": 103,
+    "targetedEvidenceScenarioPassed": 4,
+    "docsCheckPassed": true,
+    "docsLocalLinkCount": 1996,
+    "fullUnitPassed": 426,
+    "flowMvpFullRunPassedBeforeExpectationRefresh": 185,
+    "sourceTraceExpectationRefreshTargetedPassed": 1,
+    "effectiveFlowMvpScenarioPassed": 186,
+    "urlFirstPublicWorkbenchE2ePassed": 54,
+    "totalE2eScenarioPassed": 240,
+    "e2eFailureAfterExpectationRefresh": 0,
+    "productionBuildPassed": true,
+    "diffCheckPassed": true
+  },
+  "remainingReviewQueue": [
+    {
+      "contentId": "curated-funmom-learning-park",
+      "priority": "medium",
+      "reason": "Import exact worksheet article rows, audience or difficulty, and reuse-rights evidence before re-enabling execution."
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 학습자료·가전관리 최신성 리뷰</title>
+  <style>
+    :root { color-scheme: light; --ink:#171717; --muted:#66635d; --line:#dedbd4; --paper:#fff; --bg:#f6f5f1; --blue:#3654ff; --amber:#9a6300; --green:#176d5d; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,"Noto Sans KR",sans-serif; line-height:1.6; }
+    main { width:min(1120px,calc(100% - 32px)); margin:32px auto 72px; }
+    header { border-top:5px solid var(--blue); background:var(--paper); padding:28px; }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { font-size:clamp(26px,4vw,42px); line-height:1.18; }
+    h2 { margin:0 0 14px; font-size:24px; }
+    h3 { margin-bottom:8px; font-size:18px; }
+    .eyebrow { color:var(--blue); font-size:13px; font-weight:700; }
+    .lead { max-width:780px; color:var(--muted); font-size:17px; }
+    .summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:22px; }
+    .metric { border:1px solid var(--line); background:#fafafa; padding:14px; }
+    .metric strong { display:block; font-size:26px; }
+    section { margin-top:22px; background:var(--paper); padding:24px; }
+    .decision { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .status { display:inline-block; margin-bottom:10px; padding:4px 8px; border:1px solid currentColor; font-size:12px; font-weight:700; }
+    .hold { color:var(--amber); }
+    .keep { color:var(--green); }
+    ul { margin:0; padding-left:20px; }
+    a { color:var(--blue); }
+    .shots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    figure { margin:0; border-top:1px solid var(--line); padding-top:14px; }
+    figure img { display:block; width:100%; max-height:760px; object-fit:contain; object-position:top; background:#f9f9f7; border:1px solid var(--line); }
+    figcaption { margin-top:8px; color:var(--muted); font-size:13px; }
+    .mobile img { max-width:390px; margin-inline:auto; }
+    code { background:#f2f1ed; padding:2px 5px; }
+    @media (max-width:760px) { main { width:min(100% - 20px,560px); margin-top:10px; } header,section { padding:18px; } .summary,.decision,.shots { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">CURRENT SOURCE CHECK · 2026-07-12</p>
+    <h1>열리는 페이지와 실행 가능한 콘텐츠를 구분했습니다</h1>
+    <p class="lead">펀맘은 broad category collection으로 보류하고, 삼성 천장형 1way 필터 안내는 현재 공식 범위 안에서 direct utility로 유지했습니다.</p>
+    <div class="summary">
+      <div class="metric"><strong>0</strong><span>펀맘 공개 주간 실행 row</span></div>
+      <div class="metric"><strong>1</strong><span>검증된 에어컨 반복 규칙</span></div>
+      <div class="metric"><strong>0</strong><span>공개 sourceTrace 노출</span></div>
+    </div>
+  </header>
+
+  <section>
+    <h2>판정</h2>
+    <div class="decision">
+      <article>
+        <span class="status hold">SOURCE ROW HOLD</span>
+        <h3>펀맘 주간 출력 루틴</h3>
+        <p>사이트는 접근 가능하지만 최신 확인 게시물이 2021년이고, 카테고리 모음은 월~토 일정·10분 기준·아이별 난이도를 정의하지 않습니다.</p>
+        <ul>
+          <li>새 저장·내보내기·URL hit 중지</li>
+          <li>직접 route와 원문 링크 유지</li>
+          <li>기존 저장 기록 유지, 비삭제 경고 제공</li>
+        </ul>
+        <p><a href="https://funmom.tistory.com/">현재 펀맘 원문</a></p>
+      </article>
+      <article>
+        <span class="status keep">VERIFIED DIRECT UTILITY</span>
+        <h3>삼성 천장형 에어컨 1way 필터</h3>
+        <p>공식 안내는 약 2주 또는 필터 알림 시 청소를 지지합니다. 다만 모델별 방법이 다르므로 1way 모델·사용설명서 확인을 첫 체크로 고정했습니다.</p>
+        <ul>
+          <li><code>FREQ=WEEKLY;INTERVAL=2</code> 유지</li>
+          <li>모델 확인 첫 체크, risk medium</li>
+          <li>direct-only/noindex와 save/export 유지</li>
+        </ul>
+        <p><a href="https://www.samsungsvc.co.kr/solution/28524">현재 삼성 공식 원문</a></p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>펀맘 사용자 경계</h2>
+    <div class="shots">
+      <figure class="mobile"><img src="screenshots/01-funmom-review-hold-mobile.png" alt="펀맘 실행 항목 준비 중 모바일 화면"><figcaption>390px 직접 route: 저장·내보내기·주간 row 없음</figcaption></figure>
+      <figure><img src="screenshots/02-funmom-review-hold-wide.png" alt="펀맘 실행 항목 준비 중 와이드 화면"><figcaption>1024px: 동일한 source-row hold, overflow 없음</figcaption></figure>
+      <figure class="mobile"><img src="screenshots/03-funmom-url-first-blocked-mobile.png" alt="펀맘 URL-first 자료 확인 필요 화면"><figcaption>URL-first: creator 자료를 `공식 원문`으로 부르지 않음</figcaption></figure>
+      <figure class="mobile"><img src="screenshots/04-funmom-existing-save-warning-mobile.png" alt="기존 펀맘 저장 기록의 원문 자료 확인 경고"><figcaption>기존 저장본: 자동 교체·삭제 없이 source-row 경고</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>에어컨 모델 적용 범위</h2>
+    <div class="shots">
+      <figure class="mobile"><img src="screenshots/05-aircon-direct-mobile.png" alt="천장형 에어컨 1way 필터 청소 모바일 화면"><figcaption>390px: 1way 모델 확인이 첫 정보</figcaption></figure>
+      <figure class="mobile"><img src="screenshots/06-aircon-details-mobile.png" alt="천장형 에어컨 1way 필터 청소 상세 체크"><figcaption>7개 체크: 모델, 전원, 분리, 청소, 건조, 장착, 리셋</figcaption></figure>
+      <figure><img src="screenshots/07-aircon-direct-wide.png" alt="천장형 에어컨 1way 필터 청소 와이드 화면"><figcaption>1024px: direct utility의 입력·첫 행동·상세 위계 유지</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>다음 조건</h2>
+    <p>펀맘은 exact worksheet article URL, 대상 연령·난이도, 링크·출력물 권리 경계를 확보하기 전에는 다시 실행 가능 상태로 올리지 않습니다. 에어컨은 다른 제조사나 2way·4way·벽걸이·스탠드형으로 범위를 넓히지 않습니다.</p>
+  </section>
+</main>
+</body>
+</html>
