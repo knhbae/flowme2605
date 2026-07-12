@@ -1,0 +1,100 @@
+{
+  "package": "2026-07-13-flowme-value-chain-execution-redesign-evidence",
+  "productFraming": {
+    "fullValueChainOpen": true,
+    "launchPriority": "user-execution-first",
+    "creatorSupplyPreserved": true,
+    "canonicalFlowPreserved": true,
+    "personalOverlayPreserved": true,
+    "calendarAndExportProjectionPreserved": true,
+    "reviewUpdateOutcomeLoopImplemented": false,
+    "reviewUpdateOutcomeLoopReserved": true
+  },
+  "screenshots": {
+    "count": 18,
+    "capturedByScript": 15,
+    "reusedPublicArchetypeCaptures": 3,
+    "mobileWidth": 390,
+    "wideWidth": 1024,
+    "horizontalOverflowCount": 0
+  },
+  "home": {
+    "urlMemoEntryVisible": true,
+    "representativeFlowSourceSignalVisible": true,
+    "primaryEntryDestination": "/flows"
+  },
+  "urlFirst": {
+    "lookupResultFocused": true,
+    "catalogHiddenAfterLookupByDefault": true,
+    "catalogSecondaryToggleVisible": true,
+    "liveAiImplied": false,
+    "visibleMarkdownHitCount": 0,
+    "candidateUserCopyInternalHitCount": 0
+  },
+  "canonicalFlowMap": {
+    "heroVisualStructure": "unframed",
+    "executionOutlineVisible": true,
+    "movingExecutionStepRowCount": 5,
+    "mobileStickySaveVisible": true,
+    "sourceAndDetailPreserved": true
+  },
+  "myFlow": {
+    "surfaceRole": "task-first",
+    "taskCompleteControlPattern": "left-checkbox",
+    "openActionPattern": "secondary-detail",
+    "wideExecutionLane": "single-constrained-column",
+    "wideSidebarMinimumViewport": 1280,
+    "horizontalOverflowCount": 0
+  },
+  "calendar": {
+    "surfaceRole": "date-first",
+    "monthLayout": "month-overview",
+    "selectedDayLayout": "selected-day-execution",
+    "selectedDayGroupDensity": "compact",
+    "sameDateFlowIdentityPreserved": true,
+    "horizontalOverflowCount": 0
+  },
+  "publicFlow": {
+    "flowLevelSavePrimary": true,
+    "flowLevelExportSecondary": true,
+    "preSaveCheckboxPolicy": "preview-selection",
+    "postSaveCompletionPolicy": "task-checkbox",
+    "visualArchetypesIncluded": [
+      "timeline",
+      "checklist",
+      "routine"
+    ]
+  },
+  "creator": {
+    "metricPolicy": "inventory-not-outcomes",
+    "visibleSeedOutcomeMetricLabelCount": 0,
+    "inventoryMetrics": [
+      "content-count",
+      "verified-source-count",
+      "topic-count"
+    ],
+    "creatorProfileStillAuxiliary": true,
+    "studioStillAuxiliary": true
+  },
+  "verification": {
+    "typescriptNoEmit": "passed",
+    "targetedScenarioCount": 9,
+    "targetedScenarioPassed": 9,
+    "coreRegressionScenarioCount": 55,
+    "coreRegressionPassed": 55,
+    "flowMvpIntegrationScenarioCount": 191,
+    "flowMvpIntegrationFullRunPassed": 190,
+    "flowMvpIntegrationFinalScenarioPassedAfterAssertionRefresh": true,
+    "flowMvpIntegrationEffectivePassed": 191,
+    "unitTests": "passed (437/437)",
+    "docsCheck": "passed",
+    "productionBuild": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "remainingRisks": [
+    "No observed-user review or update-request loop yet",
+    "No real creator pilot outcome data yet",
+    "Studio can be empty in a clean browser session",
+    "External-calendar completion cannot be inferred as FlowMe completion"
+  ]
+}

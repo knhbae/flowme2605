@@ -1,0 +1,237 @@
+{
+  "generatedAt": "2026-07-12T21:23:09.397Z",
+  "baseUrl": "http://127.0.0.1:3110",
+  "captures": [
+    {
+      "name": "01-home-mobile.png",
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "",
+      "horizontalOverflow": false,
+      "bodyTextLength": 312,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "02-home-wide.png",
+      "route": "/",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "title": "",
+      "horizontalOverflow": false,
+      "bodyTextLength": 315,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "03-flows-default-mobile.png",
+      "route": "/flows",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "",
+      "horizontalOverflow": false,
+      "bodyTextLength": 729,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "04-flows-result-mobile.png",
+      "route": "/flows",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "",
+      "horizontalOverflow": false,
+      "bodyTextLength": 387,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "05-flow-map-moving-mobile.png",
+      "route": "/flow-maps/moving-d30",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "원룸 이사 D-30 일정 | FlowMe",
+      "horizontalOverflow": false,
+      "bodyTextLength": 772,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "06-flow-map-moving-wide.png",
+      "route": "/flow-maps/moving-d30",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "title": "원룸 이사 D-30 일정 | FlowMe",
+      "horizontalOverflow": false,
+      "bodyTextLength": 768,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "07-my-today-mobile.png",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "내 Flow",
+      "horizontalOverflow": false,
+      "bodyTextLength": 485,
+      "surfaceRole": "task-first",
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "08-my-today-wide.png",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "title": "내 Flow",
+      "horizontalOverflow": false,
+      "bodyTextLength": 780,
+      "surfaceRole": "task-first",
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "09-my-all-mobile.png",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "내 Flow",
+      "horizontalOverflow": false,
+      "bodyTextLength": 429,
+      "surfaceRole": "task-first",
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "10-my-all-wide.png",
+      "route": "/my?demo=ux12",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "title": "내 Flow",
+      "horizontalOverflow": false,
+      "bodyTextLength": 697,
+      "surfaceRole": "task-first",
+      "calendarLayouts": [],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "11-calendar-mobile.png",
+      "route": "/calendar?demo=ux12",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "캘린더",
+      "horizontalOverflow": false,
+      "bodyTextLength": 530,
+      "surfaceRole": "date-first",
+      "calendarLayouts": [
+        "month-overview",
+        "selected-day-execution"
+      ],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "12-calendar-wide.png",
+      "route": "/calendar?demo=ux12",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "title": "캘린더",
+      "horizontalOverflow": false,
+      "bodyTextLength": 924,
+      "surfaceRole": "date-first",
+      "calendarLayouts": [
+        "month-overview",
+        "selected-day-execution"
+      ],
+      "creatorMetricPolicy": null,
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "13-creator-profile-mobile.png",
+      "route": "/u/flow-curation-team",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "FLOW 큐레이션팀 | FlowMe",
+      "horizontalOverflow": false,
+      "bodyTextLength": 1716,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": "inventory-not-outcomes",
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "14-creator-profile-wide.png",
+      "route": "/u/flow-curation-team",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "title": "FLOW 큐레이션팀 | FlowMe",
+      "horizontalOverflow": false,
+      "bodyTextLength": 1716,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": "inventory-not-outcomes",
+      "visibleOutcomeMetricLabelCount": 0
+    },
+    {
+      "name": "15-studio-empty-mobile.png",
+      "route": "/u/my-flow-studio",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "나의 스튜디오 | FlowMe",
+      "horizontalOverflow": false,
+      "bodyTextLength": 240,
+      "surfaceRole": null,
+      "calendarLayouts": [],
+      "creatorMetricPolicy": "inventory-not-outcomes",
+      "visibleOutcomeMetricLabelCount": 0
+    }
+  ]
+}
