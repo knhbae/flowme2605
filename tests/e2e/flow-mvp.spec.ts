@@ -3858,26 +3858,94 @@ test('P19 task completion controls use one checkbox pattern in My Flow and Calen
   await expect(selectedDateGroup.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 });
 
-test('medical review-hold Flow Maps keep official source access without new save or stale schedule rows', async ({ page }) => {
+test('review-hold Flow Maps keep current official source access without new save or stale schedule rows', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_TAX_ADMIN_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
   const cases = [
     { mapId: 'baby-health-schedule', title: '영유아 검진·접종 일정' },
     { mapId: 'curated-child-vaccination-schedule', title: '아이 예방접종 일정표' },
+    {
+      mapId: 'year-end-tax-submit',
+      title: '연말정산 간소화자료 온라인 제출',
+      sourceHref: 'https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7706&mi=6646',
+    },
   ];
 
   for (const flowCase of cases) {
+    if (flowCase.mapId === 'year-end-tax-submit') await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/flow-maps/${flowCase.mapId}`);
 
     const publicMap = page.getByTestId('flow-map-public');
     const hold = page.getByTestId('flow-map-review-hold');
     await expect(publicMap.getByRole('heading', { name: flowCase.title })).toBeVisible();
-    await expect(hold).toContainText('최신 일정 확인 필요');
+    await expect(hold).toContainText('최신 공식 내용 확인 필요');
     await expect(hold).toContainText('지금은 이 페이지에서 저장하거나 파일로 받지 않습니다');
-    await expect(hold.getByRole('link', { name: '최신 공식 일정 확인' })).toHaveAttribute('target', '_blank');
+    const sourceLink = hold.getByRole('link', { name: '최신 공식 내용 확인' });
+    await expect(sourceLink).toHaveAttribute('target', '_blank');
+    if (flowCase.sourceHref) await expect(sourceLink).toHaveAttribute('href', flowCase.sourceHref);
     await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
     await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
     await expect(page.getByTestId('flow-map-public-step-items')).toHaveCount(0);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    if (evidenceDir && flowCase.mapId === 'year-end-tax-submit') {
+      await page.screenshot({ path: `${evidenceDir}/03-tax-review-hold-mobile.png`, fullPage: true });
+      await page.setViewportSize({ width: 1024, height: 900 });
+      await page.screenshot({ path: `${evidenceDir}/04-tax-review-hold-wide.png`, fullPage: true });
+    }
   }
+});
+
+test('postal address transfer keeps only the official next-day check and defers variable dates to the service', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_TAX_ADMIN_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/postal-address-transfer');
+
+  const publicMap = page.getByTestId('flow-map-public');
+  await expect(publicMap.getByRole('heading', { name: '주거이전 우편물 전송 확인', level: 1 })).toBeVisible();
+  await expect(publicMap).toContainText('1개 할 일');
+  await expect(publicMap).toContainText('주거이전서비스 신청·결제 상태 확인');
+  await expect(publicMap).toContainText('신청 상태와 결제 필요 여부를 확인하도록 한 번만 알려드려요');
+  await expect(publicMap).not.toContainText('D+3');
+  await expect(publicMap).not.toContainText('D+7');
+  await expect(publicMap).not.toContainText('서비스 시작일과 종료일 메모');
+  await expect(page.getByTestId('flow-map-save-all')).toBeHidden();
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/01-postal-minimal-mobile.png` });
+  }
+  const detailItems = publicMap.getByTestId('flow-map-public-step-items');
+  await detailItems.getByText('체크 4개 열기').click();
+  if (evidenceDir) {
+    await detailItems.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${evidenceDir}/07-postal-details-mobile.png` });
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+    await expect(page.getByTestId('flow-map-save-all')).toBeVisible();
+    await page.screenshot({ path: `${evidenceDir}/02-postal-minimal-wide.png`, fullPage: true });
+  }
+});
+
+test('an existing saved year-end tax map remains visible with a non-dismissible official-source warning', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_TAX_ADMIN_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my?demo=source-backed&savedMap=year-end-tax-submit');
+
+  await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('연말정산 간소화자료 온라인 제출');
+  await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+  await page.getByTestId('my-flow-view-flow').click();
+  const sourceReview = page.getByTestId('my-flow-map-update-review');
+  await expect(sourceReview).toContainText('실행 전 최신 공식 내용을 확인해 주세요');
+  await expect(sourceReview).toContainText('저장한 내용은 자동으로 바꾸지 않습니다');
+  await expect(sourceReview.getByTestId('my-flow-map-update-dismiss')).toHaveCount(0);
+  await expect(sourceReview.getByRole('link', { name: '공식 내용 확인' })).toHaveAttribute(
+    'href',
+    '/flow-maps/year-end-tax-submit',
+  );
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/06-tax-existing-save-warning-mobile.png`, fullPage: true });
 });
 
 test('an existing saved baby health map remains visible after public execution is held', async ({ page }) => {
@@ -3922,7 +3990,7 @@ test('my flow keeps a non-dismissible official-source warning for a held saved m
   await expect(updateReview).toContainText('실행 전 최신 공식 내용을 확인해 주세요');
   await expect(updateReview).toContainText('영유아 검진·접종 일정');
   await expect(updateReview).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(updateReview).toContainText('최신 일정 확인 필요');
+  await expect(updateReview).toContainText('최신 공식 내용 확인 필요');
   await expect(updateReview).toContainText('저장한 내용은 자동으로 바꾸지 않습니다');
   await expect(updateReview.getByTestId('my-flow-map-update-toggle')).toHaveCount(0);
   await expect(updateReview.getByTestId('my-flow-map-update-apply')).toHaveCount(0);

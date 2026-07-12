@@ -187,6 +187,26 @@ test('official baby health source URL resolves to a non-executable review hold',
   assert.equal(result.aiGeneration.enabled, false);
 });
 
+test('dated and current NTS year-end tax URLs resolve to the same non-executable review hold', () => {
+  const urls = [
+    'https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438',
+    'https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7706&mi=6646',
+  ];
+
+  for (const url of urls) {
+    const result = lookupUrlFirstP0Input(`${url}&utm_source=stale-review`);
+    assert.equal(result.status, 'needs_review');
+    assert.equal(result.flowMapId, 'year-end-tax-submit');
+    assert.equal(result.routeHref, '/flow-maps/year-end-tax-submit');
+    assert.equal(result.canSaveToMyFlow, false);
+    assert.equal(result.canExport, false);
+    assert.equal(result.saveMode, 'blocked');
+    assert.deepEqual(result.preview.calendar, []);
+    assert.deepEqual(result.preview.markdown, []);
+    assert.equal(result.aiGeneration.enabled, false);
+  }
+});
+
 test('wedding source URL resolves to the curated checklist family representative only', () => {
   const result = lookupUrlFirstP0Input(
     'https://blog.naver.com/wilklove/223518896995?utm_source=duplicate',

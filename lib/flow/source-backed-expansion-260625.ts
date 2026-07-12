@@ -2,10 +2,12 @@ import type { FlowBundle, FlowItem, FlowItemDetail } from './types';
 import type { SourceBackedMyFlowMap } from './source-backed-my-flow';
 
 const now = '2026-06-25T00:00:00.000Z';
+const reviewedNow = '2026-07-12T00:00:00.000Z';
 
 const postalAddressSourceUrl = 'https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal';
 const smishingSourceUrl = 'https://www.kisa.or.kr/1020601';
 const yearEndTaxSourceUrl = 'https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438';
+const yearEndTaxReviewUrl = 'https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7706&mi=6646';
 const airconFilterSourceUrl = 'https://www.samsungsvc.co.kr/solution/28524';
 const picnicFoodSourceUrl =
   'https://www.mfds.go.kr/brd/m_827/view.do?company_cd=&company_nm=&itm_seq_1=0&multi_itm_seq=0&page=2&seq=3608&srchFr=&srchTo=&srchTp=&srchWord=';
@@ -82,18 +84,18 @@ export const additionalSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
   {
     id: 'postal-address-transfer',
     userLabel: '우편물 이전',
-    title: '주거이전 우편물 전송 일정',
-    version: '2026-06-25.1',
-    updatedAt: now,
-    updatePolicy: 'auto_patch_when_safe',
+    title: '주거이전 우편물 전송 확인',
+    version: '2026-07-12.1',
+    updatedAt: reviewedNow,
+    updatePolicy: 'review_before_apply',
     summary:
-      '전입신고 뒤 우편물이 이전 주소로 가는 일을 줄이기 위해 인터넷우체국의 주거이전 우편물 전송서비스 확인, 결제, 시작일 메모를 한 흐름으로 저장합니다.',
-    sourceTitle: '인터넷우체국 주거이전 우편물 전송서비스',
+      '전입신고 다음날 인터넷우체국에서 신청 상태와 결제 필요 여부를 확인하고, 화면에 표시된 다음 날짜만 메모합니다.',
+    sourceTitle: '인터넷우체국 주거이전서비스 신청·결제·취소',
     sourceUrl: postalAddressSourceUrl,
-    artifacts: ['전입신고 다음날 확인 일정', '결제/신청 체크', '서비스 시작일 메모'],
+    artifacts: ['전입신고 다음날 확인', '신청·결제 상태 메모'],
     setupInput: {
       label: '전입신고일',
-      hint: '전입신고 다음날부터 우체국 조회/결제 여부를 확인하는 일정으로 저장합니다.',
+      hint: '전입신고 다음날 신청 상태와 결제 필요 여부를 확인하도록 한 번만 알려드려요.',
       defaultValue: '2026-07-01',
     },
     flowSlugs: ['source-backed-postal-address-transfer'],
@@ -116,19 +118,16 @@ export const additionalSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     id: 'year-end-tax-submit',
     userLabel: '연말정산 제출',
     title: '연말정산 간소화자료 온라인 제출',
-    version: '2026-06-25.1',
-    updatedAt: now,
+    version: '2026-07-12.hold.1',
+    updatedAt: reviewedNow,
     updatePolicy: 'review_before_apply',
     summary:
-      '회사 제출 마감일 전에 홈택스에서 간소화자료를 확인하고, 근무월 선택과 간편제출까지 진행했는지만 저장합니다. 세액 판단은 FlowMe가 하지 않습니다.',
-    sourceTitle: '국세청 편리한 연말정산 간편제출 이용방법',
+      '연도별 국세청 안내와 회사 제출 방식을 다시 확인하기 전까지 새 일정 저장과 파일 받기를 보류합니다.',
+    sourceTitle: '국세청 편리한 연말정산 이용방법',
     sourceUrl: yearEndTaxSourceUrl,
-    artifacts: ['마감 전 확인 일정', '간편제출 체크', '근무월/근무처 메모'],
-    setupInput: {
-      label: '회사 제출 마감일',
-      hint: '회사에서 안내한 제출 마감일을 기준으로 D-3, D-1, D-Day 확인 일정을 만듭니다.',
-      defaultValue: '2026-01-25',
-    },
+    reviewUrl: yearEndTaxReviewUrl,
+    artifacts: ['연도별 공식 안내 확인', '회사 제출 방식 확인'],
+    sourceUrlCount: 2,
     flowSlugs: ['source-backed-year-end-tax-submit'],
   },
   {
@@ -187,13 +186,13 @@ export const additionalSourceBackedMyFlowBundles: FlowBundle[] = [
       source_url: postalAddressSourceUrl,
       source_status: 'real',
       source_precision: 'exact',
-      source_checked_at: '2026-06-25',
+      source_checked_at: '2026-07-12',
       primary_destination: 'hybrid',
       setup_anchor_label: '전입신고일',
-      setup_anchor_hint: '전입신고일을 기준으로 다음날 조회와 7일 이내 결제 확인을 배치합니다.',
-      risk_level: 'low',
+      setup_anchor_hint: '전입신고 다음날 신청 상태와 결제 필요 여부를 한 번 확인합니다.',
+      risk_level: 'medium',
       created_at: now,
-      updated_at: now,
+      updated_at: reviewedNow,
       tags: ['source-backed', 'flow-map:postal-address-transfer', 'timeline', 'official'],
     },
     sections: [{ id: 'postal-after-move', flow_id: 'flow-source-backed-postal-address-transfer', title: '전입신고 후 확인', order: 0 }],
@@ -202,46 +201,19 @@ export const additionalSourceBackedMyFlowBundles: FlowBundle[] = [
         'flow-source-backed-postal-address-transfer',
         'postal-after-move',
         'postal-next-day-check',
-        '우편물 전송 신청·결제 조회',
-        '전입신고 다음날 우체국에서 접수 또는 결제 대상인지 확인합니다.',
+        '주거이전서비스 신청·결제 상태 확인',
+        '전입신고 다음날 우체국에서 무료·유료 신청 상태와 다음 할 일을 확인합니다.',
         0,
-        { type: 'calendar', day_offset: 1, duration_days: 1, source_type: 'official' },
-      ),
-      item(
-        'flow-source-backed-postal-address-transfer',
-        'postal-after-move',
-        'postal-payment-deadline',
-        '수수료 결제 필요 여부 확인',
-        '유료 대상이면 안내문자 접수번호와 결제 기한을 메모합니다.',
-        1,
-        { type: 'calendar', day_offset: 3, duration_days: 1, source_type: 'official' },
-      ),
-      item(
-        'flow-source-backed-postal-address-transfer',
-        'postal-after-move',
-        'postal-service-start',
-        '서비스 시작일과 종료일 메모',
-        '서비스 시작일, 기간, 연장 필요 여부만 짧게 남깁니다.',
-        2,
-        { type: 'calendar', day_offset: 7, duration_days: 1, source_type: 'official' },
+        { type: 'calendar', day_offset: 1, duration_days: 1, source_type: 'official', risk_level: 'medium' },
       ),
     ],
     itemDetails: [
-      detail('postal-next-day-check', '전입신고 시 신청한 우편물 전송서비스는 익일부터 우체국 조회/결제 확인이 필요할 수 있습니다.', [
-        '인터넷우체국 주거이전서비스를 열기',
-        '전입신고 때 신청한 무료/유료 전송서비스가 있는지 조회',
-        '미신청이면 개별 신청 가능 여부와 본인인증 조건 확인',
-      ], '신청 또는 조회 결과와 다음 해야 할 일이 메모에 남아 있습니다.', postalAddressSourceUrl),
-      detail('postal-payment-deadline', '타 권역 이사 등 유료 대상이면 결제하지 않을 경우 서비스가 자동 취소될 수 있습니다.', [
-        '안내문자 접수번호가 있으면 결제 화면에서 조회',
-        '수수료와 결제 기한을 메모',
-        '결제하지 않을 항목은 취소 또는 미진행으로 표시',
-      ], '결제 필요 여부, 접수번호, 결제 상태가 메모에 남아 있습니다.', postalAddressSourceUrl),
-      detail('postal-service-start', '우편물이 언제부터 새 주소로 오는지 알아야 빠진 우편을 별도로 챙길 수 있습니다.', [
-        '서비스 시작일과 종료 예정일 확인',
-        '연장이 필요하면 종료 3일 전 다시 볼 메모 남기기',
-        '법원 송달 등 별도 신고가 필요한 우편은 따로 처리 메모',
-      ], '서비스 시작/종료일과 연장 필요 여부가 정리되어 있습니다.', postalAddressSourceUrl),
+      detail('postal-next-day-check', '전입신고 때 함께 신청한 서비스는 익일부터 우체국에서 조회하거나 결제할 수 있습니다.', [
+        '인터넷우체국에서 무료·유료 신청 상태 조회',
+        '유료 대상이면 공식 화면의 결제 기한과 결제 상태 확인',
+        '미신청 상태라면 본인인증 후 개별 신청 가능 여부 확인',
+        '서비스 시작일·종료일은 공식 화면에 표시된 날짜만 메모',
+      ], '신청 상태, 결제 필요 여부, 공식 화면에서 확인한 다음 날짜가 메모에 남아 있습니다.', postalAddressSourceUrl, '결제와 서비스 시작은 토·공휴일을 제외해 계산될 수 있습니다. FlowMe가 날짜를 임의로 계산하지 않으며, 법원 송달장소는 별도 신고가 필요합니다.'),
     ],
   },
   {

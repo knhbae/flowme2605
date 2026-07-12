@@ -209,7 +209,7 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
   const gate = executionHeld
     ? {
         title: '최신 공식 내용 확인이 필요해요',
-        reason: '일정이 달라질 수 있어 현재 내용은 새 실행 Flow로 저장하지 않습니다.',
+        reason: '공식 내용이 달라질 수 있어 현재 내용은 새 실행 Flow로 저장하지 않습니다.',
         requiredAction: '공식 원문에서 최신 내용을 확인해 주세요.',
       }
     : {
@@ -260,7 +260,12 @@ function buildSourceBackedLookupEntries(): Array<[string, UrlFirstLookupTemplate
   for (const map of maps) {
     const template = buildSourceBackedLookupTemplate(map);
     if (!template) continue;
-    entries.push([canonicalizeFlowSourceUrl(map.sourceUrl), template]);
+    const sourceUrls = Array.from(
+      new Set([map.sourceUrl, map.reviewUrl].filter((sourceUrl): sourceUrl is string => Boolean(sourceUrl))),
+    );
+    for (const sourceUrl of sourceUrls) {
+      entries.push([canonicalizeFlowSourceUrl(sourceUrl), template]);
+    }
   }
 
   return entries;

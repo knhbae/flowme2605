@@ -96,6 +96,7 @@ export type SourceBackedMyFlowMap = {
   summary: string;
   sourceTitle: string;
   sourceUrl: string;
+  reviewUrl?: string;
   artifacts: string[];
   setupInput?: {
     label: string;
@@ -450,8 +451,8 @@ export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlo
     homepageEligible: false,
     directRouteEnabled: true,
     productScore: 4,
-    reason: 'Useful utility, but too narrow to prove Flow Map value as a representative example.',
-    nextAction: 'Keep as direct-route utility research only.',
+    reason: 'The current official page supports a next-day status check, but payment and service-start dates depend on business-day rules.',
+    nextAction: 'Keep one verified next-day check as a direct-only utility and leave variable dates to the official service result.',
   },
   'smishing-response': {
     mapId: 'smishing-response',
@@ -467,9 +468,10 @@ export const sourceBackedFlowMapQualityDecisions: Record<string, SourceBackedFlo
     status: 'park',
     homepageEligible: false,
     directRouteEnabled: true,
+    publicExecutionEnabled: false,
     productScore: 4,
-    reason: 'Potential deadline checklist, but source and user job need stronger specificity and tax-sensitive boundaries.',
-    nextAction: 'Re-source and rewrite before any representative use.',
+    reason: 'The exact source is a 2025 video, while employer deadlines vary and the existing D-3/D-1 schedule is not an NTS deadline.',
+    nextAction: 'Re-source against the current tax year and rebuild without inferred dates before enabling save or export.',
   },
   'aircon-filter-cleaning': {
     mapId: 'aircon-filter-cleaning',

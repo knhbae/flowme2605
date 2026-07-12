@@ -688,9 +688,9 @@ test('source-backed expansion maps remain direct-route experiments pending repre
 
 test('source-backed expansion direct-route experiments preserve technical destination and input shape', () => {
   const expectations = [
-    ['postal-address-transfer', 'source-backed-postal-address-transfer', '전입신고일', 'hybrid', 3],
+    ['postal-address-transfer', 'source-backed-postal-address-transfer', '전입신고일', 'hybrid', 1],
     ['smishing-response', 'source-backed-smishing-response', undefined, 'internal_check', 3],
-    ['year-end-tax-submit', 'source-backed-year-end-tax-submit', '회사 제출 마감일', 'hybrid', 3],
+    ['year-end-tax-submit', 'source-backed-year-end-tax-submit', undefined, 'hybrid', 3],
     ['aircon-filter-cleaning', 'source-backed-aircon-filter-cleaning', '다음 청소일', 'calendar', 1],
     ['picnic-food-safety', 'source-backed-picnic-food-safety', '나들이일', 'hybrid', 3],
   ] as const;
@@ -734,17 +734,19 @@ test('postal address transfer sourceTrace repair keeps official service rows sou
   assert.ok(lookupableIds.includes('postal-address-transfer'));
 
   const rows = buildSourceBackedMyFlowRows(bundleBySlug('source-backed-postal-address-transfer'));
-  assert.equal(rows.length, 3);
+  assert.equal(rows.length, 1);
   assert.ok(rows.every((row) => row.mapId === 'postal-address-transfer'));
-  assert.ok(rows.every((row) => row.riskLevel === 'low'));
+  assert.ok(rows.every((row) => row.riskLevel === 'medium'));
   assert.ok(rows.every((row) => row.sourceUrl === 'https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal'));
+  assert.equal(rows[0]?.calendar.mode, 'anchor_offset');
+  assert.equal(rows[0]?.calendar.dayOffset, 1);
 
   const detailTrace = bundleBySlug('source-backed-postal-address-transfer')
     .itemDetails.map((detail) => detail.why)
     .join('\n');
   assert.match(detailTrace, /sourceTrace: Korea Post address move service/);
   assert.match(detailTrace, /source row: postal-next-day-check/);
-  assert.match(detailTrace, /source row: postal-service-start/);
+  assert.doesNotMatch(detailTrace, /postal-payment-deadline|postal-service-start/);
   assert.doesNotMatch(detailTrace, /administrative advice|postal service advice|legal interpretation/i);
 });
 
@@ -762,7 +764,12 @@ test('year-end tax sourceTrace repair keeps official NTS rows source-traced with
   );
   assert.equal(publishPackage.map.id, 'year-end-tax-submit');
   assert.equal(getSourceBackedFlowMapQualityDecision('year-end-tax-submit').directRouteEnabled, true);
-  assert.ok(lookupableIds.includes('year-end-tax-submit'));
+  assert.equal(getSourceBackedFlowMapQualityDecision('year-end-tax-submit').publicExecutionEnabled, false);
+  assert.ok(!lookupableIds.includes('year-end-tax-submit'));
+  assert.equal(
+    publishPackage.map.reviewUrl,
+    'https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7706&mi=6646',
+  );
 
   const rows = buildSourceBackedMyFlowRows(bundleBySlug('source-backed-year-end-tax-submit'));
   assert.equal(rows.length, 3);

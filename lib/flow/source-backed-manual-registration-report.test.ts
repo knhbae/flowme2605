@@ -71,7 +71,7 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
     generatedAt: '2026-07-06T00:00:00.000+09:00',
   });
 
-  assert.equal(report.summary.qaPassCount, 13);
+  assert.equal(report.summary.qaPassCount, 12);
   assert.equal(report.summary.registrationHoldCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 0);
@@ -172,9 +172,9 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
 
   const taxPass = report.rows.find((row) => row.mapId === 'year-end-tax-submit');
   assert.ok(taxPass);
-  assert.equal(taxPass.lookupEligible, true);
+  assert.equal(taxPass.lookupEligible, false);
   assert.equal(taxPass.qualityStatus, 'park');
-  assert.equal(taxPass.status, 'qa_pass');
+  assert.equal(taxPass.status, 'lookup_blocked');
   assert.equal(taxPass.missingSourceTraceStepCount, 0);
   assert.deepEqual(taxPass.issueCodes, []);
 

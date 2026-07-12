@@ -3493,7 +3493,7 @@ function getMyFlowMapUpdateNotice(
   const affectedCount = Math.max(affectedFlowSlugs.length, snapshot.flowSlugs.length);
   const reasons = executionHeld
     ? [
-        '공식 일정이 최신인지 다시 확인 중입니다.',
+        '공식 원문과 현재 표시 내용이 맞는지 다시 확인 중입니다.',
         '저장한 기록은 유지되지만 실행 전 공식 원문을 확인해 주세요.',
         ...assessment.reasons.map(formatMyFlowMapUpdateReason),
       ]
@@ -3545,7 +3545,7 @@ function getMyFlowMapUpdateNotice(
     return {
       mapId: snapshot.mapId,
       title: snapshot.title,
-      label: '최신 일정 확인 필요',
+      label: '최신 공식 내용 확인 필요',
       tone: 'amber',
       status: 'review_before_apply',
       canApplyAutomatically: false,
@@ -8948,13 +8948,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <section data-testid="my-flow-map-update-review" className="rounded-lg border border-amber-200 bg-amber-50/70 p-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold text-amber-800">{allExecutionHeld ? '공식 일정 재확인' : '업데이트 확인'}</p>
+            <p className="text-xs font-semibold text-amber-800">{allExecutionHeld ? '공식 내용 재확인' : '업데이트 확인'}</p>
             <h4 className="text-base font-semibold text-amber-950">
               {allExecutionHeld ? '실행 전 최신 공식 내용을 확인해 주세요' : '저장한 콘텐츠에 다시 볼 내용이 있습니다'}
             </h4>
             <p className="mt-1 text-sm font-medium text-amber-900">
               {allExecutionHeld
-                ? '저장한 기록은 그대로 남지만, 일정이 달라질 수 있어 공식 원문 확인이 필요합니다.'
+                ? '저장한 기록은 그대로 남지만, 공식 내용이 달라질 수 있어 원문 확인이 필요합니다.'
                 : '기존 항목은 그대로 두고, 원문이나 일정 변경 가능성만 따로 확인합니다.'}
             </p>
           </div>

@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import { RUNTIME_ARCHIVED_FLOW_SLUGS } from '../../lib/flow/runtime-content-policy';
 import {
@@ -194,7 +195,9 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
   await expectUrlFirstExportModesAvoidTechnicalFormatLabels(result);
 });
 
-test('outdated medical schedule URLs stop at official-source review without save or draft bypass', async ({ page }) => {
+test('outdated schedule source URLs stop at official-source review without save or draft bypass', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_TAX_ADMIN_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
   await openFlowFinding(page);
   const cases = [
     {
@@ -204,6 +207,14 @@ test('outdated medical schedule URLs stop at official-source review without save
     {
       url: 'https://khms.or.kr/healthy_life/prevention/vaccination_child',
       routeHref: '/flow-maps/curated-child-vaccination-schedule',
+    },
+    {
+      url: 'https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438',
+      routeHref: '/flow-maps/year-end-tax-submit',
+    },
+    {
+      url: 'https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7706&mi=6646',
+      routeHref: '/flow-maps/year-end-tax-submit',
     },
   ];
 
@@ -217,6 +228,9 @@ test('outdated medical schedule URLs stop at official-source review without save
     await expect(result.getByTestId('flow-url-supply-request')).toHaveCount(0);
     await expect(result).not.toContainText('Markdown');
     await expectCleanUrlFirstUserSurface(result);
+    if (evidenceDir && flowCase.url.includes('cntntsView.do')) {
+      await page.screenshot({ path: `${evidenceDir}/05-tax-url-first-blocked-mobile.png`, fullPage: true });
+    }
   }
 });
 

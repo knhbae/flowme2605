@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-07-12T00:00:00+09:00",
+  "scope": "tax-and-administrative-source-freshness",
+  "officialSources": [
+    {
+      "contentId": "postal-address-transfer",
+      "url": "https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal",
+      "checkedAt": "2026-07-12",
+      "reachable": true,
+      "decision": "reshape_verified_minimum"
+    },
+    {
+      "contentId": "year-end-tax-submit-exact-source",
+      "url": "https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=6489&nttSn=1330438",
+      "sourceRegisteredAt": "2025-01-20",
+      "checkedAt": "2026-07-12",
+      "reachable": true,
+      "decision": "review_hold"
+    },
+    {
+      "contentId": "year-end-tax-submit-current-review",
+      "url": "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7706&mi=6646",
+      "checkedAt": "2026-07-12",
+      "reachable": true,
+      "decision": "official_review_destination"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "postal-minimal-mobile",
+      "route": "/flow-maps/postal-address-transfer",
+      "viewport": { "width": 390, "height": 844 },
+      "executionItemCount": 1,
+      "supportedAnchorOffsets": [1],
+      "unsupportedFixedOffsetCount": 0,
+      "saveControlVisible": true,
+      "horizontalOverflowCount": 0
+    },
+    {
+      "name": "postal-minimal-wide",
+      "route": "/flow-maps/postal-address-transfer",
+      "viewport": { "width": 1024, "height": 900 },
+      "executionItemCount": 1,
+      "horizontalOverflowCount": 0
+    },
+    {
+      "name": "tax-review-hold-mobile",
+      "route": "/flow-maps/year-end-tax-submit",
+      "viewport": { "width": 390, "height": 844 },
+      "reviewHoldVisible": true,
+      "publicStaleScheduleRowCount": 0,
+      "saveControlCount": 0,
+      "exportControlCount": 0,
+      "officialReviewUrl": "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7706&mi=6646"
+    },
+    {
+      "name": "tax-url-first-current-source",
+      "route": "/flows",
+      "viewport": { "width": 390, "height": 844 },
+      "lookupStatus": "needs_review",
+      "saveMode": "blocked",
+      "saveControlCount": 0,
+      "exportControlCount": 0,
+      "draftBypassCount": 0,
+      "internalCopyHitCount": 0
+    },
+    {
+      "name": "tax-existing-save-warning",
+      "route": "/my?demo=source-backed&savedMap=year-end-tax-submit",
+      "viewport": { "width": 390, "height": 844 },
+      "savedRecordVisible": true,
+      "officialSourceWarningCount": 1,
+      "warningDismissControlCount": 0,
+      "savedRecordAutomaticallyReplaced": false
+    }
+  ],
+  "summary": {
+    "postalExecutionItemCountBefore": 3,
+    "postalExecutionItemCountAfter": 1,
+    "postalInventedRelativeDateCountBefore": 2,
+    "postalInventedRelativeDateCountAfter": 0,
+    "taxInventedRelativeDateCountBefore": 3,
+    "taxPublicRelativeDateCountAfter": 0,
+    "taxPublicExecutionEnabled": false,
+    "taxLegacySourceLookupStatus": "needs_review",
+    "taxCurrentReviewUrlLookupStatus": "needs_review",
+    "taxUrlFirstSaveBypassCount": 0,
+    "taxUrlFirstExportBypassCount": 0,
+    "taxExistingSavedWarningCount": 1,
+    "taxExistingSavedWarningDismissCount": 0,
+    "normalRouteGuardrailHitCount": 0,
+    "urlFirstVisibleMarkdownHitCount": 0,
+    "candidateUserCopyInternalHitCount": 0,
+    "horizontalOverflowCount": 0,
+    "screenshotCount": 7
+  },
+  "validation": {
+    "unitTestPassed": 424,
+    "unitTestFailed": 0,
+    "flowMvpE2ePassed": 183,
+    "urlFirstPublicWorkbenchE2ePassed": 53,
+    "totalE2ePassed": 236,
+    "e2eFailed": 0,
+    "targetedEvidenceScenarioPassed": 4,
+    "docsCheckPassed": true,
+    "productionBuildPassed": true,
+    "diffCheckPassed": true
+  },
+  "remainingReviewQueue": [
+    {
+      "contentId": "curated-funmom-learning-park",
+      "priority": "medium",
+      "reason": "Verify that current learning rows remain inside the source scope."
+    },
+    {
+      "contentId": "aircon-filter-cleaning",
+      "priority": "low",
+      "reason": "Verify model applicability and the two-week repeat rule."
+    }
+  ]
+}

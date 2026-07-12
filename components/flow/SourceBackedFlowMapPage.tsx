@@ -59,25 +59,25 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
           data-testid="flow-map-review-hold"
           className="border-t-4 border-[#E2A62B] bg-white px-5 py-7 shadow-[0_18px_50px_rgba(31,35,48,0.07)] sm:px-8 sm:py-10"
         >
-          <p className="text-sm font-semibold text-[#8A5A00]">최신 일정 확인 필요</p>
+          <p className="text-sm font-semibold text-[#8A5A00]">최신 공식 내용 확인 필요</p>
           <h1 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
             {displayTitle}
           </h1>
           <p className="mt-4 max-w-2xl break-keep text-base font-semibold leading-7 text-slate-800">
-            공식 일정과 현재 표시 내용을 다시 확인하고 있어요.
+            공식 원문과 현재 표시 내용을 다시 확인하고 있어요.
           </p>
           <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-slate-600">
-            일정이 달라질 수 있어 지금은 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 공식 원문에서 최신 내용을 확인해 주세요.
+            공식 내용이 달라질 수 있어 지금은 이 페이지에서 저장하거나 파일로 받지 않습니다. 아래 원문에서 최신 내용을 확인해 주세요.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <a
               data-testid="flow-map-source-link"
               className="inline-flex min-h-11 items-center justify-center bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#2944DB]"
-              href={map.sourceUrl}
+              href={map.reviewUrl ?? map.sourceUrl}
               target="_blank"
               rel="noreferrer"
             >
-              최신 공식 일정 확인
+              최신 공식 내용 확인
             </a>
             <Link
               className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
