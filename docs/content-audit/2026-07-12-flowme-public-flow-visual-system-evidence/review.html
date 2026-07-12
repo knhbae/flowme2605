@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 공개 Flow 시각 시스템 리뷰</title>
+  <style>
+    :root { color-scheme: light; --ink:#18201c; --sub:#64706a; --line:#dce4df; --paper:#f4f7f5; --blue:#3654ff; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Arial,"Noto Sans KR",sans-serif; }
+    main { max-width:1240px; margin:0 auto; padding:32px 24px 64px; }
+    header { padding-bottom:24px; border-bottom:1px solid var(--line); }
+    h1 { margin:8px 0 12px; font-size:clamp(30px,4vw,50px); letter-spacing:0; }
+    h2 { margin:0 0 8px; font-size:21px; }
+    p { margin:0; color:var(--sub); line-height:1.7; }
+    .eyebrow { color:var(--blue); font-size:13px; font-weight:700; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; margin:24px 0 36px; border:1px solid var(--line); background:var(--line); }
+    .metrics div { background:#fff; padding:18px; }
+    .metrics strong { display:block; font-size:26px; }
+    .metrics span { display:block; margin-top:4px; color:var(--sub); font-size:13px; line-height:1.5; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+    article { min-width:0; border-top:1px solid var(--line); padding-top:16px; }
+    article.wide { grid-column:1 / -1; }
+    figure { margin:14px 0 0; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:auto; }
+    img { display:block; width:100%; height:auto; }
+    figure.mobile { max-width:390px; max-height:900px; overflow:auto; }
+    .split { display:grid; grid-template-columns:minmax(0,1fr) 390px; align-items:start; gap:20px; }
+    .open { margin-top:36px; padding:20px; border:1px solid #f0d8ae; background:#fff8e9; border-radius:8px; }
+    .links { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+    a { color:var(--blue); font-weight:700; }
+    @media (max-width:800px) {
+      main { padding:24px 16px 48px; }
+      .metrics, .grid, .split { grid-template-columns:1fr; }
+      article.wide { grid-column:auto; }
+      figure.mobile { max-width:none; max-height:720px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">2026-07-12 · PUBLIC FLOW VISUAL SYSTEM</p>
+    <h1>같은 실행 계약, 목적에 맞는 화면</h1>
+    <p>원본의 풍부한 맥락은 보존하고, 사용 순간에는 필요한 행동만 먼저 보여준다. 타임라인·점검·판단·루틴·기록형을 한 화면 복제품으로 만들지 않았다.</p>
+    <div class="links">
+      <a href="../2026-07-12-flowme-cross-category-ux-reference-audit/review.html">레퍼런스 감사</a>
+      <a href="../2026-07-12-flowme-user-creator-value-chain-ceo-ko.html">사용자·제작자 가치사슬</a>
+      <a href="./route-evidence.json">JSON evidence</a>
+    </div>
+  </header>
+
+  <section class="metrics">
+    <div><strong>5</strong><span>검증한 실행 표면 유형</span></div>
+    <div><strong>13</strong><span>390px / 1024px 화면 캡처</span></div>
+    <div><strong>1</strong><span>Flow 단위 export 진입점</span></div>
+    <div><strong>0</strong><span>대표 모바일 horizontal overflow</span></div>
+  </section>
+
+  <section class="grid">
+    <article class="wide">
+      <h2>Timeline · 이사 D-30</h2>
+      <p>wide는 일정 개요보다 실행 목록을 넓게, mobile은 주요 8개 할 일을 먼저 보여준다.</p>
+      <div class="split">
+        <figure><img src="./screenshots/01-moving-timeline-wide.png" alt="이사 타임라인 wide 화면"></figure>
+        <figure class="mobile"><img src="./screenshots/02-moving-timeline-mobile.png" alt="이사 타임라인 mobile 화면"></figure>
+      </div>
+    </article>
+
+    <article>
+      <h2>Checklist · 신차 인수</h2>
+      <p>보류 기준은 보이되 기록 폼은 접고, 핵심 체크를 먼저 보여준다.</p>
+      <figure><img src="./screenshots/04-new-car-checklist-wide.png" alt="신차 점검 wide 화면"></figure>
+    </article>
+    <article>
+      <h2>Decision · 중고차 구매</h2>
+      <p>점검 순서와 구매/보류/거절 판단을 먼저, 보류 메모는 필요할 때 연다.</p>
+      <figure class="mobile"><img src="./screenshots/12-used-car-decision-mobile.png" alt="중고차 판단 mobile 화면"></figure>
+    </article>
+
+    <article>
+      <h2>Routine · 영어 30일</h2>
+      <p>현재 세션과 이번 주를 먼저 보여주고 미래 주차와 지난 기록은 펼친다.</p>
+      <figure class="mobile"><img src="./screenshots/13-english-routine-mobile.png" alt="영어 루틴 mobile 화면"></figure>
+    </article>
+    <article>
+      <h2>Record · 냉장고 7일</h2>
+      <p>오늘 기록 행과 장보기 메모를 먼저, 전체 표는 필요할 때 펼친다.</p>
+      <figure><img src="./screenshots/06-fridge-record-wide.png" alt="냉장고 기록 wide 화면"></figure>
+    </article>
+  </section>
+
+  <section class="open">
+    <h2>아직 닫히지 않은 가치사슬</h2>
+    <p>리뷰, 수정 요청, 기준 Flow 업데이트 수락, 제작자 집계 신호는 아직 화면과 데이터 계약이 없다. 공개 Flow 시각 시스템 완료를 전체 서비스 완료로 해석하지 않는다.</p>
+  </section>
+</main>
+</body>
+</html>

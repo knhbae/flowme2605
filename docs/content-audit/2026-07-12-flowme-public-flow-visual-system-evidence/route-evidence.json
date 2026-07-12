@@ -1,0 +1,101 @@
+{
+  "generatedAt": "2026-07-12T23:40:00+09:00",
+  "package": "2026-07-12-flowme-public-flow-visual-system-evidence",
+  "summary": {
+    "capturedScreenshotCount": 13,
+    "capturedArchetypeCount": 5,
+    "publicFlowHeroFramedCardCount": 0,
+    "publicFlowOuterWorkbenchCardCount": 0,
+    "publicFlowCreatorAttributionAboveFold": true,
+    "publicFlowCreatorAttributionDestinationTier": "creator-profile",
+    "publicFlowExportSingleSecondaryEntryCount": 1,
+    "publicFlowInlineExportActionGroupCount": 0,
+    "publicFlowExportCollapsedByDefault": true,
+    "publicFlowPreviewAmbiguousFractionCount": 0,
+    "publicFlowTimelineMobileListFirst": true,
+    "publicFlowTimelineInitialVisibleItemCount": 8,
+    "publicFlowTimelineWideListCalendarWidthRatioMinimum": 2,
+    "publicFlowChecklistInitialVisibleItemCount": 8,
+    "publicFlowHoldMemoCollapsedByDefault": true,
+    "publicFlowRoutineCurrentWeekVisible": true,
+    "publicFlowRoutineFutureWeekCollapsedOnMobile": true,
+    "publicFlowRoutineLogCollapsedOnMobile": true,
+    "publicFlowMobileHorizontalOverflowCount": 0,
+    "publicShareSaveFirstRouteCount": 6,
+    "publicShareRegressionTestCount": 55,
+    "publicShareRegressionFailureCount": 0,
+    "myFlowCalendarVisualRedesignCompleted": false,
+    "creatorReviewUpdateLoopImplemented": false,
+    "creatorOutcomeFeedbackLoopImplemented": false
+  },
+  "valueChain": {
+    "sourceAttribution": "visible",
+    "creatorAttribution": "visible_above_fold",
+    "canonicalExecutionView": "preserved",
+    "privatePersonalCopy": "preserved",
+    "myFlowSave": "primary",
+    "externalExport": "secondary_collapsed",
+    "reviewAndRevisionRequest": "not_implemented",
+    "creatorUpdateAcceptance": "not_implemented",
+    "creatorOutcomeSignals": "not_implemented"
+  },
+  "scenarios": [
+    {
+      "name": "moving-timeline",
+      "route": "/f/moving-d30-basic",
+      "viewports": [390, 1024],
+      "surface": "timeline",
+      "screenshots": ["screenshots/01-moving-timeline-wide.png", "screenshots/02-moving-timeline-mobile.png"]
+    },
+    {
+      "name": "vehicle-timeline",
+      "route": "/f/vehicle-inspection-prep",
+      "viewports": [390, 1024],
+      "surface": "timeline",
+      "screenshots": ["screenshots/03-vehicle-timeline-wide.png", "screenshots/08-vehicle-timeline-mobile.png"]
+    },
+    {
+      "name": "new-car-checklist",
+      "route": "/f/new-car-delivery-check",
+      "viewports": [390, 1024],
+      "surface": "checklist",
+      "screenshots": ["screenshots/04-new-car-checklist-wide.png", "screenshots/09-new-car-checklist-mobile.png"]
+    },
+    {
+      "name": "washer-routine",
+      "route": "/f/washer-tub-clean-monthly",
+      "viewports": [390, 1024],
+      "surface": "routine",
+      "screenshots": ["screenshots/05-washer-routine-wide.png", "screenshots/10-washer-routine-mobile.png"]
+    },
+    {
+      "name": "fridge-record",
+      "route": "/f/fridge-cleanout-weekly-plan",
+      "viewports": [390, 1024],
+      "surface": "record",
+      "screenshots": ["screenshots/06-fridge-record-wide.png", "screenshots/11-fridge-record-mobile.png"]
+    },
+    {
+      "name": "study-timeline",
+      "route": "/f/computer-skills-d30-study",
+      "viewports": [1024],
+      "surface": "timeline",
+      "screenshots": ["screenshots/07-study-timeline-wide.png"]
+    },
+    {
+      "name": "used-car-decision",
+      "route": "/f/used-car-buying-check",
+      "viewports": [390],
+      "surface": "decision",
+      "screenshots": ["screenshots/12-used-car-decision-mobile.png"]
+    },
+    {
+      "name": "english-routine",
+      "route": "/f/english-study-30day-routine",
+      "viewports": [390],
+      "surface": "routine",
+      "screenshots": ["screenshots/13-english-routine-mobile.png"]
+    }
+  ]
+}
+

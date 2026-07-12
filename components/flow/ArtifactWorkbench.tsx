@@ -102,28 +102,27 @@ const maintenanceRoutineSlugs = new Set([
   'real-samsung-washer-filter-care',
   'monstera-care-routine',
 ]);
-const FLOWME_SURFACE_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]';
-const FLOWME_WORKBENCH_CARD_CLASS = `${FLOWME_SURFACE_CARD_CLASS} md:p-5`;
-const FLOWME_PANEL_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4';
-const FLOWME_INNER_ROW_CLASS = 'rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_SURFACE_CARD_CLASS = 'rounded-lg border border-[#DDE4E0] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_PANEL_CARD_CLASS = 'rounded-lg border border-[#DDE4E0] bg-[#F8FAF9] p-4';
+const FLOWME_INNER_ROW_CLASS = 'rounded-md border border-[#DDE4E0] bg-white px-3 py-2 text-sm shadow-[0_1px_0_rgba(27,26,23,0.03)]';
 const FLOWME_EYEBROW_CLASS = 'text-sm font-semibold text-[#3654FF]';
 const FLOWME_TITLE_CLASS = 'text-base font-semibold text-[#1B1A17]';
 const FLOWME_PROGRESS_CHIP_CLASS = 'rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-xs font-semibold text-[#6E6B64]';
-const FLOWME_BUTTON_PRIMARY_CLASS = 'rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-[#C9C6BE]';
-const FLOWME_BUTTON_SECONDARY_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:border-[#E7E4DD] disabled:text-[#A7A39A]';
-const FLOWME_DISCLOSURE_CLASS = 'mt-2 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2 text-sm';
-const FLOWME_SUPPORT_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4';
-const FLOWME_COMPACT_SUPPORT_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3';
-const FLOWME_TABLE_CARD_CLASS = 'overflow-x-auto rounded-2xl border border-[#E7E4DD] bg-white shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+const FLOWME_BUTTON_PRIMARY_CLASS = 'rounded-md bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-[#C9C6BE]';
+const FLOWME_BUTTON_SECONDARY_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:border-[#E7E4DD] disabled:text-[#A7A39A]';
+const FLOWME_DISCLOSURE_CLASS = 'mt-2 rounded-md border border-[#DDE4E0] bg-[#F8FAF9] px-3 py-2 text-sm';
+const FLOWME_SUPPORT_CARD_CLASS = 'rounded-lg border border-[#DDE4E0] bg-[#F8FAF9] p-4';
+const FLOWME_COMPACT_SUPPORT_CARD_CLASS = 'rounded-lg border border-[#DDE4E0] bg-[#F8FAF9] p-3';
+const FLOWME_TABLE_CARD_CLASS = 'overflow-x-auto rounded-lg border border-[#DDE4E0] bg-white shadow-[0_1px_0_rgba(27,26,23,0.03)]';
 const FLOWME_TABLE_HEADER_CLASS = 'border-b border-[#E7E4DD] px-3 py-3';
 const FLOWME_TABLE_HEAD_CLASS = 'bg-[#FAFAF8] text-xs font-semibold text-[#6E6B64]';
-const FLOWME_INPUT_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
-const FLOWME_SMALL_INPUT_CLASS = 'rounded-xl border border-[#D8D5CD] bg-white px-2 py-1.5 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
+const FLOWME_INPUT_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
+const FLOWME_SMALL_INPUT_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-2 py-1.5 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
 const FLOWME_CHECKBOX_CLASS = 'h-4 w-4 rounded border-[#D8D5CD] text-[#3654FF]';
 const FLOWME_SMALL_CHECKBOX_CLASS = 'h-3 w-3 rounded border-[#D8D5CD] text-[#3654FF]';
-const FLOWME_LINK_BUTTON_CLASS = 'shrink-0 rounded-xl border border-[#D8D5CD] bg-white px-3 py-1.5 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40';
-const FLOWME_SUCCESS_CARD_CLASS = 'rounded-2xl border border-[#E7E4DD] bg-[#EAF7F0] p-4';
-const FLOWME_WARNING_CARD_CLASS = 'rounded-2xl border border-[#F0D8AE] bg-[#FFF7E8] p-3';
+const FLOWME_LINK_BUTTON_CLASS = 'shrink-0 rounded-md border border-[#D8D5CD] bg-white px-3 py-1.5 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40';
+const FLOWME_SUCCESS_CARD_CLASS = 'rounded-lg border border-[#CFE8DA] bg-[#EAF7F0] p-4';
+const FLOWME_WARNING_CARD_CLASS = 'rounded-lg border border-[#F0D8AE] bg-[#FFF7E8] p-3';
 
 function getPreSavePreviewCheckboxLabel(label: string) {
   return `저장 전 미리보기 선택: ${label}`;
@@ -152,22 +151,24 @@ export function ArtifactWorkbench({
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
   const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
-  const done = getExecutableItems(bundle).filter((item) => checks[item.id]).length;
   const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
 
   return (
-    <section aria-label="Flow artifact workbench" className={isJeonsePrecheck ? `my-4 ${FLOWME_WORKBENCH_CARD_CLASS}` : `my-6 ${FLOWME_WORKBENCH_CARD_CLASS}`}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <section
+      aria-label="Flow artifact workbench"
+      data-artifact-surface={plan.primarySurface}
+      className={isJeonsePrecheck ? 'my-4' : 'my-8'}
+    >
+      <div className={`flex flex-wrap items-end justify-between gap-3 ${isJeonsePrecheck ? '' : 'border-b border-[#DDE4E0] pb-4'}`}>
         <div>
-          <p className={FLOWME_EYEBROW_CLASS}>{isJeonsePrecheck ? '계약 일정' : '내 실행판'}</p>
+          <p className={FLOWME_EYEBROW_CLASS}>{isJeonsePrecheck ? '계약 일정' : '실행 미리보기'}</p>
           <h2 className={isJeonsePrecheck ? 'mt-1 text-xl font-bold tracking-normal text-[#1B1A17] md:text-2xl' : 'mt-1 text-2xl font-bold tracking-normal text-[#1B1A17]'}>{surfaceTitle(plan.primarySurface, bundle)}</h2>
           {isJeonsePrecheck ? null : <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6E6B64]">{surfaceDescription(plan.primarySurface, bundle)}</p>}
         </div>
-        <span className={FLOWME_PROGRESS_CHIP_CLASS}>
-          {formatPreSavePreviewProgress(done, total)}
+        <span data-testid="public-flow-preview-summary" className="text-xs font-semibold text-[#737B77]">
+          {total}개 항목 미리보기
         </span>
       </div>
-      <FlowLevelExportPanel actions={exportActions} bundle={bundle} />
       <div className={isJeonsePrecheck ? 'mt-4' : 'mt-5'}>
         {plan.primarySurface === 'decision_table' ? (
           <DecisionWorkbench
@@ -178,7 +179,6 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
-            exportActions={exportActions}
           />
         ) : plan.primarySurface === 'routine_calendar' ? (
           <RoutineWorkbench
@@ -189,10 +189,9 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
-            exportActions={exportActions}
           />
         ) : plan.primarySurface === 'spreadsheet_log' ? (
-          <SpreadsheetWorkbench bundle={bundle} anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+          <SpreadsheetWorkbench bundle={bundle} anchor={anchor} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} />
         ) : plan.primarySurface === 'meal_reaction_log' ? (
           <MealReactionWorkbench
             bundle={bundle}
@@ -201,7 +200,6 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
-            exportActions={exportActions}
           />
         ) : plan.primarySurface === 'timeline_calendar' ? (
           <TimelineWorkbench
@@ -213,12 +211,11 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
-            exportActions={exportActions}
           />
         ) : plan.primarySurface === 'memo_card' ? (
-          <MemoCardWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} exportActions={exportActions} />
+          <MemoCardWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} />
         ) : plan.primarySurface === 'step_progress' ? (
-          <StepProgressWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} exportActions={exportActions} />
+          <StepProgressWorkbench bundle={bundle} checks={checks} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} onToggleItem={onToggleItem} />
         ) : (
           <ChecklistWorkbench
             bundle={bundle}
@@ -227,10 +224,10 @@ export function ArtifactWorkbench({
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
             onToggleItem={onToggleItem}
-            exportActions={exportActions}
           />
         )}
       </div>
+      <FlowLevelExportPanel actions={exportActions} bundle={bundle} />
     </section>
   );
 }
@@ -241,19 +238,23 @@ function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportAct
   const displayTitle = toContentDisplayTitle(bundle.flow.title);
 
   return (
-    <section
+    <details
       data-testid="public-flow-export-secondary-entry"
-      className="mt-4 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3 sm:p-4"
+      className="group mt-6 border-t border-[#DDE4E0] pt-4"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <summary
+        data-testid="public-flow-export-secondary-toggle"
+        className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-1 py-2 outline-none focus-visible:ring-2 focus-visible:ring-[#3654FF]/25"
+      >
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-[#8A857B]">파일로 가져가기</p>
-          <h3 className="mt-1 text-base font-semibold text-[#1B1A17]">이 Flow 통째로 가져가기</h3>
-          <p className="mt-1 max-w-xl break-keep text-sm leading-6 text-[#6E6B64]">
-            저장하지 않고 캘린더·시트·메모 형식으로 받을 수 있어요.
-          </p>
+          <p className="text-sm font-semibold text-[#1B1A17]">이 Flow 통째로 가져가기</p>
+          <p className="mt-0.5 text-xs leading-5 text-[#737B77]">캘린더·시트·메모 중 필요한 형식을 고릅니다.</p>
         </div>
-        <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-3">
+        <span className="shrink-0 text-xs font-semibold text-[#3654FF] group-open:hidden">형식 보기</span>
+        <span className="hidden shrink-0 text-xs font-semibold text-[#737B77] group-open:inline">접기</span>
+      </summary>
+      <div className="mt-3 rounded-lg border border-[#DDE4E0] bg-white p-3 sm:p-4">
+        <div className="grid w-full gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {actions.canExportCalendar ? (
             <button
               type="button"
@@ -283,10 +284,19 @@ function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportAct
           >
             {FLOW_EXPORT_LABELS.memoCopy}
           </button>
+          <button
+            type="button"
+            data-testid="public-flow-export-format-option"
+            className={FLOWME_BUTTON_SECONDARY_CLASS}
+            aria-label={`${FLOW_EXPORT_LABELS.editableDraft}: ${displayTitle}`}
+            onClick={actions.onCopyToEditableDraft}
+          >
+            {FLOW_EXPORT_LABELS.editableDraft}
+          </button>
         </div>
+        <ArtifactExportStatus actions={actions} />
       </div>
-      <ArtifactExportStatus actions={actions} />
-    </section>
+    </details>
   );
 }
 
@@ -402,7 +412,7 @@ function surfaceTitle(surface: string, bundle: FlowBundle): string {
     if (bundle.flow.slug === 'fridge-cleanout-weekly-plan') return '7일 재고 소진표';
     return '기록표';
   }
-  if (surface === 'timeline_calendar') return '월간 캘린더 + 실행 리스트';
+  if (surface === 'timeline_calendar') return '일정과 할 일';
   if (surface === 'memo_card') return '메모 카드';
   if (surface === 'step_progress') return '단계별 실행';
   return '실행 리스트';
@@ -426,7 +436,7 @@ function surfaceDescription(surface: string, bundle: FlowBundle): string {
     if (bundle.flow.slug === 'fridge-cleanout-weekly-plan') return '우선 재료, 메뉴 후보, 장보기 보류 상태를 7일 표로 관리합니다.';
     return '매일 남길 기록 열과 주간 리뷰 메모를 먼저 잡아둡니다.';
   }
-  if (surface === 'timeline_calendar') return '해야 할 일을 리스트로 훑고, 같은 항목이 월간 달력에서 어느 날짜에 걸리는지 봅니다.';
+  if (surface === 'timeline_calendar') return '기준 날짜에 맞춰 해야 할 일을 순서대로 확인합니다.';
   if (surface === 'memo_card') return '나중에 다시 참고할 기준과 결정 메모를 한 장으로 정리합니다.';
   if (surface === 'step_progress') return '단계 순서대로 확인하고, 지금 할 일과 다음 단계를 한눈에 봅니다.';
   return '저장 전에 필요한 항목을 미리 표시하고, 자세히에서 원문 기준과 확인 기준만 봅니다.';
@@ -534,16 +544,15 @@ function TimelineWorkbench({
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const [showAllTimelineRows, setShowAllTimelineRows] = useState(false);
   const rows = scheduleRows(bundle, anchor);
   const comparisonConfig = getComparisonConfig(bundle);
   const logTables = getLogTables(bundle);
   const memoFields = getMemoCardFields(bundle);
   const shouldShowFullSourceTable = bundle.flow.slug === 'plank-30-day-challenge';
-  const listLimit = shouldShowFullSourceTable ? Number.POSITIVE_INFINITY : 8;
-  const listRows = rows.length
-    ? rows.slice(0, listLimit)
+  const allListRows = rows.length
+    ? rows
     : getExecutableItems(bundle)
-        .slice(0, listLimit)
         .map((item, index) => ({
           id: item.id,
           title: item.title,
@@ -551,35 +560,33 @@ function TimelineWorkbench({
           timing: item.day_offset !== undefined ? timingLabel(item.day_offset, item.duration_days) : `항목 ${index + 1}`,
           startDate: '',
         }));
+  const listRows = shouldShowFullSourceTable || showAllTimelineRows ? allListRows : allListRows.slice(0, 8);
+  const hiddenRowCount = Math.max(allListRows.length - listRows.length, 0);
   const month = rows[0]?.startDate.slice(0, 7) ?? anchor.slice(0, 7);
 
   return (
     <div className="space-y-4">
       {bundle.flow.slug === 'wedding-d180-basic' ? <WeddingSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
       {bundle.flow.slug === 'plank-30-day-challenge' ? <PlankChallengeSourceBridge sourceUrl={bundle.flow.source_url} /> : null}
-      <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
-        <MiniMonthCalendar title="월간 캘린더" eyebrow="캘린더" month={month} rows={rows} exportActions={exportActions} mobileArtifactLabel={getMobileArtifactLabel(bundle, 'month_calendar')} />
-        <div data-testid="artifact-list-card" className={FLOWME_PANEL_CARD_CLASS}>
+      <div
+        data-testid="artifact-timeline-layout"
+        className="grid gap-5 lg:grid-cols-[minmax(250px,0.58fr)_minmax(0,1.42fr)] lg:items-start xl:grid-cols-[minmax(280px,0.52fr)_minmax(0,1.48fr)]"
+      >
+        <div data-testid="artifact-list-card" className={`order-1 lg:order-2 ${FLOWME_PANEL_CARD_CLASS}`}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className={FLOWME_EYEBROW_CLASS}>{shouldShowFullSourceTable ? '원문 표' : '체크리스트'}</p>
-              <h3 className={FLOWME_TITLE_CLASS}>{shouldShowFullSourceTable ? '30일 실행표' : '실행 리스트'}</h3>
+              <h3 className={FLOWME_TITLE_CLASS}>{shouldShowFullSourceTable ? '30일 실행표' : '다가오는 할 일'}</h3>
               {shouldShowFullSourceTable ? <p className="mt-1 text-xs font-medium text-[#6E6B64]">Day 1부터 Day 30까지 원문 순서를 모두 보여줍니다.</p> : null}
             </div>
-            <ArtifactExportButtons
-              actions={exportActions}
-              kinds={logTables.length ? ['copy', 'draft'] : ['copy', 'excel', 'draft']}
-              mobileArtifactLabel={getMobileArtifactLabel(bundle, 'execution_list')}
-              mobileKinds={['excel']}
-            />
+            <span className="text-xs font-semibold text-[#737B77]">{hiddenRowCount ? `${listRows.length}개 먼저 표시` : `${listRows.length}개 표시`}</span>
           </div>
-          <ArtifactExportStatus actions={exportActions} />
-          <div className="mt-3 space-y-2">
+          <div className="mt-3 divide-y divide-[#E5EAE7] overflow-hidden rounded-lg border border-[#DDE4E0] bg-white">
             {listRows.map((row) => {
               const detail = getWorkbenchItemDetail(bundle, row.id);
               return (
-                <div key={row.id} className={FLOWME_INNER_ROW_CLASS}>
-                  <label className="grid grid-cols-[22px_92px_1fr] gap-3">
+                <div key={row.id} className="px-3 py-3 text-sm sm:px-4">
+                  <label className="grid grid-cols-[20px_minmax(72px,92px)_minmax(0,1fr)] items-start gap-3">
                     <input
                       aria-label={getPreSavePreviewCheckboxLabel(row.title)}
                       className="mt-0.5 h-4 w-4 rounded border-[#D8D5CD] text-[#3654FF]"
@@ -598,6 +605,18 @@ function TimelineWorkbench({
               );
             })}
           </div>
+          {hiddenRowCount || (!shouldShowFullSourceTable && showAllTimelineRows && allListRows.length > 8) ? (
+            <button
+              type="button"
+              className="mt-3 inline-flex min-h-9 items-center text-sm font-semibold text-[#3654FF] hover:underline"
+              onClick={() => setShowAllTimelineRows((value) => !value)}
+            >
+              {showAllTimelineRows ? '처음 8개만 보기' : `나머지 ${hiddenRowCount}개 보기`}
+            </button>
+          ) : null}
+        </div>
+        <div className="order-2 lg:order-1 lg:sticky lg:top-6">
+          <MiniMonthCalendar title="일정 한눈에 보기" eyebrow="날짜" month={month} rows={rows} compact />
         </div>
       </div>
       {logTables.length ? (
@@ -941,6 +960,7 @@ function MiniMonthCalendar({
   doneIds,
   exportActions,
   mobileArtifactLabel,
+  compact = false,
 }: {
   title: string;
   eyebrow?: string;
@@ -949,10 +969,11 @@ function MiniMonthCalendar({
   doneIds?: Set<string>;
   exportActions?: ArtifactExportActions;
   mobileArtifactLabel?: string;
+  compact?: boolean;
 }) {
   const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
   return (
-    <div data-testid="artifact-calendar-card" className={FLOWME_SURFACE_CARD_CLASS}>
+    <div data-testid="artifact-calendar-card" className={compact ? 'rounded-lg border border-[#DDE4E0] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]' : FLOWME_SURFACE_CARD_CLASS}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           {eyebrow ? <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p> : null}
@@ -972,15 +993,33 @@ function MiniMonthCalendar({
       <div className="mt-2 grid grid-cols-7 gap-1">
         {days.map((date, index) => {
           const dayRows = date ? rows.filter((row) => row.startDate === date) : [];
+          const dateLabel = date ? `${formatKoreanShortDate(date)}${dayRows.length ? `, ${dayRows.length}개 할 일` : ''}` : undefined;
           return (
-            <div key={`${month}-${index}`} className={`min-h-16 rounded-xl border p-1 text-xs ${date ? 'border-[#E7E4DD] bg-[#FAFAF8]' : 'border-[#EEEAE2] bg-[#FAFAF8]/60'}`}>
+            <div
+              key={`${month}-${index}`}
+              aria-label={dateLabel}
+              className={`${compact ? 'min-h-11 rounded-md px-1 py-1.5' : 'min-h-16 rounded-xl p-1'} border text-xs ${date ? 'border-[#E1E6E3] bg-[#F8FAF9]' : 'border-[#EEF1EF] bg-[#FAFBFA]'}`}
+            >
               {date ? <p className="font-semibold text-[#6E6B64]">{date.slice(8)}</p> : null}
-              {dayRows.slice(0, 2).map((row) => (
-                <p key={row.id} className={`mt-1 truncate rounded-lg px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-[#EAF7F0] text-[#1F8A5B]' : 'bg-white text-[#3654FF]'}`}>
-                  {doneIds?.has(row.id) ? '표시 ' : ''}{row.title}
-                </p>
-              ))}
-              {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-[#6E6B64]">+{dayRows.length - 2}</p> : null}
+              {compact ? (
+                dayRows.length ? (
+                  <div className="mt-1.5 flex flex-wrap items-center gap-0.5" aria-hidden="true">
+                    {dayRows.slice(0, 3).map((row) => (
+                      <span key={row.id} className={`h-1.5 w-1.5 rounded-full ${doneIds?.has(row.id) ? 'bg-[#1F8A5B]' : 'bg-[#3654FF]'}`} />
+                    ))}
+                    {dayRows.length > 3 ? <span className="ml-0.5 text-[9px] font-semibold text-[#737B77]">+{dayRows.length - 3}</span> : null}
+                  </div>
+                ) : null
+              ) : (
+                <>
+                  {dayRows.slice(0, 2).map((row) => (
+                    <p key={row.id} className={`mt-1 truncate rounded-lg px-1 py-0.5 text-left text-[11px] font-medium ${doneIds?.has(row.id) ? 'bg-[#EAF7F0] text-[#1F8A5B]' : 'bg-white text-[#3654FF]'}`}>
+                      {doneIds?.has(row.id) ? '표시 ' : ''}{row.title}
+                    </p>
+                  ))}
+                  {dayRows.length > 2 ? <p className="mt-1 text-[11px] text-[#6E6B64]">+{dayRows.length - 2}</p> : null}
+                </>
+              )}
             </div>
           );
         })}
@@ -1006,6 +1045,7 @@ function RoutineOccurrenceCalendar({
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const [showAllRoutineWeeks, setShowAllRoutineWeeks] = useState(false);
   const visibleRows = rows;
   const occurrenceSummary = `${weekCount}주 ${visibleRows.length}회차`;
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
@@ -1064,7 +1104,10 @@ function RoutineOccurrenceCalendar({
         </div>
         <div className="mt-2 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1">
           {weekRows.map((week, weekIndex) => (
-            <div key={`routine-week-${weekIndex}`} className="contents">
+            <div
+              key={`routine-week-${weekIndex}`}
+              className={weekIndex === 0 || showAllRoutineWeeks ? 'contents' : 'hidden md:contents'}
+            >
               <div className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] p-2">
                 <p className="text-[10px] font-bold text-[#6E6B64]">{weekIndex + 1}주차</p>
                 <p className="mt-1 text-sm font-semibold text-[#1B1A17]">{weekIndex + 1}주차</p>
@@ -1103,6 +1146,16 @@ function RoutineOccurrenceCalendar({
             </div>
           ))}
         </div>
+        {weekCount > 1 ? (
+          <button
+            type="button"
+            data-testid="routine-grid-mobile-toggle"
+            className="mt-3 inline-flex min-h-9 items-center text-sm font-semibold text-[#3654FF] hover:underline md:hidden"
+            onClick={() => setShowAllRoutineWeeks((value) => !value)}
+          >
+            {showAllRoutineWeeks ? '이번 주만 보기' : `나머지 ${weekCount - 1}주 보기`}
+          </button>
+        ) : null}
       </div>
     </section>
   );
@@ -1121,6 +1174,7 @@ function RoutineSessionLogCard({
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const [showMobileLog, setShowMobileLog] = useState(false);
   const visibleRows = rows.slice(0, 8);
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const valueLabel = isSleepCheck ? '수면 여부' : '세트/강도';
@@ -1141,7 +1195,15 @@ function RoutineSessionLogCard({
         />
       </div>
       <ArtifactExportStatus actions={exportActions} />
-      <div className={`mt-3 ${FLOWME_TABLE_CARD_CLASS}`}>
+      <button
+        type="button"
+        data-testid="routine-session-log-mobile-toggle"
+        className="mt-3 inline-flex min-h-9 items-center text-sm font-semibold text-[#3654FF] hover:underline md:hidden"
+        onClick={() => setShowMobileLog((value) => !value)}
+      >
+        {showMobileLog ? '기록표 접기' : '지난 회차 기록표 열기'}
+      </button>
+      <div className={`${showMobileLog ? 'block' : 'hidden'} mt-3 md:block ${FLOWME_TABLE_CARD_CLASS}`}>
         <table className="min-w-[720px] text-left text-sm">
           <thead className={FLOWME_TABLE_HEAD_CLASS}>
             <tr>
@@ -1668,23 +1730,33 @@ function HoldSectionCard({
         ))}
       </ul>
       <p className="mt-2 text-sm leading-6 text-[#4A4842]">{section.consequence}</p>
-      <p className="mt-2 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-xs font-semibold text-[#A13E2E]">{section.memo_template}</p>
+      <p className="mt-2 rounded-md border border-[#E7E4DD] bg-white px-3 py-2 text-xs font-semibold text-[#A13E2E]">{section.memo_template}</p>
       {fields.length ? (
-        <div data-testid="flow-hold-memo-card" className="mt-3 grid gap-3">
-          {fields.map((field) => (
-            <label key={field.id} className="grid gap-1 text-sm font-semibold text-[#1B1A17]">
-              {field.label}
-              <textarea
-                data-testid={`flow-hold-field-${field.id}`}
-                aria-label={field.label}
-                className="min-h-20 rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-normal text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
-                placeholder={field.placeholder}
-                value={workbenchState.memoCards?.[field.id] ?? ''}
-                onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
-              />
-            </label>
-          ))}
-        </div>
+        <details data-testid="flow-hold-memo-card" className="group mt-3 border-t border-[#E9CFC8] pt-2">
+          <summary
+            data-testid="flow-hold-memo-toggle"
+            className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 rounded-md px-1 text-sm font-semibold text-[#A13E2E] outline-none focus-visible:ring-2 focus-visible:ring-[#A13E2E]/20"
+          >
+            <span>보류 기록 남기기</span>
+            <span className="text-xs font-medium text-[#8A5A50] group-open:hidden">필요할 때 열기</span>
+            <span className="hidden text-xs font-medium text-[#8A5A50] group-open:inline">접기</span>
+          </summary>
+          <div className="mt-2 grid gap-3">
+            {fields.map((field) => (
+              <label key={field.id} className="grid gap-1 text-sm font-semibold text-[#1B1A17]">
+                {field.label}
+                <textarea
+                  data-testid={`flow-hold-field-${field.id}`}
+                  aria-label={field.label}
+                  className="min-h-20 rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-normal text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
+                  placeholder={field.placeholder}
+                  value={workbenchState.memoCards?.[field.id] ?? ''}
+                  onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
+                />
+              </label>
+            ))}
+          </div>
+        </details>
       ) : null}
     </section>
   );
@@ -2629,6 +2701,7 @@ function ChecklistWorkbench({
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const [showAllChecklistItems, setShowAllChecklistItems] = useState(false);
   const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
   if (isJeonsePrecheck) {
     return (
@@ -2647,7 +2720,9 @@ function ChecklistWorkbench({
   const listTitle = bundle.flow.slug === 'new-car-delivery-check' || bundle.flow.slug === 'used-car-buying-check' ? '현장 체크리스트' : '실행 리스트';
   const holdSection = workbenchState && onWorkbenchChange ? <HoldSectionCard bundle={bundle} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} /> : null;
   const putChecklistFirst = bundle.flow.slug === 'used-car-buying-check';
-  const visibleItems = getExecutableItems(bundle).slice(0, bundle.flow.slug === 'used-car-buying-check' ? bundle.items.length : 10);
+  const allChecklistItems = getExecutableItems(bundle);
+  const visibleItems = showAllChecklistItems ? allChecklistItems : allChecklistItems.slice(0, 8);
+  const hiddenChecklistItemCount = Math.max(allChecklistItems.length - visibleItems.length, 0);
   const visibleDetails = visibleItems.map((item) => getWorkbenchItemDetail(bundle, item.id));
   const repeatedCaution = getRepeatedWorkbenchCaution(visibleDetails);
 
@@ -2694,6 +2769,16 @@ function ChecklistWorkbench({
             );
           })}
         </div>
+        {hiddenChecklistItemCount || (showAllChecklistItems && allChecklistItems.length > 8) ? (
+          <button
+            type="button"
+            data-testid="artifact-checklist-more-toggle"
+            className="mt-3 inline-flex min-h-9 items-center text-sm font-semibold text-[#3654FF] hover:underline"
+            onClick={() => setShowAllChecklistItems((value) => !value)}
+          >
+            {showAllChecklistItems ? '핵심 8개만 보기' : `나머지 ${hiddenChecklistItemCount}개 보기`}
+          </button>
+        ) : null}
       </div>
       {putChecklistFirst ? holdSection : null}
     </div>

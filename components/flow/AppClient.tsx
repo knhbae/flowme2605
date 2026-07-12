@@ -11665,19 +11665,19 @@ export function PublicFlow({ slug }: { slug: string }) {
     showPublicSaveAction ? (
       <div
         data-testid="public-flow-mobile-save-cta"
-        className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 rounded-2xl border border-[#E7E4DD] bg-white/95 p-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-[#DDE4E0] bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_28px_rgba(23,32,28,0.08)] backdrop-blur sm:hidden"
       >
-        <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-xl items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-semibold text-[#8A857B]">{savedFlowAt ? '저장됨' : '공유 콘텐츠'}</p>
             <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
           </div>
           {savedFlowAt ? (
-            <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+            <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
               내 Flow에서 보기
             </Link>
           ) : (
-            <button className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" type="button" onClick={saveToMyFlow}>
+            <button className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" type="button" onClick={saveToMyFlow}>
               내 Flow에 저장
             </button>
           )}
@@ -11688,14 +11688,14 @@ export function PublicFlow({ slug }: { slug: string }) {
     if (!showPublicHeroSetup) return null;
     if (bundle.flow.anchor_type === 'none') {
       return (
-        <div data-testid="public-flow-primary-setup" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD]">
+        <div data-testid="public-flow-primary-setup" className="rounded-lg border border-[#DDE4E0] bg-white px-3 py-2.5">
           <p className="text-[11px] font-semibold text-[#8A857B]">필요한 입력</p>
           <p className="mt-1 text-sm font-semibold text-[#1B1A17]">입력 없이 바로 확인합니다.</p>
         </div>
       );
     }
     return (
-      <div data-testid="public-flow-primary-setup" className="rounded-xl bg-white px-3 py-3 ring-1 ring-[#E7E4DD]">
+      <div data-testid="public-flow-primary-setup" className="rounded-lg border border-[#DDE4E0] bg-white px-3 py-3">
         <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} compactSecondaryActions />
       </div>
     );
@@ -11746,12 +11746,12 @@ export function PublicFlow({ slug }: { slug: string }) {
     ) : null;
 
   return (
-    <main className={`min-h-screen bg-[#FAFAF8] px-4 py-3 text-slate-950 md:px-6 md:py-6 ${publicMobileClearanceClass}`}>
+    <main className={`min-h-screen bg-[#F5F7F6] px-4 text-slate-950 md:px-8 ${publicMobileClearanceClass}`}>
       {renderPublicMobileSaveCta()}
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-[1240px]">
         <PublicFlowShareShell savedFlowAt={savedFlowAt} />
 
-        <header data-testid="public-flow-hero" className={compactJeonsePage ? 'rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4' : 'rounded-2xl border border-[#E7E4DD] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(27,26,23,0.05)] md:px-6 md:py-5'}>
+        <header data-testid="public-flow-hero" className={compactJeonsePage ? 'border-b border-[#DDE4E0] pb-5 pt-1 md:pb-6' : 'border-b border-[#DDE4E0] pb-7 pt-2 md:pb-9 md:pt-4'}>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500">
             <span>{bundle.flow.category}</span>
             <span aria-hidden="true">·</span>
@@ -11764,12 +11764,20 @@ export function PublicFlow({ slug }: { slug: string }) {
             ) : null}
           </div>
           <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{publicDisplayTitle}</h1>
+          {bundle.flow.description ? <p className={compactJeonsePage ? 'mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-4 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
+          <div data-testid="public-flow-creator-attribution" className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#66706B]">
+            <Link className="font-semibold text-[#1B1A17] underline-offset-2 hover:text-[#3654FF] hover:underline" href={getCreatorPath(bundle)}>
+              by {getCreatorName(bundle)}
+            </Link>
+            <span aria-hidden="true">·</span>
+            <span>원문 기준 실행본</span>
+          </div>
           {showPublicHeroSetup ? (
-            <section className={compactJeonsePage ? 'mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5' : 'mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3'}>
+            <section className="mt-5 border-y border-[#DDE4E0] py-4">
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
-              <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)] md:items-stretch">
+              <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)] md:items-stretch">
                 {renderPublicHeroSetup()}
-                <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2.5 ring-1 ring-[#E7E4DD] md:flex md:flex-col md:justify-center">
+                <div data-testid="public-flow-first-action-preview" className="px-1 py-2.5 md:flex md:flex-col md:justify-center md:border-l md:border-[#DDE4E0] md:pl-5">
                   <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
                   <p className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
                 </div>
@@ -11777,25 +11785,24 @@ export function PublicFlow({ slug }: { slug: string }) {
               {showPublicSaveAction ? <div className="mt-3">{renderPublicSaveActions()}</div> : null}
             </section>
           ) : (
-            <section className="mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3">
+            <section className="mt-5 border-y border-[#DDE4E0] py-4">
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
+              <div className="mt-3 grid gap-1 sm:grid-cols-3 sm:divide-x sm:divide-[#DDE4E0]">
+                <div className="px-1 py-2 sm:px-4">
                   <p className="text-[11px] font-semibold text-[#8A857B]">입력</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroInput}</p>
                 </div>
-                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
+                <div className="px-1 py-2 sm:px-4">
                   <p className="text-[11px] font-semibold text-[#8A857B]">저장 결과</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroArtifact}</p>
                 </div>
-                <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
+                <div data-testid="public-flow-first-action-preview" className="px-1 py-2 sm:px-4">
                   <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
                 </div>
               </div>
             </section>
           )}
-          {bundle.flow.description ? <p className={compactJeonsePage ? 'mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
           {compactJeonsePage ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">D-3 / D-Day / D+1</span>
@@ -11818,9 +11825,9 @@ export function PublicFlow({ slug }: { slug: string }) {
         </header>
 
       {showDesktopReferenceRail ? (
-        <div data-testid="flow-desktop-workbench-layout" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-          <div className={showMobileWorkbenchFirst ? 'flex min-w-0 flex-col lg:block' : 'min-w-0'}>
-            <div className={showMobileWorkbenchFirst ? 'order-3 lg:hidden' : 'lg:hidden'}>
+        <div data-testid="flow-desktop-workbench-layout" className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
+          <div className={showMobileWorkbenchFirst ? 'flex min-w-0 flex-col xl:block' : 'min-w-0'}>
+            <div className={showMobileWorkbenchFirst ? 'order-3 xl:hidden' : 'xl:hidden'}>
               <FlowMigrationStatus bundle={bundle} />
               <FlowSourceFitStatus bundle={bundle} />
             </div>
@@ -11837,16 +11844,13 @@ export function PublicFlow({ slug }: { slug: string }) {
                 onWeekdaysChange={setWeekdaySelection}
                 savedFlowAt={savedFlowAt}
                 onSaveToMyFlow={saveToMyFlow}
-                onDownloadExcel={downloadExcel}
-                onDownloadCalendar={downloadCalendar}
-                onCopyText={copy}
               />
             ) : null}
 
-            <div className={showMobileWorkbenchFirst ? 'order-2 lg:contents' : undefined}>{renderSetupSection()}</div>
-            <div className={showMobileWorkbenchFirst ? 'order-1 lg:contents' : undefined}>{renderArtifactWorkbench()}</div>
+            <div className={showMobileWorkbenchFirst ? 'order-2 xl:contents' : undefined}>{renderSetupSection()}</div>
+            <div className={showMobileWorkbenchFirst ? 'order-1 xl:contents' : undefined}>{renderArtifactWorkbench()}</div>
           </div>
-          <aside data-testid="flow-desktop-rail" className="hidden space-y-4 lg:sticky lg:top-6 lg:block">
+          <aside data-testid="flow-desktop-rail" className="hidden space-y-4 xl:sticky xl:top-6 xl:block">
             <FlowMigrationStatus bundle={bundle} />
             <FlowSourceFitStatus bundle={bundle} />
             <SourceContentCard bundle={bundle} className="mt-0" />
@@ -11879,9 +11883,6 @@ export function PublicFlow({ slug }: { slug: string }) {
               onWeekdaysChange={setWeekdaySelection}
               savedFlowAt={savedFlowAt}
               onSaveToMyFlow={saveToMyFlow}
-              onDownloadExcel={downloadExcel}
-              onDownloadCalendar={downloadCalendar}
-              onCopyText={copy}
             />
           ) : null}
 
@@ -11970,7 +11971,7 @@ export function PublicFlow({ slug }: { slug: string }) {
 
       {!hideSharedPublicFooter ? (
         <>
-          <section className="my-5 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]">
+          <section className="my-5 rounded-lg border border-[#DDE4E0] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <Link className="text-sm font-semibold text-[#1B1A17] underline-offset-2 hover:text-[#3654FF] hover:underline" href={getCreatorPath(bundle)}>
@@ -12053,27 +12054,24 @@ export function PublicFlow({ slug }: { slug: string }) {
       <div
         data-testid="mobile-export-bar"
         aria-hidden={!showMobileExportActions}
-        className={`fixed inset-x-4 bottom-[calc(9.75rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-[#DDE4E0] bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_28px_rgba(23,32,28,0.08)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
       >
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-xl">
             <div className="flex items-center gap-3">
               <div className="min-w-0 flex-1">
-                <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="font-medium text-[#6E6B64]">진행률</span>
-                  <span className="font-semibold">{done} / {executableCount}</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[#E7E4DD]">
-                  <div className="h-full bg-[#3654FF]" style={{ width: `${executableCount > 0 ? Math.round((done / executableCount) * 100) : 0}%` }} />
-                </div>
+                <p className="text-[11px] font-semibold text-[#8A857B]">
+                  저장 전 미리보기 · {done > 0 ? `${done}개 미리 선택` : `${executableCount}개 항목`}
+                </p>
+                <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
               </div>
               {savedFlowAt ? (
-                <Link className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+                <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
                   내 Flow에서 보기
                 </Link>
               ) : (
                 <button
                   type="button"
-                  className="shrink-0 rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm"
+                  className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm"
                   onClick={saveToMyFlow}
                 >
                   내 Flow에 저장
@@ -12093,13 +12091,13 @@ function PublicFlowShareShell({ savedFlowAt }: { savedFlowAt?: string }) {
     <nav
       aria-label="공유 콘텐츠"
       data-testid="flow-public-shell"
-      className="mb-4 flex min-h-12 items-center justify-between gap-3 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-2.5 shadow-[0_1px_0_rgba(27,26,23,0.03)] backdrop-blur md:mb-6"
+      className="mb-5 flex min-h-14 items-center justify-between gap-3 border-b border-[#DDE4E0] py-3 md:mb-7"
     >
       <Link className="inline-flex min-h-9 items-center text-lg font-semibold tracking-tight text-[#1B1A17]" href="/">
         FLOW
       </Link>
       {savedFlowAt ? (
-        <Link className="inline-flex min-h-9 items-center rounded-xl border border-[#E7E4DD] px-3 text-sm font-semibold text-[#6E6B64] hover:text-[#3654FF]" href="/my">
+        <Link className="inline-flex min-h-9 items-center rounded-md border border-[#DDE4E0] bg-white px-3 text-sm font-semibold text-[#59625E] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href="/my">
           내 Flow에서 보기
         </Link>
       ) : (
@@ -12198,9 +12196,6 @@ function ExportFirstHero({
   onWeekdaysChange,
   savedFlowAt,
   onSaveToMyFlow,
-  onDownloadExcel,
-  onDownloadCalendar,
-  onCopyText,
 }: {
   bundle: FlowBundle;
   anchor: string;
@@ -12212,27 +12207,23 @@ function ExportFirstHero({
   onWeekdaysChange: (value: string[]) => void;
   savedFlowAt?: string;
   onSaveToMyFlow: () => void;
-  onDownloadExcel: () => void;
-  onDownloadCalendar: () => void;
-  onCopyText: () => void;
 }) {
-  const displayTitle = toContentDisplayTitle(bundle.flow.title);
   const previewEntries = getExportFirstPreviewEntries(bundle, displayAnchor);
   const remainingCount = Math.max(getScheduleEntries(bundle, displayAnchor).length - previewEntries.length, 0);
-  const sourceText = bundle.flow.source_title ? `${bundle.items.length}개 항목 · ${toUserFacingSourceTitle(bundle.flow.source_title)}` : `${bundle.items.length}개 항목`;
 
   return (
-    <section aria-label="Export-first flow hero" className="my-6 rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)] md:p-5">
-      <div className="grid gap-5 md:grid-cols-[1.08fr_0.92fr] md:items-start">
+    <section aria-label="Export-first flow hero" className="my-7 border-b border-[#DDE4E0] pb-7">
+      <div className="grid gap-6 md:grid-cols-[1.12fr_0.88fr] md:items-start md:gap-8">
         <div>
-          <h2 className="text-2xl font-bold tracking-normal text-[#1B1A17] md:text-3xl">{displayTitle}</h2>
-          <p className="mt-2 text-sm leading-6 text-[#6E6B64]">{sourceText}</p>
+          <p className="text-sm font-semibold text-[#3654FF]">저장 전 일정 확인</p>
+          <h2 className="mt-1 text-xl font-bold tracking-normal text-[#1B1A17] md:text-2xl">이사일을 정하면 할 일 날짜가 맞춰집니다</h2>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-[#66706B]">먼저 중요한 날짜만 확인하고, 저장 후 내 Flow에서 각 할 일을 다시 조정할 수 있습니다.</p>
 
-          <div className="mt-5 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-4">
-            <p className="text-sm font-semibold text-[#4A4842]">이렇게 캘린더에 들어갑니다</p>
-            <div className="mt-3 space-y-2">
+          <div className="mt-5 border-y border-[#DDE4E0] py-4">
+            <p className="text-sm font-semibold text-[#4A4842]">이렇게 일정이 잡혀요</p>
+            <div className="mt-3 divide-y divide-[#E5EAE7]">
               {previewEntries.map((entry) => (
-                <div key={entry.id} className="grid grid-cols-[3.2rem_5.8rem_1fr] items-baseline gap-2 text-sm">
+                <div key={entry.id} className="grid grid-cols-[3.2rem_5.8rem_minmax(0,1fr)] items-baseline gap-2 py-2 text-sm first:pt-0 last:pb-0">
                   <span className="font-semibold text-[#6E6B64]">{entry.timing}</span>
                   <span className="font-medium text-[#6E6B64]">{formatKoreanShortDate(entry.startDate)}</span>
                   <span className="min-w-0 text-[#1B1A17]">{entry.title}</span>
@@ -12243,7 +12234,7 @@ function ExportFirstHero({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#E7E4DD] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]">
+        <div className="border-t border-[#DDE4E0] pt-5 md:border-l md:border-t-0 md:pl-8 md:pt-0">
           <p className="text-sm font-semibold text-[#1B1A17]">{getSetupStepTitle(bundle)}</p>
           <p className="mt-1 text-sm leading-6 text-[#6E6B64]">{getSetupStepDescription(bundle)}</p>
           <div className="mt-4">
@@ -12261,14 +12252,14 @@ function ExportFirstHero({
           </div>
           <div className="mt-4" data-testid="moving-save-actions">
             {savedFlowAt ? (
-              <div className="rounded-2xl border border-[#DCEBDD] bg-[#EAF7F0] p-3 text-sm text-[#1B1A17]">
+              <div className="rounded-lg border border-[#CFE8DA] bg-[#EAF7F0] p-3 text-sm text-[#1B1A17]">
                 <p className="font-semibold">내 Flow에 담았어요</p>
                 <p className="mt-1 text-xs leading-5 text-[#1F8A5B]">이제 FLOW 안에서 체크하거나 외부 도구로도 보낼 수 있습니다.</p>
               </div>
             ) : null}
             {savedFlowAt ? (
               <Link
-                className="mt-3 flex w-full items-center justify-center rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+                className="mt-3 flex w-full items-center justify-center rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
                 href="/my"
               >
                 내 Flow에서 보기
@@ -12276,23 +12267,13 @@ function ExportFirstHero({
             ) : (
               <button
                 type="button"
-                className="w-full rounded-xl bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+                className="w-full rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
                 onClick={onSaveToMyFlow}
               >
                 내 Flow에 저장
               </button>
             )}
-            <div className="mt-2 grid gap-2 sm:grid-cols-3">
-              <button className="rounded-xl border border-[#D8D5CD] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]" type="button" onClick={onDownloadCalendar}>
-                {FLOW_EXPORT_LABELS.calendarFile}
-              </button>
-              <button className="rounded-xl border border-[#D8D5CD] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]" type="button" onClick={onDownloadExcel}>
-                {FLOW_EXPORT_LABELS.sheetFile}
-              </button>
-              <button className="rounded-xl border border-[#D8D5CD] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]" type="button" onClick={onCopyText}>
-                {FLOW_EXPORT_LABELS.memoCopy}
-              </button>
-            </div>
+            <p className="mt-3 text-center text-xs leading-5 text-[#737B77]">파일로 가져가기는 실행 미리보기 아래에서 선택할 수 있어요.</p>
           </div>
           {displayAnchor ? (
             <p className="mt-2 text-center text-xs font-medium text-[#6E6B64]">
