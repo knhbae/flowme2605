@@ -1240,27 +1240,35 @@ function createDraftFlowId(): string {
   return `flow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function isPersonalMemoDraftBundle(bundle: FlowBundle): boolean {
+  return bundle.flow.status === 'draft' && bundle.flow.slug.startsWith('url-draft-') && bundle.flow.source_title === '내 메모';
+}
+
 function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowPackage {
   const now = new Date().toISOString();
   const id = createDraftFlowId();
   const slug = `url-draft-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const sectionId = `${id}-draft-section`;
+  const sectionTitle = source.kind === 'memo' ? '메모에서 나눈 할 일' : '손볼 초안 항목';
   const title = normalizeDraftText(input.flowTitle, source.defaultTitle);
   const anchor = isIsoDateString(input.anchorDate) ? input.anchorDate : undefined;
   const suggestions = (input.items.length > 0 ? input.items : source.suggestions).slice(0, 7);
-  const items = suggestions.map<FlowItem>((suggestion, index) => ({
-    id: `${id}-draft-item-${index + 1}`,
-    flow_id: id,
-    section_id: sectionId,
-    title: normalizeDraftText(suggestion.title, `${title} 할 일 ${index + 1}`),
-    ...(suggestion.memo.trim() ? { description: suggestion.memo.trim() } : {}),
-    type: anchor ? 'calendar' : 'todo',
-    day_offset: suggestion.dayOffset,
-    duration_days: 1,
-    source_type: source.kind === 'memo' ? 'creator_experience' : 'reference',
-    risk_level: 'low',
-    order: index,
-  }));
+  const items = suggestions.map<FlowItem>((suggestion, index) => {
+    const dayOffset = source.kind === 'memo' ? (index === 0 ? 0 : undefined) : suggestion.dayOffset;
+    return {
+      id: `${id}-draft-item-${index + 1}`,
+      flow_id: id,
+      section_id: sectionId,
+      title: normalizeDraftText(suggestion.title, `${title} 할 일 ${index + 1}`),
+      ...(suggestion.memo.trim() ? { description: suggestion.memo.trim() } : {}),
+      type: anchor && dayOffset !== undefined ? 'calendar' : 'todo',
+      ...(dayOffset !== undefined ? { day_offset: dayOffset } : {}),
+      duration_days: 1,
+      source_type: source.kind === 'memo' ? 'creator_experience' : 'reference',
+      risk_level: 'low',
+      order: index,
+    };
+  });
 
   return {
     bundle: {
@@ -1286,7 +1294,7 @@ function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: 
         usage_count: 0,
         copy_count: 0,
         tags: source.kind === 'memo' ? ['내 초안', '내 메모'] : ['내 초안'],
-        raw_text: `# ${title}\n\n## 손볼 초안 항목\n${items.map((item) => `- ${item.title}${item.description ? `\n  메모: ${item.description}` : ''}`).join('\n')}${source.kind === 'memo' ? `\n\n## 처음 붙여넣은 메모\n${source.memo.trim()}` : ''}`,
+        raw_text: `# ${title}\n\n## ${sectionTitle}\n${items.map((item) => `- ${item.title}${item.description ? `\n  메모: ${item.description}` : ''}`).join('\n')}${source.kind === 'memo' ? `\n\n## 처음 붙여넣은 메모\n${source.memo.trim()}` : ''}`,
         created_at: now,
         updated_at: now,
       },
@@ -1294,7 +1302,7 @@ function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: 
         {
           id: sectionId,
           flow_id: id,
-          title: '손볼 초안 항목',
+          title: sectionTitle,
           order: 0,
         },
       ],
@@ -1476,17 +1484,17 @@ function FlowMemoDraftPanel({
         />
       </label>
       <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
-        기준일 <span className="font-medium text-[#8A857B]">선택</span>
+        첫 할 일 날짜 <span className="font-medium text-[#8A857B]">선택</span>
         <input
           data-testid="flow-memo-draft-anchor-date"
-          aria-label="메모 초안 기준일"
+          aria-label="메모 초안 첫 할 일 날짜"
           className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
           type="date"
           value={draftAnchorDate}
           onChange={(event) => setDraftAnchorDate(event.target.value)}
         />
         <span className="break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
-          날짜가 필요할 때만 정하세요. 저장 후 My Flow에서 다시 바꿀 수 있습니다.
+          첫 번째 할 일만 캘린더에 넣습니다. 나머지는 저장 후 필요한 날짜만 정할 수 있어요.
         </span>
       </label>
       <div data-testid="flow-memo-draft-suggestion-list" className="grid gap-2 rounded-lg bg-[#F7FBF4] p-2.5 md:col-span-2">
@@ -1506,8 +1514,10 @@ function FlowMemoDraftPanel({
                 <p className="break-keep text-xs font-semibold leading-5 text-[#1B1A17]">{item.title}</p>
                 <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
                   {draftAnchorDate
-                    ? formatKoreanShortDate(addDays(new Date(draftAnchorDate), item.dayOffset), { includeWeekday: true })
-                    : `실행 순서 ${index + 1}`}
+                    ? index === 0
+                      ? formatKoreanShortDate(new Date(draftAnchorDate), { includeWeekday: true })
+                      : '날짜 없음 · 저장 후 필요할 때 추가'
+                    : '날짜 미정'}
                 </p>
               </div>
             </li>
@@ -3296,6 +3306,26 @@ function isMyFlowPersonalSavedCopy(flow: MySavedFlow): boolean {
 
 function isUrlFirstDraftSavedFlow(flow: MySavedFlow): boolean {
   return flow.progress.slug.startsWith('url-draft-') || flow.bundle.flow.slug.startsWith('url-draft-');
+}
+
+function isMemoDraftSavedFlow(flow: MySavedFlow): boolean {
+  return isUrlFirstDraftSavedFlow(flow) && isPersonalMemoDraftBundle(flow.bundle);
+}
+
+function getMyFlowSettingsDateAnchorCopy(flow: MySavedFlow) {
+  if (isMemoDraftSavedFlow(flow)) {
+    return {
+      label: '첫 할 일 날짜',
+      editLabel: '첫 할 일 날짜 바꾸기',
+      help: '첫 번째 할 일만 이 날짜에 맞춰집니다. 다른 할 일은 따로 정한 날짜를 유지합니다.',
+      itemOverrideLabel: '이 할 일 날짜',
+      distinction: '첫 할 일 날짜는 첫 번째 할 일만 정하고, 이 할 일 날짜는 선택한 할 일만 바꿉니다.',
+    };
+  }
+  if (isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy) return getSourceBackedFlowMapDateAnchorCopy();
+  return getSourceBackedFlowMapDateAnchorCopy(
+    flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
+  );
 }
 
 function canEditMyFlowSavedFlowSettings(flow: MySavedFlow): boolean {
@@ -8449,13 +8479,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
     const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
-    const settingsDateAnchorCopy = settingsEditable
-      ? isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy
-        ? getSourceBackedFlowMapDateAnchorCopy()
-        : getSourceBackedFlowMapDateAnchorCopy(
-            flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
-          )
-      : null;
+    const settingsDateAnchorCopy = settingsEditable ? getMyFlowSettingsDateAnchorCopy(flow) : null;
     const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const structureLabel = flow.savedMap
@@ -8637,13 +8661,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
     const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
-    const settingsDateAnchorCopy = settingsEditable
-      ? isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy
-        ? getSourceBackedFlowMapDateAnchorCopy()
-        : getSourceBackedFlowMapDateAnchorCopy(
-            flow.savedMap?.mapId ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId) : getSourceBackedMyFlowMapForBundle(flow.bundle),
-          )
-      : null;
+    const settingsDateAnchorCopy = settingsEditable ? getMyFlowSettingsDateAnchorCopy(flow) : null;
     const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = getMyFlowFlowProgressLabel(flow);
@@ -12670,6 +12688,7 @@ function getPublicViews(bundle: FlowBundle, hasScheduleAnchor = false): { id: Pu
 
 function getScheduleEntries(bundle: FlowBundle, anchor: string): ScheduleEntry[] {
   if (!anchor && bundle.flow.structure_type !== 'checklist') return [];
+  const personalMemoDraft = isPersonalMemoDraftBundle(bundle);
   if (bundle.flow.content_type === 'meal_plan') {
     return (bundle.mealSlots ?? []).map((slot) => {
       const start = addDays(new Date(anchor), slot.day_offset);
@@ -12696,7 +12715,7 @@ function getScheduleEntries(bundle: FlowBundle, anchor: string): ScheduleEntry[]
         id: item.id,
         title: item.title,
         section: getSectionTitleForBundle(bundle, item.section_id),
-        timing: timingLabel(item.day_offset, item.duration_days),
+        timing: personalMemoDraft && item.day_offset === 0 ? '첫 할 일 날짜' : timingLabel(item.day_offset, item.duration_days),
         startDate: formatDate(start),
         endDate: end ? formatDate(end) : undefined,
         durationDays: item.duration_days,

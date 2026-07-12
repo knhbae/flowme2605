@@ -1,9 +1,14 @@
 {
-  "capturedAt": "2026-07-12T03:03:28.413Z",
+  "capturedAt": "2026-07-12T03:28:49.296Z",
   "sourcePolicy": {
     "runtimeBuildOnly": true,
     "outdatedReviewScreensUsedAsCurrentEvidence": false,
-    "reviewGatedContentUsedAsSuccessScenario": false
+    "reviewGatedContentUsedAsSuccessScenario": false,
+    "runtimeInventoryEvidence": "../2026-07-12-flowme-runtime-content-inventory-separation-evidence/route-evidence.json",
+    "publicSuccessRouteCount": 71,
+    "reviewGatedRouteCount": 86,
+    "archiveDirectRouteCount": 20,
+    "retiredFlowMapRouteCount": 8
   },
   "scenarios": [
     {
@@ -31,7 +36,24 @@
       "sourceTitle": "내 메모",
       "sourceUrlPresent": false,
       "originalMemoPreserved": true,
-      "itemCount": 4
+      "itemCount": 4,
+      "scheduledItemCount": 1,
+      "unscheduledItemCount": 3,
+      "inventedSequentialDateCount": 0,
+      "dateAnchorLabel": "첫 할 일 날짜",
+      "legacyDdayLabelHitCount": 0
+    },
+    {
+      "scenario": "memo-draft-calendar",
+      "viewport": "mobile",
+      "width": 390,
+      "selectedDate": "2026-08-30",
+      "visibleMemoDraftItemCount": 1,
+      "firstItemVisible": true,
+      "unscheduledItemsVisible": false,
+      "timingLabel": "첫 할 일 날짜",
+      "legacyDdayLabelHitCount": 0,
+      "horizontalOverflow": false
     },
     {
       "scenario": "url-memo-entry",
@@ -56,7 +78,24 @@
       "sourceTitle": "내 메모",
       "sourceUrlPresent": false,
       "originalMemoPreserved": true,
-      "itemCount": 4
+      "itemCount": 4,
+      "scheduledItemCount": 1,
+      "unscheduledItemCount": 3,
+      "inventedSequentialDateCount": 0,
+      "dateAnchorLabel": "첫 할 일 날짜",
+      "legacyDdayLabelHitCount": 0
+    },
+    {
+      "scenario": "memo-draft-calendar",
+      "viewport": "wide",
+      "width": 1024,
+      "selectedDate": "2026-08-30",
+      "visibleMemoDraftItemCount": 1,
+      "firstItemVisible": true,
+      "unscheduledItemsVisible": false,
+      "timingLabel": "첫 할 일 날짜",
+      "legacyDdayLabelHitCount": 0,
+      "horizontalOverflow": false
     }
   ],
   "summary": {
@@ -68,6 +107,11 @@
     "memoDraftLiveAiImpliedCount": 0,
     "horizontalOverflowCount": 0,
     "originalMemoPreservedCount": 2,
+    "memoDraftScheduledItemCountPerCopy": 1,
+    "memoDraftUnscheduledItemCountPerCopy": 3,
+    "memoDraftInventedSequentialDateCount": 0,
+    "memoDraftCalendarProjectionCount": 2,
+    "memoDraftLegacyDdayLabelHitCount": 0,
     "firstCatalogCardWithinBaseline": true,
     "urlCanonicalLookupPreserved": true,
     "storageSchemaChanged": false,

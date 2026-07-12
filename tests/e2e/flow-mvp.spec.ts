@@ -449,7 +449,10 @@ test('flow finding turns a plain memo into an editable private draft and lands i
   await expect(editor).toBeVisible();
   await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(4);
   await editor.getByLabel('메모 초안 제목').fill('우리 집 이사 준비');
-  await editor.getByLabel('메모 초안 기준일').fill('2026-08-30');
+  await editor.getByLabel('메모 초안 첫 할 일 날짜').fill('2026-08-30');
+  await expect(editor).toContainText('첫 번째 할 일만 캘린더에 넣습니다');
+  await expect(editor.getByTestId('flow-memo-draft-item').first()).toContainText('8월 30일');
+  await expect(editor.getByTestId('flow-memo-draft-item').nth(1)).toContainText('날짜 없음');
   await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
 
   await page.waitForURL(/\/my(?:\?|$)/);
@@ -468,8 +471,26 @@ test('flow finding turns a plain memo into an editable private draft and lands i
   expect(storedDraft?.flow?.source_url).toBeUndefined();
   expect(storedDraft?.flow?.raw_text).toContain('처음 붙여넣은 메모');
   expect(storedDraft?.flow?.raw_text).toContain('관리사무소에 연락한다');
+  expect(storedDraft?.items?.[0]).toMatchObject({ type: 'calendar', day_offset: 0 });
+  expect(
+    storedDraft?.items
+      ?.slice(1)
+      .every((item: { type?: string; day_offset?: number }) => item.type === 'todo' && item.day_offset === undefined),
+  ).toBe(true);
   await expect(page.getByText('우리 집 이사 준비').first()).toBeVisible();
+  await expect(page.locator('body')).not.toContainText('기준 D-Day');
   await expectNoHorizontalOverflow(page);
+
+  await page.getByTestId('my-flow-view-flow').click();
+  const memoDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await expect(memoDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toContainText('첫 할 일 날짜');
+
+  await page.goto('/calendar');
+  await expect(page.getByText('이사 견적을 비교하기').first()).toBeVisible();
+  await expect(page.getByText('관리사무소에 연락하기')).toHaveCount(0);
+  await expect(page.getByText('첫 할 일 날짜').first()).toBeVisible();
+  await expect(page.getByText('메모에서 나눈 할 일').first()).toBeVisible();
+  await expect(page.locator('body')).not.toContainText('기준 D-Day');
 });
 
 test('flow finding URL lookup saves production candidates without AI generation', async ({ page }) => {

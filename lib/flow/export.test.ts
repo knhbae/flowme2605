@@ -2,6 +2,58 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from './export';
 import { seedBundles } from './seed-flows';
+import type { FlowBundle } from './types';
+
+test('personal memo draft calendar export includes only the explicitly dated first task', () => {
+  const bundle: FlowBundle = {
+    flow: {
+      id: 'memo-draft-flow',
+      slug: 'url-draft-memo-test',
+      title: '우리 집 이사 준비',
+      category: '내 초안',
+      structure_type: 'checklist',
+      content_type: 'default',
+      anchor_type: 'start_date',
+      status: 'draft',
+      source_title: '내 메모',
+      source_status: 'preview',
+      created_at: '2026-07-12T00:00:00.000Z',
+      updated_at: '2026-07-12T00:00:00.000Z',
+    },
+    sections: [{ id: 'memo-section', flow_id: 'memo-draft-flow', title: '메모에서 나눈 할 일', order: 0 }],
+    items: [
+      {
+        id: 'memo-item-1',
+        flow_id: 'memo-draft-flow',
+        section_id: 'memo-section',
+        title: '이사 견적을 비교하기',
+        type: 'calendar',
+        day_offset: 0,
+        duration_days: 1,
+        order: 0,
+      },
+      {
+        id: 'memo-item-2',
+        flow_id: 'memo-draft-flow',
+        section_id: 'memo-section',
+        title: '관리사무소에 연락하기',
+        type: 'todo',
+        duration_days: 1,
+        order: 1,
+      },
+    ],
+    warnings: [],
+  };
+
+  const calendar = buildIcsCalendar(bundle, {}, '2026-08-30');
+  const memo = buildText(bundle, {}, '2026-08-30');
+
+  assert.equal((calendar.match(/BEGIN:VEVENT/g) ?? []).length, 1);
+  assert.match(calendar, /이사 견적을 비교하기/);
+  assert.doesNotMatch(calendar, /관리사무소에 연락하기/);
+  assert.match(memo, /이사 견적을 비교하기/);
+  assert.match(memo, /관리사무소에 연락하기/);
+});
 
 test('timeline text export includes calculated dates when anchor exists', () => {
   const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
