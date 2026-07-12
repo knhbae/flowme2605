@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-07-12T23:30:00+09:00",
+  "scope": "cross-category-ux-reference-audit",
+  "validationClaim": "design-reference-input-only",
+  "productCategories": {
+    "calendar": ["Apple Calendar", "Google Calendar", "Fantastical", "Notion Calendar"],
+    "workspace": ["Notion"],
+    "todo": ["Things", "Todoist", "Microsoft To Do", "TickTick"],
+    "workout": ["Nike Training Club", "Fitbod", "Freeletics"],
+    "travel": ["Wanderlog", "Roadtrippers", "TripIt", "Polarsteps"]
+  },
+  "crossProductPatterns": [
+    "overview-detail-density-split",
+    "one-data-model-multiple-job-views",
+    "focused-today-surface",
+    "program-current-session-separation",
+    "journey-stage-separation",
+    "direct-edit-near-visible-date-or-action",
+    "progressive-disclosure",
+    "one-primary-action-per-state"
+  ],
+  "flowArchetypes": [
+    "timeline-project",
+    "checklist-inspection",
+    "routine-program",
+    "record-tracker",
+    "decision-comparison",
+    "itinerary-trip",
+    "source-hold-reference"
+  ],
+  "routePriorities": [
+    {
+      "route": "/f/[slug]",
+      "priority": 1,
+      "reason": "shared shell has the clearest wide calendar/list density imbalance"
+    },
+    {
+      "route": "/my",
+      "priority": 2,
+      "reason": "daily focus and saved inventory require distinct density levels"
+    },
+    {
+      "route": "/calendar",
+      "priority": 3,
+      "reason": "month navigation and selected-day execution must be visually separated"
+    },
+    {
+      "route": "/flows",
+      "priority": 4,
+      "reason": "intake states need archetype-led results without generic component stacks"
+    },
+    {
+      "route": "/",
+      "priority": 5,
+      "reason": "entry hierarchy should use the completed shared primitives"
+    }
+  ],
+  "knownVisualDebt": {
+    "publicFlowWideCalendarListDensityImbalance": true,
+    "genericAllArtifactsStack": true,
+    "nestedCardPressure": true,
+    "automatedGuardrailsProveVisualQuality": false
+  }
+}
