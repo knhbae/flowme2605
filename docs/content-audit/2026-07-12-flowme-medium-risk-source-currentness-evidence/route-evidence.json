@@ -1,0 +1,106 @@
+{
+  "packageId": "2026-07-12-flowme-medium-risk-source-currentness-evidence",
+  "inspectedAt": "2026-07-12",
+  "policy": {
+    "sourceReachabilityIsNotCurrentness": true,
+    "publicationDateCanBeUnknown": true,
+    "sourcePublishedModifiedCheckedSeparated": true,
+    "semanticScopeReviewedSeparately": true,
+    "yearStampedPolicyCopyOnNormalRoutes": false
+  },
+  "sourceChecks": [
+    {
+      "slug": "source-backed-postal-address-transfer",
+      "sourceUrl": "https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal",
+      "sourceType": "official-service",
+      "httpStatus": 200,
+      "sourcePublishedAt": null,
+      "sourceModifiedAt": null,
+      "sourceCheckedAt": "2026-07-12",
+      "sourceFitDecision": "keep_representative",
+      "scope": "next-day official status and payment-need check only"
+    },
+    {
+      "slug": "source-backed-aircon-filter-cleaning",
+      "sourceUrl": "https://www.samsungsvc.co.kr/solution/28524",
+      "sourceType": "official-guide",
+      "httpStatus": 200,
+      "sourcePublishedAt": "2025-01-06",
+      "sourceModifiedAt": null,
+      "sourceCheckedAt": "2026-07-12",
+      "sourceFitDecision": "keep_representative",
+      "scope": "ceiling 1way model filter cleaning and reset only"
+    },
+    {
+      "slug": "curated-ajd-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceType": "commercial-guide",
+      "httpStatus": 200,
+      "sourcePublishedAt": "2024-05-17",
+      "sourceModifiedAt": "2026-06-30",
+      "sourceCheckedAt": "2026-07-12",
+      "sourceFitDecision": "keep_representative",
+      "scope": "five current D-day sections"
+    },
+    {
+      "slug": "curated-wedding-naver-timeline",
+      "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+      "sourceType": "personal-experience",
+      "httpStatus": 200,
+      "sourcePublishedAt": "2024-07-20",
+      "sourceModifiedAt": null,
+      "sourceCheckedAt": "2026-07-12",
+      "sourceFitDecision": "keep_representative",
+      "scope": "six personal-experience time bands only",
+      "healthBeautyAdviceImported": false
+    },
+    {
+      "slug": "curated-wedding-gongysd-atoz",
+      "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+      "sourceType": "commercial-guide",
+      "httpStatus": 200,
+      "sourcePublishedAt": "2024-12-25",
+      "sourceModifiedAt": "2026-02-10",
+      "sourceCheckedAt": "2026-07-12",
+      "sourceFitDecision": "keep_representative",
+      "sourceCategoryCount": 15,
+      "flowStarterCategoryCount": 4,
+      "scope": "four-category starter sheet, not A-to-Z"
+    }
+  ],
+  "weddingMap": {
+    "mapId": "curated-wedding-checklist-family",
+    "version": "2026-07-12.1",
+    "publicSaveMode": "choose_child",
+    "publicChildFlowCount": 2,
+    "publicSaveAllCtaCount": 0,
+    "childCtaLabel": "내용 보고 시작",
+    "compactPreviewCountPerChild": 2,
+    "hiddenStepSummaryCounts": [4, 2],
+    "videoSpecificCopyHitCount": 0
+  },
+  "summary": {
+    "manualSourceFitAuditCount": 141,
+    "keepRepresentativeCount": 54,
+    "reshapeBeforeFeaturedCount": 74,
+    "catalogPreviewOnlyCount": 12,
+    "hideFromPublicCatalogCount": 1,
+    "sourcePublicationMetadataUnknownCount": 1,
+    "sourceModifiedMetadataPresentCount": 2,
+    "normalRouteInternalCopyHitCount": 0,
+    "normalRouteRawIsoHitCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "screenshots": [
+    { "scenario": "postal-official", "viewport": "390x844", "file": "screenshots/01-postal-official-mobile.png" },
+    { "scenario": "aircon-official", "viewport": "390x844", "file": "screenshots/02-aircon-official-mobile.png" },
+    { "scenario": "moving-current-map", "viewport": "390x844", "file": "screenshots/03-moving-current-map-mobile.png" },
+    { "scenario": "moving-current-public", "viewport": "390x844", "file": "screenshots/04-moving-current-public-mobile.png" },
+    { "scenario": "wedding-choose-one-map", "viewport": "390x844", "file": "screenshots/05-wedding-choose-one-map-mobile.png" },
+    { "scenario": "wedding-personal-timeline", "viewport": "390x844", "file": "screenshots/06-wedding-personal-timeline-mobile.png" },
+    { "scenario": "wedding-four-part-starter", "viewport": "390x844", "file": "screenshots/07-wedding-four-part-starter-mobile.png" },
+    { "scenario": "wedding-choose-one-map-wide", "viewport": "1024x900", "file": "screenshots/08-wedding-choose-one-map-wide.png" }
+  ]
+}

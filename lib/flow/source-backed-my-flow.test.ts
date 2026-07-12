@@ -738,16 +738,18 @@ test('postal address transfer sourceTrace repair keeps official service rows sou
   assert.ok(lookupableIds.includes('postal-address-transfer'));
 
   const rows = buildSourceBackedMyFlowRows(bundleBySlug('source-backed-postal-address-transfer'));
+  const bundle = bundleBySlug('source-backed-postal-address-transfer');
   assert.equal(rows.length, 1);
   assert.ok(rows.every((row) => row.mapId === 'postal-address-transfer'));
   assert.ok(rows.every((row) => row.riskLevel === 'medium'));
   assert.ok(rows.every((row) => row.sourceUrl === 'https://service.epost.go.kr/front.RetrieveAddressMoveInfo.postal'));
   assert.equal(rows[0]?.calendar.mode, 'anchor_offset');
   assert.equal(rows[0]?.calendar.dayOffset, 1);
+  assert.equal(bundle.flow.source_checked_at, '2026-07-12');
+  assert.equal(bundle.flow.source_published_at, undefined);
+  assert.match(bundle.flow.conversion_note ?? '', /수수료와 서비스 기간은 공식 화면/u);
 
-  const detailTrace = bundleBySlug('source-backed-postal-address-transfer')
-    .itemDetails.map((detail) => detail.why)
-    .join('\n');
+  const detailTrace = bundle.itemDetails.map((detail) => detail.why).join('\n');
   assert.match(detailTrace, /sourceTrace: Korea Post address move service/);
   assert.match(detailTrace, /source row: postal-next-day-check/);
   assert.doesNotMatch(detailTrace, /postal-payment-deadline|postal-service-start/);
@@ -972,7 +974,9 @@ test('aircon filter routine keeps current Samsung 1way scope, model check, and o
 
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.version, '2026-07-12.1');
+  assert.equal(bundle.flow.source_published_at, '2025-01-06');
   assert.equal(bundle.flow.source_checked_at, '2026-07-12');
+  assert.equal(bundle.flow.updated_at, '2026-07-12T00:00:00.000Z');
   assert.equal(bundle.flow.risk_level, 'medium');
   assert.equal(row.riskLevel, 'medium');
   assert.equal(row.calendar.repeatRule, 'FREQ=WEEKLY;INTERVAL=2');
@@ -1124,6 +1128,7 @@ test('curated Allblanc sourceTrace repair keeps exact video rows source-traced w
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'curated-allblanc-workout-park');
   assert.equal(publishPackage.public.saveMode, 'choose_child');
+  assert.equal(publishPackage.public.choiceCopy?.childCtaLabel, '요일 정하고 시작');
   assert.equal(getSourceBackedFlowMapQualityDecision('curated-allblanc-workout-park').directRouteEnabled, true);
   assert.equal(getSourceBackedFlowMapQualityDecision('curated-allblanc-workout-park').publicExecutionEnabled, true);
   assert.equal(getSourceBackedFlowMapQualityDecision('homefit-map').directRouteEnabled, false);
@@ -1284,6 +1289,9 @@ test('curated wedding sourceTrace repair keeps the two source versions separated
 
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'curated-wedding-checklist-family');
+  assert.equal(publishPackage.map.version, '2026-07-12.1');
+  assert.equal(publishPackage.public.saveMode, 'choose_child');
+  assert.equal(publishPackage.public.choiceCopy?.childCtaLabel, '내용 보고 시작');
   assert.equal(getSourceBackedFlowMapQualityDecision('curated-wedding-checklist-family').directRouteEnabled, true);
   assert.equal(getSourceBackedFlowMapQualityDecision('wedding-map').directRouteEnabled, false);
   assert.ok(lookupableIds.includes('curated-wedding-checklist-family'));
@@ -1295,6 +1303,18 @@ test('curated wedding sourceTrace repair keeps the two source versions separated
   assert.ok(gongysd);
   assert.equal(naver.steps.length, 6);
   assert.equal(gongysd.steps.length, 4);
+  assert.equal(naver.title, '결혼 준비 1년 참고 타임라인');
+  assert.equal(gongysd.title, '결혼 준비 핵심 4가지 시작표');
+
+  const naverBundle = bundleBySlug(naver.slug);
+  const gongysdBundle = bundleBySlug(gongysd.slug);
+  assert.equal(naverBundle.flow.source_published_at, '2024-07-20');
+  assert.equal(naverBundle.flow.source_modified_at, undefined);
+  assert.equal(gongysdBundle.flow.source_published_at, '2024-12-25');
+  assert.equal(gongysdBundle.flow.source_modified_at, '2026-02-10');
+  assert.ok([naverBundle, gongysdBundle].every((bundle) => bundle.flow.source_checked_at === '2026-07-12'));
+  assert.match(naverBundle.flow.warning ?? '', /개인 경험/u);
+  assert.match(gongysdBundle.flow.warning ?? '', /네 가지/u);
 
   assert.ok(naver.steps.every((step) => step.sourceTrace?.includes('Naver wedding timeline article')));
   assert.ok(naver.steps.every((step) => !step.sourceTrace?.includes('Gongysd wedding checklist article')));
@@ -1302,6 +1322,20 @@ test('curated wedding sourceTrace repair keeps the two source versions separated
   assert.ok(gongysd.steps.every((step) => !step.sourceTrace?.includes('Naver wedding timeline article')));
   assert.ok(naver.steps.some((step) => step.sourceTrace?.includes('timeline period row: wedding-naver-d12')));
   assert.ok(gongysd.steps.some((step) => step.sourceTrace?.includes('A-to-Z category row: wedding-gongysd-studio-dress-makeup')));
+});
+
+test('current AJD moving source records original publication, latest revision, and recheck separately', () => {
+  const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-ajd-moving-d30');
+  const bundle = bundleBySlug('curated-ajd-moving-d30');
+
+  assert.ok(publishPackage);
+  assert.equal(publishPackage.map.version, '2026-07-12.1');
+  assert.equal(bundle.flow.source_published_at, '2024-05-17');
+  assert.equal(bundle.flow.source_modified_at, '2026-06-30');
+  assert.equal(bundle.flow.source_checked_at, '2026-07-12');
+  assert.equal(bundle.flow.updated_at, '2026-07-12T00:00:00.000Z');
+  assert.equal(bundle.items.length, 5);
+  assert.match(bundle.flow.conversion_note ?? '', /최신 D-day 표에서 다섯 개 구간/u);
 });
 
 test('curated source app seed converts each recommended Flow into executable source-backed rows', () => {

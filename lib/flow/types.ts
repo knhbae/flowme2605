@@ -72,6 +72,7 @@ export type Flow = {
    */
   routine_duration_days?: number;
   source_published_at?: string;
+  source_modified_at?: string;
   source_checked_at?: string;
   conversion_note?: string;
   risk_level?: RiskLevel;

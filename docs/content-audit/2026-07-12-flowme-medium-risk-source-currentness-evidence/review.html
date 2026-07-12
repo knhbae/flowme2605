@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 중위험 공개 출처 현재성 감사</title>
+  <style>
+    :root { color-scheme: light; --ink:#171717; --muted:#66635d; --line:#ddd9d0; --paper:#fff; --bg:#f6f6f2; --blue:#3654ff; --amber:#8a5a00; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,"Noto Sans KR",sans-serif; line-height:1.65; }
+    main { width:min(1180px,calc(100% - 32px)); margin:0 auto; padding:44px 0 72px; }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { font-size:clamp(30px,5vw,54px); line-height:1.12; letter-spacing:0; }
+    h2 { margin:42px 0 14px; font-size:25px; }
+    .lead { max-width:820px; color:var(--muted); font-size:17px; }
+    .band { margin-top:24px; border-top:4px solid var(--blue); background:var(--paper); padding:22px; }
+    .facts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .fact { border:1px solid var(--line); padding:14px; background:#fafaf8; }
+    .fact b { display:block; font-size:24px; }
+    .fact span { color:var(--muted); font-size:13px; }
+    table { width:100%; border-collapse:collapse; background:var(--paper); }
+    th,td { border:1px solid var(--line); padding:11px; text-align:left; vertical-align:top; }
+    th { background:#efeee9; font-size:13px; }
+    td { font-size:14px; }
+    .unknown { color:var(--amber); font-weight:700; }
+    .shots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    figure { margin:0; border:1px solid var(--line); background:var(--paper); padding:12px; }
+    img { display:block; width:100%; height:auto; border:1px solid #ece9e1; }
+    figcaption { padding-top:10px; color:var(--muted); font-size:13px; }
+    .mobile img { max-height:760px; object-fit:contain; object-position:top; background:#fafaf8; }
+    .wide { grid-column:1 / -1; }
+    .callout { border-left:4px solid var(--blue); background:#eef1ff; padding:16px 18px; }
+    code { background:#ecebe6; padding:2px 5px; }
+    a { color:var(--blue); }
+    @media (max-width:760px) { .facts,.shots { grid-template-columns:1fr; } .wide { grid-column:auto; } table { display:block; overflow-x:auto; } main { width:min(100% - 20px,1180px); padding-top:24px; } }
+  </style>
+</head>
+<body>
+<main>
+  <p>2026-07-12 · source currentness review</p>
+  <h1>열리는 페이지와<br />현재 쓸 수 있는 내용은 다릅니다</h1>
+  <p class="lead">다섯 공개 Flow를 게시일, 원문 수정일, 오늘 재확인, 현재 실행 범위로 나눠 감사했습니다. 오래됐다는 이유만으로 삭제하지 않고, 최근 수정됐다는 이유만으로 전체 내용을 자동 승인하지도 않았습니다.</p>
+
+  <section class="band facts">
+    <div class="fact"><b>5</b><span>재확인한 공개 Flow</span></div>
+    <div class="fact"><b>2</b><span>수정일 메타가 있는 원문</span></div>
+    <div class="fact"><b>1</b><span>게시일을 알 수 없는 공식 서비스</span></div>
+    <div class="fact"><b>0</b><span>결혼 Map 전체 저장 CTA</span></div>
+  </section>
+
+  <h2>판정표</h2>
+  <table>
+    <thead><tr><th>Flow</th><th>게시</th><th>수정</th><th>오늘 확인</th><th>현재 유지 범위</th></tr></thead>
+    <tbody>
+      <tr><td>우편물 이전</td><td class="unknown">알 수 없음</td><td>알 수 없음</td><td>2026-07-12</td><td>전입신고 다음날 공식 상태·결제 필요 여부 확인</td></tr>
+      <tr><td>천장형 1way 필터</td><td>2025-01-06</td><td>표시 없음</td><td>2026-07-12</td><td>정확한 모델의 청소·건조·장착·리셋</td></tr>
+      <tr><td>AJD 이사 D-30</td><td>2024-05-17</td><td>2026-06-30</td><td>2026-07-12</td><td>현재 원문의 다섯 D-day 구간</td></tr>
+      <tr><td>개인 결혼 타임라인</td><td>2024-07-20</td><td>표시 없음</td><td>2026-07-12</td><td>개인 경험의 여섯 기간 구분만</td></tr>
+      <tr><td>공여사들 결혼 가이드</td><td>2024-12-25</td><td>2026-02-10</td><td>2026-07-12</td><td>15개 중 핵심 4가지 시작표</td></tr>
+    </tbody>
+  </table>
+
+  <h2>핵심 제품 결정</h2>
+  <div class="callout">
+    <strong>결혼 준비 Map은 두 자료를 모두 저장하지 않습니다.</strong>
+    <p>개인 경험 타임라인과 최근 갱신된 핵심 시작표는 범위와 신뢰 방식이 다릅니다. 각 카드에서 앞 2개 항목만 보고 하나를 골라 해당 공개 Flow에서 저장합니다.</p>
+  </div>
+
+  <h2>시나리오 화면</h2>
+  <div class="shots">
+    <figure class="mobile"><img src="screenshots/01-postal-official-mobile.png" alt="우편물 이전 공식 서비스 모바일" /><figcaption>공식 서비스 화면은 게시일을 만들지 않고 재확인일만 표시합니다.</figcaption></figure>
+    <figure class="mobile"><img src="screenshots/02-aircon-official-mobile.png" alt="천장형 1way 에어컨 필터 모바일" /><figcaption>게시일과 재확인일, 정확한 모델 경계를 함께 표시합니다.</figcaption></figure>
+    <figure class="mobile"><img src="screenshots/03-moving-current-map-mobile.png" alt="현재 AJD 이사 Map 모바일" /><figcaption>URL 연도보다 최신 수정 원문의 다섯 D-day 구간을 사용합니다.</figcaption></figure>
+    <figure class="mobile"><img src="screenshots/04-moving-current-public-mobile.png" alt="AJD 이사 공개 Flow 모바일" /><figcaption>게시·수정·재확인 날짜를 원문 메타에서 분리합니다.</figcaption></figure>
+    <figure class="mobile"><img src="screenshots/05-wedding-choose-one-map-mobile.png" alt="결혼 참고표 선택 Map 모바일" /><figcaption>둘 중 하나를 고르는 짧은 비교 선반입니다.</figcaption></figure>
+    <figure class="mobile"><img src="screenshots/06-wedding-personal-timeline-mobile.png" alt="개인 경험 결혼 타임라인 모바일" /><figcaption>개인 경험 참고 일정과 실제 계약 확인 경계를 명시합니다.</figcaption></figure>
+    <figure class="mobile"><img src="screenshots/07-wedding-four-part-starter-mobile.png" alt="결혼 핵심 4가지 시작표 모바일" /><figcaption>A-to-Z가 아닌 실제 제공 범위 네 가지로 제목과 결과물을 맞춥니다.</figcaption></figure>
+    <figure class="wide"><img src="screenshots/08-wedding-choose-one-map-wide.png" alt="결혼 참고표 선택 Map 1024px" /><figcaption>1024px에서도 선택 카드가 전부 펼쳐지지 않고 앞 2개 항목만 비교됩니다.</figcaption></figure>
+  </div>
+
+  <h2>검증 한계</h2>
+  <p>자동화, source HTML/metadata 재확인, 390px·1024px 스크린샷 검토를 수행했습니다. 실제 사용자 관찰 세션은 0건이며 외부 원문의 이후 변경은 다음 재확인 대상입니다.</p>
+</main>
+</body>
+</html>

@@ -6472,6 +6472,79 @@ test('current Allblanc source fit separates publication age, personal schedule, 
   expect(await page.locator('meta[name="robots"][content*="noindex"]').count()).toBeGreaterThan(0);
 });
 
+test('current medium-risk sources separate publication, revision, recheck, and executable scope', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_MEDIUM_SOURCE_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const postalResponse = await page.goto('/f/source-backed-postal-address-transfer');
+  expect(postalResponse?.status()).toBe(200);
+  const postalSource = page.getByTestId('flow-source-card');
+  await expect(postalSource).toContainText('7월 12일 원문 확인 기록');
+  await expect(postalSource).not.toContainText('원문 게시');
+  await expect(page.locator('body')).toContainText('공식 화면의 결제 기한');
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-postal-official-mobile.png`, fullPage: true });
+
+  const airconResponse = await page.goto('/f/source-backed-aircon-filter-cleaning');
+  expect(airconResponse?.status()).toBe(200);
+  const airconSource = page.getByTestId('flow-source-card');
+  await expect(airconSource).toContainText('2025년 1월 6일 원문 게시');
+  await expect(airconSource).toContainText('7월 12일 원문 확인 기록');
+  await expect(page.locator('body')).toContainText('천장형 1way');
+  await expect(page.locator('body')).toContainText('사용설명서');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-aircon-official-mobile.png`, fullPage: true });
+
+  const movingMapResponse = await page.goto('/flow-maps/curated-ajd-moving-d30');
+  expect(movingMapResponse?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: '이사 D-30 체크리스트' })).toBeVisible();
+  await expect(page.locator('body')).toContainText('최근 갱신된 원문');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-moving-current-map-mobile.png`, fullPage: true });
+
+  const movingResponse = await page.goto('/f/curated-ajd-moving-d30');
+  expect(movingResponse?.status()).toBe(200);
+  const movingSource = page.getByTestId('flow-source-card');
+  await expect(movingSource).toContainText('2024년 5월 17일 원문 게시');
+  await expect(movingSource).toContainText('2026년 6월 30일 원문 수정');
+  await expect(movingSource).toContainText('7월 12일 원문 확인 기록');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-moving-current-public-mobile.png`, fullPage: true });
+
+  const weddingMapResponse = await page.goto('/flow-maps/curated-wedding-checklist-family');
+  expect(weddingMapResponse?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: '결혼 준비 참고표 2종' })).toBeVisible();
+  await expect(page.getByTestId('flow-map-choose-child')).toContainText('두 참고표 중 하나를 고르세요');
+  await expect(page.getByTestId('flow-map-choose-child')).not.toContainText('영상');
+  await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
+  await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '내용 보고 시작' })).toHaveCount(2);
+  await expect(page.getByTestId('flow-map-child-compact-preview')).toHaveCount(2);
+  await expect(page.locator('body')).toContainText('나머지 4개는 내용 보기에서 확인');
+  await expect(page.locator('body')).toContainText('나머지 2개는 내용 보기에서 확인');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/05-wedding-choose-one-map-mobile.png`, fullPage: true });
+
+  const naverResponse = await page.goto('/f/curated-wedding-naver-timeline');
+  expect(naverResponse?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: '결혼 준비 1년 참고 타임라인' })).toBeVisible();
+  await expect(page.getByTestId('flow-source-card')).toContainText('2024년 7월 20일 원문 게시');
+  await expect(page.locator('body')).toContainText('개인 경험을 바탕으로 한 참고 일정');
+  await expect(page.locator('body')).not.toContainText(/리프팅 시술|화이트태닝|다이어트 병원/u);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/06-wedding-personal-timeline-mobile.png`, fullPage: true });
+
+  const gongysdResponse = await page.goto('/f/curated-wedding-gongysd-atoz');
+  expect(gongysdResponse?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: '결혼 준비 핵심 4가지 시작표' })).toBeVisible();
+  const gongysdSource = page.getByTestId('flow-source-card');
+  await expect(gongysdSource).toContainText('2024년 12월 25일 원문 게시');
+  await expect(gongysdSource).toContainText('2026년 2월 10일 원문 수정');
+  await expect(page.locator('body')).toContainText('전체 체크리스트가 아니라 시작 단계 네 가지');
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/07-wedding-four-part-starter-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/flow-maps/curated-wedding-checklist-family');
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/08-wedding-choose-one-map-wide.png`, fullPage: true });
+});
+
 test('current source freshness audit keeps corrected routes executable and stale routes gated', async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 844 });

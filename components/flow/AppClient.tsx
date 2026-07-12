@@ -391,6 +391,7 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
   const sourceMeta = [
     domain,
     bundle.flow.source_published_at ? `${formatSourcePublishedDate(bundle.flow.source_published_at)} 원문 게시` : null,
+    bundle.flow.source_modified_at ? `${formatSourcePublishedDate(bundle.flow.source_modified_at)} 원문 수정` : null,
     bundle.flow.source_checked_at ? `${formatMyFlowDisplayDate(bundle.flow.source_checked_at)} 원문 확인 기록` : null,
     bundle.flow.updated_at ? `${formatMyFlowDisplayDate(formatDate(new Date(bundle.flow.updated_at)))} Flow 정리` : null,
     getSourcePrecisionLabel(bundle),

@@ -105,6 +105,13 @@ export type SourceBackedMyFlowMap = {
     defaultValue?: string;
   };
   publicSaveMode?: 'save_all' | 'choose_child';
+  publicChoiceCopy?: {
+    resultPromise: string;
+    heading: string;
+    body: string;
+    inputLabel: string;
+    childCtaLabel: string;
+  };
   flowSlugs: string[];
   categoryLabel?: string;
   userFacingStatus?: string;
@@ -268,6 +275,7 @@ export type SourceBackedFlowMapPublishPackage = {
     setupInputs: string[];
     setupInput?: SourceBackedMyFlowMap['setupInput'];
     saveMode: NonNullable<SourceBackedMyFlowMap['publicSaveMode']>;
+    choiceCopy?: SourceBackedMyFlowMap['publicChoiceCopy'];
     primaryCta: { label: string; href: string };
     secondaryCtas: { label: string; href: string }[];
     artifacts: string[];
@@ -2062,6 +2070,7 @@ export function buildSourceBackedFlowMapPublishPackage(mapId: string): SourceBac
       setupInputs: map.setupInput ? [map.setupInput.label] : [],
       setupInput: map.setupInput,
       saveMode: map.publicSaveMode ?? 'save_all',
+      choiceCopy: map.publicChoiceCopy,
       primaryCta: { label: '전체 저장하고 시작', href: '/my' },
       secondaryCtas: childBundles.map((bundle) => ({ label: `${bundle.flow.title}만 저장`, href: '/my' })),
       artifacts: map.artifacts,

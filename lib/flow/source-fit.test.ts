@@ -96,9 +96,9 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 136);
+  assert.equal(summary.auditedCount, 141);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 49);
+  assert.equal(summary.decisionCounts.keep_representative, 54);
   assert.equal(summary.decisionCounts.reshape_before_featured, 74);
   assert.equal(summary.decisionCounts.catalog_preview_only, 12);
   assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
@@ -120,6 +120,27 @@ test('current Allblanc source fit separates old video publication dates from cur
     assert.match(`${audit.contentAction} ${audit.uxAction}`, /요일/u, slug);
     assert.ok(audit.naturalArtifacts.some((artifact) => artifact.kind === 'routine_calendar'), slug);
   }
+});
+
+test('medium-risk currentness pass separates publication age, source updates, and current semantic scope', () => {
+  const expected = new Map([
+    ['source-backed-postal-address-transfer', /게시일.*추정하지 않고/u],
+    ['source-backed-aircon-filter-cleaning', /2025년 1월 6일 게시/u],
+    ['curated-ajd-moving-d30', /2024년 5월 17일 게시.*2026년 6월 30일 수정/u],
+    ['curated-wedding-naver-timeline', /2024년 7월 20일 게시.*개인 경험/u],
+    ['curated-wedding-gongysd-atoz', /2024년 12월 25일 게시.*2026년 2월 10일 수정/u],
+  ]);
+
+  for (const [slug, sourcePattern] of expected) {
+    const audit = getSourceFitAudit(slug);
+    assert.ok(audit, slug);
+    assert.equal(audit.checkedAt, '2026-07-12', slug);
+    assert.equal(audit.decision, 'keep_representative', slug);
+    assert.match(audit.sourceUsefulness, sourcePattern, slug);
+  }
+
+  assert.match(getSourceFitAudit('curated-wedding-naver-timeline')?.contentAction ?? '', /건강·미용 조언.*옮기지 않는다/u);
+  assert.match(getSourceFitAudit('curated-wedding-gongysd-atoz')?.contentAction ?? '', /핵심 4가지 시작표/u);
 });
 
 test('current new-car source fit keeps only supported purchase records executable', () => {
