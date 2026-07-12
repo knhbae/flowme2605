@@ -79,6 +79,7 @@ export type SourceBackedFlowMapQualityDecision = {
   status: SourceBackedFlowMapCandidateStatus;
   homepageEligible: boolean;
   directRouteEnabled: boolean;
+  publicCatalogEligible?: boolean;
   productScore: number;
   reason: string;
   nextAction: string;
@@ -800,9 +801,10 @@ export const sourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: 'AJD 이사 준비 체크리스트',
     sourceUrl: movingSourceUrl,
     artifacts: ['D-30 일정', '이사 전 체크', '연락처·예약번호 메모'],
+    categoryLabel: '이사 준비',
     setupInput: {
       label: '이사일',
-      hint: '이사일 1개를 넣으면 원문 체크리스트의 주요 실행 항목을 날짜별 Step으로 배치합니다.',
+      hint: '이사일 1개를 넣으면 원문 체크리스트의 주요 실행 항목을 날짜별 할 일로 배치합니다.',
       defaultValue: '2026-07-22',
     },
     flowSlugs: ['source-backed-moving-d30'],
@@ -818,6 +820,7 @@ export const sourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: 'Mathbang 중1 수학 목차',
     sourceUrl: mathSourceUrl,
     artifacts: ['8개 단원 진도표', '하위 개념 체크', '원문 링크'],
+    categoryLabel: '학습 진도',
     flowSlugs: ['source-backed-middle-school-math-1'],
   },
   {
@@ -831,6 +834,7 @@ export const sourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: '공식 영유아 검진·예방접종 안내',
     sourceUrl: babyHealthCheckupSourceUrl,
     artifacts: ['검진 일정', '예방접종 조회 일정', '예약·문진표 메모'],
+    categoryLabel: '아이 건강 일정',
     setupInput: {
       label: '아이 생년월일',
       hint: '생년월일 1개로 검진·접종 확인 시점을 배치합니다. 실제 가능 여부는 공식 조회와 의료기관 안내를 우선합니다.',
@@ -1139,7 +1143,8 @@ export function isPublicCatalogSourceBackedFlowMap(map: SourceBackedMyFlowMap): 
   const decision = getSourceBackedFlowMapQualityDecision(map.id);
   return (
     isUrlFirstLookupableSourceBackedFlowMap(map) &&
-    decision.status !== 'park' &&
+    (decision.status === 'representative' || decision.status === 'candidate') &&
+    decision.publicCatalogEligible !== false &&
     decision.productScore >= 5
   );
 }

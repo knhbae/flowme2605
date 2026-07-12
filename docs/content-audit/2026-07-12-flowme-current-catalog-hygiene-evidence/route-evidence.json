@@ -1,0 +1,84 @@
+{
+  "capturedAt": "2026-07-12T04:09:52.666Z",
+  "sourcePolicy": {
+    "runtimeBuildOnly": true,
+    "outdatedReviewScreensUsedAsCurrentEvidence": false,
+    "reviewGatedContentUsedAsSuccessScenario": false,
+    "runtimeInventoryEvidence": "../2026-07-12-flowme-runtime-content-inventory-separation-evidence/route-evidence.json"
+  },
+  "before": {
+    "catalogCardCount": 11,
+    "genericCategoryLabelCount": 8,
+    "sameJobMovingCardCount": 2,
+    "reviseStatusCatalogCardCount": 2
+  },
+  "scenarios": [
+    {
+      "scenario": "public-catalog",
+      "viewport": "mobile",
+      "width": 390,
+      "catalogCardCount": 8,
+      "genericCategoryLabelCount": 0,
+      "duplicateMovingCardCount": 0,
+      "reviseStatusCatalogCardCount": 0,
+      "firstCatalogCardTop": 464,
+      "firstCatalogCardTopLimit": 480,
+      "horizontalOverflow": false
+    },
+    {
+      "scenario": "public-catalog",
+      "viewport": "wide",
+      "width": 1024,
+      "catalogCardCount": 8,
+      "genericCategoryLabelCount": 0,
+      "duplicateMovingCardCount": 0,
+      "reviseStatusCatalogCardCount": 0,
+      "horizontalOverflow": false
+    }
+  ],
+  "visibleMapIds": [
+    "moving-d30",
+    "middle-school-math-1",
+    "curated-opic-mock-course",
+    "curated-reading-routine-log",
+    "curated-new-car-purchase-guide",
+    "curated-wedding-checklist-family",
+    "curated-allblanc-workout-park",
+    "baby-food-map"
+  ],
+  "excludedFromBrowse": [
+    {
+      "mapId": "baby-health-schedule",
+      "reason": "revise",
+      "directRoutePreserved": true,
+      "exactUrlLookupPreserved": true,
+      "savedRecordPreserved": true
+    },
+    {
+      "mapId": "curated-child-vaccination-schedule",
+      "reason": "revise",
+      "directRoutePreserved": true,
+      "exactUrlLookupPreserved": true,
+      "savedRecordPreserved": true
+    },
+    {
+      "mapId": "curated-ajd-moving-d30",
+      "reason": "duplicate-comparison",
+      "directRoutePreserved": true,
+      "exactUrlLookupPreserved": true,
+      "savedRecordPreserved": true
+    }
+  ],
+  "summary": {
+    "catalogCardCount": 8,
+    "catalogCardReductionCount": 3,
+    "genericCategoryLabelCount": 0,
+    "duplicateBrowseCardCount": 0,
+    "reviseBrowseCardCount": 0,
+    "preservedDirectAndLookupCount": 3,
+    "horizontalOverflowCount": 0,
+    "storageSchemaChanged": false,
+    "urlLookupContractChanged": false,
+    "publicFlowShellChanged": false
+  }
+}

@@ -1277,25 +1277,32 @@ test('runtime source-backed merge does not reintroduce archived duplicate flows'
   );
 });
 
-test('public Flow Map catalog uses current direct routes instead of parked legacy maps', () => {
-  const ids = getPublicCatalogSourceBackedFlowMaps().map((map) => map.id);
+test('public Flow Map catalog shows unique ready routes while preserving direct review paths', () => {
+  const catalogMaps = getPublicCatalogSourceBackedFlowMaps();
+  const ids = catalogMaps.map((map) => map.id);
 
   assert.deepEqual(ids, [
     'moving-d30',
     'middle-school-math-1',
-    'baby-health-schedule',
     'curated-opic-mock-course',
     'curated-reading-routine-log',
     'curated-new-car-purchase-guide',
-    'curated-child-vaccination-schedule',
-    'curated-ajd-moving-d30',
     'curated-wedding-checklist-family',
     'curated-allblanc-workout-park',
     'baby-food-map',
   ]);
+  assert.ok(catalogMaps.every((map) => map.categoryLabel && map.categoryLabel !== '콘텐츠'));
+  assert.ok(!ids.includes('baby-health-schedule'));
+  assert.ok(!ids.includes('curated-child-vaccination-schedule'));
+  assert.ok(!ids.includes('curated-ajd-moving-d30'));
   assert.ok(!ids.includes('moving-map'));
   assert.ok(!ids.includes('new-car-map'));
   assert.ok(!ids.includes('homefit-map'));
+
+  const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
+  assert.ok(lookupableIds.includes('baby-health-schedule'));
+  assert.ok(lookupableIds.includes('curated-child-vaccination-schedule'));
+  assert.ok(lookupableIds.includes('curated-ajd-moving-d30'));
 });
 
 test('curated source expansion preserves source-specific row counts and sensitive boundaries', () => {

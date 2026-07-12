@@ -355,8 +355,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   const flowMapCatalog = page.getByTestId('flow-map-catalog-section');
   await expect(flowMapCatalog).toBeVisible();
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
-  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(11);
-  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(9);
+  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(8);
+  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(6);
   await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(0);
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
@@ -367,12 +367,15 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(firstCatalogCard.getByTestId('flow-map-source-link')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/moving-d30"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/flow-maps/middle-school-math-1"]')).toBeVisible();
-  await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-ajd-moving-d30"]')).toBeVisible();
+  await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-ajd-moving-d30"]')).toHaveCount(0);
+  await expect(flowMapCatalog.locator('a[href="/flow-maps/baby-health-schedule"]')).toHaveCount(0);
+  await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-child-vaccination-schedule"]')).toHaveCount(0);
+  await expect(flowMapCatalog.getByText('콘텐츠', { exact: true })).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/moving-map"]')).toHaveCount(0);
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(page.getByTestId('single-flow-catalog-section')).toHaveCount(0);
   const catalogCount = flowMapCatalog.getByTestId('flow-catalog-count');
-  await expect(catalogCount).toContainText('11개 콘텐츠');
+  await expect(catalogCount).toContainText('8개 콘텐츠');
   await expect(catalogCount).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);

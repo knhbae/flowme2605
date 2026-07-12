@@ -199,9 +199,10 @@ export const curatedSourceBackedFlowMapQualityDecisions: Record<string, SourceBa
     status: 'candidate',
     homepageEligible: false,
     directRouteEnabled: true,
+    publicCatalogEligible: false,
     productScore: 8,
     reason: 'The source has a strong D-day checklist and overlaps the existing representative moving baseline.',
-    nextAction: 'Keep as a curated-source route and compare against the existing moving-d30 representative map.',
+    nextAction: 'Keep direct URL lookup and saved copies, but hide this duplicate from general discovery while moving-d30 remains the representative card.',
   },
   'curated-wedding-checklist-family': {
     mapId: 'curated-wedding-checklist-family',
@@ -248,6 +249,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: '오픽 모의고사 공부 방법',
     sourceUrl: opicSourceUrl,
     artifacts: ['2주 모의고사 캘린더', '1달 반복 계획표', '회차별 영상 링크 메모'],
+    categoryLabel: '어학 학습',
     setupInput: {
       label: '시작일',
       hint: '모의고사 1회차를 시작할 날짜입니다.',
@@ -284,6 +286,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: '독서 기록 Naver blog',
     sourceUrl: readingSourceUrl,
     artifacts: ['4주 독서 캘린더', '책별 기록표', '월말 권수 합계'],
+    categoryLabel: '독서 루틴',
     flowSlugs: ['curated-reading-monthly-log'],
   },
   {
@@ -297,6 +300,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: 'Getcha 신차 구매 절차 가이드',
     sourceUrl: newCarSourceUrl,
     artifacts: ['구매 절차 체크리스트', '견적 비교 메모', '출고/등록 확인 메모'],
+    categoryLabel: '구매 준비',
     flowSlugs: ['curated-new-car-basic'],
   },
   {
@@ -310,6 +314,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: 'KHMS 영유아 예방접종',
     sourceUrl: vaccinationSourceUrl,
     artifacts: ['생년월일 기준 접종 일정', '공식 항목 메모', '병원 확인 상태'],
+    categoryLabel: '아이 건강 일정',
     setupInput: {
       label: '아이 생년월일',
       hint: '생년월일을 기준으로 월령별 공식표 확인 일정을 만듭니다.',
@@ -328,6 +333,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: 'AJD 이사 준비 체크리스트',
     sourceUrl: movingSourceUrl,
     artifacts: ['D-day 캘린더', '이사 체크리스트', '업체/정산 메모'],
+    categoryLabel: '이사 준비',
     setupInput: {
       label: '이사일',
       hint: '이사일을 기준으로 D-30부터 D-Day까지 배치합니다.',
@@ -338,7 +344,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
   {
     id: 'curated-wedding-checklist-family',
     userLabel: '결혼 준비',
-    title: '결혼 준비 체크리스트 버전',
+    title: '결혼 준비 체크리스트 2종',
     version: '2026-06-30.2',
     updatedAt: now,
     updatePolicy: 'review_before_apply',
@@ -346,6 +352,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: '결혼 체크리스트 원문 2종',
     sourceUrl: weddingNaverSourceUrl,
     artifacts: ['결혼식 D-month 일정', 'A-to-Z 준비표', '업체/보류 메모'],
+    categoryLabel: '결혼 준비',
     setupInput: {
       label: '결혼식 날짜',
       hint: '타임라인 버전은 결혼식 날짜 기준으로 계산합니다.',
@@ -364,6 +371,7 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     sourceTitle: 'Allblanc TV YouTube channel',
     sourceUrl: allblancSourceUrl,
     artifacts: ['영상별 반복 일정', '영상 URL과 운동 요약', '완료/중단 상태'],
+    categoryLabel: '운동 루틴',
     setupInput: {
       label: '시작일',
       hint: '선택한 영상 1개의 첫 실행일입니다.',

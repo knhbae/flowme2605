@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 현행 공개 카탈로그 정리</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, "Noto Sans KR", sans-serif; background: #f5f4f0; color: #1b1a17; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
+    h1 { margin: 8px 0; font-size: clamp(28px, 4vw, 48px); letter-spacing: 0; }
+    h2 { margin: 32px 0 14px; font-size: 22px; }
+    p, li { line-height: 1.65; color: #5f5b53; }
+    .eyebrow { color: #176d5d; font-weight: 800; }
+    .decision { border-left: 4px solid #176d5d; background: #eef6f1; padding: 14px 16px; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 22px; }
+    .metric { border: 1px solid #dedbd4; background: white; padding: 14px; border-radius: 8px; }
+    .metric strong { display: block; font-size: 24px; color: #176d5d; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+    figure { margin: 0; border: 1px solid #dedbd4; background: white; border-radius: 8px; overflow: hidden; }
+    img { display: block; width: 100%; height: auto; background: #fafaf8; }
+    figcaption { padding: 12px 14px 14px; line-height: 1.5; color: #5f5b53; }
+    code { background: #eceae4; border-radius: 4px; padding: 2px 5px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">2026-07-12 · current production build</div>
+    <h1>현재 사용자가 고를 콘텐츠만 보이는가</h1>
+    <p>과거 review 화면이나 숨긴 재고가 아니라 현행 <code>/flows</code> production surface를 모바일 390px과 wide 1024px에서 다시 검사했다.</p>
+    <div class="metrics">
+      <div class="metric"><strong>11 → 8</strong>browse cards</div>
+      <div class="metric"><strong>8 → 0</strong>generic categories</div>
+      <div class="metric"><strong>2 → 1</strong>same-job moving cards</div>
+      <div class="metric"><strong>0</strong>horizontal overflow</div>
+    </div>
+  </header>
+
+  <section>
+    <h2>판단</h2>
+    <p class="decision">일반 탐색은 고유한 ready/candidate 콘텐츠만 보여준다. 재검토 콘텐츠와 비교용 중복은 목록에서 숨기되 direct route, exact URL lookup, 기존 저장 기록은 보존한다.</p>
+  </section>
+
+  <section>
+    <h2>모바일 390px</h2>
+    <div class="gallery">
+      <figure><img src="screenshots/01-flows-mobile-top.png" alt="정리된 Flow 찾기 모바일 첫 화면"><figcaption>URL·메모 진입, 필터, 첫 카드가 기존 above-fold 범위 안에 유지된다.</figcaption></figure>
+      <figure><img src="screenshots/02-flows-mobile-full.png" alt="정리된 Flow 찾기 모바일 전체"><figcaption>8개 카드 전체가 구체적인 카테고리와 한 개의 열어보기 행동으로 이어진다.</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Wide 1024px</h2>
+    <div class="gallery">
+      <figure><img src="screenshots/03-flows-wide-top.png" alt="정리된 Flow 찾기 wide 첫 화면"><figcaption>검색과 필터, 첫 카드 행이 한 흐름으로 읽힌다.</figcaption></figure>
+      <figure><img src="screenshots/04-flows-wide-full.png" alt="정리된 Flow 찾기 wide 전체"><figcaption>중복 이사 카드와 generic 분류 없이 8개 고유 콘텐츠가 2열 grid로 보인다.</figcaption></figure>
+    </div>
+  </section>
+</main>
+</body>
+</html>

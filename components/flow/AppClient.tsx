@@ -1044,6 +1044,7 @@ function FlowMapCatalogCard({ item }: { item: FlowMapCatalogLink }) {
   return (
     <article
       data-testid="flow-map-catalog-card"
+      data-map-id={item.id}
       data-source-kind={item.sourceKind}
       className="flex min-w-0 flex-col rounded-2xl border border-[#E7E4DD] bg-white p-3.5 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
     >
@@ -2762,11 +2763,11 @@ const currentSourceBackedCatalogLinks = getPublicCatalogSourceBackedFlowMaps().m
     id: map.id,
     title: toUserFacingMapTitle(map.title),
     summary: map.summary,
-    categoryLabel: map.categoryLabel ?? '콘텐츠',
+    categoryLabel: map.categoryLabel ?? '실행 콘텐츠',
     userFacingStatus: map.userFacingStatus ?? '확인 가능',
     input: map.setupInput?.label ?? '입력 없음',
     artifact: map.artifacts[0] ?? '저장 항목',
-    note: map.categoryLabel ?? '콘텐츠',
+    note: map.categoryLabel ?? '실행 콘텐츠',
     reason: map.summary,
     flowCount: map.flowSlugs.length,
     counts,
@@ -2776,7 +2777,7 @@ const currentSourceBackedCatalogLinks = getPublicCatalogSourceBackedFlowMaps().m
     sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
     previewSteps,
-    searchText: [map.title, map.userLabel, map.sourceTitle, ...map.artifacts, getChildFlowCatalogSearchText(childFlows)].filter(Boolean).join(' '),
+    searchText: [map.title, map.userLabel, map.categoryLabel, map.sourceTitle, ...map.artifacts, getChildFlowCatalogSearchText(childFlows)].filter(Boolean).join(' '),
     sourceKind: 'curated-source',
   };
 });
