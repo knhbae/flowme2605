@@ -8,6 +8,9 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
 <section class="metrics">
   <div class="metric">공개 승인<strong>71</strong></div>
   <div class="metric">검토 게이트<strong>86</strong></div>
+  <div class="metric">정상 경로 검토 링크<strong>0</strong></div>
+  <div class="metric">검토 실행 미리보기<strong>0</strong></div>
+  <div class="metric">프로필 첫 노출<strong>12</strong></div>
   <div class="metric">내부 생성 샘플<strong>440</strong></div>
   <div class="metric">runtime 생성 샘플<strong>0</strong></div>
   <div class="metric">archive route<strong>20</strong></div>
@@ -16,7 +19,7 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
   <div class="metric">legacy 잔존<strong>0</strong></div>
   <div class="metric">생성 URL 상태<strong>404</strong></div>
 </section>
-<section class="policy"><strong>정책</strong><p>승인 Flow만 공개 실행 표면으로 센다. 검토 게이트는 noindex와 행동 차단을 유지한다. 미저장 archive는 runtime에서 제거하고, 저장한 archive는 완료·메모가 남는 이전 저장본으로 보존한다.</p></section>
+<section class="policy"><strong>정책</strong><p>승인 Flow만 정상 카탈로그와 공개 제작자 프로필에 노출한다. 검토 게이트는 direct noindex로만 남기고 예전 실행 문구·일정·체크 항목과 저장/export 행동을 숨긴다. 미저장 archive는 runtime에서 제거하고, 저장한 archive는 완료·메모가 남는 이전 저장본으로 보존한다.</p></section>
 <section class="grid">
     <article>
       <h2>홈 모바일</h2>
@@ -57,6 +60,16 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
       <h2>검토 게이트 Flow wide</h2>
       <p><code>/f/housing-subscription-account</code> · 1024px · HTTP 200</p>
       <img src="screenshots/review-gate-wide.png" alt="검토 게이트 Flow wide" loading="lazy">
+    </article>
+    <article>
+      <h2>공개 제작자 프로필 모바일</h2>
+      <p><code>/u/flow-curation-team</code> · 390px · HTTP 200</p>
+      <img src="screenshots/public-creator-profile-mobile.png" alt="공개 제작자 프로필 모바일" loading="lazy">
+    </article>
+    <article>
+      <h2>공개 제작자 프로필 wide</h2>
+      <p><code>/u/flow-curation-team</code> · 1024px · HTTP 200</p>
+      <img src="screenshots/public-creator-profile-wide.png" alt="공개 제작자 프로필 wide" loading="lazy">
     </article>
     <article>
       <h2>제작자 프로필 모바일</h2>

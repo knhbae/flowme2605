@@ -27,6 +27,10 @@ async function expectReviewOnlySourceRoute(
   await expect(gate).toBeVisible();
   await expect(gate).toHaveAttribute('data-review-reason', reviewReason);
   await expect(gate.getByRole('link', { name: '현재 원문 확인하기' })).toHaveAttribute('href', sourceUrl);
+  await expect(page.getByTestId('public-flow-review-summary')).toBeVisible();
+  await expect(gate.getByTestId('public-flow-review-items-hidden')).toBeVisible();
+  await expect(gate.locator('li')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-first-action-preview')).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);

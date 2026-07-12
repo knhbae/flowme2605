@@ -348,7 +348,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
   await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(11);
   await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(9);
-  await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(1);
+  await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(0);
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
   expect(firstCatalogCardTop).toBeLessThan(480);
@@ -363,11 +363,11 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(page.getByTestId('single-flow-catalog-section')).toHaveCount(0);
   const catalogCount = flowMapCatalog.getByTestId('flow-catalog-count');
-  await expect(catalogCount).toContainText('12개 콘텐츠');
+  await expect(catalogCount).toContainText('11개 콘텐츠');
   await expect(catalogCount).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크 Flow' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '초등학교 입학 D-30 준비 Flow' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '초기 이유식 메뉴·레시피 Flow' })).toHaveCount(0);
@@ -378,13 +378,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByRole('heading', { name: '시험 D-30 공부 계획 Flow' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이직 전 리스크 점검 Flow' })).toHaveCount(0);
 
-  const jeonseCard = page.locator('a[href="/f/jeonse-contract-precheck-docs"]');
-  await expect(jeonseCard.getByText('주거/계약전점검')).toBeVisible();
-  await expect(jeonseCard).toContainText('계약 예정일만 넣으면 저장됩니다: 캘린더 + 체크');
-  await expect(jeonseCard.getByText('먼저 할 일')).toBeVisible();
-  await expect(jeonseCard.getByText('원문 연결')).toHaveCount(0);
-  await expect(jeonseCard.getByTestId('flow-card-primary-action')).toHaveText('열어보기');
-  await expectCompactCatalogAction(jeonseCard, jeonseCard.getByTestId('flow-card-primary-action'));
+  await expect(page.locator('a[href="/f/jeonse-contract-precheck-docs"]')).toHaveCount(0);
   await expect(page.getByText('베타 운영 중').first()).toHaveCount(0);
   await expect(page.getByText('미리보기').first()).toHaveCount(0);
   await expect(page.getByText('출력:').first()).toHaveCount(0);
@@ -1745,14 +1739,14 @@ test('mobile fixed layers keep save actions and final content separated', async 
   }
 });
 
-test('flow card title opens the public execution page', async ({ page }) => {
+test('flow catalog title opens the current public Flow Map page', async ({ page }) => {
   await page.goto('/flows');
 
-  await page.getByRole('link', { name: '전세계약 전 서류 체크' }).click();
+  await page.locator('a[href="/flow-maps/moving-d30"]').click();
 
-  await expect(page).toHaveURL(/\/f\/jeonse-contract-precheck-docs/);
-  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크' }).first()).toBeVisible();
-  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크 Flow' })).toHaveCount(0);
+  await expect(page).toHaveURL(/\/flow-maps\/moving-d30/);
+  await expect(page.getByRole('heading', { name: '원룸 이사 D-30 일정' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '원룸 이사 D-30 일정 지도' })).toHaveCount(0);
 });
 
 test('user-facing content titles hide trailing Flow suffix while keeping app labels', async ({ page }) => {
@@ -1760,8 +1754,8 @@ test('user-facing content titles hide trailing Flow suffix while keeping app lab
   await page.goto('/flows');
   await page.evaluate(() => window.localStorage.clear());
   await expect(page.getByRole('link', { name: 'Flow 찾기' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크 Flow' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '원룸 이사 D-30' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '원룸 이사 D-30 Flow' })).toHaveCount(0);
 
   await page.goto('/f/vehicle-inspection-prep');
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
@@ -2075,13 +2069,12 @@ test('flow discovery keeps legacy tag queries out of the representative catalog 
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
   await expect(page.getByRole('heading', { name: '무엇을 저장할까요?' })).toBeVisible();
-  await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(1);
+  await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(0);
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByLabel('태그')).toHaveCount(0);
   await expect(page.getByText('#돈이 걸린 결정').first()).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '중고차 구매 현장 점검 Flow' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크 Flow' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '전세계약 전 서류 체크' })).toHaveCount(0);
 });
 
 test('my flow workspace separates copied or drafted flows from public discovery', async ({ page }) => {
@@ -4857,6 +4850,10 @@ test('source-fit decisions are visible on direct-access public flow pages', asyn
   await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute('data-decision', 'reshape_before_featured');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
   await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
+  await expect(page.getByTestId('public-flow-review-summary')).toBeVisible();
+  await expect(page.getByTestId('public-flow-review-items-hidden')).toBeVisible();
+  await expect(page.getByTestId('public-flow-first-action-preview')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-review-only-gate').locator('li')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
 

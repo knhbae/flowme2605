@@ -813,7 +813,7 @@ function FlowCard({
   onCopy,
 }: {
   bundle: FlowBundle;
-  variant?: 'default' | 'compact';
+  variant?: 'default' | 'compact' | 'profile';
   editable?: boolean;
   titleHref?: string;
   primaryHref?: string;
@@ -825,13 +825,14 @@ function FlowCard({
   const count = getFlowItemCount(bundle);
   const color = categoryColors[bundle.flow.category] ?? '#6B7280';
   const previewItems = getFlowPreviewItems(bundle, variant === 'compact' ? 3 : 4);
+  const isProfileVariant = variant === 'profile';
   const cardTitleHref = titleHref ?? `/f/${bundle.flow.slug}`;
   const cardPrimaryHref = primaryHref ?? `/f/${bundle.flow.slug}`;
   const cardPrimaryLabel = primaryLabel ?? '시작하기';
 
   return (
-    <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="space-y-4">
+    <article className={`flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-sm ${isProfileVariant ? 'p-4' : 'p-5'}`}>
+      <div className={isProfileVariant ? 'space-y-3' : 'space-y-4'}>
         <div className="flex flex-wrap items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
           <span className="text-sm font-medium text-gray-600">{bundle.flow.category}</span>
@@ -854,26 +855,34 @@ function FlowCard({
               {displayTitle}
             </Link>
           </h2>
-          <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{getUserFacingFlowResultText(bundle)}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
-              {getCreatorAvatar(bundle)}
-            </span>
-            <Link className="font-medium underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
-              by {getCreatorName(bundle)}
-            </Link>
-            <span>베타 운영 중</span>
-            <span>{count}개 항목</span>
-          </div>
+          <p className={`mt-2 text-sm leading-6 text-gray-600 ${isProfileVariant ? 'line-clamp-2' : 'line-clamp-3'}`}>{getUserFacingFlowResultText(bundle)}</p>
+          {isProfileVariant ? (
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-gray-500">
+              <span>{count}개 항목</span>
+              <span aria-hidden="true">·</span>
+              <span>{getPreviewTypeLabel(bundle)}</span>
+            </div>
+          ) : (
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
+                {getCreatorAvatar(bundle)}
+              </span>
+              <Link className="font-medium underline-offset-2 hover:text-blue-700 hover:underline" href={getCreatorPath(bundle)}>
+                by {getCreatorName(bundle)}
+              </Link>
+              <span>베타 운영 중</span>
+              <span>{count}개 항목</span>
+            </div>
+          )}
         </div>
-        <div className="flex flex-wrap gap-1">
+        {!isProfileVariant ? <div className="flex flex-wrap gap-1">
           {getFlowTags(bundle).slice(0, 3).map((tag) => (
             <span key={tag} className="rounded-full bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600">
               #{tag}
             </span>
           ))}
-        </div>
-        <div className="rounded-md border border-gray-100 bg-[#FAFAF8] p-3">
+        </div> : null}
+        {!isProfileVariant ? <div className="rounded-md border border-gray-100 bg-[#FAFAF8] p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-semibold text-gray-500">미리보기</p>
             <span className="text-xs font-semibold text-blue-700">{getPreviewTypeLabel(bundle)}</span>
@@ -886,7 +895,7 @@ function FlowCard({
             ))}
           </ul>
           <p className="mt-2 text-xs font-semibold text-gray-500">출력: {getExportTargetsText(bundle)}</p>
-        </div>
+        </div> : null}
         {variant === 'default' ? <p className="text-sm font-medium text-gray-600">{getAnchorLabel(bundle)}</p> : null}
       </div>
       <div className="mt-5 flex flex-wrap gap-2">
@@ -1066,7 +1075,7 @@ function FlowMapCatalogCard({ item }: { item: FlowMapCatalogLink }) {
 }
 
 function isPublicDirectoryBundle(bundle: FlowBundle): boolean {
-  return serviceCatalogFlowSlugs.has(bundle.flow.slug);
+  return serviceCatalogFlowSlugs.has(bundle.flow.slug) && getPublicFlowIndexingPolicy(bundle).indexable;
 }
 
 function createEmptyMealBundle({
@@ -1295,7 +1304,6 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
 function PublicFlowReviewOnlyPanel({ bundle }: { bundle: FlowBundle }) {
   const indexingPolicy = getPublicFlowIndexingPolicy(bundle);
   const audit = getSourceFitAudit(bundle.flow.slug);
-  const previewTitles = getFlowPreviewStepTitles(bundle).slice(0, 5);
 
   return (
     <section
@@ -1305,23 +1313,16 @@ function PublicFlowReviewOnlyPanel({ bundle }: { bundle: FlowBundle }) {
       className="my-6 rounded-2xl border border-[#F0D8AE] bg-[#FFF7E8] p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)] md:p-5"
     >
       <p className="text-sm font-semibold text-[#9A5A16]">원문 재확인 중</p>
-      <h2 className="mt-1 text-xl font-semibold text-[#1B1A17]">지금은 내용만 미리 볼 수 있어요</h2>
+      <h2 className="mt-1 text-xl font-semibold text-[#1B1A17]">지금은 원문만 확인할 수 있어요</h2>
       <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">
-        원문과 실행 항목을 다시 확인하고 있습니다. 확인이 끝날 때까지 저장, 완료 표시, 파일 받기는 열지 않습니다.
+        실행 항목을 다시 확인하고 있어 일정과 체크 내용은 숨겼어요. 확인이 끝난 Flow만 저장하거나 완료 표시할 수 있습니다.
       </p>
-      {previewTitles.length > 0 ? (
-        <div className="mt-4 rounded-xl border border-[#E7E4DD] bg-white p-3">
-          <p className="text-xs font-semibold text-[#8A857B]">확인 중인 실행 항목</p>
-          <ul className="mt-2 grid gap-2 text-sm text-[#4A4842]">
-            {previewTitles.map((title) => (
-              <li key={title} className="flex gap-2">
-                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C28A48]" />
-                <span>{title}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+      <p
+        data-testid="public-flow-review-items-hidden"
+        className="mt-4 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5 text-sm font-semibold text-[#4A4842]"
+      >
+        확인 전에는 이 페이지의 일정과 체크 항목을 실행에 사용하지 않습니다.
+      </p>
       <div className="mt-4 flex flex-wrap gap-2">
         {bundle.flow.source_url ? (
           <a
@@ -10025,6 +10026,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 }
 
 type CreatorProfileSourceFilter = 'all' | 'real' | 'preview' | 'draft';
+const CREATOR_PROFILE_PAGE_SIZE = 12;
 
 function isUrlFirstDraftBundle(bundle: FlowBundle): boolean {
   return bundle.flow.status === 'draft' && bundle.flow.slug.startsWith('url-draft-');
@@ -10034,19 +10036,25 @@ export function CreatorProfile({ slug }: { slug: string }) {
   const { bundles } = useBundles();
   const normalized = normalizeCreatorSlug(slug);
   const user = findVirtualUserBySlug(normalized);
-  const creatorBundles = bundles.filter((bundle) => {
+  const allCreatorBundles = bundles.filter((bundle) => {
     const creator = getCreatorUser(bundle);
     if (user) return creator?.id === user.id;
     return normalizeCreatorSlug(creator?.slug ?? creatorSlug(getCreatorName(bundle))) === normalized;
-  }).sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
+  });
+  const profileSeedBundle = allCreatorBundles[0];
+  const profile = user ?? (profileSeedBundle ? getCreatorUser(profileSeedBundle) : undefined);
+  const canShowReviewInventory = Boolean(profile?.is_current_user || profile?.is_preview_channel);
+  const creatorBundles = allCreatorBundles
+    .filter((bundle) => canShowReviewInventory || getPublicFlowIndexingPolicy(bundle).indexable)
+    .sort((a, b) => getCreatorBundlePriority(a) - getCreatorBundlePriority(b));
   const allCategoryLabel = '모든 주제';
   const [categoryFilter, setCategoryFilter] = useState(allCategoryLabel);
   const [sourceFilter, setSourceFilter] = useState<CreatorProfileSourceFilter>(
-    user?.is_current_user ? 'all' : 'real',
+    profile?.is_current_user ? 'all' : profile?.is_preview_channel ? 'real' : 'all',
   );
   const [libraryQuery, setLibraryQuery] = useState('');
-  const first = creatorBundles[0];
-  const profile = user ?? (first ? getCreatorUser(first) : undefined);
+  const [visibleContentLimit, setVisibleContentLimit] = useState(CREATOR_PROFILE_PAGE_SIZE);
+  const first = creatorBundles[0] ?? profileSeedBundle;
   const totalUsage = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.usage_count ?? 0), 0);
   const totalCopies = creatorBundles.reduce((sum, bundle) => sum + (bundle.flow.copy_count ?? 0), 0);
   const categories = Array.from(new Set(creatorBundles.map((bundle) => bundle.flow.category))).slice(0, 6);
@@ -10079,10 +10087,35 @@ export function CreatorProfile({ slug }: { slug: string }) {
         .toLowerCase();
       return searchable.includes(normalizedLibraryQuery);
     });
+  const shouldPaginateCreatorProfile = !canShowReviewInventory;
+  const displayedCreatorBundles = shouldPaginateCreatorProfile
+    ? visibleCreatorBundles.slice(0, visibleContentLimit)
+    : visibleCreatorBundles;
+  const hiddenCreatorBundleCount = Math.max(
+    0,
+    visibleCreatorBundles.length - displayedCreatorBundles.length,
+  );
   const exactRealBundles = creatorBundles.filter(
     (bundle) => bundle.flow.source_status === 'real' && bundle.flow.source_precision === 'exact',
   );
   const recommendedBundles = exactRealBundles.slice(0, 3);
+  const sourceFilterOptions: Array<[CreatorProfileSourceFilter, string]> = profile?.is_current_user
+    ? [
+        ['all', '모두 보기'],
+        ['real', '확인된 콘텐츠'],
+        ['preview', '샘플'],
+        ['draft', '초안'],
+      ]
+    : profile?.is_preview_channel
+      ? [
+          ['all', '모두 보기'],
+          ['real', '확인된 콘텐츠'],
+          ['preview', '샘플'],
+        ]
+      : [
+          ['all', '모두 보기'],
+          ['real', '원문 확인됨'],
+        ];
 
   if (!first && !profile) {
     return (
@@ -10135,7 +10168,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
         </div>
       </header>
 
-      {recommendedBundles.length ? (
+      {profile?.is_preview_channel && recommendedBundles.length ? (
         <section className="mt-8 border-y border-gray-200 bg-gray-50 py-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -10171,10 +10204,16 @@ export function CreatorProfile({ slug }: { slug: string }) {
               {profile?.is_current_user ? '스튜디오 콘텐츠' : '만든 콘텐츠'}
             </h2>
             <p className="mt-1 text-sm text-gray-600">
-              {visibleCreatorBundles.length}개 표시 / 전체 {creatorBundles.length}개
+              {displayedCreatorBundles.length}개 표시 / 전체 {creatorBundles.length}개
             </p>
           </div>
-          <Link className="text-sm font-semibold text-blue-700" href="/flows/new">내 콘텐츠로 만들기</Link>
+          <Link
+            data-testid="creator-profile-library-action"
+            className="text-sm font-semibold text-blue-700"
+            href={profile?.is_current_user ? '/flows/new' : '/flows'}
+          >
+            {profile?.is_current_user ? '내 콘텐츠로 만들기' : 'Flow 찾기'}
+          </Link>
         </div>
         <label className="mb-3 block">
           <span className="text-sm font-semibold text-gray-700">콘텐츠 검색</span>
@@ -10182,16 +10221,14 @@ export function CreatorProfile({ slug }: { slug: string }) {
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
             placeholder="제목, 카테고리, 태그, 출처로 검색"
             value={libraryQuery}
-            onChange={(event) => setLibraryQuery(event.target.value)}
+            onChange={(event) => {
+              setLibraryQuery(event.target.value);
+              setVisibleContentLimit(CREATOR_PROFILE_PAGE_SIZE);
+            }}
           />
         </label>
         <div className="mb-3 flex flex-wrap gap-2">
-          {[
-            ['all', '모두 보기'],
-            ['real', '확인된 콘텐츠'],
-            ['preview', '샘플'],
-            ['draft', '초안'],
-          ].map(([key, label]) => (
+          {sourceFilterOptions.map(([key, label]) => (
             <button
               key={key}
               data-testid={key === 'draft' ? 'creator-profile-draft-tab' : undefined}
@@ -10201,7 +10238,10 @@ export function CreatorProfile({ slug }: { slug: string }) {
                   : 'border-gray-200 bg-white text-gray-700'
               }`}
               type="button"
-              onClick={() => setSourceFilter(key as CreatorProfileSourceFilter)}
+              onClick={() => {
+                setSourceFilter(key as CreatorProfileSourceFilter);
+                setVisibleContentLimit(CREATOR_PROFILE_PAGE_SIZE);
+              }}
             >
               {label}
             </button>
@@ -10217,14 +10257,17 @@ export function CreatorProfile({ slug }: { slug: string }) {
                   : 'border-gray-200 bg-white text-gray-700'
               }`}
               type="button"
-              onClick={() => setCategoryFilter(category)}
+              onClick={() => {
+                setCategoryFilter(category);
+                setVisibleContentLimit(CREATOR_PROFILE_PAGE_SIZE);
+              }}
             >
               {category}
             </button>
           ))}
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {visibleCreatorBundles.map((bundle) => {
+          {displayedCreatorBundles.map((bundle) => {
             const isUrlFirstDraft = isUrlFirstDraftBundle(bundle);
             return (
               <div
@@ -10234,9 +10277,11 @@ export function CreatorProfile({ slug }: { slug: string }) {
                 data-flow-status={bundle.flow.status}
                 data-source-status={bundle.flow.source_status ?? 'unclassified'}
                 data-exposure-status={normalizeExecutionModel(bundle).exposureStatus}
+                data-public-indexable={getPublicFlowIndexingPolicy(bundle).indexable ? 'true' : 'false'}
               >
                 <FlowCard
                   bundle={bundle}
+                  variant={canShowReviewInventory ? 'default' : 'profile'}
                   primaryHref={isUrlFirstDraft ? '/my' : undefined}
                   primaryLabel={isUrlFirstDraft ? '내 Flow에서 수정' : undefined}
                   primaryTestId={isUrlFirstDraft ? 'creator-profile-draft-edit-link' : undefined}
@@ -10246,6 +10291,16 @@ export function CreatorProfile({ slug }: { slug: string }) {
             );
           })}
         </div>
+        {hiddenCreatorBundleCount > 0 ? (
+          <button
+            type="button"
+            data-testid="creator-profile-content-more"
+            className="mt-4 min-h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800 hover:border-blue-300 hover:text-blue-700"
+            onClick={() => setVisibleContentLimit((current) => current + CREATOR_PROFILE_PAGE_SIZE)}
+          >
+            콘텐츠 더 보기 · {hiddenCreatorBundleCount}개 남음
+          </button>
+        ) : null}
       </section>
     </main>
   );
@@ -11344,7 +11399,19 @@ export function PublicFlow({ slug }: { slug: string }) {
             ) : null}
           </div>
           <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{publicDisplayTitle}</h1>
-          {showPublicHeroSetup ? (
+          {isPublicReviewOnly ? (
+            <section
+              data-testid="public-flow-review-summary"
+              className="mt-3 rounded-xl border border-[#F0D8AE] bg-[#FFF7E8] px-3 py-2.5"
+            >
+              <p className="break-keep text-sm font-semibold leading-6 text-[#9A5A16]">
+                현재 원문과 실행 내용을 다시 확인하고 있어요.
+              </p>
+              <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">
+                확인 전에는 예전 일정과 체크 항목을 표시하지 않습니다.
+              </p>
+            </section>
+          ) : showPublicHeroSetup ? (
             <section className={compactJeonsePage ? 'mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5' : 'mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3'}>
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
               <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)] md:items-stretch">
@@ -11375,8 +11442,8 @@ export function PublicFlow({ slug }: { slug: string }) {
               </div>
             </section>
           )}
-          {bundle.flow.description ? <p className={compactJeonsePage ? 'mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
-          {compactJeonsePage ? (
+          {!isPublicReviewOnly && bundle.flow.description ? <p className={compactJeonsePage ? 'mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
+          {isPublicReviewOnly ? null : compactJeonsePage ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">D-3 / D-Day / D+1</span>
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">7개 체크</span>

@@ -13,6 +13,7 @@
 5. 대체 Flow가 지정된 archive는 replacement route가 계속 열리는지 확인한다.
 6. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.
 7. 품질 게이트에서 직접 노출이 중단된 구형 Flow Map은 카탈로그에서 현재 대표 Map으로 교체하고 direct route를 404로 닫았다.
+8. 정상 /flows와 공개 제작자 프로필에서는 검토 게이트 링크를 제거하고, direct review route에서는 예전 설명·일정·체크 항목을 숨겼다. 내부 preview channel과 /creators 재고는 검토용으로 보존했다.
 
 ## 저장한 archive 처리
 
@@ -26,7 +27,9 @@
 ## 오래된 콘텐츠 해석
 
 - 공개 승인 71개: 정상 실행과 index 허용.
-- 검토 게이트 86개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않는다.
+- 검토 게이트 86개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않고 정상 발견 경로 링크도 0개로 유지한다.
+- 검토 게이트 direct route: 예전 실행 미리보기 0개, 목록 항목 0개, 숨김 marker 1개.
+- 공개 제작자 프로필은 승인 콘텐츠만 사용하며 처음 12개를 간결한 카드로 보여주고 나머지는 더 보기로 연다. 펼친 미리보기/베타 라벨은 0/0개다.
 - 생성 샘플 440개: 실제 콘텐츠가 아닌 구조 검토 재고. runtime과 public route에서 제거.
 - 명시적 archive 20개: 출처 불충분 또는 공개 숨김 판정이 확정되어 runtime과 public route에서 제거.
   - digital-detox-weekly: unsupported_source_claims · 원문이 삭제되었고 현재 Flow의 효과 문구를 뒷받침할 수 없습니다.

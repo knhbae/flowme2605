@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T23:23:00.092Z",
+  "generatedAt": "2026-07-12T00:14:34.201Z",
   "baseUrl": "http://127.0.0.1:3112",
   "summary": {
     "canonicalSeedBundleCount": 153,
@@ -47,16 +47,26 @@
     "reviewGatedRouteNoindex": true,
     "reviewGatedPanelCount": 1,
     "reviewGatedSaveActionCount": 0,
+    "reviewGatedItemsHiddenMarkerCount": 1,
+    "reviewGatedExecutionPreviewCount": 0,
+    "reviewGatedVisibleListItemCount": 0,
+    "normalRouteReviewGatedLinkCount": 0,
+    "publicFlowCatalogReviewGatedLinkCount": 0,
+    "publicCreatorProfileReviewGatedLinkCount": 0,
+    "publicCreatorProfileInitialVisibleContentCount": 12,
+    "publicCreatorProfileMoreActionVisibleCount": 2,
+    "publicCreatorProfileExpandedPreviewLabelCount": 0,
+    "publicCreatorProfileBetaLabelCount": 0,
     "normalSourceCurrentCount": 120,
     "normalSourceReviewDueCount": 0,
     "normalSourceStaleCount": 0,
     "normalSourceMissingMetadataCount": 0,
-    "screenshotCount": 19,
+    "screenshotCount": 21,
     "horizontalOverflowCount": 0
   },
   "policy": {
     "publicApproved": "indexable and executable public Flow",
-    "reviewGated": "direct-access noindex route with save and export actions disabled until review approval",
+    "reviewGated": "direct-access noindex route with stale execution copy hidden and save/export disabled until review approval; excluded from normal discovery",
     "runtimeArchived": "public route removed; unsaved runtime copies removed while saved user history becomes a retired personal copy",
     "internalGeneratedPreview": "internal review inventory only; excluded from runtime seed, browser storage, and public routes"
   },
@@ -78,6 +88,11 @@
       "source_fit_review_required": 77,
       "source_review_pending": 9,
       "exact_real_source": 26
+    },
+    "reviewGatedSourceFitDecision": {
+      "catalog_preview_only": 8,
+      "reshape_before_featured": 69,
+      "not_audited": 9
     },
     "runtimeLifecycle": {
       "keep": 45,
@@ -153,6 +168,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-mobile.png"
     },
@@ -167,6 +187,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-wide.png"
     },
@@ -181,6 +206,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-mobile.png"
     },
@@ -195,6 +225,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-wide.png"
     },
@@ -209,6 +244,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-mobile.png"
     },
@@ -223,6 +263,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-wide.png"
     },
@@ -237,6 +282,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/review-gate-mobile.png"
     },
@@ -251,8 +301,51 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/review-gate-wide.png"
+    },
+    {
+      "id": "public-creator-profile-mobile",
+      "route": "/u/flow-curation-team",
+      "width": 390,
+      "height": 844,
+      "label": "공개 제작자 프로필 모바일",
+      "status": 200,
+      "robots": "index, follow",
+      "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 12,
+      "creatorProfileMoreActionCount": 1,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/public-creator-profile-mobile.png"
+    },
+    {
+      "id": "public-creator-profile-wide",
+      "route": "/u/flow-curation-team",
+      "width": 1024,
+      "height": 768,
+      "label": "공개 제작자 프로필 wide",
+      "status": 200,
+      "robots": "index, follow",
+      "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 12,
+      "creatorProfileMoreActionCount": 1,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/public-creator-profile-wide.png"
     },
     {
       "id": "creator-profile-mobile",
@@ -265,6 +358,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 2,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 4,
+      "creatorProfileBetaLabelCount": 4,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-mobile.png"
     },
@@ -279,6 +377,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 2,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 4,
+      "creatorProfileBetaLabelCount": 4,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-wide.png"
     },
@@ -293,6 +396,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 1,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-mobile.png"
     },
@@ -307,6 +415,11 @@
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 1,
       "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 0,
+      "creatorProfileContentCardCount": 0,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 0,
+      "creatorProfileBetaLabelCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-wide.png"
     }
@@ -743,603 +856,861 @@
       "slug": "new-apartment-precheck",
       "title": "신축 아파트 입주 사전점검 Flow",
       "sourceStatus": "preview",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 80
     },
     {
       "slug": "japan-esim-setup-before-departure",
       "title": "일본 eSIM 출국 전 등록 체크 Flow",
       "sourceStatus": "preview",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 83
     },
     {
       "slug": "alt-phone-sk7-self-activation",
       "title": "알뜰폰 SK7 셀프개통 체크 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-08",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 75
     },
     {
       "slug": "chiangmai-solo-trip-packing",
       "title": "치앙마이 혼자 여행 준비물 체크 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-08",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 79
     },
     {
       "slug": "lease-contract-report-deadline",
       "title": "주택 임대차계약 신고 마감 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 86
     },
     {
       "slug": "jeonse-contract-precheck-docs",
       "title": "전세계약 전 서류 체크 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-08",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 80
     },
     {
       "slug": "picture-book-reading-routine",
       "title": "그림책 읽기 루틴 + 질문 카드 Flow",
       "sourceStatus": "preview",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 76
     },
     {
       "slug": "kids-printable-squishy-craft",
       "title": "아이 도안 스퀴시 만들기 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-10",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 74
     },
     {
       "slug": "remote-help-session-precheck",
       "title": "원격지원 사전 권한 체크 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-06-10",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 58
     },
     {
       "slug": "kids-dino-footprint-art",
       "title": "아이 공룡 발자국 미술 놀이 Flow",
       "sourceStatus": "preview",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 71
     },
     {
       "slug": "banana-peanut-recipe-video",
       "title": "바나나 땅콩버터 빵 영상 따라하기 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-07",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 68
     },
     {
       "slug": "dog-adoption-first-week",
       "title": "강아지 입양 첫 주 체크 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-04",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 81
     },
     {
       "slug": "home-workout-20min",
       "title": "하루 20분 전신 홈트 Flow",
       "sourceStatus": "unclassified",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 76
     },
     {
       "slug": "job-change-risk-check",
       "title": "이직 전 리스크 점검 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 75
     },
     {
       "slug": "overseas-travel-d14",
       "title": "해외여행 출국 준비 Flow",
       "sourceStatus": "unclassified",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 76
     },
     {
       "slug": "year-end-tax-docs",
       "title": "연말정산 서류 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 85
     },
     {
       "slug": "national-health-checkup-d7",
       "title": "국가건강검진 D-7 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 89
     },
     {
       "slug": "business-registration-basic",
       "title": "개인 사업자등록 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 77
     },
     {
       "slug": "driver-license-renewal-check",
       "title": "운전면허 갱신 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 82
     },
     {
       "slug": "happy-birth-service-check",
       "title": "행복출산 통합신청 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 79
     },
     {
       "slug": "vaccination-certificate-issue",
       "title": "예방접종증명서 발급 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 75
     },
     {
       "slug": "family-certificate-issue",
       "title": "가족관계증명서 발급 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 74
     },
     {
       "slug": "resident-register-copy-issue",
       "title": "주민등록등본·초본 발급 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 74
     },
     {
       "slug": "industrial-accident-claim-docs",
       "title": "산재보험 요양비 청구 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 80
     },
     {
       "slug": "elementary-school-entry-d30",
       "title": "초등학교 입학 D-30 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-08",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 86
     },
     {
       "slug": "monstera-care-routine",
       "title": "몬스테라 물주기·분갈이 루틴 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-07",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 76
     },
     {
       "slug": "water-purifier-filter-cycle",
       "title": "정수기 필터 교체 주기표 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-07",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "car-care-monthly-routine",
       "title": "월 1회 자동차 관리 루틴 Flow",
       "sourceStatus": "unclassified",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 79
     },
     {
       "slug": "running-5k-4week",
       "title": "초보 러너 5km 4주 완주 Flow",
       "sourceStatus": "unclassified",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 75
     },
     {
       "slug": "plank-30-day-challenge",
       "title": "30일 플랭크 챌린지 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-07",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 82
     },
     {
       "slug": "diet-habit-2week",
       "title": "2주 수면 체크 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 87
     },
     {
       "slug": "qnet-exam-application-prep",
       "title": "Q-Net 원서접수 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 85
     },
     {
       "slug": "diet-meal-exercise-log",
       "title": "다이어트 식사·운동 기록 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 88
     },
     {
       "slug": "diet-reset-2week",
       "title": "다이어트 2주 습관 리셋 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-23",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 86
     },
     {
       "slug": "real-thankyou-bubu-video-daily-stretch-9min",
       "title": "ThankyouBUBU 9분 스트레칭 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-belly-side-all-in-one",
       "title": "ThankyouBUBU 뱃살 옆구리 루틴 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-no-knee-cardio-strength",
       "title": "ThankyouBUBU 무릎부담 낮춘 전신 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-arm-back-shoulder",
       "title": "ThankyouBUBU 팔뚝 등살 루틴 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-waist-8cm",
       "title": "ThankyouBUBU 허리둘레 집중 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-8min-cardio",
       "title": "ThankyouBUBU 8분 전신유산소 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-3min-arm",
       "title": "ThankyouBUBU 3분 팔뚝 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-3min-abs",
       "title": "ThankyouBUBU 3분 복근 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-video-lower-belly-8min",
       "title": "ThankyouBUBU 8분 아랫뱃살 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-body-fat-6kg-method",
       "title": "FITVELY 체지방 6kg 감량 비법 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-carb-reason",
       "title": "FITVELY 탄수화물을 먹어야 하는 이유 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-three-week-check",
       "title": "FITVELY 3주 감량 점검 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-post-workout-nutrition",
       "title": "FITVELY 운동직후 섭취 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-carb-amount-shorts",
       "title": "FITVELY 오늘 탄수화물 기록 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-after-work-nutrition",
       "title": "FITVELY 퇴근후 운동 영양 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-weight-class-method",
       "title": "FITVELY 체중별 다이어트 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-bulk-up-method",
       "title": "FITVELY 벌크업 운동표 적용 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-workout-order",
       "title": "FITVELY 운동 순서 결정 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-video-workout-split-science",
       "title": "FITVELY 운동루틴 설계 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-home-workout-starter",
       "title": "ThankyouBUBU 홈트 시작 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-thankyou-bubu-20min-routine",
       "title": "ThankyouBUBU 20분 반복 운동 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-fitvely-diet-record-routine",
       "title": "FITVELY 식단 기록 루틴 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-qnet-application-examday-check",
       "title": "Q-Net 원서접수와 시험당일 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-gov24-moving-report-check",
       "title": "정부24 전입신고 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 55
     },
     {
       "slug": "real-childcare-vaccination-visit-prep",
       "title": "아이사랑 영유아 검진/접종 방문 준비 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-childcare-support-application-check",
       "title": "아이사랑 시간제보육 신청 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-ohouse-moving-d30-prep",
       "title": "오늘의집 원룸 이사 D-30 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-ohouse-movein-cleaning-check",
       "title": "오늘의집 입주청소 결정 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-mofa-overseas-travel-prep",
       "title": "외교부 해외여행 안전 준비 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-05-21",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-kdca-travel-health-check",
       "title": "질병관리청 해외여행 건강 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "real-safe-driving-license-renewal",
       "title": "안전운전 면허 갱신 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "housing-subscription-account",
       "title": "주택청약 공고 자격 확인 준비 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-12",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "health-insurance-dependent",
       "title": "건강보험 피부양자 등록 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "citizen-secretary-alerts",
       "title": "국민비서 알림 신청 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 63
     },
     {
       "slug": "birth-registration-prep",
       "title": "출생신고 준비 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "seal-or-signature-certificate",
       "title": "인감증명·본인서명사실확인서 발급 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "recipe-video-execute",
       "title": "레시피 영상 실전 적용 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "catalog_preview_only",
+      "sourceFitScore": 55
     },
     {
       "slug": "monthly-household-budget",
       "title": "월간 가계부 시작 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-12",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "payday-finance-routine",
       "title": "월급날 재정 루틴 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-12",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "morning-skincare-routine",
       "title": "아침 스킨케어 5분 루틴 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "domestic-trip-d7",
       "title": "국내여행 짐 준비 Flow",
       "sourceStatus": "real",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 67
     },
     {
       "slug": "morning-routine-30day",
       "title": "나만의 아침 루틴 시작 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "dog-walk-routine",
       "title": "강아지 산책 루틴 Flow",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-11",
-      "indexingReason": "source_fit_review_required"
+      "indexingReason": "source_fit_review_required",
+      "sourceFitDecision": "reshape_before_featured",
+      "sourceFitScore": 78
     },
     {
       "slug": "funmom-hangul-2w",
       "title": "펀맘 한글 2주 공부",
       "sourceStatus": "preview",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "funmom-maze-2w",
       "title": "펀맘 미로찾기 2주 공부",
       "sourceStatus": "preview",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "funmom-math-1m",
       "title": "펀맘 수학 1달 공부",
       "sourceStatus": "preview",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "reading-morning-routine",
       "title": "아침 읽고 쓰기 루틴",
       "sourceStatus": "preview",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "vaccination-official",
       "title": "월령별 예방접종 확인",
       "sourceStatus": "preview",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "source-backed-baby-vaccination-schedule",
       "title": "아이 예방접종 일정 확인",
       "sourceStatus": "real",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-06-23",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "curated-funmom-weekly-print-picker",
       "title": "펀맘 월~토 출력 루틴",
       "sourceStatus": "real",
+      "sourcePrecision": "broad",
       "sourceCheckedAt": "2026-06-29",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "curated-baby-food-daily-meal-row",
       "title": "오늘 이유식 식단 기록",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-29",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     },
     {
       "slug": "curated-baby-food-cube-stock",
       "title": "이유식 큐브 재고 기록",
       "sourceStatus": "needs_review",
+      "sourcePrecision": "exact",
       "sourceCheckedAt": "2026-06-29",
-      "indexingReason": "source_review_pending"
+      "indexingReason": "source_review_pending",
+      "sourceFitDecision": null,
+      "sourceFitScore": null
     }
   ]
 }
