@@ -2626,7 +2626,11 @@ function ChecklistWorkbench({
                   />
                   <span className={`font-medium ${getPreSavePreviewTextClass(Boolean(checks[item.id]))}`}>{item.title}</span>
                 </label>
-                <WorkbenchDetailDisclosure detail={detail} showSourceLinks={false} suppressedCaution={repeatedCaution} />
+                <WorkbenchDetailDisclosure
+                  detail={detail}
+                  showSourceLinks={Boolean(detail?.links?.some((link) => link.type === 'official'))}
+                  suppressedCaution={repeatedCaution}
+                />
               </div>
             );
           })}

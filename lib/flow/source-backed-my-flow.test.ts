@@ -323,7 +323,9 @@ test('curated new car sourceTrace repair moves the Getcha URL representative to 
   const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-new-car-purchase-guide');
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'curated-new-car-purchase-guide');
-  assert.equal(getSourceBackedFlowMapQualityDecision('curated-new-car-purchase-guide').directRouteEnabled, true);
+  const decision = getSourceBackedFlowMapQualityDecision('curated-new-car-purchase-guide');
+  assert.equal(decision.directRouteEnabled, true);
+  assert.equal(decision.publicExecutionEnabled, true);
   assert.equal(getSourceBackedFlowMapQualityDecision('new-car-map').directRouteEnabled, false);
 
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
@@ -332,7 +334,9 @@ test('curated new car sourceTrace repair moves the Getcha URL representative to 
 
   const steps = publishPackage.public.childFlows.flatMap((flow) => flow.steps);
   assert.equal(steps.length, 7);
-  assert.ok(steps.every((step) => step.sourceTrace?.includes('Getcha new car purchase guide')));
+  assert.equal(steps.filter((step) => step.sourceTrace?.includes('Getcha new car purchase guide')).length, 5);
+  assert.match(steps.find((step) => step.id === 'new-car-registration')?.sourceTrace ?? '', /EasyLaw official new vehicle registration guidance/);
+  assert.match(steps.find((step) => step.id === 'new-car-insurance')?.sourceTrace ?? '', /EasyLaw official compulsory automobile insurance guidance/);
   assert.deepEqual(
     steps.map((step) => step.id),
     [
@@ -1402,7 +1406,23 @@ test('curated source expansion preserves source-specific row counts and sensitiv
   const newCarRows = buildSourceBackedMyFlowRows(bundleBySlug('curated-new-car-basic'));
   assert.equal(newCarRows.length, 7);
   assert.ok(newCarRows.every((row) => row.riskLevel === 'financial_sensitive'));
-  assert.match(newCarRows.map((row) => row.title).join('\n'), /보험 가입 확인/);
+  assert.equal(bundleBySlug('curated-new-car-basic').flow.source_checked_at, '2026-07-12');
+  assert.match(newCarRows.map((row) => row.title).join('\n'), /의무보험 확인/);
+  assert.match(newCarRows.find((row) => row.stepId === 'new-car-registration')?.sourceUrl ?? '', /easylaw\.go\.kr/);
+  assert.equal(newCarRows.find((row) => row.stepId === 'new-car-registration')?.sourceType, 'official');
+  assert.match(newCarRows.find((row) => row.stepId === 'new-car-insurance')?.sourceUrl ?? '', /easylaw\.go\.kr/);
+  assert.equal(newCarRows.find((row) => row.stepId === 'new-car-insurance')?.sourceType, 'official');
+
+  const newCarUserCopy = [
+    bundleBySlug('curated-new-car-basic').flow.title,
+    bundleBySlug('curated-new-car-basic').flow.description,
+    bundleBySlug('curated-new-car-basic').flow.warning,
+    ...bundleBySlug('curated-new-car-basic').items.flatMap((item) => [item.title, item.description]),
+    ...bundleBySlug('curated-new-car-basic').itemDetails.flatMap((detail) => [detail.how, detail.completion_criteria, detail.caution]),
+  ]
+    .filter(Boolean)
+    .join('\n');
+  assert.doesNotMatch(newCarUserCopy, /연봉\s*(?:의)?\s*50%|7\s*[~-]\s*8%|100만\s*원|300만\s*원|계약금\s*10%|15일\s*이내|최소\s*3곳|36개월|60개월/u);
 
   const vaccinationRows = [
     ...buildSourceBackedMyFlowRows(bundleBySlug('curated-child-vaccination-first-year')),

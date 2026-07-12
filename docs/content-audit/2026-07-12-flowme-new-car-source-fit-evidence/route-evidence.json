@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "2026-07-12.new-car-source-fit.1",
+  "generatedAt": "2026-07-12T09:06:16.576Z",
+  "scope": "new-car-source-fit-and-source-freshness-semantics",
+  "freshness": {
+    "publishedCount": 157,
+    "normalUserRouteCount": 141,
+    "currentCount": 141,
+    "reviewDueCount": 0,
+    "staleCount": 0,
+    "missingMetadataCount": 0,
+    "semanticCurrentnessGuaranteed": false,
+    "reason": "source_checked_at age does not encode source publication age, destination drift, or semantic source fit"
+  },
+  "sourceFit": {
+    "manualAuditCount": 133,
+    "decisionCounts": {
+      "keepRepresentative": 47,
+      "reshapeBeforeFeatured": 73,
+      "catalogPreviewOnly": 12,
+      "hideFromPublicCatalog": 1
+    },
+    "sourceBackedPublicExecutableFlowCount": 14,
+    "unauditedPublicExecutableFlowCount": 13,
+    "unauditedFinancialSensitiveCount": 0,
+    "unauditedMedicalSensitiveCount": 3,
+    "unauditedMediumRiskCount": 5,
+    "unauditedLowRiskCount": 5
+  },
+  "newCar": {
+    "mapId": "curated-new-car-purchase-guide",
+    "flowSlug": "curated-new-car-basic",
+    "mapVersion": "2026-07-12.1",
+    "sourceCheckedAt": "2026-07-12",
+    "qualityStatus": "candidate",
+    "directRouteEnabled": true,
+    "publicExecutionEnabled": true,
+    "manualSourceFitDecision": "keep_representative",
+    "referenceJourneyRowCount": 5,
+    "officialAdministrativeRowCount": 2,
+    "officialRowIds": [
+      "new-car-registration",
+      "new-car-insurance"
+    ],
+    "officialSourceUrls": [
+      "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=1&csmSeq=675&popMenu=ov",
+      "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=1&cnpClsNo=3&csmSeq=675"
+    ],
+    "unsupportedFixedClaimHitCount": 0,
+    "unsupportedFixedClaimPatterns": [
+      "annual salary ratio",
+      "fixed acquisition or registration percentage",
+      "fixed insurance price range",
+      "fixed contract deposit ratio",
+      "universal new-registration deadline",
+      "universal document list",
+      "minimum finance provider count"
+    ]
+  },
+  "routes": [
+    {
+      "scenario": "new-car-map-mobile",
+      "route": "/flow-maps/curated-new-car-purchase-guide",
+      "viewport": { "width": 390, "height": 844 },
+      "status": 200,
+      "saveVisible": true,
+      "officialLinkCount": 2,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/01-new-car-map-mobile.png"
+    },
+    {
+      "scenario": "new-car-map-wide",
+      "route": "/flow-maps/curated-new-car-purchase-guide",
+      "viewport": { "width": 1024, "height": 900 },
+      "status": 200,
+      "saveVisible": true,
+      "officialLinkCount": 2,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/02-new-car-map-wide.png"
+    },
+    {
+      "scenario": "new-car-public-mobile",
+      "route": "/f/curated-new-car-basic",
+      "viewport": { "width": 390, "height": 844 },
+      "status": 200,
+      "robots": "index, follow",
+      "saveVisible": true,
+      "officialLinkCount": 2,
+      "sourceBadgeText": "원문 연결됨",
+      "sourceCheckedMetaLabel": "원문 확인 기록",
+      "flowUpdatedMetaLabel": "Flow 정리",
+      "legacyUpdatedMetaHitCount": 0,
+      "internalCopyHitCount": 0,
+      "rawIsoHitCount": 0,
+      "screenshot": "screenshots/03-new-car-public-mobile.png"
+    },
+    {
+      "scenario": "new-car-official-details-mobile",
+      "route": "/f/curated-new-car-basic",
+      "viewport": { "width": 390, "height": 844 },
+      "officialDetailDisclosureCount": 2,
+      "officialLinkLabels": [
+        "공식 신규등록 안내",
+        "공식 의무보험 안내"
+      ],
+      "screenshot": "screenshots/04-new-car-official-details-mobile.png"
+    }
+  ],
+  "nextAuditQueue": {
+    "priority": "medical-sensitive exact-video source fit",
+    "mapId": "curated-allblanc-workout-park",
+    "flowSlugs": [
+      "curated-allblanc-morning-workout",
+      "curated-allblanc-no-jump-cardio",
+      "curated-allblanc-lower-body"
+    ]
+  },
+  "observedUserSessionCount": 0
+}

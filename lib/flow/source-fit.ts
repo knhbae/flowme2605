@@ -442,6 +442,64 @@ export const sourceFitAudits: SourceFitAudit[] = [
     },
   }),
   defineAudit({
+    slug: 'curated-new-car-basic',
+    checkedAt: '2026-07-12',
+    sourceTitle: 'Getcha 신차 구매 절차 참고 가이드 + 찾기쉬운 생활법령 신규등록·의무보험 안내',
+    sourceUrl: 'https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners',
+    sourcePrecision: 'exact',
+    sourceUsefulness:
+      'Getcha 글은 예산, 방식 비교, 견적, 계약, 출고, 등록, 보험으로 이어지는 구매 순서를 참고하는 데 쓸 수 있다. 고정 비율·금액·기한·상품 판단은 근거로 쓰지 않고, 신규등록과 의무보험 행은 2026년 현재 생활법령 안내 링크를 별도로 사용한다.',
+    idealReconstruction:
+      '구매 방식과 견적은 사용자가 받은 실제 조건을 비교표에 기록하고, 계약·출고·등록·의무보험은 완료 상태와 문의 메모를 남긴다. 등록과 의무보험은 각 행에서 공식 안내를 다시 연다.',
+    naturalArtifacts: [
+      {
+        kind: 'comparison_table',
+        artifactTitle: '신차 견적·구매 방식 비교표',
+        simulatedInputs: [
+          '후보 차량=아반떼 하이브리드',
+          '견적A=현금 구매',
+          '견적B=할부 제안',
+          '확인 기준=차량가·옵션·총비용·계약 조건',
+        ],
+        expectedOutput: ['후보, 판매 채널, 차량·옵션, 총비용, 금융 조건, 포함 조건, 문의, 확인 상태 열'],
+        currentFlowMatch: '예산, 구매 방식, 견적, 계약 행이 비교할 조건과 문의 메모를 보존한다.',
+        currentUxSupport: '체크와 메모는 가능하고 시트 내보내기로 받은 조건을 나란히 볼 수 있다.',
+        gap: 'FlowMe가 상품이나 최저가를 추천하는 것처럼 보이지 않도록 실제 제안값 기록과 확인 상태에 한정해야 한다.',
+      },
+      {
+        kind: 'checklist',
+        artifactTitle: '출고·신규등록·의무보험 확인표',
+        simulatedInputs: ['출고예정일=판매자 확인', '등록주체=판매자 대행 여부 확인', '보험시작일=인수 전 실제 가입 조건 확인'],
+        expectedOutput: ['출고 검수 상태', '신규등록 공식 안내 확인', '등록 완료 상태', '의무보험 가입 여부', '보장 시작일', '보류 메모'],
+        currentFlowMatch: '출고, 신규등록, 의무보험을 서로 다른 완료 행으로 유지한다.',
+        currentUxSupport: '등록과 의무보험 행에서 현재 생활법령 안내를 직접 열 수 있다.',
+        gap: '등록 서류와 보험 보장은 개인·차량·계약에 따라 달라지므로 보편 목록이나 추천값을 앱 본문에 고정하면 안 된다.',
+      },
+    ],
+    userJourney: [
+      '신차 구매 순서를 참고하고 후보 차량과 예산 범위를 적는다.',
+      '실제로 받은 구매 방식과 견적 조건을 비교표에 기록한다.',
+      '계약서, 출고 검수, 등록 진행 상태를 확인하고 보류 사항을 메모한다.',
+      '신규등록과 의무보험은 각 공식 안내와 실제 접수·가입 조건을 다시 확인한다.',
+    ],
+    currentGap:
+      '민간 글은 구매 순서 참고에는 유용하지만 고정 비율·금액·기한과 금융·보험 판단의 단독 근거로는 부족하다. 등록과 의무보험을 공식 근거로 분리한 현재 모델을 유지해야 한다.',
+    contentAction:
+      '고정 가격·비율·기한·보편 서류 목록을 넣지 않고, 민간 글은 구매 순서에만 사용하며 등록과 의무보험 행은 현재 공식 안내 링크를 유지한다.',
+    uxAction:
+      '추천이나 자동 판단 대신 실제 제안 조건, 확인 상태, 문의 메모를 먼저 보여주고 각 민감 행에서 공식 안내를 다시 열 수 있게 한다.',
+    scores: {
+      actionDensity: 14,
+      temporalStructure: 7,
+      externalManagementNeed: 18,
+      completionClarity: 13,
+      personalizationNeed: 8,
+      returnValue: 8,
+      sourceSpecificityTrust: 9,
+      riskBoundaryClarity: 5,
+    },
+  }),
+  defineAudit({
     slug: 'car-care-monthly-routine',
     checkedAt: '2026-07-11',
     sourceTitle: '타이어 공기압 TPMS·블랙박스 셀프정비 2026 완벽 체크리스트',

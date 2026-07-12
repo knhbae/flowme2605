@@ -11,6 +11,10 @@ const opicYoutubeSourceUrl = 'https://www.youtube.com/playlist?list=PLq3xvPExCrK
 const babyFoodSourceUrl = 'https://blog.naver.com/01695258757/222768860919';
 const readingSourceUrl = 'https://blog.naver.com/naristyle87/222978131890';
 const newCarSourceUrl = 'https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners';
+const newCarRegistrationSourceUrl =
+  'https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=2&cnpClsNo=1&csmSeq=675&popMenu=ov';
+const newCarInsuranceSourceUrl =
+  'https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=1&cciNo=1&cnpClsNo=3&csmSeq=675';
 const vaccinationSourceUrl = 'https://khms.or.kr/healthy_life/prevention/vaccination_child';
 const movingSourceUrl =
   'https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363';
@@ -21,8 +25,12 @@ const allblancMorningWorkoutUrl = 'https://www.youtube.com/watch?v=fLLScgWQcHc';
 const allblancNoJumpWorkoutUrl = 'https://www.youtube.com/watch?v=2dail5Imi04';
 const allblancLowerBodyWorkoutUrl = 'https://www.youtube.com/watch?v=UEPkHmW_2FU';
 
-function newCarSourceTrace(stepId: string): string {
-  return `Getcha new car purchase guide ${newCarSourceUrl} - source purchase step: ${stepId}`;
+function newCarSourceTrace(
+  stepId: string,
+  sourceUrl = newCarSourceUrl,
+  sourceLabel = 'Getcha new car purchase guide',
+): string {
+  return `${sourceLabel} ${sourceUrl} - source purchase step: ${stepId}`;
 }
 
 function movingSourceTrace(stepId: string): string {
@@ -69,6 +77,7 @@ type CuratedStep = {
   sourceType?: SourceType;
   riskLevel?: RiskLevel;
   sourceUrl?: string;
+  sourceLabel?: string;
   linkType?: FlowItemLinkType;
   why: string;
   how: string[];
@@ -119,7 +128,7 @@ function bundle(flow: CuratedFlowSeed, sections: FlowBundle['sections'], steps: 
         ...(step.caution ? { caution: step.caution } : {}),
         links: [
           {
-            label: '원문 열기',
+            label: step.sourceLabel ?? '원문 열기',
             url: step.sourceUrl ?? sourceUrl ?? '',
             type: step.linkType ?? (step.sourceType === 'official' ? 'official' : step.sourceType === 'creator_experience' ? 'creator' : 'reference'),
           },
@@ -184,9 +193,12 @@ export const curatedSourceBackedFlowMapQualityDecisions: Record<string, SourceBa
     status: 'candidate',
     homepageEligible: false,
     directRouteEnabled: true,
+    publicExecutionEnabled: true,
     productScore: 7.2,
-    reason: 'The guide has a clear seven-step procedure and a natural checklist/comparison-sheet artifact.',
-    nextAction: 'Keep financial-product recommendations out and test whether the checklist is actionable.',
+    reason:
+      'The private guide supports the purchase sequence, while current EasyLaw registration and compulsory-insurance pages now support the two legal or administrative rows.',
+    nextAction:
+      'Keep fixed prices, ratios, deadlines, product recommendations, and universal document claims out; recheck the official registration and insurance links before their review window expires.',
   },
   'curated-child-vaccination-schedule': {
     mapId: 'curated-child-vaccination-schedule',
@@ -297,11 +309,11 @@ export const curatedSourceBackedMyFlowMaps: SourceBackedMyFlowMap[] = [
     id: 'curated-new-car-purchase-guide',
     userLabel: '신차 구매',
     title: '신차 구매 7단계 체크리스트',
-    version: '2026-06-30.2',
-    updatedAt: now,
+    version: '2026-07-12.1',
+    updatedAt: reviewedNow,
     updatePolicy: 'review_before_apply',
-    summary: '신차 구매 절차를 예산/차량, 방식, 견적, 계약, 출고/검수, 등록, 보험 확인 순서로 저장합니다.',
-    sourceTitle: 'Getcha 신차 구매 절차 가이드',
+    summary: '구매 순서는 참고 가이드로 정리하고, 등록과 의무보험은 현재 공식 안내를 따로 확인합니다.',
+    sourceTitle: 'Getcha 신차 구매 절차 참고 가이드',
     sourceUrl: newCarSourceUrl,
     artifacts: ['구매 절차 체크리스트', '견적 비교 메모', '출고/등록 확인 메모'],
     categoryLabel: '구매 준비',
@@ -678,39 +690,65 @@ export const curatedSourceBackedMyFlowBundles: FlowBundle[] = [
       category: '차량/구매',
       structure_type: 'checklist',
       anchor_type: 'none',
-      source_title: 'Getcha 신차 구매 절차 가이드',
+      source_title: 'Getcha 신차 구매 절차 참고 가이드',
       source_url: newCarSourceUrl,
       source_status: 'real',
       source_precision: 'exact',
-      source_checked_at: '2026-06-29',
+      source_checked_at: '2026-07-12',
       primary_destination: 'internal_check',
       risk_level: 'financial_sensitive',
-      warning: 'FlowMe는 금융상품, 보험상품, 최저가, 법적 판단을 추천하지 않습니다. 진행 상태와 문의 메모만 남깁니다.',
+      warning:
+        '구매 방식, 가격, 보험 보장을 추천하지 않습니다. 계약 조건은 판매자와 계약서로, 등록과 의무보험은 현재 공식 안내와 실제 접수 조건으로 다시 확인하세요.',
+      updated_at: reviewedNow,
       tags: tagMap('curated-new-car-purchase-guide', 'car', 'purchase-checklist'),
     },
     [section(newCarFlowId, 'new-car-steps', '구매 절차', 0)],
     [
       ['new-car-budget-model', '예산과 차량 선택', '예산 범위와 후보 차량을 적습니다.', ['예산 범위', '후보 차량', '필수 조건'], '예산과 후보 차량이 기록되었습니다.'],
-      ['new-car-purchase-method', '구매 방식 결정', '현금, 할부, 리스, 장기렌트 중 현재 후보를 표시합니다.', ['구매 방식 후보', '확인할 조건', '문의할 내용'], '구매 방식 후보가 정해졌습니다.'],
+      ['new-car-purchase-method', '구매 방식 비교 메모', '현금, 할부, 리스, 장기렌트의 실제 제안 조건을 나란히 적습니다.', ['비교할 방식', '각 제안의 총비용과 조건', '확인할 내용'], '비교할 방식과 확인할 조건을 적었습니다.'],
       ['new-car-quotes-negotiation', '견적과 협상 메모', '받은 견적을 비교표로 기록합니다.', ['딜러/채널', '견적 링크 또는 메모', '포함 조건', '추가 문의'], '비교할 견적이 기록되었습니다.'],
       ['new-car-contract', '계약 확인', '계약 전 확인할 자료와 남은 문의를 기록합니다.', ['계약서 확인', '계약금 여부', '남은 문의'], '계약 관련 확인 상태가 기록되었습니다.'],
       ['new-car-delivery-inspection', '출고와 검수', '출고 일정과 검수 확인 상태를 남깁니다.', ['출고 예정일', '검수 확인', '인수 보류 여부'], '출고/검수 상태가 기록되었습니다.'],
-      ['new-car-registration', '등록 확인', '차량 등록 관련 진행 상태를 기록합니다.', ['등록 진행 여부', '번호판/서류 확인', '보류 사항'], '등록 진행 상태가 기록되었습니다.'],
-      ['new-car-insurance', '보험 가입 확인', '보험 가입 여부와 시작일만 확인합니다.', ['보험 가입 여부', '보험 시작일', '확인 메모'], '보험 가입 상태가 기록되었습니다.'],
+      ['new-car-registration', '신규등록 확인', '등록 주체와 실제 접수 조건을 공식 안내에서 확인하고 진행 상태를 기록합니다.', ['등록 주체와 진행 여부', '필요 서류 공식 안내 확인', '등록 완료 확인'], '공식 안내를 확인하고 등록 진행 상태를 기록했습니다.'],
+      ['new-car-insurance', '의무보험 확인', '의무보험 가입 여부와 보장 시작일을 공식 안내와 실제 가입 조건으로 확인합니다.', ['의무보험 가입 여부', '보장 시작일', '가입 조건 확인 메모'], '의무보험 가입 상태와 시작일을 확인했습니다.'],
     ].map(([id, title, description, how, doneWhen], order) => ({
       id: String(id),
       sectionId: 'new-car-steps',
       title: String(title),
       description: String(description),
       order,
-      sourceType: 'reference' as const,
+      sourceType:
+        id === 'new-car-registration' || id === 'new-car-insurance' ? ('official' as const) : ('reference' as const),
       riskLevel: 'financial_sensitive' as const,
-      why: 'Getcha 원문은 신차 구매 절차를 단계별로 설명하므로 FlowMe는 상태와 메모만 남깁니다.',
+      sourceUrl:
+        id === 'new-car-registration'
+          ? newCarRegistrationSourceUrl
+          : id === 'new-car-insurance'
+            ? newCarInsuranceSourceUrl
+            : newCarSourceUrl,
+      sourceLabel:
+        id === 'new-car-registration'
+          ? '공식 신규등록 안내'
+          : id === 'new-car-insurance'
+            ? '공식 의무보험 안내'
+            : '구매 절차 참고 원문',
+      linkType:
+        id === 'new-car-registration' || id === 'new-car-insurance' ? ('official' as const) : ('reference' as const),
+      why:
+        id === 'new-car-registration'
+          ? '신규등록 여부와 구비서류는 현재 생활법령 안내를 기준으로 확인하고 진행 상태만 남깁니다.'
+          : id === 'new-car-insurance'
+            ? '자동차 보유자의 의무보험 가입 여부는 현재 생활법령 안내와 실제 가입 조건으로 확인합니다.'
+            : 'Getcha 원문은 신차 구매 순서를 참고하는 자료이며 FlowMe는 비교할 조건과 확인 상태만 남깁니다.',
       how: how as string[],
       doneWhen: String(doneWhen),
-      caution: '상품 추천, 가격 판단, 법적/재무 판단은 하지 않습니다.',
-      sourceUrl: newCarSourceUrl,
-      sourceTrace: newCarSourceTrace(String(id)),
+      caution: '고정 비율, 금액, 기한을 일반화하거나 상품·가격·법적·재무 판단을 대신하지 않습니다.',
+      sourceTrace:
+        id === 'new-car-registration'
+          ? newCarSourceTrace(String(id), newCarRegistrationSourceUrl, 'EasyLaw official new vehicle registration guidance')
+          : id === 'new-car-insurance'
+            ? newCarSourceTrace(String(id), newCarInsuranceSourceUrl, 'EasyLaw official compulsory automobile insurance guidance')
+            : newCarSourceTrace(String(id)),
     })),
   ),
   bundle(

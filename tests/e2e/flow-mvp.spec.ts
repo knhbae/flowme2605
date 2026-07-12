@@ -6359,6 +6359,50 @@ test('current-source audit batch exposes one execution surface only for approved
   }
 });
 
+test('current new-car source fit separates the reference journey from official registration and insurance', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_NEW_CAR_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const mapResponse = await page.goto('/flow-maps/curated-new-car-purchase-guide');
+  expect(mapResponse?.status()).toBe(200);
+  await expect(page.getByRole('heading', { name: '신차 구매 7단계 체크리스트' })).toBeVisible();
+  await expect(page.locator('body')).toContainText('구매 방식 비교 메모');
+  await expect(page.locator('body')).toContainText('신규등록 확인');
+  await expect(page.locator('body')).toContainText('의무보험 확인');
+  await expect(page.locator('a[href*="easylaw.go.kr"]')).toHaveCount(2);
+  await expect(page.locator('body')).not.toContainText(/연봉\s*(?:의)?\s*50%|7\s*[~-]\s*8%|계약금\s*10%|15일\s*이내/u);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-new-car-map-mobile.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-new-car-map-wide.png`, fullPage: true });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const childResponse = await page.goto('/f/curated-new-car-basic');
+  expect(childResponse?.status()).toBe(200);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+  await expect(page.getByText('원문 연결됨', { exact: true })).toBeVisible();
+  await expect(page.locator('body')).toContainText('등록과 의무보험은 현재 공식 안내');
+  await expect(page.locator('a[href*="easylaw.go.kr"]')).toHaveCount(2);
+  await expect(page.locator('body')).not.toContainText(/100만\s*원|300만\s*원|최소\s*3곳|36개월|60개월/u);
+  const sourceCard = page.getByTestId('flow-source-card');
+  await expect(sourceCard).toContainText('원문 확인 기록');
+  await expect(sourceCard).toContainText('Flow 정리');
+  await expect(sourceCard).not.toContainText('업데이트');
+  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  await expectNoUserFacingRawIsoDate(page.locator('body'));
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-new-car-public-mobile.png`, fullPage: true });
+
+  const officialDetails = page.locator('details').filter({ has: page.locator('a[href*="easylaw.go.kr"]') });
+  await expect(officialDetails).toHaveCount(2);
+  await officialDetails.evaluateAll((elements) => elements.forEach((element) => ((element as HTMLDetailsElement).open = true)));
+  await page.locator('a[href*="easylaw.go.kr"]').first().scrollIntoViewIfNeeded();
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-new-car-official-details-mobile.png`, fullPage: true });
+});
+
 test('current source freshness audit keeps corrected routes executable and stale routes gated', async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 844 });

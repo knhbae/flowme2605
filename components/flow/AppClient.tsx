@@ -324,7 +324,7 @@ function FlowBadges({ bundle, showStatus = false }: { bundle: FlowBundle; showSt
           {flow.status === 'published' ? '공개 Flow' : '초안 Flow'}
         </Badge>
       ) : null}
-      {flow.source_url ? <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700">✓ 출처 확인됨</Badge> : null}
+      {flow.source_url ? <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700">원문 연결됨</Badge> : null}
       {visibleRisk ? (
         <Badge className={riskClasses[visibleRisk]}>{riskLabels[visibleRisk]}</Badge>
       ) : null}
@@ -390,8 +390,8 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
   const hideConversionNote = serviceCatalogFlowSlugs.has(bundle.flow.slug);
   const sourceMeta = [
     domain,
-    bundle.flow.source_checked_at ? `${formatMyFlowDisplayDate(bundle.flow.source_checked_at)} 확인` : null,
-    bundle.flow.updated_at ? `${formatMyFlowDisplayDate(formatDate(new Date(bundle.flow.updated_at)))} 업데이트` : null,
+    bundle.flow.source_checked_at ? `${formatMyFlowDisplayDate(bundle.flow.source_checked_at)} 원문 확인 기록` : null,
+    bundle.flow.updated_at ? `${formatMyFlowDisplayDate(formatDate(new Date(bundle.flow.updated_at)))} Flow 정리` : null,
     getSourcePrecisionLabel(bundle),
   ].filter(Boolean);
 
@@ -492,7 +492,7 @@ function getCatalogDestinationLabel(bundle: FlowBundle): string {
 }
 
 function getCatalogSourceSignal(bundle: FlowBundle): string {
-  if (bundle.flow.source_status === 'real' && bundle.flow.source_checked_at) return '출처 확인됨';
+  if (bundle.flow.source_status === 'real' && bundle.flow.source_checked_at) return '원문 연결';
   if (bundle.flow.source_status === 'real') return '실제 원문';
   if (bundle.flow.source_url) return '원문 연결';
   return '출처 없음';
@@ -2700,8 +2700,8 @@ function getSourceStatusLabel(bundle: FlowBundle) {
 }
 
 function getSourcePrecisionLabel(bundle: FlowBundle): string | undefined {
-  if (bundle.flow.source_precision === 'exact') return '정확한 출처 페이지';
-  if (bundle.flow.source_precision === 'broad') return '넓은 출처';
+  if (bundle.flow.source_precision === 'exact') return '개별 원문 페이지';
+  if (bundle.flow.source_precision === 'broad') return '출처 범위 넓음';
   return undefined;
 }
 

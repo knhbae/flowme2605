@@ -11,6 +11,11 @@ import {
 } from './source-fit';
 import { isCuratedSourceAppSeedBundle } from './curated-source-app-seed-meta';
 import { seedBundles } from './seed-flows';
+import {
+  isSourceBackedFlowMapExecutable,
+  sourceBackedMyFlowBundles,
+  sourceBackedMyFlowMaps,
+} from './source-backed-my-flow';
 
 test('source-fit scoring clamps each dimension to its maximum and returns a 0-100 score', () => {
   assert.equal(
@@ -91,12 +96,38 @@ test('moving audit simulates calendar and spreadsheet artifacts before comparing
 test('source-fit summary captures keep, reshape, and preview decisions', () => {
   const summary = getSourceFitSummary();
 
-  assert.equal(summary.auditedCount, 132);
+  assert.equal(summary.auditedCount, 133);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 46);
+  assert.equal(summary.decisionCounts.keep_representative, 47);
   assert.equal(summary.decisionCounts.reshape_before_featured, 73);
   assert.equal(summary.decisionCounts.catalog_preview_only, 12);
   assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
+});
+
+test('current new-car source fit keeps only supported purchase records executable', () => {
+  const audit = getSourceFitAudit('curated-new-car-basic');
+
+  assert.ok(audit);
+  assert.equal(audit.checkedAt, '2026-07-12');
+  assert.equal(audit.decision, 'keep_representative');
+  assert.match(audit.sourceUsefulness, /신규등록과 의무보험.*생활법령/u);
+  assert.match(audit.contentAction, /고정 가격.*넣지 않고/u);
+  assert.ok(audit.naturalArtifacts.some((artifact) => artifact.kind === 'comparison_table'));
+  assert.ok(audit.naturalArtifacts.some((artifact) => artifact.kind === 'checklist'));
+});
+
+test('no unaudited financial-sensitive source-backed map remains publicly executable', () => {
+  const auditedSlugs = new Set(sourceFitAudits.map((audit) => audit.slug));
+  const bundleBySlug = new Map(sourceBackedMyFlowBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const unauditedHighRisk = sourceBackedMyFlowMaps.flatMap((map) => {
+    if (!isSourceBackedFlowMapExecutable(map)) return [];
+    return map.flowSlugs.filter((slug) => {
+      const risk = bundleBySlug.get(slug)?.flow.risk_level;
+      return risk === 'financial_sensitive' && !auditedSlugs.has(slug);
+    });
+  });
+
+  assert.deepEqual(unauditedHighRisk, []);
 });
 
 test('sensitive current-source pass separates exact execution routes from broad advice', () => {

@@ -126,9 +126,9 @@ test('converted pilot lab exposes 10 real-source flows for B validation', () => 
 test('content lab exposes source-fit audit summary for representative cleanup', () => {
   const summary = getContentLabSummary(seedBundles);
 
-  assert.equal(summary.sourceFitAuditedCount, 132);
+  assert.equal(summary.sourceFitAuditedCount, 133);
   assert.ok(summary.sourceFitAverageScore >= 70);
-  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 46);
+  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 47);
   assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 73);
   assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 12);
   assert.equal(summary.sourceFitDecisionCounts.hide_from_public_catalog, 1);
