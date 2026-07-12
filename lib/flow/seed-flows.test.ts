@@ -129,6 +129,15 @@ test('runtime content policy archives unsupported public routes without deleting
     ),
     [],
   );
+  const runtimeReviewBundles = mergeSourceBackedMyFlowBundles(seedBundles);
+  assert.deepEqual(
+    RUNTIME_ARCHIVED_FLOW_POLICIES.filter((policy) => {
+      if (!policy.replacementSlug) return false;
+      const replacement = runtimeReviewBundles.find((bundle) => bundle.flow.slug === policy.replacementSlug);
+      return !replacement || !getPublicFlowIndexingPolicy(replacement).indexable;
+    }),
+    [],
+  );
   for (const policy of RUNTIME_ARCHIVED_FLOW_POLICIES) {
     const canonical = seedBundles.find((bundle) => bundle.flow.slug === policy.slug);
     assert.ok(canonical, policy.slug);

@@ -205,6 +205,15 @@ async function scrollElementToViewportEnd(locator: Locator) {
   await locator.evaluate((element) => element.scrollIntoView({ block: 'end', inline: 'nearest' }));
 }
 
+async function expectPublicFlowRouteClosed(page: Page, route: string) {
+  const response = await page.goto(route);
+  expect(response?.status(), route).toBe(404);
+  await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
+  await expect(page.getByRole('link', { name: '홈으로' })).toHaveAttribute('href', '/');
+}
+
 test('home presents FLOW as an executable content platform', async ({ page }) => {
   await page.goto('/');
 
@@ -1237,11 +1246,7 @@ test('special public workbench routes keep the FlowMe visual rhythm', async ({ p
   await expect(babyFoodWorkbench.getByTestId('meal-source-bridge')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
   await expect(babyFoodWorkbench.getByTestId('meal-source-bridge')).toHaveCSS('border-radius', '16px');
 
-  await page.goto('/f/real-thankyou-bubu-home-workout-starter');
-  const exactVideoReviewGate = page.getByTestId('public-flow-review-only-gate');
-  await expect(exactVideoReviewGate).toHaveCSS('border-color', 'rgb(240, 216, 174)');
-  await expect(exactVideoReviewGate).toHaveCSS('border-radius', '16px');
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+  await expectPublicFlowRouteClosed(page, '/f/real-thankyou-bubu-home-workout-starter');
 
   await page.goto('/f/washer-tub-clean-monthly');
   const maintenanceWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
@@ -2192,34 +2197,33 @@ test('preview creator channel profile excludes generated sample entries from run
 test('creator channel can filter real source-backed flows', async ({ page }) => {
   await page.goto('/u/samsung-service');
 
-  await expect(page.getByText('원문 확인됨').first()).toBeVisible();
+  await expect(page.getByText('내부 검토 재고', { exact: true })).toBeVisible();
   await expect(page.getByText('대표 항목:')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '확인된 콘텐츠', exact: true })).toHaveClass(/border-blue-600/);
+  await expect(page.getByRole('button', { name: '원문 있는 재고', exact: true })).toHaveClass(/border-blue-600/);
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-samsung-washer-filter-care"]').first()).toBeVisible();
+  await expect(page.locator('[data-testid="creator-profile-content-card"][data-public-indexable="false"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '검토 재고 열기' })).toHaveCount(0);
   await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
 });
 
 test('fitness creator profile highlights exact video flows before samples', async ({ page }) => {
   await page.goto('/u/thankyou-bubu');
 
-  await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
-  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]').first()).toBeVisible();
+  await expect(page.getByText('원문 있는 콘텐츠부터 검토')).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '검토 재고 열기' }).first()).toHaveAttribute('href', '/content-flows');
 
   await page.locator('button').first().click();
 
-  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]')).toHaveCount(0);
   await expect(page.locator('a[href^="/f/channel-thankyou-bubu-"]')).toHaveCount(0);
 });
 
-test('retired duplicate fitness route yields to the current review-gated source flow', async ({ page }) => {
-  const archivedResponse = await page.goto('/f/real-thankyou-bubu-video-full-body-no-jump');
-  expect(archivedResponse?.status()).toBe(404);
-  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
-
-  await page.goto('/f/real-thankyou-bubu-home-workout-starter');
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+test('retired and review-gated fitness routes both stay out of the public service', async ({ page }) => {
+  await expectPublicFlowRouteClosed(page, '/f/real-thankyou-bubu-video-full-body-no-jump');
+  await expectPublicFlowRouteClosed(page, '/f/real-thankyou-bubu-home-workout-starter');
 });
 
 test('current ThankyouBUBU routes stay behind the source-fit review boundary', async ({ page }) => {
@@ -2227,10 +2231,7 @@ test('current ThankyouBUBU routes stay behind the source-fit review boundary', a
     'real-thankyou-bubu-home-workout-starter',
     'real-thankyou-bubu-20min-routine',
   ]) {
-    await page.goto(`/f/${slug}`);
-    await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
-    await expect(page.getByRole('region', { name: '영상 반복 캘린더 설정' })).toHaveCount(0);
+    await expectPublicFlowRouteClosed(page, `/f/${slug}`);
   }
 });
 
@@ -2240,19 +2241,12 @@ test('FITVELY source flows remain read-only until source-fit review is complete'
     'real-fitvely-video-workout-order',
     'real-fitvely-diet-record-routine',
   ]) {
-    await page.goto(`/f/${slug}`);
-    await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+    await expectPublicFlowRouteClosed(page, `/f/${slug}`);
   }
 });
 
-test('review-gated exact video does not expose copy or execution actions', async ({ page }) => {
-  await page.goto('/f/real-thankyou-bubu-home-workout-starter');
-
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.getByRole('button', { name: '내 버전 만들기' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+test('review-gated exact video has no public copy or execution route', async ({ page }) => {
+  await expectPublicFlowRouteClosed(page, '/f/real-thankyou-bubu-home-workout-starter');
 });
 
 test('creator profile merges newly shipped seed flows into existing browser storage', async ({ page }) => {
@@ -2304,8 +2298,9 @@ test('creator profile merges newly shipped seed flows into existing browser stor
 
   await page.goto('/u/thankyou-bubu');
 
-  await expect(page.getByText('실제 콘텐츠로 바로 시작')).toBeVisible();
-  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]').first()).toBeVisible();
+  await expect(page.getByText('원문 있는 콘텐츠부터 검토')).toBeVisible();
+  await expect(page.locator('a[href="/f/real-thankyou-bubu-home-workout-starter"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '검토 재고 열기' }).first()).toHaveAttribute('href', '/content-flows');
   await page.getByRole('button', { name: '모두 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Local only old flow' })).toBeVisible();
   const generatedPreviewCount = await page.evaluate(() => {
@@ -2416,7 +2411,9 @@ test('a saved archived flow remains as personal history without returning to tod
   expect(migratedState.itemStates['book-finish-old-item'].note).toBe('완독 기록은 보존해야 합니다.');
 
   await page.goto('/calendar');
-  await expect(page.getByTestId('my-flow-calendar-card')).not.toContainText('책 한 권 완독 실천');
+  await expect(page.getByTestId('my-flow-calendar-card')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-empty-state')).toBeVisible();
+  await expect(page.locator('body')).not.toContainText('책 한 권 완독 실천');
 
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto('/my');
@@ -3591,8 +3588,17 @@ test('my flow separates ready source-backed content from review-needed saved flo
   const reviewCard = reviewSection.locator('[data-testid="my-flow-overview-card"][data-flow-slug="alt-phone-sk7-self-activation"]');
   await expect(reviewCard).toContainText('알뜰폰 SK7 셀프개통 체크');
   await expect(reviewCard).not.toContainText('알뜰폰 SK7 셀프개통 체크 Flow');
-  await expect(reviewCard.getByTestId('my-flow-content-readiness')).toContainText('원문 확인');
-  await expect(reviewCard).toContainText('원문과 할 일을 한 번 확인한 뒤 실행하세요.');
+  await expect(reviewCard.getByTestId('my-flow-content-readiness')).toContainText('실행 보류');
+  await expect(reviewCard).toContainText('현재 공개 실행에서 제외된 기록입니다.');
+  await expect(reviewCard.getByTestId('my-flow-next-action')).toHaveCount(0);
+  await expect(reviewCard.getByTestId('my-flow-overview-progress-summary')).toHaveCount(0);
+  await expect(reviewCard.getByRole('link', { name: '현재 원문 보기' })).toHaveAttribute(
+    'href',
+    'https://blog.naver.com/PostView.nhn?blogId=saljjak-&logNo=223661947600',
+  );
+
+  await page.goto('/calendar');
+  await expect(page.locator('body')).not.toContainText('알뜰폰 SK7 셀프개통 체크');
 });
 
 test('source-backed single progress map opens step detail on mobile My Flow', async ({ page }) => {
@@ -4840,33 +4846,18 @@ test('flow item card makes detail and skipped states explicit', async ({ page })
   await expect(workbench.getByText('이유:').first()).toBeVisible();
 });
 
-test('source-fit decisions are visible on direct-access public flow pages', async ({ page }) => {
-  const archivedResponse = await page.goto('/f/study-exam-d30-plan');
-  expect(archivedResponse?.status()).toBe(404);
-  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
-  await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
-
-  await page.goto('/f/running-5k-4week');
-  await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute('data-decision', 'reshape_before_featured');
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.getByTestId('public-flow-review-summary')).toBeVisible();
-  await expect(page.getByTestId('public-flow-review-items-hidden')).toBeVisible();
-  await expect(page.getByTestId('public-flow-first-action-preview')).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-review-only-gate').locator('li')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
-  await expect(page.getByRole('checkbox')).toHaveCount(0);
+test('source-fit decisions keep archived and review-gated flows out of public routes', async ({ page }) => {
+  await expectPublicFlowRouteClosed(page, '/f/study-exam-d30-plan');
+  await expectPublicFlowRouteClosed(page, '/f/running-5k-4week');
 
   await page.goto('/f/vehicle-inspection-prep');
   await expect(page.getByTestId('source-fit-status')).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
   const currentFlowRobots = await page.locator('meta[name="robots"]').getAttribute('content');
   expect(currentFlowRobots ?? '').not.toMatch(/noindex/i);
 
   for (const slug of ['new-car-delivery-check', 'fridge-cleanout-weekly-plan', 'washer-tub-clean-monthly']) {
     await page.goto(`/f/${slug}`);
     await expect(page.getByTestId('source-fit-status')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
   }
 });
@@ -6008,24 +5999,13 @@ test('content flows washer preview keeps setup light and method details in memo'
   await expect(executionPreview).toContainText('냄새가 반복되면 다음 실행부터 2주 1회로 조정');
 });
 
-test('content flows studio links promoted candidates to matching public service flows', async ({ page }) => {
+test('content flows studio links only approved candidates to public service flows', async ({ page }) => {
   await page.goto('/content-flows');
 
   const expectations: Record<string, string> = {
     'washer-tub-clean-monthly': '/f/washer-tub-clean-monthly',
-    'monstera-care-routine': '/f/monstera-care-routine',
     'wedding-12-month-timeline': '/f/wedding-d180-basic',
-    'water-purifier-filter-cycle': '/f/water-purifier-filter-cycle',
     'used-car-buying-check': '/f/used-car-buying-check',
-    'plank-30-day-challenge': '/f/plank-30-day-challenge',
-    'thankyou-bubu-no-jump-home-workout': '/f/real-thankyou-bubu-home-workout-starter',
-    'japan-esim-setup-before-departure': '/f/japan-esim-setup-before-departure',
-    'kids-dino-footprint-art': '/f/kids-dino-footprint-art',
-    'banana-peanut-recipe-video': '/f/banana-peanut-recipe-video',
-    'jeonse-contract-precheck-docs': '/f/jeonse-contract-precheck-docs',
-    'elementary-school-entry-d30': '/f/elementary-school-entry-d30',
-    'kids-printable-squishy-craft': '/f/kids-printable-squishy-craft',
-    'remote-help-session-precheck': '/f/remote-help-session-precheck',
     'fridge-cleanout-weekly-plan': '/f/fridge-cleanout-weekly-plan',
   };
 
@@ -6036,8 +6016,18 @@ test('content flows studio links promoted candidates to matching public service 
     await expect(link).toHaveAttribute('href', href);
   }
 
-  await page.locator('[data-testid="content-flow-candidate"][data-flow-id="lg-aircon-filter-biweekly"]').click();
-  await expect(page.getByTestId('content-flow-public-route-link')).toHaveCount(0);
+  for (const id of [
+    'monstera-care-routine',
+    'water-purifier-filter-cycle',
+    'plank-30-day-challenge',
+    'thankyou-bubu-no-jump-home-workout',
+    'jeonse-contract-precheck-docs',
+    'remote-help-session-precheck',
+    'lg-aircon-filter-biweekly',
+  ]) {
+    await page.locator(`[data-testid="content-flow-candidate"][data-flow-id="${id}"]`).click();
+    await expect(page.getByTestId('content-flow-public-route-link')).toHaveCount(0);
+  }
 });
 
 test('approved promoted content-flow routes preserve executable source cues', async ({ page }) => {
@@ -6093,14 +6083,7 @@ test('promoted maintenance routes use source-specific artifact workbenches', asy
   await expect(workbench).not.toContainText('2주 1회');
 
   for (const route of ['/f/monstera-care-routine', '/f/water-purifier-filter-cycle']) {
-    await page.goto(route);
-    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute(
-      'data-decision',
-      'reshape_before_featured',
-    );
-    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
-    await expect(page.getByRole('checkbox')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+    await expectPublicFlowRouteClosed(page, route);
   }
 });
 
@@ -6115,7 +6098,6 @@ test('current-source audit batch exposes one execution surface only for approved
     await page.goto(route);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
     await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
-    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
     await expect(page.getByLabel('Flow artifact preview')).toHaveCount(0);
     await expect(page.getByText('전체 흐름', { exact: true })).toHaveCount(0);
     await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
@@ -6133,19 +6115,8 @@ test('current-source audit batch exposes one execution surface only for approved
     '단계 순서대로 확인하고, 지금 할 일과 다음 단계를 한눈에 봅니다.',
   );
 
-  for (const { route, decision } of [
-    { route: '/f/citizen-secretary-alerts', decision: 'catalog_preview_only' },
-    { route: '/f/domestic-trip-d7', decision: 'reshape_before_featured' },
-  ]) {
-    await page.goto(route);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute(
-      'data-decision',
-      decision,
-    );
-    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
-    await expect(page.getByRole('checkbox')).toHaveCount(0);
+  for (const route of ['/f/citizen-secretary-alerts', '/f/domestic-trip-d7']) {
+    await expectPublicFlowRouteClosed(page, route);
   }
 });
 
@@ -6173,7 +6144,6 @@ test('current source freshness audit keeps corrected routes executable and stale
     await page.goto(route);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
     await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toBeVisible();
-    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
     await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
     await expect(page.locator('body')).not.toContainText('??');
     await expect(page.locator('body')).not.toContainText('�');
@@ -6202,26 +6172,16 @@ test('current source freshness audit keeps corrected routes executable and stale
   await expect(page.locator('body')).not.toContainText('66일');
 
   const gatedRoutes = [
-    { route: '/f/birth-registration-prep', decision: 'reshape_before_featured' },
-    { route: '/f/seal-or-signature-certificate', decision: 'reshape_before_featured' },
-    { route: '/f/health-insurance-dependent', decision: 'reshape_before_featured' },
-    { route: '/f/dog-walk-routine', decision: 'reshape_before_featured' },
-    { route: '/f/morning-routine-30day', decision: 'reshape_before_featured' },
-    { route: '/f/morning-skincare-routine', decision: 'reshape_before_featured' },
-    { route: '/f/recipe-video-execute', decision: 'catalog_preview_only' },
+    '/f/birth-registration-prep',
+    '/f/seal-or-signature-certificate',
+    '/f/health-insurance-dependent',
+    '/f/dog-walk-routine',
+    '/f/morning-routine-30day',
+    '/f/morning-skincare-routine',
+    '/f/recipe-video-execute',
   ];
-  for (const { route, decision } of gatedRoutes) {
-    await page.goto(route);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveAttribute(
-      'data-decision',
-      decision,
-    );
-    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
-    await expect(page.getByRole('checkbox')).toHaveCount(0);
-    await expect(page.locator('body')).not.toContainText('??');
-    await expect(page.locator('body')).not.toContainText('�');
+  for (const route of gatedRoutes) {
+    await expectPublicFlowRouteClosed(page, route);
   }
 
   for (const route of RUNTIME_ARCHIVED_FLOW_SLUGS.map((slug) => `/f/${slug}`)) {
@@ -6243,15 +6203,8 @@ test('current source freshness audit keeps corrected routes executable and stale
   }
 });
 
-test('plank challenge stays review-gated until its source table is approved', async ({ page }) => {
-  await page.goto('/f/plank-30-day-challenge');
-
-  await expect(page.getByRole('heading', { name: '30일 플랭크 챌린지' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '30일 플랭크 챌린지 Flow' })).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+test('plank challenge stays out of public routes until its source table is approved', async ({ page }) => {
+  await expectPublicFlowRouteClosed(page, '/f/plank-30-day-challenge');
 });
 
 test('promoted public routes keep save primary visible and the executable artifact available', async ({ page }) => {
@@ -6750,7 +6703,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(convertedPilot.getByRole('link', { name: /다이어트 식단·운동 기록/ })).toBeVisible();
 });
 
-test('representative real content pilot flows are executable', async ({ page }) => {
+test('approved pilot flow executes while review inventory stays out of public routes', async ({ page }) => {
   await page.goto('/f/samsung-aircon-seasonal-check');
   await expect(page.getByRole('heading', { name: '삼성 에어컨 계절 전 점검' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '삼성 에어컨 계절 전 점검 Flow' })).toHaveCount(0);
@@ -6772,20 +6725,11 @@ test('representative real content pilot flows are executable', async ({ page }) 
   await firstSessionPreview.check();
   await expect(firstSessionPreview).toBeChecked();
 
-  await page.goto('/f/qnet-exam-application-prep');
-  await expect(page.getByRole('heading', { name: 'Q-Net 원서접수 준비' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Q-Net 원서접수 준비 Flow' })).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+  await expectPublicFlowRouteClosed(page, '/f/qnet-exam-application-prep');
 });
 
 test('official route quality gates keep only approved artifacts executable', async ({ page }) => {
-  await page.goto('/f/family-certificate-issue');
-  await expect(page.getByRole('heading', { name: '가족관계증명서 발급' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '가족관계증명서 발급 Flow' })).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+  await expectPublicFlowRouteClosed(page, '/f/family-certificate-issue');
 
   await page.goto('/f/passport-renewal-docs');
   await expect(page.getByRole('heading', { name: '여권 재발급 준비' })).toBeVisible();
@@ -6795,25 +6739,12 @@ test('official route quality gates keep only approved artifacts executable', asy
   await expect(passportWorkbench.getByRole('heading', { name: '메모 카드' })).toHaveCount(0);
   await expect(passportWorkbench.getByRole('textbox', { name: '여행일·신청자·신청 경로' })).toHaveCount(0);
 
-  await page.goto('/f/driver-license-renewal-check');
-  await expect(page.getByRole('heading', { name: '운전면허 갱신 준비' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '운전면허 갱신 준비 Flow' })).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
-
-  await page.goto('/f/qnet-exam-application-prep');
-  await expect(page.getByRole('heading', { name: 'Q-Net 원서접수 준비' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Q-Net 원서접수 준비 Flow' })).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+  await expectPublicFlowRouteClosed(page, '/f/driver-license-renewal-check');
+  await expectPublicFlowRouteClosed(page, '/f/qnet-exam-application-prep');
 });
 
-test('MOFA travel route stays review-gated until its execution fields are approved', async ({ page }) => {
-  await page.goto('/f/real-mofa-overseas-travel-prep');
-
-  await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+test('MOFA travel route stays out of public routes until its execution fields are approved', async ({ page }) => {
+  await expectPublicFlowRouteClosed(page, '/f/real-mofa-overseas-travel-prep');
 });
 
 test('experiment feedback routes keep one artifact-first execution surface', async ({ page }) => {
@@ -6843,9 +6774,7 @@ test('review-gated routines do not leak workbenches while an approved routine st
     'real-thankyou-bubu-home-workout-starter',
     'real-fitvely-diet-record-routine',
   ]) {
-    await page.goto(`/f/${slug}`);
-    await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
+    await expectPublicFlowRouteClosed(page, `/f/${slug}`);
   }
 
   await page.goto('/f/english-study-30day-routine');

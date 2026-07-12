@@ -1301,50 +1301,6 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
   };
 }
 
-function PublicFlowReviewOnlyPanel({ bundle }: { bundle: FlowBundle }) {
-  const indexingPolicy = getPublicFlowIndexingPolicy(bundle);
-  const audit = getSourceFitAudit(bundle.flow.slug);
-
-  return (
-    <section
-      data-testid="public-flow-review-only-gate"
-      data-review-reason={indexingPolicy.reason}
-      data-decision={audit?.decision ?? ''}
-      className="my-6 rounded-2xl border border-[#F0D8AE] bg-[#FFF7E8] p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)] md:p-5"
-    >
-      <p className="text-sm font-semibold text-[#9A5A16]">원문 재확인 중</p>
-      <h2 className="mt-1 text-xl font-semibold text-[#1B1A17]">지금은 원문만 확인할 수 있어요</h2>
-      <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">
-        실행 항목을 다시 확인하고 있어 일정과 체크 내용은 숨겼어요. 확인이 끝난 Flow만 저장하거나 완료 표시할 수 있습니다.
-      </p>
-      <p
-        data-testid="public-flow-review-items-hidden"
-        className="mt-4 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2.5 text-sm font-semibold text-[#4A4842]"
-      >
-        확인 전에는 이 페이지의 일정과 체크 항목을 실행에 사용하지 않습니다.
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {bundle.flow.source_url ? (
-          <a
-            className="inline-flex min-h-10 items-center rounded-xl border border-[#D8D5CD] bg-white px-3 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]"
-            href={bundle.flow.source_url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            현재 원문 확인하기
-          </a>
-        ) : null}
-        <Link
-          className="inline-flex min-h-10 items-center rounded-xl bg-[#3654FF] px-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
-          href="/flows"
-        >
-          다른 Flow 찾기
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 function findExistingUrlFirstDraftBundle(
   bundles: FlowBundle[],
   candidate: UrlFirstSupplyCandidate,
@@ -3104,6 +3060,10 @@ function getMyFlowSourceHref(flow: MySavedFlow): string {
   if (isRetiredPersonalCopyBundle(flow.bundle)) {
     return retiredPolicy?.replacementSlug ? `/f/${retiredPolicy.replacementSlug}` : '/flows';
   }
+  const readiness = getMyFlowContentReadiness(flow);
+  if (readiness.kind === 'review' || readiness.kind === 'preview') {
+    return flow.bundle.flow.source_url ?? '/flows';
+  }
   const sourceBackedMap = getSourceBackedMyFlowMapForBundle(flow.bundle);
   return flow.savedMap ? `/flow-maps/${flow.savedMap.mapId}` : sourceBackedMap ? `/flow-maps/${sourceBackedMap.id}` : `/f/${flow.progress.slug}`;
 }
@@ -3113,6 +3073,10 @@ function getMyFlowSourceLinkLabel(flow: MySavedFlow): string {
     return getRuntimeArchivedFlowPolicy(flow.progress.slug)?.replacementSlug
       ? '새 Flow 보기'
       : '다른 Flow 찾기';
+  }
+  const readiness = getMyFlowContentReadiness(flow);
+  if (readiness.kind === 'review' || readiness.kind === 'preview') {
+    return flow.bundle.flow.source_url ? '현재 원문 보기' : '다른 Flow 찾기';
   }
   return flow.savedMap || getSourceBackedMyFlowMapForBundle(flow.bundle) ? '전체 보기' : 'Flow 보기';
 }
@@ -3378,11 +3342,23 @@ function getMyFlowContentReadiness(flow: MySavedFlow): MyFlowContentReadiness {
   if (isRetiredPersonalCopyBundle(flow.bundle)) {
     return { kind: 'retired', label: '이전 저장본', groupLabel: '내 이전 기록' };
   }
+  if (isUrlFirstDraftSavedFlow(flow)) {
+    return { kind: 'ready', label: '실행 가능' };
+  }
+  if (flow.savedMap) {
+    return { kind: 'ready', label: '실행 가능' };
+  }
+  if (flow.bundle.flow.status === 'published') {
+    if (getPublicFlowIndexingPolicy(flow.bundle).indexable) {
+      return { kind: 'ready', label: '실행 가능' };
+    }
+    return { kind: 'review', label: '실행 보류', groupLabel: '확인 후 실행' };
+  }
   const sourceStatus = flow.bundle.flow.source_status;
   const sourceBacked = flow.progress.slug.startsWith('source-backed-') || Boolean(flow.bundle.flow.tags?.includes('source-backed'));
-  if (flow.savedMap || sourceBacked || sourceStatus === 'real' || serviceCatalogFlowSlugs.has(flow.progress.slug)) return { kind: 'ready', label: '실행 가능' };
-  if (sourceStatus === 'preview') return { kind: 'preview', label: '원문 확인', groupLabel: '확인 후 실행' };
-  if (sourceStatus === 'needs_review') return { kind: 'review', label: '원문 확인', groupLabel: '확인 후 실행' };
+  if (sourceBacked || sourceStatus === 'real' || serviceCatalogFlowSlugs.has(flow.progress.slug)) return { kind: 'ready', label: '실행 가능' };
+  if (sourceStatus === 'preview') return { kind: 'preview', label: '실행 보류', groupLabel: '확인 후 실행' };
+  if (sourceStatus === 'needs_review') return { kind: 'review', label: '실행 보류', groupLabel: '확인 후 실행' };
   return { kind: 'legacy', label: '예전 저장', groupLabel: '예전 저장 콘텐츠' };
 }
 
@@ -3392,8 +3368,8 @@ function isMyFlowReadyContent(flow: MySavedFlow): boolean {
 
 function getMyFlowContentReadinessNote(readiness: MyFlowContentReadiness): string {
   if (readiness.kind === 'ready') return '내 Flow에서 실행할 수 있습니다.';
-  if (readiness.kind === 'review') return '원문과 할 일을 한 번 확인한 뒤 실행하세요.';
-  if (readiness.kind === 'preview') return '원문을 확인한 뒤 내 일정에 맞게 실행하세요.';
+  if (readiness.kind === 'review') return '현재 공개 실행에서 제외된 기록입니다. 원문 확인 전에는 완료 항목으로 사용하지 않습니다.';
+  if (readiness.kind === 'preview') return '아직 공개 실행 전인 기록입니다. 원문 확인 전에는 완료 항목으로 사용하지 않습니다.';
   if (readiness.kind === 'retired') return '공개가 끝난 Flow의 내 기록입니다. 완료 기록과 메모는 이 기기에 남아 있어요.';
   return '예전 저장 방식입니다. 새 콘텐츠와 구분해서 봅니다.';
 }
@@ -4243,18 +4219,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return items;
     }, []);
 
+  const workspaceSavedFlows = isCalendarSurface
+    ? savedFlows.filter(isMyFlowReadyContent)
+    : savedFlows;
+
   useEffect(() => {
-    if (selectedSavedFlowSlug !== 'all' && !savedFlows.some((flow) => flow.progress.slug === selectedSavedFlowSlug)) {
+    if (selectedSavedFlowSlug !== 'all' && !workspaceSavedFlows.some((flow) => flow.progress.slug === selectedSavedFlowSlug)) {
       setSelectedSavedFlowSlug('all');
     }
-  }, [selectedSavedFlowSlug, savedFlows]);
+  }, [selectedSavedFlowSlug, workspaceSavedFlows]);
 
   const visibleSavedFlows = selectedSavedFlowSlug === 'all'
-    ? savedFlows
-    : savedFlows.filter((flow) => flow.progress.slug === selectedSavedFlowSlug);
-  const visibleExecutionFlows = visibleSavedFlows.filter(
-    (flow) => getMyFlowContentReadiness(flow).kind !== 'retired',
-  );
+    ? workspaceSavedFlows
+    : workspaceSavedFlows.filter((flow) => flow.progress.slug === selectedSavedFlowSlug);
+  const visibleExecutionFlows = visibleSavedFlows.filter(isMyFlowReadyContent);
   const savedFlowMapSnapshots = Array.from(
     Object.values(savedFlowMapBySlug).reduce((snapshots, snapshot) => snapshots.set(snapshot.mapId, snapshot), new Map<string, SavedFlowMapSnapshot>()).values(),
   );
@@ -4269,16 +4247,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     : [];
   const hasPostSavePanel = Boolean(postSaveMap && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || savedMapIdParam));
   const showPostSavePanel = hasPostSavePanel && !myFlowPostSaveWorkspaceOpen;
-  const showMyFlowWorkspace = savedFlows.length > 0;
+  const showMyFlowWorkspace = workspaceSavedFlows.length > 0;
   const shouldCollapseFlowInventory =
     savedFlows.length >= 6 &&
     selectedSavedFlowSlug === 'all' &&
     flowListFilter === 'all' &&
     flowListQuery.trim().length === 0;
   const shouldGroupFlowInventory = savedFlows.length >= 20 || isMyFlowScenarioDemo;
-  const showMyFlowSidebar = savedFlows.length > 1 && savedFlows.length < 20 && savedView === 'flow';
+  const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 20 && savedView === 'flow';
   const showFlowInventory = !shouldCollapseFlowInventory || myFlowInventoryOpen;
-  const showMyFlowScopeControl = !isMyFlowMobileViewport && savedFlows.length > 1;
+  const showMyFlowScopeControl = !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
   const getSavedFlowNextRow = (flow: MySavedFlow) =>
     flow.rows.find((row) => !isMyFlowRowChecked(flow, row));
   const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
@@ -7761,6 +7739,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const sourceHref = getMyFlowSourceHref(flow);
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const contentReadiness = getMyFlowContentReadiness(flow);
+    const executionReady = contentReadiness.kind === 'ready';
+    const sourceLinkExternal = sourceHref.startsWith('https://');
     const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
     const inventoryMeta = [
       getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode),
@@ -7790,28 +7770,40 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {savedMapTitle ? <p className="mt-1 text-xs font-semibold text-blue-700">{savedMapTitle}</p> : null}
                 {inventoryMeta ? <p className="mt-1 text-xs font-semibold text-slate-500">{inventoryMeta}</p> : null}
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              {executionReady || contentReadiness.kind === 'retired' ? <div className="flex shrink-0 items-center gap-2">
                 <span data-testid="my-flow-inventory-progress-summary" className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
                   {getMyFlowFlowProgressLabel(flow)}
                 </span>
-              </div>
+              </div> : null}
             </div>
-            {nextRow ? (
+            {executionReady && nextRow ? (
               <div className="mt-3 rounded-md bg-slate-50 px-3 py-2">
                 <p className="text-xs font-semibold text-slate-500">{getMyFlowRowStatusLabel(nextRow)}</p>
                 <p className="mt-1 text-sm font-semibold text-slate-950">{nextRow.title}</p>
               </div>
             ) : null}
+            {!executionReady ? (
+              <p data-testid="my-flow-content-readiness-note" className="mt-3 rounded-md bg-white px-3 py-2 text-xs font-semibold leading-5 text-amber-900 ring-1 ring-amber-100">
+                {getMyFlowContentReadinessNote(contentReadiness)}
+              </p>
+            ) : null}
             <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
-                type="button"
-                aria-label={nextRow ? getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel) : getMyFlowOpenActionAriaLabel(flowTitle, nextActionLabel)}
-                onClick={() => (nextRow ? openMyFlowRowFromFlowTab(flow, nextRow) : setSelectedSavedFlowSlug(flow.progress.slug))}
+              {executionReady ? (
+                <button
+                  className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
+                  type="button"
+                  aria-label={nextRow ? getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel) : getMyFlowOpenActionAriaLabel(flowTitle, nextActionLabel)}
+                  onClick={() => (nextRow ? openMyFlowRowFromFlowTab(flow, nextRow) : setSelectedSavedFlowSlug(flow.progress.slug))}
+                >
+                  {nextActionLabel}
+                </button>
+              ) : null}
+              <Link
+                className="inline-flex min-h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
+                href={sourceHref}
+                target={sourceLinkExternal ? '_blank' : undefined}
+                rel={sourceLinkExternal ? 'noreferrer' : undefined}
               >
-                {nextActionLabel}
-              </button>
-              <Link className="inline-flex min-h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300" href={sourceHref}>
                 {sourceLabel}
               </Link>
             </div>
@@ -8242,6 +8234,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
     const contentReadiness = getMyFlowContentReadiness(flow);
+    const executionReady = contentReadiness.kind === 'ready';
     const retiredPersonalCopy = contentReadiness.kind === 'retired';
     const sourceHref = getMyFlowSourceHref(flow);
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
@@ -8267,7 +8260,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       myFlowDetailSurface === 'flow' && myFlowActiveRow && myFlowDetailOpen && myFlowActiveRow.flow.progress.slug === flow.progress.slug
         ? myFlowActiveRow
         : null;
-    const flowExpanded = myFlowExpandedStructureSlug === flow.progress.slug || Boolean(activeCompactRow);
+    const flowExpanded = executionReady && (myFlowExpandedStructureSlug === flow.progress.slug || Boolean(activeCompactRow));
     const stepRows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
     const stepEntries = stepRows.map((row, index) => ({ row, index }));
     const allStepsVisible = myFlowExpandedStructureStepSlug === flow.progress.slug;
@@ -8287,8 +8280,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           type="button"
           data-testid="my-flow-mobile-structure-open"
           aria-expanded={flowExpanded}
+          disabled={!executionReady}
           className="w-full rounded-md text-left"
-          onClick={() => toggleMyFlowStructureFlow(flow)}
+          onClick={() => {
+            if (executionReady) toggleMyFlowStructureFlow(flow);
+          }}
         >
           <span className="flex items-start justify-between gap-3">
             <span className="flex min-w-0 flex-1 gap-2">
@@ -8296,29 +8292,29 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold text-slate-950">{flowTitle}</span>
                 <span className="mt-1 block truncate text-xs font-semibold text-slate-500">{structureLabel}</span>
-                {retiredPersonalCopy ? (
+                {!executionReady ? (
                   <span data-testid="my-flow-content-readiness" className="mt-2 inline-flex w-fit rounded-md bg-white px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
                     {contentReadiness.label}
                   </span>
                 ) : null}
               </span>
             </span>
-            <span
+            {executionReady || retiredPersonalCopy ? <span
               data-testid="my-flow-mobile-structure-progress"
               className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold ${flowExpanded ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-700'}`}
             >
               {progressSummary}
-            </span>
+            </span> : null}
           </span>
-          <span className="mt-3 block h-1.5 overflow-hidden rounded-full bg-slate-200">
+          {executionReady || retiredPersonalCopy ? <span className="mt-3 block h-1.5 overflow-hidden rounded-full bg-slate-200">
             <span className="block h-full rounded-full bg-blue-700" style={{ width: `${flow.percent}%` }} aria-hidden="true" />
-          </span>
+          </span> : null}
           {personalSavedCopy ? (
             <span data-testid="my-flow-personal-copy-badge" className="mt-2 inline-flex w-fit rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
               개인 사본
             </span>
           ) : null}
-          {nextRow && !flowExpanded ? (
+          {executionReady && nextRow && !flowExpanded ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2">
               <span className="block text-xs font-semibold text-blue-700">{getMyFlowRowStatusLabel(nextRow)}</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
@@ -8326,11 +8322,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {[nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ') || progressSummary}
               </span>
             </span>
-          ) : !nextRow ? (
+          ) : executionReady && !nextRow ? (
             <span className="mt-3 block rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">남은 항목이 없습니다.</span>
           ) : null}
         </button>
-        {retiredPersonalCopy ? (
+        {!executionReady ? (
           <div className="mt-3 rounded-md border border-amber-100 bg-white px-3 py-2">
             <p className="text-xs font-semibold leading-5 text-amber-900">{getMyFlowContentReadinessNote(contentReadiness)}</p>
             <Link className="mt-2 inline-flex min-h-8 items-center justify-center rounded-md border border-amber-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-amber-900" href={sourceHref}>
@@ -8338,7 +8334,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </Link>
           </div>
         ) : null}
-        {settingsEditable ? (
+        {executionReady && settingsEditable ? (
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
@@ -8352,9 +8348,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {renderMyFlowPersonalCopySettings(flow)}
-        {!retiredPersonalCopy ? renderMyFlowCompletionFeedback(flow) : null}
-        {!retiredPersonalCopy ? renderMyFlowReuseNotice(flow) : null}
-        {flowExpanded ? (
+        {executionReady ? renderMyFlowCompletionFeedback(flow) : null}
+        {executionReady ? renderMyFlowReuseNotice(flow) : null}
+        {executionReady && flowExpanded ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
               const stepOpen = Boolean(activeCompactRow && activeCompactRow.id === stepRow.id);
@@ -8448,7 +8444,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const sourceHref = getMyFlowSourceHref(flow);
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const contentReadiness = getMyFlowContentReadiness(flow);
+    const executionReady = contentReadiness.kind === 'ready';
     const retiredPersonalCopy = contentReadiness.kind === 'retired';
+    const sourceLinkExternal = sourceHref.startsWith('https://');
     const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
     const hiddenInInventory = hiddenFlowSlugSet.has(flow.progress.slug);
     const showHideToggle = savedFlows.length > 1 && !isMyFlowMobileViewport;
@@ -8524,7 +8522,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         </div>
         {renderMyFlowPersonalCopySettings(flow)}
-        <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
+        {executionReady ? <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
           <p className={`text-xs font-semibold ${showContentReadinessBadge ? 'text-slate-600' : 'text-blue-700'}`}>{nextRow ? getMyFlowRowStatusLabel(nextRow) : '다음에 볼 항목'}</p>
           {nextRow ? (
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -8545,13 +8543,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ) : (
             <p className="mt-1 text-sm text-slate-600">남은 실행 항목이 없습니다.</p>
           )}
-        </div>
-        {activeOverviewRow ? (
+        </div> : null}
+        {executionReady && activeOverviewRow ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
             {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow')}
           </div>
         ) : null}
-        <div className="mt-4">
+        {executionReady || retiredPersonalCopy ? <div className="mt-4">
           <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-700">
             <span>진행</span>
             <span data-testid="my-flow-overview-progress-summary" className="text-slate-950">{progressSummary}</span>
@@ -8564,12 +8562,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           >
             <div className="h-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
           </div>
-        </div>
-        {!retiredPersonalCopy ? renderMyFlowCompletionFeedback(flow) : null}
-        {!retiredPersonalCopy ? renderMyFlowReuseNotice(flow) : null}
-        {renderMyFlowExcludedSteps(flow)}
+        </div> : null}
+        {executionReady ? renderMyFlowCompletionFeedback(flow) : null}
+        {executionReady ? renderMyFlowReuseNotice(flow) : null}
+        {executionReady ? renderMyFlowExcludedSteps(flow) : null}
         <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
-          <Link className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300" href={sourceHref}>
+          <Link
+            className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
+            href={sourceHref}
+            target={sourceLinkExternal ? '_blank' : undefined}
+            rel={sourceLinkExternal ? 'noreferrer' : undefined}
+          >
                 {flow.savedMap ? '원문 보기' : sourceLabel}
           </Link>
           {showHideToggle ? (
@@ -8593,6 +8596,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         const done = group.flows.reduce((sum, flow) => sum + flow.done, 0);
         const total = group.flows.reduce((sum, flow) => sum + flow.total, 0);
         const isMapGroup = Boolean(group.savedMap);
+        const executionReadyGroup = group.flows.every(isMyFlowReadyContent);
         return (
           <section
             key={group.key}
@@ -8603,7 +8607,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <div className="min-w-0">
                 <p className={`text-xs font-semibold ${isMapGroup ? 'text-blue-700' : 'text-slate-500'}`}>{isMapGroup ? '저장한 콘텐츠' : group.label}</p>
                 <h4 className="mt-1 text-base font-semibold text-slate-950">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
-                <p className="mt-1 text-xs font-semibold text-slate-600">{group.flows.length}개 목록 · 전체 {done}/{total} 완료</p>
+                <p className="mt-1 text-xs font-semibold text-slate-600">
+                  {executionReadyGroup
+                    ? `${group.flows.length}개 목록 · 전체 ${done}/${total} 완료`
+                    : `${group.flows.length}개 저장 기록`}
+                </p>
               </div>
               {group.savedMap ? (
                 <Link
@@ -8825,9 +8833,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : '오늘, 다음, 지난 할 일을 먼저 봅니다.'}
           </p>
         </div>
-        {savedFlows.length > 0 || !isCalendarSurface ? (
+        {workspaceSavedFlows.length > 0 || !isCalendarSurface ? (
           <div className="flex flex-wrap gap-2">
-            {savedFlows.length > 0 ? (
+            {workspaceSavedFlows.length > 0 ? (
               <Link
                 className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800"
                 data-testid="my-flow-studio-link"
@@ -8841,7 +8849,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
       </div>
 
-      {savedFlows.length === 0 ? (
+      {workspaceSavedFlows.length === 0 ? (
         <section data-testid="my-flow-empty-state" className="rounded-xl border border-dashed border-slate-300 bg-white p-5 shadow-sm sm:p-6">
           <p className="text-sm font-semibold text-blue-700">{isCalendarSurface ? '날짜 항목 없음' : '저장한 콘텐츠 없음'}</p>
           <h2 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950">
@@ -8860,7 +8868,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </section>
       ) : null}
 
-      {savedFlows.length > 0 ? (
+      {workspaceSavedFlows.length > 0 ? (
         <section className="mb-6">
           {!isCalendarSurface ? (
             <div className="mb-2 hidden flex-wrap items-end justify-between gap-3 sm:mb-3 sm:flex">
@@ -8892,10 +8900,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <p className="text-xs font-semibold uppercase text-slate-500">실행 목록</p>
                     <h3 className="text-base font-semibold text-slate-950">Flow 목록</h3>
                   </div>
-                  <p className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{savedFlows.length}개</p>
+                  <p className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{workspaceSavedFlows.length}개</p>
                 </div>
                 <div className="grid gap-2">
-                  {savedFlows.map((flow) => (
+                  {workspaceSavedFlows.map((flow) => (
                     <button
                       key={flow.progress.slug}
                       className={`rounded-md border px-3 py-3 text-left ${selectedSavedFlowSlug === flow.progress.slug ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
@@ -8927,7 +8935,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       onChange={(event) => setSelectedSavedFlowSlug(event.target.value)}
                     >
                       <option value="all">전체 Flow</option>
-                      {savedFlows.map((flow) => (
+                      {workspaceSavedFlows.map((flow) => (
                         <option key={flow.progress.slug} value={flow.progress.slug}>
                           {getMyFlowExecutionFlowTitle(flow.progress.title)}
                         </option>
@@ -10109,7 +10117,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
     : profile?.is_preview_channel
       ? [
           ['all', '모두 보기'],
-          ['real', '확인된 콘텐츠'],
+          ['real', '원문 있는 재고'],
           ['preview', '샘플'],
         ]
       : [
@@ -10172,10 +10180,10 @@ export function CreatorProfile({ slug }: { slug: string }) {
         <section className="mt-8 border-y border-gray-200 bg-gray-50 py-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-emerald-700">원문 확인됨</p>
-              <h2 className="mt-1 text-2xl font-semibold">실제 콘텐츠로 바로 시작</h2>
+              <p className="text-sm font-semibold text-emerald-700">내부 검토 재고</p>
+              <h2 className="mt-1 text-2xl font-semibold">원문 있는 콘텐츠부터 검토</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                운동/다이어트 앱처럼 출처가 분명한 콘텐츠를 먼저 고르고, 오늘 실행한 기록과 다음 반복 날짜까지 남기게 구성했습니다.
+                원문이 있는 콘텐츠를 먼저 모았습니다. 공개 승인 전에는 실행 페이지 대신 내부 검토 재고에서 확인합니다.
               </p>
             </div>
             <button
@@ -10183,7 +10191,7 @@ export function CreatorProfile({ slug }: { slug: string }) {
               type="button"
               onClick={() => setSourceFilter('real')}
             >
-              바로 시작만 보기
+              원문 재고만 보기
             </button>
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -10269,6 +10277,16 @@ export function CreatorProfile({ slug }: { slug: string }) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {displayedCreatorBundles.map((bundle) => {
             const isUrlFirstDraft = isUrlFirstDraftBundle(bundle);
+            const publicRouteEnabled = getPublicFlowIndexingPolicy(bundle).indexable;
+            const internalReviewHref = canShowReviewInventory && !publicRouteEnabled
+              ? '/content-flows'
+              : undefined;
+            const cardHref = isUrlFirstDraft ? '/my' : internalReviewHref;
+            const cardLabel = isUrlFirstDraft
+              ? '내 Flow에서 수정'
+              : internalReviewHref
+                ? '검토 재고 열기'
+                : undefined;
             return (
               <div
                 key={bundle.flow.id}
@@ -10282,10 +10300,10 @@ export function CreatorProfile({ slug }: { slug: string }) {
                 <FlowCard
                   bundle={bundle}
                   variant={canShowReviewInventory ? 'default' : 'profile'}
-                  primaryHref={isUrlFirstDraft ? '/my' : undefined}
-                  primaryLabel={isUrlFirstDraft ? '내 Flow에서 수정' : undefined}
+                  primaryHref={cardHref}
+                  primaryLabel={cardLabel}
                   primaryTestId={isUrlFirstDraft ? 'creator-profile-draft-edit-link' : undefined}
-                  titleHref={isUrlFirstDraft ? '/my' : undefined}
+                  titleHref={cardHref}
                 />
               </div>
             );
@@ -11129,8 +11147,6 @@ export function PublicFlow({ slug }: { slug: string }) {
   if (!bundle) return <main className="p-8">Flow를 찾을 수 없습니다.</main>;
 
   const publicDisplayTitle = toContentDisplayTitle(bundle.flow.title);
-  const publicFlowIndexingPolicy = getPublicFlowIndexingPolicy(bundle);
-  const isPublicReviewOnly = !publicFlowIndexingPolicy.indexable;
   const displayAnchor = getPreviewAnchor(bundle, anchorMode, anchor);
   const views = getPublicViews(bundle, Boolean(displayAnchor));
   const activeView = views.some((item) => item.id === view) ? view : 'list';
@@ -11146,17 +11162,14 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
-  const showPublicSaveAction = !showExportFirstHero && !isPublicReviewOnly;
-  const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction && !isPublicReviewOnly;
+  const showPublicSaveAction = !showExportFirstHero;
+  const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
   const publicHeroInput = getAnchorLabel(bundle);
   const publicHeroArtifact = getCatalogDestinationLabel(bundle);
-  const publicHeroPromise = isPublicReviewOnly
-    ? '원문과 실행 항목을 다시 확인하고 있습니다.'
-    : getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
+  const publicHeroPromise = getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
   const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
   const showPublicHeroSetup =
-    !isPublicReviewOnly &&
     !showTodayExecution &&
     !showExportFirstHero &&
     (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none');
@@ -11399,19 +11412,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             ) : null}
           </div>
           <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{publicDisplayTitle}</h1>
-          {isPublicReviewOnly ? (
-            <section
-              data-testid="public-flow-review-summary"
-              className="mt-3 rounded-xl border border-[#F0D8AE] bg-[#FFF7E8] px-3 py-2.5"
-            >
-              <p className="break-keep text-sm font-semibold leading-6 text-[#9A5A16]">
-                현재 원문과 실행 내용을 다시 확인하고 있어요.
-              </p>
-              <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">
-                확인 전에는 예전 일정과 체크 항목을 표시하지 않습니다.
-              </p>
-            </section>
-          ) : showPublicHeroSetup ? (
+          {showPublicHeroSetup ? (
             <section className={compactJeonsePage ? 'mt-3 rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2.5' : 'mt-3 rounded-2xl border border-[#E7E4DD] bg-[#FAFAF8] p-3'}>
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
               <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)] md:items-stretch">
@@ -11428,11 +11429,11 @@ export function PublicFlow({ slug }: { slug: string }) {
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-3">
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">{isPublicReviewOnly ? '필요한 기준' : '입력'}</p>
+                  <p className="text-[11px] font-semibold text-[#8A857B]">입력</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroInput}</p>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">{isPublicReviewOnly ? '예상 결과' : '저장 결과'}</p>
+                  <p className="text-[11px] font-semibold text-[#8A857B]">저장 결과</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroArtifact}</p>
                 </div>
                 <div data-testid="public-flow-first-action-preview" className="rounded-xl bg-white px-3 py-2 ring-1 ring-[#E7E4DD]">
@@ -11442,26 +11443,20 @@ export function PublicFlow({ slug }: { slug: string }) {
               </div>
             </section>
           )}
-          {!isPublicReviewOnly && bundle.flow.description ? <p className={compactJeonsePage ? 'mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
-          {isPublicReviewOnly ? null : compactJeonsePage ? (
+          {bundle.flow.description ? <p className={compactJeonsePage ? 'mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
+          {compactJeonsePage ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">D-3 / D-Day / D+1</span>
               <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">7개 체크</span>
-              <span className={`rounded-md border px-2.5 py-1 ${isPublicReviewOnly ? 'border-[#F0D8AE] bg-[#FFF7E8] text-[#9A5A16]' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`}>
-                {isPublicReviewOnly ? '원문 재확인 중' : '출처 확인됨'}
+              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                출처 확인됨
               </span>
             </div>
           ) : (
             <>
               <FlowHeroMeta bundle={bundle} hideAnchorStart={showPublicHeroSetup || showMobileWorkbenchFirst} />
               <div className="mt-3 md:mt-4">
-                {isPublicReviewOnly ? (
-                  <span className="inline-flex rounded-md border border-[#F0D8AE] bg-[#FFF7E8] px-2.5 py-1 text-xs font-semibold text-[#9A5A16]">
-                    원문 재확인 중
-                  </span>
-                ) : (
-                  <FlowBadges bundle={bundle} />
-                )}
+                <FlowBadges bundle={bundle} />
               </div>
             </>
           )}
@@ -11470,9 +11465,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           ) : null}
         </header>
 
-      {isPublicReviewOnly ? (
-        <PublicFlowReviewOnlyPanel bundle={bundle} />
-      ) : showDesktopReferenceRail ? (
+      {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className={showMobileWorkbenchFirst ? 'flex min-w-0 flex-col lg:block' : 'min-w-0'}>
             <div className={showMobileWorkbenchFirst ? 'order-3 lg:hidden' : 'lg:hidden'}>
@@ -11545,7 +11538,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </>
       )}
 
-      {!isPublicReviewOnly && showStorageNotice ? (
+      {showStorageNotice ? (
         <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <p>
@@ -11564,9 +11557,9 @@ export function PublicFlow({ slug }: { slug: string }) {
         </section>
       ) : null}
 
-      {!isPublicReviewOnly && !shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
+      {!shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
 
-      {!isPublicReviewOnly && showTodayExecution && !shouldUseSimplifiedFeedbackLayout(bundle) ? (
+      {showTodayExecution && !shouldUseSimplifiedFeedbackLayout(bundle) ? (
         <ExactVideoToolPreview
           bundle={bundle}
           anchor={anchor}
@@ -11587,7 +11580,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         />
       ) : null}
 
-      {isPublicReviewOnly || shouldUseSimplifiedFeedbackLayout(bundle) ? null : showTodayExecution ? (
+      {shouldUseSimplifiedFeedbackLayout(bundle) ? null : showTodayExecution ? (
         shouldHideExactVideoExecutionCard(bundle) ? null : <ExactVideoRenderer bundle={bundle} checks={checks} onToggle={toggle} />
       ) : (
         <>
@@ -11643,7 +11636,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </>
       ) : null}
 
-      {!isPublicReviewOnly && showMobileExportSheet && !compactJeonsePage ? (
+      {showMobileExportSheet && !compactJeonsePage ? (
         <div className="fixed inset-0 z-30 md:hidden" data-testid="mobile-export-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-export-title">
           <button className="absolute inset-0 bg-slate-950/35" aria-label="배경" onClick={() => setShowMobileExportSheet(false)} />
           <section className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-[#E7E4DD] bg-white p-5 shadow-[0_-16px_40px_rgba(27,26,23,0.16)]">
@@ -11705,12 +11698,11 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       ) : null}
 
-      {!isPublicReviewOnly ? (
-        <div
-          data-testid="mobile-export-bar"
-          aria-hidden={!showMobileExportActions}
-          className={`fixed inset-x-4 bottom-[calc(9.75rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
-        >
+      <div
+        data-testid="mobile-export-bar"
+        aria-hidden={!showMobileExportActions}
+        className={`fixed inset-x-4 bottom-[calc(9.75rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-[#E7E4DD] bg-white/95 px-4 py-3 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur transition duration-200 md:hidden ${showMobileExportActions ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'}`}
+      >
           <div className="mx-auto max-w-5xl">
             <div className="flex items-center gap-3">
               <div className="min-w-0 flex-1">
@@ -11737,8 +11729,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               )}
             </div>
           </div>
-        </div>
-      ) : null}
+      </div>
       {!savedFlowAt ? <PublicFlowSecondaryBrowseLink /> : null}
       </div>
     </main>

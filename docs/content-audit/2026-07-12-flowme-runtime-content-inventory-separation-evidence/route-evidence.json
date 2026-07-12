@@ -1,11 +1,12 @@
 {
-  "generatedAt": "2026-07-12T00:14:34.201Z",
+  "generatedAt": "2026-07-12T01:30:17.763Z",
   "baseUrl": "http://127.0.0.1:3112",
   "summary": {
     "canonicalSeedBundleCount": 153,
     "runtimeSeedBundleCount": 133,
     "sourceBackedProjectionCount": 24,
-    "runtimePublishedRouteCount": 157,
+    "runtimePublishedInventoryCount": 157,
+    "publicRoutableFlowCount": 71,
     "publicIndexableCount": 71,
     "publicReviewGatedCount": 86,
     "internalSeedInventoryCount": 593,
@@ -17,7 +18,7 @@
     "normalRouteGeneratedPreviewLinkCount": 0,
     "archivedRuntimeFlowCount": 20,
     "archivedRuntimePublicRoute404Count": 20,
-    "archivedReplacementRoute200Count": 15,
+    "archivedReplacementRoute200Count": 13,
     "normalRouteArchivedFlowLinkCount": 0,
     "currentPublicFlowMapCatalogCount": 11,
     "currentPublicFlowMapRoute200Count": 11,
@@ -43,13 +44,11 @@
     "approvedPublicRouteStatus": 200,
     "approvedPublicRouteNoindex": false,
     "approvedPublicSaveActionCount": 1,
-    "reviewGatedRouteStatus": 200,
-    "reviewGatedRouteNoindex": true,
-    "reviewGatedPanelCount": 1,
+    "reviewGatedRouteStatus": 404,
+    "reviewGatedPublicRoute404Count": 86,
+    "reviewGatedPublicShellCount": 0,
     "reviewGatedSaveActionCount": 0,
-    "reviewGatedItemsHiddenMarkerCount": 1,
-    "reviewGatedExecutionPreviewCount": 0,
-    "reviewGatedVisibleListItemCount": 0,
+    "reviewGatedWorkbenchCount": 0,
     "normalRouteReviewGatedLinkCount": 0,
     "publicFlowCatalogReviewGatedLinkCount": 0,
     "publicCreatorProfileReviewGatedLinkCount": 0,
@@ -57,16 +56,23 @@
     "publicCreatorProfileMoreActionVisibleCount": 2,
     "publicCreatorProfileExpandedPreviewLabelCount": 0,
     "publicCreatorProfileBetaLabelCount": 0,
+    "previewCreatorInternalReviewLinkCount": 44,
+    "reviewSavedRecordMobileVisible": true,
+    "reviewSavedRecordWideVisible": true,
+    "reviewSavedRecordOpenControlDisabled": true,
+    "reviewSavedRecordNextActionCount": 0,
+    "reviewSavedRecordProgressCount": 0,
+    "reviewSavedRecordExcludedFromCalendar": true,
     "normalSourceCurrentCount": 120,
     "normalSourceReviewDueCount": 0,
     "normalSourceStaleCount": 0,
     "normalSourceMissingMetadataCount": 0,
-    "screenshotCount": 21,
+    "screenshotCount": 25,
     "horizontalOverflowCount": 0
   },
   "policy": {
     "publicApproved": "indexable and executable public Flow",
-    "reviewGated": "direct-access noindex route with stale execution copy hidden and save/export disabled until review approval; excluded from normal discovery",
+    "reviewGated": "internal review inventory only; public direct route removed until review approval; saved personal history remains non-executable and excluded from Calendar",
     "runtimeArchived": "public route removed; unsaved runtime copies removed while saved user history becomes a retired personal copy",
     "internalGeneratedPreview": "internal review inventory only; excluded from runtime seed, browser storage, and public routes"
   },
@@ -156,6 +162,22 @@
       "wide": "screenshots/retired-saved-copy-wide.png"
     }
   },
+  "reviewSavedRecordUi": {
+    "slug": "alt-phone-sk7-self-activation",
+    "mobileVisible": true,
+    "mobileReadinessLabel": "실행 보류",
+    "mobileOpenControlDisabled": true,
+    "wideVisible": true,
+    "wideReadinessLabel": "실행 보류",
+    "wideNextActionCount": 0,
+    "wideProgressCount": 0,
+    "sourceHref": "https://blog.naver.com/PostView.nhn?blogId=saljjak-&logNo=223661947600",
+    "excludedFromCalendar": true,
+    "screenshots": {
+      "mobile": "screenshots/review-saved-record-mobile.png",
+      "wide": "screenshots/review-saved-record-wide.png"
+    }
+  },
   "scenarios": [
     {
       "id": "home-mobile",
@@ -173,6 +195,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-mobile.png"
     },
@@ -192,6 +215,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/home-wide.png"
     },
@@ -211,6 +235,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-mobile.png"
     },
@@ -230,6 +255,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/flows-wide.png"
     },
@@ -249,6 +275,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-mobile.png"
     },
@@ -268,17 +295,18 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/approved-public-wide.png"
     },
     {
-      "id": "review-gate-mobile",
+      "id": "review-route-404-mobile",
       "route": "/f/housing-subscription-account",
       "width": 390,
       "height": 844,
-      "label": "검토 게이트 Flow 모바일",
-      "status": 200,
-      "robots": "noindex, nofollow",
+      "label": "검토 재고 공개 route 404 모바일",
+      "status": 404,
+      "robots": null,
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
@@ -287,17 +315,18 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
-      "screenshot": "screenshots/review-gate-mobile.png"
+      "screenshot": "screenshots/review-route-404-mobile.png"
     },
     {
-      "id": "review-gate-wide",
+      "id": "review-route-404-wide",
       "route": "/f/housing-subscription-account",
       "width": 1024,
       "height": 768,
-      "label": "검토 게이트 Flow wide",
-      "status": 200,
-      "robots": "noindex, nofollow",
+      "label": "검토 재고 공개 route 404 wide",
+      "status": 404,
+      "robots": null,
       "generatedPreviewLinkCount": 0,
       "archivedRuntimeLinkCount": 0,
       "disabledLegacyFlowMapLinkCount": 0,
@@ -306,8 +335,9 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
-      "screenshot": "screenshots/review-gate-wide.png"
+      "screenshot": "screenshots/review-route-404-wide.png"
     },
     {
       "id": "public-creator-profile-mobile",
@@ -325,6 +355,7 @@
       "creatorProfileMoreActionCount": 1,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/public-creator-profile-mobile.png"
     },
@@ -344,6 +375,7 @@
       "creatorProfileMoreActionCount": 1,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/public-creator-profile-wide.png"
     },
@@ -363,6 +395,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 4,
       "creatorProfileBetaLabelCount": 4,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-mobile.png"
     },
@@ -382,8 +415,49 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 4,
       "creatorProfileBetaLabelCount": 4,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/creator-profile-wide.png"
+    },
+    {
+      "id": "creator-profile-review-mobile",
+      "route": "/u/thankyou-bubu",
+      "width": 390,
+      "height": 844,
+      "label": "검토 재고 제작자 프로필 모바일",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 6,
+      "creatorProfileContentCardCount": 11,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 14,
+      "creatorProfileBetaLabelCount": 14,
+      "internalReviewInventoryLinkCount": 22,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/creator-profile-review-mobile.png"
+    },
+    {
+      "id": "creator-profile-review-wide",
+      "route": "/u/thankyou-bubu",
+      "width": 1024,
+      "height": 768,
+      "label": "검토 재고 제작자 프로필 wide",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "generatedPreviewLinkCount": 0,
+      "archivedRuntimeLinkCount": 0,
+      "disabledLegacyFlowMapLinkCount": 0,
+      "reviewGatedFlowLinkCount": 6,
+      "creatorProfileContentCardCount": 11,
+      "creatorProfileMoreActionCount": 0,
+      "creatorProfilePreviewLabelCount": 14,
+      "creatorProfileBetaLabelCount": 14,
+      "internalReviewInventoryLinkCount": 22,
+      "horizontalOverflow": false,
+      "screenshot": "screenshots/creator-profile-review-wide.png"
     },
     {
       "id": "internal-inventory-mobile",
@@ -401,6 +475,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-mobile.png"
     },
@@ -420,6 +495,7 @@
       "creatorProfileMoreActionCount": 0,
       "creatorProfilePreviewLabelCount": 0,
       "creatorProfileBetaLabelCount": 0,
+      "internalReviewInventoryLinkCount": 0,
       "horizontalOverflow": false,
       "screenshot": "screenshots/internal-inventory-wide.png"
     }
@@ -498,8 +574,7 @@
       "policy": {
         "slug": "real-gov24-resident-register-copy",
         "reason": "superseded_duplicate",
-        "evidence": "같은 정부24 원문을 더 구체적으로 다루는 등본·초본 발급 Flow가 이미 있습니다.",
-        "replacementSlug": "resident-register-copy-issue"
+        "evidence": "같은 정부24 원문을 더 구체적으로 다루는 등본·초본 발급 Flow가 이미 있습니다."
       },
       "screenshot": null
     },
@@ -530,8 +605,7 @@
       "policy": {
         "slug": "real-thankyou-bubu-video-full-body-no-jump",
         "reason": "superseded_duplicate",
-        "evidence": "같은 ThankyouBUBU 영상을 사용하는 홈트 시작 Flow와 실행 구조가 중복됩니다.",
-        "replacementSlug": "real-thankyou-bubu-home-workout-starter"
+        "evidence": "같은 ThankyouBUBU 영상을 사용하는 홈트 시작 Flow와 실행 구조가 중복됩니다."
       },
       "screenshot": null
     },
@@ -660,20 +734,8 @@
       "screenshot": null
     },
     {
-      "archivedSlug": "real-gov24-resident-register-copy",
-      "replacementSlug": "resident-register-copy-issue",
-      "status": 200,
-      "screenshot": null
-    },
-    {
       "archivedSlug": "real-sinagong-computer-d30-study",
       "replacementSlug": "computer-skills-d30-study",
-      "status": 200,
-      "screenshot": null
-    },
-    {
-      "archivedSlug": "real-thankyou-bubu-video-full-body-no-jump",
-      "replacementSlug": "real-thankyou-bubu-home-workout-starter",
       "status": 200,
       "screenshot": null
     },
@@ -860,7 +922,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 80
+      "sourceFitScore": 80,
+      "publicRouteStatus": 404
     },
     {
       "slug": "japan-esim-setup-before-departure",
@@ -870,7 +933,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 83
+      "sourceFitScore": 83,
+      "publicRouteStatus": 404
     },
     {
       "slug": "alt-phone-sk7-self-activation",
@@ -880,7 +944,8 @@
       "sourceCheckedAt": "2026-06-08",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 75
+      "sourceFitScore": 75,
+      "publicRouteStatus": 404
     },
     {
       "slug": "chiangmai-solo-trip-packing",
@@ -890,7 +955,8 @@
       "sourceCheckedAt": "2026-06-08",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 79
+      "sourceFitScore": 79,
+      "publicRouteStatus": 404
     },
     {
       "slug": "lease-contract-report-deadline",
@@ -900,7 +966,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 86
+      "sourceFitScore": 86,
+      "publicRouteStatus": 404
     },
     {
       "slug": "jeonse-contract-precheck-docs",
@@ -910,7 +977,8 @@
       "sourceCheckedAt": "2026-06-08",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 80
+      "sourceFitScore": 80,
+      "publicRouteStatus": 404
     },
     {
       "slug": "picture-book-reading-routine",
@@ -920,7 +988,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 76
+      "sourceFitScore": 76,
+      "publicRouteStatus": 404
     },
     {
       "slug": "kids-printable-squishy-craft",
@@ -930,7 +999,8 @@
       "sourceCheckedAt": "2026-06-10",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 74
+      "sourceFitScore": 74,
+      "publicRouteStatus": 404
     },
     {
       "slug": "remote-help-session-precheck",
@@ -940,7 +1010,8 @@
       "sourceCheckedAt": "2026-06-10",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 58
+      "sourceFitScore": 58,
+      "publicRouteStatus": 404
     },
     {
       "slug": "kids-dino-footprint-art",
@@ -950,7 +1021,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 71
+      "sourceFitScore": 71,
+      "publicRouteStatus": 404
     },
     {
       "slug": "banana-peanut-recipe-video",
@@ -960,7 +1032,8 @@
       "sourceCheckedAt": "2026-06-07",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 68
+      "sourceFitScore": 68,
+      "publicRouteStatus": 404
     },
     {
       "slug": "dog-adoption-first-week",
@@ -970,7 +1043,8 @@
       "sourceCheckedAt": "2026-06-04",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 81
+      "sourceFitScore": 81,
+      "publicRouteStatus": 404
     },
     {
       "slug": "home-workout-20min",
@@ -980,7 +1054,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 76
+      "sourceFitScore": 76,
+      "publicRouteStatus": 404
     },
     {
       "slug": "job-change-risk-check",
@@ -990,7 +1065,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 75
+      "sourceFitScore": 75,
+      "publicRouteStatus": 404
     },
     {
       "slug": "overseas-travel-d14",
@@ -1000,7 +1076,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 76
+      "sourceFitScore": 76,
+      "publicRouteStatus": 404
     },
     {
       "slug": "year-end-tax-docs",
@@ -1010,7 +1087,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 85
+      "sourceFitScore": 85,
+      "publicRouteStatus": 404
     },
     {
       "slug": "national-health-checkup-d7",
@@ -1020,7 +1098,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 89
+      "sourceFitScore": 89,
+      "publicRouteStatus": 404
     },
     {
       "slug": "business-registration-basic",
@@ -1030,7 +1109,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 77
+      "sourceFitScore": 77,
+      "publicRouteStatus": 404
     },
     {
       "slug": "driver-license-renewal-check",
@@ -1040,7 +1120,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 82
+      "sourceFitScore": 82,
+      "publicRouteStatus": 404
     },
     {
       "slug": "happy-birth-service-check",
@@ -1050,7 +1131,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 79
+      "sourceFitScore": 79,
+      "publicRouteStatus": 404
     },
     {
       "slug": "vaccination-certificate-issue",
@@ -1060,7 +1142,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 75
+      "sourceFitScore": 75,
+      "publicRouteStatus": 404
     },
     {
       "slug": "family-certificate-issue",
@@ -1070,7 +1153,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 74
+      "sourceFitScore": 74,
+      "publicRouteStatus": 404
     },
     {
       "slug": "resident-register-copy-issue",
@@ -1080,7 +1164,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 74
+      "sourceFitScore": 74,
+      "publicRouteStatus": 404
     },
     {
       "slug": "industrial-accident-claim-docs",
@@ -1090,7 +1175,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 80
+      "sourceFitScore": 80,
+      "publicRouteStatus": 404
     },
     {
       "slug": "elementary-school-entry-d30",
@@ -1100,7 +1186,8 @@
       "sourceCheckedAt": "2026-06-08",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 86
+      "sourceFitScore": 86,
+      "publicRouteStatus": 404
     },
     {
       "slug": "monstera-care-routine",
@@ -1110,7 +1197,8 @@
       "sourceCheckedAt": "2026-06-07",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 76
+      "sourceFitScore": 76,
+      "publicRouteStatus": 404
     },
     {
       "slug": "water-purifier-filter-cycle",
@@ -1120,7 +1208,8 @@
       "sourceCheckedAt": "2026-06-07",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "car-care-monthly-routine",
@@ -1130,7 +1219,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 79
+      "sourceFitScore": 79,
+      "publicRouteStatus": 404
     },
     {
       "slug": "running-5k-4week",
@@ -1140,7 +1230,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 75
+      "sourceFitScore": 75,
+      "publicRouteStatus": 404
     },
     {
       "slug": "plank-30-day-challenge",
@@ -1150,7 +1241,8 @@
       "sourceCheckedAt": "2026-06-07",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 82
+      "sourceFitScore": 82,
+      "publicRouteStatus": 404
     },
     {
       "slug": "diet-habit-2week",
@@ -1160,7 +1252,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 87
+      "sourceFitScore": 87,
+      "publicRouteStatus": 404
     },
     {
       "slug": "qnet-exam-application-prep",
@@ -1170,7 +1263,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 85
+      "sourceFitScore": 85,
+      "publicRouteStatus": 404
     },
     {
       "slug": "diet-meal-exercise-log",
@@ -1180,7 +1274,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 88
+      "sourceFitScore": 88,
+      "publicRouteStatus": 404
     },
     {
       "slug": "diet-reset-2week",
@@ -1190,7 +1285,8 @@
       "sourceCheckedAt": "2026-05-23",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 86
+      "sourceFitScore": 86,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-daily-stretch-9min",
@@ -1200,7 +1296,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-belly-side-all-in-one",
@@ -1210,7 +1307,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-no-knee-cardio-strength",
@@ -1220,7 +1318,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-arm-back-shoulder",
@@ -1230,7 +1329,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-waist-8cm",
@@ -1240,7 +1340,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-8min-cardio",
@@ -1250,7 +1351,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-3min-arm",
@@ -1260,7 +1362,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-3min-abs",
@@ -1270,7 +1373,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-video-lower-belly-8min",
@@ -1280,7 +1384,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-body-fat-6kg-method",
@@ -1290,7 +1395,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-carb-reason",
@@ -1300,7 +1406,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-three-week-check",
@@ -1310,7 +1417,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-post-workout-nutrition",
@@ -1320,7 +1428,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-carb-amount-shorts",
@@ -1330,7 +1439,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-after-work-nutrition",
@@ -1340,7 +1450,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-weight-class-method",
@@ -1350,7 +1461,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-bulk-up-method",
@@ -1360,7 +1472,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-workout-order",
@@ -1370,7 +1483,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-video-workout-split-science",
@@ -1380,7 +1494,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-home-workout-starter",
@@ -1390,7 +1505,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-thankyou-bubu-20min-routine",
@@ -1400,7 +1516,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-fitvely-diet-record-routine",
@@ -1410,7 +1527,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-qnet-application-examday-check",
@@ -1420,7 +1538,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-gov24-moving-report-check",
@@ -1430,7 +1549,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 55
+      "sourceFitScore": 55,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-childcare-vaccination-visit-prep",
@@ -1440,7 +1560,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-childcare-support-application-check",
@@ -1450,7 +1571,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-ohouse-moving-d30-prep",
@@ -1460,7 +1582,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-ohouse-movein-cleaning-check",
@@ -1470,7 +1593,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-mofa-overseas-travel-prep",
@@ -1480,7 +1604,8 @@
       "sourceCheckedAt": "2026-05-21",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-kdca-travel-health-check",
@@ -1490,7 +1615,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "real-safe-driving-license-renewal",
@@ -1500,7 +1626,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "housing-subscription-account",
@@ -1510,7 +1637,8 @@
       "sourceCheckedAt": "2026-07-12",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "health-insurance-dependent",
@@ -1520,7 +1648,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "citizen-secretary-alerts",
@@ -1530,7 +1659,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 63
+      "sourceFitScore": 63,
+      "publicRouteStatus": 404
     },
     {
       "slug": "birth-registration-prep",
@@ -1540,7 +1670,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "seal-or-signature-certificate",
@@ -1550,7 +1681,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "recipe-video-execute",
@@ -1560,7 +1692,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "catalog_preview_only",
-      "sourceFitScore": 55
+      "sourceFitScore": 55,
+      "publicRouteStatus": 404
     },
     {
       "slug": "monthly-household-budget",
@@ -1570,7 +1703,8 @@
       "sourceCheckedAt": "2026-07-12",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "payday-finance-routine",
@@ -1580,7 +1714,8 @@
       "sourceCheckedAt": "2026-07-12",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "morning-skincare-routine",
@@ -1590,7 +1725,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "domestic-trip-d7",
@@ -1600,7 +1736,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 67
+      "sourceFitScore": 67,
+      "publicRouteStatus": 404
     },
     {
       "slug": "morning-routine-30day",
@@ -1610,7 +1747,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "dog-walk-routine",
@@ -1620,7 +1758,8 @@
       "sourceCheckedAt": "2026-07-11",
       "indexingReason": "source_fit_review_required",
       "sourceFitDecision": "reshape_before_featured",
-      "sourceFitScore": 78
+      "sourceFitScore": 78,
+      "publicRouteStatus": 404
     },
     {
       "slug": "funmom-hangul-2w",
@@ -1630,7 +1769,8 @@
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "funmom-maze-2w",
@@ -1640,7 +1780,8 @@
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "funmom-math-1m",
@@ -1650,7 +1791,8 @@
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "reading-morning-routine",
@@ -1660,7 +1802,8 @@
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "vaccination-official",
@@ -1670,7 +1813,8 @@
       "sourceCheckedAt": "2026-07-01T00:00:00+09:00",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "source-backed-baby-vaccination-schedule",
@@ -1680,7 +1824,8 @@
       "sourceCheckedAt": "2026-06-23",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "curated-funmom-weekly-print-picker",
@@ -1690,7 +1835,8 @@
       "sourceCheckedAt": "2026-06-29",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "curated-baby-food-daily-meal-row",
@@ -1700,7 +1846,8 @@
       "sourceCheckedAt": "2026-06-29",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     },
     {
       "slug": "curated-baby-food-cube-stock",
@@ -1710,7 +1857,8 @@
       "sourceCheckedAt": "2026-06-29",
       "indexingReason": "source_review_pending",
       "sourceFitDecision": null,
-      "sourceFitScore": null
+      "sourceFitScore": null,
+      "publicRouteStatus": 404
     }
   ]
 }

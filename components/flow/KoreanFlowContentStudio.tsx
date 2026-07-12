@@ -128,80 +128,16 @@ const publicFlowRouteByCandidateId: Partial<Record<string, { slug: string; label
     slug: 'washer-tub-clean-monthly',
     label: '서비스 Flow 보기',
   },
-  'monstera-care-routine': {
-    slug: 'monstera-care-routine',
-    label: '서비스 Flow 보기',
-  },
   'wedding-12-month-timeline': {
     slug: 'wedding-d180-basic',
-    label: '서비스 Flow 보기',
-  },
-  'water-purifier-filter-cycle': {
-    slug: 'water-purifier-filter-cycle',
     label: '서비스 Flow 보기',
   },
   'used-car-buying-check': {
     slug: 'used-car-buying-check',
     label: '서비스 Flow 보기',
   },
-  'plank-30-day-challenge': {
-    slug: 'plank-30-day-challenge',
-    label: '서비스 Flow 보기',
-  },
-  'thankyou-bubu-no-jump-home-workout': {
-    slug: 'real-thankyou-bubu-home-workout-starter',
-    label: '서비스 Flow 보기',
-  },
-  'japan-esim-setup-before-departure': {
-    slug: 'japan-esim-setup-before-departure',
-    label: '서비스 Flow 보기',
-  },
-  'alt-phone-sk7-self-activation': {
-    slug: 'alt-phone-sk7-self-activation',
-    label: '서비스 Flow 보기',
-  },
-  'infant-health-checkup-prep': {
-    slug: 'infant-health-checkup-prep',
-    label: '서비스 Flow 보기',
-  },
-  'chiangmai-solo-trip-packing': {
-    slug: 'chiangmai-solo-trip-packing',
-    label: '서비스 Flow 보기',
-  },
-  'lease-contract-report-deadline': {
-    slug: 'lease-contract-report-deadline',
-    label: '서비스 Flow 보기',
-  },
-  'jeonse-contract-precheck-docs': {
-    slug: 'jeonse-contract-precheck-docs',
-    label: '서비스 Flow 보기',
-  },
-  'elementary-school-entry-d30': {
-    slug: 'elementary-school-entry-d30',
-    label: '서비스 Flow 보기',
-  },
-  'kids-printable-squishy-craft': {
-    slug: 'kids-printable-squishy-craft',
-    label: '?쒕퉬??Flow 蹂닿린',
-  },
-  'remote-help-session-precheck': {
-    slug: 'remote-help-session-precheck',
-    label: '서비스 Flow 보기',
-  },
   'fridge-cleanout-weekly-plan': {
     slug: 'fridge-cleanout-weekly-plan',
-    label: '서비스 Flow 보기',
-  },
-  'picture-book-reading-routine': {
-    slug: 'picture-book-reading-routine',
-    label: '서비스 Flow 보기',
-  },
-  'kids-dino-footprint-art': {
-    slug: 'kids-dino-footprint-art',
-    label: '서비스 Flow 보기',
-  },
-  'banana-peanut-recipe-video': {
-    slug: 'banana-peanut-recipe-video',
     label: '서비스 Flow 보기',
   },
 };

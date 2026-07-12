@@ -21,7 +21,7 @@ const APPROVED_PUBLIC_SHARE_ROUTES = [
   '/f/used-car-buying-check',
 ];
 
-const REVIEW_ONLY_PUBLIC_SHARE_ROUTES = [
+const CLOSED_REVIEW_FLOW_ROUTES = [
   '/f/real-thankyou-bubu-home-workout-starter',
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
@@ -269,15 +269,15 @@ test.describe('public share shell secondary browse order', () => {
     });
   }
 
-  for (const route of REVIEW_ONLY_PUBLIC_SHARE_ROUTES) {
-    test(`${route} stays read-only until source-fit review is complete`, async ({ page }) => {
+  for (const route of CLOSED_REVIEW_FLOW_ROUTES) {
+    test(`${route} stays out of the public share shell until source-fit review is complete`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(route);
+      const response = await page.goto(route);
 
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
-      await expect(page.getByTestId('public-flow-review-only-gate')).toBeVisible();
-      await expect(page.getByRole('link', { name: '현재 원문 확인하기' })).toBeVisible();
-      await expect(page.getByTestId('flow-public-secondary-browse-link')).toBeVisible();
+      expect(response?.status()).toBe(404);
+      await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
+      await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
+      await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
       await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
       await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
       await expect(page.getByTestId('mobile-export-bar')).toHaveCount(0);

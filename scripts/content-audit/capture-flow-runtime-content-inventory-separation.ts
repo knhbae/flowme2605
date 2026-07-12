@@ -105,12 +105,14 @@ const screenshotScenarios = [
   { id: 'flows-wide', route: '/flows', width: 1024, height: 768, label: 'Flow 찾기 wide' },
   { id: 'approved-public-mobile', route: '/f/vehicle-inspection-prep', width: 390, height: 844, label: '공개 승인 Flow 모바일' },
   { id: 'approved-public-wide', route: '/f/vehicle-inspection-prep', width: 1024, height: 768, label: '공개 승인 Flow wide' },
-  { id: 'review-gate-mobile', route: '/f/housing-subscription-account', width: 390, height: 844, label: '검토 게이트 Flow 모바일' },
-  { id: 'review-gate-wide', route: '/f/housing-subscription-account', width: 1024, height: 768, label: '검토 게이트 Flow wide' },
+  { id: 'review-route-404-mobile', route: '/f/housing-subscription-account', width: 390, height: 844, label: '검토 재고 공개 route 404 모바일' },
+  { id: 'review-route-404-wide', route: '/f/housing-subscription-account', width: 1024, height: 768, label: '검토 재고 공개 route 404 wide' },
   { id: 'public-creator-profile-mobile', route: '/u/flow-curation-team', width: 390, height: 844, label: '공개 제작자 프로필 모바일' },
   { id: 'public-creator-profile-wide', route: '/u/flow-curation-team', width: 1024, height: 768, label: '공개 제작자 프로필 wide' },
   { id: 'creator-profile-mobile', route: '/u/samsung-service', width: 390, height: 844, label: '제작자 프로필 모바일' },
   { id: 'creator-profile-wide', route: '/u/samsung-service', width: 1024, height: 768, label: '제작자 프로필 wide' },
+  { id: 'creator-profile-review-mobile', route: '/u/thankyou-bubu', width: 390, height: 844, label: '검토 재고 제작자 프로필 모바일' },
+  { id: 'creator-profile-review-wide', route: '/u/thankyou-bubu', width: 1024, height: 768, label: '검토 재고 제작자 프로필 wide' },
   { id: 'internal-inventory-mobile', route: '/creators', width: 390, height: 844, label: '내부 재고 모바일' },
   { id: 'internal-inventory-wide', route: '/creators', width: 1024, height: 768, label: '내부 재고 wide' },
 ] as const;
@@ -154,6 +156,7 @@ try {
       creatorProfileMoreActionCount: await page.getByTestId('creator-profile-content-more').count(),
       creatorProfilePreviewLabelCount: await page.getByText('미리보기', { exact: true }).count(),
       creatorProfileBetaLabelCount: await page.getByText('베타 운영 중', { exact: true }).count(),
+      internalReviewInventoryLinkCount: await page.locator('a[href="/content-flows"]').count(),
       horizontalOverflow: await page.evaluate(
         () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
       ),
@@ -172,15 +175,14 @@ try {
   const reviewResponse = await boundaryPage.goto(`${baseUrl}/f/housing-subscription-account`, {
     waitUntil: 'domcontentloaded',
   });
-  const reviewRobots = await boundaryPage.locator('meta[name="robots"]').getAttribute('content').catch(() => null);
-  const reviewGateCount = await boundaryPage.getByTestId('public-flow-review-only-gate').count();
+  const reviewPublicShellCount = await boundaryPage.getByTestId('public-flow-share-shell').count();
   const reviewSaveActionCount = await boundaryPage.getByRole('button', { name: /내 Flow에 저장/ }).count();
-  const reviewItemsHiddenMarkerCount = await boundaryPage.getByTestId('public-flow-review-items-hidden').count();
-  const reviewExecutionPreviewCount = await boundaryPage.getByTestId('public-flow-first-action-preview').count();
-  const reviewVisibleListItemCount = await boundaryPage
-    .getByTestId('public-flow-review-only-gate')
-    .locator('li')
-    .count();
+  const reviewWorkbenchCount = await boundaryPage.getByLabel('Flow artifact workbench').count();
+  const reviewGatedRouteResults: Array<{ slug: string; status: number | null }> = [];
+  for (const slug of reviewGatedFlowSlugs) {
+    const response = await boundaryPage.goto(`${baseUrl}/f/${slug}`, { waitUntil: 'domcontentloaded' });
+    reviewGatedRouteResults.push({ slug, status: response?.status() ?? null });
+  }
   const generatedPreviewResponse = await boundaryPage.goto(
     `${baseUrl}/f/channel-samsung-service-%EC%9B%94%EA%B0%84-%EC%A0%90%EA%B2%80-%EB%A3%A8%ED%8B%B4`,
     { waitUntil: 'domcontentloaded' },
@@ -429,6 +431,69 @@ try {
   });
   await migrationContext.close();
 
+  const reviewSavedRecordUi = {
+    slug: 'alt-phone-sk7-self-activation',
+    mobileVisible: false,
+    mobileReadinessLabel: '',
+    mobileOpenControlDisabled: false,
+    wideVisible: false,
+    wideReadinessLabel: '',
+    wideNextActionCount: 0,
+    wideProgressCount: 0,
+    sourceHref: '',
+    excludedFromCalendar: false,
+  };
+  for (const viewport of [
+    { id: 'mobile', width: 390, height: 844 },
+    { id: 'wide', width: 1024, height: 768 },
+  ] as const) {
+    const context = await browser.newContext({
+      viewport: { width: viewport.width, height: viewport.height },
+    });
+    const page = await context.newPage();
+    await page.addInitScript((slug) => {
+      window.localStorage.setItem(
+        `flow:saved:${slug}`,
+        JSON.stringify({
+          slug,
+          savedAt: '2026-07-01T09:00:00.000Z',
+          selectedArtifactMode: 'checklist',
+        }),
+      );
+    }, reviewSavedRecordUi.slug);
+    await page.goto(`${baseUrl}/my`, { waitUntil: 'domcontentloaded' });
+    await page.getByTestId('my-flow-view-flow').click();
+    const card = viewport.id === 'mobile'
+      ? page.locator(`[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${reviewSavedRecordUi.slug}"]`)
+      : page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${reviewSavedRecordUi.slug}"]`);
+    await card.waitFor({ state: 'visible' });
+    const readinessLabel = (await card.getByTestId('my-flow-content-readiness').innerText()).trim();
+    if (viewport.id === 'mobile') {
+      reviewSavedRecordUi.mobileVisible = await card.isVisible();
+      reviewSavedRecordUi.mobileReadinessLabel = readinessLabel;
+      reviewSavedRecordUi.mobileOpenControlDisabled = await card
+        .getByTestId('my-flow-mobile-structure-open')
+        .isDisabled();
+    } else {
+      reviewSavedRecordUi.wideVisible = await card.isVisible();
+      reviewSavedRecordUi.wideReadinessLabel = readinessLabel;
+      reviewSavedRecordUi.wideNextActionCount = await card.getByTestId('my-flow-next-action').count();
+      reviewSavedRecordUi.wideProgressCount = await card.getByTestId('my-flow-overview-progress-summary').count();
+      reviewSavedRecordUi.sourceHref =
+        (await card.getByRole('link', { name: '현재 원문 보기' }).getAttribute('href')) ?? '';
+    }
+    await page.screenshot({
+      path: path.join(screenshotDirectory, `review-saved-record-${viewport.id}.png`),
+      fullPage: true,
+    });
+    if (viewport.id === 'mobile') {
+      await page.goto(`${baseUrl}/calendar`, { waitUntil: 'domcontentloaded' });
+      reviewSavedRecordUi.excludedFromCalendar =
+        (await page.getByText('알뜰폰 SK7 셀프개통 체크', { exact: false }).count()) === 0;
+    }
+    await context.close();
+  }
+
   const normalRoutePreviewLinkCount = capturedScenarios
     .filter((scenario) => !String(scenario.route).startsWith('/creators'))
     .reduce((sum, scenario) => sum + Number(scenario.generatedPreviewLinkCount ?? 0), 0);
@@ -470,11 +535,15 @@ try {
   const publicCreatorProfileBetaLabelCount = capturedScenarios
     .filter((scenario) => String(scenario.id).startsWith('public-creator-profile-'))
     .reduce((sum, scenario) => sum + Number(scenario.creatorProfileBetaLabelCount ?? 0), 0);
+  const previewCreatorInternalReviewLinkCount = capturedScenarios
+    .filter((scenario) => String(scenario.id).startsWith('creator-profile-'))
+    .reduce((sum, scenario) => sum + Number(scenario.internalReviewInventoryLinkCount ?? 0), 0);
   const summary = {
     canonicalSeedBundleCount: seedBundles.length,
     runtimeSeedBundleCount: runtimeSeedBundles.length,
     sourceBackedProjectionCount,
-    runtimePublishedRouteCount: runtimePublishedBundles.length,
+    runtimePublishedInventoryCount: runtimePublishedBundles.length,
+    publicRoutableFlowCount: indexableBundles.length,
     publicIndexableCount: indexableBundles.length,
     publicReviewGatedCount: reviewGatedBundles.length,
     internalSeedInventoryCount: internalReviewBundles.length,
@@ -520,12 +589,10 @@ try {
     approvedPublicRouteNoindex: Boolean(approvedRobots?.includes('noindex')),
     approvedPublicSaveActionCount: approvedSaveActionCount,
     reviewGatedRouteStatus: reviewResponse?.status() ?? null,
-    reviewGatedRouteNoindex: Boolean(reviewRobots?.includes('noindex')),
-    reviewGatedPanelCount: reviewGateCount,
+    reviewGatedPublicRoute404Count: reviewGatedRouteResults.filter((route) => route.status === 404).length,
+    reviewGatedPublicShellCount: reviewPublicShellCount,
     reviewGatedSaveActionCount: reviewSaveActionCount,
-    reviewGatedItemsHiddenMarkerCount: reviewItemsHiddenMarkerCount,
-    reviewGatedExecutionPreviewCount: reviewExecutionPreviewCount,
-    reviewGatedVisibleListItemCount: reviewVisibleListItemCount,
+    reviewGatedWorkbenchCount: reviewWorkbenchCount,
     normalRouteReviewGatedLinkCount,
     publicFlowCatalogReviewGatedLinkCount,
     publicCreatorProfileReviewGatedLinkCount,
@@ -533,11 +600,18 @@ try {
     publicCreatorProfileMoreActionVisibleCount,
     publicCreatorProfileExpandedPreviewLabelCount,
     publicCreatorProfileBetaLabelCount,
+    previewCreatorInternalReviewLinkCount,
+    reviewSavedRecordMobileVisible: reviewSavedRecordUi.mobileVisible,
+    reviewSavedRecordWideVisible: reviewSavedRecordUi.wideVisible,
+    reviewSavedRecordOpenControlDisabled: reviewSavedRecordUi.mobileOpenControlDisabled,
+    reviewSavedRecordNextActionCount: reviewSavedRecordUi.wideNextActionCount,
+    reviewSavedRecordProgressCount: reviewSavedRecordUi.wideProgressCount,
+    reviewSavedRecordExcludedFromCalendar: reviewSavedRecordUi.excludedFromCalendar,
     normalSourceCurrentCount: sourceFreshness.currentCount,
     normalSourceReviewDueCount: sourceFreshness.reviewDueCount,
     normalSourceStaleCount: sourceFreshness.staleCount,
     normalSourceMissingMetadataCount: sourceFreshness.missingMetadataCount,
-    screenshotCount: capturedScenarios.length + 7,
+    screenshotCount: capturedScenarios.length + 9,
     horizontalOverflowCount: capturedScenarios.filter((scenario) => scenario.horizontalOverflow).length,
   };
 
@@ -547,7 +621,7 @@ try {
     summary,
     policy: {
       publicApproved: 'indexable and executable public Flow',
-      reviewGated: 'direct-access noindex route with stale execution copy hidden and save/export disabled until review approval; excluded from normal discovery',
+      reviewGated: 'internal review inventory only; public direct route removed until review approval; saved personal history remains non-executable and excluded from Calendar',
       runtimeArchived: 'public route removed; unsaved runtime copies removed while saved user history becomes a retired personal copy',
       internalGeneratedPreview: 'internal review inventory only; excluded from runtime seed, browser storage, and public routes',
     },
@@ -571,6 +645,13 @@ try {
       screenshots: {
         mobile: 'screenshots/retired-saved-copy-mobile.png',
         wide: 'screenshots/retired-saved-copy-wide.png',
+      },
+    },
+    reviewSavedRecordUi: {
+      ...reviewSavedRecordUi,
+      screenshots: {
+        mobile: 'screenshots/review-saved-record-mobile.png',
+        wide: 'screenshots/review-saved-record-wide.png',
       },
     },
     scenarios: capturedScenarios,
@@ -617,6 +698,8 @@ try {
       indexingReason: getPublicFlowIndexingPolicy(bundle).reason,
       sourceFitDecision: getSourceFitAudit(bundle.flow.slug)?.decision ?? null,
       sourceFitScore: getSourceFitAudit(bundle.flow.slug)?.score ?? null,
+      publicRouteStatus:
+        reviewGatedRouteResults.find((route) => route.slug === bundle.flow.slug)?.status ?? null,
     })),
   };
 
@@ -628,12 +711,14 @@ try {
 
   const readme = `# FlowMe 런타임 콘텐츠 재고 분리 evidence\n\n` +
     `- 정상 seed: ${summary.runtimeSeedBundleCount}개\n` +
-    `- source-backed projection 포함 public route: ${summary.runtimePublishedRouteCount}개\n` +
-    `- 공개 승인: ${summary.publicIndexableCount}개\n` +
-    `- 검토 게이트: ${summary.publicReviewGatedCount}개\n` +
+    `- source-backed projection 포함 발행 재고: ${summary.runtimePublishedInventoryCount}개\n` +
+    `- 공개 승인/실제 public route: ${summary.publicIndexableCount}/${summary.publicRoutableFlowCount}개\n` +
+    `- 내부 검토 재고: ${summary.publicReviewGatedCount}개, direct URL 404: ${summary.reviewGatedPublicRoute404Count}개\n` +
     `- 정상 발견 경로의 검토 게이트 링크: ${summary.normalRouteReviewGatedLinkCount}개 (Flow 찾기 ${summary.publicFlowCatalogReviewGatedLinkCount}, 공개 제작자 프로필 ${summary.publicCreatorProfileReviewGatedLinkCount})\n` +
     `- 공개 제작자 프로필 초기 콘텐츠: ${summary.publicCreatorProfileInitialVisibleContentCount}개, 더 보기 action viewport 합계: ${summary.publicCreatorProfileMoreActionVisibleCount}개, 펼친 미리보기/베타 라벨: ${summary.publicCreatorProfileExpandedPreviewLabelCount}/${summary.publicCreatorProfileBetaLabelCount}개\n` +
-    `- 검토 게이트의 예전 실행 미리보기/목록: ${summary.reviewGatedExecutionPreviewCount}/${summary.reviewGatedVisibleListItemCount}개, 숨김 marker: ${summary.reviewGatedItemsHiddenMarkerCount}개\n` +
+    `- 검토 재고 public shell/save/workbench: ${summary.reviewGatedPublicShellCount}/${summary.reviewGatedSaveActionCount}/${summary.reviewGatedWorkbenchCount}개\n` +
+    `- 내부 preview profile의 검토 재고 링크: ${summary.previewCreatorInternalReviewLinkCount}개\n` +
+    `- 저장된 검토 재고 모바일/wide 표시: ${summary.reviewSavedRecordMobileVisible}/${summary.reviewSavedRecordWideVisible}, 열기 disabled: ${summary.reviewSavedRecordOpenControlDisabled}, 캘린더 제외: ${summary.reviewSavedRecordExcludedFromCalendar}\n` +
     `- 내부 전체 재고: ${summary.internalPublishedInventoryCount}개\n` +
     `- 내부 생성 샘플: ${summary.generatedPreviewInternalIdCount}개, 정상 runtime ${summary.generatedPreviewRuntimeCount}개\n` +
     `- 생성 샘플 공개 URL: HTTP ${summary.generatedPreviewPublicRouteStatus}\n` +
@@ -647,7 +732,7 @@ try {
     `- 정상 출처 stale/review-due/missing: ${summary.normalSourceStaleCount}/${summary.normalSourceReviewDueCount}/${summary.normalSourceMissingMetadataCount}\n\n` +
     `## 판정\n\n` +
     `생성형 샘플과 명시적 archive ${summary.archivedRuntimeFlowCount}개는 삭제하지 않고 내부 검토 재고에 보존했다. 미저장 archive는 runtime에서 제거하고, 사용자가 저장한 archive는 완료·메모를 유지하는 이전 저장본으로 남긴다. 과거 direct public URL은 한국어 복귀 경로가 있는 서비스용 404다. ` +
-    `검토 게이트 ${summary.publicReviewGatedCount}개는 공개 승인 콘텐츠로 세지 않으며 noindex와 행동 차단을 유지한다. 정상 카탈로그와 공개 제작자 프로필의 링크는 0개이며, direct route에서도 확인 전 실행 문구를 숨긴다. 구형 Flow Map ${summary.disabledLegacyFlowMapCount}개는 현재 대표 Map으로 카탈로그를 교체하고 direct route도 닫았다.\n\n` +
+    `검토 재고 ${summary.publicReviewGatedCount}개도 공개 승인 전에는 public route를 만들지 않는다. 과거 저장 기록은 별도 확인 영역에 남기되 오늘·캘린더·완료 진행에서 제외한다. 정상 카탈로그와 공개 제작자 프로필의 검토 링크는 0개이며, 내부 preview profile은 /content-flows 검토 재고로 연결한다.\n\n` +
     `## 파일\n\n- [audit.md](./audit.md)\n- [review.html](./review.html)\n- [route-evidence.json](./route-evidence.json)\n- [screenshots/](./screenshots/)\n`;
   writeFileSync(path.join(outputDirectory, 'README.md'), readme, 'utf8');
 
@@ -665,7 +750,8 @@ try {
     `5. 대체 Flow가 지정된 archive는 replacement route가 계속 열리는지 확인한다.\n` +
     `6. /creators의 공개 링크는 source-fit 승인 Flow만 허용한다.\n` +
     `7. 품질 게이트에서 직접 노출이 중단된 구형 Flow Map은 카탈로그에서 현재 대표 Map으로 교체하고 direct route를 404로 닫았다.\n` +
-    `8. 정상 /flows와 공개 제작자 프로필에서는 검토 게이트 링크를 제거하고, direct review route에서는 예전 설명·일정·체크 항목을 숨겼다. 내부 preview channel과 /creators 재고는 검토용으로 보존했다.\n\n` +
+    `8. 정상 /flows와 공개 제작자 프로필에서는 검토 재고 링크를 제거하고, 검토 재고의 direct /f route도 404로 닫았다. 내부 preview channel은 /content-flows 재고로 연결했다.\n` +
+    `9. 과거 저장된 검토 재고는 별도 확인 영역에 보존하되 오늘·캘린더·완료 진행과 상세 열기에서 제외했다.\n\n` +
     `## 저장한 archive 처리\n\n` +
     `- 이전 저장본 ${summary.retiredSavedCopyCount}개를 개인 기록으로 보존했다.\n` +
     `- 이전 runtime 마이그레이션에서 bundle이 사라진 상태의 canonical 복구: ${summary.retiredSavedCopyRecoveredFromCanonical}.\n` +
@@ -675,8 +761,8 @@ try {
     `- 대체 Flow: ${summary.retiredSavedCopyReplacementHref ?? '없음'}.\n\n` +
     `## 오래된 콘텐츠 해석\n\n` +
     `- 공개 승인 ${summary.publicIndexableCount}개: 정상 실행과 index 허용.\n` +
-    `- 검토 게이트 ${summary.publicReviewGatedCount}개: 원문 또는 UX 승인 전이며 noindex, 저장/export 차단. “공개 콘텐츠” 수에 포함하지 않고 정상 발견 경로 링크도 ${summary.normalRouteReviewGatedLinkCount}개로 유지한다.\n` +
-    `- 검토 게이트 direct route: 예전 실행 미리보기 ${summary.reviewGatedExecutionPreviewCount}개, 목록 항목 ${summary.reviewGatedVisibleListItemCount}개, 숨김 marker ${summary.reviewGatedItemsHiddenMarkerCount}개.\n` +
+    `- 검토 재고 ${summary.publicReviewGatedCount}개: 원문 또는 UX 승인 전이며 public route 404 ${summary.reviewGatedPublicRoute404Count}개. “공개 콘텐츠” 수에 포함하지 않고 정상 발견 경로 링크도 ${summary.normalRouteReviewGatedLinkCount}개로 유지한다.\n` +
+    `- 저장된 검토 재고: 모바일/wide ${summary.reviewSavedRecordMobileVisible}/${summary.reviewSavedRecordWideVisible}, 열기 disabled ${summary.reviewSavedRecordOpenControlDisabled}, 다음 행동/진행 표시 ${summary.reviewSavedRecordNextActionCount}/${summary.reviewSavedRecordProgressCount}, 캘린더 제외 ${summary.reviewSavedRecordExcludedFromCalendar}.\n` +
     `- 공개 제작자 프로필은 승인 콘텐츠만 사용하며 처음 ${summary.publicCreatorProfileInitialVisibleContentCount}개를 간결한 카드로 보여주고 나머지는 더 보기로 연다. 펼친 미리보기/베타 라벨은 ${summary.publicCreatorProfileExpandedPreviewLabelCount}/${summary.publicCreatorProfileBetaLabelCount}개다.\n` +
     `- 생성 샘플 ${summary.generatedPreviewInternalIdCount}개: 실제 콘텐츠가 아닌 구조 검토 재고. runtime과 public route에서 제거.\n` +
     `- 명시적 archive ${summary.archivedRuntimeFlowCount}개: 출처 불충분 또는 공개 숨김 판정이 확정되어 runtime과 public route에서 제거.\n` +
@@ -692,7 +778,7 @@ try {
     deferredRetirementSummary +
     `\n\n` +
     `## 남은 리스크\n\n` +
-    `- 검토 게이트 ${summary.publicReviewGatedCount}개는 아직 runtime 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-gated / archive를 계속 결정해야 한다.\n` +
+    `- 검토 재고 ${summary.publicReviewGatedCount}개는 내부 재고에 남아 있다. 다음 포트폴리오 배치에서 promote / keep-internal / archive를 계속 결정해야 한다.\n` +
     `- 정상 4탭 route는 여전히 큰 AppClient client bundle을 공유한다. 생성 객체 제거와 별개로 route/component split이 필요하다.\n` +
     `- 자동 QA는 실제 사용자 검증을 대신하지 않는다.\n`;
   writeFileSync(path.join(outputDirectory, 'audit.md'), audit, 'utf8');
@@ -709,12 +795,13 @@ try {
 <style>
 body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",sans-serif;letter-spacing:0}main{max-width:1240px;margin:auto;padding:32px 20px 64px}header{border-bottom:1px solid #d9dde4;padding-bottom:24px}h1{font-size:clamp(28px,4vw,48px);margin:8px 0 12px}p{line-height:1.65}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:24px 0}.metric{background:#fff;border:1px solid #d9dde4;padding:16px;border-radius:6px}.metric strong{display:block;font-size:28px;margin-top:6px}.policy{background:#fff;border-left:4px solid #2563eb;padding:16px;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-top:28px}article{background:#fff;border:1px solid #d9dde4;border-radius:6px;padding:16px}article h2{font-size:18px;margin:0 0 4px}img{display:block;width:100%;height:auto;border:1px solid #e5e7eb;margin-top:12px}code{font-size:12px}@media(max-width:420px){main{padding:20px 12px}.grid{grid-template-columns:1fr}}
 </style></head><body><main>
-<header><p>2026-07-12 · 현재 소스 기준</p><h1>공개 실행 재고와 내부 샘플 분리</h1><p>오래된 페이지를 단순 삭제하지 않고 공개 승인, 검토 게이트, 내부 생성 샘플로 나눠 실제 사용자 노출 경계를 확인합니다.</p></header>
+<header><p>2026-07-12 · 현재 소스 기준</p><h1>공개 실행 재고와 내부 검토 재고 분리</h1><p>오래된 페이지를 공개 설명 화면으로 남기지 않고, 승인 콘텐츠만 public route로 서비스하는 경계를 확인합니다.</p></header>
 <section class="metrics">
   <div class="metric">공개 승인<strong>${summary.publicIndexableCount}</strong></div>
-  <div class="metric">검토 게이트<strong>${summary.publicReviewGatedCount}</strong></div>
+  <div class="metric">내부 검토 재고<strong>${summary.publicReviewGatedCount}</strong></div>
+  <div class="metric">검토 route 404<strong>${summary.reviewGatedPublicRoute404Count}</strong></div>
   <div class="metric">정상 경로 검토 링크<strong>${summary.normalRouteReviewGatedLinkCount}</strong></div>
-  <div class="metric">검토 실행 미리보기<strong>${summary.reviewGatedExecutionPreviewCount}</strong></div>
+  <div class="metric">저장 검토 기록 실행 action<strong>${summary.reviewSavedRecordNextActionCount}</strong></div>
   <div class="metric">프로필 첫 노출<strong>${summary.publicCreatorProfileInitialVisibleContentCount}</strong></div>
   <div class="metric">내부 생성 샘플<strong>${summary.generatedPreviewInternalIdCount}</strong></div>
   <div class="metric">runtime 생성 샘플<strong>${summary.generatedPreviewRuntimeCount}</strong></div>
@@ -724,8 +811,8 @@ body{margin:0;background:#f5f6f8;color:#171717;font-family:Arial,"Noto Sans KR",
   <div class="metric">legacy 잔존<strong>${summary.legacyPreviewMigrationRemainingCount}</strong></div>
   <div class="metric">생성 URL 상태<strong>${summary.generatedPreviewPublicRouteStatus}</strong></div>
 </section>
-<section class="policy"><strong>정책</strong><p>승인 Flow만 정상 카탈로그와 공개 제작자 프로필에 노출한다. 검토 게이트는 direct noindex로만 남기고 예전 실행 문구·일정·체크 항목과 저장/export 행동을 숨긴다. 미저장 archive는 runtime에서 제거하고, 저장한 archive는 완료·메모가 남는 이전 저장본으로 보존한다.</p></section>
-<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>지원 근거가 끊긴 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article><article><h2>원문 불일치 Flow의 대체 실행 화면</h2><p>대체 route는 HTTP 200으로 유지</p><img src="screenshots/archive-replacement-pet-health-mobile.png" alt="반려동물 건강 관찰 대체 Flow"></article><article><h2>현재 대표 Flow Map</h2><p>카탈로그와 direct route에서 현재 source-backed Map을 사용</p><img src="screenshots/current-flow-map-mobile.png" alt="현재 대표 Flow Map 모바일"></article><article><h2>공개 중단 구형 Flow Map</h2><p>정상 사용자 진입점에서 제거하고 direct route는 HTTP 404</p><img src="screenshots/legacy-flow-map-404-mobile.png" alt="구형 Flow Map 404"></article><article><h2>이전 저장본 · 모바일</h2><p>완료와 메모는 보존하고 새 실행에서는 제외</p><img src="screenshots/retired-saved-copy-mobile.png" alt="이전 저장본 모바일"></article><article><h2>이전 저장본 · wide</h2><p>대체 Flow 링크와 기록 보존 상태 확인</p><img src="screenshots/retired-saved-copy-wide.png" alt="이전 저장본 wide"></article></section>
+<section class="policy"><strong>정책</strong><p>승인 Flow만 정상 카탈로그, 공개 제작자 프로필, direct /f route에 노출한다. 검토 재고는 내부 화면에만 보존하고 direct /f route는 404로 닫는다. 과거 저장 기록은 별도 확인 영역에 남기되 오늘·캘린더·완료 진행에서는 제외한다.</p></section>
+<section class="grid">${cards}<article><h2>생성 샘플 direct URL</h2><p>공개 shell 없이 HTTP ${summary.generatedPreviewPublicRouteStatus}</p><img src="screenshots/generated-preview-404-mobile.png" alt="생성 샘플 404"></article><article><h2>지원 근거가 끊긴 archive URL</h2><p>공개 shell 없이 HTTP 404</p><img src="screenshots/archived-flow-404-mobile.png" alt="archive Flow 404"></article><article><h2>원문 불일치 Flow의 대체 실행 화면</h2><p>대체 route는 HTTP 200으로 유지</p><img src="screenshots/archive-replacement-pet-health-mobile.png" alt="반려동물 건강 관찰 대체 Flow"></article><article><h2>현재 대표 Flow Map</h2><p>카탈로그와 direct route에서 현재 source-backed Map을 사용</p><img src="screenshots/current-flow-map-mobile.png" alt="현재 대표 Flow Map 모바일"></article><article><h2>공개 중단 구형 Flow Map</h2><p>정상 사용자 진입점에서 제거하고 direct route는 HTTP 404</p><img src="screenshots/legacy-flow-map-404-mobile.png" alt="구형 Flow Map 404"></article><article><h2>이전 저장본 · 모바일</h2><p>완료와 메모는 보존하고 새 실행에서는 제외</p><img src="screenshots/retired-saved-copy-mobile.png" alt="이전 저장본 모바일"></article><article><h2>이전 저장본 · wide</h2><p>대체 Flow 링크와 기록 보존 상태 확인</p><img src="screenshots/retired-saved-copy-wide.png" alt="이전 저장본 wide"></article><article><h2>검토 재고 저장 기록 · 모바일</h2><p>기록은 보존하지만 열기와 실행은 비활성</p><img src="screenshots/review-saved-record-mobile.png" alt="검토 재고 저장 기록 모바일"></article><article><h2>검토 재고 저장 기록 · wide</h2><p>다음 행동과 진행률 없이 현재 원문만 연결</p><img src="screenshots/review-saved-record-wide.png" alt="검토 재고 저장 기록 wide"></article></section>
 </main></body></html>`;
   writeFileSync(path.join(outputDirectory, 'review.html'), reviewHtml, 'utf8');
 } finally {

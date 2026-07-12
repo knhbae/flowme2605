@@ -18,19 +18,10 @@ async function openAllWorkbenchDetails(page: import('@playwright/test').Page) {
   return listCard;
 }
 
-async function expectReviewOnlySourceRoute(
-  page: import('@playwright/test').Page,
-  sourceUrl: string,
-  reviewReason = 'source_review_pending',
-) {
-  const gate = page.getByTestId('public-flow-review-only-gate');
-  await expect(gate).toBeVisible();
-  await expect(gate).toHaveAttribute('data-review-reason', reviewReason);
-  await expect(gate.getByRole('link', { name: '현재 원문 확인하기' })).toHaveAttribute('href', sourceUrl);
-  await expect(page.getByTestId('public-flow-review-summary')).toBeVisible();
-  await expect(gate.getByTestId('public-flow-review-items-hidden')).toBeVisible();
-  await expect(gate.locator('li')).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-first-action-preview')).toHaveCount(0);
+async function expectClosedSourceRoute(page: import('@playwright/test').Page) {
+  await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
   await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
@@ -85,13 +76,10 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/birth-registration-prep separates birth filing from benefit bundle application', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/birth-registration-prep');
+    const response = await page.goto('/f/birth-registration-prep');
 
-    await expectReviewOnlySourceRoute(
-      page,
-      'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001',
-      'source_fit_review_required',
-    );
+    expect(response?.status()).toBe(404);
+    await expectClosedSourceRoute(page);
     const body = page.locator('body');
     await expect(body).not.toContainText(/정부24\s*\(온라인\)[^\n]{0,80}출생신고/u);
     await expect(body).not.toContainText(/부모급여[^\n]{0,80}60일/u);
@@ -99,13 +87,10 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/payday-finance-routine does not turn a mismatched source ratio into a recommendation', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/payday-finance-routine');
+    const response = await page.goto('/f/payday-finance-routine');
 
-    await expectReviewOnlySourceRoute(
-      page,
-      'https://toss.im/tossfeed/article/bank-account-divide',
-      'source_fit_review_required',
-    );
+    expect(response?.status()).toBe(404);
+    await expectClosedSourceRoute(page);
     const body = page.locator('body');
     await expect(body).not.toContainText(/생활비\s*40%[^\n]{0,100}비상금\s*20%/u);
   });
@@ -125,22 +110,17 @@ test.describe('field checklist workbench source density', () => {
     await expect(body).not.toContainText(/일부 재산[^\n]{0,100}6개월/u);
   });
 
-  test('remaining broad advice routes stay review-only after source freshness audit', async ({ page }) => {
+  test('remaining broad advice routes stay out of public service after source freshness audit', async ({ page }) => {
     const routes = [
-      {
-        route: '/f/housing-subscription-account',
-        sourceUrl: 'https://www.applyhome.co.kr/co/coa/selectMainView.do',
-      },
-      {
-        route: '/f/monthly-household-budget',
-        sourceUrl: 'https://eknowhow.kr/budgeting-50-30-20-rule/',
-      },
+      '/f/housing-subscription-account',
+      '/f/monthly-household-budget',
     ];
 
     await page.setViewportSize({ width: 390, height: 844 });
     for (const route of routes) {
-      await page.goto(route.route);
-      await expectReviewOnlySourceRoute(page, route.sourceUrl, 'source_fit_review_required');
+      const response = await page.goto(route);
+      expect(response?.status()).toBe(404);
+      await expectClosedSourceRoute(page);
     }
   });
 

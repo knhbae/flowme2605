@@ -53,7 +53,6 @@ export const RUNTIME_ARCHIVED_FLOW_POLICIES: readonly RuntimeArchivedFlowPolicy[
     slug: 'real-gov24-resident-register-copy',
     reason: 'superseded_duplicate',
     evidence: '같은 정부24 원문을 더 구체적으로 다루는 등본·초본 발급 Flow가 이미 있습니다.',
-    replacementSlug: 'resident-register-copy-issue',
   },
   {
     slug: 'study-exam-d30-plan',
@@ -70,7 +69,6 @@ export const RUNTIME_ARCHIVED_FLOW_POLICIES: readonly RuntimeArchivedFlowPolicy[
     slug: 'real-thankyou-bubu-video-full-body-no-jump',
     reason: 'superseded_duplicate',
     evidence: '같은 ThankyouBUBU 영상을 사용하는 홈트 시작 Flow와 실행 구조가 중복됩니다.',
-    replacementSlug: 'real-thankyou-bubu-home-workout-starter',
   },
   {
     slug: 'infant-health-checkup-prep',

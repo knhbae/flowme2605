@@ -18,9 +18,10 @@ function decodeSlug(slug: string) {
 }
 
 function findPublicFlow(slug: string) {
-  return mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find(
+  const bundle = mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find(
     (bundle) => bundle.flow.slug === decodeSlug(slug),
   );
+  return bundle && getPublicFlowIndexingPolicy(bundle).indexable ? bundle : undefined;
 }
 
 export async function generateMetadata({
@@ -37,15 +38,12 @@ export async function generateMetadata({
     };
   }
 
-  const policy = getPublicFlowIndexingPolicy(bundle);
   const publicTitle = toContentDisplayTitle(bundle.flow.title);
   return {
-    title: policy.indexable ? `${publicTitle} | FlowMe` : `원문 확인 중 | FlowMe`,
-    description: policy.indexable
-      ? bundle.flow.description
-      : '원문과 실행 순서를 확인 중인 Flow입니다.',
-    robots: policy.indexable ? { index: true, follow: true } : NON_INDEXABLE_ROUTE_ROBOTS,
-    alternates: policy.indexable ? { canonical: `/f/${bundle.flow.slug}` } : undefined,
+    title: `${publicTitle} | FlowMe`,
+    description: bundle.flow.description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `/f/${bundle.flow.slug}` },
   };
 }
 
