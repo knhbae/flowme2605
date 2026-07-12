@@ -128,9 +128,9 @@ test('content lab exposes source-fit audit summary for representative cleanup', 
 
   assert.equal(summary.sourceFitAuditedCount, 141);
   assert.ok(summary.sourceFitAverageScore >= 70);
-  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 54);
+  assert.equal(summary.sourceFitDecisionCounts.keep_representative, 53);
   assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 74);
-  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 12);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 13);
   assert.equal(summary.sourceFitDecisionCounts.hide_from_public_catalog, 1);
 });
 
@@ -175,14 +175,15 @@ test('content lab exposes lifecycle buckets for keep, fix, preview, and removal 
 
   assert.equal(summary.lifecycleTotalCount, seedBundles.length);
   assert.equal(countSum, seedBundles.length);
-  assert.equal(summary.lifecycleBucketCounts.keep, 46);
+  assert.equal(summary.lifecycleBucketCounts.keep, 45);
   assert.equal(summary.lifecycleBucketCounts.hide, 2);
   assert.equal(summary.lifecycleBucketCounts.preview_only, summary.previewGeneratedFlowCount + 2);
   assert.equal(summary.lifecycleBucketCounts.remove_candidate, 0);
-  assert.equal(summary.lifecycleBucketCounts.fix, 103);
+  assert.equal(summary.lifecycleBucketCounts.fix, 104);
   assert.deepEqual(summary.lifecycleHideSlugs, ['real-fitvely-weekly-body-check', 'skin-weekly-check']);
   assert.ok(summary.lifecycleFixSlugs.includes('real-sinagong-computer-d30-study'));
   assert.ok(summary.lifecycleFixSlugs.includes('driver-license-renewal-check'));
+  assert.ok(summary.lifecycleFixSlugs.includes('baby-food-menu-recipe'));
 });
 
 test('content lab closes the remaining 2026-06-01 source review queue', () => {

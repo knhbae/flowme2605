@@ -98,9 +98,9 @@ test('source-fit summary captures keep, reshape, and preview decisions', () => {
 
   assert.equal(summary.auditedCount, 141);
   assert.ok(summary.averageScore >= 70);
-  assert.equal(summary.decisionCounts.keep_representative, 54);
+  assert.equal(summary.decisionCounts.keep_representative, 53);
   assert.equal(summary.decisionCounts.reshape_before_featured, 74);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 12);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 13);
   assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
 });
 

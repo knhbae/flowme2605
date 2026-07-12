@@ -17,7 +17,6 @@ test('P0 representative flows are explicitly classified for landing and QA', () 
   assert.deepEqual(getRepresentativeFlowSlugs(), [
     'moving-d30-basic',
     'used-car-buying-check',
-    'baby-food-menu-recipe',
     'wedding-d180-basic',
     'english-study-30day-routine',
   ]);
@@ -25,6 +24,7 @@ test('P0 representative flows are explicitly classified for landing and QA', () 
   for (const slug of getRepresentativeFlowSlugs()) {
     assert.equal(normalizeExecutionModel(bySlug(slug)).exposureStatus, 'representative', slug);
   }
+  assert.equal(normalizeExecutionModel(bySlug('baby-food-menu-recipe')).exposureStatus, 'catalog_preview');
 });
 
 test('source-fit audit decisions gate public exposure without removing direct access', () => {

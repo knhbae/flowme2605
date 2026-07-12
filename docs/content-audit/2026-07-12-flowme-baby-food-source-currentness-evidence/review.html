@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 초기 이유식 개인 식단 현재성 감사</title>
+  <style>
+    :root { color-scheme:light; --ink:#171717; --muted:#625f58; --line:#ddd9d0; --paper:#fff; --bg:#f6f6f2; --blue:#234fe8; --amber:#9a5c00; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,"Noto Sans KR",sans-serif; line-height:1.65; }
+    main { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:44px 0 72px; }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { max-width:850px; font-size:clamp(32px,5vw,56px); line-height:1.12; letter-spacing:0; }
+    h2 { margin:40px 0 14px; font-size:25px; }
+    .lead { max-width:820px; color:var(--muted); font-size:17px; }
+    .facts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:24px; }
+    .fact { border:1px solid var(--line); background:var(--paper); padding:16px; }
+    .fact b { display:block; font-size:25px; }
+    .fact span { color:var(--muted); font-size:13px; }
+    .callout { margin-top:24px; border-left:5px solid var(--amber); background:#fff8e8; padding:18px 20px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .panel { border:1px solid var(--line); background:var(--paper); padding:18px; }
+    .panel ul { padding-left:20px; margin-bottom:0; }
+    .shots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    figure { margin:0; border:1px solid var(--line); background:var(--paper); padding:12px; }
+    figure.wide { grid-column:1 / -1; }
+    img { display:block; width:100%; height:auto; border:1px solid #ece9e1; }
+    figure.mobile img { max-height:760px; object-fit:contain; object-position:top; background:#fafaf8; }
+    figcaption { padding-top:10px; color:var(--muted); font-size:13px; }
+    a { color:var(--blue); }
+    code { background:#ecebe6; padding:2px 5px; }
+    @media (max-width:760px) { .facts,.grid,.shots { grid-template-columns:1fr; } figure.wide { grid-column:auto; } main { width:min(100% - 20px,1120px); padding-top:24px; } }
+  </style>
+</head>
+<body>
+<main>
+  <p>2026-07-12 · medical-sensitive source currentness</p>
+  <h1>오래된 글이라서가 아니라,<br />지금의 실행 범위를 보증하지 못해 멈춥니다</h1>
+  <p class="lead">개인 경험 식단표의 게시·수정 이력, 현재 공식 안내, FlowMe의 33일 실행 변환을 따로 비교했습니다. 원문과 기존 기록은 보존하되 신규 공개 저장과 Calendar 실행은 닫았습니다.</p>
+
+  <section class="facts">
+    <div class="fact"><b>2023-07</b><span>개인 원문 게시</span></div>
+    <div class="fact"><b>2023-08</b><span>개인 원문 마지막 수정</span></div>
+    <div class="fact"><b>2026-05</b><span>질병관리청 안내 업데이트</span></div>
+    <div class="fact"><b>0</b><span>삭제한 source row</span></div>
+  </section>
+
+  <div class="callout">
+    <strong>판정: 공개 실행 보류</strong>
+    <p>원문 URL은 열리지만, 한 아기의 시작 시점과 재료 순서를 모든 아이의 33일 일정으로 자동 배치할 근거는 아닙니다. 공식 안내는 엄격한 식품 순서가 없고 개별 상황에 맞춰야 한다고 설명합니다.</p>
+  </div>
+
+  <h2>무엇을 보존하고 무엇을 닫았나</h2>
+  <section class="grid">
+    <article class="panel">
+      <h3>보존</h3>
+      <ul>
+        <li>개인 원문 URL과 게시·수정·재확인 날짜</li>
+        <li>11개 메뉴 slot과 11개 recipe record</li>
+        <li>기존 사용자의 저장 기록과 원문 접근</li>
+      </ul>
+    </article>
+    <article class="panel">
+      <h3>중단</h3>
+      <ul>
+        <li>공개 <code>/f/baby-food-menu-recipe</code> 신규 실행</li>
+        <li>고정 3일 간격 식단의 신규 저장·export</li>
+        <li>보류 저장본의 완료 체크와 Calendar projection</li>
+      </ul>
+    </article>
+  </section>
+
+  <h2>현재 공식 경계</h2>
+  <p><a href="https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470">질병관리청 이유기보충식 안내</a>는 2026-05-12 업데이트됐으며, 모든 아이에게 같은 절대 지침을 적용하지 않고 개별 상황을 고려하도록 설명합니다. <a href="https://www.who.int/publications/i/item/9789240081864">WHO 2023 지침</a>도 약 6개월부터의 보충식, 다양성, 반응적 먹이기를 근거 중심으로 다룹니다.</p>
+
+  <h2>시나리오 화면</h2>
+  <section class="shots">
+    <figure class="mobile"><img src="screenshots/01-public-execution-held-mobile.png" alt="초기 이유식 공개 실행 보류 모바일" /><figcaption>신규 사용자는 오래된 실행판 대신 다른 Flow 탐색으로 돌아갑니다.</figcaption></figure>
+    <figure class="mobile"><img src="screenshots/02-existing-save-review-mobile.png" alt="초기 이유식 기존 저장 실행 보류 모바일" /><figcaption>기존 저장은 남지만 완료·일정 행동 없이 원문 확인만 제공합니다.</figcaption></figure>
+    <figure class="wide"><img src="screenshots/03-existing-save-review-wide.png" alt="초기 이유식 기존 저장 실행 보류 1024px" /><figcaption>wide에서도 실행 가능 콘텐츠와 별도 확인 영역으로 분리됩니다.</figcaption></figure>
+  </section>
+
+  <h2>검증 한계</h2>
+  <p>자동화와 화면 점검은 완료했지만 실제 보호자·의료 전문가 관찰 세션은 0건입니다. 향후 재공개는 공식 근거 중심의 사용자 선택형 기록 모델을 별도 검증한 뒤 판단해야 합니다.</p>
+</main>
+</body>
+</html>

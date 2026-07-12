@@ -151,13 +151,18 @@ test('baby food seed keeps meal slots, recipes, caution, and reaction-log afford
   assert.equal(baby.flow.structure_type, 'phase');
   assert.equal(baby.flow.content_type, 'meal_plan');
   assert.equal(baby.flow.risk_level, 'medical_sensitive');
+  assert.equal(baby.flow.source_published_at, '2023-07-06');
+  assert.equal(baby.flow.source_modified_at, '2023-08-31');
+  assert.equal(baby.flow.source_checked_at, '2026-07-12');
   assert.match(baby.flow.warning ?? '', /전문가 또는 공식 정보/);
   assert.doesNotMatch(
     `${baby.flow.description ?? ''} ${baby.flow.creator_note ?? ''} ${(baby.flow as typeof baby.flow & { setup_anchor_hint?: string }).setup_anchor_hint ?? ''}`,
     /반응 기록/,
   );
   assert.equal(baby.flow.primary_destination, 'calendar');
-  assert.match(baby.flow.conversion_note ?? '', /3일 단위/);
+  assert.match(baby.flow.conversion_note ?? '', /신규 공개 실행은 보류/);
+  assert.equal(getSourceFitAudit('baby-food-menu-recipe')?.decision, 'catalog_preview_only');
+  assert.equal(getPublicFlowIndexingPolicy(baby).indexable, false);
   assert.equal(baby.mealSlots?.length, 11);
   assert.equal(baby.recipes?.length, 11);
   assert.deepEqual(baby.mealSlots?.[0], {
@@ -1310,8 +1315,8 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 70);
-  assert.equal(reviewOnly.length, 87);
+  assert.equal(indexable.length, 69);
+  assert.equal(reviewOnly.length, 88);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
@@ -1326,6 +1331,7 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-morning-workout')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-no-jump-cardio')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-lower-body')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('baby-food-menu-recipe')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('housing-subscription-account')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('monthly-household-budget')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('payday-finance-routine')!).indexable, false);
@@ -1415,7 +1421,7 @@ test('published user routes record source freshness while preview library stays 
     return exposure === 'catalog_preview' || exposure === 'hidden';
   });
 
-  assert.ok(userRoutes.length >= 130);
+  assert.ok(userRoutes.length >= 129);
   assert.ok(previewOrHidden.length >= 20);
 
   const demotedPreviewSlugs = [

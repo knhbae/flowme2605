@@ -1,0 +1,83 @@
+{
+  "packageId": "2026-07-12-flowme-baby-food-source-currentness-evidence",
+  "inspectedAt": "2026-07-12",
+  "policy": {
+    "sourceReachabilityIsNotCurrentness": true,
+    "sourceAgeAloneCausedHold": false,
+    "semanticMedicalScopeReviewedSeparately": true,
+    "personalExperienceCanOverrideOfficialGuidance": false,
+    "sourceRowsPreservedWhenPublicExecutionHeld": true
+  },
+  "sourceCheck": {
+    "slug": "baby-food-menu-recipe",
+    "sourceUrl": "https://kimstar1021.tistory.com/63",
+    "sourceType": "personal-experience",
+    "httpStatus": 200,
+    "sourcePublishedAt": "2023-07-06",
+    "sourceModifiedAt": "2023-08-31",
+    "sourceCheckedAt": "2026-07-12",
+    "sourceFitDecisionBefore": "keep_representative",
+    "sourceFitDecisionAfter": "catalog_preview_only",
+    "sourceMealSlotCountPreserved": 11,
+    "sourceRecipeCountPreserved": 11,
+    "fixedPublicScheduleDayCount": 33,
+    "fixedPublicScheduleApproved": false
+  },
+  "officialBoundary": {
+    "kdcaUrl": "https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5470",
+    "kdcaRegisteredAt": "2020-07-22",
+    "kdcaUpdatedAt": "2026-05-12",
+    "strictFoodOrderRequired": false,
+    "childSpecificAssessmentRequired": true,
+    "whoUrl": "https://www.who.int/publications/i/item/9789240081864",
+    "whoPublishedAt": "2023-10-16",
+    "whoSupersedesEarlierGuidance": true
+  },
+  "publicBoundary": {
+    "route": "/f/baby-food-menu-recipe",
+    "indexable": false,
+    "newPublicExecutionAvailable": false,
+    "publicShareShellCount": 0,
+    "newSaveCtaCount": 0,
+    "newExportCtaCount": 0
+  },
+  "existingSaveBoundary": {
+    "existingSavePreserved": true,
+    "readiness": "review",
+    "readinessLabel": "실행 보류",
+    "sourceLinkVisible": true,
+    "completionControlCount": 0,
+    "nextActionCount": 0,
+    "calendarProjectionVisible": false,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0
+  },
+  "summary": {
+    "manualSourceFitAuditCount": 141,
+    "keepRepresentativeCount": 53,
+    "reshapeBeforeFeaturedCount": 74,
+    "catalogPreviewOnlyCount": 13,
+    "hideFromPublicCatalogCount": 1,
+    "indexablePublicFlowCount": 69,
+    "medicalSensitivePublicExecutionHeldCount": 1,
+    "sourceDataDeletedCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "screenshots": [
+    {
+      "scenario": "public-execution-held",
+      "viewport": "390x844",
+      "file": "screenshots/01-public-execution-held-mobile.png"
+    },
+    {
+      "scenario": "existing-save-review",
+      "viewport": "390x844",
+      "file": "screenshots/02-existing-save-review-mobile.png"
+    },
+    {
+      "scenario": "existing-save-review-wide",
+      "viewport": "1024x900",
+      "file": "screenshots/03-existing-save-review-wide.png"
+    }
+  ]
+}

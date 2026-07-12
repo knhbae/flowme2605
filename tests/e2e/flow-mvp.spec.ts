@@ -1349,13 +1349,6 @@ test('special public workbench routes keep the FlowMe visual rhythm', async ({ p
   await expect(spreadsheetWorkbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCSS('border-radius', '16px');
   await expect(spreadsheetWorkbench.getByTestId('mobile-artifact-summary-card')).toHaveCSS('border-radius', '16px');
 
-  await page.goto('/f/baby-food-menu-recipe');
-  const babyFoodWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(babyFoodWorkbench.getByTestId('artifact-calendar-card')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
-  await expect(babyFoodWorkbench.getByTestId('artifact-calendar-card')).toHaveCSS('border-radius', '16px');
-  await expect(babyFoodWorkbench.getByTestId('meal-source-bridge')).toHaveCSS('border-color', 'rgb(231, 228, 221)');
-  await expect(babyFoodWorkbench.getByTestId('meal-source-bridge')).toHaveCSS('border-radius', '16px');
-
   await expectPublicFlowRouteClosed(page, '/f/real-thankyou-bubu-home-workout-starter');
 
   await page.goto('/f/washer-tub-clean-monthly');
@@ -2913,7 +2906,7 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
     saveFlow('moving-d30-basic', 'calendar', '2026-06-26');
     saveFlow('computer-skills-d30-study', 'calendar', '2026-06-27');
     saveFlow('english-study-30day-routine', 'calendar', '2026-05-27');
-    saveFlow('baby-food-menu-recipe', 'sheet', '2026-05-28');
+    saveFlow('fridge-cleanout-weekly-plan', 'sheet', '2026-05-28');
     saveFlow('used-car-buying-check', 'checklist');
     saveFlow('new-car-delivery-check', 'checklist');
   });
@@ -5132,10 +5125,10 @@ test('computer skills final QA exports checklist and calendar without study prog
   expect(calendarDownload.suggestedFilename()).toBe('computer-skills-d30-study.ics');
 });
 
-test('risk-boundary QA keeps full-flow export available beside new-car and baby-food evidence', async ({ page }) => {
+test('risk-boundary QA keeps full-flow export available beside new-car evidence', async ({ page }) => {
   await page.goto('/f/new-car-delivery-check');
 
-  let workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(workbench).toBeVisible();
   const holdSection = workbench.getByTestId('flow-hold-section');
   await expect(holdSection).toContainText('인수 보류 기준');
@@ -5144,29 +5137,13 @@ test('risk-boundary QA keeps full-flow export available beside new-car and baby-
   await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-confirmation').fill('dealer confirmed scratch and will send written repair date');
   await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-next-check').fill('do not sign until repair memo is attached');
   await workbench.locator('input[type="checkbox"]').first().check();
-  let flowExport = workbench.getByTestId('public-flow-export-secondary-entry');
+  const flowExport = workbench.getByTestId('public-flow-export-secondary-entry');
   await expect(flowExport.getByRole('button', { name: /시트로 받기/ })).toBeEnabled();
 
-  let excelDownloadPromise = page.waitForEvent('download');
+  const excelDownloadPromise = page.waitForEvent('download');
   await flowExport.getByRole('button', { name: /시트로 받기/ }).click();
-  let excelDownload = await excelDownloadPromise;
+  const excelDownload = await excelDownloadPromise;
   expect(excelDownload.suggestedFilename()).toBe('new-car-delivery-check.xlsx');
-
-  await page.goto('/f/baby-food-menu-recipe');
-  await page.getByLabel('이유식 시작일').fill('2026-06-01');
-
-  workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench).toBeVisible();
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
-  await workbench.getByLabel(/^저장 전 미리보기 선택:/).first().check();
-  flowExport = workbench.getByTestId('public-flow-export-secondary-entry');
-  await expect(flowExport.getByRole('button', { name: /시트로 받기/ })).toBeEnabled();
-
-  excelDownloadPromise = page.waitForEvent('download');
-  await flowExport.getByRole('button', { name: /시트로 받기/ }).click();
-  excelDownload = await excelDownloadPromise;
-  expect(excelDownload.suggestedFilename()).toBe('baby-food-menu-recipe.xlsx');
 });
 
 test('public MVP guardrail screens keep evidence and stop conditions first', async ({ page }) => {
@@ -5178,12 +5155,7 @@ test('public MVP guardrail screens keep evidence and stop conditions first', asy
   await expect(workbench.getByTestId('flow-hold-field-new-car-delivery-check-hold-evidence-files')).toBeVisible();
   await expect(workbench.getByTestId('artifact-list-card')).toBeVisible();
 
-  await page.goto('/f/baby-food-menu-recipe');
-  await page.getByLabel('이유식 시작일').fill('2026-06-01');
-
-  workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
+  await expectPublicFlowRouteClosed(page, '/f/baby-food-menu-recipe');
 });
 
 test('moving mobile keeps save sticky and full-flow export secondary', async ({ page }) => {
@@ -5283,91 +5255,53 @@ test('new flow creation keeps advanced settings secondary', async ({ page }) => 
   await expect(page.getByText('식단·레시피로 구성하기')).toBeVisible();
 });
 
-test('meal plan flow exposes recipe and menu calendar without reaction log', async ({ page }) => {
-  await page.goto('/f/baby-food-menu-recipe');
+test('personal baby food schedule blocks new public execution while preserving an existing review-only save', async ({ page }) => {
+  const evidenceDir = process.env.FLOWME_BABY_FOOD_CURRENTNESS_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
 
-  await page.getByLabel('이유식 시작일').fill('2026-06-01');
-  const workbench = page.getByLabel('Flow artifact workbench');
-  await expect(workbench.getByText('D+0~D+2 · 06-01~06-03')).toBeVisible();
-  await expect(page.getByRole('button', { name: '주별 보기' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '달력 보기' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
-  await expect(workbench.getByText('쌀미음', { exact: true })).toBeVisible();
-  await expect(workbench.getByText('찹쌀미음', { exact: true })).toBeVisible();
-  await expect(workbench.getByText('애호박미음', { exact: true })).toBeVisible();
-  await expect(workbench.getByText('콜리플라워미음', { exact: true })).toBeVisible();
-  await expect(workbench.getByText('소고기미음', { exact: true })).toBeVisible();
-  await expect(workbench.getByTestId('meal-source-bridge')).toContainText('3일 단위 새 재료');
-  await expect(workbench.getByTestId('meal-source-bridge')).toContainText('쌀가루 20배죽');
-
-  await workbench.getByText('레시피 보기').first().click();
-  await expect(workbench.getByText('쌀 또는 쌀가루', { exact: true })).toBeVisible();
-  await expect(page.getByTestId('reaction-log-meal-rice-0')).toHaveCount(0);
-});
-
-test('baby food first screen prioritizes the menu calendar over reaction logging', async ({ page }) => {
-  await page.goto('/f/baby-food-menu-recipe');
-
-  const workbench = page.getByLabel('Flow artifact workbench');
-  await expect(workbench.getByTestId('meal-reaction-workbench')).toBeVisible();
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(workbench.getByTestId('meal-reaction-log-card')).toHaveCount(0);
-  await expect(workbench.getByTestId('meal-recipe-detail-card')).toHaveCount(0);
-  await expect(workbench).toContainText('전문가');
-  await expect(workbench).toContainText('시작일 기준 식단표');
-  await expect(workbench).toContainText('원문에서 옮긴 실행 기준');
-});
-
-test('baby food mobile starts with warning and menu calendar', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/baby-food-menu-recipe');
+  const response = await page.goto('/f/baby-food-menu-recipe');
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
+  await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-public-execution-held-mobile.png`, fullPage: true });
 
-  const workbench = page.getByLabel('Flow artifact workbench');
-  const warning = workbench.getByTestId('meal-sensitive-warning');
-  const calendarCard = workbench.getByTestId('artifact-calendar-card').first();
+  await page.evaluate(() => {
+    localStorage.setItem('flow:saved:baby-food-menu-recipe', JSON.stringify({
+      slug: 'baby-food-menu-recipe',
+      savedAt: '2026-06-07T09:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-06-07',
+    }));
+  });
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
 
-  await expect(warning).toBeVisible();
-  await expect(calendarCard).toBeVisible();
-  await expect(workbench.getByTestId('meal-today-reaction-card')).toHaveCount(0);
-
-  const warningBox = await warning.boundingBox();
-  const calendarBox = await calendarCard.boundingBox();
-  expect(warningBox).not.toBeNull();
-  expect(calendarBox).not.toBeNull();
-  expect(warningBox!.y).toBeLessThan(calendarBox!.y);
-
-  await expect(page.getByText('validated')).toHaveCount(0);
-});
-
-test('baby food mobile omits the reaction summary before the calendar', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/baby-food-menu-recipe');
-
-  const workbench = page.getByLabel('Flow artifact workbench');
-  const summaryCard = workbench.getByTestId('meal-reaction-summary-card');
-
-  await expect(summaryCard).toHaveCount(0);
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-
-  const order = await workbench.locator('[data-testid="artifact-calendar-card"], [data-testid="meal-recipe-detail-card"]').evaluateAll((nodes) =>
-    nodes.map((node) => (node as HTMLElement).dataset.testid),
+  const mobileReview = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="baby-food-menu-recipe"]');
+  await expect(mobileReview).toBeVisible();
+  await expect(mobileReview).toContainText('초기 이유식 메뉴·레시피');
+  await expect(mobileReview.getByTestId('my-flow-content-readiness')).toHaveText('실행 보류');
+  await expect(mobileReview).toContainText('현재 공개 실행에서 제외된 기록입니다.');
+  await expect(mobileReview.getByTestId('my-flow-mobile-structure-open')).toBeDisabled();
+  await expect(mobileReview.getByRole('link', { name: '현재 원문 보기' })).toHaveAttribute(
+    'href',
+    'https://kimstar1021.tistory.com/63',
   );
-  expect(order[0]).toBe('artifact-calendar-card');
-});
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/02-existing-save-review-mobile.png`, fullPage: true });
 
-test('duration calendar checks only one day at a time', async ({ page }) => {
-  await page.goto('/f/baby-food-menu-recipe');
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideReview = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="baby-food-menu-recipe"]');
+  await expect(wideReview).toBeVisible();
+  await expect(wideReview.getByTestId('my-flow-content-readiness')).toHaveText('실행 보류');
+  await expect(wideReview).toContainText('현재 공개 실행에서 제외된 기록입니다.');
+  await expect(wideReview.getByTestId('my-flow-next-action')).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-existing-save-review-wide.png`, fullPage: true });
 
-  await page.getByLabel('이유식 시작일').fill('2026-06-01');
-
-  const firstDay = page.getByLabel('저장 전 미리보기 선택: 쌀미음');
-  const secondDay = page.getByLabel('저장 전 미리보기 선택: 찹쌀미음');
-
-  await firstDay.check();
-
-  await expect(firstDay).toBeChecked();
-  await expect(secondDay).not.toBeChecked();
-  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
+  await page.goto('/calendar');
+  await expect(page.locator('body')).not.toContainText('초기 이유식 메뉴·레시피');
 });
 
 test('routine flow highlights weekly routine setup', async ({ page }) => {
@@ -5617,7 +5551,6 @@ test('dense desktop routes keep source context in a right rail beside the workbe
     'moving-d30-basic',
     'new-car-delivery-check',
     'used-car-buying-check',
-    'baby-food-menu-recipe',
   ]) {
     await page.goto(`/f/${slug}`);
 
@@ -5756,12 +5689,7 @@ test('validation fix surfaces route-specific anchors, safety panels, and mobile 
   await expect(page.getByLabel('시험일')).toBeVisible();
   await expect(page.getByTestId('public-flow-export-secondary-entry').getByRole('button', { name: /캘린더 파일 받기/ })).toBeVisible();
 
-  await page.goto('/f/baby-food-menu-recipe');
-  await expect(page.getByLabel('이유식 시작일')).toBeVisible();
-  await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox', { name: /중단|상담/ })).toHaveCount(0);
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await expect(page.getByTestId('mobile-export-bar')).toBeVisible();
+  await expectPublicFlowRouteClosed(page, '/f/baby-food-menu-recipe');
 
   await page.goto('/f/new-car-delivery-check');
   await expect(page.getByTestId('flow-hold-section')).toContainText('인수 보류 기준');
@@ -5826,7 +5754,7 @@ test('mobile workbench keeps destination export at the flow level', async ({ pag
 
 test('mobile schedule artifacts show the calendar before dense tables', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/baby-food-menu-recipe');
+  await page.goto('/f/moving-d30-basic');
 
   const workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench.getByTestId('artifact-log-table-spreadsheet')).toHaveCount(0);
@@ -5885,10 +5813,7 @@ test('mobile sensitive routes collapse secondary execution sections below the fi
   await expect(collapsedSections).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('flow-hold-section')).toBeVisible();
 
-  await page.goto('/f/baby-food-menu-recipe');
-  collapsedSections = page.getByTestId('mobile-collapsed-section');
-  await expect(collapsedSections).toHaveCount(0);
-  await expect(page.getByLabel('Flow artifact workbench').getByTestId('meal-reaction-workbench')).toBeVisible();
+  await expectPublicFlowRouteClosed(page, '/f/baby-food-menu-recipe');
 });
 
 test('artifact workbench saves local execution entries', async ({ page }) => {
@@ -6640,7 +6565,6 @@ test('promoted public routes keep save primary visible and the executable artifa
     '/f/wedding-d180-basic',
     '/f/used-car-buying-check',
     '/f/computer-skills-d30-study',
-    '/f/baby-food-menu-recipe',
     '/f/new-car-delivery-check',
     '/f/fridge-cleanout-weekly-plan',
   ]) {
@@ -7209,16 +7133,9 @@ test('review-gated routines do not leak workbenches while an approved routine st
   await expect(page.getByTestId('flow-item-card')).toHaveCount(0);
 });
 
-test('baby food feedback route keeps menu calendar and recipe details in the workbench only', async ({ page }) => {
-  await page.goto('/f/baby-food-menu-recipe');
-
-  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
-  await expect(workbench.getByText('식단표 + 레시피')).toBeVisible();
-  await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(workbench.getByText('레시피 보기').first()).toBeVisible();
-  await expect(page.getByText('반응 기록')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '전체 할 일' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '월별 달력' })).toHaveCount(0);
+test('baby food personal schedule does not leak its old workbench on the public route', async ({ page }) => {
+  await expectPublicFlowRouteClosed(page, '/f/baby-food-menu-recipe');
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
 });
 
 test('url-first p0 lab previews hit review miss and memo states without public nav exposure', async ({ page }) => {
