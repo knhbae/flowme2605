@@ -16,6 +16,7 @@
     "personalDraftUndoVisible": true,
     "personalDraftUndoRestoresStableId": true,
     "personalDraftAddedItemCompletionReversible": true,
+    "personalDraftKeyboardInteractionVerified": true,
     "personalDraftLastItemDeleteKeepsFlow": true,
     "personalDraftEmptyStateAddEntryVisible": true,
     "sourceBackedStructuralEditControlCount": 0,
@@ -53,7 +54,9 @@
         "initialSchedule": "none",
         "stablePersonalId": true,
         "persistedAfterReload": true,
-        "completionReversible": true
+        "completionReversible": true,
+        "addEntryKeyboardEnter": true,
+        "completionKeyboardSpace": true
       }
     },
     {
@@ -71,6 +74,8 @@
         "undoVisibleImmediately": true,
         "undoRestoresStableId": true,
         "undoRestoresEffectivePosition": true,
+        "deleteKeyboardEnter": true,
+        "undoKeyboardSpace": true,
         "deletePersistsAfterReload": true,
         "undoNoticePersistsAfterReload": false
       }

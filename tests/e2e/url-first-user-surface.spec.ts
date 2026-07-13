@@ -494,10 +494,15 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await page.getByTestId('my-flow-view-flow').click();
   let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
   await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
-  await expect(draftFlow.getByTestId('personal-draft-add-entry')).toBeVisible();
-  await draftFlow.getByTestId('personal-draft-add-entry').click();
-  await draftFlow.getByTestId('personal-draft-add-title').fill('관리실에 후속 전화하기');
-  await draftFlow.getByTestId('personal-draft-add-save').click();
+  const addEntry = draftFlow.getByTestId('personal-draft-add-entry');
+  await expect(addEntry).toBeVisible();
+  await addEntry.focus();
+  await expect(addEntry).toBeFocused();
+  await page.keyboard.press('Enter');
+  const addTitle = draftFlow.getByTestId('personal-draft-add-title');
+  await addTitle.fill('관리실에 후속 전화하기');
+  await expect(draftFlow.getByTestId('personal-draft-add-save')).toBeEnabled();
+  await addTitle.press('Enter');
 
   let addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 후속 전화하기' });
   await expect(addedItem).toBeVisible();
@@ -526,12 +531,18 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await addedItem.getByTestId('my-flow-mobile-structure-step-row').click();
   let detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
   const complete = detail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 체크' });
-  await complete.check();
-  await expect(detail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 취소' })).toBeChecked();
-  await detail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 취소' }).uncheck();
+  await complete.focus();
+  await expect(complete).toBeFocused();
+  await page.keyboard.press('Space');
+  const reopen = detail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 취소' });
+  await expect(reopen).toBeChecked();
+  await reopen.press('Space');
   await expect(complete).not.toBeChecked();
 
-  await detail.getByTestId('personal-draft-delete-item').click();
+  const deleteButton = detail.getByTestId('personal-draft-delete-item');
+  await deleteButton.focus();
+  await expect(deleteButton).toBeFocused();
+  await page.keyboard.press('Enter');
   const undoNotice = draftFlow.getByTestId('personal-draft-delete-undo');
   await expect(undoNotice).toBeVisible();
   await expect(addedItem).toHaveCount(0);
@@ -549,7 +560,10 @@ test('personal draft structural items add, complete, tombstone, and undo without
     await page.screenshot({ path: `${evidenceDir}/02-personal-draft-delete-undo-mobile.png`, fullPage: true });
   }
 
-  await undoNotice.getByTestId('personal-draft-delete-undo-action').click();
+  const undoButton = undoNotice.getByTestId('personal-draft-delete-undo-action');
+  await undoButton.focus();
+  await expect(undoButton).toBeFocused();
+  await page.keyboard.press('Space');
   addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 후속 전화하기' });
   await expect(addedItem).toHaveAttribute('data-item-id', stableItemId ?? '');
   const restoredOrder = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(

@@ -19,6 +19,7 @@ P23-01A's structural overlay is now connected to the My Flow detail surface for 
 | `personalDraftUndoVisible` | `true` immediately after delete |
 | `personalDraftUndoRestoresStableId` | `true` |
 | `personalDraftAddedItemCompletionReversible` | `true` |
+| `personalDraftKeyboardInteractionVerified` | `true` |
 | `sourceBackedStructuralEditControlCount` | `0` |
 
 ## Policy
