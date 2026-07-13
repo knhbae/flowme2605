@@ -2284,6 +2284,189 @@ test('personal draft recurrence rules persist without changing item date or time
   await expect(page.getByTestId('personal-draft-recurrence-control')).toHaveCount(0);
 });
 
+test('personal draft recurrence expands into Calendar occurrences with reversible completion', async ({ page }) => {
+  test.setTimeout(300_000);
+  page.setDefaultTimeout(15_000);
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') {
+      const location = message.location().url;
+      consoleErrors.push(location ? `${message.text()} (${location})` : message.text());
+    }
+  });
+  const evidenceDir = process.env.FLOWME_P23_02C2B_EVIDENCE_DIR;
+  const screenshotDir = evidenceDir ? `${evidenceDir}/screenshots` : '';
+  if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
+
+  const openDraftFlow = async () => {
+    await page.getByTestId('my-flow-view-flow').click();
+    const flow = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
+    );
+    await flow.getByTestId('my-flow-mobile-structure-open').click();
+    const showAll = flow.getByTestId('my-flow-mobile-structure-show-all');
+    if (await showAll.count()) await showAll.click();
+    return flow;
+  };
+  const openUserItemEditor = async (flow: Locator, title: string) => {
+    const item = flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+    await item.getByTestId('my-flow-mobile-structure-step-row').click();
+    const detail = flow
+      .getByTestId('my-flow-mobile-structure-inline-detail')
+      .getByTestId('my-flow-item-detail');
+    const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+    await readSummary.locator('summary').click();
+    await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+    return detail;
+  };
+  const selectCalendarDate = async (date: string) => {
+    await page
+      .locator(`.fc-daygrid-day[data-date="${date}"]`)
+      .getByTestId('my-flow-calendar-date-button')
+      .click();
+  };
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/calendar-occurrence-draft?utm_source=review');
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('Flow 이름').fill('반복 일정 확인 초안 요청');
+  await result.getByLabel('원하는 결과').fill('매일 확인할 일을 내 캘린더에서 완료하고 다시 열기');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
+  const candidateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: '반복 일정 확인 초안 요청' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('반복 일정 확인');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  const draftFlow = await openDraftFlow();
+  const recurringTitle = '매일 준비물 다시 확인하기';
+  await draftFlow.getByTestId('personal-draft-add-entry').click();
+  await draftFlow.getByTestId('personal-draft-add-title').fill(recurringTitle);
+  await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+  const recurringItem = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: recurringTitle });
+  const recurringItemId = await recurringItem.getAttribute('data-item-id');
+  expect(recurringItemId).toMatch(/^personal-item-/);
+
+  const detail = await openUserItemEditor(draftFlow, recurringTitle);
+  await detail.getByTestId('personal-draft-date-mode-fixed').click();
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-07-13');
+  await detail.getByTestId('personal-draft-recurrence-daily').click();
+  await detail.getByTestId('personal-draft-recurrence-end-mode').selectOption('count');
+  await detail.getByTestId('personal-draft-recurrence-count').fill('3');
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+
+  await recurringItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  const seriesDetail = draftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  await expect(seriesDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(seriesDetail.getByTestId('personal-draft-recurrence-calendar-entry')).toBeVisible();
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await seriesDetail.screenshot({
+      path: `${screenshotDir}/00-personal-draft-series-calendar-entry-mobile.png`,
+    });
+    await restorePlatformChromeAfterEvidence(page);
+  }
+  await seriesDetail.getByTestId('personal-draft-recurrence-calendar-entry').click();
+  await expect(page).toHaveURL(/\/calendar/);
+  await selectCalendarDate('2026-07-13');
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  let occurrenceRow = selectedDay
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: recurringTitle });
+  await expect(occurrenceRow).toHaveCount(1);
+  await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'pending');
+  const firstOccurrenceId = await occurrenceRow.getAttribute('data-occurrence-id');
+  expect(firstOccurrenceId).toContain(':occurrence:2026-07-13T');
+  await occurrenceRow.getByRole('checkbox').check();
+  occurrenceRow = selectedDay
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: recurringTitle });
+  await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'done');
+  await expect(occurrenceRow.getByRole('checkbox')).toBeChecked();
+  const storedDone = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem('flow:my-flow:occurrence-execution') || '{}'),
+  );
+  const storedDoneRecord = Object.values(storedDone).find(
+    (entry) => (entry as { occurrenceId?: string }).occurrenceId === firstOccurrenceId,
+  ) as { state?: string; completedAt?: string } | undefined;
+  expect(storedDoneRecord?.state).toBe('done');
+  expect(storedDoneRecord?.completedAt).toBeTruthy();
+  await expect(page.locator('.fc-event[aria-label*="매일 준비물 다시 확인하기"]')).toHaveCount(3);
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await selectedDay.screenshot({
+      path: `${screenshotDir}/01-personal-draft-occurrence-done-mobile.png`,
+    });
+    await restorePlatformChromeAfterEvidence(page);
+  }
+
+  await page.reload();
+  await selectCalendarDate('2026-07-13');
+  occurrenceRow = page
+    .getByTestId('my-flow-calendar-selected-day')
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: recurringTitle });
+  await expect(occurrenceRow.getByRole('checkbox')).toBeChecked();
+  await occurrenceRow.getByRole('checkbox').uncheck();
+  occurrenceRow = page
+    .getByTestId('my-flow-calendar-selected-day')
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: recurringTitle });
+  await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'reopened');
+  await expect(occurrenceRow.getByRole('checkbox')).not.toBeChecked();
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await page.getByTestId('my-flow-calendar-selected-day').screenshot({
+      path: `${screenshotDir}/02-personal-draft-occurrence-reopened-mobile.png`,
+    });
+    await restorePlatformChromeAfterEvidence(page);
+  }
+
+  await selectCalendarDate('2026-07-14');
+  const secondOccurrenceRow = page
+    .getByTestId('my-flow-calendar-selected-day')
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: recurringTitle });
+  await expect(secondOccurrenceRow).toHaveCount(1);
+  await expect(secondOccurrenceRow).toHaveAttribute('data-occurrence-state', 'pending');
+  expect(await secondOccurrenceRow.getAttribute('data-occurrence-id')).not.toBe(firstOccurrenceId);
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/calendar');
+  await selectCalendarDate('2026-07-14');
+  await expect(
+    page
+      .getByTestId('my-flow-calendar-selected-day')
+      .locator('article[data-occurrence-id]')
+      .filter({ hasText: recurringTitle }),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await page.screenshot({
+      path: `${screenshotDir}/03-personal-draft-occurrence-calendar-wide.png`,
+      fullPage: true,
+    });
+  }
+
+  await page.goto('/calendar?demo=source-backed');
+  await expect(page.locator('[data-occurrence-id]')).toHaveCount(0);
+  expect(consoleErrors).toEqual([]);
+});
+
 test('URL-first draft preserves input on storage failure and reuses the canonical saved draft', async ({ page }) => {
   const sourceUrl = 'https://example.com/draft-lifecycle-source?utm_source=review';
   const requestTitle = '중복 없이 이어갈 주말 준비';

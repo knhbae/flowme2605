@@ -9,6 +9,7 @@ const EXACT_EXECUTION_KEYS = new Set([
   'flow:my-flow:step-item-checks',
   'flow:my-flow:item-drafts',
   'flow:my-flow:date-overrides',
+  'flow:my-flow:occurrence-execution',
   'flow:my-flow:hidden-flows',
   'flow:url-first:supply-candidates',
 ]);

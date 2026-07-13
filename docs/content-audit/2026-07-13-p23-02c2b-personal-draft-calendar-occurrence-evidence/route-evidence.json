@@ -1,0 +1,59 @@
+{
+  "package": "p23-02c2b-personal-draft-calendar-occurrence",
+  "generatedAt": "2026-07-13",
+  "evidenceType": "automated_browser_and_unit",
+  "actualObservedUserCount": 0,
+  "routes": [
+    {
+      "route": "/flows",
+      "state": "url-first-miss-to-personal-draft",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/my",
+      "state": "recurring-series-base-detail",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/calendar",
+      "state": "three-daily-occurrences-done-reopened",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/calendar",
+      "state": "three-daily-occurrences-wide",
+      "viewport": "1024x768"
+    },
+    {
+      "route": "/calendar?demo=source-backed",
+      "state": "source-backed-regression",
+      "viewport": "1024x768"
+    }
+  ],
+  "markers": {
+    "personalDraftRecurrenceCalendarProjectionConnected": true,
+    "personalDraftCalendarOccurrenceCount": 3,
+    "personalDraftCalendarOccurrenceDuplicateCount": 0,
+    "personalDraftCalendarOccurrenceStableIdentity": true,
+    "personalDraftOccurrenceCompletionControlVisible": true,
+    "personalDraftOccurrenceDonePersistedAfterReload": true,
+    "personalDraftOccurrenceReopenedSupported": true,
+    "personalDraftOccurrenceCompletedAtPreservedAfterReopen": true,
+    "personalDraftSeriesBaseCompletionControlCount": 0,
+    "personalDraftSeriesCalendarEntryVisible": true,
+    "completionStateChangedStructuralMembershipCount": 0,
+    "occurrenceRecordIncludedInRunSnapshot": true,
+    "occurrenceRecordResetForNewRun": true,
+    "malformedOccurrenceRecordItemLossCount": 0,
+    "sourceMutationCount": 0,
+    "sourceBackedCalendarOccurrenceBehaviorChanged": false,
+    "sourceBackedOccurrenceControlCount": 0,
+    "calendarRecurrenceProjectionConnected": true,
+    "icsRecurrenceProjectionConnected": false,
+    "occurrenceSkippedUiConnected": false,
+    "occurrenceHeldUiConnected": false,
+    "personalDraftCalendarHorizontalOverflowCount": 0,
+    "personalDraftCalendarConsoleErrorCount": 0,
+    "personalDraftOccurrenceInternalTermHitCount": 0
+  }
+}

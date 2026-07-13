@@ -230,7 +230,7 @@ function compareOccurrences(
   );
 }
 
-function normalizeExecutionRecords(
+export function normalizePersonalStructuralOccurrenceExecutionRecords(
   value: PersonalStructuralOccurrenceExecutionRecord[] | undefined,
 ): PersonalStructuralOccurrenceExecutionRecord[] {
   if (!value) return [];
@@ -297,7 +297,9 @@ export function generatePersonalStructuralOccurrences(options: {
   maxOccurrences?: number;
 }): PersonalStructuralOccurrenceProjectionResult {
   const warnings: string[] = [];
-  const executionRecords = normalizeExecutionRecords(options.executionRecords);
+  const executionRecords = normalizePersonalStructuralOccurrenceExecutionRecords(
+    options.executionRecords,
+  );
   const range = normalizeRange(options.range);
   if (!range) {
     return {

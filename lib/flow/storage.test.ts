@@ -12,7 +12,14 @@ import {
   serializeFlowMeLocalBackup,
   type FlowMeStorageLike,
 } from './local-data-backup';
-import { getFlowScopedMyFlowPersonalExecutionState } from './my-flow-personal-state';
+import {
+  getFlowOccurrenceExecutionRecords,
+  getFlowScopedMyFlowPersonalExecutionState,
+  getMyFlowOccurrenceExecutionStorageKey,
+  getStoredMyFlowOccurrenceExecutionRecords,
+  saveStoredMyFlowOccurrenceExecutionRecords,
+} from './my-flow-personal-state';
+import { expandPersonalDraftCalendarOccurrenceRows } from './personal-draft-calendar-occurrence';
 import {
   createPersonalDraftStructuralOverlay,
   createPersonalDraftUserItem,
@@ -1781,6 +1788,117 @@ test('personal recurrence range and duplicate guards cap projection without losi
   assert.ok(invalidRange.warnings.includes('invalid_occurrence_projection_range'));
 });
 
+test('personal draft Calendar occurrence adapter expands only recurring user items and keeps occurrence completion separate', () => {
+  const series = createRecurrenceFixtureSeries({
+    itemId: 'calendar-recurring-user-item',
+    startDate: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1, end: { mode: 'count', count: 3 } },
+  });
+  const sourceRow = {
+    id: 'calendar-source-item',
+    date: '2026-07-13',
+    structuralOwnership: 'source' as const,
+    structuralProjectionOrderRank: 0,
+    structuralSchedule: { mode: 'fixed_date' as const, date: '2026-07-13' },
+  };
+  const recurringRow = {
+    id: 'calendar-recurring-user-item',
+    date: '2026-07-13',
+    structuralOwnership: 'user_created' as const,
+    structuralProjectionOrderRank: 1,
+    structuralProjectionStableId: 'calendar-recurring-user-item',
+    structuralSchedule: createRecurrenceFixtureSchedule({
+      date: '2026-07-13',
+      series,
+      time: '09:00',
+      durationMinutes: 30,
+      timeZone: 'Asia/Seoul',
+    }),
+    structuralRepeat: series,
+  };
+  const pendingRows = expandPersonalDraftCalendarOccurrenceRows({
+    personalDraftEligible: true,
+    identityNamespace: 'calendar-occurrence-draft',
+    rows: [sourceRow, recurringRow],
+    range: { start: '2026-07-13', end: '2026-07-15' },
+  });
+  const occurrences = pendingRows.filter((row) => row.structuralOccurrenceId);
+  assert.equal(pendingRows.length, 4);
+  assert.equal(pendingRows[0], sourceRow);
+  assert.deepEqual(
+    occurrences.map((row) => row.date),
+    ['2026-07-13', '2026-07-14', '2026-07-15'],
+  );
+  assert.equal(new Set(occurrences.map((row) => row.structuralOccurrenceId)).size, 3);
+  assert.ok(occurrences.every((row) => row.id === recurringRow.id));
+
+  const first = occurrences[0];
+  const done = transitionPersonalStructuralOccurrenceExecution({
+    occurrenceId: first.structuralOccurrenceId as string,
+    seriesId: first.structuralOccurrenceSeriesId as string,
+    revisionId: first.structuralOccurrenceRevisionId as string,
+    nextState: 'done',
+    at: '2026-07-13T12:00:00.000Z',
+  });
+  const completedRows = expandPersonalDraftCalendarOccurrenceRows({
+    personalDraftEligible: true,
+    identityNamespace: 'calendar-occurrence-draft',
+    rows: [sourceRow, recurringRow],
+    range: { start: '2026-07-13', end: '2026-07-15' },
+    executionRecords: [done],
+  });
+  const completedOccurrences = completedRows.filter((row) => row.structuralOccurrenceId);
+  assert.equal(completedOccurrences.length, occurrences.length);
+  assert.equal(completedOccurrences[0].structuralOccurrenceExecutionState, 'done');
+  assert.equal(completedOccurrences[1].structuralOccurrenceExecutionState, 'pending');
+  assert.equal(recurringRow.structuralSchedule.repeat, series);
+});
+
+test('personal occurrence execution records persist per flow and ignore malformed entries', () => {
+  const storage = memoryStorage();
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: { localStorage: storage } });
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: storage });
+  try {
+    const flowSlug = 'url-draft-occurrence-state';
+    const record = transitionPersonalStructuralOccurrenceExecution({
+      occurrenceId: 'series-a:revision:1:2026-07-13:occurrence:2026-07-13Tall-day',
+      seriesId: 'series-a',
+      revisionId: 'series-a:revision:1:2026-07-13',
+      nextState: 'done',
+      at: '2026-07-13T12:00:00.000Z',
+    });
+    const key = getMyFlowOccurrenceExecutionStorageKey(flowSlug, record.occurrenceId);
+    const other = transitionPersonalStructuralOccurrenceExecution({
+      occurrenceId: 'other-occurrence',
+      seriesId: 'other-series',
+      revisionId: 'other-revision',
+      nextState: 'held',
+      at: '2026-07-13T12:30:00.000Z',
+    });
+    saveStoredMyFlowOccurrenceExecutionRecords({
+      [key]: record,
+      [getMyFlowOccurrenceExecutionStorageKey('other-flow', other.occurrenceId)]: other,
+      malformed: { state: 'done' } as PersonalStructuralOccurrenceExecutionRecord,
+    });
+
+    const loaded = getStoredMyFlowOccurrenceExecutionRecords();
+    assert.equal(Object.keys(loaded).length, 2);
+    assert.deepEqual(getFlowOccurrenceExecutionRecords(flowSlug, loaded), [record]);
+    assert.deepEqual(
+      getFlowScopedMyFlowPersonalExecutionState(flowSlug).occurrenceRecords,
+      { [key]: record },
+    );
+  } finally {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
 test('personal draft structural order and persistent recovery preserve IDs, values, and source', () => {
   const personalDraft = bundle(
     'flow-personal-order-draft',
@@ -3066,6 +3184,32 @@ test('flow run registry preserves a completed legacy run before starting a clean
         'other-flow::first::none': '2026-08-01',
       }),
     );
+    const legacyOccurrenceRecord = transitionPersonalStructuralOccurrenceExecution({
+      occurrenceId: 'legacy-series:revision:1:2026-07-01:occurrence:2026-07-13Tall-day',
+      seriesId: 'legacy-series',
+      revisionId: 'legacy-series:revision:1:2026-07-01',
+      nextState: 'done',
+      at: '2026-07-13T12:00:00.000Z',
+    });
+    const otherOccurrenceRecord = transitionPersonalStructuralOccurrenceExecution({
+      occurrenceId: 'other-series:revision:1:2026-07-01:occurrence:2026-07-13Tall-day',
+      seriesId: 'other-series',
+      revisionId: 'other-series:revision:1:2026-07-01',
+      nextState: 'held',
+      at: '2026-07-13T12:30:00.000Z',
+    });
+    const legacyOccurrenceKey = getMyFlowOccurrenceExecutionStorageKey(
+      flowSlug,
+      legacyOccurrenceRecord.occurrenceId,
+    );
+    const otherOccurrenceKey = getMyFlowOccurrenceExecutionStorageKey(
+      'other-flow',
+      otherOccurrenceRecord.occurrenceId,
+    );
+    saveStoredMyFlowOccurrenceExecutionRecords({
+      [legacyOccurrenceKey]: legacyOccurrenceRecord,
+      [otherOccurrenceKey]: otherOccurrenceRecord,
+    });
     localStorage.setItem(
       `flow_builder_mvp_item_state_${flowSlug}`,
       JSON.stringify({ 'moving-method-quotes': { note: '견적 비교 완료' }, 'moving-address-change': { skipped: true } }),
@@ -3128,6 +3272,9 @@ test('flow run registry preserves a completed legacy run before starting a clean
       },
       dateOverrides: {
         [`${flowSlug}::moving-address-change::2026-07-20`]: '2026-07-21',
+      },
+      occurrenceRecords: {
+        [legacyOccurrenceKey]: legacyOccurrenceRecord,
       },
     });
 
@@ -3221,6 +3368,9 @@ test('flow run registry preserves a completed legacy run before starting a clean
       JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}')['other-flow::first::none'],
       '2026-08-01',
     );
+    assert.deepEqual(getStoredMyFlowOccurrenceExecutionRecords(), {
+      [otherOccurrenceKey]: otherOccurrenceRecord,
+    });
     assert.deepEqual(getChecks(flowSlug), {});
     assert.deepEqual(getItemStates(flowSlug), {
       'moving-utility-transfer': { skipped: true, note: 'excluded_on_start' },
@@ -3259,6 +3409,12 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.equal(
       completedHistory[0].personalExecutionStateSnapshot?.dateOverrides[`${flowSlug}::moving-address-change::2026-07-20`],
       '2026-07-21',
+    );
+    assert.equal(
+      completedHistory[0].personalExecutionStateSnapshot?.occurrenceRecords?.[
+        legacyOccurrenceKey
+      ].state,
+      'done',
     );
     const registry = getFlowRunRegistry(flowSlug);
     assert.equal(registry.activeRunId, 'run-moving-second');
@@ -3326,6 +3482,32 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
       'moving-d30-basic::moving-method-quotes::2026-05-28': '2026-05-29',
       'other-flow::first::none': '2026-06-01',
     }));
+    const removedOccurrence = transitionPersonalStructuralOccurrenceExecution({
+      occurrenceId: 'moving-occurrence',
+      seriesId: 'moving-series',
+      revisionId: 'moving-revision',
+      nextState: 'done',
+      at: '2026-07-13T12:00:00.000Z',
+    });
+    const retainedOccurrence = transitionPersonalStructuralOccurrenceExecution({
+      occurrenceId: 'other-occurrence',
+      seriesId: 'other-series',
+      revisionId: 'other-revision',
+      nextState: 'held',
+      at: '2026-07-13T12:30:00.000Z',
+    });
+    const removedOccurrenceKey = getMyFlowOccurrenceExecutionStorageKey(
+      'moving-d30-basic',
+      removedOccurrence.occurrenceId,
+    );
+    const retainedOccurrenceKey = getMyFlowOccurrenceExecutionStorageKey(
+      'other-flow',
+      retainedOccurrence.occurrenceId,
+    );
+    saveStoredMyFlowOccurrenceExecutionRecords({
+      [removedOccurrenceKey]: removedOccurrence,
+      [retainedOccurrenceKey]: retainedOccurrence,
+    });
     const removedStructuralKey = getPersonalStructuralOverlayStorageKey('moving-copy');
     const retainedStructuralKey = getPersonalStructuralOverlayStorageKey('other-copy');
     savePersonalStructuralOverlay(localStorage, createEmptyPersonalStructuralOverlay({
@@ -3350,6 +3532,9 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
     });
     assert.deepEqual(JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'), {
       'other-flow::first::none': '2026-06-01',
+    });
+    assert.deepEqual(getStoredMyFlowOccurrenceExecutionRecords(), {
+      [retainedOccurrenceKey]: retainedOccurrence,
     });
     assert.equal(localStorage.getItem(removedStructuralKey), null);
     assert.ok(localStorage.getItem(retainedStructuralKey));
@@ -3501,6 +3686,16 @@ test('FlowMe local backup includes execution records and excludes internal brows
       ],
     }),
     'flow:url-first:supply-candidates': JSON.stringify([{ canonicalUrl: 'https://example.com/a' }]),
+    'flow:my-flow:occurrence-execution': JSON.stringify({
+      'moving-d30-basic::occurrence-a': {
+        occurrenceId: 'occurrence-a',
+        seriesId: 'series-a',
+        revisionId: 'revision-a',
+        state: 'done',
+        updatedAt: '2026-07-13T09:00:00.000Z',
+        history: [],
+      },
+    }),
     [structuralKey]: JSON.stringify(createEmptyPersonalStructuralOverlay({
       savedCopyId: 'moving-copy',
       flowId: 'moving-d30-basic',
@@ -3518,6 +3713,7 @@ test('FlowMe local backup includes execution records and excludes internal brows
   assert.equal(backup.summary.requestRecordCount, 1);
   assert.ok(backup.entries['flow:saved:moving-d30-basic']);
   assert.ok(backup.entries[structuralKey]);
+  assert.ok(backup.entries['flow:my-flow:occurrence-execution']);
   assert.equal(backup.entries['flow:auth:demo-user'], undefined);
   assert.equal(backup.entries['flow:map:update:dismissed'], undefined);
   assert.equal(backup.entries['content-lab:review:internal'], undefined);

@@ -43,13 +43,18 @@ import {
   type FlowVersionReviewSelections,
 } from '@/lib/flow/flow-version-review';
 import {
+  getFlowOccurrenceExecutionRecords,
   getFlowScopedMyFlowPersonalExecutionState,
+  getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowDateOverrides,
   getStoredMyFlowItemDrafts,
+  getStoredMyFlowOccurrenceExecutionRecords,
   saveStoredMyFlowDateOverrides,
   saveStoredMyFlowItemDrafts,
+  saveStoredMyFlowOccurrenceExecutionRecords,
   type StoredMyFlowItemDraft,
 } from '@/lib/flow/my-flow-personal-state';
+import { expandPersonalDraftCalendarOccurrenceRows } from '@/lib/flow/personal-draft-calendar-occurrence';
 import {
   createPersonalDraftStructuralOverlay,
   createPersonalDraftUserItem,
@@ -91,11 +96,17 @@ import {
   type PersonalStructuralWeekday,
 } from '@/lib/flow/personal-structural-recurrence';
 import {
+  transitionPersonalStructuralOccurrenceExecution,
+  type PersonalStructuralOccurrenceExecutionRecord,
+  type PersonalStructuralOccurrenceExecutionState,
+} from '@/lib/flow/personal-structural-occurrence';
+import {
   loadOrMigratePersonalStructuralOverlay,
   savePersonalStructuralOverlay,
   type PersonalStructuralExecutionState,
   type PersonalStructuralItemOwnership,
   type PersonalStructuralOverlay,
+  type PersonalStructuralSchedule,
 } from '@/lib/flow/personal-structural-overlay';
 import {
   assessSourceBackedFlowMapUpdate,
@@ -2998,8 +3009,14 @@ type MyFlowRow = {
   structuralProjectionOrderRank?: number;
   structuralCalendarIcsEligible?: boolean;
   structuralProjectionStableId?: string;
+  structuralSchedule?: PersonalStructuralSchedule;
   structuralScheduleProjection?: PersonalStructuralScheduleProjection;
   structuralRepeat?: PersonalStructuralRepeat;
+  structuralOccurrenceId?: string;
+  structuralOccurrenceSeriesId?: string;
+  structuralOccurrenceRevisionId?: string;
+  structuralOccurrenceOriginalDate?: string;
+  structuralOccurrenceExecutionState?: PersonalStructuralOccurrenceExecutionState;
 };
 
 type MySavedFlow = {
@@ -3348,6 +3365,9 @@ function getMyFlowMonthLabel(anchor: string): string {
 }
 
 function isMyFlowRowChecked(flow: MySavedFlow, row: MyFlowRow): boolean {
+  if (row.structuralOccurrenceId) {
+    return row.structuralOccurrenceExecutionState === 'done';
+  }
   const checkIds = getMyFlowCheckIds(flow.bundle, row.id, flow.anchor);
   return checkIds.length > 0 && checkIds.every((id) => flow.checks[id]);
 }
@@ -3917,6 +3937,11 @@ function getMyFlowMonthStart(date: string): string {
   return `${date.slice(0, 7)}-01`;
 }
 
+function getMyFlowMonthEnd(date: string): string {
+  const [year, month] = date.slice(0, 7).split('-').map(Number);
+  return formatMyFlowLocalDate(new Date(year, month, 0));
+}
+
 function formatMyFlowLocalDate(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
@@ -4260,6 +4285,7 @@ function mapPersonalDraftProjectionRowToMyFlowRow(
     structuralCalendarIcsEligible:
       projectionRow.destinationEligibility.calendarIcs,
     structuralProjectionStableId: projectionRow.itemId,
+    ...(projectionRow.schedule ? { structuralSchedule: projectionRow.schedule } : {}),
     structuralScheduleProjection: projectionRow.scheduleProjection,
     ...(projectionRow.schedule?.mode === 'fixed_date' && projectionRow.schedule.repeat
       ? { structuralRepeat: projectionRow.schedule.repeat }
@@ -4509,6 +4535,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [savedFlowMapBySlug, setSavedFlowMapBySlug] = useState<Record<string, SavedFlowMapSnapshot>>({});
   const [savedFlowMapPersistenceById, setSavedFlowMapPersistenceById] = useState<Record<string, SourceBackedFlowMapPersistenceRecord>>({});
   const [myFlowDateOverrides, setMyFlowDateOverrides] = useState<Record<string, string>>({});
+  const [myFlowOccurrenceExecutionRecords, setMyFlowOccurrenceExecutionRecords] = useState<
+    Record<string, PersonalStructuralOccurrenceExecutionRecord>
+  >({});
   const [myFlowHiddenFlowSlugs, setMyFlowHiddenFlowSlugs] = useState<string[]>([]);
   const [myFlowItemDrafts, setMyFlowItemDrafts] = useState<Record<string, MyFlowItemDraft>>({});
   const [myFlowEditingDrafts, setMyFlowEditingDrafts] = useState<Record<string, MyFlowItemDraft>>({});
@@ -4699,6 +4728,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ),
     );
     setMyFlowStepItemChecks(getMyFlowStepItemChecks());
+    setMyFlowOccurrenceExecutionRecords(getStoredMyFlowOccurrenceExecutionRecords());
     setMyFlowCompletionFeedbackBySlug(
       Object.fromEntries(
         progress.flatMap((item) => {
@@ -4740,6 +4770,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setFlowListFilter('all');
       setFlowListQuery('');
       setMyFlowDateOverrides({});
+      setMyFlowOccurrenceExecutionRecords({});
       setMyFlowHiddenFlowSlugs([]);
       setMyFlowItemDrafts({});
       setMyFlowEditingDrafts({});
@@ -5023,12 +5054,54 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       });
     }
   };
-  const baseCalendarRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
-    (flow.projectionRows ?? flow.rows)
+  const occurrenceProjectionTodayDate = showDemoData ? '2026-05-28' : formatDate(new Date());
+  const occurrenceVisibleRange = {
+    start: getMyFlowMonthStart(myFlowVisibleMonth),
+    end: getMyFlowMonthEnd(myFlowVisibleMonth),
+  };
+  const occurrenceExecutionRange = {
+    start: formatDate(
+      addDays(new Date(`${occurrenceProjectionTodayDate}T00:00:00`), -31),
+    ),
+    end: formatDate(
+      addDays(new Date(`${occurrenceProjectionTodayDate}T00:00:00`), 7),
+    ),
+  };
+  const baseCalendarRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) => {
+    const baseRows = flow.projectionRows ?? flow.rows;
+    const occurrenceExecutionRecords = getFlowOccurrenceExecutionRecords(
+      flow.progress.slug,
+      myFlowOccurrenceExecutionRecords,
+    );
+    const expandedRows = [occurrenceVisibleRange, occurrenceExecutionRange]
+      .flatMap((range) =>
+        expandPersonalDraftCalendarOccurrenceRows({
+          personalDraftEligible: isPersonalDraftStructuralEditEligible(flow.bundle),
+          identityNamespace: flow.progress.slug,
+          rows: baseRows,
+          range,
+          executionRecords: occurrenceExecutionRecords,
+        }),
+      )
+      .reduce<MyFlowRow[]>((rows, row) => {
+        const key = row.structuralOccurrenceId
+          ? `occurrence:${row.structuralOccurrenceId}`
+          : `base:${row.id}:${row.date ?? 'none'}`;
+        if (!rows.some((entry) => {
+          const entryKey = entry.structuralOccurrenceId
+            ? `occurrence:${entry.structuralOccurrenceId}`
+            : `base:${entry.id}:${entry.date ?? 'none'}`;
+          return entryKey === key;
+        })) rows.push(row);
+        return rows;
+      }, []);
+    return expandedRows
       .filter((row) => row.date)
       .map((row) => {
-        const originalDate = row.date ?? '';
-        const calendarKey = getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
+        const originalDate = row.structuralOccurrenceOriginalDate ?? row.date ?? '';
+        const calendarKey = row.structuralOccurrenceId
+          ? `${flow.progress.slug}::occurrence::${row.structuralOccurrenceId}`
+          : getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
         const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
         const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
         return {
@@ -5036,10 +5109,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           flow,
           originalDate,
           calendarKey,
-          date: draftDateOverride ?? myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
+          date: row.structuralOccurrenceId
+            ? row.date
+            : draftDateOverride ??
+              myFlowDateOverrides[calendarKey] ??
+              personalDateOverride ??
+              row.date,
         };
-      }),
-  );
+      });
+  });
   const manuallyScheduledRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
     (flow.projectionRows ?? flow.rows)
       .filter((row) => !row.date)
@@ -5120,7 +5198,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   ].join(':')).join('|');
   const calendarScopedScheduleRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarScopedRoutineRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
-  const myFlowTodayDate = showDemoData ? '2026-05-28' : formatDate(new Date());
+  const myFlowTodayDate = occurrenceProjectionTodayDate;
   const calendarAnchor =
     showDemoData && selectedSavedFlowSlug === 'all' && !isCalendarSurface
       ? myFlowTodayDate
@@ -5618,14 +5696,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPersonalDraftUserItem =
       isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
       row.structuralOwnership === 'user_created';
+    const structuralBaseRow = row.structuralOccurrenceId
+      ? row.flow.rows.find(
+          (candidate) =>
+            (candidate.structuralProjectionStableId ?? candidate.id) ===
+            (row.structuralProjectionStableId ?? row.id),
+        ) ?? row
+      : row;
     const structuralSchedule = isPersonalDraftUserItem
-      ? row.structuralScheduleProjection
+      ? structuralBaseRow.structuralScheduleProjection
       : undefined;
     const scheduleMode = structuralSchedule?.scheduleState === 'timed'
       ? 'timed'
       : 'all_day';
     const structuralRecurrence = getPersonalDraftRecurrenceEditorState(
-      row.structuralRepeat,
+      structuralBaseRow.structuralRepeat,
       structuralSchedule?.calendarDate ?? row.date ?? '',
     );
     return {
@@ -5779,8 +5864,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         recurrenceEndMode !== undefined ||
         recurrenceUntil !== undefined ||
         recurrenceCount !== undefined;
+      const structuralBaseRow = row.structuralOccurrenceId
+        ? row.flow.rows.find(
+            (candidate) =>
+              (candidate.structuralProjectionStableId ?? candidate.id) ===
+              (row.structuralProjectionStableId ?? row.id),
+          ) ?? row
+        : row;
       const shouldSyncStructuralRecurrence =
-        hasStructuralSchedulePatch && Boolean(row.structuralRepeat);
+        hasStructuralSchedulePatch && Boolean(structuralBaseRow.structuralRepeat);
       const resolvedRecurrenceDraft =
         hasStructuralRecurrencePatch || shouldSyncStructuralRecurrence
         ? getMyFlowRowEditorDraft(row)
@@ -5789,7 +5881,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         let structuralOverlay =
           myFlowStructuralOverlaysBySlug[row.flow.progress.slug] ??
           createPersonalDraftStructuralOverlay(row.flow.bundle);
-        const currentSchedule = row.structuralScheduleProjection;
+        const currentSchedule = structuralBaseRow.structuralScheduleProjection;
         const nextDate = date ?? currentSchedule?.calendarDate ?? '';
         const nextMode = scheduleMode ?? (
           currentSchedule?.scheduleState === 'timed' ? 'timed' : 'all_day'
@@ -6025,6 +6117,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : undefined;
       return {
         id:
+          row.structuralOccurrenceId ??
           structuralSchedule?.stableEventIdentitySeed ??
           row.calendarKey ??
           `${row.flow.progress.slug}-${row.id}-${row.date}`,
@@ -6051,6 +6144,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           scheduleState: structuralSchedule?.scheduleState,
           startTime: structuralSchedule?.startTime,
           durationMinutes: structuralSchedule?.durationMinutes,
+          occurrenceId: row.structuralOccurrenceId,
+          occurrenceState: row.structuralOccurrenceExecutionState,
         },
       };
     }),
@@ -6295,7 +6390,48 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     recordFlowCompletionState(flow.progress.slug, completed);
   };
 
+  const togglePersonalDraftOccurrenceCompletion = (
+    flow: MySavedFlow,
+    row: MyFlowCalendarRow,
+  ): boolean => {
+    if (
+      !row.structuralOccurrenceId ||
+      !row.structuralOccurrenceSeriesId ||
+      !row.structuralOccurrenceRevisionId
+    ) {
+      return false;
+    }
+    const storageKey = getMyFlowOccurrenceExecutionStorageKey(
+      flow.progress.slug,
+      row.structuralOccurrenceId,
+    );
+    const current = myFlowOccurrenceExecutionRecords[storageKey];
+    const nextState: PersonalStructuralOccurrenceExecutionState =
+      current?.state === 'done'
+        ? 'reopened'
+        : current?.state === 'skipped'
+          ? 'reopened'
+          : 'done';
+    const nextRecord = transitionPersonalStructuralOccurrenceExecution({
+      current,
+      occurrenceId: row.structuralOccurrenceId,
+      seriesId: row.structuralOccurrenceSeriesId,
+      revisionId: row.structuralOccurrenceRevisionId,
+      nextState,
+      at: new Date().toISOString(),
+    });
+    setMyFlowOccurrenceExecutionRecords((records) => {
+      const next = { ...records, [storageKey]: nextRecord };
+      if (!isMyFlowScenarioDemo) {
+        saveStoredMyFlowOccurrenceExecutionRecords(next);
+      }
+      return next;
+    });
+    return true;
+  };
+
   const toggleSavedFlowItem = (flow: MySavedFlow, rowId: string, rowContext?: MyFlowCalendarRow) => {
+    if (rowContext && togglePersonalDraftOccurrenceCompletion(flow, rowContext)) return;
     const checkIds = getMyFlowCheckIds(flow.bundle, rowId, flow.anchor);
     const nextChecked = !checkIds.every((id) => flow.checks[id]);
     const nextChecks = checkIds.reduce(
@@ -6603,6 +6739,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowPersonalCopySettingsDraft(null);
     setMyFlowItemDrafts(getStoredMyFlowItemDrafts());
     setMyFlowDateOverrides(getStoredMyFlowDateOverrides());
+    setMyFlowOccurrenceExecutionRecords(getStoredMyFlowOccurrenceExecutionRecords());
     setMyFlowReuseNotice({
       flowSlug: flow.progress.slug,
       message: myFlowReuseDraft.versionMode === 'latest'
@@ -7201,6 +7338,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <div key={`${routineDragKey}-${options.kind ?? 'schedule'}`} data-testid="my-flow-execution-row-shell" className="grid gap-1.5">
         <article
           data-item-id={row.id}
+          data-occurrence-id={row.structuralOccurrenceId}
+          data-occurrence-state={row.structuralOccurrenceExecutionState}
           data-structural-order-rank={row.structuralProjectionOrderRank}
           data-item-type={row.itemType?.primary ?? 'check_task'}
           data-routine-key={isRoutineExecution ? routineDragKey : undefined}
@@ -7280,6 +7419,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <article
         key={`${routineDragKey}-${options.kind ?? 'schedule'}`}
         data-item-id={row.id}
+        data-occurrence-id={row.structuralOccurrenceId}
+        data-occurrence-state={row.structuralOccurrenceExecutionState}
         data-structural-order-rank={row.structuralProjectionOrderRank}
         data-item-type={row.itemType?.primary ?? 'check_task'}
         data-routine-key={isRoutineExecution ? routineDragKey : undefined}
@@ -7808,6 +7949,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPersonalDraftUserItem =
       isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
       row.structuralOwnership === 'user_created';
+    const isPersonalDraftRecurringSeries = Boolean(
+      isPersonalDraftUserItem && row.structuralRepeat && !row.structuralOccurrenceId,
+    );
     const timing = row.timing ?? item?.repeat_rule ?? '';
     const detailSection = getMyFlowRowDisplaySectionLabel(row);
     const visibleDetailSection = isProgressFlow ? '' : detailSection;
@@ -8472,6 +8616,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <section
         data-testid="my-flow-item-detail"
         data-item-type={row.itemType?.primary ?? 'check_task'}
+        data-occurrence-id={row.structuralOccurrenceId}
+        data-occurrence-state={row.structuralOccurrenceExecutionState}
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
         data-default-primary-action-count={isDetailEditing ? undefined : '2'}
         className={
@@ -8482,6 +8628,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : 'space-y-3'
         }
       >
+        {row.structuralOccurrenceId ? (
+          <p
+            data-testid="personal-draft-occurrence-status"
+            className="mb-2 text-xs font-semibold text-blue-700"
+          >
+            {row.structuralOccurrenceExecutionState === 'done'
+              ? '이번 일정 완료'
+              : row.structuralOccurrenceExecutionState === 'reopened'
+                ? '이번 일정 다시 진행'
+                : '이번 일정'}
+          </p>
+        ) : null}
         <div className={isInlineMobileMode ? 'grid gap-3' : 'flex flex-wrap items-start justify-between gap-3'}>
           <div className={isInlineMobileMode ? 'min-w-0' : 'min-w-0 flex-1'}>
             {isDetailEditing ? (
@@ -8534,13 +8692,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {routineProgressLabel}
               </span>
             ) : null}
-            {!isDetailEditing ? renderTaskCompletionCheckbox({
+            {!isDetailEditing && !isPersonalDraftRecurringSeries ? renderTaskCompletionCheckbox({
               title: editorDraft.title,
               checked,
               routine: isRoutineRow,
               detail: true,
               onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
             }) : null}
+            {!isDetailEditing && isPersonalDraftRecurringSeries ? (
+              <Link
+                href="/calendar"
+                data-testid="personal-draft-recurrence-calendar-entry"
+                className="inline-flex min-h-8 items-center rounded-md border border-blue-200 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300"
+              >
+                일정별로 확인
+              </Link>
+            ) : null}
             {!isDrawerMode && isDetailEditing ? (
               <button
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"

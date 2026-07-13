@@ -1,5 +1,12 @@
+import {
+  normalizePersonalStructuralOccurrenceExecutionRecords,
+  type PersonalStructuralOccurrenceExecutionRecord,
+} from './personal-structural-occurrence';
+
 export const MY_FLOW_ITEM_DRAFTS_STORAGE_KEY = 'flow:my-flow:item-drafts';
 export const MY_FLOW_DATE_OVERRIDES_STORAGE_KEY = 'flow:my-flow:date-overrides';
+export const MY_FLOW_OCCURRENCE_EXECUTION_STORAGE_KEY =
+  'flow:my-flow:occurrence-execution';
 
 export type StoredMyFlowItemDraft = {
   why?: string;
@@ -27,6 +34,7 @@ export type StoredMyFlowItemDraft = {
 export type MyFlowPersonalExecutionState = {
   itemDrafts: Record<string, StoredMyFlowItemDraft>;
   dateOverrides: Record<string, string>;
+  occurrenceRecords?: Record<string, PersonalStructuralOccurrenceExecutionRecord>;
 };
 
 function canUseStorage(): boolean {
@@ -67,12 +75,75 @@ export function saveStoredMyFlowDateOverrides(overrides: Record<string, string>)
   window.localStorage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(overrides));
 }
 
+export function getMyFlowOccurrenceExecutionStorageKey(
+  flowSlug: string,
+  occurrenceId: string,
+): string {
+  return `${flowSlug}::${occurrenceId}`;
+}
+
+function normalizeOccurrenceRecordMap(
+  value: unknown,
+): Record<string, PersonalStructuralOccurrenceExecutionRecord> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).flatMap(([key, entry]) => {
+      if (!key.trim()) return [];
+      const [record] = normalizePersonalStructuralOccurrenceExecutionRecords([
+        entry as PersonalStructuralOccurrenceExecutionRecord,
+      ]);
+      return record ? [[key, record] as const] : [];
+    }),
+  );
+}
+
+export function getStoredMyFlowOccurrenceExecutionRecords(): Record<
+  string,
+  PersonalStructuralOccurrenceExecutionRecord
+> {
+  if (!canUseStorage()) return {};
+  try {
+    return normalizeOccurrenceRecordMap(
+      JSON.parse(
+        window.localStorage.getItem(MY_FLOW_OCCURRENCE_EXECUTION_STORAGE_KEY) ||
+          'null',
+      ),
+    );
+  } catch {
+    return {};
+  }
+}
+
+export function saveStoredMyFlowOccurrenceExecutionRecords(
+  records: Record<string, PersonalStructuralOccurrenceExecutionRecord>,
+): void {
+  if (!canUseStorage()) return;
+  window.localStorage.setItem(
+    MY_FLOW_OCCURRENCE_EXECUTION_STORAGE_KEY,
+    JSON.stringify(normalizeOccurrenceRecordMap(records)),
+  );
+}
+
+export function getFlowOccurrenceExecutionRecords(
+  flowSlug: string,
+  records: Record<string, PersonalStructuralOccurrenceExecutionRecord> =
+    getStoredMyFlowOccurrenceExecutionRecords(),
+): PersonalStructuralOccurrenceExecutionRecord[] {
+  const prefix = `${flowSlug}::`;
+  return Object.entries(records)
+    .filter(([key]) => key.startsWith(prefix))
+    .map(([, record]) => record);
+}
+
 export function cloneMyFlowPersonalExecutionState(
   state: MyFlowPersonalExecutionState,
 ): MyFlowPersonalExecutionState {
   return {
     itemDrafts: cloneRecord(state.itemDrafts),
     dateOverrides: { ...state.dateOverrides },
+    ...(state.occurrenceRecords && Object.keys(state.occurrenceRecords).length > 0
+      ? { occurrenceRecords: cloneRecord(state.occurrenceRecords) }
+      : {}),
   };
 }
 
@@ -89,11 +160,21 @@ export function normalizeMyFlowPersonalExecutionState(value: unknown): MyFlowPer
         ),
       )
     : {};
-  return { itemDrafts, dateOverrides };
+  const occurrenceRecords = normalizeOccurrenceRecordMap(source.occurrenceRecords);
+  return {
+    itemDrafts,
+    dateOverrides,
+    ...(Object.keys(occurrenceRecords).length > 0 ? { occurrenceRecords } : {}),
+  };
 }
 
 export function getFlowScopedMyFlowPersonalExecutionState(flowSlug: string): MyFlowPersonalExecutionState {
   const prefix = `${flowSlug}::`;
+  const occurrenceRecords = Object.fromEntries(
+    Object.entries(getStoredMyFlowOccurrenceExecutionRecords()).filter(([key]) =>
+      key.startsWith(prefix),
+    ),
+  );
   return {
     itemDrafts: Object.fromEntries(
       Object.entries(getStoredMyFlowItemDrafts()).filter(([key]) => key.startsWith(prefix)),
@@ -101,11 +182,17 @@ export function getFlowScopedMyFlowPersonalExecutionState(flowSlug: string): MyF
     dateOverrides: Object.fromEntries(
       Object.entries(getStoredMyFlowDateOverrides()).filter(([key]) => key.startsWith(prefix)),
     ),
+    ...(Object.keys(occurrenceRecords).length > 0 ? { occurrenceRecords } : {}),
   };
 }
 
 export function hasMyFlowPersonalExecutionState(state?: MyFlowPersonalExecutionState): boolean {
-  return Boolean(state && (Object.keys(state.itemDrafts).length > 0 || Object.keys(state.dateOverrides).length > 0));
+  return Boolean(
+    state &&
+      (Object.keys(state.itemDrafts).length > 0 ||
+        Object.keys(state.dateOverrides).length > 0 ||
+        Object.keys(state.occurrenceRecords ?? {}).length > 0),
+  );
 }
 
 export function replaceFlowScopedMyFlowPersonalExecutionState(
@@ -126,8 +213,17 @@ export function replaceFlowScopedMyFlowPersonalExecutionState(
     ),
     ...state.dateOverrides,
   };
+  const occurrenceRecords = {
+    ...Object.fromEntries(
+      Object.entries(getStoredMyFlowOccurrenceExecutionRecords()).filter(
+        ([key]) => !key.startsWith(prefix),
+      ),
+    ),
+    ...normalizeOccurrenceRecordMap(state.occurrenceRecords),
+  };
   saveStoredMyFlowItemDrafts(itemDrafts);
   saveStoredMyFlowDateOverrides(dateOverrides);
+  saveStoredMyFlowOccurrenceExecutionRecords(occurrenceRecords);
   return cloneMyFlowPersonalExecutionState(state);
 }
 
