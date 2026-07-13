@@ -58,6 +58,7 @@ import {
   movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
+  setPersonalDraftUserItemDate,
   undoPersonalDraftStructuralDelete,
   type PersonalDraftStructuralUndo,
 } from '@/lib/flow/personal-draft-structural-edit';
@@ -5362,6 +5363,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return next;
     });
   };
+  const clearMyFlowPersonalDraftLegacyDate = (flowSlug: string, itemId: string) => {
+    const key = getPersonalDraftProjectionValueKey(flowSlug, itemId);
+    setMyFlowItemDrafts((current) => {
+      const stored = current[key];
+      if (!stored || !Object.prototype.hasOwnProperty.call(stored, 'date')) return current;
+      const { date: _date, ...remaining } = stored;
+      const next = { ...current };
+      if (Object.keys(remaining).length > 0) next[key] = remaining;
+      else delete next[key];
+      if (!isMyFlowScenarioDemo) saveStoredMyFlowItemDrafts(next);
+      return next;
+    });
+    updateMyFlowDateOverrideState((current) => {
+      if (!Object.prototype.hasOwnProperty.call(current, key)) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  };
   const toggleMyFlowHiddenFlow = (slug: string) => {
     setMyFlowHiddenFlowSlugs((current) => {
       const exists = current.includes(slug);
@@ -5509,9 +5529,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         setMyFlowVisibleMonth(getMyFlowMonthStart(date));
       }
     } else if (isUrlFirstDraftSavedFlow(row.flow)) {
+      const structuralUserItem = row.structuralOwnership === 'user_created';
+      if (structuralUserItem && date !== undefined) {
+        const structuralOverlay =
+          myFlowStructuralOverlaysBySlug[row.flow.progress.slug] ??
+          createPersonalDraftStructuralOverlay(row.flow.bundle);
+        const scheduled = setPersonalDraftUserItemDate({
+          overlay: structuralOverlay,
+          itemId: row.id,
+          date,
+        });
+        if (!scheduled || !saveMyFlowStructuralOverlay(row.flow, scheduled.overlay)) return;
+        clearMyFlowPersonalDraftLegacyDate(row.flow.progress.slug, row.id);
+      }
       const personalDraftItemPatch = {
         ...itemDraft,
-        ...(date !== undefined ? { date } : {}),
+        ...(!structuralUserItem && date !== undefined ? { date } : {}),
       };
       if (Object.keys(personalDraftItemPatch).length > 0) {
         updateMyFlowItemDraftByKey(
@@ -5519,7 +5552,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           personalDraftItemPatch,
         );
       }
-      if (date !== undefined) {
+      if (!structuralUserItem && date !== undefined) {
         const draftDateKey = getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id);
         updateMyFlowDateOverrideState((current) => {
           const next = { ...current };
@@ -5534,6 +5567,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           setMyFlowSelectedDate(date);
           setMyFlowVisibleMonth(getMyFlowMonthStart(date));
         }
+      }
+      if (structuralUserItem && date) {
+        setMyFlowSelectedDate(date);
+        setMyFlowVisibleMonth(getMyFlowMonthStart(date));
       }
     } else {
       const { title, memo, ...executionDraft } = itemDraft;
@@ -7432,6 +7469,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isFlowTabInlineMobileMode = isInlineMobileMode && surfaceContext === 'flow';
     const isRoutineRow = row.flow.bundle.flow.structure_type === 'routine';
     const isProgressFlow = Boolean(row.flow.bundle.flow.tags?.includes('progress-flow'));
+    const isPersonalDraftUserItem =
+      isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
+      row.structuralOwnership === 'user_created';
     const timing = row.timing ?? item?.repeat_rule ?? '';
     const detailSection = getMyFlowRowDisplaySectionLabel(row);
     const visibleDetailSection = isProgressFlow ? '' : detailSection;
@@ -7500,12 +7540,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const canUndoRoutineCompletion = isRoutineRow && myFlowRoutineCompletionUndo?.flowSlug === row.flow.progress.slug;
     const fieldClassName = 'mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
     const textareaClassName = `${fieldClassName} ${isMemoExpanded ? 'min-h-52' : isDrawerMode ? 'h-28 min-h-28' : 'h-20 min-h-20'} resize-y font-normal leading-6`;
-    const canEditDate = Boolean(row.calendarKey || isProgressFlow);
+    const canEditDate = Boolean(row.calendarKey || isProgressFlow || isPersonalDraftUserItem);
     const itemDateOverrideLabel = getSourceBackedFlowMapDateAnchorCopy().itemOverrideLabel;
     const itemEditButtonLabel = canEditDate ? '제목·날짜·메모 수정' : '제목·메모 수정';
     const itemEditButtonAriaLabel = `${editorDraft.title} ${itemEditButtonLabel}`;
     const itemEditCancelAriaLabel = `${editorDraft.title} 수정 취소`;
-    const showTimeLocationFields = !isProgressFlow || Boolean(row.calendarKey);
+    const showTimeLocationFields =
+      !isPersonalDraftUserItem && (!isProgressFlow || Boolean(row.calendarKey));
     const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
     const scheduleSummaryRows = [
       editorDraft.date ? { label: '날짜', value: /^\d{4}-\d{2}-\d{2}$/.test(editorDraft.date) ? formatMyFlowDisplayDate(editorDraft.date) : editorDraft.date } : undefined,
@@ -7515,7 +7556,67 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
     const occurrenceFields = (
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        {canEditDate ? (
+        {isPersonalDraftUserItem ? (
+          <fieldset
+            data-testid="personal-draft-date-mode-control"
+            className="min-w-0 sm:col-span-2"
+          >
+            <legend className="text-xs font-semibold text-slate-600">날짜</legend>
+            <div className="mt-1 grid grid-cols-2 gap-1 rounded-md bg-slate-100 p-1">
+              <button
+                type="button"
+                data-testid="personal-draft-date-mode-none"
+                aria-pressed={!editorDraft.date}
+                className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
+                  !editorDraft.date
+                    ? 'bg-white text-slate-950 shadow-sm'
+                    : 'text-slate-600 hover:bg-white/70'
+                }`}
+                onClick={() => updateMyFlowEditingDraft(row, { date: '' })}
+              >
+                날짜 없음
+              </button>
+              <button
+                type="button"
+                data-testid="personal-draft-date-mode-fixed"
+                aria-pressed={Boolean(editorDraft.date)}
+                className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
+                  editorDraft.date
+                    ? 'bg-white text-blue-700 shadow-sm'
+                    : 'text-slate-600 hover:bg-white/70'
+                }`}
+                onClick={() => {
+                  if (!editorDraft.date) updateMyFlowEditingDraft(row, { date: myFlowTodayDate });
+                }}
+              >
+                날짜 지정
+              </button>
+            </div>
+            {editorDraft.date ? (
+              <div className="mt-2 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                <label className="block text-xs font-semibold text-slate-600">
+                  날짜 선택
+                  <input
+                    data-testid="my-flow-detail-date-input"
+                    aria-label={`${editorDraft.title} 날짜 선택`}
+                    className={fieldClassName}
+                    type="date"
+                    value={editorDraft.date}
+                    onChange={(event) => updateMyFlowEditingDraft(row, { date: event.target.value })}
+                  />
+                </label>
+                <button
+                  type="button"
+                  data-testid="personal-draft-date-clear"
+                  className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:border-blue-300"
+                  onClick={() => updateMyFlowEditingDraft(row, { date: '' })}
+                >
+                  날짜 지우기
+                </button>
+              </div>
+            ) : null}
+          </fieldset>
+        ) : canEditDate ? (
           <label className="block text-xs font-semibold text-slate-600">
             {itemDateOverrideLabel}
             <input

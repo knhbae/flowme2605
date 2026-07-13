@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-02A personal draft optional fixed-date edit UI",
+  "generatedAt": "2026-07-13",
+  "baselineCommit": "fc67928",
+  "implementationScope": "personal_draft_user_created_fixed_date_only",
+  "markerDefinitions": {
+    "personalDraftUserItemListExportCountAfterDateRemoval": "one user-created Item counted once in each of checklist, sheet, and memo",
+    "completionStateChangedScheduleMembershipCount": "destination membership changes caused only by done or reopened transitions",
+    "personalDraftScheduleInternalTermHitCount": "guardrail hits across the visible date editor, ICS, checklist, sheet, and memo"
+  },
+  "markers": {
+    "personalDraftUserItemDateModeControlVisible": true,
+    "personalDraftScheduleUserReachableWithoutFixture": true,
+    "personalDraftUserItemDatePersistedAfterReload": true,
+    "personalDraftUserItemCalendarVisibleAfterDateSet": true,
+    "personalDraftUserItemIcsEventCountAfterDateSet": 1,
+    "personalDraftUserItemOldDateVisibleAfterMoveCount": 0,
+    "personalDraftUserItemNewDateVisibleAfterMoveCount": 1,
+    "personalDraftUserItemCalendarVisibleAfterDateRemovalCount": 0,
+    "personalDraftUserItemIcsEventCountAfterDateRemoval": 0,
+    "personalDraftUserItemListExportCountAfterDateRemoval": 3,
+    "personalDraftUserItemStableIdPreserved": true,
+    "personalDraftUserItemPersonalValuesPreserved": true,
+    "personalDraftUserItemOrderPreserved": true,
+    "completionStateChangedScheduleMembershipCount": 0,
+    "sourceBackedStructuralScheduleControlCount": 0,
+    "personalDraftScheduleHorizontalOverflowCount": 0,
+    "personalDraftScheduleInternalTermHitCount": 0,
+    "calendarStructuralProjectionConnected": true,
+    "icsStructuralProjectionConnected": true,
+    "checklistStructuralProjectionConnected": true,
+    "sheetStructuralProjectionConnected": true,
+    "memoStructuralProjectionConnected": true,
+    "timeEditControlAdded": false,
+    "repeatEditControlAdded": false
+  },
+  "scenarios": [
+    {
+      "id": "personal-draft-user-item-date-edit-mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "initialState": "URL-first miss draft saved to My Flow; one user-created Item without a date",
+      "fixtureUsedForSchedule": false,
+      "userActions": [
+        "open user-created Item",
+        "open edit mode",
+        "choose date mode",
+        "set 2026-08-12",
+        "add personal memo",
+        "save"
+      ],
+      "result": "fixed date is stored on the structural user Item and legacy date overlays remain empty",
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/01-personal-draft-date-edit-mobile.png"
+    },
+    {
+      "id": "personal-draft-calendar-and-ics-after-date-set",
+      "route": "/calendar",
+      "viewport": { "width": 390, "height": 844 },
+      "date": "2026-08-12",
+      "result": "one Calendar row and one ICS VEVENT use the same stable Item, title, date, and memo",
+      "calendarVisibleCount": 1,
+      "icsEventCount": 1,
+      "completionCycle": ["done", "reopened"],
+      "membershipChangeCount": 0,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/02-personal-draft-calendar-date-set-mobile.png",
+      "download": "downloads/personal-draft-user-item-date-set.ics"
+    },
+    {
+      "id": "personal-draft-date-move-wide",
+      "route": "/calendar",
+      "viewport": { "width": 1024, "height": 768 },
+      "fromDate": "2026-08-12",
+      "toDate": "2026-08-14",
+      "result": "old selected date contains zero matching rows; new date contains one row with unchanged stable ID",
+      "oldDateVisibleCount": 0,
+      "newDateVisibleCount": 1,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/03-personal-draft-date-moved-wide.png"
+    },
+    {
+      "id": "personal-draft-date-removal-mobile",
+      "route": "/my and /calendar",
+      "viewport": { "width": 390, "height": 844 },
+      "userActions": ["open Item edit", "clear date", "save", "reload", "export three list formats"],
+      "result": "Item remains in My Flow and all list exports, while Calendar and ICS projection eligibility becomes zero",
+      "calendarVisibleCount": 0,
+      "icsProjectionEventCount": 0,
+      "listDestinationCount": 3,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/04-personal-draft-date-removed-mobile.png",
+      "downloads": [
+        "downloads/personal-draft-date-removed-checklist.txt",
+        "downloads/personal-draft-date-removed-sheet.tsv",
+        "downloads/personal-draft-date-removed-memo.txt"
+      ]
+    },
+    {
+      "id": "source-backed-date-control-regression",
+      "route": "/my?demo=source-backed",
+      "viewport": { "width": 390, "height": 844 },
+      "result": "new personal structural date mode control count remains zero"
+    }
+  ],
+  "verification": {
+    "evidenceCaptureE2ePassCount": 1,
+    "focusedStructuralRegressionE2ePassCount": 4,
+    "storageTestPassCount": 33,
+    "fullUrlFirstUserSurfaceE2ePassCount": 16,
+    "publicShareWorkbenchRegressionE2ePassCount": 44,
+    "targetedFlowMvpE2ePassCount": 5,
+    "fullUnitPassCount": 453,
+    "productionBuildPassed": true,
+    "docsCheckPassed": true,
+    "gitDiffCheckPassed": true
+  }
+}

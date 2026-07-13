@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-02A optional fixed-date state transitions",
+  "generatedAt": "2026-07-13",
+  "item": {
+    "ownership": "user_created",
+    "stableItemIdPattern": "personal-item-*",
+    "title": "여행자 보험 서류 챙기기",
+    "personalMemo": "보험 증권 번호와 비상 연락처 확인"
+  },
+  "transitions": [
+    {
+      "id": "unscheduled-initial",
+      "schedule": null,
+      "calendarScreenEligible": false,
+      "calendarIcsEligible": false,
+      "listDestinations": ["checklist", "sheet", "memo"],
+      "userReachableWithoutFixture": true
+    },
+    {
+      "id": "fixed-date-set",
+      "schedule": { "mode": "fixed_date", "date": "2026-08-12" },
+      "calendarScreenEligible": true,
+      "calendarVisibleCount": 1,
+      "calendarIcsEligible": true,
+      "icsEventCount": 1,
+      "icsAssertions": {
+        "summary": "여행자 보험 서류 챙기기",
+        "dtstart": "20260812",
+        "descriptionContainsPersonalMemo": true,
+        "duplicateEventCount": 0
+      },
+      "legacyValueOverlayDatePresent": false,
+      "legacyDateOverridePresent": false
+    },
+    {
+      "id": "fixed-date-moved",
+      "schedule": { "mode": "fixed_date", "date": "2026-08-14" },
+      "oldDate": "2026-08-12",
+      "oldDateVisibleCount": 0,
+      "newDateVisibleCount": 1,
+      "stableItemIdPreserved": true
+    },
+    {
+      "id": "completed-and-reopened",
+      "schedule": { "mode": "fixed_date", "date": "2026-08-12" },
+      "executionStates": ["done", "reopened"],
+      "calendarMembershipChangeCount": 0,
+      "icsMembershipChangeCount": 0,
+      "stableItemIdPreserved": true
+    },
+    {
+      "id": "date-removed",
+      "schedule": null,
+      "calendarVisibleCount": 0,
+      "icsProjectionEventCount": 0,
+      "listExports": {
+        "checklist": { "included": true },
+        "sheet": { "included": true, "dateCell": "날짜 없음" },
+        "memo": { "included": true, "personalMemoPreserved": true }
+      },
+      "listDestinationCount": 3,
+      "stableItemIdPreserved": true
+    },
+    {
+      "id": "invalid-date-defense",
+      "attemptedDate": "2026-02-30",
+      "writeAccepted": false,
+      "itemPreserved": true,
+      "sourceMutationCount": 0
+    },
+    {
+      "id": "source-item-defense",
+      "attemptedOwnership": "source",
+      "structuralDateWriteAccepted": false,
+      "sourceMutationCount": 0
+    }
+  ],
+  "outOfScope": [
+    "time",
+    "timezone",
+    "all-day toggle",
+    "repeat rule",
+    "occurrence completion",
+    "source-backed structural schedule editing"
+  ]
+}

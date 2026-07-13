@@ -21,6 +21,7 @@ import {
   movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
+  setPersonalDraftUserItemDate,
   undoPersonalDraftStructuralDelete,
 } from './personal-draft-structural-edit';
 import {
@@ -398,6 +399,150 @@ test('personal draft structural adapter limits editing and preserves stable user
     resolvePersonalDraftStructuralItems(personalDraft, restoredSource).effectiveItems[0]?.itemId,
     'draft-source-a',
   );
+});
+
+test('personal draft user-created item date stays structural and reversible across projections', () => {
+  const personalDraft = bundle(
+    'flow-personal-date-draft',
+    'url-draft-personal-date-1',
+    'Personal date draft',
+  );
+  personalDraft.flow.status = 'draft';
+  personalDraft.flow.source_title = '내 메모';
+  personalDraft.flow.tags = ['내 초안', '내 메모'];
+  personalDraft.items = [
+    {
+      id: 'date-source-a',
+      flow_id: personalDraft.flow.id,
+      title: 'Source task',
+      type: 'todo',
+      order: 0,
+    },
+  ];
+  const sourceBefore = JSON.stringify(personalDraft.items);
+  const created = createPersonalDraftUserItem({
+    overlay: createPersonalDraftStructuralOverlay(personalDraft),
+    title: 'Personal scheduled task',
+    itemId: 'personal-date-a',
+    createdAt: '2026-07-13T21:00:00.000Z',
+  });
+  assert.ok(created);
+
+  assert.equal(
+    setPersonalDraftUserItemDate({
+      overlay: created.overlay,
+      itemId: 'personal-date-a',
+      date: '2026-02-30',
+    }),
+    undefined,
+  );
+  assert.equal(
+    setPersonalDraftUserItemDate({
+      overlay: created.overlay,
+      itemId: 'date-source-a',
+      date: '2026-08-05',
+    }),
+    undefined,
+  );
+
+  const scheduled = setPersonalDraftUserItemDate({
+    overlay: created.overlay,
+    itemId: 'personal-date-a',
+    date: '2026-08-05',
+    updatedAt: '2026-07-13T21:01:00.000Z',
+  });
+  assert.ok(scheduled);
+  assert.equal(scheduled.userItem.itemId, 'personal-date-a');
+  assert.deepEqual(scheduled.userItem.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-05',
+  });
+  const scheduledProjection = buildPersonalDraftStructuralProjection({
+    bundle: personalDraft,
+    structuralOverlay: scheduled.overlay,
+    executionStates: [{ itemId: 'personal-date-a', state: 'done' }],
+  });
+  assert.ok(scheduledProjection);
+  assert.deepEqual(
+    scheduledProjection.rowsByDestination.calendarScreen.map((row) => row.itemId),
+    ['personal-date-a'],
+  );
+  assert.deepEqual(
+    scheduledProjection.rowsByDestination.calendarIcs.map((row) => row.itemId),
+    ['personal-date-a'],
+  );
+  assert.equal(
+    scheduledProjection.effectiveRows.find((row) => row.itemId === 'personal-date-a')
+      ?.executionState?.state,
+    'done',
+  );
+
+  const changed = setPersonalDraftUserItemDate({
+    overlay: scheduled.overlay,
+    itemId: 'personal-date-a',
+    date: '2026-08-09',
+    updatedAt: '2026-07-13T21:02:00.000Z',
+  });
+  assert.ok(changed);
+  assert.equal(changed.userItem.itemId, scheduled.userItem.itemId);
+  assert.deepEqual(changed.userItem.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-09',
+  });
+  const changedProjection = buildPersonalDraftStructuralProjection({
+    bundle: personalDraft,
+    structuralOverlay: changed.overlay,
+  });
+  assert.equal(
+    changedProjection?.rowsByDestination.calendarScreen[0]?.calendarDate,
+    '2026-08-09',
+  );
+  assert.equal(
+    changedProjection?.rowsByDestination.calendarIcs[0]?.calendarDate,
+    '2026-08-09',
+  );
+
+  const unscheduled = setPersonalDraftUserItemDate({
+    overlay: changed.overlay,
+    itemId: 'personal-date-a',
+    date: '',
+    updatedAt: '2026-07-13T21:03:00.000Z',
+  });
+  assert.ok(unscheduled);
+  assert.equal(unscheduled.userItem.itemId, scheduled.userItem.itemId);
+  assert.equal(unscheduled.userItem.schedule, undefined);
+  const unscheduledProjection = buildPersonalDraftStructuralProjection({
+    bundle: personalDraft,
+    structuralOverlay: unscheduled.overlay,
+    executionStates: [{ itemId: 'personal-date-a', state: 'reopened' }],
+  });
+  assert.ok(unscheduledProjection);
+  assert.equal(
+    unscheduledProjection.rowsByDestination.calendarScreen.some(
+      (row) => row.itemId === 'personal-date-a',
+    ),
+    false,
+  );
+  assert.equal(
+    unscheduledProjection.rowsByDestination.calendarIcs.some(
+      (row) => row.itemId === 'personal-date-a',
+    ),
+    false,
+  );
+  for (const destination of ['checklist', 'sheet', 'memo'] as const) {
+    assert.equal(
+      unscheduledProjection.rowsByDestination[destination].some(
+        (row) => row.itemId === 'personal-date-a',
+      ),
+      true,
+    );
+  }
+  assert.equal(
+    unscheduledProjection.effectiveRows.find((row) => row.itemId === 'personal-date-a')
+      ?.executionState?.state,
+    'reopened',
+  );
+  assert.equal(JSON.stringify(personalDraft.items), sourceBefore);
 });
 
 test('personal draft structural order and persistent recovery preserve IDs, values, and source', () => {

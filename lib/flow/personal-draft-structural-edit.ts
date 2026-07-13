@@ -7,6 +7,7 @@ import {
   upsertPersonalStructuralUserItem,
   type PersonalStructuralItemOwnership,
   type PersonalStructuralOverlay,
+  type PersonalStructuralSchedule,
   type PersonalStructuralSourceItem,
   type PersonalStructuralUserItem,
   type ResolvePersonalStructuralItemsResult,
@@ -24,6 +25,20 @@ export type PersonalDraftStructuralUndo = {
 };
 
 export type PersonalDraftStructuralMoveDirection = 'up' | 'down';
+
+function isPlainIsoDate(value: string): boolean {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  );
+}
 
 function mergeKnownOrderWithPreservedUnknownIds(
   currentOrderOverride: string[],
@@ -116,6 +131,44 @@ export function createPersonalDraftUserItem(options: {
 
   return {
     overlay: nextOverlay,
+    userItem,
+  };
+}
+
+export function setPersonalDraftUserItemDate(options: {
+  overlay: PersonalStructuralOverlay;
+  itemId: string;
+  date: string;
+  updatedAt?: string;
+}): { overlay: PersonalStructuralOverlay; userItem: PersonalStructuralUserItem } | undefined {
+  const itemId = options.itemId.trim();
+  const date = options.date.trim();
+  const current = options.overlay.userItems.find((item) => item.itemId === itemId);
+  if (!current || (date && !isPlainIsoDate(date))) return undefined;
+
+  const { schedule: currentSchedule, ...userItemWithoutSchedule } = current;
+  const preservedFixedSchedule =
+    currentSchedule?.mode === 'fixed_date' ? currentSchedule : undefined;
+  const schedule: PersonalStructuralSchedule | undefined = date
+    ? {
+        mode: 'fixed_date',
+        date,
+        ...(preservedFixedSchedule?.time
+          ? { time: preservedFixedSchedule.time }
+          : {}),
+        ...(preservedFixedSchedule?.repeat
+          ? { repeat: preservedFixedSchedule.repeat }
+          : {}),
+      }
+    : undefined;
+  const userItem: PersonalStructuralUserItem = {
+    ...userItemWithoutSchedule,
+    ...(schedule ? { schedule } : {}),
+  };
+  const updatedAt = options.updatedAt ?? new Date().toISOString();
+
+  return {
+    overlay: upsertPersonalStructuralUserItem(options.overlay, userItem, updatedAt),
     userItem,
   };
 }
