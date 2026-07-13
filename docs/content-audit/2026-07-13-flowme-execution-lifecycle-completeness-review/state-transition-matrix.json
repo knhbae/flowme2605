@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "auditId": "P23-00",
+  "ownershipRule": [
+    "published source/version owns canonical content and provenance",
+    "personal overlay owns inclusion, alias, personal schedule and memo",
+    "execution run owns completion, skip, decision and record state",
+    "occurrence override owns one repeated occurrence",
+    "unsaved UI buffer is not canonical"
+  ],
+  "transitions": [
+    {"id":"found-to-saved","from":"discovered","action":"Flow 전체 저장","to":"saved copy","status":"supported","owner":"personal copy","evidence":["screenshots/01-moving-post-save-mobile.png"]},
+    {"id":"miss-to-draft","from":"URL miss","action":"초안 준비 후 저장","to":"saved personal draft","status":"supported","owner":"personal draft","evidence":["screenshots/11-url-draft-editor-mobile.png","screenshots/12-url-draft-my-flow-mobile.png"]},
+    {"id":"pending-to-done","from":"pending","action":"완료 체크","to":"done","status":"supported","owner":"execution run","evidence":["capture-observations.json#completionToggle.completedChecked=true"]},
+    {"id":"done-to-pending","from":"done","action":"완료 취소","to":"pending","status":"supported","owner":"execution run","evidence":["capture-observations.json#completionToggle.reopenedChecked=false"]},
+    {"id":"pending-to-skipped","from":"pending","action":"이번에는 해당 없음","to":"skipped","status":"partial","owner":"execution run","evidence":["components/flow/AppClient.tsx:13450"],"gap":"일반 My Flow row에는 없음"},
+    {"id":"skipped-to-pending","from":"skipped","action":"다시 포함","to":"pending","status":"partial","owner":"execution run","evidence":["components/flow/AppClient.tsx:13450"]},
+    {"id":"included-to-excluded","from":"included","action":"개인 사본에서 제외","to":"excluded","status":"hidden","owner":"personal overlay","evidence":["screenshots/13-url-draft-settings-mobile.png"]},
+    {"id":"excluded-to-included","from":"excluded","action":"개인 사본에 다시 포함","to":"included","status":"hidden","owner":"personal overlay","evidence":["components/flow/AppClient.tsx:6175"]},
+    {"id":"undated-to-dated","from":"unscheduled","action":"날짜 추가","to":"scheduled","status":"missing","owner":"personal overlay","evidence":["screenshots/04-undated-checklist-edit-mobile.png"],"gap":"anchor_type none 일반 체크리스트에 date input 없음"},
+    {"id":"dated-to-other-date","from":"scheduled","action":"날짜 변경","to":"scheduled override","status":"hidden","owner":"personal overlay","evidence":["components/flow/AppClient.tsx:7155","tests/e2e/flow-mvp.spec.ts:4441"]},
+    {"id":"override-to-source-date","from":"scheduled override","action":"날짜 입력 비우기","to":"source/anchor schedule","status":"partial","owner":"personal overlay","evidence":["components/flow/AppClient.tsx:5287"],"gap":"날짜 없음이 아니라 원본 일정 복귀"},
+    {"id":"scheduled-to-unscheduled","from":"source scheduled","action":"날짜 없음으로 전환","to":"unscheduled","status":"missing","owner":"personal overlay","evidence":["components/flow/AppClient.tsx:5287"]},
+    {"id":"source-title-to-alias","from":"source title","action":"제목 수정","to":"personal alias","status":"hidden","owner":"personal overlay","evidence":["screenshots/04-undated-checklist-edit-mobile.png"]},
+    {"id":"alias-to-source-title","from":"personal alias","action":"원래 제목으로 초기화","to":"source title","status":"partial","owner":"personal overlay","evidence":["components/flow/AppClient.tsx"],"gap":"명시적 초기화 action이 없음"},
+    {"id":"list-to-added-item","from":"ordered item list","action":"항목 추가","to":"list plus user item","status":"missing","owner":"personal overlay","evidence":["capture-observations.json#addControlCount=0"]},
+    {"id":"item-to-deleted","from":"active item","action":"항목 삭제","to":"personal tombstone","status":"missing","owner":"personal overlay","evidence":["capture-observations.json#itemDeleteVisible=false"]},
+    {"id":"deleted-to-restored","from":"personal tombstone","action":"삭제 복구","to":"active item","status":"missing","owner":"personal overlay","evidence":["docs/specs/2026-07-11-canonical-flow-data-model/spec.md"]},
+    {"id":"ordered-to-reordered","from":"A,B,C","action":"순서 변경","to":"B,A,C","status":"missing","owner":"personal overlay","evidence":["screenshots/13-url-draft-settings-mobile.png"]},
+    {"id":"active-to-completed-run","from":"active run","action":"모든 실행 항목 완료","to":"completed run snapshot","status":"supported","owner":"execution run registry","evidence":["screenshots/14-completed-flow-reuse-mobile.png"]},
+    {"id":"completed-to-new-run","from":"completed run","action":"같은 준비 다시 시작","to":"new active run","status":"supported","owner":"execution run registry","evidence":["tests/e2e/flow-mvp.spec.ts:6880"]},
+    {"id":"published-to-version-review","from":"saved version","action":"원본 새 버전 검토","to":"reviewed version resolution","status":"partial","owner":"version resolution","evidence":["tests/e2e/flow-mvp.spec.ts:4286"]},
+    {"id":"source-update-with-personal-structure","from":"source v1 plus personal add/delete/order","action":"source v2 merge","to":"three-way resolved copy","status":"blocked","owner":"version resolution plus personal overlay","evidence":["docs/specs/2026-07-11-canonical-flow-data-model/spec.md"],"gap":"runtime personal structural overlay가 없음"}
+  ],
+  "flowTypeCoverage": [
+    {"flowType":"기준일 역산형","fixture":"source-backed moving-d30","supported":["save","complete","reopen","calendar"],"partial":["anchor edit by ingress","date reset semantics","version review"],"missing":["add","delete","reorder"]},
+    {"flowType":"날짜 없는 체크리스트형","fixture":"travel-packing-list","supported":["save","complete","reopen","checklist export"],"partial":["time/location/repeat edit"],"missing":["add date","add","delete","reorder"]},
+    {"flowType":"반복 루틴형","fixture":"english-study-30day-routine","supported":["complete","reopen","repeat editor"],"partial":["occurrence vs series semantics","routine end vs Flow end"],"missing":["personal item structure edit"]},
+    {"flowType":"순서·일정 혼합형","fixture":"travel-packing-list plus optional schedule need","supported":["ordered display","completion"],"partial":["portable export"],"missing":["reorder","per-item date from undated"]},
+    {"flowType":"기록·메모형","fixture":"fridge-cleanout-weekly-plan","supported":["public workbench input","sheet/memo artifact"],"partial":["generic My Flow record projection","history"],"missing":["generic user-defined fields"]},
+    {"flowType":"개인 초안형","fixture":"URL-first miss draft","supported":["create","save","anchor","include/exclude","item alias/date/memo after save"],"partial":["Calendar/export projection"],"missing":["edit suggested item structure before save","add","delete","reorder"]}
+  ]
+}

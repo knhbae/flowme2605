@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 1,
+  "auditId": "P23-00",
+  "generatedDate": "2026-07-13",
+  "baseline": {
+    "branch": "main",
+    "commit": "5ffe5ff",
+    "runtime": "http://127.0.0.1:3123",
+    "evidenceKind": "current-worktree browser and code inspection"
+  },
+  "statusDefinitions": {
+    "supported": "기능과 도달 경로가 현재 사용자 표면에서 확인됨",
+    "hidden": "기능은 동작하지만 상세나 설정 안에 있어 설명 없이 찾기 어려움",
+    "partial": "일부 Flow 유형, 저장 경로, 화면 또는 export에서만 일관되게 동작함",
+    "missing": "현재 일반 사용자 경로에 기능이나 정책이 없음",
+    "blocked": "canonical model, persistence 또는 운영 결정이 선행되어야 함"
+  },
+  "summary": {
+    "total": 34,
+    "supported": 9,
+    "hidden": 7,
+    "partial": 11,
+    "missing": 5,
+    "blocked": 2
+  },
+  "capabilities": [
+    {
+      "id": "discover-save-whole-flow",
+      "stage": "discover-save",
+      "status": "supported",
+      "label": "공개/탐색 Flow 전체 저장",
+      "scope": "public /f, Flow Map, /flows hit",
+      "finding": "Flow 단위 저장 후 My Flow 착지가 동작한다.",
+      "evidence": ["screenshots/01-moving-post-save-mobile.png", "tests/e2e/public-share-cta-order.spec.ts"]
+    },
+    {
+      "id": "miss-to-personal-draft",
+      "stage": "discover-save",
+      "status": "supported",
+      "label": "URL miss에서 개인 초안 저장",
+      "scope": "/flows miss",
+      "finding": "실제 AI를 가장하지 않고 3개 제안 항목 shell을 My Flow에 저장한다.",
+      "evidence": ["screenshots/11-url-draft-editor-mobile.png", "screenshots/12-url-draft-my-flow-mobile.png"]
+    },
+    {
+      "id": "flow-title-edit",
+      "stage": "personalize",
+      "status": "partial",
+      "label": "Flow 이름 수정",
+      "scope": "URL draft와 personal copy",
+      "finding": "draft/personal copy 설정에서는 가능하지만 모든 저장 Flow에 동일하게 열리지 않는다.",
+      "evidence": ["screenshots/13-url-draft-settings-mobile.png", "components/flow/AppClient.tsx:3372"]
+    },
+    {
+      "id": "anchor-edit",
+      "stage": "schedule",
+      "status": "partial",
+      "label": "Flow 전체 기준일 수정",
+      "scope": "URL draft/personal copy 중심",
+      "finding": "URL draft에서는 보이지만 Flow Map에서 전체 저장한 source-backed 이사 Flow에는 설정 입구가 보이지 않았다.",
+      "evidence": ["screenshots/02-moving-flow-overview-mobile.png", "screenshots/03-moving-flow-overview-wide.png", "screenshots/13-url-draft-settings-mobile.png"]
+    },
+    {
+      "id": "item-title-alias",
+      "stage": "personalize",
+      "status": "hidden",
+      "label": "개별 할 일 제목 수정",
+      "scope": "My Flow 상세 > 메모·일정 > 수정",
+      "finding": "동작하지만 모바일 기준 약 4단계 진입이 필요하다.",
+      "evidence": ["screenshots/04-undated-checklist-edit-mobile.png", "tests/e2e/flow-mvp.spec.ts:1192"]
+    },
+    {
+      "id": "item-user-memo",
+      "stage": "personalize",
+      "status": "hidden",
+      "label": "개별 할 일 사용자 메모",
+      "scope": "My Flow 상세 > 메모·일정 > 수정",
+      "finding": "원문 detail과 분리된 사용자 메모 저장은 가능하나 발견성이 낮다.",
+      "evidence": ["screenshots/04-undated-checklist-edit-mobile.png", "tests/e2e/flow-mvp.spec.ts:1195"]
+    },
+    {
+      "id": "item-date-change",
+      "stage": "schedule",
+      "status": "hidden",
+      "label": "이미 일정이 있는 할 일 날짜 변경",
+      "scope": "calendarKey 또는 progress Flow 항목",
+      "finding": "날짜 override가 My Flow, Calendar, portable export에 반영된다.",
+      "evidence": ["components/flow/AppClient.tsx:7155", "tests/e2e/flow-mvp.spec.ts:4441"]
+    },
+    {
+      "id": "undated-item-add-date",
+      "stage": "schedule",
+      "status": "missing",
+      "label": "날짜 없는 일반 체크리스트 항목에 날짜 추가",
+      "scope": "anchor_type none checklist",
+      "finding": "여행 체크리스트 상세 편집에 날짜 입력이 렌더링되지 않았다. 시간·장소·반복만 보인다.",
+      "evidence": ["screenshots/04-undated-checklist-edit-mobile.png", "capture-observations.json#undated-checklist.dateInputCount=0", "components/flow/AppClient.tsx:7147"]
+    },
+    {
+      "id": "item-date-reset",
+      "stage": "schedule",
+      "status": "partial",
+      "label": "개별 날짜 되돌리기/날짜 없음",
+      "scope": "override가 있는 일정 항목",
+      "finding": "override 삭제는 source/anchor 날짜로 돌아가지만, source-dated 항목을 날짜 없음으로 바꾸는 의미는 지원되지 않는다.",
+      "evidence": ["components/flow/AppClient.tsx:5287", "tests/e2e/flow-mvp.spec.ts:4814"]
+    },
+    {
+      "id": "item-time-location",
+      "stage": "schedule",
+      "status": "hidden",
+      "label": "시간·장소 수정",
+      "scope": "My Flow 상세 편집",
+      "finding": "입력과 Calendar/export projection은 있으나 상세 안에 숨겨져 있다.",
+      "evidence": ["screenshots/04-undated-checklist-edit-mobile.png", "tests/e2e/flow-mvp.spec.ts:4441"]
+    },
+    {
+      "id": "routine-recurrence-edit",
+      "stage": "schedule",
+      "status": "hidden",
+      "label": "반복 요일·종료일·적용 범위 수정",
+      "scope": "routine 상세 편집",
+      "finding": "이번 이벤트/이후/전체 범위를 지원하지만 4단계 깊이의 상세 편집 안에 있다.",
+      "evidence": ["screenshots/06-routine-repeat-edit-mobile.png", "capture-observations.json#repeatEditorVisible=true"]
+    },
+    {
+      "id": "task-complete",
+      "stage": "execute",
+      "status": "supported",
+      "label": "할 일 완료",
+      "scope": "My Flow와 Calendar",
+      "finding": "행 왼쪽 체크박스 패턴으로 완료 상태를 저장한다.",
+      "evidence": ["screenshots/07-mixed-calendar-mobile.png", "tests/e2e/flow-mvp.spec.ts:3527"]
+    },
+    {
+      "id": "task-reopen",
+      "stage": "execute",
+      "status": "supported",
+      "label": "완료 취소/다시 미완료",
+      "scope": "My Flow detail checkbox",
+      "finding": "같은 체크박스를 다시 누르면 aria-label이 완료 취소로 바뀌고 미완료로 돌아간다.",
+      "evidence": ["capture-observations.json#completionToggle", "tests/e2e/flow-mvp.spec.ts:3527"]
+    },
+    {
+      "id": "task-skip-run",
+      "stage": "execute",
+      "status": "partial",
+      "label": "이번 실행에서 건너뜀",
+      "scope": "public/legacy workbench 일부",
+      "finding": "FlowItemState.skipped와 되돌리기는 있으나 일반 My Flow 실행 row에는 독립 건너뜀 동작이 없다.",
+      "evidence": ["components/flow/AppClient.tsx:13450", "lib/flow/export.ts:121"]
+    },
+    {
+      "id": "item-include-exclude",
+      "stage": "personalize",
+      "status": "hidden",
+      "label": "개인 사본 항목 포함/제외",
+      "scope": "personal copy/draft 설정",
+      "finding": "URL draft 설정에서 가능하지만 일반 실행 row의 건너뜀과 구분되는 설명이 약하다.",
+      "evidence": ["screenshots/13-url-draft-settings-mobile.png", "components/flow/AppClient.tsx:6175"]
+    },
+    {
+      "id": "execution-status-semantics",
+      "stage": "execute",
+      "status": "partial",
+      "label": "완료·미완료·건너뜀·제외·삭제 의미 분리",
+      "scope": "전체 runtime",
+      "finding": "완료와 제외는 존재하지만 건너뜀은 일부 surface, 삭제는 부재해 동일한 상태 모델로 설명되지 않는다.",
+      "evidence": ["lib/flow/types.ts", "lib/flow/source-backed-my-flow.ts", "screenshots/13-url-draft-settings-mobile.png"]
+    },
+    {
+      "id": "item-add",
+      "stage": "structure",
+      "status": "missing",
+      "label": "개인 할 일 추가",
+      "scope": "My Flow personal copy/draft",
+      "finding": "일반 My Flow와 draft 설정 모두 새 항목 추가 컨트롤이 없다.",
+      "evidence": ["screenshots/13-url-draft-settings-mobile.png", "capture-observations.json#addControlCount=0"]
+    },
+    {
+      "id": "item-delete",
+      "stage": "structure",
+      "status": "missing",
+      "label": "개인 할 일 삭제",
+      "scope": "My Flow personal copy/draft",
+      "finding": "candidate 요청 삭제와 Flow 숨기기는 있으나 실행 항목 삭제는 없다.",
+      "evidence": ["capture-observations.json#itemDeleteVisible=false", "components/flow/AppClient.tsx"]
+    },
+    {
+      "id": "item-delete-restore",
+      "stage": "structure",
+      "status": "missing",
+      "label": "삭제 항목 복구",
+      "scope": "My Flow",
+      "finding": "항목 tombstone/trash/undo 경로가 없다.",
+      "evidence": ["docs/specs/2026-07-11-canonical-flow-data-model/spec.md#Ownership-And-Precedence"]
+    },
+    {
+      "id": "item-reorder",
+      "stage": "structure",
+      "status": "missing",
+      "label": "개인 할 일 순서 변경",
+      "scope": "My Flow personal copy/draft",
+      "finding": "include/exclude만 있고 stable order override가 없다. creator raw-text editor는 일반 개인 실행 경로로 보지 않았다.",
+      "evidence": ["screenshots/04-undated-checklist-edit-mobile.png", "components/flow/TextFlowEditor.tsx"]
+    },
+    {
+      "id": "nested-checklist",
+      "stage": "execute",
+      "status": "supported",
+      "label": "상세 확인 항목 체크",
+      "scope": "item detail",
+      "finding": "상위 할 일 완료와 별도 레벨의 하위 체크 상태를 지원한다.",
+      "evidence": ["components/flow/AppClient.tsx:7102", "tests/e2e/flow-mvp.spec.ts:3537"]
+    },
+    {
+      "id": "myflow-calendar-overlay-parity",
+      "stage": "projection",
+      "status": "partial",
+      "label": "My Flow와 Calendar의 동일 개인 수정본",
+      "scope": "dated personal overlay",
+      "finding": "별칭/날짜/memo projection은 확인되지만 undated 항목에는 날짜를 붙일 수 없고 source-backed 저장 경로별 설정 차이가 있다.",
+      "evidence": ["tests/e2e/url-first-user-surface.spec.ts:340", "screenshots/07-mixed-calendar-mobile.png"]
+    },
+    {
+      "id": "portable-export-overlay",
+      "stage": "projection",
+      "status": "supported",
+      "label": "별칭·날짜·메모 export 반영",
+      "scope": "My Flow step memo/checklist/sheet/ICS",
+      "finding": "portable step export가 editorDraft의 유효 제목·일정·메모를 읽는다.",
+      "evidence": ["lib/flow/my-flow-step-export.ts", "tests/e2e/flow-mvp.spec.ts:1125"]
+    },
+    {
+      "id": "export-task-completion",
+      "stage": "projection",
+      "status": "partial",
+      "label": "상위 할 일 완료 상태 export",
+      "scope": "full-flow export와 portable step export",
+      "finding": "full-flow builder는 완료 상태를 읽지만 portable step export 입력에는 상위 task completion이 없다. 하위 체크만 포함된다.",
+      "evidence": ["lib/flow/export.ts:121", "lib/flow/my-flow-step-export.ts:3"]
+    },
+    {
+      "id": "export-skip-exclude-policy",
+      "stage": "projection",
+      "status": "partial",
+      "label": "건너뜀·제외 항목 export 정책",
+      "scope": "calendar/checklist/sheet/memo",
+      "finding": "ICS는 skipped를 제외하지만 text/sheet는 상태로 남긴다. personal exclude는 row 자체를 제거해 destination별 설명이 없다.",
+      "evidence": ["lib/flow/export.ts", "export-projection-matrix.json"]
+    },
+    {
+      "id": "unscheduled-ics-block",
+      "stage": "projection",
+      "status": "supported",
+      "label": "날짜 없는 항목의 Calendar export 차단",
+      "scope": "portable ICS",
+      "finding": "가짜 날짜를 만들지 않고 날짜 필요 상태를 보여준다.",
+      "evidence": ["lib/flow/my-flow-step-export.ts:72", "screenshots/04-undated-checklist-edit-mobile.png"]
+    },
+    {
+      "id": "completed-flow-reuse",
+      "stage": "reuse",
+      "status": "supported",
+      "label": "완료 Flow 새 실행 시작",
+      "scope": "My Flow completion feedback",
+      "finding": "이전 실행을 snapshot으로 남기고 새 기준일/고정 날짜 정책을 선택해 새 run을 만든다.",
+      "evidence": ["screenshots/14-completed-flow-reuse-mobile.png", "tests/e2e/flow-mvp.spec.ts:6880"]
+    },
+    {
+      "id": "past-run-history",
+      "stage": "reuse",
+      "status": "partial",
+      "label": "이전 실행 기록 열람",
+      "scope": "My Flow",
+      "finding": "run snapshot과 최근 요약은 남지만 전체 과거 항목 기록 탐색은 제공하지 않는다.",
+      "evidence": ["lib/flow/storage.ts", "components/flow/AppClient.tsx:8115"]
+    },
+    {
+      "id": "source-version-review",
+      "stage": "reuse",
+      "status": "partial",
+      "label": "원본 새 버전 검토",
+      "scope": "source-backed map",
+      "finding": "stable step ID 기반 update review가 있으나 모든 콘텐츠/version source에 일반화된 production pipeline은 아니다.",
+      "evidence": ["tests/e2e/flow-mvp.spec.ts:4286", "docs/specs/2026-07-11-canonical-flow-data-model/spec.md"]
+    },
+    {
+      "id": "source-update-personal-structure-merge",
+      "stage": "reuse",
+      "status": "blocked",
+      "label": "원본 업데이트 후 개인 추가·삭제·순서 보존",
+      "scope": "future canonical runtime",
+      "finding": "개인 add/delete/order override가 없고 canonical Item ownership contract는 승인됐지만 runtime 구현 전이다.",
+      "evidence": ["docs/specs/2026-07-11-canonical-flow-data-model/spec.md#Ownership-And-Precedence"]
+    },
+    {
+      "id": "flow-hide-restore",
+      "stage": "destructive-action",
+      "status": "hidden",
+      "label": "Flow 숨기기/복원",
+      "scope": "My Flow data management",
+      "finding": "Flow 단위 숨김 상태와 데이터 관리 경로는 있으나 실행 화면에서 삭제/복구 개념과 구분이 약하다.",
+      "evidence": ["components/flow/AppClient.tsx", "screenshots/02-moving-flow-overview-mobile.png"]
+    },
+    {
+      "id": "completion-reflection-source-correction",
+      "stage": "reflect",
+      "status": "partial",
+      "label": "완료 회고와 원본 수정 제안",
+      "scope": "completed My Flow",
+      "finding": "회고와 원본 내용 알릴 점 입력은 있으나 공개 리뷰/creator 반영 운영과 연결되지 않는다.",
+      "evidence": ["screenshots/14-completed-flow-reuse-mobile.png", "docs/content-audit/2026-07-11-claude-design-p22-current-reassessment-ko.md"]
+    },
+    {
+      "id": "refresh-persistence",
+      "stage": "persistence",
+      "status": "supported",
+      "label": "같은 브라우저 새로고침 유지",
+      "scope": "localStorage",
+      "finding": "저장·완료·overlay·run registry가 같은 브라우저 새로고침 후 유지된다.",
+      "evidence": ["capture-observations.json#reloaded-overview", "lib/flow/storage.ts"]
+    },
+    {
+      "id": "cross-device-account-persistence",
+      "stage": "persistence",
+      "status": "blocked",
+      "label": "계정 기반 기기 간 복원",
+      "scope": "production persistence",
+      "finding": "계정/DB/backend가 없고 localStorage가 현재 source of truth다.",
+      "evidence": ["docs/content-audit/2026-07-11-claude-design-p22-current-reassessment-ko.md", "docs/specs/2026-07-11-canonical-flow-data-model/spec.md"]
+    }
+  ]
+}

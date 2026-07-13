@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "auditId": "P23-00",
+  "effectiveStatePrecedence": [
+    "published content version",
+    "reviewed version resolution",
+    "personal overlay",
+    "execution run",
+    "occurrence override"
+  ],
+  "importantFinding": "현재 full-flow export와 My Flow portable-step export가 서로 다른 입력 모델을 읽어 완료·건너뜀 정책이 완전히 같지 않다.",
+  "destinations": [
+    {
+      "destination": "calendar",
+      "serializer": "ICS",
+      "scheduledPending": "included",
+      "scheduledCompleted": "included; full-flow는 CONFIRMED, portable-step은 상위 완료 상태를 모름",
+      "skipped": "full-flow에서 제외",
+      "excluded": "personal row projection에서 제외",
+      "deleted": "정책 없음; 삭제 기능 부재",
+      "unscheduled": "제외/다운로드 불가; 가짜 날짜를 만들지 않음",
+      "personalAlias": "included",
+      "personalDate": "included",
+      "personalMemo": "description에 included",
+      "order": "Calendar에서 authoritative하지 않음",
+      "status": "partial",
+      "evidence": ["lib/flow/export.ts", "lib/flow/my-flow-step-export.ts"]
+    },
+    {
+      "destination": "checklist",
+      "serializer": "plain text/checklist",
+      "scheduledPending": "included",
+      "scheduledCompleted": "full-flow는 상태 반영; portable-step은 하위 확인 항목만 반영",
+      "skipped": "full-flow text에 스킵으로 남음",
+      "excluded": "personal row projection에서 제외",
+      "deleted": "정책 없음; 삭제 기능 부재",
+      "unscheduled": "included",
+      "personalAlias": "included",
+      "personalDate": "included when present",
+      "personalMemo": "included",
+      "order": "source/personal row order; personal reorder 미지원",
+      "status": "partial",
+      "evidence": ["lib/flow/export.ts", "lib/flow/my-flow-step-export.ts"]
+    },
+    {
+      "destination": "sheet",
+      "serializer": "TSV/workbook",
+      "scheduledPending": "included",
+      "scheduledCompleted": "full-flow 상태 열에는 반영; portable-step 행은 상위 완료 상태를 모름",
+      "skipped": "full-flow 상태 열에 스킵으로 남음",
+      "excluded": "personal row projection에서 제외",
+      "deleted": "정책 없음; 삭제 기능 부재",
+      "unscheduled": "included with blank date",
+      "personalAlias": "included",
+      "personalDate": "included",
+      "personalMemo": "included",
+      "order": "source/personal row order; personal reorder 미지원",
+      "status": "partial",
+      "evidence": ["lib/flow/export.ts", "lib/flow/my-flow-step-export.ts"]
+    },
+    {
+      "destination": "memo",
+      "serializer": "plain text",
+      "scheduledPending": "included",
+      "scheduledCompleted": "portable-step은 상위 완료 상태를 모름",
+      "skipped": "full-flow text에는 남을 수 있음",
+      "excluded": "personal row projection에서 제외",
+      "deleted": "정책 없음; 삭제 기능 부재",
+      "unscheduled": "included",
+      "personalAlias": "included",
+      "personalDate": "included when present",
+      "personalMemo": "included",
+      "order": "source/personal row order; personal reorder 미지원",
+      "status": "partial",
+      "evidence": ["lib/flow/export.ts", "lib/flow/my-flow-step-export.ts"]
+    }
+  ],
+  "policyGaps": [
+    {"priority":"Blocking","gap":"portable step export에 상위 task completion/run state가 전달되지 않음"},
+    {"priority":"High","gap":"skip과 personal exclude가 destination별로 다른 방식으로 사라지거나 남지만 사용자 정책이 없음"},
+    {"priority":"High","gap":"item delete/tombstone 부재로 source update와 export 보존 정책을 검증할 수 없음"},
+    {"priority":"High","gap":"날짜 없는 체크리스트에 날짜를 추가할 수 없어 Calendar projection으로 진입할 수 없음"},
+    {"priority":"Medium","gap":"personal order override가 없어 checklist/sheet/memo 순서 재사용을 지원하지 못함"}
+  ],
+  "recommendedInvariant": "모든 destination은 같은 effective Item list를 읽고 serializer만 달라야 한다. inclusion, tombstone, order, schedule, completion, skip 정책은 serializer 바깥에서 한 번 결정한다."
+}

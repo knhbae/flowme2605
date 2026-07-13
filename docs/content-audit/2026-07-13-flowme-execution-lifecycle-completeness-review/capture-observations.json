@@ -1,0 +1,402 @@
+{
+  "generatedAt": "2026-07-13T01:59:33.808Z",
+  "baseURL": "http://127.0.0.1:3123",
+  "records": [
+    {
+      "scenario": "anchor-timeline",
+      "state": "saved-landing",
+      "screenshot": "screenshots/01-moving-post-save-mobile.png",
+      "currentEvidence": true,
+      "route": "/my?savedMap=moving-d30",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 1,
+      "visibleButtonCount": 6,
+      "headingSample": [
+        "내 Flow",
+        "내 Flow에 저장했습니다",
+        "오늘 1개 남음"
+      ],
+      "consoleErrors": [],
+      "fixture": "source-backed moving-d30, anchor 2026-08-12",
+      "tapDepthFromPublicSave": 1
+    },
+    {
+      "scenario": "anchor-timeline",
+      "state": "saved-flow-overview",
+      "screenshot": "screenshots/02-moving-flow-overview-mobile.png",
+      "currentEvidence": true,
+      "route": "/my?savedMap=moving-d30",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 4,
+      "headingSample": [
+        "내 Flow"
+      ],
+      "consoleErrors": [],
+      "fixture": "source-backed moving-d30 personal copy",
+      "tapDepthFromMyFlow": 1,
+      "settingsEntryVisible": false,
+      "anchorEditVisible": false,
+      "includeExcludeControls": 0
+    },
+    {
+      "scenario": "anchor-timeline",
+      "state": "saved-flow-overview-wide",
+      "screenshot": "screenshots/03-moving-flow-overview-wide.png",
+      "currentEvidence": true,
+      "route": "/my",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 12,
+      "headingSample": [
+        "내 Flow",
+        "진행 중인 Flow를 한눈에 확인하세요",
+        "지금 볼 할 일",
+        "필요한 Flow만 열기",
+        "원룸 이사 준비"
+      ],
+      "consoleErrors": [],
+      "fixture": "source-backed moving-d30 personal copy",
+      "settingsEntryVisible": false,
+      "anchorEditVisible": false
+    },
+    {
+      "scenario": "undated-checklist",
+      "state": "item-edit",
+      "screenshot": "screenshots/04-undated-checklist-edit-mobile.png",
+      "currentEvidence": true,
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 13,
+      "headingSample": [
+        "내 Flow"
+      ],
+      "consoleErrors": [],
+      "fixture": "travel-packing-list, no anchor",
+      "tapDepthFromMyFlow": 4,
+      "dateInputCount": 0,
+      "completionToggle": {
+        "beforeLabel": "신분증·여권(해외) 확인하기 완료 체크",
+        "completedChecked": true,
+        "completedLabel": "신분증·여권(해외) 확인하기 완료 취소",
+        "reopenedChecked": false
+      },
+      "structureActionLabels": [],
+      "itemAddVisible": false,
+      "itemDeleteVisible": false,
+      "itemReorderVisible": false
+    },
+    {
+      "scenario": "undated-checklist",
+      "state": "reloaded-overview",
+      "screenshot": "screenshots/05-undated-checklist-overview-mobile.png",
+      "currentEvidence": true,
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 4,
+      "headingSample": [
+        "내 Flow"
+      ],
+      "consoleErrors": [],
+      "fixture": "travel-packing-list, no anchor",
+      "completionReopenPersisted": true
+    },
+    {
+      "scenario": "repeating-routine",
+      "state": "repeat-settings",
+      "screenshot": "screenshots/06-routine-repeat-edit-mobile.png",
+      "currentEvidence": true,
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 7,
+      "visibleButtonCount": 16,
+      "headingSample": [
+        "내 Flow"
+      ],
+      "consoleErrors": [],
+      "fixture": "english-study-30day-routine, anchor 2026-07-13",
+      "repeatEditorVisible": true,
+      "tapDepthFromMyFlow": 4
+    },
+    {
+      "scenario": "cross-flow-calendar",
+      "state": "selected-day",
+      "screenshot": "screenshots/07-mixed-calendar-mobile.png",
+      "currentEvidence": true,
+      "route": "/calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 10,
+      "visibleButtonCount": 90,
+      "headingSample": [
+        "캘린더",
+        "월간 날짜 보기",
+        "7월 13일 (월)"
+      ],
+      "consoleErrors": [],
+      "fixture": [
+        {
+          "slug": "moving-d30-basic",
+          "mode": "calendar",
+          "anchor": "2026-08-12"
+        },
+        {
+          "slug": "vehicle-inspection-prep",
+          "mode": "calendar",
+          "anchor": "2026-07-27"
+        },
+        {
+          "slug": "english-study-30day-routine",
+          "mode": "calendar",
+          "anchor": "2026-07-13"
+        },
+        {
+          "slug": "fridge-cleanout-weekly-plan",
+          "mode": "sheet",
+          "anchor": "2026-07-13"
+        },
+        {
+          "slug": "travel-packing-list",
+          "mode": "checklist"
+        }
+      ],
+      "selectedDate": "2026-07-13",
+      "calendarEventCount": 44,
+      "selectedDayVisible": true,
+      "selectedDayFlowGroups": 0
+    },
+    {
+      "scenario": "cross-flow-calendar",
+      "state": "selected-day-wide",
+      "screenshot": "screenshots/08-mixed-calendar-wide.png",
+      "currentEvidence": true,
+      "route": "/calendar",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 10,
+      "visibleButtonCount": 92,
+      "headingSample": [
+        "캘린더",
+        "월간 날짜 보기",
+        "7월 13일 (월)"
+      ],
+      "consoleErrors": [],
+      "fixture": [
+        {
+          "slug": "moving-d30-basic",
+          "mode": "calendar",
+          "anchor": "2026-08-12"
+        },
+        {
+          "slug": "vehicle-inspection-prep",
+          "mode": "calendar",
+          "anchor": "2026-07-27"
+        },
+        {
+          "slug": "english-study-30day-routine",
+          "mode": "calendar",
+          "anchor": "2026-07-13"
+        },
+        {
+          "slug": "fridge-cleanout-weekly-plan",
+          "mode": "sheet",
+          "anchor": "2026-07-13"
+        },
+        {
+          "slug": "travel-packing-list",
+          "mode": "checklist"
+        }
+      ],
+      "selectedDate": "2026-07-13",
+      "calendarEventCount": 44
+    },
+    {
+      "scenario": "record-memo",
+      "state": "public-before-save",
+      "screenshot": "screenshots/09-record-workbench-mobile.png",
+      "currentEvidence": true,
+      "route": "/f/fridge-cleanout-weekly-plan",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 10,
+      "headingSample": [
+        "냉장고 파먹기 7일 재고 소진",
+        "7일 재고 소진표",
+        "7일 재고 소진표",
+        "장보기 전 메모",
+        "냉장고 파먹기 7일 식단 플랜 creator blog"
+      ],
+      "consoleErrors": [],
+      "fixture": "fridge-cleanout-weekly-plan public workbench",
+      "currentSurface": "public share"
+    },
+    {
+      "scenario": "record-memo",
+      "state": "public-before-save-wide",
+      "screenshot": "screenshots/10-record-workbench-wide.png",
+      "currentEvidence": true,
+      "route": "/f/fridge-cleanout-weekly-plan",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 9,
+      "headingSample": [
+        "냉장고 파먹기 7일 재고 소진",
+        "7일 재고 소진표",
+        "7일 재고 소진표",
+        "장보기 전 메모",
+        "냉장고 파먹기 7일 식단 플랜 creator blog"
+      ],
+      "consoleErrors": [],
+      "fixture": "fridge-cleanout-weekly-plan public workbench"
+    },
+    {
+      "scenario": "personal-draft",
+      "state": "draft-before-save",
+      "screenshot": "screenshots/11-url-draft-editor-mobile.png",
+      "currentEvidence": true,
+      "route": "/flows",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 5,
+      "headingSample": [
+        "URL·메모로 Flow 찾기",
+        "바로 시작할 Flow를 찾지 못했어요",
+        "내 초안",
+        "직접 손볼 초안으로 시작",
+        "원룸 이사 D-30",
+        "중1 수학 목차 진도",
+        "오픽 모의고사 2주/1달 계획표",
+        "월 4권 독서 기록 루틴"
+      ],
+      "consoleErrors": [],
+      "fixture": "URL-first miss draft, three generated shell items",
+      "editableDraftItemCountBeforeSave": 3,
+      "editableItemStructureActionsBeforeSave": 0
+    },
+    {
+      "scenario": "personal-draft",
+      "state": "saved-my-flow",
+      "screenshot": "screenshots/12-url-draft-my-flow-mobile.png",
+      "currentEvidence": true,
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 2,
+      "visibleButtonCount": 5,
+      "headingSample": [
+        "내 Flow",
+        "1개 예정",
+        "가까운 할 일만 보기"
+      ],
+      "consoleErrors": [],
+      "fixture": "saved URL-first personal draft",
+      "landedInMyFlow": true
+    },
+    {
+      "scenario": "personal-draft",
+      "state": "saved-settings",
+      "screenshot": "screenshots/13-url-draft-settings-mobile.png",
+      "currentEvidence": true,
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 3,
+      "visibleButtonCount": 11,
+      "headingSample": [
+        "내 Flow"
+      ],
+      "consoleErrors": [],
+      "fixture": "saved URL-first personal draft",
+      "inclusionCheckboxCount": 3,
+      "addControlCount": 0,
+      "deleteControlCount": 0,
+      "reorderControlCount": 1
+    },
+    {
+      "scenario": "reuse-version",
+      "state": "completed-reuse",
+      "screenshot": "screenshots/14-completed-flow-reuse-mobile.png",
+      "currentEvidence": true,
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflow": false,
+      "overflowElements": [],
+      "visibleCheckboxCount": 0,
+      "visibleButtonCount": 9,
+      "headingSample": [
+        "내 Flow"
+      ],
+      "consoleErrors": [],
+      "fixture": "moving-d30-basic, all items completed",
+      "reflectionVisible": true,
+      "reuseEntryVisible": 1,
+      "pastRunSummaryVisible": 0
+    }
+  ]
+}

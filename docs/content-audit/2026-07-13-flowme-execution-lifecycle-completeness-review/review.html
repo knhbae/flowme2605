@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P23-00 FlowMe 실행 라이프사이클 완전성 감사</title>
+  <style>
+    :root {
+      --ink: #171a1f;
+      --muted: #626a73;
+      --line: #dfe3e7;
+      --paper: #ffffff;
+      --canvas: #f4f5f3;
+      --blue: #2558d9;
+      --green: #137a62;
+      --amber: #a65b00;
+      --red: #b4232f;
+      --violet: #6d4bc3;
+      --soft-blue: #edf3ff;
+      --soft-green: #eaf8f3;
+      --soft-amber: #fff4df;
+      --soft-red: #ffeded;
+      --soft-violet: #f2edff;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); }
+    .shell { max-width: 1480px; margin: 0 auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); }
+    nav {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      padding: 28px 20px;
+      border-right: 1px solid var(--line);
+      background: #fafbfa;
+      overflow-y: auto;
+    }
+    nav strong { display: block; font-size: 17px; margin-bottom: 18px; }
+    nav a { display: block; padding: 8px 0; color: #4f5862; font-size: 13px; font-weight: 700; text-decoration: none; }
+    nav a:hover { color: var(--blue); }
+    main { min-width: 0; padding: 36px clamp(20px, 4vw, 64px) 80px; }
+    header { max-width: 1000px; padding: 12px 0 34px; }
+    .eyebrow { color: var(--blue); font-size: 13px; font-weight: 800; text-transform: uppercase; }
+    h1 { margin: 8px 0 12px; font-size: clamp(30px, 5vw, 54px); line-height: 1.12; }
+    h2 { margin: 0 0 18px; font-size: 25px; line-height: 1.3; }
+    h3 { margin: 0 0 10px; font-size: 17px; line-height: 1.4; }
+    p { margin: 0 0 12px; }
+    .lead { max-width: 880px; color: #404851; font-size: 18px; }
+    .meta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .meta span, .pill { display: inline-flex; align-items: center; min-height: 28px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 6px; background: white; color: #4f5862; font-size: 12px; font-weight: 800; }
+    section { padding: 34px 0; border-top: 1px solid var(--line); }
+    .verdict {
+      max-width: 1100px;
+      padding: 24px;
+      border-left: 5px solid var(--amber);
+      background: white;
+    }
+    .verdict strong { display: block; margin-bottom: 7px; font-size: 21px; }
+    .score-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+    .score { min-height: 112px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: white; }
+    .score b { display: block; font-size: 30px; }
+    .score span { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .score.supported { border-top: 4px solid var(--green); }
+    .score.hidden { border-top: 4px solid var(--blue); }
+    .score.partial { border-top: 4px solid var(--amber); }
+    .score.missing { border-top: 4px solid var(--red); }
+    .score.blocked { border-top: 4px solid var(--violet); }
+    .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .finding { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: white; }
+    .finding .label { display: inline-block; margin-bottom: 10px; color: var(--red); font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .journey-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .journey { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: white; }
+    .journey .route { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+    .journey ul { margin: 14px 0 0; padding-left: 20px; }
+    .journey li { margin: 5px 0; }
+    .status { display: inline-flex; margin-right: 5px; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 900; }
+    .s-supported { color: #0f654f; background: var(--soft-green); }
+    .s-hidden { color: #234bb1; background: var(--soft-blue); }
+    .s-partial { color: #8b4e00; background: var(--soft-amber); }
+    .s-missing { color: #9e1d29; background: var(--soft-red); }
+    .s-blocked { color: #5936a8; background: var(--soft-violet); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: white; }
+    table { width: 100%; min-width: 780px; border-collapse: collapse; }
+    th, td { padding: 12px 13px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f7f8f7; color: #4d5660; font-size: 12px; }
+    td { font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .state-flow { display: grid; grid-template-columns: repeat(6, minmax(110px, 1fr)); gap: 8px; }
+    .state-flow div { position: relative; min-height: 86px; padding: 13px; border: 1px solid var(--line); background: white; font-size: 12px; font-weight: 700; }
+    .state-flow b { display: block; margin-bottom: 6px; color: var(--blue); }
+    .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    figure { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); background: white; overflow: hidden; }
+    figure img { display: block; width: 100%; height: 420px; object-fit: cover; object-position: top; background: #eee; }
+    figcaption { padding: 12px; color: #555e68; font-size: 12px; }
+    figcaption b { display: block; margin-bottom: 3px; color: var(--ink); font-size: 13px; }
+    .priority-list { display: grid; gap: 10px; counter-reset: p23; }
+    .priority {
+      counter-increment: p23;
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) 140px;
+      gap: 14px;
+      align-items: start;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: white;
+    }
+    .priority::before { content: counter(p23, decimal-leading-zero); color: var(--blue); font-size: 27px; font-weight: 900; }
+    .priority .phase { color: var(--muted); font-size: 12px; font-weight: 800; text-align: right; }
+    .questions { columns: 2; column-gap: 32px; margin: 0; padding-left: 22px; }
+    .questions li { break-inside: avoid; margin: 0 0 12px; }
+    .note { padding: 16px; border: 1px solid #d8d2bc; background: #fffdf5; font-size: 13px; }
+    code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
+    footer { padding-top: 28px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 960px) {
+      .shell { display: block; }
+      nav { position: static; width: auto; height: auto; padding: 14px 20px; border-right: 0; border-bottom: 1px solid var(--line); white-space: nowrap; overflow-x: auto; }
+      nav strong { display: inline; margin-right: 16px; }
+      nav a { display: inline-block; margin-right: 14px; }
+      .score-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 620px) {
+      main { padding: 24px 16px 60px; }
+      h1 { font-size: 34px; }
+      .lead { font-size: 16px; }
+      .score-grid, .three, .journey-grid, .gallery { grid-template-columns: 1fr; }
+      .state-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .priority { grid-template-columns: 42px minmax(0, 1fr); }
+      .priority .phase { grid-column: 2; text-align: left; }
+      .questions { columns: 1; }
+      figure img { height: 520px; }
+      nav strong { display: block; margin-bottom: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav aria-label="문서 목차">
+      <strong>P23-00 Review</strong>
+      <a href="#verdict">전체 판정</a>
+      <a href="#journeys">Flow 유형별 여정</a>
+      <a href="#matrix">Capability matrix</a>
+      <a href="#states">상태 전이</a>
+      <a href="#projection">Projection</a>
+      <a href="#recovery">파괴/복구</a>
+      <a href="#evidence">Screenshots</a>
+      <a href="#backlog">P23 backlog</a>
+      <a href="#questions">사용자 질문</a>
+    </nav>
+    <main>
+      <header>
+        <div class="eyebrow">FlowMe product audit · 2026-07-13</div>
+        <h1>저장 이후의 삶이<br>완결됐는가</h1>
+        <p class="lead">Flow를 찾고 저장하는 데서 멈추지 않고, 자기 상황에 맞게 구조와 일정을 바꾸고, 실행·완료·완료 취소·외부 전송·재사용하는 전체 lifecycle을 현재 runtime 기준으로 검사했다.</p>
+        <div class="meta">
+          <span>main@5ffe5ff</span><span>390px + 1024px</span><span>6 Flow 유형</span><span>14 current screenshots</span><span>앱 UI 변경 없음</span>
+        </div>
+      </header>
+
+      <section id="verdict">
+        <h2>전체 판정</h2>
+        <div class="verdict">
+          <strong>실행 뼈대는 있다. 개인 구조 편집과 projection 정본은 아직 없다.</strong>
+          <p>완료 취소, dated item overlay, Calendar 반영, portable export, 완료 Flow 재사용은 실제 동작한다. 반면 날짜 없는 항목의 선택적 일정화와 add/delete/restore/reorder는 일반 사용자 경로에 없고, 완료·skip·exclude가 destination마다 같은 정책으로 설명되지 않는다.</p>
+        </div>
+        <div class="score-grid" aria-label="Capability status counts">
+          <div class="score supported"><b>9</b><span>supported</span></div>
+          <div class="score hidden"><b>7</b><span>hidden</span></div>
+          <div class="score partial"><b>11</b><span>partial</span></div>
+          <div class="score missing"><b>5</b><span>missing</span></div>
+          <div class="score blocked"><b>2</b><span>blocked</span></div>
+        </div>
+        <div class="three" style="margin-top:16px">
+          <article class="finding"><span class="label">Blocking</span><h3>개인 구조 overlay 부재</h3><p>user item, tombstone, restore, order override가 없어 source update와 개인 수정을 안전하게 병합할 수 없다.</p></article>
+          <article class="finding"><span class="label">High</span><h3>Undated → dated 연결 없음</h3><p>날짜 없는 여행 체크리스트 편집에 날짜 입력은 없고 시간·장소·반복만 보인다.</p></article>
+          <article class="finding"><span class="label">High</span><h3>Export 상태 정책 분산</h3><p>full-flow와 portable-step builder가 done/skip/exclude를 같은 effective state에서 읽지 않는다.</p></article>
+        </div>
+      </section>
+
+      <section id="journeys">
+        <h2>Flow 유형별 사용자 여정</h2>
+        <div class="journey-grid">
+          <article class="journey"><h3>기준일 역산형 · 이사</h3><p class="route">/flow-maps/moving-d30 → /my → /calendar</p><ul><li><span class="status s-supported">supported</span>저장·오늘 실행·완료·Calendar</li><li><span class="status s-partial">partial</span>Flow 전체 기준일 수정은 ingress별 차이</li><li><span class="status s-missing">missing</span>add/delete/reorder</li></ul></article>
+          <article class="journey"><h3>날짜 없는 체크리스트 · 여행</h3><p class="route">/my · travel-packing-list</p><ul><li><span class="status s-supported">supported</span>완료와 완료 취소</li><li><span class="status s-hidden">hidden</span>제목·메모·시간·장소</li><li><span class="status s-missing">missing</span>날짜 추가와 구조 변경</li></ul></article>
+          <article class="journey"><h3>반복 루틴 · 영어/운동</h3><p class="route">/my · english-study-30day-routine</p><ul><li><span class="status s-hidden">hidden</span>요일·종료일·적용 범위</li><li><span class="status s-supported">supported</span>한 occurrence 완료/취소</li><li><span class="status s-partial">partial</span>회차 완료와 Flow 종료 구분</li></ul></article>
+          <article class="journey"><h3>순서·일정 혼합형 · 여행/프로젝트</h3><p class="route">/my</p><ul><li><span class="status s-supported">supported</span>source order 표시</li><li><span class="status s-missing">missing</span>personal reorder</li><li><span class="status s-missing">missing</span>일부 항목만 일정화</li></ul></article>
+          <article class="journey"><h3>기록·메모형 · 냉장고</h3><p class="route">/f/fridge-cleanout-weekly-plan</p><ul><li><span class="status s-supported">supported</span>전용 workbench·sheet/memo</li><li><span class="status s-partial">partial</span>generic record field/history</li><li><span class="status s-blocked">blocked</span>canonical Field runtime</li></ul></article>
+          <article class="journey"><h3>개인 초안형 · URL miss</h3><p class="route">/flows → /my</p><ul><li><span class="status s-supported">supported</span>초안 shell·기준일·저장</li><li><span class="status s-hidden">hidden</span>저장 후 alias/date/memo</li><li><span class="status s-missing">missing</span>제안 항목 add/delete/reorder</li></ul></article>
+        </div>
+      </section>
+
+      <section id="matrix">
+        <h2>Supported / Hidden / Partial / Missing</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lifecycle</th><th>Supported</th><th>Hidden</th><th>Partial</th><th>Missing / Blocked</th></tr></thead>
+            <tbody>
+              <tr><td>발견·저장</td><td>public/Flow Map 저장, miss draft</td><td>-</td><td>저장 ingress별 settings parity</td><td>account persistence</td></tr>
+              <tr><td>개인 수정</td><td>dated overlay projection</td><td>title, memo, include/exclude</td><td>Flow title/anchor 범위</td><td>item add/delete/restore/order</td></tr>
+              <tr><td>일정</td><td>dated override, invalid ICS 차단</td><td>time, location, repeat</td><td>override reset semantics</td><td>undated → dated, source dated → unscheduled</td></tr>
+              <tr><td>실행</td><td>done, reopen, nested checks</td><td>-</td><td>skip/exclude/status semantics</td><td>generic hold policy</td></tr>
+              <tr><td>Projection</td><td>alias/date/memo portable export</td><td>-</td><td>done/skip/exclude per builder</td><td>delete/order policy</td></tr>
+              <tr><td>회고·재사용</td><td>completion reflection, new run</td><td>past runs summary</td><td>full history, version review</td><td>structural three-way merge</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" style="margin-top:12px">정본은 <a href="./capability-matrix.json">capability-matrix.json</a>이다. 이 표는 stakeholder scan을 위한 요약이다.</p>
+      </section>
+
+      <section id="states">
+        <h2>완료·날짜·구조 편집 상태 전이</h2>
+        <div class="state-flow">
+          <div><b>완료</b>pending ↔ done<br><span class="status s-supported">supported</span></div>
+          <div><b>실행 제외</b>pending ↔ skipped<br><span class="status s-partial">partial</span></div>
+          <div><b>개인 구성</b>included ↔ excluded<br><span class="status s-hidden">hidden</span></div>
+          <div><b>일정</b>undated ↔ dated<br><span class="status s-missing">missing</span></div>
+          <div><b>구조</b>add/delete/restore/order<br><span class="status s-missing">missing</span></div>
+          <div><b>재사용</b>completed → new run<br><span class="status s-supported">supported</span></div>
+        </div>
+        <div class="three" style="margin-top:16px">
+          <article class="finding"><h3>Run이 소유할 것</h3><p>done, reopened, skipped, held, decision, record value, occurrence state.</p></article>
+          <article class="finding"><h3>Overlay가 소유할 것</h3><p>include, alias, personal memo, schedule override, user item, tombstone, order.</p></article>
+          <article class="finding"><h3>Source가 소유할 것</h3><p>canonical item, 원문 detail/order/schedule, source refs, published version.</p></article>
+        </div>
+      </section>
+
+      <section id="projection">
+        <h2>My Flow / Calendar / export 비교</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Effective state</th><th>My Flow</th><th>Calendar / ICS</th><th>Checklist</th><th>Sheet / Memo</th></tr></thead>
+            <tbody>
+              <tr><td>personal alias/date/memo</td><td>표시</td><td>dated row 표시</td><td>표시</td><td>표시</td></tr>
+              <tr><td>top-level done</td><td>표시</td><td>full-flow status만 반영</td><td>portable step은 모름</td><td>portable step은 모름</td></tr>
+              <tr><td>skipped</td><td>일부 surface</td><td>full-flow ICS 제외</td><td>full-flow text에 스킵</td><td>full-flow 상태 열에 스킵</td></tr>
+              <tr><td>personal excluded</td><td>row 제거</td><td>제거</td><td>제거</td><td>제거</td></tr>
+              <tr><td>deleted/tombstone</td><td>정책 없음</td><td>정책 없음</td><td>정책 없음</td><td>정책 없음</td></tr>
+              <tr><td>unscheduled</td><td>표시</td><td>미표시/ICS 불가</td><td>표시</td><td>blank date로 표시</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" style="margin-top:12px"><strong>권장 invariant:</strong> destination별 builder가 상태를 다시 판단하지 않고, 하나의 effective Item resolver가 inclusion·tombstone·order·schedule·run state를 결정해야 한다.</p>
+      </section>
+
+      <section id="recovery">
+        <h2>파괴적 행동과 복구 경로</h2>
+        <div class="three">
+          <article class="finding"><h3>완료</h3><p>즉시 reversible. 같은 체크박스로 완료 취소가 가능하다. 현재 가장 명확한 상태 전이다.</p></article>
+          <article class="finding"><h3>제외/건너뜀</h3><p>되돌리기는 가능하지만 overlay 구성과 run 상태가 서로 다른 surface에 있어 의미를 먼저 정리해야 한다.</p></article>
+          <article class="finding"><h3>삭제</h3><p>아직 없음. source item은 personal tombstone, user item은 soft-delete로 분리하고 즉시 undo와 복구 목록을 제공해야 한다.</p></article>
+        </div>
+      </section>
+
+      <section id="evidence">
+        <h2>현재-state screenshot evidence</h2>
+        <div class="gallery">
+          <figure><img src="./screenshots/01-moving-post-save-mobile.png" alt="이사 Flow 저장 직후 모바일"><figcaption><b>이사 저장 직후</b>390px · 저장/오늘 실행은 명확하다.</figcaption></figure>
+          <figure><img src="./screenshots/02-moving-flow-overview-mobile.png" alt="이사 Flow 전체 목록 모바일"><figcaption><b>Flow Map direct save</b>390px · Flow 기준일 설정 entry가 없다.</figcaption></figure>
+          <figure><img src="./screenshots/03-moving-flow-overview-wide.png" alt="이사 Flow wide overview"><figcaption><b>이사 Flow wide</b>1024px · 같은 entry 부재를 확인했다.</figcaption></figure>
+          <figure><img src="./screenshots/04-undated-checklist-edit-mobile.png" alt="날짜 없는 여행 체크리스트 편집"><figcaption><b>Undated item editor</b>시간·장소·반복은 있으나 날짜 input이 없다.</figcaption></figure>
+          <figure><img src="./screenshots/06-routine-repeat-edit-mobile.png" alt="반복 루틴 편집"><figcaption><b>Routine scope editor</b>기능은 강하지만 4~5 depth다.</figcaption></figure>
+          <figure><img src="./screenshots/07-mixed-calendar-mobile.png" alt="여러 Flow가 표시된 모바일 Calendar"><figcaption><b>Calendar-heavy mobile</b>Flow 구분은 되지만 실행·상태 정보가 많다.</figcaption></figure>
+          <figure><img src="./screenshots/08-mixed-calendar-wide.png" alt="여러 Flow가 표시된 wide Calendar"><figcaption><b>Calendar-heavy wide</b>1024px · overflow 0.</figcaption></figure>
+          <figure><img src="./screenshots/09-record-workbench-mobile.png" alt="냉장고 기록 workbench 모바일"><figcaption><b>Record/memo flow</b>전용 artifact는 존재한다.</figcaption></figure>
+          <figure><img src="./screenshots/10-record-workbench-wide.png" alt="냉장고 기록 workbench wide"><figcaption><b>Record/memo wide</b>generic Field runtime은 아니다.</figcaption></figure>
+          <figure><img src="./screenshots/11-url-draft-editor-mobile.png" alt="URL miss 개인 초안 편집"><figcaption><b>URL miss draft</b>3개 shell item을 저장할 수 있다.</figcaption></figure>
+          <figure><img src="./screenshots/13-url-draft-settings-mobile.png" alt="개인 초안 설정"><figcaption><b>Draft settings</b>기준일/include는 있지만 add/delete/order는 없다.</figcaption></figure>
+          <figure><img src="./screenshots/14-completed-flow-reuse-mobile.png" alt="완료 Flow 회고와 재사용"><figcaption><b>Complete → reuse</b>회고와 새 run 시작이 존재한다.</figcaption></figure>
+        </div>
+        <p class="note" style="margin-top:14px">이 패키지의 14개 current screenshot에서 horizontal overflow 0, console error 0. full-page screenshot의 sticky nav 중복 위치는 캡처 합성 특성이며 viewport overlap 판정과 분리했다.</p>
+      </section>
+
+      <section id="backlog">
+        <h2>Blocking / High backlog와 권장 순서</h2>
+        <div class="priority-list">
+          <article class="priority"><div><h3>P23-01 · Personal structural overlay</h3><p>stable Item ID 위에 user item, tombstone, restore, order override를 source와 분리해 저장한다. add/delete/undo/reorder의 최소 UI와 merge-safe contract를 함께 연다.</p></div><div class="phase">Blocking</div></article>
+          <article class="priority"><div><h3>P23-02 · Optional scheduling</h3><p>모든 executable Item에서 undated ↔ dated를 지원한다. source date 복귀와 진짜 날짜 없음을 분리하고 time/repeat/location과 한 editor에서 다룬다.</p></div><div class="phase">High</div></article>
+          <article class="priority"><div><h3>P23-03 · Execution status semantics</h3><p>pending/done/skipped/held를 run state로 고정하고 personal exclude/tombstone과 분리한다. routine occurrence와 Flow completion도 분리한다.</p></div><div class="phase">High</div></article>
+          <article class="priority"><div><h3>P23-04 · Unified effective projection</h3><p>source + overlay + run + occurrence를 한 번 merge해 My Flow, Calendar, checklist, sheet, memo, ICS가 같은 effective Items를 읽게 한다.</p></div><div class="phase">Blocking follow-up</div></article>
+          <article class="priority"><div><h3>P23-05 · Reuse/version/history</h3><p>source v2와 user item/tombstone/order를 three-way review하고 orphan을 보존한다. 과거 run 상세·재-export도 연결한다.</p></div><div class="phase">Medium after core</div></article>
+        </div>
+      </section>
+
+      <section id="questions">
+        <h2>실제 사용자에게 확인할 질문</h2>
+        <ol class="questions">
+          <li>완료한 항목을 다시 미완료로 바꾸는 방법을 설명 없이 찾는가?</li>
+          <li>`제외`와 `이번에는 건너뜀`을 서로 다른 행동으로 이해하는가?</li>
+          <li>날짜 없는 체크리스트에 일부 날짜만 붙일 때 어디서 시작할 것으로 기대하는가?</li>
+          <li>항목 삭제 뒤 즉시 undo와 별도 휴지통 중 무엇을 기대하는가?</li>
+          <li>원본에서 삭제된 항목에 개인 메모가 있으면 어떻게 보존되길 원하는가?</li>
+          <li>반복 루틴 한 번 완료와 30일 Flow 종료를 구분하는가?</li>
+          <li>export에서 done/skip/exclude 항목을 기본 포함할지 제외할지 기대가 무엇인가?</li>
+          <li>과거 실행은 요약이면 충분한가, item/memo/export까지 다시 열어야 하는가?</li>
+        </ol>
+      </section>
+
+      <footer>
+        P23-00 current-worktree audit. Automated evidence is not observed-user validation. See <a href="./audit.md">audit.md</a> and machine-readable matrices for exact claims.
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
