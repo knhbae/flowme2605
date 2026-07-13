@@ -1,0 +1,79 @@
+{
+  "capturedAt": "2026-07-14T07:05:00+09:00",
+  "baselineCommit": "69768a1",
+  "command": "npm audit --json",
+  "cleanInstall": true,
+  "counts": {
+    "critical": 0,
+    "high": 4,
+    "moderate": 3,
+    "low": 0,
+    "total": 7
+  },
+  "packages": [
+    {
+      "name": "next",
+      "severity": "high",
+      "direct": true,
+      "installed": "15.3.8",
+      "recommendedFix": "15.5.20",
+      "fixSemverMajor": false,
+      "notes": "여러 DoS, middleware/proxy, cache 및 image optimizer advisory가 집계됨"
+    },
+    {
+      "name": "@playwright/test",
+      "severity": "high",
+      "direct": true,
+      "installed": "1.52.0",
+      "recommendedFix": "1.61.1",
+      "fixSemverMajor": false,
+      "notes": "transitive playwright authenticity advisory"
+    },
+    {
+      "name": "playwright",
+      "severity": "high",
+      "direct": false,
+      "installed": "1.52.0",
+      "recommendedFix": "1.61.1 via @playwright/test",
+      "fixSemverMajor": false,
+      "notes": "browser download SSL certificate authenticity verification advisory"
+    },
+    {
+      "name": "tmp",
+      "severity": "high",
+      "direct": false,
+      "recommendedFix": "available",
+      "notes": "unsanitized prefix/postfix path traversal advisory"
+    },
+    {
+      "name": "postcss",
+      "severity": "moderate",
+      "direct": true,
+      "installed": "8.5.3",
+      "recommendedFix": "8.5.10 or compatible dependency update",
+      "notes": "CSS stringify output escaping advisory"
+    },
+    {
+      "name": "exceljs",
+      "severity": "moderate",
+      "direct": true,
+      "installed": "4.4.0",
+      "recommendedFix": "manual dependency strategy required",
+      "fixSemverMajor": true,
+      "notes": "transitive uuid advisory; npm suggestion is an unsafe downgrade to exceljs 3.4.0"
+    },
+    {
+      "name": "uuid",
+      "severity": "moderate",
+      "direct": false,
+      "recommendedFix": "update transitive dependency without forced exceljs downgrade",
+      "notes": "buffer bounds advisory for selected UUID APIs"
+    }
+  ],
+  "decision": {
+    "releaseGate": "high",
+    "forceFixAllowed": false,
+    "recommendedAction": "별도 dependency-upgrade branch에서 Next, Playwright, PostCSS를 우선 업데이트하고 전체 476 unit + 259 E2E + build를 재실행한다. exceljs/uuid는 강제 downgrade 없이 대체 또는 override 가능성을 검토한다.",
+    "dirtyWorktreeWarning": "main의 package.json과 package-lock.json에는 이번 감사와 무관한 미커밋 변경이 있다. 그 결과를 clean tracked baseline의 보안 결과와 섞지 않는다."
+  }
+}

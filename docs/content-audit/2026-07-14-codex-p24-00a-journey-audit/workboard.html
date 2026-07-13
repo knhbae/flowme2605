@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P24-00A 실행 라이프사이클 감사</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #59636e;
+      --line: #d7dde3;
+      --paper: #ffffff;
+      --canvas: #f4f6f7;
+      --blue: #2357d8;
+      --red: #b42318;
+      --amber: #9a6700;
+      --green: #18794e;
+      --violet: #6941c6;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif; line-height: 1.55; }
+    a { color: var(--blue); }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    header { background: #16202b; color: white; border-bottom: 5px solid #e8b44f; }
+    header .shell { padding: 42px 0 36px; }
+    .eyebrow { margin: 0 0 8px; color: #b9c9dd; font-size: 13px; font-weight: 800; text-transform: uppercase; }
+    h1 { margin: 0; max-width: 820px; font-size: clamp(30px, 5vw, 52px); line-height: 1.12; letter-spacing: 0; }
+    .lede { max-width: 850px; margin: 16px 0 0; color: #dfe7ef; font-size: 17px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .meta span { padding: 6px 9px; border: 1px solid #6f7f91; border-radius: 4px; color: #f5f7fa; font-size: 12px; font-weight: 700; }
+    main { padding: 28px 0 64px; }
+    section { padding: 28px 0; border-bottom: 1px solid var(--line); }
+    h2 { margin: 0 0 16px; font-size: 24px; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 17px; letter-spacing: 0; }
+    p { margin: 0 0 12px; }
+    .verdict { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, .8fr); gap: 20px; }
+    .verdict-copy { background: var(--paper); border: 1px solid var(--line); border-left: 6px solid var(--red); padding: 22px; border-radius: 6px; }
+    .verdict-copy strong { color: var(--red); }
+    .metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .metric { background: var(--paper); border: 1px solid var(--line); padding: 14px; border-radius: 6px; min-height: 88px; }
+    .metric b { display: block; font-size: 24px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .findings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .finding { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 18px; }
+    .finding.blocking { border-top: 4px solid var(--red); }
+    .finding.high { border-top: 4px solid var(--amber); }
+    .finding.medium { border-top: 4px solid var(--blue); }
+    .severity { display: inline-block; margin-bottom: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .blocking .severity { color: var(--red); }
+    .high .severity { color: var(--amber); }
+    .medium .severity { color: var(--blue); }
+    .finding p { color: var(--muted); font-size: 14px; }
+    .table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; min-width: 780px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 14px; }
+    th { background: #eef1f4; font-size: 12px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    .status { display: inline-block; padding: 3px 7px; border-radius: 4px; font-size: 11px; font-weight: 900; }
+    .supported { color: var(--green); background: #e9f7f0; }
+    .partial { color: var(--amber); background: #fff4d6; }
+    .hidden { color: var(--violet); background: #f0eafe; }
+    .gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    figure { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+    figure img { display: block; width: 100%; aspect-ratio: 390 / 844; object-fit: cover; object-position: top; background: #eef1f4; }
+    figcaption { min-height: 64px; padding: 10px; color: var(--muted); font-size: 12px; }
+    .steps { counter-reset: item; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .step { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 42px 16px 16px; }
+    .step::before { counter-increment: item; content: counter(item); position: absolute; left: 16px; top: 13px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: #17202a; color: white; font-size: 12px; font-weight: 900; }
+    .step p { color: var(--muted); font-size: 13px; }
+    .note { padding: 16px; background: #fff8e7; border: 1px solid #e7c871; border-radius: 6px; color: #634b00; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .links a { display: inline-block; padding: 8px 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none; }
+    footer { padding: 24px 0 40px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 860px) {
+      .verdict, .findings, .steps { grid-template-columns: 1fr; }
+      .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      header .shell { padding: 28px 0 24px; }
+      main { padding-top: 12px; }
+      section { padding: 22px 0; }
+      .metric-grid, .gallery { grid-template-columns: 1fr 1fr; }
+      .metric b { font-size: 20px; }
+      figcaption { min-height: 72px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell">
+      <p class="eyebrow">FlowMe P24-00A · Codex independent journey simulation</p>
+      <h1>핵심 실행 루프는 연결됐다. 외부 관찰 전 정확성 오류 세 가지를 먼저 닫아야 한다.</h1>
+      <p class="lede">깨끗한 69768a1 기준선에서 476 unit, 259 E2E, production build를 통과시킨 뒤 5개 페르소나를 모바일·와이드 브라우저로 직접 재현했다.</p>
+      <div class="meta"><span>2026-07-14</span><span>실제 관찰 사용자 0명</span><span>앱 코드 변경 없음</span><span>24 screenshots</span></div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="verdict">
+      <div class="verdict-copy">
+        <h2>판정: 부분 통과</h2>
+        <p><strong>P24-00B 사용자 관찰을 바로 시작하지 않는다.</strong> 한국 시간 기본 날짜, 반복 Today 중복, URL miss 필수 입력을 먼저 수정한다. Vercel 관찰 링크도 익명 접근이 가능해야 한다.</p>
+        <p>완료, 회고, 원본 수정 메모, 새 run 재사용은 실제 상태 저장까지 연결됐다. 자동 테스트 통과와 사용자 여정 품질은 별도 판정으로 유지한다.</p>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><b>476/476</b><span>unit tests</span></div>
+        <div class="metric"><b>259/259</b><span>full Playwright</span></div>
+        <div class="metric"><b>5</b><span>Codex persona simulations</span></div>
+        <div class="metric"><b>0</b><span>observed human sessions</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>먼저 고칠 것</h2>
+      <div class="findings">
+        <article class="finding blocking"><span class="severity">Blocking</span><h3>KST 오전 기본 날짜가 전날</h3><p>07:12 KST에 날짜 지정 기본값이 2026-07-13으로 설정됐다. UTC `toISOString()` 날짜가 Today와 Calendar 초기값에 사용된다.</p></article>
+        <article class="finding blocking"><span class="severity">Blocking</span><h3>관찰 preview 익명 접근 차단</h3><p>Vercel deployment는 READY지만 익명 요청은 302 SSO redirect다. 외부 사용자 세션 링크로 쓸 수 없다.</p></article>
+        <article class="finding high"><span class="severity">High</span><h3>반복 할 일의 Today 중복</h3><p>동일 세탁조 청소 occurrence가 `다음 할 일`과 `다음 항목`에 각각 checkbox와 함께 나타난다.</p></article>
+        <article class="finding high"><span class="severity">High</span><h3>빈 miss draft 생성 허용</h3><p>필수 입력이 모두 비어도 draft가 만들어지고 fallback 상태 문장이 실행 항목 제목으로 남는다.</p></article>
+        <article class="finding high"><span class="severity">High</span><h3>tracked dependency high 4건</h3><p>Next와 Playwright를 포함한 clean baseline audit 결과다. dirty package 변경을 해결로 간주하지 않는다.</p></article>
+        <article class="finding medium"><span class="severity">Medium</span><h3>수정·완료 취소入口 3~4 actions</h3><p>기능은 있지만 기준일, 날짜 추가, 완료 취소가 상세 안쪽에 있어 설명 없이 찾기 어렵다.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>페르소나 여정 판정</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>페르소나</th><th>성공한 핵심 행동</th><th>남은 마찰</th><th>판정</th></tr></thead>
+          <tbody>
+            <tr><td>기준일 역산형 이사</td><td>이사일 설정·재수정, D-30 재계산, Calendar</td><td>재수정入口 3 actions, 상세 완료 checkbox 중복</td><td><span class="status partial">partial</span></td></tr>
+            <tr><td>날짜 없는 체크리스트</td><td>preview→완료 경계, 날짜 추가, Calendar 반영</td><td>날짜 추가入口가 상세 안쪽</td><td><span class="status hidden">hidden</span></td></tr>
+            <tr><td>반복 루틴</td><td>회차 완료, 다음 회차, 완료 취소</td><td>동일 할 일 Today 중복</td><td><span class="status partial">partial</span></td></tr>
+            <tr><td>URL miss 개인 초안</td><td>구조·일정·시간·반복 수정, Calendar occurrence</td><td>빈 입력 허용, KST 날짜 오류, 긴 편집 밀도</td><td><span class="status partial">partial</span></td></tr>
+            <tr><td>공개 Flow 완료·재사용</td><td>완료, 회고, 미전송 수정 메모, 새 run</td><td>완료 상태는 fixture 기반 검증</td><td><span class="status supported">supported</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>핵심 화면 증거</h2>
+      <div class="gallery">
+        <figure><a href="screenshots/01-anchor-moving-setup-mobile.png"><img src="screenshots/01-anchor-moving-setup-mobile.png" alt="이사일 설정 화면" /></a><figcaption>이사일 의미와 상대 일정 설명은 명확하다.</figcaption></figure>
+        <figure><a href="screenshots/08-undated-add-date-edit-mobile.png"><img src="screenshots/08-undated-add-date-edit-mobile.png" alt="날짜 없는 항목 날짜 편집" /></a><figcaption>날짜 추가는 지원하지만 상세 안쪽에 있다.</figcaption></figure>
+        <figure><a href="screenshots/11-recurring-duplicate-my-flow-mobile.png"><img src="screenshots/11-recurring-duplicate-my-flow-mobile.png" alt="반복 항목 중복 화면" /></a><figcaption>같은 할 일이 두 실행 영역에 중복된다.</figcaption></figure>
+        <figure><a href="screenshots/14-personal-draft-landing-validation-gap-mobile.png"><img src="screenshots/14-personal-draft-landing-validation-gap-mobile.png" alt="빈 초안 입력 fallback 제목" /></a><figcaption>상태 문장이 실행 항목 제목으로 저장됐다.</figcaption></figure>
+        <figure><a href="screenshots/18-personal-draft-time-recurrence-mobile.png"><img src="screenshots/18-personal-draft-time-recurrence-mobile.png" alt="개인 초안 시간 반복 편집" /></a><figcaption>시간·45분·주간 반복은 도달 가능하다. 기본 날짜는 전날이다.</figcaption></figure>
+        <figure><a href="screenshots/19-personal-draft-recurrence-calendar-mobile.png"><img src="screenshots/19-personal-draft-recurrence-calendar-mobile.png" alt="반복 항목 캘린더" /></a><figcaption>weekly occurrence가 Calendar에 투영된다.</figcaption></figure>
+        <figure><a href="screenshots/21-completed-flow-reflection-mobile.png"><img src="screenshots/21-completed-flow-reflection-mobile.png" alt="완료 Flow 회고와 다시 쓰기" /></a><figcaption>완료 뒤 회고·수정 메모·재사용이 한 흐름으로 이어진다.</figcaption></figure>
+        <figure><a href="screenshots/23-completed-flow-reused-new-run-mobile.png"><img src="screenshots/23-completed-flow-reused-new-run-mobile.png" alt="새 실행 시작 화면" /></a><figcaption>이전 24/24 snapshot을 보존하고 새 run이 시작됐다.</figcaption></figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>권장 실행 순서</h2>
+      <div class="steps">
+        <article class="step"><h3>정확성 수정</h3><p>local date, 반복 Today 단일 표현, miss draft validation을 각각 작은 fix slice로 닫는다.</p></article>
+        <article class="step"><h3>운영 Gate</h3><p>공개 관찰 preview와 dependency-only 업그레이드를 준비하고 독립 QA를 통과한다.</p></article>
+        <article class="step"><h3>실제 관찰</h3><p>5명 이상이 첫 방문·수정 실행·재방문을 각각 수행하고 발화와 실패 depth를 수집한다.</p></article>
+        <article class="step"><h3>결과 재정렬</h3><p>P24-00C에서 keep/change/defer를 결정하고 UX 개선 범위를 관찰 근거에 묶는다.</p></article>
+        <article class="step"><h3>source v2 merge</h3><p>personal overlay와 원본 업데이트를 보존하는 pure three-way contract를 먼저 만든다.</p></article>
+        <article class="step"><h3>출시 판단</h3><p>계정·다른 기기 복원, 데이터 migration, 보안 Gate를 닫은 뒤 production을 판단한다.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>증거 경계</h2>
+      <p class="note">이번 결과는 Codex가 수행한 브라우저 시뮬레이션과 자동화다. 실제 사용자가 설명 없이 기능을 발견하고 의미를 이해했다는 증거는 아직 없다. 완료 Flow는 fixture로 준비했으며, 24개 항목을 사람이 실제로 완주한 세션으로 표현하지 않는다.</p>
+    </section>
+
+    <section>
+      <h2>상세 파일</h2>
+      <div class="links">
+        <a href="audit.md">상세 감사</a>
+        <a href="journey-scorecard.json">Journey scorecard</a>
+        <a href="state-transition-results.json">State transitions</a>
+        <a href="route-evidence.json">Route evidence</a>
+        <a href="security-audit-summary.json">Security audit</a>
+        <a href="backlog-recommendation.md">권장 backlog</a>
+        <a href="claude-code-followup-prompt-ko.md">Claude Code prompt</a>
+      </div>
+    </section>
+  </main>
+  <footer class="shell">FlowMe P24-00A · clean baseline 69768a1 · app code unchanged</footer>
+</body>
+</html>

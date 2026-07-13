@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "69768a1",
+  "statusLegend": {
+    "supported": "기능과 도달 경로가 명확하고 이번 브라우저 시뮬레이션에서 성공",
+    "hidden": "동작하지만 설명 없이 찾기 어렵거나 3단계 이상 깊음",
+    "partial": "일부 화면이나 destination만 확인되거나 UX 결함이 있음",
+    "missing": "기능 또는 정책이 없음",
+    "blocked": "제품/데이터/운영 선행 결정이 필요"
+  },
+  "transitions": [
+    {
+      "action": "home_to_url_or_memo_entry",
+      "persona": "first_visit",
+      "status": "supported",
+      "depth": 1,
+      "evidence": "00-home-entry-mobile.png"
+    },
+    {
+      "action": "set_anchor_date_and_save",
+      "persona": "anchor_based_moving",
+      "status": "supported",
+      "depth": 2,
+      "evidence": "01-anchor-moving-setup-mobile.png"
+    },
+    {
+      "action": "edit_flow_anchor_after_save",
+      "persona": "anchor_based_moving",
+      "status": "hidden",
+      "depth": 3,
+      "evidence": "03-anchor-moving-edit-entry-mobile.png"
+    },
+    {
+      "action": "project_anchor_items_to_calendar",
+      "persona": "anchor_based_moving",
+      "status": "supported",
+      "depth": 1,
+      "evidence": "04-anchor-moving-calendar-mobile.png"
+    },
+    {
+      "action": "public_preview_to_saved_completion",
+      "persona": "undated_checklist",
+      "status": "supported",
+      "depth": 2,
+      "evidence": "06-undated-checklist-public-preview-mobile.png, 20-public-postsave-completion-mobile.png"
+    },
+    {
+      "action": "add_date_to_undated_item",
+      "persona": "undated_checklist",
+      "status": "hidden",
+      "depth": 3,
+      "evidence": "08-undated-add-date-edit-mobile.png"
+    },
+    {
+      "action": "remove_date_to_unscheduled",
+      "persona": "undated_checklist",
+      "status": "partial",
+      "depth": null,
+      "evidence": "automated suite only in this audit"
+    },
+    {
+      "action": "complete_task",
+      "persona": "all",
+      "status": "supported",
+      "depth": 1,
+      "evidence": "row-left checkbox"
+    },
+    {
+      "action": "reopen_completed_task",
+      "persona": "recurring_routine",
+      "status": "hidden",
+      "depth": 4,
+      "evidence": "12-recurring-reopen-path-mobile.png"
+    },
+    {
+      "action": "understand_recurring_next_occurrence",
+      "persona": "recurring_routine",
+      "status": "partial",
+      "depth": 0,
+      "evidence": "11-recurring-duplicate-my-flow-mobile.png",
+      "failure": "same item appears under both 다음 할 일 and 다음 항목"
+    },
+    {
+      "action": "create_draft_from_url_miss",
+      "persona": "personal_draft",
+      "status": "partial",
+      "depth": 2,
+      "evidence": "13-personal-draft-editor-mobile.png, 14-personal-draft-landing-validation-gap-mobile.png",
+      "failure": "empty required inputs are accepted"
+    },
+    {
+      "action": "add_reorder_delete_restore_personal_item",
+      "persona": "personal_draft",
+      "status": "supported",
+      "depth": 1,
+      "evidence": "15-personal-draft-structural-controls-mobile.png, 16-personal-draft-item-added-mobile.png"
+    },
+    {
+      "action": "set_date_time_duration_recurrence",
+      "persona": "personal_draft",
+      "status": "partial",
+      "depth": 3,
+      "evidence": "17-personal-draft-schedule-controls-mobile.png, 18-personal-draft-time-recurrence-mobile.png",
+      "failure": "default local date is previous UTC date before 09:00 KST"
+    },
+    {
+      "action": "project_recurrence_to_calendar",
+      "persona": "personal_draft",
+      "status": "supported",
+      "depth": 1,
+      "evidence": "19-personal-draft-recurrence-calendar-mobile.png"
+    },
+    {
+      "action": "save_private_reflection",
+      "persona": "public_to_reuse",
+      "status": "supported",
+      "depth": 2,
+      "evidence": "21-completed-flow-reflection-mobile.png"
+    },
+    {
+      "action": "save_unsent_source_correction",
+      "persona": "public_to_reuse",
+      "status": "supported",
+      "depth": 2,
+      "evidence": "22-completed-flow-correction-draft-mobile.png"
+    },
+    {
+      "action": "reuse_flow_as_new_run",
+      "persona": "public_to_reuse",
+      "status": "supported",
+      "depth": 2,
+      "evidence": "23-completed-flow-reused-new-run-mobile.png",
+      "persistence": "previous completed snapshot and feedback preserved in run registry"
+    },
+    {
+      "action": "merge_source_v2_with_personal_overlay",
+      "persona": "source_backed",
+      "status": "blocked",
+      "depth": null,
+      "evidence": "P24 handoff backlog; no three-way merge review UI"
+    },
+    {
+      "action": "cross_device_restore",
+      "persona": "all",
+      "status": "missing",
+      "depth": null,
+      "evidence": "localStorage-only MVP"
+    },
+    {
+      "action": "actual_external_calendar_sync",
+      "persona": "all",
+      "status": "missing",
+      "depth": null,
+      "evidence": "portable ICS only; no OAuth sync"
+    }
+  ]
+}

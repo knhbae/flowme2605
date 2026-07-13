@@ -1,0 +1,124 @@
+{
+  "auditId": "P24-00A",
+  "generatedAt": "2026-07-14T07:25:00+09:00",
+  "baseline": {
+    "commit": "69768a1",
+    "branch": "main",
+    "originSyncedAtStart": true,
+    "cleanAuditWorktree": "D:/flowme2605/flow-mvp/.worktrees/p24-audit-69768a1",
+    "node": "24.17.0",
+    "next": "15.3.8",
+    "playwright": "1.52.0"
+  },
+  "evidenceBoundary": {
+    "codexBrowserSimulationCount": 5,
+    "observedHumanSessionCount": 0,
+    "screenshotCount": 24,
+    "previousArtifactsPresentedAsCurrent": false
+  },
+  "automatedVerification": {
+    "unit": { "passed": 476, "failed": 0 },
+    "playwright": { "passed": 259, "failed": 0, "durationMinutes": 8.9 },
+    "build": "passed"
+  },
+  "personas": [
+    {
+      "id": "anchor_based_moving",
+      "label": "기준일 역산형 이사 준비",
+      "overall": "partial",
+      "taskSuccess": true,
+      "confirmed": [
+        "이사일 라벨과 기준 설명",
+        "저장 후 이사일 재수정",
+        "상대 일정 재계산",
+        "Calendar 모바일/와이드 반영"
+      ],
+      "friction": [
+        "기준일 수정은 My Flow 전체 보기까지 들어가야 함",
+        "상세를 열면 동일 완료 체크가 행과 상세에 중복됨"
+      ],
+      "maxObservedActionDepth": 3
+    },
+    {
+      "id": "undated_checklist",
+      "label": "날짜 없는 차량/여행 체크리스트",
+      "overall": "partial",
+      "taskSuccess": true,
+      "confirmed": [
+        "저장 전 preview와 저장 후 완료 상태 분리",
+        "날짜 없는 항목 저장",
+        "개별 항목 날짜 추가",
+        "Calendar 반영"
+      ],
+      "friction": [
+        "날짜 추가는 열기, 메모·일정, 수정의 3단계 경로",
+        "날짜 없음으로 되돌리기는 자동 회귀만 확인"
+      ],
+      "maxObservedActionDepth": 3
+    },
+    {
+      "id": "recurring_routine",
+      "label": "월간 반복 청소 루틴",
+      "overall": "partial",
+      "taskSuccess": true,
+      "confirmed": [
+        "반복 회차 표시",
+        "완료 후 다음 회차 이동",
+        "완료 취소 가능"
+      ],
+      "friction": [
+        "같은 다음 할 일이 오늘 화면의 두 섹션에 중복 노출됨",
+        "완료 취소는 전체 보기와 상세를 거쳐야 발견 가능"
+      ],
+      "maxObservedActionDepth": 4
+    },
+    {
+      "id": "personal_draft",
+      "label": "URL miss 개인 초안",
+      "overall": "partial",
+      "taskSuccess": true,
+      "confirmed": [
+        "정직한 AI 미연동 copy",
+        "My Flow 착지",
+        "항목 추가와 구조 변경",
+        "날짜, 시간, duration, 반복 설정",
+        "Calendar occurrence 반영"
+      ],
+      "friction": [
+        "빈 제목과 결과를 제출해도 초안이 생성됨",
+        "Flow 제목 수정 후 자동 생성 항목에는 fallback 오류 문장이 남음",
+        "한국 시간 오전 9시 이전 기본 날짜가 전날로 설정됨",
+        "긴 편집 화면의 모바일 밀도가 높음"
+      ],
+      "maxObservedActionDepth": 4
+    },
+    {
+      "id": "public_to_reuse",
+      "label": "공개 Flow 저장, 완료, 회고, 재사용",
+      "overall": "supported",
+      "taskSuccess": true,
+      "confirmed": [
+        "저장 전 preview label",
+        "저장 후 실제 완료 checkbox",
+        "개인 회고와 미전송 원본 수정 메모 분리",
+        "이전 완료 실행 snapshot 보존",
+        "새 기준일로 새 실행 시작"
+      ],
+      "friction": [
+        "완료 상태 fixture는 자동 준비했으며 실제 사용자가 24개 항목을 완주한 관찰은 아님"
+      ],
+      "maxObservedActionDepth": 2
+    }
+  ],
+  "releaseDecision": {
+    "externalObservedPilotReady": false,
+    "reasons": [
+      "한국 시간 날짜 정확성 오류",
+      "반복 Flow Today 중복",
+      "URL miss draft 필수 입력 검증 누락",
+      "Vercel preview 익명 접근 차단",
+      "clean tracked dependency high vulnerability 4건",
+      "실제 관찰 사용자 0명"
+    ]
+  }
+}
