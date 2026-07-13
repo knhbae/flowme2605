@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-07-13T18:19:34.740Z",
+  "reviewUrl": "file:///D:/flowme2605/flow-mvp/docs/content-audit/2026-07-13-p23-lifecycle-closure-review/review.html",
+  "records": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/18-review-html/mobile.png",
+      "consoleErrors": [],
+      "title": "FlowMe P23 실행 라이프사이클 마감 리뷰",
+      "heading": "저장 이후의 삶을하나의 실행 모델로",
+      "horizontalOverflow": false,
+      "brokenImageCount": 0,
+      "imageCount": 12,
+      "tableCount": 3,
+      "navigationLinkCount": 7
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/18-review-html/wide.png",
+      "consoleErrors": [],
+      "title": "FlowMe P23 실행 라이프사이클 마감 리뷰",
+      "heading": "저장 이후의 삶을하나의 실행 모델로",
+      "horizontalOverflow": false,
+      "brokenImageCount": 0,
+      "imageCount": 12,
+      "tableCount": 3,
+      "navigationLinkCount": 7
+    }
+  ]
+}

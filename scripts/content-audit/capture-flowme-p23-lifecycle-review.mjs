@@ -5,12 +5,14 @@ import { chromium } from '@playwright/test';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..', '..');
-const outputDir = path.join(
-  repoRoot,
-  'docs',
-  'content-audit',
-  '2026-07-13-flowme-execution-lifecycle-completeness-review',
-);
+const outputDir = process.env.FLOWME_P23_OUTPUT_DIR
+  ? path.resolve(repoRoot, process.env.FLOWME_P23_OUTPUT_DIR)
+  : path.join(
+      repoRoot,
+      'docs',
+      'content-audit',
+      '2026-07-13-flowme-execution-lifecycle-completeness-review',
+    );
 const screenshotsDir = path.join(outputDir, 'screenshots');
 const baseURL = process.env.FLOWME_P23_BASE_URL || 'http://127.0.0.1:3123';
 const fixedNow = new Date('2026-07-13T09:00:00+09:00');
@@ -186,11 +188,16 @@ async function captureSourceBackedMoving() {
 
     await page.getByTestId('my-flow-post-save-view-flow').click();
     const card = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]');
+    const mobilePersonalAnchorEntry = card.getByTestId('my-flow-anchor-edit-entry');
+    const mobileDirectAnchorEntry = card.getByTestId('my-flow-direct-anchor-settings-open');
+    const mobilePersonalAnchorVisible = await mobilePersonalAnchorEntry.isVisible().catch(() => false);
+    const mobileDirectAnchorVisible = await mobileDirectAnchorEntry.isVisible().catch(() => false);
     await capture(page, '02-moving-flow-overview-mobile.png', 'anchor-timeline', 'saved-flow-overview', consoleErrors, {
-      fixture: 'source-backed moving-d30 personal copy',
+      fixture: 'direct-saved source-backed moving-d30',
       tapDepthFromMyFlow: 1,
       settingsEntryVisible: await card.getByTestId('my-flow-personal-copy-settings-open').isVisible().catch(() => false),
-      anchorEditVisible: await card.getByTestId('my-flow-anchor-edit-entry').isVisible().catch(() => false),
+      anchorEditVisible: mobilePersonalAnchorVisible || mobileDirectAnchorVisible,
+      directAnchorEditVisible: mobileDirectAnchorVisible,
       includeExcludeControls: await card.getByTestId('my-flow-personal-copy-inclusion-settings').getByRole('checkbox').count(),
     });
 
@@ -199,10 +206,16 @@ async function captureSourceBackedMoving() {
     await settle(page);
     await page.getByTestId('my-flow-view-flow').click();
     const wideCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const widePersonalAnchorVisible = await wideCard.getByTestId('my-flow-anchor-edit-entry').isVisible().catch(() => false);
+    const wideDirectAnchorVisible = await wideCard
+      .getByTestId('my-flow-direct-anchor-settings-open')
+      .isVisible()
+      .catch(() => false);
     await capture(page, '03-moving-flow-overview-wide.png', 'anchor-timeline', 'saved-flow-overview-wide', consoleErrors, {
-      fixture: 'source-backed moving-d30 personal copy',
+      fixture: 'direct-saved source-backed moving-d30',
       settingsEntryVisible: await wideCard.getByTestId('my-flow-personal-copy-settings-open').isVisible().catch(() => false),
-      anchorEditVisible: await wideCard.getByTestId('my-flow-anchor-edit-entry').isVisible().catch(() => false),
+      anchorEditVisible: widePersonalAnchorVisible || wideDirectAnchorVisible,
+      directAnchorEditVisible: wideDirectAnchorVisible,
     });
   } finally {
     await context.close();

@@ -1,0 +1,10 @@
+여행 준비 목록
+할 일 2개
+
+- [ ] 날짜 없이 챙길 준비물
+  일정: 날짜 없음
+- [x] 여권과 예약 정보 최종 확인
+  일정: 2026-08-05 종일
+  메모: 예약 번호와 여권 만료일을 함께 확인
+
+Flow 원문: 사용자가 넣은 링크 https://example.com/personal-list-export-draft?utm_source=review

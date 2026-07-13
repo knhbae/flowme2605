@@ -1,0 +1,234 @@
+{
+  "generatedAt": "2026-07-13T18:19:25.878Z",
+  "baselineCommit": "e6b1cf3",
+  "evidenceClasses": {
+    "currentCommand": [
+      "npm.cmd test",
+      "npm.cmd run docs:check",
+      "npm.cmd run build",
+      "P23 lifecycle capture"
+    ],
+    "currentRepo": [
+      "docs/content-audit/2026-07-13-p23-01b-personal-draft-structural-edit-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-01c-personal-draft-order-recovery-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-01d1-structural-projection-contract-evidence/projection-fixtures.json",
+      "docs/content-audit/2026-07-13-p23-01d2-d3a-calendar-ics-projection-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-01d3b-list-export-projection-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-02a-personal-draft-optional-date-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-02b1-personal-draft-time-contract-evidence/schedule-fixtures.json",
+      "docs/content-audit/2026-07-13-p23-02b2-personal-draft-time-ui-projection-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-02c1-personal-draft-recurrence-contract-evidence/recurrence-fixtures.json",
+      "docs/content-audit/2026-07-13-p23-02c2a-personal-draft-recurrence-ui-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-02c2b-personal-draft-calendar-occurrence-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-02c2c-personal-draft-recurrence-ics-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-03-personal-occurrence-state-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-04-past-run-reuse-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-05a-source-undated-date-parity-evidence/route-evidence.json",
+      "docs/content-audit/2026-07-13-p23-05b-direct-save-anchor-edit-evidence/route-evidence.json"
+    ],
+    "priorArtifact": [
+      "P18~P22 final packages used only as historical rationale"
+    ],
+    "observedUser": []
+  },
+  "markers": {
+    "p23ImplementationSliceCount": 17,
+    "p23EvidenceSourceCount": 16,
+    "p23ScenarioTypeCount": 6,
+    "p23CurrentBaseCaptureRecordCount": 14,
+    "p23ScreenshotCount": 55,
+    "p23CurrentBaseCaptureHorizontalOverflowCount": 0,
+    "p23CurrentBaseCaptureConsoleErrorCount": 0,
+    "p23ReviewHtmlViewportCount": 2,
+    "p23ReviewHtmlHorizontalOverflowCount": 0,
+    "p23ReviewHtmlBrokenImageCount": 0,
+    "p23ReviewHtmlConsoleErrorCount": 0,
+    "p23PersonalDraftStructuralLifecycleConnected": true,
+    "p23PersonalDraftOptionalDateTimeRecurrenceConnected": true,
+    "p23PersonalDraftOccurrenceStatesDistinct": true,
+    "p23PersonalDraftCalendarIcsListExportUnified": true,
+    "p23PastRunDetailReuseConnected": true,
+    "p23SourceUndatedOptionalDateConnected": true,
+    "p23DirectSavedMapAnchorEditConnected": true,
+    "p23SourceBackedStructuralEditConnected": false,
+    "p23SourceBackedStructuralEditBlockedByVersionMergePolicy": true,
+    "p23CrossDeviceAccountPersistenceConnected": false,
+    "p23ExternalDirectSyncConnected": false,
+    "p23FormalObservedParticipantCount": 0,
+    "p23OwnerFeedbackReferenced": true,
+    "p23LocalMvpLifecycleContractClosed": true,
+    "p23ProductionReleaseReady": false
+  },
+  "currentVerification": {
+    "fullUnit": {
+      "status": "pass",
+      "count": 476
+    },
+    "docsCheck": {
+      "status": "pass",
+      "requiredFiles": 14,
+      "localLinks": 2166
+    },
+    "productionBuild": {
+      "status": "pass",
+      "staticPages": 18
+    },
+    "securityAudit": {
+      "status": "pass_at_high_threshold_with_moderate_findings",
+      "high": 0,
+      "critical": 0,
+      "moderate": 2,
+      "affectedPackage": "postcss <8.5.10 through next",
+      "advisory": "GHSA-qx2v-qp2m-jg93",
+      "mitigation": "Do not run the breaking --force downgrade; schedule a controlled Next/PostCSS dependency upgrade."
+    },
+    "reviewHtmlBrowserInspection": {
+      "status": "pass",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        }
+      ],
+      "horizontalOverflowCount": 0,
+      "brokenImageCount": 0,
+      "consoleErrorCount": 0
+    },
+    "routeRegression": {
+      "status": "pass",
+      "count": 63
+    },
+    "p23LifecycleJourneys": {
+      "status": "pass",
+      "count": 8
+    },
+    "p23HistoryReuseJourneys": {
+      "status": "pass",
+      "count": 3
+    },
+    "p23SourceParityJourneys": {
+      "status": "pass",
+      "count": 2
+    },
+    "fullPlaywrightSuiteRun": false,
+    "formalObservedParticipants": 0
+  },
+  "evidenceSources": [
+    {
+      "slice": "P23-01B",
+      "label": "개인 초안 항목 추가·삭제·즉시 되돌리기",
+      "file": "docs/content-audit/2026-07-13-p23-01b-personal-draft-structural-edit-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 11
+    },
+    {
+      "slice": "P23-01C",
+      "label": "삭제 복구·개인 순서",
+      "file": "docs/content-audit/2026-07-13-p23-01c-personal-draft-order-recovery-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 11
+    },
+    {
+      "slice": "P23-01D1",
+      "label": "구조 projection 계약",
+      "file": "docs/content-audit/2026-07-13-p23-01d1-structural-projection-contract-evidence/projection-fixtures.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 12
+    },
+    {
+      "slice": "P23-01D2/D3A",
+      "label": "Calendar·ICS 구조 projection",
+      "file": "docs/content-audit/2026-07-13-p23-01d2-d3a-calendar-ics-projection-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 30
+    },
+    {
+      "slice": "P23-01D3B",
+      "label": "checklist·sheet·memo 구조 projection",
+      "file": "docs/content-audit/2026-07-13-p23-01d3b-list-export-projection-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 24
+    },
+    {
+      "slice": "P23-02A",
+      "label": "선택적 날짜",
+      "file": "docs/content-audit/2026-07-13-p23-02a-personal-draft-optional-date-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 24
+    },
+    {
+      "slice": "P23-02B1",
+      "label": "종일·시간 계약",
+      "file": "docs/content-audit/2026-07-13-p23-02b1-personal-draft-time-contract-evidence/schedule-fixtures.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 14
+    },
+    {
+      "slice": "P23-02B2",
+      "label": "종일·시간 UI와 projection",
+      "file": "docs/content-audit/2026-07-13-p23-02b2-personal-draft-time-ui-projection-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 31
+    },
+    {
+      "slice": "P23-02C1",
+      "label": "반복 series·occurrence 계약",
+      "file": "docs/content-audit/2026-07-13-p23-02c1-personal-draft-recurrence-contract-evidence/recurrence-fixtures.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 22
+    },
+    {
+      "slice": "P23-02C2A",
+      "label": "반복 UI",
+      "file": "docs/content-audit/2026-07-13-p23-02c2a-personal-draft-recurrence-ui-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 19
+    },
+    {
+      "slice": "P23-02C2B",
+      "label": "Calendar occurrence",
+      "file": "docs/content-audit/2026-07-13-p23-02c2b-personal-draft-calendar-occurrence-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 24
+    },
+    {
+      "slice": "P23-02C2C",
+      "label": "반복 ICS",
+      "file": "docs/content-audit/2026-07-13-p23-02c2c-personal-draft-recurrence-ics-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 24
+    },
+    {
+      "slice": "P23-03",
+      "label": "완료·재개·건너뜀·보류",
+      "file": "docs/content-audit/2026-07-13-p23-03-personal-occurrence-state-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 16
+    },
+    {
+      "slice": "P23-04",
+      "label": "과거 실행·회고·다시 쓰기",
+      "file": "docs/content-audit/2026-07-13-p23-04-past-run-reuse-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 20
+    },
+    {
+      "slice": "P23-05A",
+      "label": "날짜 없는 source-backed 항목 일정화",
+      "file": "docs/content-audit/2026-07-13-p23-05a-source-undated-date-parity-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 14
+    },
+    {
+      "slice": "P23-05B",
+      "label": "직접 저장 Flow 기준일 재설정",
+      "file": "docs/content-audit/2026-07-13-p23-05b-direct-save-anchor-edit-evidence/route-evidence.json",
+      "evidenceClass": "current_repo_artifact",
+      "markerCount": 23
+    }
+  ]
+}

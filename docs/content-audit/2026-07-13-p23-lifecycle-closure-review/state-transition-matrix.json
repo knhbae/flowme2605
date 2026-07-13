@@ -1,0 +1,172 @@
+{
+  "generatedAt": "2026-07-13T18:19:25.878Z",
+  "baselineCommit": "e6b1cf3",
+  "transitions": [
+    {
+      "from": "pending",
+      "to": "done",
+      "owner": "execution_run",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "행 왼쪽 체크박스"
+    },
+    {
+      "from": "done",
+      "to": "reopened",
+      "owner": "execution_run",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "같은 체크박스로 완료 취소"
+    },
+    {
+      "from": "pending",
+      "to": "skipped",
+      "owner": "occurrence_run",
+      "status": "partial",
+      "reversible": true,
+      "userPath": "개인 반복 회차의 이번만 건너뛰기"
+    },
+    {
+      "from": "skipped",
+      "to": "pending",
+      "owner": "occurrence_run",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "다시 진행"
+    },
+    {
+      "from": "pending",
+      "to": "held",
+      "owner": "occurrence_run",
+      "status": "partial",
+      "reversible": true,
+      "userPath": "개인 반복 회차의 잠시 보류"
+    },
+    {
+      "from": "held",
+      "to": "pending",
+      "owner": "occurrence_run",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "다시 진행"
+    },
+    {
+      "from": "included",
+      "to": "excluded",
+      "owner": "personal_overlay",
+      "status": "hidden",
+      "reversible": true,
+      "userPath": "개인 사본 설정"
+    },
+    {
+      "from": "visible",
+      "to": "tombstoned",
+      "owner": "structural_overlay",
+      "status": "partial",
+      "reversible": true,
+      "userPath": "개인 draft 항목 삭제"
+    },
+    {
+      "from": "tombstoned",
+      "to": "restored",
+      "owner": "structural_overlay",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "즉시 undo 또는 목록에서 뺀 할 일"
+    },
+    {
+      "from": "source_order",
+      "to": "personal_order",
+      "owner": "structural_overlay",
+      "status": "partial",
+      "reversible": true,
+      "userPath": "개인 draft 위/아래 이동"
+    },
+    {
+      "from": "unscheduled",
+      "to": "all_day",
+      "owner": "structural_schedule",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "개인 draft와 저장된 날짜 없는 체크리스트"
+    },
+    {
+      "from": "all_day",
+      "to": "timed",
+      "owner": "structural_schedule",
+      "status": "partial",
+      "reversible": true,
+      "userPath": "개인 draft 시간 지정"
+    },
+    {
+      "from": "timed",
+      "to": "all_day",
+      "owner": "structural_schedule",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "시간 제거, 날짜 유지"
+    },
+    {
+      "from": "scheduled",
+      "to": "unscheduled",
+      "owner": "personal_schedule",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "날짜 지우기"
+    },
+    {
+      "from": "anchor_old",
+      "to": "anchor_new",
+      "owner": "saved_map_snapshot",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "이사일/기준일 바꾸기"
+    },
+    {
+      "from": "active_run",
+      "to": "completed_run",
+      "owner": "execution_run",
+      "status": "supported",
+      "reversible": false,
+      "userPath": "전체 완료와 회고 snapshot"
+    },
+    {
+      "from": "completed_run",
+      "to": "new_active_run",
+      "owner": "execution_run",
+      "status": "supported",
+      "reversible": true,
+      "userPath": "다시 쓰기, 과거 run 보존"
+    },
+    {
+      "from": "source_v1",
+      "to": "source_v2_reviewed",
+      "owner": "source_version",
+      "status": "partial",
+      "reversible": true,
+      "userPath": "새 버전 검토 후 새 run"
+    }
+  ],
+  "ownershipBoundary": {
+    "sourceVersion": [
+      "canonical title/detail/order/schedule",
+      "source URL/ref",
+      "published version"
+    ],
+    "personalStructuralOverlay": [
+      "user item",
+      "tombstone",
+      "restore",
+      "personal order",
+      "personal schedule"
+    ],
+    "executionRun": [
+      "pending",
+      "done",
+      "reopened",
+      "skipped",
+      "held",
+      "completion/reflection history"
+    ]
+  }
+}

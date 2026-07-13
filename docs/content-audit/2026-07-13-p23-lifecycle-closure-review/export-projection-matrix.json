@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-07-13T18:19:25.878Z",
+  "baselineCommit": "e6b1cf3",
+  "rows": [
+    {
+      "state": "날짜 없는 user item",
+      "myFlow": "포함",
+      "calendar": "제외",
+      "ics": "제외",
+      "checklist": "포함",
+      "sheet": "포함",
+      "memo": "포함",
+      "policy": "날짜를 정하기 전에도 실행 목록과 portable list에는 남긴다."
+    },
+    {
+      "state": "종일 또는 timed user item",
+      "myFlow": "포함",
+      "calendar": "포함",
+      "ics": "포함",
+      "checklist": "포함",
+      "sheet": "포함",
+      "memo": "포함",
+      "policy": "모든 destination이 같은 effective title/date/time/memo를 읽는다."
+    },
+    {
+      "state": "tombstoned 또는 excluded item",
+      "myFlow": "현재 목록 제외",
+      "calendar": "제외",
+      "ics": "제외",
+      "checklist": "제외",
+      "sheet": "제외",
+      "memo": "제외",
+      "policy": "source 원본과 과거 run 기록은 삭제하지 않는다."
+    },
+    {
+      "state": "done 또는 reopened item",
+      "myFlow": "상태 포함",
+      "calendar": "membership 유지",
+      "ics": "membership 유지",
+      "checklist": "상태 포함",
+      "sheet": "상태 포함",
+      "memo": "상태 포함",
+      "policy": "실행 상태는 structural membership을 바꾸지 않는다."
+    },
+    {
+      "state": "skipped 또는 held occurrence",
+      "myFlow": "상태 포함",
+      "calendar": "series 유지",
+      "ics": "series 유지",
+      "checklist": "상태 포함",
+      "sheet": "상태 포함",
+      "memo": "상태 포함",
+      "policy": "개인 반복 회차 정책이다. source-backed 일반 skip과의 통합 정책은 후속 검토가 필요하다."
+    },
+    {
+      "state": "완료된 과거 run snapshot",
+      "myFlow": "읽기 전용",
+      "calendar": "재내보내기 없음",
+      "ics": "재내보내기 없음",
+      "checklist": "제공",
+      "sheet": "제공",
+      "memo": "제공",
+      "policy": "중복 일정 방지를 위해 과거 Calendar/ICS는 제공하지 않는다."
+    }
+  ],
+  "invariant": "현재 run의 My Flow, Calendar, ICS, checklist, sheet, memo는 동일 effective state를 읽는다.",
+  "knownPolicyQuestion": "skipped occurrence와 source-backed 일반 skipped item의 외부 일정 제외 정책을 사용자 기대와 함께 재검토한다."
+}

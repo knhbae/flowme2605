@@ -1,0 +1,196 @@
+{
+  "generatedAt": "2026-07-13T18:19:25.878Z",
+  "baselineCommit": "e6b1cf3",
+  "statusDefinitions": {
+    "supported": "사용자 경로와 관련 projection이 현재 동작한다.",
+    "hidden": "동작하지만 설명 없이 찾기 어렵다.",
+    "partial": "특정 소유권·Flow 유형·destination에서만 동작한다.",
+    "missing": "현재 기능 또는 사용자 경로가 없다.",
+    "blocked": "데이터·계정·운영 정책이 선행되어야 한다."
+  },
+  "counts": {
+    "supported": 7,
+    "hidden": 1,
+    "partial": 6,
+    "missing": 1,
+    "blocked": 1
+  },
+  "capabilities": [
+    {
+      "id": "intake-save",
+      "capability": "발견·URL/메모 입력·저장",
+      "status": "supported",
+      "coverage": "공개 Flow, URL hit/miss draft, source-backed Flow Map",
+      "limitation": "AI 자동 생성은 연결하지 않았고 초안은 사용자 편집 shell이다.",
+      "evidence": [
+        "P20-01",
+        "P23 personal draft journey"
+      ]
+    },
+    {
+      "id": "complete-reopen",
+      "capability": "완료와 완료 취소",
+      "status": "supported",
+      "coverage": "My Flow, Calendar, 개인 draft occurrence",
+      "limitation": "체크박스 의미 이해는 실제 사용자에게 확인하지 않았다.",
+      "evidence": [
+        "P19-02",
+        "P23-03"
+      ]
+    },
+    {
+      "id": "optional-date",
+      "capability": "날짜 지정·변경·제거",
+      "status": "supported",
+      "coverage": "개인 draft와 날짜 없는 저장 체크리스트",
+      "limitation": "source-backed 전체 유형을 대표 표본으로 모두 관찰한 것은 아니다.",
+      "evidence": [
+        "P23-02A",
+        "P23-05A"
+      ]
+    },
+    {
+      "id": "time-all-day",
+      "capability": "종일·시간·예상 소요 시간",
+      "status": "partial",
+      "coverage": "개인 draft user-created 항목은 My Flow·Calendar·ICS·list export까지 지원",
+      "limitation": "source-backed 항목의 시간 편집 parity는 대표 회귀만 있고 제품 전 범위 계약은 아니다.",
+      "evidence": [
+        "P23-02B1",
+        "P23-02B2"
+      ]
+    },
+    {
+      "id": "recurrence",
+      "capability": "반복 rule·회차 생성·반복 ICS",
+      "status": "partial",
+      "coverage": "개인 draft daily/weekly/monthly와 기존 source-backed routine editor",
+      "limitation": "source-backed occurrence state와 series 편집 parity는 열지 않았다.",
+      "evidence": [
+        "P23-02C1",
+        "P23-02C2A",
+        "P23-02C2B",
+        "P23-02C2C"
+      ]
+    },
+    {
+      "id": "occurrence-state",
+      "capability": "회차별 완료·재개·건너뜀·보류",
+      "status": "partial",
+      "coverage": "개인 draft 반복 occurrence",
+      "limitation": "source-backed 반복 Flow에는 같은 실행 control이 없다.",
+      "evidence": [
+        "P23-03"
+      ]
+    },
+    {
+      "id": "structural-edit",
+      "capability": "항목 추가·삭제·복구·순서 변경",
+      "status": "partial",
+      "coverage": "URL-first 또는 메모 개인 draft",
+      "limitation": "source-backed 항목은 원본 버전 merge와 tombstone 정책이 필요해 차단했다.",
+      "evidence": [
+        "P23-01A",
+        "P23-01B",
+        "P23-01C"
+      ]
+    },
+    {
+      "id": "value-edit",
+      "capability": "제목·개인 메모·개별 일정 수정",
+      "status": "hidden",
+      "coverage": "개인 draft와 저장 source-backed 항목",
+      "limitation": "일부 모바일 경로는 Flow 열기→항목 열기→수정으로 3~4단계다.",
+      "evidence": [
+        "P18-05",
+        "P19-07",
+        "current capture"
+      ]
+    },
+    {
+      "id": "anchor-edit",
+      "capability": "Flow 전체 기준일 재설정",
+      "status": "supported",
+      "coverage": "URL custom-start, personal copy, direct-saved moving Flow Map",
+      "limitation": "앵커가 없는 Flow에는 의도적으로 노출하지 않는다.",
+      "evidence": [
+        "P18-07",
+        "P23-05B"
+      ]
+    },
+    {
+      "id": "calendar-ics",
+      "capability": "Calendar와 ICS 동일 projection",
+      "status": "supported",
+      "coverage": "scheduled source/user 항목, 종일·시간·반복",
+      "limitation": "실제 외부 Calendar 앱 가져오기 관찰은 0회다.",
+      "evidence": [
+        "P23-01D2/D3A",
+        "P23-02B2",
+        "P23-02C2C"
+      ]
+    },
+    {
+      "id": "list-export",
+      "capability": "checklist·sheet·memo portable export",
+      "status": "supported",
+      "coverage": "개인 draft effective list와 source-backed 기존 builder",
+      "limitation": "직접 Notion/Todo 동기화는 범위 밖이며 파일/복사 기반이다.",
+      "evidence": [
+        "P23-01D3B",
+        "P23-04"
+      ]
+    },
+    {
+      "id": "history-reuse",
+      "capability": "회고·과거 실행 상세·다시 쓰기",
+      "status": "supported",
+      "coverage": "완료 Flow snapshot, 읽기 전용 과거 항목, 새 run",
+      "limitation": "긴 실행 기록의 검색·요약 필요성은 관찰되지 않았다.",
+      "evidence": [
+        "P23-04"
+      ]
+    },
+    {
+      "id": "source-update",
+      "capability": "원본 새 버전 검토와 개인값 보존",
+      "status": "partial",
+      "coverage": "stable source-backed item과 saved source version",
+      "limitation": "개인 structural edit와 source v2의 제품 UI three-way merge는 아직 없다.",
+      "evidence": [
+        "source-backed version review",
+        "P23-05B"
+      ]
+    },
+    {
+      "id": "cross-device",
+      "capability": "다른 기기 복원·동기화",
+      "status": "blocked",
+      "coverage": "현재 브라우저 localStorage 백업/복원만 지원",
+      "limitation": "계정·DB·동기화 정책이 선행되어야 한다.",
+      "evidence": [
+        "storage backup tests"
+      ]
+    },
+    {
+      "id": "direct-sync",
+      "capability": "외부 Calendar·Notion·Todo 직접 동기화",
+      "status": "missing",
+      "coverage": "ICS/checklist/sheet/memo portable 결과물은 지원",
+      "limitation": "OAuth와 양방향 충돌 정책은 P23 범위 밖이다.",
+      "evidence": [
+        "portable export only"
+      ]
+    },
+    {
+      "id": "record-customization",
+      "capability": "기록·메모형 필드 구조 사용자 수정",
+      "status": "partial",
+      "coverage": "콘텐츠별 workbench 필드와 export",
+      "limitation": "사용자 정의 field add/delete/order runtime은 아직 없다.",
+      "evidence": [
+        "record-memo capture"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//My Flow Step Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:personal-structural:url-draft-1783961863968-b8l2c:personal-item-457a3d9
+ 4-ac9f-4bae-ba54-c9f1949e92fe@flowme.local
+DTSTAMP:20260713T165746Z
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+SUMMARY:여행자 보험 서류 챙기기
+DESCRIPTION:여행자 보험 서류 챙기기\nFlow: 주말 여행 준비\n
+ 구간: 내가 추가한 할 일\n일정: 2026-08-12\n\n메모: 보험 증
+ 권 번호와 비상 연락처 확인\n
+END:VEVENT
+END:VCALENDAR
