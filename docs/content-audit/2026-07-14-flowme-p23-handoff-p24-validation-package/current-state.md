@@ -97,3 +97,14 @@ FlowMe는 URL·메모·공개 Flow를 개인 실행 항목으로 저장하고, �
 기존 변경에는 repo 운영 문서, skills, CI, package 파일, 별도 content audit, Claude ZIP 등이 섞여 있다. 이 package는 그 변경을 정리·merge한 것으로 간주하지 않는다. 후속 구현 전에 별도 worktree cleanup lane에서 기능별 분류와 커밋 여부를 결정해야 한다.
 
 또한 현재 `docs/STATUS.md`의 primary focus와 next-up 일부는 여전히 P23-00 착수 전 문구다. 최신 판정은 P23 closure review와 이 package를 우선한다. canonical planning docs 갱신은 해당 파일의 기존 미커밋 변경을 먼저 분류한 뒤 별도 커밋으로 처리해야 한다.
+
+## Branch와 merge 상태
+
+| 범위 | 상태 | 판단 |
+| --- | --- | --- |
+| `main` | `origin/main`과 동기화 | handoff package 직접 push, 추가 merge 없음 |
+| `codex/creator-channel-200-preview` worktree | clean, main에 포함, main 559 ahead / branch 0 ahead | merged 상태, 필요 시 worktree 정리 후보 |
+| `codex/flow-20-content-ux` worktree | clean, main 미포함, main 532 ahead / branch 18 ahead, tip 2026-05-21 | 자동 merge 금지, scope audit 후 archive 또는 selective cherry-pick 판단 |
+| 기타 historical local branches | 다수 | branch 존재만으로 pending merge로 간주하지 않음 |
+
+`flow-20-content-ux`는 현재 P23/P24 제품 모델보다 오래된 별도 작업이므로 이번 handoff에서 merge하지 않았다. 전체 diff와 현재 기능 중복을 검토하지 않은 채 merge하면 회귀 위험이 크다.

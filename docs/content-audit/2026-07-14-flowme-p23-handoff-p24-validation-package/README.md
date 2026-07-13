@@ -44,3 +44,5 @@ P23은 개인 draft의 구조 편집, 날짜·시간·반복, 회차 상태, Cal
 ## Git과 merge 정책
 
 현재 개발 방식은 `main` 직접 커밋·push다. 이 handoff package는 기존 dirty 파일을 stage하거나 되돌리지 않고 새 파일만 별도 커밋한다. 별도 PR을 만들지 않으므로 이번 package에 추가 merge 단계는 없다. GitHub PR 전체 상태는 로컬에 `gh` CLI가 없어 확인하지 않았으며, 현재 브랜치와 `origin/main`의 동기화만 Git으로 확인했다.
+
+연결된 worktree 중 `codex/creator-channel-200-preview`는 이미 main에 포함됐고 clean이다. `codex/flow-20-content-ux`는 2026-05-21 tip이며 main보다 532커밋 뒤, 18커밋 앞인 오래된 clean branch다. 현재 P24 기준선에 자동 merge하지 않고 별도 scope audit 후 archive 또는 필요한 commit만 선별한다.

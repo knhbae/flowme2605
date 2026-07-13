@@ -79,3 +79,5 @@ source v2의 added/changed/removed Item과 personal alias/date/memo/tombstone/or
 현재 dirty worktree는 기능별로 별도 정리한다. 최소 분류는 `repo docs`, `skills`, `CI/tooling`, `package/runtime`, `content audit`, `Claude imports`, `temporary outputs`다. 각 범위가 완결되기 전 묶어서 stage하거나 merge하지 않는다.
 
 분류가 끝나면 `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/DECISIONS.md`의 P23/P24 상태를 closure review 기준으로 동기화한다. 현재 `STATUS.md`의 P23-00 primary focus는 outdated지만 파일 자체가 이미 dirty이므로 이번 package commit에 섞지 않는다.
+
+별도 worktree의 `codex/flow-20-content-ux`는 오래된 18개 고유 commit을 가진다. P24 구현에 앞서 현재 main과 중복되는 변경, 아직 유효한 content UX, 폐기할 변경을 audit하고 merge 대신 archive 또는 selective cherry-pick을 결정한다. `codex/creator-channel-200-preview`는 이미 main에 포함됐으므로 worktree 제거 여부만 운영 작업으로 남는다.
