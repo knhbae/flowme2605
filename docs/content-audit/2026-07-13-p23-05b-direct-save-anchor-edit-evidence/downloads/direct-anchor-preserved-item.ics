@@ -1,0 +1,25 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//My Flow Step Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:source-backed-moving-d30::moving-method-quotes::2026-07-06-2026-07-07-a
+ ll-day@flowme.local
+DTSTAMP:20260713T174836Z
+DTSTART;VALUE=DATE:20260707
+DTEND;VALUE=DATE:20260708
+SUMMARY:이사 방식과 견적 후보 정하기
+DESCRIPTION:이사 방식과 견적 후보 정하기\nFlow: 원룸 이사
+  준비\n구간: 이사 전 준비\n일정: 2026-07-07\n\n체크:\n- [ ]
+  이사 방식 1개를 정합니다.\n- [ ] 견적 후보 2-3곳을 열고
+  연락처를 메모합니다.\n- [ ] 포함 범위와 예상 비용을
+  짧게 남깁니다.\n\n완료 기준: 견적 후보 2-3곳과 연락처\
+ , 비용 범위가 메모됐습니다.\n\n메모: 오전 중 후보 2곳
+ 만 확인\n\n원문: 이사 준비 체크리스트 https://www.ajd.co.kr/
+ contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑
+ 셀_Xls_PDF_노션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+END:VCALENDAR

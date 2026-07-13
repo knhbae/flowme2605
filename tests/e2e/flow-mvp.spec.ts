@@ -4600,6 +4600,124 @@ test('source-backed undated checklist can add and remove a personal date', async
   expect(consoleErrors).toEqual([]);
 });
 
+test('direct saved Flow Map can change its anchor while preserving item overrides', async ({ page }) => {
+  test.setTimeout(60_000);
+  const evidenceDir = process.env.FLOWME_P23_05B_EVIDENCE_DIR;
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  page.on('pageerror', (error) => consoleErrors.push(error.message));
+  if (evidenceDir) {
+    fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+    fs.mkdirSync(`${evidenceDir}/downloads`, { recursive: true });
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flow-maps/moving-d30');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByLabel('이사일').fill('2026-07-22');
+  await page.getByTestId('flow-map-save-all-mobile').click();
+  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.getByTestId('my-flow-view-flow').click();
+
+  let flow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]');
+  await expect(flow.getByTestId('my-flow-direct-anchor-settings-open')).toHaveAccessibleName(
+    /원룸 이사.*이사일 바꾸기/,
+  );
+  await expect(flow.getByTestId('my-flow-personal-copy-settings-open')).toHaveCount(0);
+  await expect(flow.getByTestId('personal-draft-add-entry')).toHaveCount(0);
+  await flow.getByTestId('my-flow-mobile-structure-open').click();
+  await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  let detail = flow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await enterMyFlowDetailEditMode(detail);
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-07-07');
+  await detail.getByTestId('my-flow-detail-memo').fill('오전 중 후보 2곳만 확인');
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+
+  await flow.getByTestId('my-flow-direct-anchor-settings-open').click();
+  const anchorSettings = flow.getByTestId('my-flow-direct-anchor-settings');
+  await expect(anchorSettings).toContainText('전체 일정 기준');
+  await expect(anchorSettings.getByTestId('my-flow-direct-anchor-input')).toHaveValue('2026-07-22');
+  await expect(anchorSettings.getByTestId('my-flow-direct-anchor-policy')).toContainText('따로 바꾼 할 일 날짜와 메모는 그대로 유지');
+  await anchorSettings.getByTestId('my-flow-direct-anchor-input').fill('2026-08-05');
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/01-direct-anchor-edit-mobile.png`, fullPage: true });
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  await anchorSettings.getByRole('button', { name: '일정 다시 맞추기' }).click();
+  await expect(flow.getByTestId('my-flow-direct-anchor-settings')).toHaveCount(0);
+
+  const savedState = await page.evaluate(() => ({
+    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:moving-d30') || 'null'),
+    persistence: JSON.parse(window.localStorage.getItem('flow:map:persistence:moving-d30') || 'null'),
+    savedRecord: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-moving-d30') || 'null'),
+    storedAnchor: JSON.parse(window.localStorage.getItem('flow:source-backed-moving-d30:anchorDate') || 'null'),
+    dateOverrides: JSON.parse(window.localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
+    itemDrafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+  }));
+  expect(savedState.snapshot.anchor).toBe('2026-08-05');
+  expect(savedState.snapshot.version).toBe('2026-06-24.1');
+  expect(savedState.snapshot.personalCopy).toBeUndefined();
+  expect(savedState.persistence.saved.anchor).toBe('2026-08-05');
+  expect(savedState.persistence.map.version).toBe('2026-06-24.1');
+  expect(savedState.savedRecord.anchor).toBe('2026-08-05');
+  expect(savedState.storedAnchor.anchor).toBe('2026-08-05');
+  expect(savedState.dateOverrides['source-backed-moving-d30::moving-method-quotes::2026-07-06']).toBe('2026-07-07');
+  expect(savedState.dateOverrides['source-backed-moving-d30::moving-method-quotes::2026-06-22']).toBeUndefined();
+  expect(savedState.itemDrafts['source-backed-moving-d30::moving-method-quotes::draft-overlay'].memo).toBe('오전 중 후보 2곳만 확인');
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-22"] .fc-event')).toHaveCount(0);
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-08"] .fc-event')).toHaveCount(0);
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-06"] .fc-event')).toHaveCount(0);
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-07"] .fc-event')).toHaveCount(1);
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-22"] .fc-event')).toHaveCount(1);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/02-direct-anchor-calendar-shift-mobile.png`, fullPage: true });
+  }
+
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  flow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]');
+  await flow.getByTestId('my-flow-mobile-structure-open').click();
+  await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  detail = flow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await expect(detail).toContainText('오전 중 후보 2곳만 확인');
+  await enterMyFlowDetailEditMode(detail);
+  await expect(detail.getByTestId('my-flow-detail-date-input')).toHaveValue('2026-07-07');
+  await detail.getByRole('button', { name: /수정 취소$/ }).click();
+  await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  detail = flow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  const exportTools = await openMyFlowDetailTools(detail);
+  const downloadPromise = page.waitForEvent('download');
+  await exportTools.getByTestId('my-flow-detail-download-ics').click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  expect(downloadPath).toBeTruthy();
+  const ics = fs.readFileSync(downloadPath!, 'utf8');
+  const unfoldedIcs = ics.replace(/\r?\n[ \t]/g, '');
+  expect(ics).toContain('DTSTART;VALUE=DATE:20260707');
+  expect(unfoldedIcs).toContain('오전 중 후보 2곳만 확인');
+  if (evidenceDir) fs.writeFileSync(`${evidenceDir}/downloads/direct-anchor-preserved-item.ics`, ics, 'utf8');
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+  await expect(wideFlow.getByTestId('my-flow-direct-anchor-settings-open')).toBeVisible();
+  await wideFlow.getByTestId('my-flow-direct-anchor-settings-open').click();
+  await expect(wideFlow.getByTestId('my-flow-direct-anchor-input')).toHaveValue('2026-08-05');
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/03-direct-anchor-entry-wide.png`, fullPage: true });
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  expect(consoleErrors).toEqual([]);
+});
+
 test('my flow mobile saved map edit and revisit keeps step detail lightweight', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/moving-d30');

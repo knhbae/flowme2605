@@ -13,6 +13,7 @@ import {
   assessProgressStepNeed,
   assessSourceBackedManualRegistrationReadiness,
   assessSourceBackedFlowMapUpdate,
+  buildSourceBackedFlowMapAnchorAdjustment,
   applySourceBackedPersonalCopyToBundle,
   buildSourceBackedFlowMapPersonalCopyAdjustment,
   buildSourceBackedFlowMapPersistenceRecordUpdate,
@@ -1527,6 +1528,33 @@ test('source-backed moving map saves one dated timeline flow from a move date', 
   assert.deepEqual(snapshot.stepCountsByFlow, {
     'source-backed-moving-d30': 5,
   });
+});
+
+test('source-backed Flow Map anchor adjustment preserves the saved source version', () => {
+  const snapshot = buildSourceBackedFlowMapSavedSnapshot('moving-d30', {
+    anchor: '2026-07-22',
+    savedAt: '2026-07-13T01:00:00.000Z',
+  });
+  assert.ok(snapshot);
+  const baselineRecord = buildSourceBackedFlowMapPersistenceRecordUpdate(snapshot);
+  assert.ok(baselineRecord);
+
+  const adjusted = buildSourceBackedFlowMapAnchorAdjustment(snapshot, {
+    anchor: '2026-08-05',
+    savedAt: '2026-07-13T02:00:00.000Z',
+    baselineRecord,
+  });
+
+  assert.ok(adjusted);
+  assert.equal(adjusted.snapshot.anchor, '2026-08-05');
+  assert.equal(adjusted.snapshot.savedAt, '2026-07-13T02:00:00.000Z');
+  assert.equal(adjusted.snapshot.version, snapshot.version);
+  assert.equal(adjusted.snapshot.title, snapshot.title);
+  assert.deepEqual(adjusted.snapshot.flowSlugs, snapshot.flowSlugs);
+  assert.equal(adjusted.persistenceRecord.saved.anchor, '2026-08-05');
+  assert.equal(adjusted.persistenceRecord.map.version, baselineRecord.map.version);
+  assert.equal(buildSourceBackedFlowMapAnchorAdjustment(snapshot, { anchor: '', baselineRecord }), undefined);
+  assert.equal(buildSourceBackedFlowMapAnchorAdjustment(snapshot, { anchor: '2026-02-31', baselineRecord }), undefined);
 });
 
 test('source-backed baby health publish package separates input-bearing public save from creator review', () => {

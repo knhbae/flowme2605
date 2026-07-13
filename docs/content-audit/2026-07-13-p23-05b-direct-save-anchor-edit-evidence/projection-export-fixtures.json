@@ -1,0 +1,29 @@
+{
+  "flowMapId": "moving-d30",
+  "sourceVersion": {
+    "before": "2026-06-24.1",
+    "after": "2026-06-24.1"
+  },
+  "anchor": {
+    "before": "2026-07-22",
+    "after": "2026-08-05"
+  },
+  "personalOverride": {
+    "itemId": "moving-method-quotes",
+    "sourceDateBefore": "2026-06-22",
+    "sourceDateAfter": "2026-07-06",
+    "effectiveDateBefore": "2026-07-07",
+    "effectiveDateAfter": "2026-07-07",
+    "memoPreserved": true
+  },
+  "relativeSchedule": {
+    "itemId": "moving-cleaning-waste",
+    "dateBefore": "2026-07-08",
+    "dateAfter": "2026-07-22"
+  },
+  "destinations": {
+    "myFlow": "2026-07-07",
+    "calendar": "2026-07-07",
+    "ics": "2026-07-07"
+  }
+}

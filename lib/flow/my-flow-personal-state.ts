@@ -37,6 +37,11 @@ export type MyFlowPersonalExecutionState = {
   occurrenceRecords?: Record<string, PersonalStructuralOccurrenceExecutionRecord>;
 };
 
+export type MyFlowAnchorDatedItem = {
+  itemId: string;
+  date?: string;
+};
+
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && Boolean(window.localStorage);
 }
@@ -73,6 +78,35 @@ export function getStoredMyFlowDateOverrides(): Record<string, string> {
 export function saveStoredMyFlowDateOverrides(overrides: Record<string, string>): void {
   if (!canUseStorage()) return;
   window.localStorage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(overrides));
+}
+
+export function rekeyMyFlowAnchorDatedRecord<T>(
+  record: Record<string, T>,
+  options: {
+    flowSlug: string;
+    previousItems: MyFlowAnchorDatedItem[];
+    nextItems: MyFlowAnchorDatedItem[];
+  },
+): Record<string, T> {
+  const next = { ...record };
+  const nextDateByItemId = new Map(
+    options.nextItems
+      .filter((item): item is MyFlowAnchorDatedItem & { date: string } => Boolean(item.date))
+      .map((item) => [item.itemId, item.date]),
+  );
+
+  options.previousItems.forEach((item) => {
+    if (!item.date) return;
+    const nextDate = nextDateByItemId.get(item.itemId);
+    if (!nextDate || nextDate === item.date) return;
+    const previousKey = `${options.flowSlug}::${item.itemId}::${item.date}`;
+    if (!Object.prototype.hasOwnProperty.call(next, previousKey)) return;
+    const nextKey = `${options.flowSlug}::${item.itemId}::${nextDate}`;
+    next[nextKey] = next[previousKey];
+    delete next[previousKey];
+  });
+
+  return next;
 }
 
 export function getMyFlowOccurrenceExecutionStorageKey(

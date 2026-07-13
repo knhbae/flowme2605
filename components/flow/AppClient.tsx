@@ -50,6 +50,7 @@ import {
   getStoredMyFlowDateOverrides,
   getStoredMyFlowItemDrafts,
   getStoredMyFlowOccurrenceExecutionRecords,
+  rekeyMyFlowAnchorDatedRecord,
   saveStoredMyFlowDateOverrides,
   saveStoredMyFlowItemDrafts,
   saveStoredMyFlowOccurrenceExecutionRecords,
@@ -112,6 +113,7 @@ import {
 import {
   assessSourceBackedFlowMapUpdate,
   applySourceBackedPersistenceRecordToBundle,
+  buildSourceBackedFlowMapAnchorAdjustment,
   buildSourceBackedFlowMapPersonalCopyAdjustment,
   buildSourceBackedFlowMapPersistenceRecordUpdate,
   buildSourceBackedFlowMapPersistenceRecord,
@@ -3049,6 +3051,12 @@ type MyFlowPersonalCopySettingsDraft = {
   feedback?: string;
 };
 
+type MyFlowDirectAnchorSettingsDraft = {
+  mapId: string;
+  anchor: string;
+  feedback?: string;
+};
+
 type MyFlowInventoryGroup = {
   key: string;
   label: string;
@@ -3449,6 +3457,29 @@ function getMyFlowSettingsDateAnchorCopy(flow: MySavedFlow) {
 
 function canEditMyFlowSavedFlowSettings(flow: MySavedFlow): boolean {
   return Boolean(flow.savedMap?.personalCopy) || isUrlFirstDraftSavedFlow(flow);
+}
+
+function canEditMyFlowDirectSavedMapAnchor(flow: MySavedFlow): boolean {
+  if (
+    !flow.savedMap ||
+    flow.savedMap.personalCopy ||
+    isUrlFirstDraftSavedFlow(flow) ||
+    flow.savedMap.flowSlugs[0] !== flow.progress.slug
+  ) return false;
+  const publishPackage = buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId);
+  return Boolean(
+    publishPackage?.map.setupInput ||
+      flow.bundle.flow.anchor_type !== 'none' ||
+      flow.savedMap.anchor,
+  );
+}
+
+function getMyFlowDirectSavedMapAnchorCopy(flow: MySavedFlow) {
+  return getSourceBackedFlowMapDateAnchorCopy(
+    flow.savedMap?.mapId
+      ? buildSourceBackedFlowMapPublishPackage(flow.savedMap.mapId)
+      : getSourceBackedMyFlowMapForBundle(flow.bundle),
+  );
 }
 
 function getMyFlowPortableExportFlowTitle(flow: MySavedFlow): string {
@@ -4578,6 +4609,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStepCopiedLabel, setMyFlowStepCopiedLabel] = useState<string>(FLOW_EXPORT_FEEDBACK.memoCopied);
   const [myFlowStepDownloadedKey, setMyFlowStepDownloadedKey] = useState('');
   const [myFlowPersonalCopySettingsDraft, setMyFlowPersonalCopySettingsDraft] = useState<MyFlowPersonalCopySettingsDraft | null>(null);
+  const [myFlowDirectAnchorSettingsDraft, setMyFlowDirectAnchorSettingsDraft] = useState<MyFlowDirectAnchorSettingsDraft | null>(null);
   const [myFlowStructuralOverlaysBySlug, setMyFlowStructuralOverlaysBySlug] = useState<Record<string, PersonalStructuralOverlay>>({});
   const [myFlowStructuralAddOpenSlug, setMyFlowStructuralAddOpenSlug] = useState('');
   const [myFlowStructuralAddTitle, setMyFlowStructuralAddTitle] = useState('');
@@ -4803,6 +4835,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowDismissedMapUpdates({});
       setMyFlowExpandedMapUpdateId('');
       setMyFlowPersonalCopySettingsDraft(null);
+      setMyFlowDirectAnchorSettingsDraft(null);
       setMyFlowStructuralOverlaysBySlug({});
       setMyFlowStructuralAddOpenSlug('');
       setMyFlowStructuralAddTitle('');
@@ -7284,6 +7317,123 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     refreshSavedFlowState();
   };
 
+  const openMyFlowDirectAnchorSettings = (flow: MySavedFlow) => {
+    if (!canEditMyFlowDirectSavedMapAnchor(flow) || !flow.savedMap) return;
+    setMyFlowExpandedStructureSlug(flow.progress.slug);
+    setMyFlowDirectAnchorSettingsDraft({
+      mapId: flow.savedMap.mapId,
+      anchor: flow.anchor || flow.savedMap.anchor || '',
+    });
+  };
+
+  const saveMyFlowDirectAnchorSettings = (flow: MySavedFlow) => {
+    if (
+      typeof window === 'undefined' ||
+      !canEditMyFlowDirectSavedMapAnchor(flow) ||
+      !flow.savedMap ||
+      myFlowDirectAnchorSettingsDraft?.mapId !== flow.savedMap.mapId
+    ) return;
+
+    const nextAnchor = myFlowDirectAnchorSettingsDraft.anchor.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(nextAnchor)) {
+      setMyFlowDirectAnchorSettingsDraft((current) => current ? {
+        ...current,
+        feedback: `${getMyFlowDirectSavedMapAnchorCopy(flow).label}을 입력해 주세요.`,
+      } : current);
+      return;
+    }
+
+    const sourceSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
+    const baselineRecord = savedFlowMapPersistenceById[sourceSnapshot.mapId];
+    if (!baselineRecord) {
+      setMyFlowDirectAnchorSettingsDraft((current) => current ? {
+        ...current,
+        feedback: '저장된 일정 정보를 다시 확인해 주세요.',
+      } : current);
+      return;
+    }
+    const savedAt = new Date().toISOString();
+    const adjusted = buildSourceBackedFlowMapAnchorAdjustment(sourceSnapshot, {
+      anchor: nextAnchor,
+      savedAt,
+      baselineRecord,
+    });
+    if (!adjusted) {
+      setMyFlowDirectAnchorSettingsDraft((current) => current ? {
+        ...current,
+        feedback: '기준일을 저장하지 못했습니다.',
+      } : current);
+      return;
+    }
+
+    let nextDateOverrides = myFlowDateOverrides;
+    let nextItemDrafts = myFlowItemDrafts;
+    const mapFlows = savedFlows.filter((candidate) => candidate.savedMap?.mapId === sourceSnapshot.mapId);
+    mapFlows.forEach((candidate) => {
+      const previousRows = getMyFlowRows(candidate.bundle, candidate.anchor);
+      const nextRows = getMyFlowRows(candidate.bundle, nextAnchor);
+      const previousItems = previousRows.map((row) => ({ itemId: row.id, date: row.date }));
+      const nextItems = nextRows.map((row) => ({ itemId: row.id, date: row.date }));
+      nextDateOverrides = rekeyMyFlowAnchorDatedRecord(nextDateOverrides, {
+        flowSlug: candidate.progress.slug,
+        previousItems,
+        nextItems,
+      });
+      nextItemDrafts = rekeyMyFlowAnchorDatedRecord(nextItemDrafts, {
+        flowSlug: candidate.progress.slug,
+        previousItems,
+        nextItems,
+      });
+
+      const nextRowById = new Map(nextRows.map((row) => [row.id, row]));
+      const nextChecks = { ...candidate.checks };
+      previousRows.forEach((previousRow) => {
+        const nextRow = nextRowById.get(previousRow.id);
+        if (!nextRow) return;
+        const previousCheckIds = getMyFlowCheckIds(candidate.bundle, previousRow.id, candidate.anchor);
+        const nextCheckIds = getMyFlowCheckIds(candidate.bundle, nextRow.id, nextAnchor);
+        if (
+          previousCheckIds.length !== nextCheckIds.length ||
+          previousCheckIds.every((checkId, index) => checkId === nextCheckIds[index])
+        ) return;
+        const previousValues = previousCheckIds.map((checkId) => ({
+          present: Object.prototype.hasOwnProperty.call(nextChecks, checkId),
+          value: nextChecks[checkId],
+        }));
+        previousCheckIds.forEach((checkId) => delete nextChecks[checkId]);
+        nextCheckIds.forEach((checkId, index) => {
+          if (previousValues[index]?.present) nextChecks[checkId] = previousValues[index].value;
+        });
+      });
+      saveChecks(candidate.progress.slug, nextChecks);
+
+      const savedRecord = getSavedFlowRecord(candidate.progress.slug);
+      saveFlowRecord(candidate.progress.slug, {
+        selectedArtifactMode: savedRecord?.selectedArtifactMode ?? 'calendar',
+        anchor: nextAnchor,
+      });
+      saveStoredAnchor(candidate.progress.slug, { mode: 'custom', anchor: nextAnchor });
+    });
+
+    saveStoredMyFlowDateOverrides(nextDateOverrides);
+    saveStoredMyFlowItemDrafts(nextItemDrafts);
+    setMyFlowDateOverrides(nextDateOverrides);
+    setMyFlowItemDrafts(nextItemDrafts);
+    window.localStorage.setItem(
+      getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
+      JSON.stringify(adjusted.snapshot),
+    );
+    window.localStorage.setItem(
+      getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
+      JSON.stringify(adjusted.persistenceRecord),
+    );
+    setMyFlowSelectedDate(nextAnchor);
+    setMyFlowVisibleMonth(getMyFlowMonthStart(nextAnchor));
+    resetMyFlowRowDetailState();
+    setMyFlowDirectAnchorSettingsDraft(null);
+    refreshSavedFlowState();
+  };
+
   const getPostSaveContinuationRow = (): MyFlowCalendarRow | null => {
     if (postSavePrimaryContinuationRow) return postSavePrimaryContinuationRow;
     const postSaveFlowSlugs = new Set(postSaveFlows.map((flow) => flow.progress.slug));
@@ -9554,6 +9704,65 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderMyFlowDirectAnchorSettings = (flow: MySavedFlow) => {
+    if (
+      !canEditMyFlowDirectSavedMapAnchor(flow) ||
+      !flow.savedMap ||
+      myFlowDirectAnchorSettingsDraft?.mapId !== flow.savedMap.mapId
+    ) return null;
+    const dateAnchorCopy = getMyFlowDirectSavedMapAnchorCopy(flow);
+    return (
+      <form
+        data-testid="my-flow-direct-anchor-settings"
+        className="mt-3 grid gap-3 rounded-md border border-blue-100 bg-white px-3 py-3 text-sm"
+        onSubmit={(event) => {
+          event.preventDefault();
+          saveMyFlowDirectAnchorSettings(flow);
+        }}
+      >
+        <div>
+          <p className="text-xs font-semibold text-blue-700">전체 일정 기준</p>
+          <p data-testid="my-flow-direct-anchor-policy" className="mt-1 break-keep text-xs font-semibold leading-5 text-slate-500">
+            전체 상대 일정이 다시 맞춰집니다. 따로 바꾼 할 일 날짜와 메모는 그대로 유지돼요.
+          </p>
+        </div>
+        <label className="grid gap-1 text-xs font-semibold text-slate-700">
+          {dateAnchorCopy.label}
+          <input
+            data-testid="my-flow-direct-anchor-input"
+            aria-label={dateAnchorCopy.label}
+            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            type="date"
+            value={myFlowDirectAnchorSettingsDraft.anchor}
+            onChange={(event) => setMyFlowDirectAnchorSettingsDraft((current) => current ? {
+              ...current,
+              anchor: event.target.value,
+              feedback: '',
+            } : current)}
+          />
+        </label>
+        {myFlowDirectAnchorSettingsDraft.feedback ? (
+          <p className="text-xs font-semibold text-amber-700">{myFlowDirectAnchorSettingsDraft.feedback}</p>
+        ) : null}
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+          <button
+            type="button"
+            className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"
+            onClick={() => setMyFlowDirectAnchorSettingsDraft(null)}
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            className="min-h-9 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
+          >
+            일정 다시 맞추기
+          </button>
+        </div>
+      </form>
+    );
+  };
+
   const renderMyFlowExcludedSteps = (flow: MySavedFlow) => {
     if (flow.excludedRows.length === 0) return null;
     return (
@@ -10453,7 +10662,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
     const structuralEditEligible = isPersonalDraftStructuralEditEligible(flow.bundle);
     const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
+    const directAnchorEditable = canEditMyFlowDirectSavedMapAnchor(flow);
     const settingsDateAnchorCopy = settingsEditable ? getMyFlowSettingsDateAnchorCopy(flow) : null;
+    const directAnchorCopy = directAnchorEditable ? getMyFlowDirectSavedMapAnchorCopy(flow) : null;
     const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const structureLabel = flow.savedMap
@@ -10554,7 +10765,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </button>
           </div>
         ) : null}
+        {executionReady && directAnchorCopy ? (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              data-testid="my-flow-direct-anchor-settings-open"
+              aria-label={`${flowTitle} ${directAnchorCopy.editLabel}`}
+              className="inline-flex min-h-8 items-center justify-center rounded-md border border-blue-100 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:border-blue-300"
+              onClick={() => openMyFlowDirectAnchorSettings(flow)}
+            >
+              {directAnchorCopy.editLabel}
+            </button>
+          </div>
+        ) : null}
         {renderMyFlowPersonalCopySettings(flow)}
+        {renderMyFlowDirectAnchorSettings(flow)}
         {executionReady ? renderMyFlowCompletionFeedback(flow) : null}
         {executionReady ? renderMyFlowReuseNotice(flow) : null}
         {executionReady && flowExpanded ? (
@@ -10647,7 +10872,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const savedMapTitle = flow.savedMap ? toUserFacingMapTitle(flow.savedMap.title) : '';
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
     const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
+    const directAnchorEditable = canEditMyFlowDirectSavedMapAnchor(flow);
     const settingsDateAnchorCopy = settingsEditable ? getMyFlowSettingsDateAnchorCopy(flow) : null;
+    const directAnchorCopy = directAnchorEditable ? getMyFlowDirectSavedMapAnchorCopy(flow) : null;
     const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const nextRow = getSavedFlowNextRow(flow);
     const progressSummary = getMyFlowFlowProgressLabel(flow);
@@ -10732,9 +10959,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {personalCopySettingsLabel}
               </button>
             ) : null}
+            {directAnchorCopy ? (
+              <button
+                type="button"
+                data-testid="my-flow-direct-anchor-settings-open"
+                aria-label={`${flowTitle} ${directAnchorCopy.editLabel}`}
+                className="mt-3 inline-flex min-h-9 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                onClick={() => openMyFlowDirectAnchorSettings(flow)}
+              >
+                {directAnchorCopy.editLabel}
+              </button>
+            ) : null}
           </div>
         </div>
         {renderMyFlowPersonalCopySettings(flow)}
+        {renderMyFlowDirectAnchorSettings(flow)}
         {executionReady ? <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
           <p className={`text-xs font-semibold ${showContentReadinessBadge ? 'text-slate-600' : 'text-blue-700'}`}>{nextRow ? getMyFlowRowStatusLabel(nextRow) : '다음에 볼 항목'}</p>
           {nextRow ? (

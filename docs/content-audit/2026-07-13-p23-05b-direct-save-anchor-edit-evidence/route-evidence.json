@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-07-13T18:00:00+09:00",
+  "baselineCommit": "9e1ab1b",
+  "scenario": {
+    "route": "/flow-maps/moving-d30 -> /my -> /calendar",
+    "viewports": [390, 1024],
+    "initialAnchor": "2026-07-22",
+    "nextAnchor": "2026-08-05",
+    "personalItemDate": "2026-07-07"
+  },
+  "markers": {
+    "directSavedMapAnchorEditEntryVisibleMobile": true,
+    "directSavedMapAnchorEditEntryVisibleWide": true,
+    "directSavedMapAnchorEditLabel": "이사일 바꾸기",
+    "directSavedMapAnchorPersistedAfterReload": true,
+    "directSavedMapSnapshotAnchorUpdated": true,
+    "directSavedMapPersistenceAnchorUpdated": true,
+    "directSavedMapChildSavedRecordAnchorUpdated": true,
+    "directSavedMapChildStoredAnchorUpdated": true,
+    "directSavedMapSourceVersionChanged": false,
+    "directSavedMapPersonalCopyCreated": false,
+    "directSavedMapPersonalDateOverridePreserved": true,
+    "directSavedMapPersonalMemoPreserved": true,
+    "directSavedMapOldRelativeDateVisibleCount": 0,
+    "directSavedMapNewRelativeDateVisibleCount": 1,
+    "directSavedMapPersonalDateCalendarVisibleCount": 1,
+    "directSavedMapPersonalDateIcsEventCount": 1,
+    "sourceBackedStructuralEditControlAddedCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "userReachableWithoutFixture": true,
+    "formalObservedParticipantCount": 0,
+    "ownerFeedbackReferenced": true
+  }
+}

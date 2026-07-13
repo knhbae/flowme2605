@@ -17,6 +17,7 @@ import {
   getFlowScopedMyFlowPersonalExecutionState,
   getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowOccurrenceExecutionRecords,
+  rekeyMyFlowAnchorDatedRecord,
   saveStoredMyFlowOccurrenceExecutionRecords,
 } from './my-flow-personal-state';
 import { expandPersonalDraftCalendarOccurrenceRows } from './personal-draft-calendar-occurrence';
@@ -166,6 +167,30 @@ function generatedPreviewBundle(): FlowBundle {
   preview.flow.source_status = 'preview';
   return preview;
 }
+
+test('anchor change rekeys dated personal values without touching stable or unrelated keys', () => {
+  const record = {
+    'source-backed-moving-d30::moving-method-quotes::2026-06-22': '2026-07-07',
+    'source-backed-moving-d30::moving-method-quotes::2026-07-06': 'stale',
+    'source-backed-moving-d30::moving-method-quotes::draft-overlay': 'stable',
+    'other-flow::item::2026-06-22': 'other',
+  };
+  const previousItems = [{ itemId: 'moving-method-quotes', date: '2026-06-22' }];
+  const nextItems = [{ itemId: 'moving-method-quotes', date: '2026-07-06' }];
+
+  const rekeyed = rekeyMyFlowAnchorDatedRecord(record, {
+    flowSlug: 'source-backed-moving-d30',
+    previousItems,
+    nextItems,
+  });
+
+  assert.equal(rekeyed['source-backed-moving-d30::moving-method-quotes::2026-06-22'], undefined);
+  assert.equal(rekeyed['source-backed-moving-d30::moving-method-quotes::2026-07-06'], '2026-07-07');
+  assert.equal(rekeyed['source-backed-moving-d30::moving-method-quotes::draft-overlay'], 'stable');
+  assert.equal(rekeyed['other-flow::item::2026-06-22'], 'other');
+  assert.deepEqual(previousItems, [{ itemId: 'moving-method-quotes', date: '2026-06-22' }]);
+  assert.deepEqual(nextItems, [{ itemId: 'moving-method-quotes', date: '2026-07-06' }]);
+});
 
 test('personal structural overlay golden fixtures preserve source and resolve effective items', () => {
   assert.equal(personalStructuralOverlayGoldenFixtures.length, 12);

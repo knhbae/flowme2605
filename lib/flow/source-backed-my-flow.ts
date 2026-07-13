@@ -219,6 +219,11 @@ export type SourceBackedFlowMapPersonalCopyAdjustment = {
   persistenceRecord: SourceBackedFlowMapPersistenceRecord;
 };
 
+export type SourceBackedFlowMapAnchorAdjustment = {
+  snapshot: SourceBackedFlowMapSavedSnapshot;
+  persistenceRecord: SourceBackedFlowMapPersistenceRecord;
+};
+
 export type SourceBackedFlowMapUpdateAssessment = {
   status: 'up_to_date' | 'map_missing' | 'minor_update_available' | 'review_before_apply';
   userAction: 'none' | 'reconnect_source' | 'review_changes';
@@ -1652,6 +1657,38 @@ export function buildSourceBackedFlowMapPersistenceRecordUpdate(
       ...(anchor ? { anchor } : {}),
     },
   };
+}
+
+export function buildSourceBackedFlowMapAnchorAdjustment(
+  saved: SourceBackedFlowMapSavedSnapshot,
+  options: {
+    anchor: string;
+    savedAt?: string;
+    baselineRecord: SourceBackedFlowMapPersistenceRecord;
+  },
+): SourceBackedFlowMapAnchorAdjustment | undefined {
+  const anchor = options.anchor.trim();
+  const parsedAnchor = new Date(`${anchor}T00:00:00.000Z`);
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(anchor) ||
+    Number.isNaN(parsedAnchor.getTime()) ||
+    parsedAnchor.toISOString().slice(0, 10) !== anchor
+  ) return undefined;
+
+  const savedAt = options.savedAt ?? saved.savedAt;
+  const snapshot: SourceBackedFlowMapSavedSnapshot = {
+    ...saved,
+    savedAt,
+    anchor,
+  };
+  const persistenceRecord = buildSourceBackedFlowMapPersistenceRecordUpdate(snapshot, {
+    savedAt,
+    anchor,
+    baselineRecord: options.baselineRecord,
+  });
+  if (!persistenceRecord) return undefined;
+
+  return { snapshot, persistenceRecord };
 }
 
 export function buildSourceBackedFlowMapPersonalCopyAdjustment(
