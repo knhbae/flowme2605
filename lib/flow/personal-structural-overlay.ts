@@ -1,4 +1,5 @@
 import { normalizePersonalStructuralSchedule } from './personal-structural-schedule';
+import type { PersonalStructuralRepeat } from './personal-structural-recurrence';
 
 export const PERSONAL_STRUCTURAL_OVERLAY_SCHEMA_VERSION = 1 as const;
 export const PERSONAL_STRUCTURAL_OVERLAY_STORAGE_KEY_PREFIX =
@@ -14,10 +15,7 @@ export type PersonalStructuralSchedule =
       time?: string;
       durationMinutes?: number;
       timeZone?: string;
-      repeat?: {
-        frequency: 'daily' | 'weekly' | 'monthly';
-        interval: number;
-      };
+      repeat?: PersonalStructuralRepeat;
     }
   | {
       mode: 'anchor_offset';

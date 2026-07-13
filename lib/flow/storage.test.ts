@@ -37,6 +37,26 @@ import {
 } from './personal-structural-projection';
 import { personalStructuralScheduleGoldenFixtures } from './personal-structural-schedule.fixtures';
 import {
+  createRecurrenceFixtureSchedule,
+  createRecurrenceFixtureSeries,
+  personalStructuralOccurrenceStateMatrix,
+  personalStructuralRecurrenceGoldenFixtureIds,
+  PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+} from './personal-structural-recurrence.fixtures';
+import {
+  appendPersonalStructuralRecurrenceRevision,
+  buildPersonalStructuralOccurrenceId,
+  migrateLegacyPersonalStructuralRepeat,
+  normalizePersonalStructuralRecurrence,
+  setPersonalStructuralOccurrenceOverride,
+} from './personal-structural-recurrence';
+import {
+  buildPersonalDraftOccurrenceProjection,
+  generatePersonalStructuralOccurrences,
+  transitionPersonalStructuralOccurrenceExecution,
+  type PersonalStructuralOccurrenceExecutionRecord,
+} from './personal-structural-occurrence';
+import {
   buildPersonalStructuralScheduleProjection,
   normalizePersonalStructuralSchedule,
   PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
@@ -876,6 +896,745 @@ test('personal structural timed projection sorts all-day first and keeps stable 
   assert.equal(doneProjection.rowsByDestination.calendarScreen.length, 5);
   assert.equal(editedProjection.rowsByDestination.calendarScreen.length, 5);
   assert.equal(JSON.stringify(sourceItems), sourceBefore);
+});
+
+test('personal draft recurrence golden fixtures cover bounded daily weekly monthly and timed projections', () => {
+  assert.equal(personalStructuralRecurrenceGoldenFixtureIds.length, 30);
+  assert.equal(new Set(personalStructuralRecurrenceGoldenFixtureIds).size, 30);
+
+  const project = (options: {
+    itemId: string;
+    date: string;
+    rule?: Parameters<typeof createRecurrenceFixtureSeries>[0]['rule'];
+    range: { start: string; end: string };
+    time?: string;
+    durationMinutes?: number;
+    timeZone?: string;
+    maxOccurrences?: number;
+  }) => {
+    const series = options.rule
+      ? createRecurrenceFixtureSeries({
+          itemId: options.itemId,
+          startDate: options.date,
+          rule: options.rule,
+          ...(options.time ? { time: options.time } : {}),
+          ...(options.durationMinutes !== undefined
+            ? { durationMinutes: options.durationMinutes }
+            : {}),
+          ...(options.timeZone ? { timeZone: options.timeZone } : {}),
+        })
+      : undefined;
+    return generatePersonalStructuralOccurrences({
+      identityNamespace: 'recurrence-golden-fixtures',
+      itemId: options.itemId,
+      schedule: createRecurrenceFixtureSchedule({
+        date: options.date,
+        ...(series ? { series } : {}),
+        ...(options.time ? { time: options.time } : {}),
+        ...(options.durationMinutes !== undefined
+          ? { durationMinutes: options.durationMinutes }
+          : {}),
+        ...(options.timeZone ? { timeZone: options.timeZone } : {}),
+      }),
+      range: options.range,
+      fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+      ...(options.maxOccurrences ? { maxOccurrences: options.maxOccurrences } : {}),
+    });
+  };
+  const dates = (result: ReturnType<typeof project>) =>
+    result.projectedOccurrences.map((occurrence) => occurrence.localDate);
+
+  assert.deepEqual(
+    dates(project({
+      itemId: 'none',
+      date: '2026-07-13',
+      range: { start: '2026-07-01', end: '2026-07-31' },
+    })),
+    ['2026-07-13'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'daily',
+      date: '2026-07-13',
+      rule: { frequency: 'daily', interval: 1 },
+      range: { start: '2026-07-13', end: '2026-07-15' },
+    })),
+    ['2026-07-13', '2026-07-14', '2026-07-15'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'every-two-days',
+      date: '2026-07-13',
+      rule: { frequency: 'daily', interval: 2 },
+      range: { start: '2026-07-13', end: '2026-07-17' },
+    })),
+    ['2026-07-13', '2026-07-15', '2026-07-17'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'weekdays',
+      date: '2026-07-13',
+      rule: {
+        frequency: 'weekly',
+        interval: 1,
+        weekdays: ['MO', 'TU', 'WE', 'TH', 'FR'],
+      },
+      range: { start: '2026-07-13', end: '2026-07-19' },
+    })),
+    ['2026-07-13', '2026-07-14', '2026-07-15', '2026-07-16', '2026-07-17'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'three-days-weekly',
+      date: '2026-07-13',
+      rule: { frequency: 'weekly', interval: 1, weekdays: ['MO', 'WE', 'FR'] },
+      range: { start: '2026-07-13', end: '2026-07-19' },
+    })),
+    ['2026-07-13', '2026-07-15', '2026-07-17'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'every-two-weeks',
+      date: '2026-07-13',
+      rule: { frequency: 'weekly', interval: 2, weekdays: ['MO'] },
+      range: { start: '2026-07-13', end: '2026-08-10' },
+    })),
+    ['2026-07-13', '2026-07-27', '2026-08-10'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'monthly',
+      date: '2026-01-15',
+      rule: {
+        frequency: 'monthly',
+        interval: 1,
+        dayOfMonth: 15,
+        invalidMonthDayPolicy: 'skip',
+      },
+      range: { start: '2026-01-01', end: '2026-04-30' },
+    })),
+    ['2026-01-15', '2026-02-15', '2026-03-15', '2026-04-15'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'monthly-day-31-skip',
+      date: '2026-01-31',
+      rule: {
+        frequency: 'monthly',
+        interval: 1,
+        dayOfMonth: 31,
+        invalidMonthDayPolicy: 'skip',
+      },
+      range: { start: '2026-01-01', end: '2026-04-30' },
+    })),
+    ['2026-01-31', '2026-03-31'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'until-end',
+      date: '2026-07-13',
+      rule: {
+        frequency: 'daily',
+        interval: 1,
+        end: { mode: 'until', date: '2026-07-15' },
+      },
+      range: { start: '2026-07-01', end: '2026-07-31' },
+    })),
+    ['2026-07-13', '2026-07-14', '2026-07-15'],
+  );
+  assert.deepEqual(
+    dates(project({
+      itemId: 'count-end',
+      date: '2026-07-13',
+      rule: {
+        frequency: 'daily',
+        interval: 1,
+        end: { mode: 'count', count: 2 },
+      },
+      range: { start: '2026-07-01', end: '2026-07-31' },
+    })),
+    ['2026-07-13', '2026-07-14'],
+  );
+
+  const limited = project({
+    itemId: 'open-ended-range-bound',
+    date: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1 },
+    range: { start: '2026-07-13', end: '2026-08-31' },
+    maxOccurrences: 3,
+  });
+  assert.equal(limited.occurrences.length, 3);
+  assert.equal(limited.generationLimitReached, true);
+
+  const allDay = project({
+    itemId: 'all-day-recurrence',
+    date: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1, end: { mode: 'count', count: 2 } },
+    range: { start: '2026-07-13', end: '2026-07-14' },
+  });
+  assert.ok(
+    allDay.occurrences.every(
+      (occurrence) => occurrence.scheduleProjection.scheduleState === 'all_day',
+    ),
+  );
+
+  const ianaTimed = project({
+    itemId: 'iana-timed-recurrence',
+    date: '2026-03-07',
+    rule: { frequency: 'daily', interval: 1, end: { mode: 'count', count: 3 } },
+    range: { start: '2026-03-07', end: '2026-03-09' },
+    time: '09:00',
+    durationMinutes: 45,
+    timeZone: 'America/New_York',
+  });
+  assert.deepEqual(
+    ianaTimed.occurrences.map((occurrence) => occurrence.scheduleProjection.startTime),
+    ['09:00', '09:00', '09:00'],
+  );
+  assert.ok(
+    ianaTimed.occurrences.every(
+      (occurrence) => occurrence.scheduleProjection.timeZonePolicy === 'iana',
+    ),
+  );
+  assert.equal(
+    new Set(
+      ianaTimed.occurrences.map((occurrence) => occurrence.scheduleProjection.startTime),
+    ).size,
+    1,
+  );
+
+  const floatingTimed = project({
+    itemId: 'floating-timed-recurrence',
+    date: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1, end: { mode: 'count', count: 2 } },
+    range: { start: '2026-07-13', end: '2026-07-14' },
+    time: '18:30',
+    durationMinutes: 30,
+  });
+  assert.ok(
+    floatingTimed.occurrences.every(
+      (occurrence) => occurrence.scheduleProjection.timeZonePolicy === 'floating_local',
+    ),
+  );
+});
+
+test('personal draft recurrence keeps series revision and occurrence identities stable across edits', () => {
+  const baseSeries = createRecurrenceFixtureSeries({
+    itemId: 'identity-item',
+    startDate: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1 },
+    time: '09:00',
+    durationMinutes: 30,
+    timeZone: 'Asia/Seoul',
+  });
+  const baseSchedule = createRecurrenceFixtureSchedule({
+    date: '2026-07-13',
+    series: baseSeries,
+    time: '09:00',
+    durationMinutes: 30,
+    timeZone: 'Asia/Seoul',
+  });
+  const before = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'identity-item',
+    schedule: baseSchedule,
+    range: { start: '2026-07-13', end: '2026-07-17' },
+    personalOrderRank: 1,
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  const reordered = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'identity-item',
+    schedule: baseSchedule,
+    range: { start: '2026-07-13', end: '2026-07-17' },
+    personalOrderRank: 9,
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.deepEqual(
+    before.occurrences.map((occurrence) => occurrence.occurrenceId),
+    reordered.occurrences.map((occurrence) => occurrence.occurrenceId),
+  );
+  assert.equal(before.series?.seriesId, reordered.series?.seriesId);
+
+  const revisedSeries = appendPersonalStructuralRecurrenceRevision({
+    series: baseSeries,
+    scope: 'future',
+    effectiveFrom: '2026-07-15',
+    rule: { frequency: 'daily', interval: 2 },
+    scheduleTemplate: {
+      time: '10:00',
+      durationMinutes: 45,
+      timeZone: 'Asia/Seoul',
+    },
+    updatedAt: '2026-07-14T00:00:00.000Z',
+    executionRecordCount: 1,
+  });
+  const revised = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'identity-item',
+    schedule: createRecurrenceFixtureSchedule({
+      date: '2026-07-13',
+      series: revisedSeries,
+      time: '09:00',
+      durationMinutes: 30,
+      timeZone: 'Asia/Seoul',
+    }),
+    range: { start: '2026-07-13', end: '2026-07-18' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.deepEqual(
+    revised.occurrences.slice(0, 2).map((occurrence) => occurrence.occurrenceId),
+    before.occurrences.slice(0, 2).map((occurrence) => occurrence.occurrenceId),
+  );
+  assert.deepEqual(
+    revised.occurrences.map((occurrence) => occurrence.localDate),
+    ['2026-07-13', '2026-07-14', '2026-07-15', '2026-07-17'],
+  );
+  assert.deepEqual(
+    revised.occurrences.slice(2).map((occurrence) => occurrence.scheduleProjection.startTime),
+    ['10:00', '10:00'],
+  );
+
+  const originalOccurrence = before.occurrences[0];
+  const overriddenSeries = setPersonalStructuralOccurrenceOverride({
+    series: baseSeries,
+    override: {
+      occurrenceId: originalOccurrence.occurrenceId,
+      mode: 'reschedule',
+      schedule: {
+        date: '2026-07-14',
+        time: '11:00',
+        durationMinutes: 60,
+        timeZone: 'Asia/Seoul',
+      },
+      updatedAt: '2026-07-13T01:00:00.000Z',
+    },
+  });
+  const overridden = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'identity-item',
+    schedule: createRecurrenceFixtureSchedule({
+      date: '2026-07-13',
+      series: overriddenSeries,
+      time: '09:00',
+      durationMinutes: 30,
+      timeZone: 'Asia/Seoul',
+    }),
+    range: { start: '2026-07-13', end: '2026-07-17' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  const movedOccurrence = overridden.occurrences.find(
+    (occurrence) => occurrence.occurrenceId === originalOccurrence.occurrenceId,
+  );
+  assert.equal(movedOccurrence?.localDate, '2026-07-14');
+  assert.equal(movedOccurrence?.scheduleProjection.startTime, '11:00');
+  assert.equal(movedOccurrence?.occurrenceOverrideApplied, true);
+  assert.equal(new Set(overridden.occurrences.map((entry) => entry.occurrenceId)).size,
+    overridden.occurrences.length);
+
+  const allEditWithoutHistory = appendPersonalStructuralRecurrenceRevision({
+    series: baseSeries,
+    scope: 'all',
+    effectiveFrom: '2026-07-14',
+    rule: { frequency: 'weekly', interval: 1, weekdays: ['TU'] },
+    updatedAt: '2026-07-14T02:00:00.000Z',
+    executionRecordCount: 0,
+  });
+  assert.equal(allEditWithoutHistory.revisions.length, 1);
+  assert.equal(
+    allEditWithoutHistory.revisions[0].revisionId,
+    baseSeries.revisions[0].revisionId,
+  );
+  const allEditWithHistory = appendPersonalStructuralRecurrenceRevision({
+    series: baseSeries,
+    scope: 'all',
+    effectiveFrom: '2026-07-15',
+    rule: { frequency: 'weekly', interval: 1, weekdays: ['WE'] },
+    updatedAt: '2026-07-14T03:00:00.000Z',
+    executionRecordCount: 1,
+  });
+  assert.equal(allEditWithHistory.revisions.length, 2);
+  assert.equal(
+    allEditWithHistory.revisions[0].revisionId,
+    baseSeries.revisions[0].revisionId,
+  );
+
+  const excludedOccurrenceSeries = setPersonalStructuralOccurrenceOverride({
+    series: baseSeries,
+    override: {
+      occurrenceId: before.occurrences[1].occurrenceId,
+      mode: 'exclude',
+      updatedAt: '2026-07-14T04:00:00.000Z',
+    },
+  });
+  const excludedOccurrenceProjection = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'identity-item',
+    schedule: createRecurrenceFixtureSchedule({
+      date: '2026-07-13',
+      series: excludedOccurrenceSeries,
+      time: '09:00',
+      durationMinutes: 30,
+      timeZone: 'Asia/Seoul',
+    }),
+    range: { start: '2026-07-13', end: '2026-07-17' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(excludedOccurrenceProjection.occurrences.length, before.occurrences.length);
+  assert.equal(
+    excludedOccurrenceProjection.projectedOccurrences.length,
+    before.projectedOccurrences.length - 1,
+  );
+});
+
+test('personal recurrence execution adapter keeps done reopened skipped and held separate from structure', () => {
+  const identity = {
+    occurrenceId: 'occurrence-state-a',
+    seriesId: 'series-state-a',
+    revisionId: 'revision-state-a',
+  };
+  const done = transitionPersonalStructuralOccurrenceExecution({
+    ...identity,
+    nextState: 'done',
+    at: '2026-07-13T01:00:00.000Z',
+  });
+  const reopened = transitionPersonalStructuralOccurrenceExecution({
+    ...identity,
+    current: done,
+    nextState: 'reopened',
+    at: '2026-07-13T02:00:00.000Z',
+  });
+  assert.equal(done.state, 'done');
+  assert.equal(reopened.state, 'reopened');
+  assert.equal(reopened.completedAt, done.completedAt);
+  assert.equal(reopened.history.length, 2);
+  const completedAgain = transitionPersonalStructuralOccurrenceExecution({
+    ...identity,
+    current: reopened,
+    nextState: 'done',
+    at: '2026-07-13T02:30:00.000Z',
+  });
+  assert.equal(completedAgain.completedAt, '2026-07-13T02:30:00.000Z');
+  assert.equal(completedAgain.history.length, 3);
+
+  const skipped = transitionPersonalStructuralOccurrenceExecution({
+    occurrenceId: 'occurrence-state-skipped',
+    seriesId: identity.seriesId,
+    revisionId: identity.revisionId,
+    nextState: 'skipped',
+    at: '2026-07-13T03:00:00.000Z',
+  });
+  const held = transitionPersonalStructuralOccurrenceExecution({
+    occurrenceId: 'occurrence-state-held',
+    seriesId: identity.seriesId,
+    revisionId: identity.revisionId,
+    nextState: 'held',
+    at: '2026-07-13T04:00:00.000Z',
+  });
+  assert.equal(skipped.state, 'skipped');
+  assert.equal(held.state, 'held');
+  assert.notEqual(skipped.state, held.state);
+  assert.equal(personalStructuralOccurrenceStateMatrix.length, 10);
+  assert.throws(() =>
+    transitionPersonalStructuralOccurrenceExecution({
+      ...identity,
+      current: done,
+      nextState: 'skipped',
+      at: '2026-07-13T05:00:00.000Z',
+    }),
+  );
+  assert.throws(() =>
+    transitionPersonalStructuralOccurrenceExecution({
+      ...identity,
+      nextState: 'done',
+      at: 'not-a-time',
+    }),
+  );
+
+  const series = createRecurrenceFixtureSeries({
+    itemId: 'execution-membership',
+    startDate: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1, end: { mode: 'count', count: 3 } },
+  });
+  const schedule = createRecurrenceFixtureSchedule({ date: '2026-07-13', series });
+  const pending = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'execution-membership',
+    schedule,
+    range: { start: '2026-07-13', end: '2026-07-15' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  const first = pending.occurrences[0];
+  const record = transitionPersonalStructuralOccurrenceExecution({
+    occurrenceId: first.occurrenceId,
+    seriesId: first.seriesId,
+    revisionId: first.revisionId,
+    nextState: 'done',
+    at: '2026-07-13T06:00:00.000Z',
+  });
+  const withDone = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'execution-membership',
+    schedule,
+    range: { start: '2026-07-13', end: '2026-07-15' },
+    executionRecords: [record],
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(withDone.projectedOccurrences.length, pending.projectedOccurrences.length);
+  assert.equal(withDone.occurrences[0].executionState, 'done');
+
+  const tombstoned = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'execution-membership',
+    schedule,
+    range: { start: '2026-07-13', end: '2026-07-15' },
+    executionRecords: [record],
+    tombstoned: true,
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(tombstoned.projectedOccurrences.length, 0);
+  assert.equal(tombstoned.executionRecords[0].occurrenceId, record.occurrenceId);
+
+  const restored = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'execution-membership',
+    schedule,
+    range: { start: '2026-07-13', end: '2026-07-15' },
+    executionRecords: [record],
+    tombstoned: false,
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.deepEqual(
+    restored.occurrences.map((entry) => entry.occurrenceId),
+    pending.occurrences.map((entry) => entry.occurrenceId),
+  );
+});
+
+test('personal recurrence migration and malformed defense preserve schedules and stay draft-only', () => {
+  const legacy = migrateLegacyPersonalStructuralRepeat({
+    repeat: { frequency: 'weekly', interval: 2 },
+    identityNamespace: 'legacy-copy',
+    itemId: 'legacy-repeat-item',
+    startDate: '2026-07-13',
+    time: '09:00',
+    durationMinutes: 30,
+    timeZone: 'Asia/Seoul',
+    updatedAt: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(legacy.legacyMigrated, true);
+  assert.equal(legacy.series?.revisions[0].rule.frequency, 'weekly');
+  assert.deepEqual(legacy.series?.revisions[0].rule.weekdays, ['MO']);
+  assert.equal(legacy.series?.revisions[0].scheduleTemplate?.time, '09:00');
+
+  const preset = normalizePersonalStructuralRecurrence({
+    value: undefined,
+    repeatPreset: 'monthly',
+    identityNamespace: 'preset-copy',
+    itemId: 'preset-item',
+    startDate: '2026-07-31',
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(preset.legacyMigrated, true);
+  assert.equal(preset.series?.revisions[0].rule.dayOfMonth, 31);
+  assert.equal(preset.series?.revisions[0].rule.invalidMonthDayPolicy, 'skip');
+
+  const sourceSeries = createRecurrenceFixtureSeries({
+    itemId: 'source-preservation',
+    startDate: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1 },
+  });
+  const sourceSchedule = createRecurrenceFixtureSchedule({
+    date: '2026-07-13',
+    series: sourceSeries,
+  });
+  const before = JSON.stringify(sourceSchedule);
+  const projection = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'source-preservation',
+    schedule: sourceSchedule,
+    range: { start: '2026-07-13', end: '2026-07-14' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(JSON.stringify(sourceSchedule), before);
+  assert.equal(projection.projectedOccurrences.length, 2);
+
+  const normalizedRichOverlay = normalizePersonalStructuralOverlay(
+    {
+      schemaVersion: 1,
+      savedCopyId: 'recurrence-overlay-copy',
+      flowId: 'recurrence-overlay-flow',
+      userItems: [
+        {
+          itemId: 'recurrence-overlay-item',
+          provenance: 'user_created',
+          title: 'Recurring personal item',
+          schedule: {
+            ...sourceSchedule,
+            repeat: {
+              ...sourceSeries,
+              state: 'done',
+            },
+          },
+          createdAt: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+          orderKey: 0,
+        },
+      ],
+      itemTombstones: [],
+      orderOverride: ['recurrence-overlay-item'],
+      selection: {
+        mode: 'all_except_excluded',
+        includedItemIds: [],
+        excludedItemIds: [],
+      },
+      updatedAt: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+    },
+    { fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP },
+  );
+  assert.equal(normalizedRichOverlay?.userItems.length, 1);
+  const persistedRepeat = normalizedRichOverlay?.userItems[0].schedule?.mode === 'fixed_date'
+    ? normalizedRichOverlay.userItems[0].schedule.repeat
+    : undefined;
+  assert.equal(
+    persistedRepeat && 'schemaVersion' in persistedRepeat
+      ? persistedRepeat.seriesId
+      : undefined,
+    sourceSeries.seriesId,
+  );
+  assert.equal(
+    persistedRepeat && 'state' in persistedRepeat ? persistedRepeat.state : undefined,
+    undefined,
+  );
+
+  const malformedSchedule = normalizePersonalStructuralSchedule({
+    mode: 'fixed_date',
+    date: '2026-07-13',
+    repeat: {
+      schemaVersion: 1,
+      seriesId: 'malformed-series',
+      status: 'active',
+      revisions: [{ effectiveFrom: 'not-a-date', rule: { frequency: 'unknown' } }],
+      occurrenceOverrides: [],
+      updatedAt: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+    },
+  });
+  assert.ok(malformedSchedule.schedule);
+  assert.equal(malformedSchedule.schedule?.mode, 'fixed_date');
+  assert.equal(
+    malformedSchedule.schedule?.mode === 'fixed_date'
+      ? malformedSchedule.schedule.repeat
+      : undefined,
+    undefined,
+  );
+
+  assert.equal(
+    buildPersonalDraftOccurrenceProjection({
+      personalDraftEligible: false,
+      ownership: 'source',
+      identityNamespace: 'published-flow',
+      itemId: 'published-item',
+      schedule: { mode: 'fixed_date', date: '2026-07-13' },
+      range: { start: '2026-07-13', end: '2026-07-13' },
+    }),
+    undefined,
+  );
+  assert.equal(
+    buildPersonalDraftOccurrenceProjection({
+      personalDraftEligible: true,
+      ownership: 'source',
+      identityNamespace: 'draft-flow',
+      itemId: 'draft-source-item',
+      schedule: { mode: 'fixed_date', date: '2026-07-13' },
+      range: { start: '2026-07-13', end: '2026-07-13' },
+    }),
+    undefined,
+  );
+});
+
+test('personal recurrence range and duplicate guards cap projection without losing the item contract', () => {
+  const series = createRecurrenceFixtureSeries({
+    itemId: 'range-guard',
+    startDate: '2026-07-13',
+    rule: { frequency: 'daily', interval: 1 },
+  });
+  const schedule = createRecurrenceFixtureSchedule({ date: '2026-07-13', series });
+  const outside = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'range-guard',
+    schedule,
+    range: { start: '2026-06-01', end: '2026-06-30' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(outside.occurrences.length, 0);
+
+  const limited = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'range-guard',
+    schedule,
+    range: { start: '2026-07-13', end: '2030-12-31' },
+    maxOccurrences: 5,
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(limited.occurrences.length, 5);
+  assert.equal(limited.generationLimitReached, true);
+  assert.equal(new Set(limited.occurrences.map((entry) => entry.occurrenceId)).size, 5);
+
+  const paused = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'range-guard',
+    schedule: createRecurrenceFixtureSchedule({
+      date: '2026-07-13',
+      series: {
+        ...series,
+        status: 'paused',
+        statusEffectiveFrom: '2026-07-15',
+      },
+    }),
+    range: { start: '2026-07-13', end: '2026-07-20' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.deepEqual(
+    paused.projectedOccurrences.map((entry) => entry.localDate),
+    ['2026-07-13', '2026-07-14'],
+  );
+
+  const duplicateOccurrenceId = buildPersonalStructuralOccurrenceId({
+    revisionId: series.revisions[0].revisionId,
+    scheduledDate: '2026-07-13',
+  });
+  const duplicateRevisionSchedule = createRecurrenceFixtureSchedule({
+    date: '2026-07-13',
+    series: {
+      ...series,
+      revisions: [series.revisions[0], { ...series.revisions[0] }],
+    },
+  });
+  const duplicateGuarded = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'range-guard',
+    schedule: duplicateRevisionSchedule,
+    range: { start: '2026-07-13', end: '2026-07-14' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(
+    duplicateGuarded.occurrences.filter(
+      (entry) => entry.occurrenceId === duplicateOccurrenceId,
+    ).length,
+    1,
+  );
+  assert.equal(
+    new Set(duplicateGuarded.occurrences.map((entry) => entry.occurrenceId)).size,
+    duplicateGuarded.occurrences.length,
+  );
+
+  const invalidRange = generatePersonalStructuralOccurrences({
+    identityNamespace: 'recurrence-golden-fixtures',
+    itemId: 'range-guard',
+    schedule,
+    range: { start: '2026-07-20', end: '2026-07-10' },
+    fallbackTimestamp: PERSONAL_STRUCTURAL_RECURRENCE_FIXTURE_TIMESTAMP,
+  });
+  assert.equal(invalidRange.occurrences.length, 0);
+  assert.ok(invalidRange.warnings.includes('invalid_occurrence_projection_range'));
 });
 
 test('personal draft structural order and persistent recovery preserve IDs, values, and source', () => {

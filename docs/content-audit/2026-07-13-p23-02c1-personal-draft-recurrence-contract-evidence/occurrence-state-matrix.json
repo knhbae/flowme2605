@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "ownership": {
+    "structuralRecurrence": [
+      "seriesId",
+      "ruleRevisions",
+      "scheduleTemplates",
+      "occurrenceScheduleOverrides",
+      "seriesStatus"
+    ],
+    "occurrenceProjection": [
+      "occurrenceId",
+      "localSchedule",
+      "destinationEligibility"
+    ],
+    "executionRun": [
+      "pending",
+      "done",
+      "reopened",
+      "skipped",
+      "held",
+      "transitionTimestamps"
+    ]
+  },
+  "transitions": [
+    { "from": "pending", "to": "done", "allowed": true },
+    { "from": "pending", "to": "skipped", "allowed": true },
+    { "from": "pending", "to": "held", "allowed": true },
+    { "from": "done", "to": "reopened", "allowed": true },
+    { "from": "done", "to": "skipped", "allowed": false },
+    { "from": "reopened", "to": "done", "allowed": true },
+    { "from": "reopened", "to": "skipped", "allowed": true },
+    { "from": "reopened", "to": "held", "allowed": true },
+    { "from": "skipped", "to": "reopened", "allowed": true },
+    { "from": "held", "to": "reopened", "allowed": true }
+  ],
+  "editScopes": [
+    {
+      "scope": "this",
+      "result": "occurrence_override",
+      "pastExecutionPreserved": true
+    },
+    {
+      "scope": "future",
+      "result": "new_rule_revision",
+      "pastExecutionPreserved": true
+    },
+    {
+      "scope": "all_without_history",
+      "result": "replace_first_revision_in_place",
+      "pastExecutionPreserved": true
+    },
+    {
+      "scope": "all_with_history",
+      "result": "new_rule_revision",
+      "pastExecutionPreserved": true
+    }
+  ],
+  "semanticSeparations": {
+    "doneMeansSeriesComplete": false,
+    "skippedMeansDeleted": false,
+    "heldMeansSkipped": false,
+    "tombstoneDeletesExecutionHistory": false,
+    "completionChangesStructuralMembership": false
+  }
+}

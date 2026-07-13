@@ -1,4 +1,5 @@
 import type { PersonalStructuralSchedule } from './personal-structural-overlay';
+import { normalizePersonalStructuralRepeatForStorage } from './personal-structural-recurrence';
 
 export const PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES = 30;
 export const PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES = 5;
@@ -84,15 +85,7 @@ function normalizeDuration(value: unknown): number | undefined {
 }
 
 function normalizeRepeat(value: unknown): FixedDateSchedule['repeat'] | undefined {
-  if (!isRecord(value)) return undefined;
-  const frequency = value.frequency;
-  const interval = value.interval;
-  return (frequency === 'daily' || frequency === 'weekly' || frequency === 'monthly') &&
-    typeof interval === 'number' &&
-    Number.isInteger(interval) &&
-    interval > 0
-    ? { frequency, interval }
-    : undefined;
+  return normalizePersonalStructuralRepeatForStorage(value).repeat;
 }
 
 function normalizeTimedFields(
