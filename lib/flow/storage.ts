@@ -115,6 +115,20 @@ export type ActiveFlowProgress = {
 
 export type FlowRunReuseMode = 'legacy' | 'same_copy' | 'new_anchor' | 'reviewed_version';
 
+export type FlowRunItemSnapshotStatus = 'pending' | 'done' | 'reopened' | 'skipped' | 'held';
+
+export type FlowRunItemSnapshot = {
+  itemId: string;
+  title: string;
+  status: FlowRunItemSnapshotStatus;
+  scheduleState: 'unscheduled' | 'all_day' | 'timed';
+  date?: string;
+  time?: string;
+  durationMinutes?: number;
+  memo?: string;
+  personalOrderRank: number;
+};
+
 export type FlowRunCompletionSnapshot = {
   checks: Record<string, boolean>;
   itemStates: Record<string, FlowItemState>;
@@ -123,6 +137,8 @@ export type FlowRunCompletionSnapshot = {
   workbenchState: FlowWorkbenchState;
   reactionLogs: Record<string, ReactionLog>;
   completionFeedback?: MyFlowCompletionFeedback;
+  flowTitle?: string;
+  itemSnapshots?: FlowRunItemSnapshot[];
 };
 
 export type FlowRunRecord = {
@@ -158,6 +174,8 @@ export type EnsureLegacyFlowRunOptions = {
 
 export type CompleteActiveFlowRunOptions = EnsureLegacyFlowRunOptions & {
   completedAt?: string;
+  flowTitle?: string;
+  itemSnapshots?: FlowRunItemSnapshot[];
 };
 
 export type StartFlowRunFromCompletedOptions = {
@@ -863,10 +881,71 @@ function normalizeFlowRunReactionLogs(value: unknown): Record<string, ReactionLo
   );
 }
 
+function normalizeFlowRunItemSnapshot(value: unknown): FlowRunItemSnapshot | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const source = value as Partial<FlowRunItemSnapshot>;
+  const itemId = typeof source.itemId === 'string' ? source.itemId.trim() : '';
+  const title = typeof source.title === 'string' ? source.title.trim() : '';
+  if (!itemId || !title) return undefined;
+  const status: FlowRunItemSnapshotStatus =
+    source.status === 'done' ||
+    source.status === 'reopened' ||
+    source.status === 'skipped' ||
+    source.status === 'held'
+      ? source.status
+      : 'pending';
+  const date = typeof source.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(source.date)
+    ? source.date
+    : undefined;
+  const validTime = typeof source.time === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(source.time)
+    ? source.time
+    : undefined;
+  const durationMinutes = typeof source.durationMinutes === 'number' && Number.isFinite(source.durationMinutes)
+    ? Math.min(1440, Math.max(5, Math.round(source.durationMinutes)))
+    : undefined;
+  const scheduleState: FlowRunItemSnapshot['scheduleState'] = !date
+    ? 'unscheduled'
+    : source.scheduleState === 'timed' && validTime
+      ? 'timed'
+      : 'all_day';
+  const personalOrderRank = typeof source.personalOrderRank === 'number' && Number.isFinite(source.personalOrderRank)
+    ? Math.max(0, Math.round(source.personalOrderRank))
+    : 0;
+  const memo = typeof source.memo === 'string' && source.memo.trim()
+    ? source.memo.trim().slice(0, 4000)
+    : undefined;
+  return {
+    itemId: itemId.slice(0, 500),
+    title: title.slice(0, 1000),
+    status,
+    scheduleState,
+    ...(date ? { date } : {}),
+    ...(scheduleState === 'timed' && validTime ? { time: validTime } : {}),
+    ...(scheduleState === 'timed' && durationMinutes ? { durationMinutes } : {}),
+    ...(memo ? { memo } : {}),
+    personalOrderRank,
+  };
+}
+
+function normalizeFlowRunItemSnapshots(value: unknown): FlowRunItemSnapshot[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const seen = new Set<string>();
+  return value.flatMap((entry) => {
+    const snapshot = normalizeFlowRunItemSnapshot(entry);
+    if (!snapshot || seen.has(snapshot.itemId)) return [];
+    seen.add(snapshot.itemId);
+    return [snapshot];
+  });
+}
+
 function normalizeFlowRunCompletionSnapshot(value: unknown, flowSlug: string): FlowRunCompletionSnapshot | undefined {
   if (!value || typeof value !== 'object') return undefined;
   const source = value as Partial<FlowRunCompletionSnapshot>;
   const completionFeedback = normalizeMyFlowCompletionFeedback(source.completionFeedback);
+  const itemSnapshots = normalizeFlowRunItemSnapshots(source.itemSnapshots);
+  const flowTitle = typeof source.flowTitle === 'string' && source.flowTitle.trim()
+    ? source.flowTitle.trim().slice(0, 1000)
+    : undefined;
   return {
     checks: normalizeBooleanRecord(source.checks),
     itemStates: normalizeFlowRunItemStates(source.itemStates),
@@ -875,6 +954,8 @@ function normalizeFlowRunCompletionSnapshot(value: unknown, flowSlug: string): F
     workbenchState: normalizeWorkbenchState(source.workbenchState),
     reactionLogs: normalizeFlowRunReactionLogs(source.reactionLogs),
     ...(completionFeedback?.flowSlug === flowSlug ? { completionFeedback } : {}),
+    ...(flowTitle ? { flowTitle } : {}),
+    ...(itemSnapshots ? { itemSnapshots } : {}),
   };
 }
 
@@ -1050,7 +1131,10 @@ export function ensureLegacyActiveFlowRun(
   return saved?.runs.find((entry) => entry.runId === runId);
 }
 
-export function captureCurrentFlowRunCompletionSnapshot(flowSlug: string): FlowRunCompletionSnapshot {
+export function captureCurrentFlowRunCompletionSnapshot(
+  flowSlug: string,
+  options: Pick<CompleteActiveFlowRunOptions, 'flowTitle' | 'itemSnapshots'> = {},
+): FlowRunCompletionSnapshot {
   const stepItemChecks = Object.fromEntries(
     Object.entries(getMyFlowStepItemChecks()).filter(([key]) => key.startsWith(`${flowSlug}::`)),
   );
@@ -1061,6 +1145,7 @@ export function captureCurrentFlowRunCompletionSnapshot(flowSlug: string): FlowR
     reactionLogs = {};
   }
   const completionFeedback = getMyFlowCompletionFeedback(flowSlug);
+  const normalizedItemSnapshots = normalizeFlowRunItemSnapshots(options.itemSnapshots);
   return cloneStorageValue({
     checks: getChecks(flowSlug),
     itemStates: getItemStates(flowSlug),
@@ -1069,6 +1154,8 @@ export function captureCurrentFlowRunCompletionSnapshot(flowSlug: string): FlowR
     workbenchState: getWorkbenchState(flowSlug),
     reactionLogs,
     ...(completionFeedback ? { completionFeedback } : {}),
+    ...(options.flowTitle?.trim() ? { flowTitle: options.flowTitle.trim() } : {}),
+    ...(normalizedItemSnapshots ? { itemSnapshots: normalizedItemSnapshots } : {}),
   });
 }
 
@@ -1095,7 +1182,7 @@ export function completeActiveFlowRun(
     ...(hasMyFlowPersonalExecutionState(personalExecutionState)
       ? { personalExecutionStateSnapshot: cloneStorageValue(personalExecutionState) }
       : {}),
-    completionSnapshot: captureCurrentFlowRunCompletionSnapshot(flowSlug),
+    completionSnapshot: captureCurrentFlowRunCompletionSnapshot(flowSlug, options),
   };
   if (mapSnapshot && !mapSnapshot.personalCopy) delete completed.personalCopySnapshot;
   if (!hasMyFlowPersonalExecutionState(personalExecutionState)) delete completed.personalExecutionStateSnapshot;

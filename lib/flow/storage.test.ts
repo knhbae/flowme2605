@@ -3808,3 +3808,94 @@ test('FlowMe local restore rolls back existing execution records when writing fa
   assert.equal(storage.getItem('flow:saved:new-flow'), null);
   assert.equal(storage.getItem('flow:auth:demo-user'), 'true');
 });
+
+test('completed run item snapshots normalize additively without invalidating legacy history', () => {
+  const normalized = normalizeFlowRunRecord({
+    schemaVersion: 1,
+    runId: 'run-with-items',
+    flowSlug: 'personal-draft',
+    status: 'completed',
+    startedAt: '2026-07-12T00:00:00.000Z',
+    completedAt: '2026-07-13T00:00:00.000Z',
+    completionSnapshot: {
+      checks: {},
+      itemStates: {},
+      stepItemChecks: {},
+      comparisonState: {},
+      workbenchState: {},
+      reactionLogs: {},
+      flowTitle: ' 당시 실행 ',
+      itemSnapshots: [
+        {
+          itemId: 'stable-item',
+          title: ' 날짜 있는 할 일 ',
+          status: 'done',
+          scheduleState: 'timed',
+          date: '2026-07-13',
+          time: '09:30',
+          durationMinutes: 45,
+          personalOrderRank: 2,
+        },
+        {
+          itemId: 'stable-item',
+          title: '중복 항목',
+          status: 'pending',
+          scheduleState: 'unscheduled',
+          personalOrderRank: 1,
+        },
+        {
+          itemId: 'malformed-time',
+          title: '시간 오류 항목',
+          status: 'unknown',
+          scheduleState: 'timed',
+          date: '2026-07-14',
+          time: '24:00',
+          durationMinutes: -3,
+          personalOrderRank: Number.NaN,
+        },
+        { itemId: '', title: 'ID 없음' },
+      ],
+    },
+  });
+
+  assert.ok(normalized?.completionSnapshot);
+  assert.equal(normalized.completionSnapshot.flowTitle, '당시 실행');
+  assert.equal(normalized.completionSnapshot.itemSnapshots?.length, 2);
+  assert.deepEqual(normalized.completionSnapshot.itemSnapshots?.[0], {
+    itemId: 'stable-item',
+    title: '날짜 있는 할 일',
+    status: 'done',
+    scheduleState: 'timed',
+    date: '2026-07-13',
+    time: '09:30',
+    durationMinutes: 45,
+    personalOrderRank: 2,
+  });
+  assert.deepEqual(normalized.completionSnapshot.itemSnapshots?.[1], {
+    itemId: 'malformed-time',
+    title: '시간 오류 항목',
+    status: 'pending',
+    scheduleState: 'all_day',
+    date: '2026-07-14',
+    personalOrderRank: 0,
+  });
+
+  const legacy = normalizeFlowRunRecord({
+    schemaVersion: 1,
+    runId: 'legacy-run',
+    flowSlug: 'personal-draft',
+    status: 'completed',
+    startedAt: '2026-07-01T00:00:00.000Z',
+    completedAt: '2026-07-02T00:00:00.000Z',
+    completionSnapshot: {
+      checks: { first: true },
+      itemStates: {},
+      stepItemChecks: {},
+      comparisonState: {},
+      workbenchState: {},
+      reactionLogs: {},
+    },
+  });
+  assert.ok(legacy);
+  assert.equal(legacy.completionSnapshot?.itemSnapshots, undefined);
+});

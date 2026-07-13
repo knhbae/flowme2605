@@ -19,6 +19,7 @@ import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTar
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } from '@/lib/flow/flow-run-history';
 import {
   buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
@@ -192,6 +193,8 @@ import {
   startFlowRunFromCompleted,
   type MyFlowCompletionFeedback,
   type MyFlowStepItemChecks,
+  type FlowRunItemSnapshot,
+  type FlowRunRecord,
   type SavedFlowMapSnapshot,
 } from '@/lib/flow/storage';
 import {
@@ -6626,6 +6629,56 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     };
   };
 
+  const buildMyFlowRunItemSnapshots = (flow: MySavedFlow): FlowRunItemSnapshot[] => {
+    const seen = new Set<string>();
+    return flow.rows.flatMap((row, index) => {
+      const rowWithFlow: MyFlowCalendarRow = { ...row, flow };
+      const baseId = row.structuralOccurrenceId
+        || row.structuralProjectionStableId
+        || baseStateId(row.id);
+      const itemId = seen.has(baseId) ? getMyFlowRowInstanceKey(rowWithFlow) : baseId;
+      if (!itemId || seen.has(itemId)) return [];
+      seen.add(itemId);
+      const draft = getMyFlowRowDraft(rowWithFlow);
+      const originalDate = row.structuralOccurrenceOriginalDate ?? row.date;
+      const calendarKey = originalDate
+        ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
+        : getMyFlowManualScheduleKey(flow.progress.slug, row.id);
+      const effectiveDate = row.structuralOccurrenceId
+        ? row.date
+        : getMyFlowDraftItemDateOverride(flow, row.id)
+          ?? myFlowDateOverrides[calendarKey]
+          ?? draft.date?.trim()
+          ?? row.date;
+      const effectiveTime = row.structuralScheduleProjection?.startTime || draft.time?.trim();
+      const effectiveDuration = row.structuralScheduleProjection?.durationMinutes ?? draft.durationMinutes;
+      const scheduleState: FlowRunItemSnapshot['scheduleState'] = !effectiveDate
+        ? 'unscheduled'
+        : effectiveTime
+          ? 'timed'
+          : 'all_day';
+      const stateId = baseStateId(row.id);
+      const status: FlowRunItemSnapshot['status'] = row.structuralOccurrenceExecutionState
+        ?? (flow.itemStates[stateId]?.skipped
+          ? 'skipped'
+          : isMyFlowRowChecked(flow, row)
+            ? 'done'
+            : 'pending');
+      const memo = (draft.memo || draft.logValue || '').trim();
+      return [{
+        itemId,
+        title: getMyFlowRowDisplayTitle(rowWithFlow),
+        status,
+        scheduleState,
+        ...(effectiveDate ? { date: effectiveDate } : {}),
+        ...(scheduleState === 'timed' && effectiveTime ? { time: effectiveTime } : {}),
+        ...(scheduleState === 'timed' && effectiveDuration ? { durationMinutes: effectiveDuration } : {}),
+        ...(memo ? { memo } : {}),
+        personalOrderRank: row.structuralProjectionOrderRank ?? index,
+      }];
+    });
+  };
+
   const openMyFlowReuse = (flow: MySavedFlow, versionMode: 'current' | 'latest' = 'current') => {
     const personalExecutionState = getFlowScopedMyFlowPersonalExecutionState(flow.progress.slug);
     const versionNotice = getMyFlowVersionNoticeForFlow(flow);
@@ -6707,7 +6760,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
 
-    const completedRun = completeActiveFlowRun(flow.progress.slug, { mapSnapshot: flow.savedMap })
+    const completedRun = completeActiveFlowRun(flow.progress.slug, {
+      mapSnapshot: flow.savedMap,
+      flowTitle: getMyFlowExecutionFlowTitle(flow.progress.title),
+      itemSnapshots: buildMyFlowRunItemSnapshots(flow),
+    })
       ?? getCompletedFlowRuns(flow.progress.slug)[0];
     if (!completedRun) {
       updateMyFlowReuseDraft({ status: '지난 실행을 보관하지 못했습니다. 다시 시도해 주세요.' });
@@ -9566,6 +9623,38 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const getMyFlowRunItemScheduleLabel = (item: FlowRunItemSnapshot): string => {
+    if (!item.date) return '날짜 없음';
+    return [
+      formatMyFlowDisplayDate(item.date),
+      item.scheduleState === 'timed' ? formatMyFlowLocalTimeLabel(item.time) : '',
+      item.scheduleState === 'timed' ? formatMyFlowDurationLabel(item.durationMinutes) : '',
+    ].filter(Boolean).join(' · ');
+  };
+
+  const copyMyFlowRunHistoryExport = async (
+    run: FlowRunRecord,
+    flow: MySavedFlow,
+    destination: 'checklist' | 'sheet' | 'memo',
+  ) => {
+    const artifacts = buildFlowRunHistoryListExportArtifacts(
+      run,
+      getMyFlowExecutionFlowTitle(flow.progress.title),
+    );
+    if (!artifacts) return;
+    const output = destination === 'checklist'
+      ? artifacts.checklistText
+      : destination === 'sheet'
+        ? artifacts.sheetTsv
+        : artifacts.memoText;
+    const feedback = destination === 'checklist'
+      ? '지난 실행 체크리스트 복사됨'
+      : destination === 'sheet'
+        ? '지난 실행 시트 복사됨'
+        : '지난 실행 메모 복사됨';
+    await copyMyFlowStepText(output, `past-run-export::${run.runId}`, feedback);
+  };
+
   const renderMyFlowRunHistory = (flow: MySavedFlow) => {
     const completedRuns = getCompletedFlowRuns(flow.progress.slug);
     if (completedRuns.length === 0) return null;
@@ -9573,26 +9662,89 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return (
       <details data-testid="my-flow-past-runs" className="mt-3 border-t border-slate-100 pt-3 text-sm">
         <summary className="cursor-pointer font-semibold text-slate-700">지난 실행 {completedRuns.length}회</summary>
-        <ul className="mt-2 grid gap-2">
-          {completedRuns.slice(0, 3).map((run) => {
+        <ol className="mt-2 divide-y divide-slate-200 border-y border-slate-200">
+          {completedRuns.map((run) => {
             const completedDate = run.completedAt?.slice(0, 10);
-            const completedCount = Object.values(run.completionSnapshot?.checks ?? {}).filter(Boolean).length;
-            const totalCount = Object.keys(run.completionSnapshot?.checks ?? {}).length;
+            const itemSnapshots = run.completionSnapshot?.itemSnapshots;
+            const completedCount = itemSnapshots
+              ? itemSnapshots.filter((item) => item.status === 'done').length
+              : Object.values(run.completionSnapshot?.checks ?? {}).filter(Boolean).length;
+            const totalCount = itemSnapshots?.length ?? Object.keys(run.completionSnapshot?.checks ?? {}).length;
+            const feedback = run.completionSnapshot?.completionFeedback;
+            const exportAvailable = Boolean(itemSnapshots);
+            const exportKey = `past-run-export::${run.runId}`;
             return (
-              <li key={run.runId} className="rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-600">
-                <span className="block text-slate-800">
-                  {completedDate ? `${formatMyFlowDisplayDate(completedDate)} 완료` : '완료한 실행'}
-                </span>
-                <span className="block">
-                  {[
-                    run.anchor ? `${anchorLabel} ${formatMyFlowDisplayDate(run.anchor)}` : '',
-                    totalCount > 0 ? `전체 ${completedCount}/${totalCount} 완료` : '',
-                  ].filter(Boolean).join(' · ')}
-                </span>
+              <li key={run.runId} data-testid="my-flow-past-run" data-run-id={run.runId}>
+                <details className="group py-2">
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-3 rounded px-1 py-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200">
+                    <span className="min-w-0 text-xs font-semibold leading-5 text-slate-600">
+                      <span className="block text-sm text-slate-900">
+                        {completedDate ? `${formatMyFlowDisplayDate(completedDate)} 완료` : '완료한 실행'}
+                      </span>
+                      <span className="block">
+                        {[
+                          run.anchor ? `${anchorLabel} ${formatMyFlowDisplayDate(run.anchor)}` : '',
+                          totalCount > 0 ? `전체 ${completedCount}/${totalCount} 완료` : '',
+                        ].filter(Boolean).join(' · ')}
+                      </span>
+                    </span>
+                    <span aria-hidden="true" className="shrink-0 pt-1 text-xs font-semibold text-blue-700 group-open:hidden">보기</span>
+                    <span aria-hidden="true" className="hidden shrink-0 pt-1 text-xs font-semibold text-blue-700 group-open:inline">접기</span>
+                  </summary>
+                  <div data-testid="my-flow-past-run-detail" className="px-1 pb-2 pt-2">
+                    {itemSnapshots ? (
+                      <ol data-testid="my-flow-past-run-items" className="divide-y divide-slate-100 border-y border-slate-100">
+                        {itemSnapshots.map((item) => (
+                          <li key={item.itemId} data-testid="my-flow-past-run-item" className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 py-2 text-xs leading-5">
+                            <span className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 font-semibold ${item.status === 'done' ? 'bg-emerald-50 text-emerald-700' : item.status === 'held' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>
+                              {getFlowRunItemStatusLabel(item.status)}
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block break-words font-semibold text-slate-900">{item.title}</span>
+                              <span className="block text-slate-500">{getMyFlowRunItemScheduleLabel(item)}</span>
+                              {item.memo ? <span className="mt-1 block break-words text-slate-600">내 메모: {item.memo}</span> : null}
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p data-testid="my-flow-past-run-summary-only" className="text-xs leading-5 text-slate-500">
+                        이전 실행은 요약만 저장돼 있어요.
+                      </p>
+                    )}
+                    {feedback?.reflection ? (
+                      <div data-testid="my-flow-past-run-reflection" className="mt-3 border-l-2 border-emerald-200 pl-3 text-xs leading-5 text-slate-600">
+                        <p className="font-semibold text-slate-900">내 실행 회고 · {feedback.reflection.outcome === 'helpful' ? '도움됐어요' : '고칠 점이 있어요'}</p>
+                        {feedback.reflection.note ? <p className="mt-1 break-words">{feedback.reflection.note}</p> : null}
+                      </div>
+                    ) : null}
+                    {feedback?.sourceCorrectionDraft ? (
+                      <div data-testid="my-flow-past-run-correction" className="mt-3 border-l-2 border-amber-200 pl-3 text-xs leading-5 text-slate-600">
+                        <p className="font-semibold text-slate-900">원본 내용 전송 전 메모</p>
+                        <p className="mt-1 break-words">{feedback.sourceCorrectionDraft.note}</p>
+                        <p className="mt-1 font-semibold text-amber-700">아직 전송되지 않았어요.</p>
+                      </div>
+                    ) : null}
+                    {exportAvailable ? (
+                      <details data-testid="my-flow-past-run-export" className="mt-3 border-t border-slate-100 pt-2">
+                        <summary className="cursor-pointer text-xs font-semibold text-blue-700">지난 실행 가져가기</summary>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <button type="button" className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700" onClick={() => copyMyFlowRunHistoryExport(run, flow, 'checklist')}>체크리스트 복사</button>
+                          <button type="button" className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700" onClick={() => copyMyFlowRunHistoryExport(run, flow, 'sheet')}>시트로 복사</button>
+                          <button type="button" className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700" onClick={() => copyMyFlowRunHistoryExport(run, flow, 'memo')}>메모로 복사</button>
+                        </div>
+                        <p className="mt-2 text-xs leading-5 text-slate-500">지난 일정의 중복 등록을 막기 위해 캘린더 파일은 새 실행에서만 만들어요.</p>
+                        {myFlowStepCopiedKey === exportKey ? (
+                          <p data-testid="my-flow-past-run-export-feedback" className="mt-2 text-xs font-semibold text-emerald-700" role="status">{myFlowStepCopiedLabel}</p>
+                        ) : null}
+                      </details>
+                    ) : null}
+                  </div>
+                </details>
               </li>
             );
           })}
-        </ul>
+        </ol>
       </details>
     );
   };

@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-07-13",
+  "fixtures": [
+    {
+      "id": "dated-anchor-reuse",
+      "flowType": "anchor_offset",
+      "flow": "moving-d30-basic",
+      "completedItemCount": 24,
+      "personalTitle": "견적 후보 다시 확인",
+      "personalDate": "2026-07-15",
+      "personalMemo": "이번에는 후보 두 곳만 비교",
+      "newAnchor": "2026-10-20",
+      "pastRunImmutable": true,
+      "newRunSeparate": true
+    },
+    {
+      "id": "date-free-reuse",
+      "flowType": "undated_checklist",
+      "flow": "passport-renewal-docs",
+      "allSnapshotsUnscheduled": true,
+      "reuseMode": "same_copy",
+      "pastRunDetailAvailable": true
+    },
+    {
+      "id": "reviewed-source-version-reuse",
+      "flowType": "source_backed_versioned",
+      "flow": "middle-school-math-1",
+      "oldRunSourceVersion": "2026-01-01.old",
+      "oldRunPersonalValuesPreserved": true,
+      "newRunUsesReviewedVersion": true
+    },
+    {
+      "id": "legacy-summary-only",
+      "flowType": "legacy_run",
+      "itemSnapshotsPresent": false,
+      "summaryRemainsReadable": true,
+      "currentSourceBackfillAttempted": false
+    },
+    {
+      "id": "malformed-snapshot-normalization",
+      "flowType": "storage_defense",
+      "duplicateStableItemIdsRemoved": true,
+      "invalidTimedScheduleFallsBackToAllDay": true,
+      "legacyRunInvalidated": false
+    }
+  ]
+}

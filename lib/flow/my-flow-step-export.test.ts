@@ -9,6 +9,8 @@ import {
   type MyFlowPortableStepExportInput,
 } from './my-flow-step-export';
 import { buildPersonalStructuralListExportArtifacts } from './personal-structural-list-export';
+import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } from './flow-run-history';
+import type { FlowRunRecord } from './storage';
 import { buildPersonalStructuralRecurrenceIcs } from './personal-structural-recurrence-ics';
 import {
   buildPersonalStructuralOccurrenceId,
@@ -620,4 +622,83 @@ test('personal structural list exports share all-day and timed schedule labels w
     [artifacts.checklistText, artifacts.sheetTsv, artifacts.memoText].join('\n'),
     /Asia\/Seoul|TZID|IANA|floating/iu,
   );
+});
+
+test('past run list exports preserve the stored order, values, status, and reflection', () => {
+  const run: FlowRunRecord = {
+    schemaVersion: 1,
+    runId: 'run-1',
+    flowSlug: 'draft-1',
+    status: 'completed',
+    startedAt: '2026-07-01T00:00:00.000Z',
+    completedAt: '2026-07-13T00:00:00.000Z',
+    completionSnapshot: {
+      checks: {},
+      itemStates: {},
+      stepItemChecks: {},
+      comparisonState: {},
+      workbenchState: {},
+      reactionLogs: {},
+      flowTitle: '지난 실행 제목',
+      itemSnapshots: [
+        {
+          itemId: 'second',
+          title: '두 번째 할 일',
+          status: 'skipped',
+          scheduleState: 'unscheduled',
+          personalOrderRank: 2,
+        },
+        {
+          itemId: 'first',
+          title: '첫 번째 할 일',
+          status: 'done',
+          scheduleState: 'all_day',
+          date: '2026-07-12',
+          memo: '당시 메모',
+          personalOrderRank: 1,
+        },
+      ],
+      completionFeedback: {
+        flowSlug: 'draft-1',
+        reflection: {
+          outcome: 'helpful',
+          note: '다음에도 같은 순서로',
+          updatedAt: '2026-07-13T00:00:00.000Z',
+        },
+      },
+    },
+  };
+  const artifacts = buildFlowRunHistoryListExportArtifacts(run, '현재 제목');
+  assert.ok(artifacts);
+  assert.deepEqual(artifacts.checklistRows.map((row) => row.itemId), ['first', 'second']);
+  assert.match(artifacts.checklistText, /\[x\] 첫 번째 할 일/);
+  assert.match(artifacts.checklistText, /두 번째 할 일 \(스킵\)/);
+  assert.match(artifacts.sheetTsv, /2026-07-12/);
+  assert.match(artifacts.memoText, /당시 메모/);
+  assert.match(artifacts.memoText, /내 실행 회고/);
+  assert.match(artifacts.memoText, /다음에도 같은 순서로/);
+});
+
+test('legacy past run stays summary-only and status labels remain user-facing', () => {
+  const legacy: FlowRunRecord = {
+    schemaVersion: 1,
+    runId: 'legacy-run',
+    flowSlug: 'legacy-flow',
+    status: 'completed',
+    startedAt: '2026-07-01T00:00:00.000Z',
+    completedAt: '2026-07-13T00:00:00.000Z',
+    completionSnapshot: {
+      checks: {},
+      itemStates: {},
+      stepItemChecks: {},
+      comparisonState: {},
+      workbenchState: {},
+      reactionLogs: {},
+    },
+  };
+  assert.equal(buildFlowRunHistoryListExportArtifacts(legacy, '현재 제목'), undefined);
+  assert.equal(getFlowRunItemStatusLabel('done'), '완료');
+  assert.equal(getFlowRunItemStatusLabel('skipped'), '건너뜀');
+  assert.equal(getFlowRunItemStatusLabel('held'), '보류');
+  assert.equal(getFlowRunItemStatusLabel('reopened'), '미완료');
 });

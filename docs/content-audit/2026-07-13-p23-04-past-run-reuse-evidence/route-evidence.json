@@ -1,0 +1,50 @@
+{
+  "package": "p23-04-past-run-detail-reuse",
+  "generatedAt": "2026-07-13",
+  "evidenceType": "automated_browser_and_contract",
+  "actualObservedUserCount": 0,
+  "routes": [
+    {
+      "route": "/my",
+      "state": "completed-moving-flow-past-run-detail-and-export",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/my",
+      "state": "completed-moving-flow-past-run-detail",
+      "viewport": "1024x768"
+    },
+    {
+      "route": "/my",
+      "state": "date-free-flow-same-copy-reuse-history",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/my",
+      "state": "source-version-reviewed-reuse-history",
+      "viewport": "390x844"
+    }
+  ],
+  "markers": {
+    "pastRunItemSnapshotCaptured": true,
+    "pastRunItemDetailVisible": true,
+    "pastRunPersonalTitlePreserved": true,
+    "pastRunPersonalDatePreserved": true,
+    "pastRunPersonalMemoPreserved": true,
+    "pastRunCompletionStatePreserved": true,
+    "pastRunDateFreeItemsPreserved": true,
+    "pastRunReflectionVisible": true,
+    "pastRunUnsentCorrectionDistinct": true,
+    "pastRunChecklistExportAvailable": true,
+    "pastRunSheetExportAvailable": true,
+    "pastRunMemoExportAvailable": true,
+    "pastRunCalendarReexportAvailable": false,
+    "pastRunLegacySummaryFallback": true,
+    "pastRunSourceVersionImmutable": true,
+    "newRunUsesReviewedSourceVersion": true,
+    "pastRunReadOnlyItemControlCount": 0,
+    "pastRunHorizontalOverflowCount": 0,
+    "pastRunConsoleErrorCount": 0,
+    "actualObservedUserCount": 0
+  }
+}

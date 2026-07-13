@@ -33,6 +33,13 @@ export type PersonalStructuralListExportArtifacts = {
   memoText: string;
 };
 
+export type PersonalStructuralListExportRowsInput = {
+  flowTitle: string;
+  rows: PersonalStructuralListExportRow[];
+  sourceLabel?: string;
+  sourceUrl?: string;
+};
+
 function clean(value?: string): string {
   return (value ?? '').trim();
 }
@@ -181,6 +188,37 @@ function buildMemoText(options: {
     .join(' ');
   if (source) lines.push('', `Flow 원문: ${source}`);
   return `${lines.join('\n').trim()}\n`;
+}
+
+function normalizeListExportRows(
+  rows: PersonalStructuralListExportRow[],
+): PersonalStructuralListExportRow[] {
+  const seen = new Set<string>();
+  return rows
+    .filter((row) => {
+      if (!row.itemId || seen.has(row.itemId)) return false;
+      seen.add(row.itemId);
+      return true;
+    })
+    .map((row) => ({ ...row }))
+    .sort((left, right) => left.personalOrderRank - right.personalOrderRank);
+}
+
+export function buildPersonalStructuralListExportArtifactsFromRows(
+  options: PersonalStructuralListExportRowsInput,
+): PersonalStructuralListExportArtifacts {
+  const rows = normalizeListExportRows(options.rows);
+  const checklistRows = rows.map((row) => ({ ...row }));
+  const sheetRows = rows.map((row) => ({ ...row }));
+  const memoRows = rows.map((row) => ({ ...row }));
+  return {
+    checklistRows,
+    sheetRows,
+    memoRows,
+    checklistText: buildChecklistText({ ...options, rows: checklistRows }),
+    sheetTsv: buildSheetTsv(sheetRows),
+    memoText: buildMemoText({ ...options, rows: memoRows }),
+  };
 }
 
 export function buildPersonalStructuralListExportArtifacts<TSource>(options: {

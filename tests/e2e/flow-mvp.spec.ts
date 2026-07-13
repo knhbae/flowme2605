@@ -4350,6 +4350,13 @@ test('completed personal Flow reviews item changes before starting a new source 
   const completedRun = savedState.runs.runs.find((run: { status: string }) => run.status === 'completed');
   const activeRun = savedState.runs.runs.find((run: { status: string }) => run.status === 'active');
   expect(completedRun.sourceVersion).toBe('2026-01-01.old');
+  expect(completedRun.completionSnapshot.itemSnapshots).toHaveLength(1);
+  expect(completedRun.completionSnapshot.itemSnapshots[0]).toMatchObject({
+    title: '내 시험용 소인수분해',
+    status: 'done',
+    date: '2026-07-18',
+    memo: '내 풀이 순서를 유지',
+  });
   expect(activeRun.sourceVersion).toBe(savedState.snapshot.version);
   expect(activeRun.runId).not.toBe(completedRun.runId);
   expect(activeRun.reuseMode).toBe('reviewed_version');
@@ -6872,7 +6879,14 @@ test('completed My Flow separates private reflection from an unsent source corre
 
 test('completed My Flow starts a new dated run without overwriting the previous execution', async ({ page }) => {
   const evidenceDir = process.env.FLOWME_REUSE_EVIDENCE_DIR;
+  const historyEvidenceDir = process.env.FLOWME_P23_04_EVIDENCE_DIR;
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  page.on('pageerror', (error) => consoleErrors.push(error.message));
   if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  if (historyEvidenceDir) fs.mkdirSync(`${historyEvidenceDir}/screenshots`, { recursive: true });
   const flowSlug = 'moving-d30-basic';
   const movingBundle = seedBundles.find((bundle) => bundle.flow.slug === flowSlug);
   expect(movingBundle).toBeTruthy();
@@ -6886,6 +6900,7 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   const completedChecks = Object.fromEntries((movingBundle?.items ?? []).map((item) => [item.id, true]));
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:3104' });
   await page.addInitScript(({ slug, initialAnchor, checks, draftKey, movedDate }) => {
     if (window.sessionStorage.getItem('flow-reuse-seeded') === 'true') return;
     window.sessionStorage.setItem('flow-reuse-seeded', 'true');
@@ -6919,6 +6934,13 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   const mobileFlow = page.locator(`[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`);
   const feedback = mobileFlow.getByTestId('my-flow-completion-feedback');
   await expect(feedback).toBeVisible();
+  await feedback.getByTestId('my-flow-reflection-open').click();
+  await feedback.getByRole('button', { name: '도움됐어요' }).click();
+  await feedback.getByTestId('my-flow-reflection-note').fill('견적 후보를 먼저 줄여두니 다음 단계가 쉬웠어요.');
+  await feedback.getByTestId('my-flow-reflection-save').click();
+  await feedback.getByTestId('my-flow-source-correction-open').click();
+  await feedback.getByTestId('my-flow-source-correction-note').fill('관리사무소 운영 시간을 먼저 확인하도록 원본 순서를 검토해 주세요.');
+  await feedback.getByTestId('my-flow-source-correction-save').click();
   await feedback.getByTestId('my-flow-reuse-open').click();
   const reusePanel = feedback.getByTestId('my-flow-reuse-panel');
   await expect(feedback).toContainText('지난 실행은 기록으로 남기고 완료 상태만 새로 시작합니다.');
@@ -6944,11 +6966,43 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   await expect(mobileFlow.getByTestId('my-flow-reuse-status')).toContainText('새 이사일 10월 20일로 시작했어요. 지난 실행은 기록으로 남아 있어요.');
   await expect(mobileFlow.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
   const pastRuns = mobileFlow.getByTestId('my-flow-past-runs');
-  await expect(pastRuns.locator('summary')).toHaveText('지난 실행 1회');
-  await pastRuns.locator('summary').click();
+  await expect(pastRuns.locator(':scope > summary')).toHaveText('지난 실행 1회');
+  await pastRuns.locator(':scope > summary').click();
   await expect(pastRuns).toContainText('이사일 8월 10일');
   await expect(pastRuns).toContainText(`전체 ${movingBundle?.items.length}/${movingBundle?.items.length} 완료`);
+  const pastRun = pastRuns.getByTestId('my-flow-past-run').first();
+  await pastRun.locator('summary').first().click();
+  const pastRunDetail = pastRun.getByTestId('my-flow-past-run-detail');
+  await expect(pastRunDetail.getByTestId('my-flow-past-run-item')).toHaveCount(movingBundle?.items.length ?? 0);
+  await expect(pastRunDetail.getByTestId('my-flow-past-run-items').locator('button, input, textarea, select')).toHaveCount(0);
+  await expectNoInternalUserSurfaceCopy(pastRunDetail);
+  const editedPastItem = pastRunDetail.getByTestId('my-flow-past-run-item').filter({ hasText: '견적 후보 다시 확인' });
+  await expect(editedPastItem).toContainText('완료');
+  await expect(editedPastItem).toContainText('7월 15일');
+  await expect(editedPastItem).toContainText('이번에는 후보 두 곳만 비교');
+  await expect(pastRunDetail.getByTestId('my-flow-past-run-reflection')).toContainText('견적 후보를 먼저 줄여두니 다음 단계가 쉬웠어요.');
+  await expect(pastRunDetail.getByTestId('my-flow-past-run-correction')).toContainText('관리사무소 운영 시간을 먼저 확인하도록 원본 순서를 검토해 주세요.');
+  await expect(pastRunDetail.getByTestId('my-flow-past-run-correction')).toContainText('아직 전송되지 않았어요.');
+  const pastRunExport = pastRunDetail.getByTestId('my-flow-past-run-export');
+  await pastRunExport.locator('summary').click();
+  await pastRunExport.getByRole('button', { name: '체크리스트 복사' }).click();
+  let pastRunClipboard = await page.evaluate(() => navigator.clipboard.readText());
+  expect(pastRunClipboard).toContain('- [x] 견적 후보 다시 확인');
+  expect(pastRunClipboard).toContain('일정: 2026-07-15 종일');
+  await pastRunExport.getByRole('button', { name: '시트로 복사' }).click();
+  pastRunClipboard = await page.evaluate(() => navigator.clipboard.readText());
+  expect(pastRunClipboard).toContain('상태\t할 일\t날짜');
+  expect(pastRunClipboard).toContain('완료\t견적 후보 다시 확인\t2026-07-15');
+  await pastRunExport.getByRole('button', { name: '메모로 복사' }).click();
+  pastRunClipboard = await page.evaluate(() => navigator.clipboard.readText());
+  expect(pastRunClipboard).toContain('내 실행 회고');
+  expect(pastRunClipboard).toContain('견적 후보를 먼저 줄여두니 다음 단계가 쉬웠어요.');
+  await expect(pastRunExport.getByTestId('my-flow-past-run-export-feedback')).toHaveText('지난 실행 메모 복사됨');
   await expectNoHorizontalOverflow(page);
+  if (historyEvidenceDir) {
+    await pastRun.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${historyEvidenceDir}/screenshots/00-past-run-detail-export-mobile.png`, fullPage: true });
+  }
   if (evidenceDir) {
     await page.screenshot({ path: `${evidenceDir}/02-new-run-started-mobile.png`, fullPage: true });
   }
@@ -6967,6 +7021,16 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   expect(completedRun.runId).not.toBe(activeRun.runId);
   expect(completedRun.anchor).toBe('2026-08-10');
   expect(completedRun.personalExecutionStateSnapshot.dateOverrides[firstDraftKey]).toBe('2026-07-15');
+  expect(completedRun.completionSnapshot.flowTitle).toContain('이사');
+  expect(completedRun.completionSnapshot.itemSnapshots).toHaveLength(movingBundle?.items.length);
+  expect(completedRun.completionSnapshot.itemSnapshots[0]).toMatchObject({
+    title: '견적 후보 다시 확인',
+    status: 'done',
+    date: '2026-07-15',
+    memo: '이번에는 후보 두 곳만 비교',
+  });
+  expect(completedRun.completionSnapshot.completionFeedback.reflection.note).toBe('견적 후보를 먼저 줄여두니 다음 단계가 쉬웠어요.');
+  expect(completedRun.completionSnapshot.completionFeedback.sourceCorrectionDraft.note).toBe('관리사무소 운영 시간을 먼저 확인하도록 원본 순서를 검토해 주세요.');
   expect(activeRun.anchor).toBe('2026-10-20');
   expect(activeRun.fixedDatePolicy).toBe('reset_to_anchor');
   expect(state.checks).toEqual({});
@@ -6982,13 +7046,21 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   await page.reload();
   await page.getByTestId('my-flow-view-flow').click();
   const wideFlow = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`);
-  await expect(wideFlow.getByTestId('my-flow-past-runs').locator('summary')).toHaveText('지난 실행 1회');
-  await wideFlow.getByTestId('my-flow-past-runs').locator('summary').click();
+  await expect(wideFlow.getByTestId('my-flow-past-runs').locator(':scope > summary')).toHaveText('지난 실행 1회');
+  await wideFlow.getByTestId('my-flow-past-runs').locator(':scope > summary').click();
+  const widePastRun = wideFlow.getByTestId('my-flow-past-run').first();
+  await widePastRun.locator('summary').first().click();
+  await expect(widePastRun.getByTestId('my-flow-past-run-item')).toHaveCount(movingBundle?.items.length ?? 0);
   await expect(wideFlow.getByTestId('my-flow-reuse-open')).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
+  if (historyEvidenceDir) {
+    await widePastRun.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${historyEvidenceDir}/screenshots/01-past-run-detail-wide.png`, fullPage: true });
+  }
   if (evidenceDir) {
     await page.screenshot({ path: `${evidenceDir}/03-new-run-history-wide.png`, fullPage: true });
   }
+  expect(consoleErrors).toEqual([]);
 });
 
 test('completed date-free My Flow reuses the current copy without asking for a date', async ({ page }) => {
@@ -7026,12 +7098,20 @@ test('completed date-free My Flow reuses the current copy without asking for a d
 
   await page.getByTestId('my-flow-view-flow').click();
   await expect(flowCard.getByTestId('my-flow-reuse-status')).toContainText('새 실행을 시작했어요. 지난 실행은 기록으로 남아 있어요.');
-  await expect(flowCard.getByTestId('my-flow-past-runs').locator('summary')).toHaveText('지난 실행 1회');
+  const pastRuns = flowCard.getByTestId('my-flow-past-runs');
+  await expect(pastRuns.locator(':scope > summary')).toHaveText('지난 실행 1회');
+  await pastRuns.locator(':scope > summary').click();
+  const pastRun = pastRuns.getByTestId('my-flow-past-run').first();
+  await pastRun.locator('summary').first().click();
+  await expect(pastRun.getByTestId('my-flow-past-run-item')).toHaveCount(flowBundle?.items.length ?? 0);
+  await expect(pastRun.getByTestId('my-flow-past-run-item').first()).toContainText('날짜 없음');
   const runRegistry = await page.evaluate((slug) => JSON.parse(window.localStorage.getItem(`flow:run-registry:${slug}`) || 'null'), flowSlug);
   expect(runRegistry.runs.map((run: { status: string; reuseMode?: string }) => [run.status, run.reuseMode])).toEqual([
     ['completed', 'legacy'],
     ['active', 'same_copy'],
   ]);
+  expect(runRegistry.runs[0].completionSnapshot.itemSnapshots).toHaveLength(flowBundle?.items.length);
+  expect(runRegistry.runs[0].completionSnapshot.itemSnapshots.every((item: { scheduleState: string }) => item.scheduleState === 'unscheduled')).toBe(true);
   expect(await page.evaluate((slug) => JSON.parse(window.localStorage.getItem(`flow_builder_mvp_checks_${slug}`) || '{}'), flowSlug)).toEqual({});
   await expectNoHorizontalOverflow(page);
 });
