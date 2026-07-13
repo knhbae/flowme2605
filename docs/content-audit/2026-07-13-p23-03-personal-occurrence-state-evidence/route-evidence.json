@@ -1,0 +1,51 @@
+{
+  "package": "p23-03-personal-occurrence-state",
+  "generatedAt": "2026-07-13",
+  "evidenceType": "automated_browser_and_contract",
+  "actualObservedUserCount": 0,
+  "routes": [
+    {
+      "route": "/flows",
+      "state": "url-first-miss-to-personal-draft",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/calendar",
+      "state": "personal-draft-occurrence-skipped",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/calendar",
+      "state": "personal-draft-occurrence-held",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/calendar",
+      "state": "personal-draft-occurrence-actions-detail",
+      "viewport": "1024x768"
+    },
+    {
+      "route": "/calendar?demo=source-backed",
+      "state": "source-backed-control-regression",
+      "viewport": "1024x768"
+    }
+  ],
+  "markers": {
+    "personalDraftOccurrenceSkipVisible": true,
+    "personalDraftOccurrenceHoldVisible": true,
+    "personalDraftOccurrenceResumeVisible": true,
+    "personalDraftOccurrenceSkippedDistinctFromHeld": true,
+    "personalDraftOccurrenceSkippedCompletionDisabled": true,
+    "personalDraftOccurrenceHeldCompletionDisabled": true,
+    "personalDraftOccurrenceStatePersistedAfterReload": true,
+    "personalDraftOccurrenceStableIdAfterStateTransitions": true,
+    "personalDraftOccurrenceTransitionHistoryPreserved": true,
+    "personalDraftOccurrenceCalendarMembershipChangeCount": 0,
+    "personalDraftOccurrenceIcsMembershipChangeCount": 0,
+    "personalDraftOccurrenceKeyboardOperable": true,
+    "sourceBackedOccurrenceExecutionControlCount": 0,
+    "personalDraftOccurrenceHorizontalOverflowCount": 0,
+    "personalDraftOccurrenceConsoleErrorCount": 0,
+    "actualObservedUserCount": 0
+  }
+}

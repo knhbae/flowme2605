@@ -6390,9 +6390,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     recordFlowCompletionState(flow.progress.slug, completed);
   };
 
-  const togglePersonalDraftOccurrenceCompletion = (
+  const setPersonalDraftOccurrenceExecutionState = (
     flow: MySavedFlow,
     row: MyFlowCalendarRow,
+    nextState: PersonalStructuralOccurrenceExecutionState,
   ): boolean => {
     if (
       !row.structuralOccurrenceId ||
@@ -6406,12 +6407,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       row.structuralOccurrenceId,
     );
     const current = myFlowOccurrenceExecutionRecords[storageKey];
-    const nextState: PersonalStructuralOccurrenceExecutionState =
-      current?.state === 'done'
-        ? 'reopened'
-        : current?.state === 'skipped'
-          ? 'reopened'
-          : 'done';
     const nextRecord = transitionPersonalStructuralOccurrenceExecution({
       current,
       occurrenceId: row.structuralOccurrenceId,
@@ -6428,6 +6423,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return next;
     });
     return true;
+  };
+
+  const togglePersonalDraftOccurrenceCompletion = (
+    flow: MySavedFlow,
+    row: MyFlowCalendarRow,
+  ): boolean => {
+    if (!row.structuralOccurrenceId) return false;
+    const storageKey = getMyFlowOccurrenceExecutionStorageKey(
+      flow.progress.slug,
+      row.structuralOccurrenceId,
+    );
+    const currentState = myFlowOccurrenceExecutionRecords[storageKey]?.state ?? 'pending';
+    if (currentState === 'skipped' || currentState === 'held') return true;
+    return setPersonalDraftOccurrenceExecutionState(
+      flow,
+      row,
+      currentState === 'done' ? 'reopened' : 'done',
+    );
   };
 
   const toggleSavedFlowItem = (flow: MySavedFlow, rowId: string, rowContext?: MyFlowCalendarRow) => {
@@ -6761,6 +6774,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     routine = false,
     compact = false,
     detail = false,
+    disabled = false,
+    disabledReason = '',
   }: {
     title: string;
     checked: boolean;
@@ -6768,18 +6783,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     routine?: boolean;
     compact?: boolean;
     detail?: boolean;
+    disabled?: boolean;
+    disabledReason?: string;
   }) => {
     const actionLabel = routine
       ? (checked ? '이번 항목 완료 취소' : '이번 항목 완료')
       : (checked ? '완료 취소' : '완료 체크');
-    const ariaLabel = `${title} ${actionLabel}`;
+    const ariaLabel = disabled && disabledReason
+      ? `${title} ${disabledReason}`
+      : `${title} ${actionLabel}`;
     const shellSize = compact ? 'min-h-8 w-8' : detail ? 'min-h-9 w-9' : 'min-h-9 w-9';
 
     return (
       <label
         data-testid="my-flow-task-complete-label"
         className={`inline-flex shrink-0 items-center justify-center self-center rounded-md border bg-white transition ${shellSize} ${
-          checked
+          disabled
+            ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+            : checked
             ? 'border-emerald-300 text-emerald-700'
             : 'border-slate-300 text-slate-700 hover:border-blue-300 hover:bg-blue-50'
         }`}
@@ -6792,6 +6813,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           className="h-4 w-4 rounded border-slate-300 accent-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
           type="checkbox"
           checked={checked}
+          disabled={disabled}
           onChange={onToggle}
         />
       </label>
@@ -7302,7 +7324,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showDateMeta = Boolean(rowDateMeta) && !options.suppressDateMeta;
     const showSectionMeta = !options.minimalMeta && Boolean(displaySection);
     const showProgressMeta = Boolean(options.showFlowProgress);
-    const hasRowMeta = showDateMeta || Boolean(displayTimedSchedule) || Boolean(displayTiming) || showSectionMeta || showFlowChip || showProgressMeta;
+    const occurrenceExecutionState = row.structuralOccurrenceExecutionState ?? 'pending';
+    const occurrenceStatusLabel = occurrenceExecutionState === 'skipped'
+      ? '건너뜀'
+      : occurrenceExecutionState === 'held'
+        ? '보류'
+        : '';
+    const occurrenceCompletionDisabled = Boolean(
+      row.structuralOccurrenceId &&
+      (occurrenceExecutionState === 'skipped' || occurrenceExecutionState === 'held'),
+    );
+    const hasRowMeta = showDateMeta || Boolean(displayTimedSchedule) || Boolean(displayTiming) || showSectionMeta || showFlowChip || showProgressMeta || Boolean(occurrenceStatusLabel);
     const rowOpenAriaContext = [flowChipLabel, displayDate].filter(Boolean).join(' · ');
     const rowOpenAriaLabel = options.showOpenLabel
       ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
@@ -7361,6 +7393,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               checked,
               routine: isRoutineExecution,
               compact: options.compact,
+              disabled: occurrenceCompletionDisabled,
+              disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
               onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
             })}
           </div>
@@ -7380,6 +7414,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
                 {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
                 {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
+                {occurrenceStatusLabel ? (
+                  <span
+                    data-testid="personal-draft-occurrence-row-status"
+                    className={`rounded px-1.5 py-0.5 text-[10px] ${occurrenceExecutionState === 'held' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}
+                  >
+                    {occurrenceStatusLabel}
+                  </span>
+                ) : null}
                 </span>
               ) : null}
               <span className={`${hasRowMeta ? 'mt-1' : ''} flex min-w-0 items-center gap-2`}>
@@ -7442,6 +7484,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             checked,
             routine: isRoutineExecution,
             compact: options.compact,
+            disabled: occurrenceCompletionDisabled,
+            disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
             onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
           })}
         </div>
@@ -7459,8 +7503,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {displayTimedSchedule ? <span data-testid="personal-draft-timed-meta">{displayTimedSchedule}</span> : null}
                 {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
                 {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
-                {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
-                {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
+              {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
+              {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
+              {occurrenceStatusLabel ? (
+                <span
+                  data-testid="personal-draft-occurrence-row-status"
+                  className={`rounded px-1.5 py-0.5 text-[10px] ${occurrenceExecutionState === 'held' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}
+                >
+                  {occurrenceStatusLabel}
+                </span>
+              ) : null}
               </span>
             ) : null}
             <span className={`${hasRowMeta ? 'mt-1' : ''} flex min-w-0 items-center gap-2`}>
@@ -7952,6 +8004,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPersonalDraftRecurringSeries = Boolean(
       isPersonalDraftUserItem && row.structuralRepeat && !row.structuralOccurrenceId,
     );
+    const isPersonalDraftOccurrence = Boolean(
+      isPersonalDraftUserItem && row.structuralOccurrenceId,
+    );
+    const occurrenceExecutionState = row.structuralOccurrenceExecutionState ?? 'pending';
+    const occurrenceExecutionPaused =
+      occurrenceExecutionState === 'skipped' || occurrenceExecutionState === 'held';
     const timing = row.timing ?? item?.repeat_rule ?? '';
     const detailSection = getMyFlowRowDisplaySectionLabel(row);
     const visibleDetailSection = isProgressFlow ? '' : detailSection;
@@ -8643,6 +8701,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ? '이번 일정 완료'
               : row.structuralOccurrenceExecutionState === 'reopened'
                 ? '이번 일정 다시 진행'
+                : row.structuralOccurrenceExecutionState === 'skipped'
+                  ? '이번 일정 건너뜀'
+                  : row.structuralOccurrenceExecutionState === 'held'
+                    ? '이번 일정 보류'
                 : '이번 일정'}
           </p>
         ) : null}
@@ -8703,6 +8765,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               checked,
               routine: isRoutineRow,
               detail: true,
+              disabled: occurrenceExecutionPaused,
+              disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
               onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
             }) : null}
             {!isDetailEditing && isPersonalDraftRecurringSeries ? (
@@ -8756,6 +8820,55 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         </div>
+        {isPersonalDraftOccurrence && !isDetailEditing && occurrenceExecutionState !== 'done' ? (
+          <section
+            data-testid="personal-draft-occurrence-execution-actions"
+            className="mt-3 flex flex-col gap-2 rounded-md border border-slate-200 bg-white px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <p className="text-xs font-semibold leading-5 text-slate-600">
+              {occurrenceExecutionState === 'skipped'
+                ? '이번 일정은 건너뛰었어요. 다음 일정은 그대로예요.'
+                : occurrenceExecutionState === 'held'
+                  ? '이번 일정을 잠시 보류했어요. 날짜와 다음 일정은 그대로예요.'
+                  : '이번 일정만 상태를 바꿉니다. 반복 규칙과 다음 일정은 그대로예요.'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {occurrenceExecutionPaused ? (
+                <button
+                  type="button"
+                  data-testid="personal-draft-occurrence-resume"
+                  aria-label={`${editorDraft.title} 이번 일정 다시 진행`}
+                  className="min-h-9 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:border-blue-300"
+                  onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'reopened')}
+                >
+                  다시 진행
+                </button>
+              ) : null}
+              {occurrenceExecutionState !== 'skipped' ? (
+                <button
+                  type="button"
+                  data-testid="personal-draft-occurrence-skip"
+                  aria-label={`${editorDraft.title} 이번 일정만 건너뛰기`}
+                  className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-slate-300"
+                  onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'skipped')}
+                >
+                  이번만 건너뛰기
+                </button>
+              ) : null}
+              {occurrenceExecutionState !== 'held' ? (
+                <button
+                  type="button"
+                  data-testid="personal-draft-occurrence-hold"
+                  aria-label={`${editorDraft.title} 이번 일정 잠시 보류`}
+                  className="min-h-9 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 hover:border-amber-300"
+                  onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'held')}
+                >
+                  잠시 보류
+                </button>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
         {canUndoRoutineCompletion ? (
           <div
             data-testid="my-flow-routine-undo-notice"

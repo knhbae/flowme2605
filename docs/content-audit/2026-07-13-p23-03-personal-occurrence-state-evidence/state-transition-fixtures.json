@@ -1,0 +1,44 @@
+{
+  "fixture": "personal-draft-daily-occurrence-execution",
+  "series": {
+    "frequency": "daily",
+    "count": 3,
+    "calendarOccurrenceCountBefore": 3,
+    "calendarOccurrenceCountAfter": 3,
+    "icsMembershipPolicy": "execution-state-does-not-change-series-membership"
+  },
+  "occurrence": {
+    "date": "2026-07-14",
+    "stableIdPreserved": true,
+    "initialState": "pending",
+    "transitions": [
+      {
+        "action": "skip",
+        "to": "skipped",
+        "reloadPersisted": true,
+        "completionControlDisabled": true
+      },
+      {
+        "action": "resume",
+        "to": "reopened",
+        "reloadPersisted": true,
+        "completionControlDisabled": false
+      },
+      {
+        "action": "hold",
+        "to": "held",
+        "reloadPersisted": true,
+        "completionControlDisabled": true
+      },
+      {
+        "action": "resume",
+        "to": "reopened",
+        "reloadPersisted": true,
+        "completionControlDisabled": false
+      }
+    ]
+  },
+  "sourceMutationCount": 0,
+  "structuralMembershipChangeCount": 0,
+  "actualObservedUserCount": 0
+}
