@@ -7046,10 +7046,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const originalDate = row.date;
     const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
     const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
+    const manualScheduleKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
+    const manualDateOverride = myFlowDateOverrides[manualScheduleKey];
     const calendarKey = originalDate
       ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
-      : personalDateOverride || draftDateOverride
-        ? getMyFlowManualScheduleKey(flow.progress.slug, row.id)
+      : personalDateOverride || draftDateOverride || manualDateOverride
+        ? manualScheduleKey
         : '';
     return {
       ...row,
@@ -8064,6 +8066,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPersonalDraftOccurrence = Boolean(
       isPersonalDraftUserItem && row.structuralOccurrenceId,
     );
+    const sourceRow = row.flow.rows.find(
+      (candidate) => baseStateId(candidate.id) === baseStateId(row.id),
+    );
+    const isOriginallyUndatedSavedItem = Boolean(
+      sourceRow &&
+        !isPersonalDraftUserItem &&
+        row.flow.bundle.flow.structure_type !== 'routine' &&
+        !sourceRow.date,
+    );
     const occurrenceExecutionState = row.structuralOccurrenceExecutionState ?? 'pending';
     const occurrenceExecutionPaused =
       occurrenceExecutionState === 'skipped' || occurrenceExecutionState === 'held';
@@ -8153,7 +8164,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const canUndoRoutineCompletion = isRoutineRow && myFlowRoutineCompletionUndo?.flowSlug === row.flow.progress.slug;
     const fieldClassName = 'mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
     const textareaClassName = `${fieldClassName} ${isMemoExpanded ? 'min-h-52' : isDrawerMode ? 'h-28 min-h-28' : 'h-20 min-h-20'} resize-y font-normal leading-6`;
-    const canEditDate = Boolean(row.calendarKey || isProgressFlow || isPersonalDraftUserItem);
+    const canEditDate = Boolean(
+      row.calendarKey || isProgressFlow || isPersonalDraftUserItem || isOriginallyUndatedSavedItem,
+    );
     const itemDateOverrideLabel = getSourceBackedFlowMapDateAnchorCopy().itemOverrideLabel;
     const itemEditButtonLabel = canEditDate ? '제목·날짜·메모 수정' : '제목·메모 수정';
     const itemEditButtonAriaLabel = `${editorDraft.title} ${itemEditButtonLabel}`;
@@ -8572,17 +8585,39 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </fieldset>
         ) : canEditDate ? (
-          <label className="block text-xs font-semibold text-slate-600">
-            {itemDateOverrideLabel}
-            <input
-              data-testid="my-flow-detail-date-input"
-              aria-label={itemDateOverrideLabel}
-              className={fieldClassName}
-              type="date"
-              value={editorDraft.date}
-              onChange={(event) => updateMyFlowEditingDraft(row, { date: event.target.value })}
-            />
-          </label>
+          <div
+            data-testid={isOriginallyUndatedSavedItem ? 'my-flow-undated-item-date-control' : undefined}
+            className="grid gap-2"
+          >
+            <label className="block text-xs font-semibold text-slate-600">
+              {itemDateOverrideLabel}
+              <input
+                data-testid="my-flow-detail-date-input"
+                aria-label={itemDateOverrideLabel}
+                className={fieldClassName}
+                type="date"
+                value={editorDraft.date}
+                onChange={(event) => updateMyFlowEditingDraft(row, { date: event.target.value })}
+              />
+            </label>
+            {isOriginallyUndatedSavedItem ? (
+              editorDraft.date ? (
+                <button
+                  type="button"
+                  data-testid="my-flow-undated-item-date-clear"
+                  aria-label={`${editorDraft.title} 날짜 없애기`}
+                  className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:border-blue-300"
+                  onClick={() => updateMyFlowEditingDraft(row, { date: '' })}
+                >
+                  날짜 없애기
+                </button>
+              ) : (
+                <p className="text-[11px] font-medium leading-5 text-slate-500">
+                  날짜를 정하면 캘린더에도 함께 보여요.
+                </p>
+              )
+            ) : null}
+          </div>
         ) : null}
         {showTimeLocationFields ? (
           <>

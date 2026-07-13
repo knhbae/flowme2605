@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//My Flow Step Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:travel-packing-list::creator-260601-travel-packing-list-item-0::none-20
+ 26-07-24-all-day@flowme.local
+DTSTAMP:20260713T171930Z
+DTSTART;VALUE=DATE:20260724
+DTEND;VALUE=DATE:20260725
+SUMMARY:신분증·여권(해외) 확인하기
+DESCRIPTION:신분증·여권(해외) 확인하기\nFlow: 여행 짐 싸기
+  체크리스트\n구간: 필수 서류·결제\n일정: 2026-07-24\n\n완
+ 료 기준: 신분증과 필요 서류를 가방에 넣었다.\n\n메모:
+  신분증과 필요 서류를 가방에 넣었다.\n\n원문: KKday 여
+ 행 준비물 체크리스트 https://www.kkday.com/ko/blog/35618/world-ov
+ erseatravel-checklist\n
+URL:https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist
+END:VEVENT
+END:VCALENDAR

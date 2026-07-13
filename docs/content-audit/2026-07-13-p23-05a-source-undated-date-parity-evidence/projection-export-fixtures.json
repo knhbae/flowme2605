@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "fixture": "travel-packing-list first item",
+  "states": [
+    {
+      "state": "unscheduled",
+      "myFlowVisible": true,
+      "calendarCount": 0,
+      "listExportEligible": true,
+      "icsEventCount": 0
+    },
+    {
+      "state": "personal_date_set",
+      "date": "2026-07-24",
+      "myFlowVisible": true,
+      "calendarCount": 1,
+      "memoDateApplied": true,
+      "checklistDateApplied": true,
+      "sheetDateApplied": true,
+      "icsEventCount": 1
+    },
+    {
+      "state": "personal_date_removed",
+      "myFlowVisible": true,
+      "calendarCount": 0,
+      "manualOverrideCount": 0,
+      "listExportEligible": true,
+      "icsEventCount": 0
+    }
+  ]
+}
+

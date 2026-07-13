@@ -4485,6 +4485,121 @@ test('my flow step detail saves portable calendar task fields', async ({ page })
   expect(ics).toContain('견적 후보 3곳과 포함 범위만 메모');
 });
 
+test('source-backed undated checklist can add and remove a personal date', async ({ page }) => {
+  test.setTimeout(60_000);
+  const evidenceDir = process.env.FLOWME_P23_05A_EVIDENCE_DIR;
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  page.on('pageerror', (error) => consoleErrors.push(error.message));
+  if (evidenceDir) {
+    fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+    fs.mkdirSync(`${evidenceDir}/downloads`, { recursive: true });
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+  await page.evaluate(() => {
+    window.localStorage.setItem('flow:saved:travel-packing-list', JSON.stringify({
+      slug: 'travel-packing-list',
+      savedAt: '2026-07-13T00:00:00.000Z',
+      selectedArtifactMode: 'checklist',
+    }));
+  });
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+
+  let flow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="travel-packing-list"]');
+  if ((await flow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
+    await flow.getByTestId('my-flow-mobile-structure-open').click();
+  }
+  await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  let detail = flow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await enterMyFlowDetailEditMode(detail);
+  const dateControl = detail.getByTestId('my-flow-undated-item-date-control');
+  await expect(dateControl).toBeVisible();
+  await expect(dateControl).toContainText('날짜를 정하면 캘린더에도 함께 보여요.');
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-07-24');
+  await expect(detail.getByTestId('my-flow-undated-item-date-clear')).toHaveAccessibleName(/날짜 없애기$/);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/01-source-undated-date-set-mobile.png`, fullPage: true });
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  const scheduledCell = page.locator('.fc-daygrid-day[data-date="2026-07-24"]');
+  await expect(scheduledCell.locator('.fc-event')).toHaveCount(1);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/02-source-undated-calendar-mobile.png`, fullPage: true });
+  }
+
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  flow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="travel-packing-list"]');
+  if ((await flow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
+    await flow.getByTestId('my-flow-mobile-structure-open').click();
+  }
+  await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  detail = flow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  const exportTools = await openMyFlowDetailTools(detail);
+  await exportTools.getByTestId('my-flow-detail-copy-portable-text').click();
+  const copiedMemo = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiedMemo).toContain('일정: 2026-07-24');
+  await exportTools.getByTestId('my-flow-detail-copy-checklist-text').click();
+  const copiedChecklist = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiedChecklist).toContain('2026-07-24');
+  await exportTools.getByTestId('my-flow-detail-copy-sheet-row').click();
+  const copiedSheet = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiedSheet).toContain('2026-07-24');
+  const downloadPromise = page.waitForEvent('download');
+  await exportTools.getByTestId('my-flow-detail-download-ics').click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  expect(downloadPath).toBeTruthy();
+  const ics = fs.readFileSync(downloadPath!, 'utf8');
+  expect(ics).toContain('DTSTART;VALUE=DATE:20260724');
+  if (evidenceDir) {
+    fs.writeFileSync(`${evidenceDir}/downloads/travel-packing-personal-date.ics`, ics, 'utf8');
+  }
+
+  await enterMyFlowDetailEditMode(detail);
+  await expect(detail.getByTestId('my-flow-detail-date-input')).toHaveValue('2026-07-24');
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="travel-packing-list"]');
+  await wideFlow.getByTestId('my-flow-next-action-open').click();
+  const wideDetail = wideFlow.getByTestId('my-flow-overview-inline-detail').getByTestId('my-flow-item-detail');
+  await enterMyFlowDetailEditMode(wideDetail);
+  await expect(wideDetail.getByTestId('my-flow-detail-date-input')).toHaveValue('2026-07-24');
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/03-source-undated-date-persisted-wide.png`, fullPage: true });
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  await wideDetail.getByTestId('my-flow-undated-item-date-clear').click();
+  await expect(wideDetail.getByTestId('my-flow-detail-date-input')).toHaveValue('');
+  await wideDetail.getByTestId('my-flow-detail-save-changes').click();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-24"] .fc-event')).toHaveCount(0);
+  const storedDateOverrides = await page.evaluate(() =>
+    JSON.parse(window.localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
+  );
+  const remainingTravelOverrides = Object.entries(storedDateOverrides)
+    .filter(([key]) => key.startsWith('travel-packing-list::'));
+  expect(remainingTravelOverrides).toHaveLength(0);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/04-source-undated-calendar-after-remove-mobile.png`, fullPage: true });
+  }
+  expect(consoleErrors).toEqual([]);
+});
+
 test('my flow mobile saved map edit and revisit keeps step detail lightweight', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/moving-d30');
