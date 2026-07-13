@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-01D2/D3A personal structural Calendar and ICS projection connection",
+  "generatedAt": "2026-07-13",
+  "markers": {
+    "personalDraftCalendarProjectionConnected": true,
+    "personalDraftIcsProjectionConnected": true,
+    "calendarStructuralProjectionConnected": true,
+    "icsStructuralProjectionConnected": true,
+    "listExportStructuralProjectionConnected": false,
+    "exportStructuralProjectionConnectionStatus": "calendar_ics_only",
+    "personalDraftScheduledUserItemCalendarVisible": true,
+    "personalDraftUnscheduledUserItemCalendarVisibleCount": 0,
+    "personalDraftTombstonedItemCalendarVisibleCount": 0,
+    "personalDraftRestoredItemCalendarVisible": true,
+    "personalDraftExcludedItemCalendarVisibleCount": 0,
+    "personalDraftDateOverrideAppliedToCalendar": true,
+    "personalDraftDateRemovalAppliedToCalendar": true,
+    "personalDraftSameDateUsesPersonalRank": true,
+    "personalDraftCalendarStableIdentityPreserved": true,
+    "personalDraftIcsScheduledUserItemEventCount": 1,
+    "personalDraftIcsUnscheduledUserItemEventCount": 0,
+    "personalDraftIcsTombstonedItemEventCount": 0,
+    "personalDraftIcsExcludedItemEventCount": 0,
+    "personalDraftIcsStableUidPreserved": true,
+    "personalDraftIcsDuplicateEventCount": 0,
+    "completionStateChangedStructuralMembershipCount": 0,
+    "sourceBackedCalendarBehaviorChanged": false,
+    "sourceBackedIcsBehaviorChanged": false,
+    "personalDraftScheduleUserReachableWithoutFixture": false,
+    "personalDraftCalendarHorizontalOverflowCount": 0,
+    "personalDraftCalendarConsoleErrorCount": 0,
+    "checklistStructuralProjectionConnected": false,
+    "sheetStructuralProjectionConnected": false,
+    "memoStructuralProjectionConnected": false
+  },
+  "scenarios": [
+    {
+      "id": "personal-draft-calendar-mobile",
+      "route": "/calendar",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "URL-first draft plus scheduled user Item structural fixture",
+      "state": "same-date source and user Item; unscheduled, tombstoned, and excluded Items present in storage",
+      "result": "two eligible Items visible in personal rank order; completion remains reversible",
+      "screenshot": "screenshots/01-personal-draft-calendar-mobile.png"
+    },
+    {
+      "id": "personal-draft-calendar-wide",
+      "route": "/calendar",
+      "viewport": { "width": 1024, "height": 768 },
+      "fixture": "same persisted personal draft state",
+      "state": "same-date source and user Item after reorder",
+      "result": "month grid and selected-day agenda show the same two Items without overflow",
+      "screenshot": "screenshots/02-personal-draft-calendar-wide.png"
+    },
+    {
+      "id": "personal-draft-ics-before-after-reorder",
+      "route": "/calendar item detail",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "scheduled user Item",
+      "state": "download before and after structural reorder",
+      "result": "one VEVENT each; equal UID, SUMMARY, DTSTART, and DESCRIPTION values",
+      "downloads": [
+        "downloads/personal-draft-user-item-before-reorder.ics",
+        "downloads/personal-draft-user-item-after-reorder.ics"
+      ]
+    },
+    {
+      "id": "source-backed-regression",
+      "routes": ["/calendar?demo=source-backed", "/my?demo=source-backed"],
+      "viewport": { "width": 390, "height": 844 },
+      "result": "Calendar remains visible and structural edit/reorder controls remain absent"
+    }
+  ],
+  "knownBaselineExclusions": [
+    {
+      "signal": "/favicon.ico 404",
+      "reason": "pre-existing global static-asset request unrelated to Calendar or ICS runtime"
+    }
+  ],
+  "verification": {
+    "focusedUnitPassCount": 37,
+    "targetedRegressionE2ePassCount": 4,
+    "evidenceCaptureE2ePassCount": 1,
+    "userSurfaceRegressionE2ePassCount": 58,
+    "productionBuildPassed": true,
+    "fullUnitPassCount": 450,
+    "docsCheckPassed": true
+  }
+}

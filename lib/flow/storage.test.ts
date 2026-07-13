@@ -34,6 +34,10 @@ import {
   PERSONAL_STRUCTURAL_PROJECTION_DESTINATIONS,
 } from './personal-structural-projection';
 import {
+  buildPersonalDraftProjectionValueOverlays,
+  getPersonalDraftProjectionValueKey,
+} from './personal-draft-projection-state';
+import {
   createEmptyPersonalStructuralOverlay,
   getPersonalStructuralOverlayStorageKey,
   loadOrMigratePersonalStructuralOverlay,
@@ -876,6 +880,77 @@ test('personal draft projection wrapper stays limited to eligible draft records'
     'checklist',
     'sheet',
     'memo',
+  ]);
+});
+
+test('personal draft stored values become stable projection overlays with explicit date removal', () => {
+  const flowSlug = 'url-draft-projection-values';
+  const structuralOverlay = {
+    ...createEmptyPersonalStructuralOverlay({
+      savedCopyId: flowSlug,
+      flowId: 'projection-values-flow',
+    }),
+    userItems: [
+      {
+        itemId: 'projection-values-user',
+        provenance: 'user_created' as const,
+        title: 'Personal item',
+        createdAt: '2026-07-13T16:00:00.000Z',
+        orderKey: 1,
+      },
+    ],
+  };
+  const sourceKey = getPersonalDraftProjectionValueKey(
+    flowSlug,
+    'projection-values-source',
+  );
+  const userKey = getPersonalDraftProjectionValueKey(
+    flowSlug,
+    'projection-values-user',
+  );
+  const fallbackKey = getPersonalDraftProjectionValueKey(
+    flowSlug,
+    'projection-values-fallback',
+  );
+
+  const valueOverlays = buildPersonalDraftProjectionValueOverlays({
+    flowSlug,
+    sourceItemIds: [
+      'projection-values-source',
+      'projection-values-fallback',
+    ],
+    structuralOverlay,
+    itemDrafts: {
+      [sourceKey]: {
+        title: '  Personal source title  ',
+        memo: 'Personal source memo',
+        date: '',
+      },
+      [userKey]: {
+        date: '2026-08-09',
+      },
+    },
+    dateOverrides: {
+      [sourceKey]: '2026-08-01',
+      [fallbackKey]: '2026-08-11',
+    },
+  });
+
+  assert.deepEqual(valueOverlays, [
+    {
+      itemId: 'projection-values-source',
+      title: 'Personal source title',
+      personalMemo: 'Personal source memo',
+      scheduleOverride: null,
+    },
+    {
+      itemId: 'projection-values-fallback',
+      scheduleOverride: { mode: 'fixed_date', date: '2026-08-11' },
+    },
+    {
+      itemId: 'projection-values-user',
+      scheduleOverride: { mode: 'fixed_date', date: '2026-08-09' },
+    },
   ]);
 });
 

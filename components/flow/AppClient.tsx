@@ -62,6 +62,14 @@ import {
   type PersonalDraftStructuralUndo,
 } from '@/lib/flow/personal-draft-structural-edit';
 import {
+  buildPersonalDraftProjectionValueOverlays,
+  getPersonalDraftProjectionValueKey,
+} from '@/lib/flow/personal-draft-projection-state';
+import {
+  buildPersonalDraftStructuralProjection,
+  type PersonalStructuralProjectionRow,
+} from '@/lib/flow/personal-structural-projection';
+import {
   loadOrMigratePersonalStructuralOverlay,
   savePersonalStructuralOverlay,
   type PersonalStructuralItemOwnership,
@@ -2965,6 +2973,9 @@ type MyFlowRow = {
   detail?: FlowItemDetail;
   itemType?: MyFlowItemTypeInfo;
   structuralOwnership?: PersonalStructuralItemOwnership;
+  structuralProjectionOrderRank?: number;
+  structuralCalendarIcsEligible?: boolean;
+  structuralProjectionStableId?: string;
 };
 
 type MySavedFlow = {
@@ -4064,12 +4075,57 @@ function getMyFlowManualScheduleKey(flowSlug: string, rowId: string): string {
   return getMyFlowCalendarRowKey(flowSlug, rowId, 'none');
 }
 
-function getMyFlowDraftItemOverlayKey(flowSlug: string, rowId: string): string {
-  return getMyFlowCalendarRowKey(flowSlug, rowId, 'draft-overlay');
-}
-
 function getMyFlowRowInstanceKey(row: MyFlowCalendarRow): string {
   return row.calendarKey ?? `${row.flow.progress.slug}::${row.id}::${row.date ?? 'none'}`;
+}
+
+function mapPersonalDraftProjectionRowToMyFlowRow(
+  bundle: FlowBundle,
+  sourceRows: MyFlowRow[],
+  projectionRow: PersonalStructuralProjectionRow<FlowItem>,
+): MyFlowRow | undefined {
+  const structuralMetadata = {
+    structuralOwnership: projectionRow.ownership,
+    structuralProjectionOrderRank: projectionRow.personalOrderRank,
+    structuralCalendarIcsEligible:
+      projectionRow.destinationEligibility.calendarIcs,
+    structuralProjectionStableId: projectionRow.itemId,
+  };
+
+  if (projectionRow.ownership === 'source') {
+    const sourceRow = sourceRows.find((row) => row.id === projectionRow.itemId);
+    if (!sourceRow) return undefined;
+    const { date: _sourceDate, ...sourceRowWithoutDate } = sourceRow;
+    return withMyFlowItemType(bundle, {
+      ...sourceRowWithoutDate,
+      title: projectionRow.title,
+      ...(projectionRow.calendarDate ? { date: projectionRow.calendarDate } : {}),
+      ...structuralMetadata,
+    });
+  }
+
+  return withMyFlowItemType(bundle, {
+    id: projectionRow.itemId,
+    title: projectionRow.title,
+    section: '내가 추가한 할 일',
+    ...(projectionRow.calendarDate ? { date: projectionRow.calendarDate } : {}),
+    ...(projectionRow.schedule?.mode === 'anchor_offset'
+      ? {
+          timing: `D${
+            projectionRow.schedule.dayOffset >= 0 ? '+' : ''
+          }${projectionRow.schedule.dayOffset}`,
+        }
+      : {}),
+    ...(projectionRow.personalMemo
+      ? {
+          detail: {
+            item_id: projectionRow.itemId,
+            why: projectionRow.personalMemo,
+          },
+        }
+      : {}),
+    ...structuralMetadata,
+  });
 }
 
 function getMyFlowPersonalCopyStepOverride(
@@ -4576,24 +4632,42 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const structuralOverlay = structuralEditEligible
         ? myFlowStructuralOverlaysBySlug[progress.slug] ?? createPersonalDraftStructuralOverlay(effectiveBundle)
         : undefined;
-      const structuralRows = structuralOverlay
-        ? resolvePersonalDraftStructuralItems(effectiveBundle, structuralOverlay).effectiveItems.flatMap((item) => {
-            if (item.ownership === 'source') {
-              const sourceRow = sourceRows.find((row) => row.id === item.itemId);
-              return sourceRow ? [{ ...sourceRow, structuralOwnership: item.ownership }] : [];
-            }
-            return [withMyFlowItemType(effectiveBundle, {
-              id: item.itemId,
-              title: item.title,
-              section: '내가 추가한 할 일',
-              ...(item.schedule?.mode === 'fixed_date' ? { date: item.schedule.date } : {}),
-              ...(item.schedule?.mode === 'anchor_offset' ? { timing: `D${item.schedule.dayOffset >= 0 ? '+' : ''}${item.schedule.dayOffset}` } : {}),
-              ...(item.personalMemo ? { detail: { item_id: item.itemId, why: item.personalMemo } } : {}),
-              structuralOwnership: item.ownership,
-            })];
+      const structuralProjection = structuralOverlay
+        ? buildPersonalDraftStructuralProjection({
+            bundle: effectiveBundle,
+            structuralOverlay,
+            valueOverlays: buildPersonalDraftProjectionValueOverlays({
+              flowSlug: progress.slug,
+              sourceItemIds: effectiveBundle.items.map((item) => item.id),
+              structuralOverlay,
+              itemDrafts: myFlowItemDrafts,
+              dateOverrides: myFlowDateOverrides,
+            }),
+            anchorDate: anchor,
+          })
+        : undefined;
+      const structuralRows = structuralProjection
+        ? structuralProjection.effectiveRows.flatMap((projectionRow) => {
+            const row = mapPersonalDraftProjectionRowToMyFlowRow(
+              effectiveBundle,
+              sourceRows,
+              projectionRow,
+            );
+            return row ? [row] : [];
           })
         : sourceRows;
-      const projectionRows = sourceRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+      const projectionRows = structuralProjection
+        ? structuralProjection.rowsByDestination.calendarScreen.flatMap((projectionRow) => {
+            const row = mapPersonalDraftProjectionRowToMyFlowRow(
+              effectiveBundle,
+              sourceRows,
+              projectionRow,
+            );
+            return row && !isUrlFirstStartExcludedItemState(itemStates, row.id)
+              ? [row]
+              : [];
+          })
+        : sourceRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
       const excludedRows = structuralRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
       const rows = structuralRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
       const executableIds = Array.from(new Set(rows.flatMap((row) => getMyFlowCheckIds(effectiveBundle, row.id, anchor))));
@@ -4671,7 +4745,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     flow.rows.find((row) => !isMyFlowRowChecked(flow, row));
   const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
     isUrlFirstDraftSavedFlow(flow)
-      ? myFlowDateOverrides[getMyFlowDraftItemOverlayKey(flow.progress.slug, rowId)]
+      ? myFlowDateOverrides[getPersonalDraftProjectionValueKey(flow.progress.slug, rowId)]
       : undefined;
   const getMyFlowRoutineWeekdays = (flow: MySavedFlow) =>
     myFlowRoutineRuleDrafts[flow.progress.slug]?.weekdays ??
@@ -4791,7 +4865,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       };
     });
   });
-  const calendarRows = [...baseCalendarRows, ...manuallyScheduledRows, ...generatedRoutineRows].sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''));
+  const calendarRows = [...baseCalendarRows, ...manuallyScheduledRows, ...generatedRoutineRows].sort((a, b) => {
+    const dateOrder = (a.date ?? '').localeCompare(b.date ?? '');
+    if (dateOrder !== 0) return dateOrder;
+    if (
+      a.structuralProjectionOrderRank !== undefined &&
+      b.structuralProjectionOrderRank !== undefined
+    ) {
+      return (
+        a.structuralProjectionOrderRank - b.structuralProjectionOrderRank ||
+        a.id.localeCompare(b.id)
+      );
+    }
+    return 0;
+  });
   const calendarScheduleRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarRoutineRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
   const calendarScopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope));
@@ -4963,7 +5050,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           ? '다음 할 일'
           : '먼저 할 일';
   const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => ({
-    ...(myFlowItemDrafts[getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id)] ?? {}),
+    ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)] ?? {}),
     ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
     ...getMyFlowPersonalCopyStepDraft(row),
   });
@@ -5374,11 +5461,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         setMyFlowVisibleMonth(getMyFlowMonthStart(date));
       }
     } else if (isUrlFirstDraftSavedFlow(row.flow)) {
-      if (Object.keys(itemDraft).length > 0) {
-        updateMyFlowItemDraftByKey(getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id), itemDraft);
+      const personalDraftItemPatch = {
+        ...itemDraft,
+        ...(date !== undefined ? { date } : {}),
+      };
+      if (Object.keys(personalDraftItemPatch).length > 0) {
+        updateMyFlowItemDraftByKey(
+          getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id),
+          personalDraftItemPatch,
+        );
       }
       if (date !== undefined) {
-        const draftDateKey = getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id);
+        const draftDateKey = getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id);
         updateMyFlowDateOverrideState((current) => {
           const next = { ...current };
           if (date) {
@@ -5396,7 +5490,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     } else {
       const { title, memo, ...executionDraft } = itemDraft;
       if (title !== undefined || memo !== undefined) {
-        updateMyFlowItemDraftByKey(getMyFlowDraftItemOverlayKey(row.flow.progress.slug, row.id), {
+        updateMyFlowItemDraftByKey(getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id), {
           ...(title !== undefined ? { title } : {}),
           ...(memo !== undefined ? { memo } : {}),
         });
@@ -6655,6 +6749,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return (
         <div key={`${routineDragKey}-${options.kind ?? 'schedule'}`} data-testid="my-flow-execution-row-shell" className="grid gap-1.5">
         <article
+          data-item-id={row.id}
+          data-structural-order-rank={row.structuralProjectionOrderRank}
           data-item-type={row.itemType?.primary ?? 'check_task'}
           data-routine-key={isRoutineExecution ? routineDragKey : undefined}
           draggable={isRoutineExecution}
@@ -6731,6 +6827,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return (
       <article
         key={`${routineDragKey}-${options.kind ?? 'schedule'}`}
+        data-item-id={row.id}
+        data-structural-order-rank={row.structuralProjectionOrderRank}
         data-item-type={row.itemType?.primary ?? 'check_task'}
         data-routine-key={isRoutineExecution ? routineDragKey : undefined}
         draggable={isRoutineExecution}
@@ -7287,11 +7385,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const shouldCollapseReadSummary = isInlineMode;
     const shouldCollapsePortableExport = isInlineMode;
     const portableExportKey = getMyFlowRowInstanceKey(row);
+    const portableExportStableStepId = row.structuralProjectionStableId
+      ? `${row.flow.progress.slug}::${row.structuralProjectionStableId}`
+      : portableExportKey;
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
     const portableExportInput: MyFlowPortableStepExportInput = {
       flowTitle: getMyFlowPortableExportFlowTitle(row.flow),
-      stepId: portableExportKey,
+      stepId: portableExportStableStepId,
       stepTitle: editorDraft.title,
       sectionTitle: visibleDetailSection,
       date: editorDraft.date,
@@ -7306,7 +7407,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       completionCriteria: detail.completion_criteria,
       caution: detail.caution,
     };
-    const canDownloadPortableCalendar = canBuildMyFlowStepIcs(portableExportInput);
+    const canDownloadPortableCalendar =
+      canBuildMyFlowStepIcs(portableExportInput) &&
+      (row.structuralCalendarIcsEligible ?? true);
     const portableExportSummary = canDownloadPortableCalendar ? '메모 · 체크리스트 · 시트 행 · 캘린더' : '메모 · 체크리스트 · 시트 행 · 날짜 필요';
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const hasExpandableMemo = editorDraft.memo.trim().length > 0;
@@ -8812,7 +8915,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <ul data-testid="personal-draft-persistent-recovery-list" className="mt-2 grid gap-2 border-t border-slate-200 pt-2">
               {removedItems.map((item) => {
                 const personalTitle = myFlowItemDrafts[
-                  getMyFlowDraftItemOverlayKey(flow.progress.slug, item.itemId)
+                  getPersonalDraftProjectionValueKey(flow.progress.slug, item.itemId)
                 ]?.title;
                 const title = toUserFacingSourceTitle(personalTitle ?? item.title);
                 return (

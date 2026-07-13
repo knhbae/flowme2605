@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//My Flow Step Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:url-draft-1783927183385-la9yb::personal-item-7e18cd3b-8f7a-4814-8b0f-64
+ 2756838197-2026-08-05-all-day@flowme.local
+DTSTAMP:20260713T071949Z
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+SUMMARY:교통편 앱 오프라인 저장
+DESCRIPTION:교통편 앱 오프라인 저장\nFlow: 여행 출발 준비
+  초안\n구간: 내가 추가한 할 일\n일정: 2026-08-05\n\n메모:
+  탑승권과 지도를 오프라인에서도 열 수 있게 저장\n
+END:VEVENT
+END:VCALENDAR

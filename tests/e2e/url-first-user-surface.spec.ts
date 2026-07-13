@@ -847,6 +847,383 @@ test('personal draft order and persistent recovery survive reload without changi
   await expect(page.getByTestId('personal-draft-persistent-recovery-entry')).toHaveCount(0);
 });
 
+test('personal draft structural Calendar and ICS projections share effective items and stable identity', async ({ page }) => {
+  test.setTimeout(240_000);
+  const evidenceDir = process.env.FLOWME_P23_01D2_D3A_EVIDENCE_DIR;
+  const screenshotDir = evidenceDir ? `${evidenceDir}/screenshots` : '';
+  const downloadDir = evidenceDir ? `${evidenceDir}/downloads` : '';
+  if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
+  if (downloadDir) fs.mkdirSync(downloadDir, { recursive: true });
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() !== 'error') return;
+    const location = message.location();
+    if (
+      location.url.endsWith('/favicon.ico') &&
+      message.text().includes('404')
+    ) {
+      return;
+    }
+    consoleErrors.push(
+      [message.text(), location.url].filter(Boolean).join(' @ '),
+    );
+  });
+
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/personal-calendar-ics-draft?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('Flow 이름').fill('여행 출발 준비 초안 요청');
+  await result.getByLabel('원하는 결과').fill('일정을 정한 할 일과 날짜 없는 할 일을 함께 관리하고 싶음');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
+
+  const candidateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: '여행 출발 준비 초안 요청' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('여행 출발 준비 초안');
+  await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-08-05');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  await page.getByTestId('my-flow-view-flow').click();
+  let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
+    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
+  }
+
+  const sourceItems = draftFlow.locator(
+    '[data-testid="personal-draft-effective-item"][data-structural-ownership="source"]',
+  );
+  const sourceItemIds = await sourceItems.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute('data-item-id')).filter(Boolean),
+  );
+  expect(sourceItemIds.length).toBeGreaterThanOrEqual(3);
+  const scheduledSourceId = sourceItemIds[0]!;
+  const excludedSourceId = sourceItemIds[1]!;
+  const tombstonedSourceId = sourceItemIds[2]!;
+
+  let scheduledSourceItem = sourceItems.first();
+  await scheduledSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  let detail = draftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  const sourceReadSummary = detail.getByTestId('my-flow-detail-read-summary');
+  await sourceReadSummary.locator('summary').click();
+  await sourceReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await detail.getByTestId('my-flow-detail-title-input').fill('여권과 예약 정보 최종 확인');
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-08-05');
+  await detail.getByTestId('my-flow-detail-memo').fill('예약 번호와 여권 만료일을 함께 확인');
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+
+  for (const title of ['교통편 앱 오프라인 저장', '날짜 없이 챙길 준비물']) {
+    await draftFlow.getByTestId('personal-draft-add-entry').click();
+    await draftFlow.getByTestId('personal-draft-add-title').fill(title);
+    await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+  }
+  const scheduledUserItem = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '교통편 앱 오프라인 저장' });
+  const unscheduledUserItem = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '날짜 없이 챙길 준비물' });
+  const scheduledUserId = await scheduledUserItem.getAttribute('data-item-id');
+  const unscheduledUserId = await unscheduledUserItem.getAttribute('data-item-id');
+  expect(scheduledUserId).toMatch(/^personal-item-/);
+  expect(unscheduledUserId).toMatch(/^personal-item-/);
+
+  await unscheduledUserItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  detail = draftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  const unscheduledReadSummary = detail.getByTestId('my-flow-detail-read-summary');
+  await unscheduledReadSummary.locator('summary').click();
+  await unscheduledReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await expect(detail.getByTestId('my-flow-detail-date-input')).toHaveCount(0);
+  await detail.getByRole('button', { name: '수정 취소' }).click();
+
+  await page.evaluate(
+    ({ scheduledUserId, unscheduledUserId, scheduledSourceId, excludedSourceId, tombstonedSourceId }) => {
+      const key = Object.keys(localStorage).find((entry) =>
+        entry.startsWith('flow:my-flow:structural-overlay:'),
+      );
+      if (!key) throw new Error('Missing personal structural overlay');
+      const overlay = JSON.parse(localStorage.getItem(key) || 'null');
+      const scheduledUser = overlay.userItems.find(
+        (item: { itemId?: string }) => item.itemId === scheduledUserId,
+      );
+      if (!scheduledUser) throw new Error('Missing scheduled user item');
+      scheduledUser.schedule = { mode: 'fixed_date', date: '2026-08-05' };
+      scheduledUser.personalMemo = '탑승권과 지도를 오프라인에서도 열 수 있게 저장';
+      overlay.selection = {
+        mode: 'all_except_excluded',
+        includedItemIds: [],
+        excludedItemIds: [excludedSourceId],
+      };
+      overlay.itemTombstones = [
+        { itemId: tombstonedSourceId, ownership: 'source', deletedAt: '2026-07-13T18:00:00.000Z' },
+      ];
+      overlay.orderOverride = [
+        scheduledSourceId,
+        scheduledUserId,
+        unscheduledUserId,
+        excludedSourceId,
+        tombstonedSourceId,
+      ];
+      overlay.updatedAt = '2026-07-13T18:00:00.000Z';
+      localStorage.setItem(key, JSON.stringify(overlay));
+    },
+    {
+      scheduledUserId,
+      unscheduledUserId,
+      scheduledSourceId,
+      excludedSourceId,
+      tombstonedSourceId,
+    },
+  );
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
+    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
+  }
+  let scheduledUserAfterFixture = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '교통편 앱 오프라인 저장' });
+  await scheduledUserAfterFixture.getByTestId('personal-draft-move-up').click();
+  const orderAfterMove = await draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .evaluateAll((elements) => elements.map((element) => element.getAttribute('data-item-id')));
+  expect(orderAfterMove.indexOf(scheduledUserId)).toBeLessThan(
+    orderAfterMove.indexOf(scheduledSourceId),
+  );
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-05"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  let selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay).toContainText('교통편 앱 오프라인 저장');
+  await expect(selectedDay).toContainText('여권과 예약 정보 최종 확인');
+  await expect(selectedDay).not.toContainText('날짜 없이 챙길 준비물');
+  const selectedRows = selectedDay.locator(
+    '[data-testid="my-flow-execution-row-shell"] > article',
+  );
+  await expect(selectedRows).toHaveCount(2);
+  await expect(selectedRows.nth(0)).toHaveAttribute('data-item-id', scheduledUserId ?? '');
+  await expect(selectedRows.nth(1)).toHaveAttribute('data-item-id', scheduledSourceId);
+  await expect(
+    page.locator(`[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${tombstonedSourceId}"]`),
+  ).toHaveCount(0);
+  await expect(
+    page.locator(`[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${excludedSourceId}"]`),
+  ).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+
+  let userCalendarRow = selectedDay.locator(
+    `[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${scheduledUserId}"]`,
+  );
+  const complete = userCalendarRow.getByRole('checkbox', {
+    name: '교통편 앱 오프라인 저장 완료 체크',
+  });
+  await complete.check();
+  await expect(userCalendarRow).toBeVisible();
+  const reopen = userCalendarRow.getByRole('checkbox', {
+    name: '교통편 앱 오프라인 저장 완료 취소',
+  });
+  await reopen.uncheck();
+  await expect(userCalendarRow).toBeVisible();
+
+  await userCalendarRow.getByRole('button', { name: /교통편 앱 오프라인 저장 열기/ }).click();
+  detail = selectedDay.getByTestId('my-flow-item-detail');
+  const portableExport = detail.getByTestId('my-flow-detail-portable-export');
+  if (await portableExport.locator('summary').count()) {
+    await portableExport.locator('summary').click();
+  }
+  const firstDownloadPromise = page.waitForEvent('download');
+  await detail.getByTestId('my-flow-detail-download-ics').click();
+  const firstDownload = await firstDownloadPromise;
+  if (downloadDir) {
+    await firstDownload.saveAs(`${downloadDir}/personal-draft-user-item-before-reorder.ics`);
+  }
+  const firstDownloadPath = await firstDownload.path();
+  expect(firstDownloadPath).toBeTruthy();
+  const firstIcs = fs.readFileSync(firstDownloadPath!, 'utf8').replaceAll('\r\n ', '');
+  expect(firstIcs).toContain('SUMMARY:교통편 앱 오프라인 저장');
+  expect(firstIcs).toContain('DTSTART;VALUE=DATE:20260805');
+  expect(firstIcs).toContain('탑승권과 지도를 오프라인에서도 열 수 있게 저장');
+  expect((firstIcs.match(/BEGIN:VEVENT/g) ?? [])).toHaveLength(1);
+  const firstUid = firstIcs.match(/^UID:(.+)$/m)?.[1];
+  expect(firstUid).toBeTruthy();
+  const visibleFirstIcs = firstIcs
+    .split(/\r?\n/u)
+    .filter((line) => !line.startsWith('PRODID:') && !line.startsWith('UID:'))
+    .join('\n');
+  const icsGuardrail = scanUserFacingOutputGuardrails({
+    text: visibleFirstIcs,
+    sourceSlugSignals: urlFirstSourceSlugSignals,
+  });
+  expect(icsGuardrail.internalCopyHits).toEqual([]);
+  expect(icsGuardrail.sourceSlugHits).toEqual([]);
+  expect(icsGuardrail.structuralDisplayHits).toEqual([]);
+  expect(icsGuardrail.trailingFlowSuffixHits).toEqual([]);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await page.screenshot({
+      path: `${screenshotDir}/01-personal-draft-calendar-mobile.png`,
+      fullPage: true,
+    });
+  }
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
+    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
+  }
+  scheduledUserAfterFixture = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '교통편 앱 오프라인 저장' });
+  await scheduledUserAfterFixture.getByTestId('personal-draft-move-down').click();
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-05"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  const reorderedRows = selectedDay.locator(
+    '[data-testid="my-flow-execution-row-shell"] > article',
+  );
+  await expect(reorderedRows.nth(0)).toHaveAttribute('data-item-id', scheduledSourceId);
+  await expect(reorderedRows.nth(1)).toHaveAttribute('data-item-id', scheduledUserId ?? '');
+  userCalendarRow = selectedDay.locator(
+    `[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${scheduledUserId}"]`,
+  );
+  await userCalendarRow.getByRole('button', { name: /교통편 앱 오프라인 저장 열기/ }).click();
+  detail = selectedDay.getByTestId('my-flow-item-detail');
+  const reorderedPortableExport = detail.getByTestId('my-flow-detail-portable-export');
+  if (await reorderedPortableExport.locator('summary').count()) {
+    await reorderedPortableExport.locator('summary').click();
+  }
+  const secondDownloadPromise = page.waitForEvent('download');
+  await detail.getByTestId('my-flow-detail-download-ics').click();
+  const secondDownload = await secondDownloadPromise;
+  if (downloadDir) {
+    await secondDownload.saveAs(`${downloadDir}/personal-draft-user-item-after-reorder.ics`);
+  }
+  const secondDownloadPath = await secondDownload.path();
+  expect(secondDownloadPath).toBeTruthy();
+  const secondIcs = fs.readFileSync(secondDownloadPath!, 'utf8').replaceAll('\r\n ', '');
+  expect(secondIcs.match(/^UID:(.+)$/m)?.[1]).toBe(firstUid);
+
+  const closeReorderedDetail = selectedDay.getByRole('button', {
+    name: '닫기',
+    exact: true,
+  });
+  if (await closeReorderedDetail.count()) await closeReorderedDetail.click();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-05"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  await expect(
+    page
+      .getByTestId('my-flow-calendar-selected-day')
+      .locator('[data-testid="my-flow-execution-row-shell"] > article'),
+  ).toHaveCount(2);
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await page.screenshot({
+      path: `${screenshotDir}/02-personal-draft-calendar-wide.png`,
+      fullPage: true,
+    });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-05"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+
+  const sourceCalendarRow = selectedDay.locator(
+    `[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${scheduledSourceId}"]`,
+  );
+  await sourceCalendarRow
+    .getByRole('button', { name: /여권과 예약 정보 최종 확인 열기/ })
+    .click();
+  detail = selectedDay.getByTestId('my-flow-item-detail');
+  const sourceCalendarReadSummary = detail.getByTestId('my-flow-detail-read-summary');
+  await sourceCalendarReadSummary.locator('summary').click();
+  await sourceCalendarReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await detail.getByTestId('my-flow-detail-date-input').fill('');
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+  await expect(
+    selectedDay.locator(
+      `[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${scheduledSourceId}"]`,
+    ),
+  ).toHaveCount(0);
+  await expect(
+    selectedDay.locator(
+      `[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${scheduledUserId}"]`,
+    ),
+  ).toBeVisible();
+
+  await page.evaluate((tombstonedSourceId) => {
+    const key = Object.keys(localStorage).find((entry) =>
+      entry.startsWith('flow:my-flow:structural-overlay:'),
+    );
+    if (!key) throw new Error('Missing personal structural overlay');
+    const overlay = JSON.parse(localStorage.getItem(key) || 'null');
+    overlay.itemTombstones = overlay.itemTombstones.filter(
+      (entry: { itemId?: string }) => entry.itemId !== tombstonedSourceId,
+    );
+    localStorage.setItem(key, JSON.stringify(overlay));
+  }, tombstonedSourceId);
+  await page.reload();
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-07"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  await expect(
+    page.locator(`[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${tombstonedSourceId}"]`),
+  ).toBeVisible();
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-05"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  await expectNoHorizontalOverflow(page);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/calendar?demo=source-backed');
+  await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
+  await page.goto('/my?demo=source-backed');
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
+  await expect(page.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
+  expect(consoleErrors).toEqual([]);
+});
+
 test('URL-first draft preserves input on storage failure and reuses the canonical saved draft', async ({ page }) => {
   const sourceUrl = 'https://example.com/draft-lifecycle-source?utm_source=review';
   const requestTitle = '중복 없이 이어갈 주말 준비';

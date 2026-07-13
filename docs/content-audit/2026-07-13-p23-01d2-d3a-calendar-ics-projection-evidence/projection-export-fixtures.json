@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-01D2/D3A projection and ICS fixtures",
+  "generatedAt": "2026-07-13",
+  "fixtures": [
+    {
+      "id": "scheduled-source-item",
+      "ownership": "source",
+      "schedule": "fixed personal date",
+      "calendarScreen": true,
+      "calendarIcs": true,
+      "expected": "effective title and date appear in Calendar and ICS"
+    },
+    {
+      "id": "scheduled-user-item",
+      "ownership": "user_created",
+      "schedule": "fixed date fixture",
+      "userReachableWithoutFixture": false,
+      "calendarScreen": true,
+      "calendarIcs": true,
+      "expected": "one Calendar row and one VEVENT with personal memo"
+    },
+    {
+      "id": "unscheduled-user-item",
+      "ownership": "user_created",
+      "calendarScreen": false,
+      "calendarIcs": false,
+      "myFlow": true,
+      "expected": "kept in My Flow and absent from Calendar/ICS"
+    },
+    {
+      "id": "tombstoned-source-item",
+      "calendarScreen": false,
+      "calendarIcs": false,
+      "expected": "absent until stable-ID restore"
+    },
+    {
+      "id": "restored-source-item",
+      "calendarScreen": true,
+      "calendarIcs": true,
+      "expected": "returns with original stable ID and resolved date"
+    },
+    {
+      "id": "excluded-source-item",
+      "calendarScreen": false,
+      "calendarIcs": false,
+      "expected": "absent from both destinations"
+    },
+    {
+      "id": "explicit-date-removal",
+      "storedValue": "empty date",
+      "scheduleOverride": null,
+      "calendarScreen": false,
+      "calendarIcs": false,
+      "myFlow": true,
+      "expected": "source date does not reappear"
+    },
+    {
+      "id": "same-date-personal-order",
+      "before": ["user-created", "source"],
+      "afterReorder": ["source", "user-created"],
+      "expected": "Calendar agenda follows personal rank while both dates remain equal"
+    },
+    {
+      "id": "completion-reopen",
+      "states": ["pending", "done", "reopened"],
+      "calendarMembershipCount": 1,
+      "expected": "execution state changes do not change structural membership"
+    },
+    {
+      "id": "ics-stable-uid-after-reorder",
+      "eventCountBefore": 1,
+      "eventCountAfter": 1,
+      "duplicateEventCount": 0,
+      "uidStable": true,
+      "expected": "structural order is not part of event identity"
+    }
+  ],
+  "consumerConnections": {
+    "calendarScreen": true,
+    "calendarIcs": true,
+    "checklist": false,
+    "sheet": false,
+    "memo": false
+  }
+}
