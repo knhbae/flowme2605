@@ -1,0 +1,123 @@
+{
+  "generatedAt": "2026-07-13T00:00:00.000Z",
+  "scope": "P23-02B1 Personal Draft Time & All-day Contract",
+  "markers": {
+    "personalDraftTimeContractReady": true,
+    "unscheduledAllDayTimedStatesDistinct": true,
+    "legacyFixedDateTimeMigrated": true,
+    "timedEventDefaultDurationMinutes": 30,
+    "timedEventDurationRangeMinutes": {
+      "minimum": 5,
+      "maximum": 1440
+    },
+    "timedEventTimeZonePolicy": "iana_when_present_else_floating_local",
+    "eventIdentityChangesAfterTimeEdit": false,
+    "completionStateChangedScheduleMembershipCount": 0,
+    "malformedScheduleItemLossCount": 0,
+    "sourceMutationCount": 0,
+    "calendarTimedProjectionConnected": false,
+    "icsTimedProjectionConnected": false,
+    "personalDraftTimeUserReachableWithoutFixture": false,
+    "appUiChanged": false
+  },
+  "fixtures": [
+    {
+      "id": "unscheduled",
+      "expectedState": "unscheduled",
+      "result": "pass"
+    },
+    {
+      "id": "all-day",
+      "expectedState": "all_day",
+      "result": "pass"
+    },
+    {
+      "id": "timed-iana",
+      "expectedState": "timed",
+      "expectedDurationMinutes": 45,
+      "expectedTimeZonePolicy": "iana",
+      "result": "pass"
+    },
+    {
+      "id": "all-day-to-timed",
+      "expectedState": "timed",
+      "expectedDurationMinutes": 30,
+      "result": "pass"
+    },
+    {
+      "id": "timed-to-all-day",
+      "expectedState": "all_day",
+      "result": "pass"
+    },
+    {
+      "id": "time-edit-stable-identity",
+      "identityChanged": false,
+      "result": "pass"
+    },
+    {
+      "id": "cross-midnight",
+      "expectedEnd": "2026-08-04T00:20",
+      "result": "pass"
+    },
+    {
+      "id": "invalid-24-hour-time",
+      "expectedState": "all_day",
+      "itemPreserved": true,
+      "result": "pass"
+    },
+    {
+      "id": "invalid-duration",
+      "expectedDurationMinutes": 30,
+      "itemPreserved": true,
+      "result": "pass"
+    },
+    {
+      "id": "legacy-fixed-date-time",
+      "expectedDurationMinutes": 30,
+      "expectedTimeZonePolicy": "floating_local",
+      "result": "pass"
+    },
+    {
+      "id": "completion-reopened-membership",
+      "membershipChangedCount": 0,
+      "result": "pass"
+    },
+    {
+      "id": "reorder-timed-state",
+      "scheduleStatePreserved": true,
+      "result": "pass"
+    },
+    {
+      "id": "malformed-overlay",
+      "itemLossCount": 0,
+      "result": "pass"
+    },
+    {
+      "id": "source-backed-wrapper",
+      "adapterApplied": false,
+      "result": "pass"
+    }
+  ],
+  "consumerConnection": {
+    "pureStructuralProjection": true,
+    "calendarScreen": false,
+    "calendarIcs": false,
+    "timeEditUi": false
+  },
+  "verification": {
+    "targetedStorageTests": {
+      "passed": 36,
+      "failed": 0
+    },
+    "fullUnitTests": {
+      "passed": 456,
+      "failed": 0
+    },
+    "targetedDateUiE2e": {
+      "passed": 1,
+      "failed": 0
+    },
+    "docsCheck": "passed",
+    "productionBuild": "passed"
+  }
+}

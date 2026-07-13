@@ -34,6 +34,12 @@ import {
   buildPersonalStructuralProjection,
   PERSONAL_STRUCTURAL_PROJECTION_DESTINATIONS,
 } from './personal-structural-projection';
+import { personalStructuralScheduleGoldenFixtures } from './personal-structural-schedule.fixtures';
+import {
+  buildPersonalStructuralScheduleProjection,
+  normalizePersonalStructuralSchedule,
+  PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
+} from './personal-structural-schedule';
 import {
   buildPersonalDraftProjectionValueOverlays,
   getPersonalDraftProjectionValueKey,
@@ -543,6 +549,219 @@ test('personal draft user-created item date stays structural and reversible acro
     'reopened',
   );
   assert.equal(JSON.stringify(personalDraft.items), sourceBefore);
+});
+
+test('personal structural schedule contract distinguishes unscheduled, all-day, and timed fixtures', () => {
+  assert.equal(personalStructuralScheduleGoldenFixtures.length, 10);
+
+  personalStructuralScheduleGoldenFixtures.forEach((fixture) => {
+    const normalized = normalizePersonalStructuralSchedule(fixture.schedule);
+    const projection = buildPersonalStructuralScheduleProjection({
+      schedule: fixture.schedule,
+      anchorDate: fixture.anchorDate,
+      identityNamespace: 'schedule-fixture-copy',
+      itemId: fixture.id,
+    });
+
+    assert.equal(projection.scheduleState, fixture.expected.scheduleState, fixture.id);
+    assert.equal(projection.calendarDate, fixture.expected.calendarDate, fixture.id);
+    assert.equal(projection.startTime, fixture.expected.startTime, fixture.id);
+    assert.equal(projection.durationMinutes, fixture.expected.durationMinutes, fixture.id);
+    assert.equal(projection.endDate, fixture.expected.endDate, fixture.id);
+    assert.equal(projection.endTime, fixture.expected.endTime, fixture.id);
+    assert.equal(projection.timeZone, fixture.expected.timeZone, fixture.id);
+    assert.equal(projection.timeZonePolicy, fixture.expected.timeZonePolicy, fixture.id);
+    if (fixture.expected.warningIncludes) {
+      assert.ok(
+        projection.validationWarnings.includes(fixture.expected.warningIncludes),
+        fixture.id,
+      );
+    }
+    if (fixture.expected.legacyTimeOnlyMigrated !== undefined) {
+      assert.equal(
+        normalized.legacyTimeOnlyMigrated,
+        fixture.expected.legacyTimeOnlyMigrated,
+        fixture.id,
+      );
+    }
+  });
+});
+
+test('personal structural schedule normalization preserves legacy time and safely repairs malformed fields', () => {
+  const legacy = normalizePersonalStructuralSchedule({
+    mode: 'fixed_date',
+    date: '2026-08-03',
+    time: '09:30',
+  });
+  assert.deepEqual(legacy.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-03',
+    time: '09:30',
+  });
+  assert.equal(legacy.legacyTimeOnlyMigrated, true);
+  assert.equal(
+    buildPersonalStructuralScheduleProjection({
+      schedule: legacy.schedule,
+      identityNamespace: 'legacy-copy',
+      itemId: 'legacy-item',
+    }).durationMinutes,
+    PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
+  );
+
+  const invalidTimeZone = buildPersonalStructuralScheduleProjection({
+    schedule: {
+      mode: 'fixed_date',
+      date: '2026-08-03',
+      time: '10:00',
+      durationMinutes: 60,
+      timeZone: 'Not/AZone',
+    },
+    identityNamespace: 'malformed-copy',
+    itemId: 'malformed-zone',
+  });
+  assert.equal(invalidTimeZone.scheduleState, 'timed');
+  assert.equal(invalidTimeZone.durationMinutes, 60);
+  assert.equal(invalidTimeZone.timeZonePolicy, 'floating_local');
+  assert.ok(invalidTimeZone.validationWarnings.includes('invalid_time_zone'));
+
+  const normalizedOverlay = normalizePersonalStructuralOverlay(
+    {
+      schemaVersion: 1,
+      savedCopyId: 'schedule-migration-copy',
+      flowId: 'schedule-migration-flow',
+      userItems: [
+        {
+          itemId: 'legacy-timed-user',
+          provenance: 'user_created',
+          title: 'Legacy timed user item',
+          schedule: { mode: 'fixed_date', date: '2026-08-03', time: '08:15' },
+          createdAt: '2026-07-13T00:00:00.000Z',
+          orderKey: 0,
+        },
+        {
+          itemId: 'malformed-schedule-user',
+          provenance: 'user_created',
+          title: 'Keep malformed schedule item',
+          schedule: { mode: 'fixed_date', date: '2026-02-30', time: '24:00' },
+          createdAt: '2026-07-13T00:00:00.000Z',
+          orderKey: 1,
+        },
+      ],
+      itemTombstones: [],
+      orderOverride: ['legacy-timed-user', 'malformed-schedule-user'],
+      selection: {
+        mode: 'all_except_excluded',
+        includedItemIds: [],
+        excludedItemIds: [],
+      },
+      updatedAt: '2026-07-13T00:00:00.000Z',
+    },
+    { fallbackTimestamp: '2026-07-13T00:00:00.000Z' },
+  );
+  assert.ok(normalizedOverlay);
+  assert.equal(normalizedOverlay.userItems.length, 2);
+  assert.deepEqual(normalizedOverlay.userItems[0]?.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-03',
+    time: '08:15',
+  });
+  assert.equal(normalizedOverlay.userItems[1]?.schedule, undefined);
+});
+
+test('personal structural timed projection sorts all-day first and keeps stable identity across edits', () => {
+  const sourceItems = [
+    {
+      itemId: 'timed-ten',
+      title: 'Timed 10',
+      order: 4,
+      schedule: { mode: 'fixed_date' as const, date: '2026-08-03', time: '10:00' },
+      source: { immutable: 'timed-ten' },
+    },
+    {
+      itemId: 'timed-nine-later-rank',
+      title: 'Timed 9 later rank',
+      order: 3,
+      schedule: { mode: 'fixed_date' as const, date: '2026-08-03', time: '09:00' },
+      source: { immutable: 'timed-nine-later-rank' },
+    },
+    {
+      itemId: 'all-day',
+      title: 'All day',
+      order: 2,
+      schedule: { mode: 'fixed_date' as const, date: '2026-08-03' },
+      source: { immutable: 'all-day' },
+    },
+    {
+      itemId: 'timed-nine-earlier-rank',
+      title: 'Timed 9 earlier rank',
+      order: 1,
+      schedule: { mode: 'fixed_date' as const, date: '2026-08-03', time: '09:00' },
+      source: { immutable: 'timed-nine-earlier-rank' },
+    },
+    {
+      itemId: 'earlier-date',
+      title: 'Earlier date',
+      order: 0,
+      schedule: { mode: 'fixed_date' as const, date: '2026-08-02', time: '23:00' },
+      source: { immutable: 'earlier-date' },
+    },
+  ];
+  const sourceBefore = JSON.stringify(sourceItems);
+  const structuralOverlay = createEmptyPersonalStructuralOverlay({
+    savedCopyId: 'timed-sort-copy',
+    flowId: 'timed-sort-flow',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  });
+  const doneProjection = buildPersonalStructuralProjection({
+    sourceItems,
+    structuralOverlay,
+    executionStates: [{ itemId: 'timed-ten', state: 'done' }],
+  });
+  assert.deepEqual(
+    doneProjection.rowsByDestination.calendarScreen.map((row) => row.itemId),
+    [
+      'earlier-date',
+      'all-day',
+      'timed-nine-earlier-rank',
+      'timed-nine-later-rank',
+      'timed-ten',
+    ],
+  );
+  assert.equal(
+    doneProjection.allRows.find((row) => row.itemId === 'timed-ten')?.executionState?.state,
+    'done',
+  );
+
+  const editedProjection = buildPersonalStructuralProjection({
+    sourceItems,
+    structuralOverlay,
+    valueOverlays: [
+      {
+        itemId: 'timed-ten',
+        scheduleOverride: {
+          mode: 'fixed_date',
+          date: '2026-08-03',
+          time: '11:30',
+          durationMinutes: 45,
+          timeZone: 'Asia/Seoul',
+        },
+      },
+    ],
+    executionStates: [{ itemId: 'timed-ten', state: 'reopened' }],
+  });
+  const beforeEdit = doneProjection.allRows.find((row) => row.itemId === 'timed-ten');
+  const afterEdit = editedProjection.allRows.find((row) => row.itemId === 'timed-ten');
+  assert.equal(
+    beforeEdit?.scheduleProjection.stableEventIdentitySeed,
+    afterEdit?.scheduleProjection.stableEventIdentitySeed,
+  );
+  assert.equal(afterEdit?.scheduleProjection.startTime, '11:30');
+  assert.equal(afterEdit?.scheduleProjection.durationMinutes, 45);
+  assert.equal(afterEdit?.scheduleProjection.timeZonePolicy, 'iana');
+  assert.equal(afterEdit?.executionState?.state, 'reopened');
+  assert.equal(doneProjection.rowsByDestination.calendarScreen.length, 5);
+  assert.equal(editedProjection.rowsByDestination.calendarScreen.length, 5);
+  assert.equal(JSON.stringify(sourceItems), sourceBefore);
 });
 
 test('personal draft structural order and persistent recovery preserve IDs, values, and source', () => {

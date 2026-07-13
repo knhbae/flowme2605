@@ -12,6 +12,10 @@ import {
   getPersonalDraftStructuralSourceItems,
   isPersonalDraftStructuralEditEligible,
 } from './personal-draft-structural-edit';
+import {
+  buildPersonalStructuralScheduleProjection,
+  type PersonalStructuralScheduleProjection,
+} from './personal-structural-schedule';
 import type { FlowBundle, FlowItem } from './types';
 
 export const PERSONAL_STRUCTURAL_PROJECTION_DESTINATIONS = [
@@ -37,6 +41,7 @@ export type PersonalStructuralProjectionRow<TSource = unknown> = {
   title: string;
   personalMemo?: string;
   schedule?: PersonalStructuralSchedule;
+  scheduleProjection: PersonalStructuralScheduleProjection;
   calendarDate?: string;
   personalOrderRank: number;
   included: boolean;
@@ -60,47 +65,18 @@ export type PersonalStructuralProjectionResult<TSource = unknown> = {
   warnings: string[];
 };
 
-function parsePlainIsoDate(value: string | undefined): Date | undefined {
-  const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) return undefined;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  if (
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() !== month - 1 ||
-    date.getUTCDate() !== day
-  ) {
-    return undefined;
-  }
-  return date;
-}
-
-function formatPlainIsoDate(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function resolveCalendarDate(
-  schedule: PersonalStructuralSchedule | undefined,
-  anchorDate: string | undefined,
-): string | undefined {
-  if (!schedule) return undefined;
-  if (schedule.mode === 'fixed_date') {
-    return parsePlainIsoDate(schedule.date) ? schedule.date : undefined;
-  }
-  const anchor = parsePlainIsoDate(anchorDate);
-  if (!anchor) return undefined;
-  anchor.setUTCDate(anchor.getUTCDate() + schedule.dayOffset);
-  return formatPlainIsoDate(anchor);
-}
-
 function compareCalendarRows<TSource>(
   left: PersonalStructuralProjectionRow<TSource>,
   right: PersonalStructuralProjectionRow<TSource>,
 ): number {
+  const leftSchedule = left.scheduleProjection;
+  const rightSchedule = right.scheduleProjection;
+  const stateRank = (state: PersonalStructuralScheduleProjection['scheduleState']) =>
+    state === 'all_day' ? 0 : state === 'timed' ? 1 : 2;
   return (
     (left.calendarDate ?? '').localeCompare(right.calendarDate ?? '') ||
+    stateRank(leftSchedule.scheduleState) - stateRank(rightSchedule.scheduleState) ||
+    (leftSchedule.startTime ?? '').localeCompare(rightSchedule.startTime ?? '') ||
     left.personalOrderRank - right.personalOrderRank ||
     left.itemId.localeCompare(right.itemId)
   );
@@ -136,7 +112,16 @@ export function buildPersonalStructuralProjection<TSource>(options: {
   const warnings = [...resolved.warnings];
 
   const allRows = resolved.allItems.map((item) => {
-    const calendarDate = resolveCalendarDate(item.schedule, options.anchorDate);
+    const scheduleProjection = buildPersonalStructuralScheduleProjection({
+      schedule: item.schedule,
+      anchorDate: options.anchorDate,
+      identityNamespace: options.structuralOverlay.savedCopyId,
+      itemId: item.itemId,
+    });
+    const calendarDate = scheduleProjection.calendarDate;
+    scheduleProjection.validationWarnings.forEach((warning) => {
+      warnings.push(`schedule:${item.itemId}:${warning}`);
+    });
     if (item.projectionEligibility.calendar && !calendarDate) {
       warnings.push(
         item.schedule?.mode === 'fixed_date'
@@ -152,6 +137,7 @@ export function buildPersonalStructuralProjection<TSource>(options: {
       title: item.title,
       ...(item.personalMemo ? { personalMemo: item.personalMemo } : {}),
       ...(item.schedule ? { schedule: item.schedule } : {}),
+      scheduleProjection,
       ...(calendarDate ? { calendarDate } : {}),
       personalOrderRank: item.orderIndex,
       included: item.included,

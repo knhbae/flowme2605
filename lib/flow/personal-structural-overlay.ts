@@ -1,3 +1,5 @@
+import { normalizePersonalStructuralSchedule } from './personal-structural-schedule';
+
 export const PERSONAL_STRUCTURAL_OVERLAY_SCHEMA_VERSION = 1 as const;
 export const PERSONAL_STRUCTURAL_OVERLAY_STORAGE_KEY_PREFIX =
   'flow:my-flow:structural-overlay:';
@@ -10,6 +12,8 @@ export type PersonalStructuralSchedule =
       mode: 'fixed_date';
       date: string;
       time?: string;
+      durationMinutes?: number;
+      timeZone?: string;
       repeat?: {
         frequency: 'daily' | 'weekly' | 'monthly';
         interval: number;
@@ -20,6 +24,8 @@ export type PersonalStructuralSchedule =
       dayOffset: number;
       anchorFieldId?: string;
       time?: string;
+      durationMinutes?: number;
+      timeZone?: string;
     };
 
 export type PersonalStructuralUserItem = {
@@ -181,48 +187,6 @@ function normalizeIdList(value: unknown): string[] {
   return result;
 }
 
-function normalizeSchedule(value: unknown): PersonalStructuralSchedule | undefined {
-  if (!isRecord(value)) return undefined;
-  const time = normalizeText(value.time, 16);
-  if (value.mode === 'fixed_date') {
-    const date = normalizeText(value.date, 32);
-    if (!date) return undefined;
-    let repeat: Extract<PersonalStructuralSchedule, { mode: 'fixed_date' }>['repeat'];
-    if (isRecord(value.repeat)) {
-      const frequency = value.repeat.frequency;
-      const interval = value.repeat.interval;
-      if (
-        (frequency === 'daily' || frequency === 'weekly' || frequency === 'monthly') &&
-        typeof interval === 'number' &&
-        Number.isInteger(interval) &&
-        interval > 0
-      ) {
-        repeat = { frequency, interval };
-      }
-    }
-    return {
-      mode: 'fixed_date',
-      date,
-      ...(time ? { time } : {}),
-      ...(repeat ? { repeat } : {}),
-    };
-  }
-  if (
-    value.mode === 'anchor_offset' &&
-    typeof value.dayOffset === 'number' &&
-    Number.isFinite(value.dayOffset)
-  ) {
-    const anchorFieldId = normalizeId(value.anchorFieldId);
-    return {
-      mode: 'anchor_offset',
-      dayOffset: value.dayOffset,
-      ...(anchorFieldId ? { anchorFieldId } : {}),
-      ...(time ? { time } : {}),
-    };
-  }
-  return undefined;
-}
-
 function normalizeUserItems(
   value: unknown,
   fallbackTimestamp: string,
@@ -237,7 +201,7 @@ function normalizeUserItems(
     if (!itemId || !title || seen.has(itemId)) return;
     seen.add(itemId);
     const personalMemo = normalizeText(entry.personalMemo, 20_000);
-    const schedule = normalizeSchedule(entry.schedule);
+    const schedule = normalizePersonalStructuralSchedule(entry.schedule).schedule;
     const orderKey =
       typeof entry.orderKey === 'number' && Number.isFinite(entry.orderKey)
         ? entry.orderKey
