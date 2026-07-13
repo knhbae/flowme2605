@@ -8,6 +8,11 @@ import {
   canBuildMyFlowStepIcs,
   type MyFlowPortableStepExportInput,
 } from './my-flow-step-export';
+import { buildPersonalStructuralListExportArtifacts } from './personal-structural-list-export';
+import {
+  buildPersonalStructuralProjection,
+} from './personal-structural-projection';
+import { createEmptyPersonalStructuralOverlay } from './personal-structural-overlay';
 
 const baseInput: MyFlowPortableStepExportInput = {
   flowTitle: '원룸 이사 D-30 준비',
@@ -109,4 +114,137 @@ test('portable Step outputs keep structural words out of user-facing fallbacks',
 
   assert.match(output, /할 일/);
   assert.doesNotMatch(output, /\bStep\b|\bItem\b|Markdown|sourceTrace|source-backed/iu);
+});
+
+test('personal structural list exports share effective rows, personal order, and value overlays', () => {
+  const sourceItems = [
+    { itemId: 'source-a', title: '여권 확인', order: 0, source: { kind: 'source-a' } },
+    { itemId: 'source-b', title: '숙소 확인', order: 1, source: { kind: 'source-b' } },
+    { itemId: 'source-tombstone', title: '뺀 준비', order: 2, source: { kind: 'source-c' } },
+    { itemId: 'source-excluded', title: '제외한 준비', order: 3, source: { kind: 'source-d' } },
+  ];
+  const sourceSnapshot = structuredClone(sourceItems);
+  const overlay = createEmptyPersonalStructuralOverlay({
+    savedCopyId: 'draft-copy',
+    flowId: 'draft-flow',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  });
+  overlay.userItems = [
+    {
+      itemId: 'personal-one',
+      provenance: 'user_created',
+      title: '오프라인 지도 저장',
+      personalMemo: '지도와 탑승권을 함께 저장',
+      createdAt: '2026-07-13T00:00:00.000Z',
+      orderKey: 4,
+    },
+  ];
+  overlay.itemTombstones = [
+    {
+      itemId: 'source-tombstone',
+      ownership: 'source',
+      deletedAt: '2026-07-13T00:00:00.000Z',
+    },
+  ];
+  overlay.orderOverride = [
+    'personal-one',
+    'source-b',
+    'source-a',
+    'source-tombstone',
+    'source-excluded',
+  ];
+  overlay.selection = {
+    mode: 'all_except_excluded',
+    includedItemIds: [],
+    excludedItemIds: ['source-excluded'],
+  };
+
+  const projection = buildPersonalStructuralProjection({
+    sourceItems,
+    structuralOverlay: overlay,
+    valueOverlays: [
+      {
+        itemId: 'source-b',
+        title: '숙소 주소 다시 확인',
+        personalMemo: '체크인 시간도 함께 보기',
+        scheduleOverride: null,
+      },
+      {
+        itemId: 'source-a',
+        personalMemo: '만료일까지 확인',
+        scheduleOverride: { mode: 'fixed_date', date: '2026-08-05' },
+      },
+    ],
+    executionStates: [
+      { itemId: 'personal-one', state: 'skipped' },
+      { itemId: 'source-b', state: 'done' },
+      { itemId: 'source-a', state: 'reopened' },
+    ],
+  });
+  const artifacts = buildPersonalStructuralListExportArtifacts({
+    flowTitle: '여행 출발 준비',
+    projection,
+    sourceLabel: '여행 준비 원문',
+    sourceUrl: 'https://example.com/travel',
+  });
+
+  const expectedOrder = ['personal-one', 'source-b', 'source-a'];
+  assert.deepEqual(artifacts.checklistRows.map((row) => row.itemId), expectedOrder);
+  assert.deepEqual(artifacts.sheetRows.map((row) => row.itemId), expectedOrder);
+  assert.deepEqual(artifacts.memoRows.map((row) => row.itemId), expectedOrder);
+  assert.deepEqual(sourceItems, sourceSnapshot);
+
+  assert.match(artifacts.checklistText, /- \[ \] 오프라인 지도 저장 \(스킵\)/);
+  assert.match(artifacts.checklistText, /- \[x\] 숙소 주소 다시 확인/);
+  assert.match(artifacts.checklistText, /- \[ \] 여권 확인/);
+  assert.match(artifacts.checklistText, /일정: 2026-08-05/);
+  assert.match(artifacts.checklistText, /메모: 만료일까지 확인/);
+  assert.doesNotMatch(artifacts.checklistText, /뺀 준비|제외한 준비/);
+
+  const sheetLines = artifacts.sheetTsv.trimEnd().split('\n');
+  assert.equal(sheetLines.length, 4);
+  assert.equal(sheetLines[0], '순서\t상태\t할 일\t날짜\t메모\t원문');
+  assert.equal(sheetLines[1].split('\t')[3], '날짜 없음');
+  assert.equal(sheetLines[1].split('\t')[5], '원문 없음');
+  assert.match(sheetLines[2], /^2\t완료\t숙소 주소 다시 확인\t날짜 없음\t체크인 시간도 함께 보기\t여행 준비 원문/);
+  assert.match(sheetLines[3], /^3\t미완료\t여권 확인\t2026-08-05\t만료일까지 확인\t여행 준비 원문/);
+
+  assert.match(artifacts.memoText, /1\. 오프라인 지도 저장/);
+  assert.match(artifacts.memoText, /2\. 숙소 주소 다시 확인/);
+  assert.match(artifacts.memoText, /상태: 완료/);
+  assert.doesNotMatch(artifacts.memoText, /뺀 준비|제외한 준비/);
+  assert.doesNotMatch(
+    [artifacts.checklistText, artifacts.sheetTsv, artifacts.memoText].join('\n'),
+    /\bStep\b|\bItem\b|Markdown|sourceTrace|source-backed/iu,
+  );
+});
+
+test('completion changes list-export status without changing structural membership', () => {
+  const overlay = createEmptyPersonalStructuralOverlay({
+    savedCopyId: 'draft-copy',
+    flowId: 'draft-flow',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  });
+  const sourceItems = [
+    { itemId: 'source-a', title: '여권 확인', order: 0, source: { kind: 'source-a' } },
+  ];
+  const build = (state: 'pending' | 'done' | 'reopened') =>
+    buildPersonalStructuralListExportArtifacts({
+      flowTitle: '여행 출발 준비',
+      projection: buildPersonalStructuralProjection({
+        sourceItems,
+        structuralOverlay: overlay,
+        executionStates: [{ itemId: 'source-a', state }],
+      }),
+    });
+
+  const pending = build('pending');
+  const done = build('done');
+  const reopened = build('reopened');
+
+  assert.deepEqual(pending.checklistRows.map((row) => row.itemId), ['source-a']);
+  assert.deepEqual(done.checklistRows.map((row) => row.itemId), ['source-a']);
+  assert.deepEqual(reopened.checklistRows.map((row) => row.itemId), ['source-a']);
+  assert.match(done.checklistText, /- \[x\] 여권 확인/);
+  assert.match(reopened.checklistText, /- \[ \] 여권 확인/);
 });

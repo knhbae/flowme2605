@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-01D3B personal structural list export fixtures",
+  "generatedAt": "2026-07-13",
+  "fixtures": [
+    {
+      "id": "mixed-source-user-personal-order",
+      "effectiveOrder": ["user_created_unscheduled", "source_with_overrides"],
+      "checklist": true,
+      "sheet": true,
+      "memo": true,
+      "expected": "all destinations preserve the same personal order"
+    },
+    {
+      "id": "unscheduled-user-item",
+      "ownership": "user_created",
+      "calendarScreen": false,
+      "calendarIcs": false,
+      "checklist": true,
+      "sheet": true,
+      "memo": true,
+      "sheetSourceCell": "원문 없음",
+      "expected": "included in portable lists without a fabricated source reference"
+    },
+    {
+      "id": "tombstoned-source-item",
+      "checklistRowCount": 0,
+      "sheetRowCount": 0,
+      "memoRowCount": 0,
+      "expected": "absent until stable-ID restore"
+    },
+    {
+      "id": "excluded-source-item",
+      "checklistRowCount": 0,
+      "sheetRowCount": 0,
+      "memoRowCount": 0,
+      "expected": "absent from every list destination"
+    },
+    {
+      "id": "restored-source-item",
+      "checklist": true,
+      "sheet": true,
+      "memo": true,
+      "stableIdPreserved": true,
+      "personalOrderPreserved": true,
+      "expected": "returns in all list destinations and persists after reload"
+    },
+    {
+      "id": "title-date-memo-overrides",
+      "effectiveTitle": "여권과 예약 정보 최종 확인",
+      "effectiveDate": "2026-08-05",
+      "effectiveMemo": "예약 번호와 여권 만료일을 함께 확인",
+      "checklist": true,
+      "sheet": true,
+      "memo": true
+    },
+    {
+      "id": "explicit-date-removal",
+      "scheduleOverride": null,
+      "checklistDateLine": false,
+      "sheetDateCell": "날짜 없음",
+      "memoDateLine": false,
+      "membershipPreserved": true
+    },
+    {
+      "id": "completion-reopen",
+      "states": ["done", "reopened"],
+      "membershipCountBefore": 2,
+      "membershipCountAfter": 2,
+      "expected": "only status/checkmark changes"
+    },
+    {
+      "id": "duplicate-row-defense",
+      "stableIdDedupe": true,
+      "duplicateRowCount": 0,
+      "sourceMutationCount": 0
+    },
+    {
+      "id": "source-backed-wrapper-gate",
+      "personalStructuralListExportApplied": false,
+      "personalDraftListExportEntryCount": 0,
+      "expected": "existing source-backed and public export consumers remain unchanged"
+    }
+  ],
+  "consumerConnections": {
+    "calendarScreen": true,
+    "calendarIcs": true,
+    "checklist": true,
+    "sheet": true,
+    "memo": true
+  }
+}

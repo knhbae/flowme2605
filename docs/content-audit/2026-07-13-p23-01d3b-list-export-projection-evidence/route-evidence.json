@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-01D3B personal structural list export projection connection",
+  "generatedAt": "2026-07-13",
+  "markerDefinitions": {
+    "personalDraftUnscheduledUserItemListExportCount": "one unscheduled user Item counted once in each of checklist, sheet, and memo",
+    "personalDraftTombstonedItemListExportCount": "total visible row occurrences across checklist, sheet, and memo",
+    "personalDraftExcludedItemListExportCount": "total visible row occurrences across checklist, sheet, and memo"
+  },
+  "markers": {
+    "checklistStructuralProjectionConnected": true,
+    "sheetStructuralProjectionConnected": true,
+    "memoStructuralProjectionConnected": true,
+    "listExportStructuralProjectionConnected": true,
+    "exportStructuralProjectionConnectionStatus": "calendar_ics_checklist_sheet_memo",
+    "personalDraftUnscheduledUserItemListExportCount": 3,
+    "personalDraftTombstonedItemListExportCount": 0,
+    "personalDraftExcludedItemListExportCount": 0,
+    "personalDraftRestoredItemListExported": true,
+    "personalDraftListExportOrderPreserved": true,
+    "personalDraftListExportDuplicateRowCount": 0,
+    "personalDraftListExportOverridesApplied": true,
+    "completionStateChangedListMembershipCount": 0,
+    "sourceBackedListExportBehaviorChanged": false,
+    "listExportInternalTermHitCount": 0,
+    "personalDraftListExportReachableByViewport": {
+      "390": true,
+      "1024": true
+    },
+    "personalDraftListExportHorizontalOverflowCount": 0,
+    "personalDraftCalendarProjectionConnected": true,
+    "personalDraftIcsProjectionConnected": true,
+    "calendarStructuralProjectionConnected": true,
+    "icsStructuralProjectionConnected": true,
+    "sourceBackedCalendarBehaviorChanged": false,
+    "sourceBackedIcsBehaviorChanged": false,
+    "personalDraftScheduleUserReachableWithoutFixture": false
+  },
+  "scenarios": [
+    {
+      "id": "personal-draft-list-export-mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "initialState": "URL-first miss draft saved to My Flow",
+      "fixture": "one source Item excluded, one source Item tombstoned, mixed personal order",
+      "userActions": [
+        "edit source title/date/memo",
+        "add unscheduled user Item",
+        "complete and reopen Item",
+        "move user Item up",
+        "copy checklist/sheet/memo"
+      ],
+      "result": "two effective Items exported in personal order with overrides; hidden Items absent",
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/01-personal-draft-list-export-mobile.png"
+    },
+    {
+      "id": "personal-draft-list-export-restore-reload",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "initialState": "tombstoned source Item hidden from all list destinations",
+      "userActions": ["open persistent recovery", "restore Item", "reload", "copy checklist"],
+      "result": "restored stable Item returns at persisted personal order and output remains equal after reload"
+    },
+    {
+      "id": "personal-draft-list-export-wide",
+      "route": "/my",
+      "viewport": { "width": 1024, "height": 768 },
+      "initialState": "same restored personal draft",
+      "result": "one compact export entry exposes three destinations without horizontal overflow",
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/02-personal-draft-list-export-wide.png"
+    },
+    {
+      "id": "personal-draft-list-export-samples",
+      "route": "/my personal draft export entry",
+      "outputs": [
+        "downloads/personal-draft-checklist-completed.txt",
+        "downloads/personal-draft-checklist-reopened.txt",
+        "downloads/personal-draft-sheet.tsv",
+        "downloads/personal-draft-memo.txt"
+      ],
+      "result": "unscheduled user Item included in all three destinations; duplicate and internal-term hits are zero"
+    },
+    {
+      "id": "source-backed-list-export-regression",
+      "route": "/my?demo=source-backed",
+      "viewport": { "width": 390, "height": 844 },
+      "result": "personal draft whole-Flow list export entry count remains zero"
+    }
+  ],
+  "verification": {
+    "evidenceCaptureE2ePassCount": 1,
+    "focusedStructuralExportE2ePassCount": 5,
+    "urlFirstUserSurfaceE2ePassCount": 15,
+    "publicShareWorkbenchRegressionE2ePassCount": 44,
+    "fullUnitPassCount": 452,
+    "productionBuildPassed": true,
+    "docsCheckPassed": true
+  }
+}

@@ -1224,6 +1224,266 @@ test('personal draft structural Calendar and ICS projections share effective ite
   expect(consoleErrors).toEqual([]);
 });
 
+test('personal draft structural list exports share effective items across checklist, sheet, and memo', async ({ page }) => {
+  test.setTimeout(240_000);
+  const evidenceDir = process.env.FLOWME_P23_01D3B_EVIDENCE_DIR;
+  const screenshotDir = evidenceDir ? `${evidenceDir}/screenshots` : '';
+  const downloadDir = evidenceDir ? `${evidenceDir}/downloads` : '';
+  if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
+  if (downloadDir) fs.mkdirSync(downloadDir, { recursive: true });
+
+  const copyListExport = async (
+    flow: Locator,
+    destination: 'memo' | 'checklist' | 'sheet',
+  ) => {
+    const panel = flow.getByTestId('personal-draft-list-export');
+    if (!(await panel.evaluate((element) => (element as HTMLDetailsElement).open))) {
+      await panel.getByTestId('personal-draft-list-export-toggle').click();
+    }
+    await page.evaluate(() => navigator.clipboard.writeText(''));
+    await panel.getByTestId(`personal-draft-copy-${destination}`).click();
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).not.toBe('');
+    return page.evaluate(() => navigator.clipboard.readText());
+  };
+
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/personal-list-export-draft?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('Flow 이름').fill('여행 준비 목록 초안 요청');
+  await result.getByLabel('원하는 결과').fill('준비할 일을 고쳐서 체크리스트와 시트, 메모로 가져가고 싶음');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
+
+  const candidateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: '여행 준비 목록 초안 요청' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('여행 준비 목록');
+  await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-08-05');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  await page.getByTestId('my-flow-view-flow').click();
+  let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
+    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
+  }
+
+  let sourceItems = draftFlow.locator(
+    '[data-testid="personal-draft-effective-item"][data-structural-ownership="source"]',
+  );
+  const sourceItemIds = await sourceItems.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute('data-item-id')).filter(Boolean),
+  );
+  expect(sourceItemIds.length).toBeGreaterThanOrEqual(3);
+  const editedSourceId = sourceItemIds[0]!;
+  const excludedSourceId = sourceItemIds[1]!;
+  const tombstonedSourceId = sourceItemIds[2]!;
+  const sourceTitles = await page.evaluate(() => {
+    const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]');
+    const draft = bundles.find((bundle: { flow?: { slug?: string } }) =>
+      bundle.flow?.slug?.startsWith('url-draft-'),
+    );
+    return Object.fromEntries(
+      (draft?.items ?? []).map((item: { id: string; title: string }) => [item.id, item.title]),
+    ) as Record<string, string>;
+  });
+  expect(sourceTitles[excludedSourceId]).toBeTruthy();
+  expect(sourceTitles[tombstonedSourceId]).toBeTruthy();
+
+  let editedSourceItem = sourceItems.first();
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  let detail = draftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  const sourceReadSummary = detail.getByTestId('my-flow-detail-read-summary');
+  await sourceReadSummary.locator('summary').click();
+  await sourceReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await detail.getByTestId('my-flow-detail-title-input').fill('여권과 예약 정보 최종 확인');
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-08-05');
+  await detail.getByTestId('my-flow-detail-memo').fill('예약 번호와 여권 만료일을 함께 확인');
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+  editedSourceItem = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '여권과 예약 정보 최종 확인' });
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  detail = draftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  await detail.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 체크' }).check();
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+
+  await draftFlow.getByTestId('personal-draft-add-entry').click();
+  await draftFlow.getByTestId('personal-draft-add-title').fill('날짜 없이 챙길 준비물');
+  await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+  const userItem = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '날짜 없이 챙길 준비물' });
+  const userItemId = await userItem.getAttribute('data-item-id');
+  expect(userItemId).toMatch(/^personal-item-/);
+
+  await page.evaluate(
+    ({ editedSourceId, excludedSourceId, tombstonedSourceId, userItemId }) => {
+      const key = Object.keys(localStorage).find((entry) =>
+        entry.startsWith('flow:my-flow:structural-overlay:'),
+      );
+      if (!key) throw new Error('Missing personal structural overlay');
+      const overlay = JSON.parse(localStorage.getItem(key) || 'null');
+      overlay.selection = {
+        mode: 'all_except_excluded',
+        includedItemIds: [],
+        excludedItemIds: [excludedSourceId],
+      };
+      overlay.itemTombstones = [
+        { itemId: tombstonedSourceId, ownership: 'source', deletedAt: '2026-07-13T20:00:00.000Z' },
+      ];
+      overlay.orderOverride = [
+        editedSourceId,
+        userItemId,
+        excludedSourceId,
+        tombstonedSourceId,
+      ];
+      overlay.updatedAt = '2026-07-13T20:00:00.000Z';
+      localStorage.setItem(key, JSON.stringify(overlay));
+    },
+    { editedSourceId, excludedSourceId, tombstonedSourceId, userItemId },
+  );
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
+    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
+  }
+  let persistedUserItem = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '날짜 없이 챙길 준비물' });
+  await persistedUserItem.getByTestId('personal-draft-move-up').click();
+
+  const visibleTitles = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+    (elements) => elements.map((element) => {
+      const button = element.querySelector<HTMLElement>('[data-testid="my-flow-mobile-structure-step-row"]');
+      const lines = (button?.innerText ?? '')
+        .split(/\n+/u)
+        .map((line) => line.replace(/\s+/gu, ' ').trim())
+        .filter(Boolean);
+      return lines.find((line) => !/^단계 \d+$/u.test(line) && !/^(열기|열림|완료)$/u.test(line)) ?? '';
+    }),
+  );
+  expect(visibleTitles[0]).toBe('날짜 없이 챙길 준비물');
+  expect(visibleTitles).toContain('여권과 예약 정보 최종 확인');
+
+  const checklistDone = await copyListExport(draftFlow, 'checklist');
+  const sheetDone = await copyListExport(draftFlow, 'sheet');
+  const memoDone = await copyListExport(draftFlow, 'memo');
+  const combinedDone = [checklistDone, sheetDone, memoDone].join('\n');
+
+  expect(checklistDone).toContain('- [ ] 날짜 없이 챙길 준비물');
+  expect(checklistDone).toContain('- [x] 여권과 예약 정보 최종 확인');
+  expect(checklistDone.indexOf('날짜 없이 챙길 준비물')).toBeLessThan(
+    checklistDone.indexOf('여권과 예약 정보 최종 확인'),
+  );
+  expect(memoDone).toContain('예약 번호와 여권 만료일을 함께 확인');
+  expect(memoDone).toContain('일정: 2026-08-05');
+  expect(combinedDone).not.toContain(sourceTitles[excludedSourceId]);
+  expect(combinedDone).not.toContain(sourceTitles[tombstonedSourceId]);
+  expect(combinedDone).not.toMatch(/\bStep\b|\bItem\b|Markdown|sourceTrace|source-backed/iu);
+
+  const sheetLines = sheetDone.trimEnd().split(/\r?\n/u);
+  const sheetRows = sheetLines.slice(1).map((line) => line.split('\t'));
+  expect(sheetLines[0]).toBe('순서\t상태\t할 일\t날짜\t메모\t원문');
+  expect(sheetRows).toHaveLength(visibleTitles.length);
+  expect(sheetRows.map((row) => row[2])).toEqual(visibleTitles);
+  expect(new Set(sheetRows.map((row) => row[2])).size).toBe(sheetRows.length);
+  const userSheetRow = sheetRows.find((row) => row[2] === '날짜 없이 챙길 준비물');
+  expect(userSheetRow?.[3]).toBe('날짜 없음');
+  expect(userSheetRow?.[5]).toBe('원문 없음');
+
+  const outputGuardrail = scanUserFacingOutputGuardrails({
+    text: combinedDone,
+    sourceSlugSignals: urlFirstSourceSlugSignals,
+  });
+  expect(outputGuardrail.internalCopyHits).toEqual([]);
+  expect(outputGuardrail.sourceSlugHits).toEqual([]);
+  expect(outputGuardrail.structuralDisplayHits).toEqual([]);
+  expect(outputGuardrail.trailingFlowSuffixHits).toEqual([]);
+
+  if (downloadDir) {
+    fs.writeFileSync(`${downloadDir}/personal-draft-checklist-completed.txt`, checklistDone, 'utf8');
+    fs.writeFileSync(`${downloadDir}/personal-draft-sheet.tsv`, sheetDone, 'utf8');
+    fs.writeFileSync(`${downloadDir}/personal-draft-memo.txt`, memoDone, 'utf8');
+  }
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await draftFlow.screenshot({ path: `${screenshotDir}/01-personal-draft-list-export-mobile.png` });
+  }
+
+  editedSourceItem = draftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: '여권과 예약 정보 최종 확인' });
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  detail = draftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  await detail.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 취소' }).uncheck();
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  const checklistReopened = await copyListExport(draftFlow, 'checklist');
+  expect(checklistReopened).toContain('- [ ] 여권과 예약 정보 최종 확인');
+  expect(checklistReopened.match(/^- \[/gmu)).toHaveLength(
+    checklistDone.match(/^- \[/gmu)?.length ?? 0,
+  );
+  if (downloadDir) {
+    fs.writeFileSync(`${downloadDir}/personal-draft-checklist-reopened.txt`, checklistReopened, 'utf8');
+  }
+
+  const recovery = draftFlow.getByTestId('personal-draft-persistent-recovery');
+  await recovery.getByTestId('personal-draft-persistent-recovery-entry').click();
+  const recoverableSource = recovery
+    .getByTestId('personal-draft-recoverable-item')
+    .filter({ hasText: sourceTitles[tombstonedSourceId] });
+  await expect(recoverableSource).toHaveAttribute('data-item-id', tombstonedSourceId);
+  await recoverableSource.getByTestId('personal-draft-restore-item').click();
+  const checklistRestored = await copyListExport(draftFlow, 'checklist');
+  expect(checklistRestored).toContain(sourceTitles[tombstonedSourceId]);
+  expect(checklistRestored.match(/^- \[/gmu)).toHaveLength(
+    (checklistReopened.match(/^- \[/gmu)?.length ?? 0) + 1,
+  );
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  const checklistAfterReload = await copyListExport(draftFlow, 'checklist');
+  expect(checklistAfterReload).toBe(checklistRestored);
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]');
+  const wideExport = wideDraftFlow.getByTestId('personal-draft-list-export');
+  await expect(wideExport).toBeVisible();
+  await wideExport.getByTestId('personal-draft-list-export-toggle').click();
+  await expect(wideExport.getByTestId('personal-draft-copy-checklist')).toBeVisible();
+  await expect(wideExport.getByTestId('personal-draft-copy-sheet')).toBeVisible();
+  await expect(wideExport.getByTestId('personal-draft-copy-memo')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await page.screenshot({ path: `${screenshotDir}/02-personal-draft-list-export-wide.png`, fullPage: true });
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my?demo=source-backed');
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('personal-draft-list-export')).toHaveCount(0);
+});
+
 test('URL-first draft preserves input on storage failure and reuses the canonical saved draft', async ({ page }) => {
   const sourceUrl = 'https://example.com/draft-lifecycle-source?utm_source=review';
   const requestTitle = '중복 없이 이어갈 주말 준비';

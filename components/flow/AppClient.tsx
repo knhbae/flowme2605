@@ -65,13 +65,16 @@ import {
   buildPersonalDraftProjectionValueOverlays,
   getPersonalDraftProjectionValueKey,
 } from '@/lib/flow/personal-draft-projection-state';
+import { buildPersonalStructuralListExportArtifacts } from '@/lib/flow/personal-structural-list-export';
 import {
   buildPersonalDraftStructuralProjection,
+  type PersonalStructuralProjectionResult,
   type PersonalStructuralProjectionRow,
 } from '@/lib/flow/personal-structural-projection';
 import {
   loadOrMigratePersonalStructuralOverlay,
   savePersonalStructuralOverlay,
+  type PersonalStructuralExecutionState,
   type PersonalStructuralItemOwnership,
   type PersonalStructuralOverlay,
 } from '@/lib/flow/personal-structural-overlay';
@@ -2986,6 +2989,7 @@ type MySavedFlow = {
   itemStates: Record<string, FlowItemState>;
   rows: MyFlowRow[];
   projectionRows?: MyFlowRow[];
+  structuralProjection?: PersonalStructuralProjectionResult<FlowItem>;
   excludedRows: MyFlowRow[];
   done: number;
   total: number;
@@ -4632,17 +4636,49 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const structuralOverlay = structuralEditEligible
         ? myFlowStructuralOverlaysBySlug[progress.slug] ?? createPersonalDraftStructuralOverlay(effectiveBundle)
         : undefined;
-      const structuralProjection = structuralOverlay
+      const legacyExcludedItemIds = structuralOverlay
+        ? effectiveBundle.items
+            .map((item) => item.id)
+            .filter((itemId) => isUrlFirstStartExcludedItemState(itemStates, itemId))
+        : [];
+      const projectionStructuralOverlay = structuralOverlay && legacyExcludedItemIds.length > 0
+        ? {
+            ...structuralOverlay,
+            selection: {
+              ...structuralOverlay.selection,
+              excludedItemIds: Array.from(new Set([
+                ...structuralOverlay.selection.excludedItemIds,
+                ...legacyExcludedItemIds,
+              ])),
+            },
+          }
+        : structuralOverlay;
+      const structuralExecutionStates: PersonalStructuralExecutionState[] = projectionStructuralOverlay
+        ? Array.from(new Set([
+            ...effectiveBundle.items.map((item) => item.id),
+            ...projectionStructuralOverlay.userItems.map((item) => item.itemId),
+          ])).map((itemId) => {
+            const checkIds = getMyFlowCheckIds(effectiveBundle, itemId, anchor);
+            const state: PersonalStructuralExecutionState['state'] = isItemStateSkipped(itemStates, itemId)
+              ? 'skipped'
+              : checkIds.length > 0 && checkIds.every((checkId) => checks[checkId])
+                ? 'done'
+                : 'pending';
+            return { itemId, state };
+          })
+        : [];
+      const structuralProjection = projectionStructuralOverlay
         ? buildPersonalDraftStructuralProjection({
             bundle: effectiveBundle,
-            structuralOverlay,
+            structuralOverlay: projectionStructuralOverlay,
             valueOverlays: buildPersonalDraftProjectionValueOverlays({
               flowSlug: progress.slug,
               sourceItemIds: effectiveBundle.items.map((item) => item.id),
-              structuralOverlay,
+              structuralOverlay: projectionStructuralOverlay,
               itemDrafts: myFlowItemDrafts,
               dateOverrides: myFlowDateOverrides,
             }),
+            executionStates: structuralExecutionStates,
             anchorDate: anchor,
           })
         : undefined;
@@ -4668,8 +4704,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : [];
           })
         : sourceRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
-      const excludedRows = structuralRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
-      const rows = structuralRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+      const excludedRows = structuralProjection
+        ? structuralProjection.excludedRows.flatMap((projectionRow) => {
+            const row = mapPersonalDraftProjectionRowToMyFlowRow(
+              effectiveBundle,
+              sourceRows,
+              projectionRow,
+            );
+            return row ? [row] : [];
+          })
+        : structuralRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
+      const rows = structuralProjection
+        ? structuralRows
+        : structuralRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
       const executableIds = Array.from(new Set(rows.flatMap((row) => getMyFlowCheckIds(effectiveBundle, row.id, anchor))));
       const executableTotal = executableIds.filter((id) => !isItemStateSkipped(itemStates, id)).length;
       const total = structuralEditEligible
@@ -4692,6 +4739,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         itemStates,
         rows,
         ...(structuralEditEligible ? { projectionRows } : {}),
+        ...(structuralProjection ? { structuralProjection } : {}),
         excludedRows,
         done,
         total,
@@ -5552,6 +5600,39 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
   const copyMyFlowStepSheetRow = async (input: MyFlowPortableStepExportInput, key: string) => {
     await copyMyFlowStepText(buildMyFlowStepSheetTsv(input), key, '시트 행 복사됨');
+  };
+  const getMyFlowPersonalDraftListExport = (flow: MySavedFlow) => {
+    if (!flow.structuralProjection || !isPersonalDraftStructuralEditEligible(flow.bundle)) {
+      return undefined;
+    }
+    return buildPersonalStructuralListExportArtifacts({
+      flowTitle: getMyFlowExecutionFlowTitle(flow.progress.title),
+      projection: flow.structuralProjection,
+      sourceLabel: toUserFacingSourceTitle(flow.bundle.flow.source_title ?? ''),
+      sourceUrl: flow.bundle.flow.source_url,
+    });
+  };
+  const copyMyFlowPersonalDraftListExport = async (
+    flow: MySavedFlow,
+    destination: 'memo' | 'checklist' | 'sheet',
+  ) => {
+    const artifact = getMyFlowPersonalDraftListExport(flow);
+    if (!artifact) return;
+    const output = destination === 'memo'
+      ? artifact.memoText
+      : destination === 'checklist'
+        ? artifact.checklistText
+        : artifact.sheetTsv;
+    const feedback = destination === 'memo'
+      ? FLOW_EXPORT_FEEDBACK.memoCopied
+      : destination === 'checklist'
+        ? '체크리스트 복사됨'
+        : '시트로 복사됨';
+    await copyMyFlowStepText(
+      output,
+      `personal-draft-list-export::${flow.progress.slug}`,
+      feedback,
+    );
   };
   const downloadMyFlowStepCalendar = (input: MyFlowPortableStepExportInput, key: string, fileBase: string) => {
     if (!canBuildMyFlowStepIcs(input)) return;
@@ -8860,6 +8941,69 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderPersonalDraftListExport = (flow: MySavedFlow) => {
+    const artifact = getMyFlowPersonalDraftListExport(flow);
+    if (!artifact) return null;
+    const exportKey = `personal-draft-list-export::${flow.progress.slug}`;
+    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
+    const exportableCount = artifact.memoRows.length;
+
+    return (
+      <details
+        data-testid="personal-draft-list-export"
+        className="mt-3 border-t border-slate-200 pt-3"
+      >
+        <summary
+          data-testid="personal-draft-list-export-toggle"
+          className="cursor-pointer text-sm font-semibold text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
+        >
+          이 Flow 가져가기 · {exportableCount}개
+        </summary>
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <button
+            type="button"
+            data-testid="personal-draft-copy-memo"
+            aria-label={`${flowTitle} 전체 메모로 복사`}
+            disabled={exportableCount === 0}
+            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'memo')}
+          >
+            메모로 복사
+          </button>
+          <button
+            type="button"
+            data-testid="personal-draft-copy-checklist"
+            aria-label={`${flowTitle} 전체 체크리스트 복사`}
+            disabled={exportableCount === 0}
+            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'checklist')}
+          >
+            체크리스트 복사
+          </button>
+          <button
+            type="button"
+            data-testid="personal-draft-copy-sheet"
+            aria-label={`${flowTitle} 전체 시트로 복사`}
+            disabled={exportableCount === 0}
+            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'sheet')}
+          >
+            시트로 복사
+          </button>
+        </div>
+        {myFlowStepCopiedKey === exportKey ? (
+          <p
+            data-testid="personal-draft-list-export-feedback"
+            className="mt-2 text-xs font-semibold text-emerald-700"
+            role="status"
+          >
+            {myFlowStepCopiedLabel}
+          </p>
+        ) : null}
+      </details>
+    );
+  };
+
   const renderPersonalDraftStructuralControls = (flow: MySavedFlow) => {
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return null;
     const addOpen = myFlowStructuralAddOpenSlug === flow.progress.slug;
@@ -9020,6 +9164,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             + 할 일 추가
           </button>
         )}
+        {renderPersonalDraftListExport(flow)}
       </section>
     );
   };
