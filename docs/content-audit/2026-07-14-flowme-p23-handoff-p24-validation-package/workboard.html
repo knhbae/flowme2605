@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe P23 마감 및 P24 검증 보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #152018;
+      --muted: #5e6b62;
+      --line: #d9e0da;
+      --paper: #ffffff;
+      --canvas: #f3f6f3;
+      --green: #19633b;
+      --green-soft: #e5f2e9;
+      --blue: #1f5f8b;
+      --blue-soft: #e7f1f8;
+      --amber: #8a5b0a;
+      --amber-soft: #fff3d6;
+      --red: #9a3329;
+      --red-soft: #fbe9e7;
+      --charcoal: #26312a;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Pretendard, "Noto Sans KR", "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar {
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar .shell {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { font-weight: 800; color: var(--green); }
+    .toplinks { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; }
+    .hero { padding: 48px 0 30px; border-bottom: 1px solid var(--line); background: var(--paper); }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-weight: 800; font-size: 14px; }
+    h1 { margin: 0; max-width: 820px; font-size: clamp(30px, 5vw, 52px); line-height: 1.12; }
+    .lead { max-width: 800px; margin: 18px 0 0; color: var(--muted); font-size: 18px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .action {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .action.secondary { background: #fff; color: var(--green); }
+    main { padding: 28px 0 64px; }
+    section { margin-top: 34px; }
+    h2 { margin: 0 0 14px; font-size: 24px; line-height: 1.3; }
+    h3 { margin: 0 0 8px; font-size: 17px; }
+    p { margin: 0; }
+    .status-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+    .status {
+      min-height: 138px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--green);
+      border-radius: 6px;
+      background: var(--paper);
+    }
+    .status.warn { border-top-color: var(--amber); }
+    .status.info { border-top-color: var(--blue); }
+    .status.block { border-top-color: var(--red); }
+    .status strong { display: block; margin-bottom: 6px; font-size: 21px; }
+    .status span { color: var(--muted); font-size: 14px; }
+    .band {
+      padding: 18px;
+      border: 1px solid #efd48c;
+      border-radius: 6px;
+      background: var(--amber-soft);
+    }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel { padding: 18px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    .panel ul { margin: 10px 0 0; padding-left: 20px; }
+    .panel li + li { margin-top: 6px; }
+    .metric-row { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; }
+    .metric { padding: 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    .metric b { display: block; font-size: 23px; color: var(--charcoal); }
+    .metric small { color: var(--muted); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eef2ef; font-size: 13px; color: #445048; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .pill { display: inline-flex; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .ready { background: var(--green-soft); color: var(--green); }
+    .human { background: var(--blue-soft); color: var(--blue); }
+    .blocked { background: var(--red-soft); color: var(--red); }
+    .later { background: #eceeed; color: #4f5a53; }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    .step { padding: 18px; border-left: 4px solid var(--blue); background: var(--paper); border-radius: 0 6px 6px 0; }
+    .step b { color: var(--blue); }
+    .files { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    .file { padding: 15px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    .file a { font-weight: 750; }
+    .file p { margin-top: 5px; color: var(--muted); font-size: 14px; }
+    footer { padding: 24px 0 40px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 840px) {
+      .status-grid, .metric-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .two, .steps, .files { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .shell { width: min(100% - 22px, 1180px); }
+      .topbar .shell { align-items: flex-start; flex-direction: column; padding: 10px 0; }
+      .hero { padding-top: 32px; }
+      h1 { font-size: 32px; }
+      .lead { font-size: 16px; }
+      .status-grid, .metric-row { grid-template-columns: 1fr; }
+      .action { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell">
+      <div class="brand">FlowMe 기준선</div>
+      <nav class="toplinks" aria-label="관련 링크">
+        <a href="https://flowme2605-13grv45zl-flowme.vercel.app">Vercel preview</a>
+        <a href="../2026-07-13-p23-lifecycle-closure-review/review.html">P23 review</a>
+        <a href="./claude-code-test-prompt-ko.md">Claude Code prompt</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="shell">
+      <p class="eyebrow">2026-07-14 · P23 handoff</p>
+      <h1>로컬 실행 계약은 닫혔고, 이제 실제 사용성 검증이 먼저다.</h1>
+      <p class="lead">구조 편집, 일정, 반복, 실행 상태, Calendar와 portable export가 연결됐다. 다음 단계는 기능을 더 넣는 것이 아니라 5개 persona의 3회차 여정에서 발견성·이해도·재사용 가치를 확인하는 일이다.</p>
+      <div class="actions">
+        <a class="action" href="https://flowme2605-13grv45zl-flowme.vercel.app">Preview 열기</a>
+        <a class="action secondary" href="./claude-code-test-prompt-ko.md">테스트 프롬프트 열기</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section aria-labelledby="status-title">
+      <h2 id="status-title">현재 판정</h2>
+      <div class="status-grid">
+        <article class="status"><strong>P23 완료</strong><span>local MVP lifecycle contract가 코드·테스트·evidence로 닫혔다.</span></article>
+        <article class="status warn"><strong>출시 전</strong><span>계정·DB·다른 기기 복원과 실제 사용자 관찰이 남아 있다.</span></article>
+        <article class="status info"><strong>Preview READY</strong><span>clean commit c14c262를 Vercel preview로 배포했다.</span></article>
+        <article class="status block"><strong>관찰 0명</strong><span>자동 QA는 통과했지만 설명 없는 실제 사용을 아직 보지 못했다.</span></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="band"><strong>Git 경계:</strong> 제품 기준선은 `main`의 `c14c262`다. 기존 dirty 파일은 이번 배포와 handoff commit에 포함하지 않는다. 이 package는 PR merge가 아니라 main 직접 push 방식으로 전달한다. 현재 `docs/STATUS.md`의 P23-00 primary focus는 outdated이며, 기존 dirty 문서 분류 후 별도 동기화한다.</div>
+    </section>
+
+    <section aria-labelledby="metrics-title">
+      <h2 id="metrics-title">검증 수치</h2>
+      <div class="metric-row">
+        <div class="metric"><b>476/476</b><small>unit test</small></div>
+        <div class="metric"><b>2,166</b><small>docs local links</small></div>
+        <div class="metric"><b>18</b><small>static pages build</small></div>
+        <div class="metric"><b>55</b><small>P23 screenshots</small></div>
+        <div class="metric"><b>0</b><small>formal observed users</small></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="done-title">
+      <h2 id="done-title">한 일과 남은 일</h2>
+      <div class="two">
+        <article class="panel">
+          <h3>연결된 가치 사슬</h3>
+          <ul>
+            <li>URL·메모·공개 Flow 발견과 저장</li>
+            <li>개인 항목 추가·삭제·복구·순서 변경</li>
+            <li>날짜 없음·종일·시간·반복 일정</li>
+            <li>완료·재개·skip·hold 회차 상태</li>
+            <li>My Flow·Calendar·ICS·checklist·sheet·memo</li>
+            <li>과거 run·회고·다시 쓰기</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>출시 전에 닫을 위험</h3>
+          <ul>
+            <li>source v2와 personal overlay의 three-way merge</li>
+            <li>계정·DB·cross-device restore</li>
+            <li>source-backed 구조 편집과 반복 parity</li>
+            <li>모바일 3~4 tap 수정 경로</li>
+            <li>Calendar·history 실제 기기 밀도</li>
+            <li>PostCSS moderate advisory의 통제된 업그레이드</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="next-title">
+      <h2 id="next-title">다음 3단계</h2>
+      <div class="steps">
+        <article class="step"><b>1 · P24-00A</b><h3>독립 여정 QA</h3><p>5 persona × 3 session을 자동 simulation하고 관찰 protocol을 고정한다.</p></article>
+        <article class="step"><b>2 · P24-00B</b><h3>실제 사용자 관찰</h3><p>같은 script로 최소 15 session을 보고 발화·실패·depth를 기록한다.</p></article>
+        <article class="step"><b>3 · P24-00C</b><h3>백로그 재정렬</h3><p>관찰 근거로 keep, change, defer를 결정한 뒤 P24 구현을 연다.</p></article>
+      </div>
+    </section>
+
+    <section aria-labelledby="backlog-title">
+      <h2 id="backlog-title">P24/P25 백로그</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>순서</th><th>ID</th><th>상태</th><th>목표</th><th>gate</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>P24-00A</td><td><span class="pill ready">ready</span></td><td>관찰 준비와 독립 QA</td><td>P23 closure</td></tr>
+            <tr><td>2</td><td>P24-00B</td><td><span class="pill human">human</span></td><td>5 persona × 3 observed sessions</td><td>00A protocol</td></tr>
+            <tr><td>3</td><td>P24-00C</td><td><span class="pill blocked">blocked</span></td><td>관찰 결과와 우선순위 재정렬</td><td>00B evidence</td></tr>
+            <tr><td>4</td><td>P24-01A</td><td><span class="pill ready">contract</span></td><td>source v2 three-way merge</td><td>protocol 확정</td></tr>
+            <tr><td>5</td><td>P24-01B</td><td><span class="pill blocked">blocked</span></td><td>source update review UI</td><td>01A resolver</td></tr>
+            <tr><td>6</td><td>P24-02</td><td><span class="pill later">evidence</span></td><td>source-backed recurrence parity</td><td>observed demand</td></tr>
+            <tr><td>7</td><td>P24-03</td><td><span class="pill later">evidence</span></td><td>edit·Calendar·history UX</td><td>observed failures</td></tr>
+            <tr><td>8</td><td>P25-01</td><td><span class="pill later">production</span></td><td>account·DB·cross-device restore</td><td>release decision</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="files-title">
+      <h2 id="files-title">바로 쓸 파일</h2>
+      <div class="files">
+        <div class="file"><a href="./current-state.md">현재 상태</a><p>한 일, 검증, 제한과 dirty worktree 경계</p></div>
+        <div class="file"><a href="./backlog.md">단계별 백로그</a><p>P24/P25 순서, dependency, 완료 조건</p></div>
+        <div class="file"><a href="./claude-code-test-prompt-ko.md">Claude Code prompt</a><p>5 persona × 3 session 독립 테스트 지시문</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell">자동 QA pass는 실제 사용자 이해와 출시 준비를 대신하지 않는다. Preview는 production이 아니다.</footer>
+</body>
+</html>

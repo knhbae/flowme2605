@@ -1,0 +1,146 @@
+{
+  "generatedAt": "2026-07-14T06:20:59.9639143+09:00",
+  "product": {
+    "name": "FlowMe",
+    "branch": "main",
+    "baselineCommit": "c14c262",
+    "baselineMessage": "docs: close P23 lifecycle review",
+    "localMvpLifecycleContractClosed": true,
+    "productionReleaseReady": false,
+    "formalObservedParticipantCount": 0
+  },
+  "git": {
+    "remote": "https://github.com/knhbae/flowme2605.git",
+    "remoteBranch": "origin/main",
+    "baselineSyncedBeforePackageGeneration": true,
+    "deliveryMode": "direct_commit_to_main",
+    "packageRequiresSeparateMerge": false,
+    "githubPrStateInspected": false,
+    "githubPrStateInspectionReason": "gh_cli_not_installed",
+    "unrelatedDirtyWorktreePresent": true,
+    "unrelatedDirtyWorktreeIncludedInDeployment": false,
+    "canonicalPlanningDocsNeedPostCleanupSync": true
+  },
+  "vercel": {
+    "project": "flowme2605",
+    "deploymentId": "dpl_3hhwff4iQFJrubYD7T4ivQjUXjUL",
+    "url": "https://flowme2605-13grv45zl-flowme.vercel.app",
+    "inspectorUrl": "https://vercel.com/flowme/flowme2605/3hhwff4iQFJrubYD7T4ivQjUXjUL",
+    "readyState": "READY",
+    "target": "preview",
+    "sourceCommit": "c14c262",
+    "sourceWorktree": "clean_detached_worktree",
+    "remoteBuild": {
+      "nextVersion": "15.3.8",
+      "status": "pass",
+      "staticPages": 18
+    }
+  },
+  "p23": {
+    "implementationSliceCount": 17,
+    "evidenceSourceCount": 16,
+    "scenarioTypeCount": 6,
+    "screenshotCount": 55,
+    "personalDraftStructuralLifecycleConnected": true,
+    "optionalDateTimeRecurrenceConnected": true,
+    "occurrenceStatesDistinct": true,
+    "calendarIcsListExportUnified": true,
+    "pastRunDetailReuseConnected": true,
+    "sourceUndatedOptionalDateConnected": true,
+    "directSavedMapAnchorEditConnected": true,
+    "sourceBackedStructuralEditConnected": false,
+    "crossDeviceAccountPersistenceConnected": false
+  },
+  "verification": {
+    "unit": {
+      "status": "pass",
+      "count": 476,
+      "evidenceClass": "p23_closure_current_command"
+    },
+    "docsCheck": {
+      "status": "pass",
+      "requiredFiles": 14,
+      "localLinks": 2166,
+      "evidenceClass": "p23_closure_current_command"
+    },
+    "productionBuild": {
+      "status": "pass",
+      "staticPages": 18,
+      "evidenceClass": "p23_closure_and_current_preview_deploy"
+    },
+    "routeRegression": {
+      "status": "pass",
+      "count": 63
+    },
+    "lifecycleJourneys": {
+      "status": "pass",
+      "count": 8
+    },
+    "historyReuseJourneys": {
+      "status": "pass",
+      "count": 3
+    },
+    "sourceParityJourneys": {
+      "status": "pass",
+      "count": 2
+    },
+    "fullPlaywrightSuiteRun": false,
+    "security": {
+      "high": 0,
+      "critical": 0,
+      "moderate": 2,
+      "affectedDependency": "postcss <8.5.10 through next",
+      "forcedFixAllowed": false
+    }
+  },
+  "nextBacklog": [
+    {
+      "order": 1,
+      "id": "P24-00A",
+      "status": "ready",
+      "title": "Observed-user validation preparation and independent automated journey audit"
+    },
+    {
+      "order": 2,
+      "id": "P24-00B",
+      "status": "requires_human_participants",
+      "title": "Five personas across three observed sessions"
+    },
+    {
+      "order": 3,
+      "id": "P24-00C",
+      "status": "blocked_by_P24-00B",
+      "title": "Observation synthesis and backlog reprioritization"
+    },
+    {
+      "order": 4,
+      "id": "P24-01A",
+      "status": "ready_after_protocol",
+      "title": "Source v2 three-way merge contract"
+    },
+    {
+      "order": 5,
+      "id": "P24-01B",
+      "status": "blocked_by_P24-01A",
+      "title": "Source update review UI"
+    },
+    {
+      "order": 6,
+      "id": "P24-02",
+      "status": "needs_observed_demand",
+      "title": "Source-backed recurrence occurrence-state parity"
+    },
+    {
+      "order": 7,
+      "id": "P24-03",
+      "status": "needs_observed_evidence",
+      "title": "Edit discovery, Calendar density, and history UX"
+    },
+    {
+      "order": 8,
+      "id": "P25-01",
+      "status": "production_milestone",
+      "title": "Account, database, backup, and cross-device restore"
+    }
+  ]
+}
