@@ -229,3 +229,49 @@ P23-01B는 이 계약의 stable ID, user-created provenance, tombstone, restore 
 - canonical source mutation
 - automatic ID similarity matching
 - execution completion state migration into structural overlay
+
+## P23-01D1 Projection Contract
+
+P23-01D1 adds a pure adapter between the structural resolver and future
+Calendar/export consumers. It does not replace any current consumer.
+
+The adapter returns one stable row contract for these destinations:
+
+- `myFlow`
+- `calendarScreen`
+- `calendarIcs`
+- `checklist`
+- `sheet`
+- `memo`
+
+Each row carries the stable Item ID, source or user ownership, effective title,
+personal memo, effective schedule, resolved calendar date, personal order rank,
+membership flags, destination eligibility, and optional execution metadata.
+Execution metadata is read-only and cannot change structural membership.
+
+### Destination Rules
+
+| Item state | My Flow | Calendar screen | Calendar ICS | Checklist | Sheet | Memo |
+|---|---:|---:|---:|---:|---:|---:|
+| included and scheduled | yes | yes | yes | yes | yes | yes |
+| included and unscheduled | yes | no | no | yes | yes | yes |
+| tombstoned | no | no | no | no | no | no |
+| excluded | no | no | no | no | no | no |
+
+Personal fixed-date or anchor-offset overrides take precedence over source
+schedules. An explicit `null` schedule override removes Calendar and ICS
+eligibility without removing the Item from list projections.
+
+List projections preserve personal order. Calendar projections sort by resolved
+date first and use personal order as the same-date tie-breaker. Source v2 Items
+that do not appear in an older order override remain present.
+
+### Integration Boundary
+
+- `calendarStructuralProjectionConnected`: `false`
+- `exportStructuralProjectionConnected`: `false`
+- application UI changed: `false`
+
+P23-01D2 will connect Calendar consumers. P23-01D3 will connect ICS,
+checklist, sheet, and memo builders after each consumer's existing behavior is
+covered by integration tests.

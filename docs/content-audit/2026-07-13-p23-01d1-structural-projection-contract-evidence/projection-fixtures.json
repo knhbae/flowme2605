@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-01D1 personal structural projection contract",
+  "generatedAt": "2026-07-13",
+  "markers": {
+    "personalDraftProjectionAdapterReady": true,
+    "personalDraftProjectionSourceMutationCount": 0,
+    "tombstonedProjectionEligibleDestinationCount": 0,
+    "unscheduledUserItemCalendarEligible": false,
+    "unscheduledUserItemListExportEligible": true,
+    "personalOrderPreservedForListProjection": true,
+    "sameDateCalendarOrderUsesPersonalRank": true,
+    "structuralProjectionPreservesExecutionState": true,
+    "sourceV2ProjectionItemLossCount": 0,
+    "calendarStructuralProjectionConnected": false,
+    "exportStructuralProjectionConnected": false,
+    "appUiChanged": false
+  },
+  "destinations": [
+    "myFlow",
+    "calendarScreen",
+    "calendarIcs",
+    "checklist",
+    "sheet",
+    "memo"
+  ],
+  "verification": {
+    "focusedProjectionTestPassCount": 31,
+    "projectionRegressionTestPassCount": 128,
+    "fullUnitTestPassCount": 449,
+    "targetedPlaywrightPassCount": 1,
+    "docsCheckPassed": true,
+    "productionBuildPassed": true
+  },
+  "fixtures": [
+    {
+      "id": "unchanged-personal-draft",
+      "expected": "Source membership and order are preserved"
+    },
+    {
+      "id": "unscheduled-user-item",
+      "expected": "Included in My Flow and list exports; excluded from Calendar and ICS"
+    },
+    {
+      "id": "scheduled-user-item",
+      "expected": "Included in Calendar and ICS with a resolved date"
+    },
+    {
+      "id": "source-tombstone-and-restore",
+      "expected": "Tombstone has no eligible destination; restore preserves stable ID"
+    },
+    {
+      "id": "mixed-source-user-reorder",
+      "expected": "List projections preserve personal order"
+    },
+    {
+      "id": "title-date-memo-override",
+      "expected": "Personal values win without source mutation"
+    },
+    {
+      "id": "completed-and-reopened",
+      "expected": "Execution metadata survives without changing membership"
+    },
+    {
+      "id": "excluded-item",
+      "expected": "No destination is eligible"
+    },
+    {
+      "id": "source-v2-new-item",
+      "expected": "New source Item remains present"
+    },
+    {
+      "id": "malformed-order-override",
+      "expected": "Unknown IDs warn but cannot remove source Items"
+    },
+    {
+      "id": "same-date-calendar-order",
+      "expected": "Resolved date sorts first and personal order breaks ties"
+    },
+    {
+      "id": "source-backed-wrapper-rejection",
+      "expected": "Personal draft wrapper does not apply to published/source-backed Flow"
+    }
+  ]
+}

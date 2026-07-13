@@ -69,3 +69,22 @@ The task must not change `app/`, `components/`, visible copy, route markup, or s
 - Is add/delete/undo reachable without turning My Flow into a full editor?
 - Does a user-created Item look different only where provenance matters?
 - Does the mobile row remain focused on the task and completion action?
+
+## P23-01D1 Projection Adapter Checks
+
+- The adapter never mutates source Items, the structural overlay, or execution
+  records.
+- Tombstoned and excluded rows have zero eligible destinations.
+- An unscheduled user Item remains in My Flow, checklist, sheet, and memo, but
+  not Calendar screen or ICS.
+- An explicit personal schedule removal follows the same unscheduled policy.
+- A personal date override wins over the source schedule.
+- Checklist, sheet, and memo preserve personal order.
+- Calendar screen and ICS sort by date, then personal order for same-date rows.
+- `done` and `reopened` execution metadata survive projection without changing
+  membership or order.
+- A source ID collision keeps the source row and ignores the colliding user row.
+- Unknown order IDs return warnings and cannot remove source rows.
+- Source v2 additions remain in the projection.
+- The personal-draft wrapper rejects published/source-backed bundles.
+- Calendar and export consumer connection markers remain `false` in D1.

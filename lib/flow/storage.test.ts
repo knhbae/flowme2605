@@ -29,12 +29,18 @@ import {
   structuralOverlayUserItem,
 } from './personal-structural-overlay.fixtures';
 import {
+  buildPersonalDraftStructuralProjection,
+  buildPersonalStructuralProjection,
+  PERSONAL_STRUCTURAL_PROJECTION_DESTINATIONS,
+} from './personal-structural-projection';
+import {
   createEmptyPersonalStructuralOverlay,
   getPersonalStructuralOverlayStorageKey,
   loadOrMigratePersonalStructuralOverlay,
   loadPersonalStructuralOverlay,
   normalizePersonalStructuralOverlay,
   resolvePersonalStructuralItems,
+  restorePersonalStructuralItem,
   savePersonalStructuralOverlay,
 } from './personal-structural-overlay';
 import {
@@ -548,6 +554,329 @@ test('personal draft reorder safely merges source v2 and preserves malformed ord
     'v2-source-c',
   ]);
   assert.ok(merged.warnings.includes('unknown_order_item:missing-source-id'));
+});
+
+test('personal structural projection applies destination policy without mixing run state into structure', () => {
+  const structuralOverlay = {
+    ...createEmptyPersonalStructuralOverlay({
+      savedCopyId: 'projection-copy',
+      flowId: 'projection-flow',
+      updatedAt: '2026-07-13T13:00:00.000Z',
+    }),
+    userItems: [
+      {
+        itemId: 'projection-user-unscheduled',
+        provenance: 'user_created' as const,
+        title: 'Unscheduled personal item',
+        personalMemo: 'Personal list memo',
+        createdAt: '2026-07-13T13:00:00.000Z',
+        orderKey: 5,
+      },
+      {
+        itemId: 'projection-user-scheduled',
+        provenance: 'user_created' as const,
+        title: 'Scheduled personal item',
+        schedule: { mode: 'fixed_date' as const, date: '2026-08-01' },
+        createdAt: '2026-07-13T13:00:00.000Z',
+        orderKey: 6,
+      },
+    ],
+    itemTombstones: [
+      {
+        itemId: 'projection-source-tombstoned',
+        ownership: 'source' as const,
+        deletedAt: '2026-07-13T13:01:00.000Z',
+      },
+    ],
+    orderOverride: [
+      'projection-source-same-date',
+      'projection-user-scheduled',
+      'projection-source-alias',
+      'projection-user-unscheduled',
+      'projection-source-unscheduled-by-user',
+      'projection-source-tombstoned',
+      'projection-source-excluded',
+    ],
+    selection: {
+      mode: 'all_except_excluded' as const,
+      includedItemIds: [],
+      excludedItemIds: ['projection-source-excluded'],
+    },
+  };
+  const sourceItems = [
+    {
+      itemId: 'projection-source-alias',
+      title: 'Source alias base',
+      order: 0,
+      schedule: { mode: 'anchor_offset' as const, dayOffset: 1 },
+      source: { immutable: 'source-alias' },
+    },
+    {
+      itemId: 'projection-source-same-date',
+      title: 'Source same date',
+      order: 1,
+      schedule: { mode: 'anchor_offset' as const, dayOffset: 0 },
+      source: { immutable: 'source-same-date' },
+    },
+    {
+      itemId: 'projection-source-unscheduled-by-user',
+      title: 'Source schedule removed by user',
+      order: 2,
+      schedule: { mode: 'anchor_offset' as const, dayOffset: 2 },
+      source: { immutable: 'source-unscheduled' },
+    },
+    {
+      itemId: 'projection-source-tombstoned',
+      title: 'Tombstoned source item',
+      order: 3,
+      source: { immutable: 'source-tombstone' },
+    },
+    {
+      itemId: 'projection-source-excluded',
+      title: 'Excluded source item',
+      order: 4,
+      schedule: { mode: 'fixed_date' as const, date: '2026-08-03' },
+      source: { immutable: 'source-excluded' },
+    },
+  ];
+  const valueOverlays = [
+    {
+      itemId: 'projection-source-alias',
+      title: 'Personal alias',
+      personalMemo: 'Personal source memo',
+      scheduleOverride: { mode: 'fixed_date' as const, date: '2026-08-02' },
+    },
+    {
+      itemId: 'projection-source-unscheduled-by-user',
+      scheduleOverride: null,
+    },
+  ];
+  const executionStates = [
+    { itemId: 'projection-source-alias', state: 'done' as const },
+    { itemId: 'projection-user-scheduled', state: 'reopened' as const },
+  ];
+  const sourceBefore = JSON.stringify(sourceItems);
+  const overlayBefore = JSON.stringify(structuralOverlay);
+  const executionBefore = JSON.stringify(executionStates);
+
+  const projection = buildPersonalStructuralProjection({
+    sourceItems,
+    structuralOverlay,
+    valueOverlays,
+    executionStates,
+    anchorDate: '2026-08-01',
+  });
+
+  assert.deepEqual(
+    projection.effectiveRows.map((row) => row.itemId),
+    [
+      'projection-source-same-date',
+      'projection-user-scheduled',
+      'projection-source-alias',
+      'projection-user-unscheduled',
+      'projection-source-unscheduled-by-user',
+    ],
+  );
+  assert.deepEqual(
+    projection.rowsByDestination.calendarScreen.map((row) => [row.itemId, row.calendarDate]),
+    [
+      ['projection-source-same-date', '2026-08-01'],
+      ['projection-user-scheduled', '2026-08-01'],
+      ['projection-source-alias', '2026-08-02'],
+    ],
+  );
+  assert.deepEqual(
+    projection.rowsByDestination.calendarIcs.map((row) => row.itemId),
+    projection.rowsByDestination.calendarScreen.map((row) => row.itemId),
+  );
+  for (const destination of ['checklist', 'sheet', 'memo'] as const) {
+    assert.deepEqual(
+      projection.rowsByDestination[destination].map((row) => row.itemId),
+      projection.effectiveRows.map((row) => row.itemId),
+    );
+  }
+
+  const unscheduledUserItem = projection.allRows.find(
+    (row) => row.itemId === 'projection-user-unscheduled',
+  );
+  assert.equal(unscheduledUserItem?.destinationEligibility.calendarScreen, false);
+  assert.equal(unscheduledUserItem?.destinationEligibility.calendarIcs, false);
+  assert.equal(unscheduledUserItem?.destinationEligibility.checklist, true);
+  assert.equal(unscheduledUserItem?.destinationEligibility.sheet, true);
+  assert.equal(unscheduledUserItem?.destinationEligibility.memo, true);
+
+  const removedScheduleItem = projection.allRows.find(
+    (row) => row.itemId === 'projection-source-unscheduled-by-user',
+  );
+  assert.equal(removedScheduleItem?.schedule, undefined);
+  assert.equal(removedScheduleItem?.destinationEligibility.calendarScreen, false);
+  assert.equal(removedScheduleItem?.destinationEligibility.checklist, true);
+
+  const tombstoned = projection.allRows.find(
+    (row) => row.itemId === 'projection-source-tombstoned',
+  );
+  const excluded = projection.allRows.find(
+    (row) => row.itemId === 'projection-source-excluded',
+  );
+  assert.equal(
+    Object.values(tombstoned?.destinationEligibility ?? {}).filter(Boolean).length,
+    0,
+  );
+  assert.equal(
+    Object.values(excluded?.destinationEligibility ?? {}).filter(Boolean).length,
+    0,
+  );
+  assert.equal(excluded?.excluded, true);
+  assert.equal(excluded?.included, false);
+
+  const personalAlias = projection.allRows.find(
+    (row) => row.itemId === 'projection-source-alias',
+  );
+  assert.equal(personalAlias?.title, 'Personal alias');
+  assert.equal(personalAlias?.personalMemo, 'Personal source memo');
+  assert.equal(personalAlias?.calendarDate, '2026-08-02');
+  assert.equal(personalAlias?.executionState?.state, 'done');
+  assert.equal(
+    projection.allRows.find((row) => row.itemId === 'projection-user-scheduled')
+      ?.executionState?.state,
+    'reopened',
+  );
+
+  const restoredOverlay = restorePersonalStructuralItem(
+    structuralOverlay,
+    'projection-source-tombstoned',
+    '2026-07-13T13:02:00.000Z',
+  );
+  const restoredProjection = buildPersonalStructuralProjection({
+    sourceItems,
+    structuralOverlay: restoredOverlay,
+    valueOverlays,
+    executionStates,
+    anchorDate: '2026-08-01',
+  });
+  assert.equal(
+    restoredProjection.effectiveRows.some(
+      (row) => row.itemId === 'projection-source-tombstoned',
+    ),
+    true,
+  );
+  assert.equal(JSON.stringify(sourceItems), sourceBefore);
+  assert.equal(JSON.stringify(structuralOverlay), overlayBefore);
+  assert.equal(JSON.stringify(executionStates), executionBefore);
+});
+
+test('personal structural projection preserves source v2 items and source ownership on malformed order collisions', () => {
+  const sourceItems = [
+    { itemId: 'projection-v2-a', title: 'Source A', order: 0, source: { version: 1 } },
+    { itemId: 'projection-v2-b', title: 'Source B', order: 1, source: { version: 1 } },
+    { itemId: 'projection-v2-c', title: 'Source C', order: 2, source: { version: 2 } },
+  ];
+  const overlay = {
+    ...createEmptyPersonalStructuralOverlay({
+      savedCopyId: 'projection-v2-copy',
+      flowId: 'projection-v2-flow',
+    }),
+    userItems: [
+      {
+        itemId: 'projection-v2-a',
+        provenance: 'user_created' as const,
+        title: 'Colliding personal item',
+        createdAt: '2026-07-13T14:00:00.000Z',
+        orderKey: 0,
+      },
+      {
+        itemId: 'projection-v2-user',
+        provenance: 'user_created' as const,
+        title: 'Valid personal item',
+        createdAt: '2026-07-13T14:00:00.000Z',
+        orderKey: 1,
+      },
+    ],
+    orderOverride: [
+      'projection-missing-id',
+      'projection-v2-b',
+      'projection-v2-a',
+      'projection-v2-user',
+    ],
+  };
+  const sourceBefore = JSON.stringify(sourceItems);
+
+  const projection = buildPersonalStructuralProjection({
+    sourceItems,
+    structuralOverlay: overlay,
+  });
+
+  assert.deepEqual(
+    projection.effectiveRows.map((row) => row.itemId),
+    ['projection-v2-b', 'projection-v2-a', 'projection-v2-user', 'projection-v2-c'],
+  );
+  assert.equal(
+    projection.allRows.find((row) => row.itemId === 'projection-v2-a')?.ownership,
+    'source',
+  );
+  assert.equal(
+    projection.allRows.find((row) => row.itemId === 'projection-v2-a')?.title,
+    'Source A',
+  );
+  assert.equal(
+    projection.allRows.some((row) => row.itemId === 'projection-v2-c'),
+    true,
+  );
+  assert.ok(projection.warnings.includes('unknown_order_item:projection-missing-id'));
+  assert.ok(projection.warnings.includes('personal_item_collides_with_source:projection-v2-a'));
+  assert.equal(JSON.stringify(sourceItems), sourceBefore);
+});
+
+test('personal draft projection wrapper stays limited to eligible draft records', () => {
+  const personalDraft = bundle(
+    'projection-personal-draft-flow',
+    'url-draft-projection-contract',
+    'Projection contract draft',
+  );
+  personalDraft.flow.status = 'draft';
+  personalDraft.flow.source_title = '내 메모';
+  personalDraft.flow.tags = ['내 초안', '내 메모'];
+  personalDraft.items = [
+    {
+      id: 'projection-draft-source',
+      flow_id: personalDraft.flow.id,
+      title: 'Draft source item',
+      type: 'todo',
+      day_offset: 0,
+      order: 0,
+    },
+  ];
+  const overlay = createPersonalDraftStructuralOverlay(personalDraft);
+  const projection = buildPersonalDraftStructuralProjection({
+    bundle: personalDraft,
+    structuralOverlay: overlay,
+    anchorDate: '2026-08-01',
+  });
+  assert.ok(projection);
+  assert.deepEqual(
+    projection.rowsByDestination.calendarScreen.map((row) => [row.itemId, row.calendarDate]),
+    [['projection-draft-source', '2026-08-01']],
+  );
+
+  const sourceBacked = structuredClone(personalDraft);
+  sourceBacked.flow.status = 'published';
+  sourceBacked.flow.slug = 'published-source-backed-projection';
+  assert.equal(
+    buildPersonalDraftStructuralProjection({
+      bundle: sourceBacked,
+      structuralOverlay: overlay,
+      anchorDate: '2026-08-01',
+    }),
+    undefined,
+  );
+  assert.deepEqual(PERSONAL_STRUCTURAL_PROJECTION_DESTINATIONS, [
+    'myFlow',
+    'calendarScreen',
+    'calendarIcs',
+    'checklist',
+    'sheet',
+    'memo',
+  ]);
 });
 
 test('personal structural normalization drops execution state fields', () => {
