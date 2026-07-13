@@ -14,6 +14,14 @@ import {
 } from './local-data-backup';
 import { getFlowScopedMyFlowPersonalExecutionState } from './my-flow-personal-state';
 import {
+  createPersonalDraftStructuralOverlay,
+  createPersonalDraftUserItem,
+  deletePersonalDraftStructuralItem,
+  isPersonalDraftStructuralEditEligible,
+  resolvePersonalDraftStructuralItems,
+  undoPersonalDraftStructuralDelete,
+} from './personal-draft-structural-edit';
+import {
   personalStructuralOverlayGoldenFixtures,
   structuralOverlayDeletedUserItemFixture,
   structuralOverlayUserItem,
@@ -248,6 +256,136 @@ test('personal structural user item deletion is a reversible tombstone', () => {
   });
   assert.equal(restored.effectiveItems.some((item) => item.itemId === structuralOverlayUserItem.itemId), true);
   assert.equal(restored.allItems.find((item) => item.itemId === structuralOverlayUserItem.itemId)?.ownership, 'user_created');
+});
+
+test('personal draft structural adapter limits editing and preserves stable user item identity', () => {
+  const personalDraft = bundle(
+    'flow-personal-draft',
+    'url-draft-personal-1',
+    'Weekend preparation draft',
+  );
+  personalDraft.flow.status = 'draft';
+  personalDraft.flow.category = '내 초안';
+  personalDraft.flow.source_title = '내 메모';
+  personalDraft.flow.source_status = 'preview';
+  personalDraft.flow.tags = ['내 초안', '내 메모'];
+  personalDraft.items = [
+    {
+      id: 'draft-source-a',
+      flow_id: personalDraft.flow.id,
+      title: 'First source task',
+      type: 'todo',
+      order: 0,
+    },
+    {
+      id: 'draft-source-b',
+      flow_id: personalDraft.flow.id,
+      title: 'Second source task',
+      type: 'todo',
+      order: 1,
+    },
+  ];
+
+  const sourceBacked = bundle(
+    'flow-source-backed',
+    'source-backed-personal-1',
+    'Source backed flow',
+  );
+  sourceBacked.flow.status = 'draft';
+  sourceBacked.flow.tags = ['source-backed'];
+  sourceBacked.flow.source_title = '내 메모';
+
+  assert.equal(isPersonalDraftStructuralEditEligible(personalDraft), true);
+  assert.equal(isPersonalDraftStructuralEditEligible(sourceBacked), false);
+
+  const baseOverlay = createPersonalDraftStructuralOverlay(personalDraft);
+  assert.equal(
+    createPersonalDraftUserItem({
+      overlay: baseOverlay,
+      title: '   ',
+      itemId: 'personal-empty-title',
+    }),
+    undefined,
+  );
+  const created = createPersonalDraftUserItem({
+    overlay: baseOverlay,
+    title: '  Added   personal task  ',
+    itemId: 'personal-stable-a',
+    createdAt: '2026-07-13T10:00:00.000Z',
+  });
+  assert.ok(created);
+  assert.equal(created.userItem.title, 'Added personal task');
+  assert.equal(created.userItem.provenance, 'user_created');
+  assert.equal(created.userItem.schedule, undefined);
+
+  const added = resolvePersonalDraftStructuralItems(personalDraft, created.overlay);
+  assert.deepEqual(
+    added.effectiveItems.map((item) => item.itemId),
+    ['draft-source-a', 'draft-source-b', 'personal-stable-a'],
+  );
+  assert.equal(
+    added.effectiveItems.find((item) => item.itemId === 'personal-stable-a')?.ownership,
+    'user_created',
+  );
+
+  const deleted = deletePersonalDraftStructuralItem({
+    bundle: personalDraft,
+    overlay: created.overlay,
+    itemId: 'personal-stable-a',
+    deletedAt: '2026-07-13T10:01:00.000Z',
+  });
+  assert.ok(deleted);
+  assert.equal(
+    resolvePersonalDraftStructuralItems(personalDraft, deleted.overlay).effectiveItems.some(
+      (item) => item.itemId === 'personal-stable-a',
+    ),
+    false,
+  );
+  assert.deepEqual(deleted.undo, {
+    flowSlug: personalDraft.flow.slug,
+    itemId: 'personal-stable-a',
+    ownership: 'user_created',
+    title: 'Added personal task',
+  });
+
+  const restoredOverlay = undoPersonalDraftStructuralDelete({
+    overlay: deleted.overlay,
+    undo: deleted.undo,
+    restoredAt: '2026-07-13T10:02:00.000Z',
+  });
+  const restored = resolvePersonalDraftStructuralItems(personalDraft, restoredOverlay);
+  assert.deepEqual(
+    restored.effectiveItems.map((item) => item.itemId),
+    ['draft-source-a', 'draft-source-b', 'personal-stable-a'],
+  );
+  assert.equal(created.overlay.userItems[0]?.itemId, 'personal-stable-a');
+  assert.equal(restoredOverlay.userItems[0]?.itemId, 'personal-stable-a');
+
+  const sourceTitlesBeforeDelete = personalDraft.items.map((item) => item.title);
+  const deletedSource = deletePersonalDraftStructuralItem({
+    bundle: personalDraft,
+    overlay: restoredOverlay,
+    itemId: 'draft-source-a',
+    deletedAt: '2026-07-13T10:03:00.000Z',
+  });
+  assert.ok(deletedSource);
+  assert.equal(deletedSource.undo.ownership, 'source');
+  assert.equal(
+    resolvePersonalDraftStructuralItems(personalDraft, deletedSource.overlay).effectiveItems.some(
+      (item) => item.itemId === 'draft-source-a',
+    ),
+    false,
+  );
+  assert.deepEqual(personalDraft.items.map((item) => item.title), sourceTitlesBeforeDelete);
+  const restoredSource = undoPersonalDraftStructuralDelete({
+    overlay: deletedSource.overlay,
+    undo: deletedSource.undo,
+    restoredAt: '2026-07-13T10:04:00.000Z',
+  });
+  assert.equal(
+    resolvePersonalDraftStructuralItems(personalDraft, restoredSource).effectiveItems[0]?.itemId,
+    'draft-source-a',
+  );
 });
 
 test('personal structural normalization drops execution state fields', () => {

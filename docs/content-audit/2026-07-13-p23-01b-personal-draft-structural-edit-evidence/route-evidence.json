@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-13T00:00:00+09:00",
+  "baselineCommit": "05965af",
+  "packageCommit": "commit-containing-this-package",
+  "verificationBoundary": "automated-browser-and-unit-test-evidence",
+  "summary": {
+    "personalDraftStructuralEditEligible": true,
+    "personalDraftAddEntryVisible": true,
+    "personalDraftAddEntryVisibleByViewport": {
+      "390": true,
+      "1024": true
+    },
+    "personalDraftUserItemPersistedAfterReload": true,
+    "personalDraftDeleteUsesTombstone": true,
+    "personalDraftUndoVisible": true,
+    "personalDraftUndoRestoresStableId": true,
+    "personalDraftAddedItemCompletionReversible": true,
+    "personalDraftLastItemDeleteKeepsFlow": true,
+    "personalDraftEmptyStateAddEntryVisible": true,
+    "sourceBackedStructuralEditControlCount": 0,
+    "sourceBundleMutationCount": 0,
+    "calendarStructuralProjectionConnected": false,
+    "exportStructuralProjectionConnected": false,
+    "reorderControlCount": 0,
+    "horizontalOverflowCount": 0
+  },
+  "eligibilityPolicy": {
+    "status": "draft",
+    "idNamespace": "url-draft-*",
+    "requiredTag": "내 초안",
+    "acceptedSourceClassifications": [
+      "내 메모",
+      "사용자가 넣은 링크"
+    ],
+    "specificContentSlugHardcoding": false,
+    "sourceBackedEligible": false,
+    "publishedEligible": false
+  },
+  "scenarios": [
+    {
+      "id": "personal-draft-add-mobile",
+      "route": "/flows -> /my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fixture": "URL-first miss personal draft",
+      "screenshot": "screenshots/01-personal-draft-item-added-mobile.png",
+      "assertions": {
+        "addEntryVisible": true,
+        "userItemOwnership": "user_created",
+        "initialSchedule": "none",
+        "stablePersonalId": true,
+        "persistedAfterReload": true,
+        "completionReversible": true
+      }
+    },
+    {
+      "id": "personal-draft-delete-undo-mobile",
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fixture": "URL-first miss personal draft with one user-created item",
+      "screenshot": "screenshots/02-personal-draft-delete-undo-mobile.png",
+      "assertions": {
+        "deleteUsesTombstone": true,
+        "userItemRecordRetained": true,
+        "undoVisibleImmediately": true,
+        "undoRestoresStableId": true,
+        "undoRestoresEffectivePosition": true,
+        "deletePersistsAfterReload": true,
+        "undoNoticePersistsAfterReload": false
+      }
+    },
+    {
+      "id": "personal-draft-structural-edit-wide",
+      "route": "/my",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "fixture": "URL-first miss personal draft",
+      "screenshot": "screenshots/03-personal-draft-structural-edit-wide.png",
+      "assertions": {
+        "addEntryVisible": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "id": "source-backed-structural-control-absence",
+      "route": "/my?demo=source-backed",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fixture": "source-backed demo",
+      "screenshot": null,
+      "assertions": {
+        "structuralEditControlCount": 0,
+        "deleteControlCount": 0
+      }
+    }
+  ],
+  "persistence": {
+    "adapter": "P23-01A versioned localStorage structural overlay",
+    "addPersistsAfterReload": true,
+    "tombstonePersistsAfterReload": true,
+    "restorePersistsAfterReload": true,
+    "malformedOverlaySourcePreservation": "covered-by-P23-01A-unit-fixtures"
+  },
+  "validation": {
+    "structuralAdapterUnitTest": "passed: 26 storage tests",
+    "targetedPlaywright": "passed: 3 scenarios",
+    "fullUnitSuite": "passed: 444 tests",
+    "docsCheck": "passed",
+    "productionBuild": "passed with isolated distDir",
+    "gitDiffCheck": "passed"
+  },
+  "deferred": [
+    "source-backed structural edit",
+    "reorder UI",
+    "Calendar structural projection",
+    "export structural projection",
+    "date and recurrence editing",
+    "persistent undo history"
+  ]
+}

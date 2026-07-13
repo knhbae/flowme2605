@@ -51,6 +51,21 @@ import {
   type StoredMyFlowItemDraft,
 } from '@/lib/flow/my-flow-personal-state';
 import {
+  createPersonalDraftStructuralOverlay,
+  createPersonalDraftUserItem,
+  deletePersonalDraftStructuralItem,
+  isPersonalDraftStructuralEditEligible,
+  resolvePersonalDraftStructuralItems,
+  undoPersonalDraftStructuralDelete,
+  type PersonalDraftStructuralUndo,
+} from '@/lib/flow/personal-draft-structural-edit';
+import {
+  loadOrMigratePersonalStructuralOverlay,
+  savePersonalStructuralOverlay,
+  type PersonalStructuralItemOwnership,
+  type PersonalStructuralOverlay,
+} from '@/lib/flow/personal-structural-overlay';
+import {
   assessSourceBackedFlowMapUpdate,
   applySourceBackedPersistenceRecordToBundle,
   buildSourceBackedFlowMapPersonalCopyAdjustment,
@@ -2947,6 +2962,7 @@ type MyFlowRow = {
   date?: string;
   detail?: FlowItemDetail;
   itemType?: MyFlowItemTypeInfo;
+  structuralOwnership?: PersonalStructuralItemOwnership;
 };
 
 type MySavedFlow = {
@@ -2956,6 +2972,7 @@ type MySavedFlow = {
   checks: Record<string, boolean>;
   itemStates: Record<string, FlowItemState>;
   rows: MyFlowRow[];
+  projectionRows?: MyFlowRow[];
   excludedRows: MyFlowRow[];
   done: number;
   total: number;
@@ -4297,6 +4314,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStepCopiedLabel, setMyFlowStepCopiedLabel] = useState<string>(FLOW_EXPORT_FEEDBACK.memoCopied);
   const [myFlowStepDownloadedKey, setMyFlowStepDownloadedKey] = useState('');
   const [myFlowPersonalCopySettingsDraft, setMyFlowPersonalCopySettingsDraft] = useState<MyFlowPersonalCopySettingsDraft | null>(null);
+  const [myFlowStructuralOverlaysBySlug, setMyFlowStructuralOverlaysBySlug] = useState<Record<string, PersonalStructuralOverlay>>({});
+  const [myFlowStructuralAddOpenSlug, setMyFlowStructuralAddOpenSlug] = useState('');
+  const [myFlowStructuralAddTitle, setMyFlowStructuralAddTitle] = useState('');
+  const [myFlowStructuralUndo, setMyFlowStructuralUndo] = useState<PersonalDraftStructuralUndo | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
@@ -4454,6 +4475,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }),
       ),
     );
+    if (typeof window !== 'undefined') {
+      setMyFlowStructuralOverlaysBySlug(
+        Object.fromEntries(
+          progress.flatMap((item) => {
+            const bundle = myFlowBundles.find((entry) => entry.flow.slug === item.slug);
+            if (!bundle || !isPersonalDraftStructuralEditEligible(bundle)) return [];
+            const loaded = loadOrMigratePersonalStructuralOverlay(window.localStorage, {
+              savedCopyId: bundle.flow.slug,
+              flowId: bundle.flow.id,
+            });
+            return [[bundle.flow.slug, loaded.overlay] as const];
+          }),
+        ),
+      );
+    }
   };
 
   useEffect(() => {
@@ -4501,6 +4537,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowDismissedMapUpdates({});
       setMyFlowExpandedMapUpdateId('');
       setMyFlowPersonalCopySettingsDraft(null);
+      setMyFlowStructuralOverlaysBySlug({});
+      setMyFlowStructuralAddOpenSlug('');
+      setMyFlowStructuralAddTitle('');
+      setMyFlowStructuralUndo(null);
       return;
     }
     if (demoMode === 'legacy') seedMyFlowDemoState(myFlowBundles);
@@ -4529,12 +4569,38 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         savedMap ? savedFlowMapPersistenceById[savedMap.mapId] : undefined,
         savedMap?.personalCopy,
       );
-      const allRows = getMyFlowRows(effectiveBundle, anchor);
-      const excludedRows = allRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
-      const rows = allRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
-      const executableIds = getExecutableCheckIds(effectiveBundle, anchor);
+      const sourceRows = getMyFlowRows(effectiveBundle, anchor);
+      const structuralEditEligible = isPersonalDraftStructuralEditEligible(effectiveBundle);
+      const structuralOverlay = structuralEditEligible
+        ? myFlowStructuralOverlaysBySlug[progress.slug] ?? createPersonalDraftStructuralOverlay(effectiveBundle)
+        : undefined;
+      const structuralRows = structuralOverlay
+        ? resolvePersonalDraftStructuralItems(effectiveBundle, structuralOverlay).effectiveItems.flatMap((item) => {
+            if (item.ownership === 'source') {
+              const sourceRow = sourceRows.find((row) => row.id === item.itemId);
+              return sourceRow ? [{ ...sourceRow, structuralOwnership: item.ownership }] : [];
+            }
+            return [withMyFlowItemType(effectiveBundle, {
+              id: item.itemId,
+              title: item.title,
+              section: '내가 추가한 할 일',
+              ...(item.schedule?.mode === 'fixed_date' ? { date: item.schedule.date } : {}),
+              ...(item.schedule?.mode === 'anchor_offset' ? { timing: `D${item.schedule.dayOffset >= 0 ? '+' : ''}${item.schedule.dayOffset}` } : {}),
+              ...(item.personalMemo ? { detail: { item_id: item.itemId, why: item.personalMemo } } : {}),
+              structuralOwnership: item.ownership,
+            })];
+          })
+        : sourceRows;
+      const projectionRows = sourceRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+      const excludedRows = structuralRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
+      const rows = structuralRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+      const executableIds = Array.from(new Set(rows.flatMap((row) => getMyFlowCheckIds(effectiveBundle, row.id, anchor))));
       const executableTotal = executableIds.filter((id) => !isItemStateSkipped(itemStates, id)).length;
-      const total = savedMap ? executableTotal : Math.max(executableTotal, progress.total);
+      const total = structuralEditEligible
+        ? executableTotal
+        : savedMap
+          ? executableTotal
+          : Math.max(executableTotal, progress.total);
       const done = executableIds.filter((id) => checks[id] && !isItemStateSkipped(itemStates, id)).length;
       const anchorDisplay = getMyFlowAnchorDisplay(progressBundle, anchor, myFlowDemoMode);
       const meta = [
@@ -4549,6 +4615,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         checks,
         itemStates,
         rows,
+        ...(structuralEditEligible ? { projectionRows } : {}),
         excludedRows,
         done,
         total,
@@ -4663,7 +4730,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
   };
   const baseCalendarRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
-    flow.rows
+    (flow.projectionRows ?? flow.rows)
       .filter((row) => row.date)
       .map((row) => {
         const originalDate = row.date ?? '';
@@ -4680,7 +4747,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }),
   );
   const manuallyScheduledRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
-    flow.rows
+    (flow.projectionRows ?? flow.rows)
       .filter((row) => !row.date)
       .flatMap((row) => {
         const calendarKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
@@ -5747,7 +5814,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const completeSavedFlow = (flow: MySavedFlow) => {
-    const executableIds = getExecutableCheckIds(flow.bundle, flow.anchor)
+    const executableIds = (isPersonalDraftStructuralEditEligible(flow.bundle)
+      ? Array.from(
+          new Set(flow.rows.flatMap((row) => getMyFlowCheckIds(flow.bundle, row.id, flow.anchor))),
+        )
+      : getExecutableCheckIds(flow.bundle, flow.anchor))
       .filter((id) => !isItemStateSkipped(flow.itemStates, id));
     const nextChecks = executableIds.reduce(
       (next, id) => ({
@@ -6060,6 +6131,77 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (typeof window !== 'undefined' && !window.confirm(`${getMyFlowExecutionFlowTitle(flow.progress.title)} 저장 기록을 이 브라우저에서 지울까요?`)) return;
     clearFlowLocalProgress(flow.progress.slug);
     refreshSavedFlowState();
+  };
+
+  const saveMyFlowStructuralOverlay = (
+    flow: MySavedFlow,
+    overlay: PersonalStructuralOverlay,
+  ): boolean => {
+    if (
+      typeof window === 'undefined' ||
+      isMyFlowScenarioDemo ||
+      !isPersonalDraftStructuralEditEligible(flow.bundle)
+    ) return false;
+    try {
+      const saved = savePersonalStructuralOverlay(window.localStorage, overlay);
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        [flow.progress.slug]: saved,
+      }));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const addMyFlowPersonalDraftItem = (flow: MySavedFlow) => {
+    if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
+    const overlay =
+      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
+      createPersonalDraftStructuralOverlay(flow.bundle);
+    const itemId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? `personal-item-${crypto.randomUUID()}`
+      : `personal-item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const created = createPersonalDraftUserItem({
+      overlay,
+      title: myFlowStructuralAddTitle,
+      itemId,
+    });
+    if (!created || !saveMyFlowStructuralOverlay(flow, created.overlay)) return;
+    setMyFlowStructuralAddTitle('');
+    setMyFlowStructuralAddOpenSlug('');
+    setMyFlowStructuralUndo(null);
+    setMyFlowExpandedStructureStepSlug(flow.progress.slug);
+  };
+
+  const deleteMyFlowPersonalDraftItem = (row: MyFlowCalendarRow) => {
+    const flow = row.flow;
+    if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
+    const overlay =
+      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
+      createPersonalDraftStructuralOverlay(flow.bundle);
+    const deleted = deletePersonalDraftStructuralItem({
+      bundle: flow.bundle,
+      overlay,
+      itemId: row.id,
+    });
+    if (!deleted || !saveMyFlowStructuralOverlay(flow, deleted.overlay)) return;
+    setMyFlowStructuralUndo(deleted.undo);
+    resetMyFlowRowDetailState();
+  };
+
+  const undoMyFlowPersonalDraftDelete = (flow: MySavedFlow) => {
+    if (!myFlowStructuralUndo || myFlowStructuralUndo.flowSlug !== flow.progress.slug) return;
+    const overlay =
+      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
+      createPersonalDraftStructuralOverlay(flow.bundle);
+    const restored = undoPersonalDraftStructuralDelete({
+      overlay,
+      undo: myFlowStructuralUndo,
+    });
+    if (!saveMyFlowStructuralOverlay(flow, restored)) return;
+    setMyFlowStructuralUndo(null);
+    setMyFlowExpandedStructureStepSlug(flow.progress.slug);
   };
 
   const resetMyFlowRowDetailState = () => {
@@ -7412,6 +7554,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 닫기
               </button>
             ) : null}
+            {!isDetailEditing && isPersonalDraftStructuralEditEligible(row.flow.bundle) ? (
+              <button
+                type="button"
+                data-testid="personal-draft-delete-item"
+                aria-label={`${editorDraft.title} 삭제`}
+                className="rounded-md border border-rose-200 bg-white px-3 py-2 text-xs font-semibold text-rose-700 hover:border-rose-300 hover:bg-rose-50"
+                onClick={() => deleteMyFlowPersonalDraftItem(row)}
+              >
+                삭제
+              </button>
+            ) : null}
           </div>
         </div>
         {canUndoRoutineCompletion ? (
@@ -8528,6 +8681,103 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderPersonalDraftStructuralControls = (flow: MySavedFlow) => {
+    if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return null;
+    const addOpen = myFlowStructuralAddOpenSlug === flow.progress.slug;
+    const undo = myFlowStructuralUndo?.flowSlug === flow.progress.slug
+      ? myFlowStructuralUndo
+      : null;
+    const inputId = `personal-draft-add-title-${flow.progress.slug}`;
+
+    return (
+      <section
+        data-testid="personal-draft-structural-controls"
+        data-structural-edit-eligible="true"
+        className="mt-3 border-t border-slate-200 pt-3"
+      >
+        {flow.rows.length === 0 ? (
+          <p data-testid="personal-draft-empty-state" className="mb-3 text-sm font-semibold text-slate-700">
+            할 일을 모두 뺐어요. 필요한 할 일을 다시 추가할 수 있어요.
+          </p>
+        ) : null}
+        {undo ? (
+          <div
+            data-testid="personal-draft-delete-undo"
+            role="status"
+            className="mb-3 flex flex-col gap-2 rounded-md bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <span>{undo.title} 항목을 목록에서 뺐어요.</span>
+            <button
+              type="button"
+              data-testid="personal-draft-delete-undo-action"
+              className="min-h-8 rounded-md border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700"
+              onClick={() => undoMyFlowPersonalDraftDelete(flow)}
+            >
+              되돌리기
+            </button>
+          </div>
+        ) : null}
+        {addOpen ? (
+          <form
+            data-testid="personal-draft-add-form"
+            className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"
+            onSubmit={(event) => {
+              event.preventDefault();
+              addMyFlowPersonalDraftItem(flow);
+            }}
+          >
+            <label htmlFor={inputId} className="grid gap-1 text-xs font-semibold text-slate-700">
+              추가할 할 일
+              <input
+                id={inputId}
+                data-testid="personal-draft-add-title"
+                className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                value={myFlowStructuralAddTitle}
+                maxLength={120}
+                autoFocus
+                onChange={(event) => setMyFlowStructuralAddTitle(event.target.value)}
+              />
+            </label>
+            <div className="grid grid-cols-2 gap-2 sm:flex">
+              <button
+                type="button"
+                className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600"
+                onClick={() => {
+                  setMyFlowStructuralAddOpenSlug('');
+                  setMyFlowStructuralAddTitle('');
+                }}
+              >
+                취소
+              </button>
+              <button
+                type="submit"
+                data-testid="personal-draft-add-save"
+                disabled={!myFlowStructuralAddTitle.trim()}
+                className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+              >
+                추가
+              </button>
+            </div>
+          </form>
+        ) : (
+          <button
+            type="button"
+            data-testid="personal-draft-add-entry"
+            aria-expanded="false"
+            className="inline-flex min-h-9 items-center rounded-md border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+            onClick={() => {
+              setMyFlowStructuralAddOpenSlug(flow.progress.slug);
+              setMyFlowStructuralAddTitle('');
+              setMyFlowStructuralUndo(null);
+            }}
+          >
+            + 할 일 추가
+          </button>
+        )}
+      </section>
+    );
+  };
+
   const renderCompactFlowStructureRow = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const nextRow = getSavedFlowNextRow(flow);
@@ -8537,6 +8787,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const sourceHref = getMyFlowSourceHref(flow);
     const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const personalSavedCopy = isMyFlowPersonalSavedCopy(flow);
+    const structuralEditEligible = isPersonalDraftStructuralEditEligible(flow.bundle);
     const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
     const settingsDateAnchorCopy = settingsEditable ? getMyFlowSettingsDateAnchorCopy(flow) : null;
     const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
@@ -8648,7 +8899,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               const stepOpen = Boolean(activeCompactRow && activeCompactRow.id === stepRow.id);
               const stepChecked = isMyFlowRowChecked(flow, stepRow);
               return (
-                <div key={`step-${flow.progress.slug}-${stepRow.id}-${stepRow.date ?? index}`} className="rounded-md bg-white ring-1 ring-blue-100">
+                <div
+                  key={`step-${flow.progress.slug}-${stepRow.id}-${stepRow.date ?? index}`}
+                  data-testid={structuralEditEligible ? 'personal-draft-effective-item' : undefined}
+                  data-item-id={structuralEditEligible ? stepRow.id : undefined}
+                  data-structural-ownership={structuralEditEligible ? stepRow.structuralOwnership : undefined}
+                  className="rounded-md bg-white ring-1 ring-blue-100"
+                >
                   <button
                     type="button"
                     data-testid="my-flow-mobile-structure-step-row"
@@ -8710,6 +8967,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         ) : null}
+        {executionReady && flowExpanded ? renderPersonalDraftStructuralControls(flow) : null}
         {flowExpanded ? renderMyFlowExcludedSteps(flow) : null}
       </article>
     );
@@ -8830,6 +9088,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <p className="mt-1 text-sm text-slate-600">남은 실행 항목이 없습니다.</p>
           )}
         </div> : null}
+        {executionReady ? renderPersonalDraftStructuralControls(flow) : null}
         {executionReady && activeOverviewRow ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
             {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow')}
