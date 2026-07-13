@@ -67,6 +67,16 @@ async function hidePlatformChromeForEvidence(page: Page) {
     });
 }
 
+async function restorePlatformChromeAfterEvidence(page: Page) {
+  await page
+    .locator('[data-testid="platform-nav"], [data-testid="platform-mobile-tabs"]')
+    .evaluateAll((elements) => {
+      elements.forEach((element) => {
+        (element as HTMLElement).style.visibility = '';
+      });
+    });
+}
+
 function expectCleanUserFacingOutput(text: string) {
   const result = scanUserFacingOutputGuardrails({
     text,
@@ -1404,13 +1414,13 @@ test('personal draft structural list exports share effective items across checkl
 
   const sheetLines = sheetDone.trimEnd().split(/\r?\n/u);
   const sheetRows = sheetLines.slice(1).map((line) => line.split('\t'));
-  expect(sheetLines[0]).toBe('순서\t상태\t할 일\t날짜\t메모\t원문');
+  expect(sheetLines[0]).toBe('순서\t상태\t할 일\t날짜\t시간\t예상 시간\t메모\t원문');
   expect(sheetRows).toHaveLength(visibleTitles.length);
   expect(sheetRows.map((row) => row[2])).toEqual(visibleTitles);
   expect(new Set(sheetRows.map((row) => row[2])).size).toBe(sheetRows.length);
   const userSheetRow = sheetRows.find((row) => row[2] === '날짜 없이 챙길 준비물');
   expect(userSheetRow?.[3]).toBe('날짜 없음');
-  expect(userSheetRow?.[5]).toBe('원문 없음');
+  expect(userSheetRow?.[7]).toBe('원문 없음');
 
   const outputGuardrail = scanUserFacingOutputGuardrails({
     text: combinedDone,
@@ -1766,6 +1776,272 @@ test('personal draft user-created item date can be set, moved, and removed acros
   await page.goto('/my?demo=source-backed');
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('personal-draft-date-mode-control')).toHaveCount(0);
+});
+
+test('personal draft user-created item time and all-day mode persist across Calendar and exports', async ({ page }) => {
+  test.setTimeout(300_000);
+  const evidenceDir = process.env.FLOWME_P23_02B2_EVIDENCE_DIR;
+  const screenshotDir = evidenceDir ? `${evidenceDir}/screenshots` : '';
+  const downloadDir = evidenceDir ? `${evidenceDir}/downloads` : '';
+  if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
+  if (downloadDir) fs.mkdirSync(downloadDir, { recursive: true });
+
+  const openDraftFlow = async () => {
+    await page.getByTestId('my-flow-view-flow').click();
+    const flow = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
+    );
+    await flow.getByTestId('my-flow-mobile-structure-open').click();
+    const showAll = flow.getByTestId('my-flow-mobile-structure-show-all');
+    if (await showAll.count()) await showAll.click();
+    return flow;
+  };
+  const addUserItem = async (flow: Locator, title: string) => {
+    await flow.getByTestId('personal-draft-add-entry').click();
+    await flow.getByTestId('personal-draft-add-title').fill(title);
+    await flow.getByTestId('personal-draft-add-title').press('Enter');
+    return flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+  };
+  const openUserItemEditor = async (flow: Locator, title: string) => {
+    const item = flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+    await item.getByTestId('my-flow-mobile-structure-step-row').click();
+    const detail = flow
+      .getByTestId('my-flow-mobile-structure-inline-detail')
+      .getByTestId('my-flow-item-detail');
+    const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+    await readSummary.locator('summary').click();
+    await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+    return { item, detail };
+  };
+  const copyListExport = async (
+    flow: Locator,
+    destination: 'memo' | 'checklist' | 'sheet',
+  ) => {
+    const panel = flow.getByTestId('personal-draft-list-export');
+    if (!(await panel.evaluate((element) => (element as HTMLDetailsElement).open))) {
+      await panel.getByTestId('personal-draft-list-export-toggle').click();
+    }
+    await page.evaluate(() => navigator.clipboard.writeText(''));
+    await panel.getByTestId(`personal-draft-copy-${destination}`).click();
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).not.toBe('');
+    return page.evaluate(() => navigator.clipboard.readText());
+  };
+  const downloadCalendarFromRow = async (row: Locator, filename: string) => {
+    await row.getByRole('button', { name: /열기/ }).click();
+    const detail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
+    const portableExport = detail.getByTestId('my-flow-detail-portable-export');
+    if (await portableExport.locator('summary').count()) await portableExport.locator('summary').click();
+    const downloadPromise = page.waitForEvent('download');
+    await detail.getByTestId('my-flow-detail-download-ics').click();
+    const download = await downloadPromise;
+    if (downloadDir) await download.saveAs(`${downloadDir}/${filename}`);
+    const path = await download.path();
+    expect(path).toBeTruthy();
+    return fs.readFileSync(path!, 'utf8').replaceAll('\r\n ', '');
+  };
+
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/personal-time-draft?utm_source=review');
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('Flow 이름').fill('출발 시간 준비 초안 요청');
+  await result.getByLabel('원하는 결과').fill('출발 전에 할 일을 시간 순서로 정리하고 싶음');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
+  const candidateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: '출발 시간 준비 초안 요청' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('출발 시간 준비');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  let draftFlow = await openDraftFlow();
+  const timedItem = await addUserItem(draftFlow, '보험 서류 챙기기');
+  const timedItemId = await timedItem.getAttribute('data-item-id');
+  expect(timedItemId).toMatch(/^personal-item-/);
+  let opened = await openUserItemEditor(draftFlow, '보험 서류 챙기기');
+  await opened.detail.getByTestId('personal-draft-date-mode-fixed').click();
+  await opened.detail.getByTestId('my-flow-detail-date-input').fill('2026-08-12');
+  await expect(opened.detail.getByTestId('personal-draft-time-mode-control')).toBeVisible();
+  await opened.detail.getByTestId('personal-draft-time-mode-timed').click();
+  await expect(opened.detail.getByTestId('my-flow-detail-save-changes')).toBeDisabled();
+  await opened.detail.getByTestId('personal-draft-time-input').fill('09:30');
+  await opened.detail.getByTestId('personal-draft-duration-input').fill('45');
+  await expect(opened.detail.getByTestId('personal-draft-time-validation')).toHaveCount(0);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await opened.detail.screenshot({ path: `${screenshotDir}/01-personal-draft-time-edit-mobile.png` });
+    await restorePlatformChromeAfterEvidence(page);
+  }
+  await opened.detail.getByTestId('my-flow-detail-save-changes').click();
+
+  const storedTimed = await page.evaluate((itemId) => {
+    const structuralKey = Object.keys(localStorage).find((key) =>
+      key.startsWith('flow:my-flow:structural-overlay:'),
+    );
+    const structural = structuralKey
+      ? JSON.parse(localStorage.getItem(structuralKey) || 'null')
+      : null;
+    return structural?.userItems?.find(
+      (item: { itemId?: string }) => item.itemId === itemId,
+    );
+  }, timedItemId);
+  expect(storedTimed?.schedule).toMatchObject({
+    mode: 'fixed_date',
+    date: '2026-08-12',
+    time: '09:30',
+    durationMinutes: 45,
+  });
+  expect(typeof storedTimed?.schedule?.timeZone).toBe('string');
+  expect(storedTimed.schedule.timeZone.length).toBeGreaterThan(0);
+
+  await page.reload();
+  draftFlow = await openDraftFlow();
+  await expect(
+    draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '보험 서류 챙기기' }),
+  ).toContainText('오전 9:30 · 45분');
+
+  const allDayItem = await addUserItem(draftFlow, '여권 원본 챙기기');
+  const allDayItemId = await allDayItem.getAttribute('data-item-id');
+  opened = await openUserItemEditor(draftFlow, '여권 원본 챙기기');
+  await opened.detail.getByTestId('personal-draft-date-mode-fixed').click();
+  await opened.detail.getByTestId('my-flow-detail-date-input').fill('2026-08-12');
+  await expect(opened.detail.getByTestId('personal-draft-time-mode-all-day')).toHaveAttribute('aria-pressed', 'true');
+  await opened.detail.getByTestId('my-flow-detail-save-changes').click();
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-12"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  let selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  let agendaRows = selectedDay.locator('[data-testid="my-flow-execution-row-shell"] > article');
+  const visibleItemIds = await agendaRows.evaluateAll((rows) =>
+    rows.map((row) => row.getAttribute('data-item-id')),
+  );
+  expect(visibleItemIds.indexOf(allDayItemId)).toBeLessThan(visibleItemIds.indexOf(timedItemId));
+  let timedCalendarRow = agendaRows.filter({ hasText: '보험 서류 챙기기' });
+  await expect(timedCalendarRow.getByTestId('personal-draft-timed-meta')).toHaveText('오전 9:30 · 45분');
+  await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 완료 체크' }).check();
+  await expect(timedCalendarRow).toBeVisible();
+  await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 완료 취소' }).uncheck();
+  const firstIcs = await downloadCalendarFromRow(
+    timedCalendarRow,
+    'personal-draft-timed-before-edit.ics',
+  );
+  const firstUid = firstIcs.match(/^UID:(.+)$/mu)?.[1];
+  expect(firstIcs).toContain('DTSTART;TZID=');
+  expect(firstIcs).toContain(':20260812T093000');
+  expect(firstIcs).toContain(':20260812T101500');
+  expect((firstIcs.match(/BEGIN:VEVENT/g) ?? [])).toHaveLength(1);
+  const firstIcsGuardrail = scanUserFacingOutputGuardrails({
+    text: firstIcs.split(/\r?\n/u).filter((line) => !line.startsWith('UID:') && !line.startsWith('PRODID:')).join('\n'),
+    sourceSlugSignals: urlFirstSourceSlugSignals,
+  });
+  expect(firstIcsGuardrail.internalCopyHits).toEqual([]);
+  expect(firstIcsGuardrail.sourceSlugHits).toEqual([]);
+  expect(firstIcsGuardrail.structuralDisplayHits).toEqual([]);
+  expect(firstIcsGuardrail.trailingFlowSuffixHits).toEqual([]);
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    const openDetail = selectedDay.getByTestId('my-flow-item-detail');
+    const closeDetail = openDetail.getByRole('button', { name: '닫기' });
+    if (await closeDetail.count()) await closeDetail.click();
+    await hidePlatformChromeForEvidence(page);
+    await selectedDay.screenshot({ path: `${screenshotDir}/02-personal-draft-timed-calendar-mobile.png` });
+    await restorePlatformChromeAfterEvidence(page);
+  }
+
+  await page.goto('/my');
+  draftFlow = await openDraftFlow();
+  opened = await openUserItemEditor(draftFlow, '보험 서류 챙기기');
+  await expect(opened.detail.getByTestId('personal-draft-time-input')).toHaveValue('09:30');
+  await expect(opened.detail.getByTestId('personal-draft-duration-input')).toHaveValue('45');
+  await opened.detail.getByTestId('personal-draft-time-input').fill('10:15');
+  await opened.detail.getByTestId('personal-draft-duration-input').fill('60');
+  await opened.detail.getByTestId('my-flow-detail-save-changes').click();
+
+  const checklist = await copyListExport(draftFlow, 'checklist');
+  const sheet = await copyListExport(draftFlow, 'sheet');
+  const memo = await copyListExport(draftFlow, 'memo');
+  expect(checklist).toContain('일정: 2026-08-12 · 10:15 · 예상 1시간');
+  expect(sheet).toContain('보험 서류 챙기기\t2026-08-12\t10:15\t1시간');
+  expect(memo).toContain('일정: 2026-08-12 · 10:15 · 예상 1시간');
+  const listGuardrail = scanUserFacingOutputGuardrails({
+    text: [checklist, sheet, memo].join('\n'),
+    sourceSlugSignals: urlFirstSourceSlugSignals,
+  });
+  expect(listGuardrail.internalCopyHits).toEqual([]);
+  expect(listGuardrail.sourceSlugHits).toEqual([]);
+  expect(listGuardrail.structuralDisplayHits).toEqual([]);
+  expect(listGuardrail.trailingFlowSuffixHits).toEqual([]);
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-12"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  timedCalendarRow = selectedDay
+    .locator('[data-testid="my-flow-execution-row-shell"] > article')
+    .filter({ hasText: '보험 서류 챙기기' });
+  await expect(timedCalendarRow).toHaveCount(1);
+  await expect(timedCalendarRow.getByTestId('personal-draft-timed-meta')).toHaveText('오전 10:15 · 1시간');
+  const secondIcs = await downloadCalendarFromRow(
+    timedCalendarRow,
+    'personal-draft-timed-after-edit.ics',
+  );
+  expect(secondIcs.match(/^UID:(.+)$/mu)?.[1]).toBe(firstUid);
+  expect(secondIcs).toContain(':20260812T101500');
+  expect(secondIcs).toContain(':20260812T111500');
+  expect((secondIcs.match(/BEGIN:VEVENT/g) ?? [])).toHaveLength(1);
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.reload();
+  await page.getByTestId('my-flow-month-picker').fill('2026-08');
+  await page
+    .locator('.fc-daygrid-day[data-date="2026-08-12"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await page.screenshot({ path: `${screenshotDir}/03-personal-draft-timed-calendar-wide.png`, fullPage: true });
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my');
+  draftFlow = await openDraftFlow();
+  opened = await openUserItemEditor(draftFlow, '보험 서류 챙기기');
+  await opened.detail.getByTestId('personal-draft-time-mode-all-day').click();
+  await opened.detail.getByTestId('my-flow-detail-save-changes').click();
+  const storedAllDay = await page.evaluate((itemId) => {
+    const structuralKey = Object.keys(localStorage).find((key) =>
+      key.startsWith('flow:my-flow:structural-overlay:'),
+    );
+    const structural = structuralKey
+      ? JSON.parse(localStorage.getItem(structuralKey) || 'null')
+      : null;
+    return structural?.userItems?.find(
+      (item: { itemId?: string }) => item.itemId === itemId,
+    )?.schedule;
+  }, timedItemId);
+  expect(storedAllDay).toEqual({ mode: 'fixed_date', date: '2026-08-12' });
+  await page.reload();
+  draftFlow = await openDraftFlow();
+  await expect(
+    draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '보험 서류 챙기기' }),
+  ).not.toContainText('오전 10:15');
+  await expectNoHorizontalOverflow(page);
+
+  await page.goto('/my?demo=source-backed');
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('personal-draft-time-mode-control')).toHaveCount(0);
 });
 
 test('URL-first draft preserves input on storage failure and reuses the canonical saved draft', async ({ page }) => {

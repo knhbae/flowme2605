@@ -22,6 +22,7 @@ import {
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
   setPersonalDraftUserItemDate,
+  setPersonalDraftUserItemSchedule,
   undoPersonalDraftStructuralDelete,
 } from './personal-draft-structural-edit';
 import {
@@ -549,6 +550,119 @@ test('personal draft user-created item date stays structural and reversible acro
     'reopened',
   );
   assert.equal(JSON.stringify(personalDraft.items), sourceBefore);
+});
+
+test('personal draft user-created schedule preserves date, time, duration, zone, and stable identity', () => {
+  const personalDraft = bundle(
+    'flow-personal-time-draft',
+    'url-draft-personal-time-1',
+    'Personal time draft',
+  );
+  personalDraft.flow.status = 'draft';
+  personalDraft.flow.source_title = '내 메모';
+  personalDraft.flow.tags = ['내 초안', '내 메모'];
+  const created = createPersonalDraftUserItem({
+    overlay: createPersonalDraftStructuralOverlay(personalDraft),
+    title: 'Timed personal task',
+    itemId: 'personal-time-a',
+    createdAt: '2026-07-13T22:00:00.000Z',
+  });
+  assert.ok(created);
+
+  assert.equal(
+    setPersonalDraftUserItemSchedule({
+      overlay: created.overlay,
+      itemId: 'personal-time-a',
+      date: '2026-08-12',
+      mode: 'timed',
+      time: '24:00',
+      durationMinutes: 45,
+    }),
+    undefined,
+  );
+
+  const timed = setPersonalDraftUserItemSchedule({
+    overlay: created.overlay,
+    itemId: 'personal-time-a',
+    date: '2026-08-12',
+    mode: 'timed',
+    time: '23:50',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+    updatedAt: '2026-07-13T22:01:00.000Z',
+  });
+  assert.ok(timed);
+  assert.deepEqual(timed.userItem.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-12',
+    time: '23:50',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+  });
+
+  const moved = setPersonalDraftUserItemDate({
+    overlay: timed.overlay,
+    itemId: 'personal-time-a',
+    date: '2026-08-14',
+    updatedAt: '2026-07-13T22:02:00.000Z',
+  });
+  assert.ok(moved);
+  assert.deepEqual(moved.userItem.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-14',
+    time: '23:50',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+  });
+
+  const timedProjection = buildPersonalDraftStructuralProjection({
+    bundle: personalDraft,
+    structuralOverlay: moved.overlay,
+    executionStates: [{ itemId: 'personal-time-a', state: 'done' }],
+  });
+  const timedRow = timedProjection?.allRows.find(
+    (row) => row.itemId === 'personal-time-a',
+  );
+  assert.equal(timedRow?.scheduleProjection.scheduleState, 'timed');
+  assert.equal(timedRow?.scheduleProjection.endDate, '2026-08-15');
+  assert.equal(timedRow?.scheduleProjection.endTime, '00:35');
+  assert.equal(timedRow?.executionState?.state, 'done');
+
+  const unscheduled = setPersonalDraftUserItemDate({
+    overlay: moved.overlay,
+    itemId: 'personal-time-a',
+    date: '',
+    updatedAt: '2026-07-13T22:02:30.000Z',
+  });
+  assert.ok(unscheduled);
+  assert.equal(unscheduled.userItem.schedule, undefined);
+
+  const allDay = setPersonalDraftUserItemSchedule({
+    overlay: moved.overlay,
+    itemId: 'personal-time-a',
+    date: '2026-08-14',
+    mode: 'all_day',
+  });
+  assert.ok(allDay);
+  assert.deepEqual(allDay.userItem.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-14',
+  });
+  const allDayProjection = buildPersonalDraftStructuralProjection({
+    bundle: personalDraft,
+    structuralOverlay: allDay.overlay,
+    executionStates: [{ itemId: 'personal-time-a', state: 'reopened' }],
+  });
+  assert.equal(
+    timedRow?.scheduleProjection.stableEventIdentitySeed,
+    allDayProjection?.allRows.find((row) => row.itemId === 'personal-time-a')
+      ?.scheduleProjection.stableEventIdentitySeed,
+  );
+  assert.equal(
+    allDayProjection?.allRows.find((row) => row.itemId === 'personal-time-a')
+      ?.executionState?.state,
+    'reopened',
+  );
 });
 
 test('personal structural schedule contract distinguishes unscheduled, all-day, and timed fixtures', () => {

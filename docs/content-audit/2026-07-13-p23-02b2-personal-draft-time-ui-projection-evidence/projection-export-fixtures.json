@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-02B2 schedule projection and export fixtures",
+  "generatedAt": "2026-07-13",
+  "fixtures": [
+    {
+      "id": "user-timed-iana-before-edit",
+      "input": {
+        "date": "2026-08-12",
+        "time": "09:30",
+        "durationMinutes": 45,
+        "timeZone": "Asia/Seoul"
+      },
+      "expected": {
+        "scheduleState": "timed",
+        "calendarDisplay": "오전 9:30 · 45분",
+        "icsStartSuffix": "20260812T093000",
+        "icsEndSuffix": "20260812T101500",
+        "icsTzidPresent": true,
+        "icsEventCount": 1
+      },
+      "evidence": "downloads/personal-draft-timed-before-edit.ics"
+    },
+    {
+      "id": "user-timed-iana-after-edit",
+      "input": {
+        "date": "2026-08-12",
+        "time": "10:15",
+        "durationMinutes": 60,
+        "timeZone": "Asia/Seoul"
+      },
+      "expected": {
+        "scheduleState": "timed",
+        "calendarDisplay": "오전 10:15 · 1시간",
+        "icsStartSuffix": "20260812T101500",
+        "icsEndSuffix": "20260812T111500",
+        "icsTzidPresent": true,
+        "icsEventCount": 1,
+        "uidMatchesBeforeEdit": true
+      },
+      "evidence": "downloads/personal-draft-timed-after-edit.ics"
+    },
+    {
+      "id": "same-date-all-day-before-timed",
+      "input": [
+        { "title": "여권 원본 챙기기", "date": "2026-08-12" },
+        { "title": "보험 서류 챙기기", "date": "2026-08-12", "time": "09:30", "durationMinutes": 45 }
+      ],
+      "expectedOrder": ["여권 원본 챙기기", "보험 서류 챙기기"]
+    },
+    {
+      "id": "timed-list-export",
+      "input": { "date": "2026-08-12", "time": "10:15", "durationMinutes": 60 },
+      "expected": {
+        "checklistSchedule": "일정: 2026-08-12 · 10:15 · 예상 1시간",
+        "sheetColumns": ["날짜", "시간", "예상 시간"],
+        "sheetValues": ["2026-08-12", "10:15", "1시간"],
+        "memoSchedule": "일정: 2026-08-12 · 10:15 · 예상 1시간",
+        "rawTimeZoneVisible": false
+      }
+    },
+    {
+      "id": "timed-to-all-day",
+      "input": { "date": "2026-08-12", "time": "10:15", "durationMinutes": 60, "timeZone": "Asia/Seoul" },
+      "action": "switch_to_all_day",
+      "expected": { "date": "2026-08-12", "timePresent": false, "durationPresent": false, "timeZonePresent": false }
+    },
+    {
+      "id": "date-removal",
+      "input": { "date": "2026-08-12", "time": "10:15", "durationMinutes": 60, "timeZone": "Asia/Seoul" },
+      "action": "remove_date",
+      "expected": { "schedulePresent": false, "itemLossCount": 0 }
+    },
+    {
+      "id": "legacy-floating-timed",
+      "input": { "date": "2026-08-12", "time": "09:30" },
+      "expected": { "durationMinutes": 30, "timeZonePolicy": "floating_local", "icsTzidPresent": false }
+    },
+    {
+      "id": "cross-midnight-duration",
+      "input": { "date": "2026-08-12", "time": "23:45", "durationMinutes": 45, "timeZone": "Asia/Seoul" },
+      "expected": { "icsEndSuffix": "20260813T003000", "stableIdentityChanged": false }
+    },
+    {
+      "id": "completion-reopen-membership",
+      "inputStates": ["pending", "done", "reopened"],
+      "expected": { "calendarMembershipCount": 1, "icsMembershipCount": 1, "stableIdentityChanged": false }
+    },
+    {
+      "id": "source-backed-non-application",
+      "input": { "recordType": "source_backed" },
+      "expected": { "structuralTimeControlCount": 0, "behaviorChanged": false }
+    }
+  ]
+}

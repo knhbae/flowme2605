@@ -12,6 +12,8 @@ export type StoredMyFlowItemDraft = {
   memo?: string;
   location?: string;
   time?: string;
+  durationMinutes?: number;
+  scheduleMode?: 'all_day' | 'timed';
   logValue?: string;
   decisionStatus?: 'undecided' | 'buy' | 'hold' | 'reject';
   nextReviewDate?: string;

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-02B2 personal draft time and all-day UI/projection connection",
+  "generatedAt": "2026-07-13",
+  "baselineCommit": "ca3d262",
+  "implementationScope": "personal_draft_user_created_schedule_only",
+  "markerDefinitions": {
+    "completionStateChangedTimedMembershipCount": "destination membership changes caused only by done or reopened transitions",
+    "personalDraftTimedDuplicateCalendarRowCount": "duplicate selected-day rows for the same stable Item after a time edit",
+    "personalDraftTimedDuplicateIcsEventCount": "extra VEVENT blocks in a single per-Item ICS download",
+    "sourceBackedTimedProjectionBehaviorChanged": "whether source-backed Calendar or export behavior changed in this slice",
+    "manualUserObservationCount": "human-observed usability sessions; Playwright runs are excluded"
+  },
+  "markers": {
+    "personalDraftTimeEditControlVisible": true,
+    "personalDraftTimedUiReachableWithoutFixture": true,
+    "personalDraftTimedSchedulePersistedAfterReload": true,
+    "personalDraftTimedTimeZoneStored": true,
+    "personalDraftTimeRemovalKeepsDate": true,
+    "personalDraftDateRemovalClearsTime": true,
+    "personalDraftTimedCalendarRowVisible": true,
+    "personalDraftAllDayBeforeTimedOnSameDate": true,
+    "personalDraftTimedRowsSortedByStartTime": true,
+    "personalDraftSameTimeUsesPersonalOrder": true,
+    "personalDraftTimedDurationDisplayed": true,
+    "personalDraftTimedIcsEventCount": 1,
+    "personalDraftTimedIcsTzidPresent": true,
+    "personalDraftTimedIcsDurationApplied": true,
+    "personalDraftTimedIcsUidStableAfterTimeEdit": true,
+    "personalDraftFloatingLegacyIcsPreserved": true,
+    "personalDraftTimedListExportsUpdated": true,
+    "completionStateChangedTimedMembershipCount": 0,
+    "personalDraftTimedDuplicateCalendarRowCount": 0,
+    "personalDraftTimedDuplicateIcsEventCount": 0,
+    "sourceBackedStructuralTimeControlCount": 0,
+    "sourceBackedTimedProjectionBehaviorChanged": false,
+    "personalDraftTimeHorizontalOverflowCount": 0,
+    "personalDraftTimeInternalTermHitCount": 0,
+    "calendarStructuralProjectionConnected": true,
+    "icsStructuralProjectionConnected": true,
+    "checklistStructuralProjectionConnected": true,
+    "sheetStructuralProjectionConnected": true,
+    "memoStructuralProjectionConnected": true,
+    "repeatEditControlAdded": false,
+    "manualUserObservationCount": 0
+  },
+  "scenarios": [
+    {
+      "id": "personal-draft-time-edit-mobile",
+      "route": "/flows -> /my",
+      "viewport": { "width": 390, "height": 844 },
+      "initialState": "URL-first miss draft saved to My Flow; one user-created Item without a date",
+      "fixtureUsedForTimedState": false,
+      "userActions": [
+        "add user Item",
+        "set 2026-08-12",
+        "choose timed",
+        "set 09:30",
+        "set expected duration 45 minutes",
+        "save and reload"
+      ],
+      "result": "timed schedule and valid device time zone persist on the same stable personal Item",
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/01-personal-draft-time-edit-mobile.png"
+    },
+    {
+      "id": "personal-draft-all-day-and-timed-calendar-mobile",
+      "route": "/calendar",
+      "viewport": { "width": 390, "height": 844 },
+      "date": "2026-08-12",
+      "result": "all-day row precedes timed row; timed metadata appears once; done and reopened preserve the same row",
+      "allDayBeforeTimed": true,
+      "timedDisplayLabel": "오전 9:30 · 45분",
+      "membershipChangeCount": 0,
+      "duplicateRowCount": 0,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/02-personal-draft-timed-calendar-mobile.png",
+      "download": "downloads/personal-draft-timed-before-edit.ics"
+    },
+    {
+      "id": "personal-draft-time-edit-and-wide-calendar",
+      "route": "/my -> /calendar",
+      "viewport": { "width": 1024, "height": 768 },
+      "date": "2026-08-12",
+      "userActions": ["change 09:30 to 10:15", "change 45 to 60 minutes", "save", "open Calendar"],
+      "result": "one row displays 오전 10:15 · 1시간 while monthly grid remains compact",
+      "duplicateRowCount": 0,
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/03-personal-draft-timed-calendar-wide.png",
+      "download": "downloads/personal-draft-timed-after-edit.ics"
+    },
+    {
+      "id": "personal-draft-timed-list-exports",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "result": "checklist, sheet, and memo use the same 2026-08-12 10:15 60-minute effective schedule",
+      "destinationCount": 3,
+      "internalTermHitCount": 0
+    },
+    {
+      "id": "personal-draft-timed-to-all-day",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "result": "date 2026-08-12 remains while time, duration, and time zone are removed",
+      "stableItemIdPreserved": true,
+      "horizontalOverflowCount": 0
+    },
+    {
+      "id": "source-backed-time-control-regression",
+      "route": "/my?demo=source-backed",
+      "viewport": { "width": 390, "height": 844 },
+      "result": "personal structural time mode control count remains zero"
+    }
+  ],
+  "verification": {
+    "focusedStorageAndIcsUnitPassCount": 46,
+    "fullUnitPassCount": 459,
+    "p23_02b2TimedJourneyE2ePassCount": 1,
+    "p23_02aOptionalDateRegressionE2ePassCount": 1,
+    "fullUrlFirstUserSurfaceE2ePassCount": 17,
+    "targetedFlowMvpE2ePassCount": 5,
+    "publicShareWorkbenchRegressionE2ePassCount": 44,
+    "productionBuildPassed": true,
+    "docsCheckPassed": true,
+    "gitDiffCheckPassed": true
+  }
+}

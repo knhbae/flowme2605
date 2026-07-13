@@ -98,6 +98,41 @@ test('Step ICS creates all-day event when time is empty', () => {
   assert.doesNotMatch(ics, /DTSTART:20260624T/);
 });
 
+test('personal draft timed ICS keeps stable UID and applies TZID, duration, and midnight rollover', () => {
+  const timedInput: MyFlowPortableStepExportInput = {
+    ...baseInput,
+    date: '2026-08-03',
+    time: '23:50',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+    stableEventIdentitySeed: 'personal-structural:draft-copy:personal-item-a',
+    repeatPreset: '',
+  };
+  const timed = buildMyFlowStepIcs(timedInput).replaceAll('\r\n ', '');
+  const moved = buildMyFlowStepIcs({
+    ...timedInput,
+    date: '2026-08-05',
+    time: '09:10',
+    durationMinutes: 30,
+  }).replaceAll('\r\n ', '');
+  const uid = timed.match(/^UID:(.+)$/mu)?.[1];
+  const movedUid = moved.match(/^UID:(.+)$/mu)?.[1];
+
+  assert.equal(uid, movedUid);
+  assert.equal(uid, 'personal-structural:draft-copy:personal-item-a@flowme.local');
+  assert.match(timed, /DTSTART;TZID=Asia\/Seoul:20260803T235000/);
+  assert.match(timed, /DTEND;TZID=Asia\/Seoul:20260804T003500/);
+  assert.match(timed, /예상 45분/);
+  assert.equal((timed.match(/BEGIN:VEVENT/g) ?? []).length, 1);
+
+  const floating = buildMyFlowStepIcs({
+    ...timedInput,
+    timeZone: undefined,
+  }).replaceAll('\r\n ', '');
+  assert.match(floating, /DTSTART:20260803T235000/);
+  assert.doesNotMatch(floating, /TZID=/);
+});
+
 test('portable Step outputs keep structural words out of user-facing fallbacks', () => {
   const input = { ...baseInput, stepTitle: '' };
   const visibleIcs = buildMyFlowStepIcs(input)
@@ -203,11 +238,11 @@ test('personal structural list exports share effective rows, personal order, and
 
   const sheetLines = artifacts.sheetTsv.trimEnd().split('\n');
   assert.equal(sheetLines.length, 4);
-  assert.equal(sheetLines[0], '순서\t상태\t할 일\t날짜\t메모\t원문');
+  assert.equal(sheetLines[0], '순서\t상태\t할 일\t날짜\t시간\t예상 시간\t메모\t원문');
   assert.equal(sheetLines[1].split('\t')[3], '날짜 없음');
-  assert.equal(sheetLines[1].split('\t')[5], '원문 없음');
-  assert.match(sheetLines[2], /^2\t완료\t숙소 주소 다시 확인\t날짜 없음\t체크인 시간도 함께 보기\t여행 준비 원문/);
-  assert.match(sheetLines[3], /^3\t미완료\t여권 확인\t2026-08-05\t만료일까지 확인\t여행 준비 원문/);
+  assert.equal(sheetLines[1].split('\t')[7], '원문 없음');
+  assert.match(sheetLines[2], /^2\t완료\t숙소 주소 다시 확인\t날짜 없음\t\t\t체크인 시간도 함께 보기\t여행 준비 원문/);
+  assert.match(sheetLines[3], /^3\t미완료\t여권 확인\t2026-08-05\t종일\t\t만료일까지 확인\t여행 준비 원문/);
 
   assert.match(artifacts.memoText, /1\. 오프라인 지도 저장/);
   assert.match(artifacts.memoText, /2\. 숙소 주소 다시 확인/);
@@ -247,4 +282,65 @@ test('completion changes list-export status without changing structural membersh
   assert.deepEqual(reopened.checklistRows.map((row) => row.itemId), ['source-a']);
   assert.match(done.checklistText, /- \[x\] 여권 확인/);
   assert.match(reopened.checklistText, /- \[ \] 여권 확인/);
+});
+
+test('personal structural list exports share all-day and timed schedule labels without exposing timezone', () => {
+  const overlay = createEmptyPersonalStructuralOverlay({
+    savedCopyId: 'timed-list-copy',
+    flowId: 'timed-list-flow',
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  });
+  overlay.userItems = [
+    {
+      itemId: 'all-day-user',
+      provenance: 'user_created',
+      title: '종일 준비',
+      schedule: { mode: 'fixed_date', date: '2026-08-03' },
+      createdAt: '2026-07-13T00:00:00.000Z',
+      orderKey: 0,
+    },
+    {
+      itemId: 'timed-user',
+      provenance: 'user_created',
+      title: '시간 준비',
+      schedule: {
+        mode: 'fixed_date',
+        date: '2026-08-03',
+        time: '09:30',
+        durationMinutes: 45,
+        timeZone: 'Asia/Seoul',
+      },
+      createdAt: '2026-07-13T00:00:00.000Z',
+      orderKey: 1,
+    },
+    {
+      itemId: 'unscheduled-user',
+      provenance: 'user_created',
+      title: '날짜 없는 준비',
+      createdAt: '2026-07-13T00:00:00.000Z',
+      orderKey: 2,
+    },
+  ];
+  overlay.orderOverride = ['all-day-user', 'timed-user', 'unscheduled-user'];
+  const artifacts = buildPersonalStructuralListExportArtifacts({
+    flowTitle: '시간 준비 Flow',
+    projection: buildPersonalStructuralProjection({
+      sourceItems: [],
+      structuralOverlay: overlay,
+    }),
+  });
+
+  assert.match(artifacts.checklistText, /일정: 2026-08-03 종일/);
+  assert.match(artifacts.checklistText, /일정: 2026-08-03 · 09:30 · 예상 45분/);
+  assert.match(artifacts.checklistText, /일정: 날짜 없음/);
+  const sheetLines = artifacts.sheetTsv.trimEnd().split('\n');
+  assert.equal(sheetLines[1].split('\t')[4], '종일');
+  assert.equal(sheetLines[2].split('\t')[4], '09:30');
+  assert.equal(sheetLines[2].split('\t')[5], '45분');
+  assert.equal(sheetLines[3].split('\t')[3], '날짜 없음');
+  assert.match(artifacts.memoText, /일정: 2026-08-03 · 09:30 · 예상 45분/);
+  assert.doesNotMatch(
+    [artifacts.checklistText, artifacts.sheetTsv, artifacts.memoText].join('\n'),
+    /Asia\/Seoul|TZID|IANA|floating/iu,
+  );
 });

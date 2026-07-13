@@ -1,4 +1,10 @@
 import { foldIcsContentLine } from './ics';
+import {
+  PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
+  PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES,
+  PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES,
+  isPersonalStructuralIanaTimeZone,
+} from './personal-structural-schedule';
 
 export type MyFlowStepRepeatPreset = '' | 'daily' | 'weekly' | 'monthly';
 
@@ -9,6 +15,9 @@ export type MyFlowPortableStepExportInput = {
   sectionTitle?: string;
   date?: string;
   time?: string;
+  durationMinutes?: number;
+  timeZone?: string;
+  stableEventIdentitySeed?: string;
   repeatPreset?: MyFlowStepRepeatPreset | string;
   location?: string;
   memo?: string;
@@ -63,14 +72,33 @@ function addDaysToPlainDate(date: string, days: number): string {
 }
 
 function addMinutes(date: string, time: string, minutes: number): string {
-  const value = new Date(`${date}T${time}:00`);
-  value.setMinutes(value.getMinutes() + minutes);
-  const yyyy = String(value.getFullYear()).padStart(4, '0');
-  const mm = String(value.getMonth() + 1).padStart(2, '0');
-  const dd = String(value.getDate()).padStart(2, '0');
-  const hh = String(value.getHours()).padStart(2, '0');
-  const min = String(value.getMinutes()).padStart(2, '0');
+  const [year, month, day] = date.split('-').map(Number);
+  const [hour, minute] = time.split(':').map(Number);
+  const value = new Date(Date.UTC(year, month - 1, day, hour, minute + minutes));
+  const yyyy = String(value.getUTCFullYear()).padStart(4, '0');
+  const mm = String(value.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(value.getUTCDate()).padStart(2, '0');
+  const hh = String(value.getUTCHours()).padStart(2, '0');
+  const min = String(value.getUTCMinutes()).padStart(2, '0');
   return `${yyyy}${mm}${dd}T${hh}${min}00`;
+}
+
+function normalizeDurationMinutes(value?: number): number {
+  return typeof value === 'number' &&
+    Number.isInteger(value) &&
+    value >= PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES &&
+    value <= PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES
+    ? value
+    : PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES;
+}
+
+function formatDurationLabel(value?: number): string {
+  if (!value) return '';
+  const hours = Math.floor(value / 60);
+  const minutes = value % 60;
+  if (!hours) return `${minutes}분`;
+  if (!minutes) return `${hours}시간`;
+  return `${hours}시간 ${minutes}분`;
 }
 
 function getRepeatLabel(repeatPreset?: string): string {
@@ -78,8 +106,12 @@ function getRepeatLabel(repeatPreset?: string): string {
   return repeatLabels[value] ?? value;
 }
 
-function formatSchedule(date?: string, time?: string): string {
-  return [clean(date), clean(time)].filter(Boolean).join(' ');
+function formatSchedule(date?: string, time?: string, durationMinutes?: number): string {
+  const dateTime = [clean(date), clean(time)].filter(Boolean).join(' ');
+  const duration = time && durationMinutes
+    ? `예상 ${formatDurationLabel(durationMinutes)}`
+    : '';
+  return [dateTime, duration].filter(Boolean).join(' · ');
 }
 
 function formatChecklistItems(input: MyFlowPortableStepExportInput): string[] {
@@ -99,7 +131,7 @@ export function canBuildMyFlowStepIcs(input: MyFlowPortableStepExportInput): boo
 export function buildMyFlowStepChecklistText(input: MyFlowPortableStepExportInput): string {
   const title = clean(input.stepTitle) || '할 일';
   const flowTitle = clean(input.flowTitle);
-  const schedule = formatSchedule(input.date, input.time);
+  const schedule = formatSchedule(input.date, input.time, input.durationMinutes);
   const location = clean(input.location);
   const sourceLabel = clean(input.sourceLabel);
   const sourceUrl = clean(input.sourceUrl);
@@ -117,13 +149,15 @@ export function buildMyFlowStepChecklistText(input: MyFlowPortableStepExportInpu
 export function buildMyFlowStepSheetTsv(input: MyFlowPortableStepExportInput): string {
   const checklist = formatChecklistItems(input).map((line) => line.replace(/^- /, '')).join(' | ');
   const source = [clean(input.sourceLabel), clean(input.sourceUrl)].filter(Boolean).join(' ');
-  const header = ['Flow', '할 일', '구간', '날짜', '시간', '반복', '장소', '체크리스트', '메모', '완료 기준', '주의', '원문'];
+  const includeDuration = input.durationMinutes !== undefined;
+  const header = ['Flow', '할 일', '구간', '날짜', '시간', ...(includeDuration ? ['예상 시간'] : []), '반복', '장소', '체크리스트', '메모', '완료 기준', '주의', '원문'];
   const row = [
     input.flowTitle,
     input.stepTitle,
     input.sectionTitle,
     input.date,
     input.time,
+    ...(includeDuration ? [formatDurationLabel(input.durationMinutes)] : []),
     getRepeatLabel(input.repeatPreset),
     input.location,
     checklist,
@@ -154,7 +188,7 @@ export function buildMyFlowStepPortableText(input: MyFlowPortableStepExportInput
   const lines = [title];
   if (flowTitle) lines.push(`Flow: ${flowTitle}`);
   if (sectionTitle) lines.push(`구간: ${sectionTitle}`);
-  if (date || time) lines.push(`일정: ${[date, time].filter(Boolean).join(' ')}`);
+  if (date || time) lines.push(`일정: ${formatSchedule(date, time, input.durationMinutes)}`);
   if (repeatPreset && repeatLabels[repeatPreset]) lines.push(`반복: ${getRepeatLabel(repeatPreset)}`);
   if (location) lines.push(`장소: ${location}`);
   if (items.length > 0) {
@@ -187,12 +221,22 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:${escapeIcsText(`${input.stepId}-${date}-${time || 'all-day'}@flowme.local`)}`,
+    `UID:${escapeIcsText(clean(input.stableEventIdentitySeed)
+      ? `${clean(input.stableEventIdentitySeed)}@flowme.local`
+      : `${input.stepId}-${date}-${time || 'all-day'}@flowme.local`)}`,
     `DTSTAMP:${nowStamp}`,
   ];
 
   if (time) {
-    lines.push(`DTSTART:${formatTimedIcsDate(date, time)}`, `DTEND:${addMinutes(date, time, 30)}`);
+    const durationMinutes = normalizeDurationMinutes(input.durationMinutes);
+    const timeZone = isPersonalStructuralIanaTimeZone(input.timeZone)
+      ? input.timeZone.trim()
+      : '';
+    const parameter = timeZone ? `;TZID=${timeZone}` : '';
+    lines.push(
+      `DTSTART${parameter}:${formatTimedIcsDate(date, time)}`,
+      `DTEND${parameter}:${addMinutes(date, time, durationMinutes)}`,
+    );
   } else {
     lines.push(`DTSTART;VALUE=DATE:${compactDate(date)}`, `DTEND;VALUE=DATE:${compactDate(addDaysToPlainDate(date, 1))}`);
   }

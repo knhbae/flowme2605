@@ -58,7 +58,7 @@ import {
   movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
-  setPersonalDraftUserItemDate,
+  setPersonalDraftUserItemSchedule,
   undoPersonalDraftStructuralDelete,
   type PersonalDraftStructuralUndo,
 } from '@/lib/flow/personal-draft-structural-edit';
@@ -72,6 +72,14 @@ import {
   type PersonalStructuralProjectionResult,
   type PersonalStructuralProjectionRow,
 } from '@/lib/flow/personal-structural-projection';
+import {
+  PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
+  PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES,
+  PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES,
+  isPersonalStructuralIanaTimeZone,
+  isPersonalStructuralLocalTime,
+  type PersonalStructuralScheduleProjection,
+} from '@/lib/flow/personal-structural-schedule';
 import {
   loadOrMigratePersonalStructuralOverlay,
   savePersonalStructuralOverlay,
@@ -2980,6 +2988,7 @@ type MyFlowRow = {
   structuralProjectionOrderRank?: number;
   structuralCalendarIcsEligible?: boolean;
   structuralProjectionStableId?: string;
+  structuralScheduleProjection?: PersonalStructuralScheduleProjection;
 };
 
 type MySavedFlow = {
@@ -3916,6 +3925,52 @@ function formatMyFlowDisplayDate(date: string, options: { includeWeekday?: boole
   return `${label} (${weekday})`;
 }
 
+function formatMyFlowLocalTimeLabel(time?: string): string {
+  if (!isPersonalStructuralLocalTime(time)) return '';
+  const [hourValue, minuteValue] = time.split(':').map(Number);
+  const period = hourValue < 12 ? '오전' : '오후';
+  const hour = hourValue % 12 || 12;
+  return `${period} ${hour}:${String(minuteValue).padStart(2, '0')}`;
+}
+
+function formatMyFlowDurationLabel(durationMinutes?: number): string {
+  if (!durationMinutes || durationMinutes < 1) return '';
+  const hours = Math.floor(durationMinutes / 60);
+  const minutes = durationMinutes % 60;
+  if (!hours) return `${minutes}분`;
+  if (!minutes) return `${hours}시간`;
+  return `${hours}시간 ${minutes}분`;
+}
+
+function formatMyFlowTimedScheduleLabel(
+  schedule?: PersonalStructuralScheduleProjection,
+): string {
+  if (schedule?.scheduleState !== 'timed') return '';
+  return [
+    formatMyFlowLocalTimeLabel(schedule.startTime),
+    formatMyFlowDurationLabel(schedule.durationMinutes),
+  ].filter(Boolean).join(' · ');
+}
+
+function getCurrentDeviceTimeZone(): string | undefined {
+  try {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return isPersonalStructuralIanaTimeZone(timeZone) ? timeZone : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function isPersonalDraftDurationValid(durationMinutes?: number): boolean {
+  return Boolean(
+    typeof durationMinutes === 'number' &&
+      Number.isInteger(durationMinutes) &&
+      durationMinutes >= PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES &&
+      durationMinutes <= PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES &&
+      durationMinutes % 5 === 0,
+  );
+}
+
 function addMyFlowMonths(date: string, count: number): string {
   const current = new Date(`${getMyFlowMonthStart(date)}T00:00:00`);
   current.setMonth(current.getMonth() + count);
@@ -4095,6 +4150,7 @@ function mapPersonalDraftProjectionRowToMyFlowRow(
     structuralCalendarIcsEligible:
       projectionRow.destinationEligibility.calendarIcs,
     structuralProjectionStableId: projectionRow.itemId,
+    structuralScheduleProjection: projectionRow.scheduleProjection,
   };
 
   if (projectionRow.ownership === 'source') {
@@ -4917,6 +4973,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarRows = [...baseCalendarRows, ...manuallyScheduledRows, ...generatedRoutineRows].sort((a, b) => {
     const dateOrder = (a.date ?? '').localeCompare(b.date ?? '');
     if (dateOrder !== 0) return dateOrder;
+    const scheduleStateRank = (row: MyFlowCalendarRow) =>
+      row.structuralScheduleProjection?.scheduleState === 'all_day'
+        ? 0
+        : row.structuralScheduleProjection?.scheduleState === 'timed'
+          ? 1
+          : 2;
+    const stateOrder = scheduleStateRank(a) - scheduleStateRank(b);
+    if (stateOrder !== 0) return stateOrder;
+    const timeOrder = (
+      a.structuralScheduleProjection?.startTime ?? ''
+    ).localeCompare(b.structuralScheduleProjection?.startTime ?? '');
+    if (timeOrder !== 0) return timeOrder;
     if (
       a.structuralProjectionOrderRank !== undefined &&
       b.structuralProjectionOrderRank !== undefined
@@ -4931,7 +4999,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarScheduleRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarRoutineRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
   const calendarScopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope));
-  const calendarScopedDateSignature = calendarScopedRows.map((row) => row.date ?? '').join('|');
+  const calendarScopedDateSignature = calendarScopedRows.map((row) => [
+    row.date ?? '',
+    row.structuralScheduleProjection?.scheduleState ?? '',
+    row.structuralScheduleProjection?.startTime ?? '',
+    row.structuralScheduleProjection?.durationMinutes ?? '',
+  ].join(':')).join('|');
   const calendarScopedScheduleRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarScopedRoutineRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
   const myFlowTodayDate = showDemoData ? '2026-05-28' : formatDate(new Date());
@@ -5363,12 +5436,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return next;
     });
   };
-  const clearMyFlowPersonalDraftLegacyDate = (flowSlug: string, itemId: string) => {
+  const clearMyFlowPersonalDraftLegacySchedule = (flowSlug: string, itemId: string) => {
     const key = getPersonalDraftProjectionValueKey(flowSlug, itemId);
     setMyFlowItemDrafts((current) => {
       const stored = current[key];
-      if (!stored || !Object.prototype.hasOwnProperty.call(stored, 'date')) return current;
-      const { date: _date, ...remaining } = stored;
+      if (!stored) return current;
+      const {
+        date: _date,
+        time: _time,
+        durationMinutes: _durationMinutes,
+        scheduleMode: _scheduleMode,
+        ...remaining
+      } = stored;
+      if (Object.keys(stored).length === Object.keys(remaining).length) return current;
       const next = { ...current };
       if (Object.keys(remaining).length > 0) next[key] = remaining;
       else delete next[key];
@@ -5415,20 +5495,35 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return next;
     });
   };
-  const getMyFlowRowEditorDraft = (row: MyFlowCalendarRow): Required<Pick<MyFlowItemDraft, 'title' | 'date' | 'repeatPreset' | 'memo' | 'location' | 'time'>> => {
+  const getMyFlowRowEditorDraft = (row: MyFlowCalendarRow): Required<Pick<MyFlowItemDraft, 'title' | 'date' | 'repeatPreset' | 'memo' | 'location' | 'time' | 'durationMinutes' | 'scheduleMode'>> => {
     const key = getMyFlowRowInstanceKey(row);
     const committedDraft = getMyFlowRowDraft(row);
     const editingDraft = myFlowEditingDrafts[key] ?? {};
     const detail = getMyFlowRowDisplayDetail(row);
     const item = row.flow.bundle.items.find((entry) => entry.id === row.id);
     const fallbackMemo = row.flow.savedMap?.personalCopy ? '' : formatMyFlowDetailMemo(detail, row, item);
+    const isPersonalDraftUserItem =
+      isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
+      row.structuralOwnership === 'user_created';
+    const structuralSchedule = isPersonalDraftUserItem
+      ? row.structuralScheduleProjection
+      : undefined;
+    const scheduleMode = structuralSchedule?.scheduleState === 'timed'
+      ? 'timed'
+      : 'all_day';
     return {
       title: editingDraft.title ?? getMyFlowRowDisplayTitle(row),
-      date: editingDraft.date ?? committedDraft.date ?? row.date ?? '',
+      date: editingDraft.date ?? structuralSchedule?.calendarDate ?? committedDraft.date ?? row.date ?? '',
       repeatPreset: editingDraft.repeatPreset ?? committedDraft.repeatPreset ?? '',
       memo: editingDraft.memo ?? committedDraft.memo ?? fallbackMemo,
       location: editingDraft.location ?? committedDraft.location ?? '',
-      time: editingDraft.time ?? committedDraft.time ?? '',
+      time: editingDraft.time ?? structuralSchedule?.startTime ?? committedDraft.time ?? '',
+      durationMinutes:
+        editingDraft.durationMinutes ??
+        structuralSchedule?.durationMinutes ??
+        committedDraft.durationMinutes ??
+        PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
+      scheduleMode: editingDraft.scheduleMode ?? committedDraft.scheduleMode ?? scheduleMode,
     };
   };
   const getMyFlowDecisionDraft = (row: MyFlowCalendarRow): Required<Pick<MyFlowItemDraft, 'decisionStatus' | 'nextReviewDate'>> => {
@@ -5530,22 +5625,61 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }
     } else if (isUrlFirstDraftSavedFlow(row.flow)) {
       const structuralUserItem = row.structuralOwnership === 'user_created';
-      if (structuralUserItem && date !== undefined) {
+      const {
+        time,
+        durationMinutes,
+        scheduleMode,
+        ...itemDraftWithoutStructuralSchedule
+      } = itemDraft;
+      const hasStructuralSchedulePatch =
+        date !== undefined ||
+        time !== undefined ||
+        durationMinutes !== undefined ||
+        scheduleMode !== undefined;
+      if (structuralUserItem && hasStructuralSchedulePatch) {
         const structuralOverlay =
           myFlowStructuralOverlaysBySlug[row.flow.progress.slug] ??
           createPersonalDraftStructuralOverlay(row.flow.bundle);
-        const scheduled = setPersonalDraftUserItemDate({
+        const currentSchedule = row.structuralScheduleProjection;
+        const nextDate = date ?? currentSchedule?.calendarDate ?? '';
+        const nextMode = scheduleMode ?? (
+          currentSchedule?.scheduleState === 'timed' ? 'timed' : 'all_day'
+        );
+        const nextTime = time ?? currentSchedule?.startTime ?? '';
+        const nextDuration =
+          durationMinutes ??
+          currentSchedule?.durationMinutes ??
+          PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES;
+        const timedFieldsChanged =
+          nextMode !== currentSchedule?.scheduleState ||
+          nextTime !== (currentSchedule?.startTime ?? '') ||
+          nextDuration !== (
+            currentSchedule?.durationMinutes ??
+            PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES
+          );
+        const scheduled = setPersonalDraftUserItemSchedule({
           overlay: structuralOverlay,
           itemId: row.id,
-          date,
+          date: nextDate,
+          mode: nextMode,
+          time: nextTime,
+          durationMinutes: nextDuration,
+          timeZone:
+            nextMode === 'timed'
+              ? timedFieldsChanged
+                ? getCurrentDeviceTimeZone()
+                : currentSchedule?.timeZone
+              : undefined,
         });
         if (!scheduled || !saveMyFlowStructuralOverlay(row.flow, scheduled.overlay)) return;
-        clearMyFlowPersonalDraftLegacyDate(row.flow.progress.slug, row.id);
+        clearMyFlowPersonalDraftLegacySchedule(row.flow.progress.slug, row.id);
       }
-      const personalDraftItemPatch = {
-        ...itemDraft,
-        ...(!structuralUserItem && date !== undefined ? { date } : {}),
-      };
+      const personalDraftItemPatch = structuralUserItem
+        ? itemDraftWithoutStructuralSchedule
+        : {
+            ...itemDraft,
+            ...(date !== undefined ? { date } : {}),
+          };
       if (Object.keys(personalDraftItemPatch).length > 0) {
         updateMyFlowItemDraftByKey(
           getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id),
@@ -5700,15 +5834,31 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const flowMarker = getMyFlowCalendarFlowMarker(row.flow);
       const color = flowMarker.color;
       const title = getMyFlowRowDisplayTitle(row);
+      const structuralSchedule = row.structuralScheduleProjection;
+      const isTimed = Boolean(
+        structuralSchedule?.scheduleState === 'timed' &&
+        row.date &&
+        structuralSchedule.startTime,
+      );
+      const start = isTimed
+        ? `${row.date}T${structuralSchedule?.startTime}:00`
+        : row.date;
+      const end = isTimed && structuralSchedule?.endDate && structuralSchedule.endTime
+        ? `${structuralSchedule.endDate}T${structuralSchedule.endTime}:00`
+        : undefined;
       return {
-        id: row.calendarKey ?? `${row.flow.progress.slug}-${row.id}-${row.date}`,
+        id:
+          structuralSchedule?.stableEventIdentitySeed ??
+          row.calendarKey ??
+          `${row.flow.progress.slug}-${row.id}-${row.date}`,
         title,
-        start: row.date,
-        allDay: true,
+        start,
+        ...(end ? { end } : {}),
+        allDay: !isTimed,
         backgroundColor: checked ? '#F8FAFC' : '#FFFFFF',
         borderColor: checked ? '#CBD5E1' : '#E2E8F0',
         textColor: checked ? '#64748B' : '#0F172A',
-        editable: Boolean(row.calendarKey),
+        editable: Boolean(row.calendarKey) && row.structuralOwnership !== 'user_created',
         extendedProps: {
           kind: 'schedule',
           checked,
@@ -5721,6 +5871,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           flowMarkerShortTitle: flowMarker.shortTitle,
           flowMarkerInitial: flowMarker.initial,
           color,
+          scheduleState: structuralSchedule?.scheduleState,
+          startTime: structuralSchedule?.startTime,
+          durationMinutes: structuralSchedule?.durationMinutes,
         },
       };
     }),
@@ -6825,6 +6978,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const timingAccessibilityLabel = options.kind === 'routine' || options.hideTimingMeta ? undefined : getMyFlowTimingChipLabel(row.timing ?? '');
     const displaySection = options.hideSectionMeta ? '' : getMyFlowRowDisplaySectionLabel(row);
     const displayDate = row.date ? formatMyFlowDisplayDate(row.date) : '';
+    const displayTimedSchedule = formatMyFlowTimedScheduleLabel(
+      row.structuralScheduleProjection,
+    );
     const rowDateMeta = options.kind === 'routine' && !options.showRoutineDate ? '루틴' : displayDate;
     const flowChipLabel = getMyFlowFlowChipLabel(row.flow);
     const showFlowChip = !options.minimalMeta && !options.hideFlowMeta && (options.showFlowProgress || visibleSavedFlows.length > 1 || Boolean(row.flow.savedMap));
@@ -6832,7 +6988,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showDateMeta = Boolean(rowDateMeta) && !options.suppressDateMeta;
     const showSectionMeta = !options.minimalMeta && Boolean(displaySection);
     const showProgressMeta = Boolean(options.showFlowProgress);
-    const hasRowMeta = showDateMeta || Boolean(displayTiming) || showSectionMeta || showFlowChip || showProgressMeta;
+    const hasRowMeta = showDateMeta || Boolean(displayTimedSchedule) || Boolean(displayTiming) || showSectionMeta || showFlowChip || showProgressMeta;
     const rowOpenAriaContext = [flowChipLabel, displayDate].filter(Boolean).join(' · ');
     const rowOpenAriaLabel = options.showOpenLabel
       ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
@@ -6903,6 +7059,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {hasRowMeta ? (
                 <span className="flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
                 {showDateMeta ? <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span> : null}
+                {displayTimedSchedule ? <span data-testid="personal-draft-timed-meta">{displayTimedSchedule}</span> : null}
                 {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
                 {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
                 {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
@@ -6981,6 +7138,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {hasRowMeta ? (
               <span className="flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
                 {showDateMeta ? <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span> : null}
+                {displayTimedSchedule ? <span data-testid="personal-draft-timed-meta">{displayTimedSchedule}</span> : null}
                 {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
                 {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
                 {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{flowChipLabel}</span> : null}
@@ -7023,6 +7181,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPrimary = options.tone === 'primary';
     const rowMeta = [
       row.date ? formatMyFlowDisplayDate(row.date) : '',
+      formatMyFlowTimedScheduleLabel(row.structuralScheduleProjection),
       row.timing ? formatMyFlowTimingChip(row.timing) : '',
       getMyFlowRowDisplaySectionLabel(row),
     ].filter(Boolean).join(' · ');
@@ -7373,7 +7532,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const handleMyFlowCalendarEventClick = (info: EventClickArg) => {
-    if (info.event.startStr) setMyFlowSelectedDate(info.event.startStr);
+    if (info.event.startStr) setMyFlowSelectedDate(info.event.startStr.slice(0, 10));
     setMyFlowRoutineOverflowDate('');
     setMyFlowScheduleOverflowDate('');
     const calendarKey = String(info.event.extendedProps.calendarKey ?? '');
@@ -7427,7 +7586,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const handleMyFlowCalendarEventDrop = (info: EventDropArg) => {
     const calendarKey = String(info.event.extendedProps.calendarKey ?? '');
     const kind = String(info.event.extendedProps.kind ?? '');
-    const nextDate = info.event.startStr;
+    const nextDate = info.event.startStr.slice(0, 10);
     if (!calendarKey || kind !== 'schedule' || !nextDate) {
       info.revert();
       return;
@@ -7518,6 +7677,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       sectionTitle: visibleDetailSection,
       date: editorDraft.date,
       time: editorDraft.time,
+      ...(isPersonalDraftUserItem
+        ? {
+            stableEventIdentitySeed:
+              row.structuralScheduleProjection?.stableEventIdentitySeed,
+            ...(editorDraft.scheduleMode === 'timed'
+              ? {
+                  durationMinutes: editorDraft.durationMinutes,
+                  timeZone: row.structuralScheduleProjection?.timeZone,
+                }
+              : {}),
+          }
+        : {}),
       repeatPreset: editorDraft.repeatPreset,
       location: editorDraft.location,
       memo: editorDraft.memo,
@@ -7548,9 +7719,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showTimeLocationFields =
       !isPersonalDraftUserItem && (!isProgressFlow || Boolean(row.calendarKey));
     const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
+    const personalDraftTimedScheduleInvalid = Boolean(
+      isPersonalDraftUserItem &&
+        editorDraft.date &&
+        editorDraft.scheduleMode === 'timed' &&
+        (
+          !isPersonalStructuralLocalTime(editorDraft.time) ||
+          !isPersonalDraftDurationValid(editorDraft.durationMinutes)
+        ),
+    );
     const scheduleSummaryRows = [
       editorDraft.date ? { label: '날짜', value: /^\d{4}-\d{2}-\d{2}$/.test(editorDraft.date) ? formatMyFlowDisplayDate(editorDraft.date) : editorDraft.date } : undefined,
-      editorDraft.time ? { label: '시간', value: editorDraft.time } : undefined,
+      editorDraft.time ? { label: '시간', value: formatMyFlowLocalTimeLabel(editorDraft.time) } : undefined,
+      isPersonalDraftUserItem && editorDraft.scheduleMode === 'timed'
+        ? { label: '예상', value: formatMyFlowDurationLabel(editorDraft.durationMinutes) }
+        : undefined,
       editorDraft.repeatPreset ? { label: '반복', value: editorDraft.repeatPreset === 'daily' ? '매일' : editorDraft.repeatPreset === 'weekly' ? '매주' : editorDraft.repeatPreset === 'monthly' ? '매월' : editorDraft.repeatPreset } : undefined,
       editorDraft.location ? { label: '장소', value: editorDraft.location } : undefined,
     ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
@@ -7572,7 +7755,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     ? 'bg-white text-slate-950 shadow-sm'
                     : 'text-slate-600 hover:bg-white/70'
                 }`}
-                onClick={() => updateMyFlowEditingDraft(row, { date: '' })}
+                onClick={() => updateMyFlowEditingDraft(row, {
+                  date: '',
+                  scheduleMode: 'all_day',
+                  time: '',
+                  durationMinutes: undefined,
+                })}
               >
                 날짜 없음
               </button>
@@ -7586,7 +7774,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     : 'text-slate-600 hover:bg-white/70'
                 }`}
                 onClick={() => {
-                  if (!editorDraft.date) updateMyFlowEditingDraft(row, { date: myFlowTodayDate });
+                  if (!editorDraft.date) {
+                    updateMyFlowEditingDraft(row, {
+                      date: myFlowTodayDate,
+                      scheduleMode: 'all_day',
+                      time: '',
+                      durationMinutes: undefined,
+                    });
+                  }
                 }}
               >
                 날짜 지정
@@ -7609,11 +7804,110 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   type="button"
                   data-testid="personal-draft-date-clear"
                   className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:border-blue-300"
-                  onClick={() => updateMyFlowEditingDraft(row, { date: '' })}
+                  onClick={() => updateMyFlowEditingDraft(row, {
+                    date: '',
+                    scheduleMode: 'all_day',
+                    time: '',
+                    durationMinutes: undefined,
+                  })}
                 >
                   날짜 지우기
                 </button>
               </div>
+            ) : null}
+            {editorDraft.date ? (
+              <fieldset
+                data-testid="personal-draft-time-mode-control"
+                className="mt-3 min-w-0 border-t border-slate-200 pt-3"
+              >
+                <legend className="text-xs font-semibold text-slate-600">시간</legend>
+                <div className="mt-1 grid grid-cols-2 gap-1 rounded-md bg-slate-100 p-1">
+                  <button
+                    type="button"
+                    data-testid="personal-draft-time-mode-all-day"
+                    aria-pressed={editorDraft.scheduleMode === 'all_day'}
+                    className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
+                      editorDraft.scheduleMode === 'all_day'
+                        ? 'bg-white text-blue-700 shadow-sm'
+                        : 'text-slate-600 hover:bg-white/70'
+                    }`}
+                    onClick={() => updateMyFlowEditingDraft(row, {
+                      scheduleMode: 'all_day',
+                      time: '',
+                      durationMinutes: undefined,
+                    })}
+                  >
+                    종일
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="personal-draft-time-mode-timed"
+                    aria-pressed={editorDraft.scheduleMode === 'timed'}
+                    className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
+                      editorDraft.scheduleMode === 'timed'
+                        ? 'bg-white text-blue-700 shadow-sm'
+                        : 'text-slate-600 hover:bg-white/70'
+                    }`}
+                    onClick={() => updateMyFlowEditingDraft(row, {
+                      scheduleMode: 'timed',
+                      time: editorDraft.scheduleMode === 'timed' ? editorDraft.time : '',
+                      durationMinutes: isPersonalDraftDurationValid(editorDraft.durationMinutes)
+                        ? editorDraft.durationMinutes
+                        : PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
+                    })}
+                  >
+                    시간 지정
+                  </button>
+                </div>
+                {editorDraft.scheduleMode === 'timed' ? (
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <label className="block text-xs font-semibold text-slate-600">
+                      시작 시간
+                      <input
+                        data-testid="personal-draft-time-input"
+                        aria-label={`${editorDraft.title} 시작 시간`}
+                        className={fieldClassName}
+                        type="time"
+                        value={editorDraft.time}
+                        onChange={(event) => updateMyFlowEditingDraft(row, { time: event.target.value })}
+                      />
+                    </label>
+                    <label className="block text-xs font-semibold text-slate-600">
+                      예상 소요 시간
+                      <span className="relative mt-1 block">
+                        <input
+                          data-testid="personal-draft-duration-input"
+                          aria-label={`${editorDraft.title} 예상 소요 시간`}
+                          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          type="number"
+                          min={PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES}
+                          max={PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES}
+                          step={5}
+                          value={editorDraft.durationMinutes}
+                          onChange={(event) => updateMyFlowEditingDraft(row, {
+                            durationMinutes: event.target.value
+                              ? Number(event.target.value)
+                              : undefined,
+                          })}
+                        />
+                        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-500">분</span>
+                      </span>
+                    </label>
+                    <p className="text-[11px] font-medium leading-5 text-slate-500 sm:col-span-2">
+                      현재 기기 시간 기준으로 저장돼요.
+                    </p>
+                    {personalDraftTimedScheduleInvalid ? (
+                      <p
+                        data-testid="personal-draft-time-validation"
+                        role="alert"
+                        className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700 sm:col-span-2"
+                      >
+                        시작 시간과 5분 단위의 예상 시간을 입력해 주세요.
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+              </fieldset>
             ) : null}
           </fieldset>
         ) : canEditDate ? (
@@ -8114,12 +8408,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </p>
             <div className="flex gap-2">
               <button
-                className={`rounded-md px-3 py-2 text-xs font-semibold ${hasEditorChanges ? 'bg-blue-700 text-white' : 'cursor-not-allowed bg-slate-100 text-slate-400'}`}
+                className={`rounded-md px-3 py-2 text-xs font-semibold ${hasEditorChanges && !personalDraftTimedScheduleInvalid ? 'bg-blue-700 text-white' : 'cursor-not-allowed bg-slate-100 text-slate-400'}`}
                 type="button"
-                disabled={!hasEditorChanges}
+                disabled={!hasEditorChanges || personalDraftTimedScheduleInvalid}
                 data-testid="my-flow-detail-save-changes"
                 onClick={() => {
-                  if (!hasEditorChanges) return;
+                  if (!hasEditorChanges || personalDraftTimedScheduleInvalid) return;
                   saveMyFlowEditingDraft(row);
                   setMyFlowEditingDetailKey('');
                 }}
@@ -9354,7 +9648,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <span className="block text-xs font-semibold text-blue-700">{getMyFlowRowStatusLabel(nextRow)}</span>
               <span className="mt-1 block text-sm font-semibold text-slate-950">{nextRow.title}</span>
               <span className="mt-1 block text-xs font-semibold text-slate-500">
-                {[nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ') || progressSummary}
+                {[nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', formatMyFlowTimedScheduleLabel(nextRow.structuralScheduleProjection), nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ') || progressSummary}
               </span>
             </span>
           ) : executionReady && !nextRow ? (
@@ -9413,7 +9707,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                             {getMyFlowRowDisplayTitle(stepRow)}
                           </span>
                           <span className="mt-1 block truncate text-xs font-semibold text-slate-500">
-                            {[stepRow.date ? formatMyFlowDisplayDate(stepRow.date) : '', stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || progressSummary}
+                            {[stepRow.date ? formatMyFlowDisplayDate(stepRow.date) : '', formatMyFlowTimedScheduleLabel(stepRow.structuralScheduleProjection), stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || progressSummary}
                           </span>
                         </span>
                         <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${stepChecked ? 'bg-emerald-50 text-emerald-700' : stepOpen ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-600'}`}>
@@ -9568,7 +9862,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           {nextRow ? (
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
-              <p className="text-xs font-semibold text-slate-500">{[nextRow.timing ? formatMyFlowTimingChip(nextRow.timing) : '', nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ')}</p>
+              <p className="text-xs font-semibold text-slate-500">{[nextRow.timing ? formatMyFlowTimingChip(nextRow.timing) : '', nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', formatMyFlowTimedScheduleLabel(nextRow.structuralScheduleProjection), nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ')}</p>
               <p className="mt-0.5 font-semibold text-slate-950">{nextRow.title}</p>
               </div>
               <button

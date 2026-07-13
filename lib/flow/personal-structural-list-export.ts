@@ -15,6 +15,9 @@ export type PersonalStructuralListExportRow = {
   itemId: string;
   title: string;
   date?: string;
+  scheduleState: 'unscheduled' | 'all_day' | 'timed';
+  time?: string;
+  durationMinutes?: number;
   memo?: string;
   status: PersonalStructuralListExportStatus;
   personalOrderRank: number;
@@ -49,6 +52,25 @@ function statusLabel(status: PersonalStructuralListExportStatus): string {
   return '미완료';
 }
 
+function durationLabel(durationMinutes?: number): string {
+  if (!durationMinutes) return '';
+  const hours = Math.floor(durationMinutes / 60);
+  const minutes = durationMinutes % 60;
+  if (!hours) return `${minutes}분`;
+  if (!minutes) return `${hours}시간`;
+  return `${hours}시간 ${minutes}분`;
+}
+
+function scheduleLabel(row: PersonalStructuralListExportRow): string {
+  if (!row.date) return '날짜 없음';
+  if (row.scheduleState === 'all_day') return `${row.date} 종일`;
+  return [
+    row.date,
+    row.time,
+    row.durationMinutes ? `예상 ${durationLabel(row.durationMinutes)}` : '',
+  ].filter(Boolean).join(' · ');
+}
+
 function rowStatus<TSource>(
   row: PersonalStructuralProjectionRow<TSource>,
 ): PersonalStructuralListExportStatus {
@@ -81,6 +103,13 @@ function toListRows<TSource>(options: {
       itemId: row.itemId,
       title: compactLine(row.title) || '할 일',
       ...(row.calendarDate ? { date: row.calendarDate } : {}),
+      scheduleState: row.scheduleProjection.scheduleState,
+      ...(row.scheduleProjection.startTime
+        ? { time: row.scheduleProjection.startTime }
+        : {}),
+      ...(row.scheduleProjection.durationMinutes
+        ? { durationMinutes: row.scheduleProjection.durationMinutes }
+        : {}),
       ...(row.personalMemo !== undefined
         ? { memo: compactLine(row.personalMemo) }
         : {}),
@@ -107,7 +136,7 @@ function buildChecklistText(options: {
         ? ' (보류)'
         : '';
     lines.push(`- [${checked}] ${row.title}${stateSuffix}`);
-    if (row.date) lines.push(`  일정: ${row.date}`);
+    lines.push(`  일정: ${scheduleLabel(row)}`);
     if (row.memo) lines.push(`  메모: ${row.memo}`);
   });
 
@@ -119,12 +148,14 @@ function buildChecklistText(options: {
 }
 
 function buildSheetTsv(rows: PersonalStructuralListExportRow[]): string {
-  const header = ['순서', '상태', '할 일', '날짜', '메모', '원문'];
+  const header = ['순서', '상태', '할 일', '날짜', '시간', '예상 시간', '메모', '원문'];
   const body = rows.map((row, index) => [
     String(index + 1),
     statusLabel(row.status),
     row.title,
     row.date ?? '날짜 없음',
+    row.date ? (row.scheduleState === 'all_day' ? '종일' : row.time) : '',
+    row.scheduleState === 'timed' ? durationLabel(row.durationMinutes) : '',
     row.memo,
     row.sourceRef ?? '원문 없음',
   ].map(escapeTsvCell).join('\t'));
@@ -141,7 +172,7 @@ function buildMemoText(options: {
 
   options.rows.forEach((row, index) => {
     lines.push('', `${index + 1}. ${row.title}`, `   상태: ${statusLabel(row.status)}`);
-    if (row.date) lines.push(`   일정: ${row.date}`);
+    lines.push(`   일정: ${scheduleLabel(row)}`);
     if (row.memo) lines.push(`   메모: ${row.memo}`);
   });
 

@@ -13,6 +13,13 @@ import {
   type ResolvePersonalStructuralItemsResult,
 } from './personal-structural-overlay';
 import type { FlowBundle, FlowItem } from './types';
+import {
+  PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
+  PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES,
+  PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES,
+  isPersonalStructuralIanaTimeZone,
+  isPersonalStructuralLocalTime,
+} from './personal-structural-schedule';
 
 const PERSONAL_DRAFT_TAG = '내 초안';
 const PERSONAL_DRAFT_SOURCE_TITLES = new Set(['내 메모', '사용자가 넣은 링크']);
@@ -25,6 +32,7 @@ export type PersonalDraftStructuralUndo = {
 };
 
 export type PersonalDraftStructuralMoveDirection = 'up' | 'down';
+export type PersonalDraftUserItemScheduleMode = 'all_day' | 'timed';
 
 function isPlainIsoDate(value: string): boolean {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -141,26 +149,73 @@ export function setPersonalDraftUserItemDate(options: {
   date: string;
   updatedAt?: string;
 }): { overlay: PersonalStructuralOverlay; userItem: PersonalStructuralUserItem } | undefined {
+  const current = options.overlay.userItems.find(
+    (item) => item.itemId === options.itemId.trim(),
+  );
+  const currentSchedule = current?.schedule?.mode === 'fixed_date'
+    ? current.schedule
+    : undefined;
+  return setPersonalDraftUserItemSchedule({
+    ...options,
+    mode: currentSchedule?.time ? 'timed' : 'all_day',
+    time: currentSchedule?.time,
+    durationMinutes: currentSchedule?.durationMinutes,
+    timeZone: currentSchedule?.timeZone,
+  });
+}
+
+export function setPersonalDraftUserItemSchedule(options: {
+  overlay: PersonalStructuralOverlay;
+  itemId: string;
+  date: string;
+  mode: PersonalDraftUserItemScheduleMode;
+  time?: string;
+  durationMinutes?: number;
+  timeZone?: string;
+  updatedAt?: string;
+}): { overlay: PersonalStructuralOverlay; userItem: PersonalStructuralUserItem } | undefined {
   const itemId = options.itemId.trim();
   const date = options.date.trim();
   const current = options.overlay.userItems.find((item) => item.itemId === itemId);
   if (!current || (date && !isPlainIsoDate(date))) return undefined;
 
   const { schedule: currentSchedule, ...userItemWithoutSchedule } = current;
-  const preservedFixedSchedule =
-    currentSchedule?.mode === 'fixed_date' ? currentSchedule : undefined;
-  const schedule: PersonalStructuralSchedule | undefined = date
-    ? {
+  const preservedRepeat = currentSchedule?.mode === 'fixed_date'
+    ? currentSchedule.repeat
+    : undefined;
+  let schedule: PersonalStructuralSchedule | undefined;
+
+  if (date) {
+    if (options.mode === 'timed') {
+      const time = options.time?.trim();
+      if (!isPersonalStructuralLocalTime(time)) return undefined;
+      const durationMinutes =
+        typeof options.durationMinutes === 'number' &&
+        Number.isInteger(options.durationMinutes) &&
+        options.durationMinutes >= PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES &&
+        options.durationMinutes <= PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES
+          ? options.durationMinutes
+          : PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES;
+      const timeZone = isPersonalStructuralIanaTimeZone(options.timeZone)
+        ? options.timeZone.trim()
+        : undefined;
+      schedule = {
         mode: 'fixed_date',
         date,
-        ...(preservedFixedSchedule?.time
-          ? { time: preservedFixedSchedule.time }
-          : {}),
-        ...(preservedFixedSchedule?.repeat
-          ? { repeat: preservedFixedSchedule.repeat }
-          : {}),
-      }
-    : undefined;
+        time,
+        durationMinutes,
+        ...(timeZone ? { timeZone } : {}),
+        ...(preservedRepeat ? { repeat: preservedRepeat } : {}),
+      };
+    } else {
+      schedule = {
+        mode: 'fixed_date',
+        date,
+        ...(preservedRepeat ? { repeat: preservedRepeat } : {}),
+      };
+    }
+  }
+
   const userItem: PersonalStructuralUserItem = {
     ...userItemWithoutSchedule,
     ...(schedule ? { schedule } : {}),
