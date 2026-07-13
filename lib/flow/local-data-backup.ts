@@ -23,6 +23,7 @@ const EXECUTION_KEY_PREFIXES = [
   'flow:map:saved:',
   'flow:map:persistence:',
   'flow:my-flow:completion-feedback:',
+  'flow:my-flow:structural-overlay:',
   'flow:run-registry:',
   'flow:completion-detected-at:',
 ];

@@ -14,6 +14,7 @@ import {
   type SourceBackedFlowMapStepBinding,
 } from './source-backed-my-flow';
 import { prepareFlowRunNewAnchor, type FlowRunFixedDatePolicy } from './flow-run-reuse';
+import { removePersonalStructuralOverlaysForFlow } from './personal-structural-overlay';
 import {
   getFlowScopedMyFlowPersonalExecutionState,
   hasMyFlowPersonalExecutionState,
@@ -650,6 +651,7 @@ export function clearFlowLocalProgress(slug: string): void {
   );
   localStorage.setItem(MY_FLOW_STEP_ITEM_CHECKS_KEY, JSON.stringify(nextStepItemChecks));
   replaceFlowScopedMyFlowPersonalExecutionState(slug);
+  removePersonalStructuralOverlaysForFlow(localStorage, slug);
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
 }
 

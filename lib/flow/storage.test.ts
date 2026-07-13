@@ -14,6 +14,20 @@ import {
 } from './local-data-backup';
 import { getFlowScopedMyFlowPersonalExecutionState } from './my-flow-personal-state';
 import {
+  personalStructuralOverlayGoldenFixtures,
+  structuralOverlayDeletedUserItemFixture,
+  structuralOverlayUserItem,
+} from './personal-structural-overlay.fixtures';
+import {
+  createEmptyPersonalStructuralOverlay,
+  getPersonalStructuralOverlayStorageKey,
+  loadOrMigratePersonalStructuralOverlay,
+  loadPersonalStructuralOverlay,
+  normalizePersonalStructuralOverlay,
+  resolvePersonalStructuralItems,
+  savePersonalStructuralOverlay,
+} from './personal-structural-overlay';
+import {
   RETIRED_PERSONAL_COPY_TAG,
   RUNTIME_ARCHIVED_FLOW_SLUGS,
 } from './runtime-content-policy';
@@ -96,6 +110,247 @@ function generatedPreviewBundle(): FlowBundle {
   preview.flow.source_status = 'preview';
   return preview;
 }
+
+test('personal structural overlay golden fixtures preserve source and resolve effective items', () => {
+  assert.equal(personalStructuralOverlayGoldenFixtures.length, 12);
+
+  personalStructuralOverlayGoldenFixtures.forEach((fixture) => {
+    const sourceBefore = JSON.stringify(fixture.sourceItems);
+    const overlayBefore = JSON.stringify(fixture.overlay);
+    const result = resolvePersonalStructuralItems({
+      sourceItems: fixture.sourceItems,
+      structuralOverlay: fixture.overlay,
+      valueOverlays: fixture.valueOverlays,
+      executionStates: fixture.executionStates,
+    });
+
+    assert.deepEqual(
+      result.allItems.map((item) => item.itemId),
+      fixture.expected.allOrder,
+      fixture.id,
+    );
+    assert.deepEqual(
+      result.effectiveItems.map((item) => item.itemId),
+      fixture.expected.effectiveOrder,
+      fixture.id,
+    );
+    assert.deepEqual(
+      result.tombstonedItems.map((item) => item.itemId),
+      fixture.expected.tombstonedIds,
+      fixture.id,
+    );
+    assert.deepEqual(
+      Object.fromEntries(result.allItems.map((item) => [item.itemId, item.ownership])),
+      fixture.expected.ownershipById,
+      fixture.id,
+    );
+    assert.deepEqual(
+      result.allItems
+        .filter((item) => item.projectionEligibility.calendar)
+        .map((item) => item.itemId),
+      fixture.expected.calendarEligibleIds,
+      fixture.id,
+    );
+    assert.deepEqual(
+      [...result.warnings].sort(),
+      [...(fixture.expected.warningCodes ?? [])].sort(),
+      fixture.id,
+    );
+    assert.equal(JSON.stringify(fixture.sourceItems), sourceBefore, `${fixture.id}: source mutated`);
+    assert.equal(JSON.stringify(fixture.overlay), overlayBefore, `${fixture.id}: overlay mutated`);
+  });
+
+  const valueOverlayResult = resolvePersonalStructuralItems({
+    sourceItems: personalStructuralOverlayGoldenFixtures[8].sourceItems,
+    structuralOverlay: personalStructuralOverlayGoldenFixtures[8].overlay,
+    valueOverlays: personalStructuralOverlayGoldenFixtures[8].valueOverlays,
+  });
+  const adjusted = valueOverlayResult.allItems.find((item) => item.itemId === 'source-b');
+  assert.equal(adjusted?.title, 'Personal title B');
+  assert.equal(adjusted?.personalMemo, 'Personal memo B');
+  assert.deepEqual(adjusted?.schedule, { mode: 'fixed_date', date: '2026-09-01' });
+
+  const completedResult = resolvePersonalStructuralItems({
+    sourceItems: personalStructuralOverlayGoldenFixtures[9].sourceItems,
+    structuralOverlay: personalStructuralOverlayGoldenFixtures[9].overlay,
+    executionStates: personalStructuralOverlayGoldenFixtures[9].executionStates,
+  });
+  assert.equal(completedResult.allItems.find((item) => item.itemId === 'source-a')?.executionState?.state, 'done');
+  assert.deepEqual(
+    completedResult.effectiveItems.map((item) => item.itemId),
+    personalStructuralOverlayGoldenFixtures[9].expected.effectiveOrder,
+  );
+
+  assert.equal(personalStructuralOverlayGoldenFixtures[11].overlay.migration?.source, 'legacy_step_selection');
+  assert.equal(personalStructuralOverlayGoldenFixtures[11].overlay.selection.mode, 'only_included');
+  assert.equal(personalStructuralOverlayGoldenFixtures[7].overlay.userItems[0]?.itemId, 'personal-a');
+  assert.equal(personalStructuralOverlayGoldenFixtures[7].overlay.itemTombstones[0]?.itemId, 'source-b');
+  assert.ok(personalStructuralOverlayGoldenFixtures[7].overlay.orderOverride.includes('source-b'));
+});
+
+test('personal structural projection policy separates structure from run status', () => {
+  const sourceFixture = personalStructuralOverlayGoldenFixtures[0];
+  const excludedOverlay = {
+    ...sourceFixture.overlay,
+    selection: {
+      mode: 'all_except_excluded' as const,
+      includedItemIds: [],
+      excludedItemIds: ['source-a'],
+    },
+  };
+  const result = resolvePersonalStructuralItems({
+    sourceItems: sourceFixture.sourceItems,
+    structuralOverlay: excludedOverlay,
+    executionStates: [
+      { itemId: 'source-b', state: 'skipped' },
+      { itemId: 'source-c', state: 'done' },
+    ],
+  });
+  const excluded = result.allItems.find((item) => item.itemId === 'source-a');
+  const unscheduledSkipped = result.allItems.find((item) => item.itemId === 'source-b');
+  const completed = result.allItems.find((item) => item.itemId === 'source-c');
+
+  assert.deepEqual(excluded?.projectionEligibility, {
+    calendar: false,
+    checklist: false,
+    sheet: false,
+    memo: false,
+  });
+  assert.deepEqual(unscheduledSkipped?.projectionEligibility, {
+    calendar: false,
+    checklist: true,
+    sheet: true,
+    memo: true,
+  });
+  assert.equal(unscheduledSkipped?.executionState?.state, 'skipped');
+  assert.deepEqual(completed?.projectionEligibility, {
+    calendar: true,
+    checklist: true,
+    sheet: true,
+    memo: true,
+  });
+  assert.equal(completed?.executionState?.state, 'done');
+});
+
+test('personal structural user item deletion is a reversible tombstone', () => {
+  const deleted = resolvePersonalStructuralItems({
+    sourceItems: structuralOverlayDeletedUserItemFixture.sourceItems,
+    structuralOverlay: structuralOverlayDeletedUserItemFixture.overlay,
+  });
+  assert.equal(deleted.effectiveItems.some((item) => item.itemId === structuralOverlayUserItem.itemId), false);
+  assert.equal(deleted.tombstonedItems[0]?.itemId, structuralOverlayUserItem.itemId);
+  assert.equal(deleted.tombstonedItems[0]?.userItem?.itemId, structuralOverlayUserItem.itemId);
+
+  const restoredFixture = personalStructuralOverlayGoldenFixtures[4];
+  const restored = resolvePersonalStructuralItems({
+    sourceItems: restoredFixture.sourceItems,
+    structuralOverlay: restoredFixture.overlay,
+  });
+  assert.equal(restored.effectiveItems.some((item) => item.itemId === structuralOverlayUserItem.itemId), true);
+  assert.equal(restored.allItems.find((item) => item.itemId === structuralOverlayUserItem.itemId)?.ownership, 'user_created');
+});
+
+test('personal structural normalization drops execution state fields', () => {
+  const base = createEmptyPersonalStructuralOverlay({
+    savedCopyId: 'copy-no-run-state',
+    flowId: 'flow-no-run-state',
+    updatedAt: '2026-07-13T09:00:00.000Z',
+  });
+  const unsafe = {
+    ...base,
+    completionState: 'done',
+    skippedItemIds: ['source-a'],
+    userItems: [{ ...structuralOverlayUserItem, done: true, occurrenceKey: '2026-07-13' }],
+  };
+  const normalized = normalizePersonalStructuralOverlay(unsafe, {
+    savedCopyId: base.savedCopyId,
+    flowId: base.flowId,
+    fallbackTimestamp: base.updatedAt,
+  });
+  assert.ok(normalized);
+  assert.equal('completionState' in normalized, false);
+  assert.equal('skippedItemIds' in normalized, false);
+  assert.equal('done' in normalized.userItems[0], false);
+  assert.equal('occurrenceKey' in normalized.userItems[0], false);
+
+  const storage = memoryStorage();
+  savePersonalStructuralOverlay(
+    storage,
+    unsafe as unknown as ReturnType<typeof createEmptyPersonalStructuralOverlay>,
+  );
+  const persisted = JSON.parse(
+    storage.getItem(getPersonalStructuralOverlayStorageKey(base.savedCopyId)) || '{}',
+  ) as Record<string, unknown>;
+  assert.equal('completionState' in persisted, false);
+  assert.equal('skippedItemIds' in persisted, false);
+  assert.equal('done' in ((persisted.userItems as Array<Record<string, unknown>>)[0] ?? {}), false);
+});
+
+test('personal structural persistence migrates additively and preserves malformed records', () => {
+  const storage = memoryStorage({
+    'legacy:personal-copy': JSON.stringify({ included: ['source-a'], excluded: ['source-b'] }),
+  });
+  const migrated = loadOrMigratePersonalStructuralOverlay(storage, {
+    savedCopyId: 'copy-migrated',
+    flowId: 'flow-migrated',
+    legacy: {
+      source: 'legacy_step_selection',
+      includedItemIds: ['source-a', 'source-b'],
+      excludedItemIds: ['source-b'],
+      sourceSchemaVersion: 1,
+    },
+    now: '2026-07-13T09:00:00.000Z',
+  });
+  assert.equal(migrated.source, 'legacy_migration');
+  assert.deepEqual(migrated.overlay.selection, {
+    mode: 'only_included',
+    includedItemIds: ['source-a'],
+    excludedItemIds: ['source-b'],
+  });
+  assert.ok(storage.getItem(migrated.storageKey));
+  assert.ok(storage.getItem('legacy:personal-copy'));
+  assert.deepEqual(
+    loadPersonalStructuralOverlay(storage, {
+      savedCopyId: 'copy-migrated',
+      flowId: 'flow-migrated',
+      fallbackTimestamp: '2026-07-13T09:00:00.000Z',
+    }),
+    migrated.overlay,
+  );
+
+  const malformedKey = getPersonalStructuralOverlayStorageKey('copy-malformed');
+  storage.setItem(malformedKey, '{not-json');
+  const malformed = loadOrMigratePersonalStructuralOverlay(storage, {
+    savedCopyId: 'copy-malformed',
+    flowId: 'flow-malformed',
+    legacy: { includedItemIds: ['source-a'] },
+    now: '2026-07-13T09:00:00.000Z',
+  });
+  assert.equal(malformed.source, 'malformed_preserved');
+  assert.deepEqual(malformed.warnings, ['malformed_overlay_preserved']);
+  assert.equal(storage.getItem(malformedKey), '{not-json');
+});
+
+test('personal structural migration failure keeps legacy data available', () => {
+  const base = memoryStorage({ 'legacy:copy': JSON.stringify({ included: ['source-a'] }) });
+  const storage = {
+    getItem: (key: string) => base.getItem(key),
+    removeItem: (key: string) => base.removeItem(key),
+    setItem: () => {
+      throw new Error('quota exceeded');
+    },
+  };
+  const result = loadOrMigratePersonalStructuralOverlay(storage, {
+    savedCopyId: 'copy-quota',
+    flowId: 'flow-quota',
+    legacy: { includedItemIds: ['source-a'] },
+    now: '2026-07-13T09:00:00.000Z',
+  });
+  assert.equal(result.source, 'legacy_migration');
+  assert.deepEqual(result.warnings, ['migration_persistence_failed']);
+  assert.ok(base.getItem('legacy:copy'));
+  assert.equal(base.getItem(result.storageKey), null);
+});
 
 test('storage merge keeps local drafts while adding newly shipped seed flows', () => {
   const oldSeed = bundle('flow-old-seed', 'old-seed', 'Old seed from local storage');
@@ -814,6 +1069,15 @@ test('flow run registry preserves a completed legacy run before starting a clean
       '신청 시간을 보강해 주세요.',
     );
 
+    const structuralOverlay = savePersonalStructuralOverlay(
+      localStorage,
+      createEmptyPersonalStructuralOverlay({
+        savedCopyId: flowSlug,
+        flowId: flowSlug,
+        updatedAt: legacyCompletedAt,
+      }),
+    );
+
     assert.equal(
       startFlowRunFromCompleted(flowSlug, {
         runId: 'invalid-run-without-anchor',
@@ -880,6 +1144,14 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.equal(localStorage.getItem(`flow:completion-detected-at:${flowSlug}`), null);
     assert.deepEqual(getMyFlowStepItemChecks(), { 'other-flow::first::none': { '0': true } });
     assert.equal(getStoredAnchor(flowSlug).anchor, '2026-09-15');
+    assert.deepEqual(
+      loadPersonalStructuralOverlay(localStorage, {
+        savedCopyId: flowSlug,
+        flowId: flowSlug,
+        fallbackTimestamp: legacyCompletedAt,
+      }),
+      structuralOverlay,
+    );
     assert.equal(getSavedFlowRecord(flowSlug)?.savedAt, '2026-08-01T00:00:00.000Z');
     const activeMapSnapshot = getSavedFlowMapIndexByFlowSlug()[flowSlug];
     assert.equal(activeMapSnapshot.anchor, '2026-09-15');
@@ -969,6 +1241,18 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
       'moving-d30-basic::moving-method-quotes::2026-05-28': '2026-05-29',
       'other-flow::first::none': '2026-06-01',
     }));
+    const removedStructuralKey = getPersonalStructuralOverlayStorageKey('moving-copy');
+    const retainedStructuralKey = getPersonalStructuralOverlayStorageKey('other-copy');
+    savePersonalStructuralOverlay(localStorage, createEmptyPersonalStructuralOverlay({
+      savedCopyId: 'moving-copy',
+      flowId: 'moving-d30-basic',
+      updatedAt: '2026-07-13T09:00:00.000Z',
+    }));
+    savePersonalStructuralOverlay(localStorage, createEmptyPersonalStructuralOverlay({
+      savedCopyId: 'other-copy',
+      flowId: 'other-flow',
+      updatedAt: '2026-07-13T09:00:00.000Z',
+    }));
 
     clearFlowLocalProgress('moving-d30-basic');
 
@@ -982,6 +1266,8 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
     assert.deepEqual(JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'), {
       'other-flow::first::none': '2026-06-01',
     });
+    assert.equal(localStorage.getItem(removedStructuralKey), null);
+    assert.ok(localStorage.getItem(retainedStructuralKey));
   } finally {
     Object.defineProperty(globalThis, 'window', {
       configurable: true,
@@ -1118,6 +1404,7 @@ test('my flow step item checks are persisted separately from step completion', (
 });
 
 test('FlowMe local backup includes execution records and excludes internal browser state', () => {
+  const structuralKey = getPersonalStructuralOverlayStorageKey('moving-copy');
   const storage = memoryStorage({
     'flow:saved:moving-d30-basic': JSON.stringify({ slug: 'moving-d30-basic' }),
     'flow:moving-d30-basic:anchorDate': JSON.stringify({ mode: 'custom', anchor: '2026-08-15' }),
@@ -1129,6 +1416,11 @@ test('FlowMe local backup includes execution records and excludes internal brows
       ],
     }),
     'flow:url-first:supply-candidates': JSON.stringify([{ canonicalUrl: 'https://example.com/a' }]),
+    [structuralKey]: JSON.stringify(createEmptyPersonalStructuralOverlay({
+      savedCopyId: 'moving-copy',
+      flowId: 'moving-d30-basic',
+      updatedAt: '2026-07-13T09:00:00.000Z',
+    })),
     'flow:auth:demo-user': 'true',
     'flow:map:update:dismissed': JSON.stringify({ moving: true }),
     'content-lab:review:internal': 'operator-only',
@@ -1140,6 +1432,7 @@ test('FlowMe local backup includes execution records and excludes internal brows
   assert.equal(backup.summary.completedRunCount, 1);
   assert.equal(backup.summary.requestRecordCount, 1);
   assert.ok(backup.entries['flow:saved:moving-d30-basic']);
+  assert.ok(backup.entries[structuralKey]);
   assert.equal(backup.entries['flow:auth:demo-user'], undefined);
   assert.equal(backup.entries['flow:map:update:dismissed'], undefined);
   assert.equal(backup.entries['content-lab:review:internal'], undefined);
@@ -1166,6 +1459,7 @@ test('FlowMe local backup rejects unsupported keys instead of importing arbitrar
 });
 
 test('FlowMe local restore replaces execution records but preserves unrelated browser state', () => {
+  const structuralKey = getPersonalStructuralOverlayStorageKey('moving-copy');
   const storage = memoryStorage({
     'flow:saved:old-flow': JSON.stringify({ slug: 'old-flow' }),
     'flow_builder_mvp_checks_old-flow': JSON.stringify({ old: true }),
@@ -1178,6 +1472,11 @@ test('FlowMe local restore replaces execution records but preserves unrelated br
     entries: {
       'flow:saved:moving-d30-basic': JSON.stringify({ slug: 'moving-d30-basic' }),
       'flow:moving-d30-basic:anchorDate': JSON.stringify({ mode: 'custom', anchor: '2026-08-15' }),
+      [structuralKey]: JSON.stringify(createEmptyPersonalStructuralOverlay({
+        savedCopyId: 'moving-copy',
+        flowId: 'moving-d30-basic',
+        updatedAt: '2026-07-13T09:00:00.000Z',
+      })),
     },
   }));
 
@@ -1186,6 +1485,7 @@ test('FlowMe local restore replaces execution records but preserves unrelated br
   assert.equal(storage.getItem('flow:saved:old-flow'), null);
   assert.equal(storage.getItem('flow_builder_mvp_checks_old-flow'), null);
   assert.ok(storage.getItem('flow:saved:moving-d30-basic'));
+  assert.ok(storage.getItem(structuralKey));
   assert.equal(storage.getItem('flow:auth:demo-user'), 'true');
 });
 
