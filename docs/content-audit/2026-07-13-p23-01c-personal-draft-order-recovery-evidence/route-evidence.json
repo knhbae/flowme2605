@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-13T00:00:00+09:00",
+  "baselineCommits": [
+    "d56d471",
+    "ca67727"
+  ],
+  "packageCommit": "commit-containing-this-package",
+  "verificationBoundary": "automated-browser-and-unit-test-evidence",
+  "summary": {
+    "personalDraftPersistentRecoveryEntryVisible": true,
+    "personalDraftRestoreAfterReloadStableId": true,
+    "personalDraftReorderControlCount": 8,
+    "personalDraftReorderControlCountByViewport": {
+      "390": 8,
+      "1024": 8
+    },
+    "personalDraftOrderPersistedAfterReload": true,
+    "personalDraftReorderPreservesCompletion": true,
+    "personalDraftRestorePreservesPersonalValues": true,
+    "personalDraftRestorePreservesDeleteTimeOrder": true,
+    "personalDraftKeyboardReorderVerified": true,
+    "personalDraftBoundaryMoveControlDisabled": true,
+    "sourceBackedStructuralReorderControlCount": 0,
+    "sourceBackedPersistentRecoveryControlCount": 0,
+    "personalDraftHorizontalOverflowCount": 0,
+    "sourceBundleMutationCount": 0,
+    "calendarStructuralProjectionConnected": false,
+    "exportStructuralProjectionConnected": false
+  },
+  "scenarios": [
+    {
+      "id": "personal-draft-mixed-reorder-mobile",
+      "route": "/flows -> /my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fixture": "URL-first miss personal draft with three scaffold items and one user-created item",
+      "screenshot": "screenshots/01-personal-draft-reordered-mobile.png",
+      "assertions": {
+        "sourceAndUserItemsReorderedTogether": true,
+        "orderOverridePersistedAfterReload": true,
+        "completionPreserved": true,
+        "enterActivationVerified": true,
+        "spaceActivationVerified": true,
+        "firstMoveUpDisabled": true,
+        "lastMoveDownDisabled": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "id": "personal-draft-persistent-recovery-mobile",
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fixture": "Reloaded personal draft with a tombstoned source scaffold item",
+      "screenshot": "screenshots/02-personal-draft-persistent-recovery-mobile.png",
+      "assertions": {
+        "immediateUndoExpiredAfterReload": true,
+        "persistentRecoveryEntryVisible": true,
+        "entryInitiallyCollapsed": true,
+        "recoverableItemStableIdMatches": true,
+        "restoreKeyboardSpaceVerified": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "id": "personal-draft-restored-values-mobile",
+      "route": "/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fixture": "Restored source scaffold item with personal title, date, memo and completed run state",
+      "screenshot": "screenshots/03-personal-draft-restored-mobile.png",
+      "assertions": {
+        "stableIdPreserved": true,
+        "deleteTimeOrderPreserved": true,
+        "personalTitlePreserved": true,
+        "personalDatePreserved": true,
+        "personalMemoPreserved": true,
+        "completionPreserved": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "id": "personal-draft-reorder-wide",
+      "route": "/my",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "fixture": "Restored URL-first miss personal draft",
+      "screenshot": "screenshots/04-personal-draft-order-wide.png",
+      "assertions": {
+        "orderItemCount": 4,
+        "reorderControlCount": 8,
+        "firstMoveUpDisabled": true,
+        "lastMoveDownDisabled": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "id": "source-backed-structural-control-absence",
+      "route": "/my?demo=source-backed",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fixture": "source-backed demo",
+      "screenshot": null,
+      "assertions": {
+        "reorderControlCount": 0,
+        "persistentRecoveryControlCount": 0
+      }
+    }
+  ],
+  "resolverAndPersistence": {
+    "visibleMoveTargets": "effective-items-only",
+    "deleteOrderPolicy": "materialize-current-all-item-order-before-tombstone",
+    "restorePositionPolicy": "delete-time-personal-order",
+    "unknownOrderIdPolicy": "preserve-existing-slot",
+    "sourceV2NewItemPolicy": "merge-without-dropping-personal-order",
+    "completionStorage": "execution-state-outside-structural-overlay",
+    "personalValueStorage": "stable-item-id-outside-structural-overlay"
+  },
+  "projectionBoundary": {
+    "calendarStructuralProjectionConnected": false,
+    "exportStructuralProjectionConnected": false,
+    "nextSlice": "P23-01D"
+  },
+  "validation": {
+    "structuralAdapterUnitTest": "passed: 28 storage tests",
+    "targetedPlaywright": "passed: 13 URL-first scenarios including P23-01B and P23-01C",
+    "publicAndWorkbenchPlaywright": "passed: 44 scenarios",
+    "fullUnitSuite": "passed: 446 tests",
+    "docsCheck": "passed: 14 required files and 2107 local links",
+    "productionBuild": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "deferred": [
+    "source-backed structural edit",
+    "Calendar structural projection",
+    "checklist, sheet, memo and calendar export structural projection",
+    "date, time and recurrence editing expansion",
+    "drag-and-drop",
+    "account, database, AI and OAuth"
+  ]
+}

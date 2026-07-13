@@ -57,6 +57,16 @@ async function hideNextDevOverlay(page: Page) {
   });
 }
 
+async function hidePlatformChromeForEvidence(page: Page) {
+  await page
+    .locator('[data-testid="platform-nav"], [data-testid="platform-mobile-tabs"]')
+    .evaluateAll((elements) => {
+      elements.forEach((element) => {
+        (element as HTMLElement).style.visibility = 'hidden';
+      });
+    });
+}
+
 function expectCleanUserFacingOutput(text: string) {
   const result = scanUserFacingOutputGuardrails({
     text,
@@ -643,6 +653,198 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
   await expect(page.getByTestId('personal-draft-delete-item')).toHaveCount(0);
+});
+
+test('personal draft order and persistent recovery survive reload without changing source-backed flows', async ({ page }) => {
+  test.setTimeout(180_000);
+  const evidenceDir = process.env.FLOWME_P23_01C_EVIDENCE_DIR;
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/personal-order-recovery-draft?utm_source=review');
+
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('Flow 이름').fill('주말 준비 순서 초안 요청');
+  await result.getByLabel('원하는 결과').fill('준비 순서를 바꾸고 빠진 할 일을 다시 복구하고 싶음');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
+
+  const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: '주말 준비 순서 초안 요청' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('주말 준비 순서 초안');
+  await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-08-01');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  await page.getByTestId('my-flow-view-flow').click();
+  let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await draftFlow.getByTestId('personal-draft-add-entry').click();
+  await draftFlow.getByTestId('personal-draft-add-title').fill('관리실에 최종 확인 전화하기');
+  await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+
+  let addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
+  const userItemId = await addedItem.getAttribute('data-item-id');
+  expect(userItemId).toMatch(/^personal-item-/);
+  let editedSourceItem = draftFlow.locator(
+    '[data-testid="personal-draft-effective-item"][data-structural-ownership="source"]',
+  ).first();
+  const editedSourceItemId = await editedSourceItem.getAttribute('data-item-id');
+  expect(editedSourceItemId).toBeTruthy();
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  let detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+  await readSummary.locator('summary').click();
+  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await detail.getByTestId('my-flow-detail-title-input').fill('관리실에 변경 내용 확인하기');
+  await detail.getByTestId('my-flow-detail-date-input').fill('2026-08-05');
+  await detail.getByTestId('my-flow-detail-memo').fill('계약 변경 사항과 방문 시간을 함께 확인');
+  await detail.getByTestId('my-flow-detail-save-changes').click();
+  editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await detail.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 체크' }).check();
+
+  const orderBeforeMove = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute('data-item-id')),
+  );
+  const moveUp = addedItem.getByTestId('personal-draft-move-up');
+  await moveUp.focus();
+  await expect(moveUp).toBeFocused();
+  await page.keyboard.press('Enter');
+  const orderAfterEnterMove = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute('data-item-id')),
+  );
+  expect(orderAfterEnterMove.indexOf(userItemId)).toBe(orderBeforeMove.indexOf(userItemId) - 1);
+  editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
+  const moveSourceDown = editedSourceItem.getByTestId('personal-draft-move-down');
+  await moveSourceDown.focus();
+  await expect(moveSourceDown).toBeFocused();
+  await page.keyboard.press('Space');
+  const orderAfterMove = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute('data-item-id')),
+  );
+  expect(orderAfterMove).not.toEqual(orderAfterEnterMove);
+  await expect(draftFlow.locator('[data-testid="personal-draft-move-up"]:visible')).toHaveCount(orderAfterMove.length);
+  await expect(draftFlow.locator('[data-testid="personal-draft-move-down"]:visible')).toHaveCount(orderAfterMove.length);
+  await expect(draftFlow.getByTestId('personal-draft-effective-item').first().getByTestId('personal-draft-move-up')).toBeDisabled();
+  await expect(draftFlow.getByTestId('personal-draft-effective-item').last().getByTestId('personal-draft-move-down')).toBeDisabled();
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await draftFlow.screenshot({ path: `${evidenceDir}/01-personal-draft-reordered-mobile.png` });
+  }
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
+    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
+  }
+  const persistedOrder = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute('data-item-id')),
+  );
+  expect(persistedOrder).toEqual(orderAfterMove);
+  editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await expect(detail.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
+  await detail.getByTestId('personal-draft-delete-item').click();
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await expect(draftFlow.getByTestId('personal-draft-delete-undo')).toHaveCount(0);
+  const recovery = draftFlow.getByTestId('personal-draft-persistent-recovery');
+  await expect(recovery.getByTestId('personal-draft-persistent-recovery-entry')).toBeVisible();
+  await expect(recovery).not.toHaveAttribute('open', '');
+  await recovery.getByTestId('personal-draft-persistent-recovery-entry').click();
+  const recoverableItem = recovery.getByTestId('personal-draft-recoverable-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
+  await expect(recoverableItem).toHaveAttribute('data-item-id', editedSourceItemId ?? '');
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await draftFlow.screenshot({ path: `${evidenceDir}/02-personal-draft-persistent-recovery-mobile.png` });
+  }
+
+  const restoreButton = recoverableItem.getByTestId('personal-draft-restore-item');
+  await restoreButton.focus();
+  await expect(restoreButton).toBeFocused();
+  await page.keyboard.press('Space');
+  editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
+  await expect(editedSourceItem).toHaveAttribute('data-item-id', editedSourceItemId ?? '');
+  const restoredOrder = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute('data-item-id')),
+  );
+  expect(restoredOrder).toEqual(orderAfterMove);
+  await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await expect(detail.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
+  const restoredReadSummary = detail.getByTestId('my-flow-detail-read-summary');
+  await restoredReadSummary.locator('summary').click();
+  await restoredReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await expect(detail.getByTestId('my-flow-detail-title-input')).toHaveValue('관리실에 변경 내용 확인하기');
+  await expect(detail.getByTestId('my-flow-detail-date-input')).toHaveValue('2026-08-05');
+  await expect(detail.getByTestId('my-flow-detail-memo')).toHaveValue('계약 변경 사항과 방문 시간을 함께 확인');
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await hideNextDevOverlay(page);
+    await draftFlow.screenshot({ path: `${evidenceDir}/03-personal-draft-restored-mobile.png` });
+  }
+
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
+    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
+  }
+  addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
+  await addedItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
+  await detail.getByTestId('personal-draft-delete-item').click();
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  const userRecovery = draftFlow.getByTestId('personal-draft-persistent-recovery');
+  await userRecovery.getByTestId('personal-draft-persistent-recovery-entry').click();
+  const recoverableUserItem = userRecovery.getByTestId('personal-draft-recoverable-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
+  await expect(recoverableUserItem).toHaveAttribute('data-item-id', userItemId ?? '');
+  await recoverableUserItem.getByTestId('personal-draft-restore-item').click();
+  addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
+  await expect(addedItem).toHaveAttribute('data-item-id', userItemId ?? '');
+  const restoredAfterUserRecovery = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+    (elements) => elements.map((element) => element.getAttribute('data-item-id')),
+  );
+  expect(restoredAfterUserRecovery).toEqual(restoredOrder);
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]');
+  const wideOrderList = wideDraftFlow.getByTestId('personal-draft-order-list-wide');
+  await expect(wideOrderList).toBeVisible();
+  await expect(wideOrderList.getByTestId('personal-draft-order-item-wide')).toHaveCount(restoredAfterUserRecovery.length);
+  await expect(wideOrderList.getByTestId('personal-draft-move-up')).toHaveCount(restoredAfterUserRecovery.length);
+  await expect(wideOrderList.getByTestId('personal-draft-move-down')).toHaveCount(restoredAfterUserRecovery.length);
+  await expect(wideOrderList.getByTestId('personal-draft-order-item-wide').first().getByTestId('personal-draft-move-up')).toBeDisabled();
+  await expect(wideOrderList.getByTestId('personal-draft-order-item-wide').last().getByTestId('personal-draft-move-down')).toBeDisabled();
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await hideNextDevOverlay(page);
+    await wideDraftFlow.screenshot({ path: `${evidenceDir}/04-personal-draft-order-wide.png` });
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my?demo=source-backed');
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
+  await expect(page.getByTestId('personal-draft-persistent-recovery-entry')).toHaveCount(0);
 });
 
 test('URL-first draft preserves input on storage failure and reuses the canonical saved draft', async ({ page }) => {

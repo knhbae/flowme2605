@@ -55,7 +55,9 @@ import {
   createPersonalDraftUserItem,
   deletePersonalDraftStructuralItem,
   isPersonalDraftStructuralEditEligible,
+  movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
+  restorePersonalDraftStructuralItem,
   undoPersonalDraftStructuralDelete,
   type PersonalDraftStructuralUndo,
 } from '@/lib/flow/personal-draft-structural-edit';
@@ -6204,6 +6206,45 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowExpandedStructureStepSlug(flow.progress.slug);
   };
 
+  const restoreMyFlowPersonalDraftItem = (flow: MySavedFlow, itemId: string) => {
+    if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
+    const overlay =
+      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
+      createPersonalDraftStructuralOverlay(flow.bundle);
+    const restored = restorePersonalDraftStructuralItem({
+      bundle: flow.bundle,
+      overlay,
+      itemId,
+    });
+    if (!restored || !saveMyFlowStructuralOverlay(flow, restored)) return;
+    if (
+      myFlowStructuralUndo?.flowSlug === flow.progress.slug &&
+      myFlowStructuralUndo.itemId === itemId
+    ) {
+      setMyFlowStructuralUndo(null);
+    }
+    setMyFlowExpandedStructureStepSlug(flow.progress.slug);
+  };
+
+  const moveMyFlowPersonalDraftItem = (
+    flow: MySavedFlow,
+    itemId: string,
+    direction: 'up' | 'down',
+  ) => {
+    if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
+    const overlay =
+      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
+      createPersonalDraftStructuralOverlay(flow.bundle);
+    const reordered = movePersonalDraftStructuralItem({
+      bundle: flow.bundle,
+      overlay,
+      itemId,
+      direction,
+    });
+    if (!reordered || !saveMyFlowStructuralOverlay(flow, reordered)) return;
+    setMyFlowExpandedStructureStepSlug(flow.progress.slug);
+  };
+
   const resetMyFlowRowDetailState = () => {
     setMyFlowActiveRowKey('');
     setMyFlowEditingDrafts({});
@@ -8681,12 +8722,52 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderPersonalDraftReorderControls = (
+    flow: MySavedFlow,
+    row: MyFlowRow,
+    index: number,
+    itemCount: number,
+  ) => {
+    const displayTitle = getMyFlowRowDisplayTitle(getMyFlowRowForFlowTab(flow, row));
+    return (
+      <div
+        data-testid="personal-draft-reorder-controls"
+        data-item-id={row.id}
+        className="inline-flex shrink-0 items-center gap-1"
+      >
+        {([
+          ['up', '↑', '위로 이동', index === 0],
+          ['down', '↓', '아래로 이동', index === itemCount - 1],
+        ] as const).map(([direction, icon, label, disabled]) => (
+          <button
+            key={direction}
+            type="button"
+            data-testid={`personal-draft-move-${direction}`}
+            data-item-id={row.id}
+            disabled={disabled}
+            aria-label={`${displayTitle} ${label}`}
+            title={`${displayTitle} ${label}`}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-300"
+            onClick={() => moveMyFlowPersonalDraftItem(flow, row.id, direction)}
+          >
+            <span aria-hidden="true">{icon}</span>
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   const renderPersonalDraftStructuralControls = (flow: MySavedFlow) => {
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return null;
     const addOpen = myFlowStructuralAddOpenSlug === flow.progress.slug;
     const undo = myFlowStructuralUndo?.flowSlug === flow.progress.slug
       ? myFlowStructuralUndo
       : null;
+    const overlay =
+      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
+      createPersonalDraftStructuralOverlay(flow.bundle);
+    const removedItems = resolvePersonalDraftStructuralItems(flow.bundle, overlay).tombstonedItems;
+    const wideOrderRows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
     const inputId = `personal-draft-add-title-${flow.progress.slug}`;
 
     return (
@@ -8715,6 +8796,68 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             >
               되돌리기
             </button>
+          </div>
+        ) : null}
+        {removedItems.length > 0 ? (
+          <details
+            data-testid="personal-draft-persistent-recovery"
+            className="mb-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-2"
+          >
+            <summary
+              data-testid="personal-draft-persistent-recovery-entry"
+              className="cursor-pointer text-sm font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
+            >
+              목록에서 뺀 할 일 · {removedItems.length}개
+            </summary>
+            <ul data-testid="personal-draft-persistent-recovery-list" className="mt-2 grid gap-2 border-t border-slate-200 pt-2">
+              {removedItems.map((item) => {
+                const personalTitle = myFlowItemDrafts[
+                  getMyFlowDraftItemOverlayKey(flow.progress.slug, item.itemId)
+                ]?.title;
+                const title = toUserFacingSourceTitle(personalTitle ?? item.title);
+                return (
+                  <li
+                    key={item.itemId}
+                    data-testid="personal-draft-recoverable-item"
+                    data-item-id={item.itemId}
+                    data-structural-ownership={item.ownership}
+                    className="flex min-w-0 items-center justify-between gap-2"
+                  >
+                    <span className="min-w-0 truncate text-sm font-semibold text-slate-700" title={title}>{title}</span>
+                    <button
+                      type="button"
+                      data-testid="personal-draft-restore-item"
+                      data-item-id={item.itemId}
+                      aria-label={`${title} 목록에 복구`}
+                      className="min-h-8 shrink-0 rounded-md border border-blue-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:border-blue-300"
+                      onClick={() => restoreMyFlowPersonalDraftItem(flow, item.itemId)}
+                    >
+                      복구
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
+        ) : null}
+        {wideOrderRows.length > 0 ? (
+          <div data-testid="personal-draft-order-list-wide" className="mb-3 hidden border-b border-slate-200 pb-3 md:block">
+            <p className="mb-2 text-xs font-semibold text-slate-500">할 일 순서</p>
+            <ul className="grid gap-1.5">
+              {wideOrderRows.map((row, index) => (
+                <li
+                  key={`wide-order-${flow.progress.slug}-${row.id}`}
+                  data-testid="personal-draft-order-item-wide"
+                  data-item-id={row.id}
+                  className="flex min-w-0 items-center justify-between gap-2 rounded-md bg-slate-50 px-2 py-1.5"
+                >
+                  <span className="min-w-0 truncate text-sm font-semibold text-slate-700" title={getMyFlowRowDisplayTitle(row)}>
+                    {getMyFlowRowDisplayTitle(row)}
+                  </span>
+                  {renderPersonalDraftReorderControls(flow, row, index, wideOrderRows.length)}
+                </li>
+              ))}
+            </ul>
           </div>
         ) : null}
         {addOpen ? (
@@ -8906,28 +9049,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   data-structural-ownership={structuralEditEligible ? stepRow.structuralOwnership : undefined}
                   className="rounded-md bg-white ring-1 ring-blue-100"
                 >
-                  <button
-                    type="button"
-                    data-testid="my-flow-mobile-structure-step-row"
-                    aria-expanded={stepOpen}
-                    className={`w-full rounded-md px-3 py-2 text-left ${stepOpen ? 'bg-blue-50' : 'bg-white hover:bg-slate-50'}`}
-                    onClick={() => openMyFlowRowFromFlowTab(flow, stepRow)}
-                  >
-                    <span className="flex items-start justify-between gap-2">
-                      <span className="min-w-0">
-                        <span className="block text-[11px] font-semibold text-slate-500">단계 {index + 1}</span>
-                        <span className={`mt-0.5 block text-sm font-semibold ${stepChecked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
-                          {getMyFlowRowDisplayTitle(stepRow)}
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1">
+                    <button
+                      type="button"
+                      data-testid="my-flow-mobile-structure-step-row"
+                      aria-expanded={stepOpen}
+                      className={`min-w-0 rounded-md px-3 py-2 text-left ${stepOpen ? 'bg-blue-50' : 'bg-white hover:bg-slate-50'}`}
+                      onClick={() => openMyFlowRowFromFlowTab(flow, stepRow)}
+                    >
+                      <span className="flex items-start justify-between gap-2">
+                        <span className="min-w-0">
+                          <span className="block text-[11px] font-semibold text-slate-500">단계 {index + 1}</span>
+                          <span className={`mt-0.5 block text-sm font-semibold ${stepChecked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+                            {getMyFlowRowDisplayTitle(stepRow)}
+                          </span>
+                          <span className="mt-1 block truncate text-xs font-semibold text-slate-500">
+                            {[stepRow.date ? formatMyFlowDisplayDate(stepRow.date) : '', stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || progressSummary}
+                          </span>
                         </span>
-                        <span className="mt-1 block truncate text-xs font-semibold text-slate-500">
-                          {[stepRow.date ? formatMyFlowDisplayDate(stepRow.date) : '', stepRow.timing ? formatMyFlowTimingChip(stepRow.timing) : '', getMyFlowRowDisplaySectionLabel(stepRow)].filter(Boolean).join(' · ') || progressSummary}
+                        <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${stepChecked ? 'bg-emerald-50 text-emerald-700' : stepOpen ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-600'}`}>
+                          {stepChecked ? '완료' : stepOpen ? '열림' : '열기'}
                         </span>
                       </span>
-                      <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${stepChecked ? 'bg-emerald-50 text-emerald-700' : stepOpen ? 'bg-white text-blue-700 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-600'}`}>
-                        {stepChecked ? '완료' : stepOpen ? '열림' : '열기'}
-                      </span>
-                    </span>
-                  </button>
+                    </button>
+                    {structuralEditEligible
+                      ? renderPersonalDraftReorderControls(flow, stepRow, index, stepEntries.length)
+                      : null}
+                  </div>
                   {stepOpen && activeCompactRow ? (
                     <div
                       ref={(node) => {

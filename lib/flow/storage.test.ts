@@ -18,7 +18,9 @@ import {
   createPersonalDraftUserItem,
   deletePersonalDraftStructuralItem,
   isPersonalDraftStructuralEditEligible,
+  movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
+  restorePersonalDraftStructuralItem,
   undoPersonalDraftStructuralDelete,
 } from './personal-draft-structural-edit';
 import {
@@ -386,6 +388,166 @@ test('personal draft structural adapter limits editing and preserves stable user
     resolvePersonalDraftStructuralItems(personalDraft, restoredSource).effectiveItems[0]?.itemId,
     'draft-source-a',
   );
+});
+
+test('personal draft structural order and persistent recovery preserve IDs, values, and source', () => {
+  const personalDraft = bundle(
+    'flow-personal-order-draft',
+    'url-draft-personal-order-1',
+    'Personal order draft',
+  );
+  personalDraft.flow.status = 'draft';
+  personalDraft.flow.source_title = '내 메모';
+  personalDraft.flow.tags = ['내 초안', '내 메모'];
+  personalDraft.items = [
+    {
+      id: 'draft-order-source-a',
+      flow_id: personalDraft.flow.id,
+      title: 'Source A',
+      type: 'todo',
+      order: 0,
+    },
+    {
+      id: 'draft-order-source-b',
+      flow_id: personalDraft.flow.id,
+      title: 'Source B',
+      type: 'todo',
+      order: 1,
+    },
+  ];
+  const sourceBefore = JSON.stringify(personalDraft.items);
+  const created = createPersonalDraftUserItem({
+    overlay: createPersonalDraftStructuralOverlay(personalDraft),
+    title: 'Personal C',
+    itemId: 'personal-order-c',
+    createdAt: '2026-07-13T12:00:00.000Z',
+  });
+  assert.ok(created);
+  const overlayWithPersonalValues = {
+    ...created.overlay,
+    userItems: created.overlay.userItems.map((item) => ({
+      ...item,
+      personalMemo: 'Keep this personal memo',
+      schedule: { mode: 'fixed_date' as const, date: '2026-08-03' },
+    })),
+  };
+
+  const movedUp = movePersonalDraftStructuralItem({
+    bundle: personalDraft,
+    overlay: overlayWithPersonalValues,
+    itemId: 'personal-order-c',
+    direction: 'up',
+    movedAt: '2026-07-13T12:01:00.000Z',
+  });
+  assert.ok(movedUp);
+  assert.deepEqual(
+    resolvePersonalDraftStructuralItems(personalDraft, movedUp).effectiveItems.map((item) => item.itemId),
+    ['draft-order-source-a', 'personal-order-c', 'draft-order-source-b'],
+  );
+  assert.equal(
+    movePersonalDraftStructuralItem({
+      bundle: personalDraft,
+      overlay: movedUp,
+      itemId: 'draft-order-source-a',
+      direction: 'up',
+    }),
+    undefined,
+  );
+  assert.equal(
+    movePersonalDraftStructuralItem({
+      bundle: personalDraft,
+      overlay: movedUp,
+      itemId: 'draft-order-source-b',
+      direction: 'down',
+    }),
+    undefined,
+  );
+
+  const deleted = deletePersonalDraftStructuralItem({
+    bundle: personalDraft,
+    overlay: movedUp,
+    itemId: 'personal-order-c',
+    deletedAt: '2026-07-13T12:02:00.000Z',
+  });
+  assert.ok(deleted);
+  assert.deepEqual(deleted.overlay.orderOverride, [
+    'draft-order-source-a',
+    'personal-order-c',
+    'draft-order-source-b',
+  ]);
+
+  const storage = memoryStorage();
+  savePersonalStructuralOverlay(storage, deleted.overlay);
+  const reloaded = loadPersonalStructuralOverlay(storage, {
+    savedCopyId: personalDraft.flow.slug,
+    flowId: personalDraft.flow.id,
+  });
+  assert.ok(reloaded);
+  const recoverable = resolvePersonalDraftStructuralItems(personalDraft, reloaded).tombstonedItems[0];
+  assert.equal(recoverable?.itemId, 'personal-order-c');
+  assert.equal(recoverable?.userItem?.personalMemo, 'Keep this personal memo');
+  assert.deepEqual(recoverable?.userItem?.schedule, { mode: 'fixed_date', date: '2026-08-03' });
+
+  const restored = restorePersonalDraftStructuralItem({
+    bundle: personalDraft,
+    overlay: reloaded,
+    itemId: 'personal-order-c',
+    restoredAt: '2026-07-13T12:03:00.000Z',
+  });
+  assert.ok(restored);
+  const restoredItems = resolvePersonalDraftStructuralItems(personalDraft, restored).effectiveItems;
+  assert.deepEqual(restoredItems.map((item) => item.itemId), [
+    'draft-order-source-a',
+    'personal-order-c',
+    'draft-order-source-b',
+  ]);
+  assert.equal(restoredItems[1]?.itemId, 'personal-order-c');
+  assert.equal(restoredItems[1]?.personalMemo, 'Keep this personal memo');
+  assert.deepEqual(restoredItems[1]?.schedule, { mode: 'fixed_date', date: '2026-08-03' });
+  assert.equal(JSON.stringify(personalDraft.items), sourceBefore);
+});
+
+test('personal draft reorder safely merges source v2 and preserves malformed order IDs', () => {
+  const personalDraft = bundle(
+    'flow-personal-order-v2',
+    'url-draft-personal-order-v2',
+    'Personal order v2 draft',
+  );
+  personalDraft.flow.status = 'draft';
+  personalDraft.flow.source_title = '사용자가 넣은 링크';
+  personalDraft.flow.tags = ['내 초안'];
+  personalDraft.items = [
+    { id: 'v2-source-a', flow_id: personalDraft.flow.id, title: 'Source A', type: 'todo', order: 0 },
+    { id: 'v2-source-b', flow_id: personalDraft.flow.id, title: 'Source B', type: 'todo', order: 1 },
+  ];
+  const malformedOrderOverlay = {
+    ...createPersonalDraftStructuralOverlay(personalDraft),
+    orderOverride: ['missing-source-id', 'v2-source-b', 'v2-source-a'],
+  };
+  const moved = movePersonalDraftStructuralItem({
+    bundle: personalDraft,
+    overlay: malformedOrderOverlay,
+    itemId: 'v2-source-a',
+    direction: 'up',
+    movedAt: '2026-07-13T12:10:00.000Z',
+  });
+  assert.ok(moved);
+  assert.deepEqual(moved.orderOverride, ['missing-source-id', 'v2-source-a', 'v2-source-b']);
+
+  const sourceV2 = {
+    ...personalDraft,
+    items: [
+      ...personalDraft.items,
+      { id: 'v2-source-c', flow_id: personalDraft.flow.id, title: 'Source C', type: 'todo' as const, order: 2 },
+    ],
+  };
+  const merged = resolvePersonalDraftStructuralItems(sourceV2, moved);
+  assert.deepEqual(merged.effectiveItems.map((item) => item.itemId), [
+    'v2-source-a',
+    'v2-source-b',
+    'v2-source-c',
+  ]);
+  assert.ok(merged.warnings.includes('unknown_order_item:missing-source-id'));
 });
 
 test('personal structural normalization drops execution state fields', () => {

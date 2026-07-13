@@ -2,6 +2,7 @@ import {
   createEmptyPersonalStructuralOverlay,
   resolvePersonalStructuralItems,
   restorePersonalStructuralItem,
+  setPersonalStructuralOrder,
   tombstonePersonalStructuralItem,
   upsertPersonalStructuralUserItem,
   type PersonalStructuralItemOwnership,
@@ -21,6 +22,28 @@ export type PersonalDraftStructuralUndo = {
   ownership: PersonalStructuralItemOwnership;
   title: string;
 };
+
+export type PersonalDraftStructuralMoveDirection = 'up' | 'down';
+
+function mergeKnownOrderWithPreservedUnknownIds(
+  currentOrderOverride: string[],
+  orderedKnownIds: string[],
+): string[] {
+  const knownIds = new Set(orderedKnownIds);
+  const pendingKnownIds = [...orderedKnownIds];
+  const merged: string[] = [];
+
+  currentOrderOverride.forEach((itemId) => {
+    if (!knownIds.has(itemId)) {
+      merged.push(itemId);
+      return;
+    }
+    const nextKnownId = pendingKnownIds.shift();
+    if (nextKnownId) merged.push(nextKnownId);
+  });
+
+  return [...merged, ...pendingKnownIds];
+}
 
 export function isPersonalDraftStructuralEditEligible(bundle: FlowBundle): boolean {
   return Boolean(
@@ -108,8 +131,16 @@ export function deletePersonalDraftStructuralItem(options: {
   if (!item) return undefined;
 
   const deletedAt = options.deletedAt ?? new Date().toISOString();
+  const orderedOverlay = setPersonalStructuralOrder(
+    options.overlay,
+    mergeKnownOrderWithPreservedUnknownIds(
+      options.overlay.orderOverride,
+      resolved.allItems.map((entry) => entry.itemId),
+    ),
+    deletedAt,
+  );
   return {
-    overlay: tombstonePersonalStructuralItem(options.overlay, {
+    overlay: tombstonePersonalStructuralItem(orderedOverlay, {
       itemId: item.itemId,
       ownership: item.ownership,
       deletedAt,
@@ -132,5 +163,52 @@ export function undoPersonalDraftStructuralDelete(options: {
     options.overlay,
     options.undo.itemId,
     options.restoredAt,
+  );
+}
+
+export function restorePersonalDraftStructuralItem(options: {
+  bundle: FlowBundle;
+  overlay: PersonalStructuralOverlay;
+  itemId: string;
+  restoredAt?: string;
+}): PersonalStructuralOverlay | undefined {
+  const resolved = resolvePersonalDraftStructuralItems(options.bundle, options.overlay);
+  if (!resolved.tombstonedItems.some((item) => item.itemId === options.itemId)) return undefined;
+  return restorePersonalStructuralItem(options.overlay, options.itemId, options.restoredAt);
+}
+
+export function movePersonalDraftStructuralItem(options: {
+  bundle: FlowBundle;
+  overlay: PersonalStructuralOverlay;
+  itemId: string;
+  direction: PersonalDraftStructuralMoveDirection;
+  movedAt?: string;
+}): PersonalStructuralOverlay | undefined {
+  const resolved = resolvePersonalDraftStructuralItems(options.bundle, options.overlay);
+  const visibleItemIds = resolved.effectiveItems.map((item) => item.itemId);
+  const currentIndex = visibleItemIds.indexOf(options.itemId);
+  if (currentIndex < 0) return undefined;
+
+  const targetIndex = options.direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+  if (targetIndex < 0 || targetIndex >= visibleItemIds.length) return undefined;
+
+  const reorderedVisibleIds = [...visibleItemIds];
+  [reorderedVisibleIds[currentIndex], reorderedVisibleIds[targetIndex]] = [
+    reorderedVisibleIds[targetIndex],
+    reorderedVisibleIds[currentIndex],
+  ];
+
+  let visibleIndex = 0;
+  const reorderedKnownIds = resolved.allItems.map((item) => {
+    if (!item.included || item.tombstoned) return item.itemId;
+    const nextItemId = reorderedVisibleIds[visibleIndex];
+    visibleIndex += 1;
+    return nextItemId;
+  });
+
+  return setPersonalStructuralOrder(
+    options.overlay,
+    mergeKnownOrderWithPreservedUnknownIds(options.overlay.orderOverride, reorderedKnownIds),
+    options.movedAt,
   );
 }
