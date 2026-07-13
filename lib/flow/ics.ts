@@ -17,9 +17,13 @@ export function foldIcsContentLine(line: string): string {
     const characterBytes = utf8ByteLength(character);
     const limit = segments.length === 0 ? firstLineLimit : continuationContentLimit;
     if (segment && segmentBytes + characterBytes > limit) {
-      segments.push(segments.length === 0 ? segment : ` ${segment}`);
-      segment = character;
-      segmentBytes = characterBytes;
+      const trailingWhitespace = segment.match(/[ \t]+$/)?.[0] ?? '';
+      const emittedSegment = trailingWhitespace
+        ? segment.slice(0, -trailingWhitespace.length)
+        : segment;
+      segments.push(segments.length === 0 ? emittedSegment : ` ${emittedSegment}`);
+      segment = `${trailingWhitespace}${character}`;
+      segmentBytes = utf8ByteLength(segment);
       continue;
     }
     segment += character;

@@ -33,7 +33,7 @@
 29. duplicate occurrence prevention
 30. projection generation limit
 
-## Required Assertions
+## C1 Contract Assertions
 
 - recurrence contract ready = true
 - series and occurrence identities distinct = true
@@ -46,10 +46,23 @@
 - DST wall-clock shift count = 0
 - source mutation count = 0
 - source-backed recurrence adapter applied = false
-- Calendar and ICS recurrence consumers connected = false
+- Calendar and ICS recurrence consumers connected = false at the C1 contract-only baseline
 - recurrence UI changed = false
 - app UI changed = false
 
 ## Runtime Sanity
 
 C1 has no user-facing UI or consumer connection. Verify representative `/my` and `/calendar` routes render with no new recurrence controls, no new console errors, and no layout change. This is automated route sanity, not observed-user validation.
+
+## P23-02C2 Runtime Status
+
+- recurrence UI connected = true
+- Calendar occurrence projection connected = true
+- occurrence done/reopened connected = true
+- ICS RRULE projection connected = true
+- ICS EXDATE and RECURRENCE-ID fixture coverage = true
+- source-backed recurrence adapter applied = false
+- skipped/held and one-occurrence edit UI connected = false
+- actual observed-user count = 0
+
+The C1 assertion above records the historical contract-only baseline. The current C2C runtime assertion is Calendar and ICS recurrence consumers connected = true for personal draft user-created Items only.

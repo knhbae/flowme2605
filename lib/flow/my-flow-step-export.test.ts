@@ -9,6 +9,13 @@ import {
   type MyFlowPortableStepExportInput,
 } from './my-flow-step-export';
 import { buildPersonalStructuralListExportArtifacts } from './personal-structural-list-export';
+import { buildPersonalStructuralRecurrenceIcs } from './personal-structural-recurrence-ics';
+import {
+  buildPersonalStructuralOccurrenceId,
+  buildPersonalStructuralRecurrenceRevisionId,
+  buildPersonalStructuralRecurrenceSeriesId,
+  type PersonalStructuralRecurrenceSeries,
+} from './personal-structural-recurrence';
 import {
   buildPersonalStructuralProjection,
 } from './personal-structural-projection';
@@ -131,6 +138,276 @@ test('personal draft timed ICS keeps stable UID and applies TZID, duration, and 
   }).replaceAll('\r\n ', '');
   assert.match(floating, /DTSTART:20260803T235000/);
   assert.doesNotMatch(floating, /TZID=/);
+});
+
+test('personal draft recurrence ICS preserves interval end rules and stable series UID', () => {
+  const seriesId = buildPersonalStructuralRecurrenceSeriesId({
+    identityNamespace: 'recurrence-export-flow',
+    itemId: 'personal-item-a',
+  });
+  const revisionId = buildPersonalStructuralRecurrenceRevisionId({
+    seriesId,
+    revision: 1,
+    effectiveFrom: '2026-08-03',
+  });
+  const series: PersonalStructuralRecurrenceSeries = {
+    schemaVersion: 1,
+    seriesId,
+    status: 'active',
+    revisions: [
+      {
+        revision: 1,
+        revisionId,
+        effectiveFrom: '2026-08-03',
+        rule: {
+          frequency: 'daily',
+          interval: 2,
+          end: { mode: 'count', count: 4 },
+        },
+        updatedAt: '2026-07-13T00:00:00.000Z',
+      },
+    ],
+    occurrenceOverrides: [],
+    updatedAt: '2026-07-13T00:00:00.000Z',
+  };
+  const input = {
+    identityNamespace: 'recurrence-export-flow',
+    itemId: 'personal-item-a',
+    title: '이틀마다 준비 확인',
+    description: '준비 상태를 확인합니다.',
+    date: '2026-08-03',
+    repeat: series,
+    generatedAt: '2026-07-13T00:00:00.000Z',
+  };
+  const first = buildPersonalStructuralRecurrenceIcs(input);
+  const renamed = buildPersonalStructuralRecurrenceIcs({
+    ...input,
+    title: '이틀마다 준비 다시 확인',
+    date: '2026-08-05',
+  });
+  const ics = first.ics.replaceAll('\r\n ', '');
+
+  assert.equal(first.mode, 'rrule');
+  assert.equal(first.eventCount, 1);
+  assert.equal(first.uid, renamed.uid);
+  assert.match(ics, /RRULE:FREQ=DAILY;INTERVAL=2;COUNT=4/);
+  assert.match(ics, /DTSTART;VALUE=DATE:20260803/);
+  assert.equal((ics.match(/BEGIN:VEVENT/g) ?? []).length, 1);
+
+  const monthly = buildPersonalStructuralRecurrenceIcs({
+    ...input,
+    repeat: {
+      ...series,
+      revisions: [
+        {
+          ...series.revisions[0],
+          rule: {
+            frequency: 'monthly',
+            interval: 1,
+            dayOfMonth: 3,
+            invalidMonthDayPolicy: 'skip',
+            end: { mode: 'until', date: '2026-12-31' },
+          },
+        },
+      ],
+    },
+  }).ics.replaceAll('\r\n ', '');
+  assert.match(monthly, /RRULE:FREQ=MONTHLY;BYMONTHDAY=3;UNTIL=20261231/);
+});
+
+test('personal draft recurrence ICS writes EXDATE and RECURRENCE-ID exceptions with one series UID', () => {
+  const seriesId = buildPersonalStructuralRecurrenceSeriesId({
+    identityNamespace: 'recurrence-exception-flow',
+    itemId: 'personal-item-b',
+  });
+  const revisionId = buildPersonalStructuralRecurrenceRevisionId({
+    seriesId,
+    revision: 1,
+    effectiveFrom: '2026-08-03',
+  });
+  const excludedOccurrenceId = buildPersonalStructuralOccurrenceId({
+    revisionId,
+    scheduledDate: '2026-08-05',
+    startTime: '09:30',
+  });
+  const movedOccurrenceId = buildPersonalStructuralOccurrenceId({
+    revisionId,
+    scheduledDate: '2026-08-10',
+    startTime: '09:30',
+  });
+  const series: PersonalStructuralRecurrenceSeries = {
+    schemaVersion: 1,
+    seriesId,
+    status: 'active',
+    revisions: [
+      {
+        revision: 1,
+        revisionId,
+        effectiveFrom: '2026-08-03',
+        rule: {
+          frequency: 'weekly',
+          interval: 1,
+          weekdays: ['MO', 'WE'],
+          end: { mode: 'count', count: 6 },
+        },
+        scheduleTemplate: {
+          time: '09:30',
+          durationMinutes: 30,
+          timeZone: 'Asia/Seoul',
+        },
+        updatedAt: '2026-07-13T00:00:00.000Z',
+      },
+    ],
+    occurrenceOverrides: [
+      {
+        occurrenceId: excludedOccurrenceId,
+        mode: 'exclude',
+        updatedAt: '2026-07-13T01:00:00.000Z',
+      },
+      {
+        occurrenceId: movedOccurrenceId,
+        mode: 'reschedule',
+        schedule: {
+          date: '2026-08-11',
+          time: '14:00',
+          durationMinutes: 45,
+          timeZone: 'Asia/Seoul',
+        },
+        updatedAt: '2026-07-13T02:00:00.000Z',
+      },
+    ],
+    updatedAt: '2026-07-13T02:00:00.000Z',
+  };
+  const result = buildPersonalStructuralRecurrenceIcs({
+    identityNamespace: 'recurrence-exception-flow',
+    itemId: 'personal-item-b',
+    title: '주중 준비 확인',
+    description: '월요일과 수요일에 확인합니다.',
+    date: '2026-08-03',
+    time: '09:30',
+    durationMinutes: 30,
+    timeZone: 'Asia/Seoul',
+    repeat: series,
+    generatedAt: '2026-07-13T00:00:00.000Z',
+  });
+  const ics = result.ics.replaceAll('\r\n ', '');
+  const uids = [...ics.matchAll(/^UID:(.+)$/gmu)].map((match) => match[1]);
+
+  assert.equal(result.mode, 'rrule');
+  assert.equal(result.eventCount, 2);
+  assert.equal(result.exceptionEventCount, 1);
+  assert.equal(result.excludedOccurrenceCount, 1);
+  assert.equal(new Set(uids).size, 1);
+  assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE;COUNT=6/);
+  assert.match(ics, /EXDATE;TZID=Asia\/Seoul:20260805T093000/);
+  assert.match(ics, /RECURRENCE-ID;TZID=Asia\/Seoul:20260810T093000/);
+  assert.match(ics, /DTSTART;TZID=Asia\/Seoul:20260811T140000/);
+  assert.match(ics, /DTEND;TZID=Asia\/Seoul:20260811T144500/);
+});
+
+test('personal draft recurrence ICS uses bounded events when revisions cannot share one RRULE', () => {
+  const seriesId = buildPersonalStructuralRecurrenceSeriesId({
+    identityNamespace: 'recurrence-revision-flow',
+    itemId: 'personal-item-c',
+  });
+  const firstRevisionId = buildPersonalStructuralRecurrenceRevisionId({
+    seriesId,
+    revision: 1,
+    effectiveFrom: '2026-08-03',
+  });
+  const secondRevisionId = buildPersonalStructuralRecurrenceRevisionId({
+    seriesId,
+    revision: 2,
+    effectiveFrom: '2026-08-10',
+  });
+  const series: PersonalStructuralRecurrenceSeries = {
+    schemaVersion: 1,
+    seriesId,
+    status: 'active',
+    revisions: [
+      {
+        revision: 1,
+        revisionId: firstRevisionId,
+        effectiveFrom: '2026-08-03',
+        rule: { frequency: 'daily', interval: 1, end: { mode: 'count', count: 2 } },
+        updatedAt: '2026-07-13T00:00:00.000Z',
+      },
+      {
+        revision: 2,
+        revisionId: secondRevisionId,
+        effectiveFrom: '2026-08-10',
+        rule: {
+          frequency: 'weekly',
+          interval: 1,
+          weekdays: ['MO'],
+          end: { mode: 'count', count: 2 },
+        },
+        updatedAt: '2026-07-13T01:00:00.000Z',
+      },
+    ],
+    occurrenceOverrides: [],
+    updatedAt: '2026-07-13T01:00:00.000Z',
+  };
+  const result = buildPersonalStructuralRecurrenceIcs({
+    identityNamespace: 'recurrence-revision-flow',
+    itemId: 'personal-item-c',
+    title: '규칙이 바뀐 준비',
+    description: '과거 일정과 앞으로의 일정을 함께 보존합니다.',
+    date: '2026-08-03',
+    repeat: series,
+    generatedAt: '2026-07-13T00:00:00.000Z',
+    finiteRangeEnd: '2026-08-31',
+  });
+  const ics = result.ics.replaceAll('\r\n ', '');
+  const uids = [...ics.matchAll(/^UID:(.+)$/gmu)].map((match) => match[1]);
+
+  assert.equal(result.mode, 'finite_events');
+  assert.equal(result.eventCount, 4);
+  assert.equal(new Set(uids).size, 4);
+  assert.equal((ics.match(/BEGIN:VEVENT/g) ?? []).length, 4);
+  assert.doesNotMatch(ics, /RRULE:/);
+});
+
+test('personal draft recurrence ICS folds long descriptions without physical trailing whitespace', () => {
+  const seriesId = buildPersonalStructuralRecurrenceSeriesId({
+    identityNamespace: 'recurrence-fold-flow',
+    itemId: 'personal-item-fold',
+  });
+  const revisionId = buildPersonalStructuralRecurrenceRevisionId({
+    seriesId,
+    revision: 1,
+    effectiveFrom: '2026-08-03',
+  });
+  const description = '반복 일정을 내 캘린더로 옮긴 뒤 처리한 내용을 확인하고 다시 진행할 수 있습니다.';
+  const result = buildPersonalStructuralRecurrenceIcs({
+    identityNamespace: 'recurrence-fold-flow',
+    itemId: 'personal-item-fold',
+    title: '긴 설명 반복 일정',
+    description,
+    date: '2026-08-03',
+    repeat: {
+      schemaVersion: 1,
+      seriesId,
+      status: 'active',
+      revisions: [
+        {
+          revision: 1,
+          revisionId,
+          effectiveFrom: '2026-08-03',
+          rule: { frequency: 'daily', interval: 1, end: { mode: 'count', count: 3 } },
+          updatedAt: '2026-07-13T00:00:00.000Z',
+        },
+      ],
+      occurrenceOverrides: [],
+      updatedAt: '2026-07-13T00:00:00.000Z',
+    },
+    generatedAt: '2026-07-13T00:00:00.000Z',
+  });
+  const physicalLines = result.ics.split('\r\n').filter(Boolean);
+  const unfolded = result.ics.replaceAll('\r\n ', '');
+
+  assert.equal(physicalLines.some((line) => /[ \t]$/u.test(line)), false);
+  assert.match(unfolded, new RegExp(`DESCRIPTION:${description}`));
 });
 
 test('portable Step outputs keep structural words out of user-facing fallbacks', () => {

@@ -1,4 +1,6 @@
 import { foldIcsContentLine } from './ics';
+import { buildPersonalStructuralRecurrenceIcs } from './personal-structural-recurrence-ics';
+import type { PersonalStructuralRepeat } from './personal-structural-recurrence';
 import {
   PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
   PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES,
@@ -18,6 +20,8 @@ export type MyFlowPortableStepExportInput = {
   durationMinutes?: number;
   timeZone?: string;
   stableEventIdentitySeed?: string;
+  personalRecurrence?: PersonalStructuralRepeat;
+  personalRecurrenceIdentityNamespace?: string;
   repeatPreset?: MyFlowStepRepeatPreset | string;
   location?: string;
   memo?: string;
@@ -213,6 +217,27 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
   const date = clean(input.date);
   const time = clean(input.time);
   const repeatPreset = clean(input.repeatPreset);
+  if (input.personalRecurrence) {
+    return buildPersonalStructuralRecurrenceIcs({
+      identityNamespace:
+        clean(input.personalRecurrenceIdentityNamespace) ||
+        clean(input.stableEventIdentitySeed) ||
+        clean(input.flowTitle) ||
+        'personal-flow',
+      itemId: clean(input.stableEventIdentitySeed) || clean(input.stepId) || 'personal-item',
+      title: clean(input.stepTitle) || '할 일',
+      description: buildMyFlowStepPortableText(input),
+      date,
+      ...(time ? { time } : {}),
+      ...(time && input.durationMinutes !== undefined
+        ? { durationMinutes: input.durationMinutes }
+        : {}),
+      ...(time && clean(input.timeZone) ? { timeZone: clean(input.timeZone) } : {}),
+      repeat: input.personalRecurrence,
+      location: input.location,
+      sourceUrl: input.sourceUrl,
+    }).ics;
+  }
   const nowStamp = new Date().toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
   const lines = [
     'BEGIN:VCALENDAR',

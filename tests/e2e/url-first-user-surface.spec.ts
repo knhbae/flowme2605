@@ -2284,7 +2284,7 @@ test('personal draft recurrence rules persist without changing item date or time
   await expect(page.getByTestId('personal-draft-recurrence-control')).toHaveCount(0);
 });
 
-test('personal draft recurrence expands into Calendar occurrences with reversible completion', async ({ page }) => {
+test('personal draft recurrence expands into Calendar occurrences with reversible completion and series ICS', async ({ page }) => {
   test.setTimeout(300_000);
   page.setDefaultTimeout(15_000);
   const consoleErrors: string[] = [];
@@ -2296,7 +2296,12 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   });
   const evidenceDir = process.env.FLOWME_P23_02C2B_EVIDENCE_DIR;
   const screenshotDir = evidenceDir ? `${evidenceDir}/screenshots` : '';
+  const icsEvidenceDir = process.env.FLOWME_P23_02C2C_EVIDENCE_DIR;
+  const icsScreenshotDir = icsEvidenceDir ? `${icsEvidenceDir}/screenshots` : '';
+  const icsDownloadDir = icsEvidenceDir ? `${icsEvidenceDir}/downloads` : '';
   if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
+  if (icsScreenshotDir) fs.mkdirSync(icsScreenshotDir, { recursive: true });
+  if (icsDownloadDir) fs.mkdirSync(icsDownloadDir, { recursive: true });
 
   const openDraftFlow = async () => {
     await page.getByTestId('my-flow-view-flow').click();
@@ -2368,6 +2373,40 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .getByTestId('my-flow-item-detail');
   await expect(seriesDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await expect(seriesDetail.getByTestId('personal-draft-recurrence-calendar-entry')).toBeVisible();
+  const seriesPortableExport = seriesDetail.getByTestId('my-flow-detail-portable-export');
+  if (await seriesPortableExport.locator('summary').count()) {
+    await seriesPortableExport.locator('summary').click();
+  }
+  const firstSeriesDownloadPromise = page.waitForEvent('download');
+  await seriesDetail.getByTestId('my-flow-detail-download-ics').click();
+  const firstSeriesDownload = await firstSeriesDownloadPromise;
+  if (icsDownloadDir) {
+    await firstSeriesDownload.saveAs(`${icsDownloadDir}/personal-draft-recurrence-before-completion.ics`);
+  }
+  const firstSeriesDownloadPath = await firstSeriesDownload.path();
+  expect(firstSeriesDownloadPath).toBeTruthy();
+  const firstSeriesIcs = fs.readFileSync(firstSeriesDownloadPath!, 'utf8').replaceAll('\r\n ', '');
+  const firstSeriesUid = firstSeriesIcs.match(/^UID:(.+)$/mu)?.[1];
+  expect(firstSeriesUid).toBeTruthy();
+  expect(firstSeriesIcs).toContain('RRULE:FREQ=DAILY;COUNT=3');
+  expect((firstSeriesIcs.match(/BEGIN:VEVENT/g) ?? []).length).toBe(1);
+  expect(firstSeriesIcs).not.toContain('EXDATE:');
+  expect(firstSeriesIcs).not.toContain('RECURRENCE-ID');
+  const firstSeriesVisibleOutput = firstSeriesIcs
+    .split(/\r?\n/u)
+    .filter((line) => !line.startsWith('UID:') && !line.startsWith('PRODID:'))
+    .join('\n');
+  expect(firstSeriesVisibleOutput).not.toMatch(
+    /\bP0\b|대기열|파이프라인|Canonical URL|handoff|source-backed|\bStep\b|\bItem\b|Markdown/iu,
+  );
+  if (icsScreenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await seriesPortableExport.screenshot({
+      path: `${icsScreenshotDir}/00-personal-draft-recurrence-ics-entry-mobile.png`,
+    });
+    await restorePlatformChromeAfterEvidence(page);
+  }
   if (screenshotDir) {
     await hideNextDevOverlay(page);
     await hidePlatformChromeForEvidence(page);
@@ -2444,6 +2483,32 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   await expect(secondOccurrenceRow).toHaveAttribute('data-occurrence-state', 'pending');
   expect(await secondOccurrenceRow.getAttribute('data-occurrence-id')).not.toBe(firstOccurrenceId);
 
+  await page.goto('/my');
+  const reopenedDraftFlow = await openDraftFlow();
+  const reopenedRecurringItem = reopenedDraftFlow
+    .getByTestId('personal-draft-effective-item')
+    .filter({ hasText: recurringTitle });
+  await reopenedRecurringItem.getByTestId('my-flow-mobile-structure-step-row').click();
+  const reopenedSeriesDetail = reopenedDraftFlow
+    .getByTestId('my-flow-mobile-structure-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  const reopenedSeriesPortableExport = reopenedSeriesDetail.getByTestId('my-flow-detail-portable-export');
+  if (await reopenedSeriesPortableExport.locator('summary').count()) {
+    await reopenedSeriesPortableExport.locator('summary').click();
+  }
+  const reopenedDownloadPromise = page.waitForEvent('download');
+  await reopenedSeriesDetail.getByTestId('my-flow-detail-download-ics').click();
+  const reopenedDownload = await reopenedDownloadPromise;
+  if (icsDownloadDir) {
+    await reopenedDownload.saveAs(`${icsDownloadDir}/personal-draft-recurrence-after-reopen.ics`);
+  }
+  const reopenedDownloadPath = await reopenedDownload.path();
+  expect(reopenedDownloadPath).toBeTruthy();
+  const reopenedIcs = fs.readFileSync(reopenedDownloadPath!, 'utf8').replaceAll('\r\n ', '');
+  expect(reopenedIcs.match(/^UID:(.+)$/mu)?.[1]).toBe(firstSeriesUid);
+  expect(reopenedIcs).toContain('RRULE:FREQ=DAILY;COUNT=3');
+  expect((reopenedIcs.match(/BEGIN:VEVENT/g) ?? []).length).toBe(1);
+
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/calendar');
   await selectCalendarDate('2026-07-14');
@@ -2459,6 +2524,31 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     await page.screenshot({
       path: `${screenshotDir}/03-personal-draft-occurrence-calendar-wide.png`,
       fullPage: true,
+    });
+  }
+
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideDraftFlow = page.locator(
+    '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
+  );
+  const wideRecurringItem = wideDraftFlow
+    .getByTestId('personal-draft-order-item-wide')
+    .filter({ hasText: recurringTitle });
+  await wideRecurringItem.getByTestId('personal-draft-order-item-open-wide').click();
+  const wideSeriesDetail = wideDraftFlow
+    .getByTestId('my-flow-overview-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  const wideSeriesPortableExport = wideSeriesDetail.getByTestId('my-flow-detail-portable-export');
+  if (await wideSeriesPortableExport.locator('summary').count()) {
+    await wideSeriesPortableExport.locator('summary').click();
+  }
+  await expect(wideSeriesDetail.getByTestId('my-flow-detail-download-ics')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  if (icsScreenshotDir) {
+    await hideNextDevOverlay(page);
+    await wideSeriesPortableExport.screenshot({
+      path: `${icsScreenshotDir}/01-personal-draft-recurrence-ics-entry-wide.png`,
     });
   }
 

@@ -8011,6 +8011,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }
         : {}),
       repeatPreset: editorDraft.repeatPreset,
+      ...(isPersonalDraftUserItem && row.structuralRepeat
+        ? {
+            personalRecurrence: row.structuralRepeat,
+            personalRecurrenceIdentityNamespace: row.flow.progress.slug,
+          }
+        : {}),
       location: editorDraft.location,
       memo: editorDraft.memo,
       sourceLabel: primaryLink ? toUserFacingSourceTitle(primaryLink.label) : undefined,

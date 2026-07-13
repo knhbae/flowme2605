@@ -1,0 +1,59 @@
+{
+  "package": "p23-02c2c-personal-draft-recurrence-ics",
+  "generatedAt": "2026-07-13",
+  "evidenceType": "automated_browser_unit_and_download_fixture",
+  "actualObservedUserCount": 0,
+  "routes": [
+    {
+      "route": "/flows",
+      "state": "url-first-miss-to-personal-draft",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/my",
+      "state": "recurring-series-calendar-download-before-completion",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/calendar",
+      "state": "occurrence-done-and-reopened",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/my",
+      "state": "recurring-series-calendar-download-after-reopen",
+      "viewport": "390x844"
+    },
+    {
+      "route": "/my",
+      "state": "recurring-series-calendar-download-entry",
+      "viewport": "1024x768"
+    }
+  ],
+  "markers": {
+    "personalDraftRecurrenceIcsConnected": true,
+    "personalDraftRecurrenceIcsUserReachableWithoutFixture": true,
+    "personalDraftRecurrenceRruleMode": true,
+    "personalDraftRecurrenceIntervalPreserved": true,
+    "personalDraftRecurrenceWeeklyBydayPreserved": true,
+    "personalDraftRecurrenceMonthlyDayPreserved": true,
+    "personalDraftRecurrenceEndConditionPreserved": true,
+    "personalDraftRecurrenceSeriesUidStableAfterReopen": true,
+    "personalDraftRecurrenceIcsEventCountBeforeCompletion": 1,
+    "personalDraftRecurrenceIcsEventCountAfterReopen": 1,
+    "completionStateChangedRecurrenceIcsMembershipCount": 0,
+    "personalDraftRecurrenceIcsDuplicateEventCount": 0,
+    "personalDraftRecurrenceExdateSupported": true,
+    "personalDraftRecurrenceIdExceptionSupported": true,
+    "personalDraftRecurrenceExceptionSameUid": true,
+    "personalDraftRecurrenceExceptionUserReachableWithoutFixture": false,
+    "personalDraftRecurrenceMultiRevisionFiniteFallback": true,
+    "personalDraftRecurrenceRevisionUserReachableWithoutFixture": false,
+    "sourceMutationCount": 0,
+    "sourceBackedRecurrenceIcsBehaviorChanged": false,
+    "personalDraftRecurrenceIcsInternalTermHitCount": 0,
+    "personalDraftRecurrenceIcsHorizontalOverflowCount": 0,
+    "personalDraftRecurrenceIcsConsoleErrorCount": 0,
+    "externalCalendarObservedImportCount": 0
+  }
+}

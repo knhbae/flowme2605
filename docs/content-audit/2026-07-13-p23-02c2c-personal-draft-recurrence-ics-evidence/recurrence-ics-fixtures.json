@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-07-13",
+  "fixtures": [
+    {
+      "id": "daily-interval-count",
+      "mode": "rrule",
+      "rrule": "FREQ=DAILY;INTERVAL=2;COUNT=4",
+      "eventCount": 1,
+      "stableSeriesUid": true
+    },
+    {
+      "id": "monthly-until",
+      "mode": "rrule",
+      "rrule": "FREQ=MONTHLY;BYMONTHDAY=3;UNTIL=20261231",
+      "eventCount": 1
+    },
+    {
+      "id": "weekly-exclude-reschedule",
+      "mode": "rrule",
+      "rrule": "FREQ=WEEKLY;BYDAY=MO,WE;COUNT=6",
+      "excludedOccurrenceCount": 1,
+      "exceptionEventCount": 1,
+      "exdatePresent": true,
+      "recurrenceIdPresent": true,
+      "sameSeriesUid": true
+    },
+    {
+      "id": "multiple-revisions",
+      "mode": "finite_events",
+      "eventCount": 4,
+      "rrulePresent": false,
+      "duplicateUidCount": 0
+    },
+    {
+      "id": "actual-ui-before-and-after-reopen",
+      "mode": "rrule",
+      "rrule": "FREQ=DAILY;COUNT=3",
+      "beforeEventCount": 1,
+      "afterEventCount": 1,
+      "sameSeriesUid": true,
+      "membershipChangeCount": 0
+    }
+  ]
+}

@@ -15,4 +15,4 @@
 - [x] Confirm Calendar/ICS consumers and app UI are unchanged.
 - [x] Add recurrence rule UI in P23-02C2A.
 - [x] Connect Calendar and occurrence completion in P23-02C2B.
-- [ ] Connect ICS series and exceptions in P23-02C2C.
+- [x] Connect ICS series and exceptions in P23-02C2C.

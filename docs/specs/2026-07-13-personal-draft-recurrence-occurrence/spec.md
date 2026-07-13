@@ -1,7 +1,7 @@
 # P23-02C1 Personal Draft Recurrence And Occurrence Contract
 
 **Date:** 2026-07-13
-**Status:** Contract implemented; UI and Calendar/ICS connection deferred to P23-02C2
+**Status:** Contract, recurrence UI, Calendar occurrence execution, and ICS series/exception projection implemented through P23-02C2C
 **Scope:** URL-first miss or memo personal draft recurrence only
 
 ## Decision
@@ -70,7 +70,7 @@ Each revision may snapshot the all-day/timed template used for its future occurr
 - duration from 5 to 1,440 minutes
 - optional valid IANA time zone
 
-If a legacy revision has no template, the current fixed-date schedule is the fallback. Local date/time strings are generated without UTC conversion, so IANA and floating recurrence retain their wall-clock time across DST boundaries. Actual ICS timezone serialization remains P23-02C2 work.
+If a legacy revision has no template, the current fixed-date schedule is the fallback. Local date/time strings are generated without UTC conversion, so IANA and floating recurrence retain their wall-clock time across DST boundaries. P23-02C2C now serializes these templates through the existing all-day, IANA, and floating-time ICS policy.
 
 ## Edit Scope Contract
 
@@ -134,10 +134,17 @@ Completion must not silently remove an occurrence from ICS or Calendar membershi
 
 ## Out Of Scope
 
-- recurrence editing UI
-- Calendar occurrence consumer connection
-- ICS RRULE, EXDATE, and RECURRENCE-ID connection
-- occurrence completion UI
 - series pause or end UI
+- occurrence skip and hold UI
+- one-occurrence reschedule or exclusion UI
+- this-and-future revision UI
 - source-backed recurrence editing
 - AI, database, cloud sync, OAuth, or IA changes
+
+## P23-02C2 Connection Status
+
+- **C2A:** personal draft user-created Items expose daily, weekly, and monthly recurrence editing.
+- **C2B:** Calendar expands bounded occurrences and stores per-occurrence done/reopened state in the execution run.
+- **C2C:** personal draft calendar download uses one stable series UID with RRULE when the rule is compatible, EXDATE for structural exclusion, and RECURRENCE-ID for one-occurrence rescheduling. Multiple revisions or timed-until rules use bounded standalone VEVENTs because one RRULE would lose meaning.
+- Source-backed and public Flow recurrence/export paths remain on their existing contracts.
+- Exception and revision serialization is fixture-covered; the corresponding user editing controls remain deferred.
