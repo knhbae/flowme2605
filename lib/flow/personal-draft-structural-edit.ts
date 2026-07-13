@@ -20,6 +20,17 @@ import {
   isPersonalStructuralIanaTimeZone,
   isPersonalStructuralLocalTime,
 } from './personal-structural-schedule';
+import {
+  appendPersonalStructuralRecurrenceRevision,
+  createPersonalStructuralRecurrenceSeries,
+  normalizePersonalStructuralRecurrence,
+  normalizePersonalStructuralRecurrenceRule,
+  PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT,
+  PERSONAL_STRUCTURAL_RECURRENCE_MAX_INTERVAL,
+  type PersonalStructuralRecurrenceEnd,
+  type PersonalStructuralRecurrenceRule,
+  type PersonalStructuralWeekday,
+} from './personal-structural-recurrence';
 
 const PERSONAL_DRAFT_TAG = '내 초안';
 const PERSONAL_DRAFT_SOURCE_TITLES = new Set(['내 메모', '사용자가 넣은 링크']);
@@ -33,6 +44,12 @@ export type PersonalDraftStructuralUndo = {
 
 export type PersonalDraftStructuralMoveDirection = 'up' | 'down';
 export type PersonalDraftUserItemScheduleMode = 'all_day' | 'timed';
+export type PersonalDraftUserItemRecurrenceMode =
+  | 'none'
+  | 'daily'
+  | 'weekly'
+  | 'monthly';
+export type PersonalDraftUserItemRecurrenceEndMode = 'never' | 'until' | 'count';
 
 function isPlainIsoDate(value: string): boolean {
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -222,6 +239,132 @@ export function setPersonalDraftUserItemSchedule(options: {
   };
   const updatedAt = options.updatedAt ?? new Date().toISOString();
 
+  return {
+    overlay: upsertPersonalStructuralUserItem(options.overlay, userItem, updatedAt),
+    userItem,
+  };
+}
+
+export function setPersonalDraftUserItemRecurrence(options: {
+  overlay: PersonalStructuralOverlay;
+  itemId: string;
+  mode: PersonalDraftUserItemRecurrenceMode;
+  interval?: number;
+  weekdays?: PersonalStructuralWeekday[];
+  endMode?: PersonalDraftUserItemRecurrenceEndMode;
+  untilDate?: string;
+  occurrenceCount?: number;
+  executionRecordCount?: number;
+  updatedAt?: string;
+}): { overlay: PersonalStructuralOverlay; userItem: PersonalStructuralUserItem } | undefined {
+  const itemId = options.itemId.trim();
+  const current = options.overlay.userItems.find((item) => item.itemId === itemId);
+  if (!current || current.schedule?.mode !== 'fixed_date') return undefined;
+
+  const updatedAt = options.updatedAt ?? new Date().toISOString();
+  const { repeat: _currentRepeat, ...scheduleWithoutRepeat } = current.schedule;
+
+  if (options.mode === 'none') {
+    const userItem: PersonalStructuralUserItem = {
+      ...current,
+      schedule: scheduleWithoutRepeat,
+    };
+    return {
+      overlay: upsertPersonalStructuralUserItem(options.overlay, userItem, updatedAt),
+      userItem,
+    };
+  }
+
+  const interval = options.interval ?? 1;
+  if (
+    !Number.isInteger(interval) ||
+    interval < 1 ||
+    interval > PERSONAL_STRUCTURAL_RECURRENCE_MAX_INTERVAL
+  ) {
+    return undefined;
+  }
+  if (options.mode === 'weekly' && !options.weekdays?.length) return undefined;
+
+  let end: PersonalStructuralRecurrenceEnd | undefined;
+  if (options.endMode === 'until') {
+    if (
+      !options.untilDate ||
+      !isPlainIsoDate(options.untilDate) ||
+      options.untilDate < current.schedule.date
+    ) {
+      return undefined;
+    }
+    end = { mode: 'until', date: options.untilDate };
+  } else if (options.endMode === 'count') {
+    if (
+      typeof options.occurrenceCount !== 'number' ||
+      !Number.isInteger(options.occurrenceCount) ||
+      options.occurrenceCount < 1 ||
+      options.occurrenceCount > PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT
+    ) {
+      return undefined;
+    }
+    end = { mode: 'count', count: options.occurrenceCount };
+  }
+  const normalizedRule = normalizePersonalStructuralRecurrenceRule(
+    {
+      frequency: options.mode,
+      interval,
+      ...(options.mode === 'weekly' ? { weekdays: options.weekdays } : {}),
+      ...(options.mode === 'monthly'
+        ? {
+            dayOfMonth: Number(current.schedule.date.slice(8, 10)),
+            invalidMonthDayPolicy: 'skip',
+          }
+        : {}),
+      ...(end ? { end } : {}),
+    },
+    { effectiveFrom: current.schedule.date },
+  );
+  if (!normalizedRule.rule) return undefined;
+
+  const scheduleTemplate = {
+    ...(current.schedule.time ? { time: current.schedule.time } : {}),
+    ...(current.schedule.durationMinutes
+      ? { durationMinutes: current.schedule.durationMinutes }
+      : {}),
+    ...(current.schedule.timeZone ? { timeZone: current.schedule.timeZone } : {}),
+  };
+  const existing = normalizePersonalStructuralRecurrence({
+    value: current.schedule.repeat,
+    identityNamespace: options.overlay.savedCopyId,
+    itemId,
+    startDate: current.schedule.date,
+    time: current.schedule.time,
+    durationMinutes: current.schedule.durationMinutes,
+    timeZone: current.schedule.timeZone,
+    fallbackTimestamp: updatedAt,
+  }).series;
+  const repeat = existing
+    ? appendPersonalStructuralRecurrenceRevision({
+        series: existing,
+        scope: (options.executionRecordCount ?? 0) > 0 ? 'future' : 'all',
+        effectiveFrom: current.schedule.date,
+        rule: normalizedRule.rule,
+        ...(Object.keys(scheduleTemplate).length > 0 ? { scheduleTemplate } : {}),
+        updatedAt,
+        executionRecordCount: options.executionRecordCount ?? 0,
+      })
+    : createPersonalStructuralRecurrenceSeries({
+        identityNamespace: options.overlay.savedCopyId,
+        itemId,
+        effectiveFrom: current.schedule.date,
+        rule: normalizedRule.rule,
+        ...(Object.keys(scheduleTemplate).length > 0 ? { scheduleTemplate } : {}),
+        updatedAt,
+      });
+  const userItem: PersonalStructuralUserItem = {
+    ...current,
+    schedule: {
+      ...scheduleWithoutRepeat,
+      repeat,
+    },
+  };
   return {
     overlay: upsertPersonalStructuralUserItem(options.overlay, userItem, updatedAt),
     userItem,

@@ -14,6 +14,11 @@ export type StoredMyFlowItemDraft = {
   time?: string;
   durationMinutes?: number;
   scheduleMode?: 'all_day' | 'timed';
+  recurrenceInterval?: number;
+  recurrenceWeekdays?: string[];
+  recurrenceEndMode?: 'never' | 'until' | 'count';
+  recurrenceUntil?: string;
+  recurrenceCount?: number;
   logValue?: string;
   decisionStatus?: 'undecided' | 'buy' | 'hold' | 'reject';
   nextReviewDate?: string;

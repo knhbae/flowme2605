@@ -2044,6 +2044,246 @@ test('personal draft user-created item time and all-day mode persist across Cale
   await expect(page.getByTestId('personal-draft-time-mode-control')).toHaveCount(0);
 });
 
+test('personal draft recurrence rules persist without changing item date or time identity', async ({ page }) => {
+  test.setTimeout(300_000);
+  page.setDefaultTimeout(15_000);
+  const evidenceDir = process.env.FLOWME_P23_02C2A_EVIDENCE_DIR;
+  const screenshotDir = evidenceDir ? `${evidenceDir}/screenshots` : '';
+  if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
+
+  const openDraftFlow = async () => {
+    await page.getByTestId('my-flow-view-flow').click();
+    const flow = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
+    );
+    await flow.getByTestId('my-flow-mobile-structure-open').click();
+    const showAll = flow.getByTestId('my-flow-mobile-structure-show-all');
+    if (await showAll.count()) await showAll.click();
+    return flow;
+  };
+  const addUserItem = async (flow: Locator, title: string) => {
+    await flow.getByTestId('personal-draft-add-entry').click();
+    await flow.getByTestId('personal-draft-add-title').fill(title);
+    await flow.getByTestId('personal-draft-add-title').press('Enter');
+    return flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+  };
+  const openUserItemEditor = async (flow: Locator, title: string) => {
+    const item = flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+    await item.getByTestId('my-flow-mobile-structure-step-row').click();
+    const detail = flow
+      .getByTestId('my-flow-mobile-structure-inline-detail')
+      .getByTestId('my-flow-item-detail');
+    const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+    await readSummary.locator('summary').click();
+    await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+    return { item, detail };
+  };
+  const readStoredUserItem = async (itemId: string) => page.evaluate((targetItemId) => {
+    for (const key of Object.keys(localStorage)) {
+      if (!key.startsWith('flow:my-flow:structural-overlay:')) continue;
+      const record = JSON.parse(localStorage.getItem(key) || 'null');
+      const item = record?.userItems?.find(
+        (entry: { itemId?: string }) => entry.itemId === targetItemId,
+      );
+      if (item) return item;
+    }
+    return null;
+  }, itemId);
+
+  await openFlowFinding(page);
+  await lookupUrl(page, 'https://example.com/personal-recurrence-draft?utm_source=review');
+  const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByLabel('Flow 이름').fill('주간 여행 준비 초안 요청');
+  await result.getByLabel('원하는 결과').fill('여행 전 준비를 정해진 요일마다 확인하고 싶음');
+  await result.getByRole('button', { name: '초안 준비하기' }).click();
+  const candidateCard = page
+    .getByTestId('flow-url-supply-candidate-list')
+    .locator('article')
+    .filter({ hasText: '주간 여행 준비 초안 요청' });
+  await candidateCard.getByTestId('flow-url-miss-draft-open').click();
+  const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
+  await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('주간 여행 준비');
+  await draftEditor.getByTestId('flow-url-miss-draft-save').click();
+
+  await expect(page).toHaveURL(/\/my/);
+  let draftFlow = await openDraftFlow();
+  const recurringItem = await addUserItem(draftFlow, '보험 서류 다시 확인하기');
+  const recurringItemId = await recurringItem.getAttribute('data-item-id');
+  expect(recurringItemId).toMatch(/^personal-item-/);
+
+  let opened = await openUserItemEditor(draftFlow, '보험 서류 다시 확인하기');
+  await opened.detail.getByTestId('personal-draft-date-mode-fixed').click();
+  await opened.detail.getByTestId('my-flow-detail-date-input').fill('2026-08-17');
+  await opened.detail.getByTestId('personal-draft-time-mode-timed').click();
+  await opened.detail.getByTestId('personal-draft-time-input').fill('09:30');
+  await opened.detail.getByTestId('personal-draft-duration-input').fill('45');
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-control')).toBeVisible();
+  await opened.detail.getByTestId('personal-draft-recurrence-weekly').click();
+  await opened.detail.getByTestId('personal-draft-recurrence-interval').fill('2');
+  await opened.detail.getByTestId('personal-draft-recurrence-weekday-WE').click();
+  await opened.detail.getByTestId('personal-draft-recurrence-weekday-FR').click();
+  await opened.detail.getByTestId('personal-draft-recurrence-end-mode').selectOption('count');
+  await opened.detail.getByTestId('personal-draft-recurrence-count').fill('8');
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-validation')).toHaveCount(0);
+  await expect(opened.detail.getByTestId('my-flow-detail-save-changes')).toBeEnabled();
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await opened.detail.screenshot({
+      path: `${screenshotDir}/01-personal-draft-recurrence-edit-mobile.png`,
+    });
+    await restorePlatformChromeAfterEvidence(page);
+  }
+  const visibleCopy = await opened.detail.innerText();
+  expect(visibleCopy).not.toMatch(/P0|Canonical URL|source-backed|Step|Item|Markdown/);
+  await opened.detail.getByTestId('my-flow-detail-save-changes').click();
+
+  const storedWeekly = await readStoredUserItem(recurringItemId!);
+  expect(storedWeekly).toMatchObject({
+    itemId: recurringItemId,
+    schedule: {
+      mode: 'fixed_date',
+      date: '2026-08-17',
+      time: '09:30',
+      durationMinutes: 45,
+      repeat: {
+        schemaVersion: 1,
+        status: 'active',
+        revisions: [
+          {
+            rule: {
+              frequency: 'weekly',
+              interval: 2,
+              weekdays: ['MO', 'WE', 'FR'],
+              end: { mode: 'count', count: 8 },
+            },
+          },
+        ],
+      },
+    },
+  });
+  const recurrenceSeriesId = storedWeekly.schedule.repeat.seriesId;
+  expect(recurrenceSeriesId).toMatch(/^personal-recurrence:/);
+
+  await page.reload();
+  draftFlow = await openDraftFlow();
+  opened = await openUserItemEditor(draftFlow, '보험 서류 다시 확인하기');
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-weekly')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-interval')).toHaveValue('2');
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-weekday-MO')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-weekday-WE')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-weekday-FR')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-end-mode')).toHaveValue('count');
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-count')).toHaveValue('8');
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.reload();
+  await page.getByTestId('my-flow-view-flow').click();
+  const wideDraftFlow = page.locator(
+    '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
+  );
+  const wideOrderItem = wideDraftFlow
+    .getByTestId('personal-draft-order-item-wide')
+    .filter({ hasText: '보험 서류 다시 확인하기' });
+  await wideOrderItem.getByTestId('personal-draft-order-item-open-wide').click();
+  const wideDetail = wideDraftFlow
+    .getByTestId('my-flow-overview-inline-detail')
+    .getByTestId('my-flow-item-detail');
+  const wideReadSummary = wideDetail.getByTestId('my-flow-detail-read-summary');
+  if (await wideReadSummary.locator('summary').count()) {
+    await wideReadSummary.locator('summary').click();
+  }
+  await wideReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await expect(wideDetail.getByTestId('personal-draft-recurrence-control')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await page.screenshot({
+      path: `${screenshotDir}/02-personal-draft-recurrence-edit-wide.png`,
+      fullPage: true,
+    });
+  }
+  await wideDetail.getByTestId('personal-draft-recurrence-count').fill('10');
+  await wideDetail.getByTestId('my-flow-detail-save-changes').click();
+  const storedEditedRecurrence = await readStoredUserItem(recurringItemId!);
+  expect(storedEditedRecurrence.schedule.repeat.seriesId).toBe(recurrenceSeriesId);
+  expect(storedEditedRecurrence.schedule.repeat.revisions).toHaveLength(1);
+  expect(storedEditedRecurrence.schedule.repeat.revisions[0].rule.end).toEqual({
+    mode: 'count',
+    count: 10,
+  });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my');
+  draftFlow = await openDraftFlow();
+  opened = await openUserItemEditor(draftFlow, '보험 서류 다시 확인하기');
+  await opened.detail.getByTestId('my-flow-detail-date-input').fill('2026-08-18');
+  await opened.detail.getByTestId('personal-draft-time-input').fill('10:00');
+  await opened.detail.getByTestId('my-flow-detail-save-changes').click();
+  const storedMovedRecurrence = await readStoredUserItem(recurringItemId!);
+  expect(storedMovedRecurrence.schedule.repeat.seriesId).toBe(recurrenceSeriesId);
+  expect(storedMovedRecurrence.schedule.repeat.revisions).toHaveLength(1);
+  expect(storedMovedRecurrence.schedule.repeat.revisions[0]).toMatchObject({
+    effectiveFrom: '2026-08-18',
+    scheduleTemplate: {
+      time: '10:00',
+      durationMinutes: 45,
+    },
+  });
+
+  await page.reload();
+  draftFlow = await openDraftFlow();
+  opened = await openUserItemEditor(draftFlow, '보험 서류 다시 확인하기');
+  await opened.detail.getByTestId('personal-draft-recurrence-none').click();
+  await opened.detail.getByTestId('my-flow-detail-save-changes').click();
+  const storedWithoutRecurrence = await readStoredUserItem(recurringItemId!);
+  expect(storedWithoutRecurrence).toMatchObject({
+    itemId: recurringItemId,
+    schedule: {
+      mode: 'fixed_date',
+      date: '2026-08-18',
+      time: '10:00',
+      durationMinutes: 45,
+    },
+  });
+  expect(storedWithoutRecurrence.schedule.repeat).toBeUndefined();
+  await page.reload();
+  draftFlow = await openDraftFlow();
+  opened = await openUserItemEditor(draftFlow, '보험 서류 다시 확인하기');
+  await expect(opened.detail.getByTestId('personal-draft-recurrence-none')).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(opened.detail.getByTestId('my-flow-detail-date-input')).toHaveValue('2026-08-18');
+  await expect(opened.detail.getByTestId('personal-draft-time-input')).toHaveValue('10:00');
+  await expectNoHorizontalOverflow(page);
+  if (screenshotDir) {
+    await hideNextDevOverlay(page);
+    await hidePlatformChromeForEvidence(page);
+    await opened.detail.screenshot({
+      path: `${screenshotDir}/03-personal-draft-recurrence-removed-mobile.png`,
+    });
+    await restorePlatformChromeAfterEvidence(page);
+  }
+
+  await page.goto('/my?demo=source-backed');
+  await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('personal-draft-recurrence-control')).toHaveCount(0);
+});
+
 test('URL-first draft preserves input on storage failure and reuses the canonical saved draft', async ({ page }) => {
   const sourceUrl = 'https://example.com/draft-lifecycle-source?utm_source=review';
   const requestTitle = '중복 없이 이어갈 주말 준비';

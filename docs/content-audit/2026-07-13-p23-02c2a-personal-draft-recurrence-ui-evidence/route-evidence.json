@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "scope": "P23-02C2A personal draft recurrence rule UI and persistence",
+  "generatedAt": "2026-07-13",
+  "baselineCommit": "c567b9a",
+  "implementationScope": "personal_draft_user_created_item_only",
+  "markers": {
+    "personalDraftRecurrenceControlVisible": true,
+    "personalDraftRecurrenceUserReachableWithoutFixture": true,
+    "personalDraftRecurrencePersistedAfterReload": true,
+    "personalDraftRecurrenceSeriesIdentityStable": true,
+    "personalDraftRecurrenceWeeklyWeekdaysPersisted": true,
+    "personalDraftRecurrenceEndConditionPersisted": true,
+    "personalDraftRecurrencePartialPatchPreserved": true,
+    "personalDraftRecurrenceScheduleEditResynced": true,
+    "personalDraftRecurrenceRemovalKeepsDateTime": true,
+    "personalDraftWideItemEditEntryVisible": true,
+    "personalDraftWideItemEditEntryReachable": true,
+    "sourceBackedRecurrenceControlCount": 0,
+    "recurrenceHorizontalOverflowCount": 0,
+    "recurrenceInternalTermHitCount": 0,
+    "recurrenceMalformedRuleItemLossCount": 0,
+    "calendarRecurrenceProjectionConnected": false,
+    "icsRecurrenceProjectionConnected": false,
+    "occurrenceExecutionControlConnected": false,
+    "manualUserObservationCount": 0
+  },
+  "scenarios": [
+    {
+      "id": "personal-draft-weekly-recurrence-mobile",
+      "route": "/flows -> /my",
+      "viewport": { "width": 390, "height": 844 },
+      "initialState": "URL-first miss draft saved to My Flow with one user-created unscheduled Item",
+      "fixtureUsed": false,
+      "userActions": [
+        "set 2026-08-17",
+        "set 09:30 and 45 minutes",
+        "choose every 2 weeks",
+        "select Monday Wednesday Friday",
+        "end after 8 occurrences",
+        "save and reload"
+      ],
+      "result": "the same stable Item restores its weekly rule and end condition",
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/01-personal-draft-recurrence-edit-mobile.png"
+    },
+    {
+      "id": "personal-draft-recurrence-wide-edit-entry",
+      "route": "/my",
+      "viewport": { "width": 1024, "height": 768 },
+      "initialState": "weekly personal Item is not the Flow's first next action",
+      "userActions": [
+        "open the Item from the wide ordered list",
+        "open its edit room",
+        "change occurrence count from 8 to 10"
+      ],
+      "result": "visible open entry reaches the existing editor; partial edit preserves series identity",
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/02-personal-draft-recurrence-edit-wide.png"
+    },
+    {
+      "id": "personal-draft-recurrence-removal-mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "userActions": ["choose recurrence none", "save", "reload"],
+      "result": "after moving the recurring schedule, repeat is removed while 2026-08-18, 10:00, 45 minutes and stable Item ID remain",
+      "horizontalOverflowCount": 0,
+      "screenshot": "screenshots/03-personal-draft-recurrence-removed-mobile.png"
+    },
+    {
+      "id": "source-backed-recurrence-control-regression",
+      "route": "/my?demo=source-backed",
+      "viewport": { "width": 390, "height": 844 },
+      "result": "personal structural recurrence control count remains zero"
+    }
+  ],
+  "verification": {
+    "focusedStorageUnitPassCount": 43,
+    "recurrenceJourneyE2ePassCount": 1,
+    "productionBuildPassed": true,
+    "fullUnitPassCount": 465,
+    "fullUrlFirstUserSurfaceE2ePassCount": 18,
+    "publicShareWorkbenchRegressionE2ePassCount": 44,
+    "targetedFlowMvpE2ePassCount": 5,
+    "docsCheckPassed": true,
+    "gitDiffCheckPassed": true
+  }
+}

@@ -58,6 +58,7 @@ import {
   movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
+  setPersonalDraftUserItemRecurrence,
   setPersonalDraftUserItemSchedule,
   undoPersonalDraftStructuralDelete,
   type PersonalDraftStructuralUndo,
@@ -80,6 +81,15 @@ import {
   isPersonalStructuralLocalTime,
   type PersonalStructuralScheduleProjection,
 } from '@/lib/flow/personal-structural-schedule';
+import {
+  PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT,
+  PERSONAL_STRUCTURAL_RECURRENCE_MAX_INTERVAL,
+  PERSONAL_STRUCTURAL_WEEKDAYS,
+  type PersonalStructuralRecurrenceEnd,
+  type PersonalStructuralRecurrenceRule,
+  type PersonalStructuralRepeat,
+  type PersonalStructuralWeekday,
+} from '@/lib/flow/personal-structural-recurrence';
 import {
   loadOrMigratePersonalStructuralOverlay,
   savePersonalStructuralOverlay,
@@ -2989,6 +2999,7 @@ type MyFlowRow = {
   structuralCalendarIcsEligible?: boolean;
   structuralProjectionStableId?: string;
   structuralScheduleProjection?: PersonalStructuralScheduleProjection;
+  structuralRepeat?: PersonalStructuralRepeat;
 };
 
 type MySavedFlow = {
@@ -3971,6 +3982,105 @@ function isPersonalDraftDurationValid(durationMinutes?: number): boolean {
   );
 }
 
+const PERSONAL_DRAFT_RECURRENCE_WEEKDAY_OPTIONS: {
+  value: PersonalStructuralWeekday;
+  label: string;
+}[] = [
+  { value: 'MO', label: '월' },
+  { value: 'TU', label: '화' },
+  { value: 'WE', label: '수' },
+  { value: 'TH', label: '목' },
+  { value: 'FR', label: '금' },
+  { value: 'SA', label: '토' },
+  { value: 'SU', label: '일' },
+];
+
+type PersonalDraftRecurrenceEditorState = {
+  mode: '' | 'daily' | 'weekly' | 'monthly';
+  interval: number;
+  weekdays: PersonalStructuralWeekday[];
+  endMode: 'never' | 'until' | 'count';
+  untilDate: string;
+  occurrenceCount: number;
+};
+
+function getPersonalDraftDateWeekday(date: string): PersonalStructuralWeekday {
+  const [year, month, day] = date.split('-').map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  return PERSONAL_STRUCTURAL_WEEKDAYS[(weekday + 6) % 7];
+}
+
+function getPersonalDraftRecurrenceEditorState(
+  repeat: PersonalStructuralRepeat | undefined,
+  startDate: string,
+): PersonalDraftRecurrenceEditorState {
+  const fallback: PersonalDraftRecurrenceEditorState = {
+    mode: '',
+    interval: 1,
+    weekdays: startDate ? [getPersonalDraftDateWeekday(startDate)] : ['MO'],
+    endMode: 'never',
+    untilDate: '',
+    occurrenceCount: 10,
+  };
+  if (!repeat) return fallback;
+
+  let rule: PersonalStructuralRecurrenceRule | undefined;
+  if ('schemaVersion' in repeat) {
+    rule = [...repeat.revisions]
+      .sort((left, right) =>
+        left.effectiveFrom.localeCompare(right.effectiveFrom) ||
+        left.revision - right.revision,
+      )
+      .at(-1)?.rule;
+  } else {
+    rule = repeat;
+  }
+  if (!rule) return fallback;
+
+  const end = rule.end as PersonalStructuralRecurrenceEnd | undefined;
+  return {
+    mode: rule.frequency,
+    interval: rule.interval,
+    weekdays:
+      rule.frequency === 'weekly' && rule.weekdays?.length
+        ? rule.weekdays
+        : fallback.weekdays,
+    endMode: end?.mode ?? 'never',
+    untilDate: end?.mode === 'until' ? end.date : '',
+    occurrenceCount: end?.mode === 'count' ? end.count : 10,
+  };
+}
+
+function formatPersonalDraftRecurrenceSummary(
+  repeat: PersonalStructuralRepeat | undefined,
+  startDate: string,
+): string {
+  const recurrence = getPersonalDraftRecurrenceEditorState(repeat, startDate);
+  if (!recurrence.mode) return '';
+  const interval = recurrence.interval;
+  const base = recurrence.mode === 'daily'
+    ? interval === 1 ? '매일' : `${interval}일마다`
+    : recurrence.mode === 'weekly'
+      ? interval === 1 ? '매주' : `${interval}주마다`
+      : interval === 1 ? '매월' : `${interval}개월마다`;
+  const weekdays = recurrence.mode === 'weekly'
+    ? ` ${recurrence.weekdays
+        .map((weekday) =>
+          PERSONAL_DRAFT_RECURRENCE_WEEKDAY_OPTIONS.find(
+            (option) => option.value === weekday,
+          )?.label,
+        )
+        .filter(Boolean)
+        .join('·')}`
+    : '';
+  const end = recurrence.endMode === 'until'
+    ? ` · ${formatMyFlowDisplayDate(recurrence.untilDate)}까지`
+    : recurrence.endMode === 'count'
+      ? ` · ${recurrence.occurrenceCount}회`
+      : '';
+  return `${base}${weekdays}${end}`;
+}
+
 function addMyFlowMonths(date: string, count: number): string {
   const current = new Date(`${getMyFlowMonthStart(date)}T00:00:00`);
   current.setMonth(current.getMonth() + count);
@@ -4151,6 +4261,9 @@ function mapPersonalDraftProjectionRowToMyFlowRow(
       projectionRow.destinationEligibility.calendarIcs,
     structuralProjectionStableId: projectionRow.itemId,
     structuralScheduleProjection: projectionRow.scheduleProjection,
+    ...(projectionRow.schedule?.mode === 'fixed_date' && projectionRow.schedule.repeat
+      ? { structuralRepeat: projectionRow.schedule.repeat }
+      : {}),
   };
 
   if (projectionRow.ownership === 'source') {
@@ -5495,7 +5608,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return next;
     });
   };
-  const getMyFlowRowEditorDraft = (row: MyFlowCalendarRow): Required<Pick<MyFlowItemDraft, 'title' | 'date' | 'repeatPreset' | 'memo' | 'location' | 'time' | 'durationMinutes' | 'scheduleMode'>> => {
+  const getMyFlowRowEditorDraft = (row: MyFlowCalendarRow): Required<Pick<MyFlowItemDraft, 'title' | 'date' | 'repeatPreset' | 'memo' | 'location' | 'time' | 'durationMinutes' | 'scheduleMode' | 'recurrenceInterval' | 'recurrenceWeekdays' | 'recurrenceEndMode' | 'recurrenceUntil' | 'recurrenceCount'>> => {
     const key = getMyFlowRowInstanceKey(row);
     const committedDraft = getMyFlowRowDraft(row);
     const editingDraft = myFlowEditingDrafts[key] ?? {};
@@ -5511,10 +5624,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const scheduleMode = structuralSchedule?.scheduleState === 'timed'
       ? 'timed'
       : 'all_day';
+    const structuralRecurrence = getPersonalDraftRecurrenceEditorState(
+      row.structuralRepeat,
+      structuralSchedule?.calendarDate ?? row.date ?? '',
+    );
     return {
       title: editingDraft.title ?? getMyFlowRowDisplayTitle(row),
       date: editingDraft.date ?? structuralSchedule?.calendarDate ?? committedDraft.date ?? row.date ?? '',
-      repeatPreset: editingDraft.repeatPreset ?? committedDraft.repeatPreset ?? '',
+      repeatPreset:
+        editingDraft.repeatPreset ??
+        (isPersonalDraftUserItem ? structuralRecurrence.mode : committedDraft.repeatPreset) ??
+        '',
       memo: editingDraft.memo ?? committedDraft.memo ?? fallbackMemo,
       location: editingDraft.location ?? committedDraft.location ?? '',
       time: editingDraft.time ?? structuralSchedule?.startTime ?? committedDraft.time ?? '',
@@ -5524,6 +5644,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         committedDraft.durationMinutes ??
         PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES,
       scheduleMode: editingDraft.scheduleMode ?? committedDraft.scheduleMode ?? scheduleMode,
+      recurrenceInterval:
+        editingDraft.recurrenceInterval ?? structuralRecurrence.interval,
+      recurrenceWeekdays:
+        editingDraft.recurrenceWeekdays ?? structuralRecurrence.weekdays,
+      recurrenceEndMode:
+        editingDraft.recurrenceEndMode ?? structuralRecurrence.endMode,
+      recurrenceUntil:
+        editingDraft.recurrenceUntil ?? structuralRecurrence.untilDate,
+      recurrenceCount:
+        editingDraft.recurrenceCount ?? structuralRecurrence.occurrenceCount,
     };
   };
   const getMyFlowDecisionDraft = (row: MyFlowCalendarRow): Required<Pick<MyFlowItemDraft, 'decisionStatus' | 'nextReviewDate'>> => {
@@ -5629,6 +5759,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         time,
         durationMinutes,
         scheduleMode,
+        repeatPreset,
+        recurrenceInterval,
+        recurrenceWeekdays,
+        recurrenceEndMode,
+        recurrenceUntil,
+        recurrenceCount,
         ...itemDraftWithoutStructuralSchedule
       } = itemDraft;
       const hasStructuralSchedulePatch =
@@ -5636,8 +5772,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         time !== undefined ||
         durationMinutes !== undefined ||
         scheduleMode !== undefined;
-      if (structuralUserItem && hasStructuralSchedulePatch) {
-        const structuralOverlay =
+      const hasStructuralRecurrencePatch =
+        repeatPreset !== undefined ||
+        recurrenceInterval !== undefined ||
+        recurrenceWeekdays !== undefined ||
+        recurrenceEndMode !== undefined ||
+        recurrenceUntil !== undefined ||
+        recurrenceCount !== undefined;
+      const shouldSyncStructuralRecurrence =
+        hasStructuralSchedulePatch && Boolean(row.structuralRepeat);
+      const resolvedRecurrenceDraft =
+        hasStructuralRecurrencePatch || shouldSyncStructuralRecurrence
+        ? getMyFlowRowEditorDraft(row)
+        : undefined;
+      if (structuralUserItem && (hasStructuralSchedulePatch || hasStructuralRecurrencePatch)) {
+        let structuralOverlay =
           myFlowStructuralOverlaysBySlug[row.flow.progress.slug] ??
           createPersonalDraftStructuralOverlay(row.flow.bundle);
         const currentSchedule = row.structuralScheduleProjection;
@@ -5657,21 +5806,49 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             currentSchedule?.durationMinutes ??
             PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES
           );
-        const scheduled = setPersonalDraftUserItemSchedule({
-          overlay: structuralOverlay,
-          itemId: row.id,
-          date: nextDate,
-          mode: nextMode,
-          time: nextTime,
-          durationMinutes: nextDuration,
-          timeZone:
-            nextMode === 'timed'
-              ? timedFieldsChanged
-                ? getCurrentDeviceTimeZone()
-                : currentSchedule?.timeZone
-              : undefined,
-        });
-        if (!scheduled || !saveMyFlowStructuralOverlay(row.flow, scheduled.overlay)) return;
+        if (hasStructuralSchedulePatch) {
+          const scheduled = setPersonalDraftUserItemSchedule({
+            overlay: structuralOverlay,
+            itemId: row.structuralProjectionStableId ?? row.id,
+            date: nextDate,
+            mode: nextMode,
+            time: nextTime,
+            durationMinutes: nextDuration,
+            timeZone:
+              nextMode === 'timed'
+                ? timedFieldsChanged
+                  ? getCurrentDeviceTimeZone()
+                  : currentSchedule?.timeZone
+                : undefined,
+          });
+          if (!scheduled) return;
+          structuralOverlay = scheduled.overlay;
+        }
+        if (resolvedRecurrenceDraft && nextDate) {
+          const recurrence = setPersonalDraftUserItemRecurrence({
+            overlay: structuralOverlay,
+            itemId: row.structuralProjectionStableId ?? row.id,
+            mode:
+              resolvedRecurrenceDraft.repeatPreset === 'daily' ||
+              resolvedRecurrenceDraft.repeatPreset === 'weekly' ||
+              resolvedRecurrenceDraft.repeatPreset === 'monthly'
+                ? resolvedRecurrenceDraft.repeatPreset
+                : 'none',
+            interval: resolvedRecurrenceDraft.recurrenceInterval,
+            weekdays: resolvedRecurrenceDraft.recurrenceWeekdays.filter(
+              (weekday): weekday is PersonalStructuralWeekday =>
+                PERSONAL_STRUCTURAL_WEEKDAYS.includes(
+                  weekday as PersonalStructuralWeekday,
+                ),
+            ),
+            endMode: resolvedRecurrenceDraft.recurrenceEndMode,
+            untilDate: resolvedRecurrenceDraft.recurrenceUntil,
+            occurrenceCount: resolvedRecurrenceDraft.recurrenceCount,
+          });
+          if (!recurrence) return;
+          structuralOverlay = recurrence.overlay;
+        }
+        if (!saveMyFlowStructuralOverlay(row.flow, structuralOverlay)) return;
         clearMyFlowPersonalDraftLegacySchedule(row.flow.progress.slug, row.id);
       }
       const personalDraftItemPatch = structuralUserItem
@@ -7728,13 +7905,52 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           !isPersonalDraftDurationValid(editorDraft.durationMinutes)
         ),
     );
+    const personalDraftRecurrenceMode =
+      editorDraft.repeatPreset === 'daily' ||
+      editorDraft.repeatPreset === 'weekly' ||
+      editorDraft.repeatPreset === 'monthly'
+        ? editorDraft.repeatPreset
+        : '';
+    const personalDraftRecurrenceInvalid = Boolean(
+      isPersonalDraftUserItem &&
+        editorDraft.date &&
+        personalDraftRecurrenceMode &&
+        (
+          !Number.isInteger(editorDraft.recurrenceInterval) ||
+          editorDraft.recurrenceInterval < 1 ||
+          editorDraft.recurrenceInterval > PERSONAL_STRUCTURAL_RECURRENCE_MAX_INTERVAL ||
+          (personalDraftRecurrenceMode === 'weekly' &&
+            editorDraft.recurrenceWeekdays.length === 0) ||
+          (editorDraft.recurrenceEndMode === 'until' &&
+            (!/^\d{4}-\d{2}-\d{2}$/.test(editorDraft.recurrenceUntil) ||
+              editorDraft.recurrenceUntil < editorDraft.date)) ||
+          (editorDraft.recurrenceEndMode === 'count' &&
+            (!Number.isInteger(editorDraft.recurrenceCount) ||
+              editorDraft.recurrenceCount < 1 ||
+              editorDraft.recurrenceCount > PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT))
+        ),
+    );
     const scheduleSummaryRows = [
       editorDraft.date ? { label: '날짜', value: /^\d{4}-\d{2}-\d{2}$/.test(editorDraft.date) ? formatMyFlowDisplayDate(editorDraft.date) : editorDraft.date } : undefined,
       editorDraft.time ? { label: '시간', value: formatMyFlowLocalTimeLabel(editorDraft.time) } : undefined,
       isPersonalDraftUserItem && editorDraft.scheduleMode === 'timed'
         ? { label: '예상', value: formatMyFlowDurationLabel(editorDraft.durationMinutes) }
         : undefined,
-      editorDraft.repeatPreset ? { label: '반복', value: editorDraft.repeatPreset === 'daily' ? '매일' : editorDraft.repeatPreset === 'weekly' ? '매주' : editorDraft.repeatPreset === 'monthly' ? '매월' : editorDraft.repeatPreset } : undefined,
+      personalDraftRecurrenceMode
+        ? {
+            label: '반복',
+            value: formatPersonalDraftRecurrenceSummary(
+              row.structuralRepeat,
+              editorDraft.date,
+            ) || (personalDraftRecurrenceMode === 'daily'
+              ? '매일'
+              : personalDraftRecurrenceMode === 'weekly'
+                ? '매주'
+                : '매월'),
+          }
+        : editorDraft.repeatPreset
+          ? { label: '반복', value: editorDraft.repeatPreset }
+          : undefined,
       editorDraft.location ? { label: '장소', value: editorDraft.location } : undefined,
     ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
     const occurrenceFields = (
@@ -7760,6 +7976,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   scheduleMode: 'all_day',
                   time: '',
                   durationMinutes: undefined,
+                  repeatPreset: '',
+                  recurrenceInterval: 1,
+                  recurrenceEndMode: 'never',
                 })}
               >
                 날짜 없음
@@ -7809,6 +8028,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     scheduleMode: 'all_day',
                     time: '',
                     durationMinutes: undefined,
+                    repeatPreset: '',
+                    recurrenceInterval: 1,
+                    recurrenceEndMode: 'never',
                   })}
                 >
                   날짜 지우기
@@ -7903,6 +8125,180 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700 sm:col-span-2"
                       >
                         시작 시간과 5분 단위의 예상 시간을 입력해 주세요.
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+              </fieldset>
+            ) : null}
+            {editorDraft.date ? (
+              <fieldset
+                data-testid="personal-draft-recurrence-control"
+                className="mt-3 min-w-0 border-t border-slate-200 pt-3"
+              >
+                <legend className="text-xs font-semibold text-slate-600">반복</legend>
+                <div className="mt-1 grid grid-cols-4 gap-1 rounded-md bg-slate-100 p-1">
+                  {([
+                    ['', '없음'],
+                    ['daily', '매일'],
+                    ['weekly', '매주'],
+                    ['monthly', '매월'],
+                  ] as const).map(([mode, label]) => (
+                    <button
+                      key={mode || 'none'}
+                      type="button"
+                      data-testid={`personal-draft-recurrence-${mode || 'none'}`}
+                      aria-pressed={personalDraftRecurrenceMode === mode}
+                      className={`min-h-9 rounded px-2 py-2 text-xs font-semibold ${
+                        personalDraftRecurrenceMode === mode
+                          ? 'bg-white text-blue-700 shadow-sm'
+                          : 'text-slate-600 hover:bg-white/70'
+                      }`}
+                      onClick={() => updateMyFlowEditingDraft(row, {
+                        repeatPreset: mode,
+                        recurrenceInterval: 1,
+                        recurrenceWeekdays:
+                          mode === 'weekly'
+                            ? [getPersonalDraftDateWeekday(editorDraft.date)]
+                            : editorDraft.recurrenceWeekdays,
+                        recurrenceEndMode: 'never',
+                        recurrenceUntil: '',
+                        recurrenceCount: 10,
+                      })}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {personalDraftRecurrenceMode ? (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <label className="block text-xs font-semibold text-slate-600">
+                      반복 간격
+                      <span className="relative mt-1 block">
+                        <input
+                          data-testid="personal-draft-recurrence-interval"
+                          aria-label={`${editorDraft.title} 반복 간격`}
+                          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-14 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          type="number"
+                          min={1}
+                          max={PERSONAL_STRUCTURAL_RECURRENCE_MAX_INTERVAL}
+                          step={1}
+                          value={editorDraft.recurrenceInterval}
+                          onChange={(event) => updateMyFlowEditingDraft(row, {
+                            recurrenceInterval: event.target.value
+                              ? Number(event.target.value)
+                              : 0,
+                          })}
+                        />
+                        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-500">
+                          {personalDraftRecurrenceMode === 'daily'
+                            ? '일마다'
+                            : personalDraftRecurrenceMode === 'weekly'
+                              ? '주마다'
+                              : '개월마다'}
+                        </span>
+                      </span>
+                    </label>
+                    <label className="block text-xs font-semibold text-slate-600">
+                      반복 끝
+                      <select
+                        data-testid="personal-draft-recurrence-end-mode"
+                        aria-label={`${editorDraft.title} 반복 끝`}
+                        className={fieldClassName}
+                        value={editorDraft.recurrenceEndMode}
+                        onChange={(event) => updateMyFlowEditingDraft(row, {
+                          recurrenceEndMode: event.target.value as 'never' | 'until' | 'count',
+                        })}
+                      >
+                        <option value="never">계속</option>
+                        <option value="until">날짜까지</option>
+                        <option value="count">횟수만큼</option>
+                      </select>
+                    </label>
+                    {personalDraftRecurrenceMode === 'weekly' ? (
+                      <fieldset className="sm:col-span-2">
+                        <legend className="text-xs font-semibold text-slate-600">반복 요일</legend>
+                        <div className="mt-1 grid grid-cols-7 gap-1">
+                          {PERSONAL_DRAFT_RECURRENCE_WEEKDAY_OPTIONS.map((option) => {
+                            const selected = editorDraft.recurrenceWeekdays.includes(option.value);
+                            return (
+                              <button
+                                key={option.value}
+                                type="button"
+                                data-testid={`personal-draft-recurrence-weekday-${option.value}`}
+                                aria-pressed={selected}
+                                aria-label={`${option.label}요일 반복 ${selected ? '해제' : '선택'}`}
+                                className={`min-h-9 rounded-md border px-1 py-2 text-xs font-semibold ${
+                                  selected
+                                    ? 'border-blue-300 bg-blue-50 text-blue-700'
+                                    : 'border-slate-200 bg-white text-slate-600'
+                                }`}
+                                onClick={() => updateMyFlowEditingDraft(row, {
+                                  recurrenceWeekdays: selected
+                                    ? editorDraft.recurrenceWeekdays.filter(
+                                        (weekday) => weekday !== option.value,
+                                      )
+                                    : [...editorDraft.recurrenceWeekdays, option.value],
+                                })}
+                              >
+                                {option.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </fieldset>
+                    ) : null}
+                    {personalDraftRecurrenceMode === 'monthly' ? (
+                      <p className="rounded-md bg-slate-50 px-3 py-2 text-xs font-medium leading-5 text-slate-600 sm:col-span-2">
+                        매월 {Number(editorDraft.date.slice(8, 10))}일에 반복돼요. 해당 날짜가 없는 달은 건너뜁니다.
+                      </p>
+                    ) : null}
+                    {editorDraft.recurrenceEndMode === 'until' ? (
+                      <label className="block text-xs font-semibold text-slate-600 sm:col-span-2">
+                        마지막 날짜
+                        <input
+                          data-testid="personal-draft-recurrence-until"
+                          aria-label={`${editorDraft.title} 반복 마지막 날짜`}
+                          className={fieldClassName}
+                          type="date"
+                          min={editorDraft.date}
+                          value={editorDraft.recurrenceUntil}
+                          onChange={(event) => updateMyFlowEditingDraft(row, {
+                            recurrenceUntil: event.target.value,
+                          })}
+                        />
+                      </label>
+                    ) : null}
+                    {editorDraft.recurrenceEndMode === 'count' ? (
+                      <label className="block text-xs font-semibold text-slate-600 sm:col-span-2">
+                        반복 횟수
+                        <span className="relative mt-1 block">
+                          <input
+                            data-testid="personal-draft-recurrence-count"
+                            aria-label={`${editorDraft.title} 반복 횟수`}
+                            className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            type="number"
+                            min={1}
+                            max={PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT}
+                            step={1}
+                            value={editorDraft.recurrenceCount}
+                            onChange={(event) => updateMyFlowEditingDraft(row, {
+                              recurrenceCount: event.target.value
+                                ? Number(event.target.value)
+                                : 0,
+                            })}
+                          />
+                          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-500">회</span>
+                        </span>
+                      </label>
+                    ) : null}
+                    {personalDraftRecurrenceInvalid ? (
+                      <p
+                        data-testid="personal-draft-recurrence-validation"
+                        role="alert"
+                        className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700 sm:col-span-2"
+                      >
+                        반복 간격과 요일, 끝나는 날짜 또는 횟수를 확인해 주세요.
                       </p>
                     ) : null}
                   </div>
@@ -8408,12 +8804,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </p>
             <div className="flex gap-2">
               <button
-                className={`rounded-md px-3 py-2 text-xs font-semibold ${hasEditorChanges && !personalDraftTimedScheduleInvalid ? 'bg-blue-700 text-white' : 'cursor-not-allowed bg-slate-100 text-slate-400'}`}
+                className={`rounded-md px-3 py-2 text-xs font-semibold ${hasEditorChanges && !personalDraftTimedScheduleInvalid && !personalDraftRecurrenceInvalid ? 'bg-blue-700 text-white' : 'cursor-not-allowed bg-slate-100 text-slate-400'}`}
                 type="button"
-                disabled={!hasEditorChanges || personalDraftTimedScheduleInvalid}
+                disabled={!hasEditorChanges || personalDraftTimedScheduleInvalid || personalDraftRecurrenceInvalid}
                 data-testid="my-flow-detail-save-changes"
                 onClick={() => {
-                  if (!hasEditorChanges || personalDraftTimedScheduleInvalid) return;
+                  if (!hasEditorChanges || personalDraftTimedScheduleInvalid || personalDraftRecurrenceInvalid) return;
                   saveMyFlowEditingDraft(row);
                   setMyFlowEditingDetailKey('');
                 }}
@@ -9493,9 +9889,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   data-item-id={row.id}
                   className="flex min-w-0 items-center justify-between gap-2 rounded-md bg-slate-50 px-2 py-1.5"
                 >
-                  <span className="min-w-0 truncate text-sm font-semibold text-slate-700" title={getMyFlowRowDisplayTitle(row)}>
-                    {getMyFlowRowDisplayTitle(row)}
-                  </span>
+                  <button
+                    type="button"
+                    data-testid="personal-draft-order-item-open-wide"
+                    aria-label={`${getMyFlowRowDisplayTitle(row)} 열기`}
+                    className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded px-1 py-1 text-left text-sm font-semibold text-slate-700 hover:bg-white hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
+                    onClick={() => openMyFlowRowFromFlowTab(flow, row)}
+                  >
+                    <span className="min-w-0 truncate" title={getMyFlowRowDisplayTitle(row)}>
+                      {getMyFlowRowDisplayTitle(row)}
+                    </span>
+                    <span className="shrink-0 text-xs font-semibold text-blue-700">열기</span>
+                  </button>
                   {renderPersonalDraftReorderControls(flow, row, index, wideOrderRows.length)}
                 </li>
               ))}

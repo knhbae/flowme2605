@@ -22,6 +22,7 @@ import {
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
   setPersonalDraftUserItemDate,
+  setPersonalDraftUserItemRecurrence,
   setPersonalDraftUserItemSchedule,
   undoPersonalDraftStructuralDelete,
 } from './personal-draft-structural-edit';
@@ -682,6 +683,149 @@ test('personal draft user-created schedule preserves date, time, duration, zone,
     allDayProjection?.allRows.find((row) => row.itemId === 'personal-time-a')
       ?.executionState?.state,
     'reopened',
+  );
+});
+
+test('personal draft recurrence editing persists rules without changing item or schedule identity', () => {
+  const personalDraft = bundle(
+    'flow-personal-recurrence-draft',
+    'url-draft-personal-recurrence-1',
+    'Personal recurrence draft',
+  );
+  personalDraft.flow.status = 'draft';
+  personalDraft.flow.source_title = '내 메모';
+  personalDraft.flow.tags = ['내 초안', '내 메모'];
+  const created = createPersonalDraftUserItem({
+    overlay: createPersonalDraftStructuralOverlay(personalDraft),
+    title: 'Weekly personal task',
+    itemId: 'personal-recurrence-a',
+    createdAt: '2026-07-13T22:10:00.000Z',
+  });
+  assert.ok(created);
+  const scheduled = setPersonalDraftUserItemSchedule({
+    overlay: created.overlay,
+    itemId: 'personal-recurrence-a',
+    date: '2026-08-10',
+    mode: 'timed',
+    time: '09:30',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+    updatedAt: '2026-07-13T22:11:00.000Z',
+  });
+  assert.ok(scheduled);
+
+  const weekly = setPersonalDraftUserItemRecurrence({
+    overlay: scheduled.overlay,
+    itemId: 'personal-recurrence-a',
+    mode: 'weekly',
+    interval: 2,
+    weekdays: ['MO', 'WE', 'FR'],
+    endMode: 'count',
+    occurrenceCount: 12,
+    updatedAt: '2026-07-13T22:12:00.000Z',
+  });
+  assert.ok(weekly);
+  const weeklySchedule = weekly.userItem.schedule;
+  assert.equal(weekly.userItem.itemId, 'personal-recurrence-a');
+  assert.equal(weeklySchedule?.mode, 'fixed_date');
+  if (weeklySchedule?.mode !== 'fixed_date') assert.fail('fixed date schedule required');
+  assert.equal(weeklySchedule.time, '09:30');
+  assert.equal(weeklySchedule.durationMinutes, 45);
+  assert.equal(weeklySchedule.timeZone, 'Asia/Seoul');
+  const weeklySeries = normalizePersonalStructuralRecurrence({
+    value: weeklySchedule.repeat,
+    identityNamespace: weekly.overlay.savedCopyId,
+    itemId: weekly.userItem.itemId,
+    startDate: weeklySchedule.date,
+  }).series;
+  assert.deepEqual(weeklySeries?.revisions[0].rule, {
+    frequency: 'weekly',
+    interval: 2,
+    weekdays: ['MO', 'WE', 'FR'],
+    end: { mode: 'count', count: 12 },
+  });
+  const seriesId = weeklySeries?.seriesId;
+
+  assert.equal(
+    setPersonalDraftUserItemRecurrence({
+      overlay: weekly.overlay,
+      itemId: 'personal-recurrence-a',
+      mode: 'weekly',
+      interval: 0,
+      weekdays: ['MO'],
+    }),
+    undefined,
+  );
+  assert.equal(
+    setPersonalDraftUserItemRecurrence({
+      overlay: weekly.overlay,
+      itemId: 'personal-recurrence-a',
+      mode: 'weekly',
+      interval: 1,
+      weekdays: [],
+    }),
+    undefined,
+  );
+  assert.equal(
+    setPersonalDraftUserItemRecurrence({
+      overlay: weekly.overlay,
+      itemId: 'personal-recurrence-a',
+      mode: 'daily',
+      interval: 1,
+      endMode: 'until',
+      untilDate: '2026-08-09',
+    }),
+    undefined,
+  );
+
+  const daily = setPersonalDraftUserItemRecurrence({
+    overlay: weekly.overlay,
+    itemId: 'personal-recurrence-a',
+    mode: 'daily',
+    interval: 1,
+    endMode: 'until',
+    untilDate: '2026-09-01',
+    executionRecordCount: 0,
+    updatedAt: '2026-07-13T22:13:00.000Z',
+  });
+  assert.ok(daily);
+  const dailySchedule = daily.userItem.schedule;
+  if (dailySchedule?.mode !== 'fixed_date') assert.fail('fixed date schedule required');
+  const dailySeries = normalizePersonalStructuralRecurrence({
+    value: dailySchedule.repeat,
+    identityNamespace: daily.overlay.savedCopyId,
+    itemId: daily.userItem.itemId,
+    startDate: dailySchedule.date,
+  }).series;
+  assert.equal(dailySeries?.seriesId, seriesId);
+  assert.equal(dailySeries?.revisions.length, 1);
+  assert.deepEqual(dailySeries?.revisions[0].rule, {
+    frequency: 'daily',
+    interval: 1,
+    end: { mode: 'until', date: '2026-09-01' },
+  });
+
+  const cleared = setPersonalDraftUserItemRecurrence({
+    overlay: daily.overlay,
+    itemId: 'personal-recurrence-a',
+    mode: 'none',
+    updatedAt: '2026-07-13T22:14:00.000Z',
+  });
+  assert.ok(cleared);
+  assert.deepEqual(cleared.userItem.schedule, {
+    mode: 'fixed_date',
+    date: '2026-08-10',
+    time: '09:30',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+  });
+  assert.equal(
+    setPersonalDraftUserItemRecurrence({
+      overlay: created.overlay,
+      itemId: 'personal-recurrence-a',
+      mode: 'daily',
+    }),
+    undefined,
   );
 });
 
