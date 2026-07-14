@@ -44,7 +44,11 @@
   - [x] Reload and whole-Flow list export preserve every split Item.
   - [x] Calendar continues to include only scheduled Items.
   - [x] Empty miss requests stay unsaved and status copy never becomes an executable title.
-- [ ] P24-00F4 hard navigation and post-save hydration.
+- [x] P24-00F4 hard navigation and post-save hydration.
+  - [x] Clean production `/flows` hard navigation/reload resolves 7/7.
+  - [x] Repeated public save hydrates the matching My Flow 5/5.
+  - [x] Dirty dependency/dev findings remain separated from clean baseline evidence.
+  - [x] No speculative app-code change when the defect is not reproducible.
 
 ## UX Simplification
 

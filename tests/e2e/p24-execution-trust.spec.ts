@@ -427,4 +427,93 @@ test.describe('P24 execution trust regressions', () => {
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
     ).toBeLessThanOrEqual(1);
   });
+
+  test('the Flow finder resolves after repeated hard navigation and reloads', async ({ page }) => {
+    test.setTimeout(120_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    for (let iteration = 0; iteration < 6; iteration += 1) {
+      if (iteration === 0) {
+        await page.goto('/flows', { waitUntil: 'domcontentloaded' });
+      } else {
+        await page.reload({ waitUntil: 'domcontentloaded' });
+      }
+      await expect(page.getByTestId('flow-url-lookup-entry')).toBeVisible({ timeout: 10_000 });
+      await expect(page.getByText('Flow를 불러오는 중입니다.')).toHaveCount(0);
+      await expect(page.getByLabel('URL 또는 메모')).toBeEnabled();
+    }
+
+    const evidenceDir = process.env.FLOWME_P24_F4_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/00-flows-hard-navigation-mobile.png`,
+        fullPage: true,
+      });
+    }
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('flow-url-lookup-entry')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Flow를 불러오는 중입니다.')).toHaveCount(0);
+    if (evidenceDir) {
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/01-flows-hard-navigation-wide.png`,
+        fullPage: true,
+      });
+    }
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('public saves hydrate the matching My Flow immediately across repeated clean sessions', async ({ page }) => {
+    test.setTimeout(180_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    for (let iteration = 0; iteration < 5; iteration += 1) {
+      await page.goto('/f/new-car-delivery-check');
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      const saveArea = page.getByTestId('public-flow-mobile-save-cta');
+      await saveArea.getByRole('button', { name: '내 Flow에 저장' }).click();
+      await expect.poll(() => page.evaluate(() =>
+        Boolean(localStorage.getItem('flow:saved:new-car-delivery-check')),
+      )).toBe(true);
+      const myFlowLink = saveArea.getByRole('link', { name: '내 Flow에서 보기' });
+      await expect(myFlowLink).toBeVisible();
+      await Promise.all([
+        page.waitForURL(/\/my/, { timeout: 15_000 }),
+        myFlowLink.click(),
+      ]);
+      await expect(page.getByTestId('my-flow-workspace')).toBeVisible({ timeout: 10_000 });
+      await page.getByTestId('my-flow-view-flow').click();
+      const savedFlow = page.locator(
+        '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="new-car-delivery-check"]',
+      );
+      await expect(savedFlow).toBeVisible({ timeout: 10_000 });
+      await expect(savedFlow).toContainText('신차 인수');
+      await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
+    }
+
+    const evidenceDir = process.env.FLOWME_P24_F4_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/02-post-save-hydration-mobile.png`,
+        fullPage: true,
+      });
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    expect(consoleErrors).toEqual([]);
+  });
 });

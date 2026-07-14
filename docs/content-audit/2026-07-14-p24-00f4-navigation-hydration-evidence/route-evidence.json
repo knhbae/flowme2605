@@ -1,0 +1,51 @@
+{
+  "slice": "P24-00F4",
+  "baselineCommit": "b0f7744",
+  "runtime": {
+    "framework": "Next.js 15.3.8",
+    "mode": "production build",
+    "dependencyState": "clean tracked baseline"
+  },
+  "evidenceClass": [
+    "current_command",
+    "browser_simulated"
+  ],
+  "markers": {
+    "flowsHardNavigationMobileAttemptCount": 6,
+    "flowsHardNavigationWideAttemptCount": 1,
+    "flowsHardNavigationResolvedCount": 7,
+    "flowsSuspenseFallbackStuckCount": 0,
+    "publicPostSaveAttemptCount": 5,
+    "publicPostSaveHydratedCount": 5,
+    "publicPostSaveEmptyStateCount": 0,
+    "storedRecordBeforeMyFlowNavigationCount": 5,
+    "appCodeChanged": false,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "routes": [
+    {
+      "route": "/flows",
+      "viewport": "390x844",
+      "state": "resolved after six hard navigation/reload attempts",
+      "screenshot": "screenshots/00-flows-hard-navigation-mobile.png"
+    },
+    {
+      "route": "/flows",
+      "viewport": "1024x768",
+      "state": "resolved after wide hard reload",
+      "screenshot": "screenshots/01-flows-hard-navigation-wide.png"
+    },
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "new-car public Flow visible immediately after fifth clean save",
+      "screenshot": "screenshots/02-post-save-hydration-mobile.png"
+    }
+  ],
+  "verification": {
+    "targetedPlaywright": "2/2 pass",
+    "productionBuild": "pass (18 routes)"
+  }
+}
