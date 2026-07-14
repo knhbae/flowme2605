@@ -1,0 +1,47 @@
+{
+  "artifact": "P24-00S1 date movement contract",
+  "evidenceType": "automated_fixture",
+  "observedUserSessions": 0,
+  "appUiChanged": false,
+  "dateMovementContractReady": true,
+  "dateMovementScopes": [
+    "single",
+    "selected",
+    "anchor",
+    "occurrence",
+    "future_series",
+    "whole_series"
+  ],
+  "dateOwnershipStates": [
+    "linked",
+    "fixed",
+    "unscheduled"
+  ],
+  "bulkMovementAtomic": true,
+  "previewAffectedCountAvailable": true,
+  "anchorLinkedRecalculatedCount": 1,
+  "anchorFixedKeptCount": 1,
+  "anchorUnscheduledKeptCount": 1,
+  "selectedUnknownItemLossCount": 0,
+  "dateRemovalCalendarEligible": false,
+  "dateRemovalIcsEligible": false,
+  "dateRemovalListExportEligibleDestinationCount": 3,
+  "dstWallClockShiftCount": 0,
+  "occurrenceIdentityChangeCount": 0,
+  "occurrenceExecutionStateChangeCount": 0,
+  "futureSeriesRevisionCreated": true,
+  "futureSeriesGapOccurrenceLeakCount": 0,
+  "wholeSeriesIdentityChangeWithoutHistoryCount": 0,
+  "pastExecutionRecordLossCount": 0,
+  "staleApplyBlocked": true,
+  "mismatchedUndoBlocked": true,
+  "calendarUnscheduledTrayConnected": false,
+  "exportSharedMultiSelectConnected": false,
+  "backwardFutureSeriesMoveSupported": false,
+  "backwardFutureSeriesMoveBlockedReason": "explicit_cutover_policy_required",
+  "unitTests": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  }
+}
