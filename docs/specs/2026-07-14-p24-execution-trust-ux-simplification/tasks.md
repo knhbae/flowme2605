@@ -62,7 +62,7 @@
 ## Operations and Observation
 
 - [x] P24-00OPS1 public observation URL.
-- [ ] P24-00OPS2 controlled dependency upgrade with high `0`, full/sharded E2E, and rollback evidence.
+- [x] P24-00OPS2 controlled dependency upgrade with high `0`, bounded-shard full E2E, rollback evidence, and 390px/1024px capture.
 - [ ] Independent Claude Code regression on the same commit and lockfile.
 - [ ] P24-00B 15 observed sessions.
 - [ ] P24-00C keep/change/defer review.

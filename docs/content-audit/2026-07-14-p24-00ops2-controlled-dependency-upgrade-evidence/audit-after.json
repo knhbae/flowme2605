@@ -1,0 +1,130 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "exceljs": {
+      "name": "exceljs",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "uuid"
+      ],
+      "effects": [],
+      "range": ">=3.5.0",
+      "nodes": [
+        "node_modules/exceljs"
+      ],
+      "fixAvailable": {
+        "name": "exceljs",
+        "version": "3.4.0",
+        "isSemVerMajor": true
+      }
+    },
+    "next": {
+      "name": "next",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "postcss"
+      ],
+      "effects": [],
+      "range": "9.3.4-canary.0 - 16.3.0-canary.5",
+      "nodes": [
+        "node_modules/next"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "9.3.3",
+        "isSemVerMajor": true
+      }
+    },
+    "postcss": {
+      "name": "postcss",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1117015,
+          "name": "postcss",
+          "dependency": "postcss",
+          "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+          "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-79"
+          ],
+          "cvss": {
+            "score": 6.1,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+          },
+          "range": "<8.5.10"
+        }
+      ],
+      "effects": [
+        "next"
+      ],
+      "range": "<8.5.10",
+      "nodes": [
+        "node_modules/next/node_modules/postcss"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "9.3.3",
+        "isSemVerMajor": true
+      }
+    },
+    "uuid": {
+      "name": "uuid",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1119441,
+          "name": "uuid",
+          "dependency": "uuid",
+          "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+          "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-787",
+            "CWE-1285"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N"
+          },
+          "range": "<11.1.1"
+        }
+      ],
+      "effects": [
+        "exceljs"
+      ],
+      "range": "<11.1.1",
+      "nodes": [
+        "node_modules/uuid"
+      ],
+      "fixAvailable": {
+        "name": "exceljs",
+        "version": "3.4.0",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 4,
+      "high": 0,
+      "critical": 0,
+      "total": 4
+    },
+    "dependencies": {
+      "prod": 119,
+      "dev": 115,
+      "optional": 65,
+      "peer": 2,
+      "peerOptional": 0,
+      "total": 273
+    }
+  }
+}

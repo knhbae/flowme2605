@@ -18,8 +18,8 @@ Detailed status lives in the [P24 completion audit](./content-audit/2026-07-14-p
 | --- | --- | --- |
 | P24 implementation | Date/effective projection, recurrence, draft integrity, completion undo, editor, Calendar tray, export scope, execution notes | Done by automated evidence |
 | P24-00OPS1 | Public anonymous production URL | Done |
-| P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E and rollback | In progress |
-| P24-00B | Five real participants x three sessions | Ready after OPS2, `0 / 15` |
+| P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E and rollback | Done |
+| P24-00B | Five real participants x three sessions | Ready, `0 / 15` |
 | P24-00C | Keep/change/defer and observed fixes | Pending P24-00B |
 | P24 final | Final regression, production deploy and completion package | Pending |
 

@@ -541,7 +541,12 @@ test('flow finding turns a plain memo into an editable private draft and lands i
 
   await page.goto('/calendar');
   await expect(page.getByText('이사 견적을 비교하기').first()).toBeVisible();
-  await expect(page.getByText('관리사무소에 연락하기')).toHaveCount(0);
+  await expect(
+    page.locator('.fc-event').filter({ hasText: '관리사무소에 연락하기' }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByTestId('my-flow-calendar-unscheduled-tray').getByText('관리사무소에 연락하기'),
+  ).toBeVisible();
   await expect(page.getByText('첫 할 일 날짜').first()).toBeVisible();
   await expect(page.getByText('메모에서 나눈 할 일').first()).toBeVisible();
   await expect(page.locator('body')).not.toContainText('기준 D-Day');
@@ -1071,7 +1076,7 @@ test('my flow personal copy settings can readjust saved title date and included 
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:3104' });
   await personalFlow.getByTestId('my-flow-mobile-structure-step-row').first().click();
   const personalDetail = personalFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(personalFlow.getByRole('button', { name: /정수와 유리수/ })).toBeVisible();
+  await expect(personalFlow.getByTestId('my-flow-mobile-structure-step-row').first()).toContainText('정수와 유리수');
   await personalDetail.getByTestId('my-flow-detail-portable-export').locator('summary').click();
   await personalDetail.getByTestId('my-flow-detail-copy-portable-text').click();
   const copiedMarkdown = await page.evaluate(() => navigator.clipboard.readText());
@@ -3599,14 +3604,15 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-completion-note')).toHaveCount(0);
   await expect(routineMemoInput).not.toHaveValue(/실행:/);
   await expect(routineMemoInput).not.toHaveValue(/완료 기준:/);
+  await expandMyFlowAdvancedEditor(selectedRoutineDetail);
   const routineRepeatToggleBox = await selectedRoutineDetail.getByTestId('my-flow-routine-repeat-toggle').boundingBox();
   const routineTimeBox = await selectedRoutineDetail.getByLabel('시간').boundingBox();
   const routineLocationBox = await selectedRoutineDetail.getByLabel('장소').boundingBox();
-  expect(routineRepeatToggleBox?.y ?? 9999).toBeLessThan(routineTimeBox?.y ?? 0);
-  expect(routineRepeatToggleBox?.y ?? 9999).toBeLessThan(routineLocationBox?.y ?? 0);
+  expect(routineTimeBox?.y ?? 9999).toBeLessThan(routineRepeatToggleBox?.y ?? 0);
+  expect(routineLocationBox?.y ?? 9999).toBeLessThan(routineRepeatToggleBox?.y ?? 0);
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-occurrence-section')).toContainText('이번 일정');
   const routineOccurrenceBox = await selectedRoutineDetail.getByTestId('my-flow-routine-occurrence-section').boundingBox();
-  expect(routineRepeatToggleBox?.y ?? 9999).toBeLessThan(routineOccurrenceBox?.y ?? 0);
+  expect(routineOccurrenceBox?.y ?? 9999).toBeLessThan(routineRepeatToggleBox?.y ?? 0);
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-repeat-editor')).toHaveCount(0);
   await selectedRoutineDetail.getByTestId('my-flow-routine-repeat-toggle').click();
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-routine-repeat-editor')).toBeVisible();
@@ -3879,7 +3885,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   const itemChecklist = flowDetail.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('거듭제곱');
   await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정');
-  await expect(flowDetail.getByTestId('my-flow-detail-portable-export')).toContainText('원문·내 도구');
+  await expect(flowDetail.getByTestId('my-flow-detail-portable-export').locator('summary')).toContainText('원문 · 이 항목 가져가기');
   await itemChecklist.getByLabel('거듭제곱').check();
   await expect(flowDetail.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/8');
 });
@@ -4961,6 +4967,7 @@ test('my flow ux12 calendar collapses dense days and opens recurring routine edi
   await page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-icon"]').first().click();
   const routineDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
   await enterMyFlowDetailEditMode(routineDetail);
+  await expandMyFlowAdvancedEditor(routineDetail);
   await routineDetail.getByTestId('my-flow-routine-repeat-toggle').click();
   const routineRepeatEditor = routineDetail.getByTestId('my-flow-routine-repeat-editor');
   await expect(routineRepeatEditor.locator('select')).toHaveValue('this');
