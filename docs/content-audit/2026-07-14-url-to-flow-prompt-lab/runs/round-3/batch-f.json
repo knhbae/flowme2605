@@ -1,0 +1,192 @@
+{
+  "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
+  "runId": "round-3-batch-f",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "modelEvidence": {
+    "provider": "codex-subagent-runtime",
+    "model": "codex-subagent-runtime",
+    "modelTier": "unclassified",
+    "evidenceKind": "in_session_same_model"
+  },
+  "timing": {
+    "startedAt": null,
+    "completedAt": null,
+    "latencyMs": null,
+    "evidenceKind": "not_available"
+  },
+  "usage": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "evidenceKind": "not_available"
+  },
+  "cost": {
+    "amount": null,
+    "currency": null,
+    "pricingRef": null,
+    "evidenceKind": "not_available"
+  },
+  "outputs": [
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-10",
+      "caseId": "case-10",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "phase_lifecycle",
+        "primarySourceId": "source-kotsa-regular-inspection",
+        "supportingSourceIds": [
+          "source-kotsa-inspection-procedure"
+        ],
+        "receivedSourceRowIds": [
+          "row-inspection-window",
+          "row-inspection-agency-phases"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "내 차량의 검사 유효기간 안에 정기검사를 받고 필요할 때 재검사 조건을 확인한다.",
+        "lifeArea": "money_admin_purchase",
+        "planningPattern": "phase_lifecycle",
+        "primaryArtifact": "checklist",
+        "contentShape": "정기검사 유효기간을 기준으로 한 단일 체크 항목"
+      },
+      "proposal": {
+        "proposalTitle": "자동차 정기검사 챙기기",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "유효기간 안에 정기검사 받기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-inspection-window"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "유효기간 안에 정기검사를 받았다"
+            },
+            "memoCandidate": "필요할 때 재검사 조건을 확인한다.",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [
+          {
+            "sourceRowId": "row-inspection-agency-phases",
+            "reasonCode": "supporting_source_boundary",
+            "reason": "supporting source의 검사기관 내부 단계는 사용자가 수행하는 독립 Item이 아니다."
+          }
+        ],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "primary source의 유효기간 행을 한 개의 사용자 행동으로 보존한다."
+        },
+        {
+          "target": "calendar",
+          "applicability": "not_applicable",
+          "reason": "SourceRow에 실제 날짜가 없어 Calendar 일정은 만들 수 없다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "구체적인 검사 유효기간 날짜와 재검사 조건은 SourceRow에 없다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "차량에 적용되는 실제 유효기간과 재검사 조건을 공식 정보에서 확인해야 한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-11",
+      "caseId": "case-11",
+      "status": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "readiness": null,
+        "errorCode": "missing_source_rows"
+      },
+      "sourceAssessment": {
+        "access": "unavailable",
+        "sourceShape": "unknown",
+        "primarySourceId": "source-computer-skills-pdf-unavailable",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": null,
+      "proposal": {
+        "proposalTitle": null,
+        "items": [],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [],
+      "reviewHints": {
+        "recommendedDisposition": "source_import_required",
+        "uncertainties": [
+          "파일 본문과 진도표로 옮길 SourceRow를 확보하지 못했다."
+        ],
+        "hardFailCodes": [
+          "missing_source_rows"
+        ],
+        "humanReviewRequired": []
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-12",
+      "caseId": "case-12",
+      "status": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "readiness": null,
+        "errorCode": "locale_applicability_unverified"
+      },
+      "sourceAssessment": {
+        "access": "partial",
+        "sourceShape": "unknown",
+        "primarySourceId": "source-stemcyte-hospital-bag",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": null,
+      "proposal": {
+        "proposalTitle": null,
+        "items": [],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [],
+      "reviewHints": {
+        "recommendedDisposition": "hold",
+        "uncertainties": [
+          "미국 병원·보험·서류 맥락이 한국 사용자에게 적용되는지 검증되지 않았다."
+        ],
+        "hardFailCodes": [
+          "locale_applicability_unverified"
+        ],
+        "humanReviewRequired": [
+          "한국 병원 기준의 의료·보험·행정 적용성을 별도로 확인해야 한다."
+        ]
+      }
+    }
+  ]
+}

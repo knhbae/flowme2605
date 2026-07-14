@@ -1,0 +1,69 @@
+{
+  "caseId": null,
+  "blindRunLabel": null,
+  "reviewMethod": {
+    "reviewerKind": "in_session_model_proxy",
+    "modelIdentityBlinded": true,
+    "humanReviewer": false
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  },
+  "reviewHardFailCodes": null,
+  "scores": {
+    "userNeedFit": null,
+    "executionClarity": null,
+    "contentFidelityAndCoverage": null,
+    "portabilityAndNaturalArtifact": null,
+    "cognitiveLoad": null,
+    "copySpecificity": null,
+    "sourceAndSafetySeparation": null
+  },
+  "scoreComments": {
+    "userNeedFit": null,
+    "executionClarity": null,
+    "contentFidelityAndCoverage": null,
+    "portabilityAndNaturalArtifact": null,
+    "cognitiveLoad": null,
+    "copySpecificity": null,
+    "sourceAndSafetySeparation": null
+  },
+  "qualityAverage": null,
+  "sourceRowAccounting": {
+    "executableRows": null,
+    "mappedUniqueRows": null,
+    "approvedOmittedRows": null,
+    "accountedSourceRowRate": null
+  },
+  "correction": {
+    "reviewSeconds": null,
+    "reviewTimeEvidenceKind": "not_available",
+    "originalItemCount": null,
+    "keptOriginalItems": null,
+    "itemKeepRate": null,
+    "deletedItems": null,
+    "mergedItems": null,
+    "splitItems": null,
+    "titleRewrites": null,
+    "completionRewrites": null,
+    "sourceRefFixes": null,
+    "omissionFixes": null,
+    "scheduleRemovals": null,
+    "destinationChanges": null,
+    "riskBoundaryFixes": null,
+    "fullRegenerationRequired": null,
+    "burden": null
+  },
+  "contentQualityGatePassed": null,
+  "negativeGatePassed": null,
+  "fullUsabilityVerified": false,
+  "decision": null,
+  "topFixes": [],
+  "correctedPreview": {
+    "title": null,
+    "items": [],
+    "destinations": [],
+    "reviewNote": null
+  }
+}

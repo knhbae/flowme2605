@@ -1,0 +1,378 @@
+{
+  "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
+  "runId": "round-3-batch-d",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "caseSetVersion": "url-to-flow-prompt-lab-cases-v1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "modelEvidence": {
+    "provider": "codex-subagent-runtime",
+    "model": "codex-subagent-runtime",
+    "modelTier": "unclassified",
+    "evidenceKind": "in_session_same_model"
+  },
+  "timing": {
+    "startedAt": null,
+    "completedAt": null,
+    "latencyMs": null,
+    "evidenceKind": "not_available"
+  },
+  "usage": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "evidenceKind": "not_available"
+  },
+  "cost": {
+    "amount": null,
+    "currency": null,
+    "pricingRef": null,
+    "evidenceKind": "not_available"
+  },
+  "outputs": [
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-01",
+      "caseId": "case-01",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "date_preparation",
+        "primarySourceId": "source-nhis-health-checkup",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-checkup-booking",
+          "row-checkup-visit"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "검진 대상과 예약을 확인한 뒤 검진기관 방문을 마친다.",
+        "lifeArea": "health_fitness",
+        "planningPattern": "date_preparation",
+        "primaryArtifact": "checklist",
+        "contentShape": "검진 확인과 방문 체크리스트"
+      },
+      "proposal": {
+        "proposalTitle": "건강검진 확인과 방문",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "검진 대상 및 예약 확인하기",
+            "intent": "inspect",
+            "sourceRowIds": [
+              "row-checkup-booking"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "검진 대상 및 예약 확인을 끝낸 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          },
+          {
+            "proposalId": "p-02",
+            "title": "검진기관 방문하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-checkup-visit"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "검진기관 방문을 끝낸 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "두 SourceRow를 각각 완료 확인이 가능한 항목으로 유지한다."
+        },
+        {
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "SourceRow에 실제 날짜 표현이 없어 일정 시점을 만들 수 없다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "의료 민감 정보에 해당하므로 사람 검토가 필요하다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-02",
+      "caseId": "case-02",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "repeating_routine",
+        "primarySourceId": "source-samsung-aircon-filter",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-aircon-filter-4week"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "극세 필터를 4주에 한 번 청소하고 완료 여부를 확인한다.",
+        "lifeArea": "home_living",
+        "planningPattern": "repeating_routine",
+        "primaryArtifact": "hybrid",
+        "contentShape": "반복 주기와 완료 확인이 있는 청소 항목"
+      },
+      "proposal": {
+        "proposalTitle": "에어컨 극세 필터 청소",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "극세 필터 청소하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-aircon-filter-4week"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "극세 필터 청소를 끝낸 상태"
+            },
+            "memoCandidate": "먼지 제거, 물세척, 그늘 건조",
+            "groupingCandidate": null,
+            "scheduleCandidate": {
+              "sourceRowIds": [
+                "row-aircon-filter-4week"
+              ],
+              "sourceText": "4주에 한 번",
+              "parsedByRule": false
+            }
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "calendar",
+          "applicability": "applicable",
+          "reason": "SourceRow의 반복 표현을 파싱하지 않은 일정 후보로 보존한다."
+        },
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "필터 청소를 한 개의 완료 확인 항목으로 유지한다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "4주에 한 번은 파싱되지 않은 원문 일정 후보이다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "반복 일정으로 적용하기 전에 주기 해석을 검토해야 한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-05",
+      "caseId": "case-05",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "source_table_rows",
+        "primarySourceId": "source-kmooc-hundred-schools",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-kmooc-week-01",
+          "row-kmooc-week-02"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "1주차와 2주차 강의·퀴즈의 현재 진도를 기록한다.",
+        "lifeArea": "study_reading",
+        "planningPattern": "source_table_rows",
+        "primaryArtifact": "sheet",
+        "contentShape": "주차별 강의와 퀴즈 진도 기록표"
+      },
+      "proposal": {
+        "proposalTitle": "제자백가 강좌 주차별 진도",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "1주차 강의와 퀴즈 진도 기록하기",
+            "intent": "record",
+            "sourceRowIds": [
+              "row-kmooc-week-01"
+            ],
+            "completion": {
+              "mode": "record",
+              "doneWhen": "1주차 강의와 퀴즈의 현재 진도를 기록한 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": {
+              "sourceRowIds": [
+                "row-kmooc-week-01"
+              ],
+              "sourceText": "1주차",
+              "parsedByRule": false
+            }
+          },
+          {
+            "proposalId": "p-02",
+            "title": "2주차 강의와 퀴즈 진도 기록하기",
+            "intent": "record",
+            "sourceRowIds": [
+              "row-kmooc-week-02"
+            ],
+            "completion": {
+              "mode": "record",
+              "doneWhen": "2주차 강의와 퀴즈의 현재 진도를 기록한 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": {
+              "sourceRowIds": [
+                "row-kmooc-week-02"
+              ],
+              "sourceText": "2주차",
+              "parsedByRule": false
+            }
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "sheet",
+          "applicability": "applicable",
+          "reason": "두 SourceRow를 주차별 진도 기록 행으로 유지한다."
+        },
+        {
+          "target": "memo",
+          "applicability": "applicable",
+          "reason": "각 주차 진도 행과 함께 사용자가 메모를 남길 수 있다."
+        },
+        {
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "주차 표현은 있으나 실제 날짜 기준이 없어 일정으로 배치할 수 없다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "1주차와 2주차는 실제 날짜로 파싱되지 않은 source-defined 주차 표현이다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "주차 표현을 일정으로 사용할 경우 기준 날짜를 확인해야 한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-06",
+      "caseId": "case-06",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "single_resource",
+        "primarySourceId": "source-recipe-video-playlist",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-recipe-video-resource"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "선택한 레시피 영상을 한 번 실행하고 출처 재생목록을 함께 보관한다.",
+        "lifeArea": "meals_grocery",
+        "planningPattern": "resource_queue",
+        "primaryArtifact": "memo",
+        "contentShape": "단일 레시피 영상 실행 메모"
+      },
+      "proposal": {
+        "proposalTitle": "선택한 레시피 영상 실행",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "선택한 레시피 영상 실행하기",
+            "intent": "use_resource",
+            "sourceRowIds": [
+              "row-recipe-video-resource"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "선택한 레시피 영상을 한 번 실행한 상태"
+            },
+            "memoCandidate": "출처 재생목록: https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "memo",
+          "applicability": "applicable",
+          "reason": "선택한 영상 항목과 입력에 제공된 출처 재생목록을 함께 보관한다."
+        },
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "영상 실행 여부를 한 번 확인하는 항목으로 유지한다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "선택한 개별 영상의 URL은 입력에 제공되지 않았다.",
+          "출처의 권리 상태가 needs_review이다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "개별 영상 링크와 출처 사용 권리를 검토해야 한다."
+        ]
+      }
+    }
+  ]
+}

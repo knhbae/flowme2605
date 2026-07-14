@@ -1,0 +1,182 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-2",
+  "caseId": "case-06",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-06",
+    "requestId": "prompt-lab-v1-case-06",
+    "targetLocale": "ko-KR",
+    "userJob": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+    "maxItems": 7,
+    "claimedScope": "제공된 1개 SourceRow 범위만 변환한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-recipe-video-playlist",
+        "title": "백종원의 요리비책 레시피 재생목록",
+        "sourceType": "creator_experience",
+        "originalUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+        "canonicalUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": "백종원의 요리비책",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "needs_review",
+        "riskLevel": "low",
+        "accessStatus": "fetched"
+      },
+      "supporting": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-recipe-video-resource",
+        "sourceId": "source-recipe-video-playlist",
+        "rowType": "resource",
+        "title": "선택한 레시피 영상",
+        "detail": null,
+        "order": 0
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-06-memo-first:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-06",
+    "fixtureId": "gf-pos-06-memo-first",
+    "fixtureKind": "positive",
+    "fixtureShape": "memo_first",
+    "name": "레시피 영상 실행 메모",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+      "planningPattern": "ordered_procedure",
+      "primaryArtifact": "memo",
+      "riskLevel": "low"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-recipe-video-follow",
+        "title": "선택한 레시피 영상 따라 만들기",
+        "intent": "use_resource",
+        "sourceRowIds": [
+          "row-recipe-video-resource"
+        ],
+        "completionMode": "check",
+        "doneWhen": "선택한 영상의 레시피를 한 번 따라 만들었다.",
+        "hasSchedule": false,
+        "canonicalSchedule": null
+      }
+    ],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [
+      "row-recipe-video-resource"
+    ],
+    "expectedProjections": [
+      "memo:markdown",
+      "memo:plain_text",
+      "checklist:plain_text"
+    ],
+    "forbiddenProjections": [
+      "calendar:ics",
+      "sheet:xlsx"
+    ],
+    "referenceReview": {
+      "readiness": "ready_second_wave",
+      "hardFails": [],
+      "rightsDecision": "영상 자체를 복제하지 않고 제목·링크·짧은 실행 메모만 사용한다.",
+      "riskDecision": "알레르기와 식품 안전 판단을 FlowMe가 대신하지 않는다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.2",
+    "requestId": "prompt-lab-v1-case-06",
+    "caseId": "case-06",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "single_resource",
+      "primarySourceId": "source-recipe-video-playlist",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-recipe-video-resource"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "선택한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+      "lifeArea": "meals_grocery",
+      "planningPattern": "resource_queue",
+      "primaryArtifact": "memo",
+      "contentShape": "실행 기록이 붙은 단일 영상 메모"
+    },
+    "proposal": {
+      "proposalTitle": "선택한 레시피 영상 실행 기록",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "선택한 레시피 영상 열어 실행하기",
+          "intent": "use_resource",
+          "sourceRowIds": [
+            "row-recipe-video-resource"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 레시피 영상을 열어 한 번 실행함"
+          },
+          "memoCandidate": "실행에 필요한 맥락을 함께 보관한다.",
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "memo",
+        "applicability": "applicable",
+        "reason": "선택한 영상과 실행에 필요한 맥락을 하나의 기록으로 보관한다."
+      },
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "영상 실행 여부만 확인하고 입력에 없는 조리 단계를 만들지 않는다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "보관할 구체적인 맥락은 입력에 제시되지 않음"
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "출처 권리 상태 needs_review 확인"
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

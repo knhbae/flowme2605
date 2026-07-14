@@ -1,0 +1,360 @@
+{
+  "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
+  "runId": "round-1-batch-b",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "modelEvidence": {
+    "provider": "codex-subagent-runtime",
+    "model": "codex-subagent-runtime",
+    "modelTier": "unclassified",
+    "evidenceKind": "in_session_same_model"
+  },
+  "timing": {
+    "startedAt": null,
+    "completedAt": null,
+    "latencyMs": null,
+    "evidenceKind": "not_available"
+  },
+  "usage": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "evidenceKind": "not_available"
+  },
+  "cost": {
+    "amount": null,
+    "currency": null,
+    "pricingRef": null,
+    "evidenceKind": "not_available"
+  },
+  "outputs": [
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-05",
+      "caseId": "case-05",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "table",
+        "primarySourceId": "source-kmooc-hundred-schools",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-kmooc-week-01",
+          "row-kmooc-week-02"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "공개 강좌의 제공된 주차를 따라가며 각 주차의 현재 진도와 메모를 남긴다.",
+        "lifeArea": "learning",
+        "planningPattern": "progress_tracking",
+        "primaryArtifact": "sheet",
+        "contentShape": "주차별 학습 진도표"
+      },
+      "proposal": {
+        "proposalTitle": "제자백가의 사상 1~2주차 진도 기록",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "1주차 강의와 퀴즈 진도 기록하기",
+            "intent": "record",
+            "sourceRowIds": [
+              "row-kmooc-week-01"
+            ],
+            "completion": {
+              "mode": "record",
+              "doneWhen": "1주차 강의와 퀴즈의 현재 진도와 메모가 기록됨"
+            },
+            "memoCandidate": "1주차 학습 메모",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          },
+          {
+            "proposalId": "p-02",
+            "title": "2주차 강의와 퀴즈 진도 기록하기",
+            "intent": "record",
+            "sourceRowIds": [
+              "row-kmooc-week-02"
+            ],
+            "completion": {
+              "mode": "record",
+              "doneWhen": "2주차 강의와 퀴즈의 현재 진도와 메모가 기록됨"
+            },
+            "memoCandidate": "2주차 학습 메모",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "sheet",
+          "applicability": "applicable",
+          "reason": "두 주차의 순서와 진도·메모 기록을 행 단위로 보존할 수 있음"
+        },
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "각 주차의 진도 기록 여부를 독립적으로 확인할 수 있음"
+        },
+        {
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "주차 이름만 있고 실제 날짜나 기간이 제공되지 않음"
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "SourceRow에 강의와 퀴즈의 세부 완료 기준이 제공되지 않음"
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "주차별 진도 기록 기준과 메모 형식을 확인"
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-06",
+      "caseId": "case-06",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "resource",
+        "primarySourceId": "source-recipe-video-playlist",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-recipe-video-resource"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+        "lifeArea": "food",
+        "planningPattern": "resource_execution",
+        "primaryArtifact": "memo",
+        "contentShape": "레시피 영상 실행 메모"
+      },
+      "proposal": {
+        "proposalTitle": "선택한 레시피 영상 한 번 실행하기",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "선택한 레시피 영상 열어 한 번 실행하기",
+            "intent": "use_resource",
+            "sourceRowIds": [
+              "row-recipe-video-resource"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "선택한 영상을 열어 한 번 실행하고 필요한 맥락이 기록됨"
+            },
+            "memoCandidate": "선택한 영상 실행에 필요한 맥락",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "memo",
+          "applicability": "applicable",
+          "reason": "영상 자원과 실행에 필요한 맥락을 한곳에 보관할 수 있음"
+        },
+        {
+          "target": "todo",
+          "applicability": "applicable",
+          "reason": "한 번 실행한다는 사용자 목적을 단일 할 일로 보존할 수 있음"
+        },
+        {
+          "target": "calendar",
+          "applicability": "not_applicable",
+          "reason": "날짜나 기간 표현이 제공되지 않음"
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "선택한 영상의 구체적인 레시피와 보관할 맥락 항목이 제공되지 않음"
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "원문 이용 범위와 needs_review 권리 상태를 확인"
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-07",
+      "caseId": "case-07",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "check",
+        "primarySourceId": "source-car365-used-car-guide",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-used-car-decision"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "중고차의 차량 이력과 상태를 확인해 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+        "lifeArea": "mobility",
+        "planningPattern": "decision_gate",
+        "primaryArtifact": "hybrid",
+        "contentShape": "구매 후보 판단 기록"
+      },
+      "proposal": {
+        "proposalTitle": "중고차 후보 선택·보류 판단",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "차량 이력과 상태를 확인해 후보 판단하기",
+            "intent": "decide",
+            "sourceRowIds": [
+              "row-used-car-decision"
+            ],
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "후보를 선택하거나 보류한 상태와 그 이유가 기록됨"
+            },
+            "memoCandidate": "차량 이력과 상태 확인 결과 및 선택·보류 이유",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "차량 이력과 상태 확인 후 판단한다는 순서를 보존할 수 있음"
+        },
+        {
+          "target": "memo",
+          "applicability": "applicable",
+          "reason": "선택 또는 보류 이유와 확인 결과를 기록할 수 있음"
+        },
+        {
+          "target": "calendar",
+          "applicability": "not_applicable",
+          "reason": "날짜나 기간 표현이 제공되지 않음"
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "차량 이력과 상태의 구체 확인 기준은 SourceRow에 제공되지 않음"
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "공식 가이드의 확인 기준과 최종 구매 판단을 사람이 검토"
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-08",
+      "caseId": "case-08",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "check",
+        "primarySourceId": "source-nhis-infant-checkup",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-infant-checkup-prep"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "아이 검진의 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+        "lifeArea": "health",
+        "planningPattern": "preparation_check",
+        "primaryArtifact": "checklist",
+        "contentShape": "검진 준비 확인 항목"
+      },
+      "proposal": {
+        "proposalTitle": "영유아 검진 예약·문진표 준비 확인",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "예약과 문진표 준비 상태 확인하기",
+            "intent": "inspect",
+            "sourceRowIds": [
+              "row-infant-checkup-prep"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "예약과 문진표의 준비 상태가 확인됨"
+            },
+            "memoCandidate": "의료 판단은 공식 안내에 맡김",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "예약과 문진표 준비 상태를 한 항목에서 확인할 수 있음"
+        },
+        {
+          "target": "memo",
+          "applicability": "applicable",
+          "reason": "공식 안내에 의료 판단을 맡긴다는 경계를 함께 보존할 수 있음"
+        },
+        {
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "예약 준비만 제시되고 실제 검진 날짜는 제공되지 않음"
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "예약과 문진표의 구체 절차 및 실제 검진 일정이 SourceRow에 제공되지 않음"
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "의료 판단과 검진 적합성은 공식 안내 또는 의료진에게 확인"
+        ]
+      }
+    }
+  ]
+}

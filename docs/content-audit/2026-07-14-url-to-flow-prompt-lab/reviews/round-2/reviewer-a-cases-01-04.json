@@ -1,0 +1,360 @@
+{
+  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v1",
+  "round": "round-2",
+  "blindRunLabel": "R2-A",
+  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+  "results": [
+    {
+      "caseId": "case-01",
+      "blindRunLabel": "R2-A",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 4,
+        "executionClarity": 4,
+        "contentFidelityAndCoverage": 5,
+        "portabilityAndNaturalArtifact": 4,
+        "cognitiveLoad": 5,
+        "copySpecificity": 4,
+        "sourceAndSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "검진 대상·예약 확인과 기관 방문은 맞지만 검진 전과 당일에 놓치지 않는다는 사용 맥락이 제목과 사용자 필요에서 약해졌다.",
+        "executionClarity": "두 행동은 독립적으로 확인 가능하지만 완료 기준이 각각 마친 상태라는 표현에 머물러 관찰 신호가 다소 약하다.",
+        "contentFidelityAndCoverage": "제공된 두 SourceRow를 각각 한 Item에 정확히 연결했고 입력에 없는 날짜나 의료 사실을 만들지 않았다.",
+        "portabilityAndNaturalArtifact": "체크리스트 투영은 자연스럽고 날짜 근거가 없는 Calendar를 차단한 판단도 적절하지만 시간 맥락은 날짜 근거 확보 전까지 이동할 수 없다.",
+        "cognitiveLoad": "두 SourceRow를 두 Item으로만 유지해 불필요한 단계나 설명 부담이 없다.",
+        "copySpecificity": "Item 제목은 대상과 행동이 분명하지만 완료 문구는 행동을 다시 명사화해 반복한다.",
+        "sourceAndSafetySeparation": "공식 출처와 의료 민감도를 추적하고 사람 검토를 요구했으며 의료 결론을 만들지 않았지만 export에서의 의료 판단 제외 경계는 명시하지 않았다."
+      },
+      "qualityAverage": 4.29,
+      "sourceRowAccounting": {
+        "executableRows": 2,
+        "mappedUniqueRows": 2,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 2,
+        "keptOriginalItems": 2,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 1,
+        "completionRewrites": 2,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 1,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": true,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "content_gate_pass",
+      "topFixes": [
+        "완료 기준을 마친 상태가 아니라 실제로 확인하거나 방문한 결과로 쓴다.",
+        "날짜 근거가 없으므로 Calendar 차단을 유지하고 의료 판단은 export에 포함하지 않는다고 명시한다."
+      ],
+      "correctedPreview": {
+        "title": "건강검진 대상·예약 확인과 기관 방문",
+        "items": [
+          {
+            "title": "검진 대상과 예약 상태 확인하기",
+            "doneWhen": "검진 대상과 예약 상태를 확인했다.",
+            "sourceRowIds": [
+              "row-checkup-booking"
+            ]
+          },
+          {
+            "title": "검진기관 방문하기",
+            "doneWhen": "검진기관 방문을 마쳤다.",
+            "sourceRowIds": [
+              "row-checkup-visit"
+            ]
+          }
+        ],
+        "destinations": [
+          "checklist:markdown"
+        ],
+        "reviewNote": "SourceRow에 날짜 표현이 없으므로 Calendar 일정은 만들지 않고, 검진 결과 해석이나 의료 판단은 포함하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-02",
+      "blindRunLabel": "R2-A",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 4,
+        "contentFidelityAndCoverage": 5,
+        "portabilityAndNaturalArtifact": 4,
+        "cognitiveLoad": 5,
+        "copySpecificity": 4,
+        "sourceAndSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "4주 주기의 필터 청소와 완료 기록이라는 사용자 일이 변환 결정과 Item에 일관되게 드러난다.",
+        "executionClarity": "청소 행동과 반복 후보는 분명하지만 완료 기준에 먼지 제거·물세척·그늘 건조가 반영되지 않아 확인 신호가 약하다.",
+        "contentFidelityAndCoverage": "유일한 SourceRow를 빠짐없이 연결하고 4주에 한 번과 세 가지 방법을 각각 일정 후보와 메모로 보존했다.",
+        "portabilityAndNaturalArtifact": "Calendar와 체크리스트 투영은 자연스럽지만 청소 방법 메모의 별도 memo 목적지가 projectionPlan에 명시되지 않았다.",
+        "cognitiveLoad": "반복 작업을 한 Item으로 유지하고 방법은 메모로 내려 최소 구조를 지켰다.",
+        "copySpecificity": "필터 청소라는 다음 행동은 구체적이지만 제목에 에어컨 맥락이 없고 완료 기준이 포괄적이다.",
+        "sourceAndSafetySeparation": "공식 SourceRow를 추적하고 반복 표현을 파싱되지 않은 원문 후보로 분리해 근거와 해석 경계를 명확히 했다."
+      },
+      "qualityAverage": 4.57,
+      "sourceRowAccounting": {
+        "executableRows": 1,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 1,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 1,
+        "completionRewrites": 1,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 1,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": true,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "content_gate_pass",
+      "topFixes": [
+        "완료 기준에 먼지 제거·물세척·그늘 건조를 반영한다.",
+        "청소 방법이 Calendar 설명에 묻히지 않도록 memo 목적지를 명시한다."
+      ],
+      "correctedPreview": {
+        "title": "에어컨 극세 필터 4주 청소",
+        "items": [
+          {
+            "title": "에어컨 극세 필터 청소하기",
+            "doneWhen": "먼지를 제거하고 물세척한 뒤 그늘 건조를 마쳤다.",
+            "sourceRowIds": [
+              "row-aircon-filter-4week"
+            ]
+          }
+        ],
+        "destinations": [
+          "calendar: 원문 '4주에 한 번' 주기 후보",
+          "checklist:plain_text",
+          "memo: 먼지 제거·물세척·그늘 건조"
+        ],
+        "reviewNote": "주기 표현은 원문 그대로 보존하고 실제 시작일과 반복 규칙은 별도 해석과 검토 후 확정한다."
+      }
+    },
+    {
+      "caseId": "case-03",
+      "blindRunLabel": "R2-A",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 4,
+        "contentFidelityAndCoverage": 5,
+        "portabilityAndNaturalArtifact": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 4,
+        "sourceAndSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "제공 범위인 여권과 데이터 유심을 빠뜨리지 않고 챙긴다는 사용 목적이 제목과 체크리스트 구조에 정확히 맞는다.",
+        "executionClarity": "두 준비물은 각각 독립적으로 체크할 수 있지만 완료 기준이 챙긴 상태라는 반복 문구여서 확인 시점이 덜 직접적이다.",
+        "contentFidelityAndCoverage": "두 SourceRow를 각각 한 Item으로 보존했고 여행 규정이나 유효성 같은 입력 밖 사실을 추가하지 않았다.",
+        "portabilityAndNaturalArtifact": "날짜 없는 두 준비물을 체크리스트로 투영해 손실 없이 바로 복사하고 확인할 수 있다.",
+        "cognitiveLoad": "준비물 두 개만 전면에 두고 불필요한 단계·일정·필드를 만들지 않았다.",
+        "copySpecificity": "Item 제목은 구체적이지만 완료 기준은 제목을 상태형으로 되풀이해 문장 수정이 필요하다.",
+        "sourceAndSafetySeparation": "creator 출처의 두 행만 사용하고 권리 상태 needs_review를 사람 검토 항목으로 드러냈지만 재사용 경계가 최종 목적지 설명에는 없다."
+      },
+      "qualityAverage": 4.57,
+      "sourceRowAccounting": {
+        "executableRows": 2,
+        "mappedUniqueRows": 2,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 2,
+        "keptOriginalItems": 2,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 2,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": true,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "content_gate_pass",
+      "topFixes": [
+        "완료 기준을 챙긴 상태가 아니라 사용자가 직접 확인할 수 있는 완료 문장으로 바꾼다.",
+        "권리 검토가 끝나기 전에는 원문 본문이나 상품 문구를 목적지에 추가하지 않는다."
+      ],
+      "correctedPreview": {
+        "title": "해외여행 준비물 챙기기",
+        "items": [
+          {
+            "title": "여권 챙기기",
+            "doneWhen": "여권을 챙겼다.",
+            "sourceRowIds": [
+              "row-pack-passport"
+            ]
+          },
+          {
+            "title": "데이터 유심 챙기기",
+            "doneWhen": "데이터 유심을 챙겼다.",
+            "sourceRowIds": [
+              "row-pack-connectivity"
+            ]
+          }
+        ],
+        "destinations": [
+          "checklist:markdown",
+          "checklist:plain_text"
+        ],
+        "reviewNote": "제공된 두 준비물만 유지하며 출처 권리 검토 전에는 원문 본문이나 상품 문구를 덧붙이지 않는다."
+      }
+    },
+    {
+      "caseId": "case-04",
+      "blindRunLabel": "R2-A",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 4,
+        "contentFidelityAndCoverage": 5,
+        "portabilityAndNaturalArtifact": 4,
+        "cognitiveLoad": 5,
+        "copySpecificity": 4,
+        "sourceAndSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "구직 등록 뒤 취업지원 신청을 마친다는 사용자 일이 두 단계 순서와 제목에 정확히 반영됐다.",
+        "executionClarity": "두 신청 행동과 순서는 분명하지만 완료 기준이 마친 상태라는 포괄 표현이라 실제 완료 확인 문구가 약하다.",
+        "contentFidelityAndCoverage": "공식 SourceRow 두 개를 순서대로 모두 연결했고 신청 조건이나 자격 같은 입력 밖 내용을 만들지 않았다.",
+        "portabilityAndNaturalArtifact": "순서를 유지한 체크리스트는 자연스럽지만 Todo나 memo로 옮길 때의 손실·개인정보 경계를 projectionPlan이 설명하지 않는다.",
+        "cognitiveLoad": "두 절차를 두 Item으로만 유지해 사용자가 다시 구조를 해석할 부담이 없다.",
+        "copySpecificity": "행동 자체는 구체적이지만 Item 제목에 고용24 맥락이 없고 완료 기준이 제목을 반복한다.",
+        "sourceAndSafetySeparation": "공식 출처와 개인정보 민감도를 추적하고 사람 검토를 요구했지만 구직·이력서 값을 콘텐츠나 export에 넣지 않는 경계는 명시하지 않았다."
+      },
+      "qualityAverage": 4.43,
+      "sourceRowAccounting": {
+        "executableRows": 2,
+        "mappedUniqueRows": 2,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 2,
+        "keptOriginalItems": 2,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 2,
+        "completionRewrites": 2,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 1,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": true,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "content_gate_pass",
+      "topFixes": [
+        "두 Item 제목에 고용24 맥락을 넣고 완료 기준을 직접 완료 문장으로 바꾼다.",
+        "개인 구직·이력서 값은 콘텐츠와 export에 포함하지 않는다고 명시한다."
+      ],
+      "correctedPreview": {
+        "title": "고용24 취업지원 시작 절차",
+        "items": [
+          {
+            "title": "고용24에서 구직 신청 등록하기",
+            "doneWhen": "고용24 구직 신청 등록을 마쳤다.",
+            "sourceRowIds": [
+              "row-work24-register"
+            ]
+          },
+          {
+            "title": "고용24에서 취업지원 서비스 신청하기",
+            "doneWhen": "고용24 취업지원 서비스 신청을 마쳤다.",
+            "sourceRowIds": [
+              "row-work24-apply"
+            ]
+          }
+        ],
+        "destinations": [
+          "checklist:markdown"
+        ],
+        "reviewNote": "SourceRow의 순서를 유지하고 개인 구직 정보나 이력서 값은 콘텐츠·메모·export에 포함하지 않는다."
+      }
+    }
+  ]
+}
