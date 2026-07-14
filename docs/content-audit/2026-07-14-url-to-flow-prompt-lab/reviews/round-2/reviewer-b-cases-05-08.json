@@ -1,0 +1,351 @@
+{
+  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v1",
+  "round": "round-2",
+  "blindRunLabel": "R2-B",
+  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+  "results": [
+    {
+      "caseId": "case-05",
+      "blindRunLabel": "R2-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 4,
+        "contentFidelityAndCoverage": 5,
+        "portabilityAndNaturalArtifact": 4,
+        "cognitiveLoad": 5,
+        "copySpecificity": 4,
+        "sourceAndSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "제공된 두 주차를 따라 진도와 메모를 남기는 사용자 일과 sheet 결과물이 정확히 맞물린다.",
+        "executionClarity": "주차별 기록 행동과 완료 상태는 분명하지만 완료 기준을 짧은 과거형으로 다듬으면 확인성이 더 좋아진다.",
+        "contentFidelityAndCoverage": "두 SourceRow가 각각 한 Item에 연결되고 누락이나 원문 밖 세부 추가가 없다.",
+        "portabilityAndNaturalArtifact": "sheet와 memo는 자연스럽지만 주차별 완료 확인에 쓸 checklist 목적지가 빠져 있다.",
+        "cognitiveLoad": "두 주차를 두 Item으로 유지해 원문 복잡도와 구조가 정확히 비례한다.",
+        "copySpecificity": "주차·강의·퀴즈·진도 기록이 구체적이지만 완료 기준 문구는 조금 더 직접적으로 쓸 수 있다.",
+        "sourceAndSafetySeparation": "공식 저위험 source의 두 행을 추적하고 주차가 실제 날짜가 아니라는 경계도 명시했다."
+      },
+      "qualityAverage": 4.57,
+      "sourceRowAccounting": {
+        "executableRows": 2,
+        "mappedUniqueRows": 2,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 2,
+        "keptOriginalItems": 2,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 2,
+        "completionRewrites": 2,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 1,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": true,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "content_gate_pass",
+      "topFixes": [
+        "주차별 제목과 완료 기준을 완료·기록 상태가 바로 보이는 문장으로 다듬는다.",
+        "sheet와 memo 외에 주차 완료 확인용 checklist 목적지를 추가한다."
+      ],
+      "correctedPreview": {
+        "title": "제자백가 강좌 1-2주차 진도표",
+        "items": [
+          {
+            "title": "1주차 강의와 퀴즈 완료하기",
+            "doneWhen": "1주차 상태와 메모를 기록했다.",
+            "sourceRowIds": [
+              "row-kmooc-week-01"
+            ]
+          },
+          {
+            "title": "2주차 강의와 퀴즈 완료하기",
+            "doneWhen": "2주차 상태와 메모를 기록했다.",
+            "sourceRowIds": [
+              "row-kmooc-week-02"
+            ]
+          }
+        ],
+        "destinations": [
+          "sheet:csv",
+          "sheet:xlsx",
+          "checklist:markdown",
+          "memo:markdown"
+        ],
+        "reviewNote": "1주차와 2주차는 실제 날짜가 아니라 강좌 내 진행 순서이며 공개 강좌의 주차 제목과 링크만 사용한다."
+      }
+    },
+    {
+      "caseId": "case-06",
+      "blindRunLabel": "R2-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 4,
+        "executionClarity": 3,
+        "contentFidelityAndCoverage": 4,
+        "portabilityAndNaturalArtifact": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 3,
+        "sourceAndSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "영상 한 건을 실행하고 맥락을 보관하는 목적은 맞지만 실제 조리 실행인지 영상 재생인지가 문구에서 모호하다.",
+        "executionClarity": "영상 열기와 한 번 실행하기는 보이지만 레시피를 따라 만든 완료 상태가 명확하지 않다.",
+        "contentFidelityAndCoverage": "유일한 SourceRow를 한 Item에 정확히 연결하고 입력에 없는 조리 단계를 만들지 않았으나 핵심 실행 의미가 약해졌다.",
+        "portabilityAndNaturalArtifact": "memo를 중심으로 실행 맥락을 보관하고 checklist로 실행 여부를 확인하는 구조가 자연스럽다.",
+        "cognitiveLoad": "한 개의 영상 자원을 한 Item으로 유지해 불필요한 단계나 필드가 없다.",
+        "copySpecificity": "선택한 영상이라는 대상은 구체적이지만 ‘실행하기’가 재생과 조리를 구분하지 못한다.",
+        "sourceAndSafetySeparation": "creator source와 권리 검토 필요성은 드러나지만 저장 범위와 권리 경계를 더 직접적으로 적을 필요가 있다."
+      },
+      "qualityAverage": 4,
+      "sourceRowAccounting": {
+        "executableRows": 1,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 1,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 1,
+        "completionRewrites": 1,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 1,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": false,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "revise",
+      "topFixes": [
+        "‘영상 실행’을 ‘영상의 레시피를 따라 만들기’로 고쳐 실제 완료 행동을 분명히 한다.",
+        "영상 복제 없이 제목·링크·짧은 실행 메모만 보관한다는 권리 경계를 적는다."
+      ],
+      "correctedPreview": {
+        "title": "선택한 레시피 영상 실행 메모",
+        "items": [
+          {
+            "title": "선택한 레시피 영상 따라 만들기",
+            "doneWhen": "선택한 영상의 레시피를 한 번 따라 만들었다.",
+            "sourceRowIds": [
+              "row-recipe-video-resource"
+            ]
+          }
+        ],
+        "destinations": [
+          "memo:markdown",
+          "memo:plain_text",
+          "checklist:plain_text"
+        ],
+        "reviewNote": "영상 자체를 복제하지 않고 제목·링크·짧은 실행 메모만 보관하며 저장 전 권리 상태를 확인한다."
+      }
+    },
+    {
+      "caseId": "case-07",
+      "blindRunLabel": "R2-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityAndCoverage": 5,
+        "portabilityAndNaturalArtifact": 4,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceAndSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "차량 이력과 상태를 근거로 구매 또는 보류를 결정하고 이유를 남기는 사용자 일이 선명하다.",
+        "executionClarity": "확인 후 결정한다는 순서와 결정·이유 기록이라는 완료 기준이 한 Item 안에서 분명하다.",
+        "contentFidelityAndCoverage": "유일한 SourceRow를 빠짐없이 참조하고 원문 밖 판단 기준이나 결과를 추가하지 않았다.",
+        "portabilityAndNaturalArtifact": "sheet는 결정과 이유 기록에 적합하지만 checklist와 memo를 함께 쓰는 hybrid 목적지가 더 자연스럽다.",
+        "cognitiveLoad": "복합 결정을 불필요하게 쪼개지 않고 한 개의 확인 가능한 Item으로 유지했다.",
+        "copySpecificity": "차량 이력·상태 확인, 구매 판단, 이유 기록이 짧고 구체적으로 이어진다.",
+        "sourceAndSafetySeparation": "재무 민감 판단을 사람 검토와 공식 안내에 맡겼지만 구매 추천·안전 판정을 하지 않는다는 경계를 더 직접적으로 쓸 수 있다."
+      },
+      "qualityAverage": 4.71,
+      "sourceRowAccounting": {
+        "executableRows": 1,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 1,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 1,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 1,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": true,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "content_gate_pass",
+      "topFixes": [
+        "구매·보류 선택지를 제목에 직접 드러내고 checklist·sheet·memo 목적지를 함께 제시한다."
+      ],
+      "correctedPreview": {
+        "title": "중고차 후보 구매·보류 판단 기록",
+        "items": [
+          {
+            "title": "후보 차량 구매·보류 결정하기",
+            "doneWhen": "구매 또는 보류 상태와 그 이유를 남겼다.",
+            "sourceRowIds": [
+              "row-used-car-decision"
+            ]
+          }
+        ],
+        "destinations": [
+          "checklist:markdown",
+          "sheet:csv",
+          "memo:markdown"
+        ],
+        "reviewNote": "공식 점검 기준과 링크를 근거로 사용하되 FlowMe가 구매 추천이나 차량 안전 판정을 대신하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-08",
+      "blindRunLabel": "R2-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityAndCoverage": 5,
+        "portabilityAndNaturalArtifact": 4,
+        "cognitiveLoad": 5,
+        "copySpecificity": 4,
+        "sourceAndSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "아이 검진의 예약과 문진표 준비를 확인하고 의료 판단은 공식 안내에 맡긴다는 목적이 정확하다.",
+        "executionClarity": "확인할 대상과 완료 상태가 한 문장에 있고 불필요한 의료 행동을 추가하지 않았다.",
+        "contentFidelityAndCoverage": "유일한 준비 SourceRow를 그대로 한 Item에 연결하고 원문 범위를 넓히지 않았다.",
+        "portabilityAndNaturalArtifact": "checklist가 주 목적지로 적합하지만 상태 기록용 sheet와 제한된 memo 이동 경계는 더 보완할 수 있다.",
+        "cognitiveLoad": "예약과 문진표 준비를 한 개의 최소 확인 Item으로 유지해 해석 부담이 없다.",
+        "copySpecificity": "대상과 행동은 구체적이지만 완료 기준의 명사형 종결을 자연스러운 확인 문장으로 다듬을 여지가 있다.",
+        "sourceAndSafetySeparation": "의료 판단을 공식 안내에 맡기는 경계는 분명하지만 민감 메모의 공개 export 제외 원칙은 드러나지 않는다."
+      },
+      "qualityAverage": 4.57,
+      "sourceRowAccounting": {
+        "executableRows": 1,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 1,
+        "itemKeepRate": 1,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 1,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 1,
+        "riskBoundaryFixes": 1,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": true,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "content_gate_pass",
+      "topFixes": [
+        "완료 기준을 ‘준비 상태를 확인했다’라는 관찰 가능한 문장으로 다듬는다.",
+        "민감 메모는 사용자 전용으로 두고 공개 export 기본값에서 제외한다고 명시한다."
+      ],
+      "correctedPreview": {
+        "title": "영유아 건강검진 준비 상태 확인",
+        "items": [
+          {
+            "title": "예약과 문진표 준비 상태 확인하기",
+            "doneWhen": "예약과 문진표 준비 상태를 확인했다.",
+            "sourceRowIds": [
+              "row-infant-checkup-prep"
+            ]
+          }
+        ],
+        "destinations": [
+          "checklist:markdown",
+          "sheet:csv",
+          "memo:markdown"
+        ],
+        "reviewNote": "의료 판단은 국민건강보험공단 공식 안내에 맡기고 민감 메모는 공개 export 기본값에서 제외한다."
+      }
+    }
+  ]
+}

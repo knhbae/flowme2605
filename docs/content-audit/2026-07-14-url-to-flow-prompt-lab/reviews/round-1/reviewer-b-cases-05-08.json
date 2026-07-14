@@ -1,0 +1,308 @@
+{
+  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v1",
+  "round": "round-1",
+  "blindRunLabel": "R1-B",
+  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+  "results": [
+    {
+      "caseId": "case-05",
+      "blindRunLabel": "R1-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": false,
+        "hardFailCodes": [
+          "conversion_schema",
+          "source_assessment_schema"
+        ]
+      },
+      "reviewHardFailCodes": null,
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "N/A — validator 계약 오류로 run이 무효이므로 사용자 필요 적합도를 채점하지 않았다.",
+        "executionClarity": "N/A — validator 계약 오류로 run이 무효이므로 실행 명확성을 채점하지 않았다.",
+        "contentFidelityAndCoverage": "N/A — validator 계약 오류로 run이 무효이므로 원문 충실도와 범위를 채점하지 않았다.",
+        "portabilityAndNaturalArtifact": "N/A — validator 계약 오류로 run이 무효이므로 목적지 적합성과 이식성을 채점하지 않았다.",
+        "cognitiveLoad": "N/A — validator 계약 오류로 run이 무효이므로 인지부하를 채점하지 않았다.",
+        "copySpecificity": "N/A — validator 계약 오류로 run이 무효이므로 문구 구체성을 채점하지 않았다.",
+        "sourceAndSafetySeparation": "N/A — validator 계약 오류로 run이 무효이므로 출처·안전 분리를 채점하지 않았다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 2,
+        "mappedUniqueRows": 2,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 2,
+        "keptOriginalItems": 0,
+        "itemKeepRate": 0,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": true,
+        "burden": null
+      },
+      "contentQualityGatePassed": false,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "invalid_run",
+      "topFixes": [
+        "sourceAssessment.sourceShape=table을 허용 enum 값으로 다시 생성한다.",
+        "conversionDecision의 lifeArea=learning과 planningPattern=progress_tracking을 허용 enum 값으로 교체한 뒤 전체 proposal을 재검증한다."
+      ],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": "source_assessment_schema와 conversion_schema 오류가 해결되기 전에는 콘텐츠 교정본을 만들지 않는다."
+      }
+    },
+    {
+      "caseId": "case-06",
+      "blindRunLabel": "R1-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": false,
+        "hardFailCodes": [
+          "conversion_schema",
+          "source_assessment_schema"
+        ]
+      },
+      "reviewHardFailCodes": null,
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "N/A — validator 계약 오류로 run이 무효이므로 사용자 필요 적합도를 채점하지 않았다.",
+        "executionClarity": "N/A — validator 계약 오류로 run이 무효이므로 실행 명확성을 채점하지 않았다.",
+        "contentFidelityAndCoverage": "N/A — validator 계약 오류로 run이 무효이므로 원문 충실도와 범위를 채점하지 않았다.",
+        "portabilityAndNaturalArtifact": "N/A — validator 계약 오류로 run이 무효이므로 목적지 적합성과 이식성을 채점하지 않았다.",
+        "cognitiveLoad": "N/A — validator 계약 오류로 run이 무효이므로 인지부하를 채점하지 않았다.",
+        "copySpecificity": "N/A — validator 계약 오류로 run이 무효이므로 문구 구체성을 채점하지 않았다.",
+        "sourceAndSafetySeparation": "N/A — validator 계약 오류로 run이 무효이므로 출처·안전 분리를 채점하지 않았다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 1,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 0,
+        "itemKeepRate": 0,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": true,
+        "burden": null
+      },
+      "contentQualityGatePassed": false,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "invalid_run",
+      "topFixes": [
+        "sourceAssessment.sourceShape=resource를 허용 enum 값으로 다시 생성한다.",
+        "conversionDecision의 lifeArea=food와 planningPattern=resource_execution을 허용 enum 값으로 교체한 뒤 전체 proposal을 재검증한다."
+      ],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": "source_assessment_schema와 conversion_schema 오류가 해결되기 전에는 콘텐츠 교정본을 만들지 않는다."
+      }
+    },
+    {
+      "caseId": "case-07",
+      "blindRunLabel": "R1-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": false,
+        "hardFailCodes": [
+          "conversion_schema",
+          "source_assessment_schema"
+        ]
+      },
+      "reviewHardFailCodes": null,
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "N/A — validator 계약 오류로 run이 무효이므로 사용자 필요 적합도를 채점하지 않았다.",
+        "executionClarity": "N/A — validator 계약 오류로 run이 무효이므로 실행 명확성을 채점하지 않았다.",
+        "contentFidelityAndCoverage": "N/A — validator 계약 오류로 run이 무효이므로 원문 충실도와 범위를 채점하지 않았다.",
+        "portabilityAndNaturalArtifact": "N/A — validator 계약 오류로 run이 무효이므로 목적지 적합성과 이식성을 채점하지 않았다.",
+        "cognitiveLoad": "N/A — validator 계약 오류로 run이 무효이므로 인지부하를 채점하지 않았다.",
+        "copySpecificity": "N/A — validator 계약 오류로 run이 무효이므로 문구 구체성을 채점하지 않았다.",
+        "sourceAndSafetySeparation": "N/A — validator 계약 오류로 run이 무효이므로 출처·안전 분리를 채점하지 않았다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 1,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 0,
+        "itemKeepRate": 0,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": true,
+        "burden": null
+      },
+      "contentQualityGatePassed": false,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "invalid_run",
+      "topFixes": [
+        "sourceAssessment.sourceShape=check를 허용 enum 값으로 다시 생성한다.",
+        "conversionDecision의 lifeArea=mobility와 planningPattern=decision_gate를 허용 enum 값으로 교체한 뒤 전체 proposal을 재검증한다."
+      ],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": "source_assessment_schema와 conversion_schema 오류가 해결되기 전에는 콘텐츠 교정본을 만들지 않는다."
+      }
+    },
+    {
+      "caseId": "case-08",
+      "blindRunLabel": "R1-B",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": false,
+        "hardFailCodes": [
+          "conversion_schema",
+          "source_assessment_schema"
+        ]
+      },
+      "reviewHardFailCodes": null,
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "N/A — validator 계약 오류로 run이 무효이므로 사용자 필요 적합도를 채점하지 않았다.",
+        "executionClarity": "N/A — validator 계약 오류로 run이 무효이므로 실행 명확성을 채점하지 않았다.",
+        "contentFidelityAndCoverage": "N/A — validator 계약 오류로 run이 무효이므로 원문 충실도와 범위를 채점하지 않았다.",
+        "portabilityAndNaturalArtifact": "N/A — validator 계약 오류로 run이 무효이므로 목적지 적합성과 이식성을 채점하지 않았다.",
+        "cognitiveLoad": "N/A — validator 계약 오류로 run이 무효이므로 인지부하를 채점하지 않았다.",
+        "copySpecificity": "N/A — validator 계약 오류로 run이 무효이므로 문구 구체성을 채점하지 않았다.",
+        "sourceAndSafetySeparation": "N/A — validator 계약 오류로 run이 무효이므로 출처·안전 분리를 채점하지 않았다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 1,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 0,
+        "itemKeepRate": 0,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": true,
+        "burden": null
+      },
+      "contentQualityGatePassed": false,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "invalid_run",
+      "topFixes": [
+        "sourceAssessment.sourceShape=check를 허용 enum 값으로 다시 생성한다.",
+        "conversionDecision의 lifeArea=health와 planningPattern=preparation_check를 허용 enum 값으로 교체한 뒤 전체 proposal을 재검증한다."
+      ],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": "source_assessment_schema와 conversion_schema 오류가 해결되기 전에는 콘텐츠 교정본을 만들지 않는다."
+      }
+    }
+  ]
+}

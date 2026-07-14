@@ -1,0 +1,187 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-1",
+  "caseId": "case-07",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-07",
+    "requestId": "prompt-lab-v1-case-07",
+    "targetLocale": "ko-KR",
+    "userJob": "중고차 점검 기준으로 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+    "maxItems": 7,
+    "claimedScope": "제공된 1개 SourceRow 범위만 변환한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-car365-used-car-guide",
+        "title": "자동차365 중고차 구매가이드",
+        "sourceType": "official",
+        "originalUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+        "canonicalUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": "자동차365",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "allowed",
+        "riskLevel": "financial_sensitive",
+        "accessStatus": "fetched"
+      },
+      "supporting": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-used-car-decision",
+        "sourceId": "source-car365-used-car-guide",
+        "rowType": "check",
+        "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+        "detail": null,
+        "order": 0
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-07-decision-hold:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-07",
+    "fixtureId": "gf-pos-07-decision-hold",
+    "fixtureKind": "positive",
+    "fixtureShape": "decision_hold",
+    "name": "중고차 후보 결정·보류",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "중고차 점검 기준으로 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+      "planningPattern": "compare_decide",
+      "primaryArtifact": "hybrid",
+      "riskLevel": "financial_sensitive"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-used-car-decide",
+        "title": "후보 차량 구매·보류·제외 결정하기",
+        "intent": "decide",
+        "sourceRowIds": [
+          "row-used-car-decision"
+        ],
+        "completionMode": "decision",
+        "doneWhen": "결정 상태와 이유를 남겼다.",
+        "hasSchedule": false,
+        "canonicalSchedule": null
+      }
+    ],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [
+      "row-used-car-decision"
+    ],
+    "expectedProjections": [
+      "checklist:markdown",
+      "sheet:csv",
+      "memo:markdown"
+    ],
+    "forbiddenProjections": [
+      "calendar:ics",
+      "todo:plain_text"
+    ],
+    "referenceReview": {
+      "readiness": "ready_second_wave",
+      "hardFails": [],
+      "rightsDecision": "공식 판단 기준과 링크만 사용한다.",
+      "riskDecision": "FlowMe는 구매 추천이나 차량 안전 판정을 제공하지 않는다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.1",
+    "requestId": "prompt-lab-v1-case-07",
+    "caseId": "case-07",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "check",
+      "primarySourceId": "source-car365-used-car-guide",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-used-car-decision"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "중고차의 차량 이력과 상태를 확인해 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+      "lifeArea": "mobility",
+      "planningPattern": "decision_gate",
+      "primaryArtifact": "hybrid",
+      "contentShape": "구매 후보 판단 기록"
+    },
+    "proposal": {
+      "proposalTitle": "중고차 후보 선택·보류 판단",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "차량 이력과 상태를 확인해 후보 판단하기",
+          "intent": "decide",
+          "sourceRowIds": [
+            "row-used-car-decision"
+          ],
+          "completion": {
+            "mode": "decision",
+            "doneWhen": "후보를 선택하거나 보류한 상태와 그 이유가 기록됨"
+          },
+          "memoCandidate": "차량 이력과 상태 확인 결과 및 선택·보류 이유",
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "차량 이력과 상태 확인 후 판단한다는 순서를 보존할 수 있음"
+      },
+      {
+        "target": "memo",
+        "applicability": "applicable",
+        "reason": "선택 또는 보류 이유와 확인 결과를 기록할 수 있음"
+      },
+      {
+        "target": "calendar",
+        "applicability": "not_applicable",
+        "reason": "날짜나 기간 표현이 제공되지 않음"
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "차량 이력과 상태의 구체 확인 기준은 SourceRow에 제공되지 않음"
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "공식 가이드의 확인 기준과 최종 구매 판단을 사람이 검토"
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

@@ -1,0 +1,231 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-1",
+  "caseId": "case-09",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-09",
+    "requestId": "prompt-lab-v1-case-09",
+    "targetLocale": "ko-KR",
+    "userJob": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+    "maxItems": 7,
+    "claimedScope": "Canonical shape contract sample. Only the extracted Day 1-2 rows are in fixture scope; this does not claim that all 30 source rows were imported.",
+    "source": {
+      "primary": {
+        "sourceId": "source-canon-photo-30",
+        "title": "Canon 30-Day Photo Challenge",
+        "sourceType": "reference",
+        "originalUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+        "canonicalUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+        "locale": "en-US",
+        "countryContext": null,
+        "publisher": "Canon USA",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "needs_review",
+        "riskLevel": "low",
+        "accessStatus": "fetched"
+      },
+      "supporting": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-photo-day-01",
+        "sourceId": "source-canon-photo-30",
+        "rowType": "resource",
+        "title": "Day 1 prompt",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-photo-day-02",
+        "sourceId": "source-canon-photo-30",
+        "rowType": "resource",
+        "title": "Day 2 prompt",
+        "detail": null,
+        "order": 1
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-09-resource-queue:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-09",
+    "fixtureId": "gf-pos-09-resource-queue",
+    "fixtureKind": "positive",
+    "fixtureShape": "resource_queue",
+    "name": "30일 사진 prompt queue · Day 1-2 contract sample",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+      "planningPattern": "resource_queue",
+      "primaryArtifact": "calendar",
+      "riskLevel": "low"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-photo-day-01",
+        "title": "Day 1 prompt로 사진 찍기",
+        "intent": "use_resource",
+        "sourceRowIds": [
+          "row-photo-day-01"
+        ],
+        "completionMode": "check",
+        "doneWhen": "Day 1 prompt에 맞는 사진을 한 장 찍었다.",
+        "hasSchedule": true,
+        "canonicalSchedule": {
+          "mode": "anchor_offset",
+          "anchorFieldId": "field-photo-start-date",
+          "dayOffset": 0,
+          "allDay": true
+        }
+      },
+      {
+        "referenceItemId": "item-photo-day-02",
+        "title": "Day 2 prompt로 사진 찍기",
+        "intent": "use_resource",
+        "sourceRowIds": [
+          "row-photo-day-02"
+        ],
+        "completionMode": "check",
+        "doneWhen": "Day 2 prompt에 맞는 사진을 한 장 찍었다.",
+        "hasSchedule": true,
+        "canonicalSchedule": {
+          "mode": "anchor_offset",
+          "anchorFieldId": "field-photo-start-date",
+          "dayOffset": 1,
+          "allDay": true
+        }
+      }
+    ],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [
+      "row-photo-day-01",
+      "row-photo-day-02"
+    ],
+    "expectedProjections": [
+      "calendar:ics",
+      "checklist:markdown",
+      "sheet:csv",
+      "memo:markdown"
+    ],
+    "forbiddenProjections": [
+      "todo:markdown",
+      "sheet:tsv"
+    ],
+    "referenceReview": {
+      "readiness": "ready_for_internal_canary",
+      "hardFails": [],
+      "rightsDecision": "prompt 제목과 원문 링크만 사용하며 해설 본문은 복제하지 않는다.",
+      "riskDecision": "위험이 낮고 사진 촬영 장소·대상은 사용자가 안전을 판단한다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.1",
+    "requestId": "prompt-lab-v1-case-09",
+    "caseId": "case-09",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "resource_queue",
+      "primarySourceId": "source-canon-photo-30",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-photo-day-01",
+        "row-photo-day-02"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "사진 연습 사용자로서 제공된 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+      "lifeArea": "hobby",
+      "planningPattern": "resource_queue",
+      "primaryArtifact": "checklist",
+      "contentShape": "순서가 있는 2개 사진 prompt 실행 목록"
+    },
+    "proposal": {
+      "proposalTitle": "사진 prompt Day 1-2 실행하기",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "Day 1 prompt 실행하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-photo-day-01"
+          ],
+          "completion": {
+            "mode": "record",
+            "doneWhen": "Day 1 prompt를 실행하고 완료 여부를 남겼다."
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "Day 2 prompt 실행하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-photo-day-02"
+          ],
+          "completion": {
+            "mode": "record",
+            "doneWhen": "Day 2 prompt를 실행하고 완료 여부를 남겼다."
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "두 prompt 행을 순서대로 실행하고 완료 여부를 확인할 수 있다."
+      },
+      {
+        "target": "calendar",
+        "applicability": "blocked",
+        "reason": "Day 1과 Day 2는 순서 표기일 뿐 실제 시작 날짜나 일정 표현이 제공되지 않았다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "제공된 행에는 Day 1과 Day 2의 실제 사진 prompt 내용이 없다.",
+        "30일 전체가 아니라 제공된 2개 행만 변환했다."
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "실제 prompt 내용과 원문 사용 권리를 확인한다."
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

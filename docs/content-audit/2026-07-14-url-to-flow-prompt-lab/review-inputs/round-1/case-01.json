@@ -1,0 +1,249 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-1",
+  "caseId": "case-01",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-01",
+    "requestId": "prompt-lab-v1-case-01",
+    "targetLocale": "ko-KR",
+    "userJob": "검진일 전에 필요한 확인을 끝내고 당일 방문을 놓치지 않는다.",
+    "maxItems": 7,
+    "claimedScope": "제공된 2개 SourceRow 범위만 변환한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-nhis-health-checkup",
+        "title": "국민건강보험 건강검진 안내",
+        "sourceType": "official",
+        "originalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+        "canonicalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": "국민건강보험공단",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "allowed",
+        "riskLevel": "medical_sensitive",
+        "accessStatus": "fetched"
+      },
+      "supporting": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-checkup-booking",
+        "sourceId": "source-nhis-health-checkup",
+        "rowType": "check",
+        "title": "검진 대상 및 예약 확인",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-checkup-visit",
+        "sourceId": "source-nhis-health-checkup",
+        "rowType": "date",
+        "title": "검진기관 방문",
+        "detail": null,
+        "order": 1
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-01-d-day-timeline:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-01",
+    "fixtureId": "gf-pos-01-d-day-timeline",
+    "fixtureKind": "positive",
+    "fixtureShape": "d_day_timeline",
+    "name": "건강검진 D-7 타임라인",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "검진일 전에 필요한 확인을 끝내고 당일 방문을 놓치지 않는다.",
+      "planningPattern": "date_preparation",
+      "primaryArtifact": "hybrid",
+      "riskLevel": "medical_sensitive"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-checkup-booking",
+        "title": "검진 대상과 예약 상태 확인하기",
+        "intent": "inspect",
+        "sourceRowIds": [
+          "row-checkup-booking"
+        ],
+        "completionMode": "check",
+        "doneWhen": "공식 조회에서 검진 대상과 예약 상태를 확인했다.",
+        "hasSchedule": true,
+        "canonicalSchedule": {
+          "mode": "anchor_offset",
+          "anchorFieldId": "field-checkup-date",
+          "dayOffset": -7,
+          "allDay": true
+        }
+      },
+      {
+        "referenceItemId": "item-checkup-visit",
+        "title": "검진기관 방문하기",
+        "intent": "act",
+        "sourceRowIds": [
+          "row-checkup-visit"
+        ],
+        "completionMode": "check",
+        "doneWhen": "예약한 검진기관 방문을 마쳤다.",
+        "hasSchedule": true,
+        "canonicalSchedule": {
+          "mode": "anchor_offset",
+          "anchorFieldId": "field-checkup-date",
+          "dayOffset": 0,
+          "allDay": true
+        }
+      }
+    ],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [
+      "row-checkup-booking",
+      "row-checkup-visit"
+    ],
+    "expectedProjections": [
+      "calendar:ics",
+      "checklist:markdown",
+      "memo:markdown"
+    ],
+    "forbiddenProjections": [
+      "sheet:xlsx",
+      "todo:markdown"
+    ],
+    "referenceReview": {
+      "readiness": "ready_second_wave",
+      "hardFails": [],
+      "rightsDecision": "공식 안내의 행위·일정 요약과 링크만 사용한다.",
+      "riskDecision": "medical_sensitive이며 결과 해석과 진료 판단은 export에도 포함하지 않는다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.1",
+    "requestId": "prompt-lab-v1-case-01",
+    "caseId": "case-01",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "d_day_timeline",
+      "primarySourceId": "source-nhis-health-checkup",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-checkup-booking",
+        "row-checkup-visit"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "건강검진을 앞둔 사용자가 검진 대상과 예약을 확인하고 검진 당일 기관 방문을 마친다.",
+      "lifeArea": "health",
+      "planningPattern": "d_day_timeline",
+      "primaryArtifact": "checklist",
+      "contentShape": "검진 전 확인과 당일 방문으로 이어지는 2단계 흐름"
+    },
+    "proposal": {
+      "proposalTitle": "건강검진 준비와 방문",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "검진 대상 및 예약 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-checkup-booking"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "검진 대상 여부와 예약 여부를 확인했다."
+          },
+          "memoCandidate": null,
+          "groupingCandidate": {
+            "label": "검진 전"
+          },
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "검진기관 방문하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-checkup-visit"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "검진기관 방문을 마쳤다."
+          },
+          "memoCandidate": null,
+          "groupingCandidate": {
+            "label": "검진 당일"
+          },
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "calendar",
+        "applicability": "blocked",
+        "reason": "검진기관 방문 행은 있지만 실제 날짜 표현이 없어 일정을 만들 수 없다."
+      },
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "두 SourceRow를 순서대로 확인하고 완료 표시할 수 있다."
+      },
+      {
+        "target": "todo",
+        "applicability": "applicable",
+        "reason": "확인과 방문을 각각 독립적인 할 일로 둘 수 있다."
+      },
+      {
+        "target": "sheet",
+        "applicability": "not_applicable",
+        "reason": "제공된 두 행에는 표 형태로 관리할 속성이 없다."
+      },
+      {
+        "target": "memo",
+        "applicability": "not_applicable",
+        "reason": "별도로 보존할 설명이나 방법이 제공되지 않았다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "검진일의 실제 날짜는 제공되지 않았다."
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "검진 대상과 예약 상태 및 실제 방문일은 사용자가 확인해야 한다.",
+        "의료 민감 콘텐츠이므로 제안이 의료 판단으로 해석되지 않는지 확인해야 한다."
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

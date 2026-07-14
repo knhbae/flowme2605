@@ -1,0 +1,364 @@
+{
+  "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
+  "runId": "round-2-batch-a",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "modelEvidence": {
+    "provider": "codex-subagent-runtime",
+    "model": "not_available",
+    "modelTier": "unclassified",
+    "evidenceKind": "in_session_same_model"
+  },
+  "timing": {
+    "startedAt": null,
+    "completedAt": null,
+    "latencyMs": null,
+    "evidenceKind": "not_available"
+  },
+  "usage": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "evidenceKind": "not_available"
+  },
+  "cost": {
+    "amount": null,
+    "currency": null,
+    "pricingRef": null,
+    "evidenceKind": "not_available"
+  },
+  "outputs": [
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-01",
+      "caseId": "case-01",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "date_preparation",
+        "primarySourceId": "source-nhis-health-checkup",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-checkup-booking",
+          "row-checkup-visit"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "검진 대상 및 예약을 확인하고 검진기관 방문을 마친다.",
+        "lifeArea": "health_fitness",
+        "planningPattern": "date_preparation",
+        "primaryArtifact": "checklist",
+        "contentShape": "검진 확인과 방문 체크리스트"
+      },
+      "proposal": {
+        "proposalTitle": "건강검진 확인과 방문",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "검진 대상 및 예약 확인하기",
+            "intent": "inspect",
+            "sourceRowIds": [
+              "row-checkup-booking"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "검진 대상 및 예약 확인을 마친 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          },
+          {
+            "proposalId": "p-02",
+            "title": "검진기관 방문하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-checkup-visit"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "검진기관 방문을 마친 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "두 SourceRow를 각각 확인 가능한 항목으로 유지한다."
+        },
+        {
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "SourceRow에 실제 날짜 표현이 없어 일정으로 배치할 수 없다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "의료 민감 정보가 포함된 Flow이므로 사람 검토가 필요하다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-02",
+      "caseId": "case-02",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "repeating_routine",
+        "primarySourceId": "source-samsung-aircon-filter",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-aircon-filter-4week"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "극세 필터를 4주에 한 번 청소하고 완료 여부를 남긴다.",
+        "lifeArea": "home_living",
+        "planningPattern": "repeating_routine",
+        "primaryArtifact": "hybrid",
+        "contentShape": "반복 주기가 있는 청소 체크 항목"
+      },
+      "proposal": {
+        "proposalTitle": "에어컨 극세 필터 청소",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "극세 필터 청소하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-aircon-filter-4week"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "극세 필터 청소를 마친 상태"
+            },
+            "memoCandidate": "먼지 제거, 물세척, 그늘 건조",
+            "groupingCandidate": null,
+            "scheduleCandidate": {
+              "sourceRowIds": [
+                "row-aircon-filter-4week"
+              ],
+              "sourceText": "4주에 한 번",
+              "parsedByRule": false
+            }
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "calendar",
+          "applicability": "applicable",
+          "reason": "SourceRow의 반복 표현을 파싱하지 않은 일정 후보로 유지한다."
+        },
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "청소 완료 여부를 확인 가능한 한 항목으로 유지한다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "반복 표현은 파싱되지 않은 원문 후보이다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "반복 일정 적용 전 주기 해석을 검토해야 한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-03",
+      "caseId": "case-03",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "source_table_rows",
+        "primarySourceId": "source-kkday-overseas-packing",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-pack-passport",
+          "row-pack-connectivity"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "여권과 데이터 유심을 빠뜨리지 않고 챙긴다.",
+        "lifeArea": "travel_outings",
+        "planningPattern": "source_table_rows",
+        "primaryArtifact": "checklist",
+        "contentShape": "두 가지 여행 준비물 체크리스트"
+      },
+      "proposal": {
+        "proposalTitle": "해외여행 준비물 챙기기",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "여권 챙기기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-pack-passport"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "여권을 챙긴 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          },
+          {
+            "proposalId": "p-02",
+            "title": "데이터 유심 챙기기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-pack-connectivity"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "데이터 유심을 챙긴 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "제공된 두 준비물 행을 각각 확인 가능한 항목으로 유지한다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "출처의 권리 상태가 needs_review이다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "출처 사용 권리를 검토해야 한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.2",
+      "requestId": "prompt-lab-v1-case-04",
+      "caseId": "case-04",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "ordered_procedure",
+        "primarySourceId": "source-work24-jobseeker-support",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-work24-register",
+          "row-work24-apply"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "구직 신청 등록과 취업지원 서비스 신청을 순서대로 마친다.",
+        "lifeArea": "work_career",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "contentShape": "두 단계 신청 절차"
+      },
+      "proposal": {
+        "proposalTitle": "고용24 취업지원 시작 절차",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "구직 신청 등록하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-work24-register"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "구직 신청 등록을 마친 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          },
+          {
+            "proposalId": "p-02",
+            "title": "취업지원 서비스 신청하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-work24-apply"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "취업지원 서비스 신청을 마친 상태"
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "SourceRow의 순서를 유지한 두 개의 확인 항목으로 투영한다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "개인정보 민감 절차가 포함된 Flow이므로 사람 검토가 필요하다."
+        ]
+      }
+    }
+  ]
+}

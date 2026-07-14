@@ -1,0 +1,286 @@
+{
+  "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
+  "runId": "round-1-batch-c",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "modelEvidence": {
+    "provider": "codex-subagent-runtime",
+    "model": "codex-subagent-runtime",
+    "modelTier": "unclassified",
+    "evidenceKind": "in_session_same_model"
+  },
+  "timing": {
+    "startedAt": null,
+    "completedAt": null,
+    "latencyMs": null,
+    "evidenceKind": "not_available"
+  },
+  "usage": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "evidenceKind": "not_available"
+  },
+  "cost": {
+    "amount": null,
+    "currency": null,
+    "pricingRef": null,
+    "evidenceKind": "not_available"
+  },
+  "outputs": [
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-09",
+      "caseId": "case-09",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "resource_queue",
+        "primarySourceId": "source-canon-photo-30",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [
+          "row-photo-day-01",
+          "row-photo-day-02"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "사진 연습 사용자로서 제공된 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+        "lifeArea": "hobby",
+        "planningPattern": "resource_queue",
+        "primaryArtifact": "checklist",
+        "contentShape": "순서가 있는 2개 사진 prompt 실행 목록"
+      },
+      "proposal": {
+        "proposalTitle": "사진 prompt Day 1-2 실행하기",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "Day 1 prompt 실행하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-photo-day-01"
+            ],
+            "completion": {
+              "mode": "record",
+              "doneWhen": "Day 1 prompt를 실행하고 완료 여부를 남겼다."
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          },
+          {
+            "proposalId": "p-02",
+            "title": "Day 2 prompt 실행하기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-photo-day-02"
+            ],
+            "completion": {
+              "mode": "record",
+              "doneWhen": "Day 2 prompt를 실행하고 완료 여부를 남겼다."
+            },
+            "memoCandidate": null,
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "두 prompt 행을 순서대로 실행하고 완료 여부를 확인할 수 있다."
+        },
+        {
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "Day 1과 Day 2는 순서 표기일 뿐 실제 시작 날짜나 일정 표현이 제공되지 않았다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "제공된 행에는 Day 1과 Day 2의 실제 사진 prompt 내용이 없다.",
+          "30일 전체가 아니라 제공된 2개 행만 변환했다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "실제 prompt 내용과 원문 사용 권리를 확인한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-10",
+      "caseId": "case-10",
+      "status": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null
+      },
+      "sourceAssessment": {
+        "access": "readable",
+        "sourceShape": "official_lifecycle",
+        "primarySourceId": "source-kotsa-regular-inspection",
+        "supportingSourceIds": [
+          "source-kotsa-inspection-procedure"
+        ],
+        "receivedSourceRowIds": [
+          "row-inspection-window",
+          "row-inspection-agency-phases"
+        ],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": {
+        "userNeed": "차량 소유자로서 내 차량의 정기검사 유효기간 안에 검사를 받고 필요하면 재검사 조건을 확인한다.",
+        "lifeArea": "vehicle",
+        "planningPattern": "deadline_window",
+        "primaryArtifact": "todo",
+        "contentShape": "유효기간에 맞춘 단일 정기검사 행동"
+      },
+      "proposal": {
+        "proposalTitle": "정기검사 유효기간 안에 검사받기",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "title": "정기검사 유효기간 안에 검사받기",
+            "intent": "act",
+            "sourceRowIds": [
+              "row-inspection-window"
+            ],
+            "completion": {
+              "mode": "check",
+              "doneWhen": "내 차량이 정기검사 유효기간 안에 검사를 받았다."
+            },
+            "memoCandidate": "재검사가 필요한 경우 조건을 확인한다.",
+            "groupingCandidate": null,
+            "scheduleCandidate": null
+          }
+        ],
+        "omittedRows": [
+          {
+            "sourceRowId": "row-inspection-agency-phases",
+            "reason": "지원 출처의 검사기관 내부 단계는 사용자가 독립적으로 실행하거나 완료할 행동이 아니며 Flow 구조를 통제할 수 없다."
+          }
+        ],
+        "incompleteReason": null
+      },
+      "projectionPlan": [
+        {
+          "target": "todo",
+          "applicability": "applicable",
+          "reason": "정기검사 받기는 사용자가 완료 여부를 확인할 수 있는 단일 행동이다."
+        },
+        {
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "유효기간의 구체적인 날짜 표현이 SourceRow에 없어 일정을 만들 수 없다."
+        }
+      ],
+      "reviewHints": {
+        "recommendedDisposition": "review",
+        "uncertainties": [
+          "차량별 정기검사 유효기간의 구체적인 값이 제공되지 않았다.",
+          "재검사 조건을 설명하는 SourceRow가 제공되지 않았다."
+        ],
+        "hardFailCodes": [],
+        "humanReviewRequired": [
+          "공식 출처에서 해당 차량의 유효기간과 필요한 경우의 재검사 조건을 확인한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-11",
+      "caseId": "case-11",
+      "status": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "readiness": null,
+        "errorCode": "missing_source_rows"
+      },
+      "sourceAssessment": {
+        "access": "unavailable",
+        "sourceShape": "unknown",
+        "primarySourceId": "source-computer-skills-pdf-unavailable",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": null,
+      "proposal": {
+        "proposalTitle": null,
+        "items": [],
+        "omittedRows": [],
+        "incompleteReason": "원본 파일 본문과 학습 행이 제공되지 않아 실행 가능한 진도표 항목을 만들 수 없다."
+      },
+      "projectionPlan": [],
+      "reviewHints": {
+        "recommendedDisposition": "source_import_required",
+        "uncertainties": [
+          "파일의 목차, 주차, 과제 행을 확인할 수 없다."
+        ],
+        "hardFailCodes": [
+          "missing_source_rows"
+        ],
+        "humanReviewRequired": [
+          "원본 파일에 접근해 행 단위 학습 내용을 추출한다."
+        ]
+      }
+    },
+    {
+      "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "requestId": "prompt-lab-v1-case-12",
+      "caseId": "case-12",
+      "status": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "readiness": null,
+        "errorCode": "locale_applicability_unverified"
+      },
+      "sourceAssessment": {
+        "access": "partial",
+        "sourceShape": "checklist",
+        "primarySourceId": "source-stemcyte-hospital-bag",
+        "supportingSourceIds": [],
+        "receivedSourceRowIds": [],
+        "untrustedInstructionDetected": false
+      },
+      "conversionDecision": null,
+      "proposal": {
+        "proposalTitle": null,
+        "items": [],
+        "omittedRows": [],
+        "incompleteReason": "미국 병원, 보험, 제대혈 판매 맥락이 섞인 의료 민감 콘텐츠여서 한국 사용자에게 적용할 수 있는지 확인되지 않았다."
+      },
+      "projectionPlan": [],
+      "reviewHints": {
+        "recommendedDisposition": "hold",
+        "uncertainties": [
+          "한국 병원의 제공품과 입원 절차에 맞는지 확인되지 않았다.",
+          "체크리스트의 개별 SourceRow가 제공되지 않았다."
+        ],
+        "hardFailCodes": [
+          "locale_applicability_unverified"
+        ],
+        "humanReviewRequired": [
+          "한국의 병원, 의료, 보험, 행정 맥락에 대한 적용성을 확인한다.",
+          "지역 적용성을 확인한 뒤 행 단위 체크리스트를 확보한다."
+        ]
+      }
+    }
+  ]
+}
