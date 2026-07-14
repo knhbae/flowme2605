@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P24 다음 작업 보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17201c;
+      --muted: #5e6963;
+      --line: #d7ded9;
+      --paper: #ffffff;
+      --canvas: #f4f6f3;
+      --green: #196b4a;
+      --green-soft: #e7f3ec;
+      --red: #a23a32;
+      --red-soft: #faece9;
+      --amber: #8a5a0a;
+      --amber-soft: #fff3d7;
+      --blue: #2f5e8f;
+      --blue-soft: #eaf1f8;
+      --violet: #69508f;
+      --violet-soft: #f0ebf7;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+    .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+    .mast { padding: 38px 0 30px; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-weight: 800; font-size: 13px; }
+    h1 { margin: 0; font-size: clamp(30px, 5vw, 48px); line-height: 1.14; letter-spacing: 0; }
+    .lead { max-width: 790px; margin: 14px 0 0; color: var(--muted); font-size: 17px; }
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+    }
+    .status-strip div { padding: 15px 16px; border-right: 1px solid var(--line); }
+    .status-strip div:last-child { border-right: 0; }
+    .status-strip strong { display: block; font-size: 13px; }
+    .status-strip span { color: var(--muted); font-size: 13px; }
+    main { padding: 30px 0 72px; }
+    section { margin: 0 0 34px; }
+    h2 { margin: 0 0 14px; font-size: 23px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 0 0 7px; font-size: 17px; letter-spacing: 0; }
+    p { margin: 0 0 10px; }
+    .verdict {
+      border: 1px solid #b9d5c5;
+      border-left: 5px solid var(--green);
+      background: var(--green-soft);
+      padding: 18px 20px;
+      border-radius: 6px;
+    }
+    .verdict strong { display: block; margin-bottom: 4px; font-size: 19px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .panel { border: 1px solid var(--line); background: var(--paper); padding: 18px; border-radius: 6px; }
+    .panel p:last-child { margin-bottom: 0; }
+    .tone-red { border-top: 4px solid var(--red); }
+    .tone-amber { border-top: 4px solid var(--amber); }
+    .tone-blue { border-top: 4px solid var(--blue); }
+    .tone-violet { border-top: 4px solid var(--violet); }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 8px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .blocking { color: var(--red); background: var(--red-soft); }
+    .high { color: var(--amber); background: var(--amber-soft); }
+    .medium { color: var(--blue); background: var(--blue-soft); }
+    .planned { color: var(--violet); background: var(--violet-soft); }
+    ol.timeline { list-style: none; padding: 0; margin: 0; counter-reset: phase; }
+    .timeline li {
+      counter-increment: phase;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .timeline li:last-child { border-bottom: 0; }
+    .timeline li::before {
+      content: counter(phase, decimal-leading-zero);
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: white;
+      background: var(--ink);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .timeline p { color: var(--muted); margin: 2px 0 0; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); border: 1px solid var(--line); }
+    th, td { padding: 12px 13px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eef1ee; font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    code { padding: 1px 5px; border-radius: 3px; background: #edf0ed; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.92em; }
+    .callout { border-left: 4px solid var(--blue); background: var(--blue-soft); padding: 15px 17px; }
+    .action-list { margin: 0; padding-left: 22px; }
+    .action-list li { margin: 8px 0; }
+    footer { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 720px) {
+      .wrap { width: min(100% - 24px, 1120px); }
+      .mast { padding: 26px 0 22px; }
+      .lead { font-size: 15px; }
+      .status-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .status-strip div:nth-child(2) { border-right: 0; }
+      .status-strip div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .grid { grid-template-columns: 1fr; }
+      .timeline li { grid-template-columns: 38px minmax(0, 1fr); }
+      .timeline li .pill { grid-column: 2; justify-self: start; }
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      table { border: 0; background: transparent; }
+      tr { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+      td { padding: 9px 12px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+      td::before { content: attr(data-label); display: block; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap mast">
+      <p class="eyebrow">FLOWME · P24 RECONCILIATION · 2026-07-14</p>
+      <h1>기능을 더하기 전에<br>실행 상태를 믿을 수 있게</h1>
+      <p class="lead">사용자 피드백, clean Codex 감사, dirty-dev Claude Code 감사, Claude Design 제안을 하나의 실행 순서로 재정렬했다. 다음은 디자인 개편이 아니라 기준선 재현이다.</p>
+    </div>
+    <div class="wrap status-strip" aria-label="현재 상태">
+      <div><strong>Main</strong><span>a9ae10e · origin 동기화</span></div>
+      <div><strong>Worktree</strong><span>대량 dirty · 범위 분리 필요</span></div>
+      <div><strong>실제 사용자</strong><span>피드백 1회 · 관찰 15 session 미실행</span></div>
+      <div><strong>다음 Gate</strong><span>P24-00R baseline reconciliation</span></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <div class="verdict">
+        <strong>현재 판정: P24-00B 사용자 관찰과 P24-01A source merge를 아직 시작하지 않는다.</strong>
+        clean 기준선과 dependency 후보 환경을 같은 조건으로 재실행해 build와 핵심 여정 finding을 먼저 확정한다. 이후 정확성 수정, 실행 UX 단순화, 날짜 이동·export 범위 계약 순으로 간다.
+      </div>
+    </section>
+
+    <section>
+      <h2>증거가 말하는 핵심 문제</h2>
+      <div class="grid">
+        <article class="panel tone-red">
+          <span class="pill blocking">Blocking</span>
+          <h3>환경과 실행 상태의 신뢰</h3>
+          <p>clean build는 통과했지만 현재 dependency 후보에서는 build가 실패했다. 날짜, recurrence, memo split, reuse 결과도 환경별 재현을 분리해야 한다.</p>
+        </article>
+        <article class="panel tone-amber">
+          <span class="pill high">High</span>
+          <h3>같은 행동의 중복과 어려운 되돌리기</h3>
+          <p>Today, next, detail에 완료 행동이 반복되고 완료 취소는 관리 화면 깊숙이 있다. 한 occurrence에 한 control과 즉시 undo가 필요하다.</p>
+        </article>
+        <article class="panel tone-blue">
+          <span class="pill medium">Medium</span>
+          <h3>날짜 없음과 범위의 비가시성</h3>
+          <p>unscheduled Item은 Calendar에서 찾기 어렵다. 날짜 이동과 export는 전체·선택·현재 범위를 먼저 보여줘야 한다.</p>
+        </article>
+        <article class="panel tone-violet">
+          <span class="pill planned">Planned</span>
+          <h3>글 대신 상태와 조작</h3>
+          <p>설명 카드를 더 붙이지 않는다. linked/fixed badge, completed section, unscheduled tray, selection count, progressive disclosure로 바꾼다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>단계별 실행 순서</h2>
+      <ol class="timeline">
+        <li><div><h3>P24-00R · 기준선 재현</h3><p>clean tracked와 dependency 후보를 격리하고 모든 finding을 네 상태로 분류한다.</p></div><span class="pill blocking">NEXT</span></li>
+        <li><div><h3>P24-00F1/F2 · 날짜 진실성</h3><p>KST local date, effective date summary, reuse override 정책을 한 projection 기준으로 맞춘다.</p></div><span class="pill blocking">Blocking</span></li>
+        <li><div><h3>P24-00F3/F4 · recurrence·draft·진입 안정성</h3><p>occurrence 수, memo split Item, empty draft, hard load, post-save hydration을 닫는다.</p></div><span class="pill blocking">Blocking</span></li>
+        <li><div><h3>P24-00U1 · 완료와 Today</h3><p>실행 row 하나, 완료 직후 undo, 같은 Flow의 완료 section, control 없는 next preview.</p></div><span class="pill high">High</span></li>
+        <li><div><h3>P24-00S1 · 날짜 이동 계약</h3><p>single, selected, anchor, occurrence, future series, whole series의 상태 전이를 먼저 테스트한다.</p></div><span class="pill high">High</span></li>
+        <li><div><h3>P24-00U2/U3 · 편집과 날짜 없음</h3><p>기본 field만 보이는 editor와 Calendar 내부 unscheduled tray를 연결한다.</p></div><span class="pill medium">Medium</span></li>
+        <li><div><h3>P24-00S2 · export 범위</h3><p>전체 Flow, 선택한 항목, 현재 항목을 먼저 고르고 Calendar/checklist/sheet/memo를 고른다.</p></div><span class="pill medium">Medium</span></li>
+        <li><div><h3>P24-00U4 · 실행 중 메모</h3><p>항목별 선택적 note를 최종 회고에 모으되 공개/전송은 명시적으로 분리한다.</p></div><span class="pill planned">Later</span></li>
+        <li><div><h3>P24-00B/C · 실제 사용자 관찰과 결정</h3><p>5명 이상 x 3회 사용 후 Today/All, tray, editor, export, feedback을 keep/change/defer한다.</p></div><span class="pill planned">Human gate</span></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>사용자 피드백을 어디에 반영하는가</h2>
+      <table>
+        <thead><tr><th>피드백</th><th>판정</th><th>작업</th></tr></thead>
+        <tbody>
+          <tr><td data-label="피드백">미등록 URL을 테스트할 수 없음</td><td data-label="판정">실제 fetch/AI는 의도적으로 gated</td><td data-label="작업">miss/draft 정직성만 P24에서 검증, backend는 별도 gate</td></tr>
+          <tr><td data-label="피드백">설명 글이 많음</td><td data-label="판정">상태·범위가 UI에 드러나지 않음</td><td data-label="작업">badge, tray, selection, inline feedback</td></tr>
+          <tr><td data-label="피드백">메모 편집이 복잡함</td><td data-label="판정">범용 field 과노출</td><td data-label="작업">P24-00U2 progressive editor</td></tr>
+          <tr><td data-label="피드백">완료 취소가 어려움</td><td data-label="판정">Today/All보다 되돌리기 경로 문제</td><td data-label="작업">P24-00U1 inline undo + completed section</td></tr>
+          <tr><td data-label="피드백">전체/선택 날짜 이동</td><td data-label="판정">UI보다 상태 계약이 선행</td><td data-label="작업">P24-00S1 pure transition first</td></tr>
+          <tr><td data-label="피드백">날짜 없음이 Calendar에서 안 보임</td><td data-label="판정">unscheduled discoverability gap</td><td data-label="작업">P24-00U3 Calendar tray</td></tr>
+          <tr><td data-label="피드백">export가 1개인지 전체인지 모호함</td><td data-label="판정">scope/format 혼합</td><td data-label="작업">P24-00S2 scope first</td></tr>
+          <tr><td data-label="피드백">회고를 단계별로 남기고 싶음</td><td data-label="판정">실행 note와 최종 reflection 미연결</td><td data-label="작업">P24-00U4 optional inline note</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>이번에 확정하지 않은 것</h2>
+      <div class="callout">
+        <p><strong>Today/All 탭 삭제, drag-and-drop, production URL AI, source-backed 구조 편집, OAuth, account/DB는 아직 결정하지 않는다.</strong></p>
+        <p>정확성 수정과 15개 실제 관찰 session 뒤에 다시 판단한다. 특히 drag-and-drop은 selection, keyboard/touch 대안, undo, anchor/fixed semantics보다 먼저 열지 않는다.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>사람이 해야 할 일</h2>
+      <ol class="action-list">
+        <li>Vercel 관찰 URL의 SSO 보호를 해제하거나 익명 URL을 새로 만든다.</li>
+        <li>현재 package/runtime dirty 변경의 소유자와 별도 branch 처리 여부를 확인한다.</li>
+        <li>정확성 수정 뒤 5명 이상, 각 3회 테스트할 사용자를 모집한다.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>바로 이어서 실행</h2>
+      <div class="panel">
+        <h3>P24-00R 복붙용 목표</h3>
+        <p><a href="./next-goal.md">next-goal.md 열기</a></p>
+        <p>세부 계약은 <a href="../../specs/2026-07-14-p24-execution-trust-ux-simplification/spec.md">durable spec</a>, 전체 작업은 <a href="./backlog.md">revised backlog</a>에서 관리한다.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">자동 QA와 디자인 목업은 실제 사용자 검증이 아니다. 이 보드는 2026-07-14 현재의 planning baseline이다.</div>
+  </footer>
+</body>
+</html>

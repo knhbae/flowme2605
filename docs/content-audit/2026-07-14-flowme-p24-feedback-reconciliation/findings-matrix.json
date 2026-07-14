@@ -1,0 +1,213 @@
+{
+  "generatedAt": "2026-07-14T00:00:00+09:00",
+  "baselineCommit": "a9ae10eec6ffc4c095d83942b7bec1632870db03",
+  "classificationPolicy": {
+    "confirmed_clean": "Reproduced on the isolated tracked baseline.",
+    "dirty_only": "Reproduced only after applying the dependency/runtime candidate patch.",
+    "not_reproduced": "Not reproduced in either controlled environment.",
+    "blocked": "A required runtime, route, deployment, or fixture was unavailable.",
+    "pending_reconciliation": "Reported evidence exists, but P24-00R has not classified it yet."
+  },
+  "findings": [
+    {
+      "id": "ENV-01",
+      "title": "Clean and dirty environments report different build results",
+      "severity": "blocking",
+      "sources": ["codex_clean_baseline", "claude_code_dirty_dev"],
+      "evidence": ["clean_baseline_automated", "dirty_dev_automated"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P24-00R",
+      "note": "Do not attribute the build failure to product code until commit, lockfile, Node, and package patch are isolated."
+    },
+    {
+      "id": "OPS-01",
+      "title": "Vercel observation URL redirects anonymous users to SSO",
+      "severity": "blocking",
+      "sources": ["codex_clean_baseline", "claude_code_dirty_dev"],
+      "evidence": ["current_command"],
+      "currentStatus": "reported_by_both",
+      "nextSlice": "P24-00OPS1",
+      "note": "Human observation cannot start until an anonymous or explicitly provisioned URL is available."
+    },
+    {
+      "id": "DATE-01",
+      "title": "KST morning defaults can use the previous UTC date",
+      "severity": "blocking",
+      "sources": ["codex_clean_baseline"],
+      "evidence": ["clean_baseline_automated"],
+      "currentStatus": "reported_clean",
+      "nextSlice": "P24-00F1",
+      "note": "Separate local calendar date from UTC serialization."
+    },
+    {
+      "id": "DATE-02",
+      "title": "Today summary ignores an Item date override",
+      "severity": "blocking",
+      "sources": ["claude_code_dirty_dev", "user_feedback"],
+      "evidence": ["dirty_dev_automated", "observed_user_feedback"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P24-00F2A",
+      "note": "Summary, full list, Calendar, and ICS must use the same effective date resolver."
+    },
+    {
+      "id": "DATE-03",
+      "title": "Reuse keep-fixed-dates option behaves like reset-to-anchor",
+      "severity": "blocking",
+      "sources": ["claude_code_dirty_dev", "user_feedback"],
+      "evidence": ["dirty_dev_automated", "observed_user_feedback"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P24-00F2B",
+      "note": "The new run must honor the selected overlay transfer policy while preserving past history."
+    },
+    {
+      "id": "REC-01",
+      "title": "Recurrence preview shows many occurrences but saved projections show one",
+      "severity": "blocking",
+      "sources": ["claude_code_dirty_dev"],
+      "evidence": ["dirty_dev_automated"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P24-00F3A",
+      "note": "Preview, My Flow, Calendar, and ICS occurrence counts must match."
+    },
+    {
+      "id": "REC-02",
+      "title": "The same recurring task can appear as both next task and next item",
+      "severity": "high",
+      "sources": ["codex_clean_baseline", "claude_design"],
+      "evidence": ["clean_baseline_automated", "design_proposal"],
+      "currentStatus": "reported_clean",
+      "nextSlice": "P24-00U1",
+      "note": "Keep one executable occurrence row and render any next preview without completion control."
+    },
+    {
+      "id": "DRAFT-01",
+      "title": "Memo-split todo Items can be persisted but hidden from UI and export",
+      "severity": "blocking",
+      "sources": ["claude_code_dirty_dev"],
+      "evidence": ["dirty_dev_automated"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P24-00F3B",
+      "note": "Item type must not remove a persisted Item from the effective list."
+    },
+    {
+      "id": "DRAFT-02",
+      "title": "Empty miss input can create a fallback draft",
+      "severity": "high",
+      "sources": ["codex_clean_baseline"],
+      "evidence": ["clean_baseline_automated"],
+      "currentStatus": "reported_clean",
+      "nextSlice": "P24-00F3B",
+      "note": "Require title or desired outcome and never persist a status sentence as an Item title."
+    },
+    {
+      "id": "ENTRY-01",
+      "title": "Direct /flows navigation can remain in loading fallback",
+      "severity": "high",
+      "sources": ["claude_code_dirty_dev"],
+      "evidence": ["dirty_dev_automated"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P24-00F4",
+      "note": "Reproduce in production mode after build environment is fixed."
+    },
+    {
+      "id": "ENTRY-02",
+      "title": "Post-save My Flow can intermittently render empty until reload",
+      "severity": "high",
+      "sources": ["claude_code_dirty_dev"],
+      "evidence": ["dirty_dev_automated"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P24-00F4",
+      "note": "One of five automated saves reproduced the stale hydration."
+    },
+    {
+      "id": "COMP-01",
+      "title": "Uncompleting a task requires leaving Today and opening detail",
+      "severity": "high",
+      "sources": ["user_feedback", "codex_clean_baseline", "claude_design"],
+      "evidence": ["observed_user_feedback", "clean_baseline_automated", "design_proposal"],
+      "currentStatus": "confirmed_problem_statement",
+      "nextSlice": "P24-00U1",
+      "note": "Keep Today and All roles, but support one-action reopen in the current context."
+    },
+    {
+      "id": "EDIT-01",
+      "title": "Personal Item edit form exposes unrelated generic fields",
+      "severity": "high",
+      "sources": ["user_feedback", "claude_code_dirty_dev", "claude_design"],
+      "evidence": ["observed_user_feedback", "dirty_dev_automated", "design_proposal"],
+      "currentStatus": "confirmed_problem_statement",
+      "nextSlice": "P24-00U2",
+      "note": "Use progressive disclosure and Item-intent field gating."
+    },
+    {
+      "id": "MOVE-01",
+      "title": "Date move lacks explicit single, selected, anchor, and recurrence scopes",
+      "severity": "high",
+      "sources": ["user_feedback", "claude_design"],
+      "evidence": ["observed_user_feedback", "design_proposal"],
+      "currentStatus": "contract_missing",
+      "nextSlice": "P24-00S1",
+      "note": "Define pure transitions, preview, history, and undo before UI."
+    },
+    {
+      "id": "UNSCHEDULED-01",
+      "title": "Unscheduled Items are difficult to discover from Calendar",
+      "severity": "medium",
+      "sources": ["user_feedback", "claude_design"],
+      "evidence": ["observed_user_feedback", "design_proposal"],
+      "currentStatus": "confirmed_problem_statement",
+      "nextSlice": "P24-00U3",
+      "note": "Expose a Calendar-local unscheduled tray without creating fake dates."
+    },
+    {
+      "id": "EXPORT-01",
+      "title": "Calendar export appears Flow-level but exports the current Item",
+      "severity": "high",
+      "sources": ["user_feedback", "claude_code_dirty_dev", "claude_design"],
+      "evidence": ["observed_user_feedback", "dirty_dev_automated", "design_proposal"],
+      "currentStatus": "confirmed_problem_statement",
+      "nextSlice": "P24-00S2",
+      "note": "Choose whole, selected, or current scope before choosing a destination."
+    },
+    {
+      "id": "FEEDBACK-01",
+      "title": "Reflection is concentrated at the end of a Flow",
+      "severity": "medium",
+      "sources": ["user_feedback", "claude_design"],
+      "evidence": ["observed_user_feedback", "design_proposal"],
+      "currentStatus": "opportunity",
+      "nextSlice": "P24-00U4",
+      "note": "Optional inline notes can aggregate into final reflection without becoming mandatory."
+    },
+    {
+      "id": "URL-01",
+      "title": "Arbitrary unregistered URL conversion is not available for user testing",
+      "severity": "medium",
+      "sources": ["user_feedback", "current_repo"],
+      "evidence": ["observed_user_feedback", "current_repo"],
+      "currentStatus": "intentionally_gated",
+      "nextSlice": "deferred_backend_gate",
+      "note": "Test the honest miss/draft path now; production fetch and real AI remain gated by security, rights, retention, and cost."
+    },
+    {
+      "id": "LOCK-01",
+      "title": "Source-backed structural edit controls are absent without an explanation",
+      "severity": "medium",
+      "sources": ["claude_code_dirty_dev"],
+      "evidence": ["dirty_dev_automated", "inferred"],
+      "currentStatus": "needs_human_observation",
+      "nextSlice": "P24-00B",
+      "note": "Do not add another explanation card until actual users show confusion."
+    },
+    {
+      "id": "DEP-01",
+      "title": "Tracked dependency baseline has high advisories while candidate upgrade is unstable",
+      "severity": "high",
+      "sources": ["codex_clean_baseline", "claude_code_dirty_dev"],
+      "evidence": ["clean_baseline_automated", "dirty_dev_automated"],
+      "currentStatus": "pending_reconciliation",
+      "nextSlice": "P25-02",
+      "note": "Run a controlled upgrade separately from product fixes; do not use npm audit fix --force."
+    }
+  ]
+}
