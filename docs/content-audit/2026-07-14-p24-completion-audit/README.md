@@ -53,9 +53,11 @@ Full marker values and evidence paths are in [completion-matrix.json](./completi
 ## Current Verification
 
 - current command: `npm.cmd audit --json` -> critical `0`, high `4`, moderate `3`
-- current command on the same product tree: docs check `14 required / 2,154 links`
-- current command on the same product tree: unit `514 / 514`
-- current command on the same product tree: Next.js `15.3.8` production build pass, 18 routes
+- current command on the OPS2 product tree: docs check `14 required / 2,178 links`
+- current command on the OPS2 product tree: unit `514 / 514`
+- current command on the OPS2 product tree: Next.js `15.5.20` production build pass, 18 routes
+- current command on the OPS2 product tree: Playwright `274 / 274` distinct tests passed across bounded shards
+- current dependency audit: critical `0`, high `0`, moderate `4`
 - current browser inspection: observation guide 390px/1024px overflow `0`, console error `0`
 - current production check: <https://flowme2605.vercel.app> anonymous HTTP `200`
 - observed-user evidence: `0 / 15`
@@ -64,8 +66,8 @@ Full marker values and evidence paths are in [completion-matrix.json](./completi
 
 The earlier backlog deferred dependency work to P25. This audit promotes it to **P24-00OPS2**, because current high advisories should not be carried into a commercial-quality observation baseline when the isolated candidate already passed unit and build.
 
-1. **P24-00OPS2:** upgrade Next, Playwright and PostCSS under a rollbackable commit; require high `0`, unit/build and full or sharded E2E.
-2. **P24-00B1:** two real participants complete session 1; validate the moderator script and stop on trust failures.
+1. **P24-00OPS2 - done:** high `0`, unit/build, all 274 Playwright tests and rollback evidence are in the [OPS2 package](../2026-07-14-p24-00ops2-controlled-dependency-upgrade-evidence/README.md).
+2. **P24-00B1 - next:** two real participants complete session 1; validate the moderator script and stop on trust failures.
 3. **P24-00B2:** remaining three participants complete session 1; first-use cohort reaches `5 / 15`.
 4. **P24-00B3:** the same five participants complete sessions 2 and 3; reach `15 / 15`.
 5. **P24-00C1:** classify findings and decide which assumptions survive.

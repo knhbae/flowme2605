@@ -26,7 +26,7 @@
     { "id": "P24-00S2", "status": "proven", "evidence": "../2026-07-14-p24-s2-export-scope-evidence/route-evidence.json" },
     { "id": "P24-00U4", "status": "proven", "evidence": "../2026-07-14-p24-u4-inline-execution-notes-evidence/route-evidence.json" },
     { "id": "P24-00OPS1", "status": "proven", "evidence": "https://flowme2605.vercel.app" },
-    { "id": "P24-00OPS2", "status": "pending", "evidence": "current npm audit high 4; isolated candidate high 0" },
+    { "id": "P24-00OPS2", "status": "proven", "evidence": "../2026-07-14-p24-00ops2-controlled-dependency-upgrade-evidence/route-evidence.json" },
     { "id": "P24-00B", "status": "pending", "evidence": "observed user 0 of 15" },
     { "id": "P24-00C", "status": "pending", "evidence": "requires P24-00B results" }
   ],

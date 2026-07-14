@@ -2,6 +2,8 @@
 
 ## P24-00OPS2 Controlled Dependency Upgrade
 
+**Status:** completed on the isolated Next `15.5.20` dependency set. Evidence: [P24-00OPS2](../2026-07-14-p24-00ops2-controlled-dependency-upgrade-evidence/README.md).
+
 **Goal:** 실제 사용자에게 전달할 production baseline의 known high dependency advisory를 `0`으로 낮춘다.
 
 **Scope:**

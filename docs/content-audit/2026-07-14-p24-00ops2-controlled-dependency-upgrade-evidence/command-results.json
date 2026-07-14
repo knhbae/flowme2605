@@ -1,0 +1,30 @@
+{
+  "runDate": "2026-07-14",
+  "baselineCommit": "3df364b52d6dffc4993aac94368bd642dfce2dad",
+  "environment": {
+    "node": "v24.17.0",
+    "npm": "11.13.0",
+    "next": "15.5.20",
+    "playwright": "1.61.1",
+    "postcss": "8.5.16"
+  },
+  "audit": {
+    "before": { "critical": 0, "high": 4, "moderate": 3, "low": 0 },
+    "after": { "critical": 0, "high": 0, "moderate": 4, "low": 0 }
+  },
+  "commands": [
+    { "command": "npm.cmd ci", "status": "pass_after_exact_stale_server_stop" },
+    { "command": "npm.cmd run docs:check", "status": "pass", "requiredFiles": 14, "localLinks": 2178 },
+    { "command": "npm.cmd test", "status": "pass", "passed": 514, "failed": 0 },
+    { "command": "npm.cmd run build", "status": "pass", "routes": 18 },
+    { "command": "bounded Playwright shards", "status": "pass", "distinctTests": 274, "failedAfterRerun": 0 },
+    { "command": "P24 capture suite", "status": "pass", "passed": 14, "screenshots": 31 },
+    { "command": "git diff --check", "status": "pass" }
+  ],
+  "playwrightShards": [
+    { "files": ["p24-execution-trust.spec.ts", "url-first-user-surface.spec.ts", "public-share-cta-order.spec.ts", "workbench-source-density.spec.ts"], "passed": 77, "failed": 0 },
+    { "files": ["flow-mvp.spec.ts", "local-data-backup.spec.ts"], "initialPassed": 192, "initialFailed": 5, "rerunPassed": 5, "finalFailed": 0 }
+  ],
+  "actualObservedUserSessions": 0,
+  "requiredObservedUserSessions": 15
+}

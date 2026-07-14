@@ -1,0 +1,44 @@
+{
+  "package": "P24-00OPS2",
+  "runDate": "2026-07-14",
+  "baselineCommit": "3df364b52d6dffc4993aac94368bd642dfce2dad",
+  "dependencyHighBefore": 4,
+  "dependencyHighAfter": 0,
+  "dependencyModerateAfter": 4,
+  "unitPassed": 514,
+  "unitFailed": 0,
+  "playwrightDistinctPassed": 274,
+  "playwrightFailedAfterRerun": 0,
+  "productionBuildPassed": true,
+  "productionRouteCount": 18,
+  "appRuntimeSourceChanged": false,
+  "appUiChanged": false,
+  "testContractAssertionUpdateCount": 5,
+  "rollbackCommit": "3df364b52d6dffc4993aac94368bd642dfce2dad",
+  "capture": {
+    "suitePassed": 14,
+    "screenshotCount": 31,
+    "viewports": [
+      { "name": "mobile", "width": 390 },
+      { "name": "wide", "width": 1024 }
+    ],
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  },
+  "claudeDesign8": {
+    "mockupAAccuracyRegressionCount": 0,
+    "mockupBProgressiveEditorPresent": true,
+    "mockupCCompletionUndoPresent": true,
+    "mockupDUnscheduledTrayPresent": true,
+    "mockupEExportScopePresent": true,
+    "mockupFDateMovementContractPresent": true,
+    "mockupGInlineNotesPresent": true,
+    "wideEditorWhitespaceRequiresObservedUserCheck": true
+  },
+  "humanValidation": {
+    "automatedEvidenceIsUserValidation": false,
+    "observedSessions": 0,
+    "requiredSessions": 15,
+    "p24Complete": false
+  }
+}
