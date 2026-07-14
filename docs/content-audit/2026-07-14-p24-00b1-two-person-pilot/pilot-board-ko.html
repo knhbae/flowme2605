@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe P24-00B1 2인 파일럿</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #161a1d;
+      --muted: #5e686f;
+      --line: #dfe3e6;
+      --paper: #ffffff;
+      --canvas: #f5f6f4;
+      --green: #0f766e;
+      --green-soft: #e8f6f2;
+      --blue: #2458a6;
+      --blue-soft: #edf3fc;
+      --amber: #8a5700;
+      --amber-soft: #fff3d4;
+      --red: #9b3030;
+      --red-soft: #fcebea;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif; line-height: 1.55; letter-spacing: 0; }
+    a { color: inherit; }
+    .topbar { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.97); }
+    .topbar-inner { width: min(1120px, calc(100% - 32px)); min-height: 64px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { min-width: 0; }
+    .brand strong { display: block; font-size: 15px; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; }
+    .launch { display: inline-flex; min-height: 40px; align-items: center; padding: 0 14px; border: 1px solid var(--ink); border-radius: 6px; background: var(--ink); color: #fff; font-weight: 800; text-decoration: none; white-space: nowrap; }
+    main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0 72px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 720px; margin-bottom: 12px; font-size: clamp(30px, 5vw, 48px); line-height: 1.12; }
+    h2 { margin-bottom: 14px; font-size: 21px; }
+    h3 { margin-bottom: 8px; font-size: 16px; }
+    .lede { max-width: 720px; color: var(--muted); }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
+    .gate { border-left: 4px solid var(--amber); background: var(--amber-soft); padding: 16px; }
+    .gate small { display: block; color: var(--amber); font-weight: 900; }
+    .gate strong { display: block; margin: 4px 0; font-size: 22px; }
+    section { margin-top: 34px; }
+    .strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); background: var(--paper); }
+    .strip div { min-width: 0; padding: 14px; }
+    .strip div + div { border-left: 1px solid var(--line); }
+    .strip span { display: block; color: var(--muted); font-size: 12px; }
+    .strip b { display: block; margin-top: 3px; overflow-wrap: anywhere; }
+    .sessions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .session { min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); overflow: hidden; }
+    .session-head { padding: 17px 18px; border-bottom: 1px solid var(--line); }
+    .session:first-child .session-head { background: var(--blue-soft); }
+    .session:last-child .session-head { background: var(--green-soft); }
+    .persona { display: inline-block; margin-bottom: 7px; color: var(--blue); font-size: 12px; font-weight: 900; }
+    .session:last-child .persona { color: var(--green); }
+    .situation { padding: 16px 18px; border-bottom: 1px solid var(--line); font-weight: 700; }
+    .tasks { margin: 0; padding: 0; list-style: none; counter-reset: task; }
+    .tasks li { position: relative; min-height: 48px; padding: 13px 16px 13px 50px; border-bottom: 1px solid var(--line); color: var(--muted); }
+    .tasks li::before { counter-increment: task; content: counter(task); position: absolute; left: 16px; top: 12px; display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 12px; font-weight: 900; }
+    .observe { padding: 15px 18px; }
+    .observe b { display: block; margin-bottom: 6px; }
+    .observe p { margin: 0; color: var(--muted); font-size: 13px; }
+    .protocol { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr); gap: 16px; }
+    .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); padding: 18px; }
+    .hint-list { display: grid; gap: 10px; }
+    .hint { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 10px; align-items: start; }
+    .hint b { display: grid; place-items: center; min-height: 30px; border-radius: 5px; background: var(--ink); color: #fff; font-size: 12px; }
+    .hint p, .stop li { margin: 0; color: var(--muted); font-size: 14px; }
+    .stop { border-color: #efb6b3; background: var(--red-soft); }
+    .stop h3 { color: var(--red); }
+    .stop ul { margin: 10px 0 0; padding-left: 20px; }
+    .stop li + li { margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 14px; }
+    th, td { border: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #ecefed; }
+    .finish { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .finish article { border-top: 4px solid var(--green); }
+    .finish article:nth-child(2) { border-color: var(--amber); }
+    .finish article:nth-child(3) { border-color: var(--red); }
+    .finish p { margin: 0; color: var(--muted); font-size: 14px; }
+    footer { margin-top: 38px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    @media (max-width: 760px) {
+      .hero, .sessions, .protocol { grid-template-columns: 1fr; }
+      .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .strip div:nth-child(3) { border-left: 0; border-top: 1px solid var(--line); }
+      .strip div:nth-child(4) { border-top: 1px solid var(--line); }
+      .finish { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .topbar-inner, main { width: min(100% - 24px, 1120px); }
+      .brand span { display: none; }
+      main { padding-top: 24px; }
+      .strip { grid-template-columns: 1fr; }
+      .strip div + div, .strip div:nth-child(3) { border-left: 0; border-top: 1px solid var(--line); }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><strong>FlowMe P24-00B1</strong><span>2인 첫 세션 파일럿 · 실제 관찰만 집계</span></div>
+      <a class="launch" href="https://flowme2605.vercel.app">앱 열기</a>
+    </div>
+  </header>
+  <main>
+    <div class="hero">
+      <div>
+        <h1>두 사람에게 설명하지 않고 첫 연결을 맡긴다</h1>
+        <p class="lede">기준일 Flow와 날짜 없는 체크리스트에서 발견, 저장, 일정, 완료 취소, 내보내기 범위가 스스로 이해되는지 본다. 취향보다 날짜·상태·범위의 신뢰를 먼저 검증한다.</p>
+      </div>
+      <aside class="gate"><small>READY, NOT RUN</small><strong>0 / 2 파일럿</strong><p>두 기록지가 실제 행동과 발화로 채워지기 전에는 완료가 아니다.</p></aside>
+    </div>
+
+    <section class="strip" aria-label="파일럿 기준">
+      <div><span>Production</span><b>flowme2605.vercel.app</b></div>
+      <div><span>Runtime</span><b>d6487a0d</b></div>
+      <div><span>Dependency</span><b>High 0</b></div>
+      <div><span>중단 기준</span><b>날짜·저장·완료·범위 오류</b></div>
+    </section>
+
+    <section>
+      <h2>참가자에게 읽을 두 상황</h2>
+      <div class="sessions">
+        <article class="session">
+          <div class="session-head"><span class="persona">P1 · 기준일 역산형</span><h3>이사 준비의 기준일과 첫 행동</h3></div>
+          <p class="situation">“2026년 8월 20일에 이사합니다. 준비 계획을 찾아 저장하고 지금 먼저 할 일을 확인해 주세요.”</p>
+          <ol class="tasks"><li>홈에서 관련 Flow 발견</li><li>이사일 의미를 이해하고 지정</li><li>My Flow 저장과 첫 할 일 확인</li><li>이사일을 하루 바꾼 뒤 원래 날짜로 복구</li><li>완료 후 잘못 눌렀다고 가정해 취소</li><li>전체 Flow export 범위 예측</li></ol>
+          <div class="observe"><b>관찰 초점</b><p>‘시작일’이 아니라 이사일로 읽는지, 저장 후 날짜와 할 일이 일치하는지, 완료 취소를 같은 맥락에서 찾는지 기록한다.</p></div>
+        </article>
+        <article class="session">
+          <div class="session-head"><span class="persona">P2 · 날짜 없는 체크형</span><h3>저장 전 preview와 일정 배치</h3></div>
+          <p class="situation">“공유받은 차량 점검 준비를 저장하고, 한 할 일을 2026년 7월 21일에 배치한 뒤 완료와 되돌리기까지 해 주세요.”</p>
+          <ol class="tasks"><li>public Flow의 준비 내용 이해</li><li>preview와 저장 후 실행 구분</li><li>My Flow에 저장</li><li>Calendar에서 날짜 없는 할 일 발견·배치</li><li>완료 후 되돌리기</li><li>선택 export 범위 예측</li></ol>
+          <div class="observe"><b>관찰 초점</b><p>날짜 없는 일을 찾는 경로, 한 항목만 배치된다는 예상, 저장 전 선택과 저장 후 완료의 차이를 기록한다.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>힌트는 단계적으로, 신뢰 오류는 즉시 중단</h2>
+      <div class="protocol">
+        <article class="panel">
+          <div class="hint-list">
+            <div class="hint"><b>H0</b><p>말하지 않고 첫 행동 시간과 경로를 기록한다.</p></div>
+            <div class="hint"><b>H1</b><p>도움을 청하면 “지금 무엇을 찾고 계세요?”라고 되묻는다.</p></div>
+            <div class="hint"><b>H2</b><p>90초 정체 시 화면 목적 한 단어만 알려준다. 결과는 도움 후 성공이다.</p></div>
+            <div class="hint"><b>H3</b><p>다음 화면의 목적만 말한다. 버튼 위치는 말하지 않고 실패 후보로 기록한다.</p></div>
+          </div>
+        </article>
+        <article class="panel stop">
+          <h3>STOP</h3>
+          <ul><li>저장 내용 소실</li><li>선택하지 않은 날짜 반영</li><li>다른 항목에 완료 연결</li><li>예상과 다른 export 범위</li><li>production 접근 실패</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>같은 기준으로 기록</h2>
+      <table>
+        <thead><tr><th>측정</th><th>기록</th><th>판정 신호</th></tr></thead>
+        <tbody>
+          <tr><td>도달</td><td>성공 / 도움 후 성공 / 실패 / 제품 차단</td><td>2명이 같은 지점에서 멈춤</td></tr>
+          <tr><td>발견성</td><td>첫 행동 시간, 잘못된 경로, 힌트 수</td><td>90초 이상 또는 H2 이상</td></tr>
+          <tr><td>정확성</td><td>예상 날짜·항목 수와 실제 결과</td><td>한 번이라도 불일치</td></tr>
+          <tr><td>되돌리기</td><td>완료 취소 성공과 도달 경로</td><td>새 화면 설명이 필요함</td></tr>
+          <tr><td>범위</td><td>날짜 이동·export 전 예상과 실제</td><td>하나·선택·전체를 혼동</td></tr>
+          <tr><td>표현</td><td>읽지 않은 설명과 다시 물은 용어</td><td>행동보다 설명이 먼저 필요함</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>두 세션 후 결정</h2>
+      <div class="finish">
+        <article class="panel"><h3>Continue</h3><p>신뢰 오류가 없고 runbook이 관찰을 방해하지 않았다. 나머지 첫 사용 3명을 진행한다.</p></article>
+        <article class="panel"><h3>Fix then continue</h3><p>반복된 발견성 문제 또는 한 번의 날짜·저장·범위 오류를 먼저 수정하고 같은 과업을 재검증한다.</p></article>
+        <article class="panel"><h3>Stop</h3><p>데이터 손실이나 상태 오연결이 발생했다. 모집을 중단하고 Blocking slice를 연다.</p></article>
+      </div>
+    </section>
+
+    <footer>자동 QA는 실제 세션이 아니다 · 현재 실제 관찰 0/15 · Claude Design (8) A-G 질문을 과업에 반영</footer>
+  </main>
+</body>
+</html>

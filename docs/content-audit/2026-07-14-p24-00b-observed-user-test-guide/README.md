@@ -9,6 +9,7 @@
 
 ## 바로 열기
 
+- [P24-00B1 2인 첫 세션 파일럿](../2026-07-14-p24-00b1-two-person-pilot/README.md)
 - [한국어 관찰 보드](./guide-ko.html)
 - [세션 기록 템플릿](./session-template.md)
 - [15세션 등록부](./session-register.json)

@@ -63,6 +63,8 @@
 
 - [x] P24-00OPS1 public observation URL.
 - [x] P24-00OPS2 controlled dependency upgrade with high `0`, bounded-shard full E2E, rollback evidence, and 390px/1024px capture.
+- [x] Prepare the P24-00B1 two-person first-session run kit with fixed routes, tasks, hint ladder, stop rules, and evidence templates.
+- [ ] Execute P24-00B1 with two real participants; current count `0 / 2`.
 - [ ] Independent Claude Code regression on the same commit and lockfile.
 - [ ] P24-00B 15 observed sessions.
 - [ ] P24-00C keep/change/defer review.

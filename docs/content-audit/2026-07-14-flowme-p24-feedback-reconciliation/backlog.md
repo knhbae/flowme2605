@@ -104,6 +104,8 @@ Promoted from P25 because the prior production baseline reported high `4`. The i
 
 5 participants x 3 sessions after all Blocking and selected High items are green. Use the [P24-00B observed-user guide](../2026-07-14-p24-00b-observed-user-test-guide/README.md) and keep each participant across discovery/save, edit/execute, and export/review/reuse sessions.
 
+P24-00B1 readiness is complete in the [two-person first-session pilot package](../2026-07-14-p24-00b1-two-person-pilot/README.md). P1 starts from Home with an anchor-date moving task; P2 starts from public vehicle inspection with an undated scheduling task. The package does not count as observation: both sessions remain `not_started`.
+
 Product gate: green by automated QA. Operations gate: green on the public production alias. Observed-user session count remains 0 / 15, so this gate is ready rather than done.
 
 ### P24-00C

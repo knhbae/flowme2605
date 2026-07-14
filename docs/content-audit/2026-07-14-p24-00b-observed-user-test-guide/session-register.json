@@ -8,6 +8,8 @@
   "sessionsPerParticipant": 3,
   "targetSessionCount": 15,
   "observedUserSessionCount": 0,
+  "currentPhase": "P24-00B1_ready_not_run",
+  "pilotPackage": "../2026-07-14-p24-00b1-two-person-pilot/README.md",
   "participants": [
     { "participantId": "P1", "persona": "anchor_date", "sessions": [{ "session": 1, "status": "not_started" }, { "session": 2, "status": "not_started" }, { "session": 3, "status": "not_started" }] },
     { "participantId": "P2", "persona": "undated_checklist", "sessions": [{ "session": 1, "status": "not_started" }, { "session": 2, "status": "not_started" }, { "session": 3, "status": "not_started" }] },

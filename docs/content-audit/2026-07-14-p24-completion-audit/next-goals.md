@@ -30,6 +30,8 @@
 
 ## P24-00B1 Two-Person First-Session Pilot
 
+**Readiness:** the [two-person pilot package](../2026-07-14-p24-00b1-two-person-pilot/README.md) fixes start routes, participant scripts, hint levels, stop rules and evidence fields. Actual sessions remain `0 / 2`.
+
 **Goal:** two real participants use the public app without interface explanation and validate the script before scaling.
 
 **Participants:** one anchor-date persona and one personal-draft or undated-checklist persona.
