@@ -1048,4 +1048,171 @@ test.describe('P24 execution trust regressions', () => {
     ).toBeLessThanOrEqual(1);
     expect(consoleErrors).toEqual([]);
   });
+
+  test('inline execution notes stay one tap away and aggregate separately at completion', async ({ page }) => {
+    test.setTimeout(120_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    const flowSlug = 'moving-d30-basic';
+    const flowBundle = seedBundles.find((bundle) => bundle.flow.slug === flowSlug);
+    const firstItem = flowBundle?.items[0];
+    expect(firstItem).toBeTruthy();
+    const checks = Object.fromEntries(
+      (flowBundle?.items ?? []).map((item, index) => [item.id, index !== 0]),
+    );
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript(({ slug, initialChecks }) => {
+      if (sessionStorage.getItem('flow-p24-u4-seeded') === 'true') return;
+      sessionStorage.setItem('flow-p24-u4-seeded', 'true');
+      localStorage.clear();
+      localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+        slug,
+        savedAt: '2026-07-14T00:00:00.000Z',
+        selectedArtifactMode: 'calendar',
+        anchor: '2026-08-15',
+      }));
+      localStorage.setItem(`flow:${slug}:anchorDate`, JSON.stringify({
+        mode: 'custom',
+        anchor: '2026-08-15',
+      }));
+      localStorage.setItem(`flow_builder_mvp_checks_${slug}`, JSON.stringify(initialChecks));
+    }, { slug: flowSlug, initialChecks: checks });
+
+    await page.goto('/my');
+    await page.getByTestId('my-flow-view-flow').click();
+    const mobileFlow = page.locator(
+      `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`,
+    );
+    await mobileFlow.getByTestId('my-flow-mobile-structure-open').click();
+    const firstRow = mobileFlow.getByTestId('personal-draft-effective-item').first().or(
+      mobileFlow.locator('[data-testid="my-flow-mobile-structure-step-list"] > div').first(),
+    );
+    const noteEntry = firstRow.getByTestId('my-flow-inline-note-open');
+    await expect(noteEntry).toBeVisible();
+    await expect(noteEntry).toHaveAttribute('aria-expanded', 'false');
+    await noteEntry.click();
+
+    const notePanel = firstRow.getByTestId('my-flow-inline-note-panel');
+    await expect(notePanel).toBeVisible();
+    await notePanel.getByTestId('my-flow-inline-note-private-input').fill(
+      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
+    );
+    await notePanel.getByTestId('my-flow-inline-note-save').click();
+    await expect(notePanel.getByTestId('my-flow-inline-note-status')).toHaveText('내 메모를 저장했어요.');
+    await notePanel.getByTestId('my-flow-inline-note-correction-mode').click();
+    await notePanel.getByTestId('my-flow-inline-note-correction-input').fill(
+      '견적 유효 기간도 확인하도록 원본에 보완해 주세요.',
+    );
+    await notePanel.getByTestId('my-flow-inline-note-save').click();
+    await expect(notePanel).toContainText('아직 원본 작성자에게 전송되지 않아요.');
+
+    const evidenceDir = process.env.FLOWME_P24_U4_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await captureWithoutPlatformChrome(
+        page,
+        firstRow,
+        `${evidenceDir}/screenshots/00-inline-execution-note-mobile.png`,
+      );
+    }
+
+    const storedNotes = await page.evaluate((slug) =>
+      JSON.parse(localStorage.getItem(`flow:my-flow:execution-notes:${slug}`) || '[]'),
+    flowSlug);
+    expect(storedNotes.map((note: { kind: string }) => note.kind).sort()).toEqual([
+      'private',
+      'source_correction',
+    ]);
+
+    await notePanel.getByRole('button', { name: /실행 메모 닫기/ }).click();
+    await firstRow.getByTestId('my-flow-mobile-structure-step-row').click();
+    const detail = firstRow.getByTestId('my-flow-mobile-structure-inline-detail');
+    await detail.getByTestId('my-flow-task-complete-control').click();
+
+    const feedback = mobileFlow.getByTestId('my-flow-completion-feedback');
+    await expect(feedback.getByTestId('my-flow-completion-private-notes')).toContainText(
+      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
+    );
+    await expect(feedback.getByTestId('my-flow-completion-correction-notes')).toContainText(
+      '견적 유효 기간도 확인하도록 원본에 보완해 주세요.',
+    );
+    await expect(feedback.getByTestId('my-flow-completion-correction-notes')).toContainText(
+      '아직 전송되지 않음',
+    );
+    if (evidenceDir) {
+      await captureWithoutPlatformChrome(
+        page,
+        feedback,
+        `${evidenceDir}/screenshots/01-completion-note-aggregation-mobile.png`,
+      );
+    }
+
+    await page.reload();
+    await page.getByTestId('my-flow-view-flow').click();
+    const reloadedMobileFlow = page.locator(
+      `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`,
+    );
+    await expect(reloadedMobileFlow.getByTestId('my-flow-completion-private-notes')).toContainText(
+      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
+    );
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.reload();
+    await page.getByTestId('my-flow-view-flow').click();
+    const wideFlow = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`,
+    );
+    await expect(wideFlow.getByTestId('my-flow-completion-private-notes')).toBeVisible();
+    await expect(wideFlow.getByTestId('my-flow-completion-correction-notes')).toBeVisible();
+    if (evidenceDir) {
+      await captureWithoutPlatformChrome(
+        page,
+        wideFlow.getByTestId('my-flow-completion-feedback'),
+        `${evidenceDir}/screenshots/02-completion-note-aggregation-wide.png`,
+      );
+    }
+
+    const wideFeedback = wideFlow.getByTestId('my-flow-completion-feedback');
+    await wideFeedback.getByTestId('my-flow-reuse-open').click();
+    const reusePanel = wideFeedback.getByTestId('my-flow-reuse-panel');
+    await reusePanel.getByTestId('my-flow-reuse-anchor-input').fill('2026-10-20');
+    await reusePanel.getByTestId('my-flow-reuse-start').click();
+    await expect(wideFlow.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
+    await page.getByTestId('my-flow-view-flow').click();
+    const pastRuns = wideFlow.getByTestId('my-flow-past-runs');
+    await expect(pastRuns).toBeVisible();
+    await pastRuns.locator(':scope > summary').click();
+    const pastRun = pastRuns.getByTestId('my-flow-past-run').first();
+    await pastRun.locator('summary').first().click();
+    await expect(pastRun.getByTestId('my-flow-past-run-execution-notes')).toContainText(
+      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
+    );
+    await expect(pastRun.getByTestId('my-flow-past-run-execution-corrections')).toContainText(
+      '견적 유효 기간도 확인하도록 원본에 보완해 주세요.',
+    );
+    const reuseState = await page.evaluate((slug) => {
+      const registry = JSON.parse(localStorage.getItem(`flow:run-registry:${slug}`) || '{"runs":[]}');
+      return {
+        currentNotes: JSON.parse(localStorage.getItem(`flow:my-flow:execution-notes:${slug}`) || '[]'),
+        completedSnapshot: registry.runs.find((run: { status: string }) => run.status === 'completed')?.completionSnapshot,
+      };
+    }, flowSlug);
+    expect(reuseState.currentNotes).toEqual([]);
+    expect(reuseState.completedSnapshot.executionNotes).toHaveLength(2);
+    if (evidenceDir) {
+      await captureWithoutPlatformChrome(
+        page,
+        pastRun,
+        `${evidenceDir}/screenshots/03-past-run-notes-wide.png`,
+      );
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    expect(consoleErrors).toEqual([]);
+  });
 });

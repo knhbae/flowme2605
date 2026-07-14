@@ -1,11 +1,13 @@
 # Project Status
 
-**Last Updated:** 2026-06-11 (v0.1.0 릴리즈)
-**Status:** v0.1.0 RELEASED  
+**Last Updated:** 2026-07-14 (P24 pre-observation baseline)
+**Status:** v0.1.0 RELEASED / P24 AUTOMATED QA GREEN
 **Current Version:** v0.1.0  
-**Primary Focus:** Stage 0 / First Flag validation for FLOW execution behavior.
+**Primary Focus:** Publish an anonymous observation build, then run P24-00B observed-user sessions. Automated QA is not user validation.
 
 ## Recent Direction Notes
+
+- 2026-07-14 P24 execution-trust closeout: Closed the clean-baseline correctness fixes and the selected UX slices before observed-user testing. The current branch keeps local/effective date parity, reuse override transfer, recurrence occurrence parity, memo-draft item inclusion, direct-route hydration, one-row completion with immediate undo, a progressive item editor, Calendar unscheduled scheduling, explicit date-move scope, whole/selected/current export scope, and one-tap execution notes. The execution-note policy follows the Claude Design `(8)` mockup direction without adding a separate review form: private notes and unsent source-correction notes are stored separately, collected automatically at completion, omitted when empty, preserved in completed-run history, and cleared from the new current run on reuse. Evidence: [P24 U4 execution notes](./content-audit/2026-07-14-p24-u4-inline-execution-notes-evidence/README.md), [P24 S2 export scope](./content-audit/2026-07-14-p24-s2-export-scope-evidence/README.md), and [revised P24 backlog](./content-audit/2026-07-14-flowme-p24-feedback-reconciliation/backlog.md). Current verification on the isolated clean branch: `npm.cmd test` 514/514, production build pass on Next.js 15.3.8, docs check pass with 14 required files and 2,148 local links, P24/URL-first/public/workbench functional accounting 77/77 after four memory-terminated parallel navigations passed on one-worker retry, completion/reuse/history targeted 3/3, mobile 390px and wide 1024px overflow 0, console error 0. Observed-user sessions remain 0; the next gate is an anonymous Vercel URL and then 5 participants x 3 sessions.
 
 - 2026-07-02 My Flow v2.1 session handoff: Closed the current My Flow execution UX loop as an internal alpha baseline, not real user validation. The current baseline keeps the 4-tab IA (`Home / Flow finding / Calendar / My Flow`), treats Calendar as the global dated-Step execution tab, treats My Flow Today as a near-term execution inbox, and treats My Flow Flow as saved-structure/progress management. Latest all-tab mobile review judged Calendar and My Flow mechanics good enough to stop broad structural churn; the next work should shift to representative source-backed content quality, Home/Flow-finding trust signals, and creator expansion structure. Handoff: [docs/content-audit/2026-07-02-my-flow-v21-session-handoff-ko.html](./content-audit/2026-07-02-my-flow-v21-session-handoff-ko.html). Copy-paste next-session goal: [docs/content-audit/2026-07-02-next-session-goal-service-readiness.md](./content-audit/2026-07-02-next-session-goal-service-readiness.md). Verification remains automated/browser QA only.
 

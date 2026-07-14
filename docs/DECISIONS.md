@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-14 - Execution notes stay lightweight, private, and separate from source correction
+
+**Decision:** A user may add an optional note directly from an execution row without opening the structural item editor. Personal execution notes and `원본에 알릴 점` are separate records. The latter remains an unsent local draft until a real delivery path exists. When a Flow completes, non-empty notes are collected automatically into separate groups; no rating, tag, or required review step is added. Reusing the Flow clears notes from the new current run while preserving them in the completed-run snapshot and history export.
+
+**Reason:** Users need to capture observations while acting, not reconstruct them only after completion. Keeping the entry one tap away follows the Claude Design `(8)` execution-feedback mockup while avoiding another dense review form. Separating private notes from source correction prevents a local memo from implying that feedback was delivered to a creator or source owner.
+
+**Applies to:** My Flow and Calendar execution rows, completion summaries, completed-run history, memo history export, local backup, recurrence occurrence identity, and any future source-correction delivery surface.
+
+**Reopen when:** observed users cannot distinguish the note icon or the private/correction boundary, a real source-owner delivery workflow is introduced, or account-backed multi-device run history replaces local snapshots.
+
+**Related docs:** [P24 U4 evidence](./content-audit/2026-07-14-p24-u4-inline-execution-notes-evidence/README.md), [P24 feedback reconciliation](./content-audit/2026-07-14-flowme-p24-feedback-reconciliation/audit.md)
+
 ### 2026-07-05 - Planning insights are captured into the repo doc graph
 
 **Decision:** During FlowMe product, source, content, creator, or community planning, important insights and direction changes must be saved in the repo doc graph during the same session instead of remaining only in chat. Use `docs/DECISIONS.md` for settled rules, `docs/IDEAS.md` for exploratory directions, `docs/content-audit/` for source/research/review artifacts, `docs/specs/` for approved multi-step work, and `docs/STATUS.md` for active blockers or temporary next-up notes.

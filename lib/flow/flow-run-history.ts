@@ -42,10 +42,20 @@ export function buildFlowRunHistoryListExportArtifacts(
         ...(reflection.note ? [`메모: ${reflection.note}`] : []),
       ]
     : [];
+  const executionNotes = run.completionSnapshot?.executionNotes ?? [];
+  const privateNoteLines = executionNotes.filter((note) => note.kind === 'private').flatMap((note, index) => [
+    ...(index === 0 ? ['', '실행 중 남긴 메모'] : []),
+    `${note.itemTitle}: ${note.note}`,
+  ]);
+  const correctionNoteLines = executionNotes.filter((note) => note.kind === 'source_correction').flatMap((note, index) => [
+    ...(index === 0 ? ['', '원본에 알릴 점 (아직 전송되지 않음)'] : []),
+    `${note.itemTitle}: ${note.note}`,
+  ]);
+  const additionalMemoLines = [...privateNoteLines, ...correctionNoteLines, ...reflectionLines];
   return {
     ...artifacts,
-    memoText: reflectionLines.length
-      ? `${artifacts.memoText.trimEnd()}\n${reflectionLines.join('\n')}\n`
+    memoText: additionalMemoLines.length
+      ? `${artifacts.memoText.trimEnd()}\n${additionalMemoLines.join('\n')}\n`
       : artifacts.memoText,
   };
 }

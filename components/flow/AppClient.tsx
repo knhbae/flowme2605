@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } 
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { CalendarUnscheduledTray } from './CalendarUnscheduledTray';
+import { FlowExecutionNotePanel } from './FlowExecutionNotePanel';
 import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 import { MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformNav } from './PlatformNav';
@@ -24,6 +25,11 @@ import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
+import {
+  getMyFlowExecutionNotesForItem,
+  type MyFlowExecutionNote,
+  type MyFlowExecutionNoteKind,
+} from '@/lib/flow/execution-notes';
 import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } from '@/lib/flow/flow-run-history';
 import {
@@ -194,6 +200,7 @@ import {
   getComparisonState,
   getItemStates,
   getMyFlowCompletionFeedback,
+  getMyFlowExecutionNotes,
   getMyFlowStepItemChecks,
   getReactionLogs,
   getSavedFlowMapIndexByFlowSlug,
@@ -209,6 +216,7 @@ import {
   saveFlowRecord,
   saveItemStates,
   saveMyFlowCompletionFeedback,
+  saveMyFlowExecutionNote,
   saveMyFlowStepItemChecks,
   saveReactionLogs,
   recordFlowCompletionState,
@@ -3220,6 +3228,19 @@ type MyFlowCompletionFeedbackDraft = {
   correctionNote: string;
   status: string;
 };
+type MyFlowExecutionNoteDraft = {
+  flowSlug: string;
+  rowKey: string;
+  itemTitle: string;
+  itemDate?: string;
+  sourceUrl?: string;
+  mode: MyFlowExecutionNoteKind;
+  privateNote: string;
+  correctionNote: string;
+  privateSaved: boolean;
+  correctionSaved: boolean;
+  status: string;
+};
 type MyFlowReuseDraft = {
   flowSlug: string;
   anchor: string;
@@ -4651,6 +4672,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStepItemChecks, setMyFlowStepItemChecks] = useState<MyFlowStepItemChecks>({});
   const [myFlowCompletionFeedbackBySlug, setMyFlowCompletionFeedbackBySlug] = useState<Record<string, MyFlowCompletionFeedback>>({});
   const [myFlowCompletionFeedbackDraft, setMyFlowCompletionFeedbackDraft] = useState<MyFlowCompletionFeedbackDraft | null>(null);
+  const [myFlowExecutionNotesBySlug, setMyFlowExecutionNotesBySlug] = useState<Record<string, MyFlowExecutionNote[]>>({});
+  const [myFlowExecutionNoteDraft, setMyFlowExecutionNoteDraft] = useState<MyFlowExecutionNoteDraft | null>(null);
   const [myFlowReuseDraft, setMyFlowReuseDraft] = useState<MyFlowReuseDraft | null>(null);
   const [myFlowReuseNotice, setMyFlowReuseNotice] = useState<MyFlowReuseNotice | null>(null);
   const [myFlowRoutineRuleDrafts, setMyFlowRoutineRuleDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
@@ -4863,6 +4886,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         progress.flatMap((item) => {
           const feedback = getMyFlowCompletionFeedback(item.slug);
           return feedback ? [[item.slug, feedback] as const] : [];
+        }),
+      ),
+    );
+    setMyFlowExecutionNotesBySlug(
+      Object.fromEntries(
+        progress.flatMap((item) => {
+          const notes = getMyFlowExecutionNotes(item.slug);
+          return notes.length > 0 ? [[item.slug, notes] as const] : [];
         }),
       ),
     );
@@ -7465,6 +7496,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowEditingDetailKey('');
     setMyFlowDetailSurface('');
     setMyFlowDetailOpen(false);
+    setMyFlowExecutionNoteDraft(null);
   };
 
   const openMyFlowRowDetail = (row: MyFlowCalendarRow, surface: MyFlowView | 'post-save' = savedView) => {
@@ -7478,11 +7510,140 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowEditingDetailKey('');
     setMyFlowRoutineOverflowDate('');
     setMyFlowScheduleOverflowDate('');
+    setMyFlowExecutionNoteDraft(null);
     setMyFlowDetailOpen(true);
     if (row.date) {
       setMyFlowSelectedDate(row.date);
       setMyFlowVisibleMonth(getMyFlowMonthStart(row.date));
     }
+  };
+
+  const openMyFlowExecutionNote = (row: MyFlowCalendarRow) => {
+    const rowKey = getMyFlowRowInstanceKey(row);
+    if (
+      myFlowExecutionNoteDraft?.flowSlug === row.flow.progress.slug &&
+      myFlowExecutionNoteDraft.rowKey === rowKey
+    ) {
+      setMyFlowExecutionNoteDraft(null);
+      return;
+    }
+    const notes = getMyFlowExecutionNotesForItem(
+      myFlowExecutionNotesBySlug[row.flow.progress.slug] ?? [],
+      rowKey,
+    );
+    const detail = getMyFlowRowDisplayDetail(row);
+    const sourceUrl = detail.links?.find((link) => /^https?:\/\//u.test(link.url))?.url
+      ?? row.flow.bundle.flow.source_url;
+    resetMyFlowRowDetailState();
+    setMyFlowExecutionNoteDraft({
+      flowSlug: row.flow.progress.slug,
+      rowKey,
+      itemTitle: getMyFlowRowDisplayTitle(row),
+      ...(row.date ? { itemDate: row.date } : {}),
+      ...(sourceUrl ? { sourceUrl } : {}),
+      mode: 'private',
+      privateNote: notes.private?.note ?? '',
+      correctionNote: notes.source_correction?.note ?? '',
+      privateSaved: Boolean(notes.private),
+      correctionSaved: Boolean(notes.source_correction),
+      status: '',
+    });
+  };
+
+  const updateMyFlowExecutionNoteDraft = (patch: Partial<MyFlowExecutionNoteDraft>) => {
+    setMyFlowExecutionNoteDraft((current) => (current ? { ...current, ...patch, status: patch.status ?? '' } : current));
+  };
+
+  const saveCurrentMyFlowExecutionNote = (remove = false) => {
+    const draft = myFlowExecutionNoteDraft;
+    if (!draft) return;
+    const draftNote = draft.mode === 'private' ? draft.privateNote : draft.correctionNote;
+    if (!remove && !draftNote.trim()) return;
+    const note = remove ? '' : draftNote;
+    const saved = saveMyFlowExecutionNote(draft.flowSlug, {
+      itemId: draft.rowKey,
+      itemTitle: draft.itemTitle,
+      kind: draft.mode,
+      note,
+      ...(draft.itemDate ? { itemDate: draft.itemDate } : {}),
+      ...(draft.mode === 'source_correction' && draft.sourceUrl ? { sourceUrl: draft.sourceUrl } : {}),
+    });
+    if (!saved) {
+      updateMyFlowExecutionNoteDraft({ status: '저장하지 못했어요. 다시 시도해 주세요.' });
+      return;
+    }
+    setMyFlowExecutionNotesBySlug((current) => ({ ...current, [draft.flowSlug]: saved }));
+    updateMyFlowExecutionNoteDraft({
+      ...(draft.mode === 'private'
+        ? { privateNote: note, privateSaved: Boolean(note.trim()) }
+        : { correctionNote: note, correctionSaved: Boolean(note.trim()) }),
+      status: note.trim()
+        ? draft.mode === 'private'
+          ? '내 메모를 저장했어요.'
+          : '전송 전 메모를 저장했어요.'
+        : '메모를 지웠어요.',
+    });
+  };
+
+  const renderMyFlowExecutionNoteButton = (row: MyFlowCalendarRow) => {
+    const rowKey = getMyFlowRowInstanceKey(row);
+    const notes = getMyFlowExecutionNotesForItem(
+      myFlowExecutionNotesBySlug[row.flow.progress.slug] ?? [],
+      rowKey,
+    );
+    const hasNote = Boolean(notes.private || notes.source_correction);
+    const active = myFlowExecutionNoteDraft?.flowSlug === row.flow.progress.slug
+      && myFlowExecutionNoteDraft.rowKey === rowKey;
+    const title = getMyFlowRowDisplayTitle(row);
+    return (
+      <button
+        type="button"
+        data-testid="my-flow-inline-note-open"
+        aria-label={`${title} 실행 메모 ${hasNote ? '수정' : '남기기'}`}
+        aria-expanded={active}
+        title="실행 메모"
+        className={`relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-base font-semibold ${
+          active
+            ? 'border-blue-300 bg-blue-50 text-blue-800'
+            : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-800'
+        }`}
+        onPointerDown={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => {
+          event.stopPropagation();
+          openMyFlowExecutionNote(row);
+        }}
+      >
+        <span aria-hidden="true">✎</span>
+        {hasNote ? <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" /> : null}
+      </button>
+    );
+  };
+
+  const renderMyFlowExecutionNotePanel = (row: MyFlowCalendarRow) => {
+    const rowKey = getMyFlowRowInstanceKey(row);
+    const draft = myFlowExecutionNoteDraft?.flowSlug === row.flow.progress.slug
+      && myFlowExecutionNoteDraft.rowKey === rowKey
+      ? myFlowExecutionNoteDraft
+      : null;
+    if (!draft) return null;
+    return (
+      <FlowExecutionNotePanel
+        title={draft.itemTitle}
+        mode={draft.mode}
+        privateNote={draft.privateNote}
+        correctionNote={draft.correctionNote}
+        hasSavedNote={draft.mode === 'private' ? draft.privateSaved : draft.correctionSaved}
+        allowCorrection={Boolean(draft.sourceUrl)}
+        status={draft.status}
+        onModeChange={(mode) => updateMyFlowExecutionNoteDraft({ mode })}
+        onPrivateNoteChange={(privateNote) => updateMyFlowExecutionNoteDraft({ privateNote })}
+        onCorrectionNoteChange={(correctionNote) => updateMyFlowExecutionNoteDraft({ correctionNote })}
+        onSave={() => saveCurrentMyFlowExecutionNote()}
+        onRemove={() => saveCurrentMyFlowExecutionNote(true)}
+        onClose={() => setMyFlowExecutionNoteDraft(null)}
+      />
+    );
   };
 
   const toggleMyFlowRowDetail = (row: MyFlowCalendarRow, surface: MyFlowView = savedView) => {
@@ -8206,12 +8367,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </span>
             </span>
           </button>
+          {renderMyFlowExecutionNoteButton(row)}
           {isRoutineExecution ? (
             <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
               {routineProgressLabel}
             </span>
           ) : null}
       </article>
+      {renderMyFlowExecutionNotePanel(row)}
       {activeInlineDetail && myFlowActiveRow ? (
         <div
           ref={(node) => {
@@ -8228,8 +8391,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
 
     return (
+      <div key={`${routineDragKey}-${options.kind ?? 'schedule'}`} className="grid gap-1.5">
       <article
-        key={`${routineDragKey}-${options.kind ?? 'schedule'}`}
         data-item-id={row.id}
         data-row-key={routineDragKey}
         data-occurrence-id={row.structuralOccurrenceId}
@@ -8299,12 +8462,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
         </button>
+        {renderMyFlowExecutionNoteButton(row)}
         {isRoutineExecution ? (
           <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
             {routineProgressLabel}
           </span>
         ) : null}
       </article>
+      {renderMyFlowExecutionNotePanel(row)}
+      </div>
     );
   };
 
@@ -8379,7 +8545,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </span>
             </span>
           </button>
+          {renderMyFlowExecutionNoteButton(row)}
         </div>
+        {myFlowExecutionNoteDraft?.flowSlug === flow.progress.slug && myFlowExecutionNoteDraft.rowKey === rowKey ? (
+          <div className="mt-2">{renderMyFlowExecutionNotePanel(row)}</div>
+        ) : null}
         {isActive && myFlowActiveRow ? (
           <div
             ref={(node) => {
@@ -10603,6 +10773,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : Object.values(run.completionSnapshot?.checks ?? {}).filter(Boolean).length;
             const totalCount = itemSnapshots?.length ?? Object.keys(run.completionSnapshot?.checks ?? {}).length;
             const feedback = run.completionSnapshot?.completionFeedback;
+            const runExecutionNotes = run.completionSnapshot?.executionNotes ?? [];
+            const runPrivateNotes = runExecutionNotes.filter((note) => note.kind === 'private');
+            const runCorrectionNotes = runExecutionNotes.filter((note) => note.kind === 'source_correction');
             const exportAvailable = Boolean(itemSnapshots);
             const exportKey = `past-run-export::${run.runId}`;
             return (
@@ -10644,6 +10817,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         이전 실행은 요약만 저장돼 있어요.
                       </p>
                     )}
+                    {runPrivateNotes.length > 0 ? (
+                      <div data-testid="my-flow-past-run-execution-notes" className="mt-3 border-l-2 border-slate-200 pl-3 text-xs leading-5 text-slate-600">
+                        <p className="font-semibold text-slate-900">실행 중 남긴 메모 · {runPrivateNotes.length}개</p>
+                        <ul className="mt-1 grid gap-1.5">
+                          {runPrivateNotes.map((note) => (
+                            <li key={`past-private-${note.itemId}`}>
+                              <span className="font-semibold text-slate-700">{note.itemTitle}</span>
+                              <span className="block break-words">{note.note}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                    {runCorrectionNotes.length > 0 ? (
+                      <div data-testid="my-flow-past-run-execution-corrections" className="mt-3 border-l-2 border-amber-200 pl-3 text-xs leading-5 text-slate-600">
+                        <p className="font-semibold text-slate-900">원본에 알릴 점 · {runCorrectionNotes.length}개</p>
+                        <ul className="mt-1 grid gap-1.5">
+                          {runCorrectionNotes.map((note) => (
+                            <li key={`past-correction-${note.itemId}`}>
+                              <span className="font-semibold text-slate-700">{note.itemTitle}</span>
+                              <span className="block break-words">{note.note}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <p className="mt-1 font-semibold text-amber-700">아직 전송되지 않았어요.</p>
+                      </div>
+                    ) : null}
                     {feedback?.reflection ? (
                       <div data-testid="my-flow-past-run-reflection" className="mt-3 border-l-2 border-emerald-200 pl-3 text-xs leading-5 text-slate-600">
                         <p className="font-semibold text-slate-900">내 실행 회고 · {feedback.reflection.outcome === 'helpful' ? '도움됐어요' : '고칠 점이 있어요'}</p>
@@ -10699,6 +10899,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug];
+    const executionNotes = myFlowExecutionNotesBySlug[flow.progress.slug] ?? [];
+    const privateExecutionNotes = executionNotes.filter((note) => note.kind === 'private');
+    const sourceCorrectionNotes = executionNotes.filter((note) => note.kind === 'source_correction');
     const activeDraft = myFlowCompletionFeedbackDraft?.flowSlug === flow.progress.slug
       ? myFlowCompletionFeedbackDraft
       : null;
@@ -10724,6 +10927,35 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <p className="mt-1 text-xs leading-5 text-slate-600">
           내 회고는 나만 보고, 원본에서 고칠 점은 전송 전 메모로 따로 저장합니다.
         </p>
+        {privateExecutionNotes.length > 0 ? (
+          <section data-testid="my-flow-completion-private-notes" className="mt-3 rounded-md bg-slate-50 px-3 py-3">
+            <h5 className="text-sm font-semibold text-slate-950">이번에 남긴 메모 · {privateExecutionNotes.length}개</h5>
+            <ul className="mt-2 grid gap-2">
+              {privateExecutionNotes.map((note) => (
+                <li key={`private-${note.itemId}`} className="border-t border-slate-200 pt-2 first:border-t-0 first:pt-0">
+                  <p className="text-xs font-semibold text-slate-600">{note.itemTitle}</p>
+                  <p className="mt-0.5 whitespace-pre-wrap text-sm leading-6 text-slate-900">{note.note}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+        {sourceCorrectionNotes.length > 0 ? (
+          <section data-testid="my-flow-completion-correction-notes" className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h5 className="text-sm font-semibold text-amber-950">원본에 알릴 점 · {sourceCorrectionNotes.length}개</h5>
+              <span className="rounded bg-white px-2 py-1 text-[11px] font-semibold text-amber-800">아직 전송되지 않음</span>
+            </div>
+            <ul className="mt-2 grid gap-2">
+              {sourceCorrectionNotes.map((note) => (
+                <li key={`correction-${note.itemId}`} className="border-t border-amber-200 pt-2 first:border-t-0 first:pt-0">
+                  <p className="text-xs font-semibold text-amber-800">{note.itemTitle}</p>
+                  <p className="mt-0.5 whitespace-pre-wrap text-sm leading-6 text-amber-950">{note.note}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
@@ -11489,10 +11721,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         </span>
                       </span>
                     </button>
-                    {structuralEditEligible
-                      ? renderPersonalDraftReorderControls(flow, stepRow, index, stepEntries.length)
-                      : null}
+                    <div className="flex shrink-0 items-center gap-1">
+                      {renderMyFlowExecutionNoteButton(stepRow)}
+                      {structuralEditEligible
+                        ? renderPersonalDraftReorderControls(flow, stepRow, index, stepEntries.length)
+                        : null}
+                    </div>
                   </div>
+                  {myFlowExecutionNoteDraft?.flowSlug === flow.progress.slug && myFlowExecutionNoteDraft.rowKey === getMyFlowRowInstanceKey(stepRow) ? (
+                    <div className="px-3 pb-3">{renderMyFlowExecutionNotePanel(stepRow)}</div>
+                  ) : null}
                   {stepOpen && activeCompactRow ? (
                     <div
                       ref={(node) => {
@@ -11549,6 +11787,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const directAnchorCopy = directAnchorEditable ? getMyFlowDirectSavedMapAnchorCopy(flow) : null;
     const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const nextRow = getSavedFlowNextRow(flow);
+    const nextExecutionRow = nextRow ? getMyFlowRowForFlowTab(flow, nextRow) : null;
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
     const nextActionLabel = getMyFlowOpenActionLabel(flow.bundle);
@@ -11654,19 +11893,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <p className="text-xs font-semibold text-slate-500">{[nextRow.timing ? formatMyFlowTimingChip(nextRow.timing) : '', nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', formatMyFlowTimedScheduleLabel(nextRow.structuralScheduleProjection), nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ')}</p>
               <p className="mt-0.5 font-semibold text-slate-950">{nextRow.title}</p>
               </div>
-              <button
-                type="button"
-                data-testid="my-flow-next-action-open"
-                className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
-                aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
-                onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
-              >
-                {nextActionLabel}
-              </button>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  data-testid="my-flow-next-action-open"
+                  className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
+                  aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
+                  onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
+                >
+                  {nextActionLabel}
+                </button>
+                {nextExecutionRow ? renderMyFlowExecutionNoteButton(nextExecutionRow) : null}
+              </div>
             </div>
           ) : (
             <p className="mt-1 text-sm text-slate-600">남은 실행 항목이 없습니다.</p>
           )}
+          {nextExecutionRow ? renderMyFlowExecutionNotePanel(nextExecutionRow) : null}
         </div> : null}
         {executionReady ? renderPersonalDraftStructuralControls(flow) : null}
         {executionReady ? renderMyFlowExportPanel(flow) : null}
