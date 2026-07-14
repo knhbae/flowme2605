@@ -1,7 +1,7 @@
 # Execution Lifecycle Completeness
 
 **Date:** 2026-07-13<br>
-**Status:** Planned audit; implementation slices remain conditional<br>
+**Status:** Completed local lifecycle contract; observed-user and external-system gates moved to P24/P25<br>
 **Owner:** FlowMe product / UX / execution data
 
 ## Decision

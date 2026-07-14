@@ -1,11 +1,25 @@
 # Project Status
 
-**Last Updated:** 2026-07-14 (P24-00OPS2 dependency gate complete)
+**Last Updated:** 2026-07-15 (backlog control and spec lifecycle synchronized)
 **Status:** v0.1.0 RELEASED / P24 OBSERVED-USER GATE
 **Current Version:** v0.1.0  
 **Primary Focus:** Run P24-00B1 with two real first-session participants, then complete 5 participants x 3 sessions and classify findings in P24-00C. Automated QA is not user validation.
 
+## Current Control Panel
+
+Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
+
+| Lane | Current truth |
+| --- | --- |
+| Active product gate | P24 observed-user validation, `0 / 15` sessions |
+| User action now | Run P1-S1 and P2-S1; separately record one real Calendar duplicate import and one cross-browser/device restore |
+| AI action now | Keep the pilot kit ready, normalize completed evidence, and wait to run P24-00C until real notes exist |
+| Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
+| Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
+
 ## Recent Direction Notes
+
+- 2026-07-15 backlog control cleanup: Reclassified the spec index so P24 is the only active gate, closed P23 and Prompt Lab against their evidence, moved external and observed-user gates to the roadmap, and separated the historical change log from the current queue. This changes planning truth only; observed sessions remain `0 / 15`.
 
 - 2026-07-14 P24 independent-review handoff: Consolidated the public production link, P24 artifact map, evidence-separation checklist, and copy-paste prompts for Codex, Claude Code, and Claude Design in the [P24 observation and independent-review handoff](./content-audit/2026-07-14-p24-observation-independent-review-handoff/README.md), tracked in [PR #127](https://github.com/knhbae/flowme2605/pull/127). The package treats independent agent QA, design heuristics, and observed-user sessions as separate evidence lanes and points the first human work to P1-S1 and P2-S1. The public alias returned anonymous HTTP 200 for 5/5 representative routes at 2026-07-14 19:04 KST, and the handoff board passed 390px/1024px browser inspection with overflow and console errors at 0. P24 E2E passed 14/14 with a UTC host and an explicitly emulated `Asia/Seoul` browser timezone so the local-date gate is runner-independent. This is reviewer readiness only: no independent review was executed by the package, app runtime code was unchanged, observed-user evidence remains `0 / 15`, and P24-00C remains blocked.
 
@@ -237,7 +251,9 @@
 - Do not label any route as validated until real user behavior data exists.
 - Avoid login, payment, AI auto-publishing, full community, and heavy integrations before Stage 0 evidence.
 
-## Recent Changes
+## Historical Change Log
+
+The entries below are retained as implementation history. They are not the current backlog; use the control panel and [ROADMAP.md](./ROADMAP.md) for current work.
 
 - Promoted `picture-book-reading-routine` into the public `/f/picture-book-reading-routine` service route as the first reading/question-card public Flow. The route uses the Totobook/Aladin 그림책 독서 지도안 as the exact guide source and a Naver 그림책 하브루타 review as a creator-experience example, then converts both into a lightweight reading routine: choose today's picture book and one question card, talk from the cover, read together, point to one child-selected scene, keep one child-speech memo, and choose the next book/question candidate. The route explicitly avoids reading-score entry, development assessment, reading-level judgment, and calendarizing an entire recommended-book list. `/content-flows` now links this candidate to the public service route, and the category promotion matrix was updated so the next priorities move to short study variants, longer recipe timing, and account/device setup candidates. This is source-to-Flow QA evidence, not user-behavior validation.
 
@@ -570,9 +586,9 @@
 - Observed-session evidence validation boundary has landed: Flow Lab evidence now counts candidate signals instead of showing a validation counter, and the evidence decision options exclude `validated candidate`.
 - Uploaded `flowme.zip` validation-fix batch has landed through PR-1 to PR-4: the 11 testable routes now carry route-specific setup anchor labels/hints, `computer-skills-d30-study` splits D-1 from D-7, `diet-habit-2week` separates stop/principle copy from checklist items, `new-car-delivery-check` exposes hold criteria, and mobile sticky export CTAs are destination-specific. No route is called validated.
 
-## Next Up
+## Historical Working Notes (2026-06-04 To 2026-06-11)
 
-v0.1.0 should stabilize the first public FLOW loop: open, anchor input, copy/export, check, and feedback.
+These notes preserve the reasoning and verification record from the June content and public-Flow pass. They are not current `Next Up` items.
 
 - 2026-06-04 work memo: Through this week, try extracting FLOW content from original content sources, starting by teaching/steering AI to do the conversion. If that path does not produce usable FLOW content, switch to manually finding original content and creating FLOW content directly.
 
@@ -607,11 +623,6 @@ v0.1.0 should stabilize the first public FLOW loop: open, anchor input, copy/exp
 
 - 2026-06-11 🟡 3개 플로우 재구성 완료 및 v0.1.0 릴리즈 공개: 컨텐츠 유효성 트리아지에서 🟡(재구성 필요)로 분류된 3개 플로우를 모두 🟢로 전환했다. (1) `new-hobby-30day`: `timeline` 구조인데 아이템에 day_offset이 없어 캘린더 export가 비어 있던 구조 버그를 D-1/D+0~1/D+1~7/D+7/D+14/D+21/D+30 마커 7개 아이템으로 재구성해 해결. (2) `ev-subsidy-apply`: 4개 중 2개가 내용 없는 빈 항목이던 것을 보조금 지원 확인서 신청(계약 전 필수 caution 포함)·취득세 감면 확인·출고 후 정산 확인 단계를 추가해 7개 아이템(why/how/done 완비, caution 3개)으로 확장. (3) `home-cafe-daily`: 물 온도·원두 신선도 확인(85~96°C 추출 온도 가이드)과 도구 즉시 헹구기 단계를 추가해 6개 아이템으로 보강. 186 tests pass. main SHA `d18f421`, GitHub 릴리즈 `v0.1.0` 공개. 트리아지 최종: 🟢 43개 / 🟡 0개.
 
-## Next Up
+## Superseded P23 Next Up
 
-1. Freeze and classify the current dirty worktree so P23 failures are attributable to one baseline.
-2. Run P23-00 across anchor-based, unscheduled checklist, routine, ordered plan, record/memo, and personal-draft Flows.
-3. Implement only Blocking/High lifecycle gaps in reversible state, optional scheduling, structure editing, or export parity.
-4. Refresh the Vercel observation build and complete 5 participants x 3 sessions.
-5. Record one real Calendar import/duplicate-import result and one cross-browser/device restore.
-6. Use observed continuity and return behavior to choose account persistence, creator/update pilot, or production URL/AI backend as the next single investment.
+The former P23 startup checklist is closed by the [P23 handoff and P24 validation package](./content-audit/2026-07-14-flowme-p23-handoff-p24-validation-package/README.md). Current sequencing now lives in the control panel, [ROADMAP.md](./ROADMAP.md), and the P24 spec; do not restart P23 from this historical section.

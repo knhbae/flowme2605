@@ -1,7 +1,7 @@
 # URL-to-FLOW Prompt Lab v1
 
 **Date:** 2026-07-14<br>
-**Status:** Approved controlled experiment; not a production provider or backend<br>
+**Status:** Completed controlled Prompt Lab v1 candidate; not a production provider or backend<br>
 **Owner:** FlowMe product/content/backend readiness<br>
 **Parent contracts:** [Canonical Flow Data Model v1](../2026-07-11-canonical-flow-data-model/spec.md), [URL-to-Flow Backend Readiness](../2026-07-12-url-to-flow-backend-readiness/spec.md)
 
@@ -142,6 +142,28 @@ The current Codex sub-session runs are useful for prompt contract and repeatabil
 - Korean self-contained HTML report
 - QA evidence for scripts, docs links, HTML rendering, and responsive overflow
 
+## Results
+
+The controlled experiment completed in three rounds without external URL fetching or an external LLM API.
+
+| Evidence | Result |
+| --- | ---: |
+| Round 1 strict validity | 1/12 |
+| Round 2 strict validity | 12/12 |
+| SourceRow accounting | 100% |
+| explicit unsupported action/date/repeat/fact hard fails | 0 |
+| negative dispositions | 2/2 |
+| Item keep rate | 100% |
+| seven-axis quality average | 4.41/5 |
+| Execution Clarity | 4.0/5 |
+| Content Fidelity/Coverage | 4.9/5 |
+| Source/Safety Separation | 4.4/5 |
+| Round 3 exact structural stability | 6/7 (85.7%) |
+
+Round 1 exposed one dominant contract defect: the prompt described the intended structure but did not enumerate every exact enum and nested shape accepted by the strict schema. `prompt-v0.2.md` changes only that defect class. Round 2 then passed every deterministic gate. Round 3 independently reran five representative positives and both negatives; case 05 alone added a blocked Calendar projection while preserving status, artifact, Item count, SourceRow grouping, and applicable destinations.
+
+The blind review is an in-session model proxy, not observed-user evidence. Provider tier, latency, token usage, cost, human review time, and full usability remain unmeasured. The report therefore treats v0.2 as a backend experiment candidate, not as production or cheap-versus-premium proof.
+
 ## Scope Boundaries
 
 ### In
@@ -174,11 +196,11 @@ Reopen the experiment design when:
 
 ## Acceptance Criteria
 
-- [ ] 12 source-only packets are reproducibly generated and separated from expectations.
-- [ ] prompt and schema are provider-neutral and enforce current canonical boundaries.
-- [ ] a single/batch validator covers every completion gate it claims.
-- [ ] all 12 cases have Round 1 raw outputs, reviews, and previews.
-- [ ] prompt defects are revised and selected cases are rerun, up to three rounds.
-- [ ] final metrics satisfy every completion gate.
-- [ ] comparison Markdown and Korean HTML report disclose evidence limits.
-- [ ] docs, scripts, and rendered HTML pass their verification lanes.
+- [x] 12 source-only packets are reproducibly generated and separated from expectations.
+- [x] prompt and schema are provider-neutral and enforce current canonical boundaries.
+- [x] a single/batch validator covers every completion gate it claims.
+- [x] all 12 cases have Round 1 raw outputs, reviews, and positive FLOW or negative-disposition previews.
+- [x] prompt defects are revised and selected cases are rerun, within three rounds.
+- [x] final metrics satisfy every completion gate.
+- [x] comparison Markdown and Korean HTML report disclose evidence limits.
+- [x] docs, scripts, and rendered HTML pass their verification lanes.
