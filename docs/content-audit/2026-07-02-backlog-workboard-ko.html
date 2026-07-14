@@ -3,502 +3,1710 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FLOW 백로그 작업판 2026-07-02</title>
+  <meta name="color-scheme" content="light" />
+  <link rel="icon" href="data:," />
+  <title>FLOW 프로젝트 현황과 백로그 | 2026-07-13</title>
   <style>
     :root {
-      --ink: #172033;
-      --muted: #667085;
-      --line: #d9e0ea;
-      --soft: #f6f8fb;
-      --panel: #ffffff;
-      --blue: #2357c6;
-      --green: #15803d;
-      --amber: #b45309;
-      --red: #b42318;
-      --violet: #6d28d9;
-      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      --bg: #f3f5f7;
+      --paper: #ffffff;
+      --ink: #17202a;
+      --muted: #5f6b76;
+      --line: #d8dee5;
+      --line-strong: #aeb8c2;
+      --blue: #2457c5;
+      --blue-soft: #edf3ff;
+      --green: #177245;
+      --green-soft: #edf8f2;
+      --amber: #9a5900;
+      --amber-soft: #fff6e7;
+      --red: #ad312b;
+      --red-soft: #fff1ef;
+      --violet: #6b46a3;
+      --violet-soft: #f6f1ff;
+      --charcoal: #29323c;
+      --radius: 6px;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
     body {
       margin: 0;
-      background: #eef2f7;
+      background: var(--bg);
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
-      line-height: 1.55;
-    }
-    a { color: inherit; text-decoration-color: rgba(35, 87, 198, 0.35); text-underline-offset: 3px; }
-    .workboard {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 28px;
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.7fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-    .hero-main, .hero-side, .section, .lane, .item, .metric {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-    }
-    .hero-main {
-      padding: 28px;
-    }
-    .eyeline {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      min-height: 28px;
-      padding: 5px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      background: #f8fafc;
-    }
-    .chip.blue { color: var(--blue); background: #eef4ff; border-color: #c7d7fe; }
-    .chip.green { color: var(--green); background: #ecfdf3; border-color: #bbf7d0; }
-    .chip.amber { color: var(--amber); background: #fffbeb; border-color: #fde68a; }
-    .chip.red { color: var(--red); background: #fef3f2; border-color: #fecaca; }
-    h1 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 46px);
-      line-height: 1.08;
+      font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.58;
       letter-spacing: 0;
     }
-    .lead {
-      margin: 16px 0 0;
-      color: var(--muted);
-      font-size: 16px;
-      max-width: 860px;
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      overflow-wrap: anywhere;
     }
-    .hero-side {
-      padding: 22px;
-      display: grid;
-      gap: 12px;
+
+    button,
+    input {
+      font: inherit;
+      letter-spacing: 0;
     }
-    .score {
+
+    button {
+      cursor: pointer;
+    }
+
+    code {
+      padding: 1px 4px;
+      border: 1px solid #d8dee5;
+      border-radius: 3px;
+      background: #f7f9fb;
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+    }
+
+    .board {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .hero {
+      padding: 18px 0 28px;
+      border-bottom: 2px solid var(--charcoal);
+    }
+
+    .meta-line {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 14px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
-    }
-    .score strong { font-size: 34px; line-height: 1; }
-    .score span { color: var(--muted); font-size: 13px; font-weight: 700; }
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .metric {
-      padding: 16px;
-      box-shadow: none;
-    }
-    .metric b {
-      display: block;
-      font-size: 22px;
-      line-height: 1.1;
-      margin-bottom: 6px;
-    }
-    .metric span {
+      flex-wrap: wrap;
+      gap: 8px 18px;
       color: var(--muted);
       font-size: 13px;
       font-weight: 650;
     }
-    .section {
-      margin-top: 18px;
-      padding: 22px;
-    }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    h2 {
+
+    h1,
+    h2,
+    h3,
+    h4 {
       margin: 0;
-      font-size: 22px;
-      line-height: 1.2;
       letter-spacing: 0;
     }
-    .section-head p {
-      margin: 6px 0 0;
+
+    h1 {
+      max-width: 900px;
+      margin-top: 18px;
+      font-size: 42px;
+      line-height: 1.12;
+      word-break: keep-all;
+    }
+
+    h2 {
+      font-size: 26px;
+      line-height: 1.25;
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    h4 {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .lead {
+      max-width: 930px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .verdict {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.5fr);
+      gap: 18px;
+      margin-top: 22px;
+      padding: 18px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .verdict strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 21px;
+      line-height: 1.35;
+    }
+
+    .verdict p {
       color: var(--muted);
       font-size: 14px;
     }
-    .lanes {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
-      align-items: start;
-    }
-    .lane {
-      padding: 14px;
-      box-shadow: none;
-      min-height: 100%;
-      background: #fbfcfe;
-    }
-    .lane h3 {
-      margin: 0 0 12px;
-      font-size: 15px;
-      line-height: 1.25;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
-    }
-    .count {
-      color: var(--muted);
-      font-size: 12px;
+
+    .verdict-state {
+      align-self: start;
+      padding: 12px 14px;
+      border-left: 4px solid var(--amber);
+      background: var(--amber-soft);
+      color: #5e3900;
+      font-size: 14px;
       font-weight: 750;
     }
-    .item {
-      padding: 13px;
-      box-shadow: none;
-      margin-bottom: 10px;
-      border-left: 4px solid var(--line);
-    }
-    .item.now { border-left-color: var(--blue); }
-    .item.next { border-left-color: var(--amber); }
-    .item.later { border-left-color: var(--violet); }
-    .item.blocked { border-left-color: var(--red); }
-    .item.done { border-left-color: var(--green); }
-    .meta {
+
+    .toc {
+      position: sticky;
+      top: 0;
+      z-index: 10;
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 8px;
+      gap: 2px;
+      overflow-x: auto;
+      margin: 0 -1px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      background: rgba(243, 245, 247, 0.96);
+      scrollbar-width: thin;
+      contain: inline-size;
     }
-    .tag {
+
+    .toc a {
+      flex: 0 0 auto;
+      padding: 8px 11px;
+      border-radius: 4px;
+      color: #3e4954;
+      font-size: 13px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible {
+      background: #e7ebef;
+      outline: none;
+    }
+
+    .section {
+      padding: 30px 0;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 60px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.65fr) minmax(0, 1.35fr);
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
       display: inline-flex;
       align-items: center;
-      min-height: 22px;
+      min-height: 24px;
       padding: 3px 7px;
-      border-radius: 6px;
-      background: #f1f5f9;
-      color: #475467;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #f7f9fb;
+      color: #46525d;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status.done {
+      border-color: #a9d3bc;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .status.active {
+      border-color: #a9bfe8;
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .status.next {
+      border-color: #e2c28b;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .status.later {
+      border-color: #c9b6e4;
+      background: var(--violet-soft);
+      color: var(--violet);
+    }
+
+    .status.blocked {
+      border-color: #e3b2ae;
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .goal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .goal-panel {
+      min-width: 0;
+      padding: 18px 0 4px;
+      border-top: 3px solid var(--charcoal);
+    }
+
+    .goal-panel.future {
+      border-top-color: var(--violet);
+    }
+
+    .goal-panel p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .goal-panel ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: #3f4a55;
+      font-size: 14px;
+    }
+
+    .goal-panel li + li {
+      margin-top: 6px;
+    }
+
+    .flowline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin-top: 24px;
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--paper);
+    }
+
+    .flow-step {
+      position: relative;
+      min-width: 0;
+      padding: 17px 14px 16px;
+      border-right: 1px solid var(--line);
+    }
+
+    .flow-step:last-child {
+      border-right: 0;
+    }
+
+    .flow-step b {
+      display: block;
+      margin: 8px 0 5px;
+      font-size: 14px;
+    }
+
+    .flow-step p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--paper);
+    }
+
+    .kpi {
+      min-width: 0;
+      padding: 16px;
+      border-right: 1px solid var(--line);
+    }
+
+    .kpi:last-child {
+      border-right: 0;
+    }
+
+    .kpi strong {
+      display: block;
+      font-size: 27px;
+      line-height: 1.1;
+    }
+
+    .kpi span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .kpi.alert strong {
+      color: var(--red);
+    }
+
+    .kpi.good strong {
+      color: var(--green);
+    }
+
+    .evidence-note {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--red);
+      background: var(--red-soft);
+      color: #6f2925;
+      font-size: 13px;
+    }
+
+    .score-list {
+      margin-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 180px 70px minmax(120px, 0.65fr) minmax(0, 1.35fr);
+      gap: 16px;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .score-row strong {
+      font-size: 14px;
+    }
+
+    .score-value {
+      font-size: 22px;
+      font-weight: 850;
+      text-align: right;
+    }
+
+    .bar {
+      height: 8px;
+      overflow: hidden;
+      background: #dfe5eb;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--blue);
+    }
+
+    .bar.good span {
+      background: var(--green);
+    }
+
+    .bar.warn span {
+      background: var(--amber);
+    }
+
+    .bar.risk span {
+      background: var(--red);
+    }
+
+    .score-copy {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .score-copy b {
+      color: var(--ink);
+    }
+
+    .maturity {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-top: 22px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .maturity-step {
+      min-width: 0;
+      padding: 15px 13px;
+      border-right: 1px solid var(--line);
+    }
+
+    .maturity-step:last-child {
+      border-right: 0;
+    }
+
+    .maturity-step h3 {
+      margin-top: 8px;
+      font-size: 15px;
+    }
+
+    .maturity-step p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    th {
+      background: #f6f8fa;
+      color: #3e4954;
+      font-size: 12px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td p + p {
+      margin-top: 6px;
+    }
+
+    .task-title {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .task-id {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-family: Consolas, "SFMono-Regular", monospace;
       font-size: 11px;
       font-weight: 800;
     }
-    .p0 { background: #eef4ff; color: var(--blue); }
-    .p1 { background: #fffbeb; color: var(--amber); }
-    .p2 { background: #f4f3ff; color: var(--violet); }
-    .hold { background: #fef3f2; color: var(--red); }
-    .ok { background: #ecfdf3; color: var(--green); }
-    .item h4 {
-      margin: 0 0 7px;
-      font-size: 14px;
-      line-height: 1.32;
-      letter-spacing: 0;
-    }
-    .item p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 12.5px;
-    }
-    .detail {
+
+    .lane-strip {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 12px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-bottom: 14px;
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--paper);
     }
-    .detail-card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      background: #fbfcfe;
+
+    .lane-cell {
+      padding: 13px;
+      border-right: 1px solid var(--line);
     }
-    .detail-card b {
+
+    .lane-cell:last-child {
+      border-right: 0;
+    }
+
+    .lane-cell strong {
       display: block;
-      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .lane-cell span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .task-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .filters {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .filters button {
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: #4e5a65;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .filters button[aria-pressed="true"] {
+      background: var(--charcoal);
+      color: #fff;
+    }
+
+    .task-search {
+      width: min(330px, 100%);
+      min-height: 40px;
+      padding: 8px 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
       font-size: 13px;
     }
-    .detail-card p, .detail-card li {
+
+    .task-row[hidden] {
+      display: none;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--paper);
+    }
+
+    .decision {
+      min-width: 0;
+      padding: 16px;
+      border-right: 1px solid var(--line);
+    }
+
+    .decision:last-child {
+      border-right: 0;
+    }
+
+    .decision strong {
+      display: block;
+      margin: 8px 0 5px;
+      font-size: 15px;
+    }
+
+    .decision p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--paper);
+    }
+
+    .arch-node {
+      min-width: 0;
+      padding: 15px 13px;
+      border-right: 1px solid var(--line);
+    }
+
+    .arch-node:last-child {
+      border-right: 0;
+    }
+
+    .arch-node b {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .arch-node p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .batch-list {
+      counter-reset: batch;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .batch {
+      counter-increment: batch;
+      display: grid;
+      grid-template-columns: 64px minmax(180px, 0.55fr) minmax(0, 1.45fr);
+      gap: 18px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .batch::before {
+      content: counter(batch, decimal-leading-zero);
+      color: var(--blue);
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .batch p,
+    .batch li {
       color: var(--muted);
       font-size: 13px;
-      margin: 0;
     }
-    ul {
+
+    .batch ul {
       margin: 0;
-      padding-left: 18px;
+      padding-left: 19px;
     }
+
+    .batch li + li {
+      margin-top: 5px;
+    }
+
+    .hold-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 24px;
+      margin-top: 18px;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid var(--line);
+    }
+
+    .hold-list li {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hold-list b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
     .source-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
+
     .source {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 13px;
-      background: #fbfcfe;
-      font-size: 13px;
-      color: var(--muted);
+      display: block;
+      min-width: 0;
+      padding: 13px 0;
+      border-top: 1px solid var(--line);
+      text-decoration: none;
     }
+
     .source strong {
       display: block;
       color: var(--ink);
-      margin-bottom: 4px;
+      font-size: 13px;
     }
-    .footer-note {
-      margin-top: 18px;
+
+    .source span {
+      display: block;
+      margin-top: 4px;
       color: var(--muted);
       font-size: 12px;
-      text-align: center;
     }
+
+    footer {
+      padding-top: 22px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     @media (max-width: 980px) {
-      .hero, .summary, .lanes, .detail, .source-grid { grid-template-columns: 1fr; }
-      .workboard { padding: 16px; }
-      .hero-main, .hero-side, .section { padding: 18px; }
-      .section-head { display: block; }
+      .board {
+        width: min(100% - 24px, 1220px);
+        padding-top: 18px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .verdict,
+      .section-head,
+      .goal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flowline,
+      .architecture {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .flow-step:nth-child(3),
+      .arch-node:nth-child(3) {
+        border-right: 0;
+      }
+
+      .flow-step:nth-child(-n + 3),
+      .arch-node:nth-child(-n + 3) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .kpi:nth-child(2),
+      .kpi:nth-child(4) {
+        border-right: 0;
+      }
+
+      .kpi:nth-child(-n + 4) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .kpi:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .score-row {
+        grid-template-columns: 150px 60px minmax(100px, 0.6fr) minmax(0, 1.4fr);
+      }
+
+      .maturity {
+        grid-template-columns: 1fr;
+      }
+
+      .maturity-step {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .maturity-step:last-child {
+        border-bottom: 0;
+      }
+
+      .lane-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .lane-cell:nth-child(3) {
+        border-right: 0;
+      }
+
+      .lane-cell:nth-child(-n + 3) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .decision-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .decision:nth-child(2) {
+        border-right: 0;
+      }
+
+      .decision:nth-child(-n + 2) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .source-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .board {
+        overflow-x: clip;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      h2 {
+        font-size: 23px;
+      }
+
+      .lead {
+        font-size: 15px;
+      }
+
+      .section {
+        padding: 25px 0;
+      }
+
+      .flowline,
+      .architecture,
+      .kpis,
+      .lane-strip,
+      .decision-grid,
+      .source-grid,
+      .hold-list {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step,
+      .arch-node,
+      .kpi,
+      .lane-cell,
+      .decision {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .flow-step:last-child,
+      .arch-node:last-child,
+      .kpi:last-child,
+      .lane-cell:last-child,
+      .decision:last-child {
+        border-bottom: 0;
+      }
+
+      .kpi:last-child {
+        grid-column: auto;
+      }
+
+      .score-row {
+        grid-template-columns: 1fr 64px;
+        gap: 8px 12px;
+      }
+
+      .score-row .bar,
+      .score-copy {
+        grid-column: 1 / -1;
+      }
+
+      .task-tools {
+        align-items: stretch;
+      }
+
+      .filters {
+        width: 100%;
+      }
+
+      .filters button {
+        flex: 1 1 auto;
+      }
+
+      .task-search {
+        width: 100%;
+      }
+
+      .table-wrap {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+      }
+
+      table.responsive {
+        min-width: 0;
+      }
+
+      table.responsive thead,
+      table.responsive thead tr,
+      table.responsive thead th {
+        position: absolute;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        border: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      table.responsive,
+      table.responsive tbody,
+      table.responsive tr,
+      table.responsive td {
+        display: block;
+        width: 100%;
+      }
+
+      table.responsive tr {
+        margin-bottom: 10px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+      }
+
+      table.responsive td {
+        display: grid;
+        grid-template-columns: 88px minmax(0, 1fr);
+        gap: 10px;
+        padding: 10px 11px;
+      }
+
+      table.responsive td::before {
+        content: attr(data-label);
+        color: #4e5a65;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      table.responsive tr:last-child td {
+        border-bottom: 1px solid var(--line);
+      }
+
+      table.responsive tr td:last-child {
+        border-bottom: 0;
+      }
+
+      .batch {
+        grid-template-columns: 46px minmax(0, 1fr);
+      }
+
+      .batch > div:last-child {
+        grid-column: 2;
+      }
     }
   </style>
 </head>
 <body>
-  <article class="workboard">
-    <section class="hero">
-      <div class="hero-main">
-        <div class="eyeline">
-          <span class="chip blue">FLOW 백로그 작업판</span>
-          <span class="chip">2026-07-02</span>
-          <span class="chip amber">자동/브라우저 QA만 있음</span>
-          <span class="chip green">HTML을 기본 보기로 전환</span>
-        </div>
-        <h1>실무자가 보는 백로그는 한 화면이어야 한다</h1>
-        <p class="lead">Markdown, spec, STATUS, content-audit 문서는 근거로 남기고, 실제 작업 선택은 이 HTML 작업판에서 한다. 현재 결론은 My Flow v2.1 구조 churn은 멈추고, 대표 콘텐츠 품질·Flow 찾기 신뢰 신호·export 스키마·동일 Flow 모델 검증으로 이동하는 것이다.</p>
+  <article class="board">
+    <header class="hero">
+      <div class="meta-line">
+        <span>마지막 갱신 2026-07-13</span>
+        <span>대표 작업판 v2.1</span>
+        <span>latest evidence <code>5ffe5ff</code></span>
+        <span>자동 QA와 사용자 검증을 분리해서 표시</span>
       </div>
-      <aside class="hero-side" aria-label="백로그 운영 점수">
-        <div class="score">
-          <div>
-            <strong>6.5</strong>
-            <span>현재 운영성</span>
-          </div>
-          <div>
-            <strong>8.2</strong>
-            <span>HTML 작업판 적용 후 목표</span>
-          </div>
-        </div>
-        <p class="lead">강점은 근거와 QA 기록이다. 약점은 단일 작업판 부재, stale roadmap, 흩어진 P0/P1, 그리고 사람이 읽기 어려운 일부 원천 문서다.</p>
-      </aside>
-    </section>
+      <h1>FLOW 프로젝트 현황과 백로그</h1>
+      <p class="lead">FLOW는 유용한 글·영상·공식 안내·개인 메모를 일정, 체크리스트, 시트, 메모로 바꿔 사용자가 바로 실행하게 돕는 서비스다. 이 문서는 목표, 현재 구현, 완성도, 남은 일, 출시 조건을 한곳에서 보는 대표 작업판이다.</p>
 
-    <section class="summary" aria-label="평가 요약">
-      <div class="metric"><b>8.5</b><span>방향성 보존</span></div>
-      <div class="metric"><b>7.0</b><span>우선순위 표현</span></div>
-      <div class="metric"><b>6.0</b><span>실행 가능성</span></div>
-      <div class="metric"><b>4.0</b><span>단일 작업판성</span></div>
-    </section>
-
-    <section class="section" aria-label="현재 백로그 작업판">
-      <div class="section-head">
+      <div class="verdict">
         <div>
-          <h2>작업판</h2>
-          <p>지금 구현하거나 검토할 일만 앞에 둔다. 장기 아이디어와 리서치 근거는 링크로 빠진다.</p>
+          <strong>핵심 실행 루프는 만들어졌다. 다음은 실행 생명주기 완전성과 5명 × 3회차 반복 관찰이다.</strong>
+          <p>URL/memo 입력, 기존 Flow 재사용, 다단계 초안, 개인 수정본, My Flow, Calendar, 완료, export, 회고, 다시 쓰기까지 이어졌다. 반면 추가·삭제·순서 변경, 선택적 일정, 수정본 export 정책은 다시 감사해야 하고 실제 반복 사용자 관찰은 1/15에 머물러 있다.</p>
         </div>
-        <span class="chip blue">Now 먼저, Then Next</span>
+        <div class="verdict-state">현재 판정<br />강한 제품 PoC / 내부 알파<br />P23-00 감사 진행 전</div>
       </div>
+    </header>
 
-      <div class="lanes">
-        <div class="lane">
-          <h3>Now <span class="count">4</span></h3>
-          <div class="item now">
-            <div class="meta"><span class="tag p0">P0</span><span class="tag">FUB-01</span></div>
-            <h4>대표 source-backed 콘텐츠 품질 재점검</h4>
-            <p>2~3개 대표 후보의 source row, Step preview, 저장 후 My Flow 진입이 충분히 설명되는지 확인한다.</p>
-          </div>
-          <div class="item now">
-            <div class="meta"><span class="tag p0">P0</span><span class="tag">FUB-02</span></div>
-            <h4>기존 도구별 export 스키마 기준</h4>
-            <p>Calendar, Todo, Sheet, Markdown/Obsidian/Notion으로 내려갈 때 Step/Item/Memo가 어떻게 변환되는지 샘플 출력으로 확인한다.</p>
-          </div>
-          <div class="item now">
-            <div class="meta"><span class="tag p0">P0</span><span class="tag">FUB-10</span></div>
-            <h4>Flow 찾기 신뢰 신호와 선택 기준</h4>
-            <p>fake review 없이 source-backed 신호, 결과 미리보기, 입력 수, Step 수, 업데이트일만 노출한다.</p>
-          </div>
-          <div class="item now">
-            <div class="meta"><span class="tag p1">P1</span><span class="tag">FUB-08</span></div>
-            <h4>My Flow v2.1 기준선 유지</h4>
-            <p>URL, 메모, 공유 Flow 등 여러 입구가 들어와도 같은 My Flow 실행 모델로 이어지는지 검토한다.</p>
-          </div>
+    <nav class="toc" aria-label="작업판 목차">
+      <a href="#goal">목표</a>
+      <a href="#snapshot">완성도</a>
+      <a href="#progress">진행상황</a>
+      <a href="#backlog">현재 백로그</a>
+      <a href="#archive">이전 추적표</a>
+      <a href="#release">출시조건</a>
+      <a href="#architecture">구조</a>
+      <a href="#sequence">실행순서</a>
+      <a href="#evidence">근거</a>
+    </nav>
+
+    <main>
+      <section class="section" id="backlog">
+        <div class="section-head">
+          <h2>0. 2026-07-13 현재 백로그</h2>
+          <p>기존 FUB와 P-number 기록은 아래 추적표에 보존하고, 현재 실행할 범위만 다시 압축했다. 상세한 완료·현재·다음·사람 gate·보류 항목은 새 통합 작업판을 정본으로 사용한다.</p>
         </div>
 
-        <div class="lane">
-          <h3>Next <span class="count">3</span></h3>
-          <div class="item next">
-            <div class="meta"><span class="tag p1">P1</span><span class="tag">FUB-04</span></div>
-            <h4>가벼운 하루 메모 입력 PoC</h4>
-            <p>메모장처럼 쓰되, 날짜 후보·빠진 항목·관련 Flow·반복 가능성을 선택 제안으로만 붙인다.</p>
-          </div>
-          <div class="item next">
-            <div class="meta"><span class="tag p1">P1</span><span class="tag">FUB-03</span></div>
-            <h4>URL에서 Flow 초안으로 가는 모델</h4>
-            <p>자동 생성보다 먼저 source row 확인과 park/revise 기준을 정한다.</p>
-          </div>
-          <div class="item next">
-            <div class="meta"><span class="tag p1">P1</span><span class="tag">FUB-05</span></div>
-            <h4>개인 Flow 초안에서 공유 Flow로 승격</h4>
-            <p>개인 메모, 원문 출처, 민감 영역 주의, 공개 전 삭제/보강 항목을 분리한다.</p>
-          </div>
+        <div class="lane-strip" aria-label="현재 백로그 상태 요약">
+          <div class="lane-cell"><strong>Now 4</strong><span>P23 감사, worktree, 관찰본, 현행성</span></div>
+          <div class="lane-cell"><strong>Next 5</strong><span>가역 상태, 구조 편집, export, history, correction</span></div>
+          <div class="lane-cell"><strong>Human 4</strong><span>15회 관찰, Calendar, 기기 이동, persistence</span></div>
+          <div class="lane-cell"><strong>Gated 7</strong><span>리뷰, Creator, DB, AI, OAuth, 플랫폼</span></div>
+          <div class="lane-cell"><strong>Dirty 74</strong><span>modified 30, untracked 44</span></div>
         </div>
 
-        <div class="lane">
-          <h3>Later <span class="count">4</span></h3>
-          <div class="item later">
-            <div class="meta"><span class="tag p2">P2</span><span class="tag">FUB-06</span></div>
-            <h4>원본·수정본·복사본 관계</h4>
-            <p>원본 업데이트와 내 복사본 유지의 차이를 사용자에게 부담 없이 보여주는 상태 모델.</p>
-          </div>
-          <div class="item later">
-            <div class="meta"><span class="tag p2">P2</span><span class="tag">FUB-07</span></div>
-            <h4>실행 기록 기반 개선 루프</h4>
-            <p>save, export, check, memo, return, feedback를 내부 관찰 행동으로만 축적한다.</p>
-          </div>
-          <div class="item later">
-            <div class="meta"><span class="tag p2">P2</span><span class="tag">FUB-09</span></div>
-            <h4>Creator 채널과 Flow Pack</h4>
-            <p>flat bundle이 아니라 parent Flow 아래 section과 child Flow가 있는 Flow of Flows 구조.</p>
-          </div>
-          <div class="item later">
-            <div class="meta"><span class="tag p2">P2</span></div>
-            <h4>계정 기반 저장과 직접 연동</h4>
-            <p>localStorage 기준선 뒤에 DB, Google Calendar, Todo, Sheets, Notion 연동을 붙인다.</p>
-          </div>
+        <div class="evidence-note">
+          <strong>현재 정본:</strong> <a href="./2026-07-13-flowme-done-next-workboard-ko.html">FlowMe 한 일·할 일 통합 작업판</a> ·
+          <a href="../specs/2026-07-13-execution-lifecycle-completeness/spec.md">P23 실행 라이프사이클 spec</a> ·
+          <a href="./2026-07-13-flowme-value-chain-execution-redesign-evidence/review.html">최신 시각 evidence</a>
         </div>
 
-        <div class="lane">
-          <h3>Blocked / Do Not <span class="count">5</span></h3>
-          <div class="item blocked">
-            <div class="meta"><span class="tag hold">Hold</span></div>
-            <h4>완전한 Notion/Obsidian 대체 workspace</h4>
-            <p>가벼운 입력감은 흡수하되, 전체 생산성 도구로 확장하지 않는다.</p>
+        <div class="table-wrap" style="margin-top:18px">
+          <table class="responsive">
+            <thead><tr><th>Lane</th><th>현재 작업</th><th>바로 다음 행동</th><th>완료 조건</th></tr></thead>
+            <tbody>
+              <tr><td data-label="Lane"><span class="status active">NOW</span></td><td data-label="현재 작업"><strong>P23-00 실행 라이프사이클 감사</strong></td><td data-label="다음 행동">6개 Flow 유형의 완료 취소, 날짜 전환, 구조 편집, export 상태 matrix 작성</td><td data-label="완료 조건">supported/hidden/partial/missing과 Blocking/High 확정</td></tr>
+              <tr><td data-label="Lane"><span class="status active">NOW</span></td><td data-label="현재 작업"><strong>작업 트리와 관찰 빌드 기준선</strong></td><td data-label="다음 행동">74개 변경 owner 분류, 현재 Vercel resolved commit 기록</td><td data-label="완료 조건">다음 slice 실패 원인이 기존 변경과 섞이지 않음</td></tr>
+              <tr><td data-label="Lane"><span class="status next">NEXT</span></td><td data-label="현재 작업"><strong>P23-01~04 조건부 구현</strong></td><td data-label="다음 행동">가역 상태 → 구조 편집 → export parity → history 순서로 High 이상만 구현</td><td data-label="완료 조건">My Flow, Calendar, export가 같은 effective personal Flow를 읽음</td></tr>
+              <tr><td data-label="Lane"><span class="status blocked">HUMAN</span></td><td data-label="현재 작업"><strong>5명 × 3회차 반복 관찰</strong></td><td data-label="다음 행동">Calendar/Todo/메모/공유/루틴 사용자 유형으로 15회 기록</td><td data-label="완료 조건">회차별 4/5 이상 무도움 완료, Blocking 재검증</td></tr>
+              <tr><td data-label="Lane"><span class="status later">GATED</span></td><td data-label="현재 작업"><strong>계정·Creator·URL/AI 중 다음 한 축</strong></td><td data-label="다음 행동">P23과 관찰 결과 후 하나만 선택</td><td data-label="완료 조건">사용자 행동과 운영 gate에 근거한 Go/No-Go</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="goal">
+        <div class="section-head">
+          <h2>1. 무엇을 만드는가</h2>
+          <p>지금 제품의 약속과 장기 비전을 섞지 않는다. 지금은 콘텐츠를 실행 가능한 결과로 바꾸는 작은 루프를 증명하고, 장기적으로만 살아있는 경험 지도로 확장한다.</p>
+        </div>
+
+        <div class="goal-grid">
+          <div class="goal-panel">
+            <h3>지금 증명할 것</h3>
+            <p>사용자가 설명을 듣지 않아도 URL이나 메모를 넣고, 쓸 만한 Flow를 얻어 자기 일정과 할 일로 옮긴 뒤 실제로 체크하는가.</p>
+            <ul>
+              <li>첫 행동: URL 붙여넣기 또는 짧은 요청 메모</li>
+              <li>핵심 결과: 일정, 체크리스트, 시트 행, 메모</li>
+              <li>관찰 행동: 열기 → 찾기/초안 → 저장/export → 체크 → 다시 오기</li>
+              <li>성공 기준: 예쁜 화면이 아니라 사용자가 실제 행동을 이어가는 것</li>
+            </ul>
           </div>
-          <div class="item blocked">
-            <div class="meta"><span class="tag hold">Hold</span></div>
-            <h4>자동 URL ingestion과 자동 공개</h4>
-            <p>source row 확인, park/revise, 민감 영역 경계 전에는 열지 않는다.</p>
-          </div>
-          <div class="item blocked">
-            <div class="meta"><span class="tag hold">Hold</span></div>
-            <h4>fake review, fake active-use count</h4>
-            <p>실사용 데이터 전에는 검증된 것처럼 보이는 신호를 만들지 않는다.</p>
-          </div>
-          <div class="item blocked">
-            <div class="meta"><span class="tag hold">Hold</span></div>
-            <h4>민감 영역 판단 자동화</h4>
-            <p>의료, 법률, 재무 판단처럼 보이는 기능은 확인/기록/문의 상태로만 둔다.</p>
-          </div>
-          <div class="item blocked">
-            <div class="meta"><span class="tag hold">Hold</span></div>
-            <h4>marketplace, 결제, 토큰</h4>
-            <p>반복 사용, creator 운영, asset 표준화 전에는 보류한다.</p>
+          <div class="goal-panel future">
+            <h3>장기적으로 만들 것</h3>
+            <p>여러 Flow가 연결되고, 사용자 실행·수정·리뷰·추가 Step이 쌓이면서 계속 고쳐지는 살아있는 경험 지도다.</p>
+            <ul>
+              <li>개인 계획과 공유 Flow가 같은 실행 모델로 연결됨</li>
+              <li>사용자 fork와 개선 제안이 원본에 안전하게 돌아감</li>
+              <li>경험에서 얻은 지식·기술·감정·성장 가치를 기록함</li>
+              <li>제작자는 팔로워의 성장을 개인정보를 침해하지 않는 집계로 봄</li>
+            </ul>
           </div>
         </div>
 
-        <div class="lane">
-          <h3>Done / Baseline <span class="count">4</span></h3>
-          <div class="item done">
-            <div class="meta"><span class="tag ok">Done</span></div>
-            <h4>My Flow v2.1 내부 alpha 기준선</h4>
-            <p>Calendar와 My Flow의 역할 분리는 자동/browser QA 기준으로 충분해져 broad churn을 멈춘다.</p>
+        <div class="flowline" aria-label="현재 핵심 제품 흐름">
+          <div class="flow-step">
+            <span class="status done">구현</span>
+            <b>1. 가져오기</b>
+            <p>홈과 Flow 찾기에서 URL 또는 요청 메모 입력</p>
           </div>
-          <div class="item done">
-            <div class="meta"><span class="tag ok">Done</span></div>
-            <h4>4-tab IA 기준</h4>
-            <p>Home, Flow 찾기, Calendar, My Flow가 현재 사용자-facing frame이다.</p>
+          <div class="flow-step">
+            <span class="status done">구현</span>
+            <b>2. 찾기·초안</b>
+            <p>기존 canonical URL 재사용 또는 3~7개 결정론적 초안</p>
           </div>
-          <div class="item done">
-            <div class="meta"><span class="tag ok">Done</span></div>
-            <h4>HTML workboard 원칙</h4>
-            <p>사람이 보는 백로그는 HTML, Markdown/spec/status는 근거 계층으로 둔다.</p>
+          <div class="flow-step">
+            <span class="status done">구현</span>
+            <b>3. 고쳐 저장</b>
+            <p>제목, 기준일, 항목 날짜·메모를 개인 수정본으로 저장</p>
           </div>
-          <div class="item done">
-            <div class="meta"><span class="tag ok">Done</span></div>
-            <h4>Service structure 문서화</h4>
-            <p>route, component, architecture, ownership rule은 SERVICE_STRUCTURE.md에서 관리한다.</p>
+          <div class="flow-step">
+            <span class="status done">구현</span>
+            <b>4. 실행</b>
+            <p>내 Flow에서 오늘 할 일, Calendar에서 날짜별 할 일 확인</p>
+          </div>
+          <div class="flow-step">
+            <span class="status done">구현</span>
+            <b>5. 내보내기</b>
+            <p>ICS, Markdown, 체크리스트, TSV/시트 행으로 이동</p>
+          </div>
+          <div class="flow-step">
+            <span class="status blocked">증거 없음</span>
+            <b>6. 배우고 개선</b>
+            <p>실사용 feedback, 재방문, 수정·추천·성장 데이터</p>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section" aria-label="운영 규칙">
-      <div class="section-head">
-        <div>
-          <h2>운영 규칙</h2>
-          <p>백로그를 실무에서 쓰려면 항목을 많이 만드는 것보다 상태 전환 규칙이 중요하다.</p>
+      <section class="section" id="snapshot">
+        <div class="section-head">
+          <h2>2. 현재 완성도</h2>
+          <p>하나의 평균 점수로 숨기지 않는다. 제품 기능, 기술 안정성, 운영 준비, 사용자 증거를 각각 본다. 자동 테스트가 많아도 사용자 증거가 0이면 공개 출시 준비가 끝난 것이 아니다.</p>
         </div>
-      </div>
-      <div class="detail">
-        <div class="detail-card">
-          <b>작업 시작 전</b>
-          <p>HTML workboard에서 하나를 Now로 올리고, Done when과 Verification을 먼저 확인한다.</p>
-        </div>
-        <div class="detail-card">
-          <b>작업 중</b>
-          <p>구현이 route, component, data/export contract를 바꾸면 SERVICE_STRUCTURE.md도 같이 갱신한다.</p>
-        </div>
-        <div class="detail-card">
-          <b>완료 후</b>
-          <p>workboard는 Done, STATUS는 한 줄 요약, spec/QA 또는 pr-history에는 검증 근거를 남긴다.</p>
-        </div>
-      </div>
-    </section>
 
-    <section class="section" aria-label="다음 세션 시작 순서">
-      <div class="section-head">
-        <div>
-          <h2>다음 세션 시작 순서</h2>
-          <p>지금 바로 실무 작업으로 전환한다면 아래 순서가 가장 덜 흔들린다.</p>
+        <div class="kpis" aria-label="현재 검증 수치">
+          <div class="kpi good"><strong>437/437</strong><span>최신 evidence 단위 테스트</span></div>
+          <div class="kpi good"><strong>55/55</strong><span>핵심 route 회귀</span></div>
+          <div class="kpi good"><strong>190/191+1</strong><span>전체 E2E와 단독 correction</span></div>
+          <div class="kpi good"><strong>18장</strong><span>390px·1024px 최신 시각 증거</span></div>
+          <div class="kpi alert"><strong>1/15</strong><span>실제 반복 사용자 관찰</span></div>
         </div>
-      </div>
-      <div class="detail">
-        <div class="detail-card">
-          <b>1. 대표 후보 2~3개 고정</b>
-          <p>현재 source-backed 후보에서 Home/Flow 찾기에 남길 후보만 고른다.</p>
-        </div>
-        <div class="detail-card">
-          <b>2. 각 후보의 export 결과 확인</b>
-          <p>Calendar, Todo, Sheet, Markdown으로 내려갔을 때 어색하지 않은지 샘플을 만든다.</p>
-        </div>
-        <div class="detail-card">
-          <b>3. 선택 신호를 사용자 화면에만 남김</b>
-          <p>내부 평가 문구는 빼고, source-backed 신호와 결과 미리보기만 남긴다.</p>
-        </div>
-      </div>
-    </section>
 
-    <section class="section" aria-label="근거 문서">
-      <div class="section-head">
-        <div>
-          <h2>근거 문서</h2>
-          <p>이 작업판은 아래 문서들을 압축한 보기다. 원문과 검증 기록은 링크에서 확인한다.</p>
+        <div class="evidence-note">
+          최신 2026-07-13 prior artifact는 핵심 시각·기능 회귀를 통과했다. 다만 현재 작업 트리는 그 commit 이후 71개 변경 항목을 포함하므로 다음 구현 전 기준선을 다시 동결해야 한다. 자동 QA와 screenshot은 실제 사용자 이해·재방문·기기 연속성을 증명하지 않는다.
         </div>
-      </div>
-      <div class="source-grid">
-        <a class="source" href="../STATUS.md"><strong>STATUS.md</strong>최신 방향과 My Flow v2.1 handoff</a>
-        <a class="source" href="../SERVICE_STRUCTURE.md"><strong>SERVICE_STRUCTURE.md</strong>현재 서비스 IA, route, component 기준</a>
-        <a class="source" href="../DECISIONS.md"><strong>DECISIONS.md</strong>HTML workboard와 IA 결정 로그</a>
-        <a class="source" href="./2026-07-02-flow-usage-entry-backlog-ko.md"><strong>Flow 활용 입구 백로그</strong>FUB-01~10 원천 백로그</a>
-        <a class="source" href="./2026-07-04-productivity-connectivity-priority-research-ko.html"><strong>생산성 도구 연결성 보드</strong>URL lookup, export-first, AI fallback 우선순위</a>
-        <a class="source" href="./2026-07-01-my-flow-pr-backlog-status-ko.html"><strong>My Flow v2.1 백로그</strong>완료/남은 백로그와 검증 상태</a>
-        <a class="source" href="../specs/2026-07-01-my-flow-v2-execution-ux/tasks.md"><strong>My Flow v2 tasks</strong>P0/P1/P2 severity와 deferred backlog</a>
-      </div>
-    </section>
 
-    <p class="footer-note">이 문서는 실사용 검증 결과가 아니라 2026-07-02 기준 repo 문서와 내부 QA 상태를 사람이 읽기 쉽게 압축한 백로그 작업판이다.</p>
+        <div class="score-list" aria-label="완성도 상세 점수">
+          <div class="score-row">
+            <strong>핵심 제품 루프</strong>
+            <span class="score-value">88</span>
+            <div class="bar good" aria-label="88점"><span style="width:88%"></span></div>
+            <div class="score-copy"><b>있는 것:</b> URL/memo → lookup/초안 → 저장 → 개인 수정 → My Flow/Calendar → 완료 → export → 재사용.<br /><b>남은 것:</b> 구조 편집과 반복 사용 증거.</div>
+          </div>
+          <div class="score-row">
+            <strong>UX 준비도</strong>
+            <span class="score-value">78</span>
+            <div class="bar warn" aria-label="78점"><span style="width:78%"></span></div>
+            <div class="score-copy"><b>있는 것:</b> 4탭 IA, task-first My Flow, date-first Calendar, 모바일/와이드 증거, 사용자 문구 guardrail.<br /><b>남은 것:</b> 완료 취소·선택적 일정·추가/삭제/순서 변경의 종단 발견성.</div>
+          </div>
+          <div class="score-row">
+            <strong>콘텐츠·출처</strong>
+            <span class="score-value">82</span>
+            <div class="bar good" aria-label="82점"><span style="width:82%"></span></div>
+            <div class="score-copy"><b>있는 것:</b> source-backed 기준본, 공개 승인/읽기 전용 gate, 원문 상세 링크와 현행성 감사.<br /><b>남은 것:</b> 보강 필요 콘텐츠 정리, 권리·지역·시점 운영, 실제 유용성 확인.</div>
+          </div>
+          <div class="score-row">
+            <strong>엔지니어링 신뢰성</strong>
+            <span class="score-value">70</span>
+            <div class="bar warn" aria-label="70점"><span style="width:70%"></span></div>
+            <div class="score-copy"><b>있는 것:</b> 최신 prior artifact의 437 단위 테스트, 핵심 회귀 55개, 빌드·문서·시각 QA.<br /><b>남은 것:</b> 74개 worktree 변경 분리, 같은 commit 전체 회귀, 큰 단일 파일 책임 분리.</div>
+          </div>
+          <div class="score-row">
+            <strong>운영·출시 준비</strong>
+            <span class="score-value">42</span>
+            <div class="bar risk" aria-label="42점"><span style="width:42%"></span></div>
+            <div class="score-copy"><b>있는 것:</b> Vercel 배포 경로, 로컬/CI 하네스 초안.<br /><b>남은 것:</b> release truth, 에러 관측, 개인정보·지원 경계, 이벤트 계약, account/cross-device 판단.</div>
+          </div>
+          <div class="score-row">
+            <strong>실사용 증거</strong>
+            <span class="score-value">8</span>
+            <div class="bar risk" aria-label="8점"><span style="width:8%"></span></div>
+            <div class="score-copy"><b>있는 것:</b> 관찰 키트와 1/15 세션 기록.<br /><b>남은 것:</b> 5명 × 3회차 반복 관찰, Calendar import, 기기 이동, 다음 제품 결정.</div>
+          </div>
+        </div>
+
+        <div class="maturity" aria-label="제품 단계">
+          <div class="maturity-step">
+            <span class="status done">강함</span>
+            <h3>리서치·기획 PoC</h3>
+            <p>제품 원칙, 소스 변환, creator/community, 장기 경험 지도까지 문서화됨.</p>
+          </div>
+          <div class="maturity-step">
+            <span class="status done">강함</span>
+            <h3>제품 PoC</h3>
+            <p>핵심 사용자 라우트와 저장·실행·export가 실제 앱에 존재함.</p>
+          </div>
+          <div class="maturity-step">
+            <span class="status active">현재</span>
+            <h3>내부 알파</h3>
+            <p>기능은 이어졌지만 전체 회귀 기준과 release 문서가 아직 불안정함.</p>
+          </div>
+          <div class="maturity-step">
+            <span class="status next">다음</span>
+            <h3>관찰형 Closed Test</h3>
+            <p>5명이 3회차까지 핵심 루프를 반복 수행하는지 봐야 함.</p>
+          </div>
+          <div class="maturity-step">
+            <span class="status blocked">보류</span>
+            <h3>Public Launch</h3>
+            <p>사용자 증거, 운영 경계, 녹색 CI, release truth 전에는 아님.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="progress">
+        <div class="section-head">
+          <h2>3. 기존 백로그는 어디까지 왔나</h2>
+          <p>이 작업판의 이전 버전에 있던 FUB-01~10을 삭제하지 않고 현재 상태로 재분류했다. “완료”는 내부 구현·QA 기준선이고, 실제 사용자 가치가 검증됐다는 뜻은 아니다.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table class="responsive">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>원래 과제</th>
+                <th>현재 판정</th>
+                <th>근거와 남은 일</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="ID"><code>FUB-01</code></td>
+                <td data-label="원래 과제">대표 source-backed 콘텐츠 품질</td>
+                <td data-label="현재 판정"><span class="status done">기준선 완료</span></td>
+                <td data-label="근거·남은 일">15개 lookup 가능 map이 현재 QA 기준을 통과했다. 다음은 더 늘리는 일이 아니라 관찰용 3개 canary를 고정하는 일이다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-02</code></td>
+                <td data-label="원래 과제">도구별 export 스키마</td>
+                <td data-label="현재 판정"><span class="status done">구현 완료</span></td>
+                <td data-label="근거·남은 일">ICS, Markdown/memo, checklist, TSV/sheet-row가 Step 개인 수정값을 반영한다. 실제 사용자가 어느 형식을 쓰는지는 미검증이다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-03</code></td>
+                <td data-label="원래 과제">URL에서 Flow 초안</td>
+                <td data-label="현재 판정"><span class="status done">P21-01 완료</span></td>
+                <td data-label="근거·남은 일">한 항목 골격에서 3~7개 결정론적 제안으로 개선됐다. 실제 AI 생성은 별도 gate spec 전까지 보류한다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-04</code></td>
+                <td data-label="원래 과제">가벼운 하루 메모 입력</td>
+                <td data-label="현재 판정"><span class="status next">부분 완료</span></td>
+                <td data-label="근거·남은 일">URL/memo 입력이 같은 초안 모델로 이어진다. 매일 메모장처럼 반복 사용되는지는 사용자 관찰이 필요하다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-05</code></td>
+                <td data-label="원래 과제">개인 초안을 공유 Flow로 승격</td>
+                <td data-label="현재 판정"><span class="status later">부분 완료</span></td>
+                <td data-label="근거·남은 일">개인 초안과 Studio 보조 선반은 있다. 공개 승격, 검토, source/version 정책은 아직 제품 기능이 아니다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-06</code></td>
+                <td data-label="원래 과제">원본·수정본·복사본 관계</td>
+                <td data-label="현재 판정"><span class="status next">부분 완료</span></td>
+                <td data-label="근거·남은 일">개인 제목·기준일·포함 Step을 원본 업데이트에서 보존한다. 사용자에게 version 차이를 검토시키는 완전한 비교 UI는 없다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-07</code></td>
+                <td data-label="원래 과제">실행 기록 기반 개선</td>
+                <td data-label="현재 판정"><span class="status blocked">미착수</span></td>
+                <td data-label="근거·남은 일">local check state는 있지만 consent가 있는 event/feedback/return 데이터와 개선 의사결정 루프가 없다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-08</code></td>
+                <td data-label="원래 과제">여러 입구가 같은 My Flow로 수렴</td>
+                <td data-label="현재 판정"><span class="status done">기준선 완료</span></td>
+                <td data-label="근거·남은 일">URL hit, 개인 수정본, miss draft가 My Flow와 Calendar의 같은 실행 모델을 사용한다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-09</code></td>
+                <td data-label="원래 과제">Creator 채널과 Flow of Flows</td>
+                <td data-label="현재 판정"><span class="status later">부분 완료</span></td>
+                <td data-label="근거·남은 일">creator profile과 source-backed map은 있으나 account-backed publish, follower feedback, true Flow of Flows 운영은 없다.</td>
+              </tr>
+              <tr>
+                <td data-label="ID"><code>FUB-10</code></td>
+                <td data-label="원래 과제">신뢰 신호와 선택 기준</td>
+                <td data-label="현재 판정"><span class="status next">부분 완료</span></td>
+                <td data-label="근거·남은 일">출처, 결과 미리보기, fake count 금지는 적용됐다. 저장 수·리뷰·활성 사용 같은 실제 신호는 데이터가 없어 표시할 수 없다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="archive">
+        <div class="section-head">
+          <h2>4. 이전 백로그 추적표</h2>
+          <p>2026-07-11 시점의 FUB/P21 작업을 추적하기 위한 역사적 표다. 현재 우선순위는 위 `2026-07-13 현재 백로그`와 새 통합 작업판을 따른다.</p>
+        </div>
+
+        <div class="lane-strip" aria-label="백로그 상태 요약">
+          <div class="lane-cell"><strong>Now 4</strong><span>기준선 복구와 관찰 준비</span></div>
+          <div class="lane-cell"><strong>Next 4</strong><span>실사용 증거와 운영 경계</span></div>
+          <div class="lane-cell"><strong>Later 4</strong><span>증거 뒤에 여는 확장</span></div>
+          <div class="lane-cell"><strong>Hold 5</strong><span>지금 만들지 않을 것</span></div>
+          <div class="lane-cell"><strong>Done 6+</strong><span>내부 구현 기준선</span></div>
+        </div>
+
+        <div class="task-tools">
+          <div class="filters" role="group" aria-label="작업 상태 필터">
+            <button type="button" data-filter="all" aria-pressed="true">전체</button>
+            <button type="button" data-filter="now" aria-pressed="false">지금</button>
+            <button type="button" data-filter="next" aria-pressed="false">다음</button>
+            <button type="button" data-filter="later" aria-pressed="false">나중</button>
+          </div>
+          <input class="task-search" id="task-search" type="search" placeholder="ID, 화면, 작업 내용 검색" aria-label="백로그 검색" />
+        </div>
+
+        <div class="table-wrap">
+          <table class="responsive" id="task-table">
+            <thead>
+              <tr>
+                <th>작업</th>
+                <th>담당 관점</th>
+                <th>현재 상태</th>
+                <th>바로 다음 행동</th>
+                <th>완료 조건</th>
+                <th>근거</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="task-row" data-lane="now">
+                <td data-label="작업"><span class="task-id">NOW-01 · P0</span><strong class="task-title">전체 E2E 기준선 복구</strong><span class="status active">지금</span></td>
+                <td data-label="담당">Engineering · QA</td>
+                <td data-label="현재">2026-07-11 실행은 177/210 통과, 33 실패. 실행 중 병행 수정이 발생해 최종 판정 불가.</td>
+                <td data-label="다음 행동">코드를 한 commit으로 동결하고 33건을 낡은 기대값, 실제 회귀, 환경 문제로 분류한다. 사용자 계약이 바뀐 테스트는 근거 문서와 함께 갱신하고 실제 회귀는 UI를 고친다.</td>
+                <td data-label="완료 조건">같은 commit에서 전체 E2E 녹색. 폐기한 테스트는 대체 증거가 있고 CI가 녹색이다.</td>
+                <td data-label="근거"><a href="../../tests/e2e/flow-mvp.spec.ts">legacy E2E</a><br /><a href="../../tests/e2e/url-first-user-surface.spec.ts">URL-first E2E</a></td>
+              </tr>
+              <tr class="task-row" data-lane="now">
+                <td data-label="작업"><span class="task-id">NOW-02 · P0</span><strong class="task-title">P21 edge-state와 식별 polish 닫기</strong><span class="status active">병행 작업 중</span></td>
+                <td data-label="담당">Product · UX · QA</td>
+                <td data-label="현재">저장 실패 입력 보존, canonical 중복 초안 재사용, 빈 My Flow/Calendar, 완료 후 0개, 오프라인 local action, Calendar Flow initial의 390px·1024px 증거 패키지가 생성됐지만 아직 로컬 변경이다.</td>
+                <td data-label="다음 행동">생성된 P21-04/P21-05 패키지의 marker와 화면을 검토하고, 같은 고정 commit에서 targeted E2E를 다시 통과시킨 뒤 코드·테스트·증거를 한 작업 단위로 commit한다.</td>
+                <td data-label="완료 조건">실패·빈·완료 후·오프라인·중복 상태가 모두 복구 행동을 보여주고 evidence package와 commit이 생긴다.</td>
+                <td data-label="근거"><a href="./2026-07-10-claude-design-p21-feedback-intake-ko.md">P21 intake</a><br /><a href="./2026-07-10-claude-design-p21-01-draft-content-evidence/review.html">P21-01 evidence</a></td>
+              </tr>
+              <tr class="task-row" data-lane="now">
+                <td data-label="작업"><span class="task-id">NOW-03 · P0</span><strong class="task-title">release truth와 작업트리 정리</strong><span class="status active">지금</span></td>
+                <td data-label="담당">Release · Docs</td>
+                <td data-label="현재">검토 시작 시 14개 tracked 수정과 9개 untracked였고, 마지막 대조 시 23개 tracked 수정과 13개 untracked로 늘었다. STATUS는 v0.1 released, ROADMAP은 in development, HISTORY는 tagged release 없음으로 충돌한다.</td>
+                <td data-label="다음 행동">tooling, P21, review input을 작업 단위로 분리한다. STATUS·ROADMAP·HISTORY·SERVICE_STRUCTURE·active spec 상태를 현재 main과 맞춘다.</td>
+                <td data-label="완료 조건">작업 단위가 커밋으로 구분되고 unowned 변경이 없으며, release/tag/deploy 상태가 한 문장으로 일치한다.</td>
+                <td data-label="근거"><a href="../STATUS.md">STATUS</a><br /><a href="../ROADMAP.md">ROADMAP</a><br /><a href="../HISTORY.md">HISTORY</a></td>
+              </tr>
+              <tr class="task-row" data-lane="now">
+                <td data-label="작업"><span class="task-id">NOW-04 · P0</span><strong class="task-title">관찰용 canary 3개와 과업 동결</strong><span class="status active">지금</span></td>
+                <td data-label="담당">Product · Content · Research</td>
+                <td data-label="현재">15개 lookup 가능 map이 QA를 통과했지만 첫 사용자에게 모두 보여줄 필요는 없다.</td>
+                <td data-label="다음 행동">낮은 위험과 서로 다른 artifact를 대표하는 이사 D-30, 중1 수학 진도, 차량 점검 준비를 우선 검토하고, hit·miss draft·save/export/check 과업을 고정한다.</td>
+                <td data-label="완료 조건">3개 route/version, 시작 상태, 관찰 과업, 중단 조건, 기록 양식이 하나의 run sheet로 고정된다.</td>
+                <td data-label="근거"><a href="./2026-07-06-source-backed-manual-registration-qa-ko.html">source QA</a><br /><a href="../PRODUCT_PRINCIPLES.md">제품 원칙</a></td>
+              </tr>
+
+              <tr class="task-row" data-lane="next">
+                <td data-label="작업"><span class="task-id">NEXT-01 · P0</span><strong class="task-title">설명 없는 3~5명 사용 관찰</strong><span class="status next">다음</span></td>
+                <td data-label="담당">Research · Product</td>
+                <td data-label="현재">실제 recipient/user 세션 0회. 자동 QA만 있다.</td>
+                <td data-label="다음 행동">사전 설명 없이 URL/memo 입력, 결과 이해, 저장 또는 export, 하나 체크, 다시 열기 과정을 관찰한다.</td>
+                <td data-label="완료 조건">사용 가능한 세션 3회 이상, 첫 행동·중단 지점·사용한 export·재방문 의향이 비식별 형태로 기록된다.</td>
+                <td data-label="근거"><a href="./2026-06-11-distribution-channel-stage0-phase-checkpoint.md">Stage 0 checkpoint</a></td>
+              </tr>
+              <tr class="task-row" data-lane="next">
+                <td data-label="작업"><span class="task-id">NEXT-02 · P0</span><strong class="task-title">관찰 결과를 제품 결정으로 압축</strong><span class="status next">다음</span></td>
+                <td data-label="담당">Product · UX</td>
+                <td data-label="현재">feedback/evidence 문서 틀은 있으나 실제 관찰값이 없다.</td>
+                <td data-label="다음 행동">세션 뒤 공통 마찰 3개, 실제 쓴 기능, 쓰지 않은 기능, 반복 사용 이유를 정리한다.</td>
+                <td data-label="완료 조건">계속/수정/중단 중 하나의 결정과 다음 한 배치만 DECISIONS·spec·STATUS에 반영된다.</td>
+                <td data-label="근거"><a href="../DECISIONS.md">DECISIONS</a><br /><a href="../specs/README.md">spec index</a></td>
+              </tr>
+              <tr class="task-row" data-lane="next">
+                <td data-label="작업"><span class="task-id">NEXT-03 · P1</span><strong class="task-title">event·feedback·privacy 계약</strong><span class="status next">다음</span></td>
+                <td data-label="담당">Product · Platform</td>
+                <td data-label="현재">local check state는 있으나 사용자 행동 event, consent, retention, feedback 저장 경계가 없다.</td>
+                <td data-label="다음 행동">open, lookup/draft, save, export, check, edit, return, feedback의 최소 정의와 수집하지 않을 값을 정한다. 첫 관찰은 수동 기록으로 충분하다.</td>
+                <td data-label="완료 조건">event dictionary, consent/retention, owner, delete path가 승인된다. PostHog 등 도구는 그 뒤에 선택한다.</td>
+                <td data-label="근거"><a href="../TOOLING.md">TOOLING</a><br /><a href="../PRODUCT_PRINCIPLES.md">Stage 0 loop</a></td>
+              </tr>
+              <tr class="task-row" data-lane="next">
+                <td data-label="작업"><span class="task-id">NEXT-04 · P1</span><strong class="task-title">거대 UI·테스트 파일 책임 분리</strong><span class="status next">다음</span></td>
+                <td data-label="담당">Architecture · Engineering</td>
+                <td data-label="현재"><code>AppClient.tsx</code> 약 13,160줄, legacy E2E 약 6,532줄, capture script 약 4,690줄. 주요 사용자 route first-load JS 약 541kB.</td>
+                <td data-label="다음 행동">URL-first, My Flow, Calendar, public/creator shell의 상태와 렌더링 책임을 route 단위 모듈로 분리하고 legacy E2E를 계약별 focused suite로 옮긴다.</td>
+                <td data-label="완료 조건">소유 경계가 SERVICE_STRUCTURE에 반영되고, 한 기능 변경이 무관한 전체 파일을 건드리지 않으며, 번들 예산과 전체 회귀가 유지된다.</td>
+                <td data-label="근거"><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE</a><br /><a href="../../components/flow/AppClient.tsx">AppClient</a></td>
+              </tr>
+
+              <tr class="task-row" data-lane="later">
+                <td data-label="작업"><span class="task-id">LATER-01 · P1</span><strong class="task-title">실제 AI 생성 gate spec</strong><span class="status later">나중</span></td>
+                <td data-label="담당">Product · AI · Safety</td>
+                <td data-label="현재">결정론적 초안만 사용하며 live AI를 암시하지 않는다.</td>
+                <td data-label="다음 행동">source 권리, data egress, 비용·지연, 환각, 민감 카테고리 수동 검토, fallback을 spec으로 먼저 정한다.</td>
+                <td data-label="완료 조건">golden set과 실패 기준이 있고 AI 결과가 초안임을 유지하며 자동 공개하지 않는다.</td>
+                <td data-label="근거"><a href="./2026-07-10-claude-design-p21-feedback-intake-ko.md">P21-02</a></td>
+              </tr>
+              <tr class="task-row" data-lane="later">
+                <td data-label="작업"><span class="task-id">LATER-02 · P2</span><strong class="task-title">계정 저장·cross-device</strong><span class="status later">나중</span></td>
+                <td data-label="담당">Platform · Data</td>
+                <td data-label="현재">localStorage 기반이라 한 기기 내부 PoC에는 충분하지만 사용자 서비스 지속성은 없다.</td>
+                <td data-label="다음 행동">관찰 사용자가 다른 기기·재설치·공유 복구를 요구할 때 auth/DB 스키마와 migration을 설계한다.</td>
+                <td data-label="완료 조건">user/map/Step state, version, delete/export, privacy가 서버 계약과 함께 검증된다.</td>
+                <td data-label="근거"><a href="../IDEAS.md">IDEAS</a><br /><a href="../specs/2026-06-24-flowme-platform-feature-planning/tasks.md">platform tasks</a></td>
+              </tr>
+              <tr class="task-row" data-lane="later">
+                <td data-label="작업"><span class="task-id">LATER-03 · P2</span><strong class="task-title">fork·추가 Step·creator feedback</strong><span class="status later">나중</span></td>
+                <td data-label="담당">Creator · Community · Trust</td>
+                <td data-label="현재">개인 수정본은 있으나 원본 제안, 검토, thumbs-up promotion은 없다.</td>
+                <td data-label="다음 행동">사용자 추가 Step을 개인 fork에 먼저 두고, 출처·중복·위험 검토를 거쳐 제안하는 모델을 설계한다.</td>
+                <td data-label="완료 조건">좋아요만으로 canonical Flow가 바뀌지 않고 creator/admin review와 version 보존이 작동한다.</td>
+                <td data-label="근거"><a href="../IDEAS.md">2026-07-08 아이디어</a></td>
+              </tr>
+              <tr class="task-row" data-lane="later">
+                <td data-label="작업"><span class="task-id">LATER-04 · P2</span><strong class="task-title">살아있는 경험 지도와 성장 가치</strong><span class="status later">나중</span></td>
+                <td data-label="담당">Product · Data · Research</td>
+                <td data-label="현재">Flow Map 구조와 아이디어만 있고 신뢰할 실행 데이터가 없다.</td>
+                <td data-label="다음 행동">여러 Flow 저장, meaningful review, creator/source cluster가 생긴 뒤 관계·가치·감정·성장 데이터의 self-report 경계를 연구한다.</td>
+                <td data-label="완료 조건">개인정보와 과장된 성과 해석 없이 사용자가 얻은 가치와 다음 행동을 설명할 수 있다.</td>
+                <td data-label="근거"><a href="../IDEAS.md">living map·growth ideas</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ul class="hold-list" aria-label="지금 만들지 않을 것">
+          <li><b>사용자 증거 없는 Public Launch</b>자동 QA와 Vercel 성공만으로 출시했다고 부르지 않는다.</li>
+          <li><b>AI 자동 생성·자동 공개</b>실제 AI는 gate spec과 human review 전까지 열지 않는다.</li>
+          <li><b>Notion·Obsidian 전체 대체</b>가벼운 메모 감각은 흡수하지만 범용 workspace를 먼저 만들지 않는다.</li>
+          <li><b>Expo·native·직접 OAuth 연동</b>push, app store, 기기 API가 실제 병목이 될 때 검토한다.</li>
+          <li><b>fake review·사용량·creator 인증</b>저장 수와 활동 수치는 실제 event와 privacy 계약이 생긴 뒤에만 표시한다.</li>
+          <li><b>marketplace·결제·token</b>반복 사용과 creator 운영이 검증되기 전에는 자산 거래를 만들지 않는다.</li>
+          <li><b>도메인 규칙 없는 URL alias 병합</b><code>tag</code>, <code>category</code>를 무작정 제거해 다른 콘텐츠를 합치지 않는다.</li>
+          <li><b>민감 영역 결과 판단 자동화</b>의료·법률·재무는 준비, 확인, 기록, 공식 출처 연결을 넘지 않는다.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="release">
+        <div class="section-head">
+          <h2>5. 출시 조건</h2>
+          <p>내부 데모, 관찰형 사용자 테스트, Closed Beta, Public Launch를 같은 말로 쓰지 않는다. 현재는 내부 데모 가능, 관찰형 테스트 준비 중, Closed Beta와 공개 출시는 보류다.</p>
+        </div>
+
+        <div class="decision-grid">
+          <div class="decision">
+            <span class="status done">가능</span>
+            <strong>내부 데모</strong>
+            <p>핵심 루프와 대표 콘텐츠를 팀·리뷰어가 직접 확인할 수 있다.</p>
+          </div>
+          <div class="decision">
+            <span class="status next">조건부</span>
+            <strong>5명 × 3회차 관찰 테스트</strong>
+            <p>P23-00과 Blocking correction을 닫고 route/version을 고정하면 시작할 수 있다.</p>
+          </div>
+          <div class="decision">
+            <span class="status blocked">아직 아님</span>
+            <strong>Closed Beta</strong>
+            <p>녹색 E2E, feedback 경계, 기본 운영 대응과 실제 세션 근거가 필요하다.</p>
+          </div>
+          <div class="decision">
+            <span class="status blocked">보류</span>
+            <strong>Public Launch</strong>
+            <p>release truth, privacy/support, 관측, 반복 사용 증거 전에는 승인하지 않는다.</p>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:18px">
+          <table class="responsive">
+            <thead>
+              <tr>
+                <th>게이트</th>
+                <th>현재 증거</th>
+                <th>판정</th>
+                <th>통과 조건</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="게이트">핵심 루프</td>
+                <td data-label="현재 증거">URL/memo, lookup/draft, save, My Flow, Calendar, export 구현</td>
+                <td data-label="판정"><span class="status done">내부 통과</span></td>
+                <td data-label="통과 조건">관찰 세션에서 설명 없이 이어짐</td>
+              </tr>
+              <tr>
+                <td data-label="게이트">전체 회귀</td>
+                <td data-label="현재 증거">단위 379 통과, build 통과, E2E 177/210</td>
+                <td data-label="판정"><span class="status blocked">실패</span></td>
+                <td data-label="통과 조건">동일 commit 전체 E2E 녹색</td>
+              </tr>
+              <tr>
+                <td data-label="게이트">출처·위험</td>
+                <td data-label="현재 증거">lookup 가능 15/15 QA, eligible 중복/sourceTrace 누락 0</td>
+                <td data-label="판정"><span class="status done">내부 통과</span></td>
+                <td data-label="통과 조건">관찰 canary 3개 version 동결</td>
+              </tr>
+              <tr>
+                <td data-label="게이트">보안 의존성</td>
+                <td data-label="현재 증거">high 0, Next 내부 PostCSS moderate 2</td>
+                <td data-label="판정"><span class="status next">조건부</span></td>
+                <td data-label="통과 조건">moderate 공개, 강제 downgrade 금지, Dependabot 추적</td>
+              </tr>
+              <tr>
+                <td data-label="게이트">배포</td>
+                <td data-label="현재 증거">마지막 외부 확인 <code>8f55d02</code> Vercel success, 현재 main <code>fddf6c8</code>, tagged release 없음</td>
+                <td data-label="판정"><span class="status next">부분</span></td>
+                <td data-label="통과 조건">배포 환경·URL·rollback·release 상태 일치</td>
+              </tr>
+              <tr>
+                <td data-label="게이트">사용자 증거</td>
+                <td data-label="현재 증거">관찰 세션 0회</td>
+                <td data-label="판정"><span class="status blocked">미통과</span></td>
+                <td data-label="통과 조건">최소 3회 usable session과 결정 기록</td>
+              </tr>
+              <tr>
+                <td data-label="게이트">운영 경계</td>
+                <td data-label="현재 증거">account/event/error/privacy/support 경계 미완성</td>
+                <td data-label="판정"><span class="status blocked">미통과</span></td>
+                <td data-label="통과 조건">Closed Beta 범위에 맞는 최소 운영 계약</td>
+              </tr>
+              <tr>
+                <td data-label="게이트">release truth</td>
+                <td data-label="현재 증거">STATUS·ROADMAP·HISTORY와 dirty worktree 불일치</td>
+                <td data-label="판정"><span class="status blocked">미통과</span></td>
+                <td data-label="통과 조건">문서·commit·deploy·tag가 같은 상태를 말함</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="architecture">
+        <div class="section-head">
+          <h2>6. 서비스와 아키텍처 구조</h2>
+          <p>사용자에게는 하나의 간단한 흐름이지만, 내부에서는 public, creator, execution, source-review 책임을 분리해야 한다. 현재 데이터는 정적 source-backed seed와 localStorage 중심이며 account-backed 서비스 구조는 아직 아니다.</p>
+        </div>
+
+        <div class="architecture" aria-label="서비스 아키텍처 흐름">
+          <div class="arch-node"><b>유입</b><p><code>/</code>, <code>/flows</code><br />URL·memo·catalog</p></div>
+          <div class="arch-node"><b>해석</b><p>canonical lookup<br />결정론적 draft</p></div>
+          <div class="arch-node"><b>공개·저장 전</b><p><code>/f/*</code>, <code>/flow-maps/*</code><br />source·result preview</p></div>
+          <div class="arch-node"><b>개인 실행</b><p><code>/my</code>, <code>/calendar</code><br />check·edit·return</p></div>
+          <div class="arch-node"><b>휴대 결과</b><p>ICS·Markdown<br />checklist·TSV</p></div>
+          <div class="arch-node"><b>검토·제작</b><p>creator profile<br />content studio·Flow Lab</p></div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:18px">
+          <table class="responsive">
+            <thead>
+              <tr>
+                <th>영역</th>
+                <th>현재 구조</th>
+                <th>잘된 점</th>
+                <th>위험 또는 다음 경계</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="영역">Route shell</td>
+                <td data-label="현재"><code>app/</code> 16개 정적 페이지 + 동적 public/creator route</td>
+                <td data-label="잘된 점">사용자 4탭과 내부 route가 구분됨</td>
+                <td data-label="위험">privacy/help/release 운영 route는 없음</td>
+              </tr>
+              <tr>
+                <td data-label="영역">Product UI</td>
+                <td data-label="현재"><code>AppClient.tsx</code> 약 13k줄 중심</td>
+                <td data-label="잘된 점">한곳에서 전체 UX 계약을 빠르게 실험함</td>
+                <td data-label="위험">변경 충돌, first-load 약 541kB, route 책임 혼합</td>
+              </tr>
+              <tr>
+                <td data-label="영역">Domain·source</td>
+                <td data-label="현재"><code>lib/flow/</code> lookup, export, source-backed, quality modules</td>
+                <td data-label="잘된 점">단위 테스트 379, source/risk 분리</td>
+                <td data-label="위험">여러 문서와 fixture가 실제 product source와 함께 커짐</td>
+              </tr>
+              <tr>
+                <td data-label="영역">Persistence</td>
+                <td data-label="현재">localStorage snapshot, personal copy overlay</td>
+                <td data-label="잘된 점">Stage 0에서 서버 없이 빠르게 실행 가능</td>
+                <td data-label="위험">cross-device, recovery, account, consent, delete contract 없음</td>
+              </tr>
+              <tr>
+                <td data-label="영역">Verification</td>
+                <td data-label="현재">unit, 4개 E2E 파일, 거대 capture script, docs check</td>
+                <td data-label="잘된 점">신규 focused suite와 시각 marker가 강함</td>
+                <td data-label="위험">legacy E2E 33 실패, 테스트 계약과 현재 UX drift</td>
+              </tr>
+              <tr>
+                <td data-label="영역">Operations</td>
+                <td data-label="현재">Vercel, 로컬 tooling/CI 개선안, no account analytics</td>
+                <td data-label="잘된 점">Node 24·audit·Dependabot 방향이 로컬에 준비됨</td>
+                <td data-label="위험">아직 uncommitted, 실제 CI·monitoring·support 증거 부족</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="sequence">
+        <div class="section-head">
+          <h2>7. 권장 실행 순서</h2>
+          <p>다음 기능을 넓히기 전에 현재 루프를 닫는다. 각 배치는 앞 배치의 결과가 다음 선택을 바꾸도록 설계한다.</p>
+        </div>
+
+        <ol class="batch-list">
+          <li class="batch">
+            <div>
+              <h3>기준선 고정</h3>
+              <p>출시 후보가 아니라 관찰 가능한 안정 상태를 만든다.</p>
+            </div>
+            <div>
+              <ul>
+                <li>병행 P21-04/P21-05 작업을 commit 단위로 닫는다.</li>
+                <li>33개 E2E 실패를 계약 drift와 실제 회귀로 분류해 전체 기준선을 녹색으로 만든다.</li>
+                <li>tooling 변경을 별도 commit으로 정리하고 release 문서의 모순을 없앤다.</li>
+                <li>관찰 canary 3개와 route/version을 고정한다.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="batch">
+            <div>
+              <h3>사람에게 보여주기</h3>
+              <p>기능 추가보다 사용자가 어디서 멈추는지 본다.</p>
+            </div>
+            <div>
+              <ul>
+                <li>설명 없이 3~5명에게 URL hit, miss draft, save/export/check 과업을 맡긴다.</li>
+                <li>개인정보 없이 첫 행동, 멈춘 지점, 실제로 사용한 결과물, 다시 쓸 이유를 기록한다.</li>
+                <li>관찰 중 UI를 즉시 설명하거나 고치지 말고 동일 version을 유지한다.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="batch">
+            <div>
+              <h3>증거로 다음 결정</h3>
+              <p>AI, account, creator 중 무엇을 열지 행동 데이터로 고른다.</p>
+            </div>
+            <div>
+              <ul>
+                <li>lookup 재사용이 강하면 source/version/trust와 canary 공급을 강화한다.</li>
+                <li>miss draft가 강하면 실제 AI gate spec과 golden set을 연다.</li>
+                <li>재방문·cross-device 요구가 강하면 account persistence를 연다.</li>
+                <li>수정·공유 요구가 강하면 fork·Step 제안·creator review를 연다.</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section" id="evidence">
+        <div class="section-head">
+          <h2>8. 근거 문서</h2>
+          <p>이 HTML은 읽기 위한 대표 화면이다. 원칙, 결정, spec, 코드, 테스트, 과거 스냅샷은 아래 근거 계층에 남긴다.</p>
+        </div>
+
+        <div class="source-grid">
+          <a class="source" href="../PRODUCT_PRINCIPLES.md"><strong>제품 원칙</strong><span>action compiler, export-first, Stage 0 성공 루프</span></a>
+          <a class="source" href="../SERVICE_STRUCTURE.md"><strong>서비스 구조</strong><span>route, component, domain, ownership baseline</span></a>
+          <a class="source" href="../DECISIONS.md"><strong>결정 로그</strong><span>URL-first, My Flow, source/risk, tooling 정책</span></a>
+          <a class="source" href="../IDEAS.md"><strong>아이디어 로그</strong><span>memo, fork, creator growth, living experience map</span></a>
+          <a class="source" href="../specs/2026-07-05-url-lookup-production-slice/spec.md"><strong>URL lookup spec</strong><span>현재 핵심 제품 slice와 out-of-scope</span></a>
+          <a class="source" href="./2026-07-11-claude-design-p21-execution-board-ko.html"><strong>P21 실행 보드</strong><span>다단계 draft, edge states, AI gate, polish</span></a>
+          <a class="source" href="./2026-07-10-claude-design-p21-01-draft-content-evidence/review.html"><strong>P21-01 시각 증거</strong><span>URL miss draft, My Flow, Calendar, Studio</span></a>
+          <a class="source" href="./2026-07-06-source-backed-manual-registration-qa-ko.html"><strong>Source 등록 QA</strong><span>26 maps, 15 lookup eligible, 15 QA pass</span></a>
+          <a class="source" href="./2026-07-10-tooling-skills-settings-refresh-ko.html"><strong>도구·하네스 갱신</strong><span>Node 24, dependency, CI, skill sync</span></a>
+          <a class="source" href="./2026-07-05-project-readiness-backlog-review-ko.html"><strong>2026-07-05 이전 스냅샷</strong><span>URL-first 구현 전 점수와 당시 P0</span></a>
+          <a class="source" href="../../tests/e2e/flow-mvp.spec.ts"><strong>Legacy 전체 E2E</strong><span>현재 33개 실패가 집중된 broad suite</span></a>
+          <a class="source" href="../../tests/e2e/url-first-user-surface.spec.ts"><strong>Focused URL-first E2E</strong><span>신규 사용자 계약과 draft lifecycle</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p><strong>증거 기준:</strong> 현재 명령은 2026-07-11 로컬 실행, 현재 repo는 <code>main@fddf6c8</code>와 dirty worktree, prior artifact는 링크된 P21/source QA 패키지, 외부 배포 상태는 GitHub connector가 <code>8f55d02</code>에서 확인한 Vercel success다. 자동 QA는 사용자 검증이 아니다.</p>
+      <p style="margin-top:7px">이 파일은 기존 대표 경로를 유지한 채 2026-07-11에 전면 갱신했다. 다음 갱신자는 항목을 추가하기 전에 상태, 다음 행동, 완료 조건, 검증 근거를 함께 수정해야 한다.</p>
+    </footer>
   </article>
+
+  <script>
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('[data-filter]'));
+      const rows = Array.from(document.querySelectorAll('.task-row'));
+      const search = document.getElementById('task-search');
+      let activeFilter = 'all';
+
+      const applyFilters = () => {
+        const query = (search?.value || '').trim().toLocaleLowerCase('ko');
+        rows.forEach((row) => {
+          const laneMatches = activeFilter === 'all' || row.dataset.lane === activeFilter;
+          const textMatches = !query || (row.textContent || '').toLocaleLowerCase('ko').includes(query);
+          row.hidden = !(laneMatches && textMatches);
+        });
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          activeFilter = button.dataset.filter || 'all';
+          buttons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+          applyFilters();
+        });
+      });
+
+      search?.addEventListener('input', applyFilters);
+    })();
+  </script>
 </body>
 </html>

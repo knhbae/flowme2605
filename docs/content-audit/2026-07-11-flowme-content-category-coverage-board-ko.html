@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 콘텐츠 카테고리 커버리지 재검토</title>
+  <style>
+    :root {
+      --ink: #18201d;
+      --muted: #626b67;
+      --line: #dce2de;
+      --canvas: #f3f5f4;
+      --paper: #ffffff;
+      --green: #176b51;
+      --green-soft: #e8f4ef;
+      --blue: #3159c9;
+      --blue-soft: #edf1ff;
+      --coral: #c94d3d;
+      --coral-soft: #fff0ed;
+      --amber: #8b650b;
+      --amber-soft: #fff7df;
+      --gray-soft: #eef1ef;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    button { font: inherit; }
+    strong, h1, h2, h3 { word-break: keep-all; overflow-wrap: anywhere; }
+    p, li, span { word-break: keep-all; overflow-wrap: anywhere; }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 52px;
+      padding: 9px max(14px, calc((100vw - 1180px) / 2));
+      border-bottom: 1px solid rgba(24, 32, 29, 0.12);
+      background: rgba(243, 245, 244, 0.96);
+      backdrop-filter: blur(12px);
+    }
+    .toolbar strong { min-width: 0; flex: 1 1 auto; font-size: 14px; }
+    .toolbar a {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 26px 0 72px; }
+    section { scroll-margin-top: 70px; padding: 38px 0; border-top: 1px solid var(--line); }
+    section:first-of-type { border-top: 0; }
+    .eyebrow { margin: 0 0 10px; color: var(--green); font-size: 12px; font-weight: 900; }
+    h1 { max-width: 900px; margin: 0; font-size: 38px; line-height: 1.18; }
+    h2 { margin: 0; font-size: 27px; line-height: 1.25; }
+    h3 { margin: 0; font-size: 17px; line-height: 1.4; }
+    .lead { max-width: 900px; margin: 16px 0 0; color: #48514d; font-size: 17px; line-height: 1.75; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 22px; margin-bottom: 22px; }
+    .section-head p { max-width: 680px; margin: 8px 0 0; color: var(--muted); line-height: 1.65; }
+
+    .quick-nav {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .quick-nav a {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 28px; }
+    .metric { min-width: 0; padding: 18px; border-top: 4px solid var(--green); background: var(--paper); }
+    .metric:nth-child(2) { border-color: var(--blue); }
+    .metric:nth-child(3) { border-color: var(--amber); }
+    .metric:nth-child(4) { border-color: var(--coral); }
+    .metric b { display: block; font-size: 27px; }
+    .metric span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .verdict {
+      margin-top: 24px;
+      padding: 20px 22px;
+      border-left: 5px solid var(--green);
+      background: var(--green-soft);
+    }
+    .verdict strong { display: block; margin-bottom: 7px; font-size: 18px; }
+    .verdict p { margin: 0; line-height: 1.7; }
+
+    .two-axis { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .axis { padding: 22px; background: var(--paper); border-top: 4px solid var(--blue); }
+    .axis:last-child { border-color: var(--coral); }
+    .axis p { margin: 8px 0 0; color: var(--muted); line-height: 1.65; }
+    .axis ul { margin: 16px 0 0; padding-left: 20px; }
+    .axis li { margin: 7px 0; line-height: 1.5; }
+
+    .filter-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 16px; }
+    .filter-row button {
+      min-height: 36px;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .filter-row button[aria-pressed="true"] { border-color: var(--green); background: var(--green); color: #fff; }
+    .coverage-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .coverage-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .coverage-card[hidden] { display: none; }
+    .coverage-top { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .status {
+      flex: 0 0 auto;
+      padding: 4px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .status.strong { background: var(--green-soft); color: var(--green); }
+    .status.partial { background: var(--amber-soft); color: var(--amber); }
+    .status.weak { background: var(--blue-soft); color: var(--blue); }
+    .status.empty { background: var(--coral-soft); color: var(--coral); }
+    .meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 14px 0; }
+    .meter i { height: 5px; background: var(--gray-soft); }
+    .meter i.on { background: var(--green); }
+    .meter.partial i.on { background: var(--amber); }
+    .meter.weak i.on { background: var(--blue); }
+    .coverage-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .coverage-card .gap { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--ink); }
+
+    .pattern-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .pattern { padding: 18px; border-top: 3px solid var(--blue); background: var(--paper); }
+    .pattern:nth-child(2n) { border-color: var(--green); }
+    .pattern:nth-child(3n) { border-color: var(--coral); }
+    .pattern p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .pattern b { display: block; margin-top: 12px; color: var(--blue); font-size: 12px; }
+
+    .travel-intro { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 26px; align-items: start; }
+    .travel-promise { padding: 22px 0; border-top: 4px solid var(--green); border-bottom: 1px solid var(--line); }
+    .travel-promise strong { display: block; font-size: 21px; line-height: 1.5; }
+    .travel-promise p { margin: 12px 0 0; color: var(--muted); line-height: 1.7; }
+    .travel-map { display: grid; gap: 10px; }
+    .travel-flow { position: relative; padding: 18px 18px 18px 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .travel-flow::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--blue); border-radius: 8px 0 0 8px; }
+    .travel-flow:nth-child(2)::before { background: var(--green); }
+    .travel-flow:nth-child(3)::before { background: var(--amber); }
+    .travel-flow:nth-child(4)::before { background: var(--coral); }
+    .travel-flow .meta { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .travel-flow .result { margin: 9px 0 0; color: var(--ink); font-size: 13px; font-weight: 800; }
+    .travel-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+    .note-band { padding: 18px; background: var(--blue-soft); }
+    .note-band.warn { background: var(--coral-soft); }
+    .note-band ul { margin: 10px 0 0; padding-left: 19px; }
+    .note-band li { margin: 6px 0; font-size: 13px; line-height: 1.5; }
+
+    .candidate-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; counter-reset: candidate; }
+    .candidate { min-width: 0; padding: 19px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); counter-increment: candidate; }
+    .candidate-head { display: grid; grid-template-columns: 34px 1fr; gap: 11px; align-items: start; }
+    .candidate-head::before { content: counter(candidate); display: grid; place-items: center; width: 34px; height: 34px; background: var(--ink); color: #fff; font-weight: 900; }
+    .candidate .chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 12px 0; }
+    .candidate .chips span { padding: 4px 6px; border-radius: 4px; background: var(--gray-soft); font-size: 11px; font-weight: 800; }
+    .candidate p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .candidate .next { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--ink); }
+
+    .gap-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .scout-gap { padding: 17px; border-top: 3px solid var(--amber); background: var(--paper); }
+    .scout-gap p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+
+    .sequence { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+    .sequence div { position: relative; min-width: 0; padding: 15px; border-top: 3px solid var(--green); background: var(--paper); }
+    .sequence b { display: block; margin-bottom: 5px; color: var(--green); font-size: 12px; }
+    .sequence span { font-size: 13px; line-height: 1.5; }
+
+    .decision-list { display: grid; gap: 8px; }
+    .decision { display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    .decision b { color: var(--coral); }
+    .decision p { margin: 0; line-height: 1.65; }
+
+    .source-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .source-list a { padding: 13px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); font-size: 13px; font-weight: 800; text-decoration: none; }
+    footer { padding: 26px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+    @media (max-width: 860px) {
+      h1 { font-size: 31px; }
+      .metrics, .coverage-grid, .pattern-grid, .gap-grid { grid-template-columns: 1fr 1fr; }
+      .travel-intro { grid-template-columns: 1fr; }
+      .sequence { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sequence div:last-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 620px) {
+      main { width: min(100% - 22px, 1180px); padding-top: 18px; }
+      section { padding: 30px 0; }
+      h1 { font-size: 28px; line-height: 1.24; }
+      h2 { font-size: 23px; }
+      .lead { font-size: 15px; line-height: 1.7; }
+      .section-head { display: block; }
+      .quick-nav { grid-template-columns: 1fr 1fr; }
+      .quick-nav a:last-child { grid-column: 1 / -1; }
+      .metrics, .two-axis, .coverage-grid, .pattern-grid, .travel-notes, .candidate-grid, .gap-grid, .source-list { grid-template-columns: 1fr; }
+      .metric { padding: 15px; }
+      .metric b { font-size: 24px; }
+      .coverage-card, .candidate, .travel-flow { padding: 16px; }
+      .travel-flow { padding-left: 21px; }
+      .sequence { grid-template-columns: 1fr; }
+      .sequence div:last-child { grid-column: auto; }
+      .decision { grid-template-columns: 1fr; gap: 5px; }
+      .toolbar strong { display: block; max-width: calc(100vw - 110px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    }
+
+    @media print {
+      .toolbar, .filter-row, .quick-nav { display: none; }
+      body { background: #fff; }
+      main { width: 100%; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <strong>FlowMe 콘텐츠 커버리지 · 2026-07-11</strong>
+    <a href="./2026-07-11-flowme-content-category-coverage-review-ko.md">근거 문서</a>
+  </div>
+
+  <main>
+    <section id="summary">
+      <p class="eyebrow">기획 검토안 · 앱/seed 변경 없음</p>
+      <h1>카테고리는 이미 있었다.<br>앱까지 이어진 생활 계획이 부족했다.</h1>
+      <p class="lead">여행을 새로 생각해낸 것이 아니다. 2026-05 taxonomy와 2026-07 소스 조사에는 이미 여행 후보가 있었지만, 현재 카탈로그는 이사·학습·육아·구매에 편중돼 있다. 이번 검토는 새 규칙을 만드는 작업이 아니라, 기존 gate를 통과한 콘텐츠 중 비어 있는 생활 문제를 채우는 포트폴리오 재설계다.</p>
+
+      <nav class="quick-nav" aria-label="문서 바로가기">
+        <a href="#coverage">현재 커버리지</a>
+        <a href="#patterns">계획 방식</a>
+        <a href="#travel">여행 설계</a>
+        <a href="#portfolio">다음 6개</a>
+        <a href="#next">다음 작업</a>
+      </nav>
+
+      <div class="metrics" aria-label="현재 카탈로그 요약">
+        <div class="metric"><b>12</b><span>현재 `/flows` 구성<br>Map 11 + 단일 Flow 1</span></div>
+        <div class="metric"><b>7</b><span>대표·후보 Map<br>이사 중복 포함</span></div>
+        <div class="metric"><b>4</b><span>revise 또는 park Map<br>완성도 보강 필요</span></div>
+        <div class="metric"><b>4/9</b><span>완전히 빈 생활 영역<br>여행·식사·커리어·취미/반려</span></div>
+      </div>
+
+      <div class="verdict">
+        <strong>핵심 판정</strong>
+        <p>Source-to-Flow 규칙은 유지한다. 후보 선정 단계에만 <b>생활 영역 커버리지</b>와 <b>새 계획 방식 여부</b>를 추가한다. 첫 확장 영역은 여행이며, 준비물·공식 절차·국가별 등록·일자별 코스를 한 Flow에 섞지 않고 각각의 child Flow로 둔다.</p>
+      </div>
+    </section>
+
+    <section id="axes">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">중복 규칙 방지</p>
+          <h2>카테고리와 변환 방식을 분리한다</h2>
+          <p>2026-05 taxonomy는 source scout용으로 유지한다. 이번 층은 변환 규칙을 대체하지 않고, 어떤 생활 문제를 먼저 채울지 판단한다.</p>
+        </div>
+      </div>
+      <div class="two-axis">
+        <div class="axis">
+          <h3>축 A · 생활 영역</h3>
+          <p>사용자가 무엇을 찾는지 답한다. 앱 탐색·검색·포트폴리오 커버리지에 사용한다.</p>
+          <ul>
+            <li>여행·외출, 집·살림, 가족·육아</li>
+            <li>식사·장보기, 공부·독서, 건강·운동</li>
+            <li>돈·서류·구매, 일·커리어, 취미·반려</li>
+          </ul>
+        </div>
+        <div class="axis">
+          <h3>축 B · 계획 방식</h3>
+          <p>원문이 어떤 실행물로 바뀌는지 답한다. 기존 conversion playbook과 export 규칙에 사용한다.</p>
+          <ul>
+            <li>날짜 역산, 순서형 절차, 반복 루틴</li>
+            <li>표/파일, 자료 큐, 비교/결정</li>
+            <li>calendar, checklist, sheet, memo 결과</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="coverage">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">현재 앱 기준</p>
+          <h2>9개 생활 영역 커버리지</h2>
+          <p>점수는 사용 검증 점수가 아니다. 현재 카탈로그에 대표/후보가 있는지, revise/park만 있는지, 같은 생활 문제가 중복되는지를 표시한 기획용 상태다.</p>
+        </div>
+      </div>
+
+      <div class="filter-row" role="group" aria-label="커버리지 필터">
+        <button type="button" data-filter="all" aria-pressed="true">전체 9</button>
+        <button type="button" data-filter="strong" aria-pressed="false">강함</button>
+        <button type="button" data-filter="partial" aria-pressed="false">부분</button>
+        <button type="button" data-filter="weak" aria-pressed="false">약함</button>
+        <button type="button" data-filter="empty" aria-pressed="false">비어 있음</button>
+      </div>
+
+      <div class="coverage-grid" id="coverage-grid">
+        <article class="coverage-card" data-status="strong">
+          <div class="coverage-top"><h3>집·살림</h3><span class="status strong">강함 3/3</span></div>
+          <div class="meter"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+          <p>이사 대표 Map, curated 이사, 전세계약 단일 Flow가 있다.</p>
+          <p class="gap"><b>빈칸:</b> 이사 중복을 줄이고 가전·계절 관리와 자취 시작을 보강해야 한다.</p>
+        </article>
+        <article class="coverage-card" data-status="partial">
+          <div class="coverage-top"><h3>가족·육아</h3><span class="status partial">부분 2/3</span></div>
+          <div class="meter partial"><i class="on"></i><i class="on"></i><i></i></div>
+          <p>이유식은 후보, 예방접종은 revise, 펀맘은 park다.</p>
+          <p class="gap"><b>빈칸:</b> 입학·방학·가족 일정과 첨부파일/source row 완성도가 부족하다.</p>
+        </article>
+        <article class="coverage-card" data-status="strong">
+          <div class="coverage-top"><h3>공부·독서</h3><span class="status strong">강함 3/3</span></div>
+          <div class="meter"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+          <p>중1 수학, 오픽, 독서 루틴이 서로 다른 학습 모양을 보여준다.</p>
+          <p class="gap"><b>빈칸:</b> 독서는 revise이며, 과목별 실제 진도 row의 폭은 아직 좁다.</p>
+        </article>
+        <article class="coverage-card" data-status="partial">
+          <div class="coverage-top"><h3>돈·서류·구매</h3><span class="status partial">부분 2/3</span></div>
+          <div class="meter partial"><i class="on"></i><i class="on"></i><i></i></div>
+          <p>신차 구매와 전세계약은 있지만 갱신·만료·연간 행정이 없다.</p>
+          <p class="gap"><b>빈칸:</b> 면허 갱신, 연말정산, 지원금/신고처럼 기한이 선명한 공식 Flow.</p>
+        </article>
+        <article class="coverage-card" data-status="weak">
+          <div class="coverage-top"><h3>건강·운동</h3><span class="status weak">약함 1/3</span></div>
+          <div class="meter weak"><i class="on"></i><i></i><i></i></div>
+          <p>홈트 Map은 revise이고 단계형 운동 프로그램은 노출되지 않는다.</p>
+          <p class="gap"><b>빈칸:</b> 5km 8주처럼 source row가 있는 프로그램과 공식 검진 일정.</p>
+        </article>
+        <article class="coverage-card" data-status="empty">
+          <div class="coverage-top"><h3>여행·외출</h3><span class="status empty">비어 있음 0/3</span></div>
+          <div class="meter"><i></i><i></i><i></i></div>
+          <p>seed와 source scout에는 흔적이 있지만 현재 통합 카탈로그 Map은 0개다.</p>
+          <p class="gap"><b>첫 보강:</b> 준비물 + 공식 출국 순서. 이후 목적지별 입국과 일자별 코스.</p>
+        </article>
+        <article class="coverage-card" data-status="empty">
+          <div class="coverage-top"><h3>식사·장보기</h3><span class="status empty">비어 있음 0/3</span></div>
+          <div class="meter"><i></i><i></i><i></i></div>
+          <p>이유식은 있지만 일반 사용자의 주간 식사·도시락·장보기는 없다.</p>
+          <p class="gap"><b>첫 보강:</b> 실제 요일/메뉴 row가 있는 일주일 도시락 식단표.</p>
+        </article>
+        <article class="coverage-card" data-status="empty">
+          <div class="coverage-top"><h3>일·커리어</h3><span class="status empty">비어 있음 0/3</span></div>
+          <div class="meter"><i></i><i></i><i></i></div>
+          <p>면접·입사·이직·사업 시작 후보는 scout에만 있다.</p>
+          <p class="gap"><b>첫 보강:</b> 면접 전날처럼 짧고 완료 기준이 분명한 체크리스트.</p>
+        </article>
+        <article class="coverage-card" data-status="empty">
+          <div class="coverage-top"><h3>취미·반려</h3><span class="status empty">비어 있음 0/3</span></div>
+          <div class="meter"><i></i><i></i><i></i></div>
+          <p>반려 접종·입양 첫 주·창작 챌린지 후보는 있으나 앱 대표가 없다.</p>
+          <p class="gap"><b>첫 보강:</b> 공식/전문 row가 있는 반려 일정 또는 source prompt가 있는 챌린지.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="patterns">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">기존 playbook의 포트폴리오 표현</p>
+          <h2>생활 콘텐츠를 소화하는 6가지 방식</h2>
+          <p>카테고리가 달라도 원문 모양과 결과물이 같으면 같은 앱 surface를 재사용한다.</p>
+        </div>
+      </div>
+      <div class="pattern-grid">
+        <article class="pattern"><h3>날짜를 향해 준비</h3><p>D-day, 월, 주차 row를 날짜로 옮긴다. 세부 설명은 메모로 둔다.</p><b>이사 · 결혼 · 시험 · 출국</b></article>
+        <article class="pattern"><h3>순서대로 진행</h3><p>공식 절차나 구매 단계를 순서형 체크로 보존한다.</p><b>신차 · 출국 당일 · 사업자등록</b></article>
+        <article class="pattern"><h3>주기적으로 반복</h3><p>원문 주기를 반복 일정 하나로 만들고 방법/링크를 메모에 둔다.</p><b>필터 청소 · 홈트 · 물주기</b></article>
+        <article class="pattern"><h3>표의 행을 따라가기</h3><p>XLSX/PDF/표의 행이나 행 묶음이 일정 또는 시트가 된다.</p><b>이유식 · 식단 · 학습 진도</b></article>
+        <article class="pattern"><h3>자료를 하나씩 실행</h3><p>영상·도안·글 title/URL row를 하루 하나의 자료로 배치한다.</p><b>홈트 playlist · 펀맘 · 독서 자료</b></article>
+        <article class="pattern"><h3>비교하고 결정</h3><p>후보와 판단 기준은 체크, 가격·상태·보류 이유는 메모로 둔다.</p><b>자동차 · 웨딩 업체 · 계약</b></article>
+      </div>
+    </section>
+
+    <section id="travel">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">첫 번째 빈 영역</p>
+          <h2>여행은 하나의 거대한 Flow가 아니라 Map이다</h2>
+          <p>한 원문이 한 child Flow의 구조를 책임지고, 사용자는 필요한 Flow만 저장한다. Map은 서로 다른 출처를 섞어 새 완벽 가이드를 만드는 곳이 아니다.</p>
+        </div>
+      </div>
+
+      <div class="travel-intro">
+        <div class="travel-promise">
+          <strong>출발일에 맞춰 준비하고, 공항에서는 순서를 바로 열고, 목적지별 절차와 코스를 필요할 때 추가한다.</strong>
+          <p>기본 입력은 출발일이다. 목적지는 국가별 Flow를 고를 때만 필요하다. 항공편·숙소·예약번호는 필수 form이 아니라 개인 메모다.</p>
+        </div>
+        <div class="travel-map" aria-label="해외여행 준비 Flow Map 예시">
+          <article class="travel-flow">
+            <h3>1. 해외여행 준비물 체크</h3>
+            <p class="meta">Primary source · KKday 2026 준비물 체크리스트 · source checklist rows</p>
+            <p class="result">결과: checklist + 원문 링크</p>
+          </article>
+          <article class="travel-flow">
+            <h3>2. 공항 출국 순서</h3>
+            <p class="meta">Primary source · 찾기쉬운 생활법령정보 · 공식 8단계</p>
+            <p class="result">결과: 출국 당일 ordered checklist</p>
+          </article>
+          <article class="travel-flow">
+            <h3>3. 일본 입국 등록</h3>
+            <p class="meta">Primary source · Visit Japan Web 공식 · source import required</p>
+            <p class="result">결과: 공식 row 확보 뒤 별도 Flow</p>
+          </article>
+          <article class="travel-flow">
+            <h3>4. 목적지별 3박 4일 일정</h3>
+            <p class="meta">Primary source · 실제 일자별 여행 코스 1개 · 새 scout 필요</p>
+            <p class="result">결과: day-by-day calendar</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="travel-notes">
+        <div class="note-band">
+          <h3>사용자가 입력하는 것</h3>
+          <ul>
+            <li>출발일, 필요한 경우 목적지</li>
+            <li>개인 항공편·숙소·예약번호는 메모</li>
+            <li>저장 뒤 포함할 child Flow 선택</li>
+          </ul>
+        </div>
+        <div class="note-band warn">
+          <h3>FlowMe가 만들지 않는 것</h3>
+          <ul>
+            <li>원문 없는 호텔·항공권 예약 Step</li>
+            <li>준비·비자·보험·일정·기록을 합친 mega Flow</li>
+            <li>후기/명소 글을 억지로 만든 일정표</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="portfolio">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">source row 우선 검토 묶음</p>
+          <h2>다음 6개 포트폴리오 후보</h2>
+          <p>즉시 앱에 넣는 목록이 아니다. 기존 demand/conversion/community 평가를 유지한 채, 현재 비어 있는 영역과 새 계획 모양을 채우는 후보만 뽑았다.</p>
+        </div>
+      </div>
+
+      <div class="candidate-grid">
+        <article class="candidate">
+          <div class="candidate-head"><h3>해외여행 준비 Map</h3></div>
+          <div class="chips"><span>SCOUT-051 + 054</span><span>여행·외출</span><span>checklist</span></div>
+          <p>준비물 원문과 공식 출국 8단계를 서로 다른 child Flow로 보존한다.</p>
+          <p class="next"><b>다음:</b> 두 원문의 row를 분리 추출하고 광고/상품 CTA를 source detail로만 둔다.</p>
+        </article>
+        <article class="candidate">
+          <div class="candidate-head"><h3>일주일 도시락 식단표</h3></div>
+          <div class="chips"><span>SCOUT-075</span><span>식사·장보기</span><span>table</span></div>
+          <p>요일별 메뉴가 주간 sheet와 식사 일정으로 이동하는지 검증한다.</p>
+          <p class="next"><b>다음:</b> 실제 메뉴 row를 확인하고 원문에 없는 장보기/조리 행동은 추가하지 않는다.</p>
+        </article>
+        <article class="candidate">
+          <div class="candidate-head"><h3>면접 전날 체크리스트</h3></div>
+          <div class="chips"><span>SCOUT-091</span><span>일·커리어</span><span>D-1 check</span></div>
+          <p>짧은 기한과 완료 상태가 분명해 새로운 생활 영역을 적은 UI 부담으로 채운다.</p>
+          <p class="next"><b>다음:</b> 원문 체크 항목과 실제 완료 기준만 추출한다.</p>
+        </article>
+        <article class="candidate">
+          <div class="candidate-head"><h3>운전면허 갱신·적성검사</h3></div>
+          <div class="chips"><span>SCOUT-044</span><span>돈·서류</span><span>official</span></div>
+          <p>기한, 면허 종류, 준비물처럼 사용자가 옮겨 적는 공식 정보를 다룬다.</p>
+          <p class="next"><b>다음:</b> 면허 종류별 분기를 source row와 최소 setup 값으로 정리한다.</p>
+        </article>
+        <article class="candidate">
+          <div class="candidate-head"><h3>에어컨 필터 청소</h3></div>
+          <div class="chips"><span>SCOUT-086</span><span>집·살림</span><span>repeat</span></div>
+          <p>이사에 편중된 집 카테고리에 제조사 기반 반복 관리 패턴을 추가한다.</p>
+          <p class="next"><b>다음:</b> 제조사 주기와 모델 공통 row만 추출하고 모델별 전문 진단은 만들지 않는다.</p>
+        </article>
+        <article class="candidate">
+          <div class="candidate-head"><h3>5km 달리기 8주 프로그램</h3></div>
+          <div class="chips"><span>SCOUT-065</span><span>건강·운동</span><span>8-week</span></div>
+          <p>영상 한 개 반복이 아닌 source-defined 단계형 운동 프로그램을 검증한다.</p>
+          <p class="next"><b>다음:</b> 8주 훈련 row와 회차를 그대로 calendar/progress sheet로 옮긴다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="scout-gaps">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">기존 100개 밖의 부족한 영역</p>
+          <h2>다음 source scout가 찾아야 할 것</h2>
+          <p>이름만 그럴듯한 주제가 아니라 실제 날짜, row, 표, 파일, 영상 목록이 있는 소스를 찾는다.</p>
+        </div>
+      </div>
+      <div class="gap-grid">
+        <article class="scout-gap"><h3>실제 여행 일정표</h3><p>1일차/2일차/3일차가 있는 국내·해외 코스. 준비물 글과 분리한다.</p></article>
+        <article class="scout-gap"><h3>가족 행사</h3><p>생일, 돌잔치, 집들이, 명절처럼 날짜와 준비 row가 있는 체크리스트.</p></article>
+        <article class="scout-gap"><h3>정기 생활비·만료</h3><p>공과금, 보험·구독 갱신, 연간 서류의 공식 날짜 또는 실제 템플릿.</p></article>
+        <article class="scout-gap"><h3>학기·방학</h3><p>학교/기관 공식 일정이나 실제 활동표가 있는 소스.</p></article>
+        <article class="scout-gap"><h3>반려 생활</h3><p>입양 첫 주, 접종, 미용/구충처럼 전문 source row가 분명한 일정.</p></article>
+        <article class="scout-gap"><h3>주말 프로젝트</h3><p>집 정리, 셀프 페인팅, 사진 정리의 준비-실행-마무리 row.</p></article>
+      </div>
+    </section>
+
+    <section id="next">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">현재 P22 상황 반영</p>
+          <h2>준비는 넓게, 앱 반영은 3~4개만</h2>
+          <p>실제 반복 사용자 관찰이 남아 있으므로 source 확보는 병행하되, 카탈로그를 한 번에 늘리지 않는다.</p>
+        </div>
+      </div>
+
+      <div class="sequence" aria-label="다음 작업 순서">
+        <div><b>1</b><span>여행 원문과 일자별 코스 후보 다시 열기</span></div>
+        <div><b>2</b><span>6개 후보 source row 추출</span></div>
+        <div><b>3</b><span>기존 Conversion Gate 적용</span></div>
+        <div><b>4</b><span>모바일 review HTML로 전체 데이터 확인</span></div>
+        <div><b>5</b><span>여행·식사·커리어 3개 우선 handoff</span></div>
+      </div>
+
+      <div class="decision-list" style="margin-top: 24px;">
+        <div class="decision"><b>지금 결정</b><p>여행을 첫 빈 영역으로 source row 추출까지 진행할지.</p></div>
+        <div class="decision"><b>나중 결정</b><p>9개 생활 영역을 실제 상위 카테고리 UI로 노출할지는 사용자 관찰과 카드 수가 늘어난 뒤 정한다.</p></div>
+        <div class="decision"><b>추천 범위</b><p>첫 breadth canary는 여행 + 식사 + 커리어 3개. 공식 행정 또는 가전을 네 번째 비교군으로 둔다.</p></div>
+      </div>
+
+      <div class="source-list">
+        <a href="./2026-05-31-flowme-category-taxonomy.md">기존 카테고리 taxonomy</a>
+        <a href="./2026-07-04-web-source-scout-category-review-ko.md">100개 웹 소스 스카우트</a>
+        <a href="./2026-07-04-web-source-demand-validation-review-ko.md">수요 검증 리뷰</a>
+        <a href="./2026-07-05-web-source-community-creator-loop-review-ko.md">커뮤니티·제작자 루프 리뷰</a>
+        <a href="../flow-rules/source-to-flow-conversion-gate.md">Source-to-Flow Conversion Gate</a>
+        <a href="../flow-rules/content-conversion-playbooks.md">Content Conversion Playbooks</a>
+      </div>
+
+      <footer>
+        이 문서는 포트폴리오 기획안이다. 앱 코드, seed JSON, 실제 Flow/Step/Item 데이터는 변경하지 않았다. 상태 표시는 실제 사용자 검증이 아니라 현재 코드와 source review 상태를 기준으로 한다.
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
+    const coverageCards = Array.from(document.querySelectorAll('.coverage-card'));
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.filter;
+        filterButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        coverageCards.forEach((card) => {
+          card.hidden = filter !== 'all' && card.dataset.status !== filter;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
