@@ -22,6 +22,15 @@
       "screenshots/review-board-wide.png"
     ]
   },
+  "reviewHandoffVerification": {
+    "evidenceKind": "current_command",
+    "p24RegressionPassed": 14,
+    "p24RegressionTotal": 14,
+    "hostProcessTimeZone": "UTC",
+    "browserTimeZone": "Asia/Seoul",
+    "appRuntimeSourceChanged": false,
+    "testHarnessChanged": true
+  },
   "status": {
     "packageReady": true,
     "codexReviewExecuted": false,

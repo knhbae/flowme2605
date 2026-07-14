@@ -2,9 +2,11 @@
 
 **상태:** 전달 준비 완료, 검토·관찰 미실행<br>
 **공개 서비스:** <https://flowme2605.vercel.app><br>
+**검토 PR:** <https://github.com/knhbae/flowme2605/pull/127><br>
 **공개 확인:** 2026-07-14 19:04 KST, 대표 route 5/5 익명 HTTP 200<br>
 **준비 기준:** e56afde5028728cace6613efb19b2f74c45cfa96<br>
 **앱 runtime 기준:** d6487a0d3352de358320b15ceeacd8b5405eb04e<br>
+**현재 회귀 확인:** P24 E2E 14/14, UTC host + Asia/Seoul browser timezone<br>
 **실제 사용자 관찰:** 0 / 15
 
 이 디렉터리는 P24를 다시 설명하지 않고 바로 검토를 시작할 수 있게 산출물, 운영 URL, 검토 질문, 역할별 프롬프트를 한곳에 모은다. 자동 QA, 에이전트의 휴리스틱 평가, 실제 사용자 관찰을 서로 다른 증거로 유지한다.
@@ -75,3 +77,4 @@ Claude Design 원본은 GitHub의 [FlowMe UXUI 전체 검토 (8).zip](https://gi
 5. P24-00C에서 관찰 발화와 행동을 기준으로 keep / change / defer / blocking을 확정한다.
 
 이 패키지 작성으로 앱 코드나 제품 동작은 변경되지 않았다.
+GitHub UTC runner에서도 한국 사용자 날짜를 동일하게 검증하도록 P24 E2E의 브라우저 timezone만 `Asia/Seoul`로 명시했다.

@@ -54,6 +54,8 @@ async function captureWithoutPlatformChrome(
 }
 
 test.describe('P24 execution trust regressions', () => {
+  test.use({ timezoneId: 'Asia/Seoul' });
+
   test('KST morning uses the local calendar day for a new schedule default', async ({ page }) => {
     test.setTimeout(120_000);
     const consoleErrors: string[] = [];
