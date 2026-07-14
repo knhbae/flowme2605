@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
+  buildMyFlowMultiStepIcs,
   buildMyFlowStepPortableText,
   buildMyFlowStepSheetTsv,
   canBuildMyFlowStepIcs,
@@ -106,6 +107,41 @@ test('Step ICS creates all-day event when time is empty', () => {
   assert.match(ics, /DTSTART;VALUE=DATE:20260624/);
   assert.match(ics, /DTEND;VALUE=DATE:20260625/);
   assert.doesNotMatch(ics, /DTSTART:20260624T/);
+});
+
+test('scoped Flow ICS combines unique dated items without changing their UIDs', () => {
+  const ics = buildMyFlowMultiStepIcs([
+    baseInput,
+    {
+      ...baseInput,
+      stepId: 'packing-list',
+      stableEventIdentitySeed: 'flow::packing-list',
+      stepTitle: '포장 목록 확인',
+      date: '2026-06-25',
+      time: '',
+      repeatPreset: '',
+    },
+    {
+      ...baseInput,
+      stepId: 'packing-list-duplicate',
+      stableEventIdentitySeed: 'flow::packing-list',
+      stepTitle: '중복 포장 목록',
+      date: '2026-06-26',
+    },
+    {
+      ...baseInput,
+      stepId: 'undated',
+      stableEventIdentitySeed: 'flow::undated',
+      stepTitle: '날짜 없는 준비',
+      date: '',
+    },
+  ]).replaceAll('\r\n ', '');
+
+  assert.equal(ics.match(/BEGIN:VEVENT/g)?.length, 2);
+  assert.match(ics, /SUMMARY:이사 방식과 견적 후보 정하기/);
+  assert.match(ics, /SUMMARY:포장 목록 확인/);
+  assert.doesNotMatch(ics, /중복 포장 목록|날짜 없는 준비/);
+  assert.match(ics, /UID:flow::packing-list@flowme\.local/);
 });
 
 test('saved source routine ICS uses one bounded RRULE master event with a stable series UID', () => {

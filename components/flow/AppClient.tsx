@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } 
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { CalendarUnscheduledTray } from './CalendarUnscheduledTray';
+import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 import { MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
@@ -28,11 +29,16 @@ import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } fro
 import {
   buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
+  buildMyFlowMultiStepIcs,
   buildMyFlowStepPortableText,
   buildMyFlowStepSheetTsv,
   canBuildMyFlowStepIcs,
   type MyFlowPortableStepExportInput,
 } from '@/lib/flow/my-flow-step-export';
+import {
+  type FlowExportDestination,
+  type FlowExportScopePlan,
+} from '@/lib/flow/export-scope';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { getPublicFlowIndexingPolicy } from '@/lib/flow/route-indexing-policy';
 import {
@@ -87,7 +93,10 @@ import {
   buildPersonalDraftProjectionValueOverlays,
   getPersonalDraftProjectionValueKey,
 } from '@/lib/flow/personal-draft-projection-state';
-import { buildPersonalStructuralListExportArtifacts } from '@/lib/flow/personal-structural-list-export';
+import {
+  buildPersonalStructuralListExportArtifactsFromRows,
+  type PersonalStructuralListExportRow,
+} from '@/lib/flow/personal-structural-list-export';
 import {
   buildPersonalDraftStructuralProjection,
   type PersonalStructuralProjectionResult,
@@ -3062,6 +3071,19 @@ type MySavedFlow = {
   demoNote?: string;
 };
 
+type MyFlowExportPanelState = {
+  flowSlug: string;
+  scope: 'flow' | 'selected';
+  selectedKeys: string[];
+};
+
+type MyFlowScopeExportItem = {
+  key: string;
+  panelItem: FlowExportPanelItem;
+  listRow: PersonalStructuralListExportRow;
+  portableInput: MyFlowPortableStepExportInput;
+};
+
 type MyFlowPersonalCopySettingsDraft = {
   flowSlug: string;
   title: string;
@@ -4673,6 +4695,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowUnscheduledSelection, setMyFlowUnscheduledSelection] = useState<string[]>([]);
   const [myFlowUnscheduledTargetDate, setMyFlowUnscheduledTargetDate] = useState('');
   const [myFlowCalendarScheduleUndo, setMyFlowCalendarScheduleUndo] = useState<MyFlowCalendarScheduleUndo | null>(null);
+  const [myFlowExportPanel, setMyFlowExportPanel] = useState<MyFlowExportPanelState | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
@@ -6283,39 +6306,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const copyMyFlowStepSheetRow = async (input: MyFlowPortableStepExportInput, key: string) => {
     await copyMyFlowStepText(buildMyFlowStepSheetTsv(input), key, '시트 행 복사됨');
   };
-  const getMyFlowPersonalDraftListExport = (flow: MySavedFlow) => {
-    if (!flow.structuralProjection || !isPersonalDraftStructuralEditEligible(flow.bundle)) {
-      return undefined;
-    }
-    return buildPersonalStructuralListExportArtifacts({
-      flowTitle: getMyFlowExecutionFlowTitle(flow.progress.title),
-      projection: flow.structuralProjection,
-      sourceLabel: toUserFacingSourceTitle(flow.bundle.flow.source_title ?? ''),
-      sourceUrl: flow.bundle.flow.source_url,
-    });
-  };
-  const copyMyFlowPersonalDraftListExport = async (
-    flow: MySavedFlow,
-    destination: 'memo' | 'checklist' | 'sheet',
-  ) => {
-    const artifact = getMyFlowPersonalDraftListExport(flow);
-    if (!artifact) return;
-    const output = destination === 'memo'
-      ? artifact.memoText
-      : destination === 'checklist'
-        ? artifact.checklistText
-        : artifact.sheetTsv;
-    const feedback = destination === 'memo'
-      ? FLOW_EXPORT_FEEDBACK.memoCopied
-      : destination === 'checklist'
-        ? '체크리스트 복사됨'
-        : '시트로 복사됨';
-    await copyMyFlowStepText(
-      output,
-      `personal-draft-list-export::${flow.progress.slug}`,
-      feedback,
-    );
-  };
   const downloadMyFlowStepCalendar = (input: MyFlowPortableStepExportInput, key: string, fileBase: string) => {
     if (!canBuildMyFlowStepIcs(input)) return;
     const ics = buildMyFlowStepIcs(input);
@@ -7517,7 +7507,146 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             date: dateResolution.date,
           }
         : {}),
-    };
+      };
+  };
+
+  const getMyFlowScopeExportItems = (flow: MySavedFlow): MyFlowScopeExportItem[] => {
+    const flowTitle = getMyFlowPortableExportFlowTitle(flow);
+    const sourceLabel = toUserFacingSourceTitle(flow.bundle.flow.source_title ?? '');
+    const sourceUrl = flow.bundle.flow.source_url;
+    const sourceRef = [sourceLabel, sourceUrl].filter(Boolean).join(' ');
+
+    return flow.rows.map((baseRow, index) => {
+      const row = getMyFlowRowForFlowTab(flow, baseRow);
+      const detail = getMyFlowRowDisplayDetail(row);
+      const committedDraft = getMyFlowRowDraft(row);
+      const title = getMyFlowRowDisplayTitle(row);
+      const primaryLink = detail.links?.[0];
+      const stableItemId = row.structuralProjectionStableId ?? baseStateId(row.id);
+      const key = `${flow.progress.slug}::${stableItemId}`;
+      const date = row.date ?? '';
+      const time = row.structuralScheduleProjection?.startTime ?? committedDraft.time ?? '';
+      const durationMinutes = time
+        ? row.structuralScheduleProjection?.durationMinutes ?? committedDraft.durationMinutes
+        : undefined;
+      const memo = committedDraft.memo ?? (
+        row.structuralOwnership === 'user_created' ? detail.why ?? '' : ''
+      );
+      const occurrenceStatus = row.structuralOccurrenceExecutionState;
+      const status: PersonalStructuralListExportRow['status'] =
+        occurrenceStatus === 'done' || occurrenceStatus === 'reopened' || occurrenceStatus === 'skipped' || occurrenceStatus === 'held'
+          ? occurrenceStatus
+          : isItemStateSkipped(flow.itemStates, row.id)
+            ? 'skipped'
+            : isMyFlowRowChecked(flow, row)
+              ? 'done'
+              : 'pending';
+      const calendarEligible = Boolean(date) && (row.structuralCalendarIcsEligible ?? true);
+      const scheduleState: PersonalStructuralListExportRow['scheduleState'] = !date
+        ? 'unscheduled'
+        : time
+          ? 'timed'
+          : 'all_day';
+      const portableInput: MyFlowPortableStepExportInput = {
+        flowTitle,
+        stepId: key,
+        stableEventIdentitySeed: key,
+        stepTitle: title,
+        sectionTitle: getMyFlowRowDisplaySectionLabel(row),
+        ...(date ? { date } : {}),
+        ...(time ? { time } : {}),
+        ...(durationMinutes ? { durationMinutes } : {}),
+        ...(time && row.structuralScheduleProjection?.timeZone
+          ? { timeZone: row.structuralScheduleProjection.timeZone }
+          : {}),
+        ...(row.structuralRepeat
+          ? {
+              personalRecurrence: row.structuralRepeat,
+              personalRecurrenceIdentityNamespace: flow.progress.slug,
+            }
+          : { repeatPreset: committedDraft.repeatPreset ?? '' }),
+        ...(committedDraft.location ? { location: committedDraft.location } : {}),
+        ...(memo ? { memo } : {}),
+        sourceLabel: primaryLink ? toUserFacingSourceTitle(primaryLink.label) : sourceLabel || undefined,
+        sourceUrl: primaryLink?.url ?? sourceUrl,
+        items: getMyFlowDetailChecklistItems(detail),
+        checkedItems: myFlowStepItemChecks[getMyFlowRowInstanceKey(row)] ?? {},
+        completionCriteria: detail.completion_criteria,
+        caution: detail.caution,
+      };
+      const scheduleMeta = [
+        date ? formatMyFlowDisplayDate(date) : '날짜 없음',
+        formatMyFlowTimedScheduleLabel(row.structuralScheduleProjection),
+        status === 'done' ? '완료' : status === 'skipped' ? '건너뜀' : status === 'held' ? '보류' : '',
+      ].filter(Boolean).join(' · ');
+
+      return {
+        key,
+        panelItem: {
+          key,
+          title,
+          calendarEligible,
+          status,
+          meta: scheduleMeta,
+        },
+        listRow: {
+          itemId: key,
+          title,
+          ...(date ? { date } : {}),
+          scheduleState,
+          ...(time ? { time } : {}),
+          ...(durationMinutes ? { durationMinutes } : {}),
+          ...(memo ? { memo } : {}),
+          status,
+          personalOrderRank: row.structuralProjectionOrderRank ?? index,
+          ...(row.structuralOwnership !== 'user_created' && sourceRef ? { sourceRef } : {}),
+        },
+        portableInput,
+      };
+    });
+  };
+
+  const exportMyFlowScope = async (
+    flow: MySavedFlow,
+    destination: FlowExportDestination,
+    plan: FlowExportScopePlan,
+  ) => {
+    const items = getMyFlowScopeExportItems(flow);
+    const destinationKeys = new Set(plan.itemsByDestination[destination].map((item) => item.key));
+    const scopedItems = items.filter((item) => destinationKeys.has(item.key));
+    if (scopedItems.length === 0) return;
+    const exportKey = `my-flow-export::${flow.progress.slug}`;
+
+    if (destination === 'calendar') {
+      const ics = buildMyFlowMultiStepIcs(scopedItems.map((item) => item.portableInput));
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = plan.filenameByDestination.calendar;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      setMyFlowStepDownloadedKey(exportKey);
+      window.setTimeout(() => setMyFlowStepDownloadedKey(''), 1600);
+      return;
+    }
+
+    const artifacts = buildPersonalStructuralListExportArtifactsFromRows({
+      flowTitle: getMyFlowPortableExportFlowTitle(flow),
+      rows: scopedItems.map((item) => item.listRow),
+      sourceLabel: toUserFacingSourceTitle(flow.bundle.flow.source_title ?? ''),
+      sourceUrl: flow.bundle.flow.source_url,
+    });
+    const output = destination === 'memo'
+      ? artifacts.memoText
+      : destination === 'checklist'
+        ? artifacts.checklistText
+        : artifacts.sheetTsv;
+    const feedback = destination === 'memo'
+      ? FLOW_EXPORT_FEEDBACK.memoCopied
+      : destination === 'checklist'
+        ? '체크리스트 복사됨'
+        : '시트로 복사됨';
+    await copyMyFlowStepText(output, exportKey, feedback);
   };
 
   const toggleMyFlowStructureFlow = (flow: MySavedFlow) => {
@@ -9908,7 +10037,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         {shouldCollapsePortableExport ? (
           <details data-testid="my-flow-detail-portable-export" className={isDetailEditing ? 'hidden' : 'mt-3 rounded-md bg-white px-3 py-3'}>
-            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·내 도구</summary>
+            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문 · 이 항목 가져가기</summary>
             {primaryLink ? (
               <a
                 data-testid="my-flow-detail-source-link"
@@ -9921,7 +10050,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
+              <p className="text-xs font-semibold text-slate-700">이 항목 가져가기 · 1개</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {portableExportSummary}
               </span>
@@ -9986,7 +10115,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : (
           <section data-testid="my-flow-detail-portable-export" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
+              <p className="text-xs font-semibold text-slate-700">이 항목 가져가기 · 1개</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {portableExportSummary}
               </span>
@@ -10973,66 +11102,50 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
-  const renderPersonalDraftListExport = (flow: MySavedFlow) => {
-    const artifact = getMyFlowPersonalDraftListExport(flow);
-    if (!artifact) return null;
-    const exportKey = `personal-draft-list-export::${flow.progress.slug}`;
-    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
-    const exportableCount = artifact.memoRows.length;
+  const renderMyFlowExportPanel = (flow: MySavedFlow) => {
+    const items = getMyFlowScopeExportItems(flow);
+    if (items.length === 0) return null;
+    const active = myFlowExportPanel?.flowSlug === flow.progress.slug;
+    const exportKey = `my-flow-export::${flow.progress.slug}`;
+    const flowTitle = getMyFlowPortableExportFlowTitle(flow);
+    const feedback = myFlowStepCopiedKey === exportKey
+      ? myFlowStepCopiedLabel
+      : myFlowStepDownloadedKey === exportKey
+        ? FLOW_EXPORT_FEEDBACK.calendarReady
+        : '';
 
     return (
-      <details
-        data-testid="personal-draft-list-export"
-        className="mt-3 border-t border-slate-200 pt-3"
-      >
-        <summary
-          data-testid="personal-draft-list-export-toggle"
-          className="cursor-pointer text-sm font-semibold text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
-        >
-          이 Flow 가져가기 · {exportableCount}개
-        </summary>
-        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <button
-            type="button"
-            data-testid="personal-draft-copy-memo"
-            aria-label={`${flowTitle} 전체 메모로 복사`}
-            disabled={exportableCount === 0}
-            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'memo')}
-          >
-            메모로 복사
-          </button>
-          <button
-            type="button"
-            data-testid="personal-draft-copy-checklist"
-            aria-label={`${flowTitle} 전체 체크리스트 복사`}
-            disabled={exportableCount === 0}
-            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'checklist')}
-          >
-            체크리스트 복사
-          </button>
-          <button
-            type="button"
-            data-testid="personal-draft-copy-sheet"
-            aria-label={`${flowTitle} 전체 시트로 복사`}
-            disabled={exportableCount === 0}
-            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'sheet')}
-          >
-            시트로 복사
-          </button>
-        </div>
-        {myFlowStepCopiedKey === exportKey ? (
-          <p
-            data-testid="personal-draft-list-export-feedback"
-            className="mt-2 text-xs font-semibold text-emerald-700"
-            role="status"
-          >
-            {myFlowStepCopiedLabel}
-          </p>
-        ) : null}
-      </details>
+      <FlowExportPanel
+        flowTitle={flowTitle}
+        items={items.map((item) => item.panelItem)}
+        open={active}
+        scope={active ? myFlowExportPanel.scope : 'flow'}
+        selectedKeys={active ? myFlowExportPanel.selectedKeys : []}
+        feedback={feedback}
+        legacyPersonalDraft={isPersonalDraftStructuralEditEligible(flow.bundle)}
+        onOpenChange={(open) => {
+          setMyFlowExportPanel(open
+            ? { flowSlug: flow.progress.slug, scope: 'flow', selectedKeys: [] }
+            : null);
+        }}
+        onScopeChange={(scope) => {
+          setMyFlowExportPanel((current) => ({
+            flowSlug: flow.progress.slug,
+            scope,
+            selectedKeys: current?.flowSlug === flow.progress.slug ? current.selectedKeys : [],
+          }));
+        }}
+        onSelectedKeysChange={(selectedKeys) => {
+          setMyFlowExportPanel((current) => ({
+            flowSlug: flow.progress.slug,
+            scope: current?.flowSlug === flow.progress.slug ? current.scope : 'selected',
+            selectedKeys,
+          }));
+        }}
+        onExport={(destination, plan) => {
+          void exportMyFlowScope(flow, destination, plan);
+        }}
+      />
     );
   };
 
@@ -11205,7 +11318,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             + 할 일 추가
           </button>
         )}
-        {renderPersonalDraftListExport(flow)}
       </section>
     );
   };
@@ -11421,6 +11533,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {executionReady && flowExpanded ? renderPersonalDraftStructuralControls(flow) : null}
+        {executionReady ? renderMyFlowExportPanel(flow) : null}
         {flowExpanded ? renderMyFlowExcludedSteps(flow) : null}
       </article>
     );
@@ -11556,6 +11669,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           )}
         </div> : null}
         {executionReady ? renderPersonalDraftStructuralControls(flow) : null}
+        {executionReady ? renderMyFlowExportPanel(flow) : null}
         {executionReady && activeOverviewRow ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
             {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow')}

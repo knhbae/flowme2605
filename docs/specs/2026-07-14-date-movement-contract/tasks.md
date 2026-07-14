@@ -12,5 +12,5 @@
 - [x] Calendar/ICS/list export eligibility 고정
 - [x] 12개 계약 테스트 통과
 - [x] Calendar `날짜 없음` 트레이 연결 (P24-00U3)
-- [ ] export 공통 다중 선택 연결 (P24-00S2)
+- [x] export 공통 다중 선택 연결 (P24-00S2)
 - [ ] 반복 과거 방향 cutover 계약 확장 (후속)

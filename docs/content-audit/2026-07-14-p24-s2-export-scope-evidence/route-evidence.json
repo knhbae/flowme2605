@@ -1,0 +1,93 @@
+{
+  "id": "p24-s2-flow-export-scope",
+  "date": "2026-07-14",
+  "baselineCommit": "8a2d773",
+  "evidenceType": "automated_browser_not_observed_user",
+  "designReference": {
+    "artifact": "FlowMe UXUI 전체 검토 (8) / FlowMe UX 개선안 목업 + 코멘트.dc.html",
+    "section": "D 내보내기 범위",
+    "patternsApplied": [
+      "flow_level_single_entry",
+      "scope_before_destination",
+      "whole_flow_default",
+      "explicit_selected_items",
+      "explicit_single_item_scope",
+      "shared_multi_select"
+    ],
+    "adaptations": [
+      "existing_user_term_가져가기",
+      "inline_compact_panel_instead_of_new_modal"
+    ]
+  },
+  "markers": {
+    "exportScopeContractReady": true,
+    "exportScopeDefault": "flow",
+    "exportScopeSelectedAvailable": true,
+    "itemDetailScopeExplicit": true,
+    "sharedMultiSelectComponent": true,
+    "personalDraftWholeFlowExportVisible": true,
+    "sourceBackedWholeFlowExportVisible": true,
+    "personalDraftWholeFlowItemCount": 3,
+    "personalDraftSelectedListExportItemCount": 2,
+    "personalDraftSelectedCalendarExportItemCount": 1,
+    "sourceBackedSelectedListExportItemCount": 2,
+    "selectedCalendarDuplicateEventCount": 0,
+    "undatedSelectedCalendarEventCount": 0,
+    "excludedDestinationEligibilityCount": 0,
+    "tombstonedDestinationEligibilityCount": 0,
+    "completionStateChangedExportMembershipCount": 0,
+    "skippedStateChangedExportMembershipCount": 0,
+    "exportInternalTermHitCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "verification": {
+    "unit": { "passed": 508, "failed": 0 },
+    "docsCheck": { "passed": true, "requiredFiles": 14, "localLinks": 2136 },
+    "build": { "passed": true, "nextVersion": "15.3.8" },
+    "p24ExecutionTrust": { "passed": 13, "failed": 0 },
+    "urlFirstUserSurface": { "passed": 19, "failed": 0 },
+    "publicShareAndWorkbench": { "passed": 44, "failed": 0 },
+    "legacyMyFlowCalendarExportTargeted": { "passed": 4, "failed": 0 }
+  },
+  "scenarios": [
+    {
+      "id": "personal_draft_selected_mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "URL-first memo draft with three effective items, one dated",
+      "actions": [
+        "open_flow_export",
+        "switch_to_selected_scope",
+        "select_two_items",
+        "copy_checklist",
+        "download_calendar"
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "source_backed_selected_mobile",
+      "route": "/my?demo=source-backed",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "source-backed moving-d30 execution with five effective rows",
+      "actions": [
+        "open_flow_export",
+        "switch_to_selected_scope",
+        "select_two_items",
+        "copy_memo",
+        "open_single_item_detail"
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "personal_draft_whole_wide",
+      "route": "/my",
+      "viewport": { "width": 1024, "height": 768 },
+      "fixture": "same persisted personal draft",
+      "actions": ["open_flow_export", "keep_whole_flow_default"],
+      "result": "pass"
+    }
+  ]
+}

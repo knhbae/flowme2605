@@ -1263,7 +1263,7 @@ test('personal draft structural list exports share effective items across checkl
     destination: 'memo' | 'checklist' | 'sheet',
   ) => {
     const panel = flow.getByTestId('personal-draft-list-export');
-    if (!(await panel.evaluate((element) => (element as HTMLDetailsElement).open))) {
+    if (!(await panel.getByTestId('my-flow-export-panel').count())) {
       await panel.getByTestId('personal-draft-list-export-toggle').click();
     }
     await page.evaluate(() => navigator.clipboard.writeText(''));
@@ -1544,7 +1544,7 @@ test('personal draft user-created item date can be set, moved, and removed acros
     destination: 'memo' | 'checklist' | 'sheet',
   ) => {
     const panel = flow.getByTestId('personal-draft-list-export');
-    if (!(await panel.evaluate((element) => (element as HTMLDetailsElement).open))) {
+    if (!(await panel.getByTestId('my-flow-export-panel').count())) {
       await panel.getByTestId('personal-draft-list-export-toggle').click();
     }
     await page.evaluate(() => navigator.clipboard.writeText(''));
@@ -1825,7 +1825,7 @@ test('personal draft user-created item time and all-day mode persist across Cale
     destination: 'memo' | 'checklist' | 'sheet',
   ) => {
     const panel = flow.getByTestId('personal-draft-list-export');
-    if (!(await panel.evaluate((element) => (element as HTMLDetailsElement).open))) {
+    if (!(await panel.getByTestId('my-flow-export-panel').count())) {
       await panel.getByTestId('personal-draft-list-export-toggle').click();
     }
     await page.evaluate(() => navigator.clipboard.writeText(''));

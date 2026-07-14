@@ -4,6 +4,7 @@ import type {
   CalendarUnscheduledSchedulePreview,
   CalendarUnscheduledTrayItem,
 } from '@/lib/flow/calendar-unscheduled-tray';
+import { FlowItemMultiSelect } from './FlowItemMultiSelect';
 
 type CalendarUnscheduledTrayProps = {
   items: CalendarUnscheduledTrayItem[];
@@ -35,9 +36,6 @@ export function CalendarUnscheduledTray({
   onUndo,
 }: CalendarUnscheduledTrayProps) {
   if (items.length === 0 && !undo) return null;
-  const selectedKeySet = new Set(selectedKeys);
-  const allSelected = items.length > 0 && items.every((item) => selectedKeySet.has(item.key));
-
   return (
     <section
       data-testid="my-flow-calendar-unscheduled-tray"
@@ -91,36 +89,15 @@ export function CalendarUnscheduledTray({
 
       {expanded && items.length > 0 ? (
         <div className="mt-2 border-t border-slate-100 pt-2" data-testid="my-flow-calendar-unscheduled-panel">
-          <div className="flex items-center justify-between gap-3 px-1 pb-2">
-            <p className="text-xs font-semibold text-slate-500">할 일 선택</p>
-            <button
-              type="button"
-              className="rounded-md px-2 py-1 text-xs font-bold text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onClick={onToggleAll}
-            >
-              {allSelected ? '선택 해제' : '모두 선택'}
-            </button>
-          </div>
-          <div className="divide-y divide-slate-100 border-y border-slate-100">
-            {items.map((item) => (
-              <label
-                key={item.key}
-                data-testid="my-flow-calendar-unscheduled-item"
-                className="flex min-h-12 cursor-pointer items-center gap-3 px-1 py-2 hover:bg-slate-50"
-              >
-                <input
-                  type="checkbox"
-                  className="h-5 w-5 shrink-0 accent-blue-700"
-                  checked={selectedKeySet.has(item.key)}
-                  aria-label={`${item.title} 날짜 지정 대상으로 선택`}
-                  onChange={() => onToggleItem(item.key)}
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold text-slate-900">{item.title}</span>
-                  <span className="mt-0.5 block truncate text-xs font-medium text-slate-500">{item.flowTitle}</span>
-                </span>
-              </label>
-            ))}
+          <div className="px-1">
+            <FlowItemMultiSelect
+              items={items.map((item) => ({ key: item.key, title: item.title, meta: item.flowTitle }))}
+              selectedKeys={selectedKeys}
+              itemTestId="my-flow-calendar-unscheduled-item"
+              selectionAriaLabel={(item) => `${item.title} 날짜 지정 대상으로 선택`}
+              onToggleItem={onToggleItem}
+              onToggleAll={onToggleAll}
+            />
           </div>
           <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(180px,240px)_1fr_auto] sm:items-end">
             <label className="grid gap-1 text-xs font-bold text-slate-600">
