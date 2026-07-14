@@ -39,7 +39,11 @@
   - [x] Standard bounded RRULE export with stable series UID.
   - [x] Visible-month navigation no longer snaps back to the execution range.
   - [x] Occurrence rows replace ambiguous whole-Flow `0/1` progress with current occurrence state.
-- [ ] P24-00F3B memo split Item inclusion and empty draft validation.
+- [x] P24-00F3B memo split Item inclusion and empty draft validation.
+  - [x] Dated memo drafts retain scheduled and unscheduled source-owned Items in My Flow.
+  - [x] Reload and whole-Flow list export preserve every split Item.
+  - [x] Calendar continues to include only scheduled Items.
+  - [x] Empty miss requests stay unsaved and status copy never becomes an executable title.
 - [ ] P24-00F4 hard navigation and post-save hydration.
 
 ## UX Simplification

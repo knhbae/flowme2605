@@ -79,6 +79,12 @@ function clean(value?: string): string {
   return (value ?? '').trim();
 }
 
+function getMemoBasedCandidateTitle(value: string): string {
+  const firstThought = splitUrlFirstDraftRequestLines(value)[0] ?? clean(value);
+  if (firstThought.length <= 60) return firstThought;
+  return `${firstThought.slice(0, 57).trimEnd()}...`;
+}
+
 function getUrlFirstDraftTopic(candidate: UrlFirstSupplyCandidate): string {
   const title = clean(candidate.title)
     .replace(/(?:초안\s*)?요청$/u, '')
@@ -225,12 +231,14 @@ export function buildUrlFirstSupplyCandidate(
   const canonicalUrl = clean(result.canonicalUrl);
   if (!status || !canonicalUrl) return undefined;
 
-  const fallbackTitle = clean(result.sourceLabel) || clean(result.title) || canonicalUrl;
+  const memo = clean(input.memo);
+  const title = clean(input.title) || getMemoBasedCandidateTitle(memo);
+  if (!title) return undefined;
   return {
     canonicalUrl,
     originalUrl: clean(result.input) || canonicalUrl,
-    title: clean(input.title) || fallbackTitle,
-    memo: clean(input.memo),
+    title,
+    memo,
     status,
     savedAt: clean(input.savedAt) || new Date().toISOString(),
   };

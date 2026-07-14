@@ -286,4 +286,145 @@ test.describe('P24 execution trust regressions', () => {
     ).toBeLessThanOrEqual(1);
     expect(consoleErrors).toEqual([]);
   });
+
+  test('a dated memo draft keeps every split item in My Flow and the whole-flow export', async ({ page }) => {
+    test.setTimeout(120_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/flows');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    const lookup = page.getByTestId('flow-url-lookup-entry');
+    await lookup.getByLabel('URL 또는 메모').fill(
+      '이사 견적을 비교한다. 관리사무소에 연락한다.',
+    );
+    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    const editor = page.getByTestId('flow-memo-draft-editor');
+    await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
+    await editor.getByLabel('메모 초안 제목').fill('이사 전 확인할 일');
+    await editor.getByLabel('메모 초안 첫 할 일 날짜').fill('2026-08-30');
+    await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
+
+    await expect(page).toHaveURL(/\/my/);
+    await page.getByTestId('my-flow-view-flow').click();
+    let draftFlow = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
+    );
+    if ((await draftFlow.getByTestId('personal-draft-effective-item').count()) === 0) {
+      await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+    }
+    const effectiveItems = draftFlow.getByTestId('personal-draft-effective-item');
+    await expect(effectiveItems).toHaveCount(3);
+    await expect(draftFlow).toContainText('이사 견적을 비교하기');
+    await expect(draftFlow).toContainText('관리사무소에 연락하기');
+    await expect(draftFlow).toContainText('할 일을 실행할 순서 정하기');
+
+    const exportPanel = draftFlow.getByTestId('personal-draft-list-export');
+    await expect(exportPanel.getByTestId('personal-draft-list-export-toggle')).toContainText(
+      '이 Flow 가져가기 · 3개',
+    );
+    await exportPanel.getByTestId('personal-draft-list-export-toggle').click();
+    await exportPanel.getByTestId('personal-draft-copy-memo').click();
+    const copiedMemo = await page.evaluate(() => navigator.clipboard.readText());
+    expect(copiedMemo).toContain('할 일 3개');
+    expect(copiedMemo).toContain('이사 견적을 비교하기');
+    expect(copiedMemo).toContain('관리사무소에 연락하기');
+    expect(copiedMemo).toContain('할 일을 실행할 순서 정하기');
+
+    const evidenceDir = process.env.FLOWME_P24_F3B_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await draftFlow.screenshot({
+        path: `${evidenceDir}/screenshots/00-memo-split-items-mobile.png`,
+      });
+    }
+    await page.reload();
+    await page.getByTestId('my-flow-view-flow').click();
+    draftFlow = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
+    );
+    if ((await draftFlow.getByTestId('personal-draft-effective-item').count()) === 0) {
+      await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+    }
+    await expect(draftFlow.getByTestId('personal-draft-effective-item')).toHaveCount(3);
+
+    await page.goto('/calendar');
+    await page.getByTestId('my-flow-month-picker').fill('2026-08');
+    await expect(page.locator('.fc-daygrid-day[data-date="2026-08-30"] .fc-event')).toHaveCount(1);
+    await expect(page.getByText('관리사무소에 연락하기')).toHaveCount(0);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my');
+    await page.getByTestId('my-flow-view-flow').click();
+    const wideDraftFlow = page.locator(
+      '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
+    );
+    await expect(wideDraftFlow).toContainText('전체 0/3 완료');
+    if (evidenceDir) {
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/01-memo-split-items-wide.png`,
+        fullPage: true,
+      });
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('an empty URL miss request stays unsaved and a memo-only request uses user copy', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/flows');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    const lookup = page.getByTestId('flow-url-lookup-entry');
+    await lookup.getByLabel('URL 또는 메모').fill('https://example.com/p24-empty-draft');
+    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    const result = page.getByTestId('flow-url-lookup-result');
+    await result.getByRole('button', { name: '초안 준비하기' }).click();
+    await expect(result.getByRole('status')).toHaveText(
+      'Flow 이름이나 원하는 결과 중 하나를 입력해 주세요.',
+    );
+    expect(
+      await page.evaluate(() =>
+        JSON.parse(localStorage.getItem('flow:url-first:supply-candidates') || '[]'),
+      ),
+    ).toEqual([]);
+
+    await result.getByLabel('원하는 결과').fill(
+      '여행 전에 여권과 환전 준비를 확인하고 싶어요.',
+    );
+    await result.getByRole('button', { name: '초안 준비하기' }).click();
+    const candidateList = page.getByTestId('flow-url-supply-candidate-list');
+    const candidate = candidateList.locator('article').first();
+    await expect(candidate).toContainText('여행 전에 여권과 환전 준비를 확인하고 싶어요');
+    await expect(candidate).not.toContainText('바로 시작할 Flow를 찾지 못했어요');
+    const stored = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('flow:url-first:supply-candidates') || '[]'),
+    );
+    expect(stored).toHaveLength(1);
+    expect(stored[0].title).toBe('여행 전에 여권과 환전 준비를 확인하고 싶어요');
+    await candidate.getByTestId('flow-url-miss-draft-open').click();
+    await expect(candidate.getByTestId('flow-url-miss-draft-suggestion-list')).not.toContainText(
+      '바로 시작할 Flow를 찾지 못했어요',
+    );
+
+    const evidenceDir = process.env.FLOWME_P24_F3B_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await candidate.screenshot({
+        path: `${evidenceDir}/screenshots/02-memo-only-draft-mobile.png`,
+      });
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+  });
 });

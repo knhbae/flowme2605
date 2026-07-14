@@ -1738,6 +1738,10 @@ function FlowUrlLookupResult({
   };
 
   const saveSupplyCandidate = () => {
+    if (!candidateTitle.trim() && !candidateMemo.trim()) {
+      setCandidateFeedback('Flow 이름이나 원하는 결과 중 하나를 입력해 주세요.');
+      return;
+    }
     const candidate = buildUrlFirstSupplyCandidate(result, {
       title: candidateTitle,
       memo: candidateMemo,
@@ -1999,7 +2003,7 @@ function FlowUrlLookupResult({
               </div>
             </form>
           )}
-          {candidateFeedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]">{candidateFeedback}</p> : null}
+          {candidateFeedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]" role="status">{candidateFeedback}</p> : null}
         </section>
       ) : null}
 
@@ -4348,8 +4352,17 @@ function mapPersonalDraftProjectionRowToMyFlowRow(
 
   if (projectionRow.ownership === 'source') {
     const sourceRow = sourceRows.find((row) => row.id === projectionRow.itemId);
-    if (!sourceRow) return undefined;
-    const { date: _sourceDate, ...sourceRowWithoutDate } = sourceRow;
+    const sourceItem = bundle.items.find((item) => item.id === projectionRow.itemId);
+    if (!sourceRow && !sourceItem) return undefined;
+    const sourceRowWithoutDate = sourceRow
+      ? (({ date: _sourceDate, ...row }) => row)(sourceRow)
+      : {
+          id: sourceItem!.id,
+          title: sourceItem!.title,
+          section: getSectionTitleForBundle(bundle, sourceItem!.section_id),
+          timing: sourceItem!.repeat_rule,
+          detail: getItemDetail(bundle, sourceItem!.id),
+        };
     return withMyFlowItemType(bundle, {
       ...sourceRowWithoutDate,
       title: projectionRow.title,
