@@ -2375,6 +2375,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   const detail = await openUserItemEditor(draftFlow, recurringTitle);
   await detail.getByTestId('personal-draft-date-mode-fixed').click();
   await detail.getByTestId('my-flow-detail-date-input').fill('2026-07-13');
+  await expandMyFlowAdvancedEditor(detail);
   await detail.getByTestId('personal-draft-recurrence-daily').click();
   await detail.getByTestId('personal-draft-recurrence-end-mode').selectOption('count');
   await detail.getByTestId('personal-draft-recurrence-count').fill('3');
