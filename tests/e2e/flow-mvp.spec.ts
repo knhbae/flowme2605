@@ -2930,7 +2930,8 @@ test('my flow today exposes inline completion without a separate today status fr
   await completeCheckbox.click();
   await expect(nowSection.getByTestId('my-flow-inline-detail')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-today-completed-list')).toBeVisible();
-  await expect(page.getByTestId('my-flow-today-completed-toggle')).toContainText('오늘 완료 1개 보기');
+  await expect(page.getByTestId('my-flow-today-completed-list')).toContainText('완료 1');
+  await expect(page.getByTestId('my-flow-today-completed-toggle')).toHaveAccessibleName('완료한 할 일 1개 보기');
 });
 
 test('my flow today dedupes rows when today overdue and next queues coexist on mobile', async ({ page }, testInfo) => {
@@ -2971,13 +2972,14 @@ test('my flow today dedupes rows when today overdue and next queues coexist on m
   await expect(overdueSection).toContainText('지난 할 일');
   await expect(page.locator('body')).not.toContainText(/밀린 할 일|지난 일정|밀림/);
   await expect(nowSection.getByTestId('my-flow-mobile-continuation-card').first()).toHaveAttribute('data-flow-slug', 'computer-skills-d30-study');
-  await expect(upcomingSection.getByTestId('my-flow-mobile-continuation-card').first()).toBeVisible();
+  await expect(upcomingSection.getByTestId('my-flow-upcoming-preview').first()).toBeVisible();
+  await expect(upcomingSection.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await expect(overdueSection.getByTestId('my-flow-overdue-open-sheet')).toBeVisible();
 
   const visibleQueueKeys = await page
     .locator(
       '[data-testid="my-flow-now-section"] [data-testid="my-flow-mobile-continuation-card"], ' +
-      '[data-testid="my-flow-upcoming-list"] [data-testid="my-flow-mobile-continuation-card"]',
+      '[data-testid="my-flow-upcoming-list"] [data-testid="my-flow-upcoming-preview-shell"]',
     )
     .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-row-key')).filter(Boolean));
   expect(visibleQueueKeys.length).toBeGreaterThanOrEqual(2);
@@ -3388,7 +3390,8 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-overdue-list')).toContainText('지난 할 일');
   await expect(page.getByTestId('my-flow-overdue-open-sheet')).toBeVisible();
   await expect(page.getByTestId('my-flow-today-completed-list').locator('article')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-today-completed-toggle')).toContainText('오늘 완료 2개 보기');
+  await expect(page.getByTestId('my-flow-today-completed-list')).toContainText('완료 2');
+  await expect(page.getByTestId('my-flow-today-completed-toggle')).toHaveAccessibleName('완료한 할 일 2개 보기');
   await page.getByTestId('my-flow-today-completed-toggle').click();
   await expect(page.getByTestId('my-flow-today-completed-list').locator('article')).toHaveCount(2);
   const firstCompletedTodayRow = page.getByTestId('my-flow-today-completed-list').locator('article').first();
@@ -3573,14 +3576,13 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   const routineDoneBefore = Number(routineProgressMatch?.[1] ?? 0);
   const routineTotal = Number(routineProgressMatch?.[2] ?? 0);
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`반복 항목 ${routineDoneBefore}/${routineTotal}`);
-  const routineCompletion = selectedRoutineDetail.getByRole('checkbox', { name: /이번 항목 완료$/ });
-  await expect(routineCompletion).toBeVisible();
-  await routineCompletion.click();
-  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`반복 항목 ${routineDoneBefore + 1}/${routineTotal}`);
-  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-undo-notice')).toContainText('방금 완료한 항목');
-  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-action-group').getByRole('button', { name: '방금 완료 취소' })).toHaveCount(0);
-  await expect(selectedRoutineDetail.getByRole('button', { name: '방금 완료 취소' })).toBeVisible();
-  await selectedRoutineDetail.getByRole('button', { name: '방금 완료 취소' }).click();
+  await expect(selectedRoutineDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await selectedDayRoutineCompletion.click();
+  const completionSnackbar = page.getByTestId('my-flow-completion-snackbar');
+  await expect(completionSnackbar).toContainText('저장한 표현으로 예문 3개 만들기');
+  await completionSnackbar.getByTestId('my-flow-completion-undo').click();
+  await expect(selectedDayRoutineCompletion).not.toBeChecked();
+  await expect(selectedRoutineDetail).toBeVisible();
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-progress-pill')).toContainText(`반복 항목 ${routineDoneBefore}/${routineTotal}`);
   await enterMyFlowDetailEditMode(selectedRoutineDetail);
   const routineTitleInput = selectedRoutineDetail.getByTestId('my-flow-detail-title-input');
@@ -3977,9 +3979,7 @@ test('P19 task completion controls use one checkbox pattern in My Flow and Calen
 
   await page.getByTestId('my-flow-post-save-open-first').click();
   const inlineDetail = nowSection.getByTestId('my-flow-inline-detail');
-  const detailComplete = inlineDetail.getByTestId('my-flow-task-complete-control').first();
-  await expect(detailComplete).toHaveAttribute('type', 'checkbox');
-  await expect(detailComplete).toHaveAttribute('aria-label', /완료/);
+  await expect(inlineDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
 
   await page.goto('/calendar');
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
@@ -5183,7 +5183,7 @@ test('my flow mobile item opens editable detail inline from today page', async (
   await expect(mobileDetail).not.toContainText('할 일 상태');
   await expect(mobileDetail).toContainText('실행할 일');
   await expect(mobileDetail.getByTestId('my-flow-detail-title-input')).toHaveCount(0);
-  await expect(mobileDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(1);
+  await expect(mobileDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(0);
   await expect(mobileDetail.getByRole('checkbox', { name: /이번 항목 완료$/ })).toHaveCount(0);
   await expect(mobileDetail.getByRole('button', { name: '수정', exact: true })).toHaveCount(0);
   await mobileDetail.getByText('메모·일정').click();
@@ -6886,6 +6886,22 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
   await expect(firstRow).toHaveAttribute('data-occurrence-state', 'done');
   await expect(firstRow.getByRole('checkbox', { name: /이번 항목 완료 취소$/ })).toBeChecked();
   await expect(firstRow.getByTestId('my-flow-routine-progress-pill')).toHaveText('이번 회차 완료');
+  const completionSnackbar = page.getByTestId('my-flow-completion-snackbar');
+  await expect(completionSnackbar).toContainText('아침 5분 전신 운동 영상 열기');
+  await completionSnackbar.getByTestId('my-flow-completion-undo').click();
+  await expect(firstRow).toHaveAttribute('data-occurrence-id', firstOccurrenceId!);
+  await expect(firstRow).toHaveAttribute('data-occurrence-state', 'reopened');
+  await expect(firstRow.getByRole('checkbox', { name: /이번 항목 완료$/ })).not.toBeChecked();
+  await firstRow.getByRole('checkbox', { name: /이번 항목 완료$/ }).click();
+  await expect(firstRow).toHaveAttribute('data-occurrence-state', 'done');
+  const u1EvidenceDir = process.env.FLOWME_P24_U1_EVIDENCE_DIR;
+  if (u1EvidenceDir) {
+    fs.mkdirSync(`${u1EvidenceDir}/screenshots`, { recursive: true });
+    await page.screenshot({
+      path: `${u1EvidenceDir}/screenshots/03-recurring-occurrence-undo-mobile.png`,
+      fullPage: true,
+    });
+  }
 
   const siblingRow = await selectRoutineRow('2026-07-17');
   const siblingOccurrenceId = await siblingRow.getAttribute('data-occurrence-id');
@@ -6905,6 +6921,7 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
   await reopenedRow.getByRole('button').first().click();
   const detail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
   await expect(detail).toHaveAttribute('data-occurrence-id', firstOccurrenceId!);
+  await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   const tools = await openMyFlowDetailTools(detail);
   const downloadPromise = page.waitForEvent('download');
   await tools.getByTestId('my-flow-detail-download-ics').click();

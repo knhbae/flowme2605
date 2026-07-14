@@ -428,6 +428,140 @@ test.describe('P24 execution trust regressions', () => {
     ).toBeLessThanOrEqual(1);
   });
 
+  test('Today completion stays reversible in place with one control per visible task', async ({ page }) => {
+    test.setTimeout(120_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.clock.install({ time: new Date('2026-06-03T09:00:00+09:00') });
+    await page.addInitScript(() => {
+      localStorage.clear();
+      localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
+        slug: 'moving-d30-basic',
+        savedAt: '2026-06-03T00:00:00.000Z',
+        selectedArtifactMode: 'calendar',
+        anchor: '2026-06-02',
+      }));
+      localStorage.setItem('flow:moving-d30-basic:anchorDate', JSON.stringify({
+        mode: 'custom',
+        anchor: '2026-06-02',
+      }));
+    });
+
+    await page.goto('/my');
+    const nowSection = page.getByTestId('my-flow-now-section');
+    const runnable = nowSection.getByTestId('my-flow-mobile-continuation-card').first();
+    const rowKey = await runnable.getAttribute('data-row-key');
+    const itemId = rowKey?.split('::')[1];
+    const title = (await runnable.getByTestId('my-flow-mobile-continuation-title').innerText()).trim();
+    expect(rowKey).toBeTruthy();
+    expect(itemId).toBeTruthy();
+    await expect(runnable.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+
+    await runnable.getByTestId('my-flow-mobile-continuation-open').click();
+    const inlineDetail = runnable.getByTestId('my-flow-inline-detail');
+    await expect(inlineDetail).toBeVisible();
+    await expect(inlineDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await runnable.getByTestId('my-flow-mobile-continuation-open').click();
+
+    await runnable.getByTestId('my-flow-task-complete-control').click();
+    const snackbar = page.getByTestId('my-flow-completion-snackbar');
+    await expect(snackbar).toBeVisible();
+    await expect(snackbar).toContainText(title);
+    await expect(snackbar.getByTestId('my-flow-completion-undo')).toHaveText('실행 취소');
+    const evidenceDir = process.env.FLOWME_P24_U1_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/00-today-completion-undo-mobile.png`,
+        fullPage: true,
+      });
+    }
+
+    await snackbar.getByTestId('my-flow-completion-undo').click();
+    await expect(snackbar).toHaveCount(0);
+    const restored = nowSection.locator(`[data-testid="my-flow-mobile-continuation-card"][data-row-key="${rowKey}"]`);
+    await expect(restored).toBeVisible();
+    await expect(restored.getByTestId('my-flow-task-complete-control')).not.toBeChecked();
+
+    await restored.getByTestId('my-flow-task-complete-control').click();
+    const completedSection = page.getByTestId('my-flow-today-completed-list');
+    await expect(completedSection).toBeVisible();
+    await completedSection.getByTestId('my-flow-today-completed-toggle').click();
+    const completedRow = completedSection.locator(`article[data-item-id="${itemId}"]`);
+    await expect(completedRow).toBeVisible();
+    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toBeChecked();
+    await completedRow.getByTestId('my-flow-task-complete-control').click();
+    await expect(nowSection.locator(`[data-row-key="${rowKey}"]`)).toBeVisible();
+    await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('Today renders future queue items as control-free previews on mobile and wide', async ({ page }) => {
+    test.setTimeout(120_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.clock.install({ time: new Date('2026-05-28T09:00:00+09:00') });
+    await page.addInitScript(() => {
+      localStorage.clear();
+      const savedAt = '2026-05-28T00:00:00.000Z';
+      const saveFlow = (slug: string, anchor?: string) => {
+        localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+          slug,
+          savedAt,
+          selectedArtifactMode: 'calendar',
+          ...(anchor ? { anchor } : {}),
+        }));
+        if (anchor) {
+          localStorage.setItem(`flow:${slug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor }));
+        }
+      };
+      saveFlow('moving-d30-basic', '2026-06-26');
+      saveFlow('computer-skills-d30-study', '2026-06-27');
+      saveFlow('used-car-buying-check');
+    });
+
+    const checkViewport = async (width: number, height: number, screenshotName: string) => {
+      await page.setViewportSize({ width, height });
+      await page.goto('/my');
+      const nowSection = page.getByTestId('my-flow-now-section');
+      const upcoming = page.getByTestId('my-flow-upcoming-list');
+      await expect(nowSection.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+      await expect(upcoming).toContainText('다음 예정');
+      await expect(upcoming.getByTestId('my-flow-upcoming-preview').first()).toBeVisible();
+      await expect(upcoming.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+      await expect(upcoming.getByTestId('my-flow-mobile-continuation-card')).toHaveCount(0);
+      const rowKeys = await page.locator(
+        '[data-testid="my-flow-now-section"] [data-row-key], [data-testid="my-flow-upcoming-list"] [data-row-key]',
+      ).evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-row-key')).filter(Boolean));
+      expect(new Set(rowKeys).size).toBe(rowKeys.length);
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+      ).toBeLessThanOrEqual(1);
+      const evidenceDir = process.env.FLOWME_P24_U1_EVIDENCE_DIR;
+      if (evidenceDir) {
+        fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+        await page.screenshot({
+          path: `${evidenceDir}/screenshots/${screenshotName}`,
+          fullPage: true,
+        });
+      }
+    };
+
+    await checkViewport(390, 844, '01-today-next-preview-mobile.png');
+    await checkViewport(1024, 768, '02-today-next-preview-wide.png');
+    expect(consoleErrors).toEqual([]);
+  });
+
   test('the Flow finder resolves after repeated hard navigation and reloads', async ({ page }) => {
     test.setTimeout(120_000);
     const consoleErrors: string[] = [];

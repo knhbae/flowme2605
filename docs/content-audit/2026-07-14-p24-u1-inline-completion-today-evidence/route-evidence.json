@@ -1,0 +1,65 @@
+{
+  "id": "p24-u1-inline-completion-today",
+  "date": "2026-07-14",
+  "baselineCommit": "4179a50",
+  "evidenceType": "automated_browser_not_observed_user",
+  "designReference": {
+    "artifact": "FlowMe UXUI 전체 검토 (8)",
+    "patternsApplied": ["B_inline_completion_undo", "F_today_single_execution_hierarchy"]
+  },
+  "markers": {
+    "oneOccurrenceOneVisibleCompletionControl": true,
+    "todayPrimaryCompletionControlCount": 1,
+    "todayInlineDetailCompletionControlCount": 0,
+    "calendarInlineDetailCompletionControlCount": 0,
+    "upcomingPreviewCompletionControlCount": 0,
+    "completionSnackbarVisible": true,
+    "completionUndoTapDepth": 1,
+    "completionUndoTimeoutMs": 5000,
+    "completedSectionReopenTapDepth": 1,
+    "genericCompletionUndoRestoresSameItem": true,
+    "recurringCompletionUndoRestoresSameOccurrence": true,
+    "occurrenceStableIdentityAfterUndo": true,
+    "completionAutoAdvancesDetail": false,
+    "taskCompleteButtonCount": 0,
+    "taskCompleteMixedControlCount": 0,
+    "todayFuturePreviewUsesExecutionCard": false,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "scenarios": [
+    {
+      "id": "generic_today_completion",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "moving-d30-basic at 2026-06-03",
+      "actions": ["open_detail", "complete", "snackbar_undo", "complete", "completed_section_reopen"],
+      "result": "pass"
+    },
+    {
+      "id": "future_preview_hierarchy_mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "three saved flows with current and future items",
+      "result": "pass"
+    },
+    {
+      "id": "future_preview_hierarchy_wide",
+      "route": "/my",
+      "viewport": { "width": 1024, "height": 768 },
+      "fixture": "three saved flows with current and future items",
+      "result": "pass"
+    },
+    {
+      "id": "recurring_occurrence_completion",
+      "route": "/calendar",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "curated-allblanc-morning-workout weekly occurrences",
+      "actions": ["complete_occurrence", "snackbar_undo", "complete_again", "reopen"],
+      "result": "pass"
+    }
+  ]
+}
+
