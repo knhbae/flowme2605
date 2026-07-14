@@ -65,6 +65,7 @@
 - [x] P24-00OPS2 controlled dependency upgrade with high `0`, bounded-shard full E2E, rollback evidence, and 390px/1024px capture.
 - [x] Prepare the P24-00B1 two-person first-session run kit with fixed routes, tasks, hint ladder, stop rules, and evidence templates.
 - [x] Recheck merged production at 390px/1024px against the exact Claude Design `(8)` A-G structure and publish the P24-00B2 design-readiness watchpoints.
+- [x] Consolidate production links, artifact map, observation checklist, and copy-paste prompts for Codex, Claude Code, and Claude Design in one independent-review handoff package.
 - [ ] Execute P24-00B1 with two real participants; current count `0 / 2`.
 - [ ] Independent Claude Code regression on the same commit and lockfile.
 - [ ] P24-00B 15 observed sessions.

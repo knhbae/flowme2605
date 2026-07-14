@@ -9,6 +9,7 @@
 
 ## 바로 열기
 
+- [P24 관찰·독립 검토 전달 패키지](../2026-07-14-p24-observation-independent-review-handoff/README.md)
 - [P24-00B1 2인 첫 세션 파일럿](../2026-07-14-p24-00b1-two-person-pilot/README.md)
 - [한국어 관찰 보드](./guide-ko.html)
 - [세션 기록 템플릿](./session-template.md)

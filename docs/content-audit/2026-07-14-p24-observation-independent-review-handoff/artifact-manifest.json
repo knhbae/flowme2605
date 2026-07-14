@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "packageId": "p24-observation-independent-review-handoff",
+  "preparedAt": "2026-07-14T19:04:56+09:00",
+  "preparedFromMainCommit": "e56afde5028728cace6613efb19b2f74c45cfa96",
+  "productRuntimeBaselineCommit": "d6487a0d3352de358320b15ceeacd8b5405eb04e",
+  "production": {
+    "url": "https://flowme2605.vercel.app",
+    "anonymousHttpStatus": 200,
+    "routeSmokePassed": 5,
+    "routeSmokeTotal": 5,
+    "checkedAt": "2026-07-14T19:04:56+09:00",
+    "evidenceKind": "current_command"
+  },
+  "reviewBoardValidation": {
+    "evidenceKind": "current_browser",
+    "viewports": ["390x844", "1024x768"],
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "screenshots": [
+      "screenshots/review-board-mobile.png",
+      "screenshots/review-board-wide.png"
+    ]
+  },
+  "status": {
+    "packageReady": true,
+    "codexReviewExecuted": false,
+    "claudeCodeReviewExecuted": false,
+    "claudeDesignReviewExecuted": false,
+    "observedUserSessionCount": 0,
+    "requiredObservedUserSessionCount": 15,
+    "p24Complete": false,
+    "blockingGate": "observed_user_evidence"
+  },
+  "priorAutomatedEvidence": {
+    "evidenceKind": "prior_artifact_not_rerun_by_this_package",
+    "unitPassed": 514,
+    "unitTotal": 514,
+    "playwrightDistinctPassed": 274,
+    "playwrightDistinctTotal": 274,
+    "productionBuildPassed": true,
+    "dependencyCriticalCount": 0,
+    "dependencyHighCount": 0,
+    "dependencyModerateCount": 4
+  },
+  "claudeDesign": {
+    "source": "FlowMe UXUI 전체 검토 (8).zip/FlowMe UX 개선안 목업 + 코멘트.dc.html",
+    "directions": [
+      "A_progressive_editor",
+      "B_inline_completion_undo",
+      "C_calendar_unscheduled_tray",
+      "D_flow_level_export_scope",
+      "E_linked_fixed_date_movement",
+      "F_one_occurrence_one_control",
+      "G_inline_notes_aggregation"
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "feedback_reconciliation",
+      "path": "../2026-07-14-flowme-p24-feedback-reconciliation/README.md",
+      "evidenceKind": "current_repo"
+    },
+    {
+      "id": "completion_audit",
+      "path": "../2026-07-14-p24-completion-audit/README.md",
+      "evidenceKind": "prior_audit"
+    },
+    {
+      "id": "dependency_operations",
+      "path": "../2026-07-14-p24-00ops2-controlled-dependency-upgrade-evidence/README.md",
+      "evidenceKind": "prior_automated_qa"
+    },
+    {
+      "id": "observed_user_program",
+      "path": "../2026-07-14-p24-00b-observed-user-test-guide/README.md",
+      "evidenceKind": "protocol_not_result"
+    },
+    {
+      "id": "two_person_pilot",
+      "path": "../2026-07-14-p24-00b1-two-person-pilot/README.md",
+      "evidenceKind": "protocol_not_result"
+    },
+    {
+      "id": "production_design_readiness",
+      "path": "../2026-07-14-p24-00b2-production-design-readiness/README.md",
+      "evidenceKind": "automated_browser_qa_not_user_validation"
+    }
+  ],
+  "prompts": {
+    "codex": "prompt-codex-ko.md",
+    "claudeCode": "prompt-claude-code-ko.md",
+    "claudeDesign": "prompt-claude-design-ko.md"
+  },
+  "productionSmoke": "production-smoke.json",
+  "appCodeChanged": false
+}

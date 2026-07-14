@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-07-14T19:04:56+09:00",
+  "baseUrl": "https://flowme2605.vercel.app",
+  "evidenceKind": "current_command",
+  "routeCount": 5,
+  "httpFailureCount": 0,
+  "routes": [
+    {
+      "route": "/",
+      "statusCode": 200,
+      "finalUrl": "https://flowme2605.vercel.app/",
+      "responseBytes": 12117
+    },
+    {
+      "route": "/flows",
+      "statusCode": 200,
+      "finalUrl": "https://flowme2605.vercel.app/flows",
+      "responseBytes": 6896
+    },
+    {
+      "route": "/my",
+      "statusCode": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my",
+      "responseBytes": 11510
+    },
+    {
+      "route": "/calendar",
+      "statusCode": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar",
+      "responseBytes": 11228
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "statusCode": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+      "responseBytes": 30138
+    }
+  ]
+}
