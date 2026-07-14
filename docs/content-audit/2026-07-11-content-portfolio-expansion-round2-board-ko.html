@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>FlowMe 콘텐츠 포트폴리오 확장 Round 2</title>
+<style>
+:root{--ink:#17211d;--muted:#62706a;--line:#d9e1dc;--paper:#f4f7f5;--white:#fff;--green:#176b51;--lime:#dff2e9;--yellow:#fff2bf;--blue:#e2efff;--red:#ffe7e3;--shadow:0 8px 28px rgba(29,55,44,.08)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:0;overflow-x:hidden}button,input,select{font:inherit;letter-spacing:0}a{color:#0a5f80;text-underline-offset:3px;overflow-wrap:anywhere}.page{width:min(1180px,100%);margin:auto;padding:24px 18px 80px}.hero{background:var(--ink);color:#fff;padding:30px;border-radius:8px}.hero small,.section-head small,.review-panel small{font-weight:800;letter-spacing:.08em;color:#89d6b8}.hero h1{font-size:clamp(28px,4vw,46px);line-height:1.12;margin:6px 0 12px;letter-spacing:0}.hero p{max-width:760px;color:#d4ded9;margin:0}.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:24px}.metrics div{background:#26352f;padding:12px;border-radius:6px;min-width:0}.metrics b{display:block;font-size:22px}.metrics span{font-size:12px;color:#c6d3cd}.notice{margin:16px 0 28px;padding:14px 16px;background:var(--yellow);border:1px solid #e7d58c;border-radius:6px}.section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:34px 0 12px}.section-title h2{margin:0;font-size:24px}.section-title p{margin:0;color:var(--muted)}.coverage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.coverage-card{background:var(--white);border:1px solid var(--line);border-radius:7px;padding:14px}.coverage-card>b{font-size:17px}.coverage-card>div{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;font-size:13px}.coverage-card p{margin:0;color:var(--muted);font-size:12px}.toolbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:minmax(180px,1fr) repeat(4,minmax(120px,auto)) auto auto;gap:8px;padding:10px;margin:22px 0 12px;background:rgba(244,247,245,.96);border:1px solid var(--line);border-radius:8px;backdrop-filter:blur(10px)}.toolbar input,.toolbar select,.toolbar button{width:100%;min-height:42px;border:1px solid #bdc9c2;background:#fff;color:var(--ink);border-radius:5px;padding:8px 10px}.toolbar button{width:auto;cursor:pointer;font-weight:700}.bundle-card{background:var(--white);border:1px solid var(--line);border-radius:8px;margin:10px 0;box-shadow:var(--shadow);overflow:hidden}.bundle>summary,.flow>summary,.step>summary,.review-panel summary,.sources>summary{cursor:pointer;list-style:none}.bundle>summary::-webkit-details-marker,.flow>summary::-webkit-details-marker,.step>summary::-webkit-details-marker,.review-panel summary::-webkit-details-marker,.sources>summary::-webkit-details-marker{display:none}.bundle>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:20px}.bundle>summary:after,.flow>summary:after,.step>summary:after,.review-panel summary:after,.sources>summary:after{content:"＋";align-self:center;font-weight:800}.bundle[open]>summary:after,.flow[open]>summary:after,.step[open]>summary:after,.review-panel details[open]>summary:after,.sources[open]>summary:after{content:"−"}.bundle>summary{grid-template-columns:minmax(0,1fr) auto 18px}.eyebrow{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase}.wave{padding:3px 7px;border-radius:4px;background:var(--blue);color:#245276}.wave.first{background:var(--lime);color:#145b45}.bundle-title h2{font-size:22px;line-height:1.25;margin:7px 0 5px}.bundle-title p{margin:0;color:var(--muted);max-width:720px}.counts{display:grid;grid-template-columns:repeat(2,70px);gap:5px}.counts span{background:#f1f5f2;border-radius:5px;padding:7px;text-align:center;font-size:11px}.counts b{display:block;font-size:17px}.bundle-body{border-top:1px solid var(--line)}.public-preview,.review-panel{padding:18px 20px}.section-head{display:flex;justify-content:space-between;align-items:start;gap:10px}.section-head h3{margin:2px 0 0;font-size:18px}.chips{display:flex;gap:6px;flex-wrap:wrap}.chips span,.setup span,.when{display:inline-flex;align-items:center;background:#eef3f0;border:1px solid #d8e2dc;border-radius:4px;padding:3px 7px;font-size:11px;color:#405149}.setup{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:14px 0}.setup>b{font-size:12px;margin-right:4px}.flow{border:1px solid var(--line);border-radius:6px;margin:8px 0;overflow:hidden}.flow>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 16px;gap:10px;align-items:center;padding:13px 14px;background:#f7faf8;font-weight:800}.flow summary span:first-child,.step summary span:first-child{min-width:0;overflow-wrap:anywhere}.flow summary small,.step summary small{display:block;font-size:10px;color:var(--green)}.flow-meta,.step-count{font-size:11px;color:var(--muted)}.flow-body{padding:12px}.need{margin:0 0 10px;padding:10px 12px;background:var(--lime);border-radius:5px}.need b,.memo b,.recommendation b,.candidate p b{display:block;font-size:10px;color:var(--green);text-transform:uppercase}.memo{white-space:pre-line;margin:10px 0;padding:10px 12px;background:#fff9df;border-left:3px solid #e7c951;border-radius:3px;color:#4f4b37}.step{border-top:1px solid var(--line)}.step:first-child{border-top:0}.step>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 16px;gap:8px;align-items:center;padding:11px 10px;font-weight:700}.step-body{padding:0 10px 10px}.items{list-style:none;padding:0;margin:0}.item-row{border:1px solid #e1e7e3;border-radius:5px;padding:10px;margin:6px 0;background:#fff}.item-main{display:grid;grid-template-columns:18px minmax(0,1fr);gap:9px}.check{width:17px;height:17px;border:2px solid #91a39a;border-radius:3px;margin-top:2px}.item-main strong{overflow-wrap:anywhere}.item-main p{margin:4px 0 0;color:var(--muted);font-size:13px}.when{margin-left:7px;background:var(--blue)}.trace{margin:7px 0 0 27px;font-size:11px;color:var(--muted)}.trace summary{cursor:pointer;font-weight:700}.trace p{margin:4px 0}.sources{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.sources>summary{display:grid;grid-template-columns:minmax(0,1fr) 16px;font-weight:800}.sources a{display:block;padding:9px 0;border-bottom:1px solid #edf1ee;text-decoration:none}.sources a span{display:block;color:var(--muted);font-size:12px}.review-panel{background:#f0f3f1;border-top:1px dashed #bfc9c3}.review-panel summary{display:grid;grid-template-columns:minmax(0,1fr) auto 16px;gap:8px;align-items:center;font-weight:800}.review-panel summary span:last-of-type{font-size:11px;color:var(--muted)}.review-body{padding-top:14px}.recommendation{padding:12px;background:#fff;border-radius:5px;margin:0 0 10px}.score-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.score{background:#fff;border:1px solid var(--line);border-radius:5px;padding:10px}.score>div{display:flex;justify-content:space-between;gap:8px}.score>div strong{color:var(--green)}.bar{display:block;height:5px;background:#e7ece9;border-radius:9px;overflow:hidden;margin:7px 0}.bar i{display:block;height:100%;background:var(--green)}.score p{margin:0;color:var(--muted);font-size:12px}.score.quality .bar i{background:#527fbe}.review-list{margin-top:14px}.review-list h4{margin:0 0 6px}.review-list ul{margin:0;padding-left:20px}.source-review{background:#fff;border:1px solid var(--line);border-radius:5px;padding:10px;margin:6px 0}.source-review p{margin:4px 0;color:var(--muted);font-size:12px}.candidate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.candidate{background:#fff;border:1px solid var(--line);border-radius:7px;padding:14px}.candidate>div{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--muted)}.status{padding:2px 6px;border-radius:4px;background:#eee}.status.ready_for_internal_canary{background:var(--lime);color:#145b45}.status.ready_second_wave{background:var(--blue);color:#245276}.status.source_import_required{background:var(--yellow);color:#735d0a}.status.reject{background:var(--red);color:#8a3327}.candidate h3{font-size:16px;line-height:1.3;margin:9px 0}.candidate p{font-size:12px;color:var(--muted);margin:7px 0}.candidate a{font-size:12px;font-weight:700}.hidden{display:none!important}.empty{display:none;padding:24px;text-align:center;color:var(--muted)}.empty.show{display:block}.footer{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(3,1fr)}.coverage-grid,.candidate-grid{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr 1fr}.toolbar input{grid-column:1/-1}.score-grid{grid-template-columns:1fr}}
+@media(max-width:560px){body{font-size:14px}.page{padding:10px 8px 60px}.hero{padding:20px 16px;border-radius:5px}.hero h1{font-size:28px}.metrics{grid-template-columns:repeat(2,1fr)}.coverage-grid,.candidate-grid{grid-template-columns:1fr}.section-title{display:block}.section-title p{margin-top:4px}.toolbar{position:static;grid-template-columns:1fr 1fr;padding:7px;margin:14px 0 8px}.toolbar input{grid-column:1/-1}.toolbar select{min-width:0}.toolbar button{width:100%}.bundle>summary{grid-template-columns:minmax(0,1fr) 16px;padding:14px}.counts{grid-column:1/-1;grid-row:2;grid-template-columns:repeat(4,1fr)}.bundle-title h2{font-size:19px}.public-preview,.review-panel{padding:14px 12px}.section-head{display:block}.section-head .chips{margin-top:8px}.flow>summary{padding:11px 10px}.flow-body{padding:8px}.step-body{padding:0 6px 8px}.item-row{padding:9px 8px}.item-main p{font-size:12px}.trace{margin-left:26px}.when{display:flex;width:max-content;margin:4px 0 0}.score{padding:9px}.candidate{padding:12px}}
+.review-panel summary small{display:block}
+@media(max-width:560px){.review-panel summary{grid-template-columns:minmax(0,1fr) 16px}.review-panel summary span:last-of-type{grid-column:1;grid-row:2}}
+</style></head><body><main class="page" id="top">
+<header class="hero"><small>2026-07-11 / SOURCE-BACKED PORTFOLIO EXPANSION</small><h1>생활 영역을 넓힌 신규 콘텐츠 10개</h1><p>실제 원문을 열어 확인한 row만 사용했습니다. 사용자에게 보일 Flow / Step / Item과 내부 점수·보류 근거를 같은 카드 안에서 분리해 검토합니다.</p><div class="metrics"><div><b>48</b><span>URL 열기 시도</span></div><div><b>10</b><span>Content Bundle</span></div><div><b>14</b><span>Flow</span></div><div><b>53</b><span>Step</span></div><div><b>133</b><span>Item</span></div><div><b>167</b><span>Source Row</span></div></div></header>
+<div class="notice"><b>검토 기준</b> 카드 제목을 누르면 실제 앱 투입 콘텐츠가 열립니다. 각 Item의 <b>원문 근거</b>에서 sourceRowIds와 링크를 볼 수 있고, 맨 아래 <b>점수·감점·묶음 근거</b>에서 13개 점수 코멘트를 확인합니다.</div>
+<section><div class="section-title"><h2>커버리지 변화</h2><p>기존 17개 + Round 2 신규 10개</p></div><div class="coverage-grid"><div class="coverage-card"><b>집·생활</b><div><span>Bundle 2 → <strong>2</strong></span><span>계획형 3/6 → <strong>3/6</strong></span></div><p>날짜 준비 · 순서 절차 · 반복 루틴</p></div><div class="coverage-card"><b>가족·육아</b><div><span>Bundle 3 → <strong>4</strong></span><span>계획형 5/6 → <strong>5/6</strong></span></div><p>날짜 준비 · 반복 루틴 · 원문 표·행 · 자료 큐 · 비교·결정</p></div><div class="coverage-card"><b>공부·독서</b><div><span>Bundle 2 → <strong>3</strong></span><span>계획형 4/6 → <strong>4/6</strong></span></div><p>날짜 준비 · 반복 루틴 · 원문 표·행 · 자료 큐</p></div><div class="coverage-card"><b>돈·행정·구매</b><div><span>Bundle 2 → <strong>6</strong></span><span>계획형 3/6 → <strong>4/6</strong></span></div><p>날짜 준비 · 순서 절차 · 반복 루틴 · 비교·결정</p></div><div class="coverage-card"><b>건강·운동</b><div><span>Bundle 2 → <strong>2</strong></span><span>계획형 4/6 → <strong>4/6</strong></span></div><p>날짜 준비 · 반복 루틴 · 원문 표·행 · 자료 큐</p></div><div class="coverage-card"><b>여행·외출</b><div><span>Bundle 2 → <strong>2</strong></span><span>계획형 3/6 → <strong>3/6</strong></span></div><p>날짜 준비 · 순서 절차 · 원문 표·행</p></div><div class="coverage-card"><b>식사·장보기</b><div><span>Bundle 2 → <strong>3</strong></span><span>계획형 2/6 → <strong>3/6</strong></span></div><p>날짜 준비 · 순서 절차 · 원문 표·행</p></div><div class="coverage-card"><b>일·커리어</b><div><span>Bundle 1 → <strong>3</strong></span><span>계획형 2/6 → <strong>4/6</strong></span></div><p>날짜 준비 · 순서 절차 · 원문 표·행 · 자료 큐</p></div><div class="coverage-card"><b>취미·반려</b><div><span>Bundle 1 → <strong>2</strong></span><span>계획형 2/6 → <strong>4/6</strong></span></div><p>날짜 준비 · 순서 절차 · 원문 표·행 · 자료 큐</p></div></div></section>
+<section id="bundles"><div class="section-title"><h2>앱 직전 Content Bundle</h2><p id="resultCount">10개 표시</p></div>
+<div class="toolbar" aria-label="콘텐츠 필터"><input id="search" type="search" placeholder="제목·Flow 검색" aria-label="제목 또는 Flow 검색"><select id="life"><option value="">모든 생활 영역</option><option value="home_living">집·생활</option><option value="family_parenting">가족·육아</option><option value="study_reading">공부·독서</option><option value="money_admin_purchase">돈·행정·구매</option><option value="health_fitness">건강·운동</option><option value="travel_outings">여행·외출</option><option value="meals_grocery">식사·장보기</option><option value="work_career">일·커리어</option><option value="hobby_pet">취미·반려</option></select><select id="pattern"><option value="">모든 계획 방식</option><option value="date_preparation">날짜 준비</option><option value="ordered_procedure">순서 절차</option><option value="repeating_routine">반복 루틴</option><option value="source_table_rows">원문 표·행</option><option value="resource_queue">자료 큐</option><option value="compare_decide">비교·결정</option></select><select id="wave"><option value="">모든 적용 순서</option><option value="first_canary">First canary</option><option value="second_wave_only">Second wave</option></select><select id="status"><option value="">모든 판정</option><option value="ready_for_internal_canary">1차 내부 적용</option><option value="ready_second_wave">2차 적용</option></select><button type="button" id="openAll">모두 펼치기</button><button type="button" id="closeAll">모두 접기</button></div>
+<div id="bundleList"><article class="bundle-card" data-life="study_reading" data-pattern="source_table_rows" data-status="ready_for_internal_canary" data-wave="first_canary" data-search="k-mooc 제자백가 15주 학습 공부·독서 원문 표·행 제자백가의 사상 15주 학습">
+    <details class="bundle" open>
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave first">FIRST CANARY</span><span>공부·독서</span></div><h2>K-MOOC 제자백가 15주 학습</h2><p>강좌 계획표의 주차 순서대로 강의·퀴즈·시험을 완료한다.</p></div>
+        <div class="counts"><span><b>1</b>Flow</span><span><b>15</b>Step</span><span><b>15</b>Item</span><span><b>15</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>원문 표·행</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>내 강좌 제목</span><span>학습 시작일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>제자백가의 사상 15주 학습</span><span class="flow-meta">15 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>강좌 계획표의 주차 순서대로 강의·퀴즈·시험을 완료한다.</p>
+      <div class="chips"><span>calendar</span><span>timeline</span><span>official weekly source table</span></div>
+      <p class="memo"><b>공통 메모</b>각 주차의 세부 강의명과 평가 정보는 메모에서 확인합니다. 실제 수강 가능 기간과 시험 기간은 K-MOOC 강좌 화면을 우선합니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>1주차 · 철학과 동아시아 철학</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>1주차 강의와 퀴즈 완료하기</strong><span class="when">기준일</span><p>철학이란 무엇인가? / 삶의 철학으로서의 동아시아 철학 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-01</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 1주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>2주차 · 제자백가의 사상과 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>2주차 강의와 퀴즈 완료하기</strong><span class="when">D+7</span><p>제자백가란 무엇인가? / 왜 도보다 덕인가? / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-02</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 2주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 3</small>3주차 · 공자의 윤리적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>3주차 강의와 퀴즈 완료하기</strong><span class="when">D+14</span><p>예와 인 / 군자는 그릇이 아니다 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-03</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 3주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 4</small>4주차 · 묵자의 지성적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>4주차 강의와 퀴즈 완료하기</strong><span class="when">D+21</span><p>의로움과 공익 / 겸애와 효도 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-04</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 4주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 5</small>5주차 · 양주의 지성적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>5주차 강의와 퀴즈 완료하기</strong><span class="when">D+28</span><p>한 오라기의 털과 천하 / 전성보진 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-05</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 5주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 6</small>6주차 · 맹자의 윤리적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>6주차 강의와 퀴즈 완료하기</strong><span class="when">D+35</span><p>성선설 / 조장하지 않기 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-06</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 6주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 7</small>7주차 · 명가와 후기묵가의 지성적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>7주차 강의와 퀴즈 완료하기</strong><span class="when">D+42</span><p>백마는 말이 아니다 / 도둑을 죽이는 것 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-07</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 7주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 8</small>8주차 · 중간시험</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>중간시험 응시하기</strong><span class="when">D+49</span><p>1~7주차 학습내용 / 객관형 20문제</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-08</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 8주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 9</small>9주차 · 노자의 심미적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>9주차 강의와 퀴즈 완료하기</strong><span class="when">D+56</span><p>자신을 드러내는 사람 / 도의 움직임 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-09</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 9주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 10</small>10주차 · 장자의 심미적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>10주차 강의와 퀴즈 완료하기</strong><span class="when">D+63</span><p>마음은 거울 / 나비의 꿈 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-10</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 10주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 11</small>11주차 · 음양가의 심미적 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>11주차 강의와 퀴즈 완료하기</strong><span class="when">D+70</span><p>상생·상극 / 살아지는 삶 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-11</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 11주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 12</small>12주차 · 순자의 공공의 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>12주차 강의와 퀴즈 완료하기</strong><span class="when">D+77</span><p>자연과 인간 / 하늘이 낳고 사람이 완성 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-12</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 12주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 13</small>13주차 · 법가의 제도 운용의 덕</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>13주차 강의와 퀴즈 완료하기</strong><span class="when">D+84</span><p>성인을 기다리지 않는 정치 / 법가의 인치 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-13</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 13주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 14</small>14주차 · 제자백가의 평가와 덕의 한계</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>14주차 강의와 퀴즈 완료하기</strong><span class="when">D+91</span><p>덕의 상호보완성 / 간담회 / 퀴즈</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-14</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 14주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 15</small>15주차 · 기말고사</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>기말고사 응시하기</strong><span class="when">D+98</span><p>9~14주차 학습내용 / 객관형 20문제</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kmooc-week-15</p><p>K-MOOC 제자백가의 사상 강좌 운영 계획 / 강좌 운영 계획 15주차</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 1개</summary><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer"><b>K-MOOC 제자백가의 사상 강좌 운영 계획</b><span>15-week syllabus table · official_education</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>완전한 15주 source table을 대표 학습 canary로 먼저 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>76</strong></div><span class="bar"><i style="width:76%"></i></span><p>수강생·조회수는 표시되지 않지만 공개 강의계획서, 매주 퀴즈, 중간·기말이라는 강한 반복 사용 신호가 있다. visible demand 수치는 unknown으로 유지했다.</p></div><div class="score"><div><b>변환 적합</b><strong>98</strong></div><span class="bar"><i style="width:98%"></i></span><p>15주 표가 그대로 Step이 되고 주차별 강의·퀴즈가 한 Item으로 닫힌다. FlowMe가 학습량을 새로 배분할 필요가 없다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>96</strong></div><span class="bar"><i style="width:96%"></i></span><p>기존 시험 루틴과 달리 공개 강좌의 source_table_rows 공백을 직접 채운다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>64</strong></div><span class="bar"><i style="width:64%"></i></span><p>다른 K-MOOC 강좌로 fork하기 쉽지만 공식 강의표라 사용자 의견 remix보다 강좌별 복제 가치가 크다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>96</strong></div><span class="bar"><i style="width:96%"></i></span><p>15개 row·Step·Item, 주차 offset, 시험 구분, export가 모두 확정됐다. 실제 강좌 개설 기간만 앱 적용 시 확인하면 된다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>수강자가 15주 강의계획을 달력으로 옮기지 않고 따라가려는 필요가 분명하다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>각 주차는 강의 두 개와 퀴즈 또는 시험 완료로 종료된다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>K-MOOC 강좌 운영 계획 1~15주를 추가 생성 없이 보존했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>주간 캘린더·체크리스트·시트 어느 쪽으로도 손실 없이 옮겨진다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>주차당 Item 하나이며 세부 차시는 메모라 긴 강좌도 가볍다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>공자의 윤리적 덕, 중간시험처럼 실제 주차명이 그대로 보인다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>공공 MOOC 공식 강의계획서이며 점수·수료 조건을 과장하지 않는다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>15주 카드 접힘으로 모바일 탐색이 가능하다. 앱에서 긴 한자 주제의 줄바꿈 QA가 필요하다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>각 주차의 두 강의와 퀴즈를 세 Item으로 쪼개지 않고 주차 완료 Item 하나로 묶음</li><li>총점 80% 수료 기준은 체크 Item이 아니라 강좌 메모로 유지</li><li>수강 가능 기간과 시험 응답 기간은 고정 생성하지 않고 실제 강좌 화면 우선</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-kmooc-hundred-schools</b><p>15주 강좌 운영 계획, 차시명, 퀴즈·중간·기말 row 전부 확인</p><p><strong>수요</strong> 조회·수강생 수 미표시, 공개 강의계획서와 평가 구조 확인</p><p><strong>권리 경계</strong> 주차명과 짧은 차시 요약만 사용하고 강의 내용은 K-MOOC로 연결</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="family_parenting" data-pattern="date_preparation compare_decide" data-status="ready_for_internal_canary" data-wave="first_canary" data-search="가족 생일 행사 준비 가족·육아 날짜 준비 비교·결정 아이 생일파티 4주 준비 돌잔치 준비">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave first">FIRST CANARY</span><span>가족·육아</span></div><h2>가족 생일 행사 준비</h2><p>아이 생일파티의 날짜·초대·주문·전날·당일 준비를 원문 시기대로 진행한다.</p></div>
+        <div class="counts"><span><b>2</b>Flow</span><span><b>8</b>Step</span><span><b>11</b>Item</span><span><b>14</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>날짜 준비</span><span>비교·결정</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>행사 이름</span><span>행사일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>아이 생일파티 4주 준비</span><span class="flow-meta">5 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>아이 생일파티의 날짜·초대·주문·전날·당일 준비를 원문 시기대로 진행한다.</p>
+      <div class="chips"><span>calendar</span><span>timeline</span><span>creator date preparation</span></div>
+      <p class="memo"><b>공통 메모</b>장소와 활동은 정답이 아니라 원문의 선택표입니다. 고른 장소·활동·초대 명단은 메모에 적습니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>3~4주 전</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>집·키즈카페·공원·파티룸의 장단점을 보고 장소를 고른 뒤 메모에 적습니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>3~4주 전 준비 마치기</strong><span class="when">-28~-21일</span><p>날짜·장소 확정, 테마 선정, 초대 인원 결정</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> kids-birthday-01, kids-birthday-06</p><p>아이 생일파티 준비 체크리스트 / 생일파티 타임라인 1 | 아이 생일파티 준비 체크리스트 / 장소 선택 비교</p><a href="https://baby.tali.kr/kids-birthday-party-planning-guide" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>2~3주 전</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>2~3주 전 준비 마치기</strong><span class="when">-21~-14일</span><p>초대장 발송, 참석 확인</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kids-birthday-02</p><p>아이 생일파티 준비 체크리스트 / 생일파티 타임라인 2</p><a href="https://baby.tali.kr/kids-birthday-party-planning-guide" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 3</small>1주 전</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>아이 연령에 맞는 활동을 골라 준비물과 함께 메모에 적습니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>1주 전 준비 마치기</strong><span class="when">D-7</span><p>음식·케이크 주문, 활동 준비물 구매, 답례품 준비</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> kids-birthday-03, kids-birthday-07</p><p>아이 생일파티 준비 체크리스트 / 생일파티 타임라인 3 | 아이 생일파티 준비 체크리스트 / 연령별 활동 추천</p><a href="https://baby.tali.kr/kids-birthday-party-planning-guide" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 4</small>전날</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>전날 준비 마치기</strong><span class="when">D-1</span><p>장식 설치, 음식 사전 준비, 동선 확인</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kids-birthday-04</p><p>아이 생일파티 준비 체크리스트 / 생일파티 타임라인 4</p><a href="https://baby.tali.kr/kids-birthday-party-planning-guide" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 5</small>당일</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>당일 준비 마치기</strong><span class="when">기준일</span><p>최종 세팅, 손님 맞이, 활동, 케이크, 답례품 배부</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> kids-birthday-05</p><p>아이 생일파티 준비 체크리스트 / 생일파티 타임라인 5</p><a href="https://baby.tali.kr/kids-birthday-party-planning-guide" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details><details class="flow" >
+    <summary><span><small>FLOW 2</small>돌잔치 준비</span><span class="flow-meta">3 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>첫돌 행사의 장소·사진 예약과 나머지 핵심 준비를 원문 기준으로 끝낸다.</p>
+      <div class="chips"><span>hybrid</span><span>timeline</span><span>creator event checklist</span></div>
+      <p class="memo"><b>공통 메모</b>원문에 시점이 있는 항목만 달력에 배치합니다. 메이크업·돌상·의상·답례품은 행사일에 맞춰 사용자가 날짜를 정합니다.</p>
+      <div class="steps"><details class="step" >
+    <summary><span><small>STEP 1</small>4개월 전부터</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>컨셉 정하고 베뉴 예약하기</strong><span class="when">최소 4개월 전</span><p>전통·모던 등 돌잔치 분위기 결정 / 최소 4개월 전 리스트업·예약, 식사 방식·식대·계약 조건 비교</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> dol-party-01, dol-party-02</p><p>돌잔치 준비 체크리스트 / 체크리스트 1 | 돌잔치 준비 체크리스트 / 체크리스트 2</p><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>2~3개월 전</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>돌스냅 예약하기</strong><span class="when">-90~-60일</span><p>최소 2~3개월 전 사진작가 포트폴리오와 장소 경험 확인</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> dol-party-06</p><p>돌잔치 준비 체크리스트 / 체크리스트 6</p><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 3</small>예약·준비 항목</span><span class="step-count">4</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>업체, 견적, 예약일, 계약금, 보류 이유는 각 Item 메모에 적습니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>헤어·메이크업 예약하기</strong><p>샵 방문 또는 출장 방식 선택</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> dol-party-03</p><p>돌잔치 준비 체크리스트 / 체크리스트 3</p><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>돌상 준비하기</strong><p>베뉴 지정 업체·외부 반입·셀프 돌상 조건 확인</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> dol-party-04</p><p>돌잔치 준비 체크리스트 / 체크리스트 4</p><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>가족 의상 준비하기</strong><p>한복·드레스·수트 대여, 피팅 또는 택배 대여 선택</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> dol-party-05</p><p>돌잔치 준비 체크리스트 / 체크리스트 5</p><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>답례품 준비하기</strong><p>품목·수량·감사카드·포장 결정</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> dol-party-07</p><p>돌잔치 준비 체크리스트 / 체크리스트 7</p><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 2개</summary><a href="https://baby.tali.kr/kids-birthday-party-planning-guide" target="_blank" rel="noreferrer"><b>아이 생일파티 준비 체크리스트</b><span>five preparation windows plus option tables · creator_commercial</span></a><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer"><b>돌잔치 준비 체크리스트</b><span>seven preparation sections with two explicit windows · creator_commercial</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>매년 반복 생일과 일회성 돌잔치를 source-owned child Flow로 나눠 첫 canary에 포함한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>81</strong></div><span class="bar"><i style="width:81%"></i></span><p>조회수는 보이지 않지만 두 원문 모두 체크리스트·타임라인 검색 의도가 높고, 생일은 매년 반복된다. 실제 수치가 없어 inferred demand로 제한했다.</p></div><div class="score"><div><b>변환 적합</b><strong>94</strong></div><span class="bar"><i style="width:94%"></i></span><p>아이 생일은 5개 시기가 완전하고 돌잔치는 7개 핵심 항목과 두 시기가 있다. 원문에 없는 날짜는 만들지 않았다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>100</strong></div><span class="bar"><i style="width:100%"></i></span><p>기존 포트폴리오에 없던 가족 행사를 처음 채우고 매년 행사와 일회성 행사를 함께 보여준다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>90</strong></div><span class="bar"><i style="width:90%"></i></span><p>아이 나이·장소·테마·지역·업체별 fork와 후기 공유가 자연스럽고 원문 제작자에게 다시 유입될 이유가 있다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>93</strong></div><span class="bar"><i style="width:93%"></i></span><p>두 Flow, 8 Step, 9 Item과 date window가 정리됐다. 돌잔치의 날짜 없는 예약 항목은 사용자가 정하도록 명시했다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>행사일까지 초대·주문·예약을 빠뜨리지 않으려는 상황이 명확하다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>각 시기 또는 예약 항목의 완료 상태가 분명하다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>아이 생일 5개 시기와 돌잔치 7개 원문 항목을 보존했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>행사일 기준 캘린더와 업체·선택 메모로 자연스럽다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>두 variant가 있지만 각각 접히고 Item은 5개·6개 수준이다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>초대장 발송, 돌스냅 예약, 답례품 준비처럼 행동과 대상이 구체적이다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>개인 경험·상업 링크가 있는 creator source이므로 업체 추천은 복제하지 않았다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>시기별 카드와 짧은 Item으로 390px에서도 전체 순서를 훑을 수 있다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>장소·연령별 활동표는 선택 정보라 별도 Item이 아니라 해당 Step 메모로 이동</li><li>돌잔치 메이크업·돌상·의상·답례품에 원문에 없는 D-day를 만들지 않음</li><li>견적·업체·계약금·보류 사유는 공통 메모에 기록</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-kids-birthday-timeline</b><p>3~4주 전부터 당일까지 5개 row와 장소·연령 선택표 확인</p><p><strong>수요</strong> 2026-03-09 수정, 조회수 미표시</p><p><strong>권리 경계</strong> 타임라인 행동만 사용하고 제휴 상품·예산 권고는 복제하지 않음</p></div><div class="source-review"><b>src-dol-party-checklist</b><p>7개 준비 항목과 장소 4개월·사진 2~3개월 시점 확인</p><p><strong>수요</strong> 본문 조회수 미표시, 관련 글 댓글 흔적 확인</p><p><strong>권리 경계</strong> 개인 업체 추천과 가격은 제외하고 준비 항목·출처만 유지</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="hobby_pet" data-pattern="source_table_rows resource_queue" data-status="ready_for_internal_canary" data-wave="first_canary" data-search="30일 사진 찍기 취미·반려 원문 표·행 자료 큐 30일 사진 찍기">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave first">FIRST CANARY</span><span>취미·반려</span></div><h2>30일 사진 찍기</h2><p>매일 원문 주제 하나를 보고 사진 한 장을 찍는다.</p></div>
+        <div class="counts"><span><b>1</b>Flow</span><span><b>5</b>Step</span><span><b>30</b>Item</span><span><b>30</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>원문 표·행</span><span>자료 큐</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>내 챌린지 제목</span><span>시작일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>30일 사진 찍기</span><span class="flow-meta">5 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>매일 원문 주제 하나를 보고 사진 한 장을 찍는다.</p>
+      <div class="chips"><span>calendar</span><span>routine</span><span>daily source prompt queue</span></div>
+      <p class="memo"><b>공통 메모</b>촬영 장소·카메라·파일 링크와 짧은 감상은 해당 날짜 메모에 적습니다. 별도 기록 필드는 만들지 않습니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>Day 1~6</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>자화상 찍기</strong><span class="when">기준일</span><p>원문 주제: Self-portrait</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-01</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 1</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>흑백 사진 찍기</strong><span class="when">D+1</span><p>원문 주제: Black and white</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-02</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 2</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>물 찍기</strong><span class="when">D+2</span><p>원문 주제: Water</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-03</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 3</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>야경 찍기</strong><span class="when">D+3</span><p>원문 주제: Night scene</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-04</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 4</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>기하학적 패턴 찍기</strong><span class="when">D+4</span><p>원문 주제: Geometric patterns</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-05</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 5</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>손 찍기</strong><span class="when">D+5</span><p>원문 주제: Hands</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-06</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 6</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>Day 7~12</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>빨간색 찍기</strong><span class="when">D+6</span><p>원문 주제: Red</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-07</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 7</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>파란색 찍기</strong><span class="when">D+7</span><p>원문 주제: Blue</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-08</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 8</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>원 찍기</strong><span class="when">D+8</span><p>원문 주제: Circles</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-09</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 9</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>삼각형 찍기</strong><span class="when">D+9</span><p>원문 주제: Triangles</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-10</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 10</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>구름 찍기</strong><span class="when">D+10</span><p>원문 주제: Clouds</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-11</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 11</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>동물 찍기</strong><span class="when">D+11</span><p>원문 주제: Animals</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-12</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 12</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 3</small>Day 13~18</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>얼굴 없는 자화상 찍기</strong><span class="when">D+12</span><p>원문 주제: Self-portrait without your face</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-13</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 13</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>눈 클로즈업 찍기</strong><span class="when">D+13</span><p>원문 주제: Close-up of eyes</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-14</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 14</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>여름 찍기</strong><span class="when">D+14</span><p>원문 주제: Summer</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-15</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 15</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>가을 찍기</strong><span class="when">D+15</span><p>원문 주제: Fall</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-16</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 16</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>겨울 찍기</strong><span class="when">D+16</span><p>원문 주제: Winter</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-17</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 17</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>봄 찍기</strong><span class="when">D+17</span><p>원문 주제: Spring</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-18</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 18</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 4</small>Day 19~24</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>인물 사진 찍기</strong><span class="when">D+18</span><p>원문 주제: Headshot</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-19</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 19</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>풍경 찍기</strong><span class="when">D+19</span><p>원문 주제: Landscape</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-20</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 20</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>반사 찍기</strong><span class="when">D+20</span><p>원문 주제: Reflection</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-21</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 21</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>실루엣 찍기</strong><span class="when">D+21</span><p>원문 주제: Silhouette</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-22</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 22</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>질감 찍기</strong><span class="when">D+22</span><p>원문 주제: Texture</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-23</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 23</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>음식 클로즈업 찍기</strong><span class="when">D+23</span><p>원문 주제: Food close-up</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-24</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 24</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 5</small>Day 25~30</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>음식이 있는 장면 찍기</strong><span class="when">D+24</span><p>원문 주제: Food scene</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-25</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 25</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>라이트 페인팅 찍기</strong><span class="when">D+25</span><p>원문 주제: Light painting</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-26</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 26</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>움직임 표현 찍기</strong><span class="when">D+26</span><p>원문 주제: Create motion</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-27</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 27</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>정지 동작 찍기</strong><span class="when">D+27</span><p>원문 주제: Stop motion</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-28</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 28</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>얕은 심도 찍기</strong><span class="when">D+28</span><p>원문 주제: Shallow depth of field</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-29</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 29</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>자유 주제 찍기</strong><span class="when">D+29</span><p>원문 주제: Your own choice</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> photo-day-30</p><p>Canon 30-Day Photo Challenge / 30-Day Photo Challenge Day 30</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 1개</summary><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer"><b>Canon 30-Day Photo Challenge</b><span>30 numbered photo prompts · commercial_creator</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>30개 prompt가 완전하고 remix·공유성이 높아 취미 canary로 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>79</strong></div><span class="bar"><i style="width:79%"></i></span><p>조회수는 없지만 Canon의 학습·커뮤니티 문맥과 친구·카메라 커뮤니티 참여 권유가 있다. 보이는 수치가 없어 inferred demand로 평가했다.</p></div><div class="score"><div><b>변환 적합</b><strong>99</strong></div><span class="bar"><i style="width:99%"></i></span><p>Day 1~30 주제가 완전하며 하루 한 장 촬영으로 바로 변환된다. 추가 계획이나 기록 Field가 필요 없다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>100</strong></div><span class="bar"><i style="width:100%"></i></span><p>기존 hobby_pet의 반려동물 편중을 줄이고 순수 취미 프로젝트와 resource_queue를 채운다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>96</strong></div><span class="bar"><i style="width:96%"></i></span><p>사진 결과를 서로 공유하고 색·계절·난이도별로 fork하기 매우 쉽다. 원문 제작자도 챌린지 유입을 얻는다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>94</strong></div><span class="bar"><i style="width:94%"></i></span><p>30개 row·Item과 시작일 offset이 완성됐다. 영어 브랜드 원문의 공개 사용 경계는 내부 canary 이후 따로 확인한다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>사진을 꾸준히 찍고 싶지만 매일 주제를 고르기 어려운 필요가 명확하다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>매일 제시된 주제로 사진 한 장을 찍으면 끝난다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>Canon의 30개 번호 prompt를 하나도 추가하거나 삭제하지 않았다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>캘린더·체크리스트·Markdown으로 자연스럽고 결과 링크는 메모에 남긴다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>30개 Item이지만 원문 자체 길이이며 6일씩 다섯 구간으로 접었다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>물, 실루엣, 얕은 심도처럼 촬영 대상이 바로 보인다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>브랜드 creator source라 원문 문장 전체 대신 짧은 주제와 링크만 사용한다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>한 날짜 한 줄이고 주차형 접힘으로 모바일 탐색과 체크가 쉽다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>촬영 장비·장소·감상·파일 링크를 별도 Field로 만들지 않고 메모로 통합</li><li>각 prompt에 확인하기·기록하기 Item을 덧붙이지 않음</li><li>원문 해설 문단은 복제하지 않고 영어 prompt 제목만 sourceTitle로 보존</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-canon-photo-30</b><p>30개 번호 prompt와 커뮤니티 참여 권유를 확인</p><p><strong>수요</strong> 조회수 미표시, Canon 학습·커뮤니티 맥락 확인</p><p><strong>권리 경계</strong> 짧은 prompt명과 출처만 사용하고 사진 예시·해설은 원문에서 보게 함</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="meals_grocery" data-pattern="source_table_rows ordered_procedure" data-status="ready_for_internal_canary" data-wave="first_canary" data-search="3일 반찬 만들기 식사·장보기 원문 표·행 순서 절차 첫째 날 장보기와 반찬 만들기 둘째·셋째 날 반찬 만들기">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave first">FIRST CANARY</span><span>식사·장보기</span></div><h2>3일 반찬 만들기</h2><p>원문 장보기 목록을 준비하고 첫째 날 반찬 묶음을 한 번의 조리 세션으로 만든다.</p></div>
+        <div class="counts"><span><b>2</b>Flow</span><span><b>4</b>Step</span><span><b>4</b>Item</span><span><b>14</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>원문 표·행</span><span>순서 절차</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>내 반찬 준비 이름</span><span>장보기 시작일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>첫째 날 장보기와 반찬 만들기</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>원문 장보기 목록을 준비하고 첫째 날 반찬 묶음을 한 번의 조리 세션으로 만든다.</p>
+      <div class="chips"><span>hybrid</span><span>timeline</span><span>creator shopping and cooking session</span></div>
+      <p class="memo"><b>공통 메모</b>가격은 2021년 원문 당시 금액이므로 옮기지 않습니다. 재료 수량과 내 조리 변경은 메모에 적습니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>장보기</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>반찬 재료 장보기</strong><span class="when">기준일</span><p>돼지고기 뒷다리살, 양배추, 깻잎, 콩나물, 팽이버섯, 달걀, 애호박, 브로콜리, 김, 순두부, 무</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> banchan-one-01</p><p>욜로리아 첫째 날 장보기와 반찬 만들기 / 장보기 목록</p><a href="https://164regina.tistory.com/918" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>첫째 날 조리</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>각 요리의 재료와 조리 순서는 원문 링크에서 확인합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>첫째 날 반찬 묶음 만들기</strong><span class="when">기준일</span><p>구운 김, 양배추찜·브로콜리, 초고추장, 깍두기, 콩나물 제육볶음을 원문 순서로 만듭니다.</p></div></div>
+    <details class="trace"><summary>원문 근거 5행</summary><p><b>sourceRowIds</b> banchan-one-02, banchan-one-03, banchan-one-04, banchan-one-05, banchan-one-06</p><p>욜로리아 첫째 날 장보기와 반찬 만들기 / 첫째 날 메뉴 1 | 욜로리아 첫째 날 장보기와 반찬 만들기 / 첫째 날 메뉴 2 | 욜로리아 첫째 날 장보기와 반찬 만들기 / 첫째 날 메뉴 3 | 욜로리아 첫째 날 장보기와 반찬 만들기 / 첫째 날 메뉴 4 | 욜로리아 첫째 날 장보기와 반찬 만들기 / 첫째 날 메뉴 5</p><a href="https://164regina.tistory.com/918" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details><details class="flow" >
+    <summary><span><small>FLOW 2</small>둘째·셋째 날 반찬 만들기</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>첫째 날 남은 재료를 이어서 둘째·셋째 날 반찬 묶음으로 만든다.</p>
+      <div class="chips"><span>hybrid</span><span>timeline</span><span>creator cooking sessions</span></div>
+      <p class="memo"><b>공통 메모</b>둘째·셋째 날 원문은 첫째 날 장보기 재료를 이어 씁니다. 내 냉장고 상태와 대체 재료는 메모에 적습니다.</p>
+      <div class="steps"><details class="step" >
+    <summary><span><small>STEP 1</small>둘째 날 조리</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>콩나물무국, 깻잎찜, 콩나물무침, 계란말이의 상세 레시피는 원문에서 확인합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>둘째 날 반찬 4가지 만들기</strong><span class="when">D+1</span><p>둘째 날 국 / 둘째 날 반찬 / 둘째 날 반찬 / 둘째 날 반찬</p></div></div>
+    <details class="trace"><summary>원문 근거 4행</summary><p><b>sourceRowIds</b> banchan-later-01, banchan-later-02, banchan-later-03, banchan-later-04</p><p>욜로리아 둘째·셋째 날 반찬 만들기 / 둘째 날 메뉴 1 | 욜로리아 둘째·셋째 날 반찬 만들기 / 둘째 날 메뉴 2 | 욜로리아 둘째·셋째 날 반찬 만들기 / 둘째 날 메뉴 3 | 욜로리아 둘째·셋째 날 반찬 만들기 / 둘째 날 메뉴 4</p><a href="https://164regina.tistory.com/entry/2%EB%A7%8C%EC%9B%90%EC%9C%BC%EB%A1%9C-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%EC%9D%BC%EC%A3%BC%EC%9D%BC-%EB%B0%98%EC%B0%AC-13%EA%B0%80%EC%A7%80-%EB%A7%8C%EB%93%A4%EA%B8%B0-%EB%91%90%EB%B2%88%EC%A7%B8-%EC%84%B8%EB%B2%88%EC%A7%B8%EB%82%A0" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>셋째 날 조리</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>돼지고기 순두부찌개, 애호박전, 양배추 샐러드, 팽이버섯전의 상세 레시피는 원문에서 확인합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>셋째 날 반찬 4가지 만들기</strong><span class="when">D+2</span><p>셋째 날 찌개 / 셋째 날 반찬 / 셋째 날 반찬 / 셋째 날 반찬</p></div></div>
+    <details class="trace"><summary>원문 근거 4행</summary><p><b>sourceRowIds</b> banchan-later-05, banchan-later-06, banchan-later-07, banchan-later-08</p><p>욜로리아 둘째·셋째 날 반찬 만들기 / 셋째 날 메뉴 1 | 욜로리아 둘째·셋째 날 반찬 만들기 / 셋째 날 메뉴 2 | 욜로리아 둘째·셋째 날 반찬 만들기 / 셋째 날 메뉴 3 | 욜로리아 둘째·셋째 날 반찬 만들기 / 셋째 날 메뉴 4</p><a href="https://164regina.tistory.com/entry/2%EB%A7%8C%EC%9B%90%EC%9C%BC%EB%A1%9C-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%EC%9D%BC%EC%A3%BC%EC%9D%BC-%EB%B0%98%EC%B0%AC-13%EA%B0%80%EC%A7%80-%EB%A7%8C%EB%93%A4%EA%B8%B0-%EB%91%90%EB%B2%88%EC%A7%B8-%EC%84%B8%EB%B2%88%EC%A7%B8%EB%82%A0" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 2개</summary><a href="https://164regina.tistory.com/918" target="_blank" rel="noreferrer"><b>욜로리아 첫째 날 장보기와 반찬 만들기</b><span>shopping list and first cooking session · creator_food</span></a><a href="https://164regina.tistory.com/entry/2%EB%A7%8C%EC%9B%90%EC%9C%BC%EB%A1%9C-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%EC%9D%BC%EC%A3%BC%EC%9D%BC-%EB%B0%98%EC%B0%AC-13%EA%B0%80%EC%A7%80-%EB%A7%8C%EB%93%A4%EA%B8%B0-%EB%91%90%EB%B2%88%EC%A7%B8-%EC%84%B8%EB%B2%88%EC%A7%B8%EB%82%A0" target="_blank" rel="noreferrer"><b>욜로리아 둘째·셋째 날 반찬 만들기</b><span>two cooking sessions with eight dishes · creator_food</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>장보기 1회와 세 번의 조리 세션으로 묶어 식사·장보기 canary에 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>83</strong></div><span class="bar"><i style="width:83%"></i></span><p>후속 시리즈와 영상 링크, 관련 글 댓글 흔적이 보인다. 정확한 조회수·다운로드 수는 없어 visible signal을 과장하지 않았다.</p></div><div class="score"><div><b>변환 적합</b><strong>96</strong></div><span class="bar"><i style="width:96%"></i></span><p>장보기 목록과 날짜별 13개 요리가 모두 있다. 요리를 13개 Item으로 늘리지 않고 실제 조리 세션으로 묶을 수 있다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>94</strong></div><span class="bar"><i style="width:94%"></i></span><p>기존 일주일 도시락의 먹기 일정과 달리 장보기→조리로 이어지는 meal prep 공백을 채운다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>88</strong></div><span class="bar"><i style="width:88%"></i></span><p>가족 수·취향·예산별 재료 fork와 실제 만든 결과 공유가 자연스럽고 원문 영상으로 다시 유입된다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>92</strong></div><span class="bar"><i style="width:92%"></i></span><p>두 source-owned Flow, 14 source row, 4 Item, day offset이 완성됐다. 오래된 가격과 라이선스 경계만 표시하면 된다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>한 번 장보고 며칠 반찬을 준비하려는 필요가 구체적이다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>장보기와 각 조리 세션의 완료 상태가 분명하다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>첫째·둘째·셋째 날 원문 메뉴와 재료만 사용했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>장보기 checklist, 조리 calendar, recipe memo로 손실 없이 옮겨진다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>13개 요리를 4개 실행 Item으로 묶어 원문 정보량 대비 화면 부담이 낮다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>첫째 날 반찬 묶음, 둘째 날 4가지처럼 실제 조리 결과가 보인다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>creator recipe이고 2021 가격은 낡았지만 가격을 제외하고 조리 원문 링크를 유지했다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>모바일에서 세 날짜와 네 Item만 보이고 상세 레시피는 메모·링크로 연다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>장보기 11종을 11개 Item이 아니라 한 장보기 Item의 detail로 묶음</li><li>요리 13개를 날짜별 조리 세션 3개로 묶음</li><li>2021년 21,270원 가격은 사용자 Item에서 제외</li><li>재료 수량·대체·보관 상태는 메모에 기록</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-yolloria-banchan-day1</b><p>장보기 11종과 첫째 날 메뉴·재료·조리 순서 확인</p><p><strong>수요</strong> 후속 글·영상 링크 확인, 조회수 미표시</p><p><strong>권리 경계</strong> 메뉴명·재료 묶음·출처만 사용하고 상세 레시피는 링크에서 확인</p></div><div class="source-review"><b>src-yolloria-banchan-day23</b><p>둘째·셋째 날 각 4개 요리와 이어 쓰는 재료 확인</p><p><strong>수요</strong> 시리즈 연결과 관련 댓글 흔적 확인</p><p><strong>권리 경계</strong> 날짜별 요리명만 실행 데이터로 사용</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="work_career" data-pattern="ordered_procedure" data-status="ready_for_internal_canary" data-wave="first_canary" data-search="고용24 취업지원 시작 일·커리어 순서 절차 고용24 구직 신청과 매칭 중장년 전직지원 신청">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave first">FIRST CANARY</span><span>일·커리어</span></div><h2>고용24 취업지원 시작</h2><p>고용24에 이력서를 등록하고 구직신청부터 지원 결과 관리까지 이어간다.</p></div>
+        <div class="counts"><span><b>2</b>Flow</span><span><b>4</b>Step</span><span><b>19</b>Item</span><span><b>19</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>순서 절차</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>구직 목표</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>고용24 구직 신청과 매칭</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>고용24에 이력서를 등록하고 구직신청부터 지원 결과 관리까지 이어간다.</p>
+      <div class="chips"><span>checklist</span><span>phase</span><span>official service procedure</span></div>
+      <p class="memo"><b>공통 메모</b>희망직종·근무지역·임금 등 이력서 내용과 지원한 회사·결과는 메모에 적습니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>구직 등록</span><span class="step-count">3</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>고용24 개인회원 가입하기</strong><p>온라인 구직신청을 위한 개인회원 가입</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-general-01</p><p>고용24 구직자 취업지원 서비스 / 이용 시작</p><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>이력서 작성하기</strong><p>인적사항, 희망직종, 경력, 희망근로조건 등 작성</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-general-02</p><p>고용24 구직자 취업지원 서비스 / 구직 신청 1</p><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>구직 신청하기</strong><p>작성한 이력서로 구직 신청하기</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-general-03</p><p>고용24 구직자 취업지원 서비스 / 구직 신청 2</p><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>지원과 결과</span><span class="step-count">3</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>추천 일자리 확인하고 지원하기</strong><p>고용센터 추천을 받거나 고용24에서 직접 입사 지원</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-general-04</p><p>고용24 구직자 취업지원 서비스 / 서비스 이용 2</p><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>지원 결과 입력하기</strong><p>지원 후 결과를 담당자에게 알리거나 고용24 채용여부에 입력</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-general-05</p><p>고용24 구직자 취업지원 서비스 / 서비스 이용 결과</p><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>필요한 매칭 지원 이용하기</strong><p>필요하면 고용센터 매칭, 동행면접, 채용행사 활용</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-general-06</p><p>고용24 구직자 취업지원 서비스 / 서비스 이용 3</p><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details><details class="flow" >
+    <summary><span><small>FLOW 2</small>중장년 전직지원 신청</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>40세 이상 퇴직 예정·구직자가 전직지원 서비스를 신청하고 배정된 지원 단계를 따라간다.</p>
+      <div class="chips"><span>checklist</span><span>phase</span><span>official service application and support path</span></div>
+      <p class="memo"><b>공통 메모</b>참여 대상은 원문 기준 40세 이상이며 서비스 기간은 신청일부터 6개월입니다. 상담 일정과 담당자 정보는 메모에 적습니다.</p>
+      <div class="steps"><details class="step" >
+    <summary><span><small>STEP 1</small>서비스 신청</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>고용24 개인회원 가입</strong><p>전직지원 신청 전 개인회원 가입</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-01</p><p>고용24 중장년 전직지원 서비스 / 신청 절차 1</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>구직 신청</strong><p>고용24 구직 신청</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-02</p><p>고용24 중장년 전직지원 서비스 / 신청 절차 2</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>전직지원 서비스 신청</strong><p>중장년 전직지원 서비스 신청</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-03</p><p>고용24 중장년 전직지원 서비스 / 신청 절차 3</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>서비스 승인</strong><p>전직지원 서비스 승인</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-04</p><p>고용24 중장년 전직지원 서비스 / 신청 절차 4</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>컨설턴트 배정</strong><p>개인별 컨설턴트 배정</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-05</p><p>고용24 중장년 전직지원 서비스 / 신청 절차 5</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>상담·교육 참여</strong><p>1:1 상담 및 교육 프로그램 참여</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-06</p><p>고용24 중장년 전직지원 서비스 / 신청 절차 6</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>상담 이후</span><span class="step-count">7</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>취업활동계획 수립</strong><p>전직·재취업 취업활동계획 수립</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-07</p><p>고용24 중장년 전직지원 서비스 / 구직 서비스 1</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>구직서류 코칭</strong><p>이력서와 자기소개서 코칭</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-08</p><p>고용24 중장년 전직지원 서비스 / 구직 서비스 2</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>구직전략 수립</strong><p>목표에 맞는 구직전략 수립</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-09</p><p>고용24 중장년 전직지원 서비스 / 구직 서비스 3</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>면접전략</strong><p>면접전략과 코칭</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-10</p><p>고용24 중장년 전직지원 서비스 / 구직 서비스 4</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>구직알선</strong><p>적합인재 알선 서비스</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-11</p><p>고용24 중장년 전직지원 서비스 / 구직 서비스 5</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>취업</strong><p>알선·지원 후 취업 단계</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-12</p><p>고용24 중장년 전직지원 서비스 / 구직 서비스 6</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>사후관리</strong><p>취업 이후 사후관리</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> work24-transition-13</p><p>고용24 중장년 전직지원 서비스 / 구직 서비스 7</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 2개</summary><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer"><b>고용24 구직자 취업지원 서비스</b><span>registration, application, matching, result loop · official_admin</span></a><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer"><b>고용24 중장년 전직지원 서비스</b><span>six application stages and seven service stages · official_admin</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>일반 구직과 40세 이상 전직지원을 분리한 공식 career Map으로 먼저 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>80</strong></div><span class="bar"><i style="width:80%"></i></span><p>조회수는 없지만 구직신청·이력서·추천·전직지원은 긴급성과 반복 방문 가능성이 높은 공식 서비스다. 수치는 unknown으로 유지했다.</p></div><div class="score"><div><b>변환 적합</b><strong>93</strong></div><span class="bar"><i style="width:93%"></i></span><p>일반 구직 6개와 중장년 신청·지원 13개 공식 단계가 있다. 서비스 승인 이후는 외부 상태라 사용자가 통제하지 못하는 구간이 일부 있다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>100</strong></div><span class="bar"><i style="width:100%"></i></span><p>기존 면접 전날 한 조각에서 구직 등록부터 지원까지 work_career 범위를 크게 넓힌다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>58</strong></div><span class="bar"><i style="width:58%"></i></span><p>직무·연령별 개인 복사는 가능하지만 공식 서비스라 제작자 홍보·커뮤니티 토론보다 신뢰 역할이 강하다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>94</strong></div><span class="bar"><i style="width:94%"></i></span><p>두 대상 Flow와 모든 source row, 메모 경계, 앱 타입 매핑이 준비됐다. 로그인 이후 화면은 링크로만 남겼다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>구직 시작과 중장년 전직지원이라는 대상·목표가 분명하다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>가입, 이력서, 구직신청, 지원, 결과 입력처럼 다음 행동이 보인다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>고용24 공식 서비스 절차와 지원 순서를 그대로 사용했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>체크리스트·시트·메모로 옮길 수 있고 외부 로그인 링크를 보존한다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>중장년 Flow가 13개 Item으로 길지만 신청과 상담 이후 두 구간으로 나뉜다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>구직 신청하기, 지원 결과 입력하기처럼 실제 서비스 동작과 일치한다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>공식 고용24 source이며 수당·자격 판단을 섞지 않았다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>모바일 접힘은 가능하다. 로그인 이동 후 복귀와 긴 중장년 목록은 앱 QA가 남는다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>희망직종·임금·경력 등 이력서 필드를 FlowMe 별도 입력으로 복제하지 않고 고용24에서 작성</li><li>국민취업지원제도 자격·수당은 별도 제도라 이 Map에서 제외</li><li>상담 일정·담당자·지원 회사·결과는 메모에 기록</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-work24-jobseeker-support</b><p>구직 신청서 작성, 직접 지원, 결과 입력, 1:1 매칭 row 확인</p><p><strong>수요</strong> 조회수 미표시, 공식 신청·채용행사 링크 확인</p><p><strong>권리 경계</strong> 서비스 단계명과 링크만 사용하고 개인정보 입력 필드는 복제하지 않음</p></div><div class="source-review"><b>src-work24-midcareer-transition</b><p>40세 이상·6개월 조건, 신청 6단계, 지원 7단계 확인</p><p><strong>수요</strong> 조회수 미표시, 전국 센터·공식 신청 링크 확인</p><p><strong>권리 경계</strong> 공식 절차만 사용하고 상담 결과·개인 경력은 앱 메모로 유지</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="money_admin_purchase" data-pattern="ordered_procedure compare_decide" data-status="ready_second_wave" data-wave="second_wave_only" data-search="개인 사업자등록 준비 돈·행정·구매 순서 절차 비교·결정 개인 사업자등록 준비">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave second">SECOND WAVE</span><span>돈·행정·구매</span></div><h2>개인 사업자등록 준비</h2><p>사업장과 업종에 맞는 서류를 준비하고 개인 사업자등록 신청서를 빠뜨리지 않고 작성한다.</p></div>
+        <div class="counts"><span><b>1</b>Flow</span><span><b>2</b>Step</span><span><b>5</b>Item</span><span><b>12</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>순서 절차</span><span>비교·결정</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>사업 이름</span><span>개업 예정일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>개인 사업자등록 준비</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>사업장과 업종에 맞는 서류를 준비하고 개인 사업자등록 신청서를 빠뜨리지 않고 작성한다.</p>
+      <div class="chips"><span>checklist</span><span>official ordered procedure</span></div>
+      <p class="memo"><b>공통 메모</b>인허가와 과세유형은 업종·매출 조건에 따라 달라집니다. 판단 결과와 상담 내용은 메모에 적고 국세청 원문을 다시 확인합니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>신청 서류 준비</span><span class="step-count">3</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>대리 방문, 사업장 계약 형태, 인허가 업종 여부에 따라 필요한 서류만 선택합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>신청서와 신분증 챙기기</strong><p>개인 사업자등록 공통 준비 서류 / 대리 방문이면 위임장과 대리인 신분증을 함께 준비</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> nts-business-01, nts-business-02</p><p>국세청 개인 사업자등록 신청서 작성방법 / 준비서류 / 공통 1 | 국세청 개인 사업자등록 신청서 작성방법 / 준비서류 / 공통 2</p><a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>사업장 소재지 서류 챙기기</strong><p>임대·전대·분양·매매 중 내 사업장에 해당하는 서류만 준비합니다.</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> nts-business-03, nts-business-04</p><p>국세청 개인 사업자등록 신청서 작성방법 / 준비서류 / 사업장 소재지 1 | 국세청 개인 사업자등록 신청서 작성방법 / 준비서류 / 사업장 소재지 2</p><a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>인허가 업종 서류 챙기기</strong><p>인허가 업종이나 운수업에 해당할 때만 준비합니다.</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> nts-business-05, nts-business-06</p><p>국세청 개인 사업자등록 신청서 작성방법 / 준비서류 / 인허가 업종 | 국세청 개인 사업자등록 신청서 작성방법 / 준비서류 / 운수업</p><a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>신청서 작성</span><span class="step-count">2</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>과세유형과 인허가 판단을 FlowMe가 대신하지 않습니다. 국세청 최신 안내나 세무 상담 결과를 메모에 적습니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>인적사항과 사업장 현황 작성하기</strong><p>신청서 인적사항 영역 작성 / 사업장 현황의 업태, 업종, 개업일 작성 / 사업장 소재와 현황 작성</p></div></div>
+    <details class="trace"><summary>원문 근거 3행</summary><p><b>sourceRowIds</b> nts-business-07, nts-business-08, nts-business-09</p><p>국세청 개인 사업자등록 신청서 작성방법 / 신청서 작성 1 | 국세청 개인 사업자등록 신청서 작성방법 / 신청서 작성 2 | 국세청 개인 사업자등록 신청서 작성방법 / 신청서 작성 3</p><a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>해당 항목과 과세유형 표시하기</strong><p>주류 판매는 해당 업종만 작성하고, 과세유형을 표시한 뒤 날짜와 서명을 마칩니다.</p></div></div>
+    <details class="trace"><summary>원문 근거 3행</summary><p><b>sourceRowIds</b> nts-business-10, nts-business-11, nts-business-12</p><p>국세청 개인 사업자등록 신청서 작성방법 / 신청서 작성 4 | 국세청 개인 사업자등록 신청서 작성방법 / 신청서 작성 5 | 국세청 개인 사업자등록 신청서 작성방법 / 신청서 작성 6</p><a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 1개</summary><a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer"><b>국세청 개인 사업자등록 신청서 작성방법</b><span>required documents and form sections · official_admin</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>공식 준비서류와 신청서 작성 Flow는 완성했다. 과세유형·인허가 분기 QA 뒤 2차 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>94</strong></div><span class="bar"><i style="width:94%"></i></span><p>국세청 원문에 조회 350,351회가 실제로 표시되어 visible demand가 가장 강한 후보 중 하나다. 다만 조회가 곧 Flow 저장 수요라는 뜻은 아니어서 만점을 주지 않았다.</p></div><div class="score"><div><b>변환 적합</b><strong>90</strong></div><span class="bar"><i style="width:90%"></i></span><p>준비서류와 신청서 작성 순서가 모두 체크 가능한 원문 row다. 업종별 인허가와 과세유형은 조건 분기라 단일 직선 Flow로 완전히 닫히지 않는다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>88</strong></div><span class="bar"><i style="width:88%"></i></span><p>행정·사업 시작이라는 비어 있던 사용자 순간과 ordered_procedure를 채운다. 기존 신차·면허 행정과는 목표가 다르다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>55</strong></div><span class="bar"><i style="width:55%"></i></span><p>사업 업종별 fork는 가능하지만 공식 행정 콘텐츠라 사용자 수정·홍보보다 신뢰 앵커 역할이 크다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>87</strong></div><span class="bar"><i style="width:87%"></i></span><p>12개 source row와 5개 최소 Item, setup·export가 모두 정리됐다. 과세유형 문구와 조건부 Item 노출 QA가 남아 second wave다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>개업 전 서류와 신청서 작성 누락을 막는 명확한 상황이다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>서류 준비와 양식 작성은 분명하지만 과세유형 판단은 사용자가 공식 안내나 상담으로 결정해야 한다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>국세청의 준비서류 6묶음과 신청서 작성 6단계만 사용했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>체크리스트와 시트로 옮기기 쉽고 개업 예정일은 선택적 캘린더 기준으로만 쓴다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>조건부 서류를 세 묶음으로 줄였지만 업종·사업장·과세유형 분기는 여전히 읽어야 한다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>신청서와 신분증, 사업장 서류, 과세유형처럼 대상이 구체적이다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>공식 source이지만 세무 판단을 FlowMe가 대신하지 않는다는 경계를 계속 보여줘야 한다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>5개 Item이라 모바일 조작은 단순하다. 실제 앱의 조건부 설명 읽기와 키보드 접근은 구현 QA가 남는다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>서류 6개를 6개 Item으로 늘리지 않고 공통·사업장·인허가 세 묶음으로 합침</li><li>업태·업종 예시 전체는 Item이 아니라 신청서 메모로 유지</li><li>과세유형 기준과 매출 계산은 선택을 대신하지 않고 공식 원문 확인으로 남김</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-nts-personal-business-registration</b><p>준비서류·신청서 작성 row와 조회수 350,351를 직접 확인</p><p><strong>수요</strong> 조회 350,351</p><p><strong>권리 경계</strong> 공식 항목명과 짧은 실행 문구만 사용하고 양식 이미지·전체 설명은 복제하지 않음</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="money_admin_purchase" data-pattern="ordered_procedure compare_decide" data-status="ready_second_wave" data-wave="second_wave_only" data-search="법인 통신판매업 신고 돈·행정·구매 순서 절차 비교·결정 법인 통신판매업 신고">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave second">SECOND WAVE</span><span>돈·행정·구매</span></div><h2>법인 통신판매업 신고</h2><p>법인 통신판매업 신고 전 조건과 서류를 확인하고 정부24 입력 순서를 따라간다.</p></div>
+        <div class="counts"><span><b>1</b>Flow</span><span><b>4</b>Step</span><span><b>10</b>Item</span><span><b>15</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>순서 절차</span><span>비교·결정</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>법인·쇼핑몰 이름</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>법인 통신판매업 신고</span><span class="flow-meta">4 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>법인 통신판매업 신고 전 조건과 서류를 확인하고 정부24 입력 순서를 따라간다.</p>
+      <div class="chips"><span>checklist</span><span>creator admin procedure</span></div>
+      <p class="memo"><b>공통 메모</b>이 Flow는 원문이 다루는 법인 기준입니다. 신고면제·호스트 소재지·등록면허세 판단은 최신 정부24·관할 구청 안내를 확인하고 결과를 메모에 적습니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>신고 전 확인</span><span class="step-count">3</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>확인 결과와 관할 구청 답변은 메모에 적습니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>법인 사업목적 확인하기</strong><p>법인 등기부등본 사업목적에 통신판매업이 기재되어 있는지 확인</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> mail-order-01</p><p>ZUZU 통신판매업 신고 가이드 / 신고 전 체크 1</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>신고 시기와 면제 기준 확인하기</strong><p>등록면허세가 매년 1월 부과되는 점을 고려해 최초 신고 시기 확인 / 직전년도 거래 50회 미만 또는 간이과세자 등 원문 면제 기준 확인</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> mail-order-02, mail-order-03</p><p>ZUZU 통신판매업 신고 가이드 / 신고 전 체크 2 | ZUZU 통신판매업 신고 가이드 / 신고 전 체크 3</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>호스트 소재지 확인하기</strong><p>외국 소재 호스트면 관할 구청 오프라인 신고가 필요한지 확인</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> mail-order-04</p><p>ZUZU 통신판매업 신고 가이드 / 신고 전 체크 4</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>준비서류</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>사업자등록증, 홈페이지 도메인, 구매안전서비스 이용확인증을 한 묶음으로 준비합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>신고 서류 3가지 준비하기</strong><p>신고 전 준비 서류 / 신고할 홈페이지의 도메인 주소 / PG사·오픈마켓·제공 은행에서 발급받는 에스크로 확인증</p></div></div>
+    <details class="trace"><summary>원문 근거 3행</summary><p><b>sourceRowIds</b> mail-order-05, mail-order-06, mail-order-07</p><p>ZUZU 통신판매업 신고 가이드 / 준비서류 1 | ZUZU 통신판매업 신고 가이드 / 준비서류 2 | ZUZU 통신판매업 신고 가이드 / 준비서류 3</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 3</small>정부24 신고</span><span class="step-count">5</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>정부24 통신판매업 신고 열기</strong><p>정부24 통신판매업 발급 화면으로 이동</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> mail-order-08</p><p>ZUZU 통신판매업 신고 가이드 / 신고 절차 1</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>업체와 대표자 정보 작성하기</strong><p>사업자등록번호와 본점 소재지 작성 / 사업자등록증을 토대로 대표자 정보 작성</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> mail-order-09, mail-order-10</p><p>ZUZU 통신판매업 신고 가이드 / 신고 절차 2 | ZUZU 통신판매업 신고 가이드 / 신고 절차 3</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>판매 정보 작성하기</strong><p>판매방식·취급품목·도메인·호스트 소재지 작성</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> mail-order-11</p><p>ZUZU 통신판매업 신고 가이드 / 신고 절차 4</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>구비서류 제출하기</strong><p>구매안전서비스 이용확인증 등 해당 서류 제출</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> mail-order-12</p><p>ZUZU 통신판매업 신고 가이드 / 신고 절차 5</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>수령방법 선택하고 신청하기</strong><p>온라인 발급 또는 관할 구청 방문 수령 선택 / 행정정보공동이용 사전동의 뒤 민원신청하기</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> mail-order-13, mail-order-14</p><p>ZUZU 통신판매업 신고 가이드 / 신고 절차 7 | ZUZU 통신판매업 신고 가이드 / 신고 절차 8</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 4</small>처리 완료 후</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>원문은 통상 2~3일을 안내하지만 실제 처리 상태는 정부24 또는 관할 기관을 우선합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>통신판매업 신고증 받기</strong><p>처리 완료 후 선택한 방법으로 신고증 발급</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> mail-order-15</p><p>ZUZU 통신판매업 신고 가이드 / 신고 완료</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 1개</summary><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer"><b>ZUZU 통신판매업 신고 가이드</b><span>pre-check, documents, Government24 procedure · commercial_admin</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>법인 대상임을 제목과 메모에 고정하고 정부24 최신성 확인 후 2차 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>78</strong></div><span class="bar"><i style="width:78%"></i></span><p>조회수는 보이지 않지만 통신판매업 신고, 준비서류, 정부24라는 높은 copy intent와 2026-04-17 최신 수정이 있다. visible demand가 없어 strong로 과장하지 않았다.</p></div><div class="score"><div><b>변환 적합</b><strong>91</strong></div><span class="bar"><i style="width:91%"></i></span><p>사전 확인 4개, 준비서류 3개, 신고 입력 순서가 완전하다. 법인 전용과 해외 호스트 분기만 주의하면 바로 체크리스트가 된다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>84</strong></div><span class="bar"><i style="width:84%"></i></span><p>온라인 판매 시작과 법인 행정이라는 새 사용자 순간을 채우지만 개인 사업자등록과 lifeArea는 겹친다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>72</strong></div><span class="bar"><i style="width:72%"></i></span><p>쇼핑몰·호스트·PG사별 fork와 제작자 업데이트는 자연스럽다. 행정 규정 때문에 자유로운 커뮤니티 수정에는 한계가 있다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>85</strong></div><span class="bar"><i style="width:85%"></i></span><p>15개 row와 12개 Item, 최신 수정일, source boundary가 정리됐다. 정부24 필드 변경과 법인 범위 재확인이 남았다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>온라인 판매를 시작하는 법인이 신고 전 준비와 신청 순서를 놓치지 않으려는 필요가 분명하다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>사업목적 확인부터 신고증 수령까지 각 행동의 종료 상태가 뚜렷하다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>ZUZU 원문의 사전 확인·준비서류·정부24 순서만 사용했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>체크리스트·시트·메모로 자연스럽고 처리 예정일을 억지로 생성하지 않았다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>12개 Item이지만 세 구간으로 나뉘며 자료 준비는 한 Item으로 묶었다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>법인 사업목적, 호스트 소재지, 구매안전서비스 확인증처럼 구체적이다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>3/5</strong></div><span class="bar"><i style="width:60%"></i></span><p>상업 가이드이며 행정 기준이 변할 수 있다. 정부24·관할 구청 확인 문구가 필수다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>구간별 접힘으로 모바일에서 다룰 수 있다. 외부 정부24 이동과 긴 메모는 구현 QA가 필요하다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>등록면허세와 면제 기준은 별도 판단 Field가 아니라 확인 Item과 메모로 유지</li><li>사업자등록증·도메인·에스크로 확인증은 하나의 준비 Item으로 묶음</li><li>공동대표 입력 예외와 2~3일 처리 안내는 상세 메모로 이동</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-zuzu-corporate-mail-order</b><p>사전 체크 4개·서류 3개·신고 절차와 2026-04-17 수정일 확인</p><p><strong>수요</strong> 조회수 미표시, 템플릿이 아닌 실제 정부24 실행 링크 확인</p><p><strong>권리 경계</strong> 스크린샷·상세 설명은 복제하지 않고 단계명과 출처 링크만 유지</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="money_admin_purchase" data-pattern="ordered_procedure date_preparation" data-status="ready_second_wave" data-wave="second_wave_only" data-search="여권 재발급 준비 돈·행정·구매 순서 절차 날짜 준비 성인 여권 재발급 미성년자 여권 재발급">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave second">SECOND WAVE</span><span>돈·행정·구매</span></div><h2>여권 재발급 준비</h2><p>18세 이상 재발급에 필요한 서류를 준비하고 가능한 신청 경로를 선택한다.</p></div>
+        <div class="counts"><span><b>2</b>Flow</span><span><b>4</b>Step</span><span><b>7</b>Item</span><span><b>12</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>순서 절차</span><span>날짜 준비</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>여권 주인</span><span>신청 예정일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>성인 여권 재발급</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>18세 이상 재발급에 필요한 서류를 준비하고 가능한 신청 경로를 선택한다.</p>
+      <div class="chips"><span>checklist</span><span>official document branch</span></div>
+      <p class="memo"><b>공통 메모</b>분실·훼손·정보 변경은 방문 신청만 가능한 별도 사유입니다. 이 Flow는 유효기간 만료·만료 전 재발급 기준입니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>구비서류</span><span class="step-count">2</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>신청서와 여권사진 준비하기</strong><p>18세 이상 기본 구비 서류 / 6개월 이내 촬영한 여권용 사진</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> passport-02, passport-03</p><p>외교부 여권 유효기간 만료 재발급 / 18세 이상 / 서류 1 | 외교부 여권 유효기간 만료 재발급 / 18세 이상 / 서류 2</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>신분증과 기존 여권 챙기기</strong><p>유효한 국가기관 발행 신분증 / 유효기간이 남아 있으면 기존 여권 지참</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> passport-04, passport-05</p><p>외교부 여권 유효기간 만료 재발급 / 18세 이상 / 서류 3 | 외교부 여권 유효기간 만료 재발급 / 18세 이상 / 서류 4</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>신청</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>내 신청 사유에 허용되는 경로와 접수처를 외교부 원문에서 다시 확인합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>방문 또는 온라인으로 신청하기</strong><p>국내는 방문·정부24·KB스타뱅킹, 국외는 재외동포 365민원포털 안내</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> passport-01</p><p>외교부 여권 유효기간 만료 재발급 / 기본 안내 / 신청방법</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details><details class="flow" >
+    <summary><span><small>FLOW 2</small>미성년자 여권 재발급</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>18세 미만 재발급에 필요한 법정대리인 서류와 관계 서류를 빠뜨리지 않는다.</p>
+      <div class="chips"><span>checklist</span><span>official guardian document branch</span></div>
+      <p class="memo"><b>공통 메모</b>법정대리인·2촌 이내 친족 신청은 구비서류가 달라질 수 있습니다. 대리인 유형은 원문에서 확인합니다.</p>
+      <div class="steps"><details class="step" >
+    <summary><span><small>STEP 1</small>구비서류</span><span class="step-count">3</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>신청서와 여권사진 준비하기</strong><p>18세 미만 기본 구비 서류 / 6개월 이내 촬영한 여권용 사진</p></div></div>
+    <details class="trace"><summary>원문 근거 2행</summary><p><b>sourceRowIds</b> passport-06, passport-07</p><p>외교부 여권 유효기간 만료 재발급 / 18세 미만 / 서류 1 | 외교부 여권 유효기간 만료 재발급 / 18세 미만 / 서류 2</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>법정대리인 서류 준비하기</strong><p>친권자 또는 후견인이 작성 / 동의서 서명 방식에 맞는 인감증명서·본인서명확인서 등 / 행정정보공동이용망 확인 가능 시 생략 가능</p></div></div>
+    <details class="trace"><summary>원문 근거 3행</summary><p><b>sourceRowIds</b> passport-08, passport-09, passport-10</p><p>외교부 여권 유효기간 만료 재발급 / 18세 미만 / 서류 3 | 외교부 여권 유효기간 만료 재발급 / 18세 미만 / 서류 4 | 외교부 여권 유효기간 만료 재발급 / 18세 미만 / 서류 5</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>기존 여권 챙기기</strong><p>유효기간이 남아 있으면 기존 여권 지참</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> passport-11</p><p>외교부 여권 유효기간 만료 재발급 / 18세 미만 / 서류 6</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>신청</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>법정대리인 경로로 신청하기</strong><p>방문 신청 또는 법정대리인 본인 인증 온라인 대리 신청</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> passport-12</p><p>외교부 여권 유효기간 만료 재발급 / 18세 미만 / 신청방법</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 1개</summary><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer"><b>외교부 여권 유효기간 만료 재발급</b><span>adult and minor document branches · official_admin</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>성인·미성년자 분리를 유지하고 대리신청 세부 분기 QA 후 2차 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>82</strong></div><span class="bar"><i style="width:82%"></i></span><p>조회수는 없지만 만료 전후 재발급은 날짜·서류 누락의 손실이 큰 고의도 행정 작업이다. 실제 수요 수치가 없어 inferred_high_intent로 본다.</p></div><div class="score"><div><b>변환 적합</b><strong>90</strong></div><span class="bar"><i style="width:90%"></i></span><p>성인과 미성년자 구비서류가 명확하고 신청 경로도 공식 row다. 미성년 대리인 종류에 따라 추가 분기가 생긴다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>76</strong></div><span class="bar"><i style="width:76%"></i></span><p>면허 갱신과 같은 행정 갱신 패턴이지만 가족 대리신청과 여행 신분증이라는 다른 순간을 보강한다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>48</strong></div><span class="bar"><i style="width:48%"></i></span><p>가족별 복사·재사용은 가능하지만 공식 문서 Flow라 제작자 홍보나 커뮤니티 remix는 낮다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>86</strong></div><span class="bar"><i style="width:86%"></i></span><p>12개 row와 두 child Flow가 준비됐다. 수수료·대리인 유형·온라인 신청 가능 범위의 최신성 QA가 남았다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>여권 재발급 때 필요한 서류와 신청 경로를 빠뜨리지 않으려는 상황이 분명하다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>준비하고 신청하는 행동이 단순하며 성인·미성년자를 섞지 않았다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>외교부 성인 4개·미성년자 6개 서류와 신청방법만 사용했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>체크리스트와 선택적 신청일 캘린더로 옮길 수 있다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>미성년자 서류가 많지만 세 묶음으로 합쳤고 대리인 세부는 원문으로 남겼다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>여권사진, 법정대리인 동의서, 관계서류처럼 대상을 바로 알 수 있다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>공식 외교부 source이며 적용 범위와 예외 신청 경로를 분리했다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>두 variant와 짧은 Item은 모바일에 적합하다. 외부 신청 링크와 문서명 읽기 QA가 남는다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>수수료표는 변동 가능성이 있어 Item으로 만들지 않고 원문 확인 정보로 유지</li><li>미성년자 대리인의 모든 조합을 별도 Flow로 만들지 않음</li><li>사진 규격 세부는 별도 확인 Item 대신 외교부 사진 안내 링크에서 확인</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-mofa-passport-renewal</b><p>성인·미성년자 기본 구비서류와 방문·온라인 신청 분기 확인</p><p><strong>수요</strong> 조회수 미표시, 공식 재발급·접수처 링크 확인</p><p><strong>권리 경계</strong> 공식 문서명과 신청 경로만 사용하고 전체 수수료·법정 예외 설명은 링크로 유지</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="work_career" data-pattern="source_table_rows resource_queue" data-status="ready_second_wave" data-wave="second_wave_only" data-search="30일 콘텐츠 발행 일·커리어 원문 표·행 자료 큐 30일 콘텐츠 발행">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave second">SECOND WAVE</span><span>일·커리어</span></div><h2>30일 콘텐츠 발행</h2><p>30개의 원문 주제를 하루 하나씩 발행 일정으로 옮겨 콘텐츠 고민 시간을 줄인다.</p></div>
+        <div class="counts"><span><b>1</b>Flow</span><span><b>5</b>Step</span><span><b>30</b>Item</span><span><b>30</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>원문 표·행</span><span>자료 큐</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>채널·프로젝트 이름</span><span>시작일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>30일 콘텐츠 발행</span><span class="flow-meta">5 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>30개의 원문 주제를 하루 하나씩 발행 일정으로 옮겨 콘텐츠 고민 시간을 줄인다.</p>
+      <div class="chips"><span>calendar</span><span>routine</span><span>creator operator daily row set</span></div>
+      <p class="memo"><b>공통 메모</b>채널, 게시물 URL, 초안 링크와 반응 메모는 해당 날짜 메모에 적습니다. 고객·팔로워 소개는 원문처럼 당사자 허락을 먼저 받습니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>Day 1~6</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>브랜드나 채널 소개하기</strong><span class="when">기준일</span><p>원문 주제: Introduce your brand</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-01</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 1</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>시작한 이유 이야기하기</strong><span class="when">D+1</span><p>원문 주제: Share why you started</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-02</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 2</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>자주 받는 질문 답하기</strong><span class="when">D+2</span><p>원문 주제: Answer a FAQ</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-03</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 3</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>작업 뒤편 보여주기</strong><span class="when">D+3</span><p>원문 주제: Behind the scenes</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-04</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 4</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>짧은 팁 하나 공유하기</strong><span class="when">D+4</span><p>원문 주제: Share a quick tip</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-05</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 5</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>흔한 오해 바로잡기</strong><span class="when">D+5</span><p>원문 주제: Bust a myth</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-06</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 6</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>Day 7~12</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>1주차 돌아보기</strong><span class="when">D+6</span><p>원문 주제: Week 1 recap</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-07</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 7</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>즐겨 쓰는 도구 소개하기</strong><span class="when">D+7</span><p>원문 주제: Favorite tool or resource</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-08</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 8</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>전후 변화 보여주기</strong><span class="when">D+8</span><p>원문 주제: Before and after</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-09</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 9</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>팔로워에게 질문하기</strong><span class="when">D+9</span><p>원문 주제: Ask your audience a question</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-10</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 10</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>실수와 배운 점 공유하기</strong><span class="when">D+10</span><p>원문 주제: Share a mistake and lesson</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-11</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 11</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>1분 이내 방법 알려주기</strong><span class="when">D+11</span><p>원문 주제: Under-60-second how-to</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-12</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 12</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 3</small>Day 13~18</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>고객이나 팔로워 소개하기</strong><span class="when">D+12</span><p>원문 주제: Customer or follower spotlight</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-13</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 13</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>2주차 돌아보기</strong><span class="when">D+13</span><p>원문 주제: Week 2 recap</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-14</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 14</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>근거 있는 반대 의견 말하기</strong><span class="when">D+14</span><p>원문 주제: Kind unpopular opinion</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-15</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 15</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>다섯 가지 목록 만들기</strong><span class="when">D+15</span><p>원문 주제: Top five list</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-16</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 16</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>반응 좋았던 글 다시 쓰기</strong><span class="when">D+16</span><p>원문 주제: Repurpose your best post</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-17</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 17</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>초보자 질문 답하기</strong><span class="when">D+17</span><p>원문 주제: Answer a beginner question</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-18</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 18</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 4</small>Day 19~24</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>중요한 원칙 공유하기</strong><span class="when">D+18</span><p>원문 주제: Quote or principle</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-19</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 19</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>라이브나 Q&amp;A 열기</strong><span class="when">D+19</span><p>원문 주제: Go live or host a Q&amp;A</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-20</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 20</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>3주차 돌아보기</strong><span class="when">D+20</span><p>원문 주제: Week 3 recap</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-21</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 21</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>댓글 질문에 답하기</strong><span class="when">D+21</span><p>원문 주제: Answer a comment question</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-22</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 22</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>두 가지 선택지 비교하기</strong><span class="when">D+22</span><p>원문 주제: Compare two options</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-23</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 23</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>무료 자료나 템플릿 나누기</strong><span class="when">D+23</span><p>원문 주제: Share a free resource or template</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-24</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 24</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 5</small>Day 25~30</span><span class="step-count">6</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>작업 공간 보여주기</strong><span class="when">D+24</span><p>원문 주제: Show your workspace or setup</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-25</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 25</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>짧은 이야기와 교훈 쓰기</strong><span class="when">D+25</span><p>원문 주제: Short story and takeaway</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-26</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 26</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>다시 한다면 바꿀 점 쓰기</strong><span class="when">D+26</span><p>원문 주제: What you would do differently</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-27</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 27</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>작은 성과 공유하기</strong><span class="when">D+27</span><p>원문 주제: Share a small win</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-28</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 28</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>다음 콘텐츠 예고하기</strong><span class="when">D+28</span><p>원문 주제: Tease what is next</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-29</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 29</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>30일 정리하고 감사 전하기</strong><span class="when">D+29</span><p>원문 주제: Recap and thank your audience</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> social-day-30</p><p>SocialKit 30-Day Social Media Content Challenge / 30-Day Content Challenge Day 30</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 1개</summary><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer"><b>SocialKit 30-Day Social Media Content Challenge</b><span>30-day calendar and downloadable CSV · commercial_creator</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>완전한 CSV row set은 통과시키되 영어 상업 template 권리 검토 후 2차 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>84</strong></div><span class="bar"><i style="width:84%"></i></span><p>조회수는 없지만 CSV 다운로드, Google Sheets·인쇄 사용, 2026-02-17 업데이트가 강한 copy intent다. visible traffic과는 분리해 inferred_high_intent로 봤다.</p></div><div class="score"><div><b>변환 적합</b><strong>99</strong></div><span class="bar"><i style="width:99%"></i></span><p>30일 콘텐츠 주제가 그대로 날짜 Item이 되고 CSV 목적지까지 원문이 명시한다. 생성할 빈칸이 없다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>90</strong></div><span class="bar"><i style="width:90%"></i></span><p>일·커리어에서 creator/operator의 resource_queue를 새로 채운다. 기존 면접 콘텐츠와 사용자 순간이 다르다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>98</strong></div><span class="bar"><i style="width:98%"></i></span><p>채널별 fork, 수정본 공유, 반응 토론, 제작자 홍보가 모두 자연스러운 강한 커뮤니티 loop다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>88</strong></div><span class="bar"><i style="width:88%"></i></span><p>30개 row와 export는 완성됐다. 영어 상업 source와 고객 spotlight 권한 문구를 공개 전에 확인해야 한다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>매일 게시 주제를 정하느라 멈추는 제작자의 필요가 분명하다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>각 날짜에 주제 하나를 발행하면 완료된다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>원문의 30개 날짜 row와 고객 허락 조건을 보존했다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>원문이 CSV·Sheets·인쇄를 직접 제공해 calendar·sheet 이동이 특히 자연스럽다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>30개 Item은 길지만 원문 자체이며 6일씩 접었다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>FAQ 답하기, 전후 변화, 무료 템플릿처럼 결과물이 구체적이다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>3/5</strong></div><span class="bar"><i style="width:60%"></i></span><p>영어 상업 template이고 고객·팔로워를 다루는 행이 있어 권리와 허락 경계가 필요하다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>한 날짜 한 줄이며 긴 설명을 메모로 보내 모바일 조작이 단순하다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>게시 채널·URL·반응을 별도 분석 Field로 만들지 않고 메모로 유지</li><li>주간 recap도 원문 Day row이므로 유지하되 추가 회고 질문은 만들지 않음</li><li>고객·팔로워 spotlight는 당사자 허락 조건을 메모에 명시</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-socialkit-content-30</b><p>30개 calendar row와 로그인 없는 CSV 다운로드 확인</p><p><strong>수요</strong> CSV·Sheets·인쇄 제공, 2026-02-17 수정, 조회수 미표시</p><p><strong>권리 경계</strong> 주제명과 출처 링크만 사용하고 template 설명·예시는 복제하지 않음</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article><article class="bundle-card" data-life="money_admin_purchase" data-pattern="date_preparation repeating_routine" data-status="ready_second_wave" data-wave="second_wave_only" data-search="자동차 정기검사 일정 돈·행정·구매 날짜 준비 반복 루틴 자동차 정기검사 일정">
+    <details class="bundle" >
+      <summary>
+        <div class="bundle-title"><div class="eyebrow"><span class="wave second">SECOND WAVE</span><span>돈·행정·구매</span></div><h2>자동차 정기검사 일정</h2><p>차량의 검사 유효기간 안에 정기검사를 받고 부적합이면 공식 재검사 기간을 놓치지 않는다.</p></div>
+        <div class="counts"><span><b>1</b>Flow</span><span><b>2</b>Step</span><span><b>2</b>Item</span><span><b>6</b>Row</span></div>
+      </summary>
+      <div class="bundle-body">
+        <section class="public-preview"><div class="section-head"><div><small>USER CONTENT</small><h3>실제 앱 투입 콘텐츠</h3></div><div class="chips"><span>날짜 준비</span><span>반복 루틴</span></div></div>
+          <div class="setup"><b>사용자가 정할 값</b><span>차량 이름</span><span>검사 유효기간 만료일</span></div>
+          <div class="flows"><details class="flow" open>
+    <summary><span><small>FLOW 1</small>자동차 정기검사 일정</span><span class="flow-meta">2 Step</span></summary>
+    <div class="flow-body">
+      <p class="need"><b>저장하면</b>차량의 검사 유효기간 안에 정기검사를 받고 부적합이면 공식 재검사 기간을 놓치지 않는다.</p>
+      <div class="chips"><span>calendar</span><span>timeline</span><span>official single-obligation lifecycle</span></div>
+      <p class="memo"><b>공통 메모</b>검사 종류·유효기간은 차종과 사업용 여부에 따라 다릅니다. 내 차량의 실제 만료일과 검사소는 TS 원문에서 확인해 메모에 적습니다. 검사기관이 수행하는 6단계는 설명 정보이며 별도 체크 Item으로 만들지 않습니다.</p>
+      <div class="steps"><details class="step" open>
+    <summary><span><small>STEP 1</small>검사 가능 기간</span><span class="step-count">1</span></summary>
+    <div class="step-body"><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>정기검사 받기</strong><span class="when">만료일 전 90일~후 31일</span><p>내 차량의 실제 유효기간을 확인하고 공식 검사 가능 기간 안에 정기검사를 받습니다.</p></div></div>
+    <details class="trace"><summary>원문 근거 5행</summary><p><b>sourceRowIds</b> vehicle-intro-01, vehicle-intro-02, vehicle-regular-01, vehicle-regular-02, vehicle-procedure-01</p><p>TS 자동차검사 소개 / 과태료 표 / 검사기간 | TS 자동차검사 소개 / 과태료 표 | TS 자동차 정기검사 / 검사대상 | TS 자동차 정기검사 / 정기검사 유효기간 표 | TS 자동차검사 절차 / 자동차검사 절차도</p><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010000" target="_blank" rel="noreferrer">원문 열기</a> <a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200" target="_blank" rel="noreferrer">원문 열기</a> <a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details><details class="step" >
+    <summary><span><small>STEP 2</small>부적합일 때</span><span class="step-count">1</span></summary>
+    <div class="step-body"><p class="memo"><b>메모</b>부적합 사유에 따라 재검사 기간 산정이 달라질 수 있으므로 결과서와 TS 안내를 우선합니다.</p><ul class="items"><li class="item-row">
+    <div class="item-main"><span class="check" aria-hidden="true"></span><div><strong>재검사 기간 안에 다시 검사받기</strong><p>검사기간 만료 후 또는 정해진 부적합 사유는 10일 이내 재검사</p></div></div>
+    <details class="trace"><summary>원문 근거 1행</summary><p><b>sourceRowIds</b> vehicle-regular-03</p><p>TS 자동차 정기검사 / 재검사기간</p><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200" target="_blank" rel="noreferrer">원문 열기</a></details>
+  </li></ul></div>
+  </details></div>
+    </div>
+  </details></div>
+          <details class="sources"><summary>원문 3개</summary><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010000" target="_blank" rel="noreferrer"><b>TS 자동차검사 소개</b><span>inspection window and penalties · official_vehicle</span></a><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200" target="_blank" rel="noreferrer"><b>TS 자동차 정기검사</b><span>target, validity and reinspection conditions · official_vehicle</span></a><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104" target="_blank" rel="noreferrer"><b>TS 자동차검사 절차</b><span>six inspection phases · official_vehicle</span></a></details>
+        </section>
+        <section class="review-panel"><details><summary><span><small>INTERNAL REVIEW</small>점수·감점·묶음 근거 모두 보기</span><span>13 scores</span></summary><div class="review-body"><p class="recommendation"><b>판정</b>한 개 핵심 의무를 억지로 늘리지 않는 일정 Flow로 유지하고 date_window adapter QA 후 2차 적용한다.</p><div class="score-grid"><div class="score"><div><b>수요</b><strong>86</strong></div><span class="bar"><i style="width:86%"></i></span><p>조회수는 없지만 법정 검사기간과 최대 60만원 과태료가 명시된 고긴급성 작업이다. 수요는 visible traffic이 아니라 손실 회피 의도로 추론했다.</p></div><div class="score"><div><b>변환 적합</b><strong>82</strong></div><span class="bar"><i style="width:82%"></i></span><p>핵심 사용자 행동은 정기검사 1개와 조건부 재검사 1개뿐이다. 정보는 충분하지만 풍부한 다단계 Flow는 아니다.</p></div><div class="score"><div><b>커버리지 이득</b><strong>92</strong></div><span class="bar"><i style="width:92%"></i></span><p>면허 갱신과 다른 차량 유지 lifecycle을 채우고 반복·갱신 공백을 줄인다.</p></div><div class="score"><div><b>제작자·커뮤니티</b><strong>35</strong></div><span class="bar"><i style="width:35%"></i></span><p>차량별 재사용은 가능하지만 공식 의무라 제작자 remix·토론 가치는 낮다.</p></div><div class="score"><div><b>앱 직전 준비</b><strong>84</strong></div><span class="bar"><i style="width:84%"></i></span><p>공식 기간·재검사 row와 date_window가 준비됐다. 차종별 유효기간 분기와 만료일 입력 QA가 남아 second wave다.</p></div><div class="score quality"><div><b>사용자 필요</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>차량 검사 만료를 놓치지 않으려는 필요가 명확하고 손실도 크다.</p></div><div class="score quality"><div><b>행동 명확성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>기간 안에 검사받기와 부적합 시 재검사받기 두 행동만 남겼다.</p></div><div class="score quality"><div><b>원문 충실도</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>TS 공식 기간·대상·재검사 조건을 사용했고 검사기관 내부 6단계를 Item으로 만들지 않았다.</p></div><div class="score quality"><div><b>이동성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>만료일 기준 calendar window와 checklist로 자연스럽다.</p></div><div class="score quality"><div><b>인지 부담</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>필수 Item 2개라 부담이 가장 낮고 설명은 메모로 이동했다.</p></div><div class="score quality"><div><b>문구 구체성</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>정기검사 받기, 재검사 기간 안에 다시 받기처럼 완료 기준이 분명하다.</p></div><div class="score quality"><div><b>출처 안전</b><strong>5/5</strong></div><span class="bar"><i style="width:100%"></i></span><p>TS 공식 source 세 페이지를 primary·supporting으로 분리했고 차량별 차이를 명시했다.</p></div><div class="score quality"><div><b>접근·조작성</b><strong>4/5</strong></div><span class="bar"><i style="width:80%"></i></span><p>두 Item이라 조작은 쉽다. date window 표시와 조건부 재검사 노출은 구현 QA가 필요하다.</p></div></div><div class="review-list"><h4>삭제·묶음 근거</h4><ul><li>관능·ABS·하체·전조등·배출가스·결과 설명은 검사기관 절차라 사용자 Item에서 제외</li><li>차종별 유효기간을 하나의 repeat rule로 강제하지 않음</li><li>검사소 위치는 지역별 고정 Item이 아니라 공식 찾기 링크로 유지</li></ul></div><div class="review-list"><h4>원문 검토</h4><div class="source-review"><b>src-kotsa-inspection-intro</b><p>만료 전 90일~후 31일 검사기간과 과태료 표 확인</p><p><strong>수요</strong> 조회수 미표시, 법정 과태료 urgency 확인</p><p><strong>권리 경계</strong> 기간·과태료 사실만 사용</p></div><div class="source-review"><b>src-kotsa-regular-inspection</b><p>차종별 유효기간과 부적합 재검사 10일 조건 확인</p><p><strong>수요</strong> 조회수 미표시, 공식 정기검사 페이지</p><p><strong>권리 경계</strong> 차종 판단을 앱이 대신하지 않음</p></div><div class="source-review"><b>src-kotsa-inspection-procedure</b><p>검사기관 6단계 확인</p><p><strong>수요</strong> 조회수 미표시</p><p><strong>권리 경계</strong> 사용자 Item으로 복제하지 않고 메모 설명에만 사용</p></div></div></div></details></section>
+      </div>
+    </details>
+  </article></div><div class="empty" id="empty">조건에 맞는 콘텐츠가 없습니다.</div></section>
+<section id="candidates"><div class="section-title"><h2>열어본 원문 후보 46개</h2><p>보이는 수요 신호와 판정 이유를 분리했습니다.</p></div><div class="candidate-grid"><article class="candidate"><div><span class="status source_import_required">원문 가져오기 필요</span><span>돈·행정·구매</span></div><h3>국세청 연말정산 체크리스트</h3><p><b>확인</b>공제 그룹은 열렸지만 실제 사용자별 체크 row는 대화형 화면 안에 남아 있다.</p><p><b>수요</b>조회수는 페이지에 표시되지 않음.</p><p><b>판정</b>대화형 질문 row를 가져오기 전에는 실행 Flow로 만들 수 없다.</p><a href="https://call.nts.go.kr/call/cm/cntnts/cntntsView.do?cntntsId=7042&amp;mi=2764" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_second_wave">2차 적용</span><span>돈·행정·구매</span></div><h3>국세청 개인 사업자등록 신청서 작성방법</h3><p><b>확인</b>준비서류 6묶음과 신청서 작성 6단계를 확인했다.</p><p><b>수요</b>국세청 페이지 조회 350,351회.</p><p><b>판정</b>공식 row와 수요가 모두 강하지만 과세유형·인허가 분기는 2차 적용에서 확인한다.</p><a href="https://www.nts.go.kr/taxpayer_advocate/na/ntt/selectNttInfo.do?mi=&amp;nttSn=1302746" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_second_wave">2차 적용</span><span>돈·행정·구매</span></div><h3>ZUZU 통신판매업 신고 가이드</h3><p><b>확인</b>법인 대상 사전 확인 4개, 준비서류 3개, 신청 절차를 확인했다.</p><p><b>수요</b>조회수는 미표시. 2026-04-17 최신 수정과 정부24 실행 링크가 보임.</p><p><b>판정</b>법인 전용 범위와 행정 최신성 표시를 유지한 채 2차 적용한다.</p><a href="https://zuzu.network/resource/guide/mail-order-sales-registration/" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_second_wave">2차 적용</span><span>돈·행정·구매</span></div><h3>외교부 여권 유효기간 만료 재발급</h3><p><b>확인</b>18세 이상과 미만 구비서류·신청방법을 각각 확인했다.</p><p><b>수요</b>조회수는 미표시. 공식 재발급 페이지와 정부24 연결이 있음.</p><p><b>판정</b>공식 신뢰는 높지만 연령·대리신청 분기가 있어 2차 적용한다.</p><a href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>공부·독서</span></div><h3>한국사 1급 4주 공부법</h3><p><b>확인</b>큰 기간 구분은 있으나 40강을 날짜별로 배정한 원문 row는 없다.</p><p><b>수요</b>개인 합격점수와 경험담은 보이지만 조회·댓글 수는 미표시.</p><p><b>판정</b>K-MOOC의 완전한 주차 row가 같은 학습 공백을 더 안전하게 채운다.</p><a href="https://explorekorean.net/%ED%95%9C%EA%B5%AD%EC%82%AC-%EB%8A%A5%EB%A0%A5-%EA%B2%80%EC%A0%95%EC%8B%9C%ED%97%98%ED%95%9C%EB%8A%A5%EA%B2%80-1%EA%B8%89-%ED%95%A9%EA%B2%A9-%EC%88%98%EA%B8%B0-%EB%B0%8F-4%EC%A3%BC-%EA%B3%B5%EB%B6%80/" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status source_import_required">원문 가져오기 필요</span><span>공부·독서</span></div><h3>컴활 2급 실기 합격 정리 PDF</h3><p><b>확인</b>본문보다 첨부 PDF가 핵심이어서 row를 직접 확인해야 한다.</p><p><b>수요</b>무료 PDF 제공 자체가 복사 의도 신호이나 다운로드 수는 미표시.</p><p><b>판정</b>첨부파일 import 전에는 기존 컴활 콘텐츠와 차별화할 수 없다.</p><a href="https://useful13.tistory.com/entry/%EC%BB%B4%ED%99%9C-2%EA%B8%89-%EC%8B%A4%EA%B8%B0-%ED%95%A9%EA%B2%A9-%EC%B4%9D-%EC%A0%95%EB%A6%AC-%EB%B0%8F-%EA%BF%80%ED%8C%81-PDF-%EB%AC%B4%EB%A3%8C-%EC%9E%90%EB%A3%8C-%EC%A0%9C%EA%B3%B5" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>공부·독서</span></div><h3>파고다 토익 4주 플랜팩</h3><p><b>확인</b>계획 row보다 상품·강좌 선택 화면 비중이 높다.</p><p><b>수요</b>상품 페이지 수요 수치는 미표시.</p><p><b>판정</b>읽을 수 있는 회차 row가 부족하고 기존 시험 콘텐츠와 중복된다.</p><a href="https://www.pagodastar.com/course/toeic/nlist/planpack?tab=event3" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>공부·독서</span></div><h3>시나공 컴활2급 실기 기출자료</h3><p><b>확인</b>자료 목록은 있으나 기존 컴활 대표 Flow와 동일한 사용자 순간이다.</p><p><b>수요</b>기출 다운로드 의도는 강하지만 개별 수치는 미표시.</p><p><b>판정</b>더 강한 기존 대표 콘텐츠의 backup으로 남긴다.</p><a href="https://www.sinagong.co.kr/pds/003002002/past-exams" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>식사·장보기</span></div><h3>샬라팜 7일 식단과 장보기</h3><p><b>확인</b>요일별 식단 row는 완전하지만 체중·건강 결과 주장과 변경금지 라이선스가 함께 있다.</p><p><b>수요</b>조회·댓글 수는 미표시. 식단표·장보기 형식은 강한 복사 의도 신호.</p><p><b>판정</b>건강 주장과 권리 검토가 필요한 반면 욜로리아는 요리 실행이 더 직접적이다.</p><a href="https://shala8383.tistory.com/entry/%F0%9F%A5%97-%EB%8B%A4%EC%9D%B4%EC%96%B4%ED%8A%B8-%EC%8B%9D%EB%8B%A8-%EC%9D%BC%EA%B8%B0-%E2%80%93-%EC%9D%BC%EC%A3%BC%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%EB%A6%AC%EC%8A%A4%ED%8A%B8-%EA%B3%B5%EA%B0%9C" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>식사·장보기</span></div><h3>Koder 주간 식단 계획</h3><p><b>확인</b>완성된 메뉴 row 없이 계획 방법을 설명한다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>사용자가 메뉴를 다시 설계해야 하므로 Flow가 아니라 방법론에 가깝다.</p><a href="https://koder.ai/ko/blog/jadong-jangbogi-mogrog-jugan-sigdan-gyehoeg" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>식사·장보기</span></div><h3>욜로리아 2만원 반찬 둘째·셋째 날</h3><p><b>확인</b>둘째 날 4개와 셋째 날 4개 메뉴·재료·조리 순서를 확인했다.</p><p><b>수요</b>관련 글 목록에 댓글 수가 보이고 후속 시리즈가 연결됨.</p><p><b>판정</b>첫째 날 글과 source-owned child Flow를 나눠 내부 적용한다.</p><a href="https://164regina.tistory.com/entry/2%EB%A7%8C%EC%9B%90%EC%9C%BC%EB%A1%9C-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%EC%9D%BC%EC%A3%BC%EC%9D%BC-%EB%B0%98%EC%B0%AC-13%EA%B0%80%EC%A7%80-%EB%A7%8C%EB%93%A4%EA%B8%B0-%EB%91%90%EB%B2%88%EC%A7%B8-%EC%84%B8%EB%B2%88%EC%A7%B8%EB%82%A0" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status source_import_required">원문 가져오기 필요</span><span>식사·장보기</span></div><h3>만원 이하 일주일 반찬 영상</h3><p><b>확인</b>영상 행과 타임스탬프를 이 환경에서 안정적으로 읽지 못했다.</p><p><b>수요</b>YouTube 영상이라는 형식 외 조회수는 확인하지 못함.</p><p><b>판정</b>영상 chapter 또는 설명란 row import가 필요하다.</p><a href="https://www.youtube.com/watch?v=4eUl32cpp4I" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>식사·장보기</span></div><h3>욜로리아 2만원 반찬 첫째 날</h3><p><b>확인</b>장보기 11종과 첫째 날 반찬·소스 row를 확인했다.</p><p><b>수요</b>후속 글과 영상 링크, 관련 글 댓글 흔적이 보임.</p><p><b>판정</b>장보기와 첫 조리 세션을 그대로 내부 적용한다.</p><a href="https://164regina.tistory.com/918" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>로얄캐닌 강아지 예방접종 일정</h3><p><b>확인</b>11~13주, 15~17주, 15개월, 연간 일정이 보였다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>다른 국내 상업 자료와 주령이 충돌해 공식 수의학 기준 없이는 승격하지 않는다.</p><a href="https://www.royalcanin.com/kr/dogs/puppy/dog-vaccination-schedule" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>핏펫 강아지 예방접종 일정</h3><p><b>확인</b>6·8·10·12·14·16주 일정과 비용 범위를 확인했다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>로얄캐닌 일정과 충돌하며 상업 자료끼리 합의할 수 없다.</p><a href="https://www.fitpetmall.com/blog/dog-vaccinations/" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>KIPFRI 고양이 입양 체크리스트</h3><p><b>확인</b>준비 항목은 확인했지만 기존 새끼 고양이 첫 주 번들과 사용자 순간이 겹친다.</p><p><b>수요</b>조회·댓글 수는 미표시.</p><p><b>판정</b>기존 반려 대표 콘텐츠보다 새 커버리지 이득이 작다.</p><a href="https://www.kipfri.com/community/news/view/b754ff6a-1935-465b-9714-d224238aa3d5" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>농사로 물관리</h3><p><b>확인</b>작물별 전문 설명은 있으나 일반 사용자의 반복 row로 바로 떨어지지 않는다.</p><p><b>수요</b>공식 농업 정보지만 일반 사용자 반응 수치는 미표시.</p><p><b>판정</b>식물 프로필과 작물별 row import가 필요하다.</p><a href="https://www.nongsaro.go.kr/portal/ps/psz/psza/contentMain.ps?menuId=PS04108" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status source_import_required">원문 가져오기 필요</span><span>가족·육아</span></div><h3>스냅스 돌잔치 체크리스트</h3><p><b>확인</b>페이지 제목은 열렸지만 본문 체크 row가 안정적으로 추출되지 않았다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>이미지·본문 import 전에는 사용하지 않는다.</p><a href="https://www.snaps.com/blog/dol-janchi-checklist-tips" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>가족·육아</span></div><h3>PBS 아이 생일파티 타임라인</h3><p><b>확인</b>9개 시기와 구체적 행동을 확인했다.</p><p><b>수요</b>조회수는 미표시. PBS 공식 부모 리소스 맥락이 있음.</p><p><b>판정</b>더 최신 한국어 원문이 같은 공백을 채워 backup으로 둔다.</p><a href="https://www.pbs.org/parents/thrive/your-birthday-party-timeline" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>가족·육아</span></div><h3>Outside 웰컴홈 파티 타임라인</h3><p><b>확인</b>네 시기별 각 4개 행동을 확인했다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>영어권 경쟁 계획 서비스의 생성형 자료이며 한국 사용자 맥락이 약하다.</p><a href="https://outside.so/planning/welcome-home-party-planning" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>취미·반려</span></div><h3>Canon 30일 사진 챌린지</h3><p><b>확인</b>30개 일자별 촬영 주제를 모두 확인했다.</p><p><b>수요</b>조회수는 미표시. 원문이 친구·카메라 커뮤니티와 함께 도전하도록 명시함.</p><p><b>판정</b>완전한 resource queue와 높은 공유성을 이유로 내부 적용한다.</p><a href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>AWAI 30일 글쓰기 챌린지</h3><p><b>확인</b>30일 주제와 페이지 댓글 12개를 확인했다.</p><p><b>수요</b>댓글 12개가 보임.</p><p><b>판정</b>사진·콘텐츠 챌린지와 같은 30일 artifact가 이미 두 개라 중복 quota로 backup 처리한다.</p><a href="https://www.awai.com/writing-prompts/challenge/" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_second_wave">2차 적용</span><span>일·커리어</span></div><h3>SocialKit 30일 콘텐츠 챌린지</h3><p><b>확인</b>30개 게시 주제와 로그인 없는 CSV 다운로드를 확인했다.</p><p><b>수요</b>CSV·Sheets·인쇄 제공과 2026-02-17 업데이트가 보임. 조회수는 미표시.</p><p><b>판정</b>완전한 row set이지만 영어 상업 서비스·권리 검토 후 2차 적용한다.</p><a href="https://socialk.it/en/resources/30-day-content-challenge-calendar-template" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>Diarly 30일 글쓰기 챌린지</h3><p><b>확인</b>30개 prompt를 확인했다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>같은 resource queue 형태가 이미 두 개 승격되어 backup으로 둔다.</p><a href="https://diarly.app/blog/30-day-writing-challenge.html" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status reject">제외</span><span>일·커리어</span></div><h3>이직 준비 체크리스트 10가지</h3><p><b>확인</b>10개 제목은 있으나 과도한 SEO 서술과 근거 없는 검색량 주장이 섞여 있다.</p><p><b>수요</b>실제 조회·댓글 수는 미표시.</p><p><b>판정</b>공식 고용24 절차보다 source safety와 실행 명확성이 낮다.</p><a href="https://study-information.tistory.com/entry/%EC%9D%B4%EC%A7%81%EC%9D%84-%EA%B3%A0%EB%AF%BC-%EC%A4%91%EC%9D%B4%EB%9D%BC%EB%A9%B4-%EB%B0%98%EB%93%9C%EC%8B%9C-%ED%99%95%EC%9D%B8%ED%95%B4%EC%95%BC-%ED%95%A0-%EC%9D%B4%EC%A7%81-%EC%A4%80%EB%B9%84-%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8-10%EA%B0%80%EC%A7%80" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>돈·행정·구매</span></div><h3>토스페이먼츠 통신판매업 신고</h3><p><b>확인</b>실행 row를 확인했지만 ZUZU와 동일한 사용자 순간이다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>최신 수정일과 사전 확인이 더 분명한 ZUZU를 대표로 선택한다.</p><a href="https://www.tosspayments.com/blog/articles/sales-registration" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>돈·행정·구매</span></div><h3>카페24 사업자등록 안내</h3><p><b>확인</b>절차는 읽히지만 국세청 원문과 동일한 사용자 순간이다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>공식 국세청 자료를 대표로 사용한다.</p><a href="https://support.cafe24.com/hc/ko/articles/8471070889241-%EC%82%AC%EC%97%85%EC%9E%90-%EB%93%B1%EB%A1%9D%EC%9D%80-%EC%96%B4%EB%96%BB%EA%B2%8C-%ED%95%98%EB%82%98%EC%9A%94" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>일·커리어</span></div><h3>고용24 중장년 전직지원</h3><p><b>확인</b>40세 이상 대상, 6개월 서비스, 신청·지원 단계를 확인했다.</p><p><b>수요</b>조회수는 미표시. 공식 신청 링크와 전국 센터가 있음.</p><p><b>판정</b>일반 구직 Flow와 연령별 variant Map으로 내부 적용한다.</p><a href="https://www.work24.go.kr/wk/u/b/1000/seniorChgJobSptSvc.do" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>집·생활</span></div><h3>아정당 사회초년생 자취 준비</h3><p><b>확인</b>물품 카테고리와 2주 전~당일 시기표를 확인했다.</p><p><b>수요</b>조회 10,184, 스크랩 1.</p><p><b>판정</b>기존 이사·주거 콘텐츠와 중복이 크므로 이번 공백 확장에서는 제외한다.</p><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%B2%98%EC%9D%8C_%EB%8F%85%EB%A6%BD%ED%95%98%EB%8A%94_%EC%82%AC%ED%9A%8C%EC%B4%88%EB%85%84%EC%83%9D%EC%9D%84_%EC%9C%84%ED%95%9C_%EC%9E%90%EC%B7%A8_%EC%A4%80%EB%B9%84_%EB%A6%AC%EC%8A%A4%ED%8A%B8-42109" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>집·생활</span></div><h3>고방 자취방 현장 방문</h3><p><b>확인</b>방 내부 6그룹, 외부 2그룹, 방문 후 질문을 확인했다.</p><p><b>수요</b>읽음 2,397, 댓글 0.</p><p><b>판정</b>비교·결정에는 강하지만 기존 전월세 점검 콘텐츠와 가까워 second backup으로 둔다.</p><a href="https://gobang.kr/contents/6137" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>가족·육아</span></div><h3>StemCyte 출산 가방 55개</h3><p><b>확인</b>산모·아기·동반자·서류 등 55개와 병원 제공품을 확인했다.</p><p><b>수요</b>대화형 진행률 0/55가 보임. 조회수는 미표시.</p><p><b>판정</b>미국 병원·보험·제대혈 판매 맥락이 섞여 한국 앱용으로 번역만 해 승격할 수 없다.</p><a href="https://stemcyte.com/ko/hospital-bag-checklist/" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status source_import_required">원문 가져오기 필요</span><span>가족·육아</span></div><h3>이랜드 출산 가방 A-Z</h3><p><b>확인</b>준비 팁과 조회수는 확인했지만 핵심 물품표가 이미지다.</p><p><b>수요</b>조회 48,242.</p><p><b>판정</b>이미지 row를 정확히 import하면 StemCyte 대체 후보가 된다.</p><a href="https://www.eland.co.kr/mgzn/viewMgzn?mgznIdx=792" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>공부·독서</span></div><h3>소로롤 오픽 2주 독학</h3><p><b>확인</b>1주차 주제 암기, 2주차 반복 말하기만 있고 일자별 row가 없다.</p><p><b>수요</b>2025 게시글이지만 조회수는 미표시.</p><p><b>판정</b>기존 오픽 XLSX 계획보다 구조가 약하고 중복된다.</p><a href="https://sororol.tistory.com/273" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>식사·장보기</span></div><h3>한솥 일주일 도시락 메뉴</h3><p><b>확인</b>7개 메뉴는 있으나 요일 배정·장보기·조리 row가 없다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>사용자가 다시 주간 계획을 짜야 하므로 이번에는 승격하지 않는다.</p><a href="https://franchise.hsd.co.kr/food_magazine/?bmode=view&amp;idx=167118152" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>강아지 예방접종 일정 2025</h3><p><b>확인</b>상업 자료들과 다른 주령표가 보였다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>공식 국내 수의학 row 없이 충돌하는 일정을 채택하지 않는다.</p><a href="https://gopetnews.tistory.com/entry/dog-vaccine-schedule" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>취미·반려</span></div><h3>Koder 식물 물주기 달력</h3><p><b>확인</b>달력 설계법은 있지만 식물별 실제 반복 row가 없다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>식물 프로필과 종별 주기 import 전에는 방법론 수준이다.</p><a href="https://koder.ai/ko/blog/geonmangjeung-sigmul-muljugi-dalryeog" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>일·커리어</span></div><h3>고용24 구직자 취업지원</h3><p><b>확인</b>이력서 작성, 구직신청, 입사지원, 결과 입력 단계를 확인했다.</p><p><b>수요</b>조회수는 미표시. 공식 서비스와 신청 링크가 있음.</p><p><b>판정</b>일반 구직자가 바로 시작할 수 있어 내부 적용한다.</p><a href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>일·커리어</span></div><h3>고용24 국민취업지원제도</h3><p><b>확인</b>유형별 자격과 제출서류는 확인했지만 분기와 민감 정보가 매우 많다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>별도 공식 제도 Flow Map 연구가 필요해 이번 bundle에서는 제외한다.</p><a href="https://www.work24.go.kr/ua/z/z/1300/selectEmssRqutIntro.do" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_second_wave">2차 적용</span><span>돈·행정·구매</span></div><h3>TS 자동차검사 소개</h3><p><b>확인</b>검사 유효기간 창과 과태료 표를 확인했다.</p><p><b>수요</b>조회수는 미표시. 공식 검사소 연결이 있음.</p><p><b>판정</b>정기검사 일정 bundle의 보조 공식 근거로 사용한다.</p><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010000" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>공부·독서</span></div><h3>K-MOOC 제자백가의 사상</h3><p><b>확인</b>1~15주 강좌 운영 계획을 모두 확인했다.</p><p><b>수요</b>조회수·수강생 수는 미표시. 공공 MOOC 강의계획서가 공개됨.</p><p><b>판정</b>완전한 주차 row와 자연스러운 달력 목적지로 내부 적용한다.</p><a href="https://www.kmooc.kr/view/course/detail/6661" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status hold">보류</span><span>돈·행정·구매</span></div><h3>TS 자동차검사 절차</h3><p><b>확인</b>관능·ABS·하체·전조등·배출가스·결과 설명을 확인했다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>사용자 체크 행동이 아니라 정기검사 Item의 상세 설명으로만 사용한다.</p><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status reject">제외</span><span>돈·행정·구매</span></div><h3>TS 서울 자동차검사소 목록</h3><p><b>확인</b>서울 검사소 탐색 페이지를 확인했다.</p><p><b>수요</b>조회수는 미표시.</p><p><b>판정</b>지역 목록은 고정 Item이 아니라 원문 링크로 유지한다.</p><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=06040701" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status reject">제외</span><span>일·커리어</span></div><h3>고용24 이력서 관리 로그인</h3><p><b>확인</b>로그인 전에는 source row가 없었다.</p><p><b>수요</b>수요 수치는 확인 불가.</p><p><b>판정</b>공식 안내 페이지의 실행 링크로만 유지한다.</p><a href="https://www.work24.go.kr/cm/z/b/0210/openLginPage.do?forwardUrl=/wk/a/b/2100/resumeMngMain.do" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_second_wave">2차 적용</span><span>돈·행정·구매</span></div><h3>TS 자동차 정기검사</h3><p><b>확인</b>차종별 유효기간과 부적합 재검사 10일 조건을 확인했다.</p><p><b>수요</b>조회수는 미표시. 공식 법정 검사 정보.</p><p><b>판정</b>한 개 핵심 행동을 억지로 늘리지 않는 일정 Flow로 2차 적용한다.</p><a href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>가족·육아</span></div><h3>아이 생일파티 준비 타임라인</h3><p><b>확인</b>다섯 시기와 장소·연령별 선택표를 확인했다.</p><p><b>수요</b>2026-03-09 최신 수정. 조회수는 미표시.</p><p><b>판정</b>매년 반복되고 제목·날짜만 바꿔 fork하기 쉬워 내부 적용한다.</p><a href="https://baby.tali.kr/kids-birthday-party-planning-guide" target="_blank" rel="noreferrer">원문 열기</a></article><article class="candidate"><div><span class="status ready_for_internal_canary">1차 내부 적용</span><span>가족·육아</span></div><h3>돌잔치 4개월 준비 체크리스트</h3><p><b>확인</b>7개 준비 항목과 장소 4개월 전·사진 2~3개월 전 시점을 확인했다.</p><p><b>수요</b>관련 글 댓글 수는 보이나 본문 조회수는 미표시.</p><p><b>판정</b>아이 생일과 다른 일회성 variant로 같은 Map에 내부 적용한다.</p><a href="https://hophop1.tistory.com/26" target="_blank" rel="noreferrer">원문 열기</a></article></div></section>
+<footer class="footer"><p>앱 코드와 seed는 수정하지 않았습니다. 이 파일은 내부 검토용이며 사용자 화면에는 점수·판정·sourceRowIds를 노출하지 않습니다.</p><a href="#top">맨 위로</a></footer>
+</main><script>
+const cards=[...document.querySelectorAll('.bundle-card')];const controls=['search','life','pattern','wave','status'].map(id=>document.getElementById(id));const empty=document.getElementById('empty');const count=document.getElementById('resultCount');function apply(){const q=document.getElementById('search').value.trim().toLowerCase();const life=document.getElementById('life').value;const pattern=document.getElementById('pattern').value;const wave=document.getElementById('wave').value;const status=document.getElementById('status').value;let visible=0;cards.forEach(card=>{const ok=(!q||card.dataset.search.includes(q))&&(!life||card.dataset.life===life)&&(!pattern||card.dataset.pattern.split(' ').includes(pattern))&&(!wave||card.dataset.wave===wave)&&(!status||card.dataset.status===status);card.classList.toggle('hidden',!ok);if(ok)visible++;});count.textContent=visible+'개 표시';empty.classList.toggle('show',visible===0)}controls.forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',apply));document.getElementById('openAll').addEventListener('click',()=>document.querySelectorAll('.bundle-card:not(.hidden) details.bundle,.bundle-card:not(.hidden) details.flow,.bundle-card:not(.hidden) details.step').forEach(node=>node.open=true));document.getElementById('closeAll').addEventListener('click',()=>document.querySelectorAll('.bundle-card:not(.hidden) details').forEach(node=>node.open=false));
+</script></body></html>

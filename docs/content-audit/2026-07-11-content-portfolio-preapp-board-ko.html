@@ -1,0 +1,1730 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>FlowMe 콘텐츠 포트폴리오 앱 직전 검토판</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root { --ink:#18211c; --muted:#64706a; --line:#d9dfdb; --paper:#f4f6f4; --white:#fff; --green:#176b4d; --green-soft:#e5f3ec; --amber:#8b5a12; --amber-soft:#fff3d6; --blue:#315f86; --blue-soft:#eaf2f8; --rose:#8a3b4c; }
+    * { box-sizing:border-box; }
+    html { background:var(--paper); color:var(--ink); font-family:Arial,"Noto Sans KR",sans-serif; }
+    body { margin:0; line-height:1.55; letter-spacing:0; }
+    a { color:var(--blue); text-decoration-thickness:1px; text-underline-offset:3px; overflow-wrap:anywhere; }
+    button { font:inherit; }
+    .page { width:min(1180px,100%); margin:0 auto; padding:28px 20px 80px; }
+    .hero { padding:30px 0 24px; border-bottom:1px solid var(--line); }
+    .kicker,.eyebrow { color:var(--green); font-size:12px; font-weight:800; text-transform:uppercase; }
+    h1 { margin:6px 0 10px; font-size:clamp(28px,4vw,48px); line-height:1.12; }
+    h2,h3,h4,p { margin-top:0; }
+    .hero > p { max-width:780px; color:var(--muted); font-size:16px; }
+    .scope-note { padding:14px 16px; border-left:4px solid var(--rose); background:#fff0f3; color:#65303b; }
+    .metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin-top:20px; }
+    .metric { background:var(--white); border:1px solid var(--line); padding:14px; border-radius:6px; }
+    .metric span { display:block; color:var(--muted); font-size:12px; }
+    .metric strong { display:block; margin-top:2px; font-size:24px; }
+    .toolbar { position:sticky; top:0; z-index:5; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:12px 0; background:rgba(244,246,244,.96); border-bottom:1px solid var(--line); backdrop-filter:blur(8px); }
+    .toolbar button { border:1px solid var(--line); background:var(--white); color:var(--ink); border-radius:4px; padding:8px 11px; cursor:pointer; }
+    .toolbar button[aria-pressed="true"] { border-color:var(--green); background:var(--green); color:white; }
+    .toolbar .spacer { flex:1 1 auto; }
+    .bundle-list { display:grid; gap:14px; margin-top:18px; }
+    .bundle-card { background:var(--white); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .bundle-card[hidden] { display:none; }
+    .bundle-card > summary { display:flex; align-items:center; gap:14px; cursor:pointer; list-style:none; padding:18px; }
+    .bundle-card > summary::-webkit-details-marker,.step > summary::-webkit-details-marker,.source-review-panel > summary::-webkit-details-marker,.score-panel > summary::-webkit-details-marker,.omission-panel > summary::-webkit-details-marker { display:none; }
+    .bundle-summary-main { min-width:0; flex:1 1 auto; }
+    .bundle-summary-main h2 { margin:8px 0 2px; font-size:21px; line-height:1.25; }
+    .bundle-summary-main p { margin:0; color:var(--muted); font-size:13px; }
+    .summary-top { display:flex; gap:6px; flex-wrap:wrap; }
+    .status,.life,.destination { display:inline-flex; align-items:center; border-radius:999px; padding:3px 8px; font-size:11px; font-weight:800; }
+    .status.ready { background:var(--green-soft); color:var(--green); }
+    .status.second { background:var(--amber-soft); color:var(--amber); }
+    .life { background:var(--blue-soft); color:var(--blue); }
+    .summary-chevron { width:12px; height:12px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(45deg); flex:0 0 auto; }
+    .bundle-card[open] .summary-chevron { transform:rotate(225deg); margin-top:7px; }
+    .bundle-body { border-top:1px solid var(--line); padding:18px; }
+    .source-strip { display:flex; gap:10px 14px; align-items:baseline; flex-wrap:wrap; padding-bottom:14px; }
+    .meta-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .meta-grid span { display:block; color:var(--muted); font-size:11px; }
+    .meta-grid strong { display:block; margin-top:3px; font-size:13px; overflow-wrap:anywhere; }
+    .flow { padding:22px 0 8px; }
+    .flow + .flow { border-top:2px solid var(--line); margin-top:18px; }
+    .flow-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .flow-head h3 { margin:2px 0 0; font-size:19px; }
+    .destination { background:#f0efe8; color:#5e5840; }
+    .user-need { margin:10px 0; color:#34413a; }
+    .field-line { color:var(--muted); font-size:13px; }
+    .field-line strong { color:var(--ink); margin-right:6px; }
+    .flow-memo,.memo { margin-top:12px; padding:12px 14px; background:#f7f8f7; border-left:3px solid var(--line); }
+    .flow-memo p,.memo p { margin:4px 0 0; color:#47534c; font-size:13px; }
+    .steps { margin-top:14px; border-top:1px solid var(--line); }
+    .step { border-bottom:1px solid var(--line); }
+    .step > summary { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:13px 2px; cursor:pointer; list-style:none; font-weight:800; }
+    .step > summary small { color:var(--muted); font-weight:400; white-space:nowrap; }
+    .step-body { padding:0 0 16px; }
+    .item-list { list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .item-row { display:flex; gap:10px; align-items:flex-start; padding:10px 0; }
+    .check { width:18px; height:18px; margin-top:2px; border:2px solid #8b9790; border-radius:3px; flex:0 0 auto; }
+    .item-row strong { display:block; font-size:14px; }
+    .item-row p { margin:2px 0 0; color:var(--muted); font-size:13px; }
+    .source-link { display:inline-block; margin-top:10px; font-size:13px; font-weight:700; }
+    .trace { margin:5px 0 0; color:#7c8781; font-size:11px; }
+    .review-zone { margin-top:22px; padding-top:18px; border-top:3px solid var(--ink); }
+    .review-zone > h3 { margin-bottom:5px; }
+    .review-zone > p { color:var(--muted); }
+    .source-review-panel,.score-panel,.omission-panel { border-top:1px solid var(--line); }
+    .source-review-panel > summary,.score-panel > summary,.omission-panel > summary { padding:13px 0; cursor:pointer; font-weight:800; list-style:none; }
+    .source-review-row { padding:10px 0; border-top:1px solid var(--line); }
+    .source-review-row p { margin:3px 0 0; color:var(--muted); font-size:13px; }
+    .score-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; padding:4px 0 16px; }
+    .score-grid h4 { margin-bottom:8px; }
+    .score-row { padding:10px 0; border-top:1px solid var(--line); }
+    .score-head { display:flex; justify-content:space-between; gap:8px; }
+    .score-head span { color:var(--green); font-weight:800; }
+    .score-row p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .omission-panel ul { margin:0 0 16px; padding-left:20px; }
+    .handoff { margin-top:36px; padding-top:24px; border-top:1px solid var(--line); }
+    .handoff-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .handoff section { background:var(--white); border:1px solid var(--line); border-radius:6px; padding:16px; }
+    .handoff ol,.handoff ul { margin:8px 0 0; padding-left:20px; }
+    .footer { margin-top:28px; color:var(--muted); font-size:12px; }
+    @media (max-width:800px) {
+      .page { padding:16px 12px 56px; }
+      .hero { padding-top:18px; }
+      .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .metrics .metric:last-child { grid-column:1 / -1; }
+      .toolbar { flex-wrap:nowrap; overflow-x:auto; margin:0 -12px; padding:10px 12px; scrollbar-width:none; }
+      .toolbar::-webkit-scrollbar { display:none; }
+      .toolbar .spacer { display:none; }
+      .toolbar button { flex:0 0 auto; }
+      .bundle-card > summary,.bundle-body { padding:15px 14px; }
+      .bundle-summary-main h2 { font-size:18px; }
+      .meta-grid,.score-grid,.handoff-grid { grid-template-columns:1fr; }
+      .flow-head { align-items:center; }
+      .flow-head h3 { font-size:17px; }
+      .item-row strong { font-size:15px; }
+      .item-row p,.flow-memo p,.memo p { font-size:14px; }
+      .source-strip { align-items:flex-start; flex-direction:column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <span class="kicker">2026-07-11 · source-backed pre-app package</span>
+      <h1>콘텐츠 포트폴리오 앱 직전 검토판</h1>
+      <p>여행·식사·커리어·반려 등 현재 카탈로그의 빈 영역을 실제 원문 row로 채웠습니다. 각 카드를 열면 앱에 들어갈 Flow / Step / Item과 원문 대응, 점수별 코멘트를 전부 확인할 수 있습니다.</p>
+      <p class="scope-note"><strong>아직 앱 반영 전입니다.</strong> 첫 canary 5개와 second wave 3개를 분리했으며 공개 노출은 권리·민감성 검토와 사용자 승인이 필요합니다.</p>
+      <div class="metrics">
+        <div class="metric"><span>Bundle</span><strong>8</strong></div>
+        <div class="metric"><span>Flow</span><strong>10</strong></div>
+        <div class="metric"><span>Step</span><strong>38</strong></div>
+        <div class="metric"><span>Item</span><strong>94</strong></div>
+        <div class="metric"><span>첫 canary / 2차</span><strong>5 / 3</strong></div>
+      </div>
+    </header>
+
+    <nav class="toolbar" aria-label="콘텐츠 필터">
+      <button type="button" data-filter="all" aria-pressed="true">전체 8</button>
+      <button type="button" data-filter="ready" aria-pressed="false">첫 canary 5</button>
+      <button type="button" data-filter="second" aria-pressed="false">2차 3</button>
+      <button type="button" data-filter="travel_outings" aria-pressed="false">여행</button>
+      <button type="button" data-filter="meals_grocery" aria-pressed="false">식사</button>
+      <button type="button" data-filter="work_career" aria-pressed="false">커리어</button>
+      <button type="button" data-filter="hobby_pet" aria-pressed="false">반려</button>
+      <span class="spacer"></span>
+      <button type="button" id="expand-all">전체 펼치기</button>
+      <button type="button" id="collapse-all">전체 접기</button>
+    </nav>
+
+    <section class="bundle-list" aria-label="앱 직전 콘텐츠 묶음">
+  <details class="bundle-card" data-status="ready_for_internal_canary" data-life="travel_outings" open>
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status ready">앱 적용 검토 가능</span><span class="life">여행·외출</span></div>
+        <h2>해외여행 준비</h2>
+        <p>2 Flow · 4 Step · 25 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 2개</strong>
+        <a href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank" rel="noreferrer">2026 해외여행 준비물 체크리스트 (+ 짐싸는 팁)</a><a href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=894&amp;popMenu=ov" target="_blank" rel="noreferrer">찾기쉬운 생활법령정보 해외여행 출국절차</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>ordered_checklist · source_checklist</strong></div>
+        <div><span>포트폴리오 역할</span><strong>representative_start · creator_community_variant · official_trust_anchor</strong></div>
+        <div><span>권장 Flow</span><strong>overseas-packing-check</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>해외여행 짐 싸기</h3></div>
+      <span class="destination">checklist</span>
+    </div>
+    <p class="user-need">출국 전 필요한 짐을 원문 카테고리대로 빠뜨리지 않고 챙긴다.</p>
+    <div class="field-line"><strong>설정</strong> 없음</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>상품 카드와 가격은 옮기지 않습니다. 여행지와 숙소 조건에 맞지 않는 선택 품목은 체크 대상에서 제외할 수 있습니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>필수 준비물</span><small>8개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>여권 챙기기</strong><p>짐을 쌀 때 가장 먼저 휴대 가방에 넣는 필수품</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>데이터 이심 챙기기</strong><p>여행지에서 사용할 데이터 수단</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>현금 챙기기</strong><p>여행지 특성에 맞는 소액과 여러 단위의 현금</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>항공권 및 각종 바우처 사본 챙기기</strong><p>항공권과 입장권 등의 인쇄 또는 별도 사본</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>보조배터리 챙기기</strong><p>이동 중 휴대전화 충전에 사용할 보조배터리</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>접이식 우산 챙기기</strong><p>가방에 넣을 수 있는 가벼운 우산</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>상비약 챙기기</strong><p>평소 사용하는 기본 상비약</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>목베개 챙기기</strong><p>장시간 비행일 때 챙기는 목베개</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>원문은 여권, 데이터 이심, 현금, 바우처 사본, 보조배터리, 접이식 우산, 상비약, 목베개를 필수 묶음으로 제시합니다. 목베개는 장시간 비행일 때 적용합니다.</p></div>
+      <a class="source-link" href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · KKday 준비물 카테고리 / 필수 준비물</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>여행 조건에 따라 챙길 것</span><small>6개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>트래블카드 챙기기</strong><p>해외 결제와 현지 통화 사용을 위한 카드</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>필터 샤워기 챙기기</strong><p>수질이 걱정되는 여행지에서 선택하는 준비물</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>슬리퍼 챙기기</strong><p>숙소나 휴양지에서 사용할 슬리퍼</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>국제 운전면허증 챙기기</strong><p>렌터카 이용 계획이 있을 때 확인할 준비물</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>긴 옷 챙기기</strong><p>일교차나 냉방에 대비할 얇은 겉옷</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>멀티탭 챙기기</strong><p>충전할 전자기기가 여러 개일 때 사용할 멀티탭</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>여행지 수질, 렌터카 이용, 일교차, 전자기기 수처럼 조건이 맞을 때만 체크합니다.</p></div>
+      <a class="source-link" href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · KKday 준비물 카테고리 / 여행 조건에 따라 챙길 것</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>숙소에 먼저 확인할 것</span><small>3개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>헤어 드라이기·고데기 챙기기</strong><p>숙소 구비 여부를 먼저 확인할 품목</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>목욕용품 챙기기</strong><p>숙소 구비 여부를 먼저 확인할 품목</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>수건 챙기기</strong><p>숙소 구비 여부를 먼저 확인할 품목</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>숙소 구비 여부를 확인한 뒤 필요한 품목만 챙깁니다. 원문의 짐싸기 팁은 옷 분리, 장기 여행 압축가방, 목욕용품 소분, 숙소 구비품 확인, 전자기기 기내 가방 보관, 캐리어 무게 확인입니다.</p></div>
+      <a class="source-link" href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · KKday 준비물 카테고리 / 숙소에 먼저 확인할 것</p>
+    </div>
+  </details></div>
+  </section>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 2</span><h3>공항 출국 순서</h3></div>
+      <span class="destination">checklist</span>
+    </div>
+    <p class="user-need">공항 도착부터 항공기 탑승까지 공식 순서를 한 화면에서 따라간다.</p>
+    <div class="field-line"><strong>설정</strong> 없음</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>수하물 크기·무게와 액체류 반입 기준은 항공사와 공항의 최신 안내를 원문에서 다시 확인합니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>출국 당일</span><small>8개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>공항 도착</strong><p>항공기 탑승까지 충분한 시간을 두고 공항에 도착</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>탑승수속 및 수하물 위탁</strong><p>이용 항공사의 탑승수속과 수하물 위탁 진행</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>해당 신고 진행</strong><p>세관·병무·검역 중 본인에게 해당하는 신고 진행</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>출국장으로 이동</strong><p>탑승수속과 필요한 신고 후 출국장으로 이동</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>보안검색</strong><p>기내 반입 규정에 따라 보안검색 진행</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>출국심사</strong><p>출국심사 절차 진행</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>탑승구로 이동</strong><p>탑승권 또는 운항정보의 탑승구로 이동</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>항공기 탑승</strong><p>항공사가 안내한 탑승 요청 시간까지 탑승</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>본인에게 해당하는 신고만 진행하고, 탑승권 또는 운항정보에 표시된 시간과 탑승구를 우선합니다.</p></div>
+      <a class="source-link" href="https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=894&amp;popMenu=ov" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 생활법령정보 출국절차 공식 8단계</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>첫 canary 포함. 준비물과 공식 출국절차는 서로 다른 child Flow로 유지한다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-kkday-overseas-packing-2026</strong><p>확인: 본문의 필수 8개, 유용 6개, 숙소 확인 3개와 짐싸기 팁 6개를 직접 확인</p><p>수요: 글 조회수는 미표시. 연결 상품에 100K+ 등 예약 수가 보이나 글 수요와 분리해 해석</p><p>권리 경계: 품목명과 짧은 실행 메모만 사용하고 상품 카드, 가격, 상세 설명은 복제하지 않음</p></div><div class="source-review-row"><strong>src-easylaw-departure-2026</strong><p>확인: 공항 도착부터 항공기 탑승까지 공식 8단계를 직접 확인</p><p>수요: 조회수 미표시. 주소 복사, 즐겨찾기, 인쇄 체크 기능 확인</p><p>권리 경계: 공식 단계명과 원문 링크만 유지하고 항공사별 상세 규정은 원문 확인으로 남김</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>80/100</span></div>
+    <p>KKday 글 조회수는 없지만 연결 상품의 큰 예약 수와 여행 체크리스트 탐색 의도가 보인다. 공식 절차는 저장 수요보다 신뢰 보강 역할이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>86/100</span></div>
+    <p>준비물 17개와 출국 절차 8단계가 각각 체크리스트로 바로 옮겨지며 서로 섞을 필요가 없다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>100/100</span></div>
+    <p>현재 앱에서 비어 있던 여행·외출 대표 시작점을 처음 채운다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>84/100</span></div>
+    <p>여행지·동행자별 준비물 fork와 후기 공유가 자연스럽고 원문 상품·정보로 돌아갈 이유도 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>94/100</span></div>
+    <p>모든 row, sourceTrace, 최소 setup, export 목적지가 확정됐다. 공개 전 상업 원문 권리 검토만 남는다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 4.75/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>출국을 앞두고 짐과 공항 순서를 빠뜨리지 않으려는 상황이 분명하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>5/5</span></div>
+    <p>준비물은 챙기면 끝나고 출국 절차는 공식 순서대로 완료한다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>KKday 품목 17개와 생활법령정보 8단계를 추가 생성 없이 보존했다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>5/5</span></div>
+    <p>두 child Flow 모두 체크리스트로 자연스럽고 출발일은 선택적 캘린더 기준으로만 쓴다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>4/5</span></div>
+    <p>준비물 17개가 길지만 원문 자체의 체크리스트이며 세 카테고리로 나눠 탐색 부담을 줄였다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>여권 챙기기, 보안검색, 탑승구 이동처럼 손으로 끝낼 수 있는 문장이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>5/5</span></div>
+    <p>상업 품목 추천과 공식 절차를 분리했고 항공사별 규정은 원문 확인으로 남겼다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>4/5</span></div>
+    <p>모바일 검토판에서 Flow와 Step을 접어 볼 수 있다. 실제 앱 접근성은 구현 QA가 남는다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>KKday 상품 카드·가격·예약 CTA는 사용자 Item에서 제외</li><li>짐싸기 팁 6개는 별도 체크 Item이 아니라 숙소 확인 Step 메모에 묶음</li><li>항공사별 수하물·액체류 세부 규정은 공식 원문 링크에서 확인</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+  <details class="bundle-card" data-status="ready_for_internal_canary" data-life="travel_outings" >
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status ready">앱 적용 검토 가능</span><span class="life">여행·외출</span></div>
+        <h2>친구와 부산 2박 3일 뚜벅이 여행</h2>
+        <p>1 Flow · 3 Step · 12 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 1개</strong>
+        <a href="https://visitbusan.net/kr/index.do?lang_cd=ko&amp;menuCd=DOM_000000202012001000&amp;uc_seq=1211" target="_blank" rel="noreferrer">친구들과 함께하는 2박 3일 부산 뚜벅이 여행 코스 추천!</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>source_table_rows · date_preparation</strong></div>
+        <div><span>포트폴리오 역할</span><strong>representative_start · creator_community_variant</strong></div>
+        <div><span>권장 Flow</span><strong>busan-friends-2n3d-route</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>부산 2박 3일 뚜벅이 코스</h3></div>
+      <span class="destination">calendar</span>
+    </div>
+    <p class="user-need">친구와 부산을 대중교통으로 여행할 때 작가가 제시한 3일 코스를 날짜별로 옮긴다.</p>
+    <div class="field-line"><strong>설정</strong> 여행 시작일*</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>원문에는 장소 순서만 있고 방문 시간은 없습니다. 앱도 임의 시간을 만들지 않고 날짜별 순서만 보존합니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>1일차</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>부산역</strong><p>1일차 출발점</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>삼정타워</strong><p>부산역에서 이동하는 1일차 두 번째 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>전포카페거리</strong><p>1일차 세 번째 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>호천마을</strong><p>일몰과 야경을 보는 1일차 마지막 장소</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>부산역에서 시작해 서면·전포를 거쳐 호천마을 야경으로 마무리합니다.</p></div>
+      <a class="source-link" href="https://visitbusan.net/kr/index.do?lang_cd=ko&amp;menuCd=DOM_000000202012001000&amp;uc_seq=1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Visit Busan 추천코스 1일차</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>2일차</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>해리단길</strong><p>2일차 첫 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>스카이캡슐</strong><p>2일차 두 번째 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>청사포다릿돌전망대</strong><p>2일차 세 번째 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>광안리해수욕장·민락수변공원</strong><p>야경을 보는 2일차 마지막 묶음</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>해리단길에서 시작해 해운대 해변권을 지나 광안리 야경으로 마무리합니다.</p></div>
+      <a class="source-link" href="https://visitbusan.net/kr/index.do?lang_cd=ko&amp;menuCd=DOM_000000202012001000&amp;uc_seq=1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Visit Busan 추천코스 2일차</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>3일차</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>장림포구</strong><p>3일차 첫 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>몰운대해안데크길</strong><p>3일차 두 번째 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>다대포해수욕장·고우니생태길</strong><p>3일차 세 번째 장소</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>부산역</strong><p>3일차 귀환 지점</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>서부산의 장림포구와 다대포 일대를 둘러본 뒤 부산역으로 돌아옵니다.</p></div>
+      <a class="source-link" href="https://visitbusan.net/kr/index.do?lang_cd=ko&amp;menuCd=DOM_000000202012001000&amp;uc_seq=1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Visit Busan 추천코스 3일차</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>첫 canary 포함. 여행 일정형과 제작자/사용자 공유 가능성을 함께 검증한다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-visitbusan-friends-2n3d</strong><p>확인: 1~3일차의 장소 순서 12개와 여행작가 출처를 직접 확인</p><p>수요: 조회 157,198, 평점 5.0, 리뷰 23</p><p>권리 경계: 장소명과 순서, 짧은 맥락만 사용하고 본문 설명과 사진은 복제하지 않음</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>92/100</span></div>
+    <p>원문에 조회 157,198, 평점 5.0, 리뷰 23이 실제로 표시되어 눈에 보이는 수요 근거가 강하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>94/100</span></div>
+    <p>1~3일차와 장소 12개가 이미 순서대로 있어 시작일만 받으면 날짜별 일정이 된다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>95/100</span></div>
+    <p>여행 준비가 아닌 실제 일자별 여행 코스라는 비어 있던 artifact를 채운다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>92/100</span></div>
+    <p>여행작가 원문, 리뷰, 찜, 여행공유가 존재하고 사용자는 친구 구성·지역에 따라 fork하기 쉽다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>97/100</span></div>
+    <p>12개 장소 row와 날짜 offset이 완성됐고 임의 방문 시간은 만들지 않는 경계도 명확하다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 4.75/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>친구와 대중교통으로 부산 2박 3일을 다니려는 사용자와 상황이 구체적이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>5/5</span></div>
+    <p>각 날짜에 원문 장소를 순서대로 방문하면 된다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>작가가 제시한 3일·12개 장소와 묶음 단위를 그대로 보존했다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>5/5</span></div>
+    <p>시작일을 기준으로 3일 all-day 캘린더와 체크리스트로 모두 옮길 수 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>4/5</span></div>
+    <p>하루 네 장소가 보이지만 날짜별 접힘 구조라 한 번에 한 날만 볼 수 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>장소명이 그대로 실행 제목이라 별도 설명 없이도 목적지가 보인다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>5/5</span></div>
+    <p>공식 관광 사이트의 작가 코스를 한 source로 사용하고 추천 설명을 사실처럼 확대하지 않았다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>4/5</span></div>
+    <p>모바일 카드와 날짜별 접힘을 검증한다. 앱의 지도·키보드 조작은 구현 범위다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>원문에 없는 방문 시각·체류시간·교통편은 생성하지 않음</li><li>장소 설명과 사진 전문은 복제하지 않고 원문 링크로 유지</li><li>광안리/민락수변공원과 다대포/고우니생태길은 원문 묶음 그대로 한 Item</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+  <details class="bundle-card" data-status="ready_for_internal_canary" data-life="meals_grocery" >
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status ready">앱 적용 검토 가능</span><span class="life">식사·장보기</span></div>
+        <h2>직장인 일주일 도시락</h2>
+        <p>1 Flow · 5 Step · 5 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 1개</strong>
+        <a href="https://ohou.se/advices/9098" target="_blank" rel="noreferrer">예쁘고 간단하게 준비하는 도시락 일주일 식단표</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>source_table_rows</strong></div>
+        <div><span>포트폴리오 역할</span><strong>representative_start · creator_community_variant · repeat_reuse</strong></div>
+        <div><span>권장 Flow</span><strong>weekday-lunchbox-menu</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>월~금 도시락 식단</h3></div>
+      <span class="destination">calendar</span>
+    </div>
+    <p class="user-need">매일 메뉴를 다시 고민하지 않고 원문의 월~금 도시락을 한 주 일정으로 쓴다.</p>
+    <div class="field-line"><strong>설정</strong> 시작 주 월요일*</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>원문에 장보기 목록이나 주말 일괄 준비 row는 없습니다. 월·화·금은 원문 재료와 레시피가 있고, 수·목은 메뉴 설명만 있으므로 없는 재료·조리 과정을 만들지 않습니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>월요일</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>스팸볶음밥·딸기 도시락 만들기</strong><p>밥 반공기, 스팸 1/2캔, 달걀 1개, 대파, 굴소스, 후춧가루. 원문에 8단계 레시피가 있음</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>밥 반공기, 스팸 1/2캔, 달걀 1개, 대파, 굴소스, 후춧가루. 원문에 8단계 레시피가 있음</p></div>
+      <a class="source-link" href="https://ohou.se/advices/9098" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 오늘의집 월요일 메뉴</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>화요일</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>게살계란덮밥·골드키위 도시락 만들기</strong><p>밥 반공기, 양파 1/2개, 굴소스 1.5T, 달걀 2개, 크래미 2줄, 소금, 후추. 원문에 7단계 레시피가 있음</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>밥 반공기, 양파 1/2개, 굴소스 1.5T, 달걀 2개, 크래미 2줄, 소금, 후추. 원문에 7단계 레시피가 있음</p></div>
+      <a class="source-link" href="https://ohou.se/advices/9098" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 오늘의집 화요일 메뉴</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>수요일</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>김치볶음밥·두부봉부침·깍두기 도시락 만들기</strong><p>원문은 김치볶음밥과 두부봉 계란부침 조합을 제시하며 별도 재료표는 없음</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>원문은 김치볶음밥과 두부봉 계란부침 조합을 제시하며 별도 재료표는 없음</p></div>
+      <a class="source-link" href="https://ohou.se/advices/9098" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 오늘의집 수요일 메뉴</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>목요일</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>짜장잡채밥·깍두기 도시락 만들기</strong><p>원문은 잡채볶음밥 반, 짜장 반과 깍두기 조합을 제시하며 별도 재료표는 없음</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>원문은 잡채볶음밥 반, 짜장 반과 깍두기 조합을 제시하며 별도 재료표는 없음</p></div>
+      <a class="source-link" href="https://ohou.se/advices/9098" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 오늘의집 목요일 메뉴</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>금요일</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>만두마요덮밥 도시락 만들기</strong><p>밥 한 그릇, 달걀 2개, 냉동만두 2개, 식용유, 소금, 마요네즈. 원문에 6단계 레시피가 있음</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>밥 한 그릇, 달걀 2개, 냉동만두 2개, 식용유, 소금, 마요네즈. 원문에 6단계 레시피가 있음</p></div>
+      <a class="source-link" href="https://ohou.se/advices/9098" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 오늘의집 금요일 메뉴</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>첫 canary 포함. 메뉴 row를 일정으로 옮기는 식사 카테고리 기준점으로 사용한다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-ohouse-weekday-lunchbox</strong><p>확인: 월~금 메뉴 5개와 월·화·금 레시피, 수·목 메뉴 설명을 직접 확인</p><p>수요: 댓글 27 확인. 다른 숫자는 UI 의미가 불명확해 수요 점수에 사용하지 않음</p><p>권리 경계: 요일별 메뉴와 짧은 재료/조리 요약만 사용하고 사진과 레시피 전문은 복제하지 않음</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>76/100</span></div>
+    <p>댓글 27은 보이지만 조회·저장 수치는 확인되지 않았다. 일주일 식단표라는 copy intent는 강하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>88/100</span></div>
+    <p>월~금 메뉴 5개가 명확하다. 원문에 없는 장보기나 일괄 조리는 넣지 않아야 한다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>100/100</span></div>
+    <p>일반 성인 식사·장보기 영역의 첫 실행 콘텐츠를 만든다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>89/100</span></div>
+    <p>사용자가 메뉴를 바꾸고 자기 식단을 공유하기 쉬우며 원문 사진·레시피로 돌아갈 가치가 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>93/100</span></div>
+    <p>5개 요일과 메뉴·재료 수준이 모두 확인됐다. 공개 시 레시피 저작권 경계를 지키면 된다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 4.75/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>직장인이 한 주 점심 메뉴를 미리 정하려는 상황이 뚜렷하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>5/5</span></div>
+    <p>각 요일에 해당 도시락 한 개를 만들면 완료된다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>월~금 메뉴를 그대로 쓰고 레시피가 없는 수·목 내용을 보충하지 않았다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>5/5</span></div>
+    <p>시작 주 월요일 하나로 5개 캘린더 일정과 5개 sheet row를 만들 수 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>5/5</span></div>
+    <p>요일당 Item 한 개뿐이며 재료와 방법은 메모로 내려갔다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>스팸볶음밥·딸기 도시락 만들기처럼 결과물이 제목에 보인다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>4/5</span></div>
+    <p>creator 원문과 권리 경계는 분리했지만 공개 전 플랫폼/creator 사용 범위 검토가 필요하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>4/5</span></div>
+    <p>요일별 접힘과 긴 재료 메모의 모바일 가독성을 검토판에서 확인한다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>원문에 없는 장보기 목록·주말 일괄 조리·소분 Step은 생성하지 않음</li><li>월·화·금의 레시피 전문 대신 재료와 짧은 요약만 memo에 둠</li><li>수·목은 원문 수준대로 메뉴 설명만 제공</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+  <details class="bundle-card" data-status="ready_for_internal_canary" data-life="work_career" >
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status ready">앱 적용 검토 가능</span><span class="life">일·커리어</span></div>
+        <h2>면접 전날 준비</h2>
+        <p>1 Flow · 6 Step · 6 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 1개</strong>
+        <a href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">면접 전날 준비해야할 7가지 체크리스트</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>date_preparation · source_checklist</strong></div>
+        <div><span>포트폴리오 역할</span><strong>representative_start · repeat_reuse</strong></div>
+        <div><span>권장 Flow</span><strong>interview-d1-check</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>면접 D-1 체크</h3></div>
+      <span class="destination">hybrid</span>
+    </div>
+    <p class="user-need">면접 전날 장소, 복장, 서류, 답변과 준비물을 한 번에 마친다.</p>
+    <div class="field-line"><strong>설정</strong> 면접일*</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>원문의 7개 섹션 중 컨디션과 준비물은 하나의 전날 마무리 Item으로 묶었습니다. 캔디데이트 서비스 홍보 문구는 옮기지 않습니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>장소와 도착</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>면접 장소와 도착 시간을 확정하기</strong><p>주소·위치, 이동 소요시간, 면접 시간과 도착시간, 건물 층·호실 확인</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>면접 장소와 시간: 주소·위치, 이동 소요시간, 면접 시간과 도착시간, 건물 층·호실 확인</p></div>
+      <a class="source-link" href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 캔디데이트 첫 번째 체크 섹션</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>복장</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>면접 복장을 전날 꺼내 두기</strong><p>회사 분위기에 맞는 복장, 구김·얼룩, 신발 상태, 액세서리·메이크업 확인</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>면접 복장: 회사 분위기에 맞는 복장, 구김·얼룩, 신발 상태, 액세서리·메이크업 확인</p></div>
+      <a class="source-link" href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 캔디데이트 두 번째 체크 섹션</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>서류</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>요청 서류를 한 파일에 넣기</strong><p>제출한 이력서·자기소개서, 포트폴리오·증빙, 회사 요청 자료, 메모지 확인</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>필요 서류: 제출한 이력서·자기소개서, 포트폴리오·증빙, 회사 요청 자료, 메모지 확인</p></div>
+      <a class="source-link" href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 캔디데이트 세 번째 체크 섹션</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>답변</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>핵심 질문 답변을 소리 내어 연습하기</strong><p>회사·직무 질문, 이력서 질문, 갈등·실패 경험, 지원 동기와 기여점 연습</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>예상 질문과 답변: 회사·직무 질문, 이력서 질문, 갈등·실패 경험, 지원 동기와 기여점 연습</p></div>
+      <a class="source-link" href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 캔디데이트 네 번째 체크 섹션</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>당일 흐름</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>도착부터 마지막 질문까지 한 번 시뮬레이션하기</strong><p>도착 후 행동, 첫 인사, 돌발 질문, 역질문 기회까지 연습</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>면접 당일 시뮬레이션: 도착 후 행동, 첫 인사, 돌발 질문, 역질문 기회까지 연습</p></div>
+      <a class="source-link" href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 캔디데이트 여섯 번째 체크 섹션</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>전날 마무리</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>컨디션과 당일 준비물을 마치기</strong><p>수면, 저녁 식사, 물과 가벼운 스트레칭, 다음 날 아침 식사 준비 / 필기구, 휴대전화 충전·보조배터리, 필요 시 간식·물, 교통비·주차비 확인</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>전날 컨디션: 수면, 저녁 식사, 물과 가벼운 스트레칭, 다음 날 아침 식사 준비<br>당일 준비물: 필기구, 휴대전화 충전·보조배터리, 필요 시 간식·물, 교통비·주차비 확인</p></div>
+      <a class="source-link" href="https://www.candidate.im/contents/blog4" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 캔디데이트 다섯 번째 체크 섹션 + 캔디데이트 일곱 번째 체크 섹션</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>첫 canary 포함. 커리어 카테고리의 짧은 D-1 실행물로 검증한다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-candidate-interview-d1</strong><p>확인: 장소·시간, 복장, 서류, 답변, 컨디션, 시뮬레이션, 준비물의 7개 섹션을 직접 확인</p><p>수요: 조회·저장·댓글 수 미표시</p><p>권리 경계: 체크 섹션과 짧은 실행 메모만 사용하고 서비스 홍보 CTA는 제외</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>70/100</span></div>
+    <p>조회·댓글 수는 보이지 않아 structure-only 수요다. 면접 전날이라는 urgency와 copy intent는 높다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>91/100</span></div>
+    <p>7개 원문 섹션을 6개 체크 행동으로 묶을 수 있고 면접일 하나만 필요하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>100/100</span></div>
+    <p>비어 있던 일·커리어 영역의 첫 대표 Flow다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>72/100</span></div>
+    <p>면접 유형별 fork는 가능하지만 개인 준비 내용이 많아 공개 커뮤니티 루프는 여행·식단보다 약하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>95/100</span></div>
+    <p>모든 섹션과 하위 체크를 확인했고 홍보 CTA 제거와 D-1 export가 확정됐다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 4.75/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>면접 전날 무엇을 끝내야 하는지 알고 싶은 구직자 상황이 선명하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>5/5</span></div>
+    <p>장소 확정, 복장, 서류, 답변, 시뮬레이션, 마무리의 완료 상태가 보인다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>원문 7개 섹션을 보존하되 낮은 수준 체크를 메모로 묶었다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>5/5</span></div>
+    <p>면접일 D-1 체크리스트와 all-day 캘린더로 자연스럽다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>5/5</span></div>
+    <p>28개 하위 문장을 6개 Item과 메모로 줄여 과밀하지 않다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>요청 서류를 한 파일에 넣기처럼 실제 물체와 끝 상태가 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>4/5</span></div>
+    <p>creator 조언임을 유지하고 서비스 홍보를 제거했다. 공식 채용 규정으로 표현하지 않는다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>4/5</span></div>
+    <p>모바일에서 6개 Step을 독립적으로 펼칠 수 있다. 앱의 실제 체크 상태 QA가 남는다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>컨디션 관리와 당일 준비물을 전날 마무리 한 Item으로 묶음</li><li>캔디데이트 면접PT 서비스 CTA 제외</li><li>세부 예상 답변은 사용자가 memo에 적고 별도 입력 필드를 만들지 않음</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+  <details class="bundle-card" data-status="ready_second_wave" data-life="money_admin_purchase" >
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status second">분기 확인 후 적용</span><span class="life">돈·서류·구매</span></div>
+        <h2>운전면허 갱신·적성검사</h2>
+        <p>2 Flow · 6 Step · 6 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 1개</strong>
+        <a href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">한국도로교통공단 정기적성검사·면허갱신</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>ordered_procedure · date_preparation</strong></div>
+        <div><span>포트폴리오 역할</span><strong>official_trust_anchor · repeat_reuse</strong></div>
+        <div><span>권장 Flow</span><strong>license-class2-renewal</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>1종·70세 이상 2종 적성검사</h3></div>
+      <span class="destination">checklist</span>
+    </div>
+    <p class="user-need">1종 또는 70세 이상 2종 대상자가 자신의 갱신기간을 확인하고 공식 준비물을 빠뜨리지 않고 신청한다.</p>
+    <div class="field-line"><strong>설정</strong> 없음</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>개인 갱신기간은 FlowMe가 계산하지 않습니다. 2026년 변경 규칙 때문에 공식 마이페이지에서 먼저 확인합니다. 기간 경과 과태료와 취소 기준은 원문을 확인합니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>기간 확인</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>공식 마이페이지에서 갱신기간 확인하기</strong><p>2026년부터 생일 전후 6개월 규칙이 적용될 수 있어 안전운전 통합민원 마이페이지 또는 교통민원24에서 개인 기간 확인</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>2026년부터 생일 전후 6개월 규칙이 적용될 수 있어 안전운전 통합민원 마이페이지 또는 교통민원24에서 개인 기간 확인<br>전국 면허시험장 또는 경찰서 교통민원실. 강남경찰서는 해당 업무를 하지 않음</p></div>
+      <a class="source-link" href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 공식 기간·신청장소 row</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>준비물</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>면허증·사진·필요 서류 준비하기</strong><p>운전면허증, 6개월 이내 컬러사진 2매, 적성검사 신청서. 건강검진·진단서 활용 시 사진 수가 달라질 수 있음 / 모바일IC 21,000원 또는 일반 16,000원, 신체검사비 별도. 일부 시험장은 신체검사장이 없음</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>1종·70세 이상 2종 준비물: 운전면허증, 6개월 이내 컬러사진 2매, 적성검사 신청서. 건강검진·진단서 활용 시 사진 수가 달라질 수 있음<br>1종·70세 이상 2종 수수료와 신체검사: 모바일IC 21,000원 또는 일반 16,000원, 신체검사비 별도. 일부 시험장은 신체검사장이 없음</p></div>
+      <a class="source-link" href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 공식 면허 종류별 준비물 row</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>신청</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>온라인 가능 여부 확인 후 갱신 신청하기</strong><p>사진 등록과 신청서 출력이 가능하며, 1종 보통 대상자가 국민건강보험공단 검진 자료를 보유한 경우 인터넷 신청 가능</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>1종 적성검사 신청: 사진 등록과 신청서 출력이 가능하며, 1종 보통 대상자가 국민건강보험공단 검진 자료를 보유한 경우 인터넷 신청 가능<br>기간 경과 기준은 공식 원문에서 다시 확인합니다.</p></div>
+      <a class="source-link" href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 공식 신청·기간 경과 row</p>
+    </div>
+  </details></div>
+  </section>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 2</span><h3>2종 면허 갱신</h3></div>
+      <span class="destination">checklist</span>
+    </div>
+    <p class="user-need">70세 미만 2종 대상자가 자신의 갱신기간을 확인하고 공식 준비물을 빠뜨리지 않고 신청한다.</p>
+    <div class="field-line"><strong>설정</strong> 없음</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>개인 갱신기간은 FlowMe가 계산하지 않습니다. 2026년 변경 규칙 때문에 공식 마이페이지에서 먼저 확인합니다. 기간 경과 과태료와 취소 기준은 원문을 확인합니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>기간 확인</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>공식 마이페이지에서 갱신기간 확인하기</strong><p>2026년부터 생일 전후 6개월 규칙이 적용될 수 있어 안전운전 통합민원 마이페이지 또는 교통민원24에서 개인 기간 확인</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>2026년부터 생일 전후 6개월 규칙이 적용될 수 있어 안전운전 통합민원 마이페이지 또는 교통민원24에서 개인 기간 확인<br>전국 면허시험장 또는 경찰서 교통민원실. 강남경찰서는 해당 업무를 하지 않음</p></div>
+      <a class="source-link" href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 공식 기간·신청장소 row</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>준비물</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>면허증·사진·필요 서류 준비하기</strong><p>운전면허증, 6개월 이내 컬러사진 1매 / 모바일IC 15,000원 또는 일반 10,000원</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>2종 갱신 준비물: 운전면허증, 6개월 이내 컬러사진 1매<br>2종 갱신 수수료: 모바일IC 15,000원 또는 일반 10,000원</p></div>
+      <a class="source-link" href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 공식 면허 종류별 준비물 row</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>신청</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>온라인 가능 여부 확인 후 갱신 신청하기</strong><p>인터넷 또는 대리접수가 가능하며 대리접수에는 대리인 신분증과 위임장이 필요하고 수령은 본인만 가능</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>2종 갱신 신청: 인터넷 또는 대리접수가 가능하며 대리접수에는 대리인 신분증과 위임장이 필요하고 수령은 본인만 가능<br>기간 경과 기준은 공식 원문에서 다시 확인합니다.</p></div>
+      <a class="source-link" href="https://www.safedriving.or.kr/diGuide/selectDiGuide01.do?menuCd=MN-PO-1211" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 공식 신청·기간 경과 row</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>두 번째 wave. 2026년 기간 변경과 70세 이상 분기를 앱 카피로 오인 없이 표현한 뒤 적용한다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-safe-driving-license-renewal-2026</strong><p>확인: 2026년 기간 변경, 1종·2종 주기, 신청장소, 준비물, 수수료와 온라인/방문 조건을 직접 확인</p><p>수요: 공식 민원 목적의 강한 의도는 있으나 조회 수 미표시</p><p>권리 경계: 공식 준비 row와 링크를 유지하고 개인 적격성 판단은 하지 않음</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>80/100</span></div>
+    <p>공식 민원 페이지라 공개 조회수는 없지만 기한·과태료가 있는 고의도 행정 수요다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>86/100</span></div>
+    <p>1종·70세 이상 2종과 일반 2종으로 나누면 준비물과 수수료가 명확한 체크리스트가 된다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>78/100</span></div>
+    <p>기존 구매·계약 편중을 넘어 반복 행정/갱신 사용 순간을 추가한다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>30/100</span></div>
+    <p>공식 기준을 fork하거나 토론할 성격은 약하며 신뢰 anchor 역할이 맞다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>86/100</span></div>
+    <p>source row는 완성됐지만 개인 기간 자동계산 금지와 연령 분기 copy를 앱 QA에서 반드시 확인해야 한다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 4.50/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>면허 갱신기한을 놓치지 않고 준비하려는 상황과 손해가 분명하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>4/5</span></div>
+    <p>세 단계는 명확하지만 첫 단계에서 외부 마이페이지 확인이 필요하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>2026년 변경, 면허 종류별 준비물·수수료·장소를 공식 페이지대로 분리했다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>4/5</span></div>
+    <p>체크리스트는 강하지만 날짜는 개인 공식 기간 확인 후에만 선택적으로 넣을 수 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>4/5</span></div>
+    <p>Flow를 두 종류로 나눴지만 70세 이상 2종 경계는 여전히 주의 깊게 읽어야 한다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>마이페이지에서 갱신기간 확인, 면허증·사진 준비처럼 구체적이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>5/5</span></div>
+    <p>FlowMe가 법정 기간을 계산하지 않고 공식 원문을 유일한 기준으로 둔다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>4/5</span></div>
+    <p>분기 label은 명확하지만 실제 앱에서 선택 오류를 막는 QA가 남는다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>개인 갱신기간 자동 계산 기능은 만들지 않음</li><li>시력 기준·75세 이상 세부 의료/교육 요건은 Item이 아니라 공식 원문 확인 대상</li><li>과태료·취소 정보는 경고 memo로만 두고 별도 기록 필드를 만들지 않음</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+  <details class="bundle-card" data-status="ready_for_internal_canary" data-life="home_living" >
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status ready">앱 적용 검토 가능</span><span class="life">집·살림</span></div>
+        <h2>에어컨 필터 4주 청소</h2>
+        <p>1 Flow · 1 Step · 1 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 1개</strong>
+        <a href="https://www.samsungsvc.co.kr/solution/121273" target="_blank" rel="noreferrer">스탠드, 먼지거름 필터 청소 방법이 궁금합니다.</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>repeating_routine</strong></div>
+        <div><span>포트폴리오 역할</span><strong>representative_start · repeat_reuse · official_trust_anchor</strong></div>
+        <div><span>권장 Flow</span><strong>aircon-ultrafine-filter-routine</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>극세 필터 4주 청소</h3></div>
+      <span class="destination">calendar</span>
+    </div>
+    <p class="user-need">에어컨 극세 필터를 제조사가 안내한 4주 간격으로 잊지 않고 청소한다.</p>
+    <div class="field-line"><strong>설정</strong> 첫 청소일*</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>반복 주기는 원문이 정한 4주로 고정합니다. 강한 햇빛에서 건조하거나 무리하게 물청소하지 않습니다. 모델별 구조가 다르면 해당 제품 설명서를 우선합니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>4주마다</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>에어컨 극세 필터 청소하기</strong><p>먼지가 적으면 진공청소기로 제거하고, 많으면 중성세제를 푼 미지근한 물에 약 30분 담근 뒤 세척하여 그늘에서 충분히 건조</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>먼지가 적으면 진공청소기로 제거하고, 많으면 중성세제를 푼 미지근한 물에 약 30분 담근 뒤 세척하여 그늘에서 충분히 건조</p></div>
+      <a class="source-link" href="https://www.samsungsvc.co.kr/solution/121273" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · 삼성서비스 극세 필터 주기·방법</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>첫 canary 포함. 반복 관리 Flow의 가장 단순하고 근거가 강한 기준점으로 사용한다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-samsung-aircon-filter-2025</strong><p>확인: 극세 필터 4주 1회 주기와 진공청소·물세척·그늘 건조 방법을 직접 확인</p><p>수요: 조회수 32,035</p><p>권리 경계: 공식 주기와 짧은 방법만 사용하고 서비스 판매 영역은 제외</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>86/100</span></div>
+    <p>제조사 페이지에 조회수 32,035가 표시되어 실제 visible demand가 강하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>97/100</span></div>
+    <p>4주 1회라는 고정 주기와 한 번의 청소 행동, 방법 memo가 정확히 맞는다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>86/100</span></div>
+    <p>집·살림의 이사 편중을 반복 가전 관리로 넓힌다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>48/100</span></div>
+    <p>사용자 remix는 낮지만 제조사 원문 회귀와 다른 모델 확장 가능성은 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>98/100</span></div>
+    <p>입력 1개, 반복 1개, Item 1개, 공식 방법 memo로 스키마가 가장 안정적이다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 5.00/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>에어컨 필터 청소를 잊는 사용자의 반복 문제에 정확히 맞는다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>5/5</span></div>
+    <p>4주마다 극세 필터 한 번 청소하면 완료다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>제조사의 4주 주기와 청소·건조 방법만 사용했다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>5/5</span></div>
+    <p>캘린더 반복 일정 한 개로 완전히 이식된다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>5/5</span></div>
+    <p>Item 한 개와 메모 한 개뿐이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>에어컨 극세 필터 청소하기라는 실제 행동이 제목이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>5/5</span></div>
+    <p>제조사 공식 정보와 모델별 설명서 우선 경계를 표시했다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>5/5</span></div>
+    <p>고정 크기 반복 일정과 단일 체크라 모바일·키보드 조작 복잡도가 낮다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>전문세척/일반세척 비교와 서비스 전화·판매 CTA 제외</li><li>진공청소·물세척·그늘 건조는 별도 Item이 아니라 방법 memo</li><li>사용자 상태·사진·청소 증거 필드 없음</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+  <details class="bundle-card" data-status="ready_second_wave" data-life="health_fitness" >
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status second">건강 경계 확인 후 적용</span><span class="life">건강·운동</span></div>
+        <h2>5km 대회 8주 준비</h2>
+        <p>1 Flow · 8 Step · 29 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 1개</strong>
+        <a href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">5km 달리기 8주 프로그램</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>source_table_rows · date_preparation</strong></div>
+        <div><span>포트폴리오 역할</span><strong>representative_start · repeat_reuse · creator_community_variant</strong></div>
+        <div><span>권장 Flow</span><strong>beginner-5k-8week-program</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>5km 대회 8주 훈련표</h3></div>
+      <span class="destination">calendar</span>
+    </div>
+    <p class="user-need">8주 동안 원문의 거리와 걷기·달리기 패턴 29회를 날짜에 맞춰 따라간다.</p>
+    <div class="field-line"><strong>설정</strong> 1주차 월요일*</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>원문은 운동 전 워밍업·스트레칭과 운동 후 쿨다운·스트레칭을 권하고, 불편한 증상이나 통증이 생기면 쉬고 전문가와 상담하라고 안내합니다. 별도 통증 입력란은 만들지 않고 필요하면 메모에 적습니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>1주차 · 초보자 훈련</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>1.5km 가볍게 걷기·달리기</strong><p>100m 걷기 + 100m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>2km 가볍게 걷기·달리기</strong><p>100m 걷기 + 100m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>1.5km 가볍게 걷기·달리기</strong><p>100m 걷기 + 100m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>2.5km 빠르게 걷기</strong><p>달리기에 익숙해지기 위한 주말 훈련</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>초보자 훈련. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 1주차 표</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>2주차 · 기본 체력 향상</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>2km 가볍게 걷기·달리기</strong><p>200m 걷기 + 200m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>2.5km 가볍게 걷기·달리기</strong><p>200m 걷기 + 200m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>2km 가볍게 걷기·달리기</strong><p>200m 걷기 + 200m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>3km 빠르게 걷기</strong><p>주말 훈련</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>기본 체력 향상. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 2주차 표</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>3주차 · 강도 조절</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>2.5km 중간 강도 걷기·달리기</strong><p>400m 걷기 + 200m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>3km 가볍게 걷기·달리기</strong><p>400m 걷기 + 200m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>2.5km 중간 강도 걷기·달리기</strong><p>400m 걷기 + 200m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>4km 빠르게 걷기</strong><p>주말 훈련</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>강도 조절. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 3주차 표</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>4주차 · 거리 증가</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>3km 가볍게 걷기·달리기</strong><p>400m 걷기 + 800m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>3.5km 가볍게 걷기·달리기</strong><p>400m 걷기 + 800m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>3km 가볍게 걷기·달리기</strong><p>400m 걷기 + 800m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>5km 빠르게 걷기</strong><p>주말 훈련</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>거리 증가. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 4주차 표</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>5주차 · 스피드 향상</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>3.5km 중간 걷기·달리기</strong><p>400m 걷기 + 800m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>4km 중간 강도 걷기·달리기</strong><p>600m 걷기 + 1,200m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>3.5km 중간 강도로 달리기</strong><p>원문에 별도 걷기 구간 없음</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>6km 빠르게 걷기</strong><p>주말 훈련</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>스피드 향상. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 5주차 표</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>6주차 · 기술 향상</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>4km 중간 강도 걷기·달리기</strong><p>400m 걷기 + 800m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>4.5km 중간 강도 걷기·달리기</strong><p>400m 걷기 + 1,600m 달리기 반복</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>4km 중간 강도로 달리기</strong><p>원문에 별도 걷기 구간 없음</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>7km 빠르게 걷기</strong><p>주말 훈련</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>기술 향상. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 6주차 표</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>7주차 · 마지막 준비</span><small>4개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>4.5km 중간 강도로 달리기</strong><p>원문에 별도 걷기 구간 없음</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>5km 중간 강도로 달리기</strong><p>원문에 별도 걷기 구간 없음</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>4.5km 중간 강도로 달리기</strong><p>원문에 별도 걷기 구간 없음</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>8km 빠르게 걷기</strong><p>주말 훈련</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>마지막 준비. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 7주차 표</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>8주차 · 5km 대회</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>5km 대회 참가</strong><p>8주차 원문에 제시된 마지막 세션</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>5km 대회. 각 회차의 거리와 걷기·달리기 구간은 원문 그대로 유지합니다.</p></div>
+      <a class="source-link" href="https://holmez.tistory.com/entry/5km-%EB%8B%AC%EB%A6%AC%EA%B8%B0-8%EC%A3%BC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Holmez 8주차 표</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>두 번째 wave. 29회 원문 프로그램을 유지하되 건강 민감 source 경계를 먼저 검토한다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-holmez-5k-8week</strong><p>확인: 1~7주 월·수·금·주말 훈련 28개와 8주차 5km 대회 1개를 직접 확인</p><p>수요: 조회·댓글 수 미표시. 실제 29회 훈련 row가 있는 구조 수요만 확인</p><p>권리 경계: 거리와 걷기·달리기 패턴만 사용하고 건강 효과를 보장하지 않음</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>72/100</span></div>
+    <p>조회 수는 보이지 않아 구조 수요만 확인된다. 8주·29회 표는 옮겨 적기 의도가 강하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>94/100</span></div>
+    <p>1~8주, 요일, 거리, 걷기·달리기 구간이 모두 있어 캘린더로 정확히 변환된다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>92/100</span></div>
+    <p>약한 건강·운동 영역에 단일 영상이 아닌 단계형 프로그램을 추가한다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>76/100</span></div>
+    <p>시작일·주말 요일을 바꿔 fork하고 실행 후기를 공유하기 쉽지만 건강 원문 권리·안전 검토가 필요하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>86/100</span></div>
+    <p>29회 row와 schedule은 완성됐다. creator 건강 프로그램이라 첫 batch 뒤에 넣는 것이 안전하다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 4.63/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>5km 대회를 8주 동안 준비하려는 초보 목표가 분명하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>5/5</span></div>
+    <p>각 회차의 요일, 거리, 걷기·달리기 패턴이 구체적이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>29개 회차를 삭제·추가 없이 보존하고 주말만 사용자 요일로 정한다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>5/5</span></div>
+    <p>1주차 월요일과 주말 운동일로 29개 캘린더 이벤트를 만들 수 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>4/5</span></div>
+    <p>29개 Item은 많지만 원문 프로그램 자체의 필수 회차이며 주차별로 접는다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>거리와 반복 구간이 제목·detail에 직접 보인다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>4/5</span></div>
+    <p>creator 건강 프로그램과 중단 안내를 분리했지만 공식 훈련 지침은 아니다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>4/5</span></div>
+    <p>주차 접힘과 회차 목록은 모바일에 맞지만 긴 8주 캘린더 생성 QA가 남는다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>워밍업·쿨다운·통증 중단 안내는 Flow memo 한 곳에만 둠</li><li>통증·어지러움 별도 필드 없음. 필요 시 사용자 memo에 기록</li><li>원문에 없는 페이스, 심박, 세트, 기록 목표는 생성하지 않음</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+  <details class="bundle-card" data-status="ready_second_wave" data-life="hobby_pet" >
+    <summary>
+      <div class="bundle-summary-main">
+        <div class="summary-top"><span class="status second">브랜드·건강 경계 확인 후 적용</span><span class="life">취미·반려</span></div>
+        <h2>새끼 고양이 맞이 첫 주</h2>
+        <p>1 Flow · 5 Step · 10 Item</p>
+      </div>
+      <span class="summary-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="bundle-body">
+      <div class="source-strip">
+        <strong>원문 1개</strong>
+        <a href="https://www.royalcanin.com/kr/cats/kitten/collecting-your-kitten-and-their-first-week-with-you" target="_blank" rel="noreferrer">새끼 고양이 데려오기 및 함께 보내는 첫 주</a>
+      </div>
+      <div class="meta-grid">
+        <div><span>계획 방식</span><strong>date_preparation · ordered_procedure</strong></div>
+        <div><span>포트폴리오 역할</span><strong>representative_start · repeat_reuse</strong></div>
+        <div><span>권장 Flow</span><strong>kitten-arrival-first-week</strong></div>
+      </div>
+  <section class="flow">
+    <div class="flow-head">
+      <div><span class="eyebrow">Flow 1</span><h3>새끼 고양이 첫 주 적응</h3></div>
+      <span class="destination">hybrid</span>
+    </div>
+    <p class="user-need">새끼 고양이를 데려오기 전부터 첫 주까지 원문이 제시한 환경·이동·적응 행동을 따라간다.</p>
+    <div class="field-line"><strong>설정</strong> 데려오는 날*</div>
+    <div class="flow-memo"><strong>Flow 메모</strong><p>제품 추천과 맞춤 사료 기능은 옮기지 않습니다. 접종·구충·영양은 기록 필드를 만들지 않고 수의사와 상의할 내용으로 메모에 둡니다.</p></div>
+    <div class="steps">
+  <details class="step" open>
+    <summary><span>데려오기 전</span><small>2개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>안전한 방과 생활 공간 마련하기</strong><p>집 환경을 안전하게 만들고 새끼 고양이가 지낼 방을 준비 / 식사, 휴식, 배변, 놀이 공간을 서로 구분</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>기본 용품·이동장·이전 사료 준비하기</strong><p>침대, 사료, 물그릇, 화장실, 장난감 준비 / 이동장과 이전 보호자가 급여하던 사료를 준비하고 며칠 뒤 검진할 수의사를 알아보기</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>안전한 방 준비: 집 환경을 안전하게 만들고 새끼 고양이가 지낼 방을 준비<br>기본 용품 준비: 침대, 사료, 물그릇, 화장실, 장난감 준비<br>이동장·이전 사료·검진 준비: 이동장과 이전 보호자가 급여하던 사료를 준비하고 며칠 뒤 검진할 수의사를 알아보기<br>생활 공간 나누기: 식사, 휴식, 배변, 놀이 공간을 서로 구분</p></div>
+      <a class="source-link" href="https://www.royalcanin.com/kr/cats/kitten/collecting-your-kitten-and-their-first-week-with-you" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Royal Canin 데려오기 전 source sections</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>데리러 가는 날</span><small>2개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>이전 보호자에게 사료·일과·건강 이력 묻기</strong><p>사료, 급여 일과, 화장실 배치, 백신·구충·식별 칩, 좋아하는 장난감 확인</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>담요를 깐 이동장으로 안전하게 데려오기</strong><p>이동장에 담요를 깔고 종이 수건과 교체용 담요 준비</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>이전 보호자에게 물을 것: 사료, 급여 일과, 화장실 배치, 백신·구충·식별 칩, 좋아하는 장난감 확인<br>데리러 갈 때 이동장 준비: 이동장에 담요를 깔고 종이 수건과 교체용 담요 준비</p></div>
+      <a class="source-link" href="https://www.royalcanin.com/kr/cats/kitten/collecting-your-kitten-and-their-first-week-with-you" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Royal Canin 데리러 가는 날 source sections</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>첫날</span><small>3개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>조용한 방에서 스스로 탐험하게 두기</strong><p>첫날 집을 조용하게 유지 / 준비한 방에서 이동장 문을 열고 스스로 나와 탐험할 시간을 주기</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>침대와 화장실 위치 보여주기</strong><p>방을 둘러본 뒤 침대를 보여주고 화장실 위치를 아는지 확인</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>가까이 머물며 안전하게 지켜보기</strong><p>안전한 환경에서 탐색하게 두고 가까이 머물며 관찰</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>집을 평온하게 유지: 첫날 집을 조용하게 유지<br>스스로 탐험하게 하기: 준비한 방에서 이동장 문을 열고 스스로 나와 탐험할 시간을 주기<br>침대와 화장실 보여주기: 방을 둘러본 뒤 침대를 보여주고 화장실 위치를 아는지 확인<br>가까이 머물며 지켜보기: 안전한 환경에서 탐색하게 두고 가까이 머물며 관찰</p></div>
+      <a class="source-link" href="https://www.royalcanin.com/kr/cats/kitten/collecting-your-kitten-and-their-first-week-with-you" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Royal Canin 첫날 source sections</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>첫날 밤</span><small>1개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>잠자리와 물·사료·화장실 접근 확인하기</strong><p>아늑하고 조용한 침대와 물·사료·화장실 접근 확인</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>첫 밤 잠자리: 아늑하고 조용한 침대와 물·사료·화장실 접근 확인</p></div>
+      <a class="source-link" href="https://www.royalcanin.com/kr/cats/kitten/collecting-your-kitten-and-their-first-week-with-you" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Royal Canin 첫날 밤 source sections</p>
+    </div>
+  </details>
+  <details class="step" >
+    <summary><span>첫 주</span><small>2개 Item</small></summary>
+    <div class="step-body">
+      <ul class="item-list">
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>이전 사료와 급여 시간을 유지하기</strong><p>이전 보호자가 주던 사료를 같은 시간대에 급여하고 갑작스러운 변경을 피하기</p></div>
+  </li>
+  <li class="item-row">
+    <span class="check" aria-hidden="true"></span>
+    <div><strong>며칠 적응한 뒤 수의사 검진 받기</strong><p>며칠 적응한 뒤 종합 검진과 접종·구충·영양 상담을 위해 수의사 방문</p></div>
+  </li></ul>
+      <div class="memo"><strong>메모/detail</strong><p>첫 주 같은 식단과 시간 유지: 이전 보호자가 주던 사료를 같은 시간대에 급여하고 갑작스러운 변경을 피하기<br>며칠 적응 후 수의사 방문: 며칠 적응한 뒤 종합 검진과 접종·구충·영양 상담을 위해 수의사 방문</p></div>
+      <a class="source-link" href="https://www.royalcanin.com/kr/cats/kitten/collecting-your-kitten-and-their-first-week-with-you" target="_blank" rel="noreferrer">원문 열기</a>
+      <p class="trace">sourceTrace · Royal Canin 첫 주 source sections</p>
+    </div>
+  </details></div>
+  </section>
+      <section class="review-zone">
+        <h3>내부 검토</h3>
+        <p>두 번째 wave. 반려 카테고리 대표 후보지만 브랜드·건강 경계와 공개 권리 검토가 필요하다.</p>
+        <details class="source-review-panel">
+          <summary>원문 검토 근거</summary>
+          <div class="source-review-row"><strong>src-royalcanin-kitten-first-week</strong><p>확인: 데려오기 전 준비, 이전 보호자 질문, 이동, 첫날 6개 팁, 첫 밤, 첫 주 식사와 검진 섹션을 직접 확인</p><p>수요: 조회·댓글 수 미표시</p><p>권리 경계: 행동 단계와 짧은 메모만 사용하고 제품 추천·맞춤 사료 기능·의학 판단은 제외</p></div>
+        </details>
+        <details class="score-panel">
+          <summary>점수별 코멘트 보기</summary>
+          <div class="score-grid">
+            <div><h4>포트폴리오 점수</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>수요</strong><span>68/100</span></div>
+    <p>원문 조회·댓글 수는 보이지 않는다. 새끼 고양이 첫 주라는 검색·긴급성은 높지만 visible demand는 unknown이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>변환 적합도</strong><span>88/100</span></div>
+    <p>데려오기 전, 픽업, 첫날, 첫 밤, 첫 주라는 단계와 행동 row가 충분하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>커버리지 기여</strong><span>100/100</span></div>
+    <p>비어 있던 취미·반려 생활영역의 첫 실행 콘텐츠를 만든다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>제작자·커뮤니티</strong><span>70/100</span></div>
+    <p>반려 경험 공유와 fork 가능성은 있으나 건강 조언을 사용자가 임의 수정하도록 장려하면 안 된다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>앱 직전 준비도</strong><span>81/100</span></div>
+    <p>행동 row와 묶음은 끝났지만 브랜드 source, 수의학 경계, 저작권을 첫 canary 뒤에 재검토해야 한다.</p>
+  </div></div>
+            <div><h4>Flow 품질 · 평균 4.50/5</h4>
+  <div class="score-row">
+    <div class="score-head"><strong>사용자 필요</strong><span>5/5</span></div>
+    <p>새끼 고양이를 처음 데려오는 보호자의 시점과 첫 주 목표가 구체적이다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>실행 명확성</strong><span>5/5</span></div>
+    <p>전·당일·첫날·첫 밤·첫 주의 실제 준비와 환경 행동이 보인다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>원문 충실도</strong><span>5/5</span></div>
+    <p>원문 섹션을 묶되 제품 추천이나 일반 지식을 추가하지 않았다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>이식성</strong><span>4/5</span></div>
+    <p>체크리스트는 강하지만 &#039;며칠 뒤&#039;처럼 정확한 날짜가 없는 원문은 date window로 남긴다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>인지 부담</strong><span>4/5</span></div>
+    <p>13개 source section을 10개 Item으로 묶어 읽을 수 있으나 다른 후보보다 설명이 길다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>문구 구체성</strong><span>5/5</span></div>
+    <p>안전한 방 마련, 이전 사료 유지처럼 실제 행동과 대상이 있다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>출처·안전</strong><span>4/5</span></div>
+    <p>브랜드와 건강 조언을 표시하고 수의사 판단을 분리했지만 공개 전 전문 경계 검토가 필요하다.</p>
+  </div>
+  <div class="score-row">
+    <div class="score-head"><strong>접근성·조작성</strong><span>4/5</span></div>
+    <p>5개 시간 구간으로 접혀 모바일에서 읽을 수 있다. 실제 앱의 긴 memo QA가 남는다.</p>
+  </div></div>
+          </div>
+        </details>
+        <details class="omission-panel">
+          <summary>삭제·묶음·보류 근거</summary>
+          <ul><li>맞춤 사료 찾기, 제품 CTA, 브랜드 영양 설명 제외</li><li>접종·구충·영양은 기록 필드가 아니라 수의사 방문 memo에만 둠</li><li>원문에 정확한 날짜가 없는 &#039;며칠 뒤&#039;는 임의 D+3 등으로 바꾸지 않음</li></ul>
+        </details>
+      </section>
+    </div>
+  </details>
+    </section>
+
+    <section class="handoff">
+      <span class="kicker">implementation handoff</span>
+      <h2>다음 앱 세션 적용 순서</h2>
+      <p class="scope-note"><strong>현재 앱 타입과 호환:</strong> runtime type 추가 없이 FlowSection과 FlowItem으로 매핑합니다. Step.items[]는 축약하지 않고 각각 FlowItem으로 펼쳐야 합니다.</p>
+      <div class="handoff-grid">
+        <section><h3>첫 canary 5개</h3><ol><li>에어컨 필터 4주 청소</li><li>친구와 부산 2박 3일 뚜벅이 여행</li><li>면접 전날 준비</li><li>직장인 일주일 도시락</li><li>해외여행 준비</li></ol></section>
+        <section><h3>두 번째 wave</h3><ol><li>운전면허 갱신·적성검사</li><li>5km 대회 8주 준비</li><li>새끼 고양이 맞이 첫 주</li></ol></section>
+        <section><h3>앱 구현 경계</h3><ul><li>기존 앱 타입과 source registry에 contentBundles만 매핑</li><li>각 Step은 FlowSection으로 만들고 Step.items[]를 실제 FlowItem[]로 펼침</li><li>첫 canary 5개를 internal-only 상태로 노출</li><li>모바일 /flows 카드와 Flow 상세에서 첫 행동·source link 확인</li><li>calendar/checklist export에서 itemTitle, schedule, memo, sourceUrl 보존</li><li>권리·민감성 검토 후 second wave 3개를 별도 적용</li></ul></section>
+        <section><h3>공개 전 남은 gate</h3><ul><li>사용자 승인</li><li>creator/commercial source의 공개 사용 범위 확인</li><li>민감 source의 최신성·분기 copy QA</li><li>앱 모바일·export 회귀 테스트</li><li>내부 canary 이후 실제 저장·실행 관찰</li></ul></section>
+      </div>
+    </section>
+
+    <p class="footer">사용자용 콘텐츠는 JSON의 contentBundles에만 있습니다. 이 HTML의 점수·판정·삭제 근거는 reviewRecords이며 앱 사용자 화면에 노출하지 않습니다.</p>
+  </main>
+  <script>
+    const cards = [...document.querySelectorAll('.bundle-card')];
+    const filterButtons = [...document.querySelectorAll('[data-filter]')];
+    const applyFilter = (filter) => {
+      cards.forEach((card) => {
+        const show = filter === 'all'
+          || (filter === 'ready' && card.dataset.status === 'ready_for_internal_canary')
+          || (filter === 'second' && card.dataset.status === 'ready_second_wave')
+          || card.dataset.life === filter;
+        card.hidden = !show;
+      });
+      filterButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.filter === filter)));
+    };
+    filterButtons.forEach((button) => button.addEventListener('click', () => applyFilter(button.dataset.filter)));
+    document.querySelector('#expand-all').addEventListener('click', () => cards.filter((card) => !card.hidden).forEach((card) => { card.open = true; card.querySelectorAll('.step').forEach((step) => { step.open = true; }); }));
+    document.querySelector('#collapse-all').addEventListener('click', () => cards.forEach((card) => { card.open = false; }));
+  </script>
+</body>
+</html>

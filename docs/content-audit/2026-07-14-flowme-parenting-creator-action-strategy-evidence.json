@@ -1,0 +1,865 @@
+{
+  "report": {
+    "title": "FlowMe 육아 생활 운영·제작자·행동 전환 전략",
+    "reportDate": "2026-07-14",
+    "evidenceAccessedAt": "2026-07-14",
+    "revision": "CEO readiness audit v1.1",
+    "scope": "전략·콘텐츠·사용자 여정 검토이며 제품 코드 구현과 실제 사용자 실험은 포함하지 않는다.",
+    "confidenceRule": {
+      "official_fact": "회사·기관의 공식 자료 또는 저장소에서 직접 재집계한 사실",
+      "research": "학술 연구·원 조사에 기초한 수치",
+      "repository_fact": "현재 저장소 파일·명령 결과",
+      "strategic_inference": "공식 근거와 저장소 상태를 연결한 FlowMe의 판단",
+      "hypothesis_unmeasured": "실제 사용자·제작자 데이터가 없는 계획 가설"
+    }
+  },
+  "readinessAssessment": {
+    "verdict": "6주 파일럿 승인 자료로는 충분하지만 육아를 확정 시장으로 선언할 자료로는 불충분하다.",
+    "readyFor": [
+      "저위험 육아 생활 운영 파일럿의 범위 승인",
+      "제작 지원형 제작자 모집 방식 승인",
+      "6주 제작·배포와 30일 후속 관찰에 필요한 자원 승인"
+    ],
+    "notReadyFor": [
+      "육아가 여행보다 우월한 최종 시장이라는 선언",
+      "FlowMe 전환율·반복 사용·제작자 참여 의향의 성과 주장",
+      "유료 Flow·수익 배분·자체 계획 관리로의 즉시 확대"
+    ],
+    "why": "시장 순위는 가중치에 따라 바뀌며 실제 사용자·제작자 성과가 0건이므로 조건부 시험만 정당화된다.",
+    "confidence": "strategic_inference"
+  },
+  "executiveConclusion": {
+    "decision": "육아 전체가 아니라 '아이와 보내는 한 번의 주말 경험을 준비·실행·마무리 패키지로 바꾸기'를 6주 제작·배포와 30일 후속 관찰을 포함한 조건부 P0 진입 가설로 채택한다.",
+    "firstUser": "가설: 2~7세 자녀와 할 활동·외출 콘텐츠를 저장해 두지만 실행 당일 다시 검색하는 보호자와 공동 양육자이다.",
+    "firstCreator": "가설: 놀이·외출·요리·만들기 원본 콘텐츠를 10개 이상 보유하고, 자신의 링크·예약·상품 전환을 높이고 싶은 소규모·중간 규모 제작자이다.",
+    "firstSituation": "가설: 제작자 콘텐츠 한 건을 선택하면 3분 안에 일정, 준비물 체크리스트, 역할 분담, 원본 링크가 있는 실행 패키지를 확인하고 공동 양육자와 공유한다.",
+    "alternativeVertical": "육아 제작자 5명 이상을 6주 안에 확보하지 못하면 차선 진입 분야는 여행 준비이다.",
+    "positioning": "FlowMe는 육아 지식을 새로 가르치거나 가족 일정을 통째로 관리하지 않고, 제작자가 검토한 원본 경험을 가족이 바로 실행할 수 있는 결과물로 바꾼다.",
+    "confidence": "strategic_inference"
+  },
+  "repositorySnapshot": {
+    "asOf": "2026-07-14T10:07:46+09:00",
+    "branch": "main",
+    "head": "211827d",
+    "branchState": "origin/main보다 27개 커밋 뒤이며 작업 트리에 기존 변경이 많아, 구현 완료 상태와 현재 런타임 상태를 동일시하지 않는다.",
+    "contentInventory": {
+      "total": 593,
+      "keep": 44,
+      "fix": 105,
+      "previewOnly": 442,
+      "hide": 2,
+      "keepRatePct": 7.4,
+      "fixRatePct": 17.7,
+      "previewOnlyRatePct": 74.5,
+      "sourceBackedInventory": 132,
+      "realSourceReviewed": 83,
+      "sourceBackedMaps": 26,
+      "homeMaps": 2,
+      "urlLookupMaps": 10,
+      "publicCatalogMaps": 7,
+      "interpretation": "콘텐츠 폭은 있으나 첫 사용자에게 내세울 수 있는 대표 실행 콘텐츠와 제작자 검토 구조가 부족하다.",
+      "confidence": "repository_fact"
+    },
+    "qa": {
+      "cleanBaseline": "69768a1",
+      "unit": "476/476 통과",
+      "e2e": "259/259 통과",
+      "build": "통과",
+      "browserPersonaSimulation": 5,
+      "screenshots": 24,
+      "observedExternalUsers": 0,
+      "knownGaps": [
+        "KST 날짜 경계",
+        "반복 Flow 중복",
+        "URL miss에서 필수 입력 공백 허용",
+        "preview 환경 SSO",
+        "현재 dirty runtime과 clean QA baseline 불일치"
+      ],
+      "interpretation": "기능 연결은 검증했지만 사람의 행동 전환과 제작자 참여는 미측정이다.",
+      "confidence": "repository_fact"
+    }
+  },
+  "contentSampleReview": {
+    "method": "현재 모바일 화면과 기존 콘텐츠 확장 검토에서 목적 표본 4건을 골랐다. 통계적 대표 표본은 아니다.",
+    "samples": [
+      {
+        "sample": "자동차검사 D-14 준비",
+        "evidence": "현재 사용자 여정 검증 화면 06",
+        "strength": "원문 연결, 날짜 기준, 일정·체크리스트 결과가 한 화면에 보인다.",
+        "gap": "제작자 승인, 역할 분담, 완료 후 피드백은 없다.",
+        "judgment": "P0 구조 참고"
+      },
+      {
+        "sample": "주말 이사 준비 초안",
+        "evidence": "현재 사용자 여정 검증 화면 13",
+        "strength": "개인 초안 편집 경로가 있다.",
+        "gap": "일반적인 제안 목록처럼 보여 제작자·출처·상황 적합성 차이가 드러나지 않는다.",
+        "judgment": "검토 전 공개 금지"
+      },
+      {
+        "sample": "가족 생일 행사",
+        "evidence": "2026-07-11 content portfolio expansion round 2",
+        "strength": "2 Flows, 8 Steps, 11 Items, 14 source rows와 calendar/hybrid 결과물이 있다.",
+        "gap": "반복 빈도와 실제 가족 역할 인계는 미측정이다.",
+        "judgment": "육아 P0 즉시 검증용 대표 사례"
+      },
+      {
+        "sample": "출산 가방 후보",
+        "evidence": "2026-07-11 content portfolio expansion round 2",
+        "strength": "체크리스트 결과물 적합성은 높다.",
+        "gap": "미국 맥락 출처여서 한국 상황·의료기관 기준과 맞지 않는다.",
+        "judgment": "한국 공식·제작자 출처 확보 전 보류"
+      }
+    ],
+    "confidence": "repository_fact"
+  },
+  "actionJourney": [
+    {
+      "stage": "1. 콘텐츠 발견",
+      "userQuestion": "나와 관련 있는가?",
+      "flowmeMustDo": "원본·제작자·대상 상황을 즉시 보여준다.",
+      "handoff": "콘텐츠 플랫폼의 추천과 검색을 활용한다.",
+      "currentGap": "URL·메모 진입은 있으나 대상 상황과 제작자 책임이 약하다.",
+      "priority": "P0"
+    },
+    {
+      "stage": "2. 내 상황 판단",
+      "userQuestion": "우리 아이·날짜·지역·예산에 맞는가?",
+      "flowmeMustDo": "선행조건, 제외조건, 분기, 시간·비용을 먼저 확인시킨다.",
+      "handoff": "AI는 질문 정리와 개인화 제안을 돕는다.",
+      "currentGap": "일반적인 요약과 단계 목록이 많고 적용 가능성 판단 정보가 부족하다.",
+      "priority": "P0"
+    },
+    {
+      "stage": "3. 실행 결과물 확인",
+      "userQuestion": "지금 무엇을 준비하고 누가 무엇을 하나?",
+      "flowmeMustDo": "일정·준비물·역할·완료 기준이 묶인 미리보기를 만든다.",
+      "handoff": "없음. 이 구간이 FlowMe의 초기 핵심 책임이다.",
+      "currentGap": "결과물 화면은 있으나 콘텐츠별 기본 결과물과 역할 분담이 일관되지 않다.",
+      "priority": "P0"
+    },
+    {
+      "stage": "4. 외부 도구로 옮기기",
+      "userQuestion": "내가 쓰는 캘린더·메모·할 일에 들어가는가?",
+      "flowmeMustDo": "ICS·체크리스트·Markdown·표를 목적지에 맞게 내보낸다.",
+      "handoff": "Google·Samsung·Outlook Calendar, 메모·할 일·Sheet가 실행 저장소가 된다.",
+      "currentGap": "export-first 원칙은 정립됐으나 실제 목적지별 완성도와 공유 경험을 더 좁혀야 한다.",
+      "priority": "P0"
+    },
+    {
+      "stage": "5. 실행·수정·완료",
+      "userQuestion": "상황이 바뀌면 어떻게 고치고 함께 쓰나?",
+      "flowmeMustDo": "원본 버전과 개인 수정본을 구분하고 업데이트를 안내한다.",
+      "handoff": "초기 실행과 알림은 기존 도구에 맡긴다.",
+      "currentGap": "My Flow lifecycle은 있으나 P0 획득 메시지로 내세우기에는 무겁고 실제 사용자 증거가 없다.",
+      "priority": "P1"
+    },
+    {
+      "stage": "6. 재사용·개선",
+      "userQuestion": "다음 가족에게 더 좋아졌는가?",
+      "flowmeMustDo": "동의한 집계 신호, 업데이트, 제작자·기여자 검토를 연결한다.",
+      "handoff": "민감한 개인 기록은 비공개로 유지한다.",
+      "currentGap": "제작자 통계, 기여 제안, 검토 권한은 아직 전략 단계다.",
+      "priority": "P1-P2"
+    }
+  ],
+  "goodFlowContract": {
+    "required": [
+      "목표와 관찰 가능한 기대 결과",
+      "누구에게 언제 맞는지와 제외 조건",
+      "선행조건·준비물·역할",
+      "단계·선택 분기·중단 조건",
+      "시간·비용·예약·장소",
+      "일정·체크리스트·표·메모 결과물",
+      "원본 URL·제작자·검토일·버전",
+      "주의사항과 완료 기준"
+    ],
+    "assetRelationships": {
+      "creatorOriginal": "원본 저작물과 링크·브랜드·권리를 유지한다.",
+      "flowmeEdition": "허가된 원본을 실행 구조로 변환하고 검토 상태와 버전을 표시한다.",
+      "userFork": "개인 메모·날짜·역할을 더하되 원본과 분리하고 기본 비공개로 둔다.",
+      "communityPatch": "원본을 덮어쓰지 않고 제안·검토·채택 이력으로 남긴다."
+    },
+    "confidence": "strategic_inference"
+  },
+  "aiBoundary": {
+    "documentedCommodity": [
+      "콘텐츠 요약과 초안 생성",
+      "파일·웹 조사와 출처 제시",
+      "프로젝트 문맥 유지",
+      "일회·반복 예약 작업",
+      "문서·스프레드시트·프레젠테이션 생성"
+    ],
+    "flowmeOwnedLayer": [
+      "제작자가 승인한 기준 실행본",
+      "원본·권리·제작자 신원",
+      "상황별 분기와 완료 기준",
+      "목적지에 맞는 결과물 품질",
+      "버전·업데이트·개인 fork 관계",
+      "동의한 실행·도움·최신성 신호",
+      "가족·팀의 역할 분담과 인계"
+    ],
+    "deskReviewNote": "아래 비교는 공식 기능 문서에 기초한 문서 비교이며 동일 지시문으로 실제 모델 출력을 실험한 결과가 아니다.",
+    "situations": [
+      "주말 체험·외출",
+      "가족 생일 행사",
+      "어린이집 첫 등원 준비",
+      "집 놀이·만들기",
+      "가족 여행 준비",
+      "식사·생활 습관"
+    ],
+    "reasonsBeyondAi": [
+      "누가 어떤 원본을 언제 검토했는지 확인할 수 있다.",
+      "같은 Flow를 가족과 공유하고 업데이트·개인 수정본의 관계를 유지한다.",
+      "실제 목적지에 맞는 일정·체크리스트·표가 반복 가능하게 나온다.",
+      "도움이 된 실행과 최신성 개선 신호가 다음 버전에 누적된다."
+    ],
+    "confidence": "strategic_inference"
+  },
+  "verticalScoreModel": {
+    "note": "이번 점수는 시장 크기가 아니라 '첫 행동 전환과 제작자 공급'에 맞춰 가중치를 다시 둔 전략 가설이다. 2026-07-13 생태계 보고서의 점수와 직접 비교할 수 없다.",
+    "weights": {
+      "repeatDemand": 20,
+      "contentActionGap": 20,
+      "creatorCommunitySupply": 15,
+      "crossCategoryExpansion": 15,
+      "artifactFit": 10,
+      "distribution": 10,
+      "safetyRightsFeasibility": 10
+    },
+    "scores": [
+      {
+        "vertical": "육아 생활 운영",
+        "total": 88,
+        "components": [18, 18, 14, 15, 9, 9, 5],
+        "rationale": "반복·공동 실행·커뮤니티·교육·여행·식사·행정 확장성이 강하지만 안전·개인정보·권리 검토가 가장 큰 약점이다.",
+        "confidence": "strategic_inference"
+      },
+      {
+        "vertical": "여행 준비",
+        "total": 83,
+        "components": [17, 18, 13, 8, 10, 9, 8],
+        "rationale": "결과물 적합성과 안전성이 높아 육아 제작자 확보 실패 시 가장 현실적인 차선이다.",
+        "confidence": "strategic_inference"
+      },
+      {
+        "vertical": "학습·커리어",
+        "total": 80,
+        "components": [18, 16, 13, 9, 9, 8, 7],
+        "rationale": "수요와 제작자 시장은 크지만 강의·코스·AI 학습 도구와 직접 비교될 가능성이 높다.",
+        "confidence": "strategic_inference"
+      },
+      {
+        "vertical": "생활 행정",
+        "total": 79,
+        "components": [17, 19, 11, 9, 10, 7, 6],
+        "rationale": "행동 전환 문제는 크지만 제작자 수익 동기와 출처 최신성 관리가 약하다.",
+        "confidence": "strategic_inference"
+      },
+      {
+        "vertical": "운동·루틴",
+        "total": 72,
+        "components": [18, 14, 12, 8, 8, 8, 4],
+        "rationale": "반복성은 높지만 전문 앱·건강 위험·개인화 요구가 크다.",
+        "confidence": "strategic_inference"
+      }
+    ],
+    "sensitivity": {
+      "purpose": "가중치가 달라져도 육아가 항상 1위인지 확인한 민감도 분석이다. 두 결과 모두 시장 성과가 아닌 전략 가설이다.",
+      "creatorExpansionWeights": {
+        "repeatDemand": 20,
+        "contentActionGap": 20,
+        "creatorCommunitySupply": 15,
+        "crossCategoryExpansion": 15,
+        "artifactFit": 10,
+        "distribution": 10,
+        "safetyRightsFeasibility": 10
+      },
+      "creatorExpansionResult": {
+        "parenting": 88,
+        "travel": 83,
+        "leader": "육아 생활 운영"
+      },
+      "safetyOperationsWeights": {
+        "repeatDemand": 15,
+        "contentActionGap": 15,
+        "creatorCommunitySupply": 10,
+        "crossCategoryExpansion": 10,
+        "artifactFit": 15,
+        "distribution": 10,
+        "safetyRightsFeasibility": 25
+      },
+      "safetyOperationsResult": {
+        "parenting": 81.33,
+        "travel": 84.25,
+        "leader": "여행 준비"
+      },
+      "interpretation": "제작자 공급과 분야 확장을 중시하면 육아가 앞서지만 안전·운영 현실성을 중시하면 여행이 앞선다. 따라서 육아는 저위험 범위와 제작자 확보 조건을 붙인 파일럿으로만 승인할 수 있다.",
+      "confidence": "strategic_inference"
+    }
+  },
+  "parentingWedgeScoreModel": {
+    "weights": {
+      "creatorSupply": 20,
+      "actionGap": 20,
+      "artifactFit": 15,
+      "repeatAndShare": 15,
+      "creatorConversion": 10,
+      "safety": 10,
+      "repositoryReadiness": 10
+    },
+    "scores": [
+      {
+        "wedge": "주말 체험·외출·집 놀이",
+        "total": 85,
+        "components": [18, 18, 14, 14, 8, 8, 5],
+        "decision": "P0 진입 가설",
+        "reason": "놀이·여행·요리·만들기를 가로지르며 제작자 원본, 준비물, 예약, 일정, 역할 공유가 모두 필요하다."
+      },
+      {
+        "wedge": "가족 생일·행사",
+        "total": 83,
+        "components": [15, 19, 15, 9, 8, 8, 9],
+        "decision": "즉시 검증 사례",
+        "reason": "저장소에 family birthday Flow가 있어 결과물 품질을 빠르게 확인할 수 있으나 사용 빈도는 낮다."
+      },
+      {
+        "wedge": "식사·생활 습관",
+        "total": 80,
+        "components": [16, 17, 15, 15, 8, 4, 5],
+        "decision": "P1 검토",
+        "reason": "반복성과 상품 전환은 좋지만 알레르기·영양·연령 적합성 검토가 필요하다."
+      },
+      {
+        "wedge": "어린이집·학교 준비",
+        "total": 77,
+        "components": [11, 19, 15, 13, 5, 8, 6],
+        "decision": "공식 출처 기준본",
+        "reason": "체크리스트 적합성은 높지만 기관·지역별 차이와 제작자 수익 동기가 약하다."
+      },
+      {
+        "wedge": "수면·건강·발달",
+        "total": 69,
+        "components": [15, 17, 11, 15, 6, 1, 4],
+        "decision": "P2 보류",
+        "reason": "수요는 크지만 의료·발달 조언 위험과 전문 앱 경쟁이 크다."
+      },
+      {
+        "wedge": "가족 일정 전체 관리",
+        "total": 69,
+        "components": [7, 14, 15, 15, 5, 7, 6],
+        "decision": "범위 제외",
+        "reason": "Cozi·캘린더·할 일 도구와 직접 경쟁하게 되어 FlowMe의 초기 장점을 약화한다."
+      }
+    ],
+    "confidence": "strategic_inference"
+  },
+  "creatorColdStart": {
+    "model": "FlowMe가 원본 선택·구조화·QA를 대신하고 제작자는 승인·브랜드·링크를 제공하는 제작 지원형 파일럿",
+    "scenarios": [
+      {
+        "name": "Lean",
+        "creators": 5,
+        "flowsPerCreator": 3,
+        "totalFlows": 15,
+        "hoursPerFlow": 4,
+        "directProductionHours": 60,
+        "honorariumPerCreatorKrw": "300,000~500,000",
+        "creatorHonorariumTotalKrw": "1,500,000~2,500,000",
+        "note": "운영 인건비·디자인·법률 검토 비용 제외"
+      },
+      {
+        "name": "Base recommendation",
+        "candidateCreatorContacts": "16~24",
+        "creators": 8,
+        "flowsPerCreator": 3,
+        "totalFlows": 24,
+        "hoursPerFlow": 4,
+        "directProductionHours": 96,
+        "recruitingCoordinationHours": "40~60",
+        "totalInternalHours": "136~156",
+        "honorariumPerCreatorKrw": "300,000~500,000",
+        "creatorHonorariumTotalKrw": "2,400,000~4,000,000",
+        "durationWeeks": 6,
+        "followUpDays": 30,
+        "note": "실제 견적이 아니라 의사결정을 위한 가설이다. 내부 인건비·디자인·법률·권리 검토 비용은 사례비에 포함하지 않는다."
+      },
+      {
+        "name": "Expansion",
+        "creators": 20,
+        "flowsPerCreator": 5,
+        "totalFlows": 100,
+        "hoursPerFlow": 4,
+        "directProductionHours": 400,
+        "note": "P0 증거가 생기기 전에는 집행하지 않는다."
+      }
+    ],
+    "hoursBreakdownPerFlow": {
+      "selectionAndPermission": 0.5,
+      "conversion": 2,
+      "creatorReview": 0.5,
+      "artifactQa": 1
+    },
+    "creatorValue": [
+      "원본으로 돌아가는 명확한 링크와 공동 브랜드",
+      "예약·상품·제휴·뉴스레터 CTA 유지",
+      "복잡한 편집기를 배우지 않는 제작 대행",
+      "개인정보를 제외한 시작·내보내기·도움 반응 집계",
+      "업데이트된 기준 Flow와 제작자 표시"
+    ],
+    "confidence": "hypothesis_unmeasured"
+  },
+  "creatorDistributionEvidence": {
+    "facts": [
+      {
+        "metric": "YouTube Shopping 참여 한국 제작자",
+        "value": "25,000명 이상",
+        "period": "2025-07 공식 발표",
+        "sourceId": "E-022",
+        "limitation": "전체 상품 분야 수치이며 육아 제작자 수가 아니다."
+      },
+      {
+        "metric": "한국의 상품 태그 영상",
+        "value": "약 950,000개",
+        "period": "발표 전 12개월",
+        "sourceId": "E-022",
+        "limitation": "Flow형 콘텐츠나 육아 콘텐츠의 수가 아니다."
+      },
+      {
+        "metric": "상품 태그와 설명 링크 병행 효과",
+        "value": "상품 클릭률 23% 증가",
+        "period": "YouTube 내부 실험, 2024 발표",
+        "sourceId": "E-023",
+        "limitation": "FlowMe 효과가 아니며, 제작자 원본 안의 눈에 보이는 실행 링크가 작동할 가능성을 뒷받침하는 인접 근거다."
+      },
+      {
+        "metric": "NAVER 블로그 누적 공급",
+        "value": "블로그 3,700만 개·게시글 33억 건",
+        "period": "2025-08 기준",
+        "sourceId": "E-024",
+        "limitation": "전체 주제 누적치이며 활성 육아 제작자 규모는 미측정이다."
+      }
+    ],
+    "interpretation": "한국에는 원본 콘텐츠와 상품 연결에 익숙한 제작자 기반이 존재한다. 다만 육아 생활 운영 제작자가 Flow 제작에 참여한다는 증거는 아니므로 5~8명 모집 파일럿이 필요하다.",
+    "confidence": "official_fact_and_strategic_inference"
+  },
+  "participationSystem": {
+    "roles": [
+      "원본 제작자: 기준 Flow 승인과 주요 업데이트 권한",
+      "실행 사용자: 개인 fork와 도움·오래됨 신고",
+      "큐레이터·유지관리자: 출처 확인·지역화·분기 제안",
+      "검토자: 민감 영역 승인과 잠금"
+    ],
+    "smallContributions": [
+      "오래된 정보 신고",
+      "출처가 여전히 유효한지 확인",
+      "날짜·가격·준비물 수정 제안",
+      "지역별 선택 분기 추가",
+      "단계 하나 또는 주의사항 보완",
+      "직접 해봄과 완료 난이도 표시"
+    ],
+    "reputationSignals": [
+      "채택된 수정으로 도움을 받은 사용자 수",
+      "최신성 개선 일수",
+      "검토 통과율",
+      "출처 확인 정확도",
+      "제작자·검토자 승인"
+    ],
+    "sensitivePolicy": "의료·법률·재무·아동 안전은 자유 편집을 막고 제안 큐와 전문 검토를 거친다.",
+    "confidence": "strategic_inference"
+  },
+  "stageGates": [
+    {
+      "stage": "P0",
+      "product": "제작자 출처가 표시된 실행 패키지, 공유 링크, ICS·체크리스트·Markdown·표",
+      "decisionThresholds": [
+        "제작자 8명·승인 Flow 24개",
+        "제작자 링크 부착률 70% 이상",
+        "유효 방문 300건 이상 확보",
+        "결과물 미리보기→내보내기·공유 25% 이상",
+        "P0 Flow 출처·검토일·버전 표시 100%"
+      ],
+      "measurement": "모두 미측정 가설"
+    },
+    {
+      "stage": "P1",
+      "product": "사용한 Flow 저장, 업데이트 구독, 개인 수정본, 가벼운 실행 이력",
+      "decisionThresholds": [
+        "반복 사용이 내보내기만으로 해결되지 않는 사례 확인",
+        "첫 Flow를 내보내거나 공유한 사용자 중 30일 안 두 번째 Flow를 쓰는 비율 20% 이상",
+        "업데이트 구독 의향·행동 20% 이상"
+      ],
+      "measurement": "모두 미측정 가설"
+    },
+    {
+      "stage": "P2",
+      "product": "제작자 발행 도구, 사용 통계, 커뮤니티 보완, 공동 관리",
+      "decisionThresholds": [
+        "제작자 30명·승인 Flow 100개",
+        "제작자의 30일 내 두 번째 발행 40% 이상",
+        "수정 제안 검토 7일 내 처리 80% 이상"
+      ],
+      "measurement": "모두 미측정 가설"
+    },
+    {
+      "stage": "P3",
+      "product": "계획 통합 관리, 유료 Flow, 수익 배분, 개인 행동 비서",
+      "decisionThresholds": [
+        "승인 Flow 500개·제작자 100명",
+        "월 반복 실행 사용자 25% 이상",
+        "유료 Flow 구매·판매 의향과 안전 운영비 검증"
+      ],
+      "measurement": "모두 미측정 가설"
+    }
+  ],
+  "currentWorkDisposition": {
+    "continue": [
+      "URL 입력 진입과 출처 신뢰",
+      "내보내기 묶음과 결과물 우선 미리보기",
+      "현재 사용자 여정 검증에서 확인한 저장·수정·완료 연결의 정확성 보강",
+      "공식 출처·제작자 원본 기반 콘텐츠 수급"
+    ],
+    "strengthen": [
+      "대상 상황·선행조건·시간·비용·준비물·역할·분기·완료 기준",
+      "제작자 표시·권리·승인·공동 브랜드",
+      "공동 양육자 공유와 목적지별 결과물 품질",
+      "가족 생일 검증 사례를 실제 P0 기준으로 재검토",
+      "현재 105개 fix 콘텐츠를 대표성이 높은 순서로 줄여 보강"
+    ],
+    "defer": [
+      "My Flow를 초기 핵심 메시지로 확대",
+      "제작자 직접 편집기와 거래 장터",
+      "OAuth·직접 API·통합 캘린더",
+      "커뮤니티 자유 편집과 유료 Flow"
+    ],
+    "avoid": [
+      "442개 검토 전 미리보기 콘텐츠를 더 늘리는 일",
+      "일반적인 AI 초안을 검토된 Flow처럼 공개",
+      "의료·발달·안전 조언을 초기 육아 콘텐츠로 확장",
+      "실제 사용자가 없는 상태에서 사용률·만족도를 주장",
+      "가족 일정 전체 관리 도구와 정면 경쟁"
+    ]
+  },
+  "knownUnknowns": [
+    {
+      "item": "육아 주말 경험의 실제 방문→결과물 확인→내보내기 전환율",
+      "status": "미측정",
+      "nextEvidence": "6주 파일럿에서 동의 기반 이벤트로 측정"
+    },
+    {
+      "item": "제작자가 공동 브랜드 링크를 실제 원본에 부착할 비율",
+      "status": "미측정",
+      "nextEvidence": "제작자 5~8명 사전 동의와 발행 후 링크 확인"
+    },
+    {
+      "item": "후보 제작자 16~24명 접촉에서 최종 8명이 참여할 모집 전환율",
+      "status": "가설",
+      "nextEvidence": "후보 출처·접촉·답변·권리 협의·최종 참여 단계를 분리해 실제 모집 깔때기를 기록"
+    },
+    {
+      "item": "AI 단독 결과와 FlowMe 기준 실행본의 사용자 선호·완료율 차이",
+      "status": "미검증",
+      "nextEvidence": "동일 상황·동일 목적지 결과물을 사용자가 비교하는 별도 검증"
+    },
+    {
+      "item": "Flow당 4시간과 제작자 사례비 30만~50만원의 현실성",
+      "status": "가설",
+      "nextEvidence": "첫 3개 변환의 실제 운영 시간과 제작자 협의 금액 기록"
+    },
+    {
+      "item": "유효 방문 300건·내보내기 또는 공유 전환 25%라는 P0 의사결정 기준",
+      "status": "가설",
+      "nextEvidence": "6주 파일럿 전에 유효 방문 정의와 중복·봇 제외 규칙을 확정하고 표본 수와 신뢰구간을 함께 기록"
+    },
+    {
+      "item": "YouTube·NAVER의 전체 제작자 공급 중 육아 생활 운영에 맞는 제작자 비중",
+      "status": "미측정",
+      "nextEvidence": "후보 채널 30개를 목록화하고 원본 10개 이상·저위험 주제·외부 링크 운영 여부로 선별"
+    },
+    {
+      "item": "제작자 원본 변환·공동 브랜드·커뮤니티 수정의 표준 권리 계약",
+      "status": "미확정",
+      "nextEvidence": "법률 검토 전에는 공개 배포 범위를 개별 동의로 제한"
+    },
+    {
+      "item": "현재 작업 중 코드와 clean QA 기준의 일치",
+      "status": "미확정",
+      "nextEvidence": "현재 사용자 여정 검증의 피드백 정합성 확인 후 다시 검증"
+    }
+  ],
+  "sources": [
+    {
+      "id": "R-001",
+      "title": "FlowMe Product Principles",
+      "url": "../PRODUCT_PRINCIPLES.md",
+      "published": "repository current",
+      "usedFor": "action compiler, export-first, 기존 도구 활용 원칙",
+      "evidenceLevel": "repository_fact"
+    },
+    {
+      "id": "R-002",
+      "title": "현재 사용자 여정 검증",
+      "url": "./2026-07-14-codex-p24-00a-journey-audit/README.md",
+      "published": "2026-07-14",
+      "usedFor": "clean baseline QA, 5-persona simulation, 24 screenshots, 관찰 사용자 0명",
+      "evidenceLevel": "repository_fact"
+    },
+    {
+      "id": "R-003",
+      "title": "현재 사용자 여정 피드백 정합성 확인",
+      "url": "./2026-07-14-flowme-p24-feedback-reconciliation/README.md",
+      "published": "2026-07-14",
+      "usedFor": "clean QA와 current dirty runtime 불일치 경고",
+      "evidenceLevel": "repository_fact"
+    },
+    {
+      "id": "R-004",
+      "title": "현재 콘텐츠 재고 재집계",
+      "url": "../../src/lib/contentLabBundles.ts",
+      "published": "2026-07-14 command result",
+      "usedFor": "전체 593개와 유지·보강·검토 전 미리보기·출처 연결 분포",
+      "evidenceLevel": "repository_fact"
+    },
+    {
+      "id": "R-005",
+      "title": "Content portfolio expansion round 2 review",
+      "url": "./2026-07-11-content-portfolio-expansion-round2-review-ko.md",
+      "published": "2026-07-11",
+      "usedFor": "가족 생일 행사 구조와 출산 가방 후보 보류 근거",
+      "evidenceLevel": "repository_fact"
+    },
+    {
+      "id": "E-001",
+      "title": "Implementation Intentions and Goal Achievement: A Meta-analysis",
+      "url": "https://www.socmot.uni-konstanz.de/publications/implementation-intentions-and-goal-achievement-meta-analysis-effects-and-processes",
+      "published": "2006",
+      "usedFor": "94개 연구·8,000명 이상·목표 달성 효과 d=0.65",
+      "evidenceLevel": "research"
+    },
+    {
+      "id": "E-002",
+      "title": "영유아 부모의 육아정보 이용실태 및 활용지원 방안",
+      "url": "https://repo.kicce.re.kr/bitstream/2019.oak/771/2/%EC%98%81%EC%9C%A0%EC%95%84%20%EB%B6%80%EB%AA%A8%EC%9D%98%20%EC%9C%A1%EC%95%84%EC%A0%95%EB%B3%B4%20%EC%9D%B4%EC%9A%A9%EC%8B%A4%ED%83%9C%20%EB%B0%8F%20%ED%99%9C%EC%9A%A9%EC%A7%80%EC%9B%90%20%EB%B0%A9%EC%95%88.pdf",
+      "published": "2019",
+      "usedFor": "n=1,476, 개인 미디어 59.0%, 복수 매체 72.7%, 편의 39.0%, 품질·신뢰 22.4%",
+      "evidenceLevel": "research"
+    },
+    {
+      "id": "E-003",
+      "title": "온라인 육아 커뮤니티의 자녀 연령별 관심사 분석",
+      "url": "https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART002642073",
+      "published": "2020",
+      "usedFor": "2010~2018 게시물에서 놀이·교육 관심이 높고 연령에 따라 주제가 달라짐",
+      "evidenceLevel": "research"
+    },
+    {
+      "id": "E-004",
+      "title": "2025년 출생·사망통계(잠정)",
+      "url": "https://www.kostat.go.kr/boardDownload.es?bid=204&list_no=443686&seq=1",
+      "published": "2026-02",
+      "usedFor": "출생아 254,500명, 전년 대비 6.8%, 합계출산율 0.80",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-005",
+      "title": "NAVER BAND press release",
+      "url": "https://www.navercorp.com/en/media/pressReleasesDetail?seq=2320",
+      "published": "2023-11-09",
+      "usedFor": "한국 약 1,800만 MAU와 학부모·코치·학교 활동 그룹 사례",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-006",
+      "title": "Peanut Motherhood Index",
+      "url": "https://www.peanut-app.io/motherhood-index",
+      "published": "2026",
+      "usedFor": "여성 4,000명 조사와 420,000개 커뮤니티 게시물 분석",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-007",
+      "title": "Cozi Press & Media Kit",
+      "url": "https://www.cozi.com/press-media-kit/",
+      "published": "accessed 2026-07-14",
+      "usedFor": "2,000만 명 이상 등록 사용자, 가족 일정·목록·식사·집안일 관리",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-008",
+      "title": "Huckleberry app",
+      "url": "https://explore.huckleberrycare.com/app/",
+      "published": "accessed 2026-07-14",
+      "usedFor": "250만 가족 사용 주장과 수면·수유·기저귀·성장 전문 추적",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-009",
+      "title": "What to Expect App Store",
+      "url": "https://apps.apple.com/us/app/pregnancy-baby-tracker-wte/id289560144",
+      "published": "accessed 2026-07-14",
+      "usedFor": "4.9점·약 37.3만 평점과 임신·아기 성장 추적 기능",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-010",
+      "title": "Instructables Create",
+      "url": "https://www.instructables.com/create/",
+      "published": "accessed 2026-07-14",
+      "usedFor": "한 단계 레시피부터 100단계 제작까지 경험을 단계형 UGC로 발행",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-011",
+      "title": "Wikipedia Year in Review 2024",
+      "url": "https://wikimediafoundation.org/wikipedia-year-in-review-2024/",
+      "published": "2024",
+      "usedFor": "약 26만 편집자, 98,222,407건 변경, 분당 342건",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-012",
+      "title": "Wikimedia Community Insights 2024",
+      "url": "https://meta.wikimedia.org/wiki/Community_Insights/Community_Insights_2024_Report/en",
+      "published": "2024",
+      "usedFor": "3,000명 이상 조사; 도움 97%, 학습·정확성 94%, 빈틈 채우기 93%",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-013",
+      "title": "Successful Newcomers Survey 2025",
+      "url": "https://meta.wikimedia.org/wiki/Research%3ASuccessful_Newcomers_Survey_2025",
+      "published": "2025",
+      "usedFor": "학습 88%, 보람 84%, 계속 기여 의향 90%, 인정받는다고 느낌 33%",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-014",
+      "title": "GitHub good first issue guidance",
+      "url": "https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/encouraging-helpful-contributions-to-your-project-with-labels",
+      "published": "accessed 2026-07-14",
+      "usedFor": "작고 접근 가능한 첫 기여를 별도 노출하는 구조",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-015",
+      "title": "Made on YouTube 2025",
+      "url": "https://blog.youtube/news-and-events/made-on-youtube-2025/",
+      "published": "2025",
+      "usedFor": "4년간 제작자·아티스트·미디어 회사에 1,000억 달러 이상 지급",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-016",
+      "title": "Become a Notion creator",
+      "url": "https://www.notion.com/become-a-creator",
+      "published": "accessed 2026-07-14",
+      "usedFor": "프로필·판매·평점·방문·복제·매출 분석이 제작자 참여를 지원",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-017",
+      "title": "Selling on Notion Marketplace",
+      "url": "https://www.notion.com/help/selling-on-marketplace",
+      "published": "accessed 2026-07-14",
+      "usedFor": "플랫폼 결제·분석·평점과 10% + 0.40달러 거래 수수료",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-018",
+      "title": "Gemini scheduled actions",
+      "url": "https://blog.google/products-and-platforms/products/gemini/scheduled-actions-gemini-app/",
+      "published": "2025-06-06",
+      "usedFor": "일회·반복 예약 작업이 범용 AI 기능이 됨",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-019",
+      "title": "OpenAI deep research",
+      "url": "https://help.openai.com/en/articles/10500283-deep-research",
+      "published": "accessed 2026-07-14",
+      "usedFor": "범용 AI가 계획 수립·웹 조사·출처 제시를 수행",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-020",
+      "title": "Projects in ChatGPT",
+      "url": "https://help.openai.com/en/articles/10169521-projects-in-chatgpt",
+      "published": "accessed 2026-07-14",
+      "usedFor": "파일·지침·기억을 묶은 장기 작업 문맥",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-021",
+      "title": "Claude Projects",
+      "url": "https://support.anthropic.com/en/articles/9517075-what-are-projects",
+      "published": "accessed 2026-07-14",
+      "usedFor": "프로젝트 지식과 공유 문맥",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-022",
+      "title": "YouTube Shopping과 지그재그 제휴 발표",
+      "url": "https://blog.youtube/intl/ko-kr/news-and-events/yt-shopping-zigzag/",
+      "published": "2025-06-20",
+      "usedFor": "한국 참여 제작자 25,000명 이상과 상품 태그 영상 약 950,000개",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-023",
+      "title": "YouTube Shopping 한국 확장 발표",
+      "url": "https://blog.youtube/intl/ko-kr/news-and-events/--------/",
+      "published": "2024-06-05",
+      "usedFor": "상품 태그와 설명 링크를 함께 쓴 영상의 상품 클릭률이 설명 링크만 쓴 영상보다 23% 높았다는 YouTube 내부 실험",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-024",
+      "title": "NAVER 블로그 22주년 기록",
+      "url": "https://navercorp.com/media/pressReleasesDetail?seq=33269",
+      "published": "2025-09-08",
+      "usedFor": "2025년 8월 기준 누적 블로그 3,700만 개와 게시글 33억 건",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-025",
+      "title": "2026 맘스홀릭베이비페어",
+      "url": "https://www.coex.co.kr/exhibitions/2026-%EB%A7%98%EC%8A%A4%ED%99%80%EB%A6%AD%EB%B2%A0%EC%9D%B4%EB%B9%84%ED%8E%98%EC%96%B4/",
+      "published": "2026 event listing",
+      "usedFor": "육아 커뮤니티가 제품·서비스·교육·식품을 잇는 오프라인 박람회를 직접 주최하는 한국 사례",
+      "evidenceLevel": "official_fact"
+    },
+    {
+      "id": "E-026",
+      "title": "온라인 육아 커뮤니티의 상호작용과 지식 형성 연구",
+      "url": "https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003162855",
+      "published": "2024",
+      "usedFor": "2012~2021 NAVER 카페 육아 데이터에서 커뮤니티 상호작용과 주제 변화를 분석한 국내 연구",
+      "evidenceLevel": "research"
+    }
+  ],
+  "decisionItems": [
+    {
+      "id": 1,
+      "question": "'육아 생활 운영'을 첫 진입시장 가설로 시험할 것인가?",
+      "recommendation": "6주 제작·배포와 30일 후속 관찰을 조건부 승인한다. 주말 경험 실행 패키지만 P0로 제한하며 시장 확정으로 표현하지 않는다.",
+      "scaleCondition": "제작자 8명·승인 Flow 24개, 유효 방문 300건, 내보내기·공유 25%를 모두 충족하면 다음 검증 투자를 검토한다.",
+      "reviseCondition": "제작자 5~7명 또는 승인 Flow 15~23개면 육아를 확정하지 않고 모집·보상·주제를 보완한다.",
+      "stopCondition": "제작자 5명 미만 또는 승인 Flow 15개 미만이면 여행 준비로 전환한다.",
+      "confidence": "hypothesis_unmeasured"
+    },
+    {
+      "id": 2,
+      "question": "P0를 제작자 출처가 있는 실행 결과물과 공유 링크까지로 한정할 것인가?",
+      "recommendation": "승인. My Flow 통합 관리와 직접 API는 P1 이후로 둔다.",
+      "stopCondition": "목적지 결과물만으로 사용자 가치가 확인되지 않을 때 P1 저장 기능의 전면 노출을 재검토한다.",
+      "confidence": "strategic_inference"
+    },
+    {
+      "id": 3,
+      "question": "초기 제작자 확보를 제작 지원·공동 브랜드·사용 통계 제공으로 시작할 것인가?",
+      "recommendation": "8명×3개 Flow, 6주 제작·배포와 30일 후속 관찰, 내부 136~156시간, 제작자 사례비 240만~400만원 가설로 승인한다.",
+      "stopCondition": "제작자 승인율 70%, 링크 부착률 70%, 유효 방문 300건 중 하나라도 충족하지 못하면 보상·유통·가치 제안을 다시 설계한다.",
+      "confidence": "hypothesis_unmeasured"
+    }
+  ]
+}

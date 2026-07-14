@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P24-00A 독립 관찰 QA — Claude Code 실행 결과</title>
+  <style>
+    :root { color-scheme: light; --ink:#172033; --muted:#5d687c; --line:#dbe1ea; --panel:#f5f7fa; --blue:#2457e6; --green:#0f7b55; --amber:#a35b00; --red:#b42335; --purple:#6d3cc3; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin:0; background:#fff; color:var(--ink); font-family:Inter,Pretendard,"Noto Sans KR",system-ui,sans-serif; line-height:1.58; }
+    a { color:var(--blue); }
+    header { border-bottom:1px solid var(--line); background:#111827; color:#fff; }
+    .wrap { width:min(1180px, calc(100% - 32px)); margin:0 auto; }
+    .hero { padding:44px 0 38px; }
+    .eyebrow { color:#9bb5ff; font-size:12px; font-weight:800; text-transform:uppercase; }
+    h1 { margin:8px 0 12px; font-size:clamp(28px,4.6vw,46px); line-height:1.1; }
+    .hero p { max-width:820px; color:#cbd5e1; font-size:16px; }
+    .verdict { border-left:3px solid #7ea0ff; padding-left:18px; margin-top:18px; }
+    .verdict strong { display:block; font-size:19px; margin-bottom:6px; }
+    nav { position:sticky; top:0; z-index:5; background:rgba(255,255,255,.97); border-bottom:1px solid var(--line); }
+    nav .wrap { display:flex; gap:18px; overflow-x:auto; padding:12px 0; }
+    nav a { color:#334155; text-decoration:none; white-space:nowrap; font-size:13px; font-weight:700; }
+    main section.band { padding:40px 0; border-bottom:1px solid var(--line); }
+    h2 { margin:0 0 16px; font-size:24px; }
+    h3 { margin:0 0 8px; font-size:17px; }
+    .metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); border:1px solid var(--line); }
+    .metric { padding:16px; border-right:1px solid var(--line); min-height:96px; }
+    .metric:last-child { border-right:0; }
+    .metric b { display:block; font-size:24px; }
+    .metric span { color:var(--muted); font-size:12px; }
+    .notice { padding:14px 16px; border-left:4px solid var(--amber); background:#fff8eb; margin-top:16px; font-size:14px; }
+    .notice.red { border-left-color:var(--red); background:#feecef; }
+    .finding { border:1px solid var(--line); border-radius:8px; padding:18px 20px; margin-bottom:14px; }
+    .finding.blocking { border-left:5px solid var(--red); }
+    .finding.high { border-left:5px solid var(--amber); }
+    .finding.medium { border-left:5px solid var(--blue); }
+    .finding.low { border-left:5px solid var(--muted); }
+    .finding h3 { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .tag { display:inline-block; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:800; text-transform:uppercase; }
+    .tag-blocking { background:#feecef; color:var(--red); }
+    .tag-high { background:#fff1d6; color:var(--amber); }
+    .tag-medium { background:#eef2ff; color:var(--blue); }
+    .tag-low { background:#f1f4f8; color:var(--muted); }
+    .meta { color:var(--muted); font-size:12.5px; margin:4px 0 10px; }
+    .finding p { margin:6px 0; font-size:14px; }
+    .finding code, pre code { font-family:"SFMono-Regular",Consolas,monospace; font-size:12.5px; }
+    pre { background:#0f172a; color:#e2e8f0; padding:12px 14px; border-radius:6px; overflow-x:auto; font-size:12px; }
+    .table-wrap { overflow-x:auto; border:1px solid var(--line); }
+    table { width:100%; border-collapse:collapse; min-width:640px; }
+    th,td { padding:10px 12px; text-align:left; vertical-align:top; border-bottom:1px solid var(--line); font-size:13px; }
+    th { background:#f1f4f8; color:#39465a; }
+    tr:last-child td { border-bottom:0; }
+    .status { display:inline-block; padding:3px 7px; border-radius:4px; font-size:11px; font-weight:800; text-transform:uppercase; }
+    .status-supported { background:#e5f7ef; color:var(--green); }
+    .status-hidden { background:#eef2ff; color:var(--blue); }
+    .status-partial { background:#fff1d6; color:var(--amber); }
+    .status-missing { background:#feecef; color:var(--red); }
+    .status-blocked { background:#f1eafb; color:var(--purple); }
+    .questions { columns:2; column-gap:36px; padding-left:20px; font-size:14px; }
+    .questions li { break-inside:avoid; margin-bottom:8px; }
+    footer { padding:28px 0 48px; color:var(--muted); font-size:13px; }
+    @media (max-width: 820px) {
+      .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .metric:nth-child(2n) { border-right:0; }
+      .questions { columns:1; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap hero">
+    <div class="eyebrow">P24-00A · 독립 QA · automated_simulated</div>
+    <h1>FlowMe P24-00A 독립 사용자 여정 QA</h1>
+    <p>Claude Code가 5 persona × 3 session 프로토콜을 로컬 dev 서버에서 브라우저 자동화로 실행했다. 실제 사람이 참여하지 않았으므로 이 결과는 <strong>automated_simulated</strong> 등급이며 observed user 증거를 대체하지 않는다.</p>
+    <div class="verdict">
+      <strong>가장 심각한 두 가지: 빌드가 깨져 있고, 지정된 Vercel preview는 로그인 벽에 막혀 전혀 접근하지 못했다.</strong>
+      모든 관찰은 로컬 <code style="color:#cbd5e1">npm run dev</code> 기준이다. 자세한 내용은 아래 B1 참고.
+    </div>
+  </div>
+</header>
+<nav><div class="wrap">
+  <a href="#summary">요약 수치</a>
+  <a href="#blocking">Blocking</a>
+  <a href="#high">High</a>
+  <a href="#medium-low">Medium/Low</a>
+  <a href="#personas">Persona 결과</a>
+  <a href="#verify">검증 명령</a>
+  <a href="#questions">사용자에게만 답할 질문</a>
+  <a href="#next">P24-01A 판단</a>
+</div></nav>
+
+<main>
+  <section class="band" id="summary">
+    <h2>요약 수치</h2>
+    <div class="metrics">
+      <div class="metric"><b>5</b><span>Blocking findings</span></div>
+      <div class="metric"><b>3</b><span>High findings</span></div>
+      <div class="metric"><b>3</b><span>Medium findings</span></div>
+      <div class="metric"><b>8 / 15</b><span>persona×session 셀 = supported</span></div>
+      <div class="metric"><b>1 / 15</b><span>셀 = blocked (반복 skip/hold)</span></div>
+    </div>
+    <div class="notice red"><strong>npm run build 실패 (exit 1)</strong> — 커밋되지 않은 Next.js 15.3.8→15.5.20 등 의존성 변경이 원인으로 보임. 빌드가 실패해 <code>npm run start</code>, <code>npm run test:e2e</code>도 실행 불가.</div>
+    <div class="notice"><strong>Vercel preview 접근 불가</strong> — <code>https://flowme2605-13grv45zl-flowme.vercel.app</code>가 Vercel 로그인 페이지로 리다이렉트됨. 로그인은 금지된 행동이라 시도하지 않았고, 대신 로컬 <code>npm run dev</code>로 검증했다(앱 소스 코드는 baseline과 동일함을 git diff로 확인).</div>
+  </section>
+
+  <section class="band" id="blocking">
+    <h2>Blocking</h2>
+
+    <div class="finding blocking">
+      <h3><span class="tag tag-blocking">B1</span> npm run build가 dirty worktree에서 실패한다</h3>
+      <div class="meta">범위: 전체 서비스 · evidence: current command (2회 재현)</div>
+      <p>"Collecting page data" 단계에서 <code>PageNotFoundError: Cannot find module for page: ...</code>로 exit 1. 커밋되지 않은 <code>package.json</code>/<code>package-lock.json</code> 변경(Next 15.3.8→15.5.20 등)이 원인으로 추정된다. 앱 소스 코드(app/components/lib)는 baseline과 diff 없음을 확인했다.</p>
+      <pre><code>Collecting page data ...
+[Error [PageNotFoundError]: Cannot find module for page: /f/[slug]] { code: 'ENOENT' }
+&gt; Build error occurred</code></pre>
+      <p>연쇄 영향: <code>npm run start</code> 실패 → Playwright <code>webServer</code>가 이를 사용하므로 <code>npm run test:e2e</code> 자체가 실행 불가. 이번 세션에서 e2e 테스트는 0개 실행됐다.</p>
+    </div>
+
+    <div class="finding blocking">
+      <h3><span class="tag tag-blocking">B2</span> 반복 실행이 첫 회차만 표시되고 나머지 회차는 어디에도 없다</h3>
+      <div class="meta">Persona 3 · Session 1–2 · route: /f/curated-allblanc-morning-workout → /my, /calendar</div>
+      <p>저장 시점 "회차 그리드" 미리보기는 4주 12회차(월/수/금)를 정확히 보여준다. 저장 후 My Flow는 "반복 항목 0/1"만 표시, Calendar month grid는 <code>td[data-date]</code>별 <code>.fc-event</code> 개수를 직접 세었을 때 첫 회차(7/15)에만 1개, 2·3회차(7/17, 7/20)에는 0개. ICS blob의 <code>BEGIN:VEVENT</code> 개수도 1개.</p>
+      <p>요일 기반 반복과 개인 항목의 "매일" 콤보박스 반복 두 경로 모두에서 동일하게 재현 — 특정 콘텐츠가 아니라 프로젝션 레이어 구조 문제로 보인다.</p>
+      <p><strong>영향</strong>: Persona 3 Session 2의 "다른 occurrence skip/hold" 자체를 테스트할 화면이 없었다(occurrence가 1개뿐).</p>
+    </div>
+
+    <div class="finding blocking">
+      <h3><span class="tag tag-blocking">B3</span> 메모 분할 개인 초안 중 type:"todo" 항목이 완전히 비가시</h3>
+      <div class="meta">Persona 4 · Session 1 · route: /flows 미스 케이스 → /my</div>
+      <p>메모 하나를 3개 할 일로 분할해 저장했지만 My Flow에는 1개만 보인다. <code>localStorage</code> 원본을 직접 파싱해 3개 항목이 모두 저장돼 있음을 확인했다 — 1번은 <code>type:"calendar"</code>, 2·3번은 <code>type:"todo"</code>. "메모로 복사" export에도 1번 항목만 포함된다. "이 Flow 가져가기 · 3개" 라벨은 여전히 3개라고 (틀리게) 표시한다.</p>
+      <p>대조: 사용자가 "+ 할 일 추가"로 직접 만든 항목은 즉시 정상 렌더링됨 — type 처리 분기 문제로 보인다.</p>
+    </div>
+
+    <div class="finding blocking">
+      <h3><span class="tag tag-blocking">B4</span> 개별 항목 날짜 override가 "다음 할 일" 요약 위젯에 반영되지 않는다</h3>
+      <div class="meta">Persona 1 &amp; 2 각각 독립 재현 · reload 후에도 지속</div>
+      <p>항목 날짜를 개별 변경해도 My Flow 홈의 "다음 할 일"/"먼저 할 일" 위젯은 계속 원래 앵커 기준 재계산값(또는 "날짜 없음")을 보여준다. 전체 목록·Calendar·ICS는 모두 정확하다 — 위젯 하나만 부정확하다. 앵커를 다시 바꿔도 위젯은 새 앵커의 재계산값으로만 갱신될 뿐 여전히 override를 무시한다.</p>
+    </div>
+
+    <div class="finding blocking">
+      <h3><span class="tag tag-blocking">B5</span> "이 Flow 다시 쓰기"의 override 유지 옵션이 동작하지 않는다</h3>
+      <div class="meta">Persona 1 · Session 3</div>
+      <p>완료된 Flow를 "내가 바꾼 날짜 유지"를 선택해 다시 쓰면, UI 문구와 달리 override가 사라지고 새 앵커의 재계산값으로 리셋된다. 과거 실행 기록(히스토리)에는 override가 정확히 스냅샷돼 있는데, 새 실행에는 이관되지 않는다.</p>
+    </div>
+  </section>
+
+  <section class="band" id="high">
+    <h2>High</h2>
+    <div class="finding high">
+      <h3><span class="tag tag-high">H1</span> /flows 하드 네비게이션이 무한 로딩에 걸린다</h3>
+      <div class="meta">route: /flows 직접 진입 · dev 서버 재시작 후에도 재현(2회) · production 빌드로 미검증(B1로 인해)</div>
+      <p>주소창 직접 진입/새로고침 시 "Flow를 불러오는 중입니다." Suspense fallback에서 멈춘다. 홈에서 클릭(client-side transition)하면 정상. HTML을 직접 조사하면 실제 콘텐츠는 <code>hidden</code> 슬롯에 이미 도착해 있지만 보이는 위치로 옮기는 스트리밍 완료 스크립트가 실행되지 않는다.</p>
+    </div>
+    <div class="finding high">
+      <h3><span class="tag tag-high">H2</span> 저장 직후 /my가 빈 상태로 보이는 간헐적 사례</h3>
+      <div class="meta">Persona 2 Session 1 · 재현율: 5회 저장 시도 중 1회</div>
+      <p>localStorage에는 저장 데이터가 이미 존재하는데 화면은 "저장한 콘텐츠 없음"을 표시, reload로 해결. Persona 1/3/4/5의 동일 지점에서는 재현 안 됨 — 결정적이라 보기 어려워 관찰 후 수정 대상으로 분류.</p>
+    </div>
+    <div class="finding high">
+      <h3><span class="tag tag-high">H3</span> dev 서버가 장시간 세션에서 내부 모듈 오류로 불안정해짐</h3>
+      <div class="meta">B1과 동일 의존성 이슈의 연장선 추정</div>
+      <p><code>segment-explorer-node.js</code> 모듈 참조 실패, <code>Cannot find module './331.js'</code> 등으로 500 에러 발생. <code>.next</code> 삭제 후 재시작으로 해결. 제품 버그로 단정하지 않고 B1의 추가 증거로 취급한다.</p>
+    </div>
+  </section>
+
+  <section class="band" id="medium-low">
+    <h2>Medium / Low</h2>
+    <div class="finding medium"><h3><span class="tag tag-medium">M1</span> 범용 편집 필드가 콘텐츠 성격과 무관하게 노출됨</h3><p>"결정 상태(구매/거절/보류)", "다음 확인일" 등이 모든 항목에 일괄 노출 — 콘텐츠 맞춤 정도 낮음. (inferred, 실제 혼란 여부는 미검증)</p></div>
+    <div class="finding medium"><h3><span class="tag tag-medium">M2</span> source-backed 구조 편집 잠금에 안내 문구 없음</h3><p>add/delete/reorder 컨트롤이 아예 없는 것은 정책상 의도됐지만(실측 확인) "왜 없는지" 설명이 없어 버그로 오인될 수 있다.</p></div>
+    <div class="finding medium"><h3><span class="tag tag-medium">M3</span> ICS 버튼 라벨/배치가 스코프를 오해하게 만듦</h3><p>Flow 제목 아래 있어 전체를 내보내는 것처럼 보이지만 실제로는 현재 항목 1개만 내보낸다.</p></div>
+    <div class="finding low"><h3><span class="tag tag-low">L1</span> 자동화 클릭이 일부 submit 버튼에서 등록 실패 (방법론 메모)</h3><p>JS <code>.click()</code> fallback으로 우회. 오버랩 미확인 1건, 제품 버그로 단정하지 않음.</p></div>
+    <div class="finding low"><h3><span class="tag tag-low">L2</span> 스크린샷 도구가 세션 내내 타임아웃 (방법론 메모)</h3><p>screenshots/ 산출물 없음. DOM/텍스트 직접 조회로 대체.</p></div>
+  </section>
+
+  <section class="band" id="personas">
+    <h2>Persona × Session 결과</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Persona</th><th>Session</th><th>결과</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">1. 기준일 역산형(이사)</td><td>1 발견→저장→착지</td><td><span class="status status-supported">supported</span></td><td>이사일 라벨/D-30 계산 정확</td></tr>
+        <tr><td>2 일정 수정·완료</td><td><span class="status status-partial">partial</span></td><td>B4</td></tr>
+        <tr><td>3 재방문·회고·다시쓰기</td><td><span class="status status-partial">partial</span></td><td>B5</td></tr>
+        <tr><td rowspan="3">2. 날짜 없는 체크리스트형</td><td>1 저장·발견</td><td><span class="status status-supported">supported</span></td><td>H2 1회</td></tr>
+        <tr><td>2 날짜 지정/제거/완료</td><td><span class="status status-partial">partial</span></td><td>B4</td></tr>
+        <tr><td>3 재방문·구조 잠금</td><td><span class="status status-supported">supported</span></td><td>M2</td></tr>
+        <tr><td rowspan="3">3. 반복 루틴형</td><td>1 draft·반복 설정</td><td><span class="status status-supported">supported</span></td><td>저장 시점 미리보기 정확</td></tr>
+        <tr><td>2 occurrence 완료/skip/hold</td><td><span class="status status-blocked">blocked</span></td><td>B2</td></tr>
+        <tr><td>3 reload·규칙 수정</td><td><span class="status status-partial">partial</span></td><td>B2 근본원인</td></tr>
+        <tr><td rowspan="3">4. 개인 초안·구조 편집형</td><td>1 miss 진입·저장</td><td><span class="status status-partial">partial</span></td><td>B3</td></tr>
+        <tr><td>2 추가/수정/삭제/undo/순서</td><td><span class="status status-supported">supported</span></td><td>신규 추가 항목은 전부 정상</td></tr>
+        <tr><td>3 reload persistence</td><td><span class="status status-supported">supported</span></td><td>영구 복구 확인</td></tr>
+        <tr><td rowspan="3">5. 공개 공유·재사용형</td><td>1 /f/[slug] 진입</td><td><span class="status status-supported">supported</span></td><td>preview 라벨 명확</td></tr>
+        <tr><td>2 저장 후 완료 체크</td><td><span class="status status-supported">supported</span></td><td>role 분리 확인</td></tr>
+        <tr><td>3 회고·재사용</td><td><span class="status status-partial">partial</span></td><td>source 업데이트 UI 미노출</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="band" id="verify">
+    <h2>검증 명령 결과 (이번 세션 직접 실행)</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>명령</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td><code>npm test</code></td><td>476/476 pass</td></tr>
+        <tr><td><code>npm run docs:check</code></td><td>pass (14 files, 2175 links)</td></tr>
+        <tr><td><code>npm run build</code></td><td><strong style="color:var(--red)">실패 (exit 1)</strong> — 2회 재현</td></tr>
+        <tr><td><code>npm run start</code></td><td><strong style="color:var(--red)">실패</strong> — 유효한 .next 빌드 없음</td></tr>
+        <tr><td><code>npm run test:e2e</code></td><td><strong>실행 안 함</strong> — webServer 전제조건(빌드) 불충족</td></tr>
+        <tr><td><code>git diff --check</code></td><td>기존 CRLF 경고만, 오류 없음</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="band" id="questions">
+    <h2>실제 사용자에게만 답할 수 있는 질문</h2>
+    <ol class="questions">
+      <li>My Flow 홈 위젯의 날짜 오류(B4)를 실제 사용자가 알아채는가?</li>
+      <li>"결정 상태" 같은 범용 필드(M1)를 사용자가 혼란스러워하는가, 무시하는가?</li>
+      <li>source-backed Flow에 구조 편집 버튼이 없는 것(M2)을 당연하다고 받아들이는가, 버그라고 느끼는가?</li>
+      <li>반복 회차가 1개만 보이는 것(B2)을 사용자가 "완료 후 다음 회차가 생기나 보다"라고 오해하고 넘어가는가?</li>
+      <li>자동화 클릭 실패(L1)에 대응하는 "버튼을 여러 번 누르는" 실제 행동 패턴이 존재하는가?</li>
+    </ol>
+  </section>
+
+  <section class="band" id="next">
+    <h2>P24-01A(source v2 merge contract) 착수 판단</h2>
+    <p><strong>아직 착수하지 않는 것을 권고한다.</strong> B1(빌드 실패)이 해결되지 않으면 새 기능 검증 자체가 불가능하고, B2/B4/B5는 P23이 "닫혔다"고 선언한 핵심 실행 계약(반복 추적, override 유지)이 실제로는 부분적으로 깨져 있음을 보여준다. B3(todo 항목 은닉)은 source v2가 다루게 될 "added/changed Item" 처리에도 이어질 위험이 있다.</p>
+    <p><strong>권장 순서</strong>: B1 → B4/B5 → B2 원인 조사 → (필요시 B3) → targeted e2e 회귀 추가 → P24-01A 스펙 착수.</p>
+    <p>자세한 근거는 <a href="./audit.md">audit.md</a>와 <a href="./backlog-recommendation.md">backlog-recommendation.md</a> 참고.</p>
+  </section>
+</main>
+<footer><div class="wrap">
+  2026-07-14 · Claude Code 자동 QA (automated_simulated) · 대상: 로컬 npm run dev, Next.js 15.5.20 · Vercel preview 접근 불가(SSO) · 산출물: <a href="./README.md">README.md</a> · <a href="./audit.md">audit.md</a>
+</div></footer>
+</body>
+</html>

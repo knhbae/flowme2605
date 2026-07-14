@@ -1,0 +1,32 @@
+{
+  "evidence_grade": "automated_simulated",
+  "legend": {
+    "supported": "UI로 도달하고 reload·projection까지 일관됨",
+    "hidden": "기능은 있으나 설명 없이 찾기 어려움",
+    "partial": "일부 화면·destination·Flow 유형에만 반영됨",
+    "missing": "기능 또는 사용자 경로 없음",
+    "blocked": "데이터·제품 정책 또는 상위 버그로 선행 필요"
+  },
+  "transitions": [
+    { "step": "발견", "result": "supported", "personas_tested": [1,2,3,4,5], "note": "홈 CTA, /flows 카탈로그, /f/[slug] 모두 client-side 진입 확인. 하드 네비게이션 /flows는 H1 참고" },
+    { "step": "저장", "result": "supported", "personas_tested": [1,2,3,4,5], "note": "H2(간헐적 빈 상태 1회)를 제외하면 즉시 반영" },
+    { "step": "제목/기준일/메모 수정", "result": "supported", "personas_tested": [1,2,4], "note": "'제목·날짜·메모 수정' 패널 정상 동작" },
+    { "step": "날짜 지정", "result": "partial", "personas_tested": [1,2], "note": "전체목록/Calendar/ICS 정확, My Flow 요약 위젯은 B4로 부정확" },
+    { "step": "날짜 변경", "result": "partial", "personas_tested": [1,2], "note": "동일 B4 영향" },
+    { "step": "날짜 제거", "result": "supported", "personas_tested": [2], "note": "Calendar/ICS에서 제외, memo export에는 유지, 'ICS 버튼 -> 날짜 필요' 대체 UI 확인" },
+    { "step": "종일/시간 전환", "result": "supported", "personas_tested": [1,2], "note": "time input 필드 존재 및 값 반영 확인(시각적 렌더 형태는 미검증)" },
+    { "step": "반복 설정", "result": "partial", "personas_tested": [3], "note": "저장 시점 미리보기(회차 그리드)는 정확, 저장 후 실제 반영은 B2로 깨짐" },
+    { "step": "일부 완료", "result": "supported", "personas_tested": [1,2,3,4,5], "note": "체크박스 토글 및 리스트 이동 정상" },
+    { "step": "완료 취소", "result": "supported", "personas_tested": [1,2,3], "note": "동일 체크박스, accessible name '완료 체크' <-> '완료 취소' 정상 전환" },
+    { "step": "건너뜀/보류", "result": "blocked", "personas_tested": [3], "note": "B2로 인해 occurrence가 1개뿐이라 skip/hold 자체를 실행할 화면이 없었음" },
+    { "step": "항목 추가", "result": "supported", "personas_tested": [4], "note": "개인 draft에 '+ 할 일 추가'로 즉시 반영 확인" },
+    { "step": "삭제", "result": "supported", "personas_tested": [4], "note": "즉시 목록에서 제외, tombstone 문구 표시" },
+    { "step": "undo/복구", "result": "supported", "personas_tested": [4], "note": "즉시 되돌리기 및 reload 후 '복구' 옵션 지속 확인 둘 다 정상" },
+    { "step": "순서 변경", "result": "supported", "personas_tested": [4], "note": "↑↓ 버튼 존재 확인(클릭 후 순서 재배열은 시간 제약으로 값 비교까지는 미검증)" },
+    { "step": "Calendar", "result": "supported", "personas_tested": [1,2,3,5], "note": "B2(반복) 제외 나머지는 effective date와 일치" },
+    { "step": "ICS/checklist/sheet/memo", "result": "supported", "personas_tested": [1,2,3,4,5], "note": "ICS blob과 clipboard 캡처로 실측, B2/B3 영향 항목 제외 정확" },
+    { "step": "전체 완료", "result": "supported", "personas_tested": [1], "note": "5/5 완료 상태 및 진행률 표시 정상" },
+    { "step": "회고", "result": "supported", "personas_tested": [1], "note": "회고 저장, 과거 실행 히스토리 뷰에 정확히 반영 확인" },
+    { "step": "다시쓰기", "result": "partial", "personas_tested": [1], "note": "새 실행 생성 자체는 supported, override 이관 옵션은 B5로 깨짐" }
+  ]
+}
