@@ -73,6 +73,24 @@ npm run dev
 - If a user asks "what about X style/direction?" and the answer is not immediate implementation, treat it as either a pending idea or an explicit rejected/deferred decision and record it accordingly when the user confirms or the session direction is clear.
 - If multiple documents could apply, use this order: settled rule in `DECISIONS`, uncommitted direction in `IDEAS`, committed multi-step work in `specs`, active health or current blocker in `STATUS`, release fact in `HISTORY`.
 
+### Notion Operating Projection
+- The repo document graph remains canonical. Notion is an optional human-facing operations view, not another place to duplicate full specs, decisions, research, test logs, or implementation detail.
+- The active projection is [00 FlowMe 운영 홈](https://app.notion.com/p/39ac0d8f693f81339a34fdb75552bc27), backed by `collection://4946eb61-01b1-49e8-929e-82b118740310`. For non-trivial backlog or status work, establish the repo baseline first, then read this board when the connector is available.
+- Map every projected work item to a durable product direction and keep a compact `사용자가 챙길 것` summary at the top of the operations home. It should connect the current human decision or action to FLOW's larger product loop, not show an undifferentiated task list. Also maintain a horizon map sourced from `docs/PRODUCT_PRINCIPLES.md` and `docs/IDEAS.md` that separates Now, Next, Expansion, and Long horizon; visibility there does not promote a deferred idea into the active backlog.
+- Keep the operations home explicit about two different clocks: the current product-validation Stage and the implementation capability already built. Show the current baseline, completed/conditional/unstarted gates, and the evidence required for the next Stage or release-grade decision; implementation progress alone must not advance the validation Stage.
+- After substantial strategy, research, UX, QA, or release work, decide whether the user owes a blocking decision, useful feedback, direct/external action, or only ongoing awareness. Put only those outcome-level items in the top feedback queue with the exact ask, recommendation, and next checkpoint; keep AI-owned follow-up separate and do not pin completed artifacts that require no user response.
+- Every pinned review item must include a directly openable primary artifact link. Prefer the committed GitHub file URL. When the essential HTML or Markdown is still local and uncommitted, attach a dated Notion review snapshot and show the repo-local path, clearly state that the snapshot is not canonical, and refresh the canonical link after commit instead of leaving a broken link.
+- When the FlowMe Notion board and connector are available, project only active human gates and high-level work packages: decisions or input the user owes, AI results awaiting review, direct human actions, blockers, next checkpoints, done-when conditions, and repo/evidence links.
+- Keep AI work at outcome level in Notion. File changes, commands, subtasks, tests, and technical reasoning stay in the linked repo spec, plan, PR, or handoff.
+- Update the repo first, then update only the Notion items touched by the task. If Notion is unavailable or conflicts with the repo, continue from the repo and mark/report the Notion projection as stale rather than blocking work.
+
+### Repeatable Collaboration Workflows
+- Use [Session Start](./docs/workflows/session-start.md) and `npm run workflow:session-start` before substantial new or resumed work, especially in a dirty worktree.
+- Use [Request Interview](./docs/workflows/request-interview.md) only when ambiguity could materially change the outcome, product direction, scope, risk, or success evidence. Inspect repo evidence first, ask one round of 1-3 high-information questions, recommend a default, and skip the interview for clear low-risk requests.
+- Use [Direction Capture](./docs/workflows/capture-direction.md) whenever a durable decision, deferred idea, approved spec, active blocker, route contract, or release fact emerges during conversation or implementation.
+- Use [Work Closeout](./docs/workflows/work-closeout.md) and `npm run workflow:closeout` before claiming completion, handing off, committing, publishing, or reporting status.
+- Workflow scripts are read-only evidence collectors. They do not decide product direction, run verification, update Notion, or authorize commit, push, merge, deploy, or destructive cleanup.
+
 ### Idea Capture
 - 작업 중 좋은 아이디어가 나왔지만 이번 범위에 적용하지 않으면 `docs/IDEAS.md`에 기록한다.
 - 기록 형식은 날짜, 아이디어, 왜 지금 안 하는지, 다시 볼 조건, 출처 대화/작업 맥락을 포함한다.
@@ -139,6 +157,8 @@ FLOW 품질 기준은 좁은 금지 규칙이 아니라 3층 구조로 운영한
 작업자는 “운동 영상은 무조건 1개 action” 같은 절대 규칙을 만들지 않는다. 대신 “단일 운동 영상은 기본 1개 action, 프로그램/챌린지/재활 루틴은 다중 단계 허용”처럼 기본값과 예외를 함께 둔다.
 
 ## 4) Product Structure Types
+
+> **Canonical note (2026-07-12):** The four names below remain legacy UI/seed compatibility shorthands, not the backend content schema. New conversion and storage use independent axes from [Canonical Flow Data Model v1](./docs/specs/2026-07-11-canonical-flow-data-model/spec.md): `planningPattern`, `primaryArtifact`, Item intent/facets, and Item schedule mode. Map `timeline -> date_preparation`, `phase -> phase_lifecycle`, `routine -> repeating_routine`, and `checklist -> a primary artifact/projection`. `Item` remains the minimum independently stateful execution/projection unit.
 
 ### `timeline`
 D-Day 기반 플랜.

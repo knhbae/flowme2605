@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>FlowMe 도구·스킬·설정 갱신 | 2026-07-10</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --paper: #ffffff;
+      --ink: #17202a;
+      --muted: #5d6875;
+      --line: #d9dee5;
+      --blue: #1457a6;
+      --blue-soft: #edf5ff;
+      --green: #146c43;
+      --green-soft: #edf8f2;
+      --amber: #9a5700;
+      --amber-soft: #fff6e6;
+      --red: #a4302d;
+      --red-soft: #fff0ef;
+      --violet: #6941a5;
+      --violet-soft: #f5f0ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+
+    header {
+      padding: 10px 0 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .eyebrow,
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .chip.green { color: var(--green); border-color: #a9d7bf; background: var(--green-soft); }
+    .chip.amber { color: var(--amber); border-color: #e7c98d; background: var(--amber-soft); }
+    .chip.red { color: var(--red); border-color: #e6b1ae; background: var(--red-soft); }
+    .chip.blue { color: var(--blue); border-color: #a9c8eb; background: var(--blue-soft); }
+
+    h1 {
+      max-width: 900px;
+      margin: 14px 0 10px;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 880px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .metric,
+    .item,
+    .source {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+    }
+
+    .metric { padding: 14px; }
+    .metric strong { display: block; font-size: 27px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+
+    .band {
+      padding: 26px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(280px, 1.3fr);
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0; }
+    .section-head p, .note { color: var(--muted); font-size: 14px; }
+
+    .verdict {
+      padding: 18px;
+      border-left: 5px solid var(--green);
+      background: var(--green-soft);
+    }
+
+    .verdict strong { display: block; margin-bottom: 6px; font-size: 18px; }
+
+    .lanes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .lane {
+      min-width: 0;
+      padding-top: 10px;
+      border-top: 4px solid var(--line);
+    }
+
+    .lane.now { border-color: var(--green); }
+    .lane.next { border-color: var(--amber); }
+    .lane.hold { border-color: var(--violet); }
+    .lane > p { margin-top: 5px; color: var(--muted); font-size: 13px; }
+
+    .item {
+      margin-top: 10px;
+      padding: 13px;
+    }
+
+    .item p { margin-top: 6px; color: var(--muted); font-size: 13px; }
+    .item .meta { margin-top: 8px; color: var(--ink); font-size: 12px; font-weight: 700; }
+
+    .change-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .change {
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .change p { margin-top: 5px; color: var(--muted); font-size: 13px; }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    th {
+      background: #f8fafb;
+      color: #3f4a56;
+      font-size: 12px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    td strong { display: block; margin-bottom: 3px; }
+
+    .risk-before { color: var(--red); font-weight: 800; }
+    .risk-after { color: var(--green); font-weight: 800; }
+
+    .inventory {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .inventory-block {
+      padding: 15px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .inventory-block ul {
+      margin: 9px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .inventory-block li + li { margin-top: 5px; }
+
+    .sources {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .source {
+      display: block;
+      padding: 13px;
+      text-decoration: none;
+    }
+
+    .source:hover { border-color: #8eb2d9; }
+    .source strong { display: block; color: var(--ink); font-size: 13px; }
+    .source span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+    footer {
+      padding-top: 20px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    code {
+      padding: 1px 4px;
+      border: 1px solid #d7dce2;
+      border-radius: 3px;
+      background: #f7f8fa;
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 820px) {
+      .metrics,
+      .lanes,
+      .change-list,
+      .inventory,
+      .sources,
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+
+      .page { width: min(100% - 24px, 1180px); padding-top: 18px; }
+      .section-head { gap: 8px; }
+      .band { padding: 22px 0; }
+    }
+
+    @media (max-width: 460px) {
+      h1 { font-size: 32px; }
+      .lead { font-size: 15px; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric strong { font-size: 23px; }
+    }
+  </style>
+</head>
+<body>
+  <article class="page">
+    <header>
+      <div class="eyebrow">
+        <span class="chip blue">FlowMe 운영 도구 점검</span>
+        <span class="chip">2026-07-10</span>
+        <span class="chip green">우선순위 항목 반영 완료</span>
+      </div>
+      <h1>플러그인을 더 늘리기보다, 낡은 기반과 세션 간 불일치를 먼저 없앴다</h1>
+      <p class="lead">현재 FlowMe에는 기획, 디자인, 프론트 구현, 브라우저 QA, GitHub, 배포 도구가 이미 충분하다. 이번 갱신은 지원 종료 런타임과 취약 의존성을 교체하고, 다른 Codex 작업에서도 같은 FLOW 스킬을 쓰게 만들며, 실제 사용자 데이터가 생길 때 도입할 도구의 조건을 분명히 하는 데 집중했다.</p>
+
+      <div class="metrics" aria-label="갱신 요약">
+        <div class="metric"><strong>6</strong><span>이번에 실제 적용한 항목</span></div>
+        <div class="metric"><strong>5</strong><span>Codex에 동기화된 FLOW 스킬</span></div>
+        <div class="metric"><strong>4 → 0</strong><span>high 보안 취약점</span></div>
+        <div class="metric"><strong>7 → 2</strong><span>전체 npm audit 항목</span></div>
+      </div>
+    </header>
+
+    <section class="band" aria-labelledby="verdict-title">
+      <div class="section-head">
+        <h2 id="verdict-title">종합 판단</h2>
+        <p>온라인 인기도는 채택 신호로만 사용했다. 실제 적용 여부는 FlowMe의 현재 병목, 데이터 권한, 유지 비용, 출시 위험을 함께 보고 정했다.</p>
+      </div>
+      <div class="verdict">
+        <strong>지금 필요한 것은 추가 플러그인보다 운영 기반의 일관성이다.</strong>
+        Node 24, 패치된 Next/Playwright, Dependabot, CI 보안 차단, 실패 리포트 보존, FLOW 스킬 동기화까지는 즉시 가치가 있다. PostHog, Sentry, Promptfoo는 유력하지만 계정과 데이터 계약 없이 설치하면 빈 설정과 중복 관측만 늘어난다.
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="priority-title">
+      <div class="section-head">
+        <h2 id="priority-title">적용 우선순위</h2>
+        <p>“설치됨”과 “실제로 쓸 준비가 됨”을 구분했다. 다음 도구는 구체적인 트리거가 발생할 때 한 단계씩 연다.</p>
+      </div>
+
+      <div class="lanes">
+        <div class="lane now">
+          <h3>지금 적용</h3>
+          <p>현재 개발·출시 품질에 바로 영향을 주는 기반</p>
+          <div class="item">
+            <h3>Node 24 + 보안 패치</h3>
+            <p>Node 20 EOL 기준을 제거하고 Next 15.5.20, Playwright 1.61.1, PostCSS 8.5.16, 안전한 tmp/uuid 버전으로 갱신했다.</p>
+            <div class="meta">완료 조건: high audit 0</div>
+          </div>
+          <div class="item">
+            <h3>Dependabot + CI 증거</h3>
+            <p>npm/GitHub Actions를 주 1회 확인하고, CI에서 high 취약점을 차단하며 Playwright 실패 리포트를 14일 보존한다.</p>
+            <div class="meta">완료 조건: PR마다 자동 검사</div>
+          </div>
+          <div class="item">
+            <h3>FLOW 스킬 5개 동기화</h3>
+            <p>오래된 전역 사본을 저장소 원본으로 교체하고 한국어 자연화와 출시 준비 스킬도 다른 Codex 작업에서 발견되게 했다.</p>
+            <div class="meta"><code>npm run skills:install:codex</code></div>
+          </div>
+        </div>
+
+        <div class="lane next">
+          <h3>트리거가 생기면 다음</h3>
+          <p>제품 데이터나 운영 계정이 있어야 가치가 생기는 도구</p>
+          <div class="item">
+            <h3>PostHog</h3>
+            <p>첫 외부 사용자 묶음이 URL 입력, 저장, export, check, return을 실제로 수행할 때 도입한다. 이벤트 이름, 동의, 보존 기간이 선행 조건이다.</p>
+            <div class="meta">우선 목적: 사용자 행동 증거</div>
+          </div>
+          <div class="item">
+            <h3>Sentry</h3>
+            <p>Vercel 로그나 PostHog 오류 추적으로 부족한 실제 운영 오류가 생길 때 별도 도입한다. Sentry 프로젝트가 생긴 뒤 공식 읽기 전용 Codex 스킬을 설치한다.</p>
+            <div class="meta">우선 목적: 오류 triage</div>
+          </div>
+          <div class="item">
+            <h3>Promptfoo</h3>
+            <p>실제 AI URL→초안 기능을 열 때 source fidelity, 누락, 환각, Step 유용성의 golden set 회귀 검사에 사용한다.</p>
+            <div class="meta">선행 조건: AI API slice 승인</div>
+          </div>
+        </div>
+
+        <div class="lane hold">
+          <h3>계속 보류</h3>
+          <p>현재 병목을 풀지 못하거나 기존 기능과 중복되는 도구</p>
+          <div class="item">
+            <h3>Expo / native mobile</h3>
+            <p>네이티브 전용 상호작용, 푸시, 기기 캘린더, 앱스토어 배포가 요구될 때 검토한다. 현재는 반응형 웹 검증이 우선이다.</p>
+          </div>
+          <div class="item">
+            <h3>Notion / Linear / office connectors</h3>
+            <p>repo 문서와 HTML 작업판이 계획의 기준이다. 팀 자료가 외부 도구에 먼저 쌓이기 시작할 때 연결한다.</p>
+          </div>
+          <div class="item">
+            <h3>중복 Figma·GitHub·배포 스킬</h3>
+            <p>독립 패키지 이름이 미설치로 보여도 현재 플러그인이 같은 기능을 제공한다. 기능 중복 설치는 하지 않는다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="changes-title">
+      <div class="section-head">
+        <h2 id="changes-title">실제 변경 사항</h2>
+        <p>이번 결과는 추천 목록만 만든 것이 아니라 저장소와 Codex 사용자 환경에 반영한 상태다.</p>
+      </div>
+      <div class="change-list">
+        <div class="change"><h3>지원 런타임</h3><p><code>package.json</code>과 <code>.node-version</code>을 Node 24로 맞췄고, CI와 Vercel도 같은 기준을 사용한다.</p></div>
+        <div class="change"><h3>의존성 보안</h3><p>Next, Playwright, PostCSS, FullCalendar와 transitive tmp/uuid를 갱신했다. 최초 <span class="risk-before">high 4</span>에서 현재 <span class="risk-after">high 0</span>이다.</p></div>
+        <div class="change"><h3>자동 업데이트</h3><p><code>.github/dependabot.yml</code>이 npm과 GitHub Actions를 매주 확인한다. patch는 묶고 큰 변경은 별도 검토한다.</p></div>
+        <div class="change"><h3>CI 관측성</h3><p>보안 감사 단계를 추가하고 Playwright report와 test-results를 실패 시에도 보존한다.</p></div>
+        <div class="change"><h3>스킬 발견</h3><p><code>scripts/sync-codex-user-skills.mjs</code>가 저장소의 같은 이름 FLOW 스킬만 Codex 홈에 안전하게 갱신한다.</p></div>
+        <div class="change"><h3>반복 리뷰 품질</h3><p><code>flow-release-readiness</code>가 MVP, 출시, 백로그, 전체 완성도 질문을 같은 증거 체계와 한국어 HTML 형식으로 검토한다.</p></div>
+        <div class="change"><h3>검증 상태</h3><p>문서·378개 단위 테스트·격리 설치와 빌드·홈 스모크는 통과했다. 다만 병행 중인 제품 화면과 E2E 기대값이 어긋난 항목이 있어 <span class="risk-before">전체 E2E 녹색 기준은 아직 미확정</span>이다.</p></div>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="security-title">
+      <div class="section-head">
+        <h2 id="security-title">보안 전후</h2>
+        <p><code>npm audit</code> 결과와 공식 공개 권고를 대조했다. 남은 항목도 “0”으로 숨기지 않는다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>대상</th><th>이전</th><th>현재</th><th>판정</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Node.js</strong>로컬/CI 기준</td><td>20.19.3, 2026-03-24 EOL</td><td>저장소·CI·Vercel 24.x</td><td class="risk-after">지원 기준 복구</td></tr>
+            <tr><td><strong>Next.js</strong>App Router</td><td>15.3.8, 복수 high 범위</td><td>15.5.20</td><td class="risk-after">high 권고 범위 이탈</td></tr>
+            <tr><td><strong>Playwright</strong>브라우저 설치</td><td>1.52.0, high 범위</td><td>1.61.1</td><td class="risk-after">1.55.1 이상</td></tr>
+            <tr><td><strong>tmp / uuid</strong>ExcelJS 하위</td><td>0.2.5 / 8.3.2</td><td>0.2.7 / 11.1.1 override</td><td class="risk-after">현재 권고 해소</td></tr>
+            <tr><td><strong>PostCSS</strong></td><td>직접 8.5.3</td><td>직접 8.5.16, Next 내부 8.4.31</td><td class="risk-before">moderate 2건 잔존</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:10px">남은 moderate는 Next가 내부에 묶은 PostCSS 8.4 계열에 대한 npm audit 전파다. 직접 PostCSS는 패치됐고 Next high 권고는 해소됐지만, 이후 Next 패치에서 내부 번들이 갱신되는지 Dependabot으로 계속 본다.</p>
+    </section>
+
+    <section class="band" aria-labelledby="signals-title">
+      <div class="section-head">
+        <h2 id="signals-title">온라인 채택 신호와 사용자 반응</h2>
+        <p>GitHub star, fork, release cadence, 공개 issue를 함께 봤다. 숫자는 2026-07-10 확인 시점의 스냅샷이다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>도구</th><th>채택 신호</th><th>FlowMe 적합도</th><th>판단</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>OpenAI Plugins</strong>현행 공식 예제</td><td>4.3k stars, 636 forks</td><td>skill, MCP, app, hook을 묶는 현재 플러그인 기준</td><td>이전 <code>openai/skills</code>는 폐기 안내 상태다. 현재 제공 기능과 중복 여부를 먼저 확인</td></tr>
+            <tr><td><strong>Humanize KR</strong>한국어 자연화</td><td>3.7k stars, 375 forks, v2.0.0 최신</td><td>한국어 제품 문서와 카피 보조</td><td>repo v2.0 포트를 유지하고 Codex 홈에 동기화</td></tr>
+            <tr><td><strong>PostHog</strong>제품 분석</td><td>35.4k stars, 2.9k forks</td><td>save/export/check/return 증거와 replay에 가장 직접적</td><td>첫 외부 cohort 직전 도입</td></tr>
+            <tr><td><strong>Promptfoo</strong>AI eval</td><td>23.1k stars, 2.1k forks, 418 releases</td><td>URL→Flow AI 품질 회귀에 적합</td><td>실제 AI slice 때 도입. 원격 생성·데이터 유출 설정을 먼저 고정</td></tr>
+            <tr><td><strong>Sentry JS</strong>오류 관측</td><td>8.7k stars, 1.8k forks, 726 releases</td><td>Next.js 운영 오류 triage에 적합</td><td>PostHog/Vercel과 역할이 분리될 때만 추가</td></tr>
+            <tr><td><strong>MCP Servers</strong>생태계 기준</td><td>88.3k stars, 11.2k forks</td><td>도구 확장성은 크지만 권한·문맥 비용도 큼</td><td>새 MCP는 반복 병목과 데이터 경계가 확인된 뒤 선택</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="inventory-title">
+      <div class="section-head">
+        <h2 id="inventory-title">현재 기능 인벤토리</h2>
+        <p>독립 스킬 이름이 아니라 실제로 호출 가능한 기능을 기준으로 정리했다.</p>
+      </div>
+      <div class="inventory">
+        <div class="inventory-block">
+          <h3>이미 충분히 갖춘 영역</h3>
+          <ul>
+            <li>제품/UX: Figma, Code Connect, FLOW UX review</li>
+            <li>프론트: frontend app builder, Next.js, Vercel</li>
+            <li>브라우저 QA: Playwright, interactive browser, in-app browser</li>
+            <li>GitHub: PR, review comments, CI fix, publish workflow</li>
+            <li>공유: Sites, Vercel preview</li>
+            <li>안전성: security best practices, threat model</li>
+          </ul>
+        </div>
+        <div class="inventory-block">
+          <h3>FLOW 전용 스킬 5개</h3>
+          <ul>
+            <li><code>flow-content-conversion</code></li>
+            <li><code>flow-copy-editor</code></li>
+            <li><code>flow-release-readiness</code></li>
+            <li><code>flow-ux-review</code></li>
+            <li><code>humanize-korean</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="sources-title">
+      <div class="section-head">
+        <h2 id="sources-title">확인한 공식·공개 근거</h2>
+        <p>공식 문서, 공식 저장소, 공개 보안 권고와 공개 이슈만 사용했다.</p>
+      </div>
+      <div class="sources">
+        <a class="source" href="https://github.com/openai/plugins"><strong>OpenAI Plugins</strong><span>현행 공식 plugin·skill 예제 저장소</span></a>
+        <a class="source" href="https://learn.chatgpt.com/docs/build-plugins"><strong>OpenAI plugin guide</strong><span>plugin manifest, skill, MCP, app, hook 구성 기준</span></a>
+        <a class="source" href="https://github.com/openai/skills"><strong>이전 OpenAI Skills</strong><span>현행 Plugins 저장소로 이동하라는 폐기 안내 근거</span></a>
+        <a class="source" href="https://github.com/epoko77-ai/im-not-ai"><strong>Humanize KR</strong><span>한국어 자연화 v2.0.0 및 공개 반응</span></a>
+        <a class="source" href="https://nodejs.org/en/about/previous-releases"><strong>Node.js releases</strong><span>20 EOL, 22/24 LTS 상태</span></a>
+        <a class="source" href="https://vercel.com/docs/functions/runtimes/node-js/node-js-versions"><strong>Vercel Node versions</strong><span>24.x 기본 및 engines override</span></a>
+        <a class="source" href="https://playwright.dev/docs/ci-intro"><strong>Playwright CI</strong><span>GitHub Actions와 report artifact 권장 흐름</span></a>
+        <a class="source" href="https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-version-updates"><strong>Dependabot</strong><span>npm/GitHub Actions 자동 업데이트 설정</span></a>
+        <a class="source" href="https://github.com/posthog/posthog"><strong>PostHog</strong><span>analytics, replay, flags, surveys, error tracking</span></a>
+        <a class="source" href="https://github.com/promptfoo/promptfoo"><strong>Promptfoo</strong><span>AI eval과 red-team 공개 프로젝트</span></a>
+        <a class="source" href="https://github.com/promptfoo/promptfoo/issues/5808"><strong>Promptfoo data-egress issue</strong><span>원격 생성 동작에 대한 공개 사용자 문제 제기</span></a>
+        <a class="source" href="https://github.com/getsentry/sentry-javascript"><strong>Sentry JavaScript</strong><span>공식 Next.js 포함 JavaScript SDK</span></a>
+        <a class="source" href="https://github.com/advisories/GHSA-q4gf-8mx6-v5v3"><strong>Next.js advisory</strong><span>Server Components DoS 패치 범위</span></a>
+        <a class="source" href="https://github.com/advisories/GHSA-7mvr-c777-76hp"><strong>Playwright advisory</strong><span>브라우저 설치 SSL 검증 취약점</span></a>
+        <a class="source" href="https://github.com/advisories/GHSA-qx2v-qp2m-jg93"><strong>PostCSS advisory</strong><span>8.5.10 이전 stringify XSS</span></a>
+        <a class="source" href="https://github.com/advisories/GHSA-7c78-jf6q-g5cm"><strong>tmp advisory</strong><span>0.2.6 type-confusion path traversal</span></a>
+        <a class="source" href="https://github.com/advisories/GHSA-w5hq-g745-h8pq"><strong>uuid advisory</strong><span>11.1.1 이전 buffer bounds 문제</span></a>
+      </div>
+    </section>
+
+    <footer>
+      이 보드는 2026-07-10 현재 저장소와 공개 온라인 근거를 함께 본 운영 판단이다. 설치 여부는 인기 순위가 아니라 FlowMe의 실제 병목과 데이터 권한을 기준으로 다시 연다.
+    </footer>
+  </article>
+</body>
+</html>

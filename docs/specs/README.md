@@ -36,6 +36,11 @@ Keep the short topic stable. If the work is rescoped, update the files inside th
 
 ## Active Specs
 
+- [2026-07-14 URL-to-FLOW Prompt Lab v1](./2026-07-14-url-to-flow-prompt-lab/spec.md) - freezes 12 canonical SourceRow-only cases, provider-neutral semantic proposal contract, deterministic validation, blind review, three-round prompt evidence, and explicit separation from real provider cost or production URL fetching.
+- [2026-07-14 Repeated Collaboration Workflows](./2026-07-14-repeated-collaboration-workflows/spec.md) - makes session start, conditional request interviewing, direction capture, and work closeout discoverable across Codex and Claude Code while keeping scripts read-only and repo memory canonical.
+- [2026-07-13 Execution Lifecycle Completeness](./2026-07-13-execution-lifecycle-completeness/spec.md) - audits reversible completion, optional scheduling, personal task add/delete/reorder, projection parity, history, and reuse before opening more creator, AI, or integration surface.
+- [2026-07-12 URL-to-Flow Backend Readiness Contract](./2026-07-12-url-to-flow-backend-readiness/spec.md) - integrates the content coverage envelope, rich canonical adapters, rules-first/LLM-assisted conversion, cost model, rights/security/operations gates, implementation order, and split Go/No-Go decision before production URL fetching or a real provider.
+- [2026-07-11 Canonical Flow Data Model v1](./2026-07-11-canonical-flow-data-model/spec.md) - fixes Item as the minimum independently stateful execution unit, keeps SourceRow provenance and Step grouping separate, and defines projection, storage, API, fixture, and migration contracts before the URL-to-Flow backend.
 - [2026-07-11 URL-first AI Draft Gate](./2026-07-11-url-first-ai-draft-gate/spec.md) - defines the provider-neutral AI proposal, user review, safety, privacy, failure, and deterministic fallback contract before any real AI integration.
 - [2026-07-05 URL Lookup Production Slice](./2026-07-05-url-lookup-production-slice/spec.md) - adds a `/flows` URL lookup entry that reuses existing source-backed Flow conversions before any AI generation.
 - [2026-07-01 My Flow v2 Execution UX](./2026-07-01-my-flow-v2-execution-ux/spec.md) - separates post-save confirmation from normal Today/Flow execution and keeps Calendar as the global dated execution tab.
