@@ -367,7 +367,12 @@ test.describe('P24 execution trust regressions', () => {
     await page.goto('/calendar');
     await page.getByTestId('my-flow-month-picker').fill('2026-08');
     await expect(page.locator('.fc-daygrid-day[data-date="2026-08-30"] .fc-event')).toHaveCount(1);
-    await expect(page.getByText('관리사무소에 연락하기')).toHaveCount(0);
+    await expect(
+      page.locator('.fc-event').filter({ hasText: '관리사무소에 연락하기' }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByTestId('my-flow-calendar-unscheduled-tray').getByText('관리사무소에 연락하기'),
+    ).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
@@ -806,6 +811,101 @@ test.describe('P24 execution trust regressions', () => {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
       await detail.screenshot({
         path: `${evidenceDir}/screenshots/03-intent-aware-decision-mobile.png`,
+      });
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('Calendar schedules an undated personal draft item with preview, undo, and reload persistence', async ({ page }) => {
+    test.setTimeout(120_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.clock.install({ time: new Date('2026-07-14T10:00:00+09:00') });
+    await page.goto('/flows');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    const lookup = page.getByTestId('flow-url-lookup-entry');
+    await lookup.getByLabel('URL 또는 메모').fill('https://example.com/p24-calendar-tray');
+    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    const result = page.getByTestId('flow-url-lookup-result');
+    await result.getByLabel('Flow 이름').fill('캘린더 배치 초안');
+    await result.getByLabel('원하는 결과').fill('날짜 없는 준비를 캘린더에 놓기');
+    await result.getByRole('button', { name: '초안 준비하기' }).click();
+
+    const candidate = page.getByTestId('flow-url-supply-candidate-list').locator('article').first();
+    await candidate.getByTestId('flow-url-miss-draft-open').click();
+    await candidate.getByTestId('flow-url-miss-draft-flow-title').fill('캘린더 배치 초안');
+    await candidate.getByTestId('flow-url-miss-draft-save').click();
+
+    await expect(page).toHaveURL(/\/my/);
+    await page.getByTestId('my-flow-view-flow').click();
+    const draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+    await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+    await draftFlow.getByTestId('personal-draft-add-entry').click();
+    await draftFlow.getByTestId('personal-draft-add-title').fill('충전기 챙기기');
+    await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+    await expect(
+      draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '충전기 챙기기' }),
+    ).toBeVisible();
+
+    await page.goto('/calendar');
+    const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
+    await expect(tray).toBeVisible();
+    const evidenceDir = process.env.FLOWME_P24_U3_EVIDENCE_DIR;
+    const trayItem = tray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
+    const itemCheckbox = trayItem.getByRole('checkbox', { name: '충전기 챙기기 날짜 지정 대상으로 선택' });
+    await itemCheckbox.focus();
+    await itemCheckbox.press('Space');
+    await tray.getByTestId('my-flow-calendar-unscheduled-date').fill('2026-07-21');
+    await expect(tray.getByTestId('my-flow-calendar-unscheduled-preview')).toContainText('1개');
+    await expect(tray.getByTestId('my-flow-calendar-unscheduled-apply')).toBeEnabled();
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await tray.screenshot({
+        path: `${evidenceDir}/screenshots/00-calendar-unscheduled-selection-mobile.png`,
+      });
+    }
+    await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
+
+    await expect(tray.getByTestId('my-flow-calendar-unscheduled-undo')).toBeVisible();
+    await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('충전기 챙기기');
+    await expect(trayItem).toHaveCount(0);
+    if (evidenceDir) {
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/01-calendar-unscheduled-applied-mobile.png`,
+      });
+    }
+
+    await tray.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
+    await expect(
+      tray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' }),
+    ).toBeVisible();
+    await expect(page.getByTestId('my-flow-calendar-selected-day')).not.toContainText('충전기 챙기기');
+
+    const restoredTrayItem = tray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
+    await restoredTrayItem.getByRole('checkbox', { name: '충전기 챙기기 날짜 지정 대상으로 선택' }).check();
+    await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
+    await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('충전기 챙기기');
+    await page.reload();
+    await expect(
+      page.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' }),
+    ).toHaveCount(0);
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.reload();
+    await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
+    if (evidenceDir) {
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/02-calendar-unscheduled-wide.png`,
+        fullPage: true,
       });
     }
     expect(

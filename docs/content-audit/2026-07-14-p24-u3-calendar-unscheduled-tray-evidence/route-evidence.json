@@ -1,0 +1,61 @@
+{
+  "id": "p24-u3-calendar-unscheduled-tray",
+  "date": "2026-07-14",
+  "baselineCommit": "fc34e39",
+  "evidenceType": "automated_browser_not_observed_user",
+  "designReference": {
+    "artifact": "FlowMe UXUI 전체 검토 (8)",
+    "patternsApplied": [
+      "calendar_unscheduled_tray",
+      "explicit_multi_select",
+      "movement_preview",
+      "immediate_undo"
+    ],
+    "deferredPattern": "drag_and_drop_until_keyboard_touch_undo_contract"
+  },
+  "markers": {
+    "calendarUnscheduledTrayVisible": true,
+    "calendarUnscheduledTrayInitialItemCount": 4,
+    "calendarUnscheduledSelectionCount": 1,
+    "calendarUnscheduledSchedulePreviewVisible": true,
+    "calendarUnscheduledBulkScheduleApplied": true,
+    "calendarUnscheduledUndoVisible": true,
+    "calendarUnscheduledUndoRestored": true,
+    "calendarUnscheduledPersistedAfterReload": true,
+    "calendarUnscheduledUsesEffectiveItemList": true,
+    "calendarUnscheduledCompletedItemIncluded": false,
+    "calendarInitialFocusNearestScheduled": true,
+    "fakeDateCreatedCount": 0,
+    "dragAndDropEnabled": false,
+    "keyboardSelectionSupported": true,
+    "calendarUnscheduledHorizontalOverflowCount": 0,
+    "calendarUnscheduledTrayFixedOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "scenarios": [
+    {
+      "id": "personal_draft_unscheduled_mobile",
+      "route": "/calendar",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "URL-first miss draft plus one user-created unscheduled Item",
+      "actions": [
+        "select_with_space_key",
+        "set_target_date",
+        "review_preview",
+        "apply",
+        "undo",
+        "apply_again",
+        "reload"
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "personal_draft_unscheduled_wide",
+      "route": "/calendar",
+      "viewport": { "width": 1024, "height": 768 },
+      "fixture": "same persisted personal draft after schedule apply",
+      "result": "pass"
+    }
+  ]
+}

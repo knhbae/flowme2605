@@ -11,9 +11,14 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
+import { CalendarUnscheduledTray } from './CalendarUnscheduledTray';
 import { MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
+import {
+  buildCalendarUnscheduledSchedulePreview,
+  type CalendarUnscheduledTrayItem,
+} from '@/lib/flow/calendar-unscheduled-tray';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
@@ -72,6 +77,7 @@ import {
   movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
+  setPersonalDraftUserItemDate,
   setPersonalDraftUserItemRecurrence,
   setPersonalDraftUserItemSchedule,
   undoPersonalDraftStructuralDelete,
@@ -3177,6 +3183,12 @@ type MyFlowCompletionUndo = {
   occurrenceSeriesId?: string;
   occurrenceRevisionId?: string;
 };
+type MyFlowCalendarScheduleUndo = {
+  count: number;
+  targetDate: string;
+  previousOverlaysBySlug: Record<string, PersonalStructuralOverlay>;
+  previousDateOverridesByKey: Record<string, string | null>;
+};
 type MyFlowCompletionFeedbackDraft = {
   flowSlug: string;
   mode: 'reflection' | 'correction';
@@ -4657,11 +4669,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStructuralAddOpenSlug, setMyFlowStructuralAddOpenSlug] = useState('');
   const [myFlowStructuralAddTitle, setMyFlowStructuralAddTitle] = useState('');
   const [myFlowStructuralUndo, setMyFlowStructuralUndo] = useState<PersonalDraftStructuralUndo | null>(null);
+  const [myFlowUnscheduledTrayOpen, setMyFlowUnscheduledTrayOpen] = useState(true);
+  const [myFlowUnscheduledSelection, setMyFlowUnscheduledSelection] = useState<string[]>([]);
+  const [myFlowUnscheduledTargetDate, setMyFlowUnscheduledTargetDate] = useState('');
+  const [myFlowCalendarScheduleUndo, setMyFlowCalendarScheduleUndo] = useState<MyFlowCalendarScheduleUndo | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
   const isMyFlowScenarioDemo = myFlowDemoMode === 'ux12' || myFlowDemoMode === 'ux20' || myFlowDemoMode === 'source-backed';
   const myFlowCalendarCardRef = useRef<HTMLElement | null>(null);
+  const myFlowCalendarInitialFocusAppliedRef = useRef(false);
   const myFlowSelectedDayRef = useRef<HTMLElement | null>(null);
   const myFlowInlineDetailRef = useRef<HTMLDivElement | null>(null);
   const myFlowOverviewSummaryRef = useRef<HTMLElement | null>(null);
@@ -4675,6 +4692,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const timeoutId = window.setTimeout(() => setMyFlowCompletionUndo(null), 5000);
     return () => window.clearTimeout(timeoutId);
   }, [myFlowCompletionUndo]);
+  useEffect(() => {
+    if (!myFlowCalendarScheduleUndo) return;
+    const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 5000);
+    return () => window.clearTimeout(timeoutId);
+  }, [myFlowCalendarScheduleUndo]);
   const savedViewTabs = [
     ['today', '오늘'],
     ['calendar', '캘린더'],
@@ -5346,6 +5368,59 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarScheduleRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarRoutineRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
   const calendarScopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope));
+  const calendarUnscheduledRows: MyFlowCalendarRow[] = isMyFlowScenarioDemo ? [] : visibleExecutionFlows
+    .flatMap((flow) =>
+      flow.rows.flatMap((row) => {
+        if (row.structuralOccurrenceId || isMyFlowRowChecked(flow, row)) return [];
+        const dateResolution = resolveSavedFlowRowDate(flow, row);
+        const effectiveDate = row.structuralScheduleProjection?.calendarDate ?? dateResolution.date;
+        if (effectiveDate) return [];
+        return [{
+          ...row,
+          flow,
+          originalDate: dateResolution.originalDate,
+          calendarKey: dateResolution.overrideKey,
+        }];
+      }),
+    )
+    .filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope))
+    .sort((left, right) => {
+      const flowOrder = getMyFlowCalendarFlowTitle(left.flow).localeCompare(
+        getMyFlowCalendarFlowTitle(right.flow),
+        'ko',
+      );
+      if (flowOrder !== 0) return flowOrder;
+      return (
+        (left.structuralProjectionOrderRank ?? Number.MAX_SAFE_INTEGER) -
+          (right.structuralProjectionOrderRank ?? Number.MAX_SAFE_INTEGER) ||
+        left.id.localeCompare(right.id)
+      );
+    });
+  const calendarUnscheduledTrayRowsByKey = new Map(
+    calendarUnscheduledRows.map((row) => [
+      `${row.flow.progress.slug}::${row.structuralProjectionStableId ?? row.id}`,
+      row,
+    ]),
+  );
+  const calendarUnscheduledTrayItems: CalendarUnscheduledTrayItem[] = calendarUnscheduledRows.map((row) => ({
+    key: `${row.flow.progress.slug}::${row.structuralProjectionStableId ?? row.id}`,
+    flowSlug: row.flow.progress.slug,
+    flowTitle: getMyFlowCalendarFlowTitle(row.flow),
+    itemId: row.id,
+    stableItemId: row.structuralProjectionStableId ?? row.id,
+    title: row.title,
+    ownership:
+      row.structuralOwnership === 'source' || row.structuralOwnership === 'user_created'
+        ? row.structuralOwnership
+        : 'unknown',
+  }));
+  const calendarUnscheduledEffectiveTargetDate =
+    myFlowUnscheduledTargetDate || myFlowSelectedDate || occurrenceProjectionTodayDate;
+  const calendarUnscheduledSchedulePreview = buildCalendarUnscheduledSchedulePreview({
+    items: calendarUnscheduledTrayItems,
+    selectedKeys: myFlowUnscheduledSelection,
+    targetDate: calendarUnscheduledEffectiveTargetDate,
+  });
   const calendarScopedDateSignature = calendarScopedRows.map((row) => [
     row.date ?? '',
     row.structuralScheduleProjection?.scheduleState ?? '',
@@ -6542,6 +6617,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const visibleMonthStart = getMyFlowMonthStart(myFlowVisibleMonth);
     const visibleMonth = visibleMonthStart.slice(0, 7);
     const visibleMonthRows = calendarScopedRows.filter((row) => row.date?.startsWith(visibleMonth));
+    if (
+      isCalendarSurface &&
+      !myFlowCalendarInitialFocusAppliedRef.current &&
+      calendarScopedRows.length > 0
+    ) {
+      const initialDate = findMyFlowDefaultFocusDate(
+        calendarScopedRows,
+        myFlowTodayDate,
+        anchorMonthStart,
+      );
+      myFlowCalendarInitialFocusAppliedRef.current = true;
+      setMyFlowSelectedDate(initialDate);
+      setMyFlowVisibleMonth(getMyFlowMonthStart(initialDate));
+      return;
+    }
     setMyFlowSelectedDate((currentDate) => {
       const currentDateStillHasRows = calendarScopedRows.some((row) => row.date === currentDate);
       const currentDateIsInVisibleMonth = currentDate.startsWith(visibleMonth);
@@ -6557,7 +6647,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowVisibleMonth(getMyFlowMonthStart(nextSelectedDate || anchorMonthStart));
       return nextSelectedDate;
     });
-  }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, calendarScopedDateSignature, myFlowTodayDate, myFlowVisibleMonth]);
+  }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, calendarScopedDateSignature, myFlowTodayDate, myFlowVisibleMonth, isCalendarSurface]);
 
   const recordMyFlowCompletionState = (flow: MySavedFlow, checks: Record<string, boolean>) => {
     const completed = flow.rows.length > 0 && flow.rows.every((row) => {
@@ -7143,6 +7233,148 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     } catch {
       return false;
     }
+  };
+
+  const toggleMyFlowCalendarUnscheduledItem = (key: string) => {
+    setMyFlowUnscheduledSelection((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+    setMyFlowCalendarScheduleUndo(null);
+  };
+
+  const toggleAllMyFlowCalendarUnscheduledItems = () => {
+    const visibleKeys = calendarUnscheduledTrayItems.map((item) => item.key);
+    const allSelected = visibleKeys.length > 0 && visibleKeys.every((key) =>
+      myFlowUnscheduledSelection.includes(key),
+    );
+    setMyFlowUnscheduledSelection(allSelected ? [] : visibleKeys);
+    setMyFlowCalendarScheduleUndo(null);
+  };
+
+  const applyMyFlowCalendarUnscheduledSchedule = () => {
+    if (
+      typeof window === 'undefined' ||
+      isMyFlowScenarioDemo ||
+      !calendarUnscheduledSchedulePreview.canApply ||
+      !calendarUnscheduledSchedulePreview.targetDate
+    ) return;
+
+    const selectedRows = calendarUnscheduledSchedulePreview.selectedItems
+      .map((item) => calendarUnscheduledTrayRowsByKey.get(item.key))
+      .filter((row): row is MyFlowCalendarRow => Boolean(row));
+    if (selectedRows.length !== calendarUnscheduledSchedulePreview.selectedCount) return;
+
+    const previousOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const nextOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const previousDateOverridesByKey: Record<string, string | null> = {};
+    const nextDateOverrides = { ...myFlowDateOverrides };
+    const targetDate = calendarUnscheduledSchedulePreview.targetDate;
+
+    for (const row of selectedRows) {
+      const personalUserItem =
+        isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
+        row.structuralOwnership === 'user_created';
+      if (personalUserItem) {
+        const flowSlug = row.flow.progress.slug;
+        const currentOverlay =
+          nextOverlaysBySlug[flowSlug] ??
+          myFlowStructuralOverlaysBySlug[flowSlug] ??
+          createPersonalDraftStructuralOverlay(row.flow.bundle);
+        if (!previousOverlaysBySlug[flowSlug]) {
+          previousOverlaysBySlug[flowSlug] = currentOverlay;
+        }
+        const scheduled = setPersonalDraftUserItemDate({
+          overlay: currentOverlay,
+          itemId: row.structuralProjectionStableId ?? row.id,
+          date: targetDate,
+        });
+        if (!scheduled) return;
+        nextOverlaysBySlug[flowSlug] = scheduled.overlay;
+        continue;
+      }
+
+      const dateOverrideKey = isPersonalDraftStructuralEditEligible(row.flow.bundle)
+        ? getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)
+        : row.calendarKey ?? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id);
+      if (!Object.prototype.hasOwnProperty.call(previousDateOverridesByKey, dateOverrideKey)) {
+        previousDateOverridesByKey[dateOverrideKey] = myFlowDateOverrides[dateOverrideKey] ?? null;
+      }
+      nextDateOverrides[dateOverrideKey] = targetDate;
+    }
+
+    const savedOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    try {
+      Object.entries(nextOverlaysBySlug).forEach(([flowSlug, overlay]) => {
+        savedOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
+      });
+      if (Object.keys(previousDateOverridesByKey).length > 0) {
+        saveStoredMyFlowDateOverrides(nextDateOverrides);
+      }
+    } catch {
+      try {
+        Object.values(previousOverlaysBySlug).forEach((overlay) => {
+          savePersonalStructuralOverlay(window.localStorage, overlay);
+        });
+        saveStoredMyFlowDateOverrides(myFlowDateOverrides);
+      } catch {
+        // Keep the screen usable even when local storage is unavailable.
+      }
+      return;
+    }
+
+    if (Object.keys(savedOverlaysBySlug).length > 0) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        ...savedOverlaysBySlug,
+      }));
+    }
+    if (Object.keys(previousDateOverridesByKey).length > 0) {
+      setMyFlowDateOverrides(nextDateOverrides);
+    }
+    setMyFlowCalendarScheduleUndo({
+      count: selectedRows.length,
+      targetDate,
+      previousOverlaysBySlug,
+      previousDateOverridesByKey,
+    });
+    setMyFlowUnscheduledSelection([]);
+    setMyFlowSelectedDate(targetDate);
+    setMyFlowVisibleMonth(getMyFlowMonthStart(targetDate));
+  };
+
+  const undoMyFlowCalendarUnscheduledSchedule = () => {
+    if (typeof window === 'undefined' || !myFlowCalendarScheduleUndo) return;
+    const { previousOverlaysBySlug, previousDateOverridesByKey } = myFlowCalendarScheduleUndo;
+    const restoredOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const restoredDateOverrides = { ...myFlowDateOverrides };
+    Object.entries(previousDateOverridesByKey).forEach(([key, value]) => {
+      if (value === null) delete restoredDateOverrides[key];
+      else restoredDateOverrides[key] = value;
+    });
+
+    try {
+      Object.entries(previousOverlaysBySlug).forEach(([flowSlug, overlay]) => {
+        restoredOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
+      });
+      if (Object.keys(previousDateOverridesByKey).length > 0) {
+        saveStoredMyFlowDateOverrides(restoredDateOverrides);
+      }
+    } catch {
+      return;
+    }
+
+    if (Object.keys(restoredOverlaysBySlug).length > 0) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        ...restoredOverlaysBySlug,
+      }));
+    }
+    if (Object.keys(previousDateOverridesByKey).length > 0) {
+      setMyFlowDateOverrides(restoredDateOverrides);
+    }
+    setMyFlowCalendarScheduleUndo(null);
   };
 
   const addMyFlowPersonalDraftItem = (flow: MySavedFlow) => {
@@ -12176,6 +12408,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
           {savedView === 'calendar' ? (
             <div>
+              <CalendarUnscheduledTray
+                items={calendarUnscheduledTrayItems}
+                selectedKeys={myFlowUnscheduledSelection.filter((key) =>
+                  calendarUnscheduledTrayRowsByKey.has(key),
+                )}
+                targetDate={calendarUnscheduledEffectiveTargetDate}
+                preview={calendarUnscheduledSchedulePreview}
+                expanded={myFlowUnscheduledTrayOpen}
+                undo={myFlowCalendarScheduleUndo ? {
+                  count: myFlowCalendarScheduleUndo.count,
+                  targetDateLabel: formatKoreanShortDate(myFlowCalendarScheduleUndo.targetDate),
+                } : undefined}
+                onToggleExpanded={() => setMyFlowUnscheduledTrayOpen((open) => !open)}
+                onToggleItem={toggleMyFlowCalendarUnscheduledItem}
+                onToggleAll={toggleAllMyFlowCalendarUnscheduledItems}
+                onTargetDateChange={(date) => {
+                  setMyFlowUnscheduledTargetDate(date);
+                  setMyFlowCalendarScheduleUndo(null);
+                }}
+                onApply={applyMyFlowCalendarUnscheduledSchedule}
+                onUndo={undoMyFlowCalendarUnscheduledSchedule}
+              />
               <div className="grid gap-4 pb-0 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.75fr)] lg:gap-0">
               <section
                 ref={myFlowCalendarCardRef}
