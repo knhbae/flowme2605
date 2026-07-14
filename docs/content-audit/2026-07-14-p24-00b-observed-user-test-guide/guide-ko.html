@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe P24-00B 실제 사용자 관찰 가이드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #5f6b76;
+      --line: #d9dee3;
+      --surface: #ffffff;
+      --wash: #f4f6f8;
+      --green: #147d64;
+      --blue: #2458a6;
+      --blue-soft: #eaf1fb;
+      --amber: #8a5b00;
+      --amber-soft: #fff4d6;
+      --red: #a53a3a;
+      --red-soft: #fdecec;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--wash); color: var(--ink); font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif; line-height: 1.55; letter-spacing: 0; }
+    a { color: var(--blue); }
+    header { position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.96); }
+    .bar { max-width: 1180px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { min-width: 0; }
+    .brand strong { display: block; font-size: 16px; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; }
+    .launch { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 6px; background: var(--ink); color: #fff; text-decoration: none; font-weight: 700; white-space: nowrap; }
+    main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { margin: 0; font-size: clamp(27px, 4vw, 42px); line-height: 1.14; }
+    h2 { margin: 0 0 14px; font-size: 21px; }
+    h3 { margin: 0 0 8px; font-size: 16px; }
+    p { margin: 0; }
+    .intro { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; padding: 18px 0 30px; }
+    .intro-copy p { margin-top: 12px; max-width: 760px; color: var(--muted); }
+    .status { border-left: 4px solid var(--amber); background: var(--amber-soft); padding: 14px 16px; }
+    .status b { display: block; }
+    .status span { color: var(--amber); font-size: 13px; font-weight: 700; }
+    section { margin-top: 30px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .card { min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 16px; }
+    .card p, .card li { color: var(--muted); font-size: 14px; }
+    .card ul { margin: 10px 0 0; padding-left: 20px; }
+    .card li + li { margin-top: 5px; }
+    .persona { border-top: 4px solid var(--blue); }
+    .persona:nth-child(2) { border-color: var(--green); }
+    .persona:nth-child(3) { border-color: var(--amber); }
+    .persona:nth-child(4) { border-color: #7a4da0; }
+    .persona:nth-child(5) { border-color: var(--red); }
+    .tag { display: inline-block; margin-bottom: 8px; padding: 3px 7px; border-radius: 4px; background: var(--blue-soft); color: var(--blue); font-size: 12px; font-weight: 800; }
+    .journey { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+    .journey article { padding: 18px; }
+    .journey article + article { border-left: 1px solid var(--line); }
+    .journey ol { margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+    .journey li + li { margin-top: 6px; }
+    .mockups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .mockup { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: start; border-bottom: 1px solid var(--line); padding: 10px 0; }
+    .mockup b:first-child { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fff; }
+    .mockup p { color: var(--muted); font-size: 13px; }
+    .protocol { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(260px, .6fr); gap: 16px; }
+    .rules { border-left: 4px solid var(--green); }
+    .stop { border-left: 4px solid var(--red); background: var(--red-soft); }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 14px; }
+    th, td { border: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #eef1f4; }
+    .decision { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .decision .card:nth-child(1) { border-top: 4px solid var(--green); }
+    .decision .card:nth-child(2) { border-top: 4px solid var(--red); }
+    .decision .card:nth-child(3) { border-top: 4px solid var(--amber); }
+    footer { margin-top: 38px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    @media (max-width: 820px) {
+      .intro, .protocol { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .journey { grid-template-columns: 1fr; }
+      .journey article + article { border-left: 0; border-top: 1px solid var(--line); }
+    }
+    @media (max-width: 540px) {
+      .bar { padding: 12px 14px; }
+      main { padding: 20px 14px 48px; }
+      .brand span { display: none; }
+      .grid, .mockups, .decision { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div class="brand"><strong>FlowMe P24-00B</strong><span>실제 사용자 관찰 · 자동 QA와 별도</span></div>
+      <a class="launch" href="https://flowme2605.vercel.app">공개 앱 열기</a>
+    </div>
+  </header>
+  <main>
+    <div class="intro">
+      <div class="intro-copy">
+        <h1>설명하지 말고,<br>연결이 보이는지 관찰한다</h1>
+        <p>발견과 저장에서 끝내지 않는다. 같은 사용자가 세 번 돌아와 수정, 일정 배치, 실행, 완료 취소, 내보내기, 단계별 메모, 회고, 재사용까지 이어 가는지를 본다.</p>
+      </div>
+      <div class="status"><span>READY, NOT VALIDATED</span><b>0 / 15 실제 세션</b><p>5명 x 3회가 끝나기 전에는 사용자 검증 완료로 표시하지 않는다.</p></div>
+    </div>
+
+    <section>
+      <h2>5개 페르소나</h2>
+      <div class="grid">
+        <article class="card persona"><span class="tag">P1</span><h3>기준일 역산형</h3><p>이사일을 정하고 전체 이동과 한 항목 고정을 구분한다.</p></article>
+        <article class="card persona"><span class="tag">P2</span><h3>날짜 없는 체크형</h3><p>차량 점검을 저장하고 Calendar에서 필요한 항목만 배치한다.</p></article>
+        <article class="card persona"><span class="tag">P3</span><h3>반복 루틴형</h3><p>운동·청소 회차를 보고 완료와 재개를 series 전체와 구분한다.</p></article>
+        <article class="card persona"><span class="tag">P4</span><h3>개인 초안형</h3><p>메모나 미등록 URL을 항목으로 다듬고 구조와 일정을 바꾼다.</p></article>
+        <article class="card persona"><span class="tag">P5</span><h3>공유·재사용형</h3><p>공개 preview를 저장해 실행하고, 회고 후 다시 사용한다.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>한 사람의 3회 여정</h2>
+      <div class="journey">
+        <article><span class="tag">1회차</span><h3>발견과 저장</h3><ol><li>홈에서 URL 또는 메모 진입</li><li>준비된 Flow나 draft 판단</li><li>기준일·반복 조건 설정</li><li>My Flow 저장 후 첫 할 일 확인</li></ol></article>
+        <article><span class="tag">2회차</span><h3>수정과 실행</h3><ol><li>제목·날짜·시간·메모 수정</li><li>날짜 없는 일을 Calendar에 배치</li><li>하나 또는 여러 날짜 이동</li><li>완료하고 즉시 되돌리기</li><li>단계별 메모 남기기</li></ol></article>
+        <article><span class="tag">3회차</span><h3>외부 활용과 재사용</h3><ol><li>전체·선택·현재 항목 export</li><li>완료 후 자동 수집된 메모 확인</li><li>비공개 기록과 수정 요청 구분</li><li>새 기준일로 다시 쓰기</li><li>이전 실행 기록 확인</li></ol></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Claude Design (8) 목업을 검증 질문으로</h2>
+      <div class="mockups">
+        <div class="mockup"><b>A</b><div><b>정확성</b><p>날짜, 반복 회차, draft 항목 수를 사용자가 신뢰하는가?</p></div></div>
+        <div class="mockup"><b>B</b><div><b>단계적 편집</b><p>긴 설명 없이 기본 수정과 고급 설정을 구분하는가?</p></div></div>
+        <div class="mockup"><b>C</b><div><b>완료 취소</b><p>잘못 체크한 직후 같은 자리에서 되돌리는가?</p></div></div>
+        <div class="mockup"><b>D</b><div><b>날짜 없음</b><p>Calendar에서 날짜 없는 일을 발견하고 배치하는가?</p></div></div>
+        <div class="mockup"><b>E</b><div><b>내보내기 범위</b><p>전체, 선택, 현재 중 무엇이 나갈지 먼저 예측하는가?</p></div></div>
+        <div class="mockup"><b>F</b><div><b>날짜 이동 범위</b><p>한 항목과 전체 일정 이동의 결과를 맞게 예상하는가?</p></div></div>
+        <div class="mockup"><b>G</b><div><b>가벼운 회고</b><p>실행 중 기록과 원본 수정 요청을 부담 없이 구분하는가?</p></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>진행 규칙</h2>
+      <div class="protocol">
+        <article class="card rules"><h3>진행자는 목표만 읽는다</h3><ul><li>버튼명과 위치를 말하지 않는다.</li><li>90초 동안 스스로 탐색하게 둔다.</li><li>도움을 요청하면 먼저 찾는 대상을 되묻는다.</li><li>힌트를 줬다면 도움 후 성공으로 기록한다.</li><li>가상 데이터와 참가자 ID를 사용한다.</li></ul></article>
+        <article class="card stop"><h3>즉시 중단</h3><ul><li>저장한 항목이 사라짐</li><li>선택하지 않은 날짜로 이동</li><li>완료 기록이 다른 회차에 연결</li><li>예상과 다른 범위 export</li><li>공개 URL 접근 불가</li></ul></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>모든 과업에서 기록할 것</h2>
+      <table>
+        <thead><tr><th>측정</th><th>기록 방식</th><th>신뢰 경고</th></tr></thead>
+        <tbody>
+          <tr><td>도달</td><td>성공 / 도움 후 성공 / 실패 / 제품 차단</td><td>2명 이상 같은 실패</td></tr>
+          <tr><td>발견성</td><td>첫 행동 시간, 잘못된 경로, 뒤로가기</td><td>90초 이상 또는 설명 요구</td></tr>
+          <tr><td>상태 이해</td><td>완료 취소, 날짜 제거, 삭제 복구</td><td>삭제·제외·완료를 혼동</td></tr>
+          <tr><td>projection</td><td>My Flow / Calendar / export 비교</td><td>한 곳이라도 제목·날짜·항목 수 불일치</td></tr>
+          <tr><td>범위</td><td>export와 날짜 이동 결과를 사전 질문</td><td>예상과 실제 범위 불일치</td></tr>
+          <tr><td>표현</td><td>읽지 않은 설명, 다시 물은 용어</td><td>설명이 행동보다 먼저 필요함</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>P24-00C 판정</h2>
+      <div class="decision">
+        <article class="card"><h3>Keep</h3><p>5명 중 4명 이상이 도움 없이 완료하고 신뢰 문제를 말하지 않는다.</p></article>
+        <article class="card"><h3>Change</h3><p>2명 이상이 같은 지점에서 멈추거나 한 번이라도 데이터·날짜·export 신뢰 문제가 생긴다.</p></article>
+        <article class="card"><h3>Defer</h3><p>관찰된 필요가 없고 추가 기능이 현재 흐름을 더 복잡하게 만든다.</p></article>
+      </div>
+    </section>
+
+    <footer>제품 기준 bc8fc649 · 공개 URL 익명 HTTP 200 확인 · 자동 QA 514/514 · 실제 사용자 관찰 0/15</footer>
+  </main>
+</body>
+</html>

@@ -1,11 +1,13 @@
 # Project Status
 
 **Last Updated:** 2026-07-14 (P24 pre-observation baseline)
-**Status:** v0.1.0 RELEASED / P24 AUTOMATED QA GREEN
+**Status:** v0.1.0 RELEASED / P24 OBSERVED-USER TEST READY
 **Current Version:** v0.1.0  
-**Primary Focus:** Publish an anonymous observation build, then run P24-00B observed-user sessions. Automated QA is not user validation.
+**Primary Focus:** Run P24-00B with 5 participants x 3 sessions on the public production URL, then classify findings in P24-00C. Automated QA is not user validation.
 
 ## Recent Direction Notes
+
+- 2026-07-14 P24 observation operations: PR [#120](https://github.com/knhbae/flowme2605/pull/120) merged as `bc8fc649`, Vercel production deployment `dpl_GdeGC2WdBz34ttHp4fZyQkYmRLP6` reached `Ready`, and <https://flowme2605.vercel.app> returned the FLOW home with anonymous HTTP 200 instead of the Vercel login wall. [P24-00B observed-user guide](./content-audit/2026-07-14-p24-00b-observed-user-test-guide/README.md) turns the Claude Design `(8)` mockups A-G into five persona journeys across discovery, save, edit, schedule, completion/reopen, export, incremental notes, review, and reuse. This makes the operations gate ready, not validated: observed-user sessions remain `0 / 15` until real participants complete them.
 
 - 2026-07-14 P24 execution-trust closeout: Closed the clean-baseline correctness fixes and the selected UX slices before observed-user testing. The current branch keeps local/effective date parity, reuse override transfer, recurrence occurrence parity, memo-draft item inclusion, direct-route hydration, one-row completion with immediate undo, a progressive item editor, Calendar unscheduled scheduling, explicit date-move scope, whole/selected/current export scope, and one-tap execution notes. The execution-note policy follows the Claude Design `(8)` mockup direction without adding a separate review form: private notes and unsent source-correction notes are stored separately, collected automatically at completion, omitted when empty, preserved in completed-run history, and cleared from the new current run on reuse. Evidence: [P24 U4 execution notes](./content-audit/2026-07-14-p24-u4-inline-execution-notes-evidence/README.md), [P24 S2 export scope](./content-audit/2026-07-14-p24-s2-export-scope-evidence/README.md), and [revised P24 backlog](./content-audit/2026-07-14-flowme-p24-feedback-reconciliation/backlog.md). Current verification on the isolated clean branch: `npm.cmd test` 514/514, production build pass on Next.js 15.3.8, docs check pass with 14 required files and 2,148 local links, P24/URL-first/public/workbench functional accounting 77/77 after four memory-terminated parallel navigations passed on one-worker retry, completion/reuse/history targeted 3/3, mobile 390px and wide 1024px overflow 0, console error 0. Observed-user sessions remain 0; the next gate is an anonymous Vercel URL and then 5 participants x 3 sessions.
 
