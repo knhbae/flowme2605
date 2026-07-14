@@ -12,6 +12,7 @@ P24-00B의 첫 단계로 P1 기준일 역산형과 P2 날짜 없는 체크형 �
 - [P1-S1 기록지](./session-p1-s1.md)
 - [P2-S1 기록지](./session-p2-s1.md)
 - [준비 상태](./pilot-readiness.json)
+- [Claude 목업 대비 production 디자인 준비 감사](../2026-07-14-p24-00b2-production-design-readiness/README.md)
 - [전체 15세션 가이드](../2026-07-14-p24-00b-observed-user-test-guide/README.md)
 
 ## 완료 경계
