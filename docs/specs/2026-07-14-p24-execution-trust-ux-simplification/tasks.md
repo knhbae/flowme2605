@@ -32,7 +32,7 @@
 
 - [x] P24-00F1 local date boundary.
 - [x] P24-00F2A effective-date summary parity.
-- [ ] P24-00F2B reuse override transfer.
+- [x] P24-00F2B reuse override transfer.
 - [ ] P24-00F3A recurrence occurrence parity.
 - [ ] P24-00F3B memo split Item inclusion and empty draft validation.
 - [ ] P24-00F4 hard navigation and post-save hydration.

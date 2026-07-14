@@ -167,6 +167,23 @@ export function rekeyMyFlowAnchorDatedRecord<T>(
   return next;
 }
 
+export function rekeyMyFlowPersonalExecutionStateForAnchor(
+  state: MyFlowPersonalExecutionState,
+  options: {
+    flowSlug: string;
+    previousItems: MyFlowAnchorDatedItem[];
+    nextItems: MyFlowAnchorDatedItem[];
+  },
+): MyFlowPersonalExecutionState {
+  return {
+    itemDrafts: rekeyMyFlowAnchorDatedRecord(state.itemDrafts, options),
+    dateOverrides: rekeyMyFlowAnchorDatedRecord(state.dateOverrides, options),
+    ...(state.occurrenceRecords
+      ? { occurrenceRecords: cloneRecord(state.occurrenceRecords) }
+      : {}),
+  };
+}
+
 export function getMyFlowOccurrenceExecutionStorageKey(
   flowSlug: string,
   occurrenceId: string,

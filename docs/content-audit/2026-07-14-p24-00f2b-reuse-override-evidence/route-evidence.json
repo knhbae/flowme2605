@@ -1,0 +1,64 @@
+{
+  "slice": "P24-00F2B",
+  "baselineCommit": "1ec51d2",
+  "policy": {
+    "keep_fixed_dates": "rekey personal execution state to the new source row while preserving the fixed date value",
+    "reset_to_anchor": "clear fixed personal dates and recalculate all relative rows",
+    "completed_history": "preserve the old key and value in the completed run snapshot"
+  },
+  "markers": {
+    "keepFixedDateValuePreserved": true,
+    "retainedFixedDate": "2026-07-15",
+    "dateOverrideKeyRekeyed": true,
+    "oldActiveOverrideKeyCount": 0,
+    "completedSnapshotOldKeyPreserved": true,
+    "resetPolicyStillClears": true,
+    "todayUsesRetainedFixedDate": true,
+    "calendarUsesRetainedFixedDate": true,
+    "calendarDuplicateRowCount": 0,
+    "sourceMutationCount": 0,
+    "historyMutationCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  },
+  "routes": [
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "completed moving Flow, new anchor 2026-10-20, keep personal fixed date",
+      "surface": "reuse policy",
+      "screenshot": "screenshots/00-reuse-keep-policy-mobile.png"
+    },
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "new active run after reuse",
+      "surface": "Today",
+      "expectedDate": "2026-07-15",
+      "screenshot": "screenshots/01-reuse-fixed-date-today-mobile.png"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "state": "new active run after reuse",
+      "surface": "Calendar",
+      "expectedDate": "2026-07-15",
+      "screenshot": "screenshots/02-reuse-fixed-date-calendar-mobile.png"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "state": "new active run after reuse",
+      "surface": "Calendar wide",
+      "expectedDate": "2026-07-15",
+      "screenshot": "screenshots/03-reuse-fixed-date-calendar-wide.png"
+    }
+  ],
+  "verification": {
+    "unit": "481/481 pass",
+    "keepPolicyPlaywright": "1/1 pass",
+    "resetPolicyPlaywright": "1/1 pass",
+    "build": "pass (18 routes)"
+  }
+}
+

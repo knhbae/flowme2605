@@ -18,6 +18,7 @@ import {
   getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowOccurrenceExecutionRecords,
   rekeyMyFlowAnchorDatedRecord,
+  rekeyMyFlowPersonalExecutionStateForAnchor,
   resolveMyFlowEffectiveDate,
   saveStoredMyFlowOccurrenceExecutionRecords,
 } from './my-flow-personal-state';
@@ -259,6 +260,59 @@ test('effective My Flow dates resolve a manually scheduled undated item without 
     source: 'execution_override',
   });
   assert.deepEqual(sourceItems, [{ id: itemId, title: '여권 확인' }]);
+});
+
+test('reuse rekeys fixed personal dates to the new anchor row without changing their value', () => {
+  const flowSlug = 'moving-d30-basic';
+  const previousItems = [
+    { itemId: 'moving-method-quotes', date: '2026-07-11' },
+    { itemId: 'moving-address-change', date: '2026-07-31' },
+  ];
+  const nextItems = [
+    { itemId: 'moving-method-quotes', date: '2026-09-21' },
+    { itemId: 'moving-address-change', date: '2026-10-11' },
+  ];
+  const state = {
+    itemDrafts: {
+      [`${flowSlug}::moving-method-quotes::2026-07-11`]: {
+        title: '견적 후보 다시 확인',
+        memo: '후보 두 곳만 비교',
+      },
+      [`${flowSlug}::moving-method-quotes::draft-overlay`]: {
+        title: '안정 키 제목',
+      },
+    },
+    dateOverrides: {
+      [`${flowSlug}::moving-method-quotes::2026-07-11`]: '2026-07-15',
+    },
+  };
+
+  const rekeyed = rekeyMyFlowPersonalExecutionStateForAnchor(state, {
+    flowSlug,
+    previousItems,
+    nextItems,
+  });
+
+  assert.equal(
+    rekeyed.dateOverrides[`${flowSlug}::moving-method-quotes::2026-09-21`],
+    '2026-07-15',
+  );
+  assert.equal(
+    rekeyed.dateOverrides[`${flowSlug}::moving-method-quotes::2026-07-11`],
+    undefined,
+  );
+  assert.deepEqual(
+    rekeyed.itemDrafts[`${flowSlug}::moving-method-quotes::2026-09-21`],
+    { title: '견적 후보 다시 확인', memo: '후보 두 곳만 비교' },
+  );
+  assert.deepEqual(
+    rekeyed.itemDrafts[`${flowSlug}::moving-method-quotes::draft-overlay`],
+    { title: '안정 키 제목' },
+  );
+  assert.deepEqual(previousItems[0], {
+    itemId: 'moving-method-quotes',
+    date: '2026-07-11',
+  });
 });
 
 test('personal structural overlay golden fixtures preserve source and resolve effective items', () => {

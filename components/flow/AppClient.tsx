@@ -52,6 +52,7 @@ import {
   getStoredMyFlowItemDrafts,
   getStoredMyFlowOccurrenceExecutionRecords,
   rekeyMyFlowAnchorDatedRecord,
+  rekeyMyFlowPersonalExecutionStateForAnchor,
   resolveMyFlowEffectiveDate,
   saveStoredMyFlowDateOverrides,
   saveStoredMyFlowItemDrafts,
@@ -6825,6 +6826,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
 
+    const personalExecutionState = completedRun.personalExecutionStateSnapshot
+      ?? getFlowScopedMyFlowPersonalExecutionState(flow.progress.slug);
+    const nextPersonalExecutionStateSnapshot =
+      requiresAnchor && myFlowReuseDraft.fixedDatePolicy === 'keep_fixed_dates'
+        ? rekeyMyFlowPersonalExecutionStateForAnchor(personalExecutionState, {
+            flowSlug: flow.progress.slug,
+            previousItems: getMyFlowRows(flow.bundle, flow.anchor).map((row) => ({
+              itemId: row.id,
+              date: row.date,
+            })),
+            nextItems: getMyFlowRows(flow.bundle, anchor).map((row) => ({
+              itemId: row.id,
+              date: row.date,
+            })),
+          })
+        : personalExecutionState;
+
     if (reviewedVersion && typeof window !== 'undefined') {
       window.localStorage.setItem(
         getSourceBackedFlowMapSnapshotStorageKey(reviewedVersion.snapshot.mapId),
@@ -6845,6 +6863,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ...(requiresAnchor && myFlowReuseDraft.fixedDatePolicy
         ? { fixedDatePolicy: myFlowReuseDraft.fixedDatePolicy }
         : {}),
+      personalExecutionStateSnapshot: nextPersonalExecutionStateSnapshot,
       ...(reviewedVersion
         ? {
             mapId: reviewedVersion.snapshot.mapId,

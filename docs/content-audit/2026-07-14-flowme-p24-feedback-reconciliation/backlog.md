@@ -32,7 +32,7 @@ KST and DST local date fixtures, Today/default date/Calendar parity.
 
 Today summary, full list, Calendar, ICS use one effective date.
 
-### P24-00F2B Reuse override transfer
+### P24-00F2B Reuse override transfer - done
 
 `fixed date 유지` and `anchor 재계산` produce different new-run results as labelled.
 
