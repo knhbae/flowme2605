@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f654a'/%3E%3Cpath d='M8 24V8h15M8 15h10' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <title>URL→Flow 콘텐츠 계약 · 백엔드 Go/No-Go</title>
+    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <style>
+      :root {
+        --green: #0f654a;
+        --green-dark: #084d39;
+        --mint: #eaf5f0;
+        --mint-2: #f5faf7;
+        --ink: #18201d;
+        --muted: #66706c;
+        --line: #cbd4d0;
+        --line-dark: #8d9994;
+        --coral: #e85f48;
+        --coral-soft: #fff0ec;
+        --amber: #b77700;
+        --amber-soft: #fff6dc;
+        --white: #ffffff;
+        --stage: #e8eeeb;
+        --shadow: 0 24px 70px rgba(23, 47, 37, 0.18);
+        --sans: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+        --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      * { box-sizing: border-box; }
+      html { background: var(--stage); }
+      body {
+        margin: 0;
+        min-width: 320px;
+        color: var(--ink);
+        background: var(--stage);
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      button, input, a { font: inherit; }
+      button, a { -webkit-tap-highlight-color: transparent; }
+      a { color: inherit; }
+      svg { display: block; }
+
+      .app {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 18px 18px 76px;
+      }
+      .deck {
+        position: relative;
+        width: min(1280px, calc(100vw - 36px), calc((100vh - 112px) * 16 / 9));
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: var(--white);
+        box-shadow: var(--shadow);
+        isolation: isolate;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        grid-template-rows: 48px minmax(0, 1fr);
+        padding: 24px 38px 30px;
+        overflow: hidden;
+        background: var(--white);
+      }
+      .slide.is-active { display: grid; }
+      .slide[aria-hidden="true"] { visibility: hidden; }
+      .slide.is-active[aria-hidden="false"] { visibility: visible; }
+      .slide-header {
+        display: grid;
+        grid-template-columns: auto minmax(120px, 1fr) auto;
+        align-items: start;
+        gap: 18px;
+        border-bottom: 1px solid var(--line-dark);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--green);
+        font-size: 23px;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+      }
+      .brand-mark {
+        width: 26px;
+        height: 24px;
+        border-left: 7px solid currentColor;
+        border-top: 7px solid currentColor;
+        border-radius: 5px 0 0 0;
+        position: relative;
+      }
+      .brand-mark::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 5px;
+        width: 12px;
+        border-top: 6px solid currentColor;
+        border-radius: 0 4px 4px 0;
+      }
+      .section-name {
+        align-self: center;
+        color: var(--muted);
+        font: 700 11px/1.3 var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .slide-number {
+        color: var(--green);
+        font: 800 21px/1 var(--mono);
+        letter-spacing: -0.04em;
+      }
+      .slide-body { min-height: 0; padding-top: 24px; }
+      .slide-title {
+        margin: 0;
+        max-width: 1120px;
+        font-size: clamp(34px, 4.1vw, 58px);
+        line-height: 1.08;
+        letter-spacing: -0.055em;
+        font-weight: 920;
+      }
+      .slide-title.medium { font-size: clamp(31px, 3.4vw, 48px); }
+      .slide-title.small { font-size: clamp(28px, 3vw, 42px); }
+      .lead {
+        margin: 14px 0 0;
+        max-width: 850px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.58;
+        letter-spacing: -0.02em;
+      }
+      .accent { color: var(--green); }
+      .danger { color: var(--coral); }
+      .warning { color: var(--amber); }
+      .mono { font-family: var(--mono); }
+
+      .decision-rail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        min-height: 62px;
+        padding: 12px 22px;
+        border-top: 2px solid var(--green);
+        border-bottom: 2px solid var(--green);
+        background: var(--mint-2);
+        color: var(--green-dark);
+        font-size: 24px;
+        font-weight: 900;
+        letter-spacing: -0.035em;
+        text-align: center;
+        overflow-wrap: anywhere;
+      }
+      .decision-rail.coral { border-color: var(--coral); background: var(--coral-soft); color: #a53525; }
+      .decision-rail.amber { border-color: var(--amber); background: var(--amber-soft); color: #744a00; }
+      .rail-icon {
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+      }
+      .rail-icon svg { width: 21px; height: 21px; }
+
+      .hero-layout {
+        height: 100%;
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 20px;
+      }
+      .hero-stage {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 0.9fr 1.5fr;
+        align-items: center;
+        gap: 44px;
+      }
+      .trace {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) 34px minmax(0, 0.9fr);
+        align-items: center;
+        gap: 10px;
+      }
+      .trace-arrow { width: 26px; height: 26px; color: var(--green); }
+      .trace-box {
+        min-height: 212px;
+        padding: 18px;
+        border: 1px solid var(--line-dark);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: var(--white);
+      }
+      .trace-box.item { border: 2px solid var(--green); background: var(--mint-2); }
+      .trace-label { color: var(--green); font: 800 13px/1.3 var(--mono); letter-spacing: 0.04em; }
+      .trace-box blockquote { margin: 0; font-size: 21px; line-height: 1.45; font-weight: 820; letter-spacing: -0.03em; }
+      .trace-box code { color: var(--muted); font: 650 13px/1.65 var(--mono); white-space: pre-wrap; }
+      .output-stack { display: grid; gap: 12px; }
+      .output-row {
+        min-height: 76px;
+        padding: 12px 14px;
+        border: 1px solid var(--green);
+        display: grid;
+        align-content: center;
+        gap: 4px;
+      }
+      .output-row strong { color: var(--green); font-size: 18px; }
+      .output-row span { color: var(--muted); font-size: 13px; }
+
+      .outcome-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .lane-grid { min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+      .lane {
+        min-width: 0;
+        padding: 12px 28px 0;
+        border-right: 1px solid var(--line-dark);
+        display: flex;
+        flex-direction: column;
+      }
+      .lane:last-child { border-right: 0; }
+      .lane h3 { margin: 0 0 12px; color: var(--green); font-size: 27px; letter-spacing: -0.04em; }
+      .lane.hold h3 { color: var(--amber); }
+      .lane.reject h3 { color: var(--coral); }
+      .lane-example { margin: 0 0 10px; font-size: 20px; font-weight: 850; letter-spacing: -0.025em; }
+      .lane ul { margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: 15px; line-height: 1.55; }
+      .micro-flow {
+        margin-top: auto;
+        padding: 14px 0 16px;
+        display: grid;
+        grid-template-columns: 1fr 28px 1fr;
+        align-items: center;
+        gap: 8px;
+        color: var(--green);
+      }
+      .hold .micro-flow { color: var(--amber); }
+      .reject .micro-flow { color: var(--coral); }
+      .micro-node { min-height: 82px; border: 1.5px solid currentColor; display: grid; place-items: center; padding: 9px; text-align: center; font-size: 14px; font-weight: 800; }
+      .micro-flow svg { width: 22px; height: 22px; }
+
+      .verdict-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 20px; }
+      .verdict-grid { min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); }
+      .verdict-column { padding: 24px 28px; border-right: 1px solid var(--line-dark); }
+      .verdict-column:last-child { border-right: 0; }
+      .verdict-column .state { display: block; margin-bottom: 14px; color: var(--green); font: 850 16px/1 var(--mono); }
+      .verdict-column.conditional .state { color: var(--amber); }
+      .verdict-column.no .state { color: var(--coral); }
+      .verdict-column h3 { margin: 0 0 12px; font-size: 26px; letter-spacing: -0.04em; }
+      .verdict-column ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+      .open-grid { display: grid; gap: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      .open-cell { padding: 16px 18px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
+      .open-cell .kicker { display: block; margin-bottom: 8px; color: var(--green); font: 800 11px/1.2 var(--mono); letter-spacing: 0.05em; }
+      .open-cell h3 { margin: 0 0 7px; font-size: 19px; letter-spacing: -0.025em; }
+      .open-cell p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+      .definition-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .definition-stage { min-height: 0; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 30px; }
+      .definition-core { padding: 24px 26px; border: 2px solid var(--green); background: var(--mint-2); }
+      .definition-core h3 { margin: 0 0 16px; color: var(--green); font-size: 24px; }
+      .definition-core ol { margin: 0; padding-left: 22px; font-size: 18px; line-height: 1.8; font-weight: 760; }
+      .definition-examples { grid-template-columns: repeat(2, 1fr); }
+
+      .axis-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .axis-grid { grid-template-columns: repeat(3, 1fr); min-height: 0; }
+      .axis-grid .open-cell { padding: 14px 16px; }
+      .axis-grid .open-cell h3 { font-size: 17px; }
+
+      .coverage-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 18px; }
+      .coverage-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+      .coverage-table th, .coverage-table td { padding: 10px 13px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+      .coverage-table th { background: var(--mint-2); color: var(--green); font-size: 14px; }
+      .coverage-table td { font-size: 13px; line-height: 1.45; }
+      .coverage-table strong { display: block; margin-bottom: 3px; font-size: 14px; }
+      .coverage-table .hold { color: #765000; background: #fffbef; }
+      .coverage-table .reject { color: #9b3225; background: #fff8f6; }
+
+      .hierarchy-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 22px; }
+      .hierarchy-track { align-self: center; display: grid; grid-template-columns: 1.1fr 28px 1.2fr 28px 1fr 28px 1fr 28px 1.25fr; align-items: center; gap: 9px; }
+      .hierarchy-node { min-height: 145px; border: 1px solid var(--line-dark); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+      .hierarchy-node.item { border: 2px solid var(--green); background: var(--mint-2); }
+      .hierarchy-node b { color: var(--green); font: 850 15px/1 var(--mono); }
+      .hierarchy-node strong { display: block; margin-top: 20px; font-size: 20px; letter-spacing: -0.03em; }
+      .hierarchy-node p { margin: 5px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+      .hierarchy-arrow { width: 22px; height: 22px; color: var(--green); }
+
+      .mapping-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; }
+      .table-scroll { min-width: 0; overflow-x: auto; }
+      .mapping-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+      .mapping-table th, .mapping-table td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+      .mapping-table th { background: var(--mint-2); color: var(--green); font-size: 13px; }
+      .mapping-table td { font-size: 13px; line-height: 1.42; }
+      .mapping-table td:first-child { font-weight: 800; }
+      .mapping-table .omit { color: #983628; background: #fff8f6; }
+
+      .projection-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .projection-stage { min-height: 0; display: grid; grid-template-columns: 0.65fr 1.05fr 1.25fr; align-items: center; gap: 30px; }
+      .small-hierarchy { color: var(--muted); font: 750 17px/2.15 var(--mono); }
+      .small-hierarchy b { color: var(--green); }
+      .canonical-hub { min-height: 300px; border: 3px solid var(--green); border-radius: 44px; background: var(--mint-2); padding: 24px 30px; }
+      .canonical-hub h3 { margin: 0 0 16px; color: var(--green); font-size: 27px; }
+      .facet-row { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+      .facet-row:last-child { border-bottom: 0; }
+      .facet-row code { color: var(--muted); font: 650 12px/1.4 var(--mono); }
+      .projection-rows { display: grid; gap: 10px; }
+      .projection-row { min-height: 64px; padding: 10px 14px; border: 1.5px solid var(--green); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+      .projection-row strong { color: var(--green); font-size: 17px; }
+      .projection-row span { color: var(--muted); font-size: 13px; text-align: right; }
+
+      .loss-layout { height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 12px; }
+      .legend { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 12px; }
+      .legend b { color: var(--green); font-family: var(--mono); }
+      .loss-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+      .loss-table th, .loss-table td { border: 1px solid var(--line); padding: 7px 8px; text-align: center; font-size: 11.5px; line-height: 1.3; }
+      .loss-table th { background: var(--mint-2); color: var(--green); }
+      .loss-table td:first-child, .loss-table th:first-child { text-align: left; font-weight: 800; }
+      .loss-table b { color: var(--green); font-family: var(--mono); }
+      .loss-table .m { color: var(--amber); }
+      .loss-table .x { color: var(--coral); }
+
+      .pipeline-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .pipeline { align-self: center; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 9px; }
+      .pipe-node { position: relative; min-height: 160px; padding: 16px 12px; border: 1.5px solid var(--green); display: flex; flex-direction: column; justify-content: space-between; background: var(--white); }
+      .pipe-node::after { content: ""; position: absolute; left: 100%; top: 50%; width: 10px; border-top: 1.5px solid var(--ink); }
+      .pipe-node:last-child::after { display: none; }
+      .pipe-node.llm { border-color: var(--coral); }
+      .pipe-node.human { border-color: var(--amber); }
+      .pipe-node h3 { margin: 0; font-size: 15px; line-height: 1.25; letter-spacing: -0.03em; }
+      .pipe-node p { margin: 10px 0 0; color: var(--muted); font: 650 10.5px/1.45 var(--mono); }
+      .pipe-node .phase { color: var(--green); font: 800 10px/1 var(--mono); }
+      .pipe-node.llm .phase { color: var(--coral); }
+      .pipe-node.human .phase { color: var(--amber); }
+
+      .roles-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .role-grid { min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); }
+      .role { padding: 20px 26px; border-right: 1px solid var(--line-dark); }
+      .role:last-child { border-right: 0; }
+      .role h3 { margin: 0 0 12px; color: var(--green); font-size: 23px; }
+      .role.llm h3 { color: var(--coral); }
+      .role.human h3 { color: var(--amber); }
+      .role ul { margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.75; }
+      .role .not { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+      .state-layout { height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 16px; }
+      .state-rail { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+      .state-node { position: relative; padding: 10px 8px; border-bottom: 3px solid var(--green); text-align: center; font: 750 12px/1.35 var(--mono); }
+      .state-node.partial { border-color: var(--amber); }
+      .state-node.failed { border-color: var(--coral); }
+      .failure-grid { grid-template-columns: repeat(4, 1fr); min-height: 0; }
+
+      .cost-layout { height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 14px; }
+      .formula { padding: 14px 18px; border: 1.5px solid var(--green); color: var(--ink); font-size: 20px; font-weight: 850; letter-spacing: -0.03em; text-align: center; }
+      .formula b { color: var(--green); }
+      .cost-stage { min-height: 0; display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 24px; }
+      .simulator { min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); border-right: 1px solid var(--line-dark); padding-right: 24px; }
+      .presets { display: flex; gap: 8px; margin-bottom: 10px; }
+      .preset {
+        min-height: 34px;
+        padding: 6px 14px;
+        border: 1px solid var(--line-dark);
+        background: var(--white);
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .preset[aria-pressed="true"] { border-color: var(--green); background: var(--mint); color: var(--green); }
+      .sim-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 20px; align-content: start; }
+      .control { min-width: 0; }
+      .control label { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 3px; color: var(--muted); font-size: 11px; font-weight: 750; }
+      .control output { color: var(--green); font: 800 11px/1 var(--mono); }
+      .control input[type="range"] { display: block; width: 100%; min-width: 0; max-width: 100%; margin: 0; accent-color: var(--green); }
+      .results { display: grid; grid-template-columns: repeat(2, 1fr); align-content: center; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      .result { min-height: 105px; padding: 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .result span { color: var(--muted); font-size: 12px; }
+      .result strong { display: block; margin-top: 8px; color: var(--green); font: 850 25px/1 var(--mono); }
+      .assumption-note { grid-column: 1 / -1; padding: 10px 14px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+
+      .economics-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; }
+      .economics-stage { min-height: 0; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; }
+      .lever-list { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      .lever { padding: 13px 15px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .lever strong { display: block; color: var(--green); font-size: 15px; }
+      .lever span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+      .thresholds { padding: 20px 22px; border: 2px solid var(--coral); background: var(--coral-soft); }
+      .thresholds h3 { margin: 0 0 12px; color: var(--coral); font-size: 23px; }
+      .threshold-row { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid #f0b7ad; font-size: 13px; }
+      .threshold-row:last-child { border-bottom: 0; }
+      .threshold-row b { color: var(--coral); font-family: var(--mono); }
+
+      .risk-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .risk-grid { grid-template-columns: repeat(4, 1fr); min-height: 0; }
+      .risk-grid .open-cell { padding: 15px; }
+      .risk-grid ul { margin: 8px 0 0; padding-left: 17px; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+
+      .version-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+      .version-stage { min-height: 0; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 30px; }
+      .layer-stack { display: grid; align-content: center; }
+      .layer { margin-top: -1px; padding: 11px 16px; border: 1px solid var(--line-dark); display: flex; justify-content: space-between; gap: 16px; font-size: 13px; }
+      .layer span { min-width: 0; overflow-wrap: anywhere; text-align: right; }
+      .layer b { color: var(--green); font-family: var(--mono); }
+      .layer.user { border-width: 2px; border-color: var(--green); background: var(--mint-2); }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .fixture-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; }
+      .fixture-stage { min-height: 0; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; }
+      .fixture-list { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      .fixture { min-width: 0; padding: 8px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 11.5px; line-height: 1.35; overflow-wrap: anywhere; }
+      .fixture b { color: var(--green); font-family: var(--mono); }
+      .fixture.negative b { color: var(--coral); }
+      .fixture.negative { background: #fff9f7; }
+      .coverage-counts { display: grid; grid-template-columns: repeat(2, 1fr); align-content: center; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      .count { padding: 17px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .count strong { display: block; color: var(--green); font: 900 32px/1 var(--mono); }
+      .count span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+
+      .roadmap-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; }
+      .roadmap { display: grid; grid-template-columns: repeat(6, 1fr); align-self: center; border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); }
+      .phase-card { min-height: 285px; padding: 18px 14px; border-right: 1px solid var(--line-dark); display: flex; flex-direction: column; }
+      .phase-card:last-child { border-right: 0; }
+      .phase-card .num { color: var(--green); font: 850 14px/1 var(--mono); }
+      .phase-card h3 { margin: 14px 0 10px; font-size: 17px; line-height: 1.25; letter-spacing: -0.03em; }
+      .phase-card p { margin: 0; color: var(--muted); font-size: 11.5px; line-height: 1.55; }
+      .phase-card .gate { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); color: var(--green); font: 800 10px/1.35 var(--mono); }
+      .phase-card.blocked .gate { color: var(--coral); }
+
+      .final-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 20px; }
+      .final-stage { min-height: 0; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 36px; align-items: center; }
+      .final-verdict { padding: 28px; border: 3px solid var(--coral); background: var(--coral-soft); }
+      .final-verdict span { color: var(--muted); font: 750 12px/1 var(--mono); }
+      .final-verdict strong { display: block; margin-top: 14px; color: var(--coral); font-size: 44px; line-height: 1.05; letter-spacing: -0.05em; }
+      .final-verdict p { margin: 16px 0 0; color: #70453e; font-size: 15px; line-height: 1.6; }
+      .gate-list { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      .gate-item { padding: 15px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .gate-item b { color: var(--green); font: 800 11px/1 var(--mono); }
+      .gate-item strong { display: block; margin-top: 7px; font-size: 15px; }
+      .gate-item p { margin: 5px 0 0; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+      .artifact-links { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+      .artifact-link { min-height: 34px; display: inline-flex; align-items: center; padding: 7px 10px; border: 1px solid var(--line-dark); color: var(--green); text-decoration: none; font-size: 11.5px; font-weight: 800; }
+      .artifact-link:hover, .artifact-link:focus-visible { background: var(--mint); outline: 2px solid var(--green); outline-offset: 2px; }
+      .open-cell, .open-cell h3, .open-cell p, .projection-stage > *, .cost-stage > *, .version-stage > *, .fixture-stage > *, .final-stage > * { min-width: 0; overflow-wrap: anywhere; }
+
+      @media (min-width: 901px) and (max-height: 780px) {
+        .slide { grid-template-rows: 40px minmax(0, 1fr); padding: 18px 30px 22px; }
+        .slide-body { padding-top: 15px; }
+        .slide-title.small { font-size: 32px; }
+        .coverage-layout, .cost-layout, .final-layout { gap: 10px; }
+        .coverage-table th, .coverage-table td { padding: 7px 10px; font-size: 11.5px; }
+        .coverage-table strong { font-size: 12.5px; }
+        .formula { padding: 8px 12px; font-size: 16px; }
+        .cost-stage { gap: 16px; }
+        .simulator { padding-right: 16px; }
+        .presets { margin-bottom: 4px; }
+        .preset { min-height: 28px; padding: 4px 10px; font-size: 10px; }
+        .sim-grid { gap: 3px 14px; }
+        .control label, .control output { font-size: 9.5px; }
+        .assumption-note { padding: 4px 8px; font-size: 8.5px; }
+        .result { min-height: 72px; padding: 9px 12px; }
+        .result strong { font-size: 18px; }
+        .final-stage { gap: 20px; }
+        .final-verdict { padding: 18px; }
+        .final-verdict strong { font-size: 32px; }
+        .final-verdict p { margin-top: 10px; font-size: 12px; line-height: 1.4; }
+        .gate-item { padding: 8px 10px; }
+        .gate-item strong { font-size: 12px; }
+        .gate-item p { font-size: 9.5px; }
+        .artifact-links { gap: 5px; margin-top: 4px; }
+        .artifact-link { min-height: 26px; padding: 4px 7px; font-size: 9.5px; }
+      }
+
+      .controls {
+        position: fixed;
+        z-index: 30;
+        left: 50%;
+        bottom: 16px;
+        transform: translateX(-50%);
+        width: min(680px, calc(100vw - 24px));
+        min-height: 48px;
+        display: grid;
+        grid-template-columns: auto auto minmax(130px, 1fr) auto auto auto;
+        align-items: center;
+        gap: 6px;
+        padding: 6px;
+        border: 1px solid #93a09a;
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 12px 34px rgba(23, 47, 37, 0.18);
+      }
+      .control-button {
+        width: 36px;
+        height: 36px;
+        border: 1px solid transparent;
+        display: grid;
+        place-items: center;
+        background: transparent;
+        color: var(--green);
+        cursor: pointer;
+      }
+      .control-button:hover, .control-button:focus-visible { border-color: var(--green); background: var(--mint); outline: none; }
+      .control-button:disabled { opacity: 0.3; cursor: default; }
+      .control-button svg { width: 19px; height: 19px; }
+      .progress-wrap { min-width: 0; display: grid; gap: 5px; padding: 0 8px; }
+      .progress-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font: 750 10px/1 var(--mono); }
+      .progress-track { height: 3px; background: #d7dfdb; overflow: hidden; }
+      .progress-bar { width: 5%; height: 100%; background: var(--green); transition: width 180ms ease; }
+
+      .overview {
+        width: min(1040px, calc(100vw - 30px));
+        max-height: min(760px, calc(100vh - 40px));
+        padding: 0;
+        border: 1px solid var(--line-dark);
+        background: var(--white);
+        color: var(--ink);
+        box-shadow: var(--shadow);
+      }
+      .overview::backdrop { background: rgba(9, 27, 20, 0.62); }
+      .overview-head { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--white); }
+      .overview-head h2 { margin: 0; font-size: 21px; }
+      .overview-close { width: 36px; height: 36px; border: 1px solid var(--line-dark); background: white; color: var(--green); cursor: pointer; }
+      .overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding: 1px; background: var(--line); overflow-y: auto; }
+      .overview-item { min-height: 115px; padding: 14px; border: 0; background: var(--white); text-align: left; cursor: pointer; }
+      .overview-item:hover, .overview-item:focus-visible { background: var(--mint); outline: 2px solid var(--green); outline-offset: -2px; }
+      .overview-item b { display: block; color: var(--green); font: 800 11px/1 var(--mono); }
+      .overview-item span { display: block; margin-top: 10px; font-size: 15px; line-height: 1.35; font-weight: 800; }
+
+      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+      @media (max-width: 900px) {
+        .app { display: block; padding: 0 0 64px; }
+        .deck { width: 100%; height: calc(100vh - 64px); aspect-ratio: auto; box-shadow: none; }
+        .slide { grid-template-rows: 44px auto; padding: 18px 18px 24px; overflow-y: auto; }
+        .slide-header { position: sticky; top: -18px; z-index: 5; padding-top: 2px; background: var(--white); }
+        .slide-body { align-self: start; width: 100%; height: max-content; padding-top: 20px; }
+        .slide-title { font-size: 37px; }
+        .slide-title.medium { font-size: 33px; }
+        .slide-title.small { font-size: 30px; }
+        .lead { font-size: 16px; }
+        .hero-layout, .outcome-layout, .verdict-layout, .definition-layout, .axis-layout, .coverage-layout, .hierarchy-layout, .mapping-layout, .projection-layout, .loss-layout, .pipeline-layout, .roles-layout, .state-layout, .cost-layout, .economics-layout, .risk-layout, .version-layout, .fixture-layout, .roadmap-layout, .final-layout { height: auto; min-height: 0; grid-template-rows: auto; align-content: start; }
+        .hero-stage, .definition-stage, .projection-stage, .cost-stage, .economics-stage, .version-stage, .fixture-stage, .final-stage { grid-template-columns: 1fr; }
+        .trace { grid-template-columns: 1fr; }
+        .trace-arrow { transform: rotate(90deg); margin: 0 auto; }
+        .trace-box { min-height: 150px; }
+        .lane-grid, .verdict-grid, .role-grid { grid-template-columns: 1fr; }
+        .lane, .verdict-column, .role { border-right: 0; border-bottom: 1px solid var(--line-dark); }
+        .lane:last-child, .verdict-column:last-child, .role:last-child { border-bottom: 0; }
+        .micro-flow { margin-top: 8px; }
+        .definition-examples, .axis-grid, .failure-grid, .risk-grid, .metric-grid, .lever-list, .fixture-list, .gate-list { grid-template-columns: 1fr; }
+        .hierarchy-track { grid-template-columns: 1fr; }
+        .hierarchy-arrow { transform: rotate(90deg); margin: 0 auto; }
+        .hierarchy-node { min-height: 112px; }
+        .coverage-table, .mapping-table, .loss-table { min-width: 760px; }
+        .coverage-layout > :last-child, .loss-layout > :nth-child(3) { overflow-x: auto; }
+        .pipeline { grid-template-columns: repeat(2, 1fr); }
+        .pipe-node::after { display: none; }
+        .state-rail { grid-template-columns: repeat(2, 1fr); }
+        .simulator { border-right: 0; border-bottom: 1px solid var(--line-dark); padding-right: 0; padding-bottom: 18px; }
+        .roadmap { grid-template-columns: repeat(2, 1fr); }
+        .phase-card { min-height: 220px; border-bottom: 1px solid var(--line-dark); }
+        .decision-rail { font-size: 19px; }
+        .controls { bottom: 7px; grid-template-columns: auto auto minmax(90px, 1fr) auto auto; }
+        .controls [data-action="print"] { display: none; }
+        .overview-grid { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 520px) {
+        .brand { font-size: 20px; }
+        .section-name { display: none; }
+        .slide-header { grid-template-columns: 1fr auto; }
+        .slide-title { font-size: 31px; }
+        .slide-title.medium { font-size: 29px; }
+        .slide-title.small { font-size: 27px; }
+        .trace-box blockquote { font-size: 18px; }
+        .sim-grid, .results, .coverage-counts { grid-template-columns: 1fr; }
+        .pipeline, .roadmap { grid-template-columns: 1fr; }
+        .final-verdict strong { font-size: 36px; }
+        .decision-rail { gap: 10px; min-height: 54px; padding: 10px 8px; font-size: 17px; }
+        .rail-icon { flex-basis: 32px; width: 32px; height: 32px; }
+        .controls { width: calc(100vw - 12px); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+      }
+
+      .no-js .app { display: block; padding: 0; }
+      .no-js .deck { width: 100%; height: auto; aspect-ratio: auto; overflow: visible; box-shadow: none; }
+      .no-js .slide { position: relative; display: grid; visibility: visible !important; aspect-ratio: 16 / 9; page-break-after: always; }
+      .no-js .controls { display: none; }
+
+      @page { size: 13.333in 7.5in; margin: 0; }
+      @media print {
+        html, body { background: white; }
+        .app { display: block; padding: 0; }
+        .deck { width: auto; height: auto; aspect-ratio: auto; overflow: visible; box-shadow: none; }
+        .slide, .slide.is-active {
+          position: relative;
+          display: grid !important;
+          visibility: visible !important;
+          width: 13.333in;
+          height: 7.5in;
+          page-break-after: always;
+          break-after: page;
+          overflow: hidden;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+        .slide:last-of-type { page-break-after: auto; }
+        .controls, .overview { display: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="icon-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="icon-full" viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+      <symbol id="icon-print" viewBox="0 0 24 24"><path d="M7 8V4h10v4M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v6H7z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    </svg>
+
+    <main class="app">
+      <article class="deck" id="deck" aria-label="URL에서 Flow 콘텐츠를 만드는 백엔드 의사결정 프레젠테이션">
+        <section class="slide is-active" id="slide-01" data-title="URL을 넣으면 무엇이 FLOW가 되는가" role="group" aria-roledescription="slide" aria-labelledby="title-01">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">URL → FLOW CONTENT CONTRACT</div><div class="slide-number">01</div></header>
+          <div class="slide-body hero-layout">
+            <div class="hero-stage">
+              <h1 class="slide-title" id="title-01">URL을 넣으면,<br><span class="accent">무엇이<br>FLOW가 되는가</span></h1>
+              <div class="trace" aria-label="원문 행이 Item과 외부 도구 결과로 바뀌는 예시">
+                <article class="trace-box">
+                  <span class="trace-label">SourceRow</span>
+                  <blockquote>검진일 7일 전 예약 상태를 확인한다</blockquote>
+                  <code>sourceRowId: row-checkup-booking</code>
+                </article>
+                <svg class="trace-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+                <article class="trace-box item">
+                  <span class="trace-label">Item</span>
+                  <blockquote>검진 대상과 예약 상태 확인하기</blockquote>
+                  <code>intent: inspect<br>schedule: anchor_offset(-7)<br>sourceRefs: [row-checkup-booking]</code>
+                </article>
+                <svg class="trace-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+                <div class="output-stack">
+                  <div class="output-row"><strong>캘린더</strong><span>검진일 기준 D-7 일정</span></div>
+                  <div class="output-row"><strong>체크리스트</strong><span>확인 완료 상태</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="decision-rail"><span class="rail-icon"><svg aria-hidden="true"><use href="#icon-check"></use></svg></span>ICS는 결과이고, Item이 기준이다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-02" data-title="만든다 일부는 버린다 아예 보류한다" role="group" aria-roledescription="slide" aria-labelledby="title-02">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">THREE CONCRETE OUTCOMES</div><div class="slide-number">02</div></header>
+          <div class="slide-body outcome-layout">
+            <h2 class="slide-title medium" id="title-02">만든다 · 일부는 버린다 · <span class="danger">아예 보류한다</span></h2>
+            <div class="lane-grid">
+              <article class="lane">
+                <h3>만든다</h3>
+                <p class="lane-example">에어컨 필터 공식 안내</p>
+                <ul><li>“극세 필터 4주에 한 번 청소”</li><li>1 SourceRow → 1 Item</li><li>4주 반복 ICS + 체크 + 방법 Memo</li></ul>
+                <div class="micro-flow"><div class="micro-node">공식 반복 주기</div><svg aria-hidden="true"><use href="#icon-arrow"></use></svg><div class="micro-node">실행 가능한 Item</div></div>
+              </article>
+              <article class="lane hold">
+                <h3>일부는 버린다</h3>
+                <p class="lane-example">자동차 정기검사</p>
+                <ul><li>사용자 행동은 “기간 안에 검사받기” 1개</li><li>만료일은 Field, 결과 안내는 Memo</li><li>기관 내부 ABS·배출가스 단계는 omit</li></ul>
+                <div class="micro-flow"><div class="micro-node">공식 lifecycle</div><svg aria-hidden="true"><use href="#icon-arrow"></use></svg><div class="micro-node">사용자 행동만</div></div>
+              </article>
+              <article class="lane reject">
+                <h3>보류한다</h3>
+                <p class="lane-example">미국 병원 출산가방</p>
+                <ul><li>55개 행이 있어도 한국 적용성 미확인</li><li>보험·병원·상업 맥락이 다름</li><li>번역만으로 Item을 만들지 않고 hold</li></ul>
+                <div class="micro-flow"><div class="micro-node">행은 충분함</div><svg aria-hidden="true"><use href="#icon-arrow"></use></svg><div class="micro-node">지역화 검토 대기</div></div>
+              </article>
+            </div>
+            <div class="decision-rail">좋은 변환은 많이 만드는 기술이 아니라, 어디서 멈출지 아는 계약이다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-03" data-title="현재의 결론은 분리된 Go No-Go" role="group" aria-roledescription="slide" aria-labelledby="title-03">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">EXECUTIVE DECISION</div><div class="slide-number">03</div></header>
+          <div class="slide-body verdict-layout">
+            <div><h2 class="slide-title medium" id="title-03">지금 필요한 것은 “LLM 연결”이 아니라<br><span class="accent">콘텐츠 계약을 증명하는 백엔드</span>입니다</h2></div>
+            <div class="verdict-grid">
+              <article class="verdict-column"><span class="state">GO NOW</span><h3>계약·fixture·fake provider</h3><ul><li>runtime validator</li><li>canonical→legacy adapter</li><li>projection parity와 loss manifest</li><li>failure fixture와 비용 계측</li></ul></article>
+              <article class="verdict-column conditional"><span class="state">CONDITIONAL GO</span><h3>저장소 shadow-write</h3><ul><li>adapter parity</li><li>SQL/RLS와 두 사용자 격리</li><li>migration·rollback</li><li>사용자 overlay 보존</li></ul></article>
+              <article class="verdict-column no"><span class="state">NO-GO</span><h3>실제 URL·LLM·직접 연동</h3><ul><li>arbitrary production fetch</li><li>real LLM provider와 자동 retry</li><li>자동 저장·발행·캘린더 반영</li><li>OAuth·지속 sync</li></ul></article>
+            </div>
+            <div class="decision-rail coral"><span class="rail-icon"><svg aria-hidden="true"><use href="#icon-x"></use></svg></span>구현 전체를 막는 것이 아니라, 위험한 경계를 닫은 채 증명 가능한 부분부터 연다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-04" data-title="FLOW 콘텐츠가 무엇인지 한 문장으로 고정" role="group" aria-roledescription="slide" aria-labelledby="title-04">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">CONTENT CONSTITUTION</div><div class="slide-number">04</div></header>
+          <div class="slide-body definition-layout">
+            <div><h2 class="slide-title medium" id="title-04">FLOW는 요약 앱이 아니라<br><span class="accent">외부 콘텐츠를 실행 도구로 옮기는 층</span>입니다</h2></div>
+            <div class="definition-stage">
+              <article class="definition-core"><h3>한 원본에서 시작하는 4단 계약</h3><ol><li>한 primary source</li><li>한 user job</li><li>한 natural artifact</li><li>최소 실행 UI</li></ol></article>
+              <div class="open-grid definition-examples">
+                <article class="open-cell"><span class="kicker">CALENDAR</span><h3>이사 D-30</h3><p>원문의 D-day offset만 일정으로 만든다. 전화번호와 업체 메모는 Item을 늘리지 않는다.</p></article>
+                <article class="open-cell"><span class="kicker">CHECKLIST</span><h3>해외여행 준비물</h3><p>여권·데이터 수단 등 source row만 체크한다. 날짜가 없으면 ICS도 없다.</p></article>
+                <article class="open-cell"><span class="kicker">SHEET</span><h3>K-MOOC 주차표</h3><p>주차별 Item이 행, 상태·메모가 Field 열이다. 공부 일정을 새로 만들지 않는다.</p></article>
+                <article class="open-cell"><span class="kicker">MEMO</span><h3>레시피 영상 1개</h3><p>“영상 따라 만들기” 1 Item과 재료·방법 Memo. 영상을 임의 동작으로 쪼개지 않는다.</p></article>
+              </div>
+            </div>
+            <div class="decision-rail">콘텐츠를 더 읽게 하는 것이 아니라, 읽은 뒤 실제로 옮기고 끝내게 한다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-05" data-title="종류는 카테고리 하나가 아니라 독립 축의 조합" role="group" aria-roledescription="slide" aria-labelledby="title-05">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">COMPOSABLE CONTENT TYPES</div><div class="slide-number">05</div></header>
+          <div class="slide-body axis-layout">
+            <div><h2 class="slide-title medium" id="title-05">“종류”는 category 하나가 아니라<br><span class="accent">서로 독립적인 6개 축의 조합</span>입니다</h2></div>
+            <div class="open-grid axis-grid">
+              <article class="open-cell"><span class="kicker">01 LIFE AREA</span><h3>어떤 삶의 문제인가</h3><p>9개 shelf. 예: `health_fitness`, `travel_outings`.</p></article>
+              <article class="open-cell"><span class="kicker">02 PLANNING PATTERN</span><h3>어떻게 진행되는가</h3><p>날짜 준비, 순서 절차, 반복, 표 행, queue, 비교·결정, lifecycle.</p></article>
+              <article class="open-cell"><span class="kicker">03 ITEM INTENT</span><h3>사용자가 무엇을 하는가</h3><p>`act · inspect · decide · record · use_resource`.</p></article>
+              <article class="open-cell"><span class="kicker">04 PRIMARY ARTIFACT</span><h3>어디에서 쓰는가</h3><p>calendar · checklist · todo · sheet · memo · hybrid.</p></article>
+              <article class="open-cell"><span class="kicker">05 HIERARCHY</span><h3>어느 크기의 조합인가</h3><p>Item · Step · Flow · Bundle/Flow Map.</p></article>
+              <article class="open-cell"><span class="kicker">06 TRUST STATE</span><h3>근거와 위험은 어떤가</h3><p>source type · locale · rights · risk · readiness · lifecycle.</p></article>
+            </div>
+            <div class="decision-rail amber">기존 timeline·phase·routine·checklist는 정본 enum이 아니라 compatibility shorthand로 내린다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-06" data-title="v1 지원 범위와 중단 경계" role="group" aria-roledescription="slide" aria-labelledby="title-06">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">V1 COVERAGE ENVELOPE</div><div class="slide-number">06</div></header>
+          <div class="slide-body coverage-layout">
+            <div><h2 class="slide-title small" id="title-06">어떤 원문을 자동·반자동으로 다루고,<br><span class="danger">어떤 원문에서 멈출지</span>를 먼저 정합니다</h2></div>
+            <div>
+              <table class="coverage-table" aria-label="지원, 보류, 거절 콘텐츠 형태">
+                <thead><tr><th>지원</th><th>조건부·보류</th><th>거절·다시 설계</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>D-day / date window</strong>건강검진 D-7, 이사 D-30, 자동차 검사 유효기간</td><td class="hold"><strong>파일 행 미수집</strong>PDF·XLSX·playlist가 있다는 설명만 있음 → `source_import_required`</td><td class="reject"><strong>정보 소비</strong>뉴스·후기·긴 일반 정보글에 실행 user job이 없음</td></tr>
+                  <tr><td><strong>명시된 순서·반복</strong>공식 신청 절차, 필터 4주 청소</td><td class="hold"><strong>권리·신선도 미확인</strong>추출·보관·재사용 가능 범위가 불명확</td><td class="reject"><strong>generic habit</strong>“100일 꾸준히 하자”만 있고 source row·prompt·curriculum 없음</td></tr>
+                  <tr><td><strong>source rows</strong>준비물, 점검표, 표·curriculum, 30일 prompt</td><td class="hold"><strong>민감 지역화</strong>번역은 됐지만 한국 의료·법률·행정 적용성 미확인</td><td class="reject"><strong>multi-source 완벽 가이드</strong>여러 출처가 구조를 함께 통제</td></tr>
+                  <tr><td><strong>한 resource</strong>영상 1개, 레시피 1개, memo-first + action 1개</td><td class="hold"><strong>부분 추출</strong>paywall·unreadable·누락 행 → 완성본처럼 표시 금지</td><td class="reject"><strong>LLM 보충</strong>원문 없는 행동·날짜·결론을 일반지식으로 생성</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-07" data-title="SourceRow는 근거 Item은 실행 Step은 그룹" role="group" aria-roledescription="slide" aria-labelledby="title-07">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">CANONICAL HIERARCHY</div><div class="slide-number">07</div></header>
+          <div class="slide-body hierarchy-layout">
+            <div><h2 class="slide-title medium" id="title-07"><span class="accent">SourceRow는 근거</span>, Item은 실행,<br>Step은 Item을 묶는 문맥입니다</h2></div>
+            <div class="hierarchy-track" aria-label="SourceRow에서 Flow Map까지 계층">
+              <article class="hierarchy-node"><b>SourceRow</b><div><strong>최소 evidence</strong><p>원문 “검진일 7일 전 예약 확인”</p></div></article><svg class="hierarchy-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node item"><b>Item</b><div><strong>최소 state</strong><p>“예약 상태 확인하기”를 따로 완료</p></div></article><svg class="hierarchy-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node"><b>Step</b><div><strong>의미 그룹</strong><p>“검진 전 확인”</p></div></article><svg class="hierarchy-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node"><b>Flow</b><div><strong>한 user job</strong><p>“건강검진 D-7 준비”</p></div></article><svg class="hierarchy-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node"><b>Flow Map</b><div><strong>Flow의 조합</strong><p>별도 source-owned child Flow 묶음</p></div></article>
+            </div>
+            <div class="decision-rail coral">과거 Step-first 문서는 runtime 호환 표현일 뿐, 새 storage·API의 최소 단위가 아니다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-08" data-title="원문의 모든 부분은 Item Field Memo omit 중 하나" role="group" aria-roledescription="slide" aria-labelledby="title-08">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">SOURCE ROW TRACEABILITY</div><div class="slide-number">08</div></header>
+          <div class="slide-body mapping-layout">
+            <div><h2 class="slide-title small" id="title-08">원문의 모든 부분은<br><span class="accent">Item · Field · Memo · omit</span> 중 하나로 설명돼야 합니다</h2></div>
+            <div class="table-scroll"><table class="mapping-table" aria-label="자동차 정기검사 원문의 canonical mapping 예시">
+              <thead><tr><th>원문 단위</th><th>Canonical 결과</th><th>왜 이렇게 두는가</th><th>Projection</th></tr></thead>
+              <tbody>
+                <tr><td>“유효기간 안에 검사를 받는다”</td><td><strong>Item</strong><br>정기검사 받기</td><td>사용자가 따로 완료할 실제 행동</td><td>Calendar · checklist · memo</td></tr>
+                <tr><td>검사 만료일</td><td><strong>Field</strong><br>`expiryDate`</td><td>date window와 reminder 계산에 필요</td><td>ICS 날짜 · sheet 열</td></tr>
+                <tr><td>차종별 확인·공식 조회 주의</td><td><strong>Memo / caution</strong></td><td>판단·설명이지 완료할 행동은 아님</td><td>event description · memo</td></tr>
+                <tr><td>ABS·하체·배출가스 기관 내부 단계</td><td class="omit"><strong>omit</strong><br>`agency_internal_process`</td><td>사용자가 수행·체크하는 단계가 아님</td><td>어떤 출력에도 행으로 만들지 않음</td></tr>
+              </tbody>
+            </table></div>
+            <div class="decision-rail">publishable Item은 SourceRef를 갖고, 제외된 실행 가능 행은 omission reason을 갖는다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-09" data-title="하나의 Item 여러 도구의 언어" role="group" aria-roledescription="slide" aria-labelledby="title-09">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">RICH CORE + ADAPTER</div><div class="slide-number">09</div></header>
+          <div class="slide-body projection-layout">
+            <div><h2 class="slide-title medium" id="title-09">하나의 Item,<br><span class="accent">여러 도구의 언어</span></h2></div>
+            <div class="projection-stage">
+              <div class="small-hierarchy">SourceRow<br>↓<br><b>Item</b><br>↓<br>Step<br>↓<br>Flow</div>
+              <article class="canonical-hub"><h3>Canonical Item</h3><div class="facet-row"><span>행동과 완료</span><code>intent · completion</code></div><div class="facet-row"><span>일정과 반복</span><code>schedule · recurrence</code></div><div class="facet-row"><span>값과 기록</span><code>fields[]</code></div><div class="facet-row"><span>방법과 주의</span><code>memos[] · cautions[]</code></div><div class="facet-row"><span>출처와 신원</span><code>sourceRefs[] · stableId</code></div></article>
+              <div class="projection-rows"><div class="projection-row"><strong>Calendar / ICS</strong><span>날짜가 있을 때만</span></div><div class="projection-row"><strong>Todo / Checklist</strong><span>완료 가능한 행동</span></div><div class="projection-row"><strong>Sheet</strong><span>Item=행, Field=열</span></div><div class="projection-row"><strong>Memo</strong><span>손실 없는 fallback</span></div></div>
+            </div>
+            <div class="decision-rail">외부 포맷의 공통분모가 아니라 rich core + adapter + loss manifest</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-10" data-title="플랫폼마다 보존되는 것과 손실되는 것이 다름" role="group" aria-roledescription="slide" aria-labelledby="title-10">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">PROJECTION LOSS MATRIX</div><div class="slide-number">10</div></header>
+          <div class="slide-body loss-layout">
+            <div><h2 class="slide-title small" id="title-10">같은 Item도 플랫폼마다<br><span class="accent">직접 보존 · 평탄화 · Memo fallback · 금지</span>가 다릅니다</h2></div>
+            <div class="legend"><span><b>D</b> direct</span><span><b>G</b> grouped/flattened</span><span><b class="warning">M</b> Memo fallback</span><span><b class="danger">X</b> forbidden</span><span>N/A artifact 없음</span></div>
+            <div>
+              <table class="loss-table" aria-label="canonical 필드별 외부 플랫폼 손실 표">
+                <thead><tr><th>Canonical capability</th><th>ICS / Calendar</th><th>Todoist CSV</th><th>Sheets / Excel</th><th>Markdown / Obsidian</th><th>Notion handoff</th></tr></thead>
+                <tbody>
+                  <tr><td>stable Item ID</td><td><b>D</b> UID</td><td class="m"><b>M</b> description</td><td><b>D</b> ID column</td><td><b>D</b> frontmatter</td><td><b>D/G</b> property/text</td></tr>
+                  <tr><td>Step grouping</td><td class="m"><b>M/G</b> description</td><td><b>D/G</b> section</td><td><b>D</b> columns/order</td><td><b>D</b> headings</td><td><b>D/G</b> heading/property</td></tr>
+                  <tr><td>check state</td><td class="m"><b>M</b> criterion only</td><td><b>D</b> task</td><td><b>D</b> status column</td><td><b>D</b> task box</td><td><b>D/G</b> status/text</td></tr>
+                  <tr><td>date / recurrence</td><td><b>D</b> DTSTART/RRULE</td><td><b>D/G</b> DATE text</td><td><b>G</b> columns</td><td><b>G</b> frontmatter/text</td><td><b>G</b> property/text</td></tr>
+                  <tr><td>Field values</td><td class="m"><b>M</b> description</td><td class="m"><b>M/G</b></td><td><b>D</b> typed column</td><td><b>D/G</b></td><td><b>D/G</b></td></tr>
+                  <tr><td>Memo/source/caution</td><td><b>D/M</b> description</td><td><b>D/M</b> note</td><td><b>D</b> columns</td><td><b>D</b> body</td><td><b>D</b> body/property</td></tr>
+                  <tr><td>provider/prompt/review internals</td><td class="x"><b>X</b></td><td class="x"><b>X</b></td><td class="x"><b>X</b></td><td class="x"><b>X</b></td><td class="x"><b>X</b></td></tr>
+                  <tr><td>unscheduled Item</td><td>N/A · 0 events</td><td><b>D</b> no date</td><td><b>D</b></td><td><b>D</b></td><td><b>D</b></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="decision-rail amber">파일 import는 snapshot이다. sync·round-trip·account ownership을 약속하지 않는다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-11" data-title="규칙 우선 LLM 보조 파이프라인" role="group" aria-roledescription="slide" aria-labelledby="title-11">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">CONVERSION ENGINE</div><div class="slide-number">11</div></header>
+          <div class="slide-body pipeline-layout">
+            <div><h2 class="slide-title small" id="title-11">LLM은 생성기가 아니라,<br><span class="accent">모호함을 줄이는 보조자</span>입니다</h2></div>
+            <div class="pipeline" aria-label="URL-to-Flow 변환 파이프라인">
+              <article class="pipe-node"><span class="phase">RULE</span><h3>URL lookup</h3><p>canonicalize()<br>dedupe()</p></article>
+              <article class="pipe-node"><span class="phase">RULE</span><h3>수집·snapshot</h3><p>safe_fetch()<br>hash()</p></article>
+              <article class="pipe-node"><span class="phase">RULE</span><h3>SourceRow 추출</h3><p>lists · tables<br>dates · blocks</p></article>
+              <article class="pipe-node"><span class="phase">RULE</span><h3>규칙 구조화</h3><p>날짜 · 반복<br>표 · 순서</p></article>
+              <article class="pipe-node llm"><span class="phase">LLM PROPOSAL</span><h3>의미 매핑</h3><p>제목 · 분류<br>그룹 · Memo</p></article>
+              <article class="pipe-node"><span class="phase">VALIDATOR</span><h3>계약 검증</h3><p>schema · source<br>risk · rights</p></article>
+              <article class="pipe-node human"><span class="phase">HUMAN</span><h3>사람 검토</h3><p>edit · omit<br>include · review</p></article>
+              <article class="pipe-node"><span class="phase">RULE</span><h3>저장·projection</h3><p>save()<br>project()</p></article>
+            </div>
+            <div class="decision-rail">검토 전에는 저장 · 발행 · 캘린더 반영이 없다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-12" data-title="규칙 LLM 사람의 역할을 분리" role="group" aria-roledescription="slide" aria-labelledby="title-12">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">ALGORITHM VS LLM</div><div class="slide-number">12</div></header>
+          <div class="slide-body roles-layout">
+            <div><h2 class="slide-title small" id="title-12">날짜·사실·상태는 규칙이,<br>의미 제안은 LLM이, <span class="warning">최종 경계는 사람</span>이 맡습니다</h2></div>
+            <div class="role-grid">
+              <article class="role"><h3>Deterministic rule</h3><ul><li>URL 정규화·cache lookup</li><li>표·목록·날짜·반복 파싱</li><li>stable ID·hash·state transition</li><li>schema·SourceRef·projection 검증</li><li>ICS/CSV/Markdown 생성</li></ul><p class="not"><b>예:</b> `D-7`, `4주마다`, 표의 행 순서는 모델에게 계산시키지 않는다.</p></article>
+              <article class="role llm"><h3>Bounded LLM proposal</h3><ul><li>행의 의미 분류</li><li>동사형 제목 윤문</li><li>중복 행 묶기 후보</li><li>Memo·caution 후보 요약</li><li>모호함과 누락 설명</li></ul><p class="not"><b>금지:</b> 원문 없는 행동·수치·날짜·의료/법률/재무 결론, 개수 맞추기.</p></article>
+              <article class="role human"><h3>Human-only gate</h3><ul><li>rights·retention·takedown</li><li>민감 콘텐츠와 지역 적용성</li><li>논쟁적인 Item/omit 경계</li><li>사용자 overlay와 포함 여부</li><li>명시적 review·save</li></ul><p class="not"><b>예:</b> 미국 출산가방 55행은 번역 완료가 아니라 한국 적용성 review 대기다.</p></article>
+            </div>
+            <div class="decision-rail coral">`maxItems=7`은 처리 상한이지 목표 개수가 아니다 — 넘으면 partial/import, 부족해도 채우지 않는다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-13" data-title="상태 실패 취소 재시도 계약" role="group" aria-roledescription="slide" aria-labelledby="title-13">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">STATE + FAILURE CONTRACT</div><div class="slide-number">13</div></header>
+          <div class="slide-body state-layout">
+            <div><h2 class="slide-title small" id="title-13">생성·검토·저장·실행은<br><span class="accent">서로 다른 상태</span>로 남아야 합니다</h2></div>
+            <div class="state-rail" aria-label="proposal 상태 전이"><div class="state-node">ready</div><div class="state-node">generating</div><div class="state-node">proposal</div><div class="state-node partial">partial</div><div class="state-node failed">failed</div><div class="state-node">reviewed</div><div class="state-node">saved</div></div>
+            <div class="open-grid failure-grid">
+              <article class="open-cell"><span class="kicker">TIMEOUT / EMPTY</span><h3>입력을 보존한다</h3><p>완료로 표시하지 않는다. 사용자 메모에 명시된 행동이 있을 때만 compatibility fallback.</p></article>
+              <article class="open-cell"><span class="kicker">INVALID DATE</span><h3>날짜를 제거한다</h3><p>순차 offset을 발명하지 않는다. Item은 무일정으로 남고 ICS는 0건.</p></article>
+              <article class="open-cell"><span class="kicker">CANCEL / LATE RESULT</span><h3>취소한 run은 닫힌다</h3><p>늦게 도착한 provider 결과가 proposal이나 saved copy를 바꾸지 못한다.</p></article>
+              <article class="open-cell"><span class="kicker">RETRY / COST</span><h3>새 attempt로 계측한다</h3><p>기본 자동 retry는 0회. 비용·지연 budget 안에서 사용자가 명시적으로 다시 시도한다.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-14" data-title="변동비 완전원가 저장 Flow 첫 완료 비용 시뮬레이터" role="group" aria-roledescription="slide" aria-labelledby="title-14">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">LIVE COST SIMULATOR</div><div class="slide-number">14</div></header>
+          <div class="slide-body cost-layout">
+            <div><h2 class="slide-title small" id="title-14">비용은 LLM 단가가 아니라,<br><span class="accent">저장된 Flow와 첫 완료까지</span> 봅니다</h2></div>
+            <div class="formula">변동비/요청 = <b>lookup</b> + miss × (수집 + 추출 + LLM + 검증 + 저장 + retry) + <b>사람 검토</b></div>
+            <div class="cost-stage">
+              <section class="simulator" aria-label="비용 전제값 조정">
+                <div class="presets" role="group" aria-label="비용 시나리오"><button class="preset" type="button" data-preset="pilot" aria-pressed="false">Pilot</button><button class="preset" type="button" data-preset="launch" aria-pressed="true">Launch</button><button class="preset" type="button" data-preset="scale" aria-pressed="false">Scale</button></div>
+                <div class="sim-grid">
+                  <div class="control"><label for="monthlyRequests">월 요청 수 <output id="monthlyRequestsOut">1,000</output></label><input id="monthlyRequests" data-cost-input type="range" min="100" max="10000" step="100" value="1000" /></div>
+                  <div class="control"><label for="cacheHitRate">cache hit <output id="cacheHitRateOut">45%</output></label><input id="cacheHitRate" data-cost-input type="range" min="0" max="90" step="5" value="45" /></div>
+                  <div class="control"><label for="llmCallRate">miss 중 LLM 호출 <output id="llmCallRateOut">60%</output></label><input id="llmCallRate" data-cost-input type="range" min="0" max="100" step="5" value="60" /></div>
+                  <div class="control"><label for="humanReviewRate">사람 검토 <output id="humanReviewRateOut">15%</output></label><input id="humanReviewRate" data-cost-input type="range" min="0" max="60" step="5" value="15" /></div>
+                  <div class="control"><label for="saveRate">저장률 <output id="saveRateOut">35%</output></label><input id="saveRate" data-cost-input type="range" min="5" max="80" step="5" value="35" /></div>
+                  <div class="control"><label for="firstCompletionRate">첫 Item 완료율 <output id="firstCompletionRateOut">45%</output></label><input id="firstCompletionRate" data-cost-input type="range" min="5" max="90" step="5" value="45" /></div>
+                  <p class="assumption-note">기본 단가 전제: fetch+extract 12원/miss, LLM 입력 10k·출력 1.2k token, $0.5/$2.0 per 1M, 환산 1,400원/$, validate+store 3원, review 3분·3만원/시간. 모두 planning assumption이며 vendor 견적이 아닙니다.</p>
+                </div>
+              </section>
+              <section class="results" aria-live="polite" aria-label="계산 결과">
+                <div class="result"><span>월 예상 비용</span><strong id="monthlyCostResult">—</strong></div>
+                <div class="result"><span>완전원가/요청</span><strong id="intakeCostResult">—</strong></div>
+                <div class="result"><span>저장된 Flow당</span><strong id="savedCostResult">—</strong></div>
+                <div class="result"><span>첫 Item 완료당</span><strong id="completionCostResult">—</strong></div>
+                <div class="result"><span>월 LLM 호출</span><strong id="llmCallsResult">—</strong></div>
+                <div class="result"><span>시나리오 p95 전제</span><strong id="latencyResult">—</strong></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-15" data-title="비용 통제는 모델 선택보다 먼저" role="group" aria-roledescription="slide" aria-labelledby="title-15">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">UNIT ECONOMICS GATE</div><div class="slide-number">15</div></header>
+          <div class="slide-body economics-layout">
+            <div><h2 class="slide-title small" id="title-15">모델을 고르기 전에<br><span class="accent">비용을 줄이는 구조와 상한</span>을 고정합니다</h2></div>
+            <div class="economics-stage">
+              <div class="lever-list">
+                <article class="lever"><strong>canonical URL cache</strong><span>같은 URL과 snapshot hash는 reviewed result를 재사용한다.</span></article>
+                <article class="lever"><strong>source-shape routing</strong><span>명시된 표·목록·날짜는 LLM을 호출하지 않는다.</span></article>
+                <article class="lever"><strong>bounded context</strong><span>필요한 SourceRow만 provider에 보낸다. raw page 전체가 기본이 아니다.</span></article>
+                <article class="lever"><strong>no auto retry</strong><span>새 attempt와 추가 비용을 숨기지 않는다.</span></article>
+                <article class="lever"><strong>deterministic-only mode</strong><span>비용·장애·privacy gate가 닫히면 규칙 기반 또는 source import로 전환한다.</span></article>
+                <article class="lever"><strong>human queue budget</strong><span>민감·권리·지역화 검토의 사람 시간을 LLM 외 비용에 포함한다.</span></article>
+              </div>
+              <article class="thresholds"><h3>아직 비어 있는 owner threshold</h3><div class="threshold-row"><span>요청당 비용 상한</span><b>NULL</b></div><div class="threshold-row"><span>저장 Flow당 비용 상한</span><b>NULL</b></div><div class="threshold-row"><span>첫 완료당 비용 상한</span><b>NULL</b></div><div class="threshold-row"><span>p95 생성 지연 상한</span><b>NULL</b></div><div class="threshold-row"><span>일/월 예산·사용자 quota</span><b>NULL</b></div></article>
+            </div>
+            <div class="decision-rail coral">상한이 비어 있으면 real provider는 NO-GO — 가격표는 공급자 선택 시 공식 문서로 갱신한다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-16" data-title="사용자가 말하지 않은 필수 위험 경계" role="group" aria-roledescription="slide" aria-labelledby="title-16">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">TRUST + SECURITY</div><div class="slide-number">16</div></header>
+          <div class="slide-body risk-layout">
+            <div><h2 class="slide-title small" id="title-16">사용자가 말하지 않았지만<br><span class="danger">백엔드 착수 전에 꼭 닫아야 할 경계</span>가 있습니다</h2></div>
+            <div class="open-grid risk-grid">
+              <article class="open-cell"><span class="kicker">RIGHTS + FRESHNESS</span><h3>무엇을 얼마나 보관하는가</h3><ul><li>robots·이용약관·license</li><li>snapshot TTL·attribution</li><li>takedown·삭제·cache 무효화</li><li>checked date·stale review</li></ul></article>
+              <article class="open-cell"><span class="kicker">URL SECURITY</span><h3>URL은 신뢰할 수 없는 입력</h3><ul><li>SSRF·private IP·DNS rebinding</li><li>redirect·MIME·size·decompression</li><li>script 제거·sandbox parser</li><li>prompt injection 격리</li></ul></article>
+              <article class="open-cell"><span class="kicker">PRIVACY</span><h3>provider에 보내지 않을 것</h3><ul><li>URL query secret·cookie·token</li><li>PII redaction·log 최소화</li><li>provider retention/training review</li><li>user deletion·server-only key</li></ul></article>
+              <article class="open-cell"><span class="kicker">OPERATIONS</span><h3>망가졌을 때 되돌리는 법</h3><ul><li>idempotency·cancel·late result</li><li>feature flag·kill switch</li><li>deterministic-only mode</li><li>incident·rollback·owner·SLO</li></ul></article>
+            </div>
+            <div class="decision-rail amber">예: `http://127.0.0.1/admin`은 콘텐츠 후보가 아니라 SSRF 차단 fixture다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-17" data-title="원문 버전 사용자 수정 실행 기록을 분리" role="group" aria-roledescription="slide" aria-labelledby="title-17">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">VERSION + OWNERSHIP + OBSERVABILITY</div><div class="slide-number">17</div></header>
+          <div class="slide-body version-layout">
+            <div><h2 class="slide-title small" id="title-17">원문이 바뀌어도<br><span class="accent">사용자의 수정과 실행 기록은 덮어쓰지 않습니다</span></h2></div>
+            <div class="version-stage">
+              <div class="layer-stack" aria-label="데이터 소유권 우선순위"><div class="layer"><b>01</b><span>pinned immutable content version</span></div><div class="layer"><b>02</b><span>reviewed source-version resolution</span></div><div class="layer user"><b>03</b><span>user overlay · title/date/include/memo</span></div><div class="layer"><b>04</b><span>execution run state</span></div><div class="layer"><b>05</b><span>occurrence override</span></div><div class="layer"><b>06</b><span>unsaved UI buffer</span></div></div>
+              <div class="open-grid metric-grid">
+                <article class="open-cell"><span class="kicker">UPDATE</span><h3>added / changed / removed</h3><p>새 Item은 pending review. 기록이 있는 삭제 Item은 retained/orphaned.</p></article>
+                <article class="open-cell"><span class="kicker">AUDIT</span><h3>무엇으로 만들었나</h3><p>snapshot·extractor·prompt·model·validator·schema·hash version.</p></article>
+                <article class="open-cell"><span class="kicker">QUALITY</span><h3>얼마나 고쳤나</h3><p>source correction·omit·invalid schedule·fallback·escalation rate.</p></article>
+                <article class="open-cell"><span class="kicker">PRODUCT</span><h3>실제로 썼나</h3><p>review → edit/exclude → save → export/open → first completion.</p></article>
+              </div>
+            </div>
+            <div class="decision-rail">새 콘텐츠 버전은 저장된 Flow에 자동 적용하지 않는다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-18" data-title="대표 사례와 실패 사례가 계약의 테스트" role="group" aria-roledescription="slide" aria-labelledby="title-18">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">GOLDEN FIXTURES</div><div class="slide-number">18</div></header>
+          <div class="slide-body fixture-layout">
+            <div><h2 class="slide-title small" id="title-18">문서가 아니라<br><span class="accent">대표·보류·실패 사례가 같은 validator를 통과</span>해야 합니다</h2></div>
+            <div class="fixture-stage">
+              <div class="fixture-list" aria-label="positive와 negative fixture 목록">
+                <div class="fixture"><b>P01</b> 건강검진 D-7 timeline</div><div class="fixture"><b>P02</b> 에어컨 4주 routine</div><div class="fixture"><b>P03</b> 여행 준비물 checklist</div><div class="fixture"><b>P04</b> 고용24 ordered procedure</div><div class="fixture"><b>P05</b> K-MOOC source table</div><div class="fixture"><b>P06</b> 레시피 memo-first</div><div class="fixture"><b>P07</b> 중고차 decide/hold</div><div class="fixture"><b>P08</b> 건강검진 evidence/caution</div><div class="fixture"><b>P09</b> Day 1-2 queue contract sample</div><div class="fixture"><b>P10</b> 자동차 sparse lifecycle</div>
+                <div class="fixture negative"><b>N01</b> missing source rows</div><div class="fixture negative"><b>N02</b> nonlocal sensitive source</div><div class="fixture negative"><b>N03</b> paywall/unreadable</div><div class="fixture negative"><b>N04</b> no executable job / generic slogan</div><div class="fixture negative"><b>N05</b> multiple primary sources</div><div class="fixture negative"><b>N06</b> invented actions</div><div class="fixture negative"><b>N07</b> invented schedule/ICS</div><div class="fixture negative"><b>N08</b> runtime fetch timeout</div>
+              </div>
+              <div class="coverage-counts"><div class="count"><strong>10</strong><span>validated positive shapes</span></div><div class="count"><strong>8</strong><span>validated gate/runtime failures</span></div><div class="count"><strong>9</strong><span>life areas</span></div><div class="count"><strong>7</strong><span>planning patterns</span></div><div class="count"><strong>5</strong><span>projection targets</span></div><div class="count"><strong>0</strong><span>허용되는 invented action/date</span></div></div>
+            </div>
+            <div class="decision-rail amber">real provider 전에는 timeout·duplicate·cancel·rights·cost stress fixture를 provider별로 확장한다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-19" data-title="백엔드 구현은 여섯 단계로 연다" role="group" aria-roledescription="slide" aria-labelledby="title-19">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">IMPLEMENTATION ORDER</div><div class="slide-number">19</div></header>
+          <div class="slide-body roadmap-layout">
+            <div><h2 class="slide-title small" id="title-19">특정 DB·LLM을 고르기 전에<br><span class="accent">여섯 단계의 exit evidence</span>를 쌓습니다</h2></div>
+            <div class="roadmap">
+              <article class="phase-card"><span class="num">01</span><h3>계약 수렴</h3><p>runtime schema, stable ID/hash, legacy mapping, cost config.</p><span class="gate">GO · fixture validator</span></article>
+              <article class="phase-card"><span class="num">02</span><h3>projection parity</h3><p>effective Item reducer, ICS/checklist/todo/sheet/memo, loss manifest.</p><span class="gate">GO · semantic parity</span></article>
+              <article class="phase-card"><span class="num">03</span><h3>fake pipeline</h3><p>fake provider, run state, partial/failed/cancel/late-result fixture harness.</p><span class="gate">GO · failure parity</span></article>
+              <article class="phase-card"><span class="num">04</span><h3>repository·DB</h3><p>SQL/RLS, immutable version, overlay, migration, shadow-write, rollback.</p><span class="gate">CONDITIONAL · isolation</span></article>
+              <article class="phase-card"><span class="num">05</span><h3>controlled intake</h3><p>SSRF/MIME/size controls, snapshot/extractor, review UI, rights·cost·completion canary.</p><span class="gate">CONDITIONAL · observed evidence</span></article>
+              <article class="phase-card blocked"><span class="num">06</span><h3>real provider</h3><p>retention/security/current price review, numeric budgets, kill switch.</p><span class="gate">NO-GO UNTIL CLOSED</span></article>
+            </div>
+            <div class="decision-rail">DB 후보는 PostgreSQL/Supabase-compatible, LLM은 provider-neutral adapter — 둘 다 계약 뒤에 선택한다</div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-20" data-title="최종 결론 조건부 NO-GO에서 무엇을 먼저 할까" role="group" aria-roledescription="slide" aria-labelledby="title-20">
+          <header class="slide-header"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>FlowMe</div><div class="section-name">FINAL GO / NO-GO</div><div class="slide-number">20</div></header>
+          <div class="slide-body final-layout">
+            <div><h2 class="slide-title small" id="title-20">결론: 백엔드 계약 구현은 GO,<br><span class="danger">production URL·LLM은 조건부 NO-GO</span></h2></div>
+            <div class="final-stage">
+              <article class="final-verdict"><span>CURRENT VERDICT</span><strong>CONTRACT GO<br>PRODUCTION NO-GO</strong><p>지금 바로 할 일은 runtime validator → compatibility adapter → projection parity → fake provider입니다. 실제 provider는 비용·보안·권리·failure gate가 닫힌 뒤에만 엽니다.</p></article>
+              <div class="gate-list">
+                <article class="gate-item"><b>01 CONTENT</b><strong>근거 없는 Item·날짜 0건</strong><p>SourceRef와 omission reason을 fixture로 증명.</p></article>
+                <article class="gate-item"><b>02 DATA</b><strong>한 effective Item, 모든 projection</strong><p>stable ID, loss manifest, overlay parity.</p></article>
+                <article class="gate-item"><b>03 PIPELINE</b><strong>rules-first, review-before-save</strong><p>cancel·partial·late result·retry 안전성.</p></article>
+                <article class="gate-item"><b>04 ECONOMICS</b><strong>비용·지연 상한 수치 확정</strong><p>요청·저장 Flow·첫 완료 기준.</p></article>
+                <article class="gate-item"><b>05 TRUST</b><strong>권리·SSRF·PII·retention</strong><p>takedown, redaction, provider review.</p></article>
+                <article class="gate-item"><b>06 EVIDENCE</b><strong>internal canary와 실제 사용자</strong><p>수정·저장·export·첫 완료를 관찰.</p></article>
+                <nav class="artifact-links" aria-label="관련 근거 문서"><a class="artifact-link" href="../specs/2026-07-12-url-to-flow-backend-readiness/spec.md">통합 계약</a><a class="artifact-link" href="../specs/2026-07-12-url-to-flow-backend-readiness/projection-loss-matrix.md">projection/loss</a><a class="artifact-link" href="../specs/2026-07-12-url-to-flow-backend-readiness/conversion-decision-table.md">rule vs LLM</a><a class="artifact-link" href="../specs/2026-07-12-url-to-flow-backend-readiness/cost-model-v1.json">cost model</a><a class="artifact-link" href="../specs/2026-07-12-url-to-flow-backend-readiness/failure-state-golden-fixtures-v1.json">failure fixtures</a><a class="artifact-link" href="../specs/2026-07-12-url-to-flow-backend-readiness/risk-qa-checklist.md">risk/QA</a></nav>
+              </div>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <nav class="controls" aria-label="프레젠테이션 조작">
+      <button class="control-button" id="prevSlide" type="button" aria-label="이전 슬라이드"><svg aria-hidden="true"><use href="#icon-left"></use></svg></button>
+      <button class="control-button" id="nextSlide" type="button" aria-label="다음 슬라이드"><svg aria-hidden="true"><use href="#icon-right"></use></svg></button>
+      <div class="progress-wrap"><div class="progress-meta"><span id="currentTitle">URL을 넣으면 무엇이 FLOW가 되는가</span><span id="slideCount">01 / 20</span></div><div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div></div>
+      <button class="control-button" id="openOverview" type="button" aria-label="슬라이드 개요 열기"><svg aria-hidden="true"><use href="#icon-grid"></use></svg></button>
+      <button class="control-button" id="toggleFullscreen" type="button" aria-label="전체화면 전환"><svg aria-hidden="true"><use href="#icon-full"></use></svg></button>
+      <button class="control-button" data-action="print" id="printDeck" type="button" aria-label="인쇄 또는 PDF 저장"><svg aria-hidden="true"><use href="#icon-print"></use></svg></button>
+    </nav>
+
+    <dialog class="overview" id="overviewDialog" aria-labelledby="overviewTitle">
+      <div class="overview-head"><h2 id="overviewTitle">슬라이드 개요</h2><button class="overview-close" id="closeOverview" type="button" aria-label="개요 닫기">×</button></div>
+      <div class="overview-grid" id="overviewGrid"></div>
+    </dialog>
+    <p class="sr-only" id="slideAnnouncer" aria-live="polite"></p>
+
+    <script>
+      (() => {
+        const deck = document.getElementById('deck');
+        const slides = Array.from(deck.querySelectorAll('.slide'));
+        const prevButton = document.getElementById('prevSlide');
+        const nextButton = document.getElementById('nextSlide');
+        const overviewButton = document.getElementById('openOverview');
+        const overviewDialog = document.getElementById('overviewDialog');
+        const overviewGrid = document.getElementById('overviewGrid');
+        const closeOverview = document.getElementById('closeOverview');
+        const fullscreenButton = document.getElementById('toggleFullscreen');
+        const printButton = document.getElementById('printDeck');
+        const progressBar = document.getElementById('progressBar');
+        const slideCount = document.getElementById('slideCount');
+        const currentTitle = document.getElementById('currentTitle');
+        const announcer = document.getElementById('slideAnnouncer');
+        let index = 0;
+
+        const pad = (value) => String(value).padStart(2, '0');
+        const interactiveTarget = (target) => Boolean(target.closest('a, button, input, select, textarea, [contenteditable="true"], dialog'));
+
+        const indexFromHash = () => {
+          const match = location.hash.match(/slide-(\d{1,2})/i);
+          if (!match) return null;
+          const parsed = Number(match[1]) - 1;
+          return Number.isInteger(parsed) && parsed >= 0 && parsed < slides.length ? parsed : null;
+        };
+
+        const showSlide = (nextIndex, updateHash = true) => {
+          index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+          slides.forEach((slide, slideIndex) => {
+            const active = slideIndex === index;
+            slide.classList.toggle('is-active', active);
+            slide.setAttribute('aria-hidden', String(!active));
+            slide.toggleAttribute('inert', !active);
+            if (active) slide.scrollTop = 0;
+          });
+          const activeSlide = slides[index];
+          const title = activeSlide.dataset.title || `슬라이드 ${index + 1}`;
+          currentTitle.textContent = title;
+          slideCount.textContent = `${pad(index + 1)} / ${pad(slides.length)}`;
+          progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
+          prevButton.disabled = index === 0;
+          nextButton.disabled = index === slides.length - 1;
+          announcer.textContent = `${index + 1}번째 슬라이드. ${title}`;
+          document.title = `${pad(index + 1)} · ${title} | FlowMe`;
+          if (updateHash) history.replaceState(null, '', `#${activeSlide.id}`);
+          overviewGrid.querySelectorAll('button').forEach((button, buttonIndex) => button.setAttribute('aria-current', String(buttonIndex === index)));
+        };
+
+        slides.forEach((slide, slideIndex) => {
+          slide.setAttribute('aria-hidden', String(slideIndex !== 0));
+          slide.toggleAttribute('inert', slideIndex !== 0);
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'overview-item';
+          button.innerHTML = `<b>${pad(slideIndex + 1)}</b><span>${slide.dataset.title || `슬라이드 ${slideIndex + 1}`}</span>`;
+          button.addEventListener('click', () => {
+            overviewDialog.close();
+            showSlide(slideIndex);
+            deck.focus({ preventScroll: true });
+          });
+          overviewGrid.append(button);
+        });
+
+        prevButton.addEventListener('click', () => showSlide(index - 1));
+        nextButton.addEventListener('click', () => showSlide(index + 1));
+        overviewButton.addEventListener('click', () => overviewDialog.showModal());
+        closeOverview.addEventListener('click', () => overviewDialog.close());
+        overviewDialog.addEventListener('click', (event) => {
+          if (event.target === overviewDialog) overviewDialog.close();
+        });
+        fullscreenButton.addEventListener('click', async () => {
+          try {
+            if (!document.fullscreenElement) await deck.requestFullscreen();
+            else await document.exitFullscreen();
+          } catch (_) {
+            // Fullscreen can be blocked for local files; keyboard and presentation remain usable.
+          }
+        });
+        printButton.addEventListener('click', () => window.print());
+
+        window.addEventListener('hashchange', () => {
+          const hashIndex = indexFromHash();
+          if (hashIndex !== null && hashIndex !== index) showSlide(hashIndex, false);
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (interactiveTarget(event.target)) return;
+          if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); showSlide(index + 1); }
+          else if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); showSlide(index - 1); }
+          else if (event.key === 'Home') { event.preventDefault(); showSlide(0); }
+          else if (event.key === 'End') { event.preventDefault(); showSlide(slides.length - 1); }
+          else if (event.key.toLowerCase() === 'o') { event.preventDefault(); overviewDialog.showModal(); }
+          else if (event.key.toLowerCase() === 'f') { event.preventDefault(); fullscreenButton.click(); }
+        });
+
+        let touchStart = null;
+        deck.addEventListener('touchstart', (event) => {
+          if (event.touches.length !== 1 || interactiveTarget(event.target)) { touchStart = null; return; }
+          touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+        }, { passive: true });
+        deck.addEventListener('touchend', (event) => {
+          if (!touchStart || event.changedTouches.length !== 1) return;
+          const dx = event.changedTouches[0].clientX - touchStart.x;
+          const dy = event.changedTouches[0].clientY - touchStart.y;
+          touchStart = null;
+          if (Math.abs(dx) < 60 || Math.abs(dx) <= Math.abs(dy) * 1.2) return;
+          showSlide(index + (dx < 0 ? 1 : -1));
+        }, { passive: true });
+
+        const scenarios = {
+          pilot: { monthlyRequests: 100, cacheHitRate: 20, llmCallRate: 70, humanReviewRate: 30, saveRate: 30, firstCompletionRate: 40, fixedMonthly: 30000, retryRate: 0.08, p95: 20 },
+          launch: { monthlyRequests: 1000, cacheHitRate: 45, llmCallRate: 60, humanReviewRate: 15, saveRate: 35, firstCompletionRate: 45, fixedMonthly: 50000, retryRate: 0.05, p95: 15 },
+          scale: { monthlyRequests: 10000, cacheHitRate: 65, llmCallRate: 45, humanReviewRate: 8, saveRate: 40, firstCompletionRate: 50, fixedMonthly: 180000, retryRate: 0.03, p95: 12 }
+        };
+        let activeScenario = 'launch';
+        const costInputs = Object.fromEntries(Array.from(document.querySelectorAll('[data-cost-input]')).map((input) => [input.id, input]));
+        const won = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 0 });
+        const decimal = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 1 });
+
+        const updateCost = () => {
+          const requests = Number(costInputs.monthlyRequests.value);
+          const hit = Number(costInputs.cacheHitRate.value) / 100;
+          const llmRate = Number(costInputs.llmCallRate.value) / 100;
+          const reviewRate = Number(costInputs.humanReviewRate.value) / 100;
+          const saveRate = Number(costInputs.saveRate.value) / 100;
+          const completionRate = Number(costInputs.firstCompletionRate.value) / 100;
+          const scenario = scenarios[activeScenario];
+          const llmCost = ((10000 / 1000000) * 0.5 + (1200 / 1000000) * 2) * 1400;
+          const missCost = 12 + llmRate * llmCost + 3 + scenario.retryRate * 15;
+          const reviewCost = reviewRate * 3 * (30000 / 60);
+          const perIntakeVariable = 0.2 + (1 - hit) * missCost + reviewCost;
+          const monthly = requests * perIntakeVariable + scenario.fixedMonthly;
+          const perIntake = monthly / Math.max(1, requests);
+          const perSaved = monthly / Math.max(1, requests * saveRate);
+          const perCompletion = monthly / Math.max(1, requests * saveRate * completionRate);
+          const llmCalls = requests * (1 - hit) * llmRate;
+
+          document.getElementById('monthlyRequestsOut').textContent = won.format(requests);
+          document.getElementById('cacheHitRateOut').textContent = `${Math.round(hit * 100)}%`;
+          document.getElementById('llmCallRateOut').textContent = `${Math.round(llmRate * 100)}%`;
+          document.getElementById('humanReviewRateOut').textContent = `${Math.round(reviewRate * 100)}%`;
+          document.getElementById('saveRateOut').textContent = `${Math.round(saveRate * 100)}%`;
+          document.getElementById('firstCompletionRateOut').textContent = `${Math.round(completionRate * 100)}%`;
+          document.getElementById('monthlyCostResult').textContent = `${won.format(monthly)}원`;
+          document.getElementById('intakeCostResult').textContent = `${decimal.format(perIntake)}원`;
+          document.getElementById('savedCostResult').textContent = `${won.format(perSaved)}원`;
+          document.getElementById('completionCostResult').textContent = `${won.format(perCompletion)}원`;
+          document.getElementById('llmCallsResult').textContent = `${won.format(llmCalls)}회`;
+          document.getElementById('latencyResult').textContent = `${scenario.p95}초`;
+        };
+
+        document.querySelectorAll('.preset').forEach((button) => {
+          button.addEventListener('click', () => {
+            activeScenario = button.dataset.preset;
+            const values = scenarios[activeScenario];
+            Object.entries(values).forEach(([key, value]) => { if (costInputs[key]) costInputs[key].value = value; });
+            document.querySelectorAll('.preset').forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+            updateCost();
+          });
+        });
+        Object.values(costInputs).forEach((input) => input.addEventListener('input', () => {
+          document.querySelectorAll('.preset').forEach((candidate) => candidate.setAttribute('aria-pressed', 'false'));
+          updateCost();
+        }));
+
+        updateCost();
+        const initial = indexFromHash();
+        showSlide(initial === null ? 0 : initial, initial === null);
+      })();
+    </script>
+  </body>
+</html>

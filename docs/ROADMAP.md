@@ -1,14 +1,33 @@
 # Roadmap
 
-**Last Updated:** 2026-07-14
-**Current Version:** v0.1.0 (Released, observed-user validation pending)
-**Next Version:** v0.2.0 (Post-observation decisions)
+**Last Updated:** 2026-07-14<br>
+**Current Version:** v0.1.0 (released, observed-user validation pending)<br>
+**Current Validation Stage:** internal alpha / observed-user gate<br>
+**Next Version:** v0.2.0 (post-observation decisions)<br>
+**Next Milestone:** P24 observed-user evidence and keep/change/defer decisions
 
-## Completed Releases
+## Released Baseline
 
 > Release history lives in [HISTORY.md](./HISTORY.md).
 
-v0.1.0 is released. Product behavior is automated-QA green but not yet observed-user validated.
+v0.1.0 supports the browser-local product loop below:
+
+```text
+URL or memo -> prepared Flow or draft -> save -> personal edit
+-> My Flow and Calendar execution -> completion -> export -> reuse/version review
+```
+
+This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+### Stage 0 First Flag MVP
+
+| Item | Description | Status |
+| --- | --- | --- |
+| First flag flow | Parenting/infant vaccination and checkup preparation route | Released, observation pending |
+| Alternate route | Moving D-30 timeline route for lower-risk comparison | Released, observation pending |
+| Execution actions | Save, edit, schedule, complete/reopen, export, note, and reuse | Implemented, observation pending |
+| Source-backed conversion readiness | Exact source replacement, natural artifact simulation, and source/risk separation before representative framing | Implemented baseline |
+| Verification | Unit tests, production build, Playwright E2E, public production | Automated green; human evidence pending |
 
 ## Current P24 Completion Gate
 
@@ -18,47 +37,53 @@ Detailed status lives in the [P24 completion audit](./content-audit/2026-07-14-p
 | --- | --- | --- |
 | P24 implementation | Date/effective projection, recurrence, draft integrity, completion undo, editor, Calendar tray, export scope, execution notes | Done by automated evidence |
 | P24-00OPS1 | Public anonymous production URL | Done |
-| P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E and rollback | Done |
+| P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E, and rollback | Done |
 | P24-00B | Five real participants x three sessions | Ready, `0 / 15` |
 | P24-00C | Keep/change/defer and observed fixes | Pending P24-00B |
-| P24 final | Final regression, production deploy and completion package | Pending |
+| P24 final | Final regression, production deploy, and completion package | Pending |
 
-## Upcoming Releases
+## Human Validation Gates
 
-### v0.1.0 - Stage 0 First Flag MVP
+These gates cannot be closed by automated tests or simulated personas.
 
-**Goal:** Prove that users can open a FLOW route, enter an anchor, copy/export the plan, check items, and provide feedback.
+| Gate | Current state | Pass condition |
+| --- | --- | --- |
+| Repeated use | `0 / 15` observed sessions | 5 participants x 3 sessions |
+| Calendar import | Parser/Office evidence only | One configured Calendar app plus duplicate-import result |
+| Cross-device recovery | Automated/local evidence only | One real browser or device transfer |
+| Persistence decision | Undecided | Decide from observed continuity expectations |
 
-| Item | Description | Status |
-|------|-------------|--------|
-| First flag flow | Parenting/infant vaccination and checkup preparation route | Released, observation pending |
-| Alternate route | Moving D-30 timeline route for lower-risk comparison | Released, observation pending |
-| Execution actions | Save, edit, schedule, complete/reopen, export, note and reuse | Implemented, observation pending |
-| Source-backed conversion readiness | Exact source replacement, natural artifact simulation, and source/risk separation before representative framing | Implemented baseline |
-| Verification | Unit tests, production build, Playwright E2E, public production | Automated green; human evidence pending |
+## Next Decision
 
-### v0.2.0 - Evidence Capture
+After P24-00B and P24-00C, choose one primary next investment:
 
-**Goal:** Improve event capture and validation notes after first real use.
+1. account-backed persistence,
+2. creator/update pilot,
+3. production URL intake and AI backend,
+4. or another narrow execution-model correction.
 
-| Item | Description | Status |
-|------|-------------|--------|
-| Footprint logging | Track view, anchor, copy, export, check, feedback events | Planned |
-| Feedback loop | Lightweight correction/feedback intake | Planned |
-| Content safety pass | Re-check source/risk labels for sensitive categories | Planned |
+Do not open these as parallel product tracks.
 
-## Backlog
+## Gated Backlog
 
-### Product
-- Expand only after Stage 0 behavior evidence exists.
-- Continue broad-source cleanup before promoting more creator, study, health, travel, or official-service routes.
-- Keep ROADMAP entries short; durable specs belong in `docs/specs/`, while tool-generated plans may remain in `docs/superpowers/`.
-- Use [IDEAS.md](./IDEAS.md) for promising but uncommitted ideas.
+### Product And Value Chain
 
-### Technical
-- Add persistent storage only when local-only validation is insufficient.
-- Add integrations after copy/export/check behavior is proven.
+- Feedback/correction transport, moderation, and response states.
+- Creator pilot, canonical publishing, and update workflow.
+- Honest review, use, and maintenance signals from real data.
+- Content freshness, rights, localization, and portfolio focus.
 
-## Long-term Direction
+### Platform
 
-FLOW should become an execution-oriented experience wiki where trusted routes, versioning, and user footprints compound into product value.
+- Canonical runtime database migration, Auth, RLS, and rollback.
+- Account-backed persistence and cross-device synchronization.
+- Production URL fetch/extraction and a real LLM provider.
+- Direct Calendar, Notion, Todo, and Sheets integrations.
+
+### Long Horizon
+
+- Flow Pack / Flow-of-Flows.
+- Marketplace, payments, community, and creator revenue systems.
+- Experience graph and aggregate value or growth views.
+
+The gates and revisit conditions for uncommitted directions remain in [IDEAS.md](./IDEAS.md). Approved multi-step work remains in [docs/specs/](./specs/README.md).

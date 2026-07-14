@@ -79,8 +79,8 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 | D1 | Catalog group or saved workspace tab | 추천 Flow, 긴 Flow Map, 오늘, Flow, 지도, 필터 | Narrow the current job | Use page-local tabs or filters, not global nav. |
 | D2 | Flow Map or single Flow | 중1 수학 목차 진도표, 이사 D-30 준비 Flow | Inspect/save/run one content artifact | Open from card/detail link. |
 | D3 | Flow inside a Map | `1. 소인수분해`, `원룸 이사 D-30 준비` | See progress within a larger map | Show inside the Map page or My Flow Map drilldown. |
-| D4 | Step | `거듭제곱 확인`, `견적 후보 정하기` | Calendar/todo minimum executable unit | Tapping a Step opens inline detail. |
-| D5 | Item | Step memo/checklist text | Checklist item or text fallback | Hide until Step detail is open; export as text if destination app cannot represent checklist items. |
+| D4 | Step | `검진 전 확인`, `견적 비교` | Group related executable Items | Tapping a Step opens its Item list; Step itself owns no completion state. |
+| D5 | Item | `예약 상태 확인하기`, `후보를 보류하고 이유 적기` | Minimum independently stateful execution and projection unit | Project each scheduled/actionable Item to the destination; preserve Step only as grouping and use Memo fallback for unsupported detail. |
 
 ### Current Navigation Gaps To Resolve
 

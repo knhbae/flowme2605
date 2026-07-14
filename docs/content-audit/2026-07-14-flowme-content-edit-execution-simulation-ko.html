@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 콘텐츠 수정·실행 상세 UX 시뮬레이션</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #f4f5f7;
+      --surface: #ffffff;
+      --surface-2: #f8f9fa;
+      --ink: #18201d;
+      --muted: #5d6964;
+      --line: #d9dfdc;
+      --line-strong: #bcc7c2;
+      --green: #12654a;
+      --green-soft: #e6f3ed;
+      --blue: #205e9b;
+      --blue-soft: #e9f2fb;
+      --amber: #8a5a00;
+      --amber-soft: #fff3d6;
+      --coral: #a33f32;
+      --coral-soft: #fbece8;
+      --violet: #6c4da0;
+      --violet-soft: #f1ecf8;
+      --shadow: 0 12px 32px rgba(24, 32, 29, 0.08);
+      --radius: 8px;
+      --phone-radius: 28px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.62;
+      letter-spacing: 0;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; letter-spacing: 0; }
+    code, pre, .mono {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      letter-spacing: 0;
+    }
+    code { overflow-wrap: anywhere; }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: -80px;
+      z-index: 100;
+      padding: 12px 16px;
+      background: var(--ink);
+      color: white;
+      border-radius: 6px;
+    }
+    .skip-link:focus-visible { top: 16px; }
+
+    .page {
+      width: min(1440px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 24px 0 80px;
+    }
+    .topbar {
+      position: sticky;
+      top: 12px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 56px;
+      padding: 8px 12px 8px 18px;
+      border: 1px solid rgba(188, 199, 194, 0.9);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 8px 24px rgba(24, 32, 29, 0.08);
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 800;
+    }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: 7px;
+      background: var(--ink);
+      color: white;
+      font-size: 14px;
+    }
+    .toplinks { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .toplinks a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .toplinks a:hover, .toplinks a:focus-visible { background: var(--surface-2); color: var(--ink); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+      gap: 32px;
+      align-items: end;
+      padding: 72px 8px 48px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, h4 { word-break: keep-all; overflow-wrap: break-word; }
+    p { overflow-wrap: anywhere; }
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: 44px;
+      line-height: 1.14;
+      font-weight: 850;
+    }
+    .hero .lead {
+      max-width: 850px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+    .hero-note {
+      padding: 20px;
+      border-left: 4px solid var(--green);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .hero-note strong { display: block; margin-bottom: 6px; font-size: 18px; }
+    .hero-note p { margin: 0; color: var(--muted); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: normal;
+    }
+    .badge.current { border-color: #a8cfbd; background: var(--green-soft); color: var(--green); }
+    .badge.content { border-color: #aac6e1; background: var(--blue-soft); color: var(--blue); }
+    .badge.simulation { border-color: #efd28e; background: var(--amber-soft); color: var(--amber); }
+    .badge.future { border-color: #cbbce3; background: var(--violet-soft); color: var(--violet); }
+    .badge.excluded { border-color: #e2b9b1; background: var(--coral-soft); color: var(--coral); }
+
+    .section { padding: 56px 0 0; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .section-head > div { min-width: 0; }
+    .kicker { margin: 0 0 4px; color: var(--green); font-size: 13px; font-weight: 800; }
+    h2 { margin: 0; font-size: 30px; line-height: 1.24; }
+    h3 { margin: 0; font-size: 21px; line-height: 1.34; }
+    h4 { margin: 0; font-size: 16px; line-height: 1.4; }
+    .section-copy { max-width: 740px; margin: 8px 0 0; color: var(--muted); }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .review-item { min-height: 136px; padding: 20px; border-right: 1px solid var(--line); }
+    .review-item:last-child { border-right: 0; }
+    .review-item span { display: block; margin-bottom: 12px; color: var(--green); font-size: 13px; font-weight: 800; }
+    .review-item strong { display: block; font-size: 17px; }
+    .review-item p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+    .journey-nav {
+      display: grid;
+      grid-template-columns: repeat(11, minmax(92px, 1fr));
+      gap: 1px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: var(--line);
+      scrollbar-width: thin;
+    }
+    .journey-nav a {
+      display: flex;
+      min-height: 76px;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--surface);
+      text-decoration: none;
+    }
+    .journey-nav a:hover, .journey-nav a:focus-visible { background: var(--green-soft); }
+    .journey-nav b { color: var(--green); font-size: 12px; }
+    .journey-nav span { font-size: 13px; font-weight: 750; line-height: 1.35; }
+
+    .truth-note {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+      padding: 18px 20px;
+      border: 1px solid #efd28e;
+      background: var(--amber-soft);
+    }
+    .truth-note strong { color: var(--amber); }
+    .truth-note p { margin: 0; }
+
+    .source-workbench {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.7fr);
+      gap: 20px;
+    }
+    .source-sheet, .mapping-sheet, .stage, .export-panel, .memo-board, .ownership {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .source-sheet { padding: 24px; }
+    .source-sheet .url {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--blue);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+    .source-sheet ul { margin: 20px 0 0; padding-left: 20px; color: var(--muted); }
+    .mapping-sheet { overflow: hidden; }
+    .mapping-head, .map-row {
+      display: grid;
+      grid-template-columns: 80px minmax(230px, 1.4fr) minmax(230px, 1fr) 130px;
+      gap: 0;
+    }
+    .mapping-head > div {
+      padding: 12px 16px;
+      background: var(--ink);
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .map-row > div { padding: 15px 16px; border-bottom: 1px solid var(--line); }
+    .map-row:last-child > div { border-bottom: 0; }
+    .map-row .offset { color: var(--green); font-weight: 850; font-variant-numeric: tabular-nums; }
+    .map-row p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .map-row .destination { font-size: 13px; font-weight: 750; }
+
+    .stage {
+      scroll-margin-top: 88px;
+      margin-top: 24px;
+      overflow: hidden;
+    }
+    .stage-head {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .stage-no {
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .stage-title p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .stage-body {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.4fr);
+      gap: 0;
+    }
+    .stage-context { padding: 24px; border-right: 1px solid var(--line); background: #fcfcfc; }
+    .stage-context h4 { margin-bottom: 10px; color: var(--muted); font-size: 13px; text-transform: uppercase; }
+    .stage-context p { margin: 0; }
+    .stage-context ul { margin: 14px 0 0; padding-left: 20px; }
+    .stage-context li + li { margin-top: 7px; }
+    .stage-visual { min-width: 0; padding: 28px; }
+
+    .phone-wrap { display: flex; justify-content: center; }
+    .phone {
+      width: min(100%, 372px);
+      padding: 10px;
+      border: 1px solid #aeb9b4;
+      border-radius: var(--phone-radius);
+      background: #202724;
+      box-shadow: 0 18px 44px rgba(24, 32, 29, 0.18);
+    }
+    .phone-screen {
+      min-height: 650px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #f7f8f8;
+    }
+    .phone-status {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 16px 4px;
+      color: #43504a;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .appbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 52px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #dfe4e1;
+      background: white;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .app-content { padding: 16px; }
+    .app-title { margin: 0; font-size: 22px; line-height: 1.25; }
+    .app-sub { margin: 7px 0 0; color: #607069; font-size: 13px; }
+    .ui-card {
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid #d9dfdc;
+      border-radius: 7px;
+      background: white;
+    }
+    .ui-card.selected { border: 2px solid var(--green); }
+    .ui-card.excluded { border-color: #e5c3bd; background: #fffafa; }
+    .ui-card strong { display: block; font-size: 14px; }
+    .ui-card small { display: block; margin-top: 4px; color: #68756f; font-size: 12px; line-height: 1.45; }
+    .ui-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .ui-row + .ui-row { margin-top: 10px; }
+    .ui-label { color: #65716c; font-size: 12px; }
+    .ui-value { text-align: right; font-size: 13px; font-weight: 750; }
+    .field { margin-top: 12px; }
+    .field label { display: block; margin-bottom: 6px; color: #4f5c56; font-size: 12px; font-weight: 750; }
+    .field input, .field-box {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #bfc9c4;
+      border-radius: 6px;
+      background: white;
+      color: #1d2722;
+    }
+    .segment {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      margin-top: 12px;
+      padding: 4px;
+      border: 1px solid #d6ddda;
+      border-radius: 7px;
+      background: #edf0ef;
+    }
+    .segment span {
+      display: grid;
+      min-height: 40px;
+      place-items: center;
+      border-radius: 5px;
+      color: #68756f;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .segment .on { background: white; color: var(--green); box-shadow: 0 1px 4px rgba(24, 32, 29, 0.12); }
+    .button-row { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 16px; }
+    .fake-button {
+      display: grid;
+      min-height: 46px;
+      place-items: center;
+      padding: 10px 14px;
+      border: 1px solid #bfc9c4;
+      border-radius: 6px;
+      background: white;
+      color: #25312c;
+      font-size: 13px;
+      font-weight: 850;
+      text-align: center;
+    }
+    .fake-button.primary { border-color: var(--green); background: var(--green); color: white; }
+    .fake-button.subtle { background: var(--green-soft); color: var(--green); }
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 11px 0;
+      border-bottom: 1px solid #e1e5e3;
+    }
+    .toggle-row:last-child { border-bottom: 0; }
+    .toggle {
+      width: 22px;
+      height: 22px;
+      border: 1px solid #97a59e;
+      border-radius: 5px;
+      background: white;
+    }
+    .toggle.on { position: relative; border-color: var(--green); background: var(--green); }
+    .toggle.on::after { content: ""; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+    .toggle-row strong { font-size: 13px; }
+    .toggle-row small { display: block; margin-top: 2px; color: #65716c; font-size: 11px; }
+    .offset-chip { color: var(--green); font-size: 11px; font-weight: 850; white-space: nowrap; }
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 18px;
+      border-top: 1px solid #dce2df;
+      background: white;
+    }
+    .bottom-nav span { display: grid; min-height: 52px; place-items: center; color: #68756f; font-size: 11px; font-weight: 750; }
+    .bottom-nav .on { color: var(--green); }
+
+    .browser {
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: 0 16px 40px rgba(24, 32, 29, 0.12);
+    }
+    .browser-bar { display: flex; align-items: center; gap: 8px; min-height: 46px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #eef1ef; }
+    .browser-dot { width: 10px; height: 10px; border-radius: 50%; background: #9aa69f; }
+    .browser-url { min-width: 0; flex: 1; padding: 7px 10px; border: 1px solid #ccd4d0; border-radius: 5px; background: white; color: #5b6862; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .article { padding: 30px; }
+    .article .site { color: var(--coral); font-size: 12px; font-weight: 850; }
+    .article h3 { max-width: 680px; margin-top: 12px; font-size: 30px; }
+    .article .meta { margin-top: 8px; color: var(--muted); font-size: 13px; }
+    .article-preview { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 20px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .article-preview strong { color: var(--green); }
+    .article-preview ul { margin: 0; padding-left: 20px; }
+    .copy-callout { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 22px; padding: 14px 16px; border: 1px solid #aac6e1; background: var(--blue-soft); }
+    .copy-callout span { min-width: 0; color: var(--blue); font-size: 13px; overflow-wrap: anywhere; }
+    .copy-label { flex: 0 0 auto; padding: 8px 10px; border-radius: 5px; background: var(--blue); color: white !important; font-weight: 850; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .compare-pane { border: 1px solid var(--line); background: white; }
+    .compare-pane h4 { padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+    .compare-pane .inside { padding: 16px; }
+    .compare-pane .inside p { margin: 0; color: var(--muted); font-size: 14px; }
+    .compare-pane ul { margin: 12px 0 0; padding-left: 20px; }
+    .compare-pane.recommended { border: 2px solid var(--green); }
+    .compare-pane.recommended h4 { background: var(--green-soft); color: var(--green); }
+
+    .diff-grid {
+      display: grid;
+      grid-template-columns: 140px minmax(180px, 1fr) 44px minmax(180px, 1fr);
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+    .diff-grid > div { min-width: 0; padding: 12px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+    .diff-grid .label { background: var(--surface-2); color: var(--muted); font-size: 13px; font-weight: 800; }
+    .diff-grid .before { color: #59655f; }
+    .diff-grid .arrow { display: grid; place-items: center; padding: 12px 4px; color: var(--green); font-weight: 900; }
+    .diff-grid .after { background: #f2faf6; color: var(--green); font-weight: 800; }
+
+    .date-matrix { margin-top: 18px; border: 1px solid var(--line); }
+    .date-row {
+      display: grid;
+      grid-template-columns: 90px minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr);
+    }
+    .date-row > div { padding: 11px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    .date-row > div:last-child { border-right: 0; }
+    .date-row:last-child > div { border-bottom: 0; }
+    .date-row.head { background: var(--ink); color: white; font-size: 12px; font-weight: 800; }
+    .date-row .changed { background: var(--green-soft); color: var(--green); font-weight: 850; }
+    .date-row .fixed { background: var(--blue-soft); color: var(--blue); font-weight: 850; }
+
+    .flow-list { margin-top: 12px; border-top: 1px solid #dce2df; }
+    .flow-item { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 13px 0; border-bottom: 1px solid #dce2df; }
+    .flow-item .date { color: var(--green); font-size: 11px; font-weight: 850; }
+    .flow-item strong { font-size: 13px; }
+    .flow-item small { display: block; margin-top: 3px; color: #68756f; font-size: 11px; }
+    .flow-item .state { font-size: 11px; font-weight: 800; color: #68756f; }
+
+    .propagation {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .surface-preview { min-width: 0; border: 1px solid var(--line); background: white; }
+    .surface-preview > h4 { padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+    .surface-preview .preview-body { padding: 16px; }
+    .today-line { padding: 12px; border-left: 4px solid var(--green); background: var(--green-soft); }
+    .today-line strong { display: block; font-size: 14px; }
+    .today-line span { color: var(--muted); font-size: 12px; }
+    .calendar-mini { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .calendar-mini b { padding: 5px 0; color: var(--muted); font-size: 10px; text-align: center; }
+    .day { min-height: 50px; padding: 5px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    .day.old { background: #f0f2f1; text-decoration: line-through; }
+    .day.new { border-color: var(--green); background: var(--green-soft); color: var(--green); font-weight: 850; }
+    .day .event { display: block; margin-top: 4px; font-size: 9px; line-height: 1.25; }
+    .excluded-box { margin-top: 12px; padding: 12px; border: 1px dashed #cf9e95; background: var(--coral-soft); }
+    .excluded-box strong { color: var(--coral); font-size: 13px; }
+    .excluded-box p { margin: 4px 0 0; color: #75534d; font-size: 12px; }
+
+    .export-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .export-tabs span { padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; background: white; font-size: 12px; font-weight: 800; }
+    .export-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .export-panel { min-width: 0; box-shadow: none; }
+    .export-panel h4 { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+    .export-panel h4 span { color: var(--green); font-size: 12px; }
+    pre {
+      max-width: 100%;
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      background: #202724;
+      color: #edf6f1;
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .ownership { box-shadow: none; }
+    .ownership-row {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr) minmax(0, 1fr);
+      border-bottom: 1px solid var(--line);
+    }
+    .ownership-row:last-child { border-bottom: 0; }
+    .ownership-row > div { min-width: 0; padding: 16px; border-right: 1px solid var(--line); }
+    .ownership-row > div:last-child { border-right: 0; }
+    .ownership-row .owner { font-weight: 850; }
+    .ownership-row p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .ownership-row.source .owner { color: var(--blue); }
+    .ownership-row.personal .owner { color: var(--green); }
+    .ownership-row.run .owner { color: var(--amber); }
+    .ownership-row.export .owner { color: var(--violet); }
+
+    .memo-board { padding: 0; overflow: hidden; }
+    .memo-grid { display: grid; grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.5fr); }
+    .memo-input { padding: 24px; border-right: 1px solid var(--line); background: #f9f7fc; }
+    .memo-note { margin-top: 16px; padding: 16px; border: 1px solid #cbbce3; background: white; white-space: pre-wrap; }
+    .memo-transform { padding: 24px; }
+    .memo-row {
+      display: grid;
+      grid-template-columns: minmax(190px, 1fr) 110px minmax(220px, 1.15fr);
+      gap: 12px;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .memo-row:last-child { border-bottom: 0; }
+    .memo-row .raw { color: #4e5b55; font-size: 13px; }
+    .memo-row .rule { color: var(--violet); font-size: 12px; font-weight: 850; }
+    .memo-row .draft { font-size: 13px; font-weight: 750; }
+    .needs-confirm { display: inline-block; margin-top: 4px; color: var(--amber); font-size: 11px; font-weight: 850; }
+
+    .review-checks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+    .review-check { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; min-height: 94px; padding: 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: white; }
+    .review-check b { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; background: var(--green-soft); color: var(--green); font-size: 12px; }
+    .review-check strong { display: block; }
+    .review-check p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+
+    .evidence-list { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); background: white; }
+    .evidence-list li { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 16px; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+    .evidence-list li:last-child { border-bottom: 0; }
+    .evidence-list strong { color: var(--muted); font-size: 13px; }
+    .evidence-list a { color: var(--blue); overflow-wrap: anywhere; }
+
+    footer { margin-top: 64px; padding: 24px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 1100px) {
+      .hero { grid-template-columns: 1fr; align-items: start; }
+      .review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .review-item:nth-child(2) { border-right: 0; }
+      .review-item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .source-workbench, .stage-body, .memo-grid { grid-template-columns: 1fr; }
+      .stage-context, .memo-input { border-right: 0; border-bottom: 1px solid var(--line); }
+      .propagation { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      body { font-size: 16px; }
+      .page { width: min(100% - 24px, 1440px); padding-top: 12px; }
+      .topbar { position: static; align-items: flex-start; padding: 12px; }
+      .toplinks { display: none; }
+      .hero { gap: 20px; padding: 44px 0 32px; }
+      h1 { font-size: 32px; }
+      .hero .lead { font-size: 16px; }
+      .section { padding-top: 44px; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      h2 { font-size: 26px; }
+      .review-grid { grid-template-columns: 1fr; }
+      .review-item { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .review-item:last-child { border-bottom: 0; }
+      .truth-note { grid-template-columns: 1fr; gap: 6px; }
+      .mapping-sheet { border: 0; background: transparent; box-shadow: none; }
+      .mapping-head { display: none; }
+      .map-row { display: block; margin-bottom: 10px; border: 1px solid var(--line); background: white; }
+      .map-row > div { border-bottom: 0; padding: 7px 14px; }
+      .map-row > div:first-child { padding-top: 14px; }
+      .map-row > div:last-child { padding-bottom: 14px; }
+      .stage-head { grid-template-columns: 62px minmax(0, 1fr); padding: 16px; }
+      .stage-head .badge { grid-column: 2; justify-self: start; }
+      .stage-context, .stage-visual { padding: 18px; }
+      .article { padding: 20px; }
+      .article h3 { font-size: 23px; }
+      .article-preview { grid-template-columns: 1fr; gap: 8px; }
+      .copy-callout { align-items: flex-start; flex-direction: column; }
+      .compare, .export-grid { grid-template-columns: 1fr; }
+      .diff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .diff-grid .label { grid-column: 1 / -1; }
+      .diff-grid .before { grid-column: 1; }
+      .diff-grid .arrow { display: none; }
+      .diff-grid .after { grid-column: 2; }
+      .diff-grid .after::before { content: "변경 후 · "; color: var(--muted); font-size: 11px; }
+      .date-matrix { border: 0; }
+      .date-row { grid-template-columns: 52px minmax(0, 1fr) minmax(0, 1fr) 62px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+      .date-row > div { min-width: 0; padding: 10px 6px; font-size: 11px; overflow-wrap: anywhere; }
+      .ownership-row { grid-template-columns: 1fr; }
+      .ownership-row > div { border-right: 0; border-bottom: 1px solid var(--line); }
+      .ownership-row > div:last-child { border-bottom: 0; }
+      .memo-row { grid-template-columns: 1fr; gap: 4px; }
+      .memo-row .rule::before { content: "분류 · "; color: var(--muted); }
+      .review-checks { grid-template-columns: 1fr; }
+      .evidence-list li { grid-template-columns: 1fr; gap: 3px; }
+    }
+
+    @media (max-width: 420px) {
+      .page { width: min(100% - 16px, 1440px); }
+      .hero-note, .source-sheet, .stage-context, .stage-visual, .memo-input, .memo-transform { padding: 16px; }
+      .phone { padding: 7px; border-radius: 24px; }
+      .phone-screen { min-height: 620px; border-radius: 18px; }
+      .app-content { padding: 14px; }
+      .flow-item { grid-template-columns: 48px minmax(0, 1fr); }
+      .flow-item .state { grid-column: 2; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 이동</a>
+  <main id="main" class="page">
+    <nav class="topbar" aria-label="문서 이동">
+      <div class="brand"><span class="brand-mark">FM</span><span>FlowMe 상세 UX 시뮬레이션</span></div>
+      <div class="toplinks">
+        <a href="#source">원본·Step</a>
+        <a href="#journey">URL 흐름</a>
+        <a href="#exports">내보내기</a>
+        <a href="#memo">메모 흐름</a>
+        <a href="./2026-07-11-flowme-new-ux-ui-wireframe-ko.html">전체 UX 보드</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Content-level UX simulation · 2026-07-14</p>
+        <h1>콘텐츠가 내 일정이 되는 순간을, 값 하나까지 추적합니다</h1>
+        <p class="lead">AJD 이사 체크리스트에서 나온 다섯 Step을 시작일·포함 여부·개인 제목·개별 날짜·메모로 고친 뒤, My Flow와 Today, Calendar, Markdown, 체크리스트, TSV, ICS에 같은 결과가 남는지 단계별로 보여줍니다.</p>
+        <div class="legend" aria-label="근거 상태 범례">
+          <span class="badge content">기존 moving-d30 콘텐츠</span>
+          <span class="badge current">현재 구현 동작 근거</span>
+          <span class="badge simulation">방향 검토용 화면 조합</span>
+          <span class="badge future">향후 UX 제안</span>
+        </div>
+      </div>
+      <aside class="hero-note">
+        <strong>이번 보드의 핵심 질문</strong>
+        <p>사용자가 “무슨 콘텐츠가 나왔고, 내가 무엇을 바꿨으며, 그 결과가 어디까지 반영됐는지” 설명할 수 있는가?</p>
+      </aside>
+    </header>
+
+    <section class="section" aria-labelledby="read-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">먼저 볼 것</p>
+          <h2 id="read-title">네 가지만 확인하면 됩니다</h2>
+        </div>
+      </div>
+      <div class="review-grid">
+        <article class="review-item"><span>01 · 콘텐츠</span><strong>원문이 어떤 Step이 됐는가</strong><p>다섯 Step의 제목, 시점, 상세 체크, 완료 기준을 실제 값으로 봅니다.</p></article>
+        <article class="review-item"><span>02 · 수정</span><strong>어느 화면에서 무엇을 고치는가</strong><p>Flow 전체 설정과 개별 Step 수정의 경계를 분리해 봅니다.</p></article>
+        <article class="review-item"><span>03 · 반영</span><strong>한 번 고친 값이 어디까지 가는가</strong><p>Today, Calendar와 네 가지 내보내기 결과를 같은 값으로 대조합니다.</p></article>
+        <article class="review-item"><span>04 · 소유권</span><strong>원본과 내 사본이 섞이지 않는가</strong><p>sourceTrace는 유지하고 개인 변경만 overlay로 남는지 확인합니다.</p></article>
+      </div>
+    </section>
+
+    <section id="source" class="section" aria-labelledby="source-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">콘텐츠 기준</p>
+          <h2 id="source-title">원문 한 건에서 나온 실제 5개 Step</h2>
+          <p class="section-copy">시뮬레이션의 콘텐츠 기준은 기존 <code>moving-d30</code>입니다. 원문 D-day 구조를 이사일 기준 캘린더 항목으로 옮기고, 세부 확인 내용은 Step detail에 둡니다.</p>
+        </div>
+        <span class="badge content">source-backed</span>
+      </div>
+      <div class="source-workbench">
+        <article class="source-sheet">
+          <span class="badge content">Primary source</span>
+          <h3 style="margin-top:14px;">AJD 이사 준비 체크리스트</h3>
+          <p style="color:var(--muted);">사용자 상황: 이사일은 정했지만 긴 원문에서 언제 무엇을 챙길지 다시 정리하기 귀찮습니다.</p>
+          <div class="url">https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363</div>
+          <ul>
+            <li>기준일: 이사일</li>
+            <li>자연스러운 결과: D-day 캘린더 + 체크리스트</li>
+            <li>원본 보존: 제목, URL, sourceTrace, 원본 Step</li>
+            <li>개인화: 이름, 기준일, 포함 여부, 제목, 개별 날짜, 메모</li>
+          </ul>
+        </article>
+        <div class="mapping-sheet" aria-label="원문에서 Flow Step으로 변환된 결과">
+          <div class="mapping-head"><div>구간</div><div>사용자에게 보이는 Step</div><div>Step detail 핵심</div><div>목적지</div></div>
+          <div class="map-row"><div class="offset">D-30</div><div><strong>이사 방식과 견적 후보 정하기</strong><p>방식, 후보 업체, 비용 범위만 짧게 남깁니다.</p></div><div><strong>완료 기준</strong><p>견적 후보 2~3곳과 연락처, 비용 범위가 메모됨</p></div><div class="destination">Calendar<br>Memo</div></div>
+          <div class="map-row"><div class="offset">D-14</div><div><strong>입주청소와 대형폐기물 일정 확인</strong><p>예약일과 수거일이 이사일과 겹치지 않는지 봅니다.</p></div><div><strong>완료 기준</strong><p>예약일, 수거일, 신고 번호가 메모됨</p></div><div class="destination">Calendar<br>Checklist</div></div>
+          <div class="map-row"><div class="offset">D-7</div><div><strong>관리사무소 공유와 주소 변경 대상 확인</strong><p>이사 시간, 차량 동선, 주소 변경 대상을 메모합니다.</p></div><div><strong>완료 기준</strong><p>관리사무소 공유와 주소 변경 대상 메모 완료</p></div><div class="destination">Calendar<br>Memo</div></div>
+          <div class="map-row"><div class="offset">D-1</div><div><strong>계량기와 집 상태 사진 남기기</strong><p>정산과 하자 확인에 필요한 사진 위치만 남깁니다.</p></div><div><strong>완료 기준</strong><p>계량기와 주요 공간 사진 위치가 메모됨</p></div><div class="destination">Calendar<br>Checklist</div></div>
+          <div class="map-row"><div class="offset">D-Day</div><div><strong>정산과 전입신고 확인</strong><p>당일 정산과 전입신고·확정일자 확인 결과를 남깁니다.</p></div><div><strong>완료 기준</strong><p>정산 메모와 행정 확인 결과가 남음</p></div><div class="destination">Calendar<br>Official links</div></div>
+        </div>
+      </div>
+      <div class="truth-note">
+        <strong>정합성 메모</strong>
+        <p>현재 AJD canonical URL의 대표 lookup은 최신 <code>curated-ajd-moving-d30</code>입니다. 이 보드는 사용자가 지정한 기존 <code>moving-d30</code> 5 Step을 콘텐츠 예시로 쓰고, 개인 사본·Step override·export 전파는 현재 구현과 E2E에서 확인되는 동작을 근거로 조합한 방향 검토용 시뮬레이션입니다.</p>
+      </div>
+    </section>
+
+    <section id="journey" class="section" aria-labelledby="journey-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">URL 시나리오</p>
+          <h2 id="journey-title">URL 복사부터 개인 사본 실행까지 11단계</h2>
+          <p class="section-copy">각 단계는 사용자가 보는 콘텐츠, 실제 조작, 변경 결과, 다음 화면 반영을 같은 순서로 읽게 구성했습니다.</p>
+        </div>
+      </div>
+      <nav class="journey-nav" aria-label="URL 시나리오 단계">
+        <a href="#s01"><b>01</b><span>원문 발견</span></a><a href="#s02"><b>02</b><span>URL 조회</span></a><a href="#s03"><b>03</b><span>Flow 확인</span></a><a href="#s04"><b>04</b><span>시작 방식</span></a><a href="#s05"><b>05</b><span>시작 전 수정</span></a><a href="#s06"><b>06</b><span>My Flow 저장</span></a><a href="#s07"><b>07</b><span>전체 재조정</span></a><a href="#s08"><b>08</b><span>Step 수정</span></a><a href="#s09"><b>09</b><span>Today·Calendar</span></a><a href="#s10"><b>10</b><span>내보내기</span></a><a href="#s11"><b>11</b><span>원본 보호</span></a>
+      </nav>
+
+      <article id="s01" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 01</div><div class="stage-title"><h3>사용자가 외부 콘텐츠를 발견하고 URL을 복사합니다</h3><p>FlowMe 밖에서 시작하는 실제 맥락을 먼저 보여줍니다.</p></div><span class="badge simulation">시뮬레이션</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>사용자 상황</h4><p>검색이나 커뮤니티에서 이사 체크리스트를 발견했습니다. 내용은 유용하지만 날짜를 일일이 캘린더에 옮기기는 번거롭습니다.</p><ul><li>첫 행동: 브라우저 주소 복사</li><li>기대 결과: “내 이사일 기준 일정”</li><li>아직 FlowMe 계정이나 AI 생성은 필요 없음</li></ul></aside>
+          <div class="stage-visual">
+            <div class="browser">
+              <div class="browser-bar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span><div class="browser-url">ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트...</div></div>
+              <div class="article"><span class="site">AJD 생활 팁</span><h3>이사 준비 체크리스트 완벽정리</h3><p class="meta">이사 전후에 확인할 일정과 행정 항목을 D-day 순서로 정리한 글</p><div class="article-preview"><strong>글에서 발견한 구조</strong><ul><li>이사 방식과 견적</li><li>입주청소·폐기물</li><li>주소 변경과 관리사무소</li><li>계량기·집 상태 사진</li><li>당일 정산과 전입 확인</li></ul></div><div class="copy-callout"><span>https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트...</span><span class="copy-label">주소 복사</span></div></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article id="s02" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 02</div><div class="stage-title"><h3>FlowMe에 URL을 붙여넣고 기존 Flow부터 찾습니다</h3><p>새로 생성하기 전에 canonical URL hit을 우선합니다.</p></div><span class="badge current">현재 구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>사용자 조작</h4><p><strong>URL 붙여넣기</strong> 탭에서 주소를 넣고 <strong>Flow 찾기</strong>를 누릅니다.</p><ul><li>입력값: 원 URL</li><li>내부 처리: canonical URL 조회</li><li>결과 상태: 기존 Flow 있음</li></ul></aside>
+          <div class="stage-visual"><div class="phone-wrap"><div class="phone"><div class="phone-screen"><div class="phone-status"><span>9:41</span><span>5G · 82%</span></div><div class="appbar"><span>Flow 찾기</span><span>닫기</span></div><div class="app-content"><h3 class="app-title">콘텐츠를 내 계획으로</h3><p class="app-sub">먼저 같은 URL로 만들어진 Flow가 있는지 확인합니다.</p><div class="segment"><span class="on">URL 붙여넣기</span><span>메모 붙여넣기</span></div><div class="field"><label>콘텐츠 URL</label><div class="field-box" style="font-size:12px; overflow-wrap:anywhere;">https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트...</div></div><div class="button-row"><span class="fake-button primary">기존 Flow 찾기</span></div><div class="ui-card"><div class="ui-row"><div><strong>조회 순서</strong><small>canonical URL → 기존 Flow → 제작 후보</small></div><span class="badge current">AI 0회</span></div></div></div><div class="bottom-nav"><span>홈</span><span class="on">Flow</span><span>캘린더</span><span>My</span></div></div></div></div></div>
+        </div>
+      </article>
+
+      <article id="s03" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 03</div><div class="stage-title"><h3>검색 결과에서 출처와 다섯 Step을 먼저 확인합니다</h3><p>“Flow가 있다”보다 어떤 콘텐츠가 나오는지가 먼저 보여야 합니다.</p></div><span class="badge content">콘텐츠 상세</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>사용자가 확인할 것</h4><p>원문 제목, 기준일, Step 수, D-day 구간, 출처를 보고 자기 상황에 맞는지 판단합니다.</p><ul><li>Flow: 원룸 이사 D-30 준비</li><li>기준일: 이사일</li><li>결과: 일정 5개 + 상세 체크</li></ul></aside>
+          <div class="stage-visual"><div class="phone-wrap"><div class="phone"><div class="phone-screen"><div class="phone-status"><span>9:41</span><span>5G · 82%</span></div><div class="appbar"><span>조회 결과</span><span>원문 열기</span></div><div class="app-content"><span class="badge current">기존 Flow가 있어요</span><h3 class="app-title" style="margin-top:12px;">원룸 이사 D-30 준비</h3><p class="app-sub">AJD 이사 준비 체크리스트 · 이사일 기준 · 5개 일정</p><div class="flow-list"><div class="flow-item"><span class="date">D-30</span><div><strong>이사 방식과 견적 후보 정하기</strong><small>후보 2~3곳과 비용 범위 메모</small></div><span class="state">일정</span></div><div class="flow-item"><span class="date">D-14</span><div><strong>입주청소와 대형폐기물 일정 확인</strong><small>예약일·수거일·신고번호</small></div><span class="state">일정</span></div><div class="flow-item"><span class="date">D-7</span><div><strong>관리사무소 공유와 주소 변경 대상 확인</strong></div><span class="state">일정</span></div><div class="flow-item"><span class="date">D-1</span><div><strong>계량기와 집 상태 사진 남기기</strong></div><span class="state">일정</span></div><div class="flow-item"><span class="date">D-Day</span><div><strong>정산과 전입신고 확인</strong></div><span class="state">일정</span></div></div><div class="ui-card"><div class="ui-row"><span class="ui-label">원본</span><span class="ui-value">AJD · sourceTrace 유지</span></div></div></div></div></div></div></div>
+        </div>
+      </article>
+
+      <article id="s04" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 04</div><div class="stage-title"><h3>‘그대로 시작’과 ‘조금 고쳐 시작’의 결과를 비교합니다</h3><p>두 버튼의 차이가 저장 결과까지 예측 가능해야 합니다.</p></div><span class="badge current">현재 구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>결정</h4><p>사용자는 원본을 수정하는 것이 아니라, 개인 사본을 만들기 전에 최소 설정만 바꿉니다.</p><ul><li>추천 선택: 조금 고쳐 시작</li><li>원본 Flow는 그대로 유지</li><li>설정 결과는 My Flow 개인 사본에 저장</li></ul></aside>
+          <div class="stage-visual"><div class="compare"><article class="compare-pane"><h4>그대로 시작</h4><div class="inside"><p>원본 설정을 그대로 개인 사본에 적용합니다.</p><ul><li>이름: 원룸 이사 D-30 준비</li><li>이사일: 기본값 2026-07-22</li><li>Step: 5개 모두 포함</li></ul><div class="fake-button" style="margin-top:16px;">바로 My Flow에 저장</div></div></article><article class="compare-pane recommended"><h4>조금 고쳐 시작 · 선택</h4><div class="inside"><p>시작 전에 내 상황과 목적지만 가볍게 맞춥니다.</p><ul><li>저장 이름 변경</li><li>이사일 변경</li><li>Step 포함·제외</li><li>실행 또는 파일 우선 선택</li></ul><div class="fake-button primary" style="margin-top:16px;">설정하고 시작</div></div></article></div></div>
+        </div>
+      </article>
+
+      <article id="s05" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 05</div><div class="stage-title"><h3>시작 전에 이름·이사일·포함 Step·목적지를 고칩니다</h3><p>사용자가 바꾼 필드와 즉시 달라지는 날짜를 한 화면에서 보여줍니다.</p></div><span class="badge simulation">상세 조합</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>실제 입력</h4><p>저장 이름을 <strong>8월 이사 핵심만</strong>으로 바꾸고, 이사일을 <strong>2026-08-01</strong>로 설정합니다. 집주인이 처리하는 입주청소·폐기물 Step은 제외합니다.</p><ul><li>활성 Step: 4개</li><li>제외 Step: 1개</li><li>첫 목적지: My Flow에서 실행</li></ul></aside>
+          <div class="stage-visual">
+            <div class="diff-grid" aria-label="시작 전 변경값"><div class="label">항목</div><div class="before"><strong>변경 전</strong></div><div class="arrow">→</div><div class="after"><strong>변경 후</strong></div><div class="label">저장 이름</div><div class="before">원룸 이사 D-30 준비</div><div class="arrow">→</div><div class="after">8월 이사 핵심만</div><div class="label">이사일</div><div class="before mono">2026-07-22</div><div class="arrow">→</div><div class="after mono">2026-08-01</div><div class="label">Step</div><div class="before">5개 모두 포함</div><div class="arrow">→</div><div class="after">4개 포함 · 1개 제외</div><div class="label">목적지</div><div class="before">선택 전</div><div class="arrow">→</div><div class="after">My Flow에서 실행</div></div>
+            <div class="date-matrix" aria-label="이사일 변경에 따른 날짜 계산"><div class="date-row head"><div>구간</div><div>기본 이사일 7/22</div><div>변경 이사일 8/1</div><div>상태</div></div><div class="date-row"><div>D-30</div><div>2026-06-22</div><div class="changed">2026-07-02</div><div>포함</div></div><div class="date-row"><div>D-14</div><div>2026-07-08</div><div class="changed">2026-07-18</div><div class="excluded">제외</div></div><div class="date-row"><div>D-7</div><div>2026-07-15</div><div class="changed">2026-07-25</div><div>포함</div></div><div class="date-row"><div>D-1</div><div>2026-07-21</div><div class="changed">2026-07-31</div><div>포함</div></div><div class="date-row"><div>D-Day</div><div>2026-07-22</div><div class="changed">2026-08-01</div><div>포함</div></div></div>
+            <div class="compare" style="margin-top:18px;"><div class="ui-card" style="margin:0;"><h4>Step 선택</h4><div class="toggle-row"><span class="toggle on"></span><div><strong>이사 방식과 견적 후보 정하기</strong><small>2026-07-02</small></div><span class="offset-chip">D-30</span></div><div class="toggle-row"><span class="toggle"></span><div><strong>입주청소와 대형폐기물 일정 확인</strong><small>집주인이 처리해서 제외</small></div><span class="offset-chip">D-14</span></div><div class="toggle-row"><span class="toggle on"></span><div><strong>관리사무소 공유와 주소 변경 대상 확인</strong><small>2026-07-25</small></div><span class="offset-chip">D-7</span></div></div><div class="ui-card" style="margin:0;"><h4>시작 결과</h4><div class="ui-row" style="margin-top:12px;"><span class="ui-label">저장 위치</span><span class="ui-value">My Flow</span></div><div class="ui-row"><span class="ui-label">다운로드</span><span class="ui-value">나중에 Step에서</span></div><div class="button-row"><span class="fake-button primary">4개 Step으로 시작</span><span class="fake-button">Markdown 먼저 받기</span></div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article id="s06" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 06</div><div class="stage-title"><h3>개인 저장 이름과 포함 상태가 My Flow에 그대로 나타납니다</h3><p>저장 성공 메시지가 아니라 실제 실행 목록을 보여줍니다.</p></div><span class="badge current">현재 구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>저장 결과</h4><p>개인 사본 제목은 <strong>8월 이사 핵심만</strong>입니다. 활성 목록에는 4개만 보이고, 제외한 Step은 실행을 방해하지 않는 접힌 영역으로 이동합니다.</p><ul><li>원본 출처는 조용히 유지</li><li>첫 실행일: 2026-07-02</li><li>설정 조정 진입 제공</li></ul></aside>
+          <div class="stage-visual"><div class="phone-wrap"><div class="phone"><div class="phone-screen"><div class="phone-status"><span>9:41</span><span>5G · 82%</span></div><div class="appbar"><span>My Flow</span><span>설정 조정</span></div><div class="app-content"><span class="badge current">내 개인 사본</span><h3 class="app-title" style="margin-top:10px;">8월 이사 핵심만</h3><p class="app-sub">이사일 2026-08-01 · 4개 실행 · AJD 원본</p><div class="flow-list"><div class="flow-item"><span class="date">7/2</span><div><strong>이사 방식과 견적 후보 정하기</strong><small>D-30 · 다음 실행</small></div><span class="state">열기</span></div><div class="flow-item"><span class="date">7/25</span><div><strong>관리사무소 공유와 주소 변경 대상 확인</strong></div><span class="state">대기</span></div><div class="flow-item"><span class="date">7/31</span><div><strong>계량기와 집 상태 사진 남기기</strong></div><span class="state">대기</span></div><div class="flow-item"><span class="date">8/1</span><div><strong>정산과 전입신고 확인</strong></div><span class="state">대기</span></div></div><div class="excluded-box"><strong>제외됨 · 1개</strong><p>입주청소와 대형폐기물 일정 확인 · 다시 포함 가능</p></div><div class="ui-card"><div class="ui-row"><span class="ui-label">원본</span><span class="ui-value">AJD 이사 준비 체크리스트</span></div></div></div><div class="bottom-nav"><span>Today</span><span class="on">Flow</span><span>캘린더</span><span>설정</span></div></div></div></div></div>
+        </div>
+      </article>
+
+      <article id="s07" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 07</div><div class="stage-title"><h3>실행 중에도 Flow 전체 설정을 다시 조정합니다</h3><p>이름과 이사일은 Flow 전체, 제외 상태는 개인 사본에 적용됩니다.</p></div><span class="badge current">현재 구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>재조정</h4><p>이사일이 8월 4일로 밀렸습니다. 개인 제목도 <strong>8월 이사 준비 사본</strong>으로 바꿉니다. 제외한 입주청소 Step은 그대로 제외 상태를 유지합니다.</p><ul><li>이사일: 8/1 → 8/4</li><li>D-30: 7/2 → 7/5</li><li>개인 override는 아직 없음</li></ul></aside>
+          <div class="stage-visual">
+            <div class="compare"><div class="phone-wrap"><div class="phone"><div class="phone-screen"><div class="phone-status"><span>9:41</span><span>5G · 82%</span></div><div class="appbar"><span>설정 조정</span><span>취소</span></div><div class="app-content"><h3 class="app-title">Flow 전체 설정</h3><p class="app-sub">원본은 바뀌지 않고 내 사본에만 적용됩니다.</p><div class="field"><label>개인 저장 이름</label><div class="field-box">8월 이사 준비 사본</div></div><div class="field"><label>이사일</label><div class="field-box mono">2026-08-04</div></div><div class="ui-card"><div class="ui-row"><span class="ui-label">변경 범위</span><span class="ui-value">전체 상대 일정</span></div><div class="ui-row"><span class="ui-label">제외 상태</span><span class="ui-value">1개 유지</span></div></div><div class="button-row"><span class="fake-button primary">변경 저장</span></div></div></div></div></div><div><div class="date-matrix" style="margin-top:0;"><div class="date-row head"><div>구간</div><div>8/1 기준</div><div>8/4 기준</div><div>결과</div></div><div class="date-row"><div>D-30</div><div>7/2</div><div class="changed">7/5</div><div>+3일</div></div><div class="date-row"><div>D-14</div><div>7/18</div><div class="changed">7/21</div><div>제외 유지</div></div><div class="date-row"><div>D-7</div><div>7/25</div><div class="changed">7/28</div><div>+3일</div></div><div class="date-row"><div>D-1</div><div>7/31</div><div class="changed">8/3</div><div>+3일</div></div><div class="date-row"><div>D-Day</div><div>8/1</div><div class="changed">8/4</div><div>+3일</div></div></div><div class="truth-note" style="grid-template-columns:120px 1fr;"><strong>보존</strong><p>원본 Step 제목, source URL, sourceTrace와 원본 버전은 이 조정으로 바뀌지 않습니다.</p></div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article id="s08" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 08</div><div class="stage-title"><h3>Step detail에서 첫 할 일만 제목·날짜·메모를 고칩니다</h3><p>전체 이사일 계산과 개별 할 일 고정을 분리합니다.</p></div><span class="badge current">현재 구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>개별 override</h4><p>D-30 계산일은 7월 5일이지만, 사용자는 실제 연락 가능한 날인 7월 7일로 이 Step만 옮깁니다.</p><ul><li>제목: 견적 후보만 먼저 확인</li><li>날짜: 2026-07-07</li><li>메모: 오전 중 후보 2곳만 확인</li></ul></aside>
+          <div class="stage-visual">
+            <div class="diff-grid"><div class="label">항목</div><div class="before"><strong>원본·계산값</strong></div><div class="arrow">→</div><div class="after"><strong>개인 Step 값</strong></div><div class="label">제목</div><div class="before">이사 방식과 견적 후보 정하기</div><div class="arrow">→</div><div class="after">견적 후보만 먼저 확인</div><div class="label">날짜</div><div class="before mono">2026-07-05 · D-30 계산</div><div class="arrow">→</div><div class="after mono">2026-07-07 · 해당 할 일만</div><div class="label">개인 메모</div><div class="before">없음</div><div class="arrow">→</div><div class="after">오전 중 후보 2곳만 확인</div><div class="label">sourceTrace</div><div class="before">AJD · moving-method-quotes</div><div class="arrow">→</div><div class="after">그대로 유지</div></div>
+            <div class="compare" style="margin-top:18px;"><article class="ui-card" style="margin:0;"><h4>원본에서 계속 보이는 상세</h4><div class="toggle-row"><span class="toggle on"></span><div><strong>이사 방식 1개 정하기</strong><small>원문 기반 확인 항목</small></div></div><div class="toggle-row"><span class="toggle on"></span><div><strong>견적 후보 2~3곳 열기</strong><small>연락처를 메모</small></div></div><div class="toggle-row"><span class="toggle on"></span><div><strong>포함 범위와 비용 남기기</strong><small>완료 기준 유지</small></div></div></article><article class="ui-card selected" style="margin:0;"><h4>내가 고친 실행값</h4><div class="field"><label>할 일 제목</label><div class="field-box">견적 후보만 먼저 확인</div></div><div class="field"><label>이 할 일 날짜</label><div class="field-box mono">2026-07-07</div></div><div class="field"><label>개인 메모</label><div class="field-box">오전 중 후보 2곳만 확인</div></div><div class="fake-button primary" style="margin-top:12px;">변경 저장</div></article></div>
+          </div>
+        </div>
+      </article>
+
+      <article id="s09" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 09</div><div class="stage-title"><h3>같은 수정값이 My Flow, Today, Calendar에 동시에 반영됩니다</h3><p>7월 5일의 기존 이벤트는 사라지고 7월 7일에 새 제목으로 나타납니다.</p></div><span class="badge current">현재 구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>전파 규칙</h4><p>Step의 fixed date override가 상대일 계산보다 우선합니다. 제외된 D-14 Step은 활성 목록과 Calendar에서 빠집니다.</p><ul><li>My Flow: 수정 제목 표시</li><li>Today: 7월 7일 실행</li><li>Calendar: 7월 5일 제거, 7월 7일 생성</li></ul></aside>
+          <div class="stage-visual"><div class="propagation"><article class="surface-preview"><h4>My Flow</h4><div class="preview-body"><span class="badge current">내 개인 사본</span><h3 style="margin-top:10px;">8월 이사 준비 사본</h3><div class="today-line" style="margin-top:14px;"><strong>견적 후보만 먼저 확인</strong><span>7월 7일 · 오전 중 후보 2곳만 확인</span></div><div class="excluded-box"><strong>제외됨</strong><p>입주청소와 대형폐기물 일정 확인</p></div></div></article><article class="surface-preview"><h4>Today · 7월 7일</h4><div class="preview-body"><div class="today-line"><strong>견적 후보만 먼저 확인</strong><span>8월 이사 준비 사본 · D-30</span></div><div class="ui-card"><div class="ui-row"><span class="ui-label">완료 기준</span><span class="ui-value">후보·연락처·비용 메모</span></div><div class="ui-row"><span class="ui-label">개인 메모</span><span class="ui-value">오전 중 2곳</span></div></div></div></article><article class="surface-preview"><h4>Calendar · 2026년 7월</h4><div class="preview-body"><div class="calendar-mini"><b>일</b><b>월</b><b>화</b><b>수</b><b>목</b><b>금</b><b>토</b><div class="day">4</div><div class="day old">5<span class="event">기존 일정 제거</span></div><div class="day">6</div><div class="day new">7<span class="event">견적 후보만 먼저 확인</span></div><div class="day">8</div><div class="day">9</div><div class="day">10</div></div><p style="margin:12px 0 0; color:var(--muted); font-size:12px;">D-14 제외 Step은 표시되지 않습니다.</p></div></article></div></div>
+        </div>
+      </article>
+
+      <article id="s10" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 10</div><div class="stage-title"><h3>네 가지 export가 내 개인 사본 기준으로 다시 생성됩니다</h3><p>원본 출처는 남지만 파일의 제목·날짜·메모·포함 목록은 현재 개인값을 사용합니다.</p></div><span class="badge current">현재 구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>내보내기 기준</h4><p>활성 Step만 포함합니다. 수정한 첫 Step은 7월 7일로 나가고, 제외한 입주청소 Step은 모든 export에서 빠집니다.</p><ul><li>Markdown: 읽고 보관</li><li>체크리스트: 메모·todo 복사</li><li>TSV: 시트 행</li><li>ICS: 날짜가 있는 Step</li></ul></aside>
+          <div id="exports" class="stage-visual">
+            <div class="export-tabs"><span>Markdown 복사</span><span>체크리스트 복사</span><span>TSV 복사</span><span>ICS 다운로드</span></div>
+            <div class="export-grid">
+              <article class="export-panel"><h4>Markdown <span>개인 사본 기준</span></h4><pre># 8월 이사 준비 사본
+
+원본: AJD 이사 준비 체크리스트
+
+## 2026-07-07 · D-30
+- [ ] 견적 후보만 먼저 확인
+  - 메모: 오전 중 후보 2곳만 확인
+  - 완료: 후보 2~3곳, 연락처, 비용 범위 메모
+
+## 2026-07-28 · D-7
+- [ ] 관리사무소 공유와 주소 변경 대상 확인
+
+## 2026-08-03 · D-1
+- [ ] 계량기와 집 상태 사진 남기기
+
+## 2026-08-04 · D-Day
+- [ ] 정산과 전입신고 확인</pre></article>
+              <article class="export-panel"><h4>체크리스트 텍스트 <span>제외 Step 없음</span></h4><pre>Flow: 8월 이사 준비 사본
+
+- [ ] 2026-07-07 견적 후보만 먼저 확인
+      오전 중 후보 2곳만 확인
+- [ ] 2026-07-28 관리사무소 공유와 주소 변경 대상 확인
+- [ ] 2026-08-03 계량기와 집 상태 사진 남기기
+- [ ] 2026-08-04 정산과 전입신고 확인</pre></article>
+              <article class="export-panel"><h4>TSV 시트 행 <span>탭 구분</span></h4><pre>Flow	할 일	구간	날짜	메모
+8월 이사 준비 사본	견적 후보만 먼저 확인	D-30	2026-07-07	오전 중 후보 2곳만 확인
+8월 이사 준비 사본	관리사무소 공유와 주소 변경 대상 확인	D-7	2026-07-28&#9;
+8월 이사 준비 사본	계량기와 집 상태 사진 남기기	D-1	2026-08-03&#9;
+8월 이사 준비 사본	정산과 전입신고 확인	D-Day	2026-08-04	</pre></article>
+              <article class="export-panel"><h4>ICS 이벤트 <span>20260707</span></h4><pre>BEGIN:VEVENT
+DTSTART;VALUE=DATE:20260707
+SUMMARY:견적 후보만 먼저 확인
+DESCRIPTION:Flow: 8월 이사 준비 사본\n메모: 오전 중 후보 2곳만 확인
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/...
+END:VEVENT</pre></article>
+            </div>
+            <div class="truth-note"><strong>확인 포인트</strong><p><code>입주청소와 대형폐기물 일정 확인</code>은 네 결과 어디에도 없고, <code>견적 후보만 먼저 확인</code>과 <code>2026-07-07</code>은 네 결과에 모두 있습니다.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article id="s11" class="stage">
+        <header class="stage-head"><div class="stage-no">STEP 11</div><div class="stage-title"><h3>원본, 개인 사본, 실행 상태, export의 소유자를 분리합니다</h3><p>원본 업데이트가 와도 개인 제목·선택·날짜·메모를 덮어쓰지 않습니다.</p></div><span class="badge current">정책·구현 근거</span></header>
+        <div class="stage-body">
+          <aside class="stage-context"><h4>최종 경계</h4><p>사용자가 고친 것은 원본 Flow가 아니라 개인 overlay입니다. sourceTrace는 계속 원본 Step을 가리키고, Today·Calendar·파일은 overlay를 적용한 effective value를 봅니다.</p><ul><li>원본 업데이트: 새 source row 검토 가능</li><li>개인 변경: 덮어쓰기 금지</li><li>실행 완료: 별도 상태로 보존</li></ul></aside>
+          <div class="stage-visual"><div class="ownership"><div class="ownership-row source"><div><span class="owner">원본 Source / Flow</span><p>제작자·FlowMe 소유</p></div><div><strong>유지되는 값</strong><p>원본 제목, URL, sourceTrace, 원본 Step 내용, 버전</p></div><div><strong>업데이트</strong><p>새 원본 버전이 와도 개인 overlay와 실행 상태를 직접 수정하지 않음</p></div></div><div class="ownership-row personal"><div><span class="owner">개인 사본 Overlay</span><p>사용자 소유</p></div><div><strong>현재 값</strong><p>8월 이사 준비 사본, D-14 제외, 첫 Step 제목·7/7·개인 메모</p></div><div><strong>보호</strong><p>원본 업데이트 적용 후에도 이름, 선택, 날짜, 메모 유지</p></div></div><div class="ownership-row run"><div><span class="owner">실행 Run</span><p>사용자 행동</p></div><div><strong>상태</strong><p>Today 노출, 완료 체크, 보류, 실제 실행 기록</p></div><div><strong>독립성</strong><p>콘텐츠 버전과 분리해 과거 완료 상태 보존</p></div></div><div class="ownership-row export"><div><span class="owner">Export Projection</span><p>도구별 결과</p></div><div><strong>입력</strong><p>원본 출처 + 현재 개인 overlay + 포함 Step</p></div><div><strong>결과</strong><p>Markdown, checklist, TSV, ICS가 같은 effective value 사용</p></div></div></div></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="memo" class="section" aria-labelledby="memo-title">
+      <div class="section-head">
+        <div>
+          <p class="kicker">보조 시나리오 · 향후 UX 제안</p>
+          <h2 id="memo-title">메모장 문장이 같은 개인 사본 흐름으로 합류하는 방법</h2>
+          <p class="section-copy">메모 입력은 현재 구현이라고 주장하지 않습니다. 사용자가 Obsidian이나 메모장에 쓴 문장을 기존 Flow와 대조하고, 모호한 값만 확인한 뒤 동일한 overlay와 export 모델로 합류시키는 방향 제안입니다.</p>
+        </div>
+        <span class="badge future">향후 UX 제안</span>
+      </div>
+      <div class="memo-board">
+        <div class="memo-grid">
+          <article class="memo-input"><span class="badge future">원문 메모</span><h3 style="margin-top:12px;">메모장 / Obsidian</h3><div class="memo-note">8월 4일 이사.
+이번 주 안에 업체 2곳 견적 받아보기.
+입주청소는 집주인이 처리하니 빼기.
+일주일 전 관리사무소에 이사 시간 알리기.
+전날 계량기 사진.
+당일 정산하고 전입신고 확인.</div><p style="margin:14px 0 0; color:var(--muted); font-size:13px;">사용자는 계획 문법을 배우지 않고 평소 쓰던 문장 그대로 붙여넣습니다.</p></article>
+          <div class="memo-transform"><h3>문장별로 추출 결과와 확인할 값을 나눕니다</h3><div class="memo-row"><div class="raw">“8월 4일 이사.”</div><div class="rule">기준일</div><div class="draft">이사일 2026-08-04 <span class="needs-confirm">연도 확인 필요</span></div></div><div class="memo-row"><div class="raw">“이번 주 안에 업체 2곳 견적”</div><div class="rule">행동 + 모호한 날짜</div><div class="draft">견적 후보만 먼저 확인 <span class="needs-confirm">정확한 날짜 선택 → 7월 7일</span></div></div><div class="memo-row"><div class="raw">“입주청소는 집주인이 처리하니 빼기.”</div><div class="rule">제외 의도</div><div class="draft">입주청소와 대형폐기물 일정 확인 → 제외됨</div></div><div class="memo-row"><div class="raw">“일주일 전 관리사무소…”</div><div class="rule">상대일</div><div class="draft">D-7 · 2026-07-28 · 포함</div></div><div class="memo-row"><div class="raw">“전날 계량기 사진.”</div><div class="rule">상대일</div><div class="draft">D-1 · 2026-08-03 · 포함</div></div><div class="memo-row"><div class="raw">“당일 정산하고 전입신고 확인.”</div><div class="rule">기준일</div><div class="draft">D-Day · 2026-08-04 · 포함</div></div></div>
+        </div>
+      </div>
+      <div class="compare" style="margin-top:20px;"><article class="compare-pane recommended"><h4>권장: 기존 Flow에 내 메모 반영</h4><div class="inside"><p>같은 이사 구조의 <code>moving-d30</code>을 먼저 제안하고, 메모 문장을 개인 이름·제외·날짜·메모 override로 적용합니다.</p><ul><li>AI 생성 비용 최소화</li><li>원본 출처와 완료 기준 유지</li><li>URL 경로와 같은 개인 사본으로 합류</li></ul></div></article><article class="compare-pane"><h4>예외: 새 메모 초안</h4><div class="inside"><p>관련 Flow가 없거나 사용자가 기존 구조를 원하지 않을 때만 출처 없는 개인 초안으로 만듭니다.</p><ul><li>공식·source-backed처럼 표시하지 않음</li><li>모호한 날짜와 반복은 저장 전 확인</li><li>자동 공개나 자동 발행 없음</li></ul></div></article></div>
+      <div class="truth-note" style="border-color:#cbbce3; background:var(--violet-soft);"><strong style="color:var(--violet);">합류 결과</strong><p>연도 2026과 “이번 주 = 7월 7일”만 확인하면 URL 시나리오의 <strong>8월 이사 준비 사본</strong>과 같은 개인 overlay가 됩니다. 이후 Today, Calendar, Markdown, checklist, TSV, ICS는 별도 메모 전용 제품이 아니라 동일한 실행·내보내기 경로를 사용합니다.</p></div>
+    </section>
+
+    <section class="section" aria-labelledby="review-title">
+      <div class="section-head"><div><p class="kicker">눈검토 체크리스트</p><h2 id="review-title">HTML을 보면서 판단할 여덟 가지</h2></div></div>
+      <div class="review-checks"><div class="review-check"><b>1</b><div><strong>원문과 5개 Step의 관계가 보이는가</strong><p>제목뿐 아니라 시점, 세부 확인, 완료 기준까지 이해되는지 봅니다.</p></div></div><div class="review-check"><b>2</b><div><strong>‘그대로’와 ‘조금 고쳐’의 차이가 명확한가</strong><p>버튼을 누른 뒤 무엇이 저장되는지 예측 가능한지 봅니다.</p></div></div><div class="review-check"><b>3</b><div><strong>Flow 전체 수정과 Step 수정이 구분되는가</strong><p>이사일 변경과 개별 날짜 고정이 섞이지 않는지 봅니다.</p></div></div><div class="review-check"><b>4</b><div><strong>제외한 Step이 실행을 방해하지 않는가</strong><p>활성 목록과 export에서는 빠지고, 복원 위치는 남는지 봅니다.</p></div></div><div class="review-check"><b>5</b><div><strong>7월 7일 override가 모든 화면에 같은가</strong><p>Today, Calendar, Markdown, TSV, ICS 값이 일치하는지 봅니다.</p></div></div><div class="review-check"><b>6</b><div><strong>원본 출처가 개인 수정 뒤에도 추적되는가</strong><p>개인화가 출처 삭제나 원본 수정처럼 보이지 않는지 봅니다.</p></div></div><div class="review-check"><b>7</b><div><strong>메모 경로가 가볍고 익숙한가</strong><p>메모 사용자가 새 계획 문법이나 무거운 폼을 배우지 않아도 되는지 봅니다.</p></div></div><div class="review-check"><b>8</b><div><strong>현재와 향후 제안이 혼동되지 않는가</strong><p>구현 근거, 콘텐츠 예시, 시뮬레이션, 미래 제안 표기가 충분한지 봅니다.</p></div></div></div>
+    </section>
+
+    <section class="section" aria-labelledby="evidence-title">
+      <div class="section-head"><div><p class="kicker">근거</p><h2 id="evidence-title">이 보드가 참고한 현재 자료</h2></div></div>
+      <ul class="evidence-list"><li><strong>전체 UX 지도</strong><a href="./2026-07-11-flowme-new-ux-ui-wireframe-ko.html">2026-07-11 FlowMe W01~W22 전체 UX 상세안</a></li><li><strong>moving-d30 콘텐츠</strong><code>lib/flow/source-backed-my-flow.ts</code></li><li><strong>현재 canonical AJD Flow</strong><code>lib/flow/source-backed-curated-260630.ts</code></li><li><strong>개인 수정·export 동작</strong><code>tests/e2e/flow-mvp.spec.ts</code>의 URL 개인 사본, Step override, Calendar, Markdown/checklist/TSV/ICS 검증</li><li><strong>제품 정책</strong><code>docs/DECISIONS.md</code>의 URL custom start 개인 사본, Step detail export, lookup-before-AI 결정</li></ul>
+    </section>
+
+    <footer>
+      이 문서는 방향 검토용 정적 UX 시뮬레이션입니다. 실제 사용자 행동이 관찰되기 전에는 사용성이 검증됐다고 부르지 않습니다. 실제 앱 UI, AI 메모 변환, 외부 API 연동, 서버·계정 저장은 이 산출물 범위에 포함되지 않습니다.
+    </footer>
+  </main>
+</body>
+</html>

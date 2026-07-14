@@ -4,6 +4,8 @@
 **Status:** implementation checkpoint  
 **Scope:** source-backed Flow Map publish path, saved My Flow execution contract, route separation
 
+> **Canonical compatibility notice (2026-07-12):** This checkpoint uses the June Step-first runtime vocabulary. New backend and export work follows [Canonical Flow Data Model v1](../2026-07-11-canonical-flow-data-model/spec.md): canonical `Item` owns independent execution/projection state and canonical `Step` groups Items. Preserve this document as historical route behavior, not as the new storage minimum.
+
 ## Problem
 
 Recent Flow Map and My Flow UX work improved the visible surfaces, but the product boundary still needed a stronger contract:

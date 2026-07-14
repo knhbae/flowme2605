@@ -30,12 +30,13 @@ Before showing an export button or future integration option, answer these in or
 
 ## Step And Item Portability
 
-For Flow Map or parent-child content, treat `Step` as the minimum row that can leave FlowMe.
+For new canonical content, treat `Item` as the minimum independently stateful execution and projection unit. `Step` groups related Items and does not own completion state. The older Step-first export rule remains a compatibility bridge only for legacy records that already bundle one real execution moment as a Step.
 
-- A Step may become one calendar event, todo task, checklist row, sheet row, or progress row.
-- Items belong inside the Step. They can appear in FlowMe as a nested checklist when the Flow service supports it.
-- If the destination app does not support nested checklist items, serialize Items as plain text in the event description, todo note/body, sheet note column, or memo body.
-- Do not export each Item as a separate calendar event or task unless the source itself treats those Items as separate execution moments.
+- A scheduled Item may become one calendar event; an actionable Item may become one todo task, checklist row, sheet row, or progress row.
+- Preserve Step title and order as section/group metadata when the destination supports grouping.
+- If the destination cannot represent a Field, Memo, caution, or source relation structurally, serialize that information into the destination note/description or the explicit Memo fallback.
+- Do not invent a date merely to make an Item exportable to Calendar. Unscheduled Items emit no ICS event.
+- Do not split explanatory prose into Items. Only source-derived rows with independent check, decision, or record state become separate destination rows.
 
 ## Destination Rules
 
