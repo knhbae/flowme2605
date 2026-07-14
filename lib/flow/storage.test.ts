@@ -18,6 +18,8 @@ import {
   getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowOccurrenceExecutionRecords,
   rekeyMyFlowAnchorDatedRecord,
+  rekeyMyFlowPersonalExecutionStateForAnchor,
+  resolveMyFlowEffectiveDate,
   saveStoredMyFlowOccurrenceExecutionRecords,
 } from './my-flow-personal-state';
 import { expandPersonalDraftCalendarOccurrenceRows } from './personal-draft-calendar-occurrence';
@@ -101,6 +103,7 @@ import {
   getFlowRunRegistry,
   getItemStates,
   getMyFlowCompletionFeedback,
+  getMyFlowExecutionNotes,
   getMyFlowStepItemChecks,
   getSavedFlowMapIndexByFlowSlug,
   getSavedFlowRecord,
@@ -113,6 +116,7 @@ import {
   normalizeSavedFlowRecord,
   recordFlowCompletionState,
   saveMyFlowCompletionFeedback,
+  saveMyFlowExecutionNote,
   saveMyFlowStepItemChecks,
   startFlowRunFromCompleted,
 } from './storage';
@@ -190,6 +194,127 @@ test('anchor change rekeys dated personal values without touching stable or unre
   assert.equal(rekeyed['other-flow::item::2026-06-22'], 'other');
   assert.deepEqual(previousItems, [{ itemId: 'moving-method-quotes', date: '2026-06-22' }]);
   assert.deepEqual(nextItems, [{ itemId: 'moving-method-quotes', date: '2026-07-06' }]);
+});
+
+test('effective My Flow dates use one priority across source, personal copy, and execution state', () => {
+  const flowSlug = 'source-backed-moving-d30';
+  const itemId = 'moving-method-quotes';
+  const overrideKey = `${flowSlug}::${itemId}::2026-07-06`;
+
+  assert.deepEqual(
+    resolveMyFlowEffectiveDate({
+      flowSlug,
+      itemId,
+      sourceDate: '2026-07-06',
+      personalCopyDateOverride: '2026-07-07',
+      dateOverrides: { [overrideKey]: '2026-07-08' },
+      draftDateOverride: '2026-07-09',
+    }),
+    {
+      date: '2026-07-09',
+      originalDate: '2026-07-06',
+      overrideKey,
+      source: 'draft',
+    },
+  );
+
+  assert.equal(
+    resolveMyFlowEffectiveDate({
+      flowSlug,
+      itemId,
+      sourceDate: '2026-07-06',
+      personalCopyDateOverride: '2026-07-07',
+      dateOverrides: { [overrideKey]: '2026-07-08' },
+    }).date,
+    '2026-07-08',
+  );
+  assert.equal(
+    resolveMyFlowEffectiveDate({
+      flowSlug,
+      itemId,
+      sourceDate: '2026-07-06',
+      personalCopyDateOverride: '2026-07-07',
+    }).date,
+    '2026-07-07',
+  );
+  assert.equal(
+    resolveMyFlowEffectiveDate({ flowSlug, itemId, sourceDate: '2026-07-06' }).date,
+    '2026-07-06',
+  );
+});
+
+test('effective My Flow dates resolve a manually scheduled undated item without changing identity', () => {
+  const flowSlug = 'travel-packing-list';
+  const itemId = 'travel-documents';
+  const overrideKey = `${flowSlug}::${itemId}::none`;
+  const sourceItems = [{ id: itemId, title: '여권 확인' }];
+
+  const resolved = resolveMyFlowEffectiveDate({
+    flowSlug,
+    itemId,
+    dateOverrides: { [overrideKey]: '2026-07-24' },
+  });
+
+  assert.deepEqual(resolved, {
+    date: '2026-07-24',
+    originalDate: 'none',
+    overrideKey,
+    source: 'execution_override',
+  });
+  assert.deepEqual(sourceItems, [{ id: itemId, title: '여권 확인' }]);
+});
+
+test('reuse rekeys fixed personal dates to the new anchor row without changing their value', () => {
+  const flowSlug = 'moving-d30-basic';
+  const previousItems = [
+    { itemId: 'moving-method-quotes', date: '2026-07-11' },
+    { itemId: 'moving-address-change', date: '2026-07-31' },
+  ];
+  const nextItems = [
+    { itemId: 'moving-method-quotes', date: '2026-09-21' },
+    { itemId: 'moving-address-change', date: '2026-10-11' },
+  ];
+  const state = {
+    itemDrafts: {
+      [`${flowSlug}::moving-method-quotes::2026-07-11`]: {
+        title: '견적 후보 다시 확인',
+        memo: '후보 두 곳만 비교',
+      },
+      [`${flowSlug}::moving-method-quotes::draft-overlay`]: {
+        title: '안정 키 제목',
+      },
+    },
+    dateOverrides: {
+      [`${flowSlug}::moving-method-quotes::2026-07-11`]: '2026-07-15',
+    },
+  };
+
+  const rekeyed = rekeyMyFlowPersonalExecutionStateForAnchor(state, {
+    flowSlug,
+    previousItems,
+    nextItems,
+  });
+
+  assert.equal(
+    rekeyed.dateOverrides[`${flowSlug}::moving-method-quotes::2026-09-21`],
+    '2026-07-15',
+  );
+  assert.equal(
+    rekeyed.dateOverrides[`${flowSlug}::moving-method-quotes::2026-07-11`],
+    undefined,
+  );
+  assert.deepEqual(
+    rekeyed.itemDrafts[`${flowSlug}::moving-method-quotes::2026-09-21`],
+    { title: '견적 후보 다시 확인', memo: '후보 두 곳만 비교' },
+  );
+  assert.deepEqual(
+    rekeyed.itemDrafts[`${flowSlug}::moving-method-quotes::draft-overlay`],
+    { title: '안정 키 제목' },
+  );
+  assert.deepEqual(previousItems[0], {
+    itemId: 'moving-method-quotes',
+    date: '2026-07-11',
+  });
 });
 
 test('personal structural overlay golden fixtures preserve source and resolve effective items', () => {
@@ -3271,6 +3396,24 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.deepEqual(getChecks(flowSlug), { 'moving-method-quotes': true, 'moving-address-change': true });
     assert.equal(getStoredAnchor(flowSlug).anchor, '2026-07-31');
 
+    saveMyFlowExecutionNote(flowSlug, {
+      itemId: 'moving-method-quotes::2026-07-05',
+      itemTitle: '이사 업체 견적 비교',
+      itemDate: '2026-07-05',
+      kind: 'private',
+      note: '전화 전에 비교 기준을 적어두니 빨랐어요.',
+      updatedAt: '2026-07-30T09:00:00.000Z',
+    });
+    saveMyFlowExecutionNote(flowSlug, {
+      itemId: 'moving-method-quotes::2026-07-05',
+      itemTitle: '이사 업체 견적 비교',
+      itemDate: '2026-07-05',
+      kind: 'source_correction',
+      note: '견적 유효 기간도 확인하도록 보완이 필요해요.',
+      sourceUrl: 'https://example.com/moving',
+      updatedAt: '2026-07-30T09:01:00.000Z',
+    });
+
     recordFlowCompletionState(flowSlug, true, legacyCompletedAt);
     const completedRun = completeActiveFlowRun(flowSlug);
 
@@ -3291,6 +3434,13 @@ test('flow run registry preserves a completed legacy run before starting a clean
     assert.equal(completedRun.completionSnapshot?.workbenchState.occurrences.first.note, '통화 완료');
     assert.equal(completedRun.completionSnapshot?.reactionLogs.first.preferenceNote, '다음에도 같은 순서 사용');
     assert.equal(completedRun.completionSnapshot?.completionFeedback, undefined);
+    assert.deepEqual(
+      completedRun.completionSnapshot?.executionNotes?.map((note) => [note.kind, note.note]),
+      [
+        ['private', '전화 전에 비교 기준을 적어두니 빨랐어요.'],
+        ['source_correction', '견적 유효 기간도 확인하도록 보완이 필요해요.'],
+      ],
+    );
     assert.deepEqual(completedRun.personalExecutionStateSnapshot, {
       itemDrafts: {
         [`${flowSlug}::moving-method-quotes::2026-07-05`]: { memo: '실행 중 비교표를 다시 확인' },
@@ -3401,6 +3551,11 @@ test('flow run registry preserves a completed legacy run before starting a clean
       'moving-utility-transfer': { skipped: true, note: 'excluded_on_start' },
     });
     assert.equal(getMyFlowCompletionFeedback(flowSlug), undefined);
+    assert.deepEqual(getMyFlowExecutionNotes(flowSlug), []);
+    assert.deepEqual(
+      getCompletedFlowRuns(flowSlug)[0].completionSnapshot?.executionNotes?.map((note) => note.kind),
+      ['private', 'source_correction'],
+    );
     assert.equal(localStorage.getItem(`flow:completion-detected-at:${flowSlug}`), null);
     assert.deepEqual(getMyFlowStepItemChecks(), { 'other-flow::first::none': { '0': true } });
     assert.equal(getStoredAnchor(flowSlug).anchor, '2026-09-15');
@@ -3491,6 +3646,7 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
       'flow_builder_mvp_workbench_moving-d30-basic',
       'flow_builder_mvp_reactions_moving-d30-basic',
       'flow:my-flow:completion-feedback:moving-d30-basic',
+      'flow:my-flow:execution-notes:moving-d30-basic',
       'flow:run-registry:moving-d30-basic',
       'flow:completion-detected-at:moving-d30-basic',
     ];
@@ -3721,6 +3877,15 @@ test('FlowMe local backup includes execution records and excludes internal brows
         history: [],
       },
     }),
+    'flow:my-flow:execution-notes:moving-d30-basic': JSON.stringify([
+      {
+        itemId: 'moving-boxes::2026-07-10',
+        itemTitle: '박스 준비',
+        kind: 'private',
+        note: '큰 박스보다 중간 박스가 편했어요.',
+        updatedAt: '2026-07-10T09:00:00.000Z',
+      },
+    ]),
     [structuralKey]: JSON.stringify(createEmptyPersonalStructuralOverlay({
       savedCopyId: 'moving-copy',
       flowId: 'moving-d30-basic',
@@ -3739,6 +3904,7 @@ test('FlowMe local backup includes execution records and excludes internal brows
   assert.ok(backup.entries['flow:saved:moving-d30-basic']);
   assert.ok(backup.entries[structuralKey]);
   assert.ok(backup.entries['flow:my-flow:occurrence-execution']);
+  assert.ok(backup.entries['flow:my-flow:execution-notes:moving-d30-basic']);
   assert.equal(backup.entries['flow:auth:demo-user'], undefined);
   assert.equal(backup.entries['flow:map:update:dismissed'], undefined);
   assert.equal(backup.entries['content-lab:review:internal'], undefined);

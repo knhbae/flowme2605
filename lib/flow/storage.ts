@@ -14,6 +14,12 @@ import {
   type SourceBackedFlowMapStepBinding,
 } from './source-backed-my-flow';
 import { prepareFlowRunNewAnchor, type FlowRunFixedDatePolicy } from './flow-run-reuse';
+import {
+  normalizeMyFlowExecutionNotes,
+  upsertMyFlowExecutionNote,
+  type MyFlowExecutionNote,
+  type MyFlowExecutionNoteInput,
+} from './execution-notes';
 import { removePersonalStructuralOverlaysForFlow } from './personal-structural-overlay';
 import {
   getFlowScopedMyFlowPersonalExecutionState,
@@ -47,6 +53,7 @@ const SAVED_FLOW_KEY_PREFIX = 'flow:saved:';
 const SAVED_FLOW_MAP_KEY_PREFIX = 'flow:map:saved:';
 const MY_FLOW_STEP_ITEM_CHECKS_KEY = 'flow:my-flow:step-item-checks';
 const MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX = 'flow:my-flow:completion-feedback:';
+const MY_FLOW_EXECUTION_NOTES_KEY_PREFIX = 'flow:my-flow:execution-notes:';
 const FLOW_RUN_REGISTRY_KEY_PREFIX = 'flow:run-registry:';
 const FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX = 'flow:completion-detected-at:';
 
@@ -137,6 +144,7 @@ export type FlowRunCompletionSnapshot = {
   workbenchState: FlowWorkbenchState;
   reactionLogs: Record<string, ReactionLog>;
   completionFeedback?: MyFlowCompletionFeedback;
+  executionNotes?: MyFlowExecutionNote[];
   flowTitle?: string;
   itemSnapshots?: FlowRunItemSnapshot[];
 };
@@ -626,6 +634,31 @@ export function saveMyFlowCompletionFeedback(
   return normalized;
 }
 
+export function getMyFlowExecutionNotes(flowSlug: string): MyFlowExecutionNote[] {
+  if (!canUseStorage()) return [];
+  try {
+    return normalizeMyFlowExecutionNotes(
+      JSON.parse(localStorage.getItem(`${MY_FLOW_EXECUTION_NOTES_KEY_PREFIX}${flowSlug}`) || '[]'),
+    );
+  } catch {
+    return [];
+  }
+}
+
+export function saveMyFlowExecutionNote(
+  flowSlug: string,
+  input: MyFlowExecutionNoteInput,
+): MyFlowExecutionNote[] | undefined {
+  if (!canUseStorage() || !flowSlug.trim()) return undefined;
+  const notes = upsertMyFlowExecutionNote(getMyFlowExecutionNotes(flowSlug), input);
+  const key = `${MY_FLOW_EXECUTION_NOTES_KEY_PREFIX}${flowSlug}`;
+  if (notes.length > 0) localStorage.setItem(key, JSON.stringify(notes));
+  else localStorage.removeItem(key);
+  syncExecutionNotesToLatestCompletedFlowRun(flowSlug, notes);
+  localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+  return notes;
+}
+
 export function getFlowCompletionDetectedAt(flowSlug: string): string | undefined {
   if (!canUseStorage()) return undefined;
   const value = localStorage.getItem(`${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${flowSlug}`)?.trim();
@@ -660,6 +693,7 @@ export function clearFlowLocalProgress(slug: string): void {
     `${WORKBENCH_KEY_PREFIX}${slug}`,
     `${REACTIONS_KEY_PREFIX}${slug}`,
     `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${slug}`,
+    `${MY_FLOW_EXECUTION_NOTES_KEY_PREFIX}${slug}`,
     `${FLOW_RUN_REGISTRY_KEY_PREFIX}${slug}`,
     `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${slug}`,
   ].forEach((key) => localStorage.removeItem(key));
@@ -942,6 +976,7 @@ function normalizeFlowRunCompletionSnapshot(value: unknown, flowSlug: string): F
   if (!value || typeof value !== 'object') return undefined;
   const source = value as Partial<FlowRunCompletionSnapshot>;
   const completionFeedback = normalizeMyFlowCompletionFeedback(source.completionFeedback);
+  const executionNotes = normalizeMyFlowExecutionNotes(source.executionNotes);
   const itemSnapshots = normalizeFlowRunItemSnapshots(source.itemSnapshots);
   const flowTitle = typeof source.flowTitle === 'string' && source.flowTitle.trim()
     ? source.flowTitle.trim().slice(0, 1000)
@@ -954,6 +989,7 @@ function normalizeFlowRunCompletionSnapshot(value: unknown, flowSlug: string): F
     workbenchState: normalizeWorkbenchState(source.workbenchState),
     reactionLogs: normalizeFlowRunReactionLogs(source.reactionLogs),
     ...(completionFeedback?.flowSlug === flowSlug ? { completionFeedback } : {}),
+    ...(executionNotes.length > 0 ? { executionNotes } : {}),
     ...(flowTitle ? { flowTitle } : {}),
     ...(itemSnapshots ? { itemSnapshots } : {}),
   };
@@ -1145,6 +1181,7 @@ export function captureCurrentFlowRunCompletionSnapshot(
     reactionLogs = {};
   }
   const completionFeedback = getMyFlowCompletionFeedback(flowSlug);
+  const executionNotes = getMyFlowExecutionNotes(flowSlug);
   const normalizedItemSnapshots = normalizeFlowRunItemSnapshots(options.itemSnapshots);
   return cloneStorageValue({
     checks: getChecks(flowSlug),
@@ -1154,6 +1191,7 @@ export function captureCurrentFlowRunCompletionSnapshot(
     workbenchState: getWorkbenchState(flowSlug),
     reactionLogs,
     ...(completionFeedback ? { completionFeedback } : {}),
+    ...(executionNotes.length > 0 ? { executionNotes } : {}),
     ...(options.flowTitle?.trim() ? { flowTitle: options.flowTitle.trim() } : {}),
     ...(normalizedItemSnapshots ? { itemSnapshots: normalizedItemSnapshots } : {}),
   });
@@ -1217,6 +1255,32 @@ function syncCompletionFeedbackToLatestCompletedFlowRun(
   return saved?.runs.find((run) => run.runId === updated.runId);
 }
 
+function syncExecutionNotesToLatestCompletedFlowRun(
+  flowSlug: string,
+  executionNotes: MyFlowExecutionNote[],
+): FlowRunRecord | undefined {
+  const registry = getFlowRunRegistry(flowSlug);
+  if (registry.activeRunId) return undefined;
+  const latestCompleted = registry.runs
+    .filter((run) => run.status === 'completed')
+    .sort((a, b) => (b.completedAt ?? '').localeCompare(a.completedAt ?? ''))[0];
+  if (!latestCompleted?.completionSnapshot) return undefined;
+  const completionSnapshot: FlowRunCompletionSnapshot = {
+    ...latestCompleted.completionSnapshot,
+    ...(executionNotes.length > 0 ? { executionNotes: cloneStorageValue(executionNotes) } : {}),
+  };
+  if (executionNotes.length === 0) delete completionSnapshot.executionNotes;
+  const updated: FlowRunRecord = {
+    ...latestCompleted,
+    completionSnapshot,
+  };
+  const saved = saveFlowRunRegistry(flowSlug, {
+    ...registry,
+    runs: registry.runs.map((run) => (run.runId === updated.runId ? updated : run)),
+  });
+  return saved?.runs.find((run) => run.runId === updated.runId);
+}
+
 function resetCurrentFlowExecutionState(flowSlug: string): void {
   [
     `${CHECKS_KEY_PREFIX}${flowSlug}`,
@@ -1226,6 +1290,7 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
     `${WORKBENCH_KEY_PREFIX}${flowSlug}`,
     `${REACTIONS_KEY_PREFIX}${flowSlug}`,
     `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`,
+    `${MY_FLOW_EXECUTION_NOTES_KEY_PREFIX}${flowSlug}`,
     `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${flowSlug}`,
   ].forEach((key) => localStorage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { formatLocalDate } from '@/lib/flow/date';
 import {
   generateObservedSessionNoteFilename,
   generateObservedSessionNoteMarkdown,
@@ -22,7 +23,7 @@ type ObservedSessionNoteIntakeProps = {
 };
 
 function todayIsoDate(): string {
-  return new Date().toISOString().slice(0, 10);
+  return formatLocalDate(new Date());
 }
 
 export function ObservedSessionNoteIntake({ routes }: ObservedSessionNoteIntakeProps) {

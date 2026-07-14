@@ -1,0 +1,28 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FlowMe//Personal Calendar Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:saved-routine:curated-allblanc-morning-workout:allblanc-morning-run@flo
+ wme.local
+DTSTAMP:20260714T022036Z
+DTSTART;VALUE=DATE:20260715
+DTEND;VALUE=DATE:20260716
+RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260811
+SUMMARY:아침 5분 전신 운동 영상 열기
+DESCRIPTION:아침 5분 전신 운동 영상 열기\nFlow: Allblanc 아침
+  5분 홈트\n구간: 반복 실행\n일정: 2026-07-15\n\n체크:\n- [ ]
+  영상: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING\n- [ ] URL: https://w
+ ww.youtube.com/watch?v=fLLScgWQcHc\n- [ ] 요약: 아침 5분 전신 홈
+ 트\n\n완료 기준: 아침 5분 홈트 완료 또는 중단 상태가
+  기록되었습니다.\n\n메모: 영상 1개를 개인 캘린더에서
+  다시 여는 실행 단위로 사용합니다.\n\n아침 5분 홈트 완
+ 료 또는 중단 상태가 기록되었습니다.\n\n주의: 영상에
+  없는 칼로리·감량 효과·개인 운동 처방은 만들지 않으
+ 며\, 반복 요일은 사용자가 정합니다. 게시일은 원문 정
+ 보에서 따로 확인할 수 있습니다.\n\n원문: 원본 운동 영
+ 상 https://www.youtube.com/watch?v=fLLScgWQcHc\n
+URL:https://www.youtube.com/watch?v=fLLScgWQcHc
+END:VEVENT
+END:VCALENDAR

@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
+  buildMyFlowMultiStepIcs,
   buildMyFlowStepPortableText,
   buildMyFlowStepSheetTsv,
   canBuildMyFlowStepIcs,
@@ -22,6 +23,7 @@ import {
   buildPersonalStructuralProjection,
 } from './personal-structural-projection';
 import { createEmptyPersonalStructuralOverlay } from './personal-structural-overlay';
+import { resolveSavedRoutineRecurrence } from './saved-routine-occurrence';
 
 const baseInput: MyFlowPortableStepExportInput = {
   flowTitle: '원룸 이사 D-30 준비',
@@ -105,6 +107,73 @@ test('Step ICS creates all-day event when time is empty', () => {
   assert.match(ics, /DTSTART;VALUE=DATE:20260624/);
   assert.match(ics, /DTEND;VALUE=DATE:20260625/);
   assert.doesNotMatch(ics, /DTSTART:20260624T/);
+});
+
+test('scoped Flow ICS combines unique dated items without changing their UIDs', () => {
+  const ics = buildMyFlowMultiStepIcs([
+    baseInput,
+    {
+      ...baseInput,
+      stepId: 'packing-list',
+      stableEventIdentitySeed: 'flow::packing-list',
+      stepTitle: '포장 목록 확인',
+      date: '2026-06-25',
+      time: '',
+      repeatPreset: '',
+    },
+    {
+      ...baseInput,
+      stepId: 'packing-list-duplicate',
+      stableEventIdentitySeed: 'flow::packing-list',
+      stepTitle: '중복 포장 목록',
+      date: '2026-06-26',
+    },
+    {
+      ...baseInput,
+      stepId: 'undated',
+      stableEventIdentitySeed: 'flow::undated',
+      stepTitle: '날짜 없는 준비',
+      date: '',
+    },
+  ]).replaceAll('\r\n ', '');
+
+  assert.equal(ics.match(/BEGIN:VEVENT/g)?.length, 2);
+  assert.match(ics, /SUMMARY:이사 방식과 견적 후보 정하기/);
+  assert.match(ics, /SUMMARY:포장 목록 확인/);
+  assert.doesNotMatch(ics, /중복 포장 목록|날짜 없는 준비/);
+  assert.match(ics, /UID:flow::packing-list@flowme\.local/);
+});
+
+test('saved source routine ICS uses one bounded RRULE master event with a stable series UID', () => {
+  const recurrence = resolveSavedRoutineRecurrence({
+    itemId: 'allblanc-morning-run',
+    startDate: '2026-07-15',
+    sourceRepeatRule: 'FREQ=WEEKLY;BYDAY=MO,WE,FR',
+    selectedWeekdays: ['월', '수', '금'],
+    projectionWeeks: 4,
+  }, 'curated-allblanc-morning-workout');
+  assert.ok(recurrence.series);
+
+  const input: MyFlowPortableStepExportInput = {
+    flowTitle: 'Allblanc 아침 5분 홈트',
+    stepId: 'allblanc-morning-run',
+    stepTitle: '아침 5분 전신 운동 영상 열기',
+    date: '2026-07-15',
+    personalRecurrence: recurrence.series,
+    personalRecurrenceIdentityNamespace: 'curated-allblanc-morning-workout',
+  };
+  const first = buildMyFlowStepIcs(input).replaceAll('\r\n ', '');
+  const renamed = buildMyFlowStepIcs({
+    ...input,
+    stepTitle: '아침 운동 영상 다시 열기',
+  }).replaceAll('\r\n ', '');
+  const firstUid = first.match(/^UID:(.+)$/mu)?.[1];
+  const renamedUid = renamed.match(/^UID:(.+)$/mu)?.[1];
+
+  assert.equal((first.match(/BEGIN:VEVENT/g) ?? []).length, 1);
+  assert.match(first, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260811/);
+  assert.equal(firstUid, renamedUid);
+  assert.doesNotMatch(first, /source-backed|sourceTrace|\bStep\b|\bItem\b/iu);
 });
 
 test('personal draft timed ICS keeps stable UID and applies TZID, duration, and midnight rollover', () => {

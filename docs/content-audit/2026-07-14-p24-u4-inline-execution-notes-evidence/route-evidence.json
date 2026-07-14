@@ -1,0 +1,88 @@
+{
+  "id": "p24-u4-inline-execution-notes",
+  "date": "2026-07-14",
+  "baselineCommit": "69c572d",
+  "evidenceType": "automated_browser_not_observed_user",
+  "designReference": {
+    "artifact": "FlowMe UXUI 전체 검토 (8) / FlowMe UX 개선안 목업 + 코멘트.dc.html",
+    "section": "G 실행 중 피드백",
+    "patternsApplied": [
+      "one_tap_item_note_entry",
+      "notes_collected_at_completion",
+      "no_required_rating_or_tags",
+      "private_note_separate_from_source_correction",
+      "empty_aggregation_omitted"
+    ],
+    "adaptations": [
+      "pencil_entry_on_shared_execution_row",
+      "source_correction_only_when_source_context_exists",
+      "local_unsent_state_until_delivery_exists"
+    ]
+  },
+  "markers": {
+    "inlineExecutionNoteEntryVisible": true,
+    "inlineExecutionNoteTapDepth": 1,
+    "privateAndCorrectionNotesSeparated": true,
+    "executionNotesPersistedAfterReload": true,
+    "completionAggregatesPrivateNotes": true,
+    "completionAggregatesCorrectionDrafts": true,
+    "correctionNoteImpliesSent": false,
+    "completedRunPreservesExecutionNotes": true,
+    "reuseClearsCurrentExecutionNotes": true,
+    "recurrenceOccurrenceNoteIdentityDistinct": true,
+    "executionNoteMaxLength": 1000,
+    "itemStructuralMemoChangedCount": 0,
+    "sourceMutationCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "verification": {
+    "unit": { "passed": 514, "failed": 0 },
+    "docsCheck": { "passed": true, "requiredFiles": 14, "localLinks": 2142 },
+    "build": { "passed": true, "nextVersion": "15.3.8" },
+    "u4BrowserJourney": { "passed": 1, "failed": 0 },
+    "p24UrlFirstPublicWorkbench": {
+      "passed": 77,
+      "failed": 0,
+      "parallelResourceRetryCount": 4,
+      "retryWorkers": 1
+    },
+    "completionReuseHistoryTargeted": { "passed": 3, "failed": 0 }
+  },
+  "scenarios": [
+    {
+      "id": "inline_note_mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "moving-d30-basic with one remaining item",
+      "actions": [
+        "open_note_from_row",
+        "save_private_note",
+        "save_source_correction_note"
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "completion_aggregation_mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "same moving flow after final completion",
+      "actions": ["complete_last_item", "inspect_automatic_note_groups", "reload"],
+      "result": "pass"
+    },
+    {
+      "id": "completion_and_history_wide",
+      "route": "/my",
+      "viewport": { "width": 1024, "height": 768 },
+      "fixture": "same completed flow, then reused with a new anchor",
+      "actions": [
+        "inspect_completion_groups",
+        "start_new_run",
+        "inspect_past_run_snapshot"
+      ],
+      "result": "pass"
+    }
+  ]
+}

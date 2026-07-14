@@ -1,0 +1,31 @@
+{
+  "executedAt": "2026-07-14T00:50:35+09:00",
+  "baseCommit": "211827d7f5fafebab00ed71dacdb106db0b3b44b",
+  "os": "windows",
+  "timeZone": "Asia/Seoul",
+  "node": "24.17.0",
+  "npm": "11.13.0",
+  "environments": [
+    {
+      "id": "clean_tracked",
+      "packageSha256": "1E99C08B31EE80BA5F874FE989B5BBEAA4E1CF17DDDF0D902EAD0EFFEF6F91F6",
+      "lockSha256": "725453DC9D5A85C6F8750780CC1DCE8ACB07BFD1E2D23DC377BD2702AF007605",
+      "next": "15.3.8",
+      "react": "19.0.0",
+      "playwright": "1.52.0",
+      "postcss": "8.5.3",
+      "audit": { "critical": 0, "high": 4, "moderate": 3 }
+    },
+    {
+      "id": "dependency_candidate",
+      "packageSha256": "D6356CC2EABEB1C846972B2F936A78BCD10ABF0EC12A6A637020FC7BCDE1976F",
+      "lockSha256": "5840B1D9621E7FF3F16B513BE7E3D86036894C2974D051D6C0F25DEFF1DA2B62",
+      "next": "15.5.20",
+      "react": "19.0.0",
+      "playwright": "1.61.1",
+      "postcss": "8.5.16",
+      "audit": { "critical": 0, "high": 0, "moderate": 2 },
+      "productCodeChanged": false
+    }
+  ]
+}

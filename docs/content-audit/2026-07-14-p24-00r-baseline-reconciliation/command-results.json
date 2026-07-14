@@ -1,0 +1,17 @@
+{
+  "baseCommit": "211827d7f5fafebab00ed71dacdb106db0b3b44b",
+  "results": [
+    { "environment": "clean_tracked", "command": "npm.cmd ci", "status": "pass" },
+    { "environment": "dependency_candidate", "command": "npm.cmd ci", "status": "pass" },
+    { "environment": "clean_tracked", "command": "npm.cmd run docs:check", "status": "fail", "reason": "two pre-existing tracked broken local links" },
+    { "environment": "dependency_candidate", "command": "npm.cmd run docs:check", "status": "fail", "reason": "same two pre-existing tracked broken local links" },
+    { "environment": "clean_tracked", "command": "npm.cmd test", "status": "pass", "passed": 476, "failed": 0 },
+    { "environment": "dependency_candidate", "command": "npm.cmd test", "status": "pass", "passed": 476, "failed": 0 },
+    { "environment": "clean_tracked", "command": "npm.cmd run build", "status": "pass", "routes": 18 },
+    { "environment": "dependency_candidate", "command": "npm.cmd run build", "status": "pass", "routes": 18 },
+    { "environment": "clean_tracked", "command": "npm.cmd run test:e2e", "status": "blocked", "reason": "259-test run exceeded 15-minute command limit" },
+    { "environment": "clean_tracked", "command": "targeted production home E2E", "status": "pass", "passed": 1 },
+    { "environment": "clean_tracked", "command": "targeted production /flows hard-navigation E2E", "status": "pass", "passed": 1 },
+    { "environment": "dependency_candidate", "command": "targeted production /flows hard-navigation E2E", "status": "pass", "passed": 1 }
+  ]
+}

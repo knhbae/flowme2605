@@ -279,3 +279,42 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
 
   return `${lines.map(foldIcsContentLine).join('\r\n')}\r\n`;
 }
+
+function extractIcsEventComponents(ics: string): string[][] {
+  const components: string[][] = [];
+  let current: string[] | undefined;
+  ics.split(/\r?\n/u).forEach((line) => {
+    if (line === 'BEGIN:VEVENT') {
+      current = [line];
+      return;
+    }
+    if (!current) return;
+    current.push(line);
+    if (line === 'END:VEVENT') {
+      components.push(current);
+      current = undefined;
+    }
+  });
+  return components;
+}
+
+export function buildMyFlowMultiStepIcs(inputs: MyFlowPortableStepExportInput[]): string {
+  const seenInputs = new Set<string>();
+  const eventComponents = inputs.flatMap((input) => {
+    if (!canBuildMyFlowStepIcs(input)) return [];
+    const identity = clean(input.stableEventIdentitySeed) || clean(input.stepId);
+    if (!identity || seenInputs.has(identity)) return [];
+    seenInputs.add(identity);
+    return extractIcsEventComponents(buildMyFlowStepIcs(input));
+  });
+
+  return `${[
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//FlowMe//Scoped Flow Export//KO',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    ...eventComponents.flat(),
+    'END:VCALENDAR',
+  ].join('\r\n')}\r\n`;
+}

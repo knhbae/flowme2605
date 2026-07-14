@@ -1,0 +1,16 @@
+{
+  "slice": "P24-00F1",
+  "route": "/flows -> /my",
+  "viewport": { "width": 390, "height": 844 },
+  "clock": "2026-07-14T07:05:00+09:00",
+  "markers": {
+    "localDateContractSeparatedFromUtc": true,
+    "kstMorningDefaultDate": "2026-07-14",
+    "utcSerializedDateForSameInstant": "2026-07-13",
+    "dstBoundaryFixturePass": true,
+    "personalDraftDateDefaultUserReachable": true,
+    "sourceDateOnlyContractChanged": false,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  }
+}

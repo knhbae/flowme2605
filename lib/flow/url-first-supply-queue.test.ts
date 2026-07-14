@@ -82,6 +82,20 @@ test('miss URL lookup can be saved as a local production candidate request', () 
   assert.equal(candidate?.savedAt, '2026-07-05T06:30:00.000Z');
 });
 
+test('miss URL draft requires a user-authored title or desired result', () => {
+  const result = lookupUrlFirstP0Input('https://example.com/empty-draft');
+
+  assert.equal(buildUrlFirstSupplyCandidate(result, { title: '   ', memo: '\n' }), undefined);
+
+  const memoOnly = buildUrlFirstSupplyCandidate(result, {
+    memo: '여행 전에 여권과 환전 준비를 확인하고 싶어요.',
+    savedAt: '2026-07-14T02:00:00.000Z',
+  });
+  assert.equal(memoOnly?.title, '여행 전에 여권과 환전 준비를 확인하고 싶어요');
+  assert.equal(memoOnly?.memo, '여행 전에 여권과 환전 준비를 확인하고 싶어요.');
+  assert.notEqual(memoOnly?.title, result.title);
+});
+
 test('needs_review lookup can be saved as a non-executable production candidate request', () => {
   const result = lookupUrlFirstP0Input('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
   const candidate = buildUrlFirstSupplyCandidate(result, {

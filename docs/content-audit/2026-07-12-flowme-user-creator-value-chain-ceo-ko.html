@@ -1,0 +1,1070 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FlowMe 사용자·제작자 양면 가치사슬과 초기 진입 전략을 정리한 CEO 보고용 HTML 프레젠테이션">
+  <title>FlowMe 사용자·제작자 가치사슬 전략</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --ink: #111814;
+      --muted: #5f6c65;
+      --paper: #ffffff;
+      --canvas: #e8efeb;
+      --line: #d7dfda;
+      --green: #006b4f;
+      --green-soft: #e8f4ef;
+      --coral: #ef654f;
+      --coral-soft: #fff0ec;
+      --blue: #386ee8;
+      --blue-soft: #edf2ff;
+      --amber: #a46900;
+      --amber-soft: #fff5d7;
+      --shadow: 0 18px 46px rgba(18, 35, 26, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      letter-spacing: 0;
+    }
+    button, a { font: inherit; }
+    a { color: var(--green); }
+
+    .viewer-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 52px;
+      padding: 8px 18px;
+      border-bottom: 1px solid #cfd8d3;
+      background: rgba(247, 250, 248, 0.96);
+      backdrop-filter: blur(12px);
+    }
+    .viewer-title { font-size: 13px; font-weight: 800; }
+    .viewer-actions { display: flex; align-items: center; gap: 8px; }
+    .viewer-actions a,
+    .viewer-actions button {
+      min-height: 34px;
+      padding: 7px 11px;
+      border: 1px solid #c9d3cd;
+      border-radius: 5px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .viewer-actions button:disabled { opacity: 0.4; cursor: default; }
+    #slide-status { min-width: 52px; color: var(--muted); text-align: center; font-size: 12px; font-weight: 800; }
+
+    main { padding: 28px 20px 72px; }
+    .slide {
+      position: relative;
+      width: min(1440px, calc(100vw - 40px));
+      aspect-ratio: 16 / 9;
+      min-height: 760px;
+      margin: 0 auto 30px;
+      padding: 44px 56px 42px;
+      overflow: hidden;
+      border: 1px solid rgba(16, 22, 18, 0.08);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      scroll-margin-top: 70px;
+    }
+    .slide::after {
+      content: attr(data-page);
+      position: absolute;
+      right: 32px;
+      bottom: 20px;
+      color: #79847e;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .slide-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .slide-head span:last-child { color: #7a857f; font-weight: 650; text-align: right; }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 1120px;
+      margin-bottom: 18px;
+      font-size: 55px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+    h2 {
+      max-width: 1180px;
+      margin-bottom: 12px;
+      font-size: 40px;
+      line-height: 1.17;
+      letter-spacing: 0;
+    }
+    h3 { margin-bottom: 8px; font-size: 18px; line-height: 1.35; letter-spacing: 0; }
+    .lead {
+      max-width: 1120px;
+      margin-bottom: 0;
+      color: #3e4943;
+      font-size: 18px;
+      line-height: 1.58;
+    }
+    .small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .source-note { margin: 8px 0 0; color: #68746d; font-size: 10.5px; line-height: 1.42; }
+    .accent { color: var(--green); }
+    .coral { color: var(--coral); }
+    .blue { color: var(--blue); }
+
+    .cover-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
+      gap: 42px;
+      align-items: end;
+      margin-top: 32px;
+    }
+    .cover-position {
+      padding: 22px 0;
+      border-top: 5px solid var(--green);
+      border-bottom: 1px solid var(--line);
+    }
+    .cover-position b { display: block; font-size: 25px; line-height: 1.42; }
+    .cover-position p { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.58; }
+    .bridge-visual {
+      padding: 24px;
+      background: #102a20;
+      color: #fff;
+    }
+    .bridge-lane { display: grid; grid-template-columns: 1fr 62px 1fr; align-items: center; gap: 8px; }
+    .bridge-node { padding: 15px; border: 1px solid rgba(255,255,255,0.22); min-height: 104px; }
+    .bridge-node b { display: block; margin-bottom: 7px; font-size: 16px; }
+    .bridge-node span { color: #c7d8d0; font-size: 12px; line-height: 1.45; }
+    .bridge-core { color: #7fe0bc; font-size: 27px; font-weight: 900; text-align: center; }
+    .cover-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+    .cover-metrics div { min-height: 82px; padding: 13px 15px; background: #f3f6f4; }
+    .cover-metrics b { display: block; margin-bottom: 3px; color: var(--green); font-size: 23px; }
+    .cover-metrics span { color: #4f5b54; font-size: 11px; line-height: 1.42; }
+
+    .zone-track {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 25px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .zone {
+      min-height: 330px;
+      padding: 18px 18px 16px;
+      border-right: 1px solid var(--line);
+    }
+    .zone:last-child { border-right: 0; }
+    .zone core { display: block; }
+    .zone time { display: block; margin-bottom: 10px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .zone h3 { font-size: 20px; }
+    .stage-list { display: grid; gap: 8px; margin-top: 14px; }
+    .stage-row {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 9px 0;
+      border-top: 1px solid #e8ecea;
+    }
+    .stage-row b { color: var(--green); font-size: 11px; }
+    .stage-row span { font-size: 12px; line-height: 1.4; }
+    .zone.weak { background: var(--coral-soft); }
+    .zone.weak .stage-row b { color: var(--coral); }
+    .zone.core-zone { background: var(--green-soft); }
+    .zone.learn { background: var(--blue-soft); }
+    .break-band {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 13px;
+    }
+    .break-band div { padding: 12px 15px; border-left: 5px solid var(--coral); background: #fff7f4; }
+    .break-band b { display: block; margin-bottom: 3px; font-size: 13px; }
+    .break-band span { color: var(--muted); font-size: 11px; line-height: 1.45; }
+
+    .journey-table {
+      margin-top: 22px;
+      border-top: 5px solid var(--green);
+    }
+    .journey-row {
+      display: grid;
+      grid-template-columns: 106px 1.05fr 1.05fr 1.3fr;
+      gap: 16px;
+      align-items: center;
+      min-height: 62px;
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .journey-row.head { min-height: 42px; background: #f3f6f4; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .journey-row > b { color: var(--green); font-size: 12px; }
+    .journey-row span { font-size: 11.5px; line-height: 1.42; }
+    .journey-row em { color: var(--coral); font-style: normal; font-weight: 750; }
+    .ownership-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .ownership-strip div { padding: 12px 14px; border-top: 4px solid var(--green); background: #f6f8f7; }
+    .ownership-strip div:nth-child(2) { border-color: var(--blue); }
+    .ownership-strip div:nth-child(3) { border-color: var(--coral); }
+    .ownership-strip b { display: block; margin-bottom: 3px; font-size: 12px; }
+    .ownership-strip span { color: var(--muted); font-size: 10.5px; line-height: 1.4; }
+
+    .creator-chain {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 28px;
+    }
+    .creator-node {
+      position: relative;
+      min-height: 138px;
+      padding: 14px 12px;
+      background: #f4f6f5;
+      border-top: 5px solid #89948e;
+    }
+    .creator-node::after {
+      content: "→";
+      position: absolute;
+      right: -10px;
+      top: 54px;
+      z-index: 2;
+      color: var(--green);
+      font-weight: 900;
+    }
+    .creator-node:last-child::after { content: ""; }
+    .creator-node time { display: block; margin-bottom: 8px; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .creator-node b { display: block; margin-bottom: 7px; font-size: 13px; line-height: 1.35; }
+    .creator-node span { color: var(--muted); font-size: 10.5px; line-height: 1.42; }
+    .creator-node.gap { background: var(--coral-soft); border-color: var(--coral); }
+    .creator-node.core { background: var(--green-soft); border-color: var(--green); }
+    .current-state {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .state-metric { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .state-metric div { padding: 14px; background: #f4f6f5; }
+    .state-metric b { display: block; margin-bottom: 5px; color: var(--green); font-size: 21px; }
+    .state-metric span { color: var(--muted); font-size: 10.5px; line-height: 1.4; }
+    .state-warning { padding: 15px 18px; border-left: 5px solid var(--coral); background: var(--coral-soft); }
+    .state-warning b { display: block; margin-bottom: 5px; font-size: 13px; }
+    .state-warning span { color: var(--muted); font-size: 11px; line-height: 1.5; }
+
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 21px;
+    }
+    .market-item {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 14px;
+      min-height: 198px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .market-shot {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      object-position: top left;
+      border: 1px solid #dfe5e1;
+      background: #f5f6f5;
+    }
+    .market-item h3 { margin-bottom: 5px; font-size: 17px; }
+    .market-item p { margin-bottom: 8px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .market-item strong { display: block; color: var(--green); font-size: 12px; line-height: 1.4; }
+    .market-item a { display: inline-block; margin-top: 8px; font-size: 10.5px; }
+    .inference-band {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 18px;
+      align-items: center;
+      margin-top: 14px;
+      padding: 13px 17px;
+      background: #102a20;
+      color: #fff;
+    }
+    .inference-band b { color: #80dfbd; font-size: 13px; }
+    .inference-band span { font-size: 12px; line-height: 1.45; }
+
+    .boundary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 26px;
+    }
+    .boundary-col { padding-top: 14px; border-top: 6px solid var(--green); }
+    .boundary-col.partner { border-color: var(--blue); }
+    .boundary-col.avoid { border-color: var(--coral); }
+    .boundary-col h3 { font-size: 22px; }
+    .boundary-list { margin-top: 8px; }
+    .boundary-row { padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .boundary-row b { display: block; margin-bottom: 3px; font-size: 12px; }
+    .boundary-row span { color: var(--muted); font-size: 11px; line-height: 1.42; }
+    .position-line { margin-top: 18px; padding: 14px 17px; border-left: 5px solid var(--green); background: var(--green-soft); font-size: 13px; font-weight: 750; line-height: 1.45; }
+
+    .tension-list { margin-top: 22px; border-top: 5px solid var(--coral); }
+    .tension-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 74px 1fr 1.3fr;
+      gap: 14px;
+      align-items: center;
+      min-height: 75px;
+      border-bottom: 1px solid var(--line);
+    }
+    .tension-row > b { color: var(--coral); font-size: 12px; }
+    .tension-side strong { display: block; margin-bottom: 3px; font-size: 13px; }
+    .tension-side span { color: var(--muted); font-size: 10.5px; line-height: 1.4; }
+    .tension-vs { color: #8b9690; text-align: center; font-size: 11px; font-weight: 850; }
+    .tension-choice { padding: 10px 13px; background: #f4f7f5; font-size: 11px; line-height: 1.45; }
+    .tension-choice b { color: var(--green); }
+
+    .asset-stack {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 34px;
+      margin-top: 22px;
+    }
+    .stack-layers { display: grid; gap: 8px; }
+    .stack-layer {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 72px;
+      padding: 11px 14px;
+      border-left: 6px solid var(--green);
+      background: #f4f7f5;
+    }
+    .stack-layer:nth-child(2) { border-color: var(--blue); background: var(--blue-soft); }
+    .stack-layer:nth-child(3) { border-color: var(--amber); background: var(--amber-soft); }
+    .stack-layer:nth-child(4) { border-color: var(--coral); background: var(--coral-soft); }
+    .stack-layer:nth-child(5) { border-color: #66736c; }
+    .stack-layer b { font-size: 12px; }
+    .stack-layer span { color: var(--muted); font-size: 10.8px; line-height: 1.42; }
+    .role-map { padding-top: 10px; border-top: 5px solid var(--green); }
+    .role-row {
+      display: grid;
+      grid-template-columns: 118px 1fr 120px;
+      gap: 12px;
+      align-items: center;
+      min-height: 60px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .role-row b { font-size: 12px; }
+    .role-row span { color: var(--muted); font-size: 10.8px; line-height: 1.42; }
+    .role-row strong { color: var(--green); font-size: 10.5px; text-align: right; }
+    .simplify-band { margin-top: 15px; padding: 14px 16px; background: #102a20; color: #fff; font-size: 12px; line-height: 1.45; }
+    .simplify-band b { color: #80dfbd; }
+
+    .pilot-funnel {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 22px;
+    }
+    .funnel-step {
+      position: relative;
+      min-height: 92px;
+      padding: 12px 9px;
+      background: #f4f6f5;
+      border-top: 5px solid #7c8881;
+    }
+    .funnel-step::after { content: "→"; position: absolute; right: -8px; top: 34px; z-index: 2; color: var(--green); font-weight: 900; }
+    .funnel-step:last-child::after { content: ""; }
+    .funnel-step.creator { border-color: var(--coral); background: var(--coral-soft); }
+    .funnel-step.user { border-color: var(--green); background: var(--green-soft); }
+    .funnel-step.learn { border-color: var(--blue); background: var(--blue-soft); }
+    .funnel-step b { display: block; margin-bottom: 5px; font-size: 11px; line-height: 1.32; }
+    .funnel-step span { color: var(--muted); font-size: 9.8px; line-height: 1.35; }
+    .pilot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .pilot-col { padding-top: 12px; border-top: 5px solid var(--green); }
+    .pilot-col:nth-child(2) { border-color: var(--blue); }
+    .pilot-col:nth-child(3) { border-color: var(--coral); }
+    .pilot-col h3 { font-size: 17px; }
+    .pilot-item { display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+    .pilot-item b { color: var(--green); font-size: 10px; }
+    .pilot-item span { color: var(--muted); font-size: 10.5px; line-height: 1.4; }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .roadmap-stage { min-height: 186px; padding: 16px; background: #f4f6f5; border-top: 6px solid #87928c; }
+    .roadmap-stage.now { border-color: var(--green); background: var(--green-soft); }
+    .roadmap-stage.next { border-color: var(--blue); background: var(--blue-soft); }
+    .roadmap-stage.later { border-color: var(--amber); background: var(--amber-soft); }
+    .roadmap-stage.last { border-color: var(--coral); background: var(--coral-soft); }
+    .roadmap-stage time { display: block; margin-bottom: 8px; color: var(--muted); font-size: 10px; font-weight: 850; }
+    .roadmap-stage h3 { font-size: 17px; }
+    .roadmap-stage p { color: var(--muted); font-size: 10.8px; line-height: 1.45; }
+    .roadmap-stage strong { display: block; margin-top: 10px; color: var(--green); font-size: 11px; line-height: 1.4; }
+    .decision-list { margin-top: 17px; border-top: 1px solid var(--line); }
+    .decision-row {
+      display: grid;
+      grid-template-columns: 38px 1fr 1.15fr;
+      gap: 14px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .decision-row > b { color: var(--coral); font-size: 12px; }
+    .decision-row strong { font-size: 12px; }
+    .decision-row span { color: var(--muted); font-size: 10.8px; line-height: 1.4; }
+    .source-links { display: flex; flex-wrap: wrap; gap: 7px 14px; margin-top: 12px; }
+    .source-links a { font-size: 10.5px; }
+
+    .study-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 22px;
+    }
+    .study-card {
+      min-height: 214px;
+      padding: 18px 20px;
+      border-top: 6px solid var(--blue);
+      background: var(--blue-soft);
+    }
+    .study-card.action { border-color: var(--green); background: var(--green-soft); }
+    .study-card time { display: block; margin-bottom: 8px; color: var(--muted); font-size: 10px; font-weight: 850; }
+    .study-card h3 { font-size: 19px; }
+    .study-card p { margin-bottom: 12px; color: var(--muted); font-size: 11px; line-height: 1.48; }
+    .study-card a { font-size: 10.5px; }
+    .study-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 13px; }
+    .study-stats div { padding: 10px; background: rgba(255,255,255,0.8); }
+    .study-stats b { display: block; margin-bottom: 3px; color: var(--blue); font-size: 22px; }
+    .study-card.action .study-stats b { color: var(--green); }
+    .study-stats span { color: var(--muted); font-size: 9.5px; line-height: 1.35; }
+    .effect-compare { display: grid; gap: 9px; margin-top: 12px; }
+    .effect-row { display: grid; grid-template-columns: 72px 1fr 44px; gap: 9px; align-items: center; }
+    .effect-row span, .effect-row b { font-size: 10.5px; }
+    .effect-track { height: 13px; overflow: hidden; background: rgba(255,255,255,0.9); }
+    .effect-fill { width: var(--effect); height: 100%; background: var(--blue); }
+    .effect-row.behavior .effect-fill { background: var(--coral); }
+    .evidence-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 17px;
+    }
+    .evidence-flow div { position: relative; min-height: 78px; padding: 12px; border-top: 4px solid #87928c; background: #f4f6f5; }
+    .evidence-flow div::after { content: "→"; position: absolute; right: -9px; top: 28px; z-index: 2; color: var(--green); font-weight: 900; }
+    .evidence-flow div:last-child::after { content: ""; }
+    .evidence-flow .bridge-proof { border-color: var(--green); background: var(--green-soft); }
+    .evidence-flow .hypothesis { border-color: var(--coral); background: var(--coral-soft); }
+    .evidence-flow b { display: block; margin-bottom: 4px; font-size: 11px; }
+    .evidence-flow span { color: var(--muted); font-size: 9.8px; line-height: 1.35; }
+
+    .repo-metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 18px;
+    }
+    .repo-metrics div { min-height: 78px; padding: 11px 12px; background: #f4f6f5; }
+    .repo-metrics b { display: block; margin-bottom: 3px; color: var(--green); font-size: 20px; }
+    .repo-metrics span { color: var(--muted); font-size: 9.5px; line-height: 1.35; }
+    .creator-status-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 9px;
+    }
+    .creator-status-strip div { padding: 9px 12px; border-left: 4px solid var(--coral); background: var(--coral-soft); }
+    .creator-status-strip b { display: block; margin-bottom: 2px; font-size: 11px; }
+    .creator-status-strip span { color: var(--muted); font-size: 9.5px; line-height: 1.35; }
+
+    .market-number-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+    .market-number {
+      min-height: 166px;
+      padding: 18px;
+      border-top: 6px solid var(--green);
+      background: var(--green-soft);
+    }
+    .market-number:nth-child(2) { border-color: var(--blue); background: var(--blue-soft); }
+    .market-number:nth-child(3) { border-color: var(--amber); background: var(--amber-soft); }
+    .market-number:nth-child(4) { border-color: var(--coral); background: var(--coral-soft); }
+    .market-number time { display: block; margin-bottom: 10px; color: var(--muted); font-size: 9.5px; font-weight: 850; }
+    .market-number b { display: block; margin-bottom: 6px; color: var(--green); font-size: 31px; }
+    .market-number:nth-child(2) b { color: var(--blue); }
+    .market-number:nth-child(3) b { color: var(--amber); }
+    .market-number:nth-child(4) b { color: var(--coral); }
+    .market-number strong { display: block; margin-bottom: 5px; font-size: 12px; }
+    .market-number span { color: var(--muted); font-size: 10.5px; line-height: 1.4; }
+    .market-number a { display: inline-block; margin-top: 8px; font-size: 9.8px; }
+    .ops-proof {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.55fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .ops-proof div { min-height: 74px; padding: 12px 14px; background: #f4f6f5; }
+    .ops-proof b { display: block; margin-bottom: 4px; color: var(--green); font-size: 16px; }
+    .ops-proof span { color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .ops-proof .decision-proof { background: #102a20; color: #fff; }
+    .ops-proof .decision-proof b { color: #80dfbd; }
+    .ops-proof .decision-proof span { color: #d3e2dc; }
+
+    .evidence-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+    .evidence-badge { display: inline-flex; align-items: center; min-height: 24px; padding: 4px 8px; border-radius: 3px; font-size: 9.5px; font-weight: 850; }
+    .evidence-badge.confirmed { color: var(--green); background: var(--green-soft); }
+    .evidence-badge.general { color: var(--blue); background: var(--blue-soft); }
+    .evidence-badge.inferred { color: var(--amber); background: var(--amber-soft); }
+    .evidence-badge.unmeasured { color: var(--coral); background: var(--coral-soft); }
+    .evidence-ledger { margin-top: 15px; border-top: 5px solid var(--green); }
+    .evidence-row {
+      display: grid;
+      grid-template-columns: 1.12fr 1.12fr 96px 1.48fr;
+      gap: 14px;
+      align-items: center;
+      min-height: 61px;
+      padding: 8px 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .evidence-row.head { min-height: 38px; background: #f3f6f4; color: var(--muted); font-size: 10px; font-weight: 850; }
+    .evidence-row strong { font-size: 11px; line-height: 1.35; }
+    .evidence-row span { color: var(--muted); font-size: 10.2px; line-height: 1.38; }
+    .evidence-row .evidence-badge { justify-content: center; color: inherit; }
+
+    @media (max-width: 1100px) and (min-width: 901px) {
+      .slide { padding: 36px 42px 38px; }
+      h1 { font-size: 48px; }
+      h2 { font-size: 35px; }
+      .lead { font-size: 16px; }
+      .market-item { grid-template-columns: 150px 1fr; }
+      .market-shot { height: 148px; }
+      .creator-node { padding: 11px 9px; }
+    }
+
+    @media (max-width: 900px) {
+      .viewer-toolbar { padding: 8px 10px; }
+      .viewer-title { max-width: 145px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .viewer-actions a { display: none; }
+      main { padding: 10px 7px 46px; }
+      .slide {
+        width: 100%;
+        min-height: 0;
+        aspect-ratio: auto;
+        margin-bottom: 13px;
+        padding: 27px 19px 48px;
+      }
+      .slide-head { margin-bottom: 16px; }
+      h1 { font-size: 36px; line-height: 1.15; }
+      h2 { font-size: 29px; line-height: 1.22; }
+      .lead { font-size: 16px; line-height: 1.55; }
+      .cover-stage, .asset-stack, .current-state { grid-template-columns: 1fr; gap: 18px; }
+      .cover-metrics, .zone-track, .boundary-grid, .pilot-grid, .roadmap, .market-grid, .study-grid, .market-number-grid, .ops-proof { grid-template-columns: 1fr; }
+      .zone { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .break-band, .ownership-strip { grid-template-columns: 1fr; }
+      .journey-row { grid-template-columns: 88px 1fr; gap: 8px 12px; align-items: start; }
+      .journey-row.head { display: none; }
+      .journey-row span { grid-column: 2; }
+      .creator-chain, .pilot-funnel { grid-template-columns: 1fr; }
+      .creator-node, .funnel-step { min-height: 0; }
+      .creator-node::after, .funnel-step::after { content: "↓"; right: 50%; top: auto; bottom: -12px; }
+      .creator-node:last-child::after, .funnel-step:last-child::after { content: ""; }
+      .evidence-flow { grid-template-columns: 1fr; }
+      .evidence-flow div { min-height: 0; }
+      .evidence-flow div::after { content: "↓"; right: 50%; top: auto; bottom: -12px; }
+      .evidence-flow div:last-child::after { content: ""; }
+      .repo-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .creator-status-strip { grid-template-columns: 1fr; }
+      .state-metric { grid-template-columns: 1fr; }
+      .market-item { grid-template-columns: 1fr; }
+      .market-shot { height: 210px; }
+      .inference-band { grid-template-columns: 1fr; gap: 5px; }
+      .tension-row { grid-template-columns: 30px 1fr; gap: 9px; padding: 11px 0; }
+      .tension-vs { grid-column: 2; text-align: left; }
+      .tension-choice { grid-column: 2; }
+      .role-row { grid-template-columns: 100px 1fr; }
+      .role-row strong { grid-column: 2; text-align: left; }
+      .decision-row { grid-template-columns: 30px 1fr; }
+      .decision-row span { grid-column: 2; }
+      .evidence-row { grid-template-columns: 1fr; gap: 5px; padding: 12px 8px; }
+      .evidence-row.head { display: none; }
+      .evidence-row .evidence-badge { justify-content: flex-start; width: fit-content; }
+    }
+
+    @media (max-width: 520px) {
+      .bridge-lane { grid-template-columns: 1fr; }
+      .bridge-core { transform: rotate(90deg); }
+      .cover-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .market-shot { height: 180px; }
+    }
+
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      body { background: #fff; }
+      .viewer-toolbar { display: none; }
+      main { padding: 0; }
+      .slide {
+        width: 13.333in;
+        height: 7.5in;
+        min-height: 0;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="viewer-toolbar">
+    <strong class="viewer-title">FlowMe 사용자·제작자 가치사슬 전략</strong>
+    <div class="viewer-actions">
+      <a href="./2026-07-12-flowme-ai-era-platform-strategy-ceo-ko.html">전체 플랫폼 전략</a>
+      <button type="button" id="prev-slide" aria-label="이전 장표">이전</button>
+      <span id="slide-status" aria-live="polite">1 / 12</span>
+      <button type="button" id="next-slide" aria-label="다음 장표">다음</button>
+      <button type="button" id="print-deck">인쇄</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="slide" id="slide-1" data-page="01 / 12">
+      <div class="slide-head"><span>CEO 결론</span><span>양면 가치사슬 전략 · 2026-07-12</span></div>
+      <h1>FlowMe가 공략할 빈칸은<br><span class="accent">콘텐츠와 실행 사이</span>다</h1>
+      <p class="lead">제작자는 원본 콘텐츠를 실행 가능한 상품으로 만들고, 사용자는 보던 콘텐츠를 기존 도구에서 바로 실행한다. FlowMe는 콘텐츠 플랫폼이나 일정 앱이 아니라 두 가치사슬을 연결하는 실행 레이어가 된다.</p>
+
+      <div class="cover-stage">
+        <div class="cover-position">
+          <b>공급은 제작자 중심으로 시작하고,<br>제품 경험은 사용자 중심으로 설계한다.</b>
+          <p>제작자 참여는 P0 공급·유통 단계로 앞당기되, 네이티브 결제와 공개 마켓플레이스는 실행 가치가 검증된 뒤로 둔다.</p>
+        </div>
+        <div class="bridge-visual" aria-label="제작자와 사용자를 연결하는 FlowMe">
+          <div class="bridge-lane">
+            <div class="bridge-node"><b>제작자 원문</b><span>글·영상·강의·가이드<br>신뢰·맥락·기존 수익</span></div>
+            <div class="bridge-core">→</div>
+            <div class="bridge-node"><b>사용자 실행</b><span>개인화·저장·내보내기<br>완료·수정·재사용</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cover-metrics" aria-label="핵심 근거 숫자">
+        <div><b>94</b><span>실행 계획 효과를 분석한 독립 검증</span></div>
+        <div><b>0.65</b><span>목표 달성 효과크기(중간~큰 수준)</span></div>
+        <div><b>3M+</b><span>2024년 YouTube 수익화 파트너 채널</span></div>
+        <div><b>0</b><span>현재 FlowMe 제작자 수익·실행 성과 실측값</span></div>
+      </div>
+      <p class="source-note">94개 검증과 효과크기는 일반 행동과학 근거이며 FlowMe 성과가 아니다. 3백만 채널은 <a href="https://blog.youtube/inside-youtube/2024-letter-from-neal/" target="_blank" rel="noreferrer">YouTube의 2024년 공식 발표</a>다.</p>
+    </section>
+
+    <section class="slide" id="slide-2" data-page="02 / 12">
+      <div class="slide-head"><span>전체 가치사슬</span><span>12단계를 4개 구간으로 묶어 본다</span></div>
+      <h2>문제는 콘텐츠가 없는 것이 아니라,<br><span class="coral">행동 전환과 성과 회수</span>가 끊긴 것이다</h2>
+      <p class="lead">기존 플랫폼은 발견·소비·판매를 잘한다. 사용자가 계획을 만들고 실행하는 구간, 제작자가 실제 행동 성과를 다시 얻는 구간은 약하다.</p>
+
+      <div class="zone-track" aria-label="12단계 양면 가치사슬">
+        <section class="zone">
+          <time>01–03 · 기존 플랫폼 우위</time>
+          <h3>관심과 신뢰</h3>
+          <div class="stage-list">
+            <div class="stage-row"><b>01</b><span>사용자 문제 발생</span></div>
+            <div class="stage-row"><b>02</b><span>검색·추천으로 발견</span></div>
+            <div class="stage-row"><b>03</b><span>제작자·원문 신뢰 판단</span></div>
+          </div>
+        </section>
+        <section class="zone weak">
+          <time>04–06 · 첫 번째 단절</time>
+          <h3>의도에서 계획으로</h3>
+          <div class="stage-list">
+            <div class="stage-row"><b>04</b><span>콘텐츠 소비와 실행 의도</span></div>
+            <div class="stage-row"><b>05</b><span>날짜·순서·준비물 추출</span></div>
+            <div class="stage-row"><b>06</b><span>제작자 검토·권리 확정</span></div>
+          </div>
+        </section>
+        <section class="zone core-zone">
+          <time>07–09 · FlowMe 핵심</time>
+          <h3>개인화와 실행</h3>
+          <div class="stage-list">
+            <div class="stage-row"><b>07</b><span>사용자 상황에 맞게 수정</span></div>
+            <div class="stage-row"><b>08</b><span>캘린더·메모·체크로 이동</span></div>
+            <div class="stage-row"><b>09</b><span>실행·중단·복구</span></div>
+          </div>
+        </section>
+        <section class="zone learn">
+          <time>10–12 · 두 번째 단절</time>
+          <h3>학습과 수익</h3>
+          <div class="stage-list">
+            <div class="stage-row"><b>10</b><span>결과·막힘 신호</span></div>
+            <div class="stage-row"><b>11</b><span>원본 Flow 업데이트</span></div>
+            <div class="stage-row"><b>12</b><span>재사용·추천·수익화</span></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="break-band">
+        <div><b>단절 A · 사용자가 본 것을 행동으로 바꾸기 어렵다</b><span>콘텐츠를 다시 읽고 계획하고 기존 도구로 옮기는 비용이 사용자에게 남아 있다.</span></div>
+        <div><b>단절 B · 제작자가 행동 성과를 회수하지 못한다</b><span>조회·구매 이후 실제 실행, 막힘, 수정, 반복 사용이 원문 개선과 수익으로 돌아오지 않는다.</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-3" data-page="03 / 12">
+      <div class="slide-head"><span>행동 전환 근거</span><span>원 연구 메타분석 · 2006</span></div>
+      <h2>“해야겠다”는 생각만으로는 부족하다.<br><span class="accent">언제·어디서·어떻게 할지</span> 정해야 행동에 가까워진다</h2>
+      <p class="lead">두 메타분석은 의도와 행동 사이의 간극, 구체적인 실행 계획의 효과를 보여준다. FlowMe의 연결 가설은 이 일반 근거 위에 서지만, 제품 성과는 별도로 측정해야 한다.</p>
+
+      <div class="study-grid">
+        <article class="study-card">
+          <time>Webb &amp; Sheeran · 47개 실험 검증</time>
+          <h3>의도가 크게 변해도 행동 변화는 더 작았다</h3>
+          <div class="effect-compare" aria-label="의도와 행동 효과크기 비교">
+            <div class="effect-row"><span>의도 변화</span><div class="effect-track"><div class="effect-fill" style="--effect:82.5%"></div></div><b>0.66</b></div>
+            <div class="effect-row behavior"><span>행동 변화</span><div class="effect-track"><div class="effect-fill" style="--effect:45%"></div></div><b>0.36</b></div>
+          </div>
+          <p>효과크기 d 기준. 의도를 높이는 것만으로 행동이 같은 폭으로 늘지 않는다는 일반 근거다.</p>
+          <a href="https://pubmed.ncbi.nlm.nih.gov/16536643/" target="_blank" rel="noreferrer">PubMed 원 논문</a>
+        </article>
+        <article class="study-card action">
+          <time>Gollwitzer &amp; Sheeran · 94개 독립 검증</time>
+          <h3>실행 시점과 행동을 정한 계획은 목표 달성을 도왔다</h3>
+          <div class="study-stats">
+            <div><b>8,461</b><span>검증에 포함된 참여자</span></div>
+            <div><b>0.65</b><span>목표 달성 효과크기 d</span></div>
+            <div><b>.60–.70</b><span>95% 신뢰구간</span></div>
+          </div>
+          <p>여러 행동 영역을 합친 일반 효과다. 특정 콘텐츠 변환 서비스의 효과를 직접 입증하지는 않는다.</p>
+          <a href="https://doi.org/10.1016/S0065-2601(06)38002-1" target="_blank" rel="noreferrer">DOI 원 논문</a>
+        </article>
+      </div>
+
+      <div class="evidence-flow" aria-label="근거에서 FlowMe 가설까지">
+        <div><b>콘텐츠 소비</b><span>기존 플랫폼이 강함</span></div>
+        <div><b>행동 의도</b><span>행동과 차이가 존재</span></div>
+        <div class="bridge-proof"><b>실행 구조</b><span>언제·어디서·어떻게</span></div>
+        <div class="bridge-proof"><b>기존 도구 이동</b><span>캘린더·체크·메모</span></div>
+        <div class="hypothesis"><b>반복 사용</b><span>FlowMe에서 아직 미측정</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-4" data-page="04 / 12">
+      <div class="slide-head"><span>사용자 가치사슬</span><span>어디까지 소유하고 어디서 연결할지</span></div>
+      <h2>사용자는 계획 앱이 하나 더 필요한 것이 아니라,<br><span class="accent">본 콘텐츠를 바로 쓰고 싶다</span></h2>
+      <p class="lead">발견과 소비는 기존 서비스에 남기고, FlowMe는 의도→구조화→개인화→휴대 가능한 실행의 거래비용을 줄인다.</p>
+
+      <div class="journey-table" role="table" aria-label="사용자 가치사슬 상세표">
+        <div class="journey-row head" role="row"><b>단계</b><span>현재 행동</span><span>주요 불편</span><span>FlowMe 선택</span></div>
+        <div class="journey-row" role="row"><b>발견·소비</b><span>검색, 추천, 원문 시청·읽기</span><span>기존 플랫폼이 이미 강함</span><span><em>소유하지 않음.</em> 원문 링크와 제작자 맥락을 유지한다.</span></div>
+        <div class="journey-row" role="row"><b>실행 의도</b><span>저장하거나 “나중에 해야지”라고 생각</span><span>저장은 행동 약속이 아님</span><span>원문의 `FlowMe로 실행하기`에서 결과물을 먼저 보여준다.</span></div>
+        <div class="journey-row" role="row"><b>계획 추출</b><span>날짜·순서·준비물을 다시 메모</span><span>AI도 맥락과 제약을 자주 놓침</span><span>AI 초안 + 제작자 검토 기준본으로 실행 구조를 만든다.</span></div>
+        <div class="journey-row" role="row"><b>개인화</b><span>내 날짜·예산·상황에 맞게 재작성</span><span>원본과 내 수정이 뒤섞임</span><span>제작자 기준본과 비공개 개인 오버레이를 분리한다.</span></div>
+        <div class="journey-row" role="row"><b>도구 이동</b><span>캘린더·할 일·노트로 복사</span><span>중복 입력과 형식 불일치</span><span>.ics·Markdown·checklist로 내보내고 출처·버전을 남긴다.</span></div>
+        <div class="journey-row" role="row"><b>실행·복구</b><span>완료, 중단, 건너뜀, 일정 변경</span><span>계획이 현실과 어긋나면 버려짐</span><span>My Flow는 가벼운 확인·복구만 맡고 전체 PM 도구가 되지 않는다.</span></div>
+      </div>
+
+      <div class="ownership-strip">
+        <div><b>FlowMe가 소유</b><span>실행 구조, 개인화 관계, 내보내기 변환, 업데이트 수락</span></div>
+        <div><b>기존 도구와 연결</b><span>콘텐츠 발견, 결제, 캘린더·할 일·노트의 실제 실행</span></div>
+        <div><b>의도적으로 제외</b><span>영상 피드, 범용 메모 앱, 완전한 일정 관리, 무제한 AI 자동 생성</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-5" data-page="05 / 12">
+      <div class="slide-head"><span>제작자 가치사슬</span><span>콘텐츠를 실행 상품으로 다시 포장한다</span></div>
+      <h2>제작자는 콘텐츠를 만들었지만,<br><span class="coral">사용자의 행동과 추가 수익</span>은 놓치고 있다</h2>
+      <p class="lead">제작자가 참여해야 하는 이유는 콘텐츠 공급 자체가 아니다. 원본을 실행 상품으로 재사용하고, 실제 사용 신호를 받아 업데이트하며, 기존 수익 경로를 강화하기 위해서다.</p>
+
+      <div class="creator-chain" aria-label="제작자 가치사슬">
+        <div class="creator-node"><time>01</time><b>전문성·경험</b><span>제작자가 이미 보유</span></div>
+        <div class="creator-node"><time>02</time><b>원본 제작</b><span>글·영상·강의·가이드</span></div>
+        <div class="creator-node"><time>03</time><b>기존 배포</b><span>유튜브·블로그·뉴스레터</span></div>
+        <div class="creator-node gap"><time>04 · 빈칸</time><b>실행 상품화</b><span>날짜·순서·체크·결과물</span></div>
+        <div class="creator-node core"><time>05 · FLOWME</time><b>검토·발행</b><span>권리·버전·가격·CTA</span></div>
+        <div class="creator-node core"><time>06 · FLOWME</time><b>사용자 실행</b><span>개인화·저장·내보내기</span></div>
+        <div class="creator-node gap"><time>07 · 빈칸</time><b>성과 학습</b><span>시작·재방문·막힘·수정</span></div>
+        <div class="creator-node gap"><time>08 · 빈칸</time><b>수익·반복</b><span>외부 전환·유료 Pack·구독</span></div>
+      </div>
+
+      <div class="repo-metrics" aria-label="현재 FlowMe 코드 재고">
+        <div><b>153</b><span>현재 실행 콘텐츠</span></div>
+        <div><b>44</b><span>대표 유지 판정</span></div>
+        <div><b>105</b><span>보강 필요 판정</span></div>
+        <div><b>26</b><span>출처 기반 Flow 지도</span></div>
+        <div><b>7</b><span>공개 카탈로그 지도</span></div>
+        <div><b>10</b><span>URL 조회 대상 지도</span></div>
+      </div>
+      <div class="creator-status-strip">
+        <div><b>제작자 관련 경로 4개</b><span>제작·검토·디렉터리·프로필 표면이 존재</span></div>
+        <div><b>발행 상태: 로컬 전용</b><span>계정 기반 실제 발행으로 볼 수 없음</span></div>
+        <div><b>분석·결제·정산: 0</b><span>제작자 수익 성과 역시 아직 미측정</span></div>
+      </div>
+      <p class="source-note">2026-07-12 현재 코드 명령 결과. 원본: <a href="../../lib/flow/seed-flows.ts">실행 콘텐츠 목록</a>, <a href="../../lib/flow/content-lifecycle.ts">생애주기 분류</a>, <a href="../../lib/flow/source-backed-my-flow.ts">출처 기반 지도</a>, <a href="../SERVICE_STRUCTURE.md">서비스 구조</a>. 이 숫자는 제품 준비도이며 사용자 가치 검증값이 아니다.</p>
+    </section>
+
+    <section class="slide" id="slide-6" data-page="06 / 12">
+      <div class="slide-head"><span>제작자 생태계 숫자</span><span>각 회사 공식 자료 · 기준 시점 별도 표기</span></div>
+      <h2>수익과 결제의 길은 이미 크고 성숙하다.<br><span class="blue">초기부터 결제망을 다시 만들 이유가 없다</span></h2>
+      <p class="lead">FlowMe가 먼저 증명해야 할 것은 결제 기능이 아니라, 원문에서 실행으로 이어지는 새 가치와 기존 수익 경로에 대한 기여다.</p>
+
+      <div class="market-number-grid">
+        <article class="market-number"><time>YouTube · 2024 공식 발표</time><b>3M+</b><strong>파트너 프로그램 채널</strong><span>수익화 가능한 제작자 공급이 이미 대규모로 존재한다.</span><a href="https://blog.youtube/inside-youtube/2024-letter-from-neal/" target="_blank" rel="noreferrer">공식 발표</a></article>
+        <article class="market-number"><time>YouTube · 직전 3년 누적</time><b>$70B+</b><strong>제작자·아티스트 등에 지급</strong><span>기존 콘텐츠 플랫폼의 수익 레일을 대체하기보다 연결할 근거다.</span><a href="https://blog.youtube/inside-youtube/2024-letter-from-neal/" target="_blank" rel="noreferrer">공식 발표</a></article>
+        <article class="market-number"><time>YouTube 도움말 · 현재</time><b>70%</b><strong>멤버십 수익 제작자 몫</strong><span>세금·수수료 차감 후 기준이며 거래 비용은 현재 YouTube가 부담한다.</span><a href="https://support.google.com/youtube/answer/7491256?hl=en" target="_blank" rel="noreferrer">공식 도움말</a></article>
+        <article class="market-number"><time>Patreon · 2026-06-12 갱신</time><b>10%</b><strong>신규 표준 플랫폼 수수료</strong><span>2025-08-04 이후 공개한 신규 제작자 페이지 기준이며 처리 수수료 등은 별도다.</span><a href="https://support.patreon.com/hc/en-us/articles/11111747095181-Creator-fees-overview" target="_blank" rel="noreferrer">공식 도움말</a></article>
+      </div>
+
+      <div class="ops-proof">
+        <div><b>14일</b><span>Notion 한국 공식 안내의 지급 유예 기간</span></div>
+        <div><b>₩40,000</b><span>한국 제작자의 최소 지급액 예시</span></div>
+        <div class="decision-proof"><b>전략 해석</b><span>결제·세금·환불·정산은 별도 운영 사업이다. 초기에는 제작자의 기존 상품·예약·제휴 링크에 귀속을 붙이고, 자체 거래는 실행 가치가 확인된 뒤 검토한다.</span></div>
+      </div>
+      <p class="source-note">Notion 수치는 <a href="https://www.notion.com/ko/help/selling-on-marketplace" target="_blank" rel="noreferrer">한국 공식 도움말</a> 기준이다. 플랫폼별 대상과 산식이 달라 직접 비교용 시장점유율이 아니며, FlowMe 수요를 입증하지도 않는다.</p>
+    </section>
+
+    <section class="slide" id="slide-7" data-page="07 / 12">
+      <div class="slide-head"><span>시장 기능 비교</span><span>공식 제품 자료 · 2026-07-12 확인</span></div>
+      <h2>기존 플랫폼은 관심·거래·수직 진도에 강하다.<br><span class="blue">수평 실행 연결</span>은 별도 공간이다</h2>
+
+      <div class="market-grid">
+        <article class="market-item">
+          <img class="market-shot" src="./assets/2026-07-12-flowme-user-creator-value-chain/notion-marketplace-official.webp" alt="Notion 공식 제작자 프로필 화면">
+          <div><h3>Notion Marketplace</h3><p>제작자 프로필, 템플릿 판매, 접근 잠금, 분석과 고객 커뮤니케이션을 한 제품 안에 둔다.</p><strong>강점: 복제 가능한 템플릿의 거래</strong><a href="https://www.notion.com/ko/help/selling-on-marketplace" target="_blank" rel="noreferrer">공식 판매 안내</a></div>
+        </article>
+        <article class="market-item">
+          <img class="market-shot" src="./assets/2026-07-12-flowme-user-creator-value-chain/patreon-membership-official.png" alt="Patreon 공식 유료 멤버십 안내 화면">
+          <div><h3>Patreon</h3><p>팬 관계, 유료 멤버십, 일회성 디지털 상품과 회원·수익 분석을 제공한다.</p><strong>강점: 접근권과 반복 수익</strong><a href="https://support.patreon.com/hc/en-us/articles/16722980483213-Enabling-paid-memberships" target="_blank" rel="noreferrer">공식 멤버십 안내</a></div>
+        </article>
+        <article class="market-item">
+          <img class="market-shot" src="./assets/2026-07-12-flowme-user-creator-value-chain/gumroad-sales-analytics-official.png" alt="Gumroad 공식 판매 분석 화면">
+          <div><h3>Gumroad</h3><p>디지털 상품·멤버십을 팔고 조회·구매·추천 경로·이탈률을 분석한다.</p><strong>강점: 상품 거래와 전환 분석</strong><a href="https://gumroad.com/help/article/74-the-analytics-dashboard" target="_blank" rel="noreferrer">공식 분석 안내</a></div>
+        </article>
+        <article class="market-item">
+          <img class="market-shot" src="./assets/2026-07-12-flowme-user-creator-value-chain/teachable-completion-report-official.png" alt="Teachable 공식 강의 완료율 보고 화면">
+          <div><h3>Teachable</h3><p>강의 안에서 레슨 완료율, 영상 참여, 퀴즈와 학생 진도를 추적한다.</p><strong>강점: 학습이라는 수직 실행</strong><a href="https://support.teachable.com/en/articles/11682570-course-reporting-tools" target="_blank" rel="noreferrer">공식 과정 분석 안내</a></div>
+        </article>
+      </div>
+
+      <div class="inference-band"><b>전략적 추론</b><span>여러 원문을 사용자의 기존 실행 도구로 옮기면서 제작자 귀속·버전·업데이트·집계 신호를 유지하는 수평 레이어는 이 비교에서 비어 있다. 이는 시장 실측이 아니라 공식 기능 구조를 바탕으로 한 가설이다.</span></div>
+    </section>
+
+    <section class="slide" id="slide-8" data-page="08 / 12">
+      <div class="slide-head"><span>디커플링 선택</span><span>약한 고리만 소유하고 강한 고리는 연결한다</span></div>
+      <h2>FlowMe는 모든 단계를 먹는 플랫폼이 아니라,<br><span class="accent">실행 계약을 소유하는 연결자</span>다</h2>
+      <p class="lead">콘텐츠 제작과 기존 도구를 대체하면 경쟁 범위가 폭발한다. FlowMe가 장기적으로 축적해야 할 자산에만 제품 책임을 둔다.</p>
+
+      <div class="boundary-grid">
+        <section class="boundary-col">
+          <h3>직접 소유</h3>
+          <div class="boundary-list">
+            <div class="boundary-row"><b>출처·기준본·버전</b><span>누가 무엇을 근거로 만들고 고쳤는지</span></div>
+            <div class="boundary-row"><b>실행 구조</b><span>날짜·순서·체크·진도·결과물 변환</span></div>
+            <div class="boundary-row"><b>개인 수정 관계</b><span>원본과 비공개 사용자 버전의 분리</span></div>
+            <div class="boundary-row"><b>첫 번째 사용 신호</b><span>시작·저장·내보내기·재방문·업데이트 수락</span></div>
+          </div>
+        </section>
+        <section class="boundary-col partner">
+          <h3>연결·제휴</h3>
+          <div class="boundary-list">
+            <div class="boundary-row"><b>발견과 배포</b><span>유튜브·블로그·뉴스레터·검색</span></div>
+            <div class="boundary-row"><b>초기 결제</b><span>제작자의 기존 쇼핑·예약·제휴 링크</span></div>
+            <div class="boundary-row"><b>실행 목적지</b><span>캘린더·할 일·노트·시트</span></div>
+            <div class="boundary-row"><b>고객 관계</b><span>이메일·커뮤니티·강의 플랫폼</span></div>
+          </div>
+        </section>
+        <section class="boundary-col avoid">
+          <h3>초기 제외</h3>
+          <div class="boundary-list">
+            <div class="boundary-row"><b>미디어 제작·호스팅</b><span>영상 편집기와 콘텐츠 피드</span></div>
+            <div class="boundary-row"><b>완전한 생산성 도구</b><span>캘린더·노트·프로젝트 관리 대체</span></div>
+            <div class="boundary-row"><b>분야별 전문 서비스</b><span>LMS·의료 코칭·재무 판단 시스템</span></div>
+            <div class="boundary-row"><b>무제한 공개 마켓</b><span>권리·품질·수요 없이 공급부터 확대</span></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="position-line">포지션: 제작자의 원본 콘텐츠를 검토된 실행 자산으로 바꾸고, 사용자가 쓰던 도구에서 실행하게 하며, 사용 가치를 다시 제작자에게 연결한다.</div>
+      <div class="ownership-strip">
+        <div><b>휴대성 우선</b><span>외부 실행을 막지 않고 FlowMe 안에서 확인 가능한 신호만 집계</span></div>
+        <div><b>권리 분리</b><span>제작자 기준본과 비공개 개인 수정본을 분리</span></div>
+        <div><b>AI 발행 금지</b><span>AI는 초안, 제작자는 검토, FlowMe는 출처·버전 관문</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-9" data-page="09 / 12">
+      <div class="slide-head"><span>Flow 자산과 권리</span><span>‘제작자’ 한 단어로 모든 역할을 섞지 않는다</span></div>
+      <h2>돈과 데이터가 연결되려면<br><span class="blue">자산의 층과 참여자 역할</span>을 먼저 나눈다</h2>
+
+      <div class="asset-stack">
+        <div class="stack-layers" aria-label="Flow 자산 계층">
+          <div class="stack-layer"><b>01 · 원문</b><span>글·영상·강의의 저작권, 기존 조회·광고·제휴·판매 수익</span></div>
+          <div class="stack-layer"><b>02 · 기준 Flow</b><span>제작자가 검토한 실행 구조, 출처, 버전, 주의, 업데이트 책임</span></div>
+          <div class="stack-layer"><b>03 · 제안·가격</b><span>무료 동반물, 외부 유료 상품, 유료 Flow Pack, 사용·재배포 범위</span></div>
+          <div class="stack-layer"><b>04 · 개인본</b><span>사용자의 날짜·항목·메모·완료 기록. 비공개가 기본</span></div>
+          <div class="stack-layer"><b>05 · 집계 신호</b><span>동의된 시작·저장·내보내기·재방문·업데이트 수락·자기보고</span></div>
+        </div>
+
+        <div>
+          <div class="role-map" aria-label="참여자 역할">
+            <div class="role-row"><b>원문 권리자</b><span>원본 사용 범위와 수익 연결을 승인</span><strong>출처·원문 수익</strong></div>
+            <div class="role-row"><b>Flow 제작자</b><span>실행 구조를 검토·유지·업데이트</span><strong>상품·유지 가치</strong></div>
+            <div class="role-row"><b>사용자</b><span>개인본을 수정·실행하고 선택적으로 신호 제공</span><strong>실행·휴대성</strong></div>
+            <div class="role-row"><b>외부 도구</b><span>캘린더·할 일·노트·결제의 실제 목적지</span><strong>기존 습관 유지</strong></div>
+            <div class="role-row"><b>FlowMe</b><span>기준본·변환·버전·귀속·첫 번째 신호를 연결</span><strong>도구·거래 수익</strong></div>
+          </div>
+          <div class="simplify-band"><b>초기 단순화:</b> `원문 권리자 = Flow 제작자`인 파트너만 선택한다. 큐레이터·번역자·검수자 수익 분배는 기준본 가치가 검증된 뒤 추가한다.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-10" data-page="10 / 12">
+      <div class="slide-head"><span>주장별 근거 원장</span><span>확인된 사실과 전략 가설을 분리한다</span></div>
+      <h2>숫자가 있는 주장도 있고,<br><span class="coral">아직 측정해야 할 주장</span>도 있다</h2>
+      <p class="lead">외부 자료는 문제와 생태계의 존재를 뒷받침한다. FlowMe의 수요·전환·수익은 현재 근거가 없으며, 이 부분을 섞어 말하면 전략 보고서가 과장된다.</p>
+
+      <div class="evidence-legend" aria-label="근거 상태 범례">
+        <span class="evidence-badge confirmed">현재 사실</span>
+        <span class="evidence-badge general">일반 근거</span>
+        <span class="evidence-badge inferred">전략적 추론</span>
+        <span class="evidence-badge unmeasured">미측정</span>
+      </div>
+      <div class="evidence-ledger" role="table" aria-label="핵심 주장별 근거와 한계">
+        <div class="evidence-row head" role="row"><strong>핵심 주장</strong><span>근거</span><span>판정</span><span>한계와 다음 확인</span></div>
+        <div class="evidence-row" role="row"><strong>의도만으로 행동이 같은 폭으로 늘지 않는다</strong><span>47개 실험 메타분석: 의도 d=0.66, 행동 d=0.36</span><span class="evidence-badge general">일반 근거</span><span>FlowMe 이용자의 행동 전환율을 뜻하지 않는다.</span></div>
+        <div class="evidence-row" role="row"><strong>구체적인 실행 계획은 목표 달성을 돕는다</strong><span>94개 독립 검증, 8,461명, d=0.65</span><span class="evidence-badge general">일반 근거</span><span>어떤 Flow 구조가 효과적인지는 제품 안에서 따로 확인해야 한다.</span></div>
+        <div class="evidence-row" role="row"><strong>제작자 수익 경로는 이미 존재한다</strong><span>YouTube 파트너 채널 3백만+, 직전 3년 700억 달러+ 지급</span><span class="evidence-badge confirmed">현재 사실</span><span>2024 공식 스냅샷이며 FlowMe 수요 규모를 보여주지는 않는다.</span></div>
+        <div class="evidence-row" role="row"><strong>FlowMe에는 실행 자산 재고가 있다</strong><span>153개 중 유지 44, 보강 105, URL 조회 지도 10</span><span class="evidence-badge confirmed">현재 사실</span><span>코드 재고와 사용자 가치 검증은 다른 지표다.</span></div>
+        <div class="evidence-row" role="row"><strong>수평 실행 레이어가 시장의 빈칸이다</strong><span>Notion·Patreon·Gumroad·Teachable 기능 비교</span><span class="evidence-badge inferred">전략적 추론</span><span>경쟁사 기능 부재만으로 지불의사나 사용 빈도를 증명할 수 없다.</span></div>
+        <div class="evidence-row" role="row"><strong>제작자 참여가 유입·수익을 개선한다</strong><span>FlowMe 실제 제작자 전환·수익 데이터 0</span><span class="evidence-badge unmeasured">미측정</span><span>원문 권리자 배포에서 시작·저장·외부 전환을 직접 측정해야 한다.</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-11" data-page="11 / 12">
+      <div class="slide-head"><span>최우선 검증 설계</span><span>마켓이 아니라 제작자 동반 유입을 검증한다</span></div>
+      <h2>첫 검증 단위는 기능 수가 아니라<br><span class="accent">5~10명 제작자의 실제 배포</span>다</h2>
+      <p class="lead">각 제작자가 자기 원문 2개 안팎을 Flow로 만들면 10~20개 기준본을 관찰할 수 있다. 이는 기준선을 얻기 위한 운영 제안이며 성공 기준이나 현재 성과가 아니다.</p>
+
+      <div class="pilot-funnel" aria-label="제작자 P0 검증 퍼널">
+        <div class="funnel-step creator"><b>제작자 초대</b><span>원문 권리자 5~10명</span></div>
+        <div class="funnel-step creator"><b>원문 가져오기</b><span>기존 URL·영상·가이드</span></div>
+        <div class="funnel-step creator"><b>AI 초안</b><span>날짜·순서·체크 추출</span></div>
+        <div class="funnel-step creator"><b>검토·발행</b><span>권리·버전·CTA 승인</span></div>
+        <div class="funnel-step user"><b>원문에서 진입</b><span>링크·QR·임베드</span></div>
+        <div class="funnel-step user"><b>개인화</b><span>날짜·항목·목적지</span></div>
+        <div class="funnel-step user"><b>저장·내보내기</b><span>My Flow·기존 도구</span></div>
+        <div class="funnel-step learn"><b>재방문·신호</b><span>정직한 관찰 범위</span></div>
+        <div class="funnel-step learn"><b>업데이트·수익</b><span>다음 버전·외부 전환</span></div>
+      </div>
+
+      <div class="pilot-grid">
+        <section class="pilot-col"><h3>제작자 적합성</h3><div class="pilot-item"><b>01</b><span>초대→첫 Flow 발행</span></div><div class="pilot-item"><b>02</b><span>원문→발행까지 걸린 시간</span></div><div class="pilot-item"><b>03</b><span>30일 안에 두 번째 Flow 발행</span></div><div class="pilot-item"><b>04</b><span>원문 CTA·링크 실제 배포</span></div></section>
+        <section class="pilot-col"><h3>사용자 실행성</h3><div class="pilot-item"><b>01</b><span>원문 방문→Flow 미리보기</span></div><div class="pilot-item"><b>02</b><span>미리보기→시작</span></div><div class="pilot-item"><b>03</b><span>시작→저장·내보내기</span></div><div class="pilot-item"><b>04</b><span>7일 재방문·개인 수정</span></div></section>
+        <section class="pilot-col"><h3>경제·품질</h3><div class="pilot-item"><b>01</b><span>외부 상품·예약·제휴 전환 기여</span></div><div class="pilot-item"><b>02</b><span>사용자 이탈·과도한 수정</span></div><div class="pilot-item"><b>03</b><span>출처·권리·최신성 문제</span></div><div class="pilot-item"><b>04</b><span>제작자가 업데이트한 비율</span></div></section>
+      </div>
+      <p class="source-note">완료율은 My Flow 안에서 확인한 항목이나 사용자가 직접 보고한 결과만 집계한다. 외부 캘린더로 내보낸 뒤의 완료를 추정해 제작자 성과로 주장하지 않는다.</p>
+    </section>
+
+    <section class="slide" id="slide-12" data-page="12 / 12">
+      <div class="slide-head"><span>실행 순서와 CEO 결정</span><span>제작자 참여는 앞당기고 거래 운영은 늦춘다</span></div>
+      <h2>제작자 플랫폼을 먼저 만드는 것이 아니라,<br><span class="accent">제작자와 함께 콘텐츠→실행 연결을 검증</span>한다</h2>
+
+      <div class="roadmap">
+        <article class="roadmap-stage now"><time>P0 · 최우선</time><h3>제작자 동반 실행</h3><p>자기 원문→검토된 Flow→원문 실행 링크→사용자 저장·내보내기.</p><strong>수익: 외부 상품·제휴·예약 기여 측정</strong></article>
+        <article class="roadmap-stage next"><time>P1 · 다음</time><h3>제작자 운영 도구</h3><p>기준본 버전, 업데이트 수락, 집계 정보, 여러 Flow 묶음.</p><strong>수익: 제작자용 유료 운영 도구</strong></article>
+        <article class="roadmap-stage later"><time>P2 · 후속</time><h3>유료 Flow 묶음</h3><p>권리·환불·정산·접근 제어를 갖춘 자체 거래.</p><strong>수익: 거래 수수료</strong></article>
+        <article class="roadmap-stage last"><time>P3 · 장기</time><h3>삽입·API·채널</h3><p>출판사·플랫폼·브랜드가 자기 콘텐츠에 실행 연결을 추가.</p><strong>수익: 기업 구독·사용량</strong></article>
+      </div>
+
+      <div class="decision-list">
+        <div class="decision-row"><b>01</b><strong>제작자 참여를 최우선 공급·유통 과제로 둘 것인가</strong><span>추천: 승인. 단, 공개 마켓이 아니라 원문 권리자 설계 파트너로 제한한다.</span></div>
+        <div class="decision-row"><b>02</b><strong>제작자 기준본과 비공개 사용자 개인본을 분리할 것인가</strong><span>추천: 승인. 권리·업데이트·개인화를 동시에 지키는 핵심 계약이다.</span></div>
+        <div class="decision-row"><b>03</b><strong>초기 수익 검증을 외부 전환 귀속으로 시작할 것인가</strong><span>추천: 승인. 자체 결제·환불·정산은 실행 가치가 확인된 뒤 구축한다.</span></div>
+      </div>
+
+      <div class="source-links" aria-label="근거 문서">
+        <a href="./2026-07-12-flowme-ai-era-platform-strategy-ceo-ko.html">AI 시대 플랫폼 전략</a>
+        <a href="./2026-07-12-flowme-initial-content-entry-strategy-ceo-ko.html">초기 콘텐츠 공략 전략</a>
+        <a href="./2026-07-11-flowme-service-platform-strategy-ceo-v2-ko.html">서비스·플랫폼 전략 v2</a>
+        <a href="./2026-07-05-web-source-community-creator-loop-shortlist-ko.html">제작자·커뮤니티 후보 검토</a>
+        <a href="../SERVICE_STRUCTURE.md">현재 서비스 구조</a>
+        <a href="../IDEAS.md">전략 가설 기록</a>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/16536643/" target="_blank" rel="noreferrer">의도→행동 메타분석</a>
+        <a href="https://doi.org/10.1016/S0065-2601(06)38002-1" target="_blank" rel="noreferrer">실행 계획 메타분석</a>
+        <a href="https://blog.youtube/inside-youtube/2024-letter-from-neal/" target="_blank" rel="noreferrer">YouTube 제작자 경제 수치</a>
+      </div>
+      <p class="source-note">외부 근거는 문제와 기존 생태계의 존재를 뒷받침한다. FlowMe의 제작자 전환·실행·수익 수치는 현재 미측정이며, 파일럿 규모와 단계는 전략 제안이다. 승인 이후에도 실측 전에는 “검증됐다”라고 표현하지 않는다.</p>
+    </section>
+  </main>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const status = document.getElementById('slide-status');
+    const prev = document.getElementById('prev-slide');
+    const next = document.getElementById('next-slide');
+    let current = 0;
+
+    const updateControls = () => {
+      status.textContent = `${current + 1} / ${slides.length}`;
+      prev.disabled = current === 0;
+      next.disabled = current === slides.length - 1;
+    };
+    const go = (index) => {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides[current].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      updateControls();
+    };
+
+    prev.addEventListener('click', () => go(current - 1));
+    next.addEventListener('click', () => go(current + 1));
+    document.getElementById('print-deck').addEventListener('click', () => window.print());
+    document.addEventListener('keydown', (event) => {
+      if (['ArrowRight', 'PageDown'].includes(event.key)) go(current + 1);
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) go(current - 1);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      current = slides.indexOf(visible.target);
+      updateControls();
+    }, { threshold: [0.3, 0.6, 0.85] });
+    slides.forEach((slide) => observer.observe(slide));
+    updateControls();
+  </script>
+</body>
+</html>

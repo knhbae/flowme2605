@@ -1,0 +1,29 @@
+{
+  "fixture": "curated-allblanc-morning-workout-2026-07-15-mon-wed-fri",
+  "input": {
+    "startDate": "2026-07-15",
+    "weekdays": ["MO", "WE", "FR"],
+    "projectionWeeks": 4
+  },
+  "expectedOccurrences": [
+    "2026-07-15",
+    "2026-07-17",
+    "2026-07-20",
+    "2026-07-22",
+    "2026-07-24",
+    "2026-07-27",
+    "2026-07-29",
+    "2026-07-31",
+    "2026-08-03",
+    "2026-08-05",
+    "2026-08-07",
+    "2026-08-10"
+  ],
+  "calendarCount": 12,
+  "ics": {
+    "mode": "rrule",
+    "masterEventCount": 1,
+    "rrule": "FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260811",
+    "duplicateEventCount": 0
+  }
+}

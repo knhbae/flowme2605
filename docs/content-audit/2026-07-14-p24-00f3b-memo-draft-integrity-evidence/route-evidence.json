@@ -1,0 +1,54 @@
+{
+  "slice": "P24-00F3B",
+  "baselineCommit": "e6c0f8f",
+  "evidenceClass": [
+    "current_command",
+    "browser_simulated"
+  ],
+  "markers": {
+    "memoDraftSuggestedItemCount": 3,
+    "memoDraftStoredItemCount": 3,
+    "memoDraftStoredCalendarItemCount": 1,
+    "memoDraftStoredTodoItemCount": 2,
+    "memoDraftMyFlowEffectiveItemCount": 3,
+    "memoDraftItemCountAfterReload": 3,
+    "memoDraftWholeFlowMemoExportItemCount": 3,
+    "memoDraftScheduledCalendarEventCount": 1,
+    "memoDraftUnscheduledCalendarEventCount": 0,
+    "emptyUrlMissCandidateSavedCount": 0,
+    "memoOnlyCandidateUsesUserAuthoredTitle": true,
+    "lookupStatusCopyUsedAsCandidateTitleCount": 0,
+    "lookupStatusCopyUsedAsDraftItemTitleCount": 0,
+    "sourceMutationCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "routes": [
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "dated memo draft with three effective items and whole-flow export",
+      "screenshot": "screenshots/00-memo-split-items-mobile.png"
+    },
+    {
+      "route": "/my",
+      "viewport": "1024x768",
+      "state": "same three-item memo draft after reload",
+      "screenshot": "screenshots/01-memo-split-items-wide.png"
+    },
+    {
+      "route": "/flows",
+      "viewport": "390x844",
+      "state": "memo-only URL miss candidate with user-authored draft title",
+      "screenshot": "screenshots/02-memo-only-draft-mobile.png"
+    }
+  ],
+  "verification": {
+    "targetedUnit": "16/16 pass",
+    "targetedPlaywright": "2/2 pass",
+    "fullUnit": "486/486 pass",
+    "docsCheck": "pass (14 required files, 2121 local links)",
+    "build": "pass (18 routes)"
+  }
+}

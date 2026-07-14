@@ -11,23 +11,40 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
+import { CalendarUnscheduledTray } from './CalendarUnscheduledTray';
+import { FlowExecutionNotePanel } from './FlowExecutionNotePanel';
+import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 import { MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformNav } from './PlatformNav';
-import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
+import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
+import {
+  buildCalendarUnscheduledSchedulePreview,
+  type CalendarUnscheduledTrayItem,
+} from '@/lib/flow/calendar-unscheduled-tray';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
+import {
+  getMyFlowExecutionNotesForItem,
+  type MyFlowExecutionNote,
+  type MyFlowExecutionNoteKind,
+} from '@/lib/flow/execution-notes';
 import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } from '@/lib/flow/flow-run-history';
 import {
   buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
+  buildMyFlowMultiStepIcs,
   buildMyFlowStepPortableText,
   buildMyFlowStepSheetTsv,
   canBuildMyFlowStepIcs,
   type MyFlowPortableStepExportInput,
 } from '@/lib/flow/my-flow-step-export';
+import {
+  type FlowExportDestination,
+  type FlowExportScopePlan,
+} from '@/lib/flow/export-scope';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { getPublicFlowIndexingPolicy } from '@/lib/flow/route-indexing-policy';
 import {
@@ -46,17 +63,24 @@ import {
 import {
   getFlowOccurrenceExecutionRecords,
   getFlowScopedMyFlowPersonalExecutionState,
+  getMyFlowDateOverrideKey,
   getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowDateOverrides,
   getStoredMyFlowItemDrafts,
   getStoredMyFlowOccurrenceExecutionRecords,
   rekeyMyFlowAnchorDatedRecord,
+  rekeyMyFlowPersonalExecutionStateForAnchor,
+  resolveMyFlowEffectiveDate,
   saveStoredMyFlowDateOverrides,
   saveStoredMyFlowItemDrafts,
   saveStoredMyFlowOccurrenceExecutionRecords,
   type StoredMyFlowItemDraft,
 } from '@/lib/flow/my-flow-personal-state';
 import { expandPersonalDraftCalendarOccurrenceRows } from '@/lib/flow/personal-draft-calendar-occurrence';
+import {
+  expandSavedRoutineOccurrenceRows,
+  type SavedRoutineOccurrenceOrigin,
+} from '@/lib/flow/saved-routine-occurrence';
 import {
   createPersonalDraftStructuralOverlay,
   createPersonalDraftUserItem,
@@ -65,6 +89,7 @@ import {
   movePersonalDraftStructuralItem,
   resolvePersonalDraftStructuralItems,
   restorePersonalDraftStructuralItem,
+  setPersonalDraftUserItemDate,
   setPersonalDraftUserItemRecurrence,
   setPersonalDraftUserItemSchedule,
   undoPersonalDraftStructuralDelete,
@@ -74,7 +99,10 @@ import {
   buildPersonalDraftProjectionValueOverlays,
   getPersonalDraftProjectionValueKey,
 } from '@/lib/flow/personal-draft-projection-state';
-import { buildPersonalStructuralListExportArtifacts } from '@/lib/flow/personal-structural-list-export';
+import {
+  buildPersonalStructuralListExportArtifactsFromRows,
+  type PersonalStructuralListExportRow,
+} from '@/lib/flow/personal-structural-list-export';
 import {
   buildPersonalDraftStructuralProjection,
   type PersonalStructuralProjectionResult,
@@ -172,6 +200,7 @@ import {
   getComparisonState,
   getItemStates,
   getMyFlowCompletionFeedback,
+  getMyFlowExecutionNotes,
   getMyFlowStepItemChecks,
   getReactionLogs,
   getSavedFlowMapIndexByFlowSlug,
@@ -187,6 +216,7 @@ import {
   saveFlowRecord,
   saveItemStates,
   saveMyFlowCompletionFeedback,
+  saveMyFlowExecutionNote,
   saveMyFlowStepItemChecks,
   saveReactionLogs,
   recordFlowCompletionState,
@@ -1731,6 +1761,10 @@ function FlowUrlLookupResult({
   };
 
   const saveSupplyCandidate = () => {
+    if (!candidateTitle.trim() && !candidateMemo.trim()) {
+      setCandidateFeedback('Flow 이름이나 원하는 결과 중 하나를 입력해 주세요.');
+      return;
+    }
     const candidate = buildUrlFirstSupplyCandidate(result, {
       title: candidateTitle,
       memo: candidateMemo,
@@ -1992,7 +2026,7 @@ function FlowUrlLookupResult({
               </div>
             </form>
           )}
-          {candidateFeedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]">{candidateFeedback}</p> : null}
+          {candidateFeedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]" role="status">{candidateFeedback}</p> : null}
         </section>
       ) : null}
 
@@ -3022,6 +3056,8 @@ type MyFlowRow = {
   structuralOccurrenceRevisionId?: string;
   structuralOccurrenceOriginalDate?: string;
   structuralOccurrenceExecutionState?: PersonalStructuralOccurrenceExecutionState;
+  structuralOccurrenceOrigin?: SavedRoutineOccurrenceOrigin;
+  structuralOccurrenceDateOverrideKey?: string;
 };
 
 type MySavedFlow = {
@@ -3041,6 +3077,19 @@ type MySavedFlow = {
   savedMap?: SavedFlowMapSnapshot;
   demoGroup?: string;
   demoNote?: string;
+};
+
+type MyFlowExportPanelState = {
+  flowSlug: string;
+  scope: 'flow' | 'selected';
+  selectedKeys: string[];
+};
+
+type MyFlowScopeExportItem = {
+  key: string;
+  panelItem: FlowExportPanelItem;
+  listRow: PersonalStructuralListExportRow;
+  portableInput: MyFlowPortableStepExportInput;
 };
 
 type MyFlowPersonalCopySettingsDraft = {
@@ -3154,12 +3203,21 @@ type MyFlowRoutineRuleDraft = {
   endDate?: string;
   scope?: 'this' | 'future' | 'all';
 };
-type MyFlowRoutineCompletionUndo = {
+type MyFlowCompletionUndo = {
+  kind: 'row' | 'occurrence';
   flowSlug: string;
   rowId: string;
-  activeRowKey: string;
-  date: string;
-  originalDate: string;
+  rowKey: string;
+  title: string;
+  occurrenceId?: string;
+  occurrenceSeriesId?: string;
+  occurrenceRevisionId?: string;
+};
+type MyFlowCalendarScheduleUndo = {
+  count: number;
+  targetDate: string;
+  previousOverlaysBySlug: Record<string, PersonalStructuralOverlay>;
+  previousDateOverridesByKey: Record<string, string | null>;
 };
 type MyFlowCompletionFeedbackDraft = {
   flowSlug: string;
@@ -3168,6 +3226,19 @@ type MyFlowCompletionFeedbackDraft = {
   reflectionNote: string;
   correctionScope: string;
   correctionNote: string;
+  status: string;
+};
+type MyFlowExecutionNoteDraft = {
+  flowSlug: string;
+  rowKey: string;
+  itemTitle: string;
+  itemDate?: string;
+  sourceUrl?: string;
+  mode: MyFlowExecutionNoteKind;
+  privateNote: string;
+  correctionNote: string;
+  privateSaved: boolean;
+  correctionSaved: boolean;
   status: string;
 };
 type MyFlowReuseDraft = {
@@ -3206,12 +3277,9 @@ function saveStoredMyFlowHiddenFlowSlugs(slugs: string[]): void {
   window.localStorage.setItem(MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY, JSON.stringify(slugs));
 }
 
-function getMyFlowItemTypeText(bundle: FlowBundle, row: MyFlowRow, item?: FlowItem): string {
+function getMyFlowItemIntentText(bundle: FlowBundle, row: MyFlowRow, item?: FlowItem): string {
   const detail = row.detail ?? getItemDetail(bundle, row.id);
   return [
-    bundle.flow.title,
-    bundle.flow.category,
-    bundle.flow.primary_destination,
     row.title,
     row.section,
     row.timing,
@@ -3235,19 +3303,25 @@ function hasMyFlowTypeSignal(text: string, pattern: RegExp): boolean {
 
 function deriveMyFlowItemType(bundle: FlowBundle, row: MyFlowRow): MyFlowItemTypeInfo {
   const item = bundle.items.find((entry) => entry.id === row.id);
-  const text = getMyFlowItemTypeText(bundle, row, item);
+  const text = getMyFlowItemIntentText(bundle, row, item);
   const secondary = new Set<MyFlowExecutionItemType>();
   const hasCaution = Boolean(row.detail?.caution || item?.risk_level);
   const hasDecision = Boolean(
     item?.hold_eligible ||
-    hasMyFlowTypeSignal(text, /보류|결정|선택|비교|서명|중단|상담|consult|hold|stop|sign/),
+    hasMyFlowTypeSignal(
+      text,
+      /구매\s*\/\s*보류|구매\s*\/\s*거절|구매|보류|거절|계약\s*(?:진행|중단)|서명|중단|consult|hold|reject|stop|sign/,
+    ),
   );
   const hasEvidence = Boolean(
     item?.photo_filename_pattern ||
     bundle.flow.primary_destination === 'memo' ||
     hasMyFlowTypeSignal(text, /증빙|사진|파일명|제출|접수|확인서|영수증|계약서|보관|공식 조회|딜러 확인|memo|evidence|proof/),
   );
-  const hasLog = hasMyFlowTypeSignal(text, /기록|관찰|점수|컨디션|수면|식사|운동 시간|상태|메모|log|record|tracker/);
+  const hasLog = hasMyFlowTypeSignal(
+    text,
+    /기록표|기록하기|일지|관찰 기록|점수|컨디션 기록|수면 기록|식사 기록|운동 시간 기록|상태 기록|log|record|tracker/,
+  );
   const isRoutine = bundle.flow.structure_type === 'routine' || Boolean(item?.repeat_rule);
 
   if (hasDecision) secondary.add('decision_hold');
@@ -3399,6 +3473,17 @@ function getMyFlowFlowChipLabel(flow: MySavedFlow): string {
 
 function getMyFlowFlowProgressLabel(flow: MySavedFlow): string {
   return `전체 ${flow.done}/${flow.total} 완료`;
+}
+
+function getMyFlowRoutineExecutionLabel(row: MyFlowCalendarRow): string {
+  if (!row.structuralOccurrenceId) {
+    return `반복 항목 ${row.flow.done}/${row.flow.total}`;
+  }
+  if (row.structuralOccurrenceExecutionState === 'done') return '이번 회차 완료';
+  if (row.structuralOccurrenceExecutionState === 'reopened') return '이번 회차 다시 진행';
+  if (row.structuralOccurrenceExecutionState === 'skipped') return '이번 회차 건너뜀';
+  if (row.structuralOccurrenceExecutionState === 'held') return '이번 회차 보류';
+  return '이번 회차 대기';
 }
 
 function getMyFlowSourceHref(flow: MySavedFlow): string {
@@ -4297,7 +4382,7 @@ const MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT = 5;
 type MyFlowRoutineIconKind = 'study' | 'running' | 'workout' | 'meal' | 'maintenance' | 'routine';
 
 function getMyFlowCalendarRowKey(flowSlug: string, rowId: string, originalDate: string): string {
-  return `${flowSlug}::${rowId}::${originalDate}`;
+  return getMyFlowDateOverrideKey(flowSlug, rowId, originalDate);
 }
 
 function getMyFlowManualScheduleKey(flowSlug: string, rowId: string): string {
@@ -4328,8 +4413,17 @@ function mapPersonalDraftProjectionRowToMyFlowRow(
 
   if (projectionRow.ownership === 'source') {
     const sourceRow = sourceRows.find((row) => row.id === projectionRow.itemId);
-    if (!sourceRow) return undefined;
-    const { date: _sourceDate, ...sourceRowWithoutDate } = sourceRow;
+    const sourceItem = bundle.items.find((item) => item.id === projectionRow.itemId);
+    if (!sourceRow && !sourceItem) return undefined;
+    const sourceRowWithoutDate = sourceRow
+      ? (({ date: _sourceDate, ...row }) => row)(sourceRow)
+      : {
+          id: sourceItem!.id,
+          title: sourceItem!.title,
+          section: getSectionTitleForBundle(bundle, sourceItem!.section_id),
+          timing: sourceItem!.repeat_rule,
+          detail: getItemDetail(bundle, sourceItem!.id),
+        };
     return withMyFlowItemType(bundle, {
       ...sourceRowWithoutDate,
       title: projectionRow.title,
@@ -4558,8 +4652,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [savedMapIdParam, setSavedMapIdParam] = useState('');
   const [activeProgress, setActiveProgress] = useState<ReturnType<typeof getActiveFlowProgress>>([]);
   const [savedView, setSavedView] = useState<MyFlowView>(initialView);
-  const [myFlowVisibleMonth, setMyFlowVisibleMonth] = useState(getMyFlowMonthStart(formatDate(new Date())));
-  const [myFlowSelectedDate, setMyFlowSelectedDate] = useState(formatDate(new Date()));
+  const [myFlowVisibleMonth, setMyFlowVisibleMonth] = useState(getMyFlowMonthStart(formatLocalDate(new Date())));
+  const [myFlowSelectedDate, setMyFlowSelectedDate] = useState(formatLocalDate(new Date()));
   const [selectedSavedFlowSlug, setSelectedSavedFlowSlug] = useState('all');
   const [myFlowCalendarScope, setMyFlowCalendarScope] = useState<MyFlowCalendarScope>('all');
   const [checklistFilter, setChecklistFilter] = useState<ChecklistFilter>('all');
@@ -4578,12 +4672,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStepItemChecks, setMyFlowStepItemChecks] = useState<MyFlowStepItemChecks>({});
   const [myFlowCompletionFeedbackBySlug, setMyFlowCompletionFeedbackBySlug] = useState<Record<string, MyFlowCompletionFeedback>>({});
   const [myFlowCompletionFeedbackDraft, setMyFlowCompletionFeedbackDraft] = useState<MyFlowCompletionFeedbackDraft | null>(null);
+  const [myFlowExecutionNotesBySlug, setMyFlowExecutionNotesBySlug] = useState<Record<string, MyFlowExecutionNote[]>>({});
+  const [myFlowExecutionNoteDraft, setMyFlowExecutionNoteDraft] = useState<MyFlowExecutionNoteDraft | null>(null);
   const [myFlowReuseDraft, setMyFlowReuseDraft] = useState<MyFlowReuseDraft | null>(null);
   const [myFlowReuseNotice, setMyFlowReuseNotice] = useState<MyFlowReuseNotice | null>(null);
   const [myFlowRoutineRuleDrafts, setMyFlowRoutineRuleDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
   const [myFlowRoutineRuleEditorDrafts, setMyFlowRoutineRuleEditorDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
   const [myFlowExpandedRoutineKey, setMyFlowExpandedRoutineKey] = useState('');
   const [myFlowExpandedAdvancedKey, setMyFlowExpandedAdvancedKey] = useState('');
+  const [myFlowEditorAdvancedDisclosure, setMyFlowEditorAdvancedDisclosure] = useState<{
+    rowKey: string;
+    expanded: boolean;
+  } | null>(null);
   const [myFlowExpandedMemoKey, setMyFlowExpandedMemoKey] = useState('');
   const [myFlowEditingDetailKey, setMyFlowEditingDetailKey] = useState('');
   const [myFlowActiveRowKey, setMyFlowActiveRowKey] = useState('');
@@ -4591,7 +4691,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowDetailOpen, setMyFlowDetailOpen] = useState(false);
   const [myFlowExpandedStructureSlug, setMyFlowExpandedStructureSlug] = useState('');
   const [myFlowExpandedStructureStepSlug, setMyFlowExpandedStructureStepSlug] = useState('');
-  const [myFlowRoutineCompletionUndo, setMyFlowRoutineCompletionUndo] = useState<MyFlowRoutineCompletionUndo | null>(null);
+  const [myFlowCompletionUndo, setMyFlowCompletionUndo] = useState<MyFlowCompletionUndo | null>(null);
   const [myFlowInventoryOpen, setMyFlowInventoryOpen] = useState(false);
   const [myFlowTodayCompletedOpen, setMyFlowTodayCompletedOpen] = useState(false);
   const [myFlowRoutineOverflowDate, setMyFlowRoutineOverflowDate] = useState('');
@@ -4614,11 +4714,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStructuralAddOpenSlug, setMyFlowStructuralAddOpenSlug] = useState('');
   const [myFlowStructuralAddTitle, setMyFlowStructuralAddTitle] = useState('');
   const [myFlowStructuralUndo, setMyFlowStructuralUndo] = useState<PersonalDraftStructuralUndo | null>(null);
+  const [myFlowUnscheduledTrayOpen, setMyFlowUnscheduledTrayOpen] = useState(true);
+  const [myFlowUnscheduledSelection, setMyFlowUnscheduledSelection] = useState<string[]>([]);
+  const [myFlowUnscheduledTargetDate, setMyFlowUnscheduledTargetDate] = useState('');
+  const [myFlowCalendarScheduleUndo, setMyFlowCalendarScheduleUndo] = useState<MyFlowCalendarScheduleUndo | null>(null);
+  const [myFlowExportPanel, setMyFlowExportPanel] = useState<MyFlowExportPanelState | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
   const isMyFlowScenarioDemo = myFlowDemoMode === 'ux12' || myFlowDemoMode === 'ux20' || myFlowDemoMode === 'source-backed';
   const myFlowCalendarCardRef = useRef<HTMLElement | null>(null);
+  const myFlowCalendarInitialFocusAppliedRef = useRef(false);
   const myFlowSelectedDayRef = useRef<HTMLElement | null>(null);
   const myFlowInlineDetailRef = useRef<HTMLDivElement | null>(null);
   const myFlowOverviewSummaryRef = useRef<HTMLElement | null>(null);
@@ -4626,6 +4732,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowDraggingRoutineKeyRef = useRef('');
   const myFlowDraggingRoutineDateRef = useRef('');
   const showDemoData = Boolean(myFlowDemoMode);
+
+  useEffect(() => {
+    if (!myFlowCompletionUndo) return;
+    const timeoutId = window.setTimeout(() => setMyFlowCompletionUndo(null), 5000);
+    return () => window.clearTimeout(timeoutId);
+  }, [myFlowCompletionUndo]);
+  useEffect(() => {
+    if (!myFlowCalendarScheduleUndo) return;
+    const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 5000);
+    return () => window.clearTimeout(timeoutId);
+  }, [myFlowCalendarScheduleUndo]);
   const savedViewTabs = [
     ['today', '오늘'],
     ['calendar', '캘린더'],
@@ -4769,6 +4886,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         progress.flatMap((item) => {
           const feedback = getMyFlowCompletionFeedback(item.slug);
           return feedback ? [[item.slug, feedback] as const] : [];
+        }),
+      ),
+    );
+    setMyFlowExecutionNotesBySlug(
+      Object.fromEntries(
+        progress.flatMap((item) => {
+          const notes = getMyFlowExecutionNotes(item.slug);
+          return notes.length > 0 ? [[item.slug, notes] as const] : [];
         }),
       ),
     );
@@ -5026,12 +5151,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 20 && savedView === 'flow';
   const showFlowInventory = !shouldCollapseFlowInventory || myFlowInventoryOpen;
   const showMyFlowScopeControl = !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
-  const getSavedFlowNextRow = (flow: MySavedFlow) =>
-    flow.rows.find((row) => !isMyFlowRowChecked(flow, row));
   const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
     isUrlFirstDraftSavedFlow(flow)
       ? myFlowDateOverrides[getPersonalDraftProjectionValueKey(flow.progress.slug, rowId)]
       : undefined;
+  const resolveSavedFlowRowDate = (
+    flow: MySavedFlow,
+    row: MyFlowRow,
+    sourceDate: string | undefined = row.date,
+  ) => resolveMyFlowEffectiveDate({
+    flowSlug: flow.progress.slug,
+    itemId: row.id,
+    sourceDate,
+    dateOverrides: myFlowDateOverrides,
+    draftDateOverride: getMyFlowDraftItemDateOverride(flow, row.id),
+    personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, row.id),
+  });
+  const getSavedFlowNextRow = (flow: MySavedFlow) => {
+    const row = flow.rows.find((candidate) => !isMyFlowRowChecked(flow, candidate));
+    if (!row || row.structuralOccurrenceId) return row;
+    const resolution = resolveSavedFlowRowDate(flow, row);
+    return { ...row, date: resolution.date };
+  };
   const getMyFlowRoutineWeekdays = (flow: MySavedFlow) =>
     myFlowRoutineRuleDrafts[flow.progress.slug]?.weekdays ??
     flow.progress.weekdays ??
@@ -5090,7 +5231,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       });
     }
   };
-  const occurrenceProjectionTodayDate = showDemoData ? '2026-05-28' : formatDate(new Date());
+  const occurrenceProjectionTodayDate = showDemoData ? '2026-05-28' : formatLocalDate(new Date());
   const occurrenceVisibleRange = {
     start: getMyFlowMonthStart(myFlowVisibleMonth),
     end: getMyFlowMonthEnd(myFlowVisibleMonth),
@@ -5110,15 +5251,66 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       myFlowOccurrenceExecutionRecords,
     );
     const expandedRows = [occurrenceVisibleRange, occurrenceExecutionRange]
-      .flatMap((range) =>
-        expandPersonalDraftCalendarOccurrenceRows({
+      .flatMap((range) => {
+        const personalDraftOccurrenceRows = expandPersonalDraftCalendarOccurrenceRows({
           personalDraftEligible: isPersonalDraftStructuralEditEligible(flow.bundle),
           identityNamespace: flow.progress.slug,
           rows: baseRows,
           range,
           executionRecords: occurrenceExecutionRecords,
-        }),
-      )
+        });
+        const definitions = Object.fromEntries(baseRows.map((row) => {
+          const item = flow.bundle.items.find((entry) => entry.id === row.id);
+          const baseDateKey = row.date
+            ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, row.date)
+            : getMyFlowManualScheduleKey(flow.progress.slug, row.id);
+          const committedDraft = {
+            ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(flow.progress.slug, row.id)] ?? {}),
+            ...(myFlowItemDrafts[baseDateKey] ?? {}),
+          };
+          const sourceRepeatRule = item?.repeat_rule;
+          const repeatPreset = committedDraft.repeatPreset;
+          if (!row.date || (!sourceRepeatRule && !repeatPreset)) return [row.id, undefined];
+          const manualRepeatStartDate = !sourceRepeatRule && repeatPreset
+            ? myFlowDateOverrides[baseDateKey] ?? row.date
+            : row.date;
+          return [row.id, {
+            itemId: row.id,
+            startDate: manualRepeatStartDate,
+            sourceRepeatRule,
+            repeatPreset,
+            ...(sourceRepeatRule || flow.bundle.flow.structure_type === 'routine'
+              ? { selectedWeekdays: getMyFlowRoutineWeekdays(flow) }
+              : {}),
+            ...(myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate
+              ? { endDate: myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate }
+              : {}),
+            ...(isUserScheduledExactVideo(flow.bundle) ? { projectionWeeks: 4 } : {}),
+            ...(committedDraft.time ? { time: committedDraft.time } : {}),
+            ...(committedDraft.time && committedDraft.durationMinutes
+              ? { durationMinutes: committedDraft.durationMinutes }
+              : {}),
+          }];
+        }));
+        return expandSavedRoutineOccurrenceRows({
+          identityNamespace: flow.progress.slug,
+          rows: personalDraftOccurrenceRows,
+          definitions,
+          range,
+          executionRecords: occurrenceExecutionRecords,
+          resolveOccurrenceDate: ({ itemId, originalDate }) => {
+            const overrideKey = getMyFlowCalendarRowKey(
+              flow.progress.slug,
+              itemId,
+              originalDate,
+            );
+            return {
+              date: myFlowDateOverrides[overrideKey] ?? originalDate,
+              overrideKey,
+            };
+          },
+        });
+      })
       .reduce<MyFlowRow[]>((rows, row) => {
         const key = row.structuralOccurrenceId
           ? `occurrence:${row.structuralOccurrenceId}`
@@ -5135,11 +5327,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       .filter((row) => row.date)
       .map((row) => {
         const originalDate = row.structuralOccurrenceOriginalDate ?? row.date ?? '';
-        const calendarKey = row.structuralOccurrenceId
-          ? `${flow.progress.slug}::occurrence::${row.structuralOccurrenceId}`
-          : getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
-        const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
-        const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
+        const dateResolution = row.structuralOccurrenceId
+          ? undefined
+          : resolveSavedFlowRowDate(flow, row, originalDate);
+        const calendarKey = row.structuralOccurrenceDateOverrideKey ?? (
+          row.structuralOccurrenceId
+            ? `${flow.progress.slug}::occurrence::${row.structuralOccurrenceId}`
+            : dateResolution?.overrideKey ?? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
+        );
         return {
           ...row,
           flow,
@@ -5147,10 +5342,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           calendarKey,
           date: row.structuralOccurrenceId
             ? row.date
-            : draftDateOverride ??
-              myFlowDateOverrides[calendarKey] ??
-              personalDateOverride ??
-              row.date,
+            : dateResolution?.date,
         };
       });
   });
@@ -5158,15 +5350,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     (flow.projectionRows ?? flow.rows)
       .filter((row) => !row.date)
       .flatMap((row) => {
-        const calendarKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
-        const date = getMyFlowDraftItemDateOverride(flow, row.id) ?? myFlowDateOverrides[calendarKey] ?? getMyFlowPersonalCopyStepDateOverride(flow, row.id);
-        if (!date) return [];
+        const dateResolution = resolveSavedFlowRowDate(flow, row);
+        if (!dateResolution.date) return [];
         return [{
           ...row,
           flow,
-          originalDate: 'none',
-          calendarKey,
-          date,
+          originalDate: dateResolution.originalDate,
+          calendarKey: dateResolution.overrideKey,
+          date: dateResolution.date,
         }];
       }),
   );
@@ -5184,13 +5375,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       weeks: 4,
     }).filter((occurrence) => !routineEndDate || occurrence.date <= routineEndDate).map((occurrence) => {
       const originalDate = occurrence.date;
-      const calendarKey = getMyFlowCalendarRowKey(flow.progress.slug, nextRow.id, originalDate);
-      const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, nextRow.id);
+      const dateResolution = resolveMyFlowEffectiveDate({
+        flowSlug: flow.progress.slug,
+        itemId: nextRow.id,
+        sourceDate: originalDate,
+        dateOverrides: myFlowDateOverrides,
+        personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, nextRow.id),
+      });
       return {
         ...nextRow,
         originalDate,
-        calendarKey,
-        date: myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? originalDate,
+        calendarKey: dateResolution.overrideKey,
+        date: dateResolution.date,
         timing: nextRow.timing ?? `${occurrence.sessionIndex}회차 · ${occurrence.weekday}요일`,
         section: nextRow.section || '루틴',
         flow,
@@ -5226,6 +5422,59 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarScheduleRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarRoutineRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
   const calendarScopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope));
+  const calendarUnscheduledRows: MyFlowCalendarRow[] = isMyFlowScenarioDemo ? [] : visibleExecutionFlows
+    .flatMap((flow) =>
+      flow.rows.flatMap((row) => {
+        if (row.structuralOccurrenceId || isMyFlowRowChecked(flow, row)) return [];
+        const dateResolution = resolveSavedFlowRowDate(flow, row);
+        const effectiveDate = row.structuralScheduleProjection?.calendarDate ?? dateResolution.date;
+        if (effectiveDate) return [];
+        return [{
+          ...row,
+          flow,
+          originalDate: dateResolution.originalDate,
+          calendarKey: dateResolution.overrideKey,
+        }];
+      }),
+    )
+    .filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope))
+    .sort((left, right) => {
+      const flowOrder = getMyFlowCalendarFlowTitle(left.flow).localeCompare(
+        getMyFlowCalendarFlowTitle(right.flow),
+        'ko',
+      );
+      if (flowOrder !== 0) return flowOrder;
+      return (
+        (left.structuralProjectionOrderRank ?? Number.MAX_SAFE_INTEGER) -
+          (right.structuralProjectionOrderRank ?? Number.MAX_SAFE_INTEGER) ||
+        left.id.localeCompare(right.id)
+      );
+    });
+  const calendarUnscheduledTrayRowsByKey = new Map(
+    calendarUnscheduledRows.map((row) => [
+      `${row.flow.progress.slug}::${row.structuralProjectionStableId ?? row.id}`,
+      row,
+    ]),
+  );
+  const calendarUnscheduledTrayItems: CalendarUnscheduledTrayItem[] = calendarUnscheduledRows.map((row) => ({
+    key: `${row.flow.progress.slug}::${row.structuralProjectionStableId ?? row.id}`,
+    flowSlug: row.flow.progress.slug,
+    flowTitle: getMyFlowCalendarFlowTitle(row.flow),
+    itemId: row.id,
+    stableItemId: row.structuralProjectionStableId ?? row.id,
+    title: row.title,
+    ownership:
+      row.structuralOwnership === 'source' || row.structuralOwnership === 'user_created'
+        ? row.structuralOwnership
+        : 'unknown',
+  }));
+  const calendarUnscheduledEffectiveTargetDate =
+    myFlowUnscheduledTargetDate || myFlowSelectedDate || occurrenceProjectionTodayDate;
+  const calendarUnscheduledSchedulePreview = buildCalendarUnscheduledSchedulePreview({
+    items: calendarUnscheduledTrayItems,
+    selectedKeys: myFlowUnscheduledSelection,
+    targetDate: calendarUnscheduledEffectiveTargetDate,
+  });
   const calendarScopedDateSignature = calendarScopedRows.map((row) => [
     row.date ?? '',
     row.structuralScheduleProjection?.scheduleState ?? '',
@@ -5398,11 +5647,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : myFlowPrimaryContinuationIsFuture
           ? '다음 할 일'
           : '먼저 할 일';
-  const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => ({
-    ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)] ?? {}),
-    ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
-    ...getMyFlowPersonalCopyStepDraft(row),
-  });
+  const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => {
+    const baseRoutineRow = row.structuralOccurrenceOrigin === 'saved_routine'
+      ? row.flow.rows.find((candidate) => candidate.id === row.id)
+      : undefined;
+    const baseRoutineDraftKey = baseRoutineRow
+      ? baseRoutineRow.date
+        ? getMyFlowCalendarRowKey(row.flow.progress.slug, row.id, baseRoutineRow.date)
+        : getMyFlowManualScheduleKey(row.flow.progress.slug, row.id)
+      : '';
+    return {
+      ...(baseRoutineDraftKey ? myFlowItemDrafts[baseRoutineDraftKey] ?? {} : {}),
+      ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)] ?? {}),
+      ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
+      ...getMyFlowPersonalCopyStepDraft(row),
+    };
+  };
   const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => {
     const draftTitle = getMyFlowRowDraft(row).title;
     return toUserFacingSourceTitle(draftTitle ?? stripMyFlowTimingPrefixFromTitle(row.title));
@@ -6077,39 +6337,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const copyMyFlowStepSheetRow = async (input: MyFlowPortableStepExportInput, key: string) => {
     await copyMyFlowStepText(buildMyFlowStepSheetTsv(input), key, '시트 행 복사됨');
   };
-  const getMyFlowPersonalDraftListExport = (flow: MySavedFlow) => {
-    if (!flow.structuralProjection || !isPersonalDraftStructuralEditEligible(flow.bundle)) {
-      return undefined;
-    }
-    return buildPersonalStructuralListExportArtifacts({
-      flowTitle: getMyFlowExecutionFlowTitle(flow.progress.title),
-      projection: flow.structuralProjection,
-      sourceLabel: toUserFacingSourceTitle(flow.bundle.flow.source_title ?? ''),
-      sourceUrl: flow.bundle.flow.source_url,
-    });
-  };
-  const copyMyFlowPersonalDraftListExport = async (
-    flow: MySavedFlow,
-    destination: 'memo' | 'checklist' | 'sheet',
-  ) => {
-    const artifact = getMyFlowPersonalDraftListExport(flow);
-    if (!artifact) return;
-    const output = destination === 'memo'
-      ? artifact.memoText
-      : destination === 'checklist'
-        ? artifact.checklistText
-        : artifact.sheetTsv;
-    const feedback = destination === 'memo'
-      ? FLOW_EXPORT_FEEDBACK.memoCopied
-      : destination === 'checklist'
-        ? '체크리스트 복사됨'
-        : '시트로 복사됨';
-    await copyMyFlowStepText(
-      output,
-      `personal-draft-list-export::${flow.progress.slug}`,
-      feedback,
-    );
-  };
   const downloadMyFlowStepCalendar = (input: MyFlowPortableStepExportInput, key: string, fileBase: string) => {
     if (!canBuildMyFlowStepIcs(input)) return;
     const ics = buildMyFlowStepIcs(input);
@@ -6408,15 +6635,40 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   useEffect(() => {
     const anchorMonthStart = getMyFlowMonthStart(calendarAnchor);
+    const visibleMonthStart = getMyFlowMonthStart(myFlowVisibleMonth);
+    const visibleMonth = visibleMonthStart.slice(0, 7);
+    const visibleMonthRows = calendarScopedRows.filter((row) => row.date?.startsWith(visibleMonth));
+    if (
+      isCalendarSurface &&
+      !myFlowCalendarInitialFocusAppliedRef.current &&
+      calendarScopedRows.length > 0
+    ) {
+      const initialDate = findMyFlowDefaultFocusDate(
+        calendarScopedRows,
+        myFlowTodayDate,
+        anchorMonthStart,
+      );
+      myFlowCalendarInitialFocusAppliedRef.current = true;
+      setMyFlowSelectedDate(initialDate);
+      setMyFlowVisibleMonth(getMyFlowMonthStart(initialDate));
+      return;
+    }
     setMyFlowSelectedDate((currentDate) => {
       const currentDateStillHasRows = calendarScopedRows.some((row) => row.date === currentDate);
-      const nextSelectedDate = currentDateStillHasRows
-        ? currentDate
-        : findMyFlowDefaultFocusDate(calendarScopedRows, myFlowTodayDate, anchorMonthStart);
+      const currentDateIsInVisibleMonth = currentDate.startsWith(visibleMonth);
+      if (currentDateIsInVisibleMonth) {
+        if (currentDateStillHasRows || visibleMonthRows.length === 0) return currentDate;
+        return visibleMonthRows[0]?.date ?? visibleMonthStart;
+      }
+      const nextSelectedDate = findMyFlowDefaultFocusDate(
+        calendarScopedRows,
+        myFlowTodayDate,
+        anchorMonthStart,
+      );
       setMyFlowVisibleMonth(getMyFlowMonthStart(nextSelectedDate || anchorMonthStart));
       return nextSelectedDate;
     });
-  }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, calendarScopedDateSignature, myFlowTodayDate]);
+  }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, calendarScopedDateSignature, myFlowTodayDate, myFlowVisibleMonth, isCalendarSurface]);
 
   const recordMyFlowCompletionState = (flow: MySavedFlow, checks: Record<string, boolean>) => {
     const completed = flow.rows.length > 0 && flow.rows.every((row) => {
@@ -6461,26 +6713,44 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return true;
   };
 
-  const togglePersonalDraftOccurrenceCompletion = (
-    flow: MySavedFlow,
-    row: MyFlowCalendarRow,
-  ): boolean => {
-    if (!row.structuralOccurrenceId) return false;
-    const storageKey = getMyFlowOccurrenceExecutionStorageKey(
-      flow.progress.slug,
-      row.structuralOccurrenceId,
-    );
-    const currentState = myFlowOccurrenceExecutionRecords[storageKey]?.state ?? 'pending';
-    if (currentState === 'skipped' || currentState === 'held') return true;
-    return setPersonalDraftOccurrenceExecutionState(
-      flow,
-      row,
-      currentState === 'done' ? 'reopened' : 'done',
-    );
-  };
-
   const toggleSavedFlowItem = (flow: MySavedFlow, rowId: string, rowContext?: MyFlowCalendarRow) => {
-    if (rowContext && togglePersonalDraftOccurrenceCompletion(flow, rowContext)) return;
+    const rowKey = rowContext
+      ? getMyFlowRowInstanceKey(rowContext)
+      : `${flow.progress.slug}::${rowId}`;
+    const title = rowContext
+      ? getMyFlowRowDisplayTitle(rowContext)
+      : toUserFacingSourceTitle(flow.rows.find((row) => row.id === rowId)?.title ?? rowId);
+
+    if (
+      rowContext?.structuralOccurrenceId &&
+      rowContext.structuralOccurrenceSeriesId &&
+      rowContext.structuralOccurrenceRevisionId
+    ) {
+      const storageKey = getMyFlowOccurrenceExecutionStorageKey(
+        flow.progress.slug,
+        rowContext.structuralOccurrenceId,
+      );
+      const currentState = myFlowOccurrenceExecutionRecords[storageKey]?.state ?? 'pending';
+      if (currentState === 'skipped' || currentState === 'held') return;
+      const nextState = currentState === 'done' ? 'reopened' : 'done';
+      if (!setPersonalDraftOccurrenceExecutionState(flow, rowContext, nextState)) return;
+      if (nextState === 'done') {
+        setMyFlowCompletionUndo({
+          kind: 'occurrence',
+          flowSlug: flow.progress.slug,
+          rowId,
+          rowKey,
+          title,
+          occurrenceId: rowContext.structuralOccurrenceId,
+          occurrenceSeriesId: rowContext.structuralOccurrenceSeriesId,
+          occurrenceRevisionId: rowContext.structuralOccurrenceRevisionId,
+        });
+      } else {
+        setMyFlowCompletionUndo((current) => current?.rowKey === rowKey ? null : current);
+      }
+      return;
+    }
+
     const checkIds = getMyFlowCheckIds(flow.bundle, rowId, flow.anchor);
     const nextChecked = !checkIds.every((id) => flow.checks[id]);
     const nextChecks = checkIds.reduce(
@@ -6490,25 +6760,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }),
       { ...flow.checks },
     );
-    if (nextChecked && myFlowDetailOpen && rowContext?.date && flow.bundle.flow.structure_type === 'routine') {
-      const originalDate = rowContext.originalDate ?? rowContext.date;
-      setMyFlowRoutineCompletionUndo({
+    if (nextChecked) {
+      setMyFlowCompletionUndo({
+        kind: 'row',
         flowSlug: flow.progress.slug,
         rowId,
-        activeRowKey: getMyFlowCalendarRowKey(flow.progress.slug, rowId, originalDate),
-        date: rowContext.date,
-        originalDate,
+        rowKey,
+        title,
       });
-      const nextRoutineRow = flow.rows.find((candidate) =>
-        !getMyFlowCheckIds(flow.bundle, candidate.id, flow.anchor).every((id) => nextChecks[id]),
-      );
-      if (nextRoutineRow) {
-        setMyFlowActiveRowKey(getMyFlowCalendarRowKey(flow.progress.slug, nextRoutineRow.id, originalDate));
-      }
     } else {
-      setMyFlowRoutineCompletionUndo((current) =>
-        current?.flowSlug === flow.progress.slug && current.rowId === rowId ? null : current,
-      );
+      setMyFlowCompletionUndo((current) => current?.rowKey === rowKey ? null : current);
     }
     if (isMyFlowScenarioDemo) {
       setChecksBySlug((current) => ({ ...current, [flow.progress.slug]: nextChecks }));
@@ -6519,7 +6780,39 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     refreshSavedFlowState();
   };
 
-  const undoMyFlowRoutineCompletion = (flow: MySavedFlow, undo: MyFlowRoutineCompletionUndo) => {
+  const undoMyFlowCompletion = (undo: MyFlowCompletionUndo) => {
+    const flow = savedFlows.find((candidate) => candidate.progress.slug === undo.flowSlug);
+    if (!flow) {
+      setMyFlowCompletionUndo(null);
+      return;
+    }
+    if (
+      undo.kind === 'occurrence' &&
+      undo.occurrenceId &&
+      undo.occurrenceSeriesId &&
+      undo.occurrenceRevisionId
+    ) {
+      const storageKey = getMyFlowOccurrenceExecutionStorageKey(
+        undo.flowSlug,
+        undo.occurrenceId,
+      );
+      setMyFlowOccurrenceExecutionRecords((records) => {
+        const nextRecord = transitionPersonalStructuralOccurrenceExecution({
+          current: records[storageKey],
+          occurrenceId: undo.occurrenceId as string,
+          seriesId: undo.occurrenceSeriesId as string,
+          revisionId: undo.occurrenceRevisionId as string,
+          nextState: 'reopened',
+          at: new Date().toISOString(),
+        });
+        const next = { ...records, [storageKey]: nextRecord };
+        if (!isMyFlowScenarioDemo) saveStoredMyFlowOccurrenceExecutionRecords(next);
+        return next;
+      });
+      setMyFlowCompletionUndo(null);
+      return;
+    }
+
     const checkIds = getMyFlowCheckIds(flow.bundle, undo.rowId, flow.anchor);
     const currentChecks = checksBySlug[flow.progress.slug] ?? flow.checks;
     const nextChecks = checkIds.reduce(
@@ -6529,10 +6822,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }),
       { ...currentChecks },
     );
-    setMyFlowRoutineCompletionUndo(null);
-    setMyFlowActiveRowKey(undo.activeRowKey);
-    setMyFlowSelectedDate(undo.date);
-    setMyFlowVisibleMonth(getMyFlowMonthStart(undo.date));
+    setMyFlowCompletionUndo(null);
     if (isMyFlowScenarioDemo) {
       setChecksBySlug((current) => ({ ...current, [flow.progress.slug]: nextChecks }));
       return;
@@ -6674,15 +6964,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       seen.add(itemId);
       const draft = getMyFlowRowDraft(rowWithFlow);
       const originalDate = row.structuralOccurrenceOriginalDate ?? row.date;
-      const calendarKey = originalDate
-        ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
-        : getMyFlowManualScheduleKey(flow.progress.slug, row.id);
       const effectiveDate = row.structuralOccurrenceId
         ? row.date
-        : getMyFlowDraftItemDateOverride(flow, row.id)
-          ?? myFlowDateOverrides[calendarKey]
-          ?? draft.date?.trim()
-          ?? row.date;
+        : resolveMyFlowEffectiveDate({
+            flowSlug: flow.progress.slug,
+            itemId: row.id,
+            sourceDate: originalDate,
+            dateOverrides: myFlowDateOverrides,
+            draftDateOverride: getMyFlowDraftItemDateOverride(flow, row.id) ?? draft.date?.trim(),
+            personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, row.id),
+          }).date;
       const effectiveTime = row.structuralScheduleProjection?.startTime || draft.time?.trim();
       const effectiveDuration = row.structuralScheduleProjection?.durationMinutes ?? draft.durationMinutes;
       const scheduleState: FlowRunItemSnapshot['scheduleState'] = !effectiveDate
@@ -6804,6 +7095,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
 
+    const personalExecutionState = completedRun.personalExecutionStateSnapshot
+      ?? getFlowScopedMyFlowPersonalExecutionState(flow.progress.slug);
+    const nextPersonalExecutionStateSnapshot =
+      requiresAnchor && myFlowReuseDraft.fixedDatePolicy === 'keep_fixed_dates'
+        ? rekeyMyFlowPersonalExecutionStateForAnchor(personalExecutionState, {
+            flowSlug: flow.progress.slug,
+            previousItems: getMyFlowRows(flow.bundle, flow.anchor).map((row) => ({
+              itemId: row.id,
+              date: row.date,
+            })),
+            nextItems: getMyFlowRows(flow.bundle, anchor).map((row) => ({
+              itemId: row.id,
+              date: row.date,
+            })),
+          })
+        : personalExecutionState;
+
     if (reviewedVersion && typeof window !== 'undefined') {
       window.localStorage.setItem(
         getSourceBackedFlowMapSnapshotStorageKey(reviewedVersion.snapshot.mapId),
@@ -6824,6 +7132,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ...(requiresAnchor && myFlowReuseDraft.fixedDatePolicy
         ? { fixedDatePolicy: myFlowReuseDraft.fixedDatePolicy }
         : {}),
+      personalExecutionStateSnapshot: nextPersonalExecutionStateSnapshot,
       ...(reviewedVersion
         ? {
             mapId: reviewedVersion.snapshot.mapId,
@@ -6947,6 +7256,148 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
   };
 
+  const toggleMyFlowCalendarUnscheduledItem = (key: string) => {
+    setMyFlowUnscheduledSelection((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+    setMyFlowCalendarScheduleUndo(null);
+  };
+
+  const toggleAllMyFlowCalendarUnscheduledItems = () => {
+    const visibleKeys = calendarUnscheduledTrayItems.map((item) => item.key);
+    const allSelected = visibleKeys.length > 0 && visibleKeys.every((key) =>
+      myFlowUnscheduledSelection.includes(key),
+    );
+    setMyFlowUnscheduledSelection(allSelected ? [] : visibleKeys);
+    setMyFlowCalendarScheduleUndo(null);
+  };
+
+  const applyMyFlowCalendarUnscheduledSchedule = () => {
+    if (
+      typeof window === 'undefined' ||
+      isMyFlowScenarioDemo ||
+      !calendarUnscheduledSchedulePreview.canApply ||
+      !calendarUnscheduledSchedulePreview.targetDate
+    ) return;
+
+    const selectedRows = calendarUnscheduledSchedulePreview.selectedItems
+      .map((item) => calendarUnscheduledTrayRowsByKey.get(item.key))
+      .filter((row): row is MyFlowCalendarRow => Boolean(row));
+    if (selectedRows.length !== calendarUnscheduledSchedulePreview.selectedCount) return;
+
+    const previousOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const nextOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const previousDateOverridesByKey: Record<string, string | null> = {};
+    const nextDateOverrides = { ...myFlowDateOverrides };
+    const targetDate = calendarUnscheduledSchedulePreview.targetDate;
+
+    for (const row of selectedRows) {
+      const personalUserItem =
+        isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
+        row.structuralOwnership === 'user_created';
+      if (personalUserItem) {
+        const flowSlug = row.flow.progress.slug;
+        const currentOverlay =
+          nextOverlaysBySlug[flowSlug] ??
+          myFlowStructuralOverlaysBySlug[flowSlug] ??
+          createPersonalDraftStructuralOverlay(row.flow.bundle);
+        if (!previousOverlaysBySlug[flowSlug]) {
+          previousOverlaysBySlug[flowSlug] = currentOverlay;
+        }
+        const scheduled = setPersonalDraftUserItemDate({
+          overlay: currentOverlay,
+          itemId: row.structuralProjectionStableId ?? row.id,
+          date: targetDate,
+        });
+        if (!scheduled) return;
+        nextOverlaysBySlug[flowSlug] = scheduled.overlay;
+        continue;
+      }
+
+      const dateOverrideKey = isPersonalDraftStructuralEditEligible(row.flow.bundle)
+        ? getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)
+        : row.calendarKey ?? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id);
+      if (!Object.prototype.hasOwnProperty.call(previousDateOverridesByKey, dateOverrideKey)) {
+        previousDateOverridesByKey[dateOverrideKey] = myFlowDateOverrides[dateOverrideKey] ?? null;
+      }
+      nextDateOverrides[dateOverrideKey] = targetDate;
+    }
+
+    const savedOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    try {
+      Object.entries(nextOverlaysBySlug).forEach(([flowSlug, overlay]) => {
+        savedOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
+      });
+      if (Object.keys(previousDateOverridesByKey).length > 0) {
+        saveStoredMyFlowDateOverrides(nextDateOverrides);
+      }
+    } catch {
+      try {
+        Object.values(previousOverlaysBySlug).forEach((overlay) => {
+          savePersonalStructuralOverlay(window.localStorage, overlay);
+        });
+        saveStoredMyFlowDateOverrides(myFlowDateOverrides);
+      } catch {
+        // Keep the screen usable even when local storage is unavailable.
+      }
+      return;
+    }
+
+    if (Object.keys(savedOverlaysBySlug).length > 0) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        ...savedOverlaysBySlug,
+      }));
+    }
+    if (Object.keys(previousDateOverridesByKey).length > 0) {
+      setMyFlowDateOverrides(nextDateOverrides);
+    }
+    setMyFlowCalendarScheduleUndo({
+      count: selectedRows.length,
+      targetDate,
+      previousOverlaysBySlug,
+      previousDateOverridesByKey,
+    });
+    setMyFlowUnscheduledSelection([]);
+    setMyFlowSelectedDate(targetDate);
+    setMyFlowVisibleMonth(getMyFlowMonthStart(targetDate));
+  };
+
+  const undoMyFlowCalendarUnscheduledSchedule = () => {
+    if (typeof window === 'undefined' || !myFlowCalendarScheduleUndo) return;
+    const { previousOverlaysBySlug, previousDateOverridesByKey } = myFlowCalendarScheduleUndo;
+    const restoredOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const restoredDateOverrides = { ...myFlowDateOverrides };
+    Object.entries(previousDateOverridesByKey).forEach(([key, value]) => {
+      if (value === null) delete restoredDateOverrides[key];
+      else restoredDateOverrides[key] = value;
+    });
+
+    try {
+      Object.entries(previousOverlaysBySlug).forEach(([flowSlug, overlay]) => {
+        restoredOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
+      });
+      if (Object.keys(previousDateOverridesByKey).length > 0) {
+        saveStoredMyFlowDateOverrides(restoredDateOverrides);
+      }
+    } catch {
+      return;
+    }
+
+    if (Object.keys(restoredOverlaysBySlug).length > 0) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        ...restoredOverlaysBySlug,
+      }));
+    }
+    if (Object.keys(previousDateOverridesByKey).length > 0) {
+      setMyFlowDateOverrides(restoredDateOverrides);
+    }
+    setMyFlowCalendarScheduleUndo(null);
+  };
+
   const addMyFlowPersonalDraftItem = (flow: MySavedFlow) => {
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
     const overlay =
@@ -7045,6 +7496,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowEditingDetailKey('');
     setMyFlowDetailSurface('');
     setMyFlowDetailOpen(false);
+    setMyFlowExecutionNoteDraft(null);
   };
 
   const openMyFlowRowDetail = (row: MyFlowCalendarRow, surface: MyFlowView | 'post-save' = savedView) => {
@@ -7058,12 +7510,140 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowEditingDetailKey('');
     setMyFlowRoutineOverflowDate('');
     setMyFlowScheduleOverflowDate('');
-    setMyFlowRoutineCompletionUndo(null);
+    setMyFlowExecutionNoteDraft(null);
     setMyFlowDetailOpen(true);
     if (row.date) {
       setMyFlowSelectedDate(row.date);
       setMyFlowVisibleMonth(getMyFlowMonthStart(row.date));
     }
+  };
+
+  const openMyFlowExecutionNote = (row: MyFlowCalendarRow) => {
+    const rowKey = getMyFlowRowInstanceKey(row);
+    if (
+      myFlowExecutionNoteDraft?.flowSlug === row.flow.progress.slug &&
+      myFlowExecutionNoteDraft.rowKey === rowKey
+    ) {
+      setMyFlowExecutionNoteDraft(null);
+      return;
+    }
+    const notes = getMyFlowExecutionNotesForItem(
+      myFlowExecutionNotesBySlug[row.flow.progress.slug] ?? [],
+      rowKey,
+    );
+    const detail = getMyFlowRowDisplayDetail(row);
+    const sourceUrl = detail.links?.find((link) => /^https?:\/\//u.test(link.url))?.url
+      ?? row.flow.bundle.flow.source_url;
+    resetMyFlowRowDetailState();
+    setMyFlowExecutionNoteDraft({
+      flowSlug: row.flow.progress.slug,
+      rowKey,
+      itemTitle: getMyFlowRowDisplayTitle(row),
+      ...(row.date ? { itemDate: row.date } : {}),
+      ...(sourceUrl ? { sourceUrl } : {}),
+      mode: 'private',
+      privateNote: notes.private?.note ?? '',
+      correctionNote: notes.source_correction?.note ?? '',
+      privateSaved: Boolean(notes.private),
+      correctionSaved: Boolean(notes.source_correction),
+      status: '',
+    });
+  };
+
+  const updateMyFlowExecutionNoteDraft = (patch: Partial<MyFlowExecutionNoteDraft>) => {
+    setMyFlowExecutionNoteDraft((current) => (current ? { ...current, ...patch, status: patch.status ?? '' } : current));
+  };
+
+  const saveCurrentMyFlowExecutionNote = (remove = false) => {
+    const draft = myFlowExecutionNoteDraft;
+    if (!draft) return;
+    const draftNote = draft.mode === 'private' ? draft.privateNote : draft.correctionNote;
+    if (!remove && !draftNote.trim()) return;
+    const note = remove ? '' : draftNote;
+    const saved = saveMyFlowExecutionNote(draft.flowSlug, {
+      itemId: draft.rowKey,
+      itemTitle: draft.itemTitle,
+      kind: draft.mode,
+      note,
+      ...(draft.itemDate ? { itemDate: draft.itemDate } : {}),
+      ...(draft.mode === 'source_correction' && draft.sourceUrl ? { sourceUrl: draft.sourceUrl } : {}),
+    });
+    if (!saved) {
+      updateMyFlowExecutionNoteDraft({ status: '저장하지 못했어요. 다시 시도해 주세요.' });
+      return;
+    }
+    setMyFlowExecutionNotesBySlug((current) => ({ ...current, [draft.flowSlug]: saved }));
+    updateMyFlowExecutionNoteDraft({
+      ...(draft.mode === 'private'
+        ? { privateNote: note, privateSaved: Boolean(note.trim()) }
+        : { correctionNote: note, correctionSaved: Boolean(note.trim()) }),
+      status: note.trim()
+        ? draft.mode === 'private'
+          ? '내 메모를 저장했어요.'
+          : '전송 전 메모를 저장했어요.'
+        : '메모를 지웠어요.',
+    });
+  };
+
+  const renderMyFlowExecutionNoteButton = (row: MyFlowCalendarRow) => {
+    const rowKey = getMyFlowRowInstanceKey(row);
+    const notes = getMyFlowExecutionNotesForItem(
+      myFlowExecutionNotesBySlug[row.flow.progress.slug] ?? [],
+      rowKey,
+    );
+    const hasNote = Boolean(notes.private || notes.source_correction);
+    const active = myFlowExecutionNoteDraft?.flowSlug === row.flow.progress.slug
+      && myFlowExecutionNoteDraft.rowKey === rowKey;
+    const title = getMyFlowRowDisplayTitle(row);
+    return (
+      <button
+        type="button"
+        data-testid="my-flow-inline-note-open"
+        aria-label={`${title} 실행 메모 ${hasNote ? '수정' : '남기기'}`}
+        aria-expanded={active}
+        title="실행 메모"
+        className={`relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-base font-semibold ${
+          active
+            ? 'border-blue-300 bg-blue-50 text-blue-800'
+            : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-800'
+        }`}
+        onPointerDown={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => {
+          event.stopPropagation();
+          openMyFlowExecutionNote(row);
+        }}
+      >
+        <span aria-hidden="true">✎</span>
+        {hasNote ? <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" /> : null}
+      </button>
+    );
+  };
+
+  const renderMyFlowExecutionNotePanel = (row: MyFlowCalendarRow) => {
+    const rowKey = getMyFlowRowInstanceKey(row);
+    const draft = myFlowExecutionNoteDraft?.flowSlug === row.flow.progress.slug
+      && myFlowExecutionNoteDraft.rowKey === rowKey
+      ? myFlowExecutionNoteDraft
+      : null;
+    if (!draft) return null;
+    return (
+      <FlowExecutionNotePanel
+        title={draft.itemTitle}
+        mode={draft.mode}
+        privateNote={draft.privateNote}
+        correctionNote={draft.correctionNote}
+        hasSavedNote={draft.mode === 'private' ? draft.privateSaved : draft.correctionSaved}
+        allowCorrection={Boolean(draft.sourceUrl)}
+        status={draft.status}
+        onModeChange={(mode) => updateMyFlowExecutionNoteDraft({ mode })}
+        onPrivateNoteChange={(privateNote) => updateMyFlowExecutionNoteDraft({ privateNote })}
+        onCorrectionNoteChange={(correctionNote) => updateMyFlowExecutionNoteDraft({ correctionNote })}
+        onSave={() => saveCurrentMyFlowExecutionNote()}
+        onRemove={() => saveCurrentMyFlowExecutionNote(true)}
+        onClose={() => setMyFlowExecutionNoteDraft(null)}
+      />
+    );
   };
 
   const toggleMyFlowRowDetail = (row: MyFlowCalendarRow, surface: MyFlowView = savedView) => {
@@ -7076,27 +7656,158 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const getMyFlowRowForFlowTab = (flow: MySavedFlow, row: MyFlowRow): MyFlowCalendarRow => {
-    const originalDate = row.date;
-    const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
-    const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
-    const manualScheduleKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
-    const manualDateOverride = myFlowDateOverrides[manualScheduleKey];
-    const calendarKey = originalDate
-      ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
-      : personalDateOverride || draftDateOverride || manualDateOverride
-        ? manualScheduleKey
-        : '';
+    const dateResolution = resolveSavedFlowRowDate(flow, row);
+    const hasEffectiveSchedule = Boolean(dateResolution.date);
     return {
       ...row,
       flow,
-      ...(calendarKey
+      ...(hasEffectiveSchedule || row.date
         ? {
-            originalDate: originalDate ?? 'none',
-            calendarKey,
-            date: draftDateOverride ?? myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
+            originalDate: dateResolution.originalDate,
+            calendarKey: dateResolution.overrideKey,
+            date: dateResolution.date,
           }
         : {}),
-    };
+      };
+  };
+
+  const getMyFlowScopeExportItems = (flow: MySavedFlow): MyFlowScopeExportItem[] => {
+    const flowTitle = getMyFlowPortableExportFlowTitle(flow);
+    const sourceLabel = toUserFacingSourceTitle(flow.bundle.flow.source_title ?? '');
+    const sourceUrl = flow.bundle.flow.source_url;
+    const sourceRef = [sourceLabel, sourceUrl].filter(Boolean).join(' ');
+
+    return flow.rows.map((baseRow, index) => {
+      const row = getMyFlowRowForFlowTab(flow, baseRow);
+      const detail = getMyFlowRowDisplayDetail(row);
+      const committedDraft = getMyFlowRowDraft(row);
+      const title = getMyFlowRowDisplayTitle(row);
+      const primaryLink = detail.links?.[0];
+      const stableItemId = row.structuralProjectionStableId ?? baseStateId(row.id);
+      const key = `${flow.progress.slug}::${stableItemId}`;
+      const date = row.date ?? '';
+      const time = row.structuralScheduleProjection?.startTime ?? committedDraft.time ?? '';
+      const durationMinutes = time
+        ? row.structuralScheduleProjection?.durationMinutes ?? committedDraft.durationMinutes
+        : undefined;
+      const memo = committedDraft.memo ?? (
+        row.structuralOwnership === 'user_created' ? detail.why ?? '' : ''
+      );
+      const occurrenceStatus = row.structuralOccurrenceExecutionState;
+      const status: PersonalStructuralListExportRow['status'] =
+        occurrenceStatus === 'done' || occurrenceStatus === 'reopened' || occurrenceStatus === 'skipped' || occurrenceStatus === 'held'
+          ? occurrenceStatus
+          : isItemStateSkipped(flow.itemStates, row.id)
+            ? 'skipped'
+            : isMyFlowRowChecked(flow, row)
+              ? 'done'
+              : 'pending';
+      const calendarEligible = Boolean(date) && (row.structuralCalendarIcsEligible ?? true);
+      const scheduleState: PersonalStructuralListExportRow['scheduleState'] = !date
+        ? 'unscheduled'
+        : time
+          ? 'timed'
+          : 'all_day';
+      const portableInput: MyFlowPortableStepExportInput = {
+        flowTitle,
+        stepId: key,
+        stableEventIdentitySeed: key,
+        stepTitle: title,
+        sectionTitle: getMyFlowRowDisplaySectionLabel(row),
+        ...(date ? { date } : {}),
+        ...(time ? { time } : {}),
+        ...(durationMinutes ? { durationMinutes } : {}),
+        ...(time && row.structuralScheduleProjection?.timeZone
+          ? { timeZone: row.structuralScheduleProjection.timeZone }
+          : {}),
+        ...(row.structuralRepeat
+          ? {
+              personalRecurrence: row.structuralRepeat,
+              personalRecurrenceIdentityNamespace: flow.progress.slug,
+            }
+          : { repeatPreset: committedDraft.repeatPreset ?? '' }),
+        ...(committedDraft.location ? { location: committedDraft.location } : {}),
+        ...(memo ? { memo } : {}),
+        sourceLabel: primaryLink ? toUserFacingSourceTitle(primaryLink.label) : sourceLabel || undefined,
+        sourceUrl: primaryLink?.url ?? sourceUrl,
+        items: getMyFlowDetailChecklistItems(detail),
+        checkedItems: myFlowStepItemChecks[getMyFlowRowInstanceKey(row)] ?? {},
+        completionCriteria: detail.completion_criteria,
+        caution: detail.caution,
+      };
+      const scheduleMeta = [
+        date ? formatMyFlowDisplayDate(date) : '날짜 없음',
+        formatMyFlowTimedScheduleLabel(row.structuralScheduleProjection),
+        status === 'done' ? '완료' : status === 'skipped' ? '건너뜀' : status === 'held' ? '보류' : '',
+      ].filter(Boolean).join(' · ');
+
+      return {
+        key,
+        panelItem: {
+          key,
+          title,
+          calendarEligible,
+          status,
+          meta: scheduleMeta,
+        },
+        listRow: {
+          itemId: key,
+          title,
+          ...(date ? { date } : {}),
+          scheduleState,
+          ...(time ? { time } : {}),
+          ...(durationMinutes ? { durationMinutes } : {}),
+          ...(memo ? { memo } : {}),
+          status,
+          personalOrderRank: row.structuralProjectionOrderRank ?? index,
+          ...(row.structuralOwnership !== 'user_created' && sourceRef ? { sourceRef } : {}),
+        },
+        portableInput,
+      };
+    });
+  };
+
+  const exportMyFlowScope = async (
+    flow: MySavedFlow,
+    destination: FlowExportDestination,
+    plan: FlowExportScopePlan,
+  ) => {
+    const items = getMyFlowScopeExportItems(flow);
+    const destinationKeys = new Set(plan.itemsByDestination[destination].map((item) => item.key));
+    const scopedItems = items.filter((item) => destinationKeys.has(item.key));
+    if (scopedItems.length === 0) return;
+    const exportKey = `my-flow-export::${flow.progress.slug}`;
+
+    if (destination === 'calendar') {
+      const ics = buildMyFlowMultiStepIcs(scopedItems.map((item) => item.portableInput));
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = plan.filenameByDestination.calendar;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      setMyFlowStepDownloadedKey(exportKey);
+      window.setTimeout(() => setMyFlowStepDownloadedKey(''), 1600);
+      return;
+    }
+
+    const artifacts = buildPersonalStructuralListExportArtifactsFromRows({
+      flowTitle: getMyFlowPortableExportFlowTitle(flow),
+      rows: scopedItems.map((item) => item.listRow),
+      sourceLabel: toUserFacingSourceTitle(flow.bundle.flow.source_title ?? ''),
+      sourceUrl: flow.bundle.flow.source_url,
+    });
+    const output = destination === 'memo'
+      ? artifacts.memoText
+      : destination === 'checklist'
+        ? artifacts.checklistText
+        : artifacts.sheetTsv;
+    const feedback = destination === 'memo'
+      ? FLOW_EXPORT_FEEDBACK.memoCopied
+      : destination === 'checklist'
+        ? '체크리스트 복사됨'
+        : '시트로 복사됨';
+    await copyMyFlowStepText(output, exportKey, feedback);
   };
 
   const toggleMyFlowStructureFlow = (flow: MySavedFlow) => {
@@ -7441,7 +8152,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return myFlowPrimaryContinuationRow;
     }
     const firstPostSaveRow = postSaveFlows
-      .flatMap((flow) => flow.rows.map((row, index) => ({ flow, row, index })))
+      .flatMap((flow) => flow.rows.map((row, index) => {
+        const dateResolution = resolveSavedFlowRowDate(flow, row);
+        return {
+          flow,
+          row: row.structuralOccurrenceId
+            ? row
+            : { ...row, date: dateResolution.date },
+          dateResolution,
+          index,
+        };
+      }))
       .sort((left, right) => {
         const leftDate = left.row.date ?? '9999-12-31';
         const rightDate = right.row.date ?? '9999-12-31';
@@ -7449,15 +8170,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         return dateOrder === 0 ? left.index - right.index : dateOrder;
       })[0];
     if (!firstPostSaveRow) return null;
-    const originalDate = firstPostSaveRow.row.date;
+    const { dateResolution } = firstPostSaveRow;
     return {
       ...firstPostSaveRow.row,
       flow: firstPostSaveRow.flow,
-      ...(originalDate
+      ...(dateResolution.date
         ? {
-            originalDate,
-            calendarKey: getMyFlowCalendarRowKey(firstPostSaveRow.flow.progress.slug, firstPostSaveRow.row.id, originalDate),
-            date: myFlowDateOverrides[getMyFlowCalendarRowKey(firstPostSaveRow.flow.progress.slug, firstPostSaveRow.row.id, originalDate)] ?? firstPostSaveRow.row.date,
+            originalDate: dateResolution.originalDate,
+            calendarKey: dateResolution.overrideKey,
+            date: dateResolution.date,
           }
         : {}),
     };
@@ -7549,7 +8270,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
       : undefined;
     const isRoutineExecution = options.kind === 'routine' || row.itemType?.primary === 'routine_session';
-    const routineProgressLabel = `반복 항목 ${row.flow.done}/${row.flow.total}`;
+    const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
     const routineDragKey = getMyFlowRowInstanceKey(row);
     const rowClassName = options.compact
       ? `flex min-w-0 items-center gap-2 border-b py-2.5 text-sm ${isActive ? 'border-blue-300 bg-blue-50/50' : 'border-slate-200 bg-transparent'}`
@@ -7579,6 +8300,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <div key={`${routineDragKey}-${options.kind ?? 'schedule'}`} data-testid="my-flow-execution-row-shell" className="grid gap-1.5">
         <article
           data-item-id={row.id}
+          data-row-key={routineDragKey}
           data-occurrence-id={row.structuralOccurrenceId}
           data-occurrence-state={row.structuralOccurrenceExecutionState}
           data-structural-order-rank={row.structuralProjectionOrderRank}
@@ -7645,12 +8367,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </span>
             </span>
           </button>
+          {renderMyFlowExecutionNoteButton(row)}
           {isRoutineExecution ? (
             <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
               {routineProgressLabel}
             </span>
           ) : null}
       </article>
+      {renderMyFlowExecutionNotePanel(row)}
       {activeInlineDetail && myFlowActiveRow ? (
         <div
           ref={(node) => {
@@ -7659,7 +8383,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }}
           data-testid="my-flow-inline-detail"
         >
-          {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', rowDetailSurface)}
+          {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', rowDetailSurface, { parentOwnsCompletion: true })}
         </div>
       ) : null}
       </div>
@@ -7667,9 +8391,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
 
     return (
+      <div key={`${routineDragKey}-${options.kind ?? 'schedule'}`} className="grid gap-1.5">
       <article
-        key={`${routineDragKey}-${options.kind ?? 'schedule'}`}
         data-item-id={row.id}
+        data-row-key={routineDragKey}
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
         data-structural-order-rank={row.structuralProjectionOrderRank}
@@ -7737,12 +8462,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
         </button>
+        {renderMyFlowExecutionNoteButton(row)}
         {isRoutineExecution ? (
           <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
             {routineProgressLabel}
           </span>
         ) : null}
       </article>
+      {renderMyFlowExecutionNotePanel(row)}
+      </div>
     );
   };
 
@@ -7817,7 +8545,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </span>
             </span>
           </button>
+          {renderMyFlowExecutionNoteButton(row)}
         </div>
+        {myFlowExecutionNoteDraft?.flowSlug === flow.progress.slug && myFlowExecutionNoteDraft.rowKey === rowKey ? (
+          <div className="mt-2">{renderMyFlowExecutionNotePanel(row)}</div>
+        ) : null}
         {isActive && myFlowActiveRow ? (
           <div
             ref={(node) => {
@@ -7827,10 +8559,65 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             className="mt-3"
             data-testid="my-flow-inline-detail"
           >
-            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', 'today')}
+            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', 'today', { parentOwnsCompletion: true })}
           </div>
         ) : null}
       </article>
+    );
+  };
+
+  const renderMyFlowContinuationPreview = (row: MyFlowCalendarRow) => {
+    const rowKey = getMyFlowRowInstanceKey(row);
+    const activeRowKey = myFlowActiveRow && myFlowDetailOpen ? getMyFlowRowInstanceKey(myFlowActiveRow) : '';
+    const isActive = myFlowDetailSurface === 'today' && activeRowKey === rowKey;
+    const title = getMyFlowRowDisplayTitle(row);
+    const flowTitle = getMyFlowExecutionFlowTitle(row.flow.progress.title);
+    const color = categoryColors[row.flow.bundle.flow.category] ?? '#2563EB';
+    const scheduleLabel = [
+      row.date ? formatMyFlowDisplayDate(row.date, { includeWeekday: true }) : '날짜 없음',
+      formatMyFlowTimedScheduleLabel(row.structuralScheduleProjection),
+    ].filter(Boolean).join(' · ');
+
+    return (
+      <div
+        key={`my-flow-upcoming-preview-${rowKey}`}
+        data-testid="my-flow-upcoming-preview-shell"
+        data-flow-slug={row.flow.progress.slug}
+        data-row-key={rowKey}
+        className="min-w-0 border-b border-slate-200 last:border-b-0"
+      >
+        <button
+          type="button"
+          data-testid="my-flow-upcoming-preview"
+          aria-expanded={isActive}
+          aria-label={`${title} 예정 보기 · ${flowTitle} · ${scheduleLabel}`}
+          className="flex min-h-14 w-full min-w-0 items-center gap-3 px-1 py-3 text-left transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          onClick={() => toggleMyFlowRowDetail(row, 'today')}
+        >
+          <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+          <span className="min-w-0 flex-1">
+            <span className="flex min-w-0 items-center gap-2 text-[11px] font-semibold text-slate-500">
+              <span className="truncate">{flowTitle}</span>
+              <span aria-hidden="true">·</span>
+              <span className="shrink-0">{scheduleLabel}</span>
+            </span>
+            <span className="mt-0.5 block truncate text-sm font-semibold text-slate-800">{title}</span>
+          </span>
+          <span className="shrink-0 text-xs font-semibold text-slate-500">{isActive ? '닫기' : '보기'} ›</span>
+        </button>
+        {isActive && myFlowActiveRow ? (
+          <div
+            ref={(node) => {
+              myFlowInlineDetailRef.current = node;
+              if (node) scrollMyFlowInlineDetailIntoView(node);
+            }}
+            className="pb-3"
+            data-testid="my-flow-upcoming-preview-detail"
+          >
+            {renderMyFlowItemDetailEditor(myFlowActiveRow, 'inline', 'today')}
+          </div>
+        ) : null}
+      </div>
     );
   };
 
@@ -8195,7 +8982,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     resetMyFlowRowDetailState();
   };
 
-  const renderMyFlowItemDetailEditor = (row: MyFlowCalendarRow, mode: 'inline' | 'drawer' | 'panel', surfaceContext: MyFlowView | 'post-save' | '' = myFlowDetailSurface || savedView) => {
+  const renderMyFlowItemDetailEditor = (
+    row: MyFlowCalendarRow,
+    mode: 'inline' | 'drawer' | 'panel',
+    surfaceContext: MyFlowView | 'post-save' | '' = myFlowDetailSurface || savedView,
+    options: { parentOwnsCompletion?: boolean } = {},
+  ) => {
     const checked = isMyFlowRowChecked(row.flow, row);
     const detail = getMyFlowRowDisplayDetail(row);
     const item = row.flow.bundle.items.find((entry) => entry.id === row.id);
@@ -8265,6 +9057,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const portableExportStableStepId = row.structuralProjectionStableId
       ? `${row.flow.progress.slug}::${row.structuralProjectionStableId}`
       : portableExportKey;
+    const portableRecurrence = row.structuralRepeat && (
+      isPersonalDraftUserItem || row.structuralOccurrenceOrigin === 'saved_routine'
+    )
+      ? row.structuralRepeat
+      : undefined;
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
     const portableExportInput: MyFlowPortableStepExportInput = {
@@ -8287,9 +9084,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }
         : {}),
       repeatPreset: editorDraft.repeatPreset,
-      ...(isPersonalDraftUserItem && row.structuralRepeat
+      ...(portableRecurrence
         ? {
-            personalRecurrence: row.structuralRepeat,
+            personalRecurrence: portableRecurrence,
             personalRecurrenceIdentityNamespace: row.flow.progress.slug,
           }
         : {}),
@@ -8309,9 +9106,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const hasExpandableMemo = editorDraft.memo.trim().length > 0;
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
-    const routineProgressLabel = `반복 항목 ${row.flow.done}/${row.flow.total}`;
+    const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
     const detailChecklistProgressLabel = `${detailChecklistLabel} ${Object.values(detailChecklistState).filter(Boolean).length}/${detailChecklistItems.length}`;
-    const canUndoRoutineCompletion = isRoutineRow && myFlowRoutineCompletionUndo?.flowSlug === row.flow.progress.slug;
     const fieldClassName = 'mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
     const textareaClassName = `${fieldClassName} ${isMemoExpanded ? 'min-h-52' : isDrawerMode ? 'h-28 min-h-28' : 'h-20 min-h-20'} resize-y font-normal leading-6`;
     const canEditDate = Boolean(
@@ -8321,17 +9117,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const itemEditButtonLabel = canEditDate ? '제목·날짜·메모 수정' : '제목·메모 수정';
     const itemEditButtonAriaLabel = `${editorDraft.title} ${itemEditButtonLabel}`;
     const itemEditCancelAriaLabel = `${editorDraft.title} 수정 취소`;
-    const showTimeLocationFields =
+    const showTimeField =
       !isPersonalDraftUserItem && (!isProgressFlow || Boolean(row.calendarKey));
-    const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
-    const personalDraftTimedScheduleInvalid = Boolean(
+    const showLocationField = showTimeField;
+    const showRepeatPresetField = !isRoutineRow && showTimeField;
+    const personalDraftTimeInvalid = Boolean(
       isPersonalDraftUserItem &&
         editorDraft.date &&
         editorDraft.scheduleMode === 'timed' &&
-        (
-          !isPersonalStructuralLocalTime(editorDraft.time) ||
-          !isPersonalDraftDurationValid(editorDraft.durationMinutes)
-        ),
+        !isPersonalStructuralLocalTime(editorDraft.time),
+    );
+    const personalDraftDurationInvalid = Boolean(
+      isPersonalDraftUserItem &&
+        editorDraft.date &&
+        editorDraft.scheduleMode === 'timed' &&
+        !isPersonalDraftDurationValid(editorDraft.durationMinutes),
+    );
+    const personalDraftTimedScheduleInvalid = Boolean(
+      personalDraftTimeInvalid || personalDraftDurationInvalid,
     );
     const personalDraftRecurrenceMode =
       editorDraft.repeatPreset === 'daily' ||
@@ -8358,6 +9161,36 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               editorDraft.recurrenceCount > PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT))
         ),
     );
+    const editorAdvancedLabels = Array.from(new Set([
+      isPersonalDraftUserItem && editorDraft.date ? '반복' : '',
+      isPersonalDraftUserItem && editorDraft.date && editorDraft.scheduleMode === 'timed' ? '소요시간' : '',
+      showLocationField ? '장소' : '',
+      showRepeatPresetField ? '반복' : '',
+      isDecisionRow ? '결정' : '',
+      isLogRow ? '기록' : '',
+      showRoutineRepeatSettings && isRoutineRow ? '반복' : '',
+    ].filter(Boolean)));
+    const hasEditorAdvancedFields = editorAdvancedLabels.length > 0;
+    const hasStoredEditorAdvancedValues = Boolean(
+      personalDraftRecurrenceMode ||
+        personalDraftRecurrenceInvalid ||
+        personalDraftDurationInvalid ||
+        (
+          isPersonalDraftUserItem &&
+          editorDraft.scheduleMode === 'timed' &&
+          editorDraft.durationMinutes !== PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES
+        ) ||
+        editorDraft.location.trim() ||
+        (!isPersonalDraftUserItem && editorDraft.repeatPreset) ||
+        decisionDraft.decisionStatus !== 'undecided' ||
+        decisionDraft.nextReviewDate ||
+        logDraft.logValue.trim(),
+    );
+    const editorAdvancedPreference =
+      myFlowEditorAdvancedDisclosure?.rowKey === routineKey
+        ? myFlowEditorAdvancedDisclosure.expanded
+        : undefined;
+    const isEditorAdvancedExpanded = editorAdvancedPreference ?? hasStoredEditorAdvancedValues;
     const scheduleSummaryRows = [
       editorDraft.date ? { label: '날짜', value: /^\d{4}-\d{2}-\d{2}$/.test(editorDraft.date) ? formatMyFlowDisplayDate(editorDraft.date) : editorDraft.date } : undefined,
       editorDraft.time ? { label: '시간', value: formatMyFlowLocalTimeLabel(editorDraft.time) } : undefined,
@@ -8381,6 +9214,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           : undefined,
       editorDraft.location ? { label: '장소', value: editorDraft.location } : undefined,
     ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
+    const editorAdvancedToggle = showEditableDetailFields && hasEditorAdvancedFields ? (
+      <button
+        type="button"
+        data-testid="my-flow-editor-advanced-toggle"
+        aria-expanded={isEditorAdvancedExpanded}
+        className="flex min-h-11 w-full items-center justify-between gap-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm font-semibold text-slate-800 hover:border-blue-200 hover:bg-blue-50"
+        onClick={() => setMyFlowEditorAdvancedDisclosure({
+          rowKey: routineKey,
+          expanded: !isEditorAdvancedExpanded,
+        })}
+      >
+        <span className="min-w-0">
+          <span>세부 설정</span>
+          <span className="ml-1 font-medium text-slate-500">· {editorAdvancedLabels.join(' · ')}</span>
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-slate-500">
+          {isEditorAdvancedExpanded ? '⌃' : '⌄'}
+        </span>
+      </button>
+    ) : null;
     const occurrenceFields = (
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {isPersonalDraftUserItem ? (
@@ -8510,7 +9363,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </button>
                 </div>
                 {editorDraft.scheduleMode === 'timed' ? (
-                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <div className="mt-2 grid gap-2">
                     <label className="block text-xs font-semibold text-slate-600">
                       시작 시간
                       <input
@@ -8522,44 +9375,56 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         onChange={(event) => updateMyFlowEditingDraft(row, { time: event.target.value })}
                       />
                     </label>
-                    <label className="block text-xs font-semibold text-slate-600">
-                      예상 소요 시간
-                      <span className="relative mt-1 block">
-                        <input
-                          data-testid="personal-draft-duration-input"
-                          aria-label={`${editorDraft.title} 예상 소요 시간`}
-                          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                          type="number"
-                          min={PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES}
-                          max={PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES}
-                          step={5}
-                          value={editorDraft.durationMinutes}
-                          onChange={(event) => updateMyFlowEditingDraft(row, {
-                            durationMinutes: event.target.value
-                              ? Number(event.target.value)
-                              : undefined,
-                          })}
-                        />
-                        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-500">분</span>
-                      </span>
-                    </label>
-                    <p className="text-[11px] font-medium leading-5 text-slate-500 sm:col-span-2">
-                      현재 기기 시간 기준으로 저장돼요.
-                    </p>
-                    {personalDraftTimedScheduleInvalid ? (
+                    {personalDraftTimeInvalid ? (
                       <p
                         data-testid="personal-draft-time-validation"
                         role="alert"
-                        className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700 sm:col-span-2"
+                        className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700"
                       >
-                        시작 시간과 5분 단위의 예상 시간을 입력해 주세요.
+                        시작 시간을 입력해 주세요.
                       </p>
                     ) : null}
                   </div>
                 ) : null}
               </fieldset>
             ) : null}
-            {editorDraft.date ? (
+            {editorAdvancedToggle ? <div className="mt-3">{editorAdvancedToggle}</div> : null}
+            {isEditorAdvancedExpanded && editorDraft.date && editorDraft.scheduleMode === 'timed' ? (
+              <div data-testid="personal-draft-duration-control" className="mt-3 border-t border-slate-200 pt-3">
+                <label className="block text-xs font-semibold text-slate-600">
+                  예상 소요 시간
+                  <span className="relative mt-1 block">
+                    <input
+                      data-testid="personal-draft-duration-input"
+                      aria-label={`${editorDraft.title} 예상 소요 시간`}
+                      className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      type="number"
+                      min={PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES}
+                      max={PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES}
+                      step={5}
+                      value={editorDraft.durationMinutes}
+                      onChange={(event) => updateMyFlowEditingDraft(row, {
+                        durationMinutes: event.target.value ? Number(event.target.value) : undefined,
+                      })}
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-500">분</span>
+                  </span>
+                </label>
+                <p className="mt-1 text-[11px] font-medium leading-5 text-slate-500">
+                  현재 기기 시간 기준으로 저장돼요.
+                </p>
+                {personalDraftDurationInvalid ? (
+                  <p
+                    data-testid="personal-draft-duration-validation"
+                    role="alert"
+                    className="mt-2 rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700"
+                  >
+                    5분 단위로 예상 시간을 입력해 주세요.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+            {isEditorAdvancedExpanded && editorDraft.date ? (
               <fieldset
                 data-testid="personal-draft-recurrence-control"
                 className="mt-3 min-w-0 border-t border-slate-200 pt-3"
@@ -8769,27 +9634,30 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         ) : null}
-        {showTimeLocationFields ? (
-          <>
-        <label className="block text-xs font-semibold text-slate-600">
-          시간
-          <input
-            className={fieldClassName}
-            type="time"
-            value={editorDraft.time}
-            onChange={(event) => updateMyFlowEditingDraft(row, { time: event.target.value })}
-          />
-        </label>
-        <label className="block text-xs font-semibold text-slate-600">
-          장소
-          <input
-            className={fieldClassName}
-            placeholder="장소 없음"
-            value={editorDraft.location}
-            onChange={(event) => updateMyFlowEditingDraft(row, { location: event.target.value })}
-          />
-        </label>
-        {showRepeatPresetField ? (
+        {showTimeField ? (
+          <label className="block text-xs font-semibold text-slate-600">
+            시간
+            <input
+              className={fieldClassName}
+              type="time"
+              value={editorDraft.time}
+              onChange={(event) => updateMyFlowEditingDraft(row, { time: event.target.value })}
+            />
+          </label>
+        ) : null}
+        {!isPersonalDraftUserItem && editorAdvancedToggle ? <div className="sm:col-span-2">{editorAdvancedToggle}</div> : null}
+        {isEditorAdvancedExpanded && showLocationField ? (
+          <label className="block text-xs font-semibold text-slate-600">
+            장소
+            <input
+              className={fieldClassName}
+              placeholder="장소 없음"
+              value={editorDraft.location}
+              onChange={(event) => updateMyFlowEditingDraft(row, { location: event.target.value })}
+            />
+          </label>
+        ) : null}
+        {isEditorAdvancedExpanded && showRepeatPresetField ? (
           <label className="block text-xs font-semibold text-slate-600">
             반복
             <select
@@ -8805,8 +9673,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <option value="monthly">매월</option>
             </select>
           </label>
-        ) : null}
-          </>
         ) : null}
         {isProgressFlow && !row.calendarKey ? (
           <p data-testid="my-flow-progress-schedule-note" className="rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-600 sm:col-span-2">
@@ -8925,6 +9791,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
+        data-editor-advanced-expanded={isDetailEditing ? String(isEditorAdvancedExpanded) : undefined}
         data-default-primary-action-count={isDetailEditing ? undefined : '2'}
         className={
           mode === 'inline'
@@ -9002,7 +9869,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {routineProgressLabel}
               </span>
             ) : null}
-            {!isDetailEditing && !isPersonalDraftRecurringSeries ? renderTaskCompletionCheckbox({
+            {!isDetailEditing && !isPersonalDraftRecurringSeries && !options.parentOwnsCompletion ? renderTaskCompletionCheckbox({
               title: editorDraft.title,
               checked,
               routine: isRoutineRow,
@@ -9110,23 +9977,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ) : null}
             </div>
           </section>
-        ) : null}
-        {canUndoRoutineCompletion ? (
-          <div
-            data-testid="my-flow-routine-undo-notice"
-            className="mt-3 flex flex-col gap-2 rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <span>방금 완료한 항목을 되돌릴 수 있습니다.</span>
-            <button
-              className="rounded-md border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-700"
-              type="button"
-              onClick={() => {
-                if (myFlowRoutineCompletionUndo) undoMyFlowRoutineCompletion(row.flow, myFlowRoutineCompletionUndo);
-              }}
-            >
-              방금 완료 취소
-            </button>
-          </div>
         ) : null}
         {isInlineMobileMode && inlineActionHint && !isDetailEditing ? (
           <section data-testid="my-flow-inline-action-hint" className="mt-3 rounded-md bg-white px-3 py-3">
@@ -9248,54 +10098,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </section>
           )
         ) : null}
-        {isDecisionRow && isDetailEditing ? (
-          <section data-testid="my-flow-decision-fields" className="mt-3 rounded-md bg-white px-3 py-3">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="block text-xs font-semibold text-slate-600">
-                결정 상태
-                <select
-                  aria-label="결정 상태"
-                  data-testid="my-flow-decision-status"
-                  className={fieldClassName}
-                  value={decisionDraft.decisionStatus}
-                  onChange={(event) => updateMyFlowEditingDraft(row, { decisionStatus: event.target.value as MyFlowItemDraft['decisionStatus'] })}
-                >
-                  <option value="undecided">미정</option>
-                  <option value="buy">구매</option>
-                  <option value="hold">보류</option>
-                  <option value="reject">거절</option>
-                </select>
-              </label>
-              <label className="block text-xs font-semibold text-slate-600">
-                다음 확인일
-                <input
-                  aria-label="다음 확인일"
-                  data-testid="my-flow-decision-next-review"
-                  className={fieldClassName}
-                  type="date"
-                  value={decisionDraft.nextReviewDate}
-                  onChange={(event) => updateMyFlowEditingDraft(row, { nextReviewDate: event.target.value })}
-                />
-              </label>
-            </div>
-          </section>
-        ) : null}
-        {isLogRow && isDetailEditing ? (
-          <section data-testid="my-flow-log-fields" className="mt-3 rounded-md bg-white px-3 py-3">
-            <label className="block text-xs font-semibold text-slate-600">
-              오늘 기록
-              <input
-                aria-label="오늘 기록"
-                data-testid="my-flow-log-value"
-                className={fieldClassName}
-                placeholder="예: 이상 없음, 누유 없음, 7점"
-                value={logDraft.logValue}
-                onChange={(event) => updateMyFlowEditingDraft(row, { logValue: event.target.value })}
-              />
-            </label>
-          </section>
-        ) : null}
-        {isDetailEditing && showRoutineRepeatSettings ? routineRepeatSettings : null}
         {!showOccurrenceFields || !showEditableDetailFields ? null : isRoutineRow ? (
           <section data-testid="my-flow-routine-occurrence-section" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-600">
@@ -9320,6 +10122,62 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           >
             {isMemoExpanded ? '메모 작게 보기' : '메모 크게 보기'}
           </button>
+        ) : null}
+        {isDetailEditing && isEditorAdvancedExpanded && (isDecisionRow || isLogRow || (showRoutineRepeatSettings && isRoutineRow)) ? (
+          <div
+            data-testid="my-flow-editor-intent-fields"
+            className="mt-3 grid gap-4 border-t border-slate-200 pt-3"
+          >
+            {isDecisionRow ? (
+              <section data-testid="my-flow-decision-fields">
+                <p className="text-xs font-semibold text-slate-700">결정</p>
+                <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                  <label className="block text-xs font-semibold text-slate-600">
+                    결정 상태
+                    <select
+                      aria-label="결정 상태"
+                      data-testid="my-flow-decision-status"
+                      className={fieldClassName}
+                      value={decisionDraft.decisionStatus}
+                      onChange={(event) => updateMyFlowEditingDraft(row, { decisionStatus: event.target.value as MyFlowItemDraft['decisionStatus'] })}
+                    >
+                      <option value="undecided">미정</option>
+                      <option value="buy">구매</option>
+                      <option value="hold">보류</option>
+                      <option value="reject">거절</option>
+                    </select>
+                  </label>
+                  <label className="block text-xs font-semibold text-slate-600">
+                    다음 확인일
+                    <input
+                      aria-label="다음 확인일"
+                      data-testid="my-flow-decision-next-review"
+                      className={fieldClassName}
+                      type="date"
+                      value={decisionDraft.nextReviewDate}
+                      onChange={(event) => updateMyFlowEditingDraft(row, { nextReviewDate: event.target.value })}
+                    />
+                  </label>
+                </div>
+              </section>
+            ) : null}
+            {isLogRow ? (
+              <section data-testid="my-flow-log-fields">
+                <label className="block text-xs font-semibold text-slate-600">
+                  오늘 기록
+                  <input
+                    aria-label="오늘 기록"
+                    data-testid="my-flow-log-value"
+                    className={fieldClassName}
+                    placeholder="예: 이상 없음, 누유 없음, 7점"
+                    value={logDraft.logValue}
+                    onChange={(event) => updateMyFlowEditingDraft(row, { logValue: event.target.value })}
+                  />
+                </label>
+              </section>
+            ) : null}
+            {showRoutineRepeatSettings && isRoutineRow ? routineRepeatSettings : null}
+          </div>
         ) : null}
         {isDetailEditing || (isDrawerMode && hasEditorChanges) ? (
           <div data-testid="my-flow-detail-edit-actions" className="mt-3 flex flex-col gap-2 rounded-md border border-blue-100 bg-white px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
@@ -9349,7 +10207,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         {shouldCollapsePortableExport ? (
           <details data-testid="my-flow-detail-portable-export" className={isDetailEditing ? 'hidden' : 'mt-3 rounded-md bg-white px-3 py-3'}>
-            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문·내 도구</summary>
+            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문 · 이 항목 가져가기</summary>
             {primaryLink ? (
               <a
                 data-testid="my-flow-detail-source-link"
@@ -9362,7 +10220,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
+              <p className="text-xs font-semibold text-slate-700">이 항목 가져가기 · 1개</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {portableExportSummary}
               </span>
@@ -9427,7 +10285,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : (
           <section data-testid="my-flow-detail-portable-export" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">내 도구로 옮기기</p>
+              <p className="text-xs font-semibold text-slate-700">이 항목 가져가기 · 1개</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {portableExportSummary}
               </span>
@@ -9915,6 +10773,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               : Object.values(run.completionSnapshot?.checks ?? {}).filter(Boolean).length;
             const totalCount = itemSnapshots?.length ?? Object.keys(run.completionSnapshot?.checks ?? {}).length;
             const feedback = run.completionSnapshot?.completionFeedback;
+            const runExecutionNotes = run.completionSnapshot?.executionNotes ?? [];
+            const runPrivateNotes = runExecutionNotes.filter((note) => note.kind === 'private');
+            const runCorrectionNotes = runExecutionNotes.filter((note) => note.kind === 'source_correction');
             const exportAvailable = Boolean(itemSnapshots);
             const exportKey = `past-run-export::${run.runId}`;
             return (
@@ -9956,6 +10817,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         이전 실행은 요약만 저장돼 있어요.
                       </p>
                     )}
+                    {runPrivateNotes.length > 0 ? (
+                      <div data-testid="my-flow-past-run-execution-notes" className="mt-3 border-l-2 border-slate-200 pl-3 text-xs leading-5 text-slate-600">
+                        <p className="font-semibold text-slate-900">실행 중 남긴 메모 · {runPrivateNotes.length}개</p>
+                        <ul className="mt-1 grid gap-1.5">
+                          {runPrivateNotes.map((note) => (
+                            <li key={`past-private-${note.itemId}`}>
+                              <span className="font-semibold text-slate-700">{note.itemTitle}</span>
+                              <span className="block break-words">{note.note}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                    {runCorrectionNotes.length > 0 ? (
+                      <div data-testid="my-flow-past-run-execution-corrections" className="mt-3 border-l-2 border-amber-200 pl-3 text-xs leading-5 text-slate-600">
+                        <p className="font-semibold text-slate-900">원본에 알릴 점 · {runCorrectionNotes.length}개</p>
+                        <ul className="mt-1 grid gap-1.5">
+                          {runCorrectionNotes.map((note) => (
+                            <li key={`past-correction-${note.itemId}`}>
+                              <span className="font-semibold text-slate-700">{note.itemTitle}</span>
+                              <span className="block break-words">{note.note}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <p className="mt-1 font-semibold text-amber-700">아직 전송되지 않았어요.</p>
+                      </div>
+                    ) : null}
                     {feedback?.reflection ? (
                       <div data-testid="my-flow-past-run-reflection" className="mt-3 border-l-2 border-emerald-200 pl-3 text-xs leading-5 text-slate-600">
                         <p className="font-semibold text-slate-900">내 실행 회고 · {feedback.reflection.outcome === 'helpful' ? '도움됐어요' : '고칠 점이 있어요'}</p>
@@ -10011,6 +10899,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
     const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
     const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug];
+    const executionNotes = myFlowExecutionNotesBySlug[flow.progress.slug] ?? [];
+    const privateExecutionNotes = executionNotes.filter((note) => note.kind === 'private');
+    const sourceCorrectionNotes = executionNotes.filter((note) => note.kind === 'source_correction');
     const activeDraft = myFlowCompletionFeedbackDraft?.flowSlug === flow.progress.slug
       ? myFlowCompletionFeedbackDraft
       : null;
@@ -10036,6 +10927,35 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <p className="mt-1 text-xs leading-5 text-slate-600">
           내 회고는 나만 보고, 원본에서 고칠 점은 전송 전 메모로 따로 저장합니다.
         </p>
+        {privateExecutionNotes.length > 0 ? (
+          <section data-testid="my-flow-completion-private-notes" className="mt-3 rounded-md bg-slate-50 px-3 py-3">
+            <h5 className="text-sm font-semibold text-slate-950">이번에 남긴 메모 · {privateExecutionNotes.length}개</h5>
+            <ul className="mt-2 grid gap-2">
+              {privateExecutionNotes.map((note) => (
+                <li key={`private-${note.itemId}`} className="border-t border-slate-200 pt-2 first:border-t-0 first:pt-0">
+                  <p className="text-xs font-semibold text-slate-600">{note.itemTitle}</p>
+                  <p className="mt-0.5 whitespace-pre-wrap text-sm leading-6 text-slate-900">{note.note}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+        {sourceCorrectionNotes.length > 0 ? (
+          <section data-testid="my-flow-completion-correction-notes" className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h5 className="text-sm font-semibold text-amber-950">원본에 알릴 점 · {sourceCorrectionNotes.length}개</h5>
+              <span className="rounded bg-white px-2 py-1 text-[11px] font-semibold text-amber-800">아직 전송되지 않음</span>
+            </div>
+            <ul className="mt-2 grid gap-2">
+              {sourceCorrectionNotes.map((note) => (
+                <li key={`correction-${note.itemId}`} className="border-t border-amber-200 pt-2 first:border-t-0 first:pt-0">
+                  <p className="text-xs font-semibold text-amber-800">{note.itemTitle}</p>
+                  <p className="mt-0.5 whitespace-pre-wrap text-sm leading-6 text-amber-950">{note.note}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
@@ -10414,66 +11334,50 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
-  const renderPersonalDraftListExport = (flow: MySavedFlow) => {
-    const artifact = getMyFlowPersonalDraftListExport(flow);
-    if (!artifact) return null;
-    const exportKey = `personal-draft-list-export::${flow.progress.slug}`;
-    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
-    const exportableCount = artifact.memoRows.length;
+  const renderMyFlowExportPanel = (flow: MySavedFlow) => {
+    const items = getMyFlowScopeExportItems(flow);
+    if (items.length === 0) return null;
+    const active = myFlowExportPanel?.flowSlug === flow.progress.slug;
+    const exportKey = `my-flow-export::${flow.progress.slug}`;
+    const flowTitle = getMyFlowPortableExportFlowTitle(flow);
+    const feedback = myFlowStepCopiedKey === exportKey
+      ? myFlowStepCopiedLabel
+      : myFlowStepDownloadedKey === exportKey
+        ? FLOW_EXPORT_FEEDBACK.calendarReady
+        : '';
 
     return (
-      <details
-        data-testid="personal-draft-list-export"
-        className="mt-3 border-t border-slate-200 pt-3"
-      >
-        <summary
-          data-testid="personal-draft-list-export-toggle"
-          className="cursor-pointer text-sm font-semibold text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
-        >
-          이 Flow 가져가기 · {exportableCount}개
-        </summary>
-        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <button
-            type="button"
-            data-testid="personal-draft-copy-memo"
-            aria-label={`${flowTitle} 전체 메모로 복사`}
-            disabled={exportableCount === 0}
-            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'memo')}
-          >
-            메모로 복사
-          </button>
-          <button
-            type="button"
-            data-testid="personal-draft-copy-checklist"
-            aria-label={`${flowTitle} 전체 체크리스트 복사`}
-            disabled={exportableCount === 0}
-            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'checklist')}
-          >
-            체크리스트 복사
-          </button>
-          <button
-            type="button"
-            data-testid="personal-draft-copy-sheet"
-            aria-label={`${flowTitle} 전체 시트로 복사`}
-            disabled={exportableCount === 0}
-            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-            onClick={() => copyMyFlowPersonalDraftListExport(flow, 'sheet')}
-          >
-            시트로 복사
-          </button>
-        </div>
-        {myFlowStepCopiedKey === exportKey ? (
-          <p
-            data-testid="personal-draft-list-export-feedback"
-            className="mt-2 text-xs font-semibold text-emerald-700"
-            role="status"
-          >
-            {myFlowStepCopiedLabel}
-          </p>
-        ) : null}
-      </details>
+      <FlowExportPanel
+        flowTitle={flowTitle}
+        items={items.map((item) => item.panelItem)}
+        open={active}
+        scope={active ? myFlowExportPanel.scope : 'flow'}
+        selectedKeys={active ? myFlowExportPanel.selectedKeys : []}
+        feedback={feedback}
+        legacyPersonalDraft={isPersonalDraftStructuralEditEligible(flow.bundle)}
+        onOpenChange={(open) => {
+          setMyFlowExportPanel(open
+            ? { flowSlug: flow.progress.slug, scope: 'flow', selectedKeys: [] }
+            : null);
+        }}
+        onScopeChange={(scope) => {
+          setMyFlowExportPanel((current) => ({
+            flowSlug: flow.progress.slug,
+            scope,
+            selectedKeys: current?.flowSlug === flow.progress.slug ? current.selectedKeys : [],
+          }));
+        }}
+        onSelectedKeysChange={(selectedKeys) => {
+          setMyFlowExportPanel((current) => ({
+            flowSlug: flow.progress.slug,
+            scope: current?.flowSlug === flow.progress.slug ? current.scope : 'selected',
+            selectedKeys,
+          }));
+        }}
+        onExport={(destination, plan) => {
+          void exportMyFlowScope(flow, destination, plan);
+        }}
+      />
     );
   };
 
@@ -10646,7 +11550,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             + 할 일 추가
           </button>
         )}
-        {renderPersonalDraftListExport(flow)}
       </section>
     );
   };
@@ -10818,10 +11721,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         </span>
                       </span>
                     </button>
-                    {structuralEditEligible
-                      ? renderPersonalDraftReorderControls(flow, stepRow, index, stepEntries.length)
-                      : null}
+                    <div className="flex shrink-0 items-center gap-1">
+                      {renderMyFlowExecutionNoteButton(stepRow)}
+                      {structuralEditEligible
+                        ? renderPersonalDraftReorderControls(flow, stepRow, index, stepEntries.length)
+                        : null}
+                    </div>
                   </div>
+                  {myFlowExecutionNoteDraft?.flowSlug === flow.progress.slug && myFlowExecutionNoteDraft.rowKey === getMyFlowRowInstanceKey(stepRow) ? (
+                    <div className="px-3 pb-3">{renderMyFlowExecutionNotePanel(stepRow)}</div>
+                  ) : null}
                   {stepOpen && activeCompactRow ? (
                     <div
                       ref={(node) => {
@@ -10862,6 +11771,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {executionReady && flowExpanded ? renderPersonalDraftStructuralControls(flow) : null}
+        {executionReady ? renderMyFlowExportPanel(flow) : null}
         {flowExpanded ? renderMyFlowExcludedSteps(flow) : null}
       </article>
     );
@@ -10877,6 +11787,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const directAnchorCopy = directAnchorEditable ? getMyFlowDirectSavedMapAnchorCopy(flow) : null;
     const personalCopySettingsLabel = settingsDateAnchorCopy ? `${settingsDateAnchorCopy.label}·이름 바꾸기` : '설정 조정';
     const nextRow = getSavedFlowNextRow(flow);
+    const nextExecutionRow = nextRow ? getMyFlowRowForFlowTab(flow, nextRow) : null;
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
     const nextActionLabel = getMyFlowOpenActionLabel(flow.bundle);
@@ -10982,21 +11893,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <p className="text-xs font-semibold text-slate-500">{[nextRow.timing ? formatMyFlowTimingChip(nextRow.timing) : '', nextRow.date ? formatMyFlowDisplayDate(nextRow.date) : '', formatMyFlowTimedScheduleLabel(nextRow.structuralScheduleProjection), nextRow.section ? toUserFacingSourceTitle(nextRow.section) : ''].filter(Boolean).join(' · ')}</p>
               <p className="mt-0.5 font-semibold text-slate-950">{nextRow.title}</p>
               </div>
-              <button
-                type="button"
-                data-testid="my-flow-next-action-open"
-                className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
-                aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
-                onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
-              >
-                {nextActionLabel}
-              </button>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  data-testid="my-flow-next-action-open"
+                  className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
+                  aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
+                  onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
+                >
+                  {nextActionLabel}
+                </button>
+                {nextExecutionRow ? renderMyFlowExecutionNoteButton(nextExecutionRow) : null}
+              </div>
             </div>
           ) : (
             <p className="mt-1 text-sm text-slate-600">남은 실행 항목이 없습니다.</p>
           )}
+          {nextExecutionRow ? renderMyFlowExecutionNotePanel(nextExecutionRow) : null}
         </div> : null}
         {executionReady ? renderPersonalDraftStructuralControls(flow) : null}
+        {executionReady ? renderMyFlowExportPanel(flow) : null}
         {executionReady && activeOverviewRow ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
             {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow')}
@@ -11530,16 +12446,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   {myFlowSecondaryContinuationRows.length > 0 ? (
                     <section data-testid="my-flow-upcoming-list" className="min-w-0 border-y border-slate-200 py-4">
                       <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-semibold text-slate-500">다음 항목</p>
-                          <h3 className="mt-1 text-lg font-semibold text-slate-950">가까운 할 일만 보기</h3>
-                        </div>
-                        <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
-                          {myFlowSecondaryContinuationRows.length}개
-                        </span>
+                        <h3 className="text-sm font-semibold text-slate-700">다음 예정</h3>
+                        <button
+                          type="button"
+                          className="min-h-9 rounded-md px-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+                          onClick={() => selectMyFlowView('flow')}
+                        >
+                          전체 보기
+                        </button>
                       </div>
-                      <div className="mt-3 grid gap-2">
-                        {myFlowSecondaryContinuationRows.map((row) => renderMobileContinuationFlowCard(row))}
+                      <div className="mt-2">
+                        {myFlowSecondaryContinuationRows.map((row) => renderMyFlowContinuationPreview(row))}
                       </div>
                     </section>
                   ) : null}
@@ -11584,18 +12501,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   {todayCompletedRows.length > 0 ? (
                     <section data-testid="my-flow-today-completed-list" className="min-w-0 border-y border-slate-200 py-3">
                       <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="text-xs font-semibold text-slate-500">보조 상태</p>
-                          <h3 className="mt-0.5 text-sm font-semibold text-slate-800">오늘 완료</h3>
-                        </div>
+                        <h3 className="text-sm font-semibold text-slate-700">완료 {todayCompletedRows.length}</h3>
                         <button
                           type="button"
                           data-testid="my-flow-today-completed-toggle"
-                          className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+                          className="min-h-9 rounded-md px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
                           aria-expanded={myFlowTodayCompletedOpen}
+                          aria-label={`완료한 할 일 ${todayCompletedRows.length}개 ${myFlowTodayCompletedOpen ? '접기' : '보기'}`}
                           onClick={() => setMyFlowTodayCompletedOpen((open) => !open)}
                         >
-                          {myFlowTodayCompletedOpen ? '오늘 완료 접기' : `오늘 완료 ${todayCompletedRows.length}개 보기`}
+                          {myFlowTodayCompletedOpen ? '접기' : '보기'}
                         </button>
                       </div>
                       {myFlowTodayCompletedOpen ? (
@@ -11850,6 +12765,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
           {savedView === 'calendar' ? (
             <div>
+              <CalendarUnscheduledTray
+                items={calendarUnscheduledTrayItems}
+                selectedKeys={myFlowUnscheduledSelection.filter((key) =>
+                  calendarUnscheduledTrayRowsByKey.has(key),
+                )}
+                targetDate={calendarUnscheduledEffectiveTargetDate}
+                preview={calendarUnscheduledSchedulePreview}
+                expanded={myFlowUnscheduledTrayOpen}
+                undo={myFlowCalendarScheduleUndo ? {
+                  count: myFlowCalendarScheduleUndo.count,
+                  targetDateLabel: formatKoreanShortDate(myFlowCalendarScheduleUndo.targetDate),
+                } : undefined}
+                onToggleExpanded={() => setMyFlowUnscheduledTrayOpen((open) => !open)}
+                onToggleItem={toggleMyFlowCalendarUnscheduledItem}
+                onToggleAll={toggleAllMyFlowCalendarUnscheduledItems}
+                onTargetDateChange={(date) => {
+                  setMyFlowUnscheduledTargetDate(date);
+                  setMyFlowCalendarScheduleUndo(null);
+                }}
+                onApply={applyMyFlowCalendarUnscheduledSchedule}
+                onUndo={undoMyFlowCalendarUnscheduledSchedule}
+              />
               <div className="grid gap-4 pb-0 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.75fr)] lg:gap-0">
               <section
                 ref={myFlowCalendarCardRef}
@@ -12495,6 +13432,27 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ) : null}
             </div>
           </section>
+        </div>
+      ) : null}
+
+      {myFlowCompletionUndo ? (
+        <div
+          data-testid="my-flow-completion-snackbar"
+          role="status"
+          aria-live="polite"
+          className="fixed inset-x-3 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-center gap-3 rounded-md bg-slate-950 px-4 py-3 text-white shadow-xl md:bottom-6"
+        >
+          <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+            “{myFlowCompletionUndo.title}” 완료
+          </p>
+          <button
+            type="button"
+            data-testid="my-flow-completion-undo"
+            className="min-h-10 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            onClick={() => undoMyFlowCompletion(myFlowCompletionUndo)}
+          >
+            실행 취소
+          </button>
         </div>
       ) : null}
 
@@ -14454,7 +15412,7 @@ function AnchorInput({
   const anchorDate = anchor ? new Date(anchor) : null;
   const today = new Date();
   const daysUntil = anchorDate && !Number.isNaN(anchorDate.getTime())
-    ? Math.ceil((anchorDate.getTime() - new Date(formatDate(today)).getTime()) / 86400000)
+    ? Math.ceil((anchorDate.getTime() - new Date(formatLocalDate(today)).getTime()) / 86400000)
     : null;
   const earliestOffset = getEarliestOffset(bundle);
   const isPast = daysUntil !== null && daysUntil < 0;
@@ -14831,12 +15789,12 @@ function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: st
   if (mode === 'custom') return customAnchor;
   if (mode === 'undecided') return '';
   const today = new Date();
-  if (bundle.flow.content_type === 'meal_plan') return formatDate(today);
+  if (bundle.flow.content_type === 'meal_plan') return formatLocalDate(today);
   if (bundle.flow.category.includes('결혼')) return formatDate(addDays(today, 180));
   if (bundle.flow.category.includes('이사')) return formatDate(addDays(today, 30));
   if (bundle.flow.category.includes('여행')) return formatDate(addDays(today, 14));
   if (bundle.flow.structure_type === 'routine') return formatDate(nextMonday(today));
-  return formatDate(today);
+  return formatLocalDate(today);
 }
 
 function getAnchorModeLabel(mode: AnchorMode): string {
@@ -15142,7 +16100,7 @@ function TopExecutionPreview({
   if (model.uxType === 'routine' || model.uxType === 'program') {
     const repeatLabel = bundle.repeatRules?.[0] ?? '주 3회';
     const selectedWeekdays = getRoutineWeekdayLabels(repeatLabel, weekdays);
-    const startDate = anchor || formatDate(nextMonday(new Date()));
+    const startDate = anchor || formatLocalDate(nextMonday(new Date()));
     const occurrences = expandRoutineOccurrences({
       startDate,
       repeatLabel,

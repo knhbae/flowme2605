@@ -42,6 +42,64 @@ export type MyFlowAnchorDatedItem = {
   date?: string;
 };
 
+export type MyFlowEffectiveDateSource =
+  | 'draft'
+  | 'execution_override'
+  | 'personal_copy'
+  | 'source'
+  | 'none';
+
+export type MyFlowEffectiveDateResolution = {
+  date?: string;
+  originalDate: string;
+  overrideKey: string;
+  source: MyFlowEffectiveDateSource;
+};
+
+export function getMyFlowDateOverrideKey(
+  flowSlug: string,
+  itemId: string,
+  sourceDate?: string,
+): string {
+  return `${flowSlug}::${itemId}::${sourceDate || 'none'}`;
+}
+
+export function resolveMyFlowEffectiveDate(options: {
+  flowSlug: string;
+  itemId: string;
+  sourceDate?: string;
+  dateOverrides?: Record<string, string>;
+  draftDateOverride?: string;
+  personalCopyDateOverride?: string;
+}): MyFlowEffectiveDateResolution {
+  const originalDate = options.sourceDate?.trim() || 'none';
+  const overrideKey = getMyFlowDateOverrideKey(
+    options.flowSlug,
+    options.itemId,
+    options.sourceDate,
+  );
+  const candidates: Array<{
+    source: Exclude<MyFlowEffectiveDateSource, 'none'>;
+    date?: string;
+  }> = [
+    { source: 'draft', date: options.draftDateOverride },
+    {
+      source: 'execution_override',
+      date: options.dateOverrides?.[overrideKey],
+    },
+    { source: 'personal_copy', date: options.personalCopyDateOverride },
+    { source: 'source', date: options.sourceDate },
+  ];
+  const resolved = candidates.find((candidate) => candidate.date?.trim());
+
+  return {
+    ...(resolved?.date?.trim() ? { date: resolved.date.trim() } : {}),
+    originalDate,
+    overrideKey,
+    source: resolved?.source ?? 'none',
+  };
+}
+
 function canUseStorage(): boolean {
   return typeof window !== 'undefined' && Boolean(window.localStorage);
 }
@@ -107,6 +165,23 @@ export function rekeyMyFlowAnchorDatedRecord<T>(
   });
 
   return next;
+}
+
+export function rekeyMyFlowPersonalExecutionStateForAnchor(
+  state: MyFlowPersonalExecutionState,
+  options: {
+    flowSlug: string;
+    previousItems: MyFlowAnchorDatedItem[];
+    nextItems: MyFlowAnchorDatedItem[];
+  },
+): MyFlowPersonalExecutionState {
+  return {
+    itemDrafts: rekeyMyFlowAnchorDatedRecord(state.itemDrafts, options),
+    dateOverrides: rekeyMyFlowAnchorDatedRecord(state.dateOverrides, options),
+    ...(state.occurrenceRecords
+      ? { occurrenceRecords: cloneRecord(state.occurrenceRecords) }
+      : {}),
+  };
 }
 
 export function getMyFlowOccurrenceExecutionStorageKey(

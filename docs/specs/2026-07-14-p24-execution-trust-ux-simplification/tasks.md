@@ -14,36 +14,49 @@
 - [x] Inspect the current Claude Design `(8)` proposal rather than the stale ZIP root README.
 - [x] Compare current package/runtime changes with tracked `a9ae10e`.
 - [x] Review official Todoist, Apple Reminders, Google Calendar, Notion, and Carbon patterns.
-- [ ] Run P24-00R in isolated worktrees.
+- [x] Run P24-00R in isolated worktrees.
 
 ## P24-00R
 
-- [ ] Create clean worktree at `a9ae10e`.
-- [ ] Install with tracked lockfile and record exact runtime versions.
-- [ ] Run docs, unit, build, full E2E.
-- [ ] Create dependency-upgrade-only worktree from the same commit.
-- [ ] Apply only package/runtime/CI candidate changes.
-- [ ] Run the same command matrix.
-- [ ] Reproduce each disputed finding with one fixture and one expected result.
-- [ ] Verify Vercel anonymous access without using a signed-in session.
-- [ ] Publish `reproduction-matrix.json` and first implementation `/goal`.
+- [x] Create clean worktree at `211827d`.
+- [x] Install with tracked lockfile and record exact runtime versions.
+- [x] Run docs, unit, build, and targeted production E2E; record the full-suite timeout separately.
+- [x] Create dependency-upgrade-only worktree from the same commit.
+- [x] Apply only package/runtime candidate changes.
+- [x] Run the same install/docs/unit/build and `/flows` production smoke matrix.
+- [x] Reconcile disputed findings against clean evidence and current code paths.
+- [x] Verify Vercel anonymous access without using a signed-in session.
+- [x] Publish `reproduction-matrix.json` and the P24-00F1 implementation goal.
 
 ## Correctness
 
-- [ ] P24-00F1 local date boundary.
-- [ ] P24-00F2A effective-date summary parity.
-- [ ] P24-00F2B reuse override transfer.
-- [ ] P24-00F3A recurrence occurrence parity.
-- [ ] P24-00F3B memo split Item inclusion and empty draft validation.
-- [ ] P24-00F4 hard navigation and post-save hydration.
+- [x] P24-00F1 local date boundary.
+- [x] P24-00F2A effective-date summary parity.
+- [x] P24-00F2B reuse override transfer.
+- [x] P24-00F3A recurrence occurrence parity.
+  - [x] Source routine 4-week Calendar occurrence expansion.
+  - [x] Per-occurrence completion and reopen state.
+  - [x] Standard bounded RRULE export with stable series UID.
+  - [x] Visible-month navigation no longer snaps back to the execution range.
+  - [x] Occurrence rows replace ambiguous whole-Flow `0/1` progress with current occurrence state.
+- [x] P24-00F3B memo split Item inclusion and empty draft validation.
+  - [x] Dated memo drafts retain scheduled and unscheduled source-owned Items in My Flow.
+  - [x] Reload and whole-Flow list export preserve every split Item.
+  - [x] Calendar continues to include only scheduled Items.
+  - [x] Empty miss requests stay unsaved and status copy never becomes an executable title.
+- [x] P24-00F4 hard navigation and post-save hydration.
+  - [x] Clean production `/flows` hard navigation/reload resolves 7/7.
+  - [x] Repeated public save hydrates the matching My Flow 5/5.
+  - [x] Dirty dependency/dev findings remain separated from clean baseline evidence.
+  - [x] No speculative app-code change when the defect is not reproducible.
 
 ## UX Simplification
 
-- [ ] P24-00U1 inline completion undo and one occurrence/one control.
-- [ ] P24-00U2 progressive editor and intent-aware fields.
-- [ ] P24-00S1 date movement pure contract.
-- [ ] P24-00U3 Calendar unscheduled tray.
-- [ ] P24-00S2 export scope contract and shared multi-select.
+- [x] P24-00U1 inline completion undo and one occurrence/one control.
+- [x] P24-00U2 progressive editor and intent-aware fields.
+- [x] P24-00S1 date movement pure contract.
+- [x] P24-00U3 Calendar unscheduled tray.
+- [x] P24-00S2 export scope contract and shared multi-select.
 - [ ] P24-00U4 inline notes and reflection aggregation.
 
 ## Operations and Observation
