@@ -14,19 +14,19 @@
 - [x] Inspect the current Claude Design `(8)` proposal rather than the stale ZIP root README.
 - [x] Compare current package/runtime changes with tracked `a9ae10e`.
 - [x] Review official Todoist, Apple Reminders, Google Calendar, Notion, and Carbon patterns.
-- [ ] Run P24-00R in isolated worktrees.
+- [x] Run P24-00R in isolated worktrees.
 
 ## P24-00R
 
-- [ ] Create clean worktree at `a9ae10e`.
-- [ ] Install with tracked lockfile and record exact runtime versions.
-- [ ] Run docs, unit, build, full E2E.
-- [ ] Create dependency-upgrade-only worktree from the same commit.
-- [ ] Apply only package/runtime/CI candidate changes.
-- [ ] Run the same command matrix.
-- [ ] Reproduce each disputed finding with one fixture and one expected result.
-- [ ] Verify Vercel anonymous access without using a signed-in session.
-- [ ] Publish `reproduction-matrix.json` and first implementation `/goal`.
+- [x] Create clean worktree at `211827d`.
+- [x] Install with tracked lockfile and record exact runtime versions.
+- [x] Run docs, unit, build, and targeted production E2E; record the full-suite timeout separately.
+- [x] Create dependency-upgrade-only worktree from the same commit.
+- [x] Apply only package/runtime candidate changes.
+- [x] Run the same install/docs/unit/build and `/flows` production smoke matrix.
+- [x] Reconcile disputed findings against clean evidence and current code paths.
+- [x] Verify Vercel anonymous access without using a signed-in session.
+- [x] Publish `reproduction-matrix.json` and the P24-00F1 implementation goal.
 
 ## Correctness
 

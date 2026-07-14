@@ -1,0 +1,15 @@
+{
+  "baseCommit": "211827d7f5fafebab00ed71dacdb106db0b3b44b",
+  "findings": [
+    { "id": "P24-DATE-LOCAL", "classification": "confirmed_clean", "nextSlice": "P24-00F1", "reason": "clean journey audit and source inspection confirm UTC date serialization in local-date defaults" },
+    { "id": "P24-DATE-SUMMARY", "classification": "confirmed_clean", "nextSlice": "P24-00F2A", "reason": "product projection path builds Today continuation before effective date override" },
+    { "id": "P24-REUSE-KEEP-FIXED", "classification": "confirmed_clean", "nextSlice": "P24-00F2B", "reason": "reuse UI persists policy but current transition clears active date overrides" },
+    { "id": "P24-RECURRENCE-SOURCE", "classification": "confirmed_clean", "nextSlice": "P24-00F3A", "reason": "personal draft recurrence is expanded, while source-backed routine projection follows a separate first-row path" },
+    { "id": "P24-DRAFT-TODO-INCLUSION", "classification": "confirmed_clean", "nextSlice": "P24-00F3B", "reason": "saved draft retains todo Items but My Flow source row mapping filters them from effective execution/export" },
+    { "id": "P24-DRAFT-EMPTY", "classification": "confirmed_clean", "nextSlice": "P24-00F3B", "reason": "clean journey audit reproduced empty miss draft creation" },
+    { "id": "P24-FLOWS-HARD-NAV", "classification": "not_reproduced", "nextSlice": "P24-00F4", "reason": "clean and dependency-candidate production targeted E2E both pass" },
+    { "id": "P24-POST-SAVE-HYDRATION", "classification": "blocked", "nextSlice": "P24-00F4", "reason": "intermittent one-in-five report requires repeated deterministic harness" },
+    { "id": "P24-BUILD-NEXT-155", "classification": "not_reproduced", "nextSlice": "P24-00OPS1", "reason": "both Next 15.3.8 and 15.5.20 isolated production builds pass" },
+    { "id": "P24-VERCEL-ANON", "classification": "blocked", "nextSlice": "P24-00OPS1", "reason": "anonymous request receives 302 to Vercel SSO" }
+  ]
+}
