@@ -1,5 +1,6 @@
 ﻿import fs from 'node:fs';
 import { expect, type Locator, type Page, test } from '@playwright/test';
+import { addDays, formatKoreanShortDate, formatLocalDate } from '../../lib/flow/date';
 import { FLOW_EXPORT_LABELS } from '../../lib/flow/export-labels';
 import {
   RUNTIME_ARCHIVED_FLOW_POLICIES,
@@ -49,6 +50,15 @@ const userFacingSourceSlugSignals = collectSourceSlugSignals([
   ...getSourceBackedHomepageFlowMaps(),
   ...getCuratedSourceAppSeedFlowMaps(),
 ]);
+
+function createMovingDateFixture() {
+  const anchor = addDays(new Date(), 10);
+
+  return {
+    anchor: formatLocalDate(anchor),
+    firstActionLabel: formatKoreanShortDate(addDays(anchor, -30), { includeWeekday: false }),
+  };
+}
 
 async function expectNoInternalUserSurfaceCopy(locator: Locator) {
   for (const term of userSurfaceInternalTerms) {
@@ -1537,6 +1547,7 @@ test('4-tab IA PoC sends saved content to calendar and keeps My Flow as manageme
 });
 
 test('product IA v2 keeps discovery simple and saved execution clear', async ({ page }) => {
+  const movingDate = createMovingDateFixture();
   await page.setViewportSize({ width: 390, height: 844 });
 
   await page.goto('/');
@@ -1588,7 +1599,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveText('이사일 입력');
   await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page.getByTestId('flow-map-anchor-input')).toBeFocused();
-  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
+  await page.getByTestId('flow-map-anchor-input').fill(movingDate.anchor);
   await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveText('저장하고 시작');
   await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
@@ -3891,6 +3902,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
 });
 
 test('source-backed moving map saves one dated timeline into My Flow calendar', async ({ page }) => {
+  const movingDate = createMovingDateFixture();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/moving-d30');
 
@@ -3910,7 +3922,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(publicMap).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');
   await expectNoVisibleSourceBrandSlug(publicMap);
 
-  await page.getByLabel('이사일').fill('2026-07-22');
+  await page.getByLabel('이사일').fill(movingDate.anchor);
   await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
   await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
@@ -3935,7 +3947,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   await expect(movingOverviewCard).toBeVisible();
   await expectNoVisibleSourceBrandSlug(movingOverviewCard);
   await expect(movingOverviewCard).not.toContainText(/\b2026-\d{2}-\d{2}\b/);
-  await expect(movingOverviewCard).toContainText('6월 22일');
+  await expect(movingOverviewCard).toContainText(movingDate.firstActionLabel);
 
   await page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '캘린더' }).click();
   const calendarCard = page.getByTestId('my-flow-calendar-card');
@@ -3954,7 +3966,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
 
   const savedMap = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:saved:moving-d30') || 'null'));
   expect(savedMap.version).toBe('2026-06-24.1');
-  expect(savedMap.anchor).toBe('2026-07-22');
+  expect(savedMap.anchor).toBe(movingDate.anchor);
   expect(savedMap.flowSlugs).toEqual(['source-backed-moving-d30']);
   expect(savedMap.stepCountsByFlow).toEqual({
     'source-backed-moving-d30': 5,
