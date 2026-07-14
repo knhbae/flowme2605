@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>P24-00B2 Production Design Readiness</title>
+  <style>
+    :root { color-scheme:light; --ink:#171915; --muted:#626860; --line:#dcded8; --paper:#fbfbf8; --white:#fff; --blue:#2453e6; --green:#0f766e; --amber:#a85d00; --soft-green:#edf8f4; --soft-amber:#fff6e6; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Pretendard,"Noto Sans KR",Arial,sans-serif; letter-spacing:0; }
+    a { color:var(--blue); text-decoration-thickness:1px; text-underline-offset:3px; }
+    header, section { border-bottom:1px solid var(--line); }
+    .inner { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:32px 0; }
+    .eyebrow { margin:0 0 10px; color:var(--green); font-size:13px; font-weight:800; }
+    h1 { max-width:760px; margin:0; font-size:clamp(32px,5vw,58px); line-height:1.05; letter-spacing:0; }
+    h2 { margin:0 0 18px; font-size:25px; letter-spacing:0; }
+    h3 { margin:0 0 8px; font-size:18px; letter-spacing:0; }
+    p { line-height:1.7; }
+    .lede { max-width:760px; margin:20px 0 0; color:var(--muted); font-size:17px; }
+    .status { display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+    .pill { padding:7px 10px; border:1px solid var(--line); border-radius:999px; background:var(--white); font-size:13px; font-weight:700; }
+    .pill.green { border-color:#9ddacb; background:var(--soft-green); color:#075f57; }
+    .pill.amber { border-color:#ebc986; background:var(--soft-amber); color:#7c4300; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--white); }
+    .metric { min-height:118px; padding:20px; border-right:1px solid var(--line); }
+    .metric:last-child { border-right:0; }
+    .metric strong { display:block; margin-bottom:5px; font-size:30px; }
+    .metric span { color:var(--muted); font-size:13px; line-height:1.45; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .card { padding:20px; border:1px solid var(--line); border-radius:8px; background:var(--white); }
+    .card .id { display:inline-grid; place-items:center; width:32px; min-width:32px; height:28px; margin-bottom:12px; padding:0 6px; border-radius:6px; background:var(--ink); color:#fff; font-size:12px; font-weight:800; }
+    .card p { margin:0; color:var(--muted); font-size:14px; }
+    .good { border-left:4px solid var(--green); }
+    .watch { border-left:4px solid var(--amber); }
+    .screens { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; align-items:start; }
+    figure { margin:0; }
+    figure img { display:block; width:100%; height:420px; border:1px solid var(--line); border-radius:6px; background:#fff; object-fit:cover; object-position:top; }
+    figcaption { margin-top:7px; color:var(--muted); font-size:12px; }
+    .watchlist { margin:0; padding:0; list-style:none; border-top:1px solid var(--line); }
+    .watchlist li { display:grid; grid-template-columns:150px 1fr; gap:18px; padding:16px 0; border-bottom:1px solid var(--line); }
+    .watchlist strong { color:var(--amber); }
+    .next { display:grid; grid-template-columns:220px 1fr; gap:24px; align-items:start; }
+    .counter { padding:20px; border:1px solid #ebc986; border-radius:8px; background:var(--soft-amber); }
+    .counter strong { display:block; font-size:34px; }
+    .counter span { color:#714500; font-size:13px; }
+    footer .inner { color:var(--muted); font-size:13px; }
+    @media (max-width:760px) {
+      .inner { width:min(100% - 24px,1120px); padding:24px 0; }
+      .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .metric:nth-child(2) { border-right:0; }
+      .metric:nth-child(-n+2) { border-bottom:1px solid var(--line); }
+      .grid { grid-template-columns:1fr; }
+      .screens { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .screens figure:first-child { grid-column:1 / -1; }
+      .screens figure:first-child img { height:480px; }
+      .watchlist li, .next { grid-template-columns:1fr; gap:6px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="inner">
+      <p class="eyebrow">P24-00B2 · automated design readiness</p>
+      <h1>목업의 구조는 연결됐다. 이제 설명 없이 찾는지 본다.</h1>
+      <p class="lede">Claude Design (8)의 A~G 원칙과 병합된 production 5개 route를 390px·1024px에서 대조했다. 화면 안정성은 관찰 시작 기준을 통과했지만 실제 사용자 증거는 아직 없다.</p>
+      <div class="status">
+        <span class="pill green">관찰 시작 가능</span>
+        <span class="pill">production 200</span>
+        <span class="pill">overflow 0</span>
+        <span class="pill">console error 0</span>
+        <span class="pill amber">실제 세션 0 / 15</span>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="inner">
+      <h2>현재 근거</h2>
+      <div class="metrics">
+        <div class="metric"><strong>10</strong><span>route × viewport production 캡처</span></div>
+        <div class="metric"><strong>10/10</strong><span>HTTP 200 응답</span></div>
+        <div class="metric"><strong>0</strong><span>horizontal overflow와 console error</span></div>
+        <div class="metric"><strong>0/15</strong><span>실제 관찰 세션. 자동화와 분리</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner">
+      <p class="eyebrow">Claude Design (8)</p>
+      <h2>A~G fidelity</h2>
+      <div class="grid">
+        <article class="card good"><span class="id">A</span><h3>편집 단계 공개</h3><p>제목·날짜·시간·메모를 먼저, 장소·반복·결정은 세부 설정 뒤에 둔다. 펼친 뒤의 밀도는 실제 사용자에게 확인한다.</p></article>
+        <article class="card good"><span class="id">B</span><h3>제자리 완료 취소</h3><p>한 행의 checkbox, 즉시 실행 취소, 같은 맥락의 완료 목록으로 되돌리기 경로를 닫았다.</p></article>
+        <article class="card watch"><span class="id">C</span><h3>날짜 없음 tray</h3><p>Calendar 안에서 날짜 없는 일을 선택해 배치한다. 데이터가 있을 때만 나타나는入口의 발견성은 아직 미검증이다.</p></article>
+        <article class="card watch"><span class="id">D</span><h3>Flow-level export</h3><p>범위를 먼저 고르고 destination을 선택하며 개수를 표시한다. public 긴 화면에서 내보내기入口까지 도달하는지는 관찰한다.</p></article>
+        <article class="card good"><span class="id">E</span><h3>연동·고정 날짜</h3><p>기준일 재계산과 개인 고정 날짜를 분리하고 preview·undo·reuse 정책을 같은 계약으로 읽는다.</p></article>
+        <article class="card good"><span class="id">F</span><h3>실행 행 하나</h3><p>현재 할 일만 완료 control을 갖고 다음 예정은 조작 없는 예고로 낮춘다.</p></article>
+        <article class="card watch"><span class="id">G</span><h3>가벼운 실행 메모</h3><p>내 메모와 원본 보완을 분리하고 완료 시 자동 수집한다. 두 목적이 설명 없이 구분되는지는 재방문 세션에서 본다.</p></article>
+        <article class="card good"><span class="id">Pre</span><h3>정확성 선행</h3><p>공개 접근, local date, 반복 occurrence, draft item, hydration, dependency high 0을 먼저 닫았다.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner">
+      <h2>Production mobile</h2>
+      <div class="screens">
+        <figure><a href="screenshots/home-mobile.png"><img src="screenshots/home-mobile.png" alt="Home 390px"></a><figcaption>Home · 첫入口 우선</figcaption></figure>
+        <figure><a href="screenshots/flows-mobile.png"><img src="screenshots/flows-mobile.png" alt="Flow 찾기 390px"></a><figcaption>Flow 찾기 · input first</figcaption></figure>
+        <figure><a href="screenshots/public-vehicle-mobile.png"><img src="screenshots/public-vehicle-mobile.png" alt="공개 차량검사 Flow 390px"></a><figcaption>public /f · 3204px watchpoint</figcaption></figure>
+        <figure><a href="screenshots/my-moving-mobile.png"><img src="screenshots/my-moving-mobile.png" alt="My Flow Today 390px"></a><figcaption>My Flow · one executable row</figcaption></figure>
+        <figure><a href="screenshots/calendar-moving-mobile.png"><img src="screenshots/calendar-moving-mobile.png" alt="Calendar 390px"></a><figcaption>Calendar · agenda first</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner">
+      <h2>파일럿에서 볼 것</h2>
+      <ul class="watchlist">
+        <li><strong>공개 Flow 길이</strong><span>긴 근거 영역이 저장 결정을 돕는지, 첫 행동이나 export 도달을 방해하는지 행동으로 확인한다.</span></li>
+        <li><strong>수정入口</strong><span>연필 icon과 열기를 사용자가 서로 다른 행동으로 해석하는지 본다.</span></li>
+        <li><strong>날짜 없음</strong><span>Calendar에서 tray를 스스로 발견하고 하나만 선택해 날짜를 놓는지 본다.</span></li>
+        <li><strong>export 범위</strong><span>전체·선택·현재 결과를 다운로드 전에 정확히 예측하는지 묻는다.</span></li>
+        <li><strong>메모 목적</strong><span>내 기록과 원본 보완 요청을 같은 메모로 오해하지 않는지 재방문 세션에서 본다.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="inner next">
+      <div class="counter"><strong>0 / 15</strong><span>자동화는 이 숫자를 올리지 않는다.</span></div>
+      <div><p class="eyebrow">Next gate</p><h2>P1-S1과 P2-S1 실제 관찰</h2><p>두 참가자에게 고정된 시작 route와 과업만 제공한다. 날짜·저장·완료·export 신뢰 오류는 즉시 중단하며, 선호 발언과 행동 실패를 분리한다.</p><p><a href="../2026-07-14-p24-00b1-two-person-pilot/pilot-board-ko.html">2인 파일럿 보드 열기</a></p></div>
+    </div>
+  </section>
+
+  <footer><div class="inner">P24-00B2 · production browser QA, not observed-user validation · 2026-07-14</div></footer>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "auditId": "p24-00b2-production-design-readiness",
+  "capturedAt": "2026-07-14T18:00:00+09:00",
+  "productionUrl": "https://flowme2605.vercel.app",
+  "mergedBaseline": "8b48b08159c91b58defb9e0912f3e72ba6e391af",
+  "evidenceKind": "automated_browser_qa_not_user_validation",
+  "verdict": "ready_with_watchpoints",
+  "observedUserSessionCount": 0,
+  "requiredObservedUserSessionCount": 15,
+  "claudeDesignSource": "FlowMe UXUI 전체 검토 (8).zip/FlowMe UX 개선안 목업 + 코멘트.dc.html",
+  "claudeDesignFidelity": [
+    { "id": "A", "direction": "progressive_editor", "implementation": "connected", "humanDiscoveryUnverified": true },
+    { "id": "B", "direction": "inline_completion_undo", "implementation": "connected", "humanDiscoveryUnverified": true },
+    { "id": "C", "direction": "calendar_unscheduled_tray", "implementation": "connected", "humanDiscoveryUnverified": true },
+    { "id": "D", "direction": "flow_level_export_scope", "implementation": "connected", "humanDiscoveryUnverified": true },
+    { "id": "E", "direction": "linked_fixed_date_movement", "implementation": "connected", "humanDiscoveryUnverified": true },
+    { "id": "F", "direction": "one_occurrence_one_control", "implementation": "connected", "humanDiscoveryUnverified": true },
+    { "id": "G", "direction": "inline_notes_aggregation", "implementation": "connected", "humanDiscoveryUnverified": true }
+  ],
+  "routes": [
+    { "route": "/", "viewport": "390x844", "httpStatus": 200, "scrollHeight": 983, "visibleTextChars": 312, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/home-mobile.png" },
+    { "route": "/flows", "viewport": "390x844", "httpStatus": 200, "scrollHeight": 2009, "visibleTextChars": 729, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/flows-mobile.png" },
+    { "route": "/f/vehicle-inspection-prep", "viewport": "390x844", "httpStatus": 200, "scrollHeight": 3204, "visibleTextChars": 1326, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/public-vehicle-mobile.png" },
+    { "route": "/my", "state": "moving-d30-saved", "viewport": "390x844", "httpStatus": 200, "scrollHeight": 972, "visibleTextChars": 287, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/my-moving-mobile.png" },
+    { "route": "/calendar", "state": "moving-d30-saved", "viewport": "390x844", "httpStatus": 200, "scrollHeight": 1285, "visibleTextChars": 491, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/calendar-moving-mobile.png" },
+    { "route": "/", "viewport": "1024x768", "httpStatus": 200, "scrollHeight": 768, "visibleTextChars": 315, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/home-wide.png" },
+    { "route": "/flows", "viewport": "1024x768", "httpStatus": 200, "scrollHeight": 1311, "visibleTextChars": 732, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/flows-wide.png" },
+    { "route": "/f/vehicle-inspection-prep", "viewport": "1024x768", "httpStatus": 200, "scrollHeight": 2311, "visibleTextChars": 1268, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/public-vehicle-wide.png" },
+    { "route": "/my", "state": "moving-d30-saved", "viewport": "1024x768", "httpStatus": 200, "scrollHeight": 906, "visibleTextChars": 316, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/my-moving-wide.png" },
+    { "route": "/calendar", "state": "moving-d30-saved", "viewport": "1024x768", "httpStatus": 200, "scrollHeight": 1055, "visibleTextChars": 614, "horizontalOverflow": 0, "consoleErrorCount": 0, "screenshot": "screenshots/calendar-moving-wide.png" }
+  ],
+  "summary": {
+    "routeViewportCount": 10,
+    "httpFailureCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "screenshotCount": 10,
+    "publicFlowMobileScrollHeight": 3204,
+    "publicFlowCopyDensityWatchpoint": true,
+    "appCodeChanged": false,
+    "p24Complete": false
+  }
+}
