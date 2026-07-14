@@ -669,6 +669,26 @@ const html = `<!doctype html>
 
 fs.writeFileSync(path.join(auditDir, 'report.html'), html, 'utf8');
 
+const localReportLinks = [
+  './comparison.md',
+  './report-data.json',
+  '../../specs/2026-07-14-url-to-flow-prompt-lab/prompt-v0.2.md',
+  '../../specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md',
+];
+const missingReportLinks = localReportLinks.filter(
+  (href) => !fs.existsSync(path.resolve(auditDir, href)),
+);
+if (missingReportLinks.length > 0) {
+  throw new Error(`Broken local report links: ${missingReportLinks.join(', ')}`);
+}
+if (
+  slides.length !== 15 ||
+  !html.includes('<span>v0.1</span><strong class="cobalt">1/12</strong>') ||
+  !html.includes('<span>v0.2</span><strong class="coral">12/12</strong>')
+) {
+  throw new Error('Report deck structure or first-viewport evidence copy is incomplete.');
+}
+
 console.log(`Wrote Prompt Lab report artifacts:
 ${rel(path.join(auditDir, 'report-data.json'))}
 ${rel(path.join(auditDir, 'comparison.md'))}
