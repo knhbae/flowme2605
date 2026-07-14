@@ -2,6 +2,9 @@
   "name": "flowme2605",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,16 +13,21 @@
     "content:korean-flow-review:build": "node scripts/content-audit/build-korean-flow-review-html.mjs",
     "content:korean-flow-review:serve": "node scripts/content-audit/serve-korean-flow-review.mjs",
     "skills:sync": "node scripts/sync-skills.mjs",
+    "skills:install:codex": "node scripts/sync-codex-user-skills.mjs",
+    "skills:check:codex": "node scripts/sync-codex-user-skills.mjs --check",
     "hooks:install": "node scripts/install-git-hooks.mjs",
+    "workflow:session-start": "node scripts/workflows/repo-workflow.mjs session-start",
+    "workflow:closeout": "node scripts/workflows/repo-workflow.mjs work-closeout",
     "docs:check": "node scripts/sync-skills.mjs --check && node scripts/check-docs.mjs",
+    "security:audit": "npm audit --audit-level=high",
     "verify": "npm run docs:check && npm test && npm run build",
-    "test": "tsx --test lib/flow/date.test.ts lib/flow/date-movement.test.ts lib/flow/calendar-unscheduled-tray.test.ts lib/flow/export-scope.test.ts lib/flow/execution-notes.test.ts lib/flow/flow-run-history.test.ts lib/flow/parser.test.ts lib/flow/display-title.test.ts lib/flow/user-surface-guardrails.test.ts lib/flow/url-first-lookup.test.ts lib/flow/url-first-supply-queue.test.ts lib/flow/seed-flows.test.ts lib/flow/export.test.ts lib/flow/content-lab.test.ts lib/flow/storage.test.ts lib/flow/execution-model.test.ts lib/flow/recurrence.test.ts lib/flow/source-fit.test.ts lib/flow/content-inventory.test.ts lib/flow/natural-artifact-audit.test.ts lib/flow/content-lifecycle.test.ts lib/flow/source-review-priority.test.ts lib/flow/artifact-plan.test.ts lib/flow/artifact-fields.test.ts lib/flow/representative-ux-content-review.test.ts lib/flow/mobile-simulation-protocol.test.ts lib/flow/ux-cleanup-backlog.test.ts lib/flow/moving-d30-restart.test.ts lib/flow/korean-flow-content-candidates.test.ts lib/flow/korean-flow-content-user-review.test.ts lib/flow/korean-flow-content-source-refresh.test.ts lib/flow/flow-content-selection-audit.test.ts lib/flow/content-flow-review-api.test.ts lib/flow/source-backed-my-flow.test.ts lib/flow/source-backed-manual-registration-report.test.ts lib/flow/my-flow-step-export.test.ts",
+    "test": "tsx --test lib/flow/date.test.ts lib/flow/date-movement.test.ts lib/flow/calendar-unscheduled-tray.test.ts lib/flow/export-scope.test.ts lib/flow/execution-notes.test.ts lib/flow/flow-run-history.test.ts lib/flow/parser.test.ts lib/flow/display-title.test.ts lib/flow/user-surface-guardrails.test.ts lib/flow/url-first-lookup.test.ts lib/flow/url-first-supply-queue.test.ts lib/flow/seed-flows.test.ts lib/flow/export.test.ts lib/flow/content-lab.test.ts lib/flow/storage.test.ts lib/flow/execution-model.test.ts lib/flow/recurrence.test.ts lib/flow/source-fit.test.ts lib/flow/content-inventory.test.ts lib/flow/natural-artifact-audit.test.ts lib/flow/content-lifecycle.test.ts lib/flow/source-review-priority.test.ts lib/flow/artifact-plan.test.ts lib/flow/artifact-fields.test.ts lib/flow/representative-ux-content-review.test.ts lib/flow/mobile-simulation-protocol.test.ts lib/flow/ux-cleanup-backlog.test.ts lib/flow/moving-d30-restart.test.ts lib/flow/korean-flow-content-candidates.test.ts lib/flow/korean-flow-content-user-review.test.ts lib/flow/korean-flow-content-source-refresh.test.ts lib/flow/flow-content-selection-audit.test.ts lib/flow/content-flow-review-api.test.ts lib/flow/source-backed-my-flow.test.ts lib/flow/source-backed-manual-registration-report.test.ts lib/flow/my-flow-step-export.test.ts scripts/workflows/repo-workflow.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@fullcalendar/daygrid": "^6.1.20",
-    "@fullcalendar/interaction": "^6.1.20",
-    "@fullcalendar/react": "^6.1.20",
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21",
+    "@fullcalendar/react": "^6.1.21",
     "exceljs": "4.4.0",
     "next": "15.5.20",
     "react": "19.0.0",
@@ -35,5 +43,9 @@
     "tailwindcss": "3.4.17",
     "tsx": "4.19.4",
     "typescript": "5.8.3"
+  },
+  "overrides": {
+    "tmp": "0.2.7",
+    "uuid": "11.1.1"
   }
 }

@@ -34,6 +34,12 @@ The goal is not more paperwork. The goal is to keep Stage 0 focused on measurabl
 
 For backlog or planning material that humans are expected to act on, provide an HTML workboard view as the primary review surface. Markdown specs, task files, status notes, and audit documents can remain the source/evidence layer, but the actionable view should show priority, status, next action, done-when, verification, and source links in one scannable page.
 
+Notion may provide a live human-facing operations projection, but it does not add another canonical memory layer. Keep the repo document graph authoritative and send only active human gates, high-level AI work packages, blockers, checkpoints, completion conditions, and repo/evidence links to Notion. Detailed execution stays in specs, plans, PR history, tests, and audit artifacts. Agents without Notion access must still be able to complete the full repo workflow.
+
+The active projection is [00 FlowMe 운영 홈](https://app.notion.com/p/39ac0d8f693f81339a34fdb75552bc27), using data source `collection://4946eb61-01b1-49e8-929e-82b118740310`. Read the repo baseline first and update only work items touched by the current task.
+
+Repeated collaboration procedures live under [docs/workflows](../workflows/README.md). Session Start, Request Interview, Direction Capture, and Work Closeout are canonical tool-independent workflows; repo skills provide discovery and `scripts/workflows/` provides only deterministic read-only inspection.
+
 ## Compatibility Position
 
 Checked against current public agent-instruction docs on 2026-06-11.
@@ -43,6 +49,7 @@ Checked against current public agent-instruction docs on 2026-06-11.
 - `agent.md` is the expanded project guide. It is intentionally linked from `AGENTS.md` because some tools only auto-load standard agent files.
 - Repo skills live canonically under `.agents/skills/` for Codex discovery. `.claude/skills/` is a generated copy for Claude Code discovery and must not be edited directly.
 - To change a skill, edit `.agents/skills/<skill-name>/SKILL.md`, then run `npm run skills:sync`. `npm run docs:check` includes `node scripts/sync-skills.mjs --check` so drift between `.agents/skills/` and `.claude/skills/` fails CI/local docs checks.
+- Tasks opened from the workspace parent may not discover nested repo skills at startup. Run `npm run skills:install:codex` to refresh generated copies under `$CODEX_HOME/skills`; use `npm run skills:check:codex` to detect drift. These user-scope copies are also generated and must not become the source of truth.
 - Do not add `GEMINI.md`, `.cursor/rules`, or `.github/copilot-instructions.md` by default. If the team adopts another tool-specific workflow, add a short adapter that points back to `AGENTS.md` and this harness instead of duplicating rules.
 - Add nested `AGENTS.md` files only when a subdirectory has different setup, commands, or safety rules.
 
@@ -63,6 +70,7 @@ References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/
 | [../REFERENCE.md](../REFERENCE.md) | External UX/UI and productivity-method references |
 | [../pr-history/README.md](../pr-history/README.md) | PR-level changes, decisions, verification, risks, and follow-ups |
 | [../HISTORY.md](../HISTORY.md) | Released changes |
+| [../workflows/README.md](../workflows/README.md) | Repeated session-start, direction-capture, and closeout procedures |
 | [ROLES.md](./ROLES.md) | AI/human role definitions |
 | [SDLC.md](./SDLC.md) | Repeatable development cycle |
 | [QA.md](./QA.md) | Verification checklist |
@@ -71,14 +79,18 @@ References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/
 ## Default Commands
 
 ```powershell
+npm run workflow:session-start
 npm run hooks:install
 npm run docs:check
 npm test
 npm run build
 npm run verify
 npm run test:e2e
+npm run workflow:closeout
 ```
 
 Use `npm run dev` for local manual testing at `http://localhost:3000`.
 
 Local hooks are intentionally light: pre-commit runs `npm run docs:check`; pre-push runs `npm run verify`. Full Playwright E2E remains a CI and explicit QA gate, not a mandatory local hook.
+
+The supported runtime baseline is Node.js 24. CI and Vercel derive this from `package.json`; `.node-version` provides the local version-manager hint. CI also blocks high-severity dependency audit findings and retains Playwright failure artifacts.

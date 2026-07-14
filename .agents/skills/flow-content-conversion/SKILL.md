@@ -37,6 +37,11 @@ Read only the needed sections:
 11. Separate source facts, creator experience, and cautions.
 12. Score the result with the quality rubric.
 13. Revise the lowest scoring dimension before adding more content.
+14. For catalog expansion, record `lifeArea`, `planningPattern`, `portfolioRole`, and the pre-app promotion state separately from the single-source conversion decision.
+15. Before handoff, keep user-facing `contentBundles` separate from internal review records and attach a comment to every score.
+16. For sparse official lifecycle sources, allow one primary Item only when the source defines the due window and conditional next step; do not pad the Flow with agency-internal phases.
+17. For creator/operator templates, require a complete reusable row set and a natural destination. Reject broad strategy text that still makes the user design the plan.
+18. For translated sensitive sources, verify that the care, insurance, legal, document, or administrative context applies to the target locale before promotion.
 
 ## Output Shape
 
@@ -61,3 +66,6 @@ Conversion decision:
 - Do not collapse complex real programs into one action if the user needs staged decisions.
 - Do not use generic motivation copy to fill missing content.
 - Do not treat creator experience as official guidance.
+- Do not promote a candidate from scores alone when source rows, omission reasons, export mapping, or rights/risk boundaries are missing.
+- Do not reject a useful official lifecycle merely because it has one real action, and do not add low-value actions to raise the count.
+- Do not treat translation as localization evidence for health, hospital, legal, or administrative content.
