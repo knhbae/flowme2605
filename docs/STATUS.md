@@ -7,7 +7,7 @@
 
 ## Current Control Panel
 
-Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
+Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html). Review reconciliation and staged next actions: [P24 consolidated next plan](./content-audit/2026-07-15-p24-review-reconciliation-next-plan-ko.html).
 
 | Lane | Current truth |
 | --- | --- |
@@ -18,6 +18,8 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-15 P24 review reconciliation: Reconciled the current Codex production audit, Claude Code clean regression, Claude Design heuristic evaluation, and the canonical backlog without promoting simulated evidence to user validation. Clean evidence does not reproduce the prior correctness blockers, and the date-coupled E2E assertions are already fixed on the current local baseline by `1aba5da`. The next sequence is narrow visual/accessibility preflight, P1-S1 and P2-S1, five-person first-use, return sessions to `15 / 15`, then P24-00C keep/change/defer/blocking. Broad redesign, source v2 UI, AI/backend, cloud persistence, and integrations remain gated. [Staged plan](./content-audit/2026-07-15-p24-review-reconciliation-next-plan-ko.html). This is planning synthesis, not observed-user evidence; observed sessions remain `0 / 15`.
 
 - 2026-07-15 backlog control cleanup: Reclassified the spec index so P24 is the only active gate, closed P23 and Prompt Lab against their evidence, moved external and observed-user gates to the roadmap, and separated the historical change log from the current queue. This changes planning truth only; observed sessions remain `0 / 15`.
 

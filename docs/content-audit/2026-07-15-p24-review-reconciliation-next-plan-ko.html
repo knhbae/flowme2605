@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P24 검토 통합 및 다음 실행 계획</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17191e;
+      --muted: #626875;
+      --line: #dfe3e9;
+      --surface: #ffffff;
+      --canvas: #f5f6f8;
+      --blue: #2459c4;
+      --blue-soft: #edf3ff;
+      --green: #19734b;
+      --green-soft: #edf8f2;
+      --amber: #9b5a08;
+      --amber-soft: #fff7e8;
+      --red: #b42318;
+      --red-soft: #fff1f0;
+      --max: 1120px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    .wrap { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px);
+    }
+    .topbar {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand { font-size: 14px; font-weight: 800; }
+    nav { display: flex; gap: 18px; font-size: 12px; white-space: nowrap; overflow-x: auto; }
+    nav a { color: #4f5663; text-decoration: none; }
+    .hero {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, .7fr);
+      gap: 40px;
+      align-items: end;
+      padding: 64px 0 46px;
+    }
+    .eyebrow {
+      margin-bottom: 12px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 780px; margin-bottom: 18px; font-size: clamp(34px, 5vw, 58px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin-bottom: 8px; font-size: 25px; line-height: 1.3; }
+    h3 { margin-bottom: 8px; font-size: 16px; }
+    .hero-copy { max-width: 740px; margin-bottom: 0; color: var(--muted); font-size: 16px; }
+    .gate {
+      border-left: 4px solid var(--amber);
+      padding: 4px 0 4px 18px;
+    }
+    .gate span { display: block; color: var(--muted); font-size: 12px; }
+    .gate strong { display: block; margin: 4px 0; font-size: 21px; }
+    .gate b { color: var(--amber); font-size: 14px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #20242c;
+      color: #fff;
+    }
+    .metric { min-height: 96px; padding: 20px 22px; border-right: 1px solid #3a3f48; }
+    .metric:last-child { border-right: 0; }
+    .metric strong { display: block; font-size: 24px; }
+    .metric span { color: #c7ccd5; font-size: 12px; }
+    section { padding: 48px 0; border-bottom: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 32px; margin-bottom: 22px; }
+    .section-head p { margin-bottom: 0; color: var(--muted); }
+    .verdict {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .verdict article { padding: 20px; border-right: 1px solid var(--line); }
+    .verdict article:last-child { border-right: 0; }
+    .verdict strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .verdict p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+    .tone-green { border-top: 4px solid var(--green); }
+    .tone-amber { border-top: 4px solid var(--amber); }
+    .tone-blue { border-top: 4px solid var(--blue); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; font-size: 13px; }
+    th, td { padding: 13px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f0f2f5; color: #4f5663; font-size: 11px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    .status {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .done { color: var(--green); background: var(--green-soft); }
+    .verify { color: var(--blue); background: var(--blue-soft); }
+    .observe { color: var(--amber); background: var(--amber-soft); }
+    .stop { color: var(--red); background: var(--red-soft); }
+    .lanes { display: grid; gap: 0; border: 1px solid var(--line); background: var(--surface); }
+    .lane {
+      display: grid;
+      grid-template-columns: 100px minmax(180px, .7fr) minmax(0, 1.5fr) minmax(200px, .8fr);
+      gap: 18px;
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+    .lane:last-child { border-bottom: 0; }
+    .lane-index { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .lane h3 { margin: 0; }
+    .lane p, .lane ul { margin: 0; color: var(--muted); font-size: 13px; }
+    .lane ul { padding-left: 18px; }
+    .done-rule { color: #343943; font-size: 12px; }
+    .journey {
+      display: grid;
+      grid-template-columns: 120px repeat(3, 1fr);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .journey > div { padding: 15px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 12px; }
+    .journey > div:nth-child(4n) { border-right: 0; }
+    .journey > div:nth-last-child(-n + 4) { border-bottom: 0; }
+    .journey .head { background: #f0f2f5; font-weight: 800; color: #4f5663; }
+    .journey .persona { font-weight: 800; }
+    .callout {
+      margin-top: 20px;
+      border-left: 4px solid var(--red);
+      background: var(--red-soft);
+      padding: 16px 18px;
+      font-size: 13px;
+    }
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .decision-grid article { padding: 18px; border-right: 1px solid var(--line); }
+    .decision-grid article:last-child { border-right: 0; }
+    .decision-grid p { margin-bottom: 0; color: var(--muted); font-size: 12px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .plain-panel { border-top: 3px solid var(--line); padding: 18px 0 0; }
+    .plain-panel ul { margin-bottom: 0; padding-left: 19px; color: var(--muted); font-size: 13px; }
+    .next {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .next article { padding: 24px; }
+    .next article + article { border-left: 1px solid var(--line); }
+    .next p { margin-bottom: 14px; color: var(--muted); font-size: 13px; }
+    .link-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 20px; font-size: 13px; }
+    footer { padding: 30px 0 44px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 800px) {
+      .hero-grid, .section-head, .two-col, .next { grid-template-columns: 1fr; }
+      .hero-grid { gap: 28px; padding: 44px 0 34px; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(-n + 2) { border-bottom: 1px solid #3a3f48; }
+      .verdict { grid-template-columns: 1fr; }
+      .verdict article { border-right: 0; border-bottom: 1px solid var(--line); }
+      .verdict article:last-child { border-bottom: 0; }
+      .lane { grid-template-columns: 76px 1fr; }
+      .lane > :nth-child(n + 3) { grid-column: 1 / -1; }
+      .journey { grid-template-columns: 92px repeat(3, minmax(160px, 1fr)); overflow-x: auto; }
+      .decision-grid { grid-template-columns: 1fr; }
+      .decision-grid article { border-right: 0; border-bottom: 1px solid var(--line); }
+      .decision-grid article:last-child { border-bottom: 0; }
+      .next article + article { border-left: 0; border-top: 1px solid var(--line); }
+      section { padding: 38px 0; }
+      h1 { font-size: 38px; }
+    }
+    @media print {
+      header { position: static; }
+      body { background: #fff; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <div class="brand">FLOW · P24 next plan</div>
+      <nav aria-label="문서 내 이동">
+        <a href="#verdict">판정</a>
+        <a href="#sources">검토 대조</a>
+        <a href="#sequence">실행 순서</a>
+        <a href="#journey">15세션</a>
+        <a href="#decision">판정 규칙</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Review reconciliation · 2026-07-15</div>
+          <h1>더 만들기 전에<br>어디서 막히는지 본다</h1>
+          <p class="hero-copy">Codex production 검토, Claude Code clean regression, Claude Design 제품·UX 평가를 현재 저장소 백로그와 합쳤습니다. 자동화로 닫힌 정확성 문제와 사람만 판단할 수 있는 발견성 문제를 분리한 실행 계획입니다.</p>
+        </div>
+        <div class="gate">
+          <span>현재 유일한 제품 게이트</span>
+          <strong>P24 실제 사용자 관찰</strong>
+          <b>0 / 15 세션</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics" aria-label="검토 통합 핵심 지표">
+      <div class="metric"><strong>0</strong><span>clean production에서 재현된 제품 blocker</span></div>
+      <div class="metric"><strong>4</strong><span>관찰 전 검증 가능한 시각·a11y 후보</span></div>
+      <div class="metric"><strong>8</strong><span>사용자 행동 근거가 필요한 UX 후보</span></div>
+      <div class="metric"><strong>15</strong><span>P24-00C 전 필요한 실제 세션</span></div>
+    </div>
+
+    <section id="verdict">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">통합 판정</div>
+            <h2>기능 연결은 됐고, 이해 여부는 미검증</h2>
+          </div>
+          <p>날짜·반복·draft·hydration·export의 이전 Blocking 주장은 clean production에서 재현되지 않았습니다. Claude Design A-G도 구현돼 있습니다. 남은 위험은 기능 부재보다 발견성, 예측성, 인지 부하입니다.</p>
+        </div>
+        <div class="verdict">
+          <article class="tone-green">
+            <strong>정확성 기준선 유지</strong>
+            <p>잘못된 날짜, 누락 항목, 회차 손실, export 범위 오류는 현재 clean evidence에서 재현 0입니다.</p>
+          </article>
+          <article class="tone-blue">
+            <strong>시각·접근성은 먼저 재현</strong>
+            <p>F1·F10·F11·F12는 실제 상태에서 측정하고, 재현된 결함만 최소 수정합니다.</p>
+          </article>
+          <article class="tone-amber">
+            <strong>재설계는 관찰 뒤 결정</strong>
+            <p>F2-F9의 병합·재배치·확장은 5명 x 3회 관찰 후 P24-00C에서 엽니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Evidence lanes</div>
+            <h2>검토를 같은 증거로 취급하지 않는다</h2>
+          </div>
+          <p>현재 명령과 production browser는 correctness를 검증할 수 있습니다. Claude Design 평가는 강한 heuristic이지만 실제 사용자 관찰은 아닙니다. 세 자료는 경쟁하지 않고 서로 다른 질문에 답합니다.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>자료</th><th>증거 종류</th><th>판정</th><th>다음 계획에 쓰는 방식</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Codex independent production review</td><td>현재 command + production browser</td><td><span class="status done">정확성 green</span></td><td>제품 blocker 재현 0. 실제 사용자 질문만 남김.</td></tr>
+              <tr><td>Claude Code clean regression</td><td>clean origin/main command + browser</td><td><span class="status done">dirty 주장 정정</span></td><td>이전 build·날짜·반복·draft Blocking을 현재 결함으로 승격하지 않음.</td></tr>
+              <tr><td>Claude Design P24 제품·UX 평가</td><td>heuristic + static evidence</td><td><span class="status observe">관찰 시작 가능</span></td><td>F1-F12를 preflight와 observed-user 질문으로 분리.</td></tr>
+              <tr><td>STATUS + backlog control board</td><td>planning truth</td><td><span class="status verify">활성 게이트 1개</span></td><td>P24 observed-user 0 / 15만 현재 실행 백로그로 유지.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Reconciled</div>
+            <h2>다시 열지 않을 correctness 항목</h2>
+          </div>
+          <p>clean evidence가 닫은 문제를 새 문서의 긴급 백로그로 다시 만들지 않습니다. 날짜 의존 E2E 두 건은 제품 오류가 아니라 test harness 오류이며 현재 로컬 기준선에서 수정돼 있습니다.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>항목</th><th>현재 상태</th><th>남은 행정 작업</th></tr></thead>
+            <tbody>
+              <tr><td>build / public Vercel 접근</td><td><span class="status done">정상</span></td><td>공개 alias를 관찰 URL로 사용</td></tr>
+              <tr><td>KST 날짜 / override / 재사용 날짜</td><td><span class="status done">정상</span></td><td>관찰 중 신뢰 오류만 stop rule로 기록</td></tr>
+              <tr><td>반복 occurrence / Calendar / ICS</td><td><span class="status done">정상</span></td><td>사람이 현재 회차와 예고를 구분하는지 관찰</td></tr>
+              <tr><td>memo split / 빈 miss / hydration</td><td><span class="status done">정상</span></td><td>회귀 유지</td></tr>
+              <tr><td>고정 날짜 E2E fixture 2건</td><td><span class="status verify">로컬 수정 1aba5da</span></td><td>origin/main 반영과 full gate green 확인</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="sequence">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Execution order</div>
+            <h2>단계별로 닫는 P24 순서</h2>
+          </div>
+          <p>AI가 할 수 있는 preflight와 사람이 해야 하는 관찰을 병행합니다. 관찰 결과가 없는데 UX 구조를 크게 바꾸는 단계는 없습니다.</p>
+        </div>
+        <div class="lanes">
+          <div class="lane">
+            <div class="lane-index">STAGE 0</div>
+            <h3>P24-00V1 preflight</h3>
+            <ul><li>F12 accessible name</li><li>F1 sticky overlap</li><li>F10 preview state</li><li>F11 accent 역할</li></ul>
+            <div class="done-rule"><strong>완료:</strong> reproduced / not_reproduced / observation_needed 분류. 확인된 결함만 최소 수정.</div>
+          </div>
+          <div class="lane">
+            <div class="lane-index">STAGE 1</div>
+            <h3>P24-00B1 첫 2인</h3>
+            <p>P1 이사 역산, P2 차량 점검. 저장·편집·날짜 이동·Calendar 배치·완료 취소·export 예측을 설명 없이 수행.</p>
+            <div class="done-rule"><strong>완료:</strong> 사용 가능한 P1-S1, P2-S1 세션 노트 2개.</div>
+          </div>
+          <div class="lane">
+            <div class="lane-index">STAGE 2</div>
+            <h3>P24-00B2 첫 사용 5명</h3>
+            <p>반복 루틴, 개인 draft, public 재사용 persona를 추가해 F1-F12 coverage를 채움.</p>
+            <div class="done-rule"><strong>완료:</strong> 서로 다른 5명의 S1 기록과 반복 실패 패턴.</div>
+          </div>
+          <div class="lane">
+            <div class="lane-index">STAGE 3</div>
+            <h3>P24-00B3 반환 세션</h3>
+            <p>S2에서 일정·완료·메모·export, S3에서 회고·재사용·개인 수정 보존을 확인.</p>
+            <div class="done-rule"><strong>완료:</strong> 5명 x 3회 = 15 / 15.</div>
+          </div>
+          <div class="lane">
+            <div class="lane-index">PARALLEL</div>
+            <h3>외부 환경 증거</h3>
+            <p>실제 Calendar 앱 동일 ICS 2회 import, 다른 브라우저 또는 기기 backup/restore.</p>
+            <div class="done-rule"><strong>완료:</strong> 중복·UID·개인 상태 보존을 실제 환경에서 기록.</div>
+          </div>
+          <div class="lane">
+            <div class="lane-index">STAGE 4</div>
+            <h3>P24-00C1 결정</h3>
+            <p>행동 근거를 keep / change / defer / blocking으로 분류. preference와 task failure를 분리.</p>
+            <div class="done-rule"><strong>완료:</strong> 관찰 패턴별 판정과 좁은 구현 slice 승인.</div>
+          </div>
+          <div class="lane">
+            <div class="lane-index">STAGE 5</div>
+            <h3>P24-00C2 구현</h3>
+            <p>반복 근거가 있는 Blocking과 High만 하나의 문제, 하나의 수정, 하나의 회귀 패키지로 처리.</p>
+            <div class="done-rule"><strong>완료:</strong> 관찰 문제 재현, 수정, 같은 과업 재검증.</div>
+          </div>
+          <div class="lane">
+            <div class="lane-index">STAGE 6</div>
+            <h3>P24-00C3 마감</h3>
+            <p>전체 회귀, production 재배포, 실제 사용자와 자동화 evidence 분리, P25 진입 판단.</p>
+            <div class="done-rule"><strong>완료:</strong> P24 final review와 다음 제품 gate 확정.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Claude F1-F12</div>
+            <h2>발견을 언제 판단할지 고정</h2>
+          </div>
+          <p>Claude Design의 제안은 빠뜨리지 않되, 모든 제안을 즉시 change로 취급하지 않습니다.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Finding</th><th>현재 판단</th><th>검증 시점</th><th>변경 조건</th></tr></thead>
+            <tbody>
+              <tr><td>F1 sticky overlap</td><td><span class="status verify">preflight</span></td><td>Stage 0</td><td>실제 bounding-box overlap 재현</td></tr>
+              <tr><td>F1 big public 판단 길이</td><td><span class="status observe">관찰</span></td><td>P1-S1 / P2-S1</td><td>저장 결정을 못 하거나 근거를 반복 탐색</td></tr>
+              <tr><td>F2 연필·열기·체크 구분</td><td><span class="status observe">관찰</span></td><td>P1-S1</td><td>2명 이상 같은 잘못된 control 선택</td></tr>
+              <tr><td>F3 Today 실행·예고</td><td><span class="status observe">관찰</span></td><td>반복 persona</td><td>현재 회차와 다음 예고를 다른 할 일로 오해</td></tr>
+              <tr><td>F4 날짜 없음 tray</td><td><span class="status observe">관찰</span></td><td>P2-S1</td><td>힌트 없이 발견 실패가 반복</td></tr>
+              <tr><td>F5 export 범위·개수</td><td><span class="status observe">관찰</span></td><td>P1-S1 / P2-S1</td><td>예상 개수와 실제 결과 불일치</td></tr>
+              <tr><td>F6 기준일·고정 날짜</td><td><span class="status observe">관찰</span></td><td>P1-S1 / S2</td><td>예측 오류 반복. 실제 결과 오류는 즉시 Blocking</td></tr>
+              <tr><td>F7 완료취소·복구·재사용</td><td><span class="status observe">관찰</span></td><td>S1-S3</td><td>되돌릴 수 없다고 판단하거나 경로 실패 반복</td></tr>
+              <tr><td>F8 반복 회차 구분</td><td><span class="status observe">관찰</span></td><td>반복 persona</td><td>series와 occurrence를 지속적으로 혼동</td></tr>
+              <tr><td>F9 개인·원문 메모</td><td><span class="status observe">관찰</span></td><td>S2-S3</td><td>메모 목적 또는 전송 여부를 잘못 이해</td></tr>
+              <tr><td>F10 preview checkbox</td><td><span class="status verify">preflight + P2</span></td><td>Stage 0 / P2-S1</td><td>완료 control처럼 활성·조작 가능해 보임</td></tr>
+              <tr><td>F11 accent</td><td><span class="status verify">preflight</span></td><td>Stage 0</td><td>동일 primary 역할의 색 의미가 충돌</td></tr>
+              <tr><td>F12 accessible name</td><td><span class="status verify">preflight</span></td><td>Stage 0</td><td>이름 또는 제목·행동 맥락 누락</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="journey">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">5 personas x 3 sessions</div>
+            <h2>한 번 저장하고 끝나지 않는 여정</h2>
+          </div>
+          <p>첫 사용과 반환 사용을 나누고, 발견에서 재사용까지 같은 개인 상태가 이어지는지 봅니다.</p>
+        </div>
+        <div class="journey" role="table" aria-label="P24 사용자 관찰 여정">
+          <div class="head">Persona</div><div class="head">S1 발견·저장·첫 수정</div><div class="head">S2 일정·실행·외부 활용</div><div class="head">S3 회고·재사용</div>
+          <div class="persona">이사 역산</div><div>Flow 발견, 이사일 설정, 편집入口</div><div>개별 날짜 고정, 완료·취소, 전체 export</div><div>새 이사일로 다시 쓰기, 고정 날짜 유지</div>
+          <div class="persona">차량 점검</div><div>public preview, 저장, 날짜 없음 이해</div><div>Calendar 배치, 선택 export, 완료 취소</div><div>점검 결과 메모, 다음 점검 재사용</div>
+          <div class="persona">반복 루틴</div><div>반복 설정과 회차 preview</div><div>한 회차 완료·재개, Calendar·ICS</div><div>다음 회차 인지, 기록 보존</div>
+          <div class="persona">개인 draft</div><div>URL miss 또는 메모, 여러 항목 생성</div><div>구조·날짜·시간·반복 수정, export</div><div>완료 기록, 개인 메모, 수정 후 재사용</div>
+          <div class="persona">public 재사용</div><div>근거 확인, preview와 저장 경계</div><div>실행 메모, 완료, 원문 수정 메모</div><div>회고 확인, 다시 쓰기, 개인 변경 보존</div>
+        </div>
+        <div class="callout"><strong>즉시 중단:</strong> 잘못된 날짜, 데이터 손실, export membership 오류, 저장·재사용 기록 오염. 이 경우 선호 질문을 계속하지 않고 해당 문제만 Blocking fix로 분리합니다.</div>
+      </div>
+    </section>
+
+    <section id="decision">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">P24-00C rules</div>
+            <h2>느낌이 아니라 반복 행동으로 결정</h2>
+          </div>
+          <p>사람 수가 적기 때문에 통계적 일반화가 아니라 동일 실패의 반복과 신뢰 오류를 기준으로 우선순위를 정합니다.</p>
+        </div>
+        <div class="decision-grid">
+          <article><h3>Blocking</h3><p>데이터 손실, 잘못된 날짜, export 오류, 실행 기록 오염이 한 번이라도 재현.</p></article>
+          <article><h3>High</h3><p>5명 중 2명 이상이 같은 핵심 과업을 힌트 없이 완료하지 못함.</p></article>
+          <article><h3>Medium</h3><p>완료는 했지만 2명 이상이 같은 지점에서 되돌아가거나 잘못된 control을 먼저 선택.</p></article>
+          <article><h3>Keep</h3><p>5명 중 4명 이상이 힌트 없이 완료하고 신뢰 오류가 없음.</p></article>
+          <article><h3>Defer</h3><p>단일 선호, 재현되지 않는 불편, 가치 사슬 밖의 확장 요구.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="two-col">
+          <div class="plain-panel">
+            <h2>지금 열지 않음</h2>
+            <ul>
+              <li>arbitrary URL production fetch와 실제 AI provider</li>
+              <li>source-backed 구조 편집과 source v2 UI</li>
+              <li>계정, DB, cloud sync, OAuth</li>
+              <li>Studio 5번째 탭 승격</li>
+              <li>drag-and-drop 단독 조작</li>
+              <li>장식 중심 대규모 visual redesign</li>
+            </ul>
+          </div>
+          <div class="plain-panel">
+            <h2>반드시 보존</h2>
+            <ul>
+              <li>URL·메모 입력의 첫 행동 단일성</li>
+              <li>Today 실행 1행과 다음 예고 분리</li>
+              <li>Flow 단위 저장·export 프레이밍</li>
+              <li>My Flow·Calendar·export 동일 개인 상태</li>
+              <li>제작자·원문·주의·지난 실행 기록</li>
+              <li>설명보다 label·위치·상태로 해결</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Next two actions</div>
+            <h2>AI와 사용자가 병행한다</h2>
+          </div>
+          <p>preflight가 관찰을 늦추지 않고, 관찰이 가능한 시각 결함 확인을 막지도 않습니다.</p>
+        </div>
+        <div class="next">
+          <article>
+            <h3>AI 다음 목표</h3>
+            <p>P24-00V1에서 F1·F10·F11·F12를 실제 interaction state로 재현합니다. 결함이 없으면 코드 수정 없이 evidence만 닫습니다.</p>
+            <span class="status verify">verification first</span>
+          </article>
+          <article>
+            <h3>사용자 다음 행동</h3>
+            <p>P1-S1 이사 Flow와 P2-S1 차량 점검 Flow를 서로 다른 두 명에게 설명 없이 수행하게 하고 행동을 기록합니다.</p>
+            <span class="status observe">2 real sessions</span>
+          </article>
+        </div>
+        <div class="link-row">
+          <a href="./2026-07-15-p24-review-reconciliation-next-plan-ko.md">상세 Markdown</a>
+          <a href="./2026-07-15-flowme-backlog-control-board-ko.html">정본 백로그 보드</a>
+          <a href="./2026-07-14-p24-00b1-two-person-pilot/README.md">2인 파일럿 안내</a>
+          <a href="./2026-07-14-p24-00b-observed-user-test-guide/README.md">15세션 관찰 가이드</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">이 문서는 계획 정합화 산출물입니다. 자동화, heuristic, simulated journey를 실제 사용자 관찰로 계산하지 않습니다.</div>
+  </footer>
+</body>
+</html>
