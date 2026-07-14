@@ -1,0 +1,72 @@
+{
+  "slice": "P24-00F3A",
+  "baselineCommit": "6e376bc",
+  "evidenceClass": [
+    "current_command",
+    "browser_simulated"
+  ],
+  "scenario": {
+    "publicRoute": "/f/curated-allblanc-morning-workout",
+    "savedRoute": "/calendar",
+    "anchorDate": "2026-07-15",
+    "selectedWeekdays": ["월", "수", "금"],
+    "previewWindowWeeks": 4
+  },
+  "markers": {
+    "sourceRoutinePreviewOccurrenceCount": 12,
+    "sourceRoutineFourWeekSemanticOccurrenceCount": 12,
+    "sourceRoutineCalendarJulyOccurrenceCount": 8,
+    "sourceRoutineCalendarAugustOccurrenceCount": 4,
+    "sourceRoutineFirstThreeDatesVisible": true,
+    "sourceRoutineDistinctOccurrenceIdentity": true,
+    "sourceRoutineSiblingCompletionChangedCount": 0,
+    "sourceRoutineReopenSupported": true,
+    "sourceRoutineAmbiguousProgressCount": 0,
+    "sourceRoutineMonthNavigationStable": true,
+    "sourceRoutineIcsMode": "rrule",
+    "sourceRoutineIcsMasterEventCount": 1,
+    "sourceRoutineIcsRrule": "FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260811",
+    "sourceRoutineIcsSemanticOccurrenceCount": 12,
+    "sourceRoutineIcsDuplicateEventCount": 0,
+    "sourceRoutineIcsStableUid": true,
+    "sourceMutationCount": 0,
+    "completionStateChangedStructuralMembershipCount": 0,
+    "personalDraftRecurrenceBehaviorChanged": false,
+    "sourceBackedNonRecurringBehaviorChanged": false,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "routes": [
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "state": "July occurrence reopened after one completion",
+      "screenshot": "screenshots/01-allblanc-agenda-mobile.png"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "state": "July 8 occurrences",
+      "screenshot": "screenshots/02-allblanc-calendar-mobile.png"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "state": "August 4 occurrences after stable next-month navigation",
+      "screenshot": "screenshots/03-allblanc-calendar-wide.png"
+    }
+  ],
+  "download": {
+    "path": "downloads/allblanc-four-week-routine.ics",
+    "masterEventCount": 1,
+    "semanticOccurrenceCount": 12
+  },
+  "verification": {
+    "targetedUnit": "22/22 pass",
+    "targetedPlaywright": "3/3 pass",
+    "fullUnit": "485/485 pass",
+    "docsCheck": "pass (14 required files, 2121 local links)",
+    "build": "pass (18 routes)"
+  }
+}

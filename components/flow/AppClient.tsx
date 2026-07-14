@@ -61,6 +61,10 @@ import {
 } from '@/lib/flow/my-flow-personal-state';
 import { expandPersonalDraftCalendarOccurrenceRows } from '@/lib/flow/personal-draft-calendar-occurrence';
 import {
+  expandSavedRoutineOccurrenceRows,
+  type SavedRoutineOccurrenceOrigin,
+} from '@/lib/flow/saved-routine-occurrence';
+import {
   createPersonalDraftStructuralOverlay,
   createPersonalDraftUserItem,
   deletePersonalDraftStructuralItem,
@@ -3025,6 +3029,8 @@ type MyFlowRow = {
   structuralOccurrenceRevisionId?: string;
   structuralOccurrenceOriginalDate?: string;
   structuralOccurrenceExecutionState?: PersonalStructuralOccurrenceExecutionState;
+  structuralOccurrenceOrigin?: SavedRoutineOccurrenceOrigin;
+  structuralOccurrenceDateOverrideKey?: string;
 };
 
 type MySavedFlow = {
@@ -3402,6 +3408,17 @@ function getMyFlowFlowChipLabel(flow: MySavedFlow): string {
 
 function getMyFlowFlowProgressLabel(flow: MySavedFlow): string {
   return `전체 ${flow.done}/${flow.total} 완료`;
+}
+
+function getMyFlowRoutineExecutionLabel(row: MyFlowCalendarRow): string {
+  if (!row.structuralOccurrenceId) {
+    return `반복 항목 ${row.flow.done}/${row.flow.total}`;
+  }
+  if (row.structuralOccurrenceExecutionState === 'done') return '이번 회차 완료';
+  if (row.structuralOccurrenceExecutionState === 'reopened') return '이번 회차 다시 진행';
+  if (row.structuralOccurrenceExecutionState === 'skipped') return '이번 회차 건너뜀';
+  if (row.structuralOccurrenceExecutionState === 'held') return '이번 회차 보류';
+  return '이번 회차 대기';
 }
 
 function getMyFlowSourceHref(flow: MySavedFlow): string {
@@ -5129,15 +5146,63 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       myFlowOccurrenceExecutionRecords,
     );
     const expandedRows = [occurrenceVisibleRange, occurrenceExecutionRange]
-      .flatMap((range) =>
-        expandPersonalDraftCalendarOccurrenceRows({
+      .flatMap((range) => {
+        const personalDraftOccurrenceRows = expandPersonalDraftCalendarOccurrenceRows({
           personalDraftEligible: isPersonalDraftStructuralEditEligible(flow.bundle),
           identityNamespace: flow.progress.slug,
           rows: baseRows,
           range,
           executionRecords: occurrenceExecutionRecords,
-        }),
-      )
+        });
+        const definitions = Object.fromEntries(baseRows.map((row) => {
+          const item = flow.bundle.items.find((entry) => entry.id === row.id);
+          const baseDateKey = row.date
+            ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, row.date)
+            : getMyFlowManualScheduleKey(flow.progress.slug, row.id);
+          const committedDraft = {
+            ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(flow.progress.slug, row.id)] ?? {}),
+            ...(myFlowItemDrafts[baseDateKey] ?? {}),
+          };
+          const sourceRepeatRule = item?.repeat_rule;
+          const repeatPreset = committedDraft.repeatPreset;
+          if (!row.date || (!sourceRepeatRule && !repeatPreset)) return [row.id, undefined];
+          return [row.id, {
+            itemId: row.id,
+            startDate: row.date,
+            sourceRepeatRule,
+            repeatPreset,
+            ...(sourceRepeatRule || flow.bundle.flow.structure_type === 'routine'
+              ? { selectedWeekdays: getMyFlowRoutineWeekdays(flow) }
+              : {}),
+            ...(myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate
+              ? { endDate: myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate }
+              : {}),
+            ...(isUserScheduledExactVideo(flow.bundle) ? { projectionWeeks: 4 } : {}),
+            ...(committedDraft.time ? { time: committedDraft.time } : {}),
+            ...(committedDraft.time && committedDraft.durationMinutes
+              ? { durationMinutes: committedDraft.durationMinutes }
+              : {}),
+          }];
+        }));
+        return expandSavedRoutineOccurrenceRows({
+          identityNamespace: flow.progress.slug,
+          rows: personalDraftOccurrenceRows,
+          definitions,
+          range,
+          executionRecords: occurrenceExecutionRecords,
+          resolveOccurrenceDate: ({ itemId, originalDate }) => {
+            const overrideKey = getMyFlowCalendarRowKey(
+              flow.progress.slug,
+              itemId,
+              originalDate,
+            );
+            return {
+              date: myFlowDateOverrides[overrideKey] ?? originalDate,
+              overrideKey,
+            };
+          },
+        });
+      })
       .reduce<MyFlowRow[]>((rows, row) => {
         const key = row.structuralOccurrenceId
           ? `occurrence:${row.structuralOccurrenceId}`
@@ -5157,9 +5222,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         const dateResolution = row.structuralOccurrenceId
           ? undefined
           : resolveSavedFlowRowDate(flow, row, originalDate);
-        const calendarKey = row.structuralOccurrenceId
-          ? `${flow.progress.slug}::occurrence::${row.structuralOccurrenceId}`
-          : dateResolution?.overrideKey ?? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
+        const calendarKey = row.structuralOccurrenceDateOverrideKey ?? (
+          row.structuralOccurrenceId
+            ? `${flow.progress.slug}::occurrence::${row.structuralOccurrenceId}`
+            : dateResolution?.overrideKey ?? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
+        );
         return {
           ...row,
           flow,
@@ -6429,15 +6496,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   useEffect(() => {
     const anchorMonthStart = getMyFlowMonthStart(calendarAnchor);
+    const visibleMonthStart = getMyFlowMonthStart(myFlowVisibleMonth);
+    const visibleMonth = visibleMonthStart.slice(0, 7);
+    const visibleMonthRows = calendarScopedRows.filter((row) => row.date?.startsWith(visibleMonth));
     setMyFlowSelectedDate((currentDate) => {
       const currentDateStillHasRows = calendarScopedRows.some((row) => row.date === currentDate);
-      const nextSelectedDate = currentDateStillHasRows
-        ? currentDate
-        : findMyFlowDefaultFocusDate(calendarScopedRows, myFlowTodayDate, anchorMonthStart);
+      const currentDateIsInVisibleMonth = currentDate.startsWith(visibleMonth);
+      if (currentDateIsInVisibleMonth) {
+        if (currentDateStillHasRows || visibleMonthRows.length === 0) return currentDate;
+        return visibleMonthRows[0]?.date ?? visibleMonthStart;
+      }
+      const nextSelectedDate = findMyFlowDefaultFocusDate(
+        calendarScopedRows,
+        myFlowTodayDate,
+        anchorMonthStart,
+      );
       setMyFlowVisibleMonth(getMyFlowMonthStart(nextSelectedDate || anchorMonthStart));
       return nextSelectedDate;
     });
-  }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, calendarScopedDateSignature, myFlowTodayDate]);
+  }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, calendarScopedDateSignature, myFlowTodayDate, myFlowVisibleMonth]);
 
   const recordMyFlowCompletionState = (flow: MySavedFlow, checks: Record<string, boolean>) => {
     const completed = flow.rows.length > 0 && flow.rows.every((row) => {
@@ -7591,7 +7668,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
       : undefined;
     const isRoutineExecution = options.kind === 'routine' || row.itemType?.primary === 'routine_session';
-    const routineProgressLabel = `반복 항목 ${row.flow.done}/${row.flow.total}`;
+    const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
     const routineDragKey = getMyFlowRowInstanceKey(row);
     const rowClassName = options.compact
       ? `flex min-w-0 items-center gap-2 border-b py-2.5 text-sm ${isActive ? 'border-blue-300 bg-blue-50/50' : 'border-slate-200 bg-transparent'}`
@@ -8307,6 +8384,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const portableExportStableStepId = row.structuralProjectionStableId
       ? `${row.flow.progress.slug}::${row.structuralProjectionStableId}`
       : portableExportKey;
+    const portableRecurrence = row.structuralRepeat && (
+      isPersonalDraftUserItem || row.structuralOccurrenceOrigin === 'saved_routine'
+    )
+      ? row.structuralRepeat
+      : undefined;
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
     const portableExportInput: MyFlowPortableStepExportInput = {
@@ -8329,9 +8411,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }
         : {}),
       repeatPreset: editorDraft.repeatPreset,
-      ...(isPersonalDraftUserItem && row.structuralRepeat
+      ...(portableRecurrence
         ? {
-            personalRecurrence: row.structuralRepeat,
+            personalRecurrence: portableRecurrence,
             personalRecurrenceIdentityNamespace: row.flow.progress.slug,
           }
         : {}),
@@ -8351,7 +8433,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const hasExpandableMemo = editorDraft.memo.trim().length > 0;
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
-    const routineProgressLabel = `반복 항목 ${row.flow.done}/${row.flow.total}`;
+    const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
     const detailChecklistProgressLabel = `${detailChecklistLabel} ${Object.values(detailChecklistState).filter(Boolean).length}/${detailChecklistItems.length}`;
     const canUndoRoutineCompletion = isRoutineRow && myFlowRoutineCompletionUndo?.flowSlug === row.flow.progress.slug;
     const fieldClassName = 'mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';

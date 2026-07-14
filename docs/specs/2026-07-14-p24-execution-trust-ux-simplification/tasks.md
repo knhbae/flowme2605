@@ -33,7 +33,12 @@
 - [x] P24-00F1 local date boundary.
 - [x] P24-00F2A effective-date summary parity.
 - [x] P24-00F2B reuse override transfer.
-- [ ] P24-00F3A recurrence occurrence parity.
+- [x] P24-00F3A recurrence occurrence parity.
+  - [x] Source routine 4-week Calendar occurrence expansion.
+  - [x] Per-occurrence completion and reopen state.
+  - [x] Standard bounded RRULE export with stable series UID.
+  - [x] Visible-month navigation no longer snaps back to the execution range.
+  - [x] Occurrence rows replace ambiguous whole-Flow `0/1` progress with current occurrence state.
 - [ ] P24-00F3B memo split Item inclusion and empty draft validation.
 - [ ] P24-00F4 hard navigation and post-save hydration.
 

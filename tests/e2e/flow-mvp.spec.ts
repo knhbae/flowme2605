@@ -5094,7 +5094,7 @@ test('my flow ux12 drags an overflow routine row to another calendar date', asyn
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator(`article[data-routine-key="${overflowRoutineKey}"]`)).toHaveCount(0);
 });
 
-test('my flow ux12 calendar routine rows rely on the progress pill only', async ({ page }) => {
+test('my flow ux12 calendar routine rows show the current occurrence state without ambiguous flow progress', async ({ page }) => {
   await page.goto('/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   const routineIcon = page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-icon"]').first();
@@ -5104,7 +5104,8 @@ test('my flow ux12 calendar routine rows rely on the progress pill only', async 
   await page.locator('.fc-daygrid-day[data-date="2026-06-04"]').getByTestId('my-flow-calendar-date-button').click();
   const todayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();
   await expect(todayRoutineRow).toBeVisible();
-  await expect(todayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toContainText(/반복 항목 \d+\/\d+/);
+  await expect(todayRoutineRow.getByTestId('my-flow-routine-progress-pill')).toHaveText('이번 회차 대기');
+  await expect(todayRoutineRow).not.toContainText(/반복 항목 \d+\/\d+/);
   await expect(todayRoutineRow.getByTestId('my-flow-routine-completion-note')).toHaveCount(0);
 });
 
@@ -6828,6 +6829,114 @@ test('current Allblanc source fit separates publication age, personal schedule, 
   const lowerBodyResponse = await page.goto('/f/curated-allblanc-lower-body');
   expect(lowerBodyResponse?.status()).toBe(404);
   expect(await page.locator('meta[name="robots"][content*="noindex"]').count()).toBeGreaterThan(0);
+});
+
+test('saved Allblanc routine keeps all four-week occurrences, sibling completion, and RRULE export aligned', async ({ page }) => {
+  test.setTimeout(90_000);
+  const evidenceDir = process.env.FLOWME_P24_F3A_EVIDENCE_DIR;
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/curated-allblanc-morning-workout');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByTestId('public-flow-anchor-input').fill('2026-07-15');
+  for (const weekday of ['월', '수', '금']) {
+    const checkbox = page.getByLabel(weekday, { exact: true });
+    if (!(await checkbox.isChecked())) await checkbox.check();
+  }
+  for (const weekday of ['화', '목', '토', '일']) {
+    const checkbox = page.getByLabel(weekday, { exact: true });
+    if (await checkbox.isChecked()) await checkbox.uncheck();
+  }
+  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '내 Flow에 저장' }).click();
+  await expect.poll(() => page.evaluate(() => Boolean(
+    window.localStorage.getItem('flow:saved:curated-allblanc-morning-workout'),
+  ))).toBe(true);
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  const julyRoutineIcons = page.locator('.fc-daygrid-day[data-date^="2026-07-"] [data-testid="my-flow-routine-icon"]');
+  await expect(julyRoutineIcons).toHaveCount(8);
+  for (const date of ['2026-07-15', '2026-07-17', '2026-07-20']) {
+    await expect(page.locator(`.fc-daygrid-day[data-date="${date}"] [data-testid="my-flow-routine-icon"]`)).toHaveCount(1);
+  }
+
+  const selectRoutineRow = async (date: string) => {
+    await page.locator(`.fc-daygrid-day[data-date="${date}"]`).getByTestId('my-flow-calendar-date-button').click();
+    const row = page
+      .getByTestId('my-flow-calendar-selected-day')
+      .locator('article[data-occurrence-id]')
+      .filter({ hasText: '아침 5분 전신 운동 영상 열기' });
+    await expect(row).toHaveCount(1);
+    return row;
+  };
+
+  const firstRow = await selectRoutineRow('2026-07-15');
+  const firstOccurrenceId = await firstRow.getAttribute('data-occurrence-id');
+  expect(firstOccurrenceId).toBeTruthy();
+  await expect(firstRow.getByTestId('my-flow-routine-progress-pill')).toHaveText('이번 회차 대기');
+  await expect(firstRow).not.toContainText('반복 항목 0/1');
+  const firstCompletion = firstRow.getByRole('checkbox', { name: /이번 항목 완료$/ });
+  await firstCompletion.click();
+  await expect(firstRow).toHaveAttribute('data-occurrence-state', 'done');
+  await expect(firstRow.getByRole('checkbox', { name: /이번 항목 완료 취소$/ })).toBeChecked();
+  await expect(firstRow.getByTestId('my-flow-routine-progress-pill')).toHaveText('이번 회차 완료');
+
+  const siblingRow = await selectRoutineRow('2026-07-17');
+  const siblingOccurrenceId = await siblingRow.getAttribute('data-occurrence-id');
+  expect(siblingOccurrenceId).toBeTruthy();
+  expect(siblingOccurrenceId).not.toBe(firstOccurrenceId);
+  await expect(siblingRow.getByRole('checkbox', { name: /이번 항목 완료$/ })).not.toBeChecked();
+  await expect(siblingRow).toHaveAttribute('data-occurrence-state', 'pending');
+
+  const reopenedRow = await selectRoutineRow('2026-07-15');
+  await expect(reopenedRow).toHaveAttribute('data-occurrence-id', firstOccurrenceId!);
+  const reopenedCompletion = reopenedRow.getByRole('checkbox', { name: /이번 항목 완료 취소$/ });
+  await reopenedCompletion.click();
+  await expect(reopenedRow).toHaveAttribute('data-occurrence-state', 'reopened');
+  await expect(reopenedRow.getByTestId('my-flow-routine-progress-pill')).toHaveText('이번 회차 다시 진행');
+  await expect(reopenedRow.getByRole('checkbox', { name: /이번 항목 완료$/ })).not.toBeChecked();
+
+  await reopenedRow.getByRole('button').first().click();
+  const detail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
+  await expect(detail).toHaveAttribute('data-occurrence-id', firstOccurrenceId!);
+  const tools = await openMyFlowDetailTools(detail);
+  const downloadPromise = page.waitForEvent('download');
+  await tools.getByTestId('my-flow-detail-download-ics').click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  expect(downloadPath).toBeTruthy();
+  const rawIcs = fs.readFileSync(downloadPath!, 'utf8');
+  const unfoldedIcs = rawIcs.replaceAll('\r\n ', '');
+  expect((unfoldedIcs.match(/BEGIN:VEVENT/g) ?? [])).toHaveLength(1);
+  expect(unfoldedIcs).toContain('RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260811');
+  expect(unfoldedIcs).toContain('DTSTART;VALUE=DATE:20260715');
+  expect(unfoldedIcs).not.toMatch(/source-backed|sourceTrace|\bStep\b|\bItem\b/iu);
+  if (evidenceDir) {
+    await download.saveAs(`${evidenceDir}/allblanc-four-week-routine.ics`);
+  }
+  await detail.getByRole('button', { name: '닫기', exact: true }).click();
+  await page.getByTestId('my-flow-calendar-selected-day').scrollIntoViewIfNeeded();
+  if (evidenceDir) await page.getByTestId('my-flow-calendar-selected-day').screenshot({ path: `${evidenceDir}/01-allblanc-agenda-mobile.png` });
+  await page.getByTestId('my-flow-calendar-card').scrollIntoViewIfNeeded();
+  if (evidenceDir) await page.getByTestId('my-flow-calendar-card').screenshot({ path: `${evidenceDir}/02-allblanc-calendar-mobile.png` });
+  await expectNoHorizontalOverflow(page);
+
+  await page.getByRole('button', { name: '다음 달' }).click();
+  await expect(page.getByRole('heading', { name: '2026년 8월' })).toBeVisible();
+  await expect(page.locator('.fc-daygrid-day[data-date^="2026-08-"] [data-testid="my-flow-routine-icon"]')).toHaveCount(4);
+  for (const date of ['2026-08-03', '2026-08-05', '2026-08-07', '2026-08-10']) {
+    await expect(page.locator(`.fc-daygrid-day[data-date="${date}"] [data-testid="my-flow-routine-icon"]`)).toHaveCount(1);
+  }
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-allblanc-calendar-wide.png`, fullPage: true });
+  expect(consoleErrors).toEqual([]);
 });
 
 test('current medium-risk sources separate publication, revision, recheck, and executable scope', async ({ page }) => {
