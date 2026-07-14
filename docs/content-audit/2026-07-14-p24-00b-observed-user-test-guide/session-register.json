@@ -2,6 +2,8 @@
   "program": "P24-00B",
   "evidenceType": "observed_user",
   "productionUrl": "https://flowme2605.vercel.app",
+  "productBaselineCommit": "d6487a0d3352de358320b15ceeacd8b5405eb04e",
+  "productionDeploymentUrl": "https://flowme2605-gfx9e0lcy-flowme.vercel.app",
   "targetParticipants": 5,
   "sessionsPerParticipant": 3,
   "targetSessionCount": 15,
