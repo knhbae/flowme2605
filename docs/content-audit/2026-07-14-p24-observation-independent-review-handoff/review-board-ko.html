@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P24 관찰·독립 검토 전달 보드</title>
+  <style>
+    :root { color-scheme:light; --ink:#17211b; --muted:#5d6961; --line:#d9dfda; --paper:#f7f9f7; --white:#fff; --green:#0f6b49; --blue:#275a91; --amber:#9a5c05; --red:#9b3c35; --soft-green:#eaf5ef; --soft-blue:#edf3fa; --soft-amber:#fff5df; --soft-red:#faecea; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Inter,"Pretendard","Noto Sans KR",system-ui,sans-serif; line-height:1.55; }
+    a { color:var(--blue); text-underline-offset:3px; }
+    header { background:#173f31; color:#fff; border-bottom:4px solid #d7a84b; }
+    .wrap { width:min(1120px,calc(100% - 32px)); margin:0 auto; }
+    header .wrap { padding:42px 0 36px; }
+    .eyebrow { margin:0 0 8px; font-size:13px; font-weight:800; text-transform:uppercase; }
+    h1 { margin:0; max-width:760px; font-size:clamp(30px,5vw,54px); line-height:1.08; letter-spacing:0; }
+    .lead { max-width:760px; margin:16px 0 0; color:#dce9e2; font-size:17px; }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+    .actions a { display:inline-flex; min-height:44px; align-items:center; padding:9px 14px; border:1px solid #8cb4a2; border-radius:6px; color:#fff; font-weight:750; text-decoration:none; }
+    .actions a.primary { background:#fff; color:#173f31; border-color:#fff; }
+    main { padding:28px 0 64px; }
+    section { padding:30px 0; border-bottom:1px solid var(--line); }
+    h2 { margin:0 0 8px; font-size:24px; letter-spacing:0; }
+    h3 { margin:0 0 8px; font-size:17px; letter-spacing:0; }
+    .section-copy { margin:0 0 20px; color:var(--muted); max-width:800px; }
+    .status-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .status { min-height:152px; padding:18px; border:1px solid var(--line); border-radius:8px; background:var(--white); }
+    .status strong { display:block; margin-bottom:6px; font-size:26px; }
+    .status p { margin:0; color:var(--muted); font-size:14px; }
+    .done { border-top:4px solid var(--green); }
+    .ready { border-top:4px solid var(--blue); }
+    .waiting { border-top:4px solid var(--amber); }
+    .blocked { border-top:4px solid var(--red); }
+    .lane-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .lane { padding:18px; border:1px solid var(--line); border-radius:8px; background:var(--white); }
+    .lane .label { display:inline-block; margin-bottom:10px; padding:3px 8px; border-radius:4px; font-size:12px; font-weight:800; }
+    .codex .label { background:var(--soft-blue); color:var(--blue); }
+    .claude .label { background:var(--soft-green); color:var(--green); }
+    .design .label { background:var(--soft-amber); color:var(--amber); }
+    .lane ul, .watch ul { margin:10px 0 0; padding-left:20px; }
+    .lane li, .watch li { margin:5px 0; }
+    table { width:100%; border-collapse:collapse; background:var(--white); border:1px solid var(--line); }
+    th, td { padding:12px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:#edf1ed; font-size:13px; }
+    td { font-size:14px; }
+    .watch { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .watch > div { padding:18px; border-radius:8px; border:1px solid var(--line); background:var(--white); }
+    .watch .human { background:var(--soft-amber); border-color:#e8cf9a; }
+    .watch .stop { background:var(--soft-red); border-color:#e4bbb7; }
+    .steps { counter-reset:step; display:grid; gap:10px; }
+    .step { display:grid; grid-template-columns:40px 1fr; gap:12px; align-items:start; padding:14px 0; border-top:1px solid var(--line); }
+    .step:first-child { border-top:0; }
+    .step::before { counter-increment:step; content:counter(step); display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:#173f31; color:#fff; font-weight:800; }
+    .step p { margin:3px 0 0; color:var(--muted); }
+    footer { padding:24px 0 40px; color:var(--muted); font-size:13px; }
+    @media (max-width:820px) { .status-grid { grid-template-columns:1fr 1fr; } .lane-grid { grid-template-columns:1fr; } }
+    @media (max-width:560px) { .wrap { width:min(100% - 24px,1120px); } header .wrap { padding:30px 0; } .status-grid, .watch { grid-template-columns:1fr; } h1 { font-size:34px; } table { display:block; overflow-x:auto; } th, td { min-width:150px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <p class="eyebrow">FlowMe · P24 handoff · 2026-07-14</p>
+      <h1>제품은 준비됐고, 이제 사람의 행동을 봐야 한다</h1>
+      <p class="lead">P24 구현·자동 QA·Claude Design A~G 대조는 끝났다. 독립 에이전트 검토와 실제 15세션을 같은 증거로 섞지 않고 다음 결정을 준비하는 보드다.</p>
+      <div class="actions">
+        <a class="primary" href="https://flowme2605.vercel.app">공개 서비스 열기</a>
+        <a href="../2026-07-14-p24-00b1-two-person-pilot/README.md">2인 파일럿</a>
+        <a href="./prompt-codex-ko.md">Codex 프롬프트</a>
+        <a href="./prompt-claude-code-ko.md">Claude Code 프롬프트</a>
+        <a href="./prompt-claude-design-ko.md">Claude Design 프롬프트</a>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section>
+      <h2>현재 게이트</h2>
+      <p class="section-copy">자동화 통과와 실제 사용성 검증을 분리한다. P24는 인간 관찰이 없으므로 아직 완료가 아니다.</p>
+      <div class="status-grid">
+        <article class="status done"><strong>14+</strong><h3>구현·운영 slice</h3><p>정확성, UX 단순화, dependency, 공개 production이 evidence로 연결됨</p></article>
+        <article class="status ready"><strong>10/10</strong><h3>production 화면</h3><p>P24-00B2의 5개 route x 2 viewport, HTTP·overflow·console 이상 0</p></article>
+        <article class="status waiting"><strong>0/15</strong><h3>실제 사용자 세션</h3><p>P1-S1과 P2-S1부터 시작해야 하며 에이전트 결과는 여기에 더하지 않음</p></article>
+        <article class="status blocked"><strong>P24-00C</strong><h3>최종 제품 판단</h3><p>관찰 발화와 행동이 들어오기 전 keep/change/defer 확정 금지</p></article>
+      </div>
+    </section>
+    <section>
+      <h2>독립 검토 3개 lane</h2>
+      <p class="section-copy">같은 production을 보되 역할과 산출물을 분리한다.</p>
+      <div class="lane-grid">
+        <article class="lane codex"><span class="label">CODEX</span><h3>현재 제품 end-to-end QA</h3><ul><li>현재 main·lockfile에서 명령 재실행</li><li>5 persona 사용자 여정</li><li>접근성·390/1024 browser inspection</li><li>finding-first 기술 판정</li></ul><p><a href="./prompt-codex-ko.md">복붙 프롬프트 열기</a></p></article>
+        <article class="lane claude"><span class="label">CLAUDE CODE</span><h3>논쟁 finding 독립 회귀</h3><ul><li>dirty dev와 clean production 분리</li><li>build·날짜·반복·draft·hydration 재현</li><li>ICS·list export 실제 결과 확인</li><li>confirmed/not-reproduced 분류</li></ul><p><a href="./prompt-claude-code-ko.md">복붙 프롬프트 열기</a></p></article>
+        <article class="lane design"><span class="label">CLAUDE DESIGN</span><h3>제품 방향과 관찰 가설</h3><ul><li>목업 (8) A~G와 현재 화면 대조</li><li>단순 polish가 아닌 전체 여정 평가</li><li>사실·휴리스틱·인간 검증 가설 분리</li><li>P24-00C 입력 backlog 제안</li></ul><p><a href="./prompt-claude-design-ko.md">복붙 프롬프트 열기</a></p></article>
+      </div>
+    </section>
+    <section>
+      <h2>산출물 지도</h2>
+      <p class="section-copy">먼저 필요한 자료만 열고, 이전 결과를 현재 실행 결과로 바꾸어 쓰지 않는다.</p>
+      <table>
+        <thead><tr><th>자료</th><th>무엇을 답하는가</th><th>증거 종류</th></tr></thead>
+        <tbody>
+          <tr><td><a href="../2026-07-14-flowme-p24-feedback-reconciliation/README.md">Feedback reconciliation</a></td><td>상충한 피드백과 구현 순서</td><td>current repo</td></tr>
+          <tr><td><a href="../2026-07-14-p24-00ops2-controlled-dependency-upgrade-evidence/README.md">OPS2</a></td><td>dependency·build·E2E·rollback</td><td>prior automated QA</td></tr>
+          <tr><td><a href="../2026-07-14-p24-00b2-production-design-readiness/README.md">Design readiness</a></td><td>Claude A~G와 운영 화면</td><td>automated browser QA</td></tr>
+          <tr><td><a href="../2026-07-14-p24-00b-observed-user-test-guide/README.md">15-session guide</a></td><td>누가 어떤 순서로 무엇을 하는가</td><td>protocol</td></tr>
+          <tr><td><a href="../2026-07-14-p24-00b1-two-person-pilot/README.md">Two-person pilot</a></td><td>처음 실행할 두 세션</td><td>protocol</td></tr>
+          <tr><td><a href="./artifact-manifest.json">Artifact manifest</a></td><td>현재 준비·실행·차단 상태</td><td>handoff metadata</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>사람에게서 확인할 것</h2>
+      <div class="watch">
+        <div class="human"><h3>행동·이해</h3><ul><li>첫 저장 전에 결과를 예상하는가</li><li>완료를 실수해도 스스로 취소하는가</li><li>날짜 없는 일을 Calendar에 놓는가</li><li>export 범위와 항목 수를 맞게 예측하는가</li><li>개인 메모와 수정 요청을 구분하는가</li></ul></div>
+        <div class="stop"><h3>즉시 중단 조건</h3><ul><li>저장한 Item 또는 사용자 입력 손실</li><li>선택한 날짜와 실제 날짜 불일치</li><li>다른 범위·다른 Item export</li><li>완료 상태가 다른 회차에 연결됨</li><li>production 접근·저장 실패 반복</li></ul></div>
+      </div>
+    </section>
+    <section>
+      <h2>실행 순서</h2>
+      <div class="steps">
+        <div class="step"><div><h3>독립 QA</h3><p>Codex와 Claude Code를 같은 origin/main·lockfile에서 실행하고 결과를 합치지 않은 채 보존한다.</p></div></div>
+        <div class="step"><div><h3>디자인 평가</h3><p>Claude Design은 현재 화면과 목업 A~G를 비교하고 실제 사용자에게 확인할 가설을 좁힌다.</p></div></div>
+        <div class="step"><div><h3>2인 파일럿</h3><p>P1-S1 이사와 P2-S1 차량 점검을 설명 없이 수행하게 하고 정확한 발화를 기록한다.</p></div></div>
+        <div class="step"><div><h3>15세션 완주</h3><p>Blocking이 없을 때 P3~P5와 return session을 진행한다.</p></div></div>
+        <div class="step"><div><h3>P24-00C</h3><p>관찰 증거로 keep/change/defer/blocking을 확정하고 필요한 Blocking·High만 구현한다.</p></div></div>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap">이 보드는 검토 준비물이다. 앱 코드 변경 없음 · 실제 사용자 관찰 0/15 · P24 미완료.</footer>
+</body>
+</html>
