@@ -30,7 +30,7 @@
 
 ## Correctness
 
-- [ ] P24-00F1 local date boundary.
+- [x] P24-00F1 local date boundary.
 - [ ] P24-00F2A effective-date summary parity.
 - [ ] P24-00F2B reuse override transfer.
 - [ ] P24-00F3A recurrence occurrence parity.

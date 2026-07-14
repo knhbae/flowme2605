@@ -12,7 +12,7 @@ import {
   type ArtifactLogTable,
   type ArtifactMemoField,
 } from '@/lib/flow/artifact-fields';
-import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
+import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
@@ -941,7 +941,7 @@ function RecipeDisclosure({ recipe }: { recipe: WorkbenchRecipe }) {
 function mealSlotCheckIds(slot: NonNullable<FlowBundle['mealSlots']>[number], anchor: string): string[] {
   const duration = Math.max(slot.duration_days ?? 1, 1);
   if (duration <= 1) return [slot.id];
-  const baseDate = anchor || formatDate(new Date());
+  const baseDate = anchor || formatLocalDate(new Date());
   return Array.from({ length: duration }, (_, index) => {
     const date = addDays(new Date(baseDate), slot.day_offset + index);
     return `${slot.id}__${formatDate(date)}`;
@@ -971,7 +971,7 @@ function MiniMonthCalendar({
   mobileArtifactLabel?: string;
   compact?: boolean;
 }) {
-  const days = getMonthCalendarDays(month || formatDate(new Date()).slice(0, 7));
+  const days = getMonthCalendarDays(month || formatLocalDate(new Date()).slice(0, 7));
   return (
     <div data-testid="artifact-calendar-card" className={compact ? 'rounded-lg border border-[#DDE4E0] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]' : FLOWME_SURFACE_CARD_CLASS}>
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1060,7 +1060,7 @@ function RoutineOccurrenceCalendar({
       : isMealCheck
         ? '아침, 점심, 저녁 식단을 지켰는지만 표시합니다.'
         : '주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.';
-  const firstDate = visibleRows[0]?.startDate ?? formatDate(new Date());
+  const firstDate = visibleRows[0]?.startDate ?? formatLocalDate(new Date());
   const first = new Date(firstDate);
   const currentRow = visibleRows.find((row) => !workbenchState.occurrences[row.id]?.done) ?? visibleRows[0];
   const weekRows = Array.from({ length: weekCount }, (_, weekIndex) =>
@@ -1903,7 +1903,7 @@ function RoutineWorkbench({
     );
   }
 
-  const startDate = anchor || formatDate(nextMonday(new Date()));
+  const startDate = anchor || formatLocalDate(nextMonday(new Date()));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
   const weekCount = getRoutineWeekCount(bundle);
   const occurrences = expandRoutineOccurrences(startDate, selectedWeekdays, weekCount);
@@ -2195,7 +2195,7 @@ function SpreadsheetWorkbench({
   exportActions?: ArtifactExportActions;
 }) {
   const routeSpecificLogTables = getLogTables(bundle);
-  const start = anchor || formatDate(new Date());
+  const start = anchor || formatLocalDate(new Date());
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
   const spreadsheetColumns = getSpreadsheetColumns(bundle);
@@ -2379,7 +2379,7 @@ function MaintenanceRoutineWorkbench({
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
-  const startDate = anchor || formatDate(new Date());
+  const startDate = anchor || formatLocalDate(new Date());
   const isTubCleaning = bundle.flow.slug === 'washer-tub-clean-monthly';
   const isDrainFilter = bundle.flow.slug === 'real-samsung-washer-filter-care';
   const isPlantCare = !isTubCleaning && !isDrainFilter;
@@ -3133,7 +3133,7 @@ function getJeonseProgress(items: FlowItem[], checks: Record<string, boolean>): 
 
 function getJeonseDateStatus(row: ScheduleRow, progress: { done: number; total: number }): string {
   if (progress.total > 0 && progress.done >= progress.total) return '확인 표시됨';
-  if (row.startDate < formatDate(new Date())) return '지난 일정 · 확인 필요';
+  if (row.startDate < formatLocalDate(new Date())) return '지난 일정 · 확인 필요';
   return '';
 }
 

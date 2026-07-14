@@ -1,4 +1,4 @@
-import { addDays, formatDate, getRangeEnd } from './date';
+import { addDays, formatDate, formatLocalDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
 import { getComparisonConfig, getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
 import { foldIcsContentLine } from './ics';
@@ -790,7 +790,7 @@ export function buildIcsCalendar(
 }
 
 export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: string[] = []): string {
-  const startDate = anchor || formatDate(new Date());
+  const startDate = anchor || formatLocalDate(new Date());
   const byday = weekdays.map((day) => icsWeekdays[day]).filter(Boolean).join(',');
   const lines = [
     'BEGIN:VCALENDAR',

@@ -13,7 +13,7 @@ import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformNav } from './PlatformNav';
-import { addDays, formatDate, formatKoreanShortDate, getRangeEnd } from '@/lib/flow/date';
+import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
@@ -4558,8 +4558,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [savedMapIdParam, setSavedMapIdParam] = useState('');
   const [activeProgress, setActiveProgress] = useState<ReturnType<typeof getActiveFlowProgress>>([]);
   const [savedView, setSavedView] = useState<MyFlowView>(initialView);
-  const [myFlowVisibleMonth, setMyFlowVisibleMonth] = useState(getMyFlowMonthStart(formatDate(new Date())));
-  const [myFlowSelectedDate, setMyFlowSelectedDate] = useState(formatDate(new Date()));
+  const [myFlowVisibleMonth, setMyFlowVisibleMonth] = useState(getMyFlowMonthStart(formatLocalDate(new Date())));
+  const [myFlowSelectedDate, setMyFlowSelectedDate] = useState(formatLocalDate(new Date()));
   const [selectedSavedFlowSlug, setSelectedSavedFlowSlug] = useState('all');
   const [myFlowCalendarScope, setMyFlowCalendarScope] = useState<MyFlowCalendarScope>('all');
   const [checklistFilter, setChecklistFilter] = useState<ChecklistFilter>('all');
@@ -5090,7 +5090,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       });
     }
   };
-  const occurrenceProjectionTodayDate = showDemoData ? '2026-05-28' : formatDate(new Date());
+  const occurrenceProjectionTodayDate = showDemoData ? '2026-05-28' : formatLocalDate(new Date());
   const occurrenceVisibleRange = {
     start: getMyFlowMonthStart(myFlowVisibleMonth),
     end: getMyFlowMonthEnd(myFlowVisibleMonth),
@@ -14454,7 +14454,7 @@ function AnchorInput({
   const anchorDate = anchor ? new Date(anchor) : null;
   const today = new Date();
   const daysUntil = anchorDate && !Number.isNaN(anchorDate.getTime())
-    ? Math.ceil((anchorDate.getTime() - new Date(formatDate(today)).getTime()) / 86400000)
+    ? Math.ceil((anchorDate.getTime() - new Date(formatLocalDate(today)).getTime()) / 86400000)
     : null;
   const earliestOffset = getEarliestOffset(bundle);
   const isPast = daysUntil !== null && daysUntil < 0;
@@ -14831,12 +14831,12 @@ function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: st
   if (mode === 'custom') return customAnchor;
   if (mode === 'undecided') return '';
   const today = new Date();
-  if (bundle.flow.content_type === 'meal_plan') return formatDate(today);
+  if (bundle.flow.content_type === 'meal_plan') return formatLocalDate(today);
   if (bundle.flow.category.includes('결혼')) return formatDate(addDays(today, 180));
   if (bundle.flow.category.includes('이사')) return formatDate(addDays(today, 30));
   if (bundle.flow.category.includes('여행')) return formatDate(addDays(today, 14));
   if (bundle.flow.structure_type === 'routine') return formatDate(nextMonday(today));
-  return formatDate(today);
+  return formatLocalDate(today);
 }
 
 function getAnchorModeLabel(mode: AnchorMode): string {
@@ -15142,7 +15142,7 @@ function TopExecutionPreview({
   if (model.uxType === 'routine' || model.uxType === 'program') {
     const repeatLabel = bundle.repeatRules?.[0] ?? '주 3회';
     const selectedWeekdays = getRoutineWeekdayLabels(repeatLabel, weekdays);
-    const startDate = anchor || formatDate(nextMonday(new Date()));
+    const startDate = anchor || formatLocalDate(nextMonday(new Date()));
     const occurrences = expandRoutineOccurrences({
       startDate,
       repeatLabel,
