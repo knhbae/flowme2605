@@ -1,5 +1,7 @@
 # FlowMe P24/P25 단계별 백로그
 
+> **2026-07-14 재정렬:** P24-00A의 clean Codex 감사와 dirty-dev Claude Code 감사가 서로 다른 build/runtime 결과를 남겼고, 사용자는 완료 취소, 날짜 이동, 날짜 없음, export 범위, 편집 밀도, 실행 중 피드백 문제를 추가로 확인했다. `P24-00B` 실제 사용자 관찰과 `P24-01A` source v2 merge를 바로 시작하지 않는다. 먼저 [P24 feedback reconciliation](../2026-07-14-flowme-p24-feedback-reconciliation/README.md)의 `P24-00R`로 기준선을 분리한 뒤 correctness와 narrow UX slice를 진행한다. 아래의 기존 순서는 당시 handoff 기록으로 유지하되, 현재 실행 정본은 [revised P24 backlog](../2026-07-14-flowme-p24-feedback-reconciliation/backlog.md)다.
+
 ## 실행 원칙
 
 - 기능을 더 붙이기 전에 P23의 실제 발견성·이해도·재방문 가치를 관찰한다.
