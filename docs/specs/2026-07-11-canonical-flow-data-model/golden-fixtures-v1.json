@@ -1,0 +1,3249 @@
+{
+  "fixtureSchemaVersion": "flowme-canonical-golden-fixtures-v1",
+  "canonicalSchemaVersion": "flowme-canonical-flow-v1",
+  "generatedAt": "2026-07-11T23:50:00+09:00",
+  "coverage": {
+    "requiredPositiveShapes": [
+      "d_day_timeline",
+      "fixed_routine",
+      "source_checklist",
+      "ordered_phase_procedure",
+      "table_progress",
+      "memo_first",
+      "decision_hold",
+      "evidence_caution",
+      "resource_queue",
+      "sparse_official_lifecycle"
+    ],
+    "requiredNegativeShapes": [
+      "missing_source_rows",
+      "nonlocal_sensitive_source"
+    ],
+    "requiredLifeAreas": [
+      "home_living",
+      "family_parenting",
+      "study_reading",
+      "money_admin_purchase",
+      "health_fitness",
+      "travel_outings",
+      "meals_grocery",
+      "work_career",
+      "hobby_pet"
+    ],
+    "requiredPlanningPatterns": [
+      "date_preparation",
+      "ordered_procedure",
+      "repeating_routine",
+      "source_table_rows",
+      "resource_queue",
+      "compare_decide",
+      "phase_lifecycle"
+    ],
+    "requiredProjectionTargets": [
+      "calendar",
+      "checklist",
+      "todo",
+      "sheet",
+      "memo"
+    ],
+    "requiredCompletionModes": [
+      "check",
+      "decision",
+      "record"
+    ],
+    "requiredScheduleModes": [
+      "absolute",
+      "anchor_offset",
+      "date_window"
+    ]
+  },
+  "fixtures": [
+    {
+      "fixtureId": "gf-pos-01-d-day-timeline",
+      "kind": "positive",
+      "shape": "d_day_timeline",
+      "name": "건강검진 D-7 타임라인",
+      "legacyRefs": [
+        "national-health-checkup-d7"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-national-health-checkup-d7-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:cb9b4ac2ba345e4462089191ff898368e63b7128a524ca39bc0aa6031632ff46",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-national-health-checkup-d7",
+          "title": "건강검진 D-7 준비",
+          "summary": "검진일을 기준으로 예약 확인과 방문을 준비한다.",
+          "lifeArea": "health_fitness",
+          "topicTags": [
+            "건강검진",
+            "D-day"
+          ],
+          "flowIds": [
+            "flow-national-health-checkup-d7"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-national-health-checkup-d7",
+            "bundleId": "bundle-national-health-checkup-d7",
+            "title": "건강검진 D-7 준비",
+            "userNeed": "검진일 전에 필요한 확인을 끝내고 당일 방문을 놓치지 않는다.",
+            "primarySourceId": "source-nhis-health-checkup",
+            "supportingSourceIds": [],
+            "planningPattern": "date_preparation",
+            "secondaryPatterns": [],
+            "primaryArtifact": "hybrid",
+            "anchorDefinition": {
+              "fieldId": "field-checkup-date",
+              "kind": "event_date",
+              "label": "검진일",
+              "required": true
+            },
+            "setupFieldIds": [
+              "field-checkup-date"
+            ],
+            "stepIds": [
+              "step-checkup-precheck",
+              "step-checkup-visit"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "calendar",
+                "formats": [
+                  "ics"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "medical_sensitive"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-checkup-precheck",
+            "flowId": "flow-national-health-checkup-d7",
+            "title": "검진 전 확인",
+            "order": 0,
+            "itemIds": [
+              "item-checkup-booking"
+            ],
+            "sourceRefIds": [],
+            "groupingHint": "D-7"
+          },
+          {
+            "stepId": "step-checkup-visit",
+            "flowId": "flow-national-health-checkup-d7",
+            "title": "검진 당일",
+            "order": 1,
+            "itemIds": [
+              "item-checkup-visit"
+            ],
+            "sourceRefIds": [],
+            "groupingHint": "D-Day"
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-checkup-booking",
+            "stepId": "step-checkup-precheck",
+            "title": "검진 대상과 예약 상태 확인하기",
+            "intent": "inspect",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "공식 조회에서 검진 대상과 예약 상태를 확인했다."
+            },
+            "schedule": {
+              "mode": "anchor_offset",
+              "anchorFieldId": "field-checkup-date",
+              "dayOffset": -7,
+              "allDay": true
+            },
+            "fieldIds": [],
+            "memoIds": [],
+            "cautionMemoIds": [
+              "memo-checkup-boundary"
+            ],
+            "sourceRefIds": [
+              "ref-checkup-booking"
+            ]
+          },
+          {
+            "itemId": "item-checkup-visit",
+            "stepId": "step-checkup-visit",
+            "title": "검진기관 방문하기",
+            "intent": "act",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "예약한 검진기관 방문을 마쳤다."
+            },
+            "schedule": {
+              "mode": "anchor_offset",
+              "anchorFieldId": "field-checkup-date",
+              "dayOffset": 0,
+              "allDay": true
+            },
+            "fieldIds": [],
+            "memoIds": [],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-checkup-visit"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "field-checkup-date",
+            "owner": {
+              "type": "item",
+              "id": "item-checkup-booking"
+            },
+            "key": "checkupDate",
+            "label": "검진일",
+            "valueType": "date",
+            "purposes": [
+              "schedule",
+              "generation"
+            ],
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "memo-checkup-boundary",
+            "scope": {
+              "type": "item",
+              "id": "item-checkup-booking"
+            },
+            "kind": "caution",
+            "title": "공식 확인",
+            "text": "FlowMe는 검진 결과를 해석하지 않는다. 대상, 준비사항, 방문 가능 여부는 공식 조회와 검진기관 안내를 우선한다.",
+            "sourceRefIds": [
+              "ref-checkup-boundary"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-nhis-health-checkup",
+            "title": "국민건강보험 건강검진 안내",
+            "sourceType": "official",
+            "originalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+            "canonicalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+            "locale": "ko-KR",
+            "publisher": "국민건강보험공단",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "medical_sensitive"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-nhis-health-checkup-20260711",
+            "sourceId": "source-nhis-health-checkup",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+            "contentHash": "b660af89323da3cfb1ea81ca09d829e8239a9f0a6113cbc57b04160814db3059",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-checkup-booking",
+            "sourceId": "source-nhis-health-checkup",
+            "snapshotId": "snapshot-nhis-health-checkup-20260711",
+            "rowType": "check",
+            "title": "검진 대상 및 예약 확인",
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-checkup-visit",
+            "sourceId": "source-nhis-health-checkup",
+            "snapshotId": "snapshot-nhis-health-checkup-20260711",
+            "rowType": "date",
+            "title": "검진기관 방문",
+            "order": 1
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-checkup-booking",
+            "entityType": "item",
+            "entityId": "item-checkup-booking",
+            "sourceRowIds": [
+              "row-checkup-booking"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-checkup-visit",
+            "entityType": "item",
+            "entityId": "item-checkup-visit",
+            "sourceRowIds": [
+              "row-checkup-visit"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-checkup-boundary",
+            "entityType": "memo",
+            "entityId": "memo-checkup-boundary",
+            "sourceRowIds": [
+              "row-checkup-booking"
+            ],
+            "relation": "boundary",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-national-health-checkup-d7-golden",
+        "contentId": "content-national-health-checkup-d7-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_second_wave",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "검진 전 확인과 당일 방문이라는 구체적인 사용자 필요가 있다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "두 Item의 완료 조건과 기준일이 명확하다."
+          },
+          "contentFidelity": {
+            "score": 4,
+            "comment": "공식 안내의 확인·방문 행위만 사용하고 결과 해석은 제외했다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "두 Item을 ICS와 체크리스트로 손실 없이 옮길 수 있다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "필수 입력은 검진일 하나다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "확인 대상과 완료 상태가 행동 문장에 드러난다."
+          },
+          "sourceSafety": {
+            "score": 5,
+            "comment": "의료 결과 해석을 금지하고 공식 확인 경계를 분리했다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "날짜와 체크 상태를 키보드·모바일에서 조작할 수 있어야 한다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "공식 안내의 행위·일정 요약과 링크만 사용한다.",
+        "riskDecision": "medical_sensitive이며 결과 해석과 진료 판단은 export에도 포함하지 않는다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "calendar:ics",
+          "checklist:markdown",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "sheet:xlsx",
+          "todo:markdown"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-02-fixed-routine",
+      "kind": "positive",
+      "shape": "fixed_routine",
+      "name": "에어컨 필터 4주 청소",
+      "legacyRefs": [
+        "aircon-filter-4week",
+        "aircon-ultrafine-filter-routine"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-aircon-filter-4week-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:46283d0f9e79117f70b1ac50acf605551704468e759049a8bb36d08350148133",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-aircon-filter-4week",
+          "title": "에어컨 필터 4주 청소",
+          "lifeArea": "home_living",
+          "topicTags": [
+            "에어컨",
+            "반복관리"
+          ],
+          "flowIds": [
+            "flow-aircon-filter-4week"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-aircon-filter-4week",
+            "bundleId": "bundle-aircon-filter-4week",
+            "title": "에어컨 필터 4주 청소",
+            "userNeed": "공식 주기에 맞춰 에어컨 필터 청소를 반복하고 완료 여부를 남긴다.",
+            "primarySourceId": "source-samsung-aircon-filter",
+            "supportingSourceIds": [],
+            "planningPattern": "repeating_routine",
+            "secondaryPatterns": [],
+            "primaryArtifact": "calendar",
+            "setupFieldIds": [],
+            "stepIds": [
+              "step-aircon-filter-care"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "calendar",
+                "formats": [
+                  "ics"
+                ],
+                "granularity": "item",
+                "groupBy": "none",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "checklist",
+                "formats": [
+                  "plain_text"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "low"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-aircon-filter-care",
+            "flowId": "flow-aircon-filter-4week",
+            "title": "4주마다",
+            "order": 0,
+            "itemIds": [
+              "item-aircon-filter-clean"
+            ],
+            "sourceRefIds": [],
+            "groupingHint": "고정 반복"
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-aircon-filter-clean",
+            "stepId": "step-aircon-filter-care",
+            "title": "에어컨 극세 필터 청소하기",
+            "intent": "act",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "필터를 청소하고 충분히 건조해 다시 장착했다."
+            },
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-07-14",
+              "allDay": true,
+              "recurrence": {
+                "frequency": "weekly",
+                "interval": 4,
+                "sourceDefined": true
+              }
+            },
+            "fieldIds": [],
+            "memoIds": [
+              "memo-aircon-clean-method"
+            ],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-aircon-filter-clean"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [
+          {
+            "memoId": "memo-aircon-clean-method",
+            "scope": {
+              "type": "item",
+              "id": "item-aircon-filter-clean"
+            },
+            "kind": "instruction",
+            "text": "진공청소기나 부드러운 솔로 먼지를 제거하고, 물세척했다면 그늘에서 충분히 건조한다.",
+            "sourceRefIds": [
+              "ref-aircon-clean-method"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-samsung-aircon-filter",
+            "title": "삼성전자서비스 에어컨 필터 청소 안내",
+            "sourceType": "official",
+            "originalUrl": "https://www.samsungsvc.co.kr/solution/121273",
+            "canonicalUrl": "https://www.samsungsvc.co.kr/solution/121273",
+            "locale": "ko-KR",
+            "publisher": "삼성전자서비스",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "low"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-samsung-aircon-filter-20260711",
+            "sourceId": "source-samsung-aircon-filter",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.samsungsvc.co.kr/solution/121273",
+            "contentHash": "3a9eb003cf3b015cf9e68d403ead4c9d3beb33cdec30b1fafff0fee3aa167e45",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-aircon-filter-4week",
+            "sourceId": "source-samsung-aircon-filter",
+            "snapshotId": "snapshot-samsung-aircon-filter-20260711",
+            "rowType": "procedure",
+            "title": "극세 필터 4주에 한 번 청소",
+            "detail": "먼지 제거, 물세척, 그늘 건조",
+            "order": 0
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-aircon-filter-clean",
+            "entityType": "item",
+            "entityId": "item-aircon-filter-clean",
+            "sourceRowIds": [
+              "row-aircon-filter-4week"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-aircon-clean-method",
+            "entityType": "memo",
+            "entityId": "memo-aircon-clean-method",
+            "sourceRowIds": [
+              "row-aircon-filter-4week"
+            ],
+            "relation": "supports",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-aircon-filter-4week-golden",
+        "contentId": "content-aircon-filter-4week-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_for_internal_canary",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "반복 청소를 잊지 않으려는 필요가 분명하다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "한 Item과 4주 반복, 완료 기준이 명확하다."
+          },
+          "contentFidelity": {
+            "score": 5,
+            "comment": "공식 주기와 방법만 보존하고 하위 방법을 가짜 Item으로 만들지 않았다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "반복 ICS와 체크 상태로 자연스럽게 투영된다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "하나의 반복 Item만 보인다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "대상과 행동이 제목에 구체적으로 드러난다."
+          },
+          "sourceSafety": {
+            "score": 5,
+            "comment": "공식 모델 관리 범위와 일반 주기를 구분한다."
+          },
+          "accessibilityOperability": {
+            "score": 5,
+            "comment": "반복 일정과 완료 체크가 단순하다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "공식 주기와 짧은 방법 요약, 원문 링크만 사용한다.",
+        "riskDecision": "사용자 기기 모델이 다르면 공식 모델 안내를 다시 확인한다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "calendar:ics",
+          "checklist:plain_text",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "sheet:csv",
+          "todo:markdown"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-03-source-checklist",
+      "kind": "positive",
+      "shape": "source_checklist",
+      "name": "해외여행 준비물 체크리스트",
+      "legacyRefs": [
+        "overseas-trip-prep-map",
+        "overseas-packing-check"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-overseas-packing-check-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:cd8f6d15112821ba8cbce1024c1abda0f5ed2ef5d8655c41e736f8c79635a7e1",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-overseas-packing-check",
+          "title": "해외여행 준비물",
+          "lifeArea": "travel_outings",
+          "topicTags": [
+            "해외여행",
+            "짐싸기"
+          ],
+          "flowIds": [
+            "flow-overseas-packing-check"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-overseas-packing-check",
+            "bundleId": "bundle-overseas-packing-check",
+            "title": "해외여행 준비물 체크",
+            "userNeed": "해외여행 필수 준비물을 빠뜨리지 않고 챙긴다.",
+            "primarySourceId": "source-kkday-overseas-packing",
+            "supportingSourceIds": [],
+            "planningPattern": "ordered_procedure",
+            "secondaryPatterns": [],
+            "primaryArtifact": "checklist",
+            "setupFieldIds": [],
+            "stepIds": [
+              "step-overseas-essentials"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown",
+                  "plain_text"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "step_bundle",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "low"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-overseas-essentials",
+            "flowId": "flow-overseas-packing-check",
+            "title": "필수 준비물",
+            "order": 0,
+            "itemIds": [
+              "item-pack-passport",
+              "item-pack-connectivity"
+            ],
+            "sourceRefIds": []
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-pack-passport",
+            "stepId": "step-overseas-essentials",
+            "title": "여권 챙기기",
+            "intent": "inspect",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "유효한 여권을 바로 꺼낼 수 있는 가방에 넣었다."
+            },
+            "fieldIds": [],
+            "memoIds": [],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-pack-passport"
+            ]
+          },
+          {
+            "itemId": "item-pack-connectivity",
+            "stepId": "step-overseas-essentials",
+            "title": "여행지 데이터 수단 준비하기",
+            "intent": "act",
+            "order": 1,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "여행지에서 사용할 데이터 수단을 준비했다."
+            },
+            "fieldIds": [],
+            "memoIds": [
+              "memo-connectivity-choice"
+            ],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-pack-connectivity"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [
+          {
+            "memoId": "memo-connectivity-choice",
+            "scope": {
+              "type": "item",
+              "id": "item-pack-connectivity"
+            },
+            "kind": "user_prompt",
+            "text": "eSIM, 유심, 로밍 중 실제 준비한 수단과 개통 메모를 적는다.",
+            "sourceRefIds": [
+              "ref-connectivity-detail"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-kkday-overseas-packing",
+            "title": "해외여행 준비물 체크리스트",
+            "sourceType": "creator_experience",
+            "originalUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+            "canonicalUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+            "locale": "ko-KR",
+            "publisher": "KKday",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "needs_review",
+            "riskLevel": "low"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-kkday-overseas-packing-20260711",
+            "sourceId": "source-kkday-overseas-packing",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+            "contentHash": "d8a920b70eed165422d00d243b951e916f5666c9bfe3e11a7d4a83cc72662f2e",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-pack-passport",
+            "sourceId": "source-kkday-overseas-packing",
+            "snapshotId": "snapshot-kkday-overseas-packing-20260711",
+            "rowType": "check",
+            "title": "여권",
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-pack-connectivity",
+            "sourceId": "source-kkday-overseas-packing",
+            "snapshotId": "snapshot-kkday-overseas-packing-20260711",
+            "rowType": "check",
+            "title": "데이터 유심",
+            "order": 1
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-pack-passport",
+            "entityType": "item",
+            "entityId": "item-pack-passport",
+            "sourceRowIds": [
+              "row-pack-passport"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-pack-connectivity",
+            "entityType": "item",
+            "entityId": "item-pack-connectivity",
+            "sourceRowIds": [
+              "row-pack-connectivity"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-connectivity-detail",
+            "entityType": "memo",
+            "entityId": "memo-connectivity-choice",
+            "sourceRowIds": [
+              "row-pack-connectivity"
+            ],
+            "relation": "supports",
+            "supportLevel": "creator_interpretation"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-overseas-packing-check-golden",
+        "contentId": "content-overseas-packing-check-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_for_internal_canary",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "여행 직전 준비물을 빠뜨리지 않으려는 필요가 명확하다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "각 원문 row가 독립 체크 Item으로 보인다."
+          },
+          "contentFidelity": {
+            "score": 5,
+            "comment": "원문 준비물 외 행동과 날짜를 만들지 않았다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "그룹과 순서를 유지한 체크리스트로 옮길 수 있다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "설정 입력 없이 바로 체크를 시작한다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "준비 대상과 완료 상태가 구체적이다."
+          },
+          "sourceSafety": {
+            "score": 4,
+            "comment": "상업 CTA를 제외하고 creator 출처를 표시한다."
+          },
+          "accessibilityOperability": {
+            "score": 5,
+            "comment": "각 Item을 독립적으로 체크할 수 있다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "원문 row 제목과 짧은 실행 요약만 사용하고 상품 CTA와 본문 복제는 제외한다.",
+        "riskDecision": "항공사·국가별 규정은 고정 사실로 만들지 않고 공식 확인 링크로 처리한다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "checklist:markdown",
+          "checklist:plain_text",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "calendar:ics",
+          "sheet:xlsx"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-04-ordered-phase-procedure",
+      "kind": "positive",
+      "shape": "ordered_phase_procedure",
+      "name": "고용24 취업지원 시작 절차",
+      "legacyRefs": [
+        "work24-job-support-map",
+        "work24-jobseeker-start"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-work24-jobseeker-start-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:1d36e1e6cbe92cfa51ddb78583862aea3dc33b02354b86a0319ae0fb08c127ac",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-work24-jobseeker-start",
+          "title": "고용24 취업지원 시작",
+          "lifeArea": "work_career",
+          "topicTags": [
+            "구직",
+            "행정절차"
+          ],
+          "flowIds": [
+            "flow-work24-jobseeker-start"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-work24-jobseeker-start",
+            "bundleId": "bundle-work24-jobseeker-start",
+            "title": "고용24 구직자 취업지원 시작",
+            "userNeed": "고용24에서 구직 등록과 취업지원 시작 절차를 순서대로 끝낸다.",
+            "primarySourceId": "source-work24-jobseeker-support",
+            "supportingSourceIds": [],
+            "planningPattern": "phase_lifecycle",
+            "secondaryPatterns": [
+              "ordered_procedure"
+            ],
+            "primaryArtifact": "checklist",
+            "setupFieldIds": [],
+            "stepIds": [
+              "step-work24-register",
+              "step-work24-support"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "todo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "privacy_sensitive"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-work24-register",
+            "flowId": "flow-work24-jobseeker-start",
+            "title": "구직 등록",
+            "order": 0,
+            "itemIds": [
+              "item-work24-register"
+            ],
+            "sourceRefIds": []
+          },
+          {
+            "stepId": "step-work24-support",
+            "flowId": "flow-work24-jobseeker-start",
+            "title": "취업지원 이용",
+            "order": 1,
+            "itemIds": [
+              "item-work24-apply"
+            ],
+            "sourceRefIds": []
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-work24-register",
+            "stepId": "step-work24-register",
+            "title": "고용24에서 구직 신청 등록하기",
+            "intent": "act",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "고용24 구직 신청 등록을 완료했다."
+            },
+            "fieldIds": [],
+            "memoIds": [],
+            "cautionMemoIds": [
+              "memo-work24-private-data"
+            ],
+            "sourceRefIds": [
+              "ref-work24-register"
+            ]
+          },
+          {
+            "itemId": "item-work24-apply",
+            "stepId": "step-work24-support",
+            "title": "취업지원 서비스 선택해 신청하기",
+            "intent": "act",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "본인에게 필요한 지원 서비스를 선택해 신청했다."
+            },
+            "fieldIds": [],
+            "memoIds": [
+              "memo-work24-result"
+            ],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-work24-apply"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [
+          {
+            "memoId": "memo-work24-private-data",
+            "scope": {
+              "type": "item",
+              "id": "item-work24-register"
+            },
+            "kind": "caution",
+            "text": "희망직종, 임금, 경력 등 민감한 이력서 값은 FlowMe에 복제하지 않고 고용24에서 직접 작성한다.",
+            "sourceRefIds": [
+              "ref-work24-private-data"
+            ]
+          },
+          {
+            "memoId": "memo-work24-result",
+            "scope": {
+              "type": "item",
+              "id": "item-work24-apply"
+            },
+            "kind": "user_prompt",
+            "text": "상담 일정, 담당자, 지원 결과를 개인 메모로 남긴다."
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-work24-jobseeker-support",
+            "title": "고용24 구직자 취업지원 서비스",
+            "sourceType": "official",
+            "originalUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+            "canonicalUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+            "locale": "ko-KR",
+            "publisher": "고용24",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "privacy_sensitive"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-work24-jobseeker-20260711",
+            "sourceId": "source-work24-jobseeker-support",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+            "contentHash": "ccbcde58fa97d71898a5b092266fbf7d172cc923d268662ac2615f5273d2e089",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-work24-register",
+            "sourceId": "source-work24-jobseeker-support",
+            "snapshotId": "snapshot-work24-jobseeker-20260711",
+            "rowType": "procedure",
+            "title": "구직 신청 등록",
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-work24-apply",
+            "sourceId": "source-work24-jobseeker-support",
+            "snapshotId": "snapshot-work24-jobseeker-20260711",
+            "rowType": "procedure",
+            "title": "취업지원 서비스 신청",
+            "order": 1
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-work24-register",
+            "entityType": "item",
+            "entityId": "item-work24-register",
+            "sourceRowIds": [
+              "row-work24-register"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-work24-apply",
+            "entityType": "item",
+            "entityId": "item-work24-apply",
+            "sourceRowIds": [
+              "row-work24-apply"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-work24-private-data",
+            "entityType": "memo",
+            "entityId": "memo-work24-private-data",
+            "sourceRowIds": [
+              "row-work24-register"
+            ],
+            "relation": "boundary",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-work24-jobseeker-start-golden",
+        "contentId": "content-work24-jobseeker-start-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_for_internal_canary",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "구직 등록에서 지원 시작까지의 사용자 목적이 분명하다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "공식 절차 순서와 완료 상태가 분리돼 있다."
+          },
+          "contentFidelity": {
+            "score": 5,
+            "comment": "공식 단계만 사용하고 별도 제도를 섞지 않았다."
+          },
+          "portability": {
+            "score": 4,
+            "comment": "체크리스트와 task 문서로 옮길 수 있다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "FlowMe가 민감한 이력서 입력을 요구하지 않는다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "등록과 신청 행동이 구체적이다."
+          },
+          "sourceSafety": {
+            "score": 5,
+            "comment": "개인정보 입력은 공식 서비스 안에 남긴다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "절차 순서와 체크 상태가 보조기술에도 전달돼야 한다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "공식 절차명과 원문 링크만 사용한다.",
+        "riskDecision": "민감한 구직·이력서 값은 canonical content와 export에 저장하지 않는다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "checklist:markdown",
+          "todo:markdown",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "calendar:ics",
+          "sheet:xlsx"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-05-table-progress",
+      "kind": "positive",
+      "shape": "table_progress",
+      "name": "K-MOOC 15주 진도표",
+      "legacyRefs": [
+        "kmooc-philosophy-fifteen-week",
+        "kmooc-hundred-schools-fifteen-week",
+        "computer-skills-d30-study"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-kmooc-progress-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:f654a0331eafecfff62a7451c71f70d657e3047d13981494130285bd64df96f8",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-kmooc-progress",
+          "title": "K-MOOC 제자백가 진도",
+          "lifeArea": "study_reading",
+          "topicTags": [
+            "K-MOOC",
+            "학습진도"
+          ],
+          "flowIds": [
+            "flow-kmooc-progress"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-kmooc-progress",
+            "bundleId": "bundle-kmooc-progress",
+            "title": "K-MOOC 제자백가 15주 학습",
+            "userNeed": "공개 강좌의 source-defined 주차를 따라가며 현재 진도와 메모를 남긴다.",
+            "primarySourceId": "source-kmooc-hundred-schools",
+            "supportingSourceIds": [],
+            "planningPattern": "source_table_rows",
+            "secondaryPatterns": [],
+            "primaryArtifact": "sheet",
+            "setupFieldIds": [],
+            "stepIds": [
+              "step-kmooc-week-01",
+              "step-kmooc-week-02"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "sheet",
+                "formats": [
+                  "csv",
+                  "xlsx"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              },
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "low"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-kmooc-week-01",
+            "flowId": "flow-kmooc-progress",
+            "title": "1주차",
+            "order": 0,
+            "itemIds": [
+              "item-kmooc-week-01"
+            ],
+            "sourceRefIds": []
+          },
+          {
+            "stepId": "step-kmooc-week-02",
+            "flowId": "flow-kmooc-progress",
+            "title": "2주차",
+            "order": 1,
+            "itemIds": [
+              "item-kmooc-week-02"
+            ],
+            "sourceRefIds": []
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-kmooc-week-01",
+            "stepId": "step-kmooc-week-01",
+            "title": "1주차 강의와 퀴즈 완료하기",
+            "intent": "record",
+            "order": 0,
+            "completion": {
+              "mode": "record",
+              "recordFieldIds": [
+                "field-kmooc-week-01-status",
+                "field-kmooc-week-01-note"
+              ],
+              "doneWhen": "1주차 상태와 메모를 기록했다."
+            },
+            "fieldIds": [
+              "field-kmooc-week-01-status",
+              "field-kmooc-week-01-note"
+            ],
+            "memoIds": [],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-kmooc-week-01"
+            ]
+          },
+          {
+            "itemId": "item-kmooc-week-02",
+            "stepId": "step-kmooc-week-02",
+            "title": "2주차 강의와 퀴즈 완료하기",
+            "intent": "record",
+            "order": 0,
+            "completion": {
+              "mode": "record",
+              "recordFieldIds": [
+                "field-kmooc-week-02-status",
+                "field-kmooc-week-02-note"
+              ],
+              "doneWhen": "2주차 상태와 메모를 기록했다."
+            },
+            "fieldIds": [
+              "field-kmooc-week-02-status",
+              "field-kmooc-week-02-note"
+            ],
+            "memoIds": [],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-kmooc-week-02"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "field-kmooc-week-01-status",
+            "owner": {
+              "type": "item",
+              "id": "item-kmooc-week-01"
+            },
+            "key": "status",
+            "label": "상태",
+            "valueType": "single_select",
+            "purposes": [
+              "record",
+              "filter",
+              "export"
+            ],
+            "valueSource": "user",
+            "required": true,
+            "options": [
+              {
+                "value": "not_started",
+                "label": "시작 전"
+              },
+              {
+                "value": "in_progress",
+                "label": "진행 중"
+              },
+              {
+                "value": "done",
+                "label": "완료"
+              }
+            ]
+          },
+          {
+            "fieldId": "field-kmooc-week-01-note",
+            "owner": {
+              "type": "item",
+              "id": "item-kmooc-week-01"
+            },
+            "key": "note",
+            "label": "학습 메모",
+            "valueType": "long_text",
+            "purposes": [
+              "record",
+              "export"
+            ],
+            "valueSource": "user",
+            "required": false
+          },
+          {
+            "fieldId": "field-kmooc-week-02-status",
+            "owner": {
+              "type": "item",
+              "id": "item-kmooc-week-02"
+            },
+            "key": "status",
+            "label": "상태",
+            "valueType": "single_select",
+            "purposes": [
+              "record",
+              "filter",
+              "export"
+            ],
+            "valueSource": "user",
+            "required": true,
+            "options": [
+              {
+                "value": "not_started",
+                "label": "시작 전"
+              },
+              {
+                "value": "in_progress",
+                "label": "진행 중"
+              },
+              {
+                "value": "done",
+                "label": "완료"
+              }
+            ]
+          },
+          {
+            "fieldId": "field-kmooc-week-02-note",
+            "owner": {
+              "type": "item",
+              "id": "item-kmooc-week-02"
+            },
+            "key": "note",
+            "label": "학습 메모",
+            "valueType": "long_text",
+            "purposes": [
+              "record",
+              "export"
+            ],
+            "valueSource": "user",
+            "required": false
+          }
+        ],
+        "memos": [],
+        "sources": [
+          {
+            "sourceId": "source-kmooc-hundred-schools",
+            "title": "K-MOOC 제자백가의 사상 강좌 운영 계획",
+            "sourceType": "official",
+            "originalUrl": "https://www.kmooc.kr/view/course/detail/6661",
+            "canonicalUrl": "https://www.kmooc.kr/view/course/detail/6661",
+            "locale": "ko-KR",
+            "publisher": "K-MOOC",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "low"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-kmooc-hundred-schools-20260711",
+            "sourceId": "source-kmooc-hundred-schools",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.kmooc.kr/view/course/detail/6661",
+            "contentHash": "386c1f30fa3464981e6273a6ba227622a16d9019d8885478e0ff703fc0259a27",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-kmooc-week-01",
+            "sourceId": "source-kmooc-hundred-schools",
+            "snapshotId": "snapshot-kmooc-hundred-schools-20260711",
+            "rowType": "table_row",
+            "title": "1주차 강의와 퀴즈",
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-kmooc-week-02",
+            "sourceId": "source-kmooc-hundred-schools",
+            "snapshotId": "snapshot-kmooc-hundred-schools-20260711",
+            "rowType": "table_row",
+            "title": "2주차 강의와 퀴즈",
+            "order": 1
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-kmooc-week-01",
+            "entityType": "item",
+            "entityId": "item-kmooc-week-01",
+            "sourceRowIds": [
+              "row-kmooc-week-01"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-kmooc-week-02",
+            "entityType": "item",
+            "entityId": "item-kmooc-week-02",
+            "sourceRowIds": [
+              "row-kmooc-week-02"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-kmooc-progress-golden",
+        "contentId": "content-kmooc-progress-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_for_internal_canary",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "학습자가 현재 주차와 다음 주차를 확인할 수 있다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "주차 row와 기록 필드가 분명하다."
+          },
+          "contentFidelity": {
+            "score": 5,
+            "comment": "강좌 표의 주차를 source row로 보존한다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "진도 상태와 메모가 안정된 sheet 열로 투영된다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "사용자는 상태와 메모만 편집한다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "주차와 완료 대상이 구체적이다."
+          },
+          "sourceSafety": {
+            "score": 5,
+            "comment": "수료 보장이나 임의 학습 계획을 만들지 않는다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "표의 행·열 헤더와 상태 선택이 접근 가능해야 한다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "공개 강좌의 주차 제목과 링크만 사용한다.",
+        "riskDecision": "진도 기록은 수료나 시험 결과 보장을 의미하지 않는다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "sheet:csv",
+          "sheet:xlsx",
+          "checklist:markdown",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "calendar:ics",
+          "todo:markdown"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-06-memo-first",
+      "kind": "positive",
+      "shape": "memo_first",
+      "name": "레시피 영상 실행 메모",
+      "legacyRefs": [
+        "recipe-video-execute"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-recipe-video-memo-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:56b4f3cd34a7f7b78fa683f5b3e31c242153f328ca847f69f480c3eb6a6ede87",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-recipe-video-memo",
+          "title": "레시피 영상 실행 메모",
+          "lifeArea": "meals_grocery",
+          "topicTags": [
+            "레시피",
+            "영상"
+          ],
+          "flowIds": [
+            "flow-recipe-video-memo"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-recipe-video-memo",
+            "bundleId": "bundle-recipe-video-memo",
+            "title": "레시피 영상 한 번 따라하기",
+            "userNeed": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+            "primarySourceId": "source-recipe-video-playlist",
+            "supportingSourceIds": [],
+            "planningPattern": "ordered_procedure",
+            "secondaryPatterns": [],
+            "primaryArtifact": "memo",
+            "setupFieldIds": [],
+            "stepIds": [
+              "step-recipe-video-try"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown",
+                  "plain_text"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "checklist",
+                "formats": [
+                  "plain_text"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "low"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-recipe-video-try",
+            "flowId": "flow-recipe-video-memo",
+            "title": "영상 따라하기",
+            "order": 0,
+            "itemIds": [
+              "item-recipe-video-follow"
+            ],
+            "sourceRefIds": []
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-recipe-video-follow",
+            "stepId": "step-recipe-video-try",
+            "title": "선택한 레시피 영상 따라 만들기",
+            "intent": "use_resource",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "선택한 영상의 레시피를 한 번 따라 만들었다."
+            },
+            "fieldIds": [],
+            "memoIds": [
+              "memo-recipe-video-context",
+              "memo-recipe-user-note"
+            ],
+            "cautionMemoIds": [
+              "memo-recipe-caution"
+            ],
+            "sourceRefIds": [
+              "ref-recipe-video-follow"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [
+          {
+            "memoId": "memo-recipe-video-context",
+            "scope": {
+              "type": "item",
+              "id": "item-recipe-video-follow"
+            },
+            "kind": "source_detail",
+            "text": "영상 제목, URL, 필요한 재료와 핵심 방법을 짧게 적는다.",
+            "sourceRefIds": [
+              "ref-recipe-video-context"
+            ]
+          },
+          {
+            "memoId": "memo-recipe-user-note",
+            "scope": {
+              "type": "item",
+              "id": "item-recipe-video-follow"
+            },
+            "kind": "user_prompt",
+            "text": "내가 바꾼 수량과 다음번 수정점을 적는다."
+          },
+          {
+            "memoId": "memo-recipe-caution",
+            "scope": {
+              "type": "item",
+              "id": "item-recipe-video-follow"
+            },
+            "kind": "caution",
+            "text": "알레르기와 식품 안전은 사용 재료의 공식 안내와 개인 상황을 우선한다.",
+            "sourceRefIds": [
+              "ref-recipe-video-caution"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-recipe-video-playlist",
+            "title": "백종원의 요리비책 레시피 재생목록",
+            "sourceType": "creator_experience",
+            "originalUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+            "canonicalUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+            "locale": "ko-KR",
+            "publisher": "백종원의 요리비책",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "needs_review",
+            "riskLevel": "low"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-recipe-video-playlist-20260711",
+            "sourceId": "source-recipe-video-playlist",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+            "contentHash": "99bfee99c2dacd2838db9045281005fe8d41f425c80c339856d47ab7de08df55",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-recipe-video-resource",
+            "sourceId": "source-recipe-video-playlist",
+            "snapshotId": "snapshot-recipe-video-playlist-20260711",
+            "rowType": "resource",
+            "title": "선택한 레시피 영상",
+            "order": 0
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-recipe-video-follow",
+            "entityType": "item",
+            "entityId": "item-recipe-video-follow",
+            "sourceRowIds": [
+              "row-recipe-video-resource"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-recipe-video-context",
+            "entityType": "memo",
+            "entityId": "memo-recipe-video-context",
+            "sourceRowIds": [
+              "row-recipe-video-resource"
+            ],
+            "relation": "supports",
+            "supportLevel": "creator_interpretation"
+          },
+          {
+            "sourceRefId": "ref-recipe-video-caution",
+            "entityType": "memo",
+            "entityId": "memo-recipe-caution",
+            "sourceRowIds": [
+              "row-recipe-video-resource"
+            ],
+            "relation": "caution",
+            "supportLevel": "creator_interpretation"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-recipe-video-memo-golden",
+        "contentId": "content-recipe-video-memo-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_second_wave",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "저장한 영상을 실제 요리 한 번으로 연결한다."
+          },
+          "executionClarity": {
+            "score": 4,
+            "comment": "한 번 따라하기가 유일한 실행 Item이다."
+          },
+          "contentFidelity": {
+            "score": 4,
+            "comment": "영상 밖의 조리 단계나 수량을 만들지 않는다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "링크와 맥락이 memo로 손실 없이 이동한다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "상세 설명은 memo에 있고 실행 Item은 하나다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "선택한 영상을 따라 만든다는 행동이 분명하다."
+          },
+          "sourceSafety": {
+            "score": 4,
+            "comment": "creator 조언과 식품 안전 경계를 분리한다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "원문 링크와 memo가 명확한 이름으로 노출돼야 한다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "영상 자체를 복제하지 않고 제목·링크·짧은 실행 메모만 사용한다.",
+        "riskDecision": "알레르기와 식품 안전 판단을 FlowMe가 대신하지 않는다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "memo:markdown",
+          "memo:plain_text",
+          "checklist:plain_text"
+        ],
+        "forbidden": [
+          "calendar:ics",
+          "sheet:xlsx"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-07-decision-hold",
+      "kind": "positive",
+      "shape": "decision_hold",
+      "name": "중고차 후보 결정·보류",
+      "legacyRefs": [
+        "used-car-buying-check"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-used-car-decision-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:9820ad28dc0b16190f632c3380f090666189eccb6450ccec1d36c15a85284136",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-used-car-decision",
+          "title": "중고차 후보 결정",
+          "lifeArea": "money_admin_purchase",
+          "topicTags": [
+            "중고차",
+            "결정"
+          ],
+          "flowIds": [
+            "flow-used-car-decision"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-used-car-decision",
+            "bundleId": "bundle-used-car-decision",
+            "title": "중고차 후보 결정·보류",
+            "userNeed": "중고차 점검 기준으로 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+            "primarySourceId": "source-car365-used-car-guide",
+            "supportingSourceIds": [],
+            "planningPattern": "compare_decide",
+            "secondaryPatterns": [],
+            "primaryArtifact": "hybrid",
+            "setupFieldIds": [],
+            "stepIds": [
+              "step-used-car-decision"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "sheet",
+                "formats": [
+                  "csv"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "financial_sensitive"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-used-car-decision",
+            "flowId": "flow-used-car-decision",
+            "title": "최종 판단",
+            "order": 0,
+            "itemIds": [
+              "item-used-car-decide"
+            ],
+            "sourceRefIds": []
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-used-car-decide",
+            "stepId": "step-used-car-decision",
+            "title": "후보 차량 구매·보류·제외 결정하기",
+            "intent": "decide",
+            "order": 0,
+            "completion": {
+              "mode": "decision",
+              "options": [
+                {
+                  "value": "buy",
+                  "label": "구매 진행",
+                  "terminal": true
+                },
+                {
+                  "value": "hold",
+                  "label": "보류"
+                },
+                {
+                  "value": "reject",
+                  "label": "후보 제외",
+                  "terminal": true
+                }
+              ],
+              "doneWhen": "결정 상태와 이유를 남겼다."
+            },
+            "fieldIds": [
+              "field-used-car-decision-reason"
+            ],
+            "memoIds": [
+              "memo-used-car-hold-template"
+            ],
+            "cautionMemoIds": [
+              "memo-used-car-boundary"
+            ],
+            "sourceRefIds": [
+              "ref-used-car-decide"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "field-used-car-decision-reason",
+            "owner": {
+              "type": "item",
+              "id": "item-used-car-decide"
+            },
+            "key": "decisionReason",
+            "label": "결정 이유",
+            "valueType": "long_text",
+            "purposes": [
+              "record",
+              "export"
+            ],
+            "valueSource": "user",
+            "required": false
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "memo-used-car-hold-template",
+            "scope": {
+              "type": "item",
+              "id": "item-used-car-decide"
+            },
+            "kind": "hold_template",
+            "text": "보류 이유, 추가 확인할 항목, 다시 볼 날짜를 적는다."
+          },
+          {
+            "memoId": "memo-used-car-boundary",
+            "scope": {
+              "type": "item",
+              "id": "item-used-car-decide"
+            },
+            "kind": "caution",
+            "text": "FlowMe는 차량 상태나 구매 적합성을 판정하지 않는다. 공식 이력과 전문가 점검을 함께 확인한다.",
+            "sourceRefIds": [
+              "ref-used-car-boundary"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-car365-used-car-guide",
+            "title": "자동차365 중고차 구매가이드",
+            "sourceType": "official",
+            "originalUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+            "canonicalUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+            "locale": "ko-KR",
+            "publisher": "자동차365",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "financial_sensitive"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-car365-used-car-20260711",
+            "sourceId": "source-car365-used-car-guide",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+            "contentHash": "9e239df1d1f83b9249f24e61eeedcf61ffad91838c946c0d3407a55e04f92ce6",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-used-car-decision",
+            "sourceId": "source-car365-used-car-guide",
+            "snapshotId": "snapshot-car365-used-car-20260711",
+            "rowType": "check",
+            "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+            "order": 0
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-used-car-decide",
+            "entityType": "item",
+            "entityId": "item-used-car-decide",
+            "sourceRowIds": [
+              "row-used-car-decision"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-used-car-boundary",
+            "entityType": "memo",
+            "entityId": "memo-used-car-boundary",
+            "sourceRowIds": [
+              "row-used-car-decision"
+            ],
+            "relation": "boundary",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-used-car-decision-golden",
+        "contentId": "content-used-car-decision-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_second_wave",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "후보를 선택·보류·제외하고 이유를 남기는 실제 결정 필요가 있다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "결정 옵션과 완료 상태가 명시적이다."
+          },
+          "contentFidelity": {
+            "score": 4,
+            "comment": "공식 확인 기준을 사용하지만 FlowMe가 결론을 대신하지 않는다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "결정 상태와 이유가 sheet와 memo로 이동한다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "결정과 이유 외 불필요한 입력이 없다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "구매·보류·제외의 결과가 분명하다."
+          },
+          "sourceSafety": {
+            "score": 5,
+            "comment": "재무 결정과 차량 판단의 책임 경계를 표시한다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "결정 옵션과 보류 상태가 체크 완료와 구분돼야 한다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "공식 판단 기준과 링크만 사용한다.",
+        "riskDecision": "FlowMe는 구매 추천이나 차량 안전 판정을 제공하지 않는다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "checklist:markdown",
+          "sheet:csv",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "calendar:ics",
+          "todo:plain_text"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-08-evidence-caution",
+      "kind": "positive",
+      "shape": "evidence_caution",
+      "name": "영유아 건강검진 준비 증빙·주의",
+      "legacyRefs": [
+        "infant-health-checkup-prep"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-infant-checkup-evidence-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:fc33ec00d90d097010b915d56d80fe751428ba3e7536673014e7b040585bd201",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-infant-checkup-evidence",
+          "title": "영유아 건강검진 준비",
+          "lifeArea": "family_parenting",
+          "topicTags": [
+            "영유아검진",
+            "준비메모"
+          ],
+          "flowIds": [
+            "flow-infant-checkup-evidence"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-infant-checkup-evidence",
+            "bundleId": "bundle-infant-checkup-evidence",
+            "title": "영유아 건강검진 예약 확인",
+            "userNeed": "아이 검진 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+            "primarySourceId": "source-nhis-infant-checkup",
+            "supportingSourceIds": [],
+            "planningPattern": "phase_lifecycle",
+            "secondaryPatterns": [],
+            "primaryArtifact": "checklist",
+            "setupFieldIds": [],
+            "stepIds": [
+              "step-infant-checkup-prep"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "sheet",
+                "formats": [
+                  "csv"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "medical_sensitive"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-infant-checkup-prep",
+            "flowId": "flow-infant-checkup-evidence",
+            "title": "방문 전 준비",
+            "order": 0,
+            "itemIds": [
+              "item-infant-checkup-confirm"
+            ],
+            "sourceRefIds": []
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-infant-checkup-confirm",
+            "stepId": "step-infant-checkup-prep",
+            "title": "예약과 문진표 준비 확인하기",
+            "intent": "inspect",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "예약과 문진표 준비 상태를 확인했다."
+            },
+            "fieldIds": [
+              "field-infant-confirmation-note"
+            ],
+            "memoIds": [
+              "memo-infant-confirmation-prompt"
+            ],
+            "cautionMemoIds": [
+              "memo-infant-medical-boundary"
+            ],
+            "sourceRefIds": [
+              "ref-infant-checkup-confirm"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "field-infant-confirmation-note",
+            "owner": {
+              "type": "item",
+              "id": "item-infant-checkup-confirm"
+            },
+            "key": "confirmationNote",
+            "label": "예약 확인 메모",
+            "valueType": "short_text",
+            "purposes": [
+              "record",
+              "export"
+            ],
+            "valueSource": "user",
+            "required": false,
+            "sensitive": true
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "memo-infant-confirmation-prompt",
+            "scope": {
+              "type": "item",
+              "id": "item-infant-checkup-confirm"
+            },
+            "kind": "user_prompt",
+            "text": "예약 확인번호나 문진표 파일명처럼 다시 찾는 데 필요한 최소 메모만 적는다."
+          },
+          {
+            "memoId": "memo-infant-medical-boundary",
+            "scope": {
+              "type": "item",
+              "id": "item-infant-checkup-confirm"
+            },
+            "kind": "caution",
+            "text": "FlowMe는 아이 상태를 해석하지 않는다. 검진 시기와 준비사항은 공식 조회 및 의료기관 안내를 우선한다.",
+            "sourceRefIds": [
+              "ref-infant-medical-boundary"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-nhis-infant-checkup",
+            "title": "국민건강보험 영유아 건강검진 안내",
+            "sourceType": "official",
+            "originalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+            "canonicalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+            "locale": "ko-KR",
+            "publisher": "국민건강보험공단",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "medical_sensitive"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-nhis-infant-checkup-20260711",
+            "sourceId": "source-nhis-infant-checkup",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+            "contentHash": "240e9680c16e089553f924c1209bb547461481aff665078264f79608f9f64055",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-infant-checkup-prep",
+            "sourceId": "source-nhis-infant-checkup",
+            "snapshotId": "snapshot-nhis-infant-checkup-20260711",
+            "rowType": "check",
+            "title": "예약과 문진표 준비",
+            "order": 0
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-infant-checkup-confirm",
+            "entityType": "item",
+            "entityId": "item-infant-checkup-confirm",
+            "sourceRowIds": [
+              "row-infant-checkup-prep"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-infant-medical-boundary",
+            "entityType": "memo",
+            "entityId": "memo-infant-medical-boundary",
+            "sourceRowIds": [
+              "row-infant-checkup-prep"
+            ],
+            "relation": "boundary",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-infant-checkup-evidence-golden",
+        "contentId": "content-infant-checkup-evidence-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_second_wave",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "보호자가 방문 전 준비 상태를 다시 찾을 수 있다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "예약과 문진표 확인이 하나의 실제 행동이다."
+          },
+          "contentFidelity": {
+            "score": 5,
+            "comment": "공식 준비 행위만 Item으로 사용한다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "확인 메모와 주의가 체크리스트·sheet·memo에 함께 이동한다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "증빙은 가벼운 메모이며 별도 업로드 절차가 아니다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "예약과 문진표라는 확인 대상이 보인다."
+          },
+          "sourceSafety": {
+            "score": 5,
+            "comment": "의료 판단과 개인 메모를 공식 안내에서 분리한다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "주의 문구가 체크 Item으로 오인되지 않아야 한다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "공식 준비 항목과 링크만 사용한다.",
+        "riskDecision": "민감 메모는 사용자 overlay에만 저장하고 공개 content/export 기본값에 포함하지 않는다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "checklist:markdown",
+          "sheet:csv",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "calendar:ics",
+          "todo:markdown"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-09-resource-queue",
+      "kind": "positive",
+      "shape": "resource_queue",
+      "name": "30일 사진 prompt queue · Day 1-2 contract sample",
+      "scopeNote": "Canonical shape contract sample. Only the extracted Day 1-2 rows are in fixture scope; this does not claim that all 30 source rows were imported.",
+      "legacyRefs": [
+        "photo-thirty-day-challenge",
+        "canon-photo-thirty-day"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-photo-resource-queue-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:27a2008324a091d067210286d0efeede19d7227282bf334e7574c924b974df0c",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-photo-resource-queue",
+          "title": "30일 사진 찍기",
+          "lifeArea": "hobby_pet",
+          "topicTags": [
+            "사진",
+            "30일챌린지"
+          ],
+          "flowIds": [
+            "flow-photo-resource-queue"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-photo-resource-queue",
+            "bundleId": "bundle-photo-resource-queue",
+            "title": "30일 사진 prompt queue",
+            "userNeed": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+            "primarySourceId": "source-canon-photo-30",
+            "supportingSourceIds": [],
+            "planningPattern": "resource_queue",
+            "secondaryPatterns": [
+              "source_table_rows"
+            ],
+            "primaryArtifact": "calendar",
+            "anchorDefinition": {
+              "fieldId": "field-photo-start-date",
+              "kind": "start_date",
+              "label": "시작일",
+              "required": true
+            },
+            "setupFieldIds": [
+              "field-photo-start-date"
+            ],
+            "stepIds": [
+              "step-photo-days-01-02"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "calendar",
+                "formats": [
+                  "ics"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              },
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              },
+              {
+                "target": "sheet",
+                "formats": [
+                  "csv"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": false,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "low"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-photo-days-01-02",
+            "flowId": "flow-photo-resource-queue",
+            "title": "Day 1-2",
+            "order": 0,
+            "itemIds": [
+              "item-photo-day-01",
+              "item-photo-day-02"
+            ],
+            "sourceRefIds": []
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-photo-day-01",
+            "stepId": "step-photo-days-01-02",
+            "title": "Day 1 prompt로 사진 찍기",
+            "intent": "use_resource",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "Day 1 prompt에 맞는 사진을 한 장 찍었다."
+            },
+            "schedule": {
+              "mode": "anchor_offset",
+              "anchorFieldId": "field-photo-start-date",
+              "dayOffset": 0,
+              "allDay": true
+            },
+            "fieldIds": [],
+            "memoIds": [
+              "memo-photo-day-01"
+            ],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-photo-day-01"
+            ]
+          },
+          {
+            "itemId": "item-photo-day-02",
+            "stepId": "step-photo-days-01-02",
+            "title": "Day 2 prompt로 사진 찍기",
+            "intent": "use_resource",
+            "order": 1,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "Day 2 prompt에 맞는 사진을 한 장 찍었다."
+            },
+            "schedule": {
+              "mode": "anchor_offset",
+              "anchorFieldId": "field-photo-start-date",
+              "dayOffset": 1,
+              "allDay": true
+            },
+            "fieldIds": [],
+            "memoIds": [
+              "memo-photo-day-02"
+            ],
+            "cautionMemoIds": [],
+            "sourceRefIds": [
+              "ref-photo-day-02"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "field-photo-start-date",
+            "owner": {
+              "type": "flow",
+              "id": "flow-photo-resource-queue"
+            },
+            "key": "startDate",
+            "label": "시작일",
+            "valueType": "date",
+            "purposes": [
+              "schedule",
+              "generation"
+            ],
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "memo-photo-day-01",
+            "scope": {
+              "type": "item",
+              "id": "item-photo-day-01"
+            },
+            "kind": "source_detail",
+            "text": "원문의 Day 1 prompt와 링크를 보존한다.",
+            "sourceRefIds": [
+              "ref-photo-day-01-detail"
+            ]
+          },
+          {
+            "memoId": "memo-photo-day-02",
+            "scope": {
+              "type": "item",
+              "id": "item-photo-day-02"
+            },
+            "kind": "source_detail",
+            "text": "원문의 Day 2 prompt와 링크를 보존한다.",
+            "sourceRefIds": [
+              "ref-photo-day-02-detail"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-canon-photo-30",
+            "title": "Canon 30-Day Photo Challenge",
+            "sourceType": "reference",
+            "originalUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+            "canonicalUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+            "locale": "en-US",
+            "publisher": "Canon USA",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "needs_review",
+            "riskLevel": "low"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-canon-photo-30-20260711",
+            "sourceId": "source-canon-photo-30",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+            "contentHash": "f5c5d79a53b88e854675b65fbc0499956079953f733b5551eb94e4d38afcff3d",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-photo-day-01",
+            "sourceId": "source-canon-photo-30",
+            "snapshotId": "snapshot-canon-photo-30-20260711",
+            "rowType": "resource",
+            "title": "Day 1 prompt",
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-photo-day-02",
+            "sourceId": "source-canon-photo-30",
+            "snapshotId": "snapshot-canon-photo-30-20260711",
+            "rowType": "resource",
+            "title": "Day 2 prompt",
+            "order": 1
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-photo-day-01",
+            "entityType": "item",
+            "entityId": "item-photo-day-01",
+            "sourceRowIds": [
+              "row-photo-day-01"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-photo-day-02",
+            "entityType": "item",
+            "entityId": "item-photo-day-02",
+            "sourceRowIds": [
+              "row-photo-day-02"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-photo-day-01-detail",
+            "entityType": "memo",
+            "entityId": "memo-photo-day-01",
+            "sourceRowIds": [
+              "row-photo-day-01"
+            ],
+            "relation": "supports",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-photo-day-02-detail",
+            "entityType": "memo",
+            "entityId": "memo-photo-day-02",
+            "sourceRowIds": [
+              "row-photo-day-02"
+            ],
+            "relation": "supports",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-photo-resource-queue-golden",
+        "contentId": "content-photo-resource-queue-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_for_internal_canary",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "매일 무엇을 찍을지 고민하지 않고 source prompt를 실행한다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "한 source row가 하루 한 Item이 된다."
+          },
+          "contentFidelity": {
+            "score": 5,
+            "comment": "원문 prompt 밖의 확인·기록 행동을 덧붙이지 않는다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "calendar, checklist, progress sheet로 같은 Item을 투영한다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "시작일 외 입력이 없다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "Day와 prompt 실행이 제목에 드러난다."
+          },
+          "sourceSafety": {
+            "score": 4,
+            "comment": "원문 전체를 복제하지 않고 prompt 제목과 링크만 보존한다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "날짜 순서와 완료 상태가 목록·캘린더에서 동일해야 한다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [],
+        "rightsDecision": "prompt 제목과 원문 링크만 사용하며 해설 본문은 복제하지 않는다.",
+        "riskDecision": "위험이 낮고 사진 촬영 장소·대상은 사용자가 안전을 판단한다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "calendar:ics",
+          "checklist:markdown",
+          "sheet:csv",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "todo:markdown",
+          "sheet:tsv"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-pos-10-sparse-official-lifecycle",
+      "kind": "positive",
+      "shape": "sparse_official_lifecycle",
+      "name": "자동차 정기검사 날짜 창",
+      "legacyRefs": [
+        "vehicle-inspection-cycle",
+        "vehicle-regular-inspection-flow"
+      ],
+      "content": {
+        "schemaVersion": "flowme-canonical-flow-v1",
+        "contentId": "content-vehicle-inspection-window-golden",
+        "version": "1.0.0",
+        "contentHash": "sha256:8f5cc7cdce10fe5c1f40b9288b614f994750a78609b820290606bd4ae5fadc22",
+        "lifecycleStatus": "in_review",
+        "createdAt": "2026-07-11T00:00:00+09:00",
+        "updatedAt": "2026-07-11T00:00:00+09:00",
+        "bundle": {
+          "bundleId": "bundle-vehicle-inspection-window",
+          "title": "자동차 정기검사 일정",
+          "lifeArea": "money_admin_purchase",
+          "topicTags": [
+            "자동차검사",
+            "공식기한"
+          ],
+          "flowIds": [
+            "flow-vehicle-inspection-window"
+          ]
+        },
+        "flows": [
+          {
+            "flowId": "flow-vehicle-inspection-window",
+            "bundleId": "bundle-vehicle-inspection-window",
+            "title": "자동차 정기검사 기한 안에 받기",
+            "userNeed": "내 차량의 검사 유효기간 안에 정기검사를 받고 필요할 때 재검사 조건을 확인한다.",
+            "primarySourceId": "source-kotsa-regular-inspection",
+            "supportingSourceIds": [
+              "source-kotsa-inspection-procedure"
+            ],
+            "planningPattern": "phase_lifecycle",
+            "secondaryPatterns": [
+              "date_preparation"
+            ],
+            "primaryArtifact": "calendar",
+            "anchorDefinition": {
+              "fieldId": "field-inspection-expiry-date",
+              "kind": "end_date",
+              "label": "검사 유효기간 만료일",
+              "required": true
+            },
+            "setupFieldIds": [
+              "field-inspection-expiry-date"
+            ],
+            "stepIds": [
+              "step-vehicle-inspection"
+            ],
+            "projectionProfiles": [
+              {
+                "target": "calendar",
+                "formats": [
+                  "ics"
+                ],
+                "granularity": "item",
+                "groupBy": "none",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "checklist",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "item",
+                "groupBy": "step",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              },
+              {
+                "target": "memo",
+                "formats": [
+                  "markdown"
+                ],
+                "granularity": "flow",
+                "groupBy": "flow",
+                "includeSource": true,
+                "includeCautions": true,
+                "includeUserMemo": true
+              }
+            ],
+            "riskLevel": "safety_sensitive"
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "step-vehicle-inspection",
+            "flowId": "flow-vehicle-inspection-window",
+            "title": "정기검사",
+            "order": 0,
+            "itemIds": [
+              "item-vehicle-inspection"
+            ],
+            "sourceRefIds": [],
+            "groupingHint": "공식 검사 가능 기간"
+          }
+        ],
+        "items": [
+          {
+            "itemId": "item-vehicle-inspection",
+            "stepId": "step-vehicle-inspection",
+            "title": "유효기간 안에 자동차 정기검사 받기",
+            "intent": "act",
+            "order": 0,
+            "completion": {
+              "mode": "check",
+              "doneWhen": "공식 유효기간 안에 검사를 받고 결과를 확인했다."
+            },
+            "schedule": {
+              "mode": "date_window",
+              "basis": "anchor_offset",
+              "anchorFieldId": "field-inspection-expiry-date",
+              "startDayOffset": -31,
+              "endDayOffset": 0,
+              "reminderDayOffset": -14
+            },
+            "fieldIds": [],
+            "memoIds": [
+              "memo-inspection-result"
+            ],
+            "cautionMemoIds": [
+              "memo-inspection-boundary"
+            ],
+            "sourceRefIds": [
+              "ref-vehicle-inspection"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "field-inspection-expiry-date",
+            "owner": {
+              "type": "flow",
+              "id": "flow-vehicle-inspection-window"
+            },
+            "key": "inspectionExpiryDate",
+            "label": "검사 유효기간 만료일",
+            "valueType": "date",
+            "purposes": [
+              "schedule",
+              "generation"
+            ],
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "memo-inspection-result",
+            "scope": {
+              "type": "item",
+              "id": "item-vehicle-inspection"
+            },
+            "kind": "user_prompt",
+            "text": "검사 결과와 재검사 안내가 있을 때만 짧게 적는다."
+          },
+          {
+            "memoId": "memo-inspection-boundary",
+            "scope": {
+              "type": "item",
+              "id": "item-vehicle-inspection"
+            },
+            "kind": "caution",
+            "text": "차종별 유효기간과 실제 검사 가능 여부는 공식 조회를 우선한다. FlowMe는 검사기관 내부 절차를 사용자 행동으로 만들지 않는다.",
+            "sourceRefIds": [
+              "ref-inspection-boundary"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "sourceId": "source-kotsa-regular-inspection",
+            "title": "TS 자동차 정기검사",
+            "sourceType": "official",
+            "originalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "locale": "ko-KR",
+            "publisher": "한국교통안전공단",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "safety_sensitive"
+          },
+          {
+            "sourceId": "source-kotsa-inspection-procedure",
+            "title": "TS 자동차검사 절차",
+            "sourceType": "official",
+            "originalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104",
+            "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104",
+            "locale": "ko-KR",
+            "publisher": "한국교통안전공단",
+            "checkedAt": "2026-07-11",
+            "rightsStatus": "allowed",
+            "riskLevel": "safety_sensitive"
+          }
+        ],
+        "sourceSnapshots": [
+          {
+            "snapshotId": "snapshot-kotsa-regular-inspection-20260711",
+            "sourceId": "source-kotsa-regular-inspection",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "contentHash": "2c2d1fcb17b8e266aaa93b8ed84722e00edcb0f0ee59de59f57b4b6fde98272d",
+            "extractionVersion": "manual-fixture-v1"
+          },
+          {
+            "snapshotId": "snapshot-kotsa-inspection-procedure-20260711",
+            "sourceId": "source-kotsa-inspection-procedure",
+            "fetchedAt": "2026-07-11T00:00:00+09:00",
+            "finalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104",
+            "contentHash": "23f3600616f8c3238334716229f83b6fbffeb7ca8865af2f1bd5fe7f7008536f",
+            "extractionVersion": "manual-fixture-v1"
+          }
+        ],
+        "sourceRows": [
+          {
+            "sourceRowId": "row-inspection-window",
+            "sourceId": "source-kotsa-regular-inspection",
+            "snapshotId": "snapshot-kotsa-regular-inspection-20260711",
+            "rowType": "date",
+            "title": "정기검사 유효기간",
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-inspection-agency-phases",
+            "sourceId": "source-kotsa-inspection-procedure",
+            "snapshotId": "snapshot-kotsa-inspection-procedure-20260711",
+            "rowType": "reference",
+            "title": "검사기관 내부 검사 단계",
+            "order": 0
+          }
+        ],
+        "sourceRefs": [
+          {
+            "sourceRefId": "ref-vehicle-inspection",
+            "entityType": "item",
+            "entityId": "item-vehicle-inspection",
+            "sourceRowIds": [
+              "row-inspection-window"
+            ],
+            "relation": "derived_from",
+            "supportLevel": "direct"
+          },
+          {
+            "sourceRefId": "ref-inspection-boundary",
+            "entityType": "memo",
+            "entityId": "memo-inspection-boundary",
+            "sourceRowIds": [
+              "row-inspection-window",
+              "row-inspection-agency-phases"
+            ],
+            "relation": "boundary",
+            "supportLevel": "direct"
+          }
+        ]
+      },
+      "review": {
+        "reviewId": "review-vehicle-inspection-window-golden",
+        "contentId": "content-vehicle-inspection-window-golden",
+        "contentVersion": "1.0.0",
+        "readiness": "ready_second_wave",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "공식 기간 안에 검사를 받는 한 가지 의무가 명확하다."
+          },
+          "executionClarity": {
+            "score": 5,
+            "comment": "하나의 Item과 날짜 창, 완료 기준이 분명하다."
+          },
+          "contentFidelity": {
+            "score": 5,
+            "comment": "검사기관 내부 단계를 사용자 Item으로 만들지 않는다."
+          },
+          "portability": {
+            "score": 5,
+            "comment": "한 reminder와 날짜 창 설명으로 ICS에 투영된다."
+          },
+          "cognitiveLoad": {
+            "score": 5,
+            "comment": "사용자는 만료일 하나만 입력한다."
+          },
+          "copySpecificity": {
+            "score": 5,
+            "comment": "유효기간 안에 검사받는 행동이 명확하다."
+          },
+          "sourceSafety": {
+            "score": 5,
+            "comment": "차종별 기간과 검사 결과 판단을 공식 조회에 맡긴다."
+          },
+          "accessibilityOperability": {
+            "score": 4,
+            "comment": "날짜 창과 reminder date를 텍스트로도 전달해야 한다."
+          }
+        },
+        "omittedRows": [
+          {
+            "sourceRowId": "row-inspection-agency-phases",
+            "reason": "관능·ABS·하체·전조등·배출가스 등 검사기관 내부 절차이며 사용자가 완료할 Item이 아니다."
+          }
+        ],
+        "hardFails": [],
+        "rightsDecision": "공식 기한과 확인 링크만 사용한다.",
+        "riskDecision": "차종별 법정 기간을 자동 판정하지 않고 사용자가 공식 조회한 만료일을 입력한다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [
+          "calendar:ics",
+          "checklist:markdown",
+          "memo:markdown"
+        ],
+        "forbidden": [
+          "sheet:xlsx",
+          "todo:markdown"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-neg-01-missing-source-rows",
+      "kind": "negative",
+      "shape": "missing_source_rows",
+      "name": "원문 row가 없는 파일 후보",
+      "legacyRefs": [
+        "R2-SC-006",
+        "computer-skills-pdf-source-import"
+      ],
+      "content": null,
+      "review": {
+        "reviewId": "review-missing-source-rows-negative",
+        "contentId": "content-missing-source-rows-negative",
+        "contentVersion": "0.0.0",
+        "readiness": "source_import_required",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 4,
+            "comment": "학습 자료를 실행 가능한 행으로 옮기려는 필요는 있다."
+          },
+          "executionClarity": {
+            "score": 1,
+            "comment": "원문 row가 없어 실행 단위를 정의할 수 없다."
+          },
+          "contentFidelity": {
+            "score": 1,
+            "comment": "파일 import 전에는 source-derived Item을 증명할 수 없다."
+          },
+          "portability": {
+            "score": 1,
+            "comment": "row와 필드가 없어 안정된 export가 없다."
+          },
+          "cognitiveLoad": {
+            "score": 2,
+            "comment": "빈 표를 사용자에게 설계하게 만들 위험이 있다."
+          },
+          "copySpecificity": {
+            "score": 1,
+            "comment": "구체적인 row 제목과 완료 기준이 없다."
+          },
+          "sourceSafety": {
+            "score": 3,
+            "comment": "권리 검토보다 먼저 파일 접근과 row 확보가 필요하다."
+          },
+          "accessibilityOperability": {
+            "score": 1,
+            "comment": "실행 가능한 UI를 만들 데이터가 없다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [
+          "missing_source_rows",
+          "source_file_not_imported"
+        ],
+        "rightsDecision": "원본 파일을 읽고 사용할 권리를 확인하기 전에는 변환하지 않는다.",
+        "riskDecision": "일반 지식으로 학습 row를 채우지 않는다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [],
+        "forbidden": [
+          "calendar:ics",
+          "checklist:markdown",
+          "todo:markdown",
+          "sheet:csv",
+          "memo:markdown"
+        ]
+      }
+    },
+    {
+      "fixtureId": "gf-neg-02-nonlocal-sensitive-source",
+      "kind": "negative",
+      "shape": "nonlocal_sensitive_source",
+      "name": "한국 적용성이 확인되지 않은 민감 출산 준비",
+      "legacyRefs": [
+        "R2-SC-031",
+        "stemcyte-hospital-bag"
+      ],
+      "content": null,
+      "review": {
+        "reviewId": "review-nonlocal-sensitive-source-negative",
+        "contentId": "content-nonlocal-sensitive-source-negative",
+        "contentVersion": "0.0.0",
+        "readiness": "hold",
+        "qualityScores": {
+          "userNeedFit": {
+            "score": 5,
+            "comment": "출산 가방 준비라는 사용자 필요는 강하다."
+          },
+          "executionClarity": {
+            "score": 3,
+            "comment": "55개 row는 있으나 한국 병원 맥락과 일치하는지 알 수 없다."
+          },
+          "contentFidelity": {
+            "score": 2,
+            "comment": "미국 병원·보험·제대혈 판매 맥락을 한국 사용자에게 그대로 적용할 수 없다."
+          },
+          "portability": {
+            "score": 2,
+            "comment": "잘못된 지역 맥락을 checklist로 옮기면 오히려 위험하다."
+          },
+          "cognitiveLoad": {
+            "score": 3,
+            "comment": "많은 row가 있어도 적용성 판단 부담이 사용자에게 남는다."
+          },
+          "copySpecificity": {
+            "score": 4,
+            "comment": "물품명은 구체적이지만 지역별 필요 여부가 불명확하다."
+          },
+          "sourceSafety": {
+            "score": 1,
+            "comment": "민감한 병원·보험 맥락의 현지 적용성이 검증되지 않았다."
+          },
+          "accessibilityOperability": {
+            "score": 2,
+            "comment": "안전한 실행 기준이 없으므로 UI로 승격할 수 없다."
+          }
+        },
+        "omittedRows": [],
+        "hardFails": [
+          "locale_applicability_unverified",
+          "sensitive_context_mismatch"
+        ],
+        "rightsDecision": "상업 출처의 공개 재사용 범위도 확인되지 않았다.",
+        "riskDecision": "한국 병원·조리원 기준의 현지 source가 확보될 때까지 hold한다.",
+        "reviewedAt": "2026-07-11T00:00:00+09:00"
+      },
+      "projectionExpectations": {
+        "expected": [],
+        "forbidden": [
+          "calendar:ics",
+          "checklist:markdown",
+          "todo:markdown",
+          "sheet:csv",
+          "memo:markdown"
+        ]
+      }
+    }
+  ]
+}

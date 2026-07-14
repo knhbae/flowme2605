@@ -5,6 +5,8 @@
 **Scope:** `/flow-maps/[map]`, `/flow-maps/[map]/creator`, `/my`, source-backed map adapter, saved map snapshot, Step/Item export contract  
 **Related:** [Source-backed Step contract](../2026-05-28-my-flow-execution-hub/source-backed-step-contract.md), [My Flow before/after UX alignment](../2026-05-28-my-flow-execution-hub/my-flow-before-after-ux-alignment.md), [FLOW quality gate](../../flow-rules/quality-gate.md), [Quality PRD](./quality-prd.md), [2026-06-25 candidate reassessment](../../content-audit/2026-06-25-source-backed-flow-map-candidate-reassessment-ko.html)
 
+> **Canonical compatibility notice (2026-07-12):** This document preserves the June runtime/UX naming. New backend and export contracts follow [Canonical Flow Data Model v1](../2026-07-11-canonical-flow-data-model/spec.md): canonical `Item` is the minimum independently stateful execution/projection unit and canonical `Step` is grouping. Map legacy `FlowSection -> Step`, `FlowItem -> Item`, and detail prose -> Field/Memo/SourceRef; do not use the Step-first wording below as the new storage contract.
+
 ## Goal
 
 Turn the accepted source-backed Flow Map experiments into a productization baseline without making the user-facing surface heavier than a calendar, todo app, or light sheet.

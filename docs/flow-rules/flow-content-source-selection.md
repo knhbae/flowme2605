@@ -83,6 +83,41 @@ Use the coverage axes as a product-learning map, not as taxonomy decoration:
 - At least one candidate per active axis should have a content-specific preview in `/content-flows` or the static HTML review file before the axis is treated as reviewed.
 - The visible UI must answer the axis question directly. For example, `서류/행정` must show official/expert boundary, not only a generic checklist.
 
+### Portfolio Coverage And Pre-App Promotion
+
+The Source-to-Flow gate decides whether one source can become a good Flow. Portfolio review answers a different question: which already-qualified Flow should fill the next catalog gap. Do not merge these decisions or lower the source gate to improve category counts.
+
+Track three independent values for every expansion candidate:
+
+| Value | Purpose | Examples |
+|---|---|---|
+| `lifeArea` | the user problem shelf being covered | home/living, family/parenting, study/reading, money/admin/purchase, health/fitness, travel/outings, meals/grocery, work/career, hobby/pet |
+| `planningPattern` | the natural execution shape | date preparation, ordered procedure, repeating routine, source table rows, resource queue, compare/decide |
+| `portfolioRole` | why the candidate belongs in the catalog | representative start, repeat/reuse, creator/community variant, official trust anchor |
+
+These values are internal review metadata until user-facing category labels have been tested. They must not be collapsed into one `category` field or exposed as implementation jargon.
+
+Use the following promotion states before app work:
+
+| State | Required evidence | App boundary |
+|---|---|---|
+| `ready_for_internal_canary` | primary source opened, source rows extracted, Item/Field/Memo mapping complete, export destination named, risk/rights boundary recorded, and every quality score has a comment | may be handed to an app implementation session after explicit approval; not a public-content approval |
+| `ready_second_wave` | conversion is complete but a freshness, sensitive-source, rights, or branching review should follow the first canary | keep in the same handoff package but do not expose in the first batch |
+| `source_import_required` | the source is promising but the file, table, playlist, or complete rows are not yet available | keep out of app seed |
+| `hold` | source fidelity, rights, risk, or user execution remains unresolved | preserve the reason and find a better source |
+
+A candidate cannot reach `ready_for_internal_canary` from scores alone. The review package must prove all of the following:
+
+1. One primary source controls each Flow; a Flow Map may contain separate source-owned child Flows.
+2. Every generated Item maps to one or more named source rows, and every omitted source section has an explicit omission reason.
+3. Low-value facts are bundled into memo/detail instead of becoming extra Items or setup fields.
+4. Calendar, checklist, sheet, and memo export fields are stable enough for the proposed artifact.
+5. Official facts, creator experience, commercial links, cautions, and rights/permission needs are separated.
+6. User-facing content and internal review text are stored separately.
+7. The full Flow/Step/Item result is inspectable in a mobile review artifact.
+
+For a breadth canary, prepare 5-8 candidates but recommend only the smallest batch that covers the missing life areas and planning patterns. Do not treat app insertion, internal canary use, public exposure, and observed-user validation as the same state.
+
 ### Anti-Repetition Batch Quota
 
 Use this quota before starting a new 20-30 candidate source search. It prevents the review set from drifting back into the same strong but overused household/wedding/used-car examples.
@@ -106,6 +141,14 @@ Promotion tie-breaker:
 - When two candidates have similar fit scores, promote the one that expands user moment coverage, source format coverage, or artifact coverage.
 - Do not promote a lower-diversity candidate just because the execution conversion is easier.
 - If a source is weaker but represents an important new user moment, keep it as `P1 breadth candidate` and write the missing source evidence needed before promotion.
+
+### Sparse Lifecycle, Operator Template, And Localization Gates
+
+Do not use topic labels or visible action count as a shortcut for promotion.
+
+- A source-defined lifecycle obligation may become a Flow with only one primary Item when an official source provides a real due date or date window, the consequence or conditional next step is clear, and calendar/checklist is the natural destination. Keep inspection phases, fee tables, and agency-internal procedures in memo/detail. Never add `예약하기`, `확인하기`, or `기록하기` merely to make the Flow look substantial.
+- Creator/operator meta content may pass even though broad strategy articles are normally weak. It needs a complete reusable row set, a named audience, a natural calendar/sheet/checklist destination, and no requirement for FlowMe to invent private analytics, goals, or publishing strategy. A complete 30-row content calendar can pass; an article that only says how to grow a channel cannot.
+- A translated or globally available health, hospital, family, legal, or administrative source is not automatically applicable to Korean users. If insurance, care setting, professional practice, document, or commercial upsell context differs by country, keep the candidate at `hold` or `source_import_required` until a local source or explicit localization review exists. Translation quality is not evidence of local applicability.
 
 ## Strong Source Candidates
 

@@ -7,7 +7,7 @@
 
 ## Goal
 
-URL-first miss에서 실제 AI가 제목과 3~7개의 실행 항목을 제안하는 미래 slice의 제품·데이터·안전 계약을 고정한다. AI 결과는 사용자가 검토하고 수정하는 `제안 초안`이며, 사용자 확인 전 My Flow 저장, Calendar 반영, export, 공개 발행, 완료 처리를 자동으로 수행하지 않는다.
+URL-first miss에서 실제 AI가 원문 SourceRow에 근거한 실행 항목을 제안하는 미래 slice의 제품·데이터·안전 계약을 고정한다. 항목 수는 원문이 정하며, 대화형 초안의 기본 처리 상한은 7개다. 상한을 넘는 원문은 행을 누락해 완성본처럼 만들지 않고 `partial` 또는 source-import 경로로 보낸다. AI 결과는 사용자가 검토하고 수정하는 `제안 초안`이며, 사용자 확인 전 My Flow 저장, Calendar 반영, export, 공개 발행, 완료 처리를 자동으로 수행하지 않는다.
 
 이번 P21-02는 API, 모델 SDK, 비밀키, 생성 버튼을 구현하지 않는다. P21-01의 결정론적 파싱을 현재 기본 동작이자 AI 실패 시 fallback으로 유지한다.
 
@@ -26,7 +26,7 @@ FlowMe의 현재 핵심은 URL/메모를 실행 가능한 개인 Flow로 바꾸�
 ### In
 
 - provider-neutral 생성 요청/응답 계약
-- 3~7개 draft item 제안
+- source-derived draft Item 제안과 Item별 SourceRow 근거·생략 사유
 - 기준일과 상대 날짜 제안
 - source 원본, AI 제안, 사용자 overlay의 분리
 - 사용자 검토·수정·포함 여부 선택·명시적 저장 gate
@@ -51,15 +51,15 @@ FlowMe의 현재 핵심은 URL/메모를 실행 가능한 개인 Flow로 바꾸�
 | Gate | Decision |
 | --- | --- |
 | First user action | `/flows` miss에서 사용자가 `제안 초안 받기`를 명시적으로 선택한다. 실제 구현 전에는 이 CTA를 노출하지 않는다. |
-| Completion signal | 3~7개 제안 항목이 검토 화면에 나타나고 각 항목을 수정·제외할 수 있다. 생성 자체는 저장 완료가 아니다. |
+| Completion signal | 원문이 정한 수의 제안 항목이 검토 화면에 나타나고 각 항목의 근거를 확인·수정·제외할 수 있다. 생성 자체는 저장 완료가 아니다. |
 | Artifact destination | 사용자 저장 후에만 My Flow, Calendar, checklist/sheet/memo/calendar export가 같은 사용자 수정본을 읽는다. |
 | Source/risk boundary | 원문 snapshot, AI 제안, 사용자 overlay를 분리한다. 민감 콘텐츠는 source 근거와 중단 조건 없이는 저장 gate를 열지 않는다. |
-| Natural artifact | 제목, 날짜, 메모, 원문 링크가 있는 3~7개 할 일과 Calendar event/checklist/memo 결과물 |
+| Natural artifact | 제목, 필요한 경우의 날짜, 메모, 원문 링크가 있는 source-derived Item과 Calendar/checklist/sheet/memo 결과물 |
 | Verification | contract unit test, failure fixture, P21 lifecycle E2E, guardrail scan, 390/1024px browser QA, 비용/개인정보 review |
 
 ## Current Baseline
 
-P21-01은 다음을 이미 제공한다.
+P21-01은 다음을 이미 제공한다. 이 3~7개 동작은 짧은 사용자 메모를 손볼 수 있게 만드는 compatibility fallback이며, URL 원문을 정확히 변환했다는 source-backed 품질 기준은 아니다.
 
 - 사용자 제목/메모에서 결정론적으로 3~7개 항목 제안
 - `day_offset` 기반 기준일 날짜 배치
@@ -82,6 +82,7 @@ type AiDraftRequest = {
   categoryHint?: string;
   riskLevel: 'low' | 'medium' | 'sensitive';
   locale: 'ko-KR';
+  /** Interactive proposal cap, not a target count. */
   maxItems: 7;
 };
 ```
@@ -115,7 +116,8 @@ type AiDraftProposal = {
 
 유효 조건:
 
-- item은 3~7개다.
+- item은 1개 이상 `maxItems` 이하다. 개수는 SourceRow와 독립 상태 경계가 정한다.
+- 원문에 `maxItems`보다 많은 유효 행이 있으면 누락한 행과 이유를 남기고 `partial`로 표시하거나 source-import/table 경로로 전환한다.
 - 제목은 사용자가 실행 여부를 판단할 수 있는 동사형 표현이다.
 - 날짜를 임의의 절대 날짜로 만들지 않고 기준일과 `dayOffset`으로 제안한다.
 - 원문에 없는 수치·기한·안전 판단은 확정문으로 만들지 않는다.
@@ -136,7 +138,7 @@ type AiDraftProposal = {
 
 1. `ready`: miss 요청과 입력이 준비됨. 생성되지 않음.
 2. `generating`: 취소 가능. 저장·발행·완료 불가.
-3. `proposal`: 3~7개 제안이 보임. 수정·제외 가능.
+3. `proposal`: source-derived 제안이 보임. 근거 확인·수정·제외 가능.
 4. `partial`: 일부 결과만 있음. 부족한 이유를 사용자어로 표시.
 5. `failed`: 입력을 보존하고 결정론적 초안 또는 재시도를 선택.
 6. `reviewed`: 사용자가 항목을 확인·수정함.
@@ -166,7 +168,8 @@ type AiDraftProposal = {
 
 저장 버튼을 활성화하려면 다음이 모두 참이어야 한다.
 
-- item이 3개 이상 7개 이하
+- 포함 가능한 item이 1개 이상 `maxItems` 이하
+- 모든 item이 SourceRow 근거를 갖거나 명시적인 `user-request`로 표시됨
 - 빈 제목 없음
 - 포함된 항목이 1개 이상
 - 기준일이 필요한 Flow는 기준일 의미가 사용자어로 표시됨
@@ -187,10 +190,10 @@ type AiDraftProposal = {
 
 | 상태 | 사용자 결과 | fallback |
 | --- | --- | --- |
-| Timeout | 입력 보존, 완료로 표시하지 않음 | 결정론적 3~7개 제안 또는 재시도 |
-| Empty response | 빈 Flow 저장 금지 | 결정론적 제안 |
-| Partial response | 완성된 항목만 임시 표시, 부족함 안내 | 사용자 수정 또는 결정론적 보완 |
-| Invalid dates | 날짜 제안 제거 | 기준일 + 순차 offset 기본값 |
+| Timeout | 입력 보존, 완료로 표시하지 않음 | 사용자가 직접 쓴 행동 문장이 있을 때만 compatibility fallback 또는 명시적 재시도 |
+| Empty response | 빈 Flow 저장 금지 | source row가 없으면 `source_import_required`; 사용자 메모의 명시적 행동만 compatibility fallback |
+| Partial response | 완성된 항목과 생략 사유만 임시 표시, 부족함 안내 | 사용자 수정, source import, 또는 명시적 재시도; 일반지식으로 빈 행을 채우지 않음 |
+| Invalid dates | 날짜 제안 제거 | 무일정 Item으로 유지하고 사용자에게 필요한 기준일만 명시적으로 요청; 순차 날짜를 발명하지 않음 |
 | Duplicate request | 기존 proposal/draft 안내 | 기존 draft 열기 |
 | User cancel | 입력과 이전 proposal 유지 | ready 상태 복귀 |
 | Offline | 새 생성 시작 금지 | 이미 열린 로컬 draft 편집만 유지 |
@@ -211,7 +214,7 @@ type AiDraftProposal = {
 
 - 요청당 한 번의 생성 호출을 기본으로 한다.
 - source text와 memo 입력 길이를 제한한다.
-- 7개를 넘는 항목은 생성하지 않는다.
+- 대화형 한 번의 proposal은 기본 7개를 넘기지 않는다. 원문 행이 더 많으면 잘라 완성본처럼 표시하지 않고 table/resource import 또는 `partial`로 전환한다.
 - 자동 retry는 1회도 기본 허용하지 않는다. 사용자가 재시도를 선택한다.
 - provider 비용이 한도를 넘으면 결정론적 fallback을 사용한다.
 - 비용·latency가 사용자 화면에서 성공으로 오인되지 않도록 상태를 분리한다.
@@ -253,6 +256,8 @@ type AiDraftProposal = {
 - [ ] provider 보존·학습·보안 정책 검토
 - [ ] 민감정보 차단 또는 redaction 기준
 - [ ] request/response runtime schema와 validator
+- [ ] 모든 proposal Item의 SourceRow 근거 또는 명시적 `user-request`와 omission reason
+- [ ] source-derived Item 수량과 무일정 Item의 no-ICS invariant
 - [ ] deterministic fallback unit test
 - [ ] timeout/empty/partial/duplicate/offline E2E fixture
 - [ ] 사용자 검토 전 저장·발행 금지 E2E
@@ -280,7 +285,8 @@ P21-02는 문서만 추가하므로 현재 route/component/storage/export 구조
 - 실제 AI를 구현하지 않는다.
 - AI proposal은 자동 저장·발행·완료되지 않는다.
 - source, AI proposal, user overlay 경계가 명확하다.
-- 3~7개 item과 기준일/date override 계약이 P21-01 모델과 호환된다.
+- source-derived 1..`maxItems` proposal과 기준일/date override 계약이 P21-01 compatibility fallback 및 canonical Item 모델과 호환된다.
+- `maxItems`는 처리 상한일 뿐 목표 개수가 아니며, 원문 행을 채우거나 잘라 완성본처럼 표시하지 않는다.
 - failure/timeout/partial/duplicate/offline fallback이 정의된다.
 - 민감 콘텐츠 gate와 개인정보/로그 최소화 기준이 있다.
 - P21-01 결정론적 fallback이 삭제되지 않는다.

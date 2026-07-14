@@ -1,5 +1,7 @@
 # My Flow v2 Execution UX Spec
 
+> **Canonical compatibility notice (2026-07-12):** User-facing rows in this July 1 UX spec still use the existing Step-first runtime vocabulary. The backend contract is now [Canonical Flow Data Model v1](../2026-07-11-canonical-flow-data-model/spec.md): canonical `Item` is the minimum independently stateful execution/projection unit and canonical `Step` is grouping. This notice does not rename the current UI; it prevents the UX label from becoming the new storage schema.
+
 ## Goal
 
 Redesign the saved execution experience for `/my` so a user can save a Flow, open the next actionable work, review upcoming work, and inspect the full saved Flow structure without seeing a mixed planning, review, export, and inventory surface.

@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe Canonical Data Model v1 · 검토 보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18201d;
+      --muted: #5f6965;
+      --line: #dce2de;
+      --canvas: #f3f5f4;
+      --paper: #ffffff;
+      --green: #176b51;
+      --green-strong: #0e513d;
+      --green-soft: #e8f4ef;
+      --blue: #3159c9;
+      --blue-soft: #edf1ff;
+      --amber: #8b650b;
+      --amber-soft: #fff7df;
+      --coral: #b94739;
+      --coral-soft: #fff0ed;
+      --slate-soft: #eef1ef;
+      --radius: 9px;
+      --shadow: 0 12px 34px rgba(24, 32, 29, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      letter-spacing: -0.012em;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    a:hover { color: #2347ad; }
+    code {
+      padding: 0.12em 0.34em;
+      border-radius: 4px;
+      background: var(--slate-soft);
+      color: #27312d;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+    strong, h1, h2, h3 { word-break: keep-all; overflow-wrap: anywhere; }
+    p, li, td, th, span { word-break: keep-all; overflow-wrap: anywhere; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 54px;
+      padding: 9px max(14px, calc((100vw - 1160px) / 2));
+      border-bottom: 1px solid rgba(24, 32, 29, 0.12);
+      background: rgba(243, 245, 244, 0.96);
+      backdrop-filter: blur(12px);
+    }
+    .toolbar strong {
+      min-width: 0;
+      flex: 1 1 auto;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .toolbar-links { display: flex; flex: 0 0 auto; gap: 7px; }
+    .toolbar a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 35px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    main { width: min(1160px, calc(100% - 28px)); margin: 0 auto; padding: 30px 0 76px; }
+    section { scroll-margin-top: 72px; padding: 42px 0; border-top: 1px solid var(--line); }
+    section:first-child { border-top: 0; padding-top: 12px; }
+    h1 { max-width: 970px; margin: 0; font-size: clamp(34px, 5vw, 57px); line-height: 1.12; letter-spacing: -0.045em; }
+    h2 { margin: 0; font-size: clamp(26px, 3vw, 33px); line-height: 1.24; letter-spacing: -0.032em; }
+    h3 { margin: 0; font-size: 18px; line-height: 1.42; }
+    .lead { max-width: 940px; margin: 18px 0 0; color: #46504c; font-size: 18px; line-height: 1.78; }
+    .meta-line { margin: 15px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .section-head { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 34px; align-items: end; margin-bottom: 24px; }
+    .section-head p { margin: 0; color: var(--muted); line-height: 1.72; }
+
+    .quick-nav {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 28px;
+    }
+    .quick-nav a {
+      min-width: 0;
+      padding: 11px 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .decision-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+      gap: 26px;
+      align-items: stretch;
+      margin-top: 34px;
+    }
+    .decision-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+      padding: 28px;
+      border-left: 6px solid var(--green);
+      background: var(--green-soft);
+    }
+    .decision-copy strong { display: block; font-size: 24px; line-height: 1.35; }
+    .decision-copy p { margin: 13px 0 0; color: #335046; line-height: 1.75; }
+    .decision-copy small { display: block; margin-top: 24px; color: var(--green-strong); font-weight: 800; line-height: 1.55; }
+    .projection-orbit {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "calendar checklist"
+        "core core"
+        "sheet memo";
+      gap: 8px;
+      min-width: 0;
+    }
+    .orbit-node {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .orbit-node b { display: block; font-size: 15px; }
+    .orbit-node span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .orbit-node.calendar { grid-area: calendar; border-top: 4px solid var(--blue); }
+    .orbit-node.checklist { grid-area: checklist; border-top: 4px solid var(--amber); }
+    .orbit-node.sheet { grid-area: sheet; border-top: 4px solid var(--green); }
+    .orbit-node.memo { grid-area: memo; border-top: 4px solid var(--coral); }
+    .orbit-core {
+      grid-area: core;
+      padding: 22px;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      text-align: center;
+    }
+    .orbit-core b { display: block; font-size: 25px; }
+    .orbit-core span { display: block; margin-top: 6px; color: #d8e3de; font-size: 13px; line-height: 1.55; }
+
+    .metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; margin-top: 26px; }
+    .metric { min-width: 0; padding: 18px; border-top: 4px solid var(--green); background: var(--paper); }
+    .metric:nth-child(2) { border-color: var(--blue); }
+    .metric:nth-child(3) { border-color: var(--amber); }
+    .metric:nth-child(4) { border-color: var(--coral); }
+    .metric:nth-child(5) { border-color: #6a5aa8; }
+    .metric b { display: block; font-size: 27px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.52; }
+
+    .hierarchy-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); gap: 20px; }
+    .hierarchy-rail { display: grid; gap: 0; min-width: 0; }
+    .hierarchy-node { position: relative; display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 18px; padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .hierarchy-node:first-child { border-top: 1px solid var(--line); }
+    .hierarchy-node b { color: var(--green); font-size: 13px; }
+    .hierarchy-node strong { display: block; font-size: 18px; }
+    .hierarchy-node p { margin: 5px 0 0; color: var(--muted); font-size: 13px; line-height: 1.62; }
+    .evidence-lane { min-width: 0; padding: 22px; border-top: 4px solid var(--blue); background: var(--paper); }
+    .evidence-chain { display: grid; gap: 8px; margin-top: 18px; }
+    .evidence-chain div { padding: 11px 13px; border-left: 3px solid var(--blue); background: var(--blue-soft); font-size: 13px; font-weight: 800; line-height: 1.5; }
+    .evidence-lane p { color: var(--muted); line-height: 1.66; }
+    .review-outside { margin-top: 16px; padding: 15px; border-left: 4px solid var(--coral); background: var(--coral-soft); color: #71352d; font-size: 13px; line-height: 1.65; }
+
+    .inventory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; margin-top: 22px; }
+    .inventory-card { min-width: 0; padding: 19px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .inventory-card b { display: block; color: var(--coral); font-size: 13px; }
+    .inventory-card strong { display: block; margin-top: 8px; font-size: 17px; line-height: 1.45; }
+    .inventory-card p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.62; }
+    .inventory-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+    .inventory-links a { padding: 7px 9px; border: 1px solid var(--line); border-radius: 5px; background: var(--paper); font-size: 12px; font-weight: 800; text-decoration: none; }
+
+    .table-wrap { width: 100%; min-width: 0; border: 1px solid var(--line); background: var(--paper); }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { min-width: 0; padding: 13px 14px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; font-size: 13px; line-height: 1.56; }
+    thead th { background: #e9eeeb; color: #38413d; font-size: 12px; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fafcfb; }
+    .mapping-table th:nth-child(1) { width: 24%; }
+    .mapping-table th:nth-child(2) { width: 24%; }
+    .mapping-table th:nth-child(3) { width: 52%; }
+    .projection-table th:nth-child(1) { width: 14%; }
+    .projection-table th:nth-child(2) { width: 22%; }
+    .projection-table th:nth-child(n+3) { width: 16%; }
+
+    .facet-stage { display: grid; grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr); gap: 18px; }
+    .item-core { min-width: 0; padding: 25px; background: var(--ink); color: #fff; }
+    .item-core h3 { font-size: 25px; }
+    .item-core p { color: #d2ddd8; line-height: 1.68; }
+    .item-core dl { margin: 20px 0 0; }
+    .item-core dt { margin-top: 12px; color: #a8d6c4; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+    .item-core dd { margin: 4px 0 0; font-size: 13px; line-height: 1.52; }
+    .facet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .facet { min-width: 0; padding: 17px; border-top: 4px solid var(--green); background: var(--paper); }
+    .facet:nth-child(2) { border-color: var(--blue); }
+    .facet:nth-child(3) { border-color: var(--amber); }
+    .facet:nth-child(4) { border-color: var(--coral); }
+    .facet:nth-child(5) { border-color: #6a5aa8; }
+    .facet:nth-child(6) { border-color: #267481; }
+    .facet p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.58; }
+    .facet-example { margin-top: 18px; padding: 18px 20px; border-left: 5px solid var(--blue); background: var(--blue-soft); line-height: 1.68; }
+
+    .axis-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    .axis-card { min-width: 0; padding: 21px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .axis-card p { margin: 7px 0 0; color: var(--muted); line-height: 1.62; }
+    .token-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; }
+    .token-list code { display: inline-block; max-width: 100%; padding: 5px 7px; background: var(--slate-soft); font-size: 11px; font-weight: 800; }
+    .axis-warning { margin-top: 16px; padding: 17px 19px; border-left: 5px solid var(--amber); background: var(--amber-soft); color: #624a11; line-height: 1.68; }
+
+    .projection-rules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-bottom: 18px; }
+    .projection-rule { min-width: 0; padding: 16px; border-top: 4px solid var(--blue); background: var(--paper); }
+    .projection-rule:nth-child(2) { border-color: var(--amber); }
+    .projection-rule:nth-child(3) { border-color: var(--green); }
+    .projection-rule:nth-child(4) { border-color: var(--coral); }
+    .projection-rule p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.56; }
+
+    .fixture-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .fixture { min-width: 0; padding: 17px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .fixture.negative { border-color: #efc9c3; background: #fffafa; }
+    .fixture-id { display: block; color: var(--blue); font-family: "SFMono-Regular", Consolas, monospace; font-size: 10px; font-weight: 800; overflow-wrap: anywhere; }
+    .fixture.negative .fixture-id { color: var(--coral); }
+    .fixture h3 { margin-top: 8px; font-size: 16px; }
+    .fixture dl { margin: 13px 0 0; }
+    .fixture dt { margin-top: 8px; color: var(--muted); font-size: 10px; font-weight: 900; }
+    .fixture dd { margin: 3px 0 0; font-size: 12px; line-height: 1.55; }
+    .fixture .pass { color: var(--green); font-weight: 800; }
+    .fixture .block { color: var(--coral); font-weight: 800; }
+
+    .contract-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
+    .contract-links a { min-width: 0; padding: 13px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); font-size: 12px; font-weight: 800; line-height: 1.45; text-decoration: none; }
+
+    .storage-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+    .storage-stack { display: grid; gap: 8px; }
+    .storage-layer { min-width: 0; padding: 15px 17px; border-left: 4px solid var(--green); background: var(--paper); }
+    .storage-layer:nth-child(2) { border-color: var(--blue); }
+    .storage-layer:nth-child(3) { border-color: var(--amber); }
+    .storage-layer:nth-child(4) { border-color: var(--coral); }
+    .storage-layer:nth-child(5) { border-color: #6a5aa8; }
+    .storage-layer p { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.58; }
+    .api-panel { min-width: 0; padding: 21px; border: 1px solid var(--line); background: var(--paper); }
+    .api-list { display: grid; gap: 8px; margin-top: 16px; }
+    .api-row { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .api-row:last-child { border-bottom: 0; }
+    .api-row b { color: var(--blue); font-size: 11px; }
+    .api-row span { min-width: 0; font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+    .state-rail { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 18px; }
+    .state-rail div { min-width: 0; padding: 12px 8px; border-top: 3px solid var(--blue); background: var(--paper); text-align: center; }
+    .state-rail b { display: block; color: var(--blue); font-size: 10px; }
+    .state-rail span { display: block; margin-top: 5px; font-size: 11px; line-height: 1.45; }
+    .precedence { margin-top: 20px; padding: 20px; background: var(--ink); color: #fff; }
+    .precedence ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin: 15px 0 0; padding: 0; list-style: none; counter-reset: order; }
+    .precedence li { min-width: 0; padding: 13px; background: #27312d; counter-increment: order; font-size: 12px; line-height: 1.55; }
+    .precedence li::before { content: counter(order); display: block; margin-bottom: 5px; color: #8bd0b5; font-weight: 900; }
+    .migration { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-top: 18px; }
+    .migration div { padding: 17px; border-top: 4px solid var(--green); background: var(--paper); }
+    .migration div:nth-child(2) { border-color: var(--amber); }
+    .migration div:nth-child(3) { border-color: var(--blue); }
+    .migration p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.58; }
+
+    .sequence { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; counter-reset: sequence; }
+    .sequence article { min-width: 0; padding: 17px; border-top: 4px solid var(--green); background: var(--paper); counter-increment: sequence; }
+    .sequence article::before { content: counter(sequence, decimal-leading-zero); display: block; margin-bottom: 8px; color: var(--green); font-size: 12px; font-weight: 900; }
+    .sequence p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.58; }
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+    .scope-box { padding: 20px; border-top: 4px solid var(--green); background: var(--green-soft); }
+    .scope-box.out { border-color: var(--coral); background: var(--coral-soft); }
+    .scope-box ul { margin: 12px 0 0; padding-left: 19px; }
+    .scope-box li { margin: 7px 0; font-size: 13px; line-height: 1.55; }
+    .handoff { margin-top: 18px; padding: 22px; border: 1px solid var(--line); background: var(--paper); }
+    .handoff strong { display: block; font-size: 19px; }
+    .handoff p { margin: 9px 0 0; color: var(--muted); line-height: 1.68; }
+    footer { padding: 28px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+
+    @media (max-width: 960px) {
+      .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .inventory-grid, .fixture-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .projection-rules, .contract-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .state-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .sequence { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      main { width: min(100% - 22px, 1160px); padding-top: 20px; }
+      section { padding: 34px 0; }
+      .toolbar-links a:nth-child(n+2) { display: none; }
+      .lead { font-size: 16px; line-height: 1.72; }
+      .section-head, .decision-stage, .hierarchy-grid, .facet-stage, .storage-grid { grid-template-columns: 1fr; }
+      .section-head { gap: 9px; }
+      .quick-nav { grid-template-columns: 1fr 1fr; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metrics .metric:last-child { grid-column: 1 / -1; }
+      .axis-grid, .scope-grid { grid-template-columns: 1fr; }
+      .projection-rules { grid-template-columns: 1fr 1fr; }
+      .precedence ol { grid-template-columns: 1fr 1fr; }
+
+      .responsive-table { border: 0; background: transparent; }
+      .responsive-table table, .responsive-table tbody, .responsive-table tr, .responsive-table td { display: block; width: 100%; }
+      .responsive-table thead { display: none; }
+      .responsive-table tr { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+      .responsive-table td { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+      .responsive-table td:last-child { border-bottom: 0; }
+      .responsive-table td::before { content: attr(data-label); color: var(--muted); font-size: 10px; font-weight: 900; line-height: 1.5; }
+    }
+
+    @media (max-width: 460px) {
+      h1 { font-size: 33px; line-height: 1.17; }
+      h2 { font-size: 25px; }
+      .toolbar { padding-left: 11px; padding-right: 11px; }
+      .toolbar strong { max-width: calc(100vw - 112px); }
+      .metrics, .inventory-grid, .fixture-grid, .projection-rules, .contract-links, .facet-grid, .state-rail, .precedence ol, .migration, .sequence { grid-template-columns: 1fr; }
+      .metrics .metric:last-child { grid-column: auto; }
+      .decision-copy, .item-core { padding: 21px; }
+      .projection-orbit { grid-template-columns: 1fr; grid-template-areas: "core" "calendar" "checklist" "sheet" "memo"; }
+      .hierarchy-node { grid-template-columns: 62px minmax(0, 1fr); gap: 11px; }
+      .responsive-table td { grid-template-columns: 84px minmax(0, 1fr); gap: 8px; }
+    }
+
+    @media print {
+      .toolbar, .quick-nav { display: none; }
+      body { background: #fff; }
+      main { width: 100%; }
+      section { break-inside: avoid; }
+      .fixture-grid, .inventory-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <strong>FlowMe Canonical Data Model v1 · 2026-07-11</strong>
+    <div class="toolbar-links">
+      <a href="2026-07-12-flow-canonical-data-model-presentation-ko.html">PPT형 보고서</a>
+      <a href="../specs/2026-07-11-canonical-flow-data-model/spec.md">전체 스펙</a>
+      <a href="../specs/2026-07-11-canonical-flow-data-model/canonical-flow-contract.ts">TS 계약</a>
+      <a href="../specs/2026-07-11-canonical-flow-data-model/golden-fixtures-v1.json">Fixture</a>
+    </div>
+  </div>
+
+  <main>
+    <section id="decision">
+      <h1>ICS가 아니라 <span style="color: var(--green);">Item</span>이<br>FlowMe 콘텐츠의 최소 실행 단위다</h1>
+      <p class="lead">일정, 반복 루틴, 체크리스트, 표·진도, 메모, 의사결정, 근거·주의를 하나의 export 형식에 맞추지 않는다. 동일한 Item을 기준으로 달력·체크리스트·시트·메모를 다시 만들 수 있어야 URL 수집, AI 변환, My Flow, 사용자 수정이 같은 계약을 공유할 수 있다.</p>
+      <p class="meta-line">판정 상태: canonical v1 계약 승인 · runtime/DB/LLM 구현은 아직 시작하지 않음 · 이 문서는 제품 UI가 아닌 내부 검토 산출물</p>
+
+      <nav class="quick-nav" aria-label="문서 바로가기">
+        <a href="#hierarchy">계층</a>
+        <a href="#inventory">현황</a>
+        <a href="#mapping">매핑</a>
+        <a href="#facets">Item facet</a>
+        <a href="#taxonomy">분류 축</a>
+        <a href="#projection">Projection</a>
+        <a href="#fixtures">12 Fixture</a>
+        <a href="#storage">저장·API</a>
+        <a href="#migration">상태·Migration</a>
+        <a href="#backend">Backend 순서</a>
+      </nav>
+
+      <div class="decision-stage">
+        <div class="decision-copy">
+          <div>
+            <strong>독립 상태를 가져야 하면 Item이다.</strong>
+            <p>완료, 기록, 결정, 보류, 일정 조정 중 하나라도 독립적으로 필요하면 Item으로 둔다. Field는 값이고 Memo는 맥락이다. SourceRow는 Item을 뒷받침하는 최소 근거 단위다.</p>
+          </div>
+          <small>ICS = schedule이 있는 effective Item occurrence의 직렬화 결과</small>
+        </div>
+        <div class="projection-orbit" aria-label="Item projection 관계">
+          <div class="orbit-node calendar"><b>Calendar</b><span>schedule → occurrence → ICS</span></div>
+          <div class="orbit-node checklist"><b>Checklist / Todo</b><span>completion → ordered rows</span></div>
+          <div class="orbit-core"><b>Canonical Item</b><span>intent · completion · schedule · fields · memos · sourceRefs</span></div>
+          <div class="orbit-node sheet"><b>Sheet</b><span>Item/occurrence row + Field columns</span></div>
+          <div class="orbit-node memo"><b>Memo</b><span>lossless detail · source · caution fallback</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="hierarchy">
+      <div class="section-head">
+        <h2>계층: Step은 묶고, Item이 실행한다</h2>
+        <p>기존 source-backed bridge의 <code>Step = FlowItem</code> 의미를 새 backend 계약에 그대로 쓰지 않는다. 새 canonical 계약은 기존 runtime의 실제 구조와 맞춰 <code>FlowSection → Step</code>, <code>FlowItem → Item</code>으로 정리한다.</p>
+      </div>
+      <div class="hierarchy-grid">
+        <div class="hierarchy-rail">
+          <div class="hierarchy-node"><b>01</b><div><strong>Bundle / Flow Map</strong><p>연관된 Flow를 발견·발행 관점에서 묶는다. 실행 상태는 소유하지 않는다.</p></div></div>
+          <div class="hierarchy-node"><b>02</b><div><strong>Flow</strong><p>하나의 사용자 job, 하나의 primary source, 하나의 primary natural artifact를 가진다.</p></div></div>
+          <div class="hierarchy-node"><b>03</b><div><strong>Step</strong><p>기간, 단계, 주차, 날짜 묶음, procedure group 또는 source row group이다. schedule의 정본이 아니다.</p></div></div>
+          <div class="hierarchy-node"><b>04</b><div><strong>Item</strong><p>완료·기록·결정·보류가 독립적인 최소 실행 단위다. 안정적인 ID와 직접 SourceRef를 가진다.</p></div></div>
+          <div class="hierarchy-node"><b>05</b><div><strong>Field / Memo</strong><p>Field는 일정·정렬·기록·export에 필요한 값, Memo는 방법·링크·수량·예외·주의·사용자 prompt다.</p></div></div>
+        </div>
+        <aside class="evidence-lane">
+          <h3>근거 계층은 실행 계층과 분리</h3>
+          <p>URL 한 줄을 곧바로 Item으로 바꾸지 않는다. 어떤 snapshot의 어떤 source row가 무엇을 뒷받침했는지 추적한다.</p>
+          <div class="evidence-chain">
+            <div>Source · 원본 정체성 / 권리 / locale</div>
+            <div>Snapshot · fetch 시점 / content hash / extractor version</div>
+            <div>SourceRow · 날짜 / offset / check / table row / procedure</div>
+            <div>SourceRef · Item·Field·Memo와 row의 관계</div>
+          </div>
+          <div class="review-outside"><strong>Review는 바깥에 둔다.</strong><br>품질 점수, 누락 사유, 권리·위험, provider 기록은 내부 ReviewRecord이며 사용자 콘텐츠나 export에 섞지 않는다.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="inventory">
+      <div class="section-head">
+        <h2>현재 inventory: 양은 충분하지만 의미가 분산돼 있다</h2>
+        <p>현재 runtime은 이미 수백 개 Flow와 수천 개 Item을 처리한다. 문제는 데이터가 없는 것이 아니라 schedule, Field, source, overlay, export 의미가 여러 타입·slug 조건·UI 추론에 흩어져 있다는 점이다.</p>
+      </div>
+      <div class="metrics" aria-label="현재 runtime 지표">
+        <div class="metric"><b>593</b><span>Flow bundles<br>여러 세대의 콘텐츠를 adapter로 받아야 함</span></div>
+        <div class="metric"><b>3,064</b><span>Flow Items<br>stable Item ID 기반 batch migration 필요</span></div>
+        <div class="metric"><b>781</b><span>Flow Sections<br>canonical Step 후보</span></div>
+        <div class="metric"><b>90</b><span>서로 다른 category 문자열<br>canonical taxonomy로 부적합</span></div>
+        <div class="metric"><b>464 / 593</b><span><code>primary_destination</code> 누락<br>destination 단독 추론 불가</span></div>
+      </div>
+
+      <div class="inventory-grid">
+        <article class="inventory-card"><b>GAP 01</b><strong>Field가 정본에 없다</strong><p>기록표·비교표·memo field가 slug별 코드로 붙는다. 새 URL 콘텐츠가 같은 표를 만들려면 데이터 저장이 아니라 코드 배포가 필요하다.</p></article>
+        <article class="inventory-card"><b>GAP 02</b><strong>itemType이 서로 다른 축을 섞는다</strong><p><code>scheduled_task</code>는 시간, <code>log_entry</code>는 행동, <code>memo_evidence</code>는 부가 맥락인데 하나의 primary type 우선순위로 고른다.</p></article>
+        <article class="inventory-card"><b>GAP 03</b><strong>SourceRow provenance가 없다</strong><p>Flow-level URL과 detail link는 있지만 Item이 원문의 어떤 행에서 파생됐는지 안정적으로 검증할 수 없다.</p></article>
+        <article class="inventory-card"><b>GAP 04</b><strong>schedule 의미가 여러 위치에 있다</strong><p><code>day_offset</code>, <code>duration_days</code>, <code>date_window</code>, <code>repeat_rule</code>, 개인 date override가 서로 다른 층에 있다.</p></article>
+        <article class="inventory-card"><b>GAP 05</b><strong>export builder마다 입력이 다르다</strong><p>전체 Flow ICS, routine ICS, My Flow 단일 Step ICS, text/XLSX가 base·overlay·run state를 같은 방식으로 합성하지 않는다.</p></article>
+        <article class="inventory-card"><b>GAP 06</b><strong>version 감지가 content hash가 아니다</strong><p>map version, Step 수, source checked date가 같으면 내용 변경을 놓칠 수 있다. canonical content hash와 stable node diff가 필요하다.</p></article>
+      </div>
+      <div class="inventory-links">
+        <a href="../../lib/flow/types.ts">현재 types.ts</a>
+        <a href="../../components/flow/AppClient.tsx">itemType / overlay runtime</a>
+        <a href="../../lib/flow/artifact-fields.ts">slug별 Field</a>
+        <a href="../../lib/flow/export.ts">text / ICS / XLSX</a>
+        <a href="../../lib/flow/source-backed-my-flow.ts">source-backed bridge</a>
+        <a href="../specs/2026-05-28-my-flow-execution-hub/source-backed-step-contract.md">legacy Step contract</a>
+      </div>
+    </section>
+
+    <section id="mapping">
+      <div class="section-head">
+        <h2>현재 → canonical 매핑</h2>
+        <p>runtime 전체를 즉시 교체하지 않는다. canonical 문서를 현행 <code>FlowBundle</code>로 projection하는 compatibility adapter를 먼저 두고, count와 export parity가 증명된 뒤 저장소 read path를 옮긴다.</p>
+      </div>
+      <div class="table-wrap responsive-table">
+        <table class="mapping-table">
+          <thead><tr><th>현재 모델</th><th>Canonical v1</th><th>Migration 규칙</th></tr></thead>
+          <tbody>
+            <tr><td data-label="현재"><code>SourceBackedMyFlowMap</code></td><td data-label="Canonical">Bundle / Flow Map</td><td data-label="규칙">발견·발행 grouping만 유지하고 실행 상태는 분리한다.</td></tr>
+            <tr><td data-label="현재"><code>FlowBundle.flow</code></td><td data-label="Canonical">Flow identity + immutable content version</td><td data-label="규칙">slug는 legacy alias로 보존하고 stable Flow ID를 발급한다.</td></tr>
+            <tr><td data-label="현재"><code>FlowSection</code></td><td data-label="Canonical">Step</td><td data-label="규칙">기간·단계·row group의 직접 매핑. Item state를 대신 소유하지 않는다.</td></tr>
+            <tr><td data-label="현재"><code>FlowItem</code></td><td data-label="Canonical">Item</td><td data-label="규칙">독립 상태가 있는 행만 Item으로 직접 매핑한다.</td></tr>
+            <tr><td data-label="현재"><code>FlowItemDetail.why/how</code></td><td data-label="Canonical">Memo / Field / explicit Item</td><td data-label="규칙">prose는 자동 분할하지 않는다. 명시적이고 독립 check가 필요한 source row만 Item으로 승격한다.</td></tr>
+            <tr><td data-label="현재"><code>completion_criteria</code></td><td data-label="Canonical"><code>completion.doneWhen</code></td><td data-label="규칙">관찰 가능한 완료 기준을 직접 옮긴다.</td></tr>
+            <tr><td data-label="현재"><code>day_offset</code></td><td data-label="Canonical">anchor-offset schedule</td><td data-label="규칙">anchor Field와 offset을 함께 보존한다.</td></tr>
+            <tr><td data-label="현재"><code>date_window</code></td><td data-label="Canonical">date-window schedule</td><td data-label="규칙">공식 기간 전체를 일별 task로 늘리지 않고 reminder occurrence 하나를 만든다.</td></tr>
+            <tr><td data-label="현재"><code>repeat_rule / repeatRules</code></td><td data-label="Canonical">structured recurrence</td><td data-label="규칙">알려진 규칙만 parse하고 지원하지 않는 custom rule은 hold 처리한다.</td></tr>
+            <tr><td data-label="현재"><code>FlowItem.type</code></td><td data-label="Canonical">projection eligibility</td><td data-label="규칙"><code>calendar</code>는 Item type이 아니라 schedule에서 파생한다.</td></tr>
+            <tr><td data-label="현재">derived <code>itemType</code></td><td data-label="Canonical">orthogonal facets</td><td data-label="규칙">schedule·recurrence·intent·completion·Memo로 UI label을 파생한다.</td></tr>
+            <tr><td data-label="현재">slug별 <code>artifact-fields</code></td><td data-label="Canonical">FieldDefinition</td><td data-label="규칙">canary부터 content data로 옮겨 backend 생성이 코드 배포를 요구하지 않게 한다.</td></tr>
+            <tr><td data-label="현재">personal copy / drafts / date overrides</td><td data-label="Canonical">UserFlowCopy overlay</td><td data-label="규칙">우선순위를 하나의 merge reducer로 통합한다.</td></tr>
+            <tr><td data-label="현재">checks / logs / run registry</td><td data-label="Canonical">ExecutionRun + item state</td><td data-label="규칙">occurrence key와 완료 snapshot을 보존한다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="facets">
+      <div class="section-head">
+        <h2>배타적 enum 대신 orthogonal facets</h2>
+        <p>Item은 동시에 일정이 있고, 반복하며, 완료 체크가 가능하고, 기록 Field와 caution Memo를 가질 수 있다. 이 조합을 primary enum 우선순위로 압축하지 않는다.</p>
+      </div>
+      <div class="facet-stage">
+        <article class="item-core">
+          <h3>Canonical Item</h3>
+          <p>독립적인 사용자 상태와 stable identity를 가진 실행의 중심이다.</p>
+          <dl>
+            <dt>Identity</dt><dd>itemId · stepId · title · order</dd>
+            <dt>Behavior</dt><dd>intent · completion</dd>
+            <dt>Timing</dt><dd>optional schedule · optional recurrence</dd>
+            <dt>Context</dt><dd>fieldIds · memoIds · cautionMemoIds</dd>
+            <dt>Trust</dt><dd>sourceRefIds</dd>
+          </dl>
+        </article>
+        <div class="facet-grid">
+          <article class="facet"><h3>Schedule</h3><p><code>absolute</code>, <code>anchor_offset</code>, <code>date_window</code>. 일정이 없으면 ICS를 만들지 않는다.</p></article>
+          <article class="facet"><h3>Recurrence</h3><p>daily·weekly·monthly, interval, weekdays, count/until, source-defined 여부를 구조화한다.</p></article>
+          <article class="facet"><h3>Intent</h3><p><code>act</code>, <code>inspect</code>, <code>decide</code>, <code>record</code>, <code>use_resource</code>.</p></article>
+          <article class="facet"><h3>Completion</h3><p><code>check</code>, <code>decision</code>, <code>record</code>. 각각 doneWhen 또는 decision/record Field를 가진다.</p></article>
+          <article class="facet"><h3>Field / Memo</h3><p>Field는 계산·기록·export 값, Memo는 방법·링크·수량·예외·경고다.</p></article>
+          <article class="facet"><h3>Source / Caution</h3><p>Item·Field·Memo마다 SourceRef를 붙인다. caution은 check task로 위장하지 않는다.</p></article>
+        </div>
+      </div>
+      <div class="facet-example"><strong>예: “다음 접종 일정 확인”</strong>은 <code>intent=inspect</code> + <code>completion=check</code> + <code>schedule=date_window</code> + 공식 SourceRef + 의료 caution Memo를 동시에 가진다. Calendar, checklist, memo에 나갈 수 있지만 canonical Item은 하나뿐이다.</div>
+    </section>
+
+    <section id="taxonomy">
+      <div class="section-head">
+        <h2>카테고리·형태·산출물은 서로 다른 축이다</h2>
+        <p>90개 category 문자열을 하나의 canonical enum으로 복사하지 않는다. “무슨 삶의 영역인가”, “어떤 계획 패턴인가”, “어디로 가져갈 것인가”, “Item이 어떻게 행동하는가”를 분리한다.</p>
+      </div>
+      <div class="axis-grid">
+        <article class="axis-card"><h3>1. lifeArea · 탐색 선반</h3><p>사용자가 콘텐츠를 찾을 때 쓰는 안정적인 상위 영역이다.</p><div class="token-list"><code>home_living</code><code>family_parenting</code><code>study_reading</code><code>money_admin_purchase</code><code>health_fitness</code><code>travel_outings</code><code>meals_grocery</code><code>work_career</code><code>hobby_pet</code></div></article>
+        <article class="axis-card"><h3>2. planningPattern · 원문→실행 구조</h3><p>source shape와 사용자 job을 실행 구조로 바꾸는 패턴이다.</p><div class="token-list"><code>date_preparation</code><code>ordered_procedure</code><code>repeating_routine</code><code>source_table_rows</code><code>resource_queue</code><code>compare_decide</code><code>phase_lifecycle</code></div></article>
+        <article class="axis-card"><h3>3. primaryArtifact · 자연스러운 목적지</h3><p>layout보다 먼저 정한다. hybrid는 여러 canonical Item을 복제한다는 뜻이 아니다.</p><div class="token-list"><code>calendar</code><code>checklist</code><code>todo</code><code>sheet</code><code>memo</code><code>hybrid</code></div></article>
+        <article class="axis-card"><h3>4. Item facets · 실제 동작</h3><p>일정·반복·완료·결정·기록·근거·주의를 독립 속성으로 조합한다.</p><div class="token-list"><code>schedule</code><code>recurrence</code><code>intent</code><code>completion</code><code>fields</code><code>memos</code><code>sourceRefs</code></div></article>
+      </div>
+      <div class="axis-warning"><strong>금지:</strong> lifeArea가 이사라고 timeline을 자동 선택하거나, schedule이 있다고 Item 전체를 <code>scheduled_task</code> 하나로 축약하거나, hybrid를 별도 데이터 구조로 만드는 것.</div>
+    </section>
+
+    <section id="projection">
+      <div class="section-head">
+        <h2>Projection matrix: 하나의 effective state에서 모두 만든다</h2>
+        <p>모든 projection은 <strong>pinned version + reviewed resolution + user overlay + active run + occurrence override</strong>를 합성한 같은 effective Item 집합을 읽는다.</p>
+      </div>
+      <div class="projection-rules">
+        <article class="projection-rule"><h3>Calendar</h3><p>schedule이 있는 Item/occurrence만. UID는 title이 아니라 stable Item ID + occurrence key.</p></article>
+        <article class="projection-rule"><h3>Checklist / Todo</h3><p>check·decision completion Item을 Step 순서로 묶는다. 날짜는 보조 정보다.</p></article>
+        <article class="projection-rule"><h3>Sheet</h3><p>Item 또는 occurrence가 row, FieldDefinition이 column. 기록값은 run state에서 온다.</p></article>
+        <article class="projection-rule"><h3>Memo</h3><p>외부 도구가 구조화하지 못하는 방법·링크·source·caution의 lossless fallback.</p></article>
+      </div>
+      <div class="table-wrap responsive-table">
+        <table class="projection-table">
+          <thead><tr><th>형태</th><th>Canonical</th><th>Calendar</th><th>Checklist/Todo</th><th>Sheet</th><th>Memo</th></tr></thead>
+          <tbody>
+            <tr><td data-label="형태">D-day timeline</td><td data-label="Canonical">source 기간별 Step + dated Items</td><td data-label="Calendar">dated Item마다 event</td><td data-label="Checklist">Step 묶음 선택 제공</td><td data-label="Sheet">실행표 선택 제공</td><td data-label="Memo">상세·source fallback</td></tr>
+            <tr><td data-label="형태">fixed routine</td><td data-label="Canonical">recurring Item 1개</td><td data-label="Calendar">recurring event / occurrence</td><td data-label="Checklist">회차 완료</td><td data-label="Sheet">light log 선택</td><td data-label="Memo">방법·source·중단 조건</td></tr>
+            <tr><td data-label="형태">source checklist</td><td data-label="Canonical">Step 아래 check Items</td><td data-label="Calendar">사용자/source 날짜가 있을 때만</td><td data-label="Checklist">primary</td><td data-label="Sheet">checklist table 선택</td><td data-label="Memo">detail·source</td></tr>
+            <tr><td data-label="형태">progress / table</td><td data-label="Canonical">row Items + 좁은 record Fields</td><td data-label="Calendar">milestone만</td><td data-label="Checklist">선택</td><td data-label="Sheet">primary</td><td data-label="Memo">source context</td></tr>
+            <tr><td data-label="형태">decision / hold</td><td data-label="Canonical">decision Item + decision Fields</td><td data-label="Calendar">revisit date만</td><td data-label="Checklist">결정 prompt, fake done 금지</td><td data-label="Sheet">비교·결정 row</td><td data-label="Memo">보류 이유·source</td></tr>
+            <tr><td data-label="형태">memo-first</td><td data-label="Canonical">실제 적용 Item 1개 + Memo</td><td data-label="Calendar">사용자가 일정 지정 시</td><td data-label="Checklist">적용 여부</td><td data-label="Sheet">record job일 때만</td><td data-label="Memo">primary</td></tr>
+            <tr><td data-label="형태">official window</td><td data-label="Canonical">date-window Item 1개</td><td data-label="Calendar">reminder 1개 + 기간 text</td><td data-label="Checklist">최소 action</td><td data-label="Sheet">선택</td><td data-label="Memo">공식 boundary</td></tr>
+            <tr><td data-label="형태">resource queue</td><td data-label="Canonical">import된 resource row가 Item</td><td data-label="Calendar">scheduled resource마다</td><td data-label="Checklist">queue</td><td data-label="Sheet">progress 선택</td><td data-label="Memo">resource link·detail</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="fixtures">
+      <div class="section-head">
+        <h2>12개 golden fixture가 계약의 실제 경계다</h2>
+        <p>10개 positive fixture는 named content shape와 expected/forbidden projection을 고정한다. 2개 negative fixture는 source가 부족하거나 locale이 맞지 않는 민감 콘텐츠가 canonical draft로 통과하지 못함을 증명한다.</p>
+      </div>
+      <div class="fixture-grid">
+        <article class="fixture"><span class="fixture-id">gf-pos-01-d-day-timeline</span><h3>건강검진 D-7 타임라인</h3><dl><dt>판정</dt><dd>ready_second_wave · anchor-offset Items</dd><dt>기대</dt><dd class="pass">calendar:ics · checklist:markdown · memo:markdown</dd><dt>금지</dt><dd>sheet:xlsx · todo:markdown</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-02-fixed-routine</span><h3>에어컨 필터 4주 청소</h3><dl><dt>판정</dt><dd>ready_for_internal_canary · source-defined recurrence</dd><dt>기대</dt><dd class="pass">calendar:ics · checklist:plain_text · memo:markdown</dd><dt>금지</dt><dd>sheet:csv · todo:markdown</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-03-source-checklist</span><h3>해외여행 준비물 체크리스트</h3><dl><dt>판정</dt><dd>ready_for_internal_canary · check row마다 Item</dd><dt>기대</dt><dd class="pass">checklist:markdown · checklist:plain_text · memo:markdown</dd><dt>금지</dt><dd>calendar:ics · sheet:xlsx</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-04-ordered-phase-procedure</span><h3>고용24 취업지원 시작 절차</h3><dl><dt>판정</dt><dd>ready_for_internal_canary · ordered Steps + Items</dd><dt>기대</dt><dd class="pass">checklist:markdown · todo:markdown · memo:markdown</dd><dt>금지</dt><dd>calendar:ics · sheet:xlsx</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-05-table-progress</span><h3>K-MOOC 15주 진도표</h3><dl><dt>판정</dt><dd>ready_for_internal_canary · source rows + record Fields</dd><dt>기대</dt><dd class="pass">sheet:csv · sheet:xlsx · checklist:markdown · memo:markdown</dd><dt>금지</dt><dd>calendar:ics · todo:markdown</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-06-memo-first</span><h3>레시피 영상 실행 메모</h3><dl><dt>판정</dt><dd>ready_second_wave · 적용 Item 1개 + Memo</dd><dt>기대</dt><dd class="pass">memo:markdown · memo:plain_text · checklist:plain_text</dd><dt>금지</dt><dd>calendar:ics · sheet:xlsx</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-07-decision-hold</span><h3>중고차 후보 결정·보류</h3><dl><dt>판정</dt><dd>ready_second_wave · decision options + next review</dd><dt>기대</dt><dd class="pass">checklist:markdown · sheet:csv · memo:markdown</dd><dt>금지</dt><dd>calendar:ics · todo:plain_text</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-08-evidence-caution</span><h3>영유아 건강검진 준비 증빙·주의</h3><dl><dt>판정</dt><dd>ready_second_wave · Field/Memo/SourceRef facet</dd><dt>기대</dt><dd class="pass">checklist:markdown · sheet:csv · memo:markdown</dd><dt>금지</dt><dd>calendar:ics · todo:markdown</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-09-resource-queue</span><h3>30일 사진 prompt queue</h3><dl><dt>판정</dt><dd>ready_for_internal_canary · imported resource rows</dd><dt>기대</dt><dd class="pass">calendar:ics · checklist:markdown · sheet:csv · memo:markdown</dd><dt>금지</dt><dd>todo:markdown · sheet:tsv</dd></dl></article>
+        <article class="fixture"><span class="fixture-id">gf-pos-10-sparse-official-lifecycle</span><h3>자동차 정기검사 날짜 창</h3><dl><dt>판정</dt><dd>ready_second_wave · date-window Item 1개</dd><dt>기대</dt><dd class="pass">calendar:ics · checklist:markdown · memo:markdown</dd><dt>금지</dt><dd>sheet:xlsx · todo:markdown</dd></dl></article>
+        <article class="fixture negative"><span class="fixture-id">gf-neg-01-missing-source-rows</span><h3>원문 row가 없는 파일 후보</h3><dl><dt>입력</dt><dd>파일 후보는 있지만 source row import 전</dd><dt>판정</dt><dd class="block">source_import_required · canonical content 없음</dd><dt>금지</dt><dd>calendar:ics · checklist:markdown · todo:markdown · sheet:csv · memo:markdown</dd></dl></article>
+        <article class="fixture negative"><span class="fixture-id">gf-neg-02-nonlocal-sensitive-source</span><h3>한국 적용성이 확인되지 않은 민감 출산 준비</h3><dl><dt>입력</dt><dd>locale applicability가 검증되지 않은 민감 source</dd><dt>판정</dt><dd class="block">hold · canonical content 없음</dd><dt>금지</dt><dd>calendar:ics · checklist:markdown · todo:markdown · sheet:csv · memo:markdown</dd></dl></article>
+      </div>
+      <div class="contract-links">
+        <a href="../specs/2026-07-11-canonical-flow-data-model/spec.md">Canonical Flow 전체 스펙</a>
+        <a href="../specs/2026-07-11-canonical-flow-data-model/canonical-flow-contract.ts">Machine-readable TypeScript 계약</a>
+        <a href="../specs/2026-07-11-canonical-flow-data-model/golden-fixtures-v1.json">12개 golden fixtures JSON</a>
+        <a href="../specs/2026-07-11-canonical-flow-data-model/storage-api-contract.md">Storage / API 계약</a>
+      </div>
+    </section>
+
+    <section id="storage">
+      <div class="section-head">
+        <h2>저장소와 API: content·review·user state를 분리한다</h2>
+        <p>처음부터 Flow/Step/Item을 UI 테이블처럼만 저장하지 않는다. immutable versioned canonical JSON을 보존하면서 stable identity와 조회에 필요한 node index를 함께 둔다.</p>
+      </div>
+      <div class="storage-grid">
+        <div class="storage-stack">
+          <article class="storage-layer"><h3>1. Source layer</h3><p><code>sources</code> · <code>source_snapshots</code> · <code>source_rows</code>. 원본 identity와 immutable 추출본.</p></article>
+          <article class="storage-layer"><h3>2. Canonical content</h3><p><code>flow_contents</code> · <code>flow_content_versions</code> · <code>flow_nodes</code>와 Flow/Step/Item/Field/Memo index.</p></article>
+          <article class="storage-layer"><h3>3. Conversion / Review</h3><p><code>conversion_requests</code> · <code>generation_runs</code> · <code>conversion_proposals</code> · <code>draft_overlays</code> · <code>review_records</code>.</p></article>
+          <article class="storage-layer"><h3>4. User copy / Run</h3><p><code>user_flow_copies</code> · <code>user_item_overlays</code> · <code>execution_runs</code> · <code>execution_item_states</code> · <code>version_reviews</code>.</p></article>
+          <article class="storage-layer"><h3>5. Migration provenance</h3><p><code>local_import_batches</code>. 어떤 local key가 언제 무엇으로 import됐는지 남겨 rollback과 중복 방지를 지원한다.</p></article>
+        </div>
+        <aside class="api-panel">
+          <h3>API surface</h3>
+          <p style="color: var(--muted); line-height: 1.65;">URL intake와 AI proposal은 user copy 저장 이전의 별도 상태다. projection은 항상 effective merged state를 읽는다.</p>
+          <div class="api-list">
+            <div class="api-row"><b>POST</b><span>/api/v1/url-intakes</span></div>
+            <div class="api-row"><b>POST</b><span>/api/v1/url-intakes/{id}/generate</span></div>
+            <div class="api-row"><b>PATCH</b><span>/api/v1/url-intakes/{id}/overlay</span></div>
+            <div class="api-row"><b>POST</b><span>/api/v1/url-intakes/{id}/review</span></div>
+            <div class="api-row"><b>POST</b><span>/api/v1/url-intakes/{id}/save</span></div>
+            <div class="api-row"><b>POST</b><span>/api/v1/my-flows/{copyId}/runs</span></div>
+            <div class="api-row"><b>POST</b><span>/api/v1/my-flows/{copyId}/version-reviews</span></div>
+            <div class="api-row"><b>GET</b><span>/api/v1/my-flows/{copyId}/projection</span></div>
+            <div class="api-row"><b>POST</b><span>/api/v1/local-imports/preview · /commit</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="migration">
+      <div class="section-head">
+        <h2>상태·버전·사용자 수정 우선순위</h2>
+        <p>한 개의 <code>status</code>로 content lifecycle, generation UX, source acquisition, execution을 섞지 않는다. merge 순서와 각 상태의 owner를 계약에 고정한다.</p>
+      </div>
+      <div class="state-rail" aria-label="generation UX state">
+        <div><b>01</b><span>ready</span></div>
+        <div><b>02</b><span>generating</span></div>
+        <div><b>03A</b><span>proposal</span></div>
+        <div><b>03B</b><span>partial</span></div>
+        <div><b>03C</b><span>failed</span></div>
+        <div><b>04</b><span>reviewed</span></div>
+        <div><b>05</b><span>saved</span></div>
+      </div>
+      <div class="precedence">
+        <h3>Effective merge order</h3>
+        <ol>
+          <li>pinned immutable content version</li>
+          <li>reviewed version resolution</li>
+          <li>UserFlowCopy overlay</li>
+          <li>ExecutionRun state</li>
+          <li>occurrence-specific override</li>
+          <li>unsaved UI buffer · 저장 전 비정본</li>
+        </ol>
+      </div>
+      <div class="migration">
+        <div><h3>local</h3><p>현재 localStorage read/write를 유지한다. canonical adapter와 parity 검증만 추가한다.</p></div>
+        <div><h3>shadow-write</h3><p>local을 authoritative로 유지하면서 server에도 idempotent write한다. import batch provenance를 기록한다.</p></div>
+        <div><h3>server-primary</h3><p>검증 후 server read를 우선한다. feature flag로 local path에 즉시 rollback할 수 있다.</p></div>
+      </div>
+      <div class="facet-example"><strong>삭제 금지:</strong> migration 완료만으로 기존 local key를 자동 삭제하지 않는다. 새 published version도 saved copy를 조용히 덮어쓰지 않는다. removed Item에 개인 상태가 있으면 사용자가 정리할 때까지 retained/orphaned로 보존한다.</div>
+    </section>
+
+    <section id="backend">
+      <div class="section-head">
+        <h2>Backend 착수 순서와 이번 비범위</h2>
+        <p>DB나 LLM API부터 연결하지 않는다. canonical validator와 projection parity가 먼저다. 그래야 provider나 저장소를 바꿔도 Flow 의미가 유지된다.</p>
+      </div>
+      <div class="sequence">
+        <article><h3>계약 고정</h3><p>TypeScript contract, JSON fixture, runtime validator, hard-fail 규칙을 확정한다.</p></article>
+        <article><h3>Fixture 검증</h3><p>12개 shape의 expected/forbidden projection과 negative gate를 자동 검증한다.</p></article>
+        <article><h3>Compatibility adapter</h3><p>canonical → 현행 FlowBundle을 만들고 count, date window, source, export parity를 비교한다.</p></article>
+        <article><h3>내부 canary</h3><p>July ready-for-internal-canary 5개 bundle, 49 Items부터 shadow 검증한다.</p></article>
+        <article><h3>Repository / DB</h3><p>provider-neutral repository와 immutable version 저장을 feature flag 뒤에 붙인다.</p></article>
+        <article><h3>안전한 URL intake</h3><p>canonical URL, snapshot, source rows, rights/risk를 LLM 이전에 확보한다.</p></article>
+        <article><h3>LLM provider adapter</h3><p>canonical proposal만 생성하고 validator 실패 시 저장·publish하지 않는다.</p></article>
+        <article><h3>Review / Projection API</h3><p>사용자 overlay, 검토, save, My Flow run, ICS/XLSX/text projection을 같은 effective model에 연결한다.</p></article>
+      </div>
+
+      <div class="scope-grid">
+        <article class="scope-box"><h3>이 스펙에서 확정</h3><ul><li>Item 최소 단위와 SourceRow 근거 단위</li><li>Flow / Step / Item / Field / Memo 계층</li><li>schedule·recurrence·completion·decision·record facet</li><li>taxonomy와 projection 규칙</li><li>version·overlay·run 우선순위</li><li>storage/API/migration 계약과 fixture gate</li></ul></article>
+        <article class="scope-box out"><h3>이번에는 구현하지 않음</h3><ul><li>Supabase project, SQL migration, Auth, RLS 배포</li><li>실제 URL crawler, background worker, API key</li><li>실제 LLM provider 연결과 자동 retry</li><li>auto-publish, 공개 catalog promotion</li><li>새 사용자-facing type 탭 또는 raw schema UI</li><li>Calendar/Sheets OAuth와 기존 local data 삭제</li></ul></article>
+      </div>
+
+      <div class="handoff">
+        <strong>개발 시작 신호</strong>
+        <p><code>canonical-flow-contract.ts</code>가 strict compile되고, 12개 fixture validator가 통과하며, canonical→FlowBundle adapter가 Item count·source link·date window·ICS/text/XLSX parity를 증명하면 repository와 URL intake backend를 시작할 수 있다.</p>
+      </div>
+    </section>
+
+    <footer>
+      이 보드는 <a href="../specs/2026-07-11-canonical-flow-data-model/spec.md">Canonical Flow Data Model v1</a>,
+      <a href="../specs/2026-07-11-canonical-flow-data-model/canonical-flow-contract.ts">TypeScript reference contract</a>,
+      <a href="../specs/2026-07-11-canonical-flow-data-model/golden-fixtures-v1.json">golden fixtures</a>,
+      <a href="../specs/2026-07-11-canonical-flow-data-model/storage-api-contract.md">storage/API contract</a>의 사람용 검토 projection이다.
+    </footer>
+  </main>
+</body>
+</html>
