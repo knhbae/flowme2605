@@ -57,12 +57,12 @@
 - [x] P24-00S1 date movement pure contract.
 - [x] P24-00U3 Calendar unscheduled tray.
 - [x] P24-00S2 export scope contract and shared multi-select.
-- [ ] P24-00U4 inline notes and reflection aggregation.
+- [x] P24-00U4 inline notes and reflection aggregation.
 
 ## Operations and Observation
 
-- [ ] P24-00OPS1 public observation URL.
-- [ ] Controlled dependency upgrade or explicit rollback decision.
+- [x] P24-00OPS1 public observation URL.
+- [ ] P24-00OPS2 controlled dependency upgrade with high `0`, full/sharded E2E, and rollback evidence.
 - [ ] Independent Claude Code regression on the same commit and lockfile.
 - [ ] P24-00B 15 observed sessions.
 - [ ] P24-00C keep/change/defer review.
@@ -70,10 +70,10 @@
 
 ## Documentation Sync Register
 
-The following root files already contain unrelated dirty changes. Do not mix them into this planning commit.
+The earlier dirty-worktree ownership block is closed on merged `main`; keep future sync changes scoped to their own commits.
 
-- [ ] Update `docs/STATUS.md` primary focus after existing ownership is resolved.
-- [ ] Replace the old P23/P24 ordering in `docs/ROADMAP.md` after existing ownership is resolved.
-- [ ] Add this spec to `docs/specs/README.md` after its current uncommitted index changes are committed or discarded by their owner.
+- [x] Update `docs/STATUS.md` to the P24 completion gate.
+- [x] Replace the old P23/P24 ordering in `docs/ROADMAP.md`.
+- [x] Add this spec to `docs/specs/README.md`.
 - [ ] Add only settled interaction rules to `docs/DECISIONS.md` after P24-00C; do not record design proposals as decisions now.
 - [ ] Project only the active human gates to Notion when the connector and canonical GitHub links are available.

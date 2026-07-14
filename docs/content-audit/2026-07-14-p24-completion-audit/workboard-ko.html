@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe P24 완료 감사 보드</title>
+  <style>
+    :root { --ink:#182026; --muted:#5e6a72; --line:#d7dde1; --surface:#fff; --wash:#f3f5f6; --green:#11745c; --green-soft:#e8f4ef; --red:#a13c3c; --red-soft:#fbecec; --amber:#8a5a00; --amber-soft:#fff2cf; --blue:#28599a; --blue-soft:#eaf1fa; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--wash); font-family:Inter,Pretendard,"Noto Sans KR",system-ui,sans-serif; line-height:1.55; letter-spacing:0; }
+    a { color:var(--blue); }
+    header { border-bottom:1px solid var(--line); background:var(--surface); }
+    header div, main { width:min(1180px,calc(100% - 32px)); margin:0 auto; }
+    header div { display:flex; justify-content:space-between; align-items:center; gap:16px; min-height:62px; }
+    header strong { font-size:17px; }
+    header span { color:var(--muted); font-size:13px; }
+    main { padding:26px 0 60px; }
+    h1 { margin:0; font-size:clamp(28px,4vw,44px); line-height:1.12; }
+    h2 { margin:0 0 14px; font-size:21px; }
+    h3 { margin:0 0 7px; font-size:16px; }
+    p { margin:0; }
+    section { margin-top:30px; }
+    .hero { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:20px; align-items:start; }
+    .hero p { max-width:760px; margin-top:12px; color:var(--muted); }
+    .verdict { padding:16px; border-left:4px solid var(--amber); background:var(--amber-soft); }
+    .verdict b { display:block; font-size:20px; }
+    .verdict span { color:var(--amber); font-size:12px; font-weight:800; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:22px; }
+    .metric { padding:14px; border:1px solid var(--line); border-radius:8px; background:var(--surface); }
+    .metric b { display:block; font-size:24px; }
+    .metric span { color:var(--muted); font-size:13px; }
+    .lanes { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .lane { min-width:0; padding:15px; border:1px solid var(--line); border-radius:8px; background:var(--surface); }
+    .lane.done { border-top:4px solid var(--green); }
+    .lane.now { border-top:4px solid var(--red); }
+    .lane.next { border-top:4px solid var(--blue); }
+    .lane.later { border-top:4px solid var(--amber); }
+    .lane ul { margin:10px 0 0; padding-left:19px; color:var(--muted); font-size:14px; }
+    .lane li + li { margin-top:6px; }
+    table { width:100%; border-collapse:collapse; background:var(--surface); font-size:14px; }
+    th,td { padding:10px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:#e9edef; }
+    .state { display:inline-block; padding:3px 7px; border-radius:4px; font-size:12px; font-weight:800; }
+    .state.proven { color:var(--green); background:var(--green-soft); }
+    .state.pending { color:var(--red); background:var(--red-soft); }
+    .sequence { counter-reset:step; display:grid; gap:8px; }
+    .step { display:grid; grid-template-columns:38px minmax(0,1fr) auto; gap:10px; align-items:center; padding:12px 14px; border:1px solid var(--line); background:var(--surface); }
+    .step::before { counter-increment:step; content:counter(step); display:grid; place-items:center; width:30px; height:30px; border-radius:50%; color:#fff; background:var(--ink); font-weight:800; }
+    .step p { color:var(--muted); font-size:13px; }
+    .step em { color:var(--blue); font-size:12px; font-style:normal; font-weight:800; white-space:nowrap; }
+    .callout { padding:16px; border-left:4px solid var(--red); background:var(--red-soft); }
+    footer { margin-top:34px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    @media(max-width:860px){ .hero{grid-template-columns:1fr}.metrics,.lanes{grid-template-columns:1fr 1fr} }
+    @media(max-width:560px){ header div,main{width:min(100% - 24px,1180px)} header span{display:none}.metrics,.lanes{grid-template-columns:1fr}.step{grid-template-columns:34px minmax(0,1fr)}.step em{grid-column:2} table{display:block;overflow-x:auto} }
+  </style>
+</head>
+<body>
+  <header><div><strong>FlowMe P24 완료 감사</strong><span>current main · Claude Design (8) · observed-user gate</span></div></header>
+  <main>
+    <div class="hero">
+      <div><h1>구현은 닫혔고,<br>검증은 아직 끝나지 않았다</h1><p>정확성·완료 취소·편집·날짜 없음·내보내기·단계별 메모는 증거로 확인됐다. 남은 일은 dependency high를 제거하고 실제 사람의 3회 여정을 관찰한 뒤 결과를 반영하는 것이다.</p></div>
+      <aside class="verdict"><span>CURRENT VERDICT</span><b>P24 미완료</b><p>자동 QA green, 실제 관찰 0/15</p></aside>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><b>14</b><span>증명된 구현/운영 slice</span></div>
+      <div class="metric"><b>4</b><span>현재 dependency high</span></div>
+      <div class="metric"><b>0/15</b><span>실제 사용자 세션</span></div>
+      <div class="metric"><b>7/7</b><span>Claude 목업 방향 구현</span></div>
+    </div>
+
+    <section>
+      <h2>Now / Next / Later</h2>
+      <div class="lanes">
+        <article class="lane done"><h3>Done</h3><ul><li>date/effective projection</li><li>recurrence/draft/hydration</li><li>completion undo</li><li>progressive editor</li><li>unscheduled tray</li><li>export scope</li><li>execution notes</li><li>public production</li></ul></article>
+        <article class="lane now"><h3>Now</h3><ul><li>Next 15.5.20</li><li>Playwright 1.61.1</li><li>PostCSS 8.5.16</li><li>audit high 0</li><li>full/sharded E2E</li><li>rollback evidence</li></ul></article>
+        <article class="lane next"><h3>Next</h3><ul><li>B1 two-person pilot</li><li>B2 five-user first use</li><li>B3 return/reuse</li><li>15 evidence-backed sessions</li></ul></article>
+        <article class="lane later"><h3>After evidence</h3><ul><li>C1 keep/change/defer</li><li>C2 observed fixes</li><li>C3 final closeout</li><li>source v2 and cloud remain deferred</li></ul></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Claude Design (8) 대조</h2>
+      <table>
+        <thead><tr><th>목업</th><th>현재 구현</th><th>사람에게 확인할 것</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td>A 정확성</td><td>날짜·반복·draft·hydration 정합</td><td>결과를 신뢰하는가</td><td><span class="state proven">구현 증명</span></td></tr>
+          <tr><td>B 편집 축소</td><td>기본 4필드 + 조건부 세부 설정</td><td>설명 없이 수정入口를 찾는가</td><td><span class="state proven">구현 증명</span></td></tr>
+          <tr><td>C 완료 취소</td><td>한 체크박스 + 5초 되돌리기</td><td>시간과 위치가 충분한가</td><td><span class="state proven">구현 증명</span></td></tr>
+          <tr><td>D 날짜 없음</td><td>Calendar tray와 일괄 배치</td><td>Calendar에서 이를 찾는가</td><td><span class="state proven">구현 증명</span></td></tr>
+          <tr><td>E export 범위</td><td>전체/선택/현재 후 형식 선택</td><td>결과 범위를 맞게 예측하는가</td><td><span class="state proven">구현 증명</span></td></tr>
+          <tr><td>F 날짜 이동</td><td>한 항목/선택/기준일/회차/series</td><td>고정·연동 결과를 이해하는가</td><td><span class="state proven">계약 증명</span></td></tr>
+          <tr><td>G 실행 메모</td><td>비공개/원본 수정 분리와 자동 수집</td><td>아이콘이 가치인가 소음인가</td><td><span class="state proven">구현 증명</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>남은 실행 순서</h2>
+      <div class="sequence">
+        <article class="step"><div><h3>OPS2 dependency upgrade</h3><p>high 0, full/sharded E2E, production rollback</p></div><em>기술 gate</em></article>
+        <article class="step"><div><h3>B1 two-person pilot</h3><p>anchor와 draft/undated 첫 세션, script 검증</p></div><em>2/15</em></article>
+        <article class="step"><div><h3>B2 first-use cohort</h3><p>나머지 세 persona를 포함해 첫 사용 완료</p></div><em>5/15</em></article>
+        <article class="step"><div><h3>B3 return sessions</h3><p>수정·실행·export·회고·재사용 재방문</p></div><em>15/15</em></article>
+        <article class="step"><div><h3>C1 evidence decisions</h3><p>keep/change/defer/blocking, 반복 finding 수치화</p></div><em>결정</em></article>
+        <article class="step"><div><h3>C2 observed fixes</h3><p>Blocking/High만 한 행동씩 구현하고 재검증</p></div><em>구현</em></article>
+        <article class="step"><div><h3>C3 final audit</h3><p>전체 test, screenshot, deploy, docs, completion matrix</p></div><em>완료</em></article>
+      </div>
+    </section>
+
+    <section class="callout"><h2>완료라고 부르지 않는 이유</h2><p>514개 단위 테스트와 브라우저 screenshot은 동작을 증명하지만, 사용자가 Today/전체 역할·이동 범위·export 범위·메모 경계를 설명 없이 이해하는지는 증명하지 못한다. 실제 15세션 전까지 P24는 관찰 준비 상태다.</p></section>
+
+    <footer>main 3d7821d · production anonymous HTTP 200 · unit 514/514 · dependency audit high 4 · observed users 0/15</footer>
+  </main>
+</body>
+</html>

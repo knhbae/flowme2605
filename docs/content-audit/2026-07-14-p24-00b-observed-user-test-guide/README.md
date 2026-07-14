@@ -11,6 +11,7 @@
 
 - [한국어 관찰 보드](./guide-ko.html)
 - [세션 기록 템플릿](./session-template.md)
+- [15세션 등록부](./session-register.json)
 - [P24 조정 백로그](../2026-07-14-flowme-p24-feedback-reconciliation/backlog.md)
 - [P24 U4 단계별 실행 메모 evidence](../2026-07-14-p24-u4-inline-execution-notes-evidence/README.md)
 

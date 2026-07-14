@@ -1,14 +1,27 @@
 # Roadmap
 
-**Last Updated:** 2026-05-25
-**Current Version:** v0.1.0 (In Development)
-**Next Version:** v0.2.0 (Post-validation polish)
+**Last Updated:** 2026-07-14
+**Current Version:** v0.1.0 (Released, observed-user validation pending)
+**Next Version:** v0.2.0 (Post-observation decisions)
 
 ## Completed Releases
 
 > Release history lives in [HISTORY.md](./HISTORY.md).
 
-No tagged releases yet.
+v0.1.0 is released. Product behavior is automated-QA green but not yet observed-user validated.
+
+## Current P24 Completion Gate
+
+Detailed status lives in the [P24 completion audit](./content-audit/2026-07-14-p24-completion-audit/README.md) and [P24 execution-trust spec](./specs/2026-07-14-p24-execution-trust-ux-simplification/spec.md).
+
+| Item | Description | Status |
+| --- | --- | --- |
+| P24 implementation | Date/effective projection, recurrence, draft integrity, completion undo, editor, Calendar tray, export scope, execution notes | Done by automated evidence |
+| P24-00OPS1 | Public anonymous production URL | Done |
+| P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E and rollback | In progress |
+| P24-00B | Five real participants x three sessions | Ready after OPS2, `0 / 15` |
+| P24-00C | Keep/change/defer and observed fixes | Pending P24-00B |
+| P24 final | Final regression, production deploy and completion package | Pending |
 
 ## Upcoming Releases
 
@@ -18,11 +31,11 @@ No tagged releases yet.
 
 | Item | Description | Status |
 |------|-------------|--------|
-| First flag flow | Parenting/infant vaccination and checkup preparation route | In progress |
-| Alternate route | Moving D-30 timeline route for lower-risk comparison | In progress |
-| Execution actions | Copy, CSV export, share text, local check state | In progress |
-| Source-backed conversion readiness | Exact source replacement, natural artifact simulation, and source/risk separation before representative framing | In progress |
-| Verification | Unit tests, production build, Playwright E2E | In progress |
+| First flag flow | Parenting/infant vaccination and checkup preparation route | Released, observation pending |
+| Alternate route | Moving D-30 timeline route for lower-risk comparison | Released, observation pending |
+| Execution actions | Save, edit, schedule, complete/reopen, export, note and reuse | Implemented, observation pending |
+| Source-backed conversion readiness | Exact source replacement, natural artifact simulation, and source/risk separation before representative framing | Implemented baseline |
+| Verification | Unit tests, production build, Playwright E2E, public production | Automated green; human evidence pending |
 
 ### v0.2.0 - Evidence Capture
 
