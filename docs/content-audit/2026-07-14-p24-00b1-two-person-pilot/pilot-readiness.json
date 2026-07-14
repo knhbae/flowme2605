@@ -1,0 +1,38 @@
+{
+  "program": "P24-00B1",
+  "evidenceType": "observed_user_readiness",
+  "status": "ready_not_run",
+  "productionUrl": "https://flowme2605.vercel.app",
+  "productBaselineCommit": "d6487a0d3352de358320b15ceeacd8b5405eb04e",
+  "targetSessions": 2,
+  "observedSessions": 0,
+  "startRoutes": { "P1-S1": "/", "P2-S1": "/f/vehicle-inspection-prep" },
+  "participants": [
+    { "participantId": "P1", "persona": "anchor_date", "session": 1, "status": "not_started" },
+    { "participantId": "P2", "persona": "undated_checklist", "session": 1, "status": "not_started" }
+  ],
+  "requiredArtifacts": [
+    "session-p1-s1.md",
+    "session-p2-s1.md",
+    "session-register.json evidence references"
+  ],
+  "stopOn": [
+    "saved data loss",
+    "wrong effective date",
+    "completion state attached to a different item or occurrence",
+    "export scope mismatch",
+    "production access failure"
+  ],
+  "automatedQaCountsAsObservedSession": false,
+  "visualInspection": {
+    "mobileWidth": 390,
+    "wideWidth": 1024,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "screenshots": [
+      "screenshots/pilot-board-mobile.png",
+      "screenshots/pilot-board-wide.png"
+    ]
+  },
+  "p24Complete": false
+}
