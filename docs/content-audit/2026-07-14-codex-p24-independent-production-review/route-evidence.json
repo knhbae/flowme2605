@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-14T16:04:23Z",
+  "generatedAtKst": "2026-07-15T01:04:23+09:00",
+  "reviewType": "independent_production_and_origin_main",
+  "methodology": {
+    "currentCommand": true,
+    "currentBrowser": true,
+    "priorArtifactUsedAsCurrentResult": false,
+    "automatedSimulation": true,
+    "observedUser": false,
+    "actualObservedUserSessions": 0,
+    "plannedObservedUserSessions": 15
+  },
+  "baseline": {
+    "remote": "origin/main",
+    "sha": "1f0361209fac3cdd85c67cf64496ff5d5dd9fb9d",
+    "worktree": "D:/flowme2605/.tmp/flowme-p24-independent-production-review",
+    "branch": "codex/p24-independent-production-review",
+    "packageLockPreserved": true,
+    "appCodeChanged": false,
+    "dependencyFilesChanged": false,
+    "existingStatusDocsChanged": false
+  },
+  "production": {
+    "publicUrl": "https://flowme2605.vercel.app",
+    "anonymousStatus": 200,
+    "anonymousAccess": true,
+    "ssoRedirected": false,
+    "githubDeploymentSha": "1f0361209fac3cdd85c67cf64496ff5d5dd9fb9d",
+    "githubDeploymentEnvironment": "Production",
+    "githubDeploymentState": "success",
+    "protectedDeploymentUrl": "https://flowme2605-61usach7j-flowme.vercel.app",
+    "protectedDeploymentDirectAssetComparisonAvailable": false,
+    "publicAliasP24CorePass": true
+  },
+  "commands": [
+    {
+      "command": "npm.cmd ci",
+      "evidenceKind": "current_command",
+      "status": "passed",
+      "detail": "215 packages installed from package-lock; no manifest or lockfile changes"
+    },
+    {
+      "command": "npm.cmd run docs:check",
+      "evidenceKind": "current_command",
+      "status": "passed",
+      "detail": "14 required files, 2214 local links"
+    },
+    {
+      "command": "npm.cmd test",
+      "evidenceKind": "current_command",
+      "status": "passed",
+      "passed": 514,
+      "failed": 0
+    },
+    {
+      "command": "npm.cmd run build",
+      "evidenceKind": "current_command",
+      "status": "passed",
+      "nextVersion": "15.5.20",
+      "staticPages": 18
+    },
+    {
+      "command": "playwright p24-execution-trust.spec.ts local --workers=1",
+      "evidenceKind": "current_command",
+      "status": "passed",
+      "passed": 14,
+      "failed": 0
+    },
+    {
+      "command": "npm.cmd run test:e2e",
+      "evidenceKind": "current_command",
+      "status": "failed",
+      "listedTestCount": 274,
+      "firstParallelRunFailedTestCount": 7,
+      "firstParallelFailureRerunPassed": 7,
+      "serialRunPassed": 270,
+      "serialRunFailed": 4,
+      "serialFailureRerunPassed": 2,
+      "persistentFailureCount": 2,
+      "persistentFailureClassification": "date_coupled_test_expectation",
+      "productBehaviorIncorrect": false
+    },
+    {
+      "command": "playwright p24-execution-trust.spec.ts production --workers=1",
+      "evidenceKind": "current_browser",
+      "status": "passed",
+      "passed": 14,
+      "failed": 0
+    },
+    {
+      "command": "production recurrence and public keyboard targeted E2E",
+      "evidenceKind": "current_browser",
+      "status": "passed",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "command": "production structural edit and recovery keyboard targeted E2E",
+      "evidenceKind": "current_browser",
+      "status": "passed",
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "command": "production personal copy edit/export with clipboard permissions",
+      "evidenceKind": "current_browser",
+      "status": "passed",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "npm.cmd audit --json",
+      "evidenceKind": "current_command",
+      "status": "completed_with_findings",
+      "critical": 0,
+      "high": 0,
+      "moderate": 4,
+      "low": 0,
+      "directPaths": ["next", "exceljs"]
+    }
+  ],
+  "persistentE2EFailures": [
+    {
+      "test": "product IA v2 keeps discovery simple and saved execution clear",
+      "fileLine": "tests/e2e/flow-mvp.spec.ts:1539",
+      "route": "/flow-maps/moving-d30 -> /my?savedMap=moving-d30",
+      "viewport": "390x844",
+      "expected": "지난 할 일",
+      "actual": "2026-07-15 is D-7 for the fixed 2026-07-22 anchor, so the D-7 item is Today",
+      "classification": "stale_date_fixture"
+    },
+    {
+      "test": "source-backed moving map saves one dated timeline into My Flow calendar",
+      "fileLine": "tests/e2e/flow-mvp.spec.ts:3893",
+      "route": "/flow-maps/moving-d30 -> /my?savedMap=moving-d30",
+      "viewport": "390x844",
+      "expected": "D-30 estimate detail",
+      "actual": "D-7 administration/address detail selected for Today on 2026-07-15",
+      "classification": "stale_date_fixture"
+    }
+  ],
+  "routeInspection": {
+    "routeViewportCount": 10,
+    "status200Count": 10,
+    "horizontalOverflowCount": 0,
+    "fixedNavigationInteractiveOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "unnamedVisibleInteractiveCount": 0,
+    "flowsHardReloadResolvedByViewport": {
+      "390x844": true,
+      "1024x768": true
+    },
+    "routes": [
+      {"route": "/", "viewport": "390x844", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "screenshot": "inspection-home-mobile.png"},
+      {"route": "/", "viewport": "1024x768", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "screenshot": "inspection-home-wide.png"},
+      {"route": "/flows", "viewport": "390x844", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "hardReloadResolved": true, "screenshot": "inspection-flows-mobile.png"},
+      {"route": "/flows", "viewport": "1024x768", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "hardReloadResolved": true, "screenshot": "inspection-flows-wide.png"},
+      {"route": "/my", "viewport": "390x844", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "screenshot": "inspection-my-empty-mobile.png"},
+      {"route": "/my", "viewport": "1024x768", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "screenshot": "inspection-my-empty-wide.png"},
+      {"route": "/calendar", "viewport": "390x844", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "screenshot": "inspection-calendar-empty-mobile.png"},
+      {"route": "/calendar", "viewport": "1024x768", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "screenshot": "inspection-calendar-empty-wide.png"},
+      {"route": "/f/vehicle-inspection-prep", "viewport": "390x844", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "fullPageHeightPx": 3220, "screenshot": "inspection-public-vehicle-mobile.png"},
+      {"route": "/f/vehicle-inspection-prep", "viewport": "1024x768", "status": 200, "overflowPx": 0, "consoleErrors": 0, "unnamedControls": 0, "fullPageHeightPx": 2311, "screenshot": "inspection-public-vehicle-wide.png"}
+    ]
+  },
+  "correctness": {
+    "kstLocalDateDefaultCorrect": true,
+    "dateOverrideTodayListCalendarIcsParity": true,
+    "reuseKeepsFixedPersonalDate": true,
+    "reuseRecalculatesLinkedDates": true,
+    "recurrencePreviewMyFlowCalendarIcsAligned": true,
+    "recurrenceOccurrenceCompletionReversible": true,
+    "memoDraftAllSplitItemsVisible": true,
+    "memoDraftAllSplitItemsExported": true,
+    "emptyMissSaveBlocked": true,
+    "flowsHardNavigationResolved": true,
+    "publicPostSaveHydrationResolved": true,
+    "publicPreSavePreviewPostSaveCompletionBoundary": true
+  },
+  "claudeDesign": {
+    "A_progressiveEditor": {"automatedStatus": "supported", "humanValidationRequired": true},
+    "B_completionUndo": {"automatedStatus": "supported", "humanValidationRequired": true},
+    "C_unscheduledCalendarTray": {"automatedStatus": "supported", "humanValidationRequired": true},
+    "D_exportScopeFirst": {"automatedStatus": "supported", "humanValidationRequired": true},
+    "E_linkedVsFixedDate": {"automatedStatus": "supported", "humanValidationRequired": true},
+    "F_oneOccurrenceOneControl": {"automatedStatus": "supported", "duplicateActionableRowKeyCount": 0, "humanValidationRequired": true},
+    "G_inlineExecutionNotes": {"automatedStatus": "supported", "humanValidationRequired": true}
+  },
+  "screenshots": {
+    "directory": "screenshots",
+    "count": 43,
+    "mobileViewport": "390x844",
+    "wideViewport": "1024x768",
+    "evidenceKind": "current_browser"
+  },
+  "summary": {
+    "currentProductBlockerReproduced": false,
+    "currentProductCoreRegressionPass": true,
+    "fullE2EGateClean": false,
+    "actualUserValidationComplete": false,
+    "readyForObservedUserSessionsAfterTestFixtureRepair": true
+  }
+}

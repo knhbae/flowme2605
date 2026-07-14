@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-14T16:04:23Z",
+  "baselineSha": "1f0361209fac3cdd85c67cf64496ff5d5dd9fb9d",
+  "productionUrl": "https://flowme2605.vercel.app",
+  "evidenceKind": "current_browser_automated_simulation",
+  "observedUserSessions": 0,
+  "journeys": [
+    {
+      "id": "anchor_reverse_moving",
+      "persona": "기준일 역산형 이사 준비 사용자",
+      "automatedStatus": "supported",
+      "routes": ["/flow-maps/moving-d30", "/my", "/calendar"],
+      "steps": [
+        {"action": "이사일 입력 후 저장", "result": "supported"},
+        {"action": "이사일 변경과 전체 상대 일정 재계산", "result": "supported"},
+        {"action": "개별 날짜 고정", "result": "supported"},
+        {"action": "완료 후 실행 취소", "result": "supported"},
+        {"action": "전체/선택 export", "result": "supported"},
+        {"action": "새 이사일로 다시 쓰며 개인 날짜 유지", "result": "supported"}
+      ],
+      "currentEvidence": [
+        "production P24 core test 14/14",
+        "screenshots/f2b-00-reuse-keep-policy-mobile.png",
+        "screenshots/f2b-03-reuse-fixed-date-calendar-wide.png"
+      ],
+      "humanQuestion": "연결 날짜와 따로 바꾼 날짜의 차이를 설명 없이 이해하는가?"
+    },
+    {
+      "id": "undated_vehicle_checklist",
+      "persona": "날짜 없는 차량 점검 체크리스트 사용자",
+      "automatedStatus": "supported",
+      "routes": ["/f/vehicle-inspection-prep", "/my", "/calendar"],
+      "steps": [
+        {"action": "public 저장 전 preview 확인", "result": "supported"},
+        {"action": "키보드로 My Flow 저장", "result": "supported"},
+        {"action": "Calendar 미배치함에서 항목 선택", "result": "supported"},
+        {"action": "날짜 preview 후 배치와 undo", "result": "supported"},
+        {"action": "완료와 완료 취소", "result": "supported"},
+        {"action": "선택 범위 export", "result": "supported"}
+      ],
+      "currentEvidence": [
+        "production public keyboard test pass",
+        "screenshots/u3-00-calendar-unscheduled-selection-mobile.png",
+        "screenshots/s2-01-source-backed-selected-export-mobile.png"
+      ],
+      "humanQuestion": "Calendar에서 날짜 없는 항목 entry를 도움 없이 발견하는가?"
+    },
+    {
+      "id": "recurring_routine",
+      "persona": "운동 또는 정기 청소 반복 루틴 사용자",
+      "automatedStatus": "supported",
+      "routes": ["/f/real-allblanc-lower-body-strength-10min", "/my", "/calendar"],
+      "steps": [
+        {"action": "4주 반복 preview 저장", "result": "supported"},
+        {"action": "My Flow 회차 확인", "result": "supported"},
+        {"action": "Calendar occurrence 확인", "result": "supported"},
+        {"action": "한 회차 완료와 재개", "result": "supported"},
+        {"action": "개인 draft recurrence skip/held", "result": "supported_current_local_suite"},
+        {"action": "RRULE/ICS 비교", "result": "supported"}
+      ],
+      "currentEvidence": [
+        "production Allblanc recurrence test pass",
+        "production personal draft occurrence test pass",
+        "current local full-suite recurrence tests pass"
+      ],
+      "humanQuestion": "사용자가 한 회차의 완료와 series 전체 완료를 자연스럽게 구분하는가?"
+    },
+    {
+      "id": "personal_draft_structure",
+      "persona": "메모 또는 URL miss로 개인 초안을 만드는 사용자",
+      "automatedStatus": "supported",
+      "routes": ["/flows", "/my", "/calendar"],
+      "steps": [
+        {"action": "여러 줄 메모를 여러 항목으로 저장", "result": "supported"},
+        {"action": "빈 miss 저장 차단", "result": "supported"},
+        {"action": "항목 add/delete/undo/restore/reorder", "result": "supported"},
+        {"action": "날짜·시간·반복 설정", "result": "supported"},
+        {"action": "Calendar와 portable export 반영", "result": "supported"},
+        {"action": "reload persistence", "result": "supported"}
+      ],
+      "currentEvidence": [
+        "production memo split test pass",
+        "production structural keyboard tests 2/2",
+        "production recurrence occurrence test pass",
+        "screenshots/f3b-00-memo-split-items-mobile.png",
+        "screenshots/u2-01-progressive-editor-advanced-mobile.png"
+      ],
+      "humanQuestion": "고급 편집을 열었을 때 현재 수정 범위와 저장 결과를 놓치지 않는가?"
+    },
+    {
+      "id": "public_save_execute_review_reuse",
+      "persona": "공개 Flow를 저장하고 실행·회고·재사용하는 사용자",
+      "automatedStatus": "supported_with_visual_risk",
+      "routes": ["/f/vehicle-inspection-prep", "/my", "/calendar"],
+      "steps": [
+        {"action": "저장 전 preview 선택", "result": "supported"},
+        {"action": "Flow 단위 저장", "result": "supported"},
+        {"action": "저장 직후 My Flow hydration", "result": "supported"},
+        {"action": "실행 row 완료와 취소", "result": "supported"},
+        {"action": "단계별 개인 메모와 원문 알릴 점", "result": "supported"},
+        {"action": "완료 후 기록 집계와 새 실행", "result": "supported"}
+      ],
+      "currentEvidence": [
+        "production public hydration test pass",
+        "production inline note aggregation test pass",
+        "screenshots/inspection-public-vehicle-mobile.png",
+        "screenshots/u4-02-completion-note-aggregation-wide.png"
+      ],
+      "visualRisk": "public vehicle mobile full-page height 3220px at a 844px viewport",
+      "humanQuestion": "저장 전 긴 public 화면에서 필요한 정보만 읽고 확신 있게 저장하는가?"
+    }
+  ],
+  "accessibility": {
+    "routeViewportInspectionCount": 10,
+    "unnamedVisibleInteractiveCount": 0,
+    "publicSaveKeyboardPath": "passed",
+    "structuralEditKeyboardPaths": "passed",
+    "recurrenceOccurrenceKeyboardPaths": "passed_current_local_suite",
+    "actualAssistiveTechnologyUserSessionCount": 0
+  },
+  "overall": {
+    "automatedSupportedJourneyCount": 5,
+    "automatedPartialJourneyCount": 0,
+    "automatedBlockedJourneyCount": 0,
+    "humanValidatedJourneyCount": 0,
+    "productBlockerReproduced": false,
+    "qaGateDebtPresent": true
+  }
+}
