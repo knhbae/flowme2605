@@ -1,11 +1,13 @@
 # Project Status
 
-**Last Updated:** 2026-07-14 (P24 pre-observation baseline)
-**Status:** v0.1.0 RELEASED / P24 OBSERVED-USER TEST READY
+**Last Updated:** 2026-07-14 (P24 completion audit)
+**Status:** v0.1.0 RELEASED / P24 PRE-OBSERVATION OPS GATE
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P24-00B with 5 participants x 3 sessions on the public production URL, then classify findings in P24-00C. Automated QA is not user validation.
+**Primary Focus:** Close P24-00OPS2 controlled dependency upgrade, then run P24-00B with 5 participants x 3 sessions and classify findings in P24-00C. Automated QA is not user validation.
 
 ## Recent Direction Notes
+
+- 2026-07-14 P24 completion audit: Rechecked current `main` `3d7821d` against every P24 implementation slice and Claude Design `(8)` mockup A-G. Fourteen implementation/operations slices have direct evidence, but P24 remains incomplete because actual observation is `0 / 15`, P24-00C decisions do not exist, and the current dependency audit is critical `0`, high `4`, moderate `3`. [P24 completion audit](./content-audit/2026-07-14-p24-completion-audit/README.md) promotes the already-proven dependency candidate into `P24-00OPS2` before human observation, then fixes the remaining sequence as `B1 two-person pilot -> B2 five-user first-use -> B3 return sessions -> C1 decisions -> C2 observed fixes -> C3 final audit`. This is a gate adjustment, not a claim of user validation.
 
 - 2026-07-14 P24 observation operations: PR [#120](https://github.com/knhbae/flowme2605/pull/120) merged as `bc8fc649`, Vercel production deployment `dpl_GdeGC2WdBz34ttHp4fZyQkYmRLP6` reached `Ready`, and <https://flowme2605.vercel.app> returned the FLOW home with anonymous HTTP 200 instead of the Vercel login wall. [P24-00B observed-user guide](./content-audit/2026-07-14-p24-00b-observed-user-test-guide/README.md) turns the Claude Design `(8)` mockups A-G into five persona journeys across discovery, save, edit, schedule, completion/reopen, export, incremental notes, review, and reuse. This makes the operations gate ready, not validated: observed-user sessions remain `0 / 15` until real participants complete them.
 

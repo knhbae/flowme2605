@@ -36,6 +36,7 @@ Keep the short topic stable. If the work is rescoped, update the files inside th
 
 ## Active Specs
 
+- [2026-07-14 P24 Execution Trust and UX Simplification](./2026-07-14-p24-execution-trust-ux-simplification/spec.md) - closes execution correctness and Claude Design `(8)` UX slices, then requires controlled dependencies and 15 real observed sessions before completion.
 - [2026-07-11 URL-first AI Draft Gate](./2026-07-11-url-first-ai-draft-gate/spec.md) - defines the provider-neutral AI proposal, user review, safety, privacy, failure, and deterministic fallback contract before any real AI integration.
 - [2026-07-05 URL Lookup Production Slice](./2026-07-05-url-lookup-production-slice/spec.md) - adds a `/flows` URL lookup entry that reuses existing source-backed Flow conversions before any AI generation.
 - [2026-07-01 My Flow v2 Execution UX](./2026-07-01-my-flow-v2-execution-ux/spec.md) - separates post-save confirmation from normal Today/Flow execution and keeps Calendar as the global dated execution tab.

@@ -1,0 +1,18 @@
+{
+  "program": "P24-00B",
+  "evidenceType": "observed_user",
+  "productionUrl": "https://flowme2605.vercel.app",
+  "targetParticipants": 5,
+  "sessionsPerParticipant": 3,
+  "targetSessionCount": 15,
+  "observedUserSessionCount": 0,
+  "participants": [
+    { "participantId": "P1", "persona": "anchor_date", "sessions": [{ "session": 1, "status": "not_started" }, { "session": 2, "status": "not_started" }, { "session": 3, "status": "not_started" }] },
+    { "participantId": "P2", "persona": "undated_checklist", "sessions": [{ "session": 1, "status": "not_started" }, { "session": 2, "status": "not_started" }, { "session": 3, "status": "not_started" }] },
+    { "participantId": "P3", "persona": "recurring_routine", "sessions": [{ "session": 1, "status": "not_started" }, { "session": 2, "status": "not_started" }, { "session": 3, "status": "not_started" }] },
+    { "participantId": "P4", "persona": "personal_draft", "sessions": [{ "session": 1, "status": "not_started" }, { "session": 2, "status": "not_started" }, { "session": 3, "status": "not_started" }] },
+    { "participantId": "P5", "persona": "public_share_reuse", "sessions": [{ "session": 1, "status": "not_started" }, { "session": 2, "status": "not_started" }, { "session": 3, "status": "not_started" }] }
+  ],
+  "allowedStatuses": ["not_started", "scheduled", "completed", "invalidated", "blocked"],
+  "completionRule": "Only a real observed session with a completed session template and evidence reference increments observedUserSessionCount."
+}

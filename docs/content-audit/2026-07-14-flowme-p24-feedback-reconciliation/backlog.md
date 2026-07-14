@@ -6,7 +6,8 @@
 | --- | --- | --- |
 | P24-00A independent automated journey QA | done | Codex clean baseline and Claude Code dirty-dev audits both available |
 | P24-00R evidence/runtime reconciliation | done | clean and dependency-candidate worktrees were measured from `211827d` |
-| P24-00B observed users | ready | product correctness and anonymous production access are green; real sessions remain 0 / 15 |
+| P24-00OPS2 dependency upgrade | in progress | current audit high 4; isolated Next/Playwright/PostCSS candidate reached high 0 and passed unit/build |
+| P24-00B observed users | ready after OPS2 | product correctness and anonymous production access are green; real sessions remain 0 / 15 |
 | P24-01A source v2 merge | deferred | wait for P24-00B/00C observation evidence before broadening merge behavior |
 
 ## Priority 0 - Establish One Baseline
@@ -93,9 +94,9 @@ Anonymous observation URL with 390px smoke and source commit recorded.
 
 Current state: done. PR [#120](https://github.com/knhbae/flowme2605/pull/120) merged as `bc8fc649`, deployment `dpl_GdeGC2WdBz34ttHp4fZyQkYmRLP6` reached `Ready`, and <https://flowme2605.vercel.app> returned anonymous HTTP 200 with the FLOW home. Generated branch preview URLs remain protected; the public production alias is the observation URL.
 
-### P25-02 Controlled dependency upgrade
+### P24-00OPS2 Controlled dependency upgrade - in progress
 
-Keep separate from product fixes. No forced downgrade. Require audit, build, full E2E, rollback.
+Promoted from P25 because the current production baseline still reports high `4`. Keep it separate from product behavior changes. Update Next `15.5.20`, Playwright `1.61.1`, and PostCSS `8.5.16`; do not force an ExcelJS downgrade. Require high `0`, docs/unit/build, full or bounded-shard E2E, mobile/wide smoke, preview, production and rollback evidence.
 
 ## Human Validation
 
@@ -120,8 +121,8 @@ Convert observation into keep/change/defer. Only then reopen broad visual work, 
 
 ## Current Execution Order
 
-1. Done: publish the P24 U4 baseline through PR #120.
-2. Done: verify the public production alias anonymously; keep protected branch previews out of participant instructions.
-3. Done with a recorded constraint: all 77 functional checks passed, but four parallel navigations exceeded the local production server memory budget and passed on one-worker retry.
-4. Next: run P24-00B with 5 participants x 3 sessions without explaining the interface first.
-5. Then: use P24-00C to classify findings as keep/change/defer before reopening broad visual work, source v2 merge, cloud persistence, or integrations.
+1. Next: close P24-00OPS2 with high `0`, full/sharded E2E and rollback evidence.
+2. Then P24-00B1: run two real first-use pilot sessions and adjust only the script or any Blocking defect.
+3. Then P24-00B2/B3: complete the five-person first-use cohort and two return sessions, reaching `15 / 15`.
+4. Then P24-00C1: classify findings as keep/change/defer/blocking.
+5. Then P24-00C2/C3: implement observed Blocking/High fixes and run the final completion audit before reopening source v2 merge, cloud persistence, or integrations.

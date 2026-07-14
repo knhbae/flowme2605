@@ -1,0 +1,47 @@
+{
+  "auditId": "p24-completion-audit-2026-07-14",
+  "auditedMain": "3d7821dce48126043ff571d8617fd792f35e6dea",
+  "verdict": "incomplete",
+  "provenImplementationSliceCount": 14,
+  "observedUserSessionCount": 0,
+  "observedUserSessionTarget": 15,
+  "currentDependencyAudit": {
+    "critical": 0,
+    "high": 4,
+    "moderate": 3,
+    "evidenceType": "current_command"
+  },
+  "requirements": [
+    { "id": "P24-00R", "status": "proven", "evidence": "../2026-07-14-p24-00r-baseline-reconciliation/README.md" },
+    { "id": "P24-00F1", "status": "proven", "evidence": "../2026-07-14-p24-00f1-local-date-evidence/route-evidence.json" },
+    { "id": "P24-00F2A", "status": "proven", "evidence": "../2026-07-14-p24-00f2a-effective-date-parity-evidence/route-evidence.json" },
+    { "id": "P24-00F2B", "status": "proven", "evidence": "../2026-07-14-p24-00f2b-reuse-override-evidence/route-evidence.json" },
+    { "id": "P24-00F3A", "status": "proven", "evidence": "../2026-07-14-p24-00f3a-recurrence-parity-evidence/route-evidence.json" },
+    { "id": "P24-00F3B", "status": "proven", "evidence": "../2026-07-14-p24-00f3b-memo-draft-integrity-evidence/route-evidence.json" },
+    { "id": "P24-00F4", "status": "proven", "evidence": "../2026-07-14-p24-00f4-navigation-hydration-evidence/route-evidence.json" },
+    { "id": "P24-00U1", "status": "proven", "evidence": "../2026-07-14-p24-u1-inline-completion-today-evidence/route-evidence.json" },
+    { "id": "P24-00S1", "status": "proven_contract", "evidence": "../2026-07-14-p24-s1-date-movement-contract-evidence/movement-fixtures.json" },
+    { "id": "P24-00U2", "status": "proven", "evidence": "../2026-07-14-p24-u2-progressive-editor-evidence/route-evidence.json" },
+    { "id": "P24-00U3", "status": "proven", "evidence": "../2026-07-14-p24-u3-calendar-unscheduled-tray-evidence/route-evidence.json" },
+    { "id": "P24-00S2", "status": "proven", "evidence": "../2026-07-14-p24-s2-export-scope-evidence/route-evidence.json" },
+    { "id": "P24-00U4", "status": "proven", "evidence": "../2026-07-14-p24-u4-inline-execution-notes-evidence/route-evidence.json" },
+    { "id": "P24-00OPS1", "status": "proven", "evidence": "https://flowme2605.vercel.app" },
+    { "id": "P24-00OPS2", "status": "pending", "evidence": "current npm audit high 4; isolated candidate high 0" },
+    { "id": "P24-00B", "status": "pending", "evidence": "observed user 0 of 15" },
+    { "id": "P24-00C", "status": "pending", "evidence": "requires P24-00B results" }
+  ],
+  "claudeDesignMapping": [
+    { "mockup": "A", "status": "implemented_not_observed", "slice": "P24-00F1/F2/F3/F4" },
+    { "mockup": "B", "status": "implemented_not_observed", "slice": "P24-00U2" },
+    { "mockup": "C", "status": "implemented_not_observed", "slice": "P24-00U1" },
+    { "mockup": "D", "status": "implemented_not_observed", "slice": "P24-00U3" },
+    { "mockup": "E", "status": "implemented_not_observed", "slice": "P24-00S2" },
+    { "mockup": "F", "status": "implemented_not_observed", "slice": "P24-00S1" },
+    { "mockup": "G", "status": "implemented_not_observed", "slice": "P24-00U4" }
+  ],
+  "completionBlockedBy": [
+    "dependency_high_findings",
+    "missing_real_observed_sessions",
+    "missing_keep_change_defer_decisions"
+  ]
+}
