@@ -1,0 +1,55 @@
+{
+  "slice": "P24-00F2A",
+  "baselineCommit": "b9fcc06",
+  "effectiveDatePriority": [
+    "draft",
+    "execution_override",
+    "personal_copy",
+    "source"
+  ],
+  "markers": {
+    "effectiveDateResolverShared": true,
+    "todayUsesEffectiveDate": true,
+    "fullListUsesEffectiveDate": true,
+    "calendarUsesEffectiveDate": true,
+    "icsUsesEffectiveDate": true,
+    "effectiveDateExpected": "2026-07-24",
+    "todayEffectiveDateVisible": "2026-07-24",
+    "fullListEffectiveDateVisible": "2026-07-24",
+    "calendarEffectiveDateVisible": "2026-07-24",
+    "icsDtstart": "20260724",
+    "sourceItemMutationCount": 0,
+    "completionIdentityChangeCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "reuseOverrideTransferChanged": false
+  },
+  "routes": [
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "travel checklist first item moved from unscheduled to 2026-07-24",
+      "surface": "Today",
+      "screenshot": "screenshots/00-effective-date-today-mobile.png"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "state": "same item projected on 2026-07-24",
+      "surface": "Calendar",
+      "screenshot": "screenshots/01-effective-date-calendar-mobile.png"
+    }
+  ],
+  "downloads": [
+    {
+      "file": "downloads/effective-date-parity.ics",
+      "assertion": "DTSTART;VALUE=DATE:20260724"
+    }
+  ],
+  "verification": {
+    "unit": "480/480 pass",
+    "targetedPlaywright": "5/5 pass across P24 and source-backed date suites",
+    "build": "pass (18 routes)",
+    "docsCheck": "pass (14 required files, 2112 local links)"
+  }
+}

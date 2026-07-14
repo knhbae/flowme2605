@@ -18,6 +18,7 @@ import {
   getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowOccurrenceExecutionRecords,
   rekeyMyFlowAnchorDatedRecord,
+  resolveMyFlowEffectiveDate,
   saveStoredMyFlowOccurrenceExecutionRecords,
 } from './my-flow-personal-state';
 import { expandPersonalDraftCalendarOccurrenceRows } from './personal-draft-calendar-occurrence';
@@ -190,6 +191,74 @@ test('anchor change rekeys dated personal values without touching stable or unre
   assert.equal(rekeyed['other-flow::item::2026-06-22'], 'other');
   assert.deepEqual(previousItems, [{ itemId: 'moving-method-quotes', date: '2026-06-22' }]);
   assert.deepEqual(nextItems, [{ itemId: 'moving-method-quotes', date: '2026-07-06' }]);
+});
+
+test('effective My Flow dates use one priority across source, personal copy, and execution state', () => {
+  const flowSlug = 'source-backed-moving-d30';
+  const itemId = 'moving-method-quotes';
+  const overrideKey = `${flowSlug}::${itemId}::2026-07-06`;
+
+  assert.deepEqual(
+    resolveMyFlowEffectiveDate({
+      flowSlug,
+      itemId,
+      sourceDate: '2026-07-06',
+      personalCopyDateOverride: '2026-07-07',
+      dateOverrides: { [overrideKey]: '2026-07-08' },
+      draftDateOverride: '2026-07-09',
+    }),
+    {
+      date: '2026-07-09',
+      originalDate: '2026-07-06',
+      overrideKey,
+      source: 'draft',
+    },
+  );
+
+  assert.equal(
+    resolveMyFlowEffectiveDate({
+      flowSlug,
+      itemId,
+      sourceDate: '2026-07-06',
+      personalCopyDateOverride: '2026-07-07',
+      dateOverrides: { [overrideKey]: '2026-07-08' },
+    }).date,
+    '2026-07-08',
+  );
+  assert.equal(
+    resolveMyFlowEffectiveDate({
+      flowSlug,
+      itemId,
+      sourceDate: '2026-07-06',
+      personalCopyDateOverride: '2026-07-07',
+    }).date,
+    '2026-07-07',
+  );
+  assert.equal(
+    resolveMyFlowEffectiveDate({ flowSlug, itemId, sourceDate: '2026-07-06' }).date,
+    '2026-07-06',
+  );
+});
+
+test('effective My Flow dates resolve a manually scheduled undated item without changing identity', () => {
+  const flowSlug = 'travel-packing-list';
+  const itemId = 'travel-documents';
+  const overrideKey = `${flowSlug}::${itemId}::none`;
+  const sourceItems = [{ id: itemId, title: '여권 확인' }];
+
+  const resolved = resolveMyFlowEffectiveDate({
+    flowSlug,
+    itemId,
+    dateOverrides: { [overrideKey]: '2026-07-24' },
+  });
+
+  assert.deepEqual(resolved, {
+    date: '2026-07-24',
+    originalDate: 'none',
+    overrideKey,
+    source: 'execution_override',
+  });
+  assert.deepEqual(sourceItems, [{ id: itemId, title: '여권 확인' }]);
 });
 
 test('personal structural overlay golden fixtures preserve source and resolve effective items', () => {

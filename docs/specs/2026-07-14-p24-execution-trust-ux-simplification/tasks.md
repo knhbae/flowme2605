@@ -31,7 +31,7 @@
 ## Correctness
 
 - [x] P24-00F1 local date boundary.
-- [ ] P24-00F2A effective-date summary parity.
+- [x] P24-00F2A effective-date summary parity.
 - [ ] P24-00F2B reuse override transfer.
 - [ ] P24-00F3A recurrence occurrence parity.
 - [ ] P24-00F3B memo split Item inclusion and empty draft validation.

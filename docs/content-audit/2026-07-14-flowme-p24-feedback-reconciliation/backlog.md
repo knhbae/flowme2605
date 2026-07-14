@@ -5,13 +5,13 @@
 | Gate | Status | Reason |
 | --- | --- | --- |
 | P24-00A independent automated journey QA | done | Codex clean baseline and Claude Code dirty-dev audits both available |
-| P24-00R evidence/runtime reconciliation | next | build and product findings were measured in different environments |
+| P24-00R evidence/runtime reconciliation | done | clean and dependency-candidate worktrees were measured from `211827d` |
 | P24-00B observed users | blocked | correctness and public preview gates are not closed |
 | P24-01A source v2 merge | deferred | current effective-state and occurrence parity must be trusted first |
 
 ## Priority 0 - Establish One Baseline
 
-### P24-00R Baseline and evidence reconciliation
+### P24-00R Baseline and evidence reconciliation - done
 
 - Separate clean `a9ae10e` from dependency-upgrade candidate.
 - Run the same install/docs/unit/build/E2E matrix.
@@ -24,11 +24,11 @@ Done when one commit/lockfile/runtime becomes the implementation baseline and th
 
 ## Blocking Correctness
 
-### P24-00F1 Local date boundary
+### P24-00F1 Local date boundary - done
 
 KST and DST local date fixtures, Today/default date/Calendar parity.
 
-### P24-00F2A Effective-date projection parity
+### P24-00F2A Effective-date projection parity - done
 
 Today summary, full list, Calendar, ICS use one effective date.
 

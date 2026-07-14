@@ -46,11 +46,13 @@ import {
 import {
   getFlowOccurrenceExecutionRecords,
   getFlowScopedMyFlowPersonalExecutionState,
+  getMyFlowDateOverrideKey,
   getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowDateOverrides,
   getStoredMyFlowItemDrafts,
   getStoredMyFlowOccurrenceExecutionRecords,
   rekeyMyFlowAnchorDatedRecord,
+  resolveMyFlowEffectiveDate,
   saveStoredMyFlowDateOverrides,
   saveStoredMyFlowItemDrafts,
   saveStoredMyFlowOccurrenceExecutionRecords,
@@ -4297,7 +4299,7 @@ const MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT = 5;
 type MyFlowRoutineIconKind = 'study' | 'running' | 'workout' | 'meal' | 'maintenance' | 'routine';
 
 function getMyFlowCalendarRowKey(flowSlug: string, rowId: string, originalDate: string): string {
-  return `${flowSlug}::${rowId}::${originalDate}`;
+  return getMyFlowDateOverrideKey(flowSlug, rowId, originalDate);
 }
 
 function getMyFlowManualScheduleKey(flowSlug: string, rowId: string): string {
@@ -5026,12 +5028,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 20 && savedView === 'flow';
   const showFlowInventory = !shouldCollapseFlowInventory || myFlowInventoryOpen;
   const showMyFlowScopeControl = !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
-  const getSavedFlowNextRow = (flow: MySavedFlow) =>
-    flow.rows.find((row) => !isMyFlowRowChecked(flow, row));
   const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
     isUrlFirstDraftSavedFlow(flow)
       ? myFlowDateOverrides[getPersonalDraftProjectionValueKey(flow.progress.slug, rowId)]
       : undefined;
+  const resolveSavedFlowRowDate = (
+    flow: MySavedFlow,
+    row: MyFlowRow,
+    sourceDate: string | undefined = row.date,
+  ) => resolveMyFlowEffectiveDate({
+    flowSlug: flow.progress.slug,
+    itemId: row.id,
+    sourceDate,
+    dateOverrides: myFlowDateOverrides,
+    draftDateOverride: getMyFlowDraftItemDateOverride(flow, row.id),
+    personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, row.id),
+  });
+  const getSavedFlowNextRow = (flow: MySavedFlow) => {
+    const row = flow.rows.find((candidate) => !isMyFlowRowChecked(flow, candidate));
+    if (!row || row.structuralOccurrenceId) return row;
+    const resolution = resolveSavedFlowRowDate(flow, row);
+    return { ...row, date: resolution.date };
+  };
   const getMyFlowRoutineWeekdays = (flow: MySavedFlow) =>
     myFlowRoutineRuleDrafts[flow.progress.slug]?.weekdays ??
     flow.progress.weekdays ??
@@ -5135,11 +5153,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       .filter((row) => row.date)
       .map((row) => {
         const originalDate = row.structuralOccurrenceOriginalDate ?? row.date ?? '';
+        const dateResolution = row.structuralOccurrenceId
+          ? undefined
+          : resolveSavedFlowRowDate(flow, row, originalDate);
         const calendarKey = row.structuralOccurrenceId
           ? `${flow.progress.slug}::occurrence::${row.structuralOccurrenceId}`
-          : getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
-        const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
-        const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
+          : dateResolution?.overrideKey ?? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate);
         return {
           ...row,
           flow,
@@ -5147,10 +5166,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           calendarKey,
           date: row.structuralOccurrenceId
             ? row.date
-            : draftDateOverride ??
-              myFlowDateOverrides[calendarKey] ??
-              personalDateOverride ??
-              row.date,
+            : dateResolution?.date,
         };
       });
   });
@@ -5158,15 +5174,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     (flow.projectionRows ?? flow.rows)
       .filter((row) => !row.date)
       .flatMap((row) => {
-        const calendarKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
-        const date = getMyFlowDraftItemDateOverride(flow, row.id) ?? myFlowDateOverrides[calendarKey] ?? getMyFlowPersonalCopyStepDateOverride(flow, row.id);
-        if (!date) return [];
+        const dateResolution = resolveSavedFlowRowDate(flow, row);
+        if (!dateResolution.date) return [];
         return [{
           ...row,
           flow,
-          originalDate: 'none',
-          calendarKey,
-          date,
+          originalDate: dateResolution.originalDate,
+          calendarKey: dateResolution.overrideKey,
+          date: dateResolution.date,
         }];
       }),
   );
@@ -5184,13 +5199,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       weeks: 4,
     }).filter((occurrence) => !routineEndDate || occurrence.date <= routineEndDate).map((occurrence) => {
       const originalDate = occurrence.date;
-      const calendarKey = getMyFlowCalendarRowKey(flow.progress.slug, nextRow.id, originalDate);
-      const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, nextRow.id);
+      const dateResolution = resolveMyFlowEffectiveDate({
+        flowSlug: flow.progress.slug,
+        itemId: nextRow.id,
+        sourceDate: originalDate,
+        dateOverrides: myFlowDateOverrides,
+        personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, nextRow.id),
+      });
       return {
         ...nextRow,
         originalDate,
-        calendarKey,
-        date: myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? originalDate,
+        calendarKey: dateResolution.overrideKey,
+        date: dateResolution.date,
         timing: nextRow.timing ?? `${occurrence.sessionIndex}회차 · ${occurrence.weekday}요일`,
         section: nextRow.section || '루틴',
         flow,
@@ -6674,15 +6694,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       seen.add(itemId);
       const draft = getMyFlowRowDraft(rowWithFlow);
       const originalDate = row.structuralOccurrenceOriginalDate ?? row.date;
-      const calendarKey = originalDate
-        ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
-        : getMyFlowManualScheduleKey(flow.progress.slug, row.id);
       const effectiveDate = row.structuralOccurrenceId
         ? row.date
-        : getMyFlowDraftItemDateOverride(flow, row.id)
-          ?? myFlowDateOverrides[calendarKey]
-          ?? draft.date?.trim()
-          ?? row.date;
+        : resolveMyFlowEffectiveDate({
+            flowSlug: flow.progress.slug,
+            itemId: row.id,
+            sourceDate: originalDate,
+            dateOverrides: myFlowDateOverrides,
+            draftDateOverride: getMyFlowDraftItemDateOverride(flow, row.id) ?? draft.date?.trim(),
+            personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, row.id),
+          }).date;
       const effectiveTime = row.structuralScheduleProjection?.startTime || draft.time?.trim();
       const effectiveDuration = row.structuralScheduleProjection?.durationMinutes ?? draft.durationMinutes;
       const scheduleState: FlowRunItemSnapshot['scheduleState'] = !effectiveDate
@@ -7076,24 +7097,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const getMyFlowRowForFlowTab = (flow: MySavedFlow, row: MyFlowRow): MyFlowCalendarRow => {
-    const originalDate = row.date;
-    const personalDateOverride = getMyFlowPersonalCopyStepDateOverride(flow, row.id);
-    const draftDateOverride = getMyFlowDraftItemDateOverride(flow, row.id);
-    const manualScheduleKey = getMyFlowManualScheduleKey(flow.progress.slug, row.id);
-    const manualDateOverride = myFlowDateOverrides[manualScheduleKey];
-    const calendarKey = originalDate
-      ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, originalDate)
-      : personalDateOverride || draftDateOverride || manualDateOverride
-        ? manualScheduleKey
-        : '';
+    const dateResolution = resolveSavedFlowRowDate(flow, row);
+    const hasEffectiveSchedule = Boolean(dateResolution.date);
     return {
       ...row,
       flow,
-      ...(calendarKey
+      ...(hasEffectiveSchedule || row.date
         ? {
-            originalDate: originalDate ?? 'none',
-            calendarKey,
-            date: draftDateOverride ?? myFlowDateOverrides[calendarKey] ?? personalDateOverride ?? row.date,
+            originalDate: dateResolution.originalDate,
+            calendarKey: dateResolution.overrideKey,
+            date: dateResolution.date,
           }
         : {}),
     };
@@ -7441,7 +7454,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return myFlowPrimaryContinuationRow;
     }
     const firstPostSaveRow = postSaveFlows
-      .flatMap((flow) => flow.rows.map((row, index) => ({ flow, row, index })))
+      .flatMap((flow) => flow.rows.map((row, index) => {
+        const dateResolution = resolveSavedFlowRowDate(flow, row);
+        return {
+          flow,
+          row: row.structuralOccurrenceId
+            ? row
+            : { ...row, date: dateResolution.date },
+          dateResolution,
+          index,
+        };
+      }))
       .sort((left, right) => {
         const leftDate = left.row.date ?? '9999-12-31';
         const rightDate = right.row.date ?? '9999-12-31';
@@ -7449,15 +7472,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         return dateOrder === 0 ? left.index - right.index : dateOrder;
       })[0];
     if (!firstPostSaveRow) return null;
-    const originalDate = firstPostSaveRow.row.date;
+    const { dateResolution } = firstPostSaveRow;
     return {
       ...firstPostSaveRow.row,
       flow: firstPostSaveRow.flow,
-      ...(originalDate
+      ...(dateResolution.date
         ? {
-            originalDate,
-            calendarKey: getMyFlowCalendarRowKey(firstPostSaveRow.flow.progress.slug, firstPostSaveRow.row.id, originalDate),
-            date: myFlowDateOverrides[getMyFlowCalendarRowKey(firstPostSaveRow.flow.progress.slug, firstPostSaveRow.row.id, originalDate)] ?? firstPostSaveRow.row.date,
+            originalDate: dateResolution.originalDate,
+            calendarKey: dateResolution.overrideKey,
+            date: dateResolution.date,
           }
         : {}),
     };
