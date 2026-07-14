@@ -51,6 +51,13 @@ async function expectNoHorizontalOverflow(page: Page) {
   await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
 }
 
+async function expandMyFlowAdvancedEditor(detail: Locator) {
+  const toggle = detail.getByTestId('my-flow-editor-advanced-toggle');
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+}
+
 async function hideNextDevOverlay(page: Page) {
   await page.locator('nextjs-portal').evaluateAll((elements) => {
     elements.forEach((element) => element.remove());
@@ -1867,6 +1874,7 @@ test('personal draft user-created item time and all-day mode persist across Cale
   await opened.detail.getByTestId('personal-draft-time-mode-timed').click();
   await expect(opened.detail.getByTestId('my-flow-detail-save-changes')).toBeDisabled();
   await opened.detail.getByTestId('personal-draft-time-input').fill('09:30');
+  await expandMyFlowAdvancedEditor(opened.detail);
   await opened.detail.getByTestId('personal-draft-duration-input').fill('45');
   await expect(opened.detail.getByTestId('personal-draft-time-validation')).toHaveCount(0);
   if (screenshotDir) {
@@ -1960,6 +1968,7 @@ test('personal draft user-created item time and all-day mode persist across Cale
   draftFlow = await openDraftFlow();
   opened = await openUserItemEditor(draftFlow, '보험 서류 챙기기');
   await expect(opened.detail.getByTestId('personal-draft-time-input')).toHaveValue('09:30');
+  await expandMyFlowAdvancedEditor(opened.detail);
   await expect(opened.detail.getByTestId('personal-draft-duration-input')).toHaveValue('45');
   await opened.detail.getByTestId('personal-draft-time-input').fill('10:15');
   await opened.detail.getByTestId('personal-draft-duration-input').fill('60');
@@ -2116,6 +2125,7 @@ test('personal draft recurrence rules persist without changing item date or time
   await opened.detail.getByTestId('my-flow-detail-date-input').fill('2026-08-17');
   await opened.detail.getByTestId('personal-draft-time-mode-timed').click();
   await opened.detail.getByTestId('personal-draft-time-input').fill('09:30');
+  await expandMyFlowAdvancedEditor(opened.detail);
   await opened.detail.getByTestId('personal-draft-duration-input').fill('45');
   await expect(opened.detail.getByTestId('personal-draft-recurrence-control')).toBeVisible();
   await opened.detail.getByTestId('personal-draft-recurrence-weekly').click();

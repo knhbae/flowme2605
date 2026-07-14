@@ -53,7 +53,7 @@
 ## UX Simplification
 
 - [x] P24-00U1 inline completion undo and one occurrence/one control.
-- [ ] P24-00U2 progressive editor and intent-aware fields.
+- [x] P24-00U2 progressive editor and intent-aware fields.
 - [ ] P24-00S1 date movement pure contract.
 - [ ] P24-00U3 Calendar unscheduled tray.
 - [ ] P24-00S2 export scope contract and shared multi-select.

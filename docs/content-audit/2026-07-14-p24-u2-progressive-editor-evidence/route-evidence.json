@@ -1,0 +1,60 @@
+{
+  "id": "p24-u2-progressive-editor",
+  "date": "2026-07-14",
+  "baselineCommit": "74a78eb",
+  "evidenceType": "automated_browser_not_observed_user",
+  "designReference": {
+    "artifact": "FlowMe UXUI 전체 검토 (8)",
+    "patternsApplied": [
+      "A_progressive_item_editor",
+      "intent_aware_optional_fields"
+    ]
+  },
+  "markers": {
+    "defaultEditorVisibleFieldCount": 4,
+    "defaultEditorTitleVisible": true,
+    "defaultEditorDateVisible": true,
+    "defaultEditorTimeVisible": true,
+    "defaultEditorMemoVisible": true,
+    "defaultEditorAdvancedFieldCount": 0,
+    "advancedDisclosureVisible": true,
+    "advancedDisclosureCount": 1,
+    "advancedLocationReachable": true,
+    "advancedRepeatReachable": true,
+    "advancedDurationReachable": true,
+    "movingDecisionFieldCount": 0,
+    "movingLogFieldCount": 0,
+    "decisionFieldVisibleOnlyForEligibleItem": true,
+    "storedAdvancedValuesReopenExpanded": true,
+    "sourceBackedRecurringLocationPreservedInIcs": true,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "observedUserSessionCount": 0
+  },
+  "scenarios": [
+    {
+      "id": "moving_basic_editor_mobile",
+      "route": "/my?savedMap=moving-d30",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "source-backed moving-d30 saved with move date 2026-07-22",
+      "actions": ["open_item", "edit", "expand_advanced", "save_location_repeat"],
+      "result": "pass"
+    },
+    {
+      "id": "moving_advanced_revisit_wide",
+      "route": "/my?savedMap=moving-d30",
+      "viewport": { "width": 1024, "height": 768 },
+      "fixture": "stored location and weekly repeat",
+      "result": "pass"
+    },
+    {
+      "id": "eligible_decision_item_mobile",
+      "route": "/my",
+      "viewport": { "width": 390, "height": 844 },
+      "fixture": "used-car-buying-check final purchase/hold/reject item",
+      "actions": ["show_all_steps", "open_item", "edit", "expand_advanced"],
+      "result": "pass"
+    }
+  ]
+}

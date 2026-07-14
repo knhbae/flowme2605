@@ -3222,12 +3222,9 @@ function saveStoredMyFlowHiddenFlowSlugs(slugs: string[]): void {
   window.localStorage.setItem(MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY, JSON.stringify(slugs));
 }
 
-function getMyFlowItemTypeText(bundle: FlowBundle, row: MyFlowRow, item?: FlowItem): string {
+function getMyFlowItemIntentText(bundle: FlowBundle, row: MyFlowRow, item?: FlowItem): string {
   const detail = row.detail ?? getItemDetail(bundle, row.id);
   return [
-    bundle.flow.title,
-    bundle.flow.category,
-    bundle.flow.primary_destination,
     row.title,
     row.section,
     row.timing,
@@ -3251,19 +3248,25 @@ function hasMyFlowTypeSignal(text: string, pattern: RegExp): boolean {
 
 function deriveMyFlowItemType(bundle: FlowBundle, row: MyFlowRow): MyFlowItemTypeInfo {
   const item = bundle.items.find((entry) => entry.id === row.id);
-  const text = getMyFlowItemTypeText(bundle, row, item);
+  const text = getMyFlowItemIntentText(bundle, row, item);
   const secondary = new Set<MyFlowExecutionItemType>();
   const hasCaution = Boolean(row.detail?.caution || item?.risk_level);
   const hasDecision = Boolean(
     item?.hold_eligible ||
-    hasMyFlowTypeSignal(text, /보류|결정|선택|비교|서명|중단|상담|consult|hold|stop|sign/),
+    hasMyFlowTypeSignal(
+      text,
+      /구매\s*\/\s*보류|구매\s*\/\s*거절|구매|보류|거절|계약\s*(?:진행|중단)|서명|중단|consult|hold|reject|stop|sign/,
+    ),
   );
   const hasEvidence = Boolean(
     item?.photo_filename_pattern ||
     bundle.flow.primary_destination === 'memo' ||
     hasMyFlowTypeSignal(text, /증빙|사진|파일명|제출|접수|확인서|영수증|계약서|보관|공식 조회|딜러 확인|memo|evidence|proof/),
   );
-  const hasLog = hasMyFlowTypeSignal(text, /기록|관찰|점수|컨디션|수면|식사|운동 시간|상태|메모|log|record|tracker/);
+  const hasLog = hasMyFlowTypeSignal(
+    text,
+    /기록표|기록하기|일지|관찰 기록|점수|컨디션 기록|수면 기록|식사 기록|운동 시간 기록|상태 기록|log|record|tracker/,
+  );
   const isRoutine = bundle.flow.structure_type === 'routine' || Boolean(item?.repeat_rule);
 
   if (hasDecision) secondary.add('decision_hold');
@@ -4620,6 +4623,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowRoutineRuleEditorDrafts, setMyFlowRoutineRuleEditorDrafts] = useState<Record<string, MyFlowRoutineRuleDraft>>({});
   const [myFlowExpandedRoutineKey, setMyFlowExpandedRoutineKey] = useState('');
   const [myFlowExpandedAdvancedKey, setMyFlowExpandedAdvancedKey] = useState('');
+  const [myFlowEditorAdvancedDisclosure, setMyFlowEditorAdvancedDisclosure] = useState<{
+    rowKey: string;
+    expanded: boolean;
+  } | null>(null);
   const [myFlowExpandedMemoKey, setMyFlowExpandedMemoKey] = useState('');
   const [myFlowEditingDetailKey, setMyFlowEditingDetailKey] = useState('');
   const [myFlowActiveRowKey, setMyFlowActiveRowKey] = useState('');
@@ -5188,9 +5195,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           const sourceRepeatRule = item?.repeat_rule;
           const repeatPreset = committedDraft.repeatPreset;
           if (!row.date || (!sourceRepeatRule && !repeatPreset)) return [row.id, undefined];
+          const manualRepeatStartDate = !sourceRepeatRule && repeatPreset
+            ? myFlowDateOverrides[baseDateKey] ?? row.date
+            : row.date;
           return [row.id, {
             itemId: row.id,
-            startDate: row.date,
+            startDate: manualRepeatStartDate,
             sourceRepeatRule,
             repeatPreset,
             ...(sourceRepeatRule || flow.bundle.flow.structure_type === 'routine'
@@ -5508,11 +5518,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : myFlowPrimaryContinuationIsFuture
           ? '다음 할 일'
           : '먼저 할 일';
-  const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => ({
-    ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)] ?? {}),
-    ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
-    ...getMyFlowPersonalCopyStepDraft(row),
-  });
+  const getMyFlowRowDraft = (row: MyFlowCalendarRow): MyFlowItemDraft => {
+    const baseRoutineRow = row.structuralOccurrenceOrigin === 'saved_routine'
+      ? row.flow.rows.find((candidate) => candidate.id === row.id)
+      : undefined;
+    const baseRoutineDraftKey = baseRoutineRow
+      ? baseRoutineRow.date
+        ? getMyFlowCalendarRowKey(row.flow.progress.slug, row.id, baseRoutineRow.date)
+        : getMyFlowManualScheduleKey(row.flow.progress.slug, row.id)
+      : '';
+    return {
+      ...(baseRoutineDraftKey ? myFlowItemDrafts[baseRoutineDraftKey] ?? {} : {}),
+      ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)] ?? {}),
+      ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
+      ...getMyFlowPersonalCopyStepDraft(row),
+    };
+  };
   const getMyFlowRowDisplayTitle = (row: MyFlowCalendarRow) => {
     const draftTitle = getMyFlowRowDraft(row).title;
     return toUserFacingSourceTitle(draftTitle ?? stripMyFlowTimingPrefixFromTitle(row.title));
@@ -8565,17 +8586,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const itemEditButtonLabel = canEditDate ? '제목·날짜·메모 수정' : '제목·메모 수정';
     const itemEditButtonAriaLabel = `${editorDraft.title} ${itemEditButtonLabel}`;
     const itemEditCancelAriaLabel = `${editorDraft.title} 수정 취소`;
-    const showTimeLocationFields =
+    const showTimeField =
       !isPersonalDraftUserItem && (!isProgressFlow || Boolean(row.calendarKey));
-    const showRepeatPresetField = !isRoutineRow && showTimeLocationFields;
-    const personalDraftTimedScheduleInvalid = Boolean(
+    const showLocationField = showTimeField;
+    const showRepeatPresetField = !isRoutineRow && showTimeField;
+    const personalDraftTimeInvalid = Boolean(
       isPersonalDraftUserItem &&
         editorDraft.date &&
         editorDraft.scheduleMode === 'timed' &&
-        (
-          !isPersonalStructuralLocalTime(editorDraft.time) ||
-          !isPersonalDraftDurationValid(editorDraft.durationMinutes)
-        ),
+        !isPersonalStructuralLocalTime(editorDraft.time),
+    );
+    const personalDraftDurationInvalid = Boolean(
+      isPersonalDraftUserItem &&
+        editorDraft.date &&
+        editorDraft.scheduleMode === 'timed' &&
+        !isPersonalDraftDurationValid(editorDraft.durationMinutes),
+    );
+    const personalDraftTimedScheduleInvalid = Boolean(
+      personalDraftTimeInvalid || personalDraftDurationInvalid,
     );
     const personalDraftRecurrenceMode =
       editorDraft.repeatPreset === 'daily' ||
@@ -8602,6 +8630,36 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               editorDraft.recurrenceCount > PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT))
         ),
     );
+    const editorAdvancedLabels = Array.from(new Set([
+      isPersonalDraftUserItem && editorDraft.date ? '반복' : '',
+      isPersonalDraftUserItem && editorDraft.date && editorDraft.scheduleMode === 'timed' ? '소요시간' : '',
+      showLocationField ? '장소' : '',
+      showRepeatPresetField ? '반복' : '',
+      isDecisionRow ? '결정' : '',
+      isLogRow ? '기록' : '',
+      showRoutineRepeatSettings && isRoutineRow ? '반복' : '',
+    ].filter(Boolean)));
+    const hasEditorAdvancedFields = editorAdvancedLabels.length > 0;
+    const hasStoredEditorAdvancedValues = Boolean(
+      personalDraftRecurrenceMode ||
+        personalDraftRecurrenceInvalid ||
+        personalDraftDurationInvalid ||
+        (
+          isPersonalDraftUserItem &&
+          editorDraft.scheduleMode === 'timed' &&
+          editorDraft.durationMinutes !== PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES
+        ) ||
+        editorDraft.location.trim() ||
+        (!isPersonalDraftUserItem && editorDraft.repeatPreset) ||
+        decisionDraft.decisionStatus !== 'undecided' ||
+        decisionDraft.nextReviewDate ||
+        logDraft.logValue.trim(),
+    );
+    const editorAdvancedPreference =
+      myFlowEditorAdvancedDisclosure?.rowKey === routineKey
+        ? myFlowEditorAdvancedDisclosure.expanded
+        : undefined;
+    const isEditorAdvancedExpanded = editorAdvancedPreference ?? hasStoredEditorAdvancedValues;
     const scheduleSummaryRows = [
       editorDraft.date ? { label: '날짜', value: /^\d{4}-\d{2}-\d{2}$/.test(editorDraft.date) ? formatMyFlowDisplayDate(editorDraft.date) : editorDraft.date } : undefined,
       editorDraft.time ? { label: '시간', value: formatMyFlowLocalTimeLabel(editorDraft.time) } : undefined,
@@ -8625,6 +8683,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           : undefined,
       editorDraft.location ? { label: '장소', value: editorDraft.location } : undefined,
     ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
+    const editorAdvancedToggle = showEditableDetailFields && hasEditorAdvancedFields ? (
+      <button
+        type="button"
+        data-testid="my-flow-editor-advanced-toggle"
+        aria-expanded={isEditorAdvancedExpanded}
+        className="flex min-h-11 w-full items-center justify-between gap-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm font-semibold text-slate-800 hover:border-blue-200 hover:bg-blue-50"
+        onClick={() => setMyFlowEditorAdvancedDisclosure({
+          rowKey: routineKey,
+          expanded: !isEditorAdvancedExpanded,
+        })}
+      >
+        <span className="min-w-0">
+          <span>세부 설정</span>
+          <span className="ml-1 font-medium text-slate-500">· {editorAdvancedLabels.join(' · ')}</span>
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-slate-500">
+          {isEditorAdvancedExpanded ? '⌃' : '⌄'}
+        </span>
+      </button>
+    ) : null;
     const occurrenceFields = (
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {isPersonalDraftUserItem ? (
@@ -8754,7 +8832,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </button>
                 </div>
                 {editorDraft.scheduleMode === 'timed' ? (
-                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <div className="mt-2 grid gap-2">
                     <label className="block text-xs font-semibold text-slate-600">
                       시작 시간
                       <input
@@ -8766,44 +8844,56 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         onChange={(event) => updateMyFlowEditingDraft(row, { time: event.target.value })}
                       />
                     </label>
-                    <label className="block text-xs font-semibold text-slate-600">
-                      예상 소요 시간
-                      <span className="relative mt-1 block">
-                        <input
-                          data-testid="personal-draft-duration-input"
-                          aria-label={`${editorDraft.title} 예상 소요 시간`}
-                          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                          type="number"
-                          min={PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES}
-                          max={PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES}
-                          step={5}
-                          value={editorDraft.durationMinutes}
-                          onChange={(event) => updateMyFlowEditingDraft(row, {
-                            durationMinutes: event.target.value
-                              ? Number(event.target.value)
-                              : undefined,
-                          })}
-                        />
-                        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-500">분</span>
-                      </span>
-                    </label>
-                    <p className="text-[11px] font-medium leading-5 text-slate-500 sm:col-span-2">
-                      현재 기기 시간 기준으로 저장돼요.
-                    </p>
-                    {personalDraftTimedScheduleInvalid ? (
+                    {personalDraftTimeInvalid ? (
                       <p
                         data-testid="personal-draft-time-validation"
                         role="alert"
-                        className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700 sm:col-span-2"
+                        className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700"
                       >
-                        시작 시간과 5분 단위의 예상 시간을 입력해 주세요.
+                        시작 시간을 입력해 주세요.
                       </p>
                     ) : null}
                   </div>
                 ) : null}
               </fieldset>
             ) : null}
-            {editorDraft.date ? (
+            {editorAdvancedToggle ? <div className="mt-3">{editorAdvancedToggle}</div> : null}
+            {isEditorAdvancedExpanded && editorDraft.date && editorDraft.scheduleMode === 'timed' ? (
+              <div data-testid="personal-draft-duration-control" className="mt-3 border-t border-slate-200 pt-3">
+                <label className="block text-xs font-semibold text-slate-600">
+                  예상 소요 시간
+                  <span className="relative mt-1 block">
+                    <input
+                      data-testid="personal-draft-duration-input"
+                      aria-label={`${editorDraft.title} 예상 소요 시간`}
+                      className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      type="number"
+                      min={PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES}
+                      max={PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES}
+                      step={5}
+                      value={editorDraft.durationMinutes}
+                      onChange={(event) => updateMyFlowEditingDraft(row, {
+                        durationMinutes: event.target.value ? Number(event.target.value) : undefined,
+                      })}
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-slate-500">분</span>
+                  </span>
+                </label>
+                <p className="mt-1 text-[11px] font-medium leading-5 text-slate-500">
+                  현재 기기 시간 기준으로 저장돼요.
+                </p>
+                {personalDraftDurationInvalid ? (
+                  <p
+                    data-testid="personal-draft-duration-validation"
+                    role="alert"
+                    className="mt-2 rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700"
+                  >
+                    5분 단위로 예상 시간을 입력해 주세요.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+            {isEditorAdvancedExpanded && editorDraft.date ? (
               <fieldset
                 data-testid="personal-draft-recurrence-control"
                 className="mt-3 min-w-0 border-t border-slate-200 pt-3"
@@ -9013,27 +9103,30 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         ) : null}
-        {showTimeLocationFields ? (
-          <>
-        <label className="block text-xs font-semibold text-slate-600">
-          시간
-          <input
-            className={fieldClassName}
-            type="time"
-            value={editorDraft.time}
-            onChange={(event) => updateMyFlowEditingDraft(row, { time: event.target.value })}
-          />
-        </label>
-        <label className="block text-xs font-semibold text-slate-600">
-          장소
-          <input
-            className={fieldClassName}
-            placeholder="장소 없음"
-            value={editorDraft.location}
-            onChange={(event) => updateMyFlowEditingDraft(row, { location: event.target.value })}
-          />
-        </label>
-        {showRepeatPresetField ? (
+        {showTimeField ? (
+          <label className="block text-xs font-semibold text-slate-600">
+            시간
+            <input
+              className={fieldClassName}
+              type="time"
+              value={editorDraft.time}
+              onChange={(event) => updateMyFlowEditingDraft(row, { time: event.target.value })}
+            />
+          </label>
+        ) : null}
+        {!isPersonalDraftUserItem && editorAdvancedToggle ? <div className="sm:col-span-2">{editorAdvancedToggle}</div> : null}
+        {isEditorAdvancedExpanded && showLocationField ? (
+          <label className="block text-xs font-semibold text-slate-600">
+            장소
+            <input
+              className={fieldClassName}
+              placeholder="장소 없음"
+              value={editorDraft.location}
+              onChange={(event) => updateMyFlowEditingDraft(row, { location: event.target.value })}
+            />
+          </label>
+        ) : null}
+        {isEditorAdvancedExpanded && showRepeatPresetField ? (
           <label className="block text-xs font-semibold text-slate-600">
             반복
             <select
@@ -9049,8 +9142,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <option value="monthly">매월</option>
             </select>
           </label>
-        ) : null}
-          </>
         ) : null}
         {isProgressFlow && !row.calendarKey ? (
           <p data-testid="my-flow-progress-schedule-note" className="rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-600 sm:col-span-2">
@@ -9169,6 +9260,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
+        data-editor-advanced-expanded={isDetailEditing ? String(isEditorAdvancedExpanded) : undefined}
         data-default-primary-action-count={isDetailEditing ? undefined : '2'}
         className={
           mode === 'inline'
@@ -9475,54 +9567,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </section>
           )
         ) : null}
-        {isDecisionRow && isDetailEditing ? (
-          <section data-testid="my-flow-decision-fields" className="mt-3 rounded-md bg-white px-3 py-3">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="block text-xs font-semibold text-slate-600">
-                결정 상태
-                <select
-                  aria-label="결정 상태"
-                  data-testid="my-flow-decision-status"
-                  className={fieldClassName}
-                  value={decisionDraft.decisionStatus}
-                  onChange={(event) => updateMyFlowEditingDraft(row, { decisionStatus: event.target.value as MyFlowItemDraft['decisionStatus'] })}
-                >
-                  <option value="undecided">미정</option>
-                  <option value="buy">구매</option>
-                  <option value="hold">보류</option>
-                  <option value="reject">거절</option>
-                </select>
-              </label>
-              <label className="block text-xs font-semibold text-slate-600">
-                다음 확인일
-                <input
-                  aria-label="다음 확인일"
-                  data-testid="my-flow-decision-next-review"
-                  className={fieldClassName}
-                  type="date"
-                  value={decisionDraft.nextReviewDate}
-                  onChange={(event) => updateMyFlowEditingDraft(row, { nextReviewDate: event.target.value })}
-                />
-              </label>
-            </div>
-          </section>
-        ) : null}
-        {isLogRow && isDetailEditing ? (
-          <section data-testid="my-flow-log-fields" className="mt-3 rounded-md bg-white px-3 py-3">
-            <label className="block text-xs font-semibold text-slate-600">
-              오늘 기록
-              <input
-                aria-label="오늘 기록"
-                data-testid="my-flow-log-value"
-                className={fieldClassName}
-                placeholder="예: 이상 없음, 누유 없음, 7점"
-                value={logDraft.logValue}
-                onChange={(event) => updateMyFlowEditingDraft(row, { logValue: event.target.value })}
-              />
-            </label>
-          </section>
-        ) : null}
-        {isDetailEditing && showRoutineRepeatSettings ? routineRepeatSettings : null}
         {!showOccurrenceFields || !showEditableDetailFields ? null : isRoutineRow ? (
           <section data-testid="my-flow-routine-occurrence-section" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-600">
@@ -9547,6 +9591,62 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           >
             {isMemoExpanded ? '메모 작게 보기' : '메모 크게 보기'}
           </button>
+        ) : null}
+        {isDetailEditing && isEditorAdvancedExpanded && (isDecisionRow || isLogRow || (showRoutineRepeatSettings && isRoutineRow)) ? (
+          <div
+            data-testid="my-flow-editor-intent-fields"
+            className="mt-3 grid gap-4 border-t border-slate-200 pt-3"
+          >
+            {isDecisionRow ? (
+              <section data-testid="my-flow-decision-fields">
+                <p className="text-xs font-semibold text-slate-700">결정</p>
+                <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                  <label className="block text-xs font-semibold text-slate-600">
+                    결정 상태
+                    <select
+                      aria-label="결정 상태"
+                      data-testid="my-flow-decision-status"
+                      className={fieldClassName}
+                      value={decisionDraft.decisionStatus}
+                      onChange={(event) => updateMyFlowEditingDraft(row, { decisionStatus: event.target.value as MyFlowItemDraft['decisionStatus'] })}
+                    >
+                      <option value="undecided">미정</option>
+                      <option value="buy">구매</option>
+                      <option value="hold">보류</option>
+                      <option value="reject">거절</option>
+                    </select>
+                  </label>
+                  <label className="block text-xs font-semibold text-slate-600">
+                    다음 확인일
+                    <input
+                      aria-label="다음 확인일"
+                      data-testid="my-flow-decision-next-review"
+                      className={fieldClassName}
+                      type="date"
+                      value={decisionDraft.nextReviewDate}
+                      onChange={(event) => updateMyFlowEditingDraft(row, { nextReviewDate: event.target.value })}
+                    />
+                  </label>
+                </div>
+              </section>
+            ) : null}
+            {isLogRow ? (
+              <section data-testid="my-flow-log-fields">
+                <label className="block text-xs font-semibold text-slate-600">
+                  오늘 기록
+                  <input
+                    aria-label="오늘 기록"
+                    data-testid="my-flow-log-value"
+                    className={fieldClassName}
+                    placeholder="예: 이상 없음, 누유 없음, 7점"
+                    value={logDraft.logValue}
+                    onChange={(event) => updateMyFlowEditingDraft(row, { logValue: event.target.value })}
+                  />
+                </label>
+              </section>
+            ) : null}
+            {showRoutineRepeatSettings && isRoutineRow ? routineRepeatSettings : null}
+          </div>
         ) : null}
         {isDetailEditing || (isDrawerMode && hasEditorChanges) ? (
           <div data-testid="my-flow-detail-edit-actions" className="mt-3 flex flex-col gap-2 rounded-md border border-blue-100 bg-white px-3 py-2 sm:flex-row sm:items-center sm:justify-between">

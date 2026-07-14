@@ -84,6 +84,13 @@ async function enterMyFlowDetailEditMode(detail: Locator) {
   await expect(detail).toHaveAttribute('data-detail-mode', 'edit');
 }
 
+async function expandMyFlowAdvancedEditor(detail: Locator) {
+  const toggle = detail.getByTestId('my-flow-editor-advanced-toggle');
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+}
+
 async function openMyFlowDetailTools(detail: Locator) {
   const tools = detail.getByTestId('my-flow-detail-portable-export');
   await expect(tools).toBeVisible();
@@ -4447,6 +4454,7 @@ test('my flow step detail saves portable calendar task fields', async ({ page })
   await enterMyFlowDetailEditMode(detail);
   await detail.getByTestId('my-flow-detail-date-input').fill('2026-06-24');
   await detail.locator('input[type="time"]').fill('09:30');
+  await expandMyFlowAdvancedEditor(detail);
   await detail.getByTestId('my-flow-detail-repeat-input').selectOption('weekly');
   await detail.locator('input[placeholder="장소 없음"]').fill('집');
   await detail.locator('textarea').first().fill('견적 후보 3곳과 포함 범위만 메모');
@@ -4746,6 +4754,8 @@ test('my flow mobile saved map edit and revisit keeps step detail lightweight', 
   await expect.poll(async () => (await detail.boundingBox())?.y ?? 9999).toBeLessThan(844);
 
   await enterMyFlowDetailEditMode(detail);
+  await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveCount(0);
+  await expandMyFlowAdvancedEditor(detail);
   await expect(detail.getByTestId('my-flow-detail-repeat-input')).toBeVisible();
   await detail.getByTestId('my-flow-detail-date-input').fill('2026-06-25');
   await detail.locator('input[type="time"]').fill('10:00');

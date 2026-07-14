@@ -21,6 +21,16 @@ async function openMyFlowDetailTools(detail: Locator) {
   return tools;
 }
 
+async function expandMyFlowAdvancedEditor(detail: Locator) {
+  const toggle = detail.getByTestId('my-flow-editor-advanced-toggle');
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
+    await toggle.click();
+  }
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  return toggle;
+}
+
 test.describe('P24 execution trust regressions', () => {
   test('KST morning uses the local calendar day for a new schedule default', async ({ page }) => {
     test.setTimeout(120_000);
@@ -643,6 +653,159 @@ test.describe('P24 execution trust regressions', () => {
       await page.screenshot({
         path: `${evidenceDir}/screenshots/02-post-save-hydration-mobile.png`,
         fullPage: true,
+      });
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('My Flow keeps common item edits visible and intent-specific settings progressive', async ({ page }) => {
+    test.setTimeout(180_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/flow-maps/moving-d30');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+    await page.getByLabel('이사일').fill('2026-07-22');
+    await page.getByRole('button', { name: '저장하고 시작' }).click();
+    await expect(page).toHaveURL('/my?savedMap=moving-d30');
+    await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+    await page.getByTestId('my-flow-view-flow').click();
+
+    const openMovingEditor = async () => {
+      const flow = page.locator(
+        '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]',
+      );
+      if ((await flow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
+        await flow.getByTestId('my-flow-mobile-structure-open').click();
+      }
+      await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+      const detail = flow
+        .getByTestId('my-flow-mobile-structure-inline-detail')
+        .getByTestId('my-flow-item-detail');
+      await enterMyFlowDetailEditMode(detail);
+      return detail;
+    };
+
+    let detail = await openMovingEditor();
+    await expect(detail.getByTestId('my-flow-detail-title-input')).toBeVisible();
+    await expect(detail.getByTestId('my-flow-detail-date-input')).toBeVisible();
+    await expect(detail.locator('input[type="time"]')).toBeVisible();
+    await expect(detail.getByTestId('my-flow-detail-memo')).toBeVisible();
+    const advancedToggle = detail.getByTestId('my-flow-editor-advanced-toggle');
+    await expect(advancedToggle).toContainText('세부 설정');
+    await expect(advancedToggle).toContainText('장소');
+    await expect(advancedToggle).toContainText('반복');
+    await expect(advancedToggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveCount(0);
+    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveCount(0);
+    await expect(detail.getByTestId('my-flow-editor-intent-fields')).toHaveCount(0);
+    const evidenceDir = process.env.FLOWME_P24_U2_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await detail.screenshot({
+        path: `${evidenceDir}/screenshots/00-progressive-editor-basic-mobile.png`,
+      });
+    }
+
+    await expandMyFlowAdvancedEditor(detail);
+    await expect(detail.locator('input[placeholder="장소 없음"]')).toBeVisible();
+    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toBeVisible();
+    await expect(detail.getByTestId('my-flow-decision-fields')).toHaveCount(0);
+    await expect(detail.getByTestId('my-flow-log-fields')).toHaveCount(0);
+    await detail.locator('input[placeholder="장소 없음"]').fill('집');
+    await detail.getByTestId('my-flow-detail-repeat-input').selectOption('weekly');
+    if (evidenceDir) {
+      await detail.screenshot({
+        path: `${evidenceDir}/screenshots/01-progressive-editor-advanced-mobile.png`,
+      });
+    }
+    await detail.getByTestId('my-flow-detail-save-changes').click();
+
+    await page.reload();
+    await page.getByTestId('my-flow-view-flow').click();
+    detail = await openMovingEditor();
+    await expect(detail).toHaveAttribute('data-editor-advanced-expanded', 'true');
+    await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveValue('집');
+    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveValue('weekly');
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const wideCard = page.locator(
+      '[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]',
+    );
+    if ((await page.locator('[data-testid="my-flow-item-detail"]:visible').count()) === 0) {
+      await wideCard.getByTestId('my-flow-next-action-open').click();
+    }
+    const wideDetail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
+    await expect(wideDetail).toBeVisible();
+    if ((await wideDetail.getByTestId('my-flow-editor-advanced-toggle').count()) === 0) {
+      await enterMyFlowDetailEditMode(wideDetail);
+    }
+    await expect(wideDetail).toHaveAttribute('data-editor-advanced-expanded', 'true');
+    await expect(wideDetail.getByTestId('my-flow-editor-advanced-toggle')).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    if (evidenceDir) {
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/02-progressive-editor-revisit-wide.png`,
+        fullPage: true,
+      });
+    }
+    expect(consoleErrors).toEqual([]);
+  });
+
+  test('decision fields appear only for an eligible decision item', async ({ page }) => {
+    test.setTimeout(120_000);
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/my');
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('flow:saved:used-car-buying-check', JSON.stringify({
+        slug: 'used-car-buying-check',
+        savedAt: '2026-07-14T04:00:00.000Z',
+        selectedArtifactMode: 'checklist',
+      }));
+    });
+    await page.reload();
+    await page.getByTestId('my-flow-view-flow').click();
+    const flow = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="used-car-buying-check"]',
+    );
+    if ((await flow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
+      await flow.getByTestId('my-flow-mobile-structure-open').click();
+    }
+    const showAllSteps = flow.getByRole('button', { name: /전체 단계 보기/ });
+    if ((await showAllSteps.count()) > 0) await showAllSteps.click();
+    const decisionRow = flow
+      .getByTestId('my-flow-mobile-structure-step-row')
+      .filter({ hasText: '최종 구매/보류/거절' });
+    await decisionRow.click();
+    const detail = flow
+      .getByTestId('my-flow-mobile-structure-inline-detail')
+      .getByTestId('my-flow-item-detail');
+    await enterMyFlowDetailEditMode(detail);
+    const toggle = detail.getByTestId('my-flow-editor-advanced-toggle');
+    await expect(toggle).toContainText('결정');
+    await expect(detail.getByTestId('my-flow-decision-fields')).toHaveCount(0);
+    await expandMyFlowAdvancedEditor(detail);
+    await expect(detail.getByTestId('my-flow-decision-fields')).toBeVisible();
+    await expect(detail.getByTestId('my-flow-decision-status')).toBeVisible();
+    const evidenceDir = process.env.FLOWME_P24_U2_EVIDENCE_DIR;
+    if (evidenceDir) {
+      fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+      await detail.screenshot({
+        path: `${evidenceDir}/screenshots/03-intent-aware-decision-mobile.png`,
       });
     }
     expect(
