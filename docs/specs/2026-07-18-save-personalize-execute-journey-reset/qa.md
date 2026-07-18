@@ -20,9 +20,11 @@
 | Current production inventory | Captured | review package screenshots |
 | Existing simulation comparison | Reviewed | 11-stage simulation crosswalk |
 | Official reference pattern review | Reviewed | `reference-patterns.md` |
-| App runtime code unchanged | Pending final diff | `git diff --name-only` |
-| `npm.cmd run docs:check` | Not run | Run after documentation edits |
-| `git diff --check` | Not run | Run after documentation edits |
+| App runtime code unchanged | Passed | scoped status contains documentation and evidence paths only |
+| `npm.cmd run docs:check` | Passed | 14 required files, 2,384 local links |
+| `npm.cmd test` | Passed | 518 / 518 |
+| `npm.cmd run build` | Passed | Next.js 15.5.20, 18 static/dynamic route entries generated |
+| `git diff --check` | Passed | no whitespace errors after normalization |
 
 ## Prototype Review Questions
 
