@@ -1,0 +1,73 @@
+{
+  "reviewDate": "2026-07-18",
+  "status": "planning_gate",
+  "observedUserSessionCount": 0,
+  "appRuntimeChanged": false,
+  "currentEvidence": [
+    {
+      "kind": "current_browser",
+      "route": "/flow-maps/moving-d30",
+      "viewport": "390x844",
+      "artifact": "screenshots/02-moving-save-before-mobile-current.png",
+      "finding": "save result is explained repeatedly before the full artifact is scannable"
+    },
+    {
+      "kind": "current_browser",
+      "route": "/my?savedMap=moving-d30",
+      "viewport": "390x844",
+      "artifact": "screenshots/03-post-save-today-mobile-current.png",
+      "finding": "post-save defaults to a Today slice instead of the whole saved Flow"
+    },
+    {
+      "kind": "current_browser",
+      "route": "/my?savedMap=moving-d30",
+      "viewport": "390x844",
+      "artifact": "screenshots/04-post-save-full-flow-after-two-actions-mobile-current.png",
+      "finding": "whole Flow requires additional navigation and expansion"
+    },
+    {
+      "kind": "current_browser",
+      "route": "/calendar",
+      "viewport": "390x844",
+      "artifact": "screenshots/05-calendar-mobile-current.png",
+      "finding": "date-first Calendar can remain the dated execution surface"
+    },
+    {
+      "kind": "current_browser",
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "artifact": "screenshots/01-public-vehicle-mobile-current.png",
+      "finding": "basic save journey is coherent but explanatory and supporting sections are too dense"
+    }
+  ],
+  "priorArtifacts": [
+    {
+      "kind": "prior_artifact",
+      "artifact": "../2026-07-14-flowme-content-edit-execution-simulation-ko.html",
+      "claim": "proposes full Step preview, save-vs-adjust, and actual post-save list"
+    },
+    {
+      "kind": "prior_artifact",
+      "artifact": "screenshots/reference-claude-progressive-editor.png",
+      "claim": "progressive editor reference"
+    },
+    {
+      "kind": "prior_artifact",
+      "artifact": "screenshots/reference-claude-completion-undo.png",
+      "claim": "completion and undo reference"
+    },
+    {
+      "kind": "prior_artifact",
+      "artifact": "screenshots/reference-claude-one-occurrence.png",
+      "claim": "one execution row and non-actionable next preview reference"
+    }
+  ],
+  "hypotheses": {
+    "recommendedReset": "artifact_first_optional_adjust_post_save_full_flow",
+    "keepFourTabIa": true,
+    "keepStorageExecutionExportContracts": true,
+    "hideHeldFromOrdinarySurfaces": true,
+    "postSaveWholeFlowActionDepthTarget": 0,
+    "prototypeTestsRequiredBeforeImplementation": 2
+  }
+}

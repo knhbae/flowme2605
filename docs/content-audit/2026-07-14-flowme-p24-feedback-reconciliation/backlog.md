@@ -7,8 +7,11 @@
 | P24-00A independent automated journey QA | done | Codex clean baseline and Claude Code dirty-dev audits both available |
 | P24-00R evidence/runtime reconciliation | done | clean and dependency-candidate worktrees were measured from `211827d` |
 | P24-00OPS2 dependency upgrade | done | audit high 0; unit 514, build and 274 distinct Playwright tests passed on Next 15.5.20 |
-| P24-00B observed users | ready | product correctness and dependency gates are green; real sessions remain 0 / 15 |
+| P24-J0 journey-frame decision | in progress | owner feedback reopened save-before, post-save whole-Flow confirmation, My Flow/Calendar roles, and held-content visibility |
+| P24-00B observed users | held | resume after P24-J0~J4 short prototype and implementation gate; real sessions remain 0 / 15 |
 | P24-01A source v2 merge | deferred | wait for P24-00B/00C observation evidence before broadening merge behavior |
+
+Current journey-frame package: [2026-07-18 Save, Personalize, Execute Journey Review](../2026-07-18-flowme-save-personalize-execute-journey-review/README.md).
 
 ## Priority 0 - Establish One Baseline
 
@@ -123,7 +126,8 @@ Convert observation into keep/change/defer. Only then reopen broad visual work, 
 
 ## Current Execution Order
 
-1. Next P24-00B1: run two real first-use pilot sessions and adjust only the script or any Blocking defect.
-2. Then P24-00B2/B3: complete the five-person first-use cohort and two return sessions, reaching `15 / 15`.
-3. Then P24-00C1: classify findings as keep/change/defer/blocking.
-4. Then P24-00C2/C3: implement observed Blocking/High fixes and run the final completion audit before reopening source v2 merge, cloud persistence, or integrations.
+1. P24-J0: compare current production, the prior simulation, Claude mockups, and two alternative wireframes; run two short prototype tests.
+2. P24-J1~J3: implement only the selected save-before, post-save, My Flow/Calendar, and held-visibility corrections.
+3. P24-J4: run integrated regression and deploy the corrected frame.
+4. P24-J5/P24-00B1: run two real first-use pilot sessions, then complete the five-person first-use cohort and return sessions, reaching `15 / 15`.
+5. P24-00C1~C3: classify findings, implement observed Blocking/High fixes, and run the final completion audit before reopening source v2 merge, cloud persistence, or integrations.

@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-07-15<br>
+**Last Updated:** 2026-07-18<br>
 **Current Version:** v0.1.0 (released, observed-user validation pending)<br>
-**Current Validation Stage:** internal alpha / observed-user gate<br>
+**Current Validation Stage:** internal alpha / journey-frame decision before observed-user gate<br>
 **Next Version:** v0.2.0 (post-observation decisions)<br>
-**Next Milestone:** P24 observed-user evidence and keep/change/defer decisions
+**Next Milestone:** P24-J0 journey decision, then observed-user evidence and keep/change/defer decisions
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -40,18 +40,36 @@ Detailed status lives in the [P24 completion audit](./content-audit/2026-07-14-p
 | P24 implementation | Date/effective projection, recurrence, draft integrity, completion undo, editor, Calendar tray, export scope, execution notes | Done by automated evidence |
 | P24-00OPS1 | Public anonymous production URL | Done |
 | P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E, and rollback | Done |
-| P24-00B | Five real participants x three sessions | Ready, `0 / 15` |
+| P24-J0 | Save, personalize, execute journey decision package | In progress; app runtime unchanged |
+| P24-00B | Five real participants x three sessions | Held by P24-J0, `0 / 15` |
 | P24-00C | Keep/change/defer and observed fixes | Pending P24-00B |
 | P24 final | Final regression, production deploy, and completion package | Pending |
 
+## P24 Journey-Frame Correction Gate
+
+Owner feedback identified a first-use framing gap after the execution model became feature-complete: users must read too much explanation before saving, cannot immediately confirm the whole saved artifact, and can confuse My Flow scope with Calendar filtering. The current recommendation is a bounded reset, not a 4-tab or schema rewrite.
+
+Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-save-personalize-execute-journey-reset/spec.md).
+
+| Slice | Purpose | Gate |
+| --- | --- | --- |
+| P24-J0 | Current replay, alternative wireframes, two short prototype tests | Select one implementation direction |
+| P24-J1 | Artifact-first save preview and optional lightweight adjustment | User predicts what save/adjust will do |
+| P24-J2 | Post-save whole-Flow confirmation, returning Today preserved | Whole Flow visible with action depth 0 |
+| P24-J3 | My Flow/Calendar role cleanup, undated tray, held-content visibility | Held ordinary count 0; dated/undated roles clear |
+| P24-J4 | Integrated implementation, regression, production deploy | Automated Blocking/High 0 |
+| P24-J5 | Short re-test, then resume P24-00B | Prototype Blocking 0 before 15-session pilot |
+
 ## Operating Queue
 
-There is one active product gate. No strategy-document approval is currently blocking the work.
+There is one active product gate. P24-J0 selects the first-use frame before the longer observed-user protocol.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Now | User + AI | P24-00B1 first two observed sessions | Complete P1-S1 and P2-S1 using the fixed pilot kit | `2 / 2` first sessions have usable notes |
-| Next | User + AI | Remaining P24-00B sessions | Repeat the same three-session protocol | `15 / 15` sessions complete |
+| Now | AI + user review | P24-J0 journey decision | Compare current and two alternatives, then review the recommended wireframe | One direction and copy/visibility map are selected |
+| Next | AI + two prototype participants | P24-J0 short prototype tests | Run moving and vehicle tasks without feature explanation | Both sessions have usable notes and Blocking 0, or blockers are fixed before implementation |
+| Then | AI | P24-J1~J4 bounded implementation | Implement only the selected first-use frame | Regression green and production evidence ready |
+| After correction | User + AI | P24-00B observed sessions | Resume the existing three-session protocol | `15 / 15` sessions complete |
 | Blocked | AI, after evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
 | Parallel human check | User | Real Calendar import and duplicate import | Import the same ICS twice in one configured app | Result and duplicate behavior are recorded |
 | Parallel human check | User | Real backup and restore | Restore one backup in another browser or device | Transfer result and friction are recorded |
