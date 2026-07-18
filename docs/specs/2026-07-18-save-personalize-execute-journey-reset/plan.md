@@ -10,7 +10,7 @@
 | --- | --- |
 | `docs/content-audit/2026-07-18-flowme-save-personalize-execute-journey-review/` | 현재 증거, 참고 패턴, 평가 결과, 와이어프레임, 다음 backlog |
 | `docs/specs/2026-07-18-save-personalize-execute-journey-reset/` | 장기 목표, 단계, QA gate |
-| `docs/STATUS.md` | 관찰 전 journey decision gate 상태 |
+| `docs/STATUS.md` | 외부 관찰 전 product-readiness gate 상태 |
 | `docs/ROADMAP.md` | P24-J0~J5 실행 순서 |
 | `docs/content-audit/2026-07-14-flowme-p24-feedback-reconciliation/backlog.md` | 기존 P24 관찰 gate의 보류 사유와 연결 |
 
@@ -24,7 +24,7 @@
 2. 기존 11단계 콘텐츠 편집 시뮬레이션과 Claude Design A/B/F 목업을 대조한다.
 3. 설명 block, 저장 전 정보, 저장 후 전체 artifact depth, undated/held 노출을 계수한다.
 4. 두 대안 와이어프레임을 만든다.
-5. 2명의 짧은 prototype test 또는 owner walkthrough를 실행한다.
+5. owner walkthrough와 별도 Codex/Claude heuristic review를 실행한다. 외부 참가자는 요청하지 않는다.
 6. `keep/change/defer`로 하나의 구현안을 선택한다.
 
 **Exit:** 구현할 화면과 삭제/접기/유지할 정보가 확정된다. 불명확하면 production 코드를 수정하지 않는다.
@@ -70,13 +70,15 @@
 
 **Exit:** automated Blocking/High 0, reference fixtures와 production parity 유지.
 
-### P24-J5 - Short re-test, then observed-user pilot
+### P24-J5 - Independent production-readiness audit
 
-1. 같은 두 대표 여정으로 10분 재검증을 한다.
-2. Blocking이 없으면 P24-00B 5명 x 3회 관찰을 재개한다.
-3. 실제 관찰 결과만 P24-00C keep/change/defer에 사용한다.
+1. 배포된 production에서 moving, vehicle, memo draft 대표 여정을 처음부터 다시 재현한다.
+2. current-browser, current-command, independent reviewer evidence만 사용해 Blocking/High를 판정한다.
+3. copy density, post-save whole Flow, My Flow/Calendar 역할, undated tray, held visibility, 접근성, 모바일/와이드 품질을 확인한다.
+4. `implementation_complete_observation_not_started` 또는 `not_ready_for_observation`으로 닫는다.
+5. P24-00B를 자동 재개하지 않고 owner에게 준비도 판단과 남은 위험을 전달한다.
 
-## Prototype Test Tasks
+## Internal Scenario Review Tasks
 
 ### Test A - Moving
 
@@ -99,20 +101,22 @@
 
 | Metric | Target |
 | --- | --- |
-| `whatWillBeSavedAnsweredWithoutHelp` | true within 10 seconds |
+| `savedArtifactPredictableFromPrimarySurface` | true in owner and independent review |
 | `saveVsAdjustDistinguished` | true |
 | `postSaveWholeFlowActionDepth` | 0 |
-| `todayVsCalendarRoleExplained` | true |
+| `todayVsCalendarRoleDistinctOnScreen` | true |
 | `primaryActionBeforeLongExplanation` | true |
 | `heldContentOrdinarySurfaceCount` | 0 |
 | `mobileHorizontalOverflowCount` | 0 |
-| `blockingPrototypeFindingCount` | 0 before J1 implementation |
+| `blockingInternalReviewFindingCount` | 0 before J1 implementation |
+| `externalObservationRequested` | false through P24-J5 |
 
 ## Risk Controls
 
-- 시뮬레이션과 실제 관찰을 구분한다.
+- 시뮬레이션, owner review, 독립 agent review, 실제 관찰을 구분한다.
 - 기존 source/detail/caution 정보는 삭제하지 않고 progressive disclosure로 이동한다.
 - post-save special state와 returning Today state를 분리해 실행 허브를 약화하지 않는다.
 - held 숨김은 record 삭제가 아니라 visibility policy로 구현한다.
 - J0에서 앱 코드를 수정하지 않는다.
 - 각 implementation slice는 이전 slice의 evidence가 green일 때만 시작한다.
+- P24-J5 통과만으로 사용자 검증 완료를 주장하지 않는다. 외부 관찰은 별도 owner decision 뒤에만 연다.

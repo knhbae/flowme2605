@@ -1,5 +1,9 @@
 # Journey Frame Audit
 
+## Observation Policy
+
+2026-07-19 owner decision: FlowMe is not yet ready to ask external users for observation. This audit therefore supports an internal product-frame decision and P24-J1~J5 observation-readiness correction only. Owner walkthrough, simulated journeys, Codex/Claude review, browser inspection, and automated QA must remain separate from `observed_user`; P24-00B stays `0 / 15`, not scheduled, until an explicit owner reopen after P24-J5.
+
 ## Findings
 
 ### 1. High - Moving save-before relies on repeated explanation

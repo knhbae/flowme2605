@@ -1,7 +1,7 @@
 # Save, Personalize, Execute Journey Reset Spec
 
 **Date:** 2026-07-18
-**Status:** Proposed - planning and prototype gate only
+**Status:** Proposed - internal journey decision and observation-readiness gate
 **Owner:** Product owner + Codex
 **Related roadmap:** [P24 journey-frame correction](../../ROADMAP.md#p24-journey-frame-correction-gate)
 
@@ -9,11 +9,11 @@
 
 FlowMe의 첫 핵심 여정을 `콘텐츠 판단 -> 필요한 만큼 조정 -> 저장 -> 전체 결과 확인 -> 오늘 실행 -> 날짜 실행`으로 다시 정렬한다. 현재 기능과 4탭 IA를 유지하되, 긴 설명을 읽어야만 저장 결과를 이해하거나 저장 직후 전체 Flow를 찾기 위해 탭과 카드를 추가로 여는 문제를 먼저 해결한다.
 
-이번 spec의 첫 단계인 **P24-J0는 앱을 수정하지 않는다.** 현재 production, 기존 콘텐츠 편집 시뮬레이션, Claude Design 목업, 인접 서비스 패턴을 근거로 대안 와이어프레임을 만들고 작은 사용자 테스트를 거쳐 구현안을 선택한다.
+이번 spec의 첫 단계인 **P24-J0는 앱을 수정하지 않는다.** 현재 production, 기존 콘텐츠 편집 시뮬레이션, Claude Design 목업, 인접 서비스 패턴을 근거로 대안 와이어프레임을 만들고 owner review와 독립적인 heuristic review를 거쳐 구현안을 선택한다. 외부 사용자는 아직 요청하지 않는다.
 
 ## Stage Fit
 
-P23/P24에서 제목·날짜·메모·구조·완료·내보내기 기능은 대부분 연결됐다. 지금 필요한 것은 기능 추가가 아니라 사용자가 그 기능을 어떤 순서와 화면에서 만나는지 정리하는 것이다. 실제 사용자 세션이 `0 / 15`인 상태에서 긴 기존 관찰 스크립트를 그대로 실행하기보다, 이번 owner feedback으로 확인된 첫 여정의 프레임을 먼저 짧게 검증하는 편이 비용이 낮다.
+P23/P24에서 제목·날짜·메모·구조·완료·내보내기 기능은 대부분 연결됐다. 지금 필요한 것은 기능 추가가 아니라 사용자가 그 기능을 어떤 순서와 화면에서 만나는지 정리하는 것이다. 실제 사용자 세션은 `0 / 15`이며, owner는 현재 제품이 외부 관찰을 요청할 수준이 아니라고 판단했다. 따라서 먼저 내부 시뮬레이션, current-browser evidence, 디자인 검토, 독립 QA로 첫 여정의 프레임과 구현 완성도를 높인다.
 
 다음은 이번 program에서 확장하지 않는다.
 
@@ -23,6 +23,7 @@ P23/P24에서 제목·날짜·메모·구조·완료·내보내기 기능은 대
 - Studio의 5번째 탭 승격
 - source-backed 원본의 직접 편집
 - 모든 콘텐츠 유형을 한 번에 재설계
+- 외부 참가자 모집, prototype session, observed-user session
 
 ## User Need
 
@@ -62,7 +63,7 @@ Flow 미리보기
 - 재방문 My Flow Today와 전체 Flow의 역할
 - Calendar dated grid와 undated tray의 역할
 - held/review 콘텐츠의 일반 실행 목록 노출 정책
-- 모바일 390px과 wide 1024px 와이어프레임·프로토타입 검토
+- 모바일 390px과 wide 1024px 와이어프레임·내부 화면 검토
 
 ### Out
 
@@ -82,7 +83,7 @@ Flow 미리보기
 | Artifact destination | 전체 Flow는 My Flow, 날짜 있는 항목은 Calendar/ICS, 날짜 없는 항목은 My Flow/list export와 Calendar tray에 남는다. |
 | Source/risk boundary | 출처·주의·세부 근거는 삭제하지 않고 접힌 상세에 유지한다. 실행 보류 콘텐츠는 일반 목록에서 숨긴다. |
 | Natural artifact | 이사는 5시점 timeline, 차량 점검은 날짜 없는 checklist, 메모 draft는 개인 task list로 보인다. |
-| Verification | current-state replay, 대안 와이어프레임, 2개의 10분 prototype test, 선정안 E2E와 production observation |
+| Verification | current-state replay, 대안 와이어프레임, owner walkthrough, 독립 heuristic review, 선정안 E2E와 production browser inspection |
 
 ## Design Hypotheses
 
@@ -98,18 +99,21 @@ Flow 미리보기
 - `빠른 저장 중심`과 `artifact-first + optional adjust` 두 대안을 같은 정보로 비교한다.
 - 추천안의 390px/1024px 와이어프레임에서 저장 전, 조정, 저장 직후, 재방문 My Flow, Calendar 역할이 연결된다.
 - 설명문은 기능 설명이 아니라 사용자가 결정을 위해 꼭 알아야 하는 내용만 남기는 기준을 정의한다.
-- prototype tester가 도움 없이 10초 안에 `무엇이 저장되는지`와 `어디서 조정하는지` 답할 수 있는지 측정한다.
+- owner와 독립 reviewer가 보조 설명 없이 화면만 보고 `무엇이 저장되는지`와 `어디서 조정하는지` 같은 결론에 도달하는지 기록한다. 이 판정은 실제 사용자 이해 증거로 계산하지 않는다.
 - 저장 직후 전체 Flow 확인에는 탭 전환이나 카드 펼치기가 필요하지 않다.
 - P24-J1~J5의 구현·재검증 순서와 중단 조건이 확정된다.
 - 앱 runtime 코드와 저장/export schema는 변경하지 않는다.
 
 ## Program Exit Criteria
 
-다음 조건이 모두 충족될 때만 기존 P24-00B의 5명 x 3회 관찰을 재개한다.
+다음 조건이 모두 충족되면 P24 구현 상태를 `implementation_complete_observation_not_started`로 닫고, owner에게 P24-00B 재개 여부를 판단할 수 있는 준비도 보고서를 전달한다. 외부 관찰은 자동으로 시작하지 않는다.
 
 - 대표 두 여정에서 저장 전 설명 없이 저장 결과를 예측한다.
 - 저장 직후 전체 artifact를 확인하고 Today/Calendar의 역할을 구분한다.
 - 긴 설명을 읽지 않아도 primary action을 선택한다.
 - held 콘텐츠가 ordinary execution surface에 0건 노출된다.
 - 모바일/와이드 production regression과 접근성 검증이 통과한다.
-- 작은 재검증에서 Blocking finding이 0건이다.
+- 독립 production-readiness 감사에서 Blocking/High finding이 0건이다.
+- production 링크가 익명 접근 가능하고 owner가 직접 핵심 여정을 검토했다.
+
+P24-00B는 owner가 제품을 사용자에게 보여줄 수준이라고 명시적으로 판단할 때만 별도 목표로 재개한다. 재개 전 observed-user session count는 계속 `0 / 15`다.

@@ -40,8 +40,8 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-18 Save, Personalize, Execute Journey Reset](./2026-07-18-save-personalize-execute-journey-reset/spec.md) - P24-J0 compares current production with alternative first-use frames before app changes; the longer observed-user pilot is held until the save/adjust/post-save frame is selected.
-- [2026-07-14 P24 Execution Trust and UX Simplification](./2026-07-14-p24-execution-trust-ux-simplification/spec.md) - implementation and operations prep are complete; its 5 participants x 3 sessions protocol resumes after P24-J0~J4 closes the reopened journey-frame gap.
+- [2026-07-18 Save, Personalize, Execute Journey Reset](./2026-07-18-save-personalize-execute-journey-reset/spec.md) - P24-J0 compares current production with alternative first-use frames before app changes; P24-J1~J5 must make the product observation-ready before any external participant is requested.
+- [2026-07-14 P24 Execution Trust and UX Simplification](./2026-07-14-p24-execution-trust-ux-simplification/spec.md) - implementation and operations prep are complete; its 5 participants x 3 sessions protocol is deferred until the owner explicitly reopens it after the current P24 readiness correction.
 
 ### Completed Or Closed
 

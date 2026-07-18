@@ -9,7 +9,8 @@
 - [x] Notion, Todoist, Sunsama, Google Calendar, Wanderlog의 관련 공식 패턴을 확인한다.
 - [x] bounded journey reset과 전면 재작성/문구-only 수정의 tradeoff를 기록한다.
 - [ ] current와 대안 A/B의 모바일·wide 와이어프레임을 완성한다.
-- [ ] owner walkthrough 1회와 외부 participant prototype test 2회를 실행한다.
+- [ ] owner walkthrough 1회와 별도 Codex/Claude heuristic review를 실행한다.
+- [ ] 외부 사용자 모집이나 prototype session 없이 선정 근거와 남은 가정을 기록한다.
 - [ ] 결과를 `keep/change/defer`로 분류한다.
 - [ ] P24-J1 구현 범위를 승인한다.
 
@@ -40,8 +41,10 @@
 - [ ] 모바일 390px, wide 1024px, keyboard, accessible name을 확인한다.
 - [ ] production deploy와 route evidence를 만든다.
 
-## P24-J5 - Human evidence
+## P24-J5 - Internal production readiness
 
-- [ ] 2개의 짧은 재검증에서 Blocking 0을 확인한다.
-- [ ] P24-00B 5명 x 3회 관찰을 재개한다.
-- [ ] P24-00C keep/change/defer를 실제 관찰 근거로 작성한다.
+- [ ] clean production에서 대표 여정을 current evidence로 다시 실행한다.
+- [ ] 독립 Codex/Claude review에서 Blocking/High 0을 확인한다.
+- [ ] 모바일 390px, wide 1024px, keyboard, accessible name, overflow, console error를 확인한다.
+- [ ] `implementation_complete_observation_not_started` 또는 `not_ready_for_observation`으로 판정한다.
+- [ ] P24-00B는 owner의 명시적 재개 결정 전까지 `0 / 15`, not scheduled로 유지한다.

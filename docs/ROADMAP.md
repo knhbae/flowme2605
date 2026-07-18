@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-07-18<br>
-**Current Version:** v0.1.0 (released, observed-user validation pending)<br>
-**Current Validation Stage:** internal alpha / journey-frame decision before observed-user gate<br>
-**Next Version:** v0.2.0 (post-observation decisions)<br>
-**Next Milestone:** P24-J0 journey decision, then observed-user evidence and keep/change/defer decisions
+**Last Updated:** 2026-07-19<br>
+**Current Version:** v0.1.0 (released product PoC)<br>
+**Current Validation Stage:** internal alpha / observation-readiness correction<br>
+**Next Version:** v0.2.0 (observation-ready product frame)<br>
+**Next Milestone:** P24-J0~J5 internal journey correction, deployment, and independent readiness audit
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -41,9 +41,9 @@ Detailed status lives in the [P24 completion audit](./content-audit/2026-07-14-p
 | P24-00OPS1 | Public anonymous production URL | Done |
 | P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E, and rollback | Done |
 | P24-J0 | Save, personalize, execute journey decision package | In progress; app runtime unchanged |
-| P24-00B | Five real participants x three sessions | Held by P24-J0, `0 / 15` |
+| P24-00B | Five real participants x three sessions | Deferred until explicit owner reopen after P24-J5, `0 / 15` |
 | P24-00C | Keep/change/defer and observed fixes | Pending P24-00B |
-| P24 final | Final regression, production deploy, and completion package | Pending |
+| P24 final | Internal regression, production deploy, and observation-readiness package | Pending |
 
 ## P24 Journey-Frame Correction Gate
 
@@ -53,24 +53,25 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 | Slice | Purpose | Gate |
 | --- | --- | --- |
-| P24-J0 | Current replay, alternative wireframes, two short prototype tests | Select one implementation direction |
+| P24-J0 | Current replay, alternative wireframes, owner review, and independent heuristic review | Select one implementation direction without recruiting users |
 | P24-J1 | Artifact-first save preview and optional lightweight adjustment | User predicts what save/adjust will do |
 | P24-J2 | Post-save whole-Flow confirmation, returning Today preserved | Whole Flow visible with action depth 0 |
 | P24-J3 | My Flow/Calendar role cleanup, undated tray, held-content visibility | Held ordinary count 0; dated/undated roles clear |
 | P24-J4 | Integrated implementation, regression, production deploy | Automated Blocking/High 0 |
-| P24-J5 | Short re-test, then resume P24-00B | Prototype Blocking 0 before 15-session pilot |
+| P24-J5 | Independent production-readiness audit | Deployed journey has Blocking/High 0; owner decides whether observation may be reopened |
 
 ## Operating Queue
 
-There is one active product gate. P24-J0 selects the first-use frame before the longer observed-user protocol.
+There is one active product gate. P24-J0 selects the first-use frame; external user observation is outside the current execution queue.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
 | Now | AI + user review | P24-J0 journey decision | Compare current and two alternatives, then review the recommended wireframe | One direction and copy/visibility map are selected |
-| Next | AI + two prototype participants | P24-J0 short prototype tests | Run moving and vehicle tasks without feature explanation | Both sessions have usable notes and Blocking 0, or blockers are fixed before implementation |
-| Then | AI | P24-J1~J4 bounded implementation | Implement only the selected first-use frame | Regression green and production evidence ready |
-| After correction | User + AI | P24-00B observed sessions | Resume the existing three-session protocol | `15 / 15` sessions complete |
-| Blocked | AI, after evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
+| Next | AI + owner review | P24-J0 internal decision | Replay moving, vehicle, and memo tasks against the alternatives | Owner selects one direction and unresolved Blocking assumptions are explicit |
+| Then | AI | P24-J1~J4 bounded implementation | Implement only the selected first-use frame | Regression green and corrected production is deployed |
+| After correction | Independent Codex/Claude review | P24-J5 production-readiness audit | Re-run representative journeys without using prior results as current evidence | Blocking/High 0 and owner receives a readiness recommendation |
+| Deferred | User, by explicit decision | P24-00B observed sessions | Reopen only when the owner judges the product ready to show users | Recruitment begins; current count stays `0 / 15` until then |
+| Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
 | Parallel human check | User | Real Calendar import and duplicate import | Import the same ICS twice in one configured app | Result and duplicate behavior are recorded |
 | Parallel human check | User | Real backup and restore | Restore one backup in another browser or device | Transfer result and friction are recorded |
 | Review shelf | User, non-blocking | Prompt Lab and recent strategy artifacts | Read when choosing the post-observation investment | Feedback is recorded without delaying P24 sessions |
@@ -81,14 +82,14 @@ These gates cannot be closed by automated tests or simulated personas.
 
 | Gate | Current state | Pass condition |
 | --- | --- | --- |
-| Repeated use | `0 / 15` observed sessions | 5 participants x 3 sessions |
+| Repeated use | `0 / 15`; not scheduled | Owner explicitly reopens a 5 participants x 3 sessions study after P24-J5 |
 | Calendar import | Parser/Office evidence only | One configured Calendar app plus duplicate-import result |
 | Cross-device recovery | Automated/local evidence only | One real browser or device transfer |
 | Persistence decision | Undecided | Decide from observed continuity expectations |
 
 ## Next Decision
 
-After P24-00B and P24-00C, choose one primary next investment:
+After P24-J5, first decide whether FlowMe is ready to open P24-00B. Only after future P24-00B/P24-00C evidence should one primary next investment be chosen:
 
 1. account-backed persistence,
 2. creator/update pilot,

@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-18 (save-personalize-execute journey decision gate opened)
-**Status:** v0.1.0 RELEASED / P24 JOURNEY-FRAME DECISION GATE
+**Last Updated:** 2026-07-19 (external observation deferred until product readiness)
+**Status:** v0.1.0 RELEASED / P24 OBSERVATION-READINESS CORRECTION
 **Current Version:** v0.1.0  
-**Primary Focus:** Complete P24-J0 current-state simulation, alternative wireframes, and two short prototype tests before changing production or resuming P24-00B. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Complete P24-J0 internal journey decision, then P24-J1~J5 product correction and independent production-readiness audit. Do not recruit or ask external users to observe the product yet. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,15 +11,17 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P24-J0 save-personalize-execute journey decision; observed sessions remain `0 / 15` |
-| User action now | Review the P24-J0 wireframe direction, then run two 10-minute prototype tasks before the longer pilot |
-| AI action now | Compare current production, prior simulation, Claude mockups, and references; produce testable alternatives without changing app runtime |
+| Active product gate | P24-J0 save-personalize-execute internal journey decision; external observation is not scheduled and remains `0 / 15` |
+| User action now | Review and approve the P24-J0 wireframe direction only; participant recruitment is not requested |
+| AI action now | Compare current production, prior simulation, Claude mockups, and references; run internal scenario and independent design/QA review without changing app runtime |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
 
-- 2026-07-18 save-personalize-execute journey gate: Owner feedback reopened the first-use frame before the 15-session observed-user pilot. The current concern is not missing execution capability: moving/public surfaces rely on long repeated explanation, the post-save state does not immediately show the whole saved Flow, save-versus-adjust is not presented as one predictable choice, My Flow selection can be mistaken for Calendar filtering, and held content competes with executable content. The [journey review](./content-audit/2026-07-18-flowme-save-personalize-execute-journey-review/README.md) and [P24-J0 spec](./specs/2026-07-18-save-personalize-execute-journey-reset/spec.md) define a bounded reset that preserves the 4-tab IA and current storage/execution/export contracts. P24-00B is held, not cancelled, until alternative wireframes and two short prototype tests select the P24-J1 implementation. This is planning and current-browser evidence, not observed-user validation; sessions remain `0 / 15`.
+- 2026-07-19 observation-readiness correction: The owner explicitly judged FlowMe not ready to ask external users for observation. P24 therefore ends with an internal production-readiness audit, not participant sessions. P24-J0 uses current-browser replay, owner review, independent Codex/Claude review, reference comparison, and simulated journeys to select the implementation frame; P24-J1~J4 implement it; P24-J5 verifies the deployed result. P24-00B remains a deferred shelf item at `0 / 15` until the owner explicitly reopens it after J5 reports Blocking/High `0`. No participant recruitment or prototype session is a current action.
+
+- 2026-07-18 save-personalize-execute journey gate: Owner feedback reopened the first-use frame before the 15-session observed-user pilot. The current concern is not missing execution capability: moving/public surfaces rely on long repeated explanation, the post-save state does not immediately show the whole saved Flow, save-versus-adjust is not presented as one predictable choice, My Flow selection can be mistaken for Calendar filtering, and held content competes with executable content. The [journey review](./content-audit/2026-07-18-flowme-save-personalize-execute-journey-review/README.md) and [P24-J0 spec](./specs/2026-07-18-save-personalize-execute-journey-reset/spec.md) define a bounded reset that preserves the 4-tab IA and current storage/execution/export contracts. This is planning and current-browser evidence, not observed-user validation; sessions remain `0 / 15`.
 
 - 2026-07-15 backlog control cleanup: Reclassified the spec index so P24 is the only active gate, closed P23 and Prompt Lab against their evidence, moved external and observed-user gates to the roadmap, and separated the historical change log from the current queue. This changes planning truth only; observed sessions remain `0 / 15`.
 

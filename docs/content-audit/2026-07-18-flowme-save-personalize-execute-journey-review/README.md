@@ -1,7 +1,7 @@
 # FlowMe Save -> Personalize -> Execute Journey Review
 
-**Date:** 2026-07-18
-**Status:** P24-J0 planning gate; app code unchanged
+**Date:** 2026-07-18; observation policy updated 2026-07-19
+**Status:** P24-J0 internal decision gate; external observation not scheduled; app code unchanged
 **Primary spec:** [Save, Personalize, Execute Journey Reset](../../specs/2026-07-18-save-personalize-execute-journey-reset/spec.md)
 
 ## Verdict
@@ -12,7 +12,7 @@
 
 > 4탭과 현재 execution/export 계약은 유지하고, `artifact-first preview -> optional lightweight adjust -> post-save full artifact -> returning Today -> dated Calendar`만 bounded reset한다.
 
-기존 P24-00B 15세션 관찰은 바로 진행하지 않는다. 먼저 P24-J0 대안 와이어프레임과 2개의 짧은 prototype test로 화면 프레임을 선택한 뒤 P24-J1부터 구현한다. 이 보류는 사용자 검증을 포기하는 것이 아니라, 잘못된 프레임을 긴 관찰 프로토콜로 측정하지 않기 위한 순서 조정이다.
+기존 P24-00B 15세션 관찰은 현재 요청하지 않는다. 먼저 P24-J0 대안 와이어프레임을 owner review와 독립 Codex/Claude heuristic review로 선택하고, P24-J1~J4를 구현한 뒤 P24-J5 production-readiness 감사를 통과해야 한다. 그 뒤에도 관찰은 자동으로 시작하지 않으며 owner가 제품을 보여줄 수준이라고 명시적으로 판단할 때만 별도 목표로 연다.
 
 ## Why This Review Exists
 
@@ -51,6 +51,6 @@ Owner feedback에서 다음 문제가 반복됐다.
 
 - production app code 수정 없음
 - proposed wireframe의 owner approval 없음
-- prototype participant session 없음
+- 외부 participant 모집·prototype session 없음
 - P24-J1 implementation 없음
-- structured observed-user session은 여전히 `0 / 15`
+- structured observed-user session은 `0 / 15`, not scheduled

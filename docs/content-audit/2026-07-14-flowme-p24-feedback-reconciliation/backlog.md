@@ -8,7 +8,7 @@
 | P24-00R evidence/runtime reconciliation | done | clean and dependency-candidate worktrees were measured from `211827d` |
 | P24-00OPS2 dependency upgrade | done | audit high 0; unit 514, build and 274 distinct Playwright tests passed on Next 15.5.20 |
 | P24-J0 journey-frame decision | in progress | owner feedback reopened save-before, post-save whole-Flow confirmation, My Flow/Calendar roles, and held-content visibility |
-| P24-00B observed users | held | resume after P24-J0~J4 short prototype and implementation gate; real sessions remain 0 / 15 |
+| P24-00B observed users | deferred, not scheduled | owner explicitly judged the product not ready for external observation; reopen only after P24-J5 readiness audit and a separate owner decision; real sessions remain 0 / 15 |
 | P24-01A source v2 merge | deferred | wait for P24-00B/00C observation evidence before broadening merge behavior |
 
 Current journey-frame package: [2026-07-18 Save, Personalize, Execute Journey Review](../2026-07-18-flowme-save-personalize-execute-journey-review/README.md).
@@ -95,7 +95,7 @@ Evidence: [P24 U4 inline execution notes](../2026-07-14-p24-u4-inline-execution-
 
 Anonymous observation URL with 390px smoke and source commit recorded.
 
-Current state: done. PR [#120](https://github.com/knhbae/flowme2605/pull/120) merged as `bc8fc649`, deployment `dpl_GdeGC2WdBz34ttHp4fZyQkYmRLP6` reached `Ready`, and <https://flowme2605.vercel.app> returned anonymous HTTP 200 with the FLOW home. Generated branch preview URLs remain protected; the public production alias is the observation URL.
+Current state: done. PR [#120](https://github.com/knhbae/flowme2605/pull/120) merged as `bc8fc649`, deployment `dpl_GdeGC2WdBz34ttHp4fZyQkYmRLP6` reached `Ready`, and <https://flowme2605.vercel.app> returned anonymous HTTP 200 with the FLOW home. Generated branch preview URLs remain protected; the public production alias is available for internal production inspection, not current participant recruitment.
 
 ### P24-00OPS2 Controlled dependency upgrade - done
 
@@ -105,11 +105,11 @@ Promoted from P25 because the prior production baseline reported high `4`. The i
 
 ### P24-00B
 
-5 participants x 3 sessions after all Blocking and selected High items are green. Use the [P24-00B observed-user guide](../2026-07-14-p24-00b-observed-user-test-guide/README.md) and keep each participant across discovery/save, edit/execute, and export/review/reuse sessions.
+This future gate remains defined as 5 participants x 3 sessions, but no participant should be recruited or asked to observe FlowMe now. The [P24-00B observed-user guide](../2026-07-14-p24-00b-observed-user-test-guide/README.md) is a deferred shelf artifact, not a current operating instruction.
 
-P24-00B1 readiness is complete in the [two-person first-session pilot package](../2026-07-14-p24-00b1-two-person-pilot/README.md). P1 starts from Home with an anchor-date moving task; P2 starts from public vehicle inspection with an undated scheduling task. The package does not count as observation: both sessions remain `not_started`.
+The [two-person first-session pilot package](../2026-07-14-p24-00b1-two-person-pilot/README.md) remains a historical, deferred shelf artifact. It does not establish current readiness and must not be used to recruit participants; both sessions remain `not_started`.
 
-Product gate: green by automated QA. Operations gate: green on the public production alias. Observed-user session count remains 0 / 15, so this gate is ready rather than done.
+Prior product and operations checks do not make the current journey observation-ready. Observed-user session count remains `0 / 15`, and the gate is not scheduled.
 
 ### P24-00C
 
@@ -126,8 +126,8 @@ Convert observation into keep/change/defer. Only then reopen broad visual work, 
 
 ## Current Execution Order
 
-1. P24-J0: compare current production, the prior simulation, Claude mockups, and two alternative wireframes; run two short prototype tests.
+1. P24-J0: compare current production, the prior simulation, Claude mockups, and two alternative wireframes; use owner and independent heuristic review only.
 2. P24-J1~J3: implement only the selected save-before, post-save, My Flow/Calendar, and held-visibility corrections.
 3. P24-J4: run integrated regression and deploy the corrected frame.
-4. P24-J5/P24-00B1: run two real first-use pilot sessions, then complete the five-person first-use cohort and return sessions, reaching `15 / 15`.
-5. P24-00C1~C3: classify findings, implement observed Blocking/High fixes, and run the final completion audit before reopening source v2 merge, cloud persistence, or integrations.
+4. P24-J5: run an independent production-readiness audit and report `implementation_complete_observation_not_started` or `not_ready_for_observation`.
+5. P24-00B/P24-00C: remain outside the current execution queue until the owner explicitly reopens observation after J5.

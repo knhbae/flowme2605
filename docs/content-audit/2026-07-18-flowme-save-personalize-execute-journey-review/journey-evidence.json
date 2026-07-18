@@ -1,7 +1,9 @@
 {
-  "reviewDate": "2026-07-18",
-  "status": "planning_gate",
+  "reviewDate": "2026-07-19",
+  "status": "internal_observation_readiness_gate",
   "observedUserSessionCount": 0,
+  "externalObservationRequested": false,
+  "externalObservationReady": false,
   "appRuntimeChanged": false,
   "currentEvidence": [
     {
@@ -68,6 +70,9 @@
     "keepStorageExecutionExportContracts": true,
     "hideHeldFromOrdinarySurfaces": true,
     "postSaveWholeFlowActionDepthTarget": 0,
-    "prototypeTestsRequiredBeforeImplementation": 2
+    "prototypeTestsRequiredBeforeImplementation": 0,
+    "ownerReviewRequiredBeforeImplementation": true,
+    "independentReviewRequiredBeforeP24Close": true,
+    "p24CloseStateTarget": "implementation_complete_observation_not_started"
   }
 }

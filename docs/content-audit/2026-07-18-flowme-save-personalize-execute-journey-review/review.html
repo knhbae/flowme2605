@@ -191,7 +191,7 @@
             <li>첫 저장 직후 전체 Flow를 기본 표시</li>
             <li>재방문은 Today-first 유지</li>
           </ul>
-          <p><b>검증 필요:</b> 전체 preview가 저장을 늦추지 않는지 10분 prototype으로 확인합니다.</p>
+          <p><b>내부 검토 필요:</b> 전체 preview가 1차 행동을 밀어내지 않는지 owner와 독립 reviewer가 확인합니다.</p>
         </article>
       </div>
     </section>
@@ -267,12 +267,12 @@
     <section>
       <p class="eyebrow">단계별 진행</p>
       <h2>각 gate를 통과해야 다음 개발로 넘어갑니다</h2>
-      <div class="phase"><b>P24-J0</b><div><strong>시뮬레이션·wireframe·prototype</strong><br />앱 코드를 바꾸지 않고 대안 하나를 선택합니다.</div><span class="metric">현재 단계</span></div>
+      <div class="phase"><b>P24-J0</b><div><strong>시뮬레이션·wireframe·내부 검토</strong><br />앱 코드를 바꾸지 않고 owner와 독립 reviewer가 대안 하나를 선택합니다.</div><span class="metric">현재 단계</span></div>
       <div class="phase"><b>P24-J1</b><div><strong>저장 판단 화면</strong><br />artifact preview와 그대로/조정 저장을 구현합니다.</div><span class="metric">J0 승인 후</span></div>
       <div class="phase"><b>P24-J2</b><div><strong>저장 직후 전체 확인</strong><br />첫 저장과 재방문 상태를 분리합니다.</div><span class="metric">depth 0</span></div>
       <div class="phase"><b>P24-J3</b><div><strong>My Flow·Calendar 역할</strong><br />날짜 없는 tray와 held visibility를 정리합니다.</div><span class="metric">held 0</span></div>
       <div class="phase"><b>P24-J4</b><div><strong>통합 개발·회귀</strong><br />세 대표 유형과 export/완료/반복 기준을 다시 확인합니다.</div><span class="metric">Blocking 0</span></div>
-      <div class="phase"><b>P24-J5</b><div><strong>짧은 재검증 후 실제 관찰</strong><br />통과한 뒤 기존 5명 x 3회 P24-00B를 재개합니다.</div><span class="metric">0 / 15 유지</span></div>
+      <div class="phase"><b>P24-J5</b><div><strong>독립 production 준비도 감사</strong><br />Blocking/High 0을 확인하고 owner에게 관찰 재개 여부를 판단할 자료를 전달합니다.</div><span class="metric">관찰 미요청</span></div>
     </section>
 
     <section>

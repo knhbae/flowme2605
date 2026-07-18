@@ -8,10 +8,11 @@
 | `current_repo` | 현재 worktree의 코드·문서 계약 |
 | `prior_artifact` | 기존 시뮬레이션 또는 Claude 목업 |
 | `official_reference` | 인접 서비스의 공식 도움말에 기록된 패턴 |
-| `prototype_test` | 정적/클릭 prototype을 수행한 사람의 관찰 |
+| `owner_review` | owner가 실제 화면 또는 wireframe을 따라가며 내린 제품 판단 |
+| `independent_agent_review` | 별도 Codex/Claude가 current 화면을 재현해 기록한 heuristic·correctness 판정 |
 | `observed_user` | production에서 실제 목적을 수행한 사용자 관찰 |
 
-`prior_artifact`, 자동화, simulated persona는 `observed_user`로 집계하지 않는다.
+`prior_artifact`, 자동화, owner review, independent agent review, simulated persona는 `observed_user`로 집계하지 않는다. P24-J0~J5에서는 외부 사용자 관찰을 요청하지 않는다.
 
 ## P24-J0 Required Checks
 
@@ -26,7 +27,7 @@
 | `npm.cmd run build` | Passed | Next.js 15.5.20, 18 static/dynamic route entries generated |
 | `git diff --check` | Passed | no whitespace errors after normalization |
 
-## Prototype Review Questions
+## Internal Review Questions
 
 1. 설명을 읽지 않고 무엇이 저장되는지 말할 수 있는가?
 2. `그대로 저장`과 `조정하고 저장`의 차이를 예측하는가?
@@ -60,5 +61,6 @@
 
 - Product constraint review: bounded journey reset; 4탭과 schema 유지.
 - Source/risk review: 세부 출처·주의는 삭제하지 않고 접힌 정보로 유지.
-- Browser review: current screenshots captured; proposed wireframes not yet tested.
-- Residual risk: owner feedback 1건은 강한 방향 신호지만 structured observed-user evidence는 아니다.
+- Browser review: current screenshots captured; proposed wireframes have not been implemented.
+- Residual risk: owner feedback and independent reviews can guide implementation but are not structured observed-user evidence.
+- Observation gate: external recruitment is explicitly deferred until P24-J5 is green and the owner reopens P24-00B.
