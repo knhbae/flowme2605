@@ -40,11 +40,12 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-18 Save, Personalize, Execute Journey Reset](./2026-07-18-save-personalize-execute-journey-reset/spec.md) - P24-J0 compares current production with alternative first-use frames before app changes; P24-J1~J5 must make the product observation-ready before any external participant is requested.
-- [2026-07-14 P24 Execution Trust and UX Simplification](./2026-07-14-p24-execution-trust-ux-simplification/spec.md) - implementation and operations prep are complete; its 5 participants x 3 sessions protocol is deferred until the owner explicitly reopens it after the current P24 readiness correction.
+- [2026-07-19 P25 Execution Workspace Foundation](./2026-07-19-execution-workspace-foundation/spec.md) - active staged correction for whole-Flow hierarchy, optional scheduling, progressive personal adjustment, projection truth, completion/reopen, export scope, public simplification, and responsive workspace design. P25-00B owner prototype review precedes runtime workspace implementation; external observation remains deferred.
 
 ### Completed Or Closed
 
+- [2026-07-18 Save, Personalize, Execute Journey Reset](./2026-07-18-save-personalize-execute-journey-reset/spec.md) - P24-J0~J5 implemented and deployed the artifact-first baseline; owner/Codex/Claude feedback reopened the broader execution-workspace frame under P25.
+- [2026-07-14 P24 Execution Trust and UX Simplification](./2026-07-14-p24-execution-trust-ux-simplification/spec.md) - implementation and operations prep are complete; its 5 participants x 3 sessions protocol remains deferred and is not the active gate.
 - [2026-07-14 URL-to-FLOW Prompt Lab v1](./2026-07-14-url-to-flow-prompt-lab/spec.md) - completed controlled prompt-contract experiment; real provider, latency, cost, and observed usability remain unproven.
 - [2026-07-14 Repeated Collaboration Workflows](./2026-07-14-repeated-collaboration-workflows/spec.md) - completed operating baseline for session start, request interviewing, direction capture, and closeout.
 - [2026-07-13 Execution Lifecycle Completeness](./2026-07-13-execution-lifecycle-completeness/spec.md) - local lifecycle contract closed; observed-user and external-system evidence moved to P24/P25.

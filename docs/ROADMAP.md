@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-19<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / observation-readiness correction<br>
-**Next Version:** v0.2.0 (observation-ready product frame)<br>
-**Next Milestone:** Owner-only readiness review; P24-00B remains deferred until explicitly reopened
+**Current Validation Stage:** internal alpha / P25 execution-workspace structural correction<br>
+**Next Version:** v0.2.0 (coherent personal execution workspace)<br>
+**Next Milestone:** P25-00B mobile/wide core-screen prototype and owner decision
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,28 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P25 Execution Workspace Correction
+
+Owner, Codex, and Claude Design feedback reopened the product frame after P24 implementation closeout. P25 is not another broad polish loop. It must make the complete personal Flow, optional scheduling, bounded personal adjustment, execution state, Calendar, and export read as one model.
+
+Detailed scope: [P25 Execution Workspace Foundation](./specs/2026-07-19-execution-workspace-foundation/spec.md).
+Review board: [P25 UX feedback reconciliation](./content-audit/2026-07-19-flowme-p25-ux-feedback-reconciliation/README.md).
+
+| Slice | Purpose | Gate |
+| --- | --- | --- |
+| P25-00A | Reconcile owner/Codex/Claude feedback and official references | Done; structural correction and staged scope recorded |
+| P25-00B | Compare core mobile/wide workspace prototypes and capture owner decisions | Screen-level keep/change/reject; no runtime change |
+| P25-01A | Canonical effective item/series/occurrence projection | Preview, My Flow, Calendar, ICS, and list export dates/counts match |
+| P25-01B | Memo draft split and count integrity | No invented filler; accepted preview equals saved/exported items |
+| P25-02 | Responsive whole-Flow workspace and post-save handoff | Full artifact reachable; no unexplained truncation |
+| P25-03 | Progressive item editor and selected-item batch adjustment | Common edit is one drawer; batch date/include/export impact is previewed |
+| P25-04 | Anytime task model and Calendar placement queue | Undated work can be found, executed, dated, moved, and cleared |
+| P25-05 | Completion/reopen and export scope parity | One occurrence/control; immediate undo and persistent reopen; exact export counts |
+| P25-06/07 | Public artifact simplification and shared responsive visual language | Duplicate representation/copy/overflow/control variants reduced to zero targets |
+| P25-08 | Internal six-journey integration gate | Automated Blocking/High zero and owner readiness decision; no observed-user claim |
+
+P25 implementation must proceed in this order. P25-02 runtime UI does not start before the P25-00B owner decision, and no visually persuasive recurrence UI ships while P25-01 parity is failing.
 
 ### Stage 0 First Flag MVP
 
@@ -67,13 +89,15 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P24-J0~J5 are complete internally; external user observation remains outside the execution queue until the owner explicitly reopens P24-00B.
+There is no active external-user gate. P24-J0~J5 remain the deployed baseline, while P25 is the only active internal product track. External user observation stays outside the queue until the owner explicitly judges a future P25 frame ready.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Now | Owner only | Readiness decision | Review the public P24 frame privately and explicitly decide whether it is ready to show users | Observation remains closed unless explicitly reopened |
-| Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | Regression green; independent Blocking/High 0 |
-| Deferred | User, by explicit decision | P24-00B observed sessions | Reopen only when the owner judges the product ready to show users | Recruitment begins; current count stays `0 / 15` until then |
+| Now | AI + owner direction | P25-00B core workspace prototype decision | Compare mobile/wide alternatives for save, whole Flow, My Flow, Calendar, adjustment, and export | Owner keep/change/reject decisions are recorded; runtime unchanged |
+| Next | AI | P25-01A/B correctness | Fix effective projection, recurrence, memo split, and count parity | Representative dates/counts match across consumers |
+| Then | AI + owner checkpoints | P25-02~P25-07 staged implementation | Close one product/data/browser gate per slice | Approved frame is implemented without source/run ownership drift |
+| Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
+| Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
 | Parallel human check | User | Real Calendar import and duplicate import | Import the same ICS twice in one configured app | Result and duplicate behavior are recorded |
 | Parallel human check | User | Real backup and restore | Restore one backup in another browser or device | Transfer result and friction are recorded |
@@ -92,14 +116,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-After P24-J5, first decide whether FlowMe is ready to open P24-00B. Only after future P24-00B/P24-00C evidence should one primary next investment be chosen:
-
-1. account-backed persistence,
-2. creator/update pilot,
-3. production URL intake and AI backend,
-4. or another narrow execution-model correction.
-
-Do not open these as parallel product tracks.
+The immediate decision is P25-00B: select the core execution-workspace frame before more runtime UI work. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated. Do not open them as parallel product tracks.
 
 ## Gated Backlog
 

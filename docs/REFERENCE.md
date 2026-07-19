@@ -1,9 +1,24 @@
 # Product Reference: Execution UX and Productivity Methods
 
-**Last reviewed:** 2026-05-21
+**Last reviewed:** 2026-07-19
 **Purpose:** Keep external UX/UI and workflow references available for future FLOW design decisions. This is research memory, not a committed roadmap.
 
 FLOW should use these notes when designing public flow pages, planner/export behavior, checklist execution, reminder copy, routine loops, health/exercise flows, and future creator/editor experiences.
+
+## 2026-07-19 P25 Execution Workspace Reference Refresh
+
+The P25 review uses official product/help documentation to answer four concrete questions: where undated work lives, how a public/template artifact becomes a personal copy, how completion can be undone later, and how one underlying plan appears in list/timeline/calendar views.
+
+| Product | Official pattern | FlowMe use | Boundary |
+| --- | --- | --- | --- |
+| [Things: Today, Upcoming, Anytime, Someday](https://culturedcode.com/things/support/articles/4001304/) and [Scheduling To-Dos](https://culturedcode.com/things/support/articles/2803579/) | Active undated work lives in Anytime; clearing a schedule returns a task there | Model no-date tasks as actionable Anytime work rather than broken Calendar data | Do not copy the exact Apple-only IA or labels without P25-00B review |
+| [Structured Tasks & Timeline](https://help.structured.app/en/categories/1823490) | Unscheduled tasks stay in an Inbox and move to the daily timeline when scheduled; replan and undo are explicit | Use a Calendar placement queue and recovery path | Drag/drop is optional acceleration, not the only path |
+| [Google Calendar Tasks](https://support.google.com/calendar/answer/9901136?hl=en-uk) | Tasks need a date to appear on Calendar; lists/pending tasks remain separately accessible; start/time/duration are distinct | Keep Calendar dated-only while My Flow owns all actionable tasks | Do not turn FlowMe into a general event calendar |
+| [Todoist tasks](https://www.todoist.com/help/articles/introduction-to-tasks-080OAXric) | One row-level completion control, immediate recurring-task undo, and a completed-task view for later uncompletion | Keep one control, immediate undo, and persistent reopen | FlowMe must model series/occurrence history more explicitly than generic task completion |
+| [Notion public-page duplication](https://www.notion.com/help/duplicate-public-pages) and [database views](https://www.notion.com/help/views-filters-and-sorts) | Public content becomes an editable private copy; one data source can have list, timeline, and Calendar views | Preserve source and personal-copy separation; share one effective Flow across projections | Do not expose an unrestricted property-heavy editor |
+| [Wanderlog help](https://help.wanderlog.com/hc/en-us) | Guides, saved lists, reservations, daily itinerary, and batch movement are separate jobs | Separate source/reference, whole Flow, schedule, and batch adjustment | Do not universalize travel-specific navigation |
+
+P25's reusable rule is: one complete personal artifact, multiple purpose-specific projections, and progressive controls. Reference products inform interaction boundaries; they do not justify copying their entire information architecture.
 
 ## 1. UX/UI Patterns From Comparable Products
 

@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - P25 centers the complete personal Flow and treats dates as optional scheduling
+
+**Decision:** Treat the P24 deployment as an implementation baseline, not a finished UX. P25 must center the complete personal Flow as the saved object; My Flow `지금`, Calendar, completion history, and exports are projections of that object. A task without a date remains actionable and exportable as an Anytime task; Calendar only places dated work on its grid and exposes an explicit scheduling queue for undated work. Personal changes use overlays and never mutate published source. Common item adjustment shows title, date/Anytime state, and note first; time, duration, recurrence, source detail, and batch operations are progressively disclosed. Before runtime workspace implementation, P25-00B compares mobile/wide prototypes and records owner decisions. Before visual recurrence work, P25-01 makes every consumer use one effective item/series/occurrence projection.
+
+**Reason:** The owner cannot yet understand how undated work is meant to be used, finds adjustment rough and overcomplicated, and does not trust the post-save or whole-Flow experience. Codex found concrete recurrence and memo-count mismatches, while Claude Design found duplicated public artifacts, hidden completion recovery, weak wide composition, and excessive copy. These are one model problem, not independent route polish tasks.
+
+**Applies to:** public/source-backed save-before pages, post-save confirmation, My Flow local views, whole-Flow detail, personal overlays, Calendar undated placement, recurrence projection, completion/reopen, export scope, responsive components, P25 evidence, and future readiness review.
+
+**Reopen when:** P25-00B owner review selects a materially different mental model, canonical projection cannot preserve current source/personal/run ownership, or later observed users consistently understand and prefer a different dated/undated and whole-Flow relationship. Automated agent reviews alone do not satisfy the observed-user condition.
+
+**Related docs:** [P25 foundation spec](./specs/2026-07-19-execution-workspace-foundation/spec.md), [P25 feedback reconciliation](./content-audit/2026-07-19-flowme-p25-ux-feedback-reconciliation/README.md)
+
 ### 2026-07-19 - Save before, first-save confirmation, and returning execution are distinct frames
 
 **Decision:** Keep the 4-tab IA and current source, personal overlay, execution, recurrence, and export contracts. On source-backed and public save-before surfaces, show the natural artifact and representative effective items before long explanation. Offer `그대로 저장` as the primary action and a bounded `조정하고 저장` path for personal title and included items. After the first save, show the whole saved Flow at depth 0 before entering the returning My Flow workspace; later visits remain task-first. Calendar keeps dated work in grid/agenda and preserves undated work in a collapsed tray. Content held for source or risk review stays stored but exposes no ordinary execution or post-save action until it becomes eligible again.
