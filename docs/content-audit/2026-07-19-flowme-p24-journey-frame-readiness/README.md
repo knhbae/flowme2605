@@ -21,7 +21,7 @@ P24-J5까지의 자동 검증과 독립 에이전트 검토는 실제 사용자 
 | P24-J2 | `savedMap`/`savedFlow` 첫 진입에 전체 Flow 확인 화면 제공, 재방문 workspace와 분리 |
 | P24-J3 | My Flow selector 역할 정리, Calendar undated tray 기본 접힘, held/review ordinary 노출 0 |
 | P24-J4 | 모바일 390px·wide 1024px, 접근성 이름, 완료/날짜/반복/export 회귀 검증 |
-| P24-J5 | 독립 자동 검토 Blocking/High 0; merge·production 배포·public-route 확인만 남음 |
+| P24-J5 | 독립 자동 검토 Blocking/High 0, PR #128 merge, production READY, public-route 재검증 완료 |
 
 ## 대표 화면
 
@@ -54,4 +54,4 @@ P24-J5까지의 자동 검증과 독립 에이전트 검토는 실제 사용자 
 
 P24 구현은 닫되 사용자 검증 완료로 표현하지 않는다. owner가 production 화면을 직접 확인하고 “이제 보여줄 수준”이라고 명시적으로 판단한 뒤에만 P24-00B를 별도 목표로 연다. 그 전에는 새 기능 확장보다 production 오류와 독립 검토의 Blocking/High만 수정한다.
 
-현재 이 브랜치의 마지막 운영 작업은 merge, production deploy, public alias 재검증이다. 완료 전까지 `route-evidence.json`의 production SHA와 deployment 상태는 pending으로 유지한다.
+P24 내부 구현과 production closeout은 완료됐다. 배포 기준은 merge `616025bf`, Vercel deployment `dpl_HSZz4qJM2MUqqoA9H4Xn5RtmoCx5`, public alias <https://flowme2605.vercel.app>이다. 이 판정은 사용자 검증 완료가 아니며 P24-00B는 계속 `0 / 15`, not scheduled다.

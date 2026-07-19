@@ -1,7 +1,7 @@
 # FlowMe Save -> Personalize -> Execute Journey Review
 
 **Date:** 2026-07-18; observation policy updated 2026-07-19
-**Status:** P24-J0~J4 implemented; P24-J5 production closeout pending; external observation not scheduled
+**Status:** P24-J0~J5 implemented and deployed; external observation not scheduled
 **Primary spec:** [Save, Personalize, Execute Journey Reset](../../specs/2026-07-18-save-personalize-execute-journey-reset/spec.md)
 
 ## Verdict
@@ -12,7 +12,7 @@
 
 > 4탭과 현재 execution/export 계약은 유지하고, `artifact-first preview -> optional lightweight adjust -> post-save full artifact -> returning Today -> dated Calendar`만 bounded reset한다.
 
-기존 P24-00B 15세션 관찰은 현재 요청하지 않는다. P24-J0에서 선택한 artifact-first, optional adjustment, first-save whole-Flow frame은 P24-J1~J4에서 구현됐고 독립 Codex heuristic review는 Blocking/High 0을 기록했다. 남은 단계는 merge, production deploy, public-route 재검증이다. 그 뒤에도 관찰은 자동으로 시작하지 않으며 owner가 제품을 보여줄 수준이라고 명시적으로 판단할 때만 별도 목표로 연다.
+기존 P24-00B 15세션 관찰은 현재 요청하지 않는다. P24-J0에서 선택한 artifact-first, optional adjustment, first-save whole-Flow frame은 P24-J1~J4에서 구현됐고, P24-J5에서 독립 Codex heuristic review Blocking/High 0, merge `616025bf`, production READY, public-route 재검증까지 닫혔다. 관찰은 자동으로 시작하지 않으며 owner가 제품을 보여줄 수준이라고 명시적으로 판단할 때만 별도 목표로 연다.
 
 ## Why This Review Exists
 
@@ -57,6 +57,5 @@ Owner feedback에서 다음 문제가 반복됐다.
 
 ## What Has Not Been Done
 
-- current branch merge와 final production deploy/public-route 확인
 - 외부 participant 모집·prototype session
 - structured observed-user session: `0 / 15`, not scheduled

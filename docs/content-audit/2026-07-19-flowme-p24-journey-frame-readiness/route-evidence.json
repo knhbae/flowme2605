@@ -58,7 +58,15 @@
   },
   "deployment": {
     "productionUrl": "https://flowme2605.vercel.app",
-    "productionSha": "pending_merge",
-    "deploymentStatus": "pending_final_deploy"
+    "productionSha": "616025bf79e5573f66ff7ef3d25c228075b391cf",
+    "deploymentId": "dpl_HSZz4qJM2MUqqoA9H4Xn5RtmoCx5",
+    "deploymentUrl": "https://flowme2605-fsv3apcm7-flowme.vercel.app",
+    "deploymentStatus": "ready",
+    "publicAliasVerified": true,
+    "productionMobilePostSaveMovingRowCount": 5,
+    "productionMobilePostSavePublicVehicleRowCount": 10,
+    "productionCalendarUndatedTrayDefaultCollapsed": true,
+    "productionHorizontalOverflowCount": 0,
+    "productionConsoleErrorCount": 0
   }
 }

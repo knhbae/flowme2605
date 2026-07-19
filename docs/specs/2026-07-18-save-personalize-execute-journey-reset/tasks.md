@@ -39,11 +39,11 @@
 - [x] 세 대표 Flow 유형에 공통 contract를 적용한다.
 - [x] 완료/재개, 날짜, 반복, export 회귀를 실행한다.
 - [x] 모바일 390px, wide 1024px, keyboard, accessible name을 확인한다.
-- [ ] production deploy와 route evidence를 만든다.
+- [x] production deploy와 route evidence를 만든다.
 
 ## P24-J5 - Internal production readiness
 
-- [ ] clean production에서 대표 여정을 current evidence로 다시 실행한다.
+- [x] clean production에서 대표 여정을 current evidence로 다시 실행한다.
 - [x] 독립 read-only Codex review에서 Blocking/High 0을 확인한다.
 - [x] 모바일 390px, wide 1024px, keyboard, accessible name, overflow, console error를 확인한다.
 - [x] `implementation_complete_observation_not_started`와 `not_ready_for_observation`으로 판정한다.
@@ -51,6 +51,6 @@
 
 ## Closeout truth
 
-- 현재 미완료 항목은 production merge/deploy와 배포된 route 재검증뿐이다.
+- production merge/deploy와 배포된 route 재검증까지 완료했다.
 - 자동화, screenshot, owner 방향 검토, independent agent review는 `observed_user`가 아니다.
 - 외부 사용자 모집·요청·일정 조율·세션은 수행하지 않았다.

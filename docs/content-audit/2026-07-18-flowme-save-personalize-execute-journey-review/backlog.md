@@ -5,11 +5,11 @@
 | Gate | Status | Exit condition |
 | --- | --- | --- |
 | P24-J0 journey decision | done | artifact-first + optional adjustment + first-save whole-Flow frame selected |
-| P24-J1 save decision surface | done in branch | save/adjust hierarchy and compact copy implemented |
-| P24-J2 post-save full artifact | done in branch | saved effective rows visible at depth 0 |
-| P24-J3 My Flow/Calendar/held roles | done in branch | ordinary held 0; dated/undated roles explicit |
-| P24-J4 integration/regression | done locally | automated and independent Blocking/High 0 |
-| P24-J5 internal production readiness | in progress | merge, deploy, and public production verification remain |
+| P24-J1 save decision surface | done and deployed | save/adjust hierarchy and compact copy implemented |
+| P24-J2 post-save full artifact | done and deployed | saved effective rows visible at depth 0 |
+| P24-J3 My Flow/Calendar/held roles | done and deployed | ordinary held 0; dated/undated roles explicit |
+| P24-J4 integration/regression | done | automated and independent Blocking/High 0 |
+| P24-J5 internal production readiness | done | PR #128 merged, production READY, public routes checked |
 | P24-00B observed-user pilot | deferred, not scheduled | owner가 J5 이후 명시적으로 재개; 현재 `0 / 15` |
 
 ## P24-J0 Deliverables
@@ -29,7 +29,7 @@
 3. **P24-J3A done:** My Flow artifact selection과 returning Today
 4. **P24-J3B done:** Calendar undated tray와 held visibility
 5. **P24-J4 done locally:** 세 대표 유형 통합과 regression
-6. **P24-J5 current:** merge, production deploy, public verification, exact SHA 기록
+6. **P24-J5 done:** merge `616025bf`, production deployment, public verification, exact evidence 기록
 7. **P24-00B deferred:** owner가 별도 목표로 명시할 때만 재개; 현재 `0 / 15`
 
 ## Explicitly Deferred
