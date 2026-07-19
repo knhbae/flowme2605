@@ -5609,9 +5609,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         'ko',
       );
       if (flowOrder !== 0) return flowOrder;
+      const leftSourceOrder = left.flow.rows.findIndex((candidate) => candidate.id === left.id);
+      const rightSourceOrder = right.flow.rows.findIndex((candidate) => candidate.id === right.id);
+      const leftOrder = left.structuralProjectionOrderRank ?? (leftSourceOrder >= 0 ? leftSourceOrder : Number.MAX_SAFE_INTEGER);
+      const rightOrder = right.structuralProjectionOrderRank ?? (rightSourceOrder >= 0 ? rightSourceOrder : Number.MAX_SAFE_INTEGER);
       return (
-        (left.structuralProjectionOrderRank ?? Number.MAX_SAFE_INTEGER) -
-          (right.structuralProjectionOrderRank ?? Number.MAX_SAFE_INTEGER) ||
+        leftOrder - rightOrder ||
         left.id.localeCompare(right.id)
       );
     });

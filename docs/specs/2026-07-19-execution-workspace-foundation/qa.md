@@ -20,6 +20,17 @@
 | P25-06/07 | Copy-density count, one public representation, responsive shared states, visual regression |
 | P25-08 | Six integrated journeys, Blocking/High zero, owner readiness decision |
 
+## Final Internal Gate
+
+- Representative integrated journeys: `9 / 9` passed.
+- Related regression set: `81 / 81` passed.
+- Unit tests: `526 / 526` passed.
+- Mobile/wide screenshots: `36`; downloads: `5`.
+- Horizontal overflow and console/page errors: `0`.
+- Automated unresolved Blocking/High: `0`.
+- Observed-user sessions: `0`; no usability-validation claim is made.
+- Three Medium refinements move to P26: public copy density, 1024px Calendar density, and advanced-editor path length.
+
 ## Representative Scenarios
 
 1. **Moving:** save five tasks, exclude one, move anchor, override one date, batch move selected tasks, export all.

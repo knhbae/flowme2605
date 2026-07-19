@@ -1,0 +1,50 @@
+{
+  "packageId": "2026-07-20-p25-final-closeout",
+  "evidenceKinds": ["current_command", "current_browser", "heuristic", "owner_direction"],
+  "sourcePackage": "../2026-07-19-p25-08-internal-journey-gate/route-evidence.json",
+  "markers": {
+    "p25SliceCount": 9,
+    "p25ClosedSliceCount": 9,
+    "p25FinalSurfaceCount": 9,
+    "p25FinalSurfaceKeepCount": 9,
+    "p25DeferredMediumCount": 3,
+    "automatedBlockingCount": 0,
+    "automatedHighCount": 0,
+    "observedUserSessionCount": 0,
+    "observedUserValidationClaimed": false,
+    "representativeJourneyPassCount": 9,
+    "representativeJourneyFailureCount": 0,
+    "relatedRegressionPassCount": 81,
+    "screenshotCount": 36,
+    "downloadArtifactCount": 5,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "sourcePersonalRunBoundaryRegressionCount": 0,
+    "finalUnitPassCount": 526,
+    "finalUnitFailureCount": 0,
+    "finalE2ePassCount": 285,
+    "finalE2eFailureCount": 0,
+    "finalE2eFileCount": 8,
+    "docsLocalLinkCount": 2527,
+    "securityHighCount": 0,
+    "securityCriticalCount": 0,
+    "securityModerateCount": 2,
+    "dateFreeSourceOrderRegressionCount": 0,
+    "p25MergedToMain": false,
+    "p25ProductionDeploymentReady": true,
+    "p25ProductionSmokePass": false
+  },
+  "finalVerification": {
+    "securityAudit": "pass_high_critical_zero_moderate_two_disclosed",
+    "docsCheck": "pass_14_required_files_2527_links",
+    "unit": "pass_526_of_526",
+    "productionBuild": "pass_18_of_18_pages",
+    "fullE2e": "pass_285_of_285_bounded_serial_groups",
+    "diffCheck": "pass"
+  },
+  "production": {
+    "url": "https://flowme2605.vercel.app",
+    "includesP25": false,
+    "anonymousAccessVerified": false
+  }
+}

@@ -1,8 +1,8 @@
 # FlowMe P25-00B Core Workspace Prototype Decision
 
 **Date:** 2026-07-19
-**Status:** prototype and internal simulation complete; owner screen decisions pending
-**Recommended direction:** option B, whole-Flow workspace
+**Status:** closed as the P25 internal implementation baseline
+**Selected direction:** option B, whole-Flow workspace
 **Runtime/schema change:** none
 **Observed-user sessions:** 0
 
@@ -17,7 +17,7 @@
 
 The prototype can switch among six Flow types, nine core surfaces, mobile/wide layouts, and options A/B. Each surface has `유지 / 수정 / 기각` controls and an optional note. Decisions are stored only in the local browser and can be copied as JSON.
 
-## Decision To Make
+## Decision Record
 
 Option A reduces copy and card density while preserving the current route-by-route structure. Option B changes the local product frame:
 
@@ -28,7 +28,9 @@ whole Flow artifact
 -> Calendar and export projection
 ```
 
-Option B is recommended because the owner feedback is not limited to visual polish. The current product makes a Today row stand in for the saved result, exposes fields before user intent, and mixes undated execution with Calendar placement.
+Option B was adopted as the P25 implementation baseline because the owner explicitly directed the full P25 program to continue and allowed substantial structural changes. The completed P25-08 journey gate then found no remaining automated Blocking or High issue in this frame.
+
+This is an **implementation decision**, not a claim that the owner approved every pixel or that observed users validated the frame. Observed-user sessions remain `0`.
 
 ## Recommended Screen Contract
 
@@ -54,6 +56,20 @@ Option B is recommended because the owner feedback is not limited to visual poli
 - Console errors: 0
 - Current production, prototype, and heuristic evidence are not observed-user evidence.
 
+## Final Surface Decisions
+
+| Surface | P25 decision | Deferred refinement |
+| --- | --- | --- |
+| Save-before | Keep option B structure | Recheck public explanatory-copy density in P26 |
+| Post-save | Keep option B structure | None required for P25 |
+| My Flow | Keep option B structure | None required for P25 |
+| Whole Flow | Keep option B structure | None required for P25 |
+| Calendar | Keep option B role split | Recheck 1024px queue/grid/agenda density in P26 |
+| Item adjustment | Keep progressive structure | Recheck advanced-editor path length in P26 |
+| Batch adjustment | Keep option B structure | None required for P25 |
+| Completion/reopen | Keep option B structure | None required for P25 |
+| Export | Keep option B structure | None required for P25 |
+
 ## Gate
 
-The prototype package is ready, but P25-00B is not fully closed until the owner records keep/change/reject for the nine surfaces. Correctness work in P25-01A may proceed independently; runtime workspace implementation in P25-02 waits for the frame decision.
+P25-00B is closed as an internal product contract. P25-01 through P25-08 implemented and verified that contract. The three deferred refinements are Medium hypotheses for P26; they do not reopen P25 and must not be described as observed-user findings.

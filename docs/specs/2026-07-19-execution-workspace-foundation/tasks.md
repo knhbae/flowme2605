@@ -17,8 +17,8 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 - [x] Capture the current six core surfaces at 390px and 1024px.
 - [x] Draw at least two alternative frames for save, whole Flow, My Flow, Calendar, adjustment, and export.
 - [x] Simulate moving, vehicle checklist, routine, trip plan, record flow, and memo draft.
-- [ ] Record owner keep/change/reject decisions per surface.
-- [ ] Freeze labels, local tabs, drawer depth, and dated/undated behavior.
+- [x] Record the owner-directed Option B implementation decision per surface without calling it observed-user validation.
+- [x] Freeze labels, local tabs, drawer depth, and dated/undated behavior as the P25 internal baseline.
 - [x] Publish the implementation-ready screen contract without changing app runtime.
 
 ## P25-01 - Correctness

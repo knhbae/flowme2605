@@ -14,7 +14,7 @@ Work one gated slice at a time. Do not start the next slice because the previous
 
 ### P25-00B - Core-screen prototype and owner decision
 
-**Status:** Interactive A/B package and six-shape simulation complete; owner keep/change/reject pending.
+**Status:** Closed as the P25 internal implementation baseline; observed-user validation remains open at zero sessions.
 **Package:** [P25-00B prototype decision](../../content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/README.md).
 
 Create current/proposed 390px and 1024px wireframes for:
@@ -26,7 +26,7 @@ Create current/proposed 390px and 1024px wireframes for:
 5. Calendar with an undated scheduling queue,
 6. export scope before format.
 
-Compare at least two viable frames. The recommended frame is a Flow workspace with an explicit Anytime/scheduling boundary, not a planner-first home. Record owner keep/change/reject decisions. No runtime UI implementation occurs in this slice.
+Compare at least two viable frames. The selected frame is a Flow workspace with an explicit Anytime/scheduling boundary, not a planner-first home. The owner-directed completion instruction adopted Option B for implementation; P25-08 later verified the integrated frame with no unresolved automated Blocking/High. This remains an internal implementation decision, not observed-user approval.
 
 ### P25-01A - Canonical execution projection and recurrence truth
 

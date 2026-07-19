@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-20 - Option B is the P25 internal release baseline
+
+**Decision:** Keep the P25 Option B whole-Flow workspace contract across save-before, post-save, My Flow, whole Flow, Calendar, item adjustment, batch adjustment, completion/reopen, and export. Treat the owner's instruction to complete P25 and permit substantial changes as implementation authorization. Treat P25-08 current command/browser evidence with unresolved automated Blocking/High `0` as the internal integration gate. Defer only public copy density, 1024px Calendar density, and advanced-editor path length to P26-00 comparison work.
+
+**Reason:** The nine-surface model is already implemented and shares one effective personal Flow, source-safe overlays, execution state, Calendar placement, and scoped export. Reopening the architecture without a contradictory Blocking/High signal would create another redesign loop. The three remaining issues are bounded comprehension and density hypotheses rather than model failures.
+
+**Applies to:** P25 release closeout, P26 planning, public save-before, first-save and returning My Flow, Calendar placement, progressive editing, batch mode, completion history, portable export, and related regression suites.
+
+**Reopen when:** production smoke exposes a Blocking/High regression, owner or Claude Design identifies a concrete structural contradiction, or later observed users consistently fail the same task under the current frame. Automated simulations remain insufficient to claim usability validation.
+
+**Related docs:** [P25 final closeout](./content-audit/2026-07-20-p25-final-closeout/README.md), [P25-08 evidence](./content-audit/2026-07-19-p25-08-internal-journey-gate/README.md), [P25-00B decision](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/README.md)
+
 ### 2026-07-19 - Portable export chooses scope before format and counts the effective projection
 
 **Decision:** My Flow names three export scopes: `Flow 전체`, `직접 선택`, and `현재 항목`. Scope appears before format, and every visible count comes from `buildFlowExportScopePlan`: whole and selected list counts use effective included rows, current item resolves to one row, and each destination uses its own eligibility count. Undated rows remain valid for checklist, sheet, and memo but not Calendar/ICS. Completion and reopen do not change export membership; exclusion and tombstone do.

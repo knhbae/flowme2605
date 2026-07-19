@@ -1,7 +1,7 @@
 # P25 Execution Workspace Foundation Spec
 
 **Date:** 2026-07-19
-**Status:** Approved for staged planning; implementation starts only after P25-00B owner review
+**Status:** Implemented; internal integration gate complete, production release pending
 **Owner:** Product owner + implementation agent
 **Related roadmap:** [P25 execution workspace correction](../../ROADMAP.md#p25-execution-workspace-correction)
 
@@ -171,5 +171,5 @@ FlowMe must not copy Notion's unrestricted property surface or compete with a fu
 - Completion has both immediate undo and a persistent reopen path.
 - Public save-before shows one artifact representation and materially less explanatory copy.
 - Mobile 390px and wide 1024px use the same hierarchy without stretched mobile cards, horizontal overflow, or fixed-control overlap.
-- P25-00B is approved by the owner before P25-02 UI implementation begins.
+- P25-00B Option B is recorded as the owner-directed internal implementation baseline; this does not claim observed-user validation.
 - Automated simulation is not reported as observed-user validation.

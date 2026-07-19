@@ -4,7 +4,20 @@
   "runtimeChanged": false,
   "observedUserSessionCount": 0,
   "recommendedOption": "B",
-  "decisionStatus": "pending_owner_keep_change_reject",
+  "decisionStatus": "adopted_as_p25_internal_implementation_baseline",
+  "decisionBasis": "Owner directed the staged P25 program to completion and allowed substantial structural change; P25-08 current command/browser evidence reports zero unresolved automated Blocking or High findings.",
+  "observedUserValidation": false,
+  "finalDecisions": {
+    "save": "keep_option_b_defer_public_copy_density_to_p26",
+    "post-save": "keep_option_b",
+    "my-flow": "keep_option_b",
+    "whole-flow": "keep_option_b",
+    "calendar": "keep_option_b_defer_wide_density_to_p26",
+    "adjust": "keep_option_b_defer_advanced_path_length_to_p26",
+    "batch": "keep_option_b",
+    "completion": "keep_option_b",
+    "export": "keep_option_b"
+  },
   "productModel": [
     "whole_flow_artifact",
     "personal_adjustment_overlay",

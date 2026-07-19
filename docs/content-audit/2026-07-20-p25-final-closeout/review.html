@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P25 Final Closeout</title>
+  <style>
+    :root { color-scheme: light; --ink:#18211d; --muted:#66716c; --line:#d8dfda; --panel:#fff; --bg:#f3f6f3; --green:#16784b; --amber:#a36200; --red:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; letter-spacing:0; }
+    main { width:min(1180px,100%); margin:0 auto; padding:32px 20px 64px; }
+    h1,h2,h3,p { margin-top:0; }
+    h1 { font-size:clamp(30px,4vw,44px); line-height:1.08; max-width:1000px; }
+    .title-line { display:block; }
+    h2 { font-size:22px; margin:0 0 14px; }
+    h3 { font-size:16px; margin-bottom:6px; }
+    .eyebrow { color:var(--green); font-weight:750; }
+    .lede { max-width:760px; color:var(--muted); font-size:17px; }
+    .summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:24px 0 34px; }
+    .metric,.band,.shot { background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+    .metric { padding:16px; min-height:112px; }
+    .metric strong { display:block; font-size:30px; line-height:1; margin-bottom:10px; }
+    .metric span { color:var(--muted); }
+    .band { padding:20px; margin:14px 0; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .decision { border-left:4px solid var(--green); }
+    .defer { border-left-color:var(--amber); }
+    .boundary { border-left-color:var(--red); }
+    .shots { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .shot { overflow:hidden; }
+    .shot img { display:block; width:100%; height:280px; object-fit:cover; object-position:top; background:#e8ece9; }
+    .shot p { padding:12px; margin:0; color:var(--muted); }
+    ul { margin:0; padding-left:20px; }
+    code { background:#e8eee9; padding:2px 5px; border-radius:4px; }
+    footer { color:var(--muted); margin-top:28px; }
+    @media (max-width:800px) { .summary,.grid,.shots { grid-template-columns:1fr 1fr; } }
+    @media (max-width:520px) { main { padding:24px 14px 48px; } .summary,.grid,.shots { grid-template-columns:1fr; } .shot img { height:auto; max-height:620px; object-fit:contain; } }
+  </style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">P25 INTERNAL CLOSEOUT · 2026-07-20</p>
+  <h1><span class="title-line">완전한 Flow를 저장하고, 조정하고,</span><span class="title-line">실행하는 하나의 작업공간</span></h1>
+  <p class="lede">P25는 화면을 하나 더 추가한 작업이 아니다. 저장한 전체 Flow를 정본으로 두고 My Flow, Calendar, 완료, export를 같은 개인 실행 상태의 projection으로 맞췄다.</p>
+
+  <section class="summary" aria-label="P25 핵심 수치">
+    <div class="metric"><strong>285 / 285</strong><span>전체 E2E</span></div>
+    <div class="metric"><strong>526 / 526</strong><span>단위 테스트</span></div>
+    <div class="metric"><strong>0</strong><span>자동 Blocking / High</span></div>
+    <div class="metric"><strong>0 / 15</strong><span>실제 관찰 사용자</span></div>
+  </section>
+
+  <section class="band">
+    <h2>최종 판정</h2>
+    <div class="grid">
+      <article class="band decision"><h3>Keep</h3><p>Option B의 9개 화면 계약, 전체 Flow 중심, 실행과 일정 배치의 분리, progressive edit, reversible completion, scope-first export.</p></article>
+      <article class="band defer"><h3>P26로 Change 검토</h3><p>public 설명 밀도, 1024px Calendar 밀도, 고급 편집 경로 길이. 기능 계약은 유지하고 비교 설계부터 한다.</p></article>
+      <article class="band boundary"><h3>검증 경계</h3><p>자동화와 시뮬레이션은 내부 통합 증거다. 첫 사용 이해도와 반복 사용 가치는 아직 증명하지 않았다.</p></article>
+    </div>
+  </section>
+
+  <section class="band">
+    <h2>대표 화면 증거</h2>
+    <div class="shots">
+      <article class="shot"><img src="../2026-07-19-p25-08-internal-journey-gate/screenshots/01-moving/01-moving-01-post-save-whole-flow-mobile.png" alt="이사 Flow 저장 직후 전체 Flow 모바일"><p>저장 직후 한 항목이 아니라 전체 artifact를 확인한다.</p></article>
+      <article class="shot"><img src="../2026-07-19-p25-08-internal-journey-gate/screenshots/02-undated/02-undated-placement-01-calendar-placement-selection-mobile.png" alt="날짜 없는 할 일 Calendar 배치 모바일"><p>날짜 없는 일은 My Flow에서 실행하고 Calendar에서는 일정에 놓는다.</p></article>
+      <article class="shot"><img src="../2026-07-19-p25-08-internal-journey-gate/screenshots/03-routine/03-routine-03-washer-monthly-calendar-wide.png" alt="월간 반복 Flow Calendar 와이드"><p>반복 source cadence와 occurrence identity를 Calendar와 ICS가 공유한다.</p></article>
+      <article class="shot"><img src="../2026-07-19-p25-08-internal-journey-gate/screenshots/04-mixed/04-mixed-01-batch-selection-wide.png" alt="여러 할 일 일괄 조정 와이드"><p>완료 체크와 분리된 임시 선택 모드에서 날짜와 export 범위를 조정한다.</p></article>
+      <article class="shot"><img src="../2026-07-19-p25-08-internal-journey-gate/screenshots/05-record/05-record-00-memo-split-items-mobile.png" alt="메모 분할 개인 Flow 모바일"><p>사용자가 수용한 문장만 stable item으로 저장하고 다시 편집한다.</p></article>
+      <article class="shot"><img src="../2026-07-19-p25-08-internal-journey-gate/screenshots/06-personal-draft/06-personal-recurrence-state-02-personal-draft-occurrence-state-actions-wide.png" alt="개인 반복 Flow 회차 상태 와이드"><p>series, occurrence, 완료, 건너뜀, 보류와 재개를 다른 상태로 유지한다.</p></article>
+    </div>
+  </section>
+
+  <section class="band">
+    <h2>릴리스 완료 조건</h2>
+    <ul>
+      <li>완료: security, docs, unit, production build, full E2E 통과</li>
+      <li>P25 PR을 <code>main</code>에 병합</li>
+      <li>Vercel production READY와 익명 접근 확인</li>
+      <li>대표 production route의 모바일/와이드 smoke 확인</li>
+    </ul>
+  </section>
+
+  <footer>이 보드는 current command/browser와 heuristic evidence를 요약한다. 실제 사용자 관찰 결과가 아니다.</footer>
+</main>
+</body>
+</html>
