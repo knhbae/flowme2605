@@ -1,0 +1,4 @@
+interface:
+  display_name: "FLOW Request Interview"
+  short_description: "Clarify ambiguous FlowMe requests before execution"
+  default_prompt: "Use $flow-request-interview to clarify this request before implementation."

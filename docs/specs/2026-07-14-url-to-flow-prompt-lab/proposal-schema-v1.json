@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/url-to-flow-semantic-proposal-v1.json",
+  "title": "FlowMe URL-to-FLOW Prompt Lab Semantic Proposal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposalSchemaVersion",
+    "promptVersion",
+    "requestId",
+    "caseId",
+    "status",
+    "sourceAssessment",
+    "conversionDecision",
+    "proposal",
+    "projectionPlan",
+    "reviewHints"
+  ],
+  "properties": {
+    "proposalSchemaVersion": {
+      "const": "flowme-semantic-proposal-v1"
+    },
+    "promptVersion": {
+      "type": "string",
+      "pattern": "^url-to-flow-prompt-v[0-9]+\\.[0-9]+$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "caseId": {
+      "type": "string",
+      "pattern": "^case-[0-9]{2}$"
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generationState", "outcome", "readiness", "errorCode"],
+      "properties": {
+        "generationState": {
+          "enum": ["proposal", "partial", "failed"]
+        },
+        "outcome": {
+          "enum": ["complete", "partial", "no_proposal", "rejected"]
+        },
+        "readiness": {
+          "type": "null"
+        },
+        "errorCode": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "sourceAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "access",
+        "sourceShape",
+        "primarySourceId",
+        "supportingSourceIds",
+        "receivedSourceRowIds",
+        "untrustedInstructionDetected"
+      ],
+      "properties": {
+        "access": {
+          "enum": ["readable", "partial", "unavailable", "blocked"]
+        },
+        "sourceShape": {
+          "enum": [
+            "date_preparation",
+            "ordered_procedure",
+            "repeating_routine",
+            "source_table_rows",
+            "resource_queue",
+            "compare_decide",
+            "phase_lifecycle",
+            "single_resource",
+            "unknown"
+          ]
+        },
+        "primarySourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supportingSourceIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "receivedSourceRowIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "untrustedInstructionDetected": {
+          "type": "boolean"
+        }
+      }
+    },
+    "conversionDecision": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "userNeed",
+        "lifeArea",
+        "planningPattern",
+        "primaryArtifact",
+        "contentShape"
+      ],
+      "properties": {
+        "userNeed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lifeArea": {
+          "enum": [
+            "home_living",
+            "family_parenting",
+            "study_reading",
+            "money_admin_purchase",
+            "health_fitness",
+            "travel_outings",
+            "meals_grocery",
+            "work_career",
+            "hobby_pet"
+          ]
+        },
+        "planningPattern": {
+          "enum": [
+            "date_preparation",
+            "ordered_procedure",
+            "repeating_routine",
+            "source_table_rows",
+            "resource_queue",
+            "compare_decide",
+            "phase_lifecycle"
+          ]
+        },
+        "primaryArtifact": {
+          "enum": ["calendar", "checklist", "todo", "sheet", "memo", "hybrid"]
+        },
+        "contentShape": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposalTitle", "items", "omittedRows", "incompleteReason"],
+      "properties": {
+        "proposalTitle": {
+          "type": ["string", "null"]
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 7,
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        },
+        "omittedRows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/omittedRow"
+          }
+        },
+        "incompleteReason": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "projectionPlan": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/projection"
+      }
+    },
+    "reviewHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommendedDisposition",
+        "uncertainties",
+        "hardFailCodes",
+        "humanReviewRequired"
+      ],
+      "properties": {
+        "recommendedDisposition": {
+          "enum": ["review", "source_import_required", "hold", "reject"]
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hardFailCodes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "humanReviewRequired": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposalId",
+        "title",
+        "intent",
+        "sourceRowIds",
+        "completion",
+        "memoCandidate",
+        "groupingCandidate",
+        "scheduleCandidate"
+      ],
+      "properties": {
+        "proposalId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intent": {
+          "enum": ["act", "inspect", "decide", "record", "use_resource"]
+        },
+        "sourceRowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "doneWhen"],
+          "properties": {
+            "mode": {
+              "enum": ["check", "decision", "record"]
+            },
+            "doneWhen": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "memoCandidate": {
+          "type": ["string", "null"]
+        },
+        "groupingCandidate": {
+          "type": ["string", "null"]
+        },
+        "scheduleCandidate": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["sourceRowIds", "sourceText", "parsedByRule"],
+              "properties": {
+                "sourceRowIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "sourceText": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "parsedByRule": {
+                  "const": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "omittedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowId", "reasonCode", "reason"],
+      "properties": {
+        "sourceRowId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reasonCode": {
+          "enum": [
+            "non_user_action",
+            "duplicate",
+            "marketing",
+            "supporting_source_boundary",
+            "unsafe_or_unsupported",
+            "out_of_claimed_scope"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "applicability", "reason"],
+      "properties": {
+        "target": {
+          "enum": ["calendar", "checklist", "todo", "sheet", "memo"]
+        },
+        "applicability": {
+          "enum": ["applicable", "not_applicable", "blocked"]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

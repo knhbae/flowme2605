@@ -145,6 +145,7 @@ const ALLOWED_TRAILING_FLOW_LINES = new Set([
   '내 Flow',
   'Flow 찾기',
   'FlowMe',
+  '저장될 전체 Flow',
   '내 Flow에 저장',
   '내 Flow에서 보기',
 ]);

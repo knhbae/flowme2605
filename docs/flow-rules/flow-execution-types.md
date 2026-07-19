@@ -280,10 +280,10 @@ Flow Map > Flow > Step > Item
 
 - **Flow Map:** the upper map that groups related executable Flows. Example: middle-school math year, baby vaccination map, certification study map.
 - **Flow:** one executable content unit inside the map. Example: a math unit, one vaccine/visit group, one subject or part.
-- **Step:** the minimum execution row that can become a calendar event, todo task, checklist row, sheet row, or progress row. Example: lesson title, chapter, visit period, source-defined task.
-- **Item:** a detail field attached to a Step, such as memo prompt, URL, material, criterion, selected option, confirmation number, or calendar-event description variable. It is usually not saved as an independent calendar/todo entry.
+- **Step:** a semantic group that orders related Items. Example: `검진 전 확인`, `검진 당일`, or one curriculum section. A Step does not own completion state.
+- **Item:** the minimum source-derived execution unit that can be checked, decided, or recorded independently. A scheduled Item may become a calendar event; other Items may become todo/checklist/sheet rows. Memo, URL, material, caution, and supporting criteria remain attached detail unless they are independently stateful source rows.
 
-Not every Flow needs all four levels. If the source is a lecture list, book chapter list, or official schedule table, `Flow Map > Flow > Step` can be enough. Add `Item` only when the Step needs structured details in memo, description, URL, or event/task variables. In FlowMe, Items may render as an internal checklist inside the Step detail when that helps execution. In outside apps that do not support nested checklist items, Items should collapse into plain text in the calendar event description, todo note/body, sheet note column, or memo. Items should not become separate scheduled tasks unless the source truly requires it.
+Not every Flow needs all four levels. A simple Flow may contain one Step with one Item, while a source table may contain many Items grouped into Steps. Preserve Step as grouping in destinations that support sections. If a destination cannot represent nested Fields, Memos, cautions, or source links, carry them in the destination note/description or Memo fallback. Do not promote explanation text into an Item, and do not add a schedule merely to force Calendar output.
 
 Good Flow of Flow:
 

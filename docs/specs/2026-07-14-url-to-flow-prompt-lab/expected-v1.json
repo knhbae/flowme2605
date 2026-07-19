@@ -1,0 +1,717 @@
+{
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "generatedFrom": "docs/specs/2026-07-11-canonical-flow-data-model/golden-fixtures-v1.json",
+  "hiddenFromGenerator": true,
+  "expectations": [
+    {
+      "caseId": "case-01",
+      "fixtureId": "gf-pos-01-d-day-timeline",
+      "fixtureKind": "positive",
+      "fixtureShape": "d_day_timeline",
+      "name": "건강검진 D-7 타임라인",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "검진일 전에 필요한 확인을 끝내고 당일 방문을 놓치지 않는다.",
+        "planningPattern": "date_preparation",
+        "primaryArtifact": "hybrid",
+        "riskLevel": "medical_sensitive"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-checkup-booking",
+          "title": "검진 대상과 예약 상태 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-checkup-booking"
+          ],
+          "completionMode": "check",
+          "doneWhen": "공식 조회에서 검진 대상과 예약 상태를 확인했다.",
+          "hasSchedule": true,
+          "canonicalSchedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "field-checkup-date",
+            "dayOffset": -7,
+            "allDay": true
+          }
+        },
+        {
+          "referenceItemId": "item-checkup-visit",
+          "title": "검진기관 방문하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-checkup-visit"
+          ],
+          "completionMode": "check",
+          "doneWhen": "예약한 검진기관 방문을 마쳤다.",
+          "hasSchedule": true,
+          "canonicalSchedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "field-checkup-date",
+            "dayOffset": 0,
+            "allDay": true
+          }
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-checkup-booking",
+        "row-checkup-visit"
+      ],
+      "expectedProjections": [
+        "calendar:ics",
+        "checklist:markdown",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "sheet:xlsx",
+        "todo:markdown"
+      ],
+      "referenceReview": {
+        "readiness": "ready_second_wave",
+        "hardFails": [],
+        "rightsDecision": "공식 안내의 행위·일정 요약과 링크만 사용한다.",
+        "riskDecision": "medical_sensitive이며 결과 해석과 진료 판단은 export에도 포함하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-02",
+      "fixtureId": "gf-pos-02-fixed-routine",
+      "fixtureKind": "positive",
+      "fixtureShape": "fixed_routine",
+      "name": "에어컨 필터 4주 청소",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "공식 주기에 맞춰 에어컨 필터 청소를 반복하고 완료 여부를 남긴다.",
+        "planningPattern": "repeating_routine",
+        "primaryArtifact": "calendar",
+        "riskLevel": "low"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-aircon-filter-clean",
+          "title": "에어컨 극세 필터 청소하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-aircon-filter-4week"
+          ],
+          "completionMode": "check",
+          "doneWhen": "필터를 청소하고 충분히 건조해 다시 장착했다.",
+          "hasSchedule": true,
+          "canonicalSchedule": {
+            "mode": "absolute",
+            "start": "2026-07-14",
+            "allDay": true,
+            "recurrence": {
+              "frequency": "weekly",
+              "interval": 4,
+              "sourceDefined": true
+            }
+          }
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-aircon-filter-4week"
+      ],
+      "expectedProjections": [
+        "calendar:ics",
+        "checklist:plain_text",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "sheet:csv",
+        "todo:markdown"
+      ],
+      "referenceReview": {
+        "readiness": "ready_for_internal_canary",
+        "hardFails": [],
+        "rightsDecision": "공식 주기와 짧은 방법 요약, 원문 링크만 사용한다.",
+        "riskDecision": "사용자 기기 모델이 다르면 공식 모델 안내를 다시 확인한다."
+      }
+    },
+    {
+      "caseId": "case-03",
+      "fixtureId": "gf-pos-03-source-checklist",
+      "fixtureKind": "positive",
+      "fixtureShape": "source_checklist",
+      "name": "해외여행 준비물 체크리스트",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "해외여행 필수 준비물을 빠뜨리지 않고 챙긴다.",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "riskLevel": "low"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-pack-passport",
+          "title": "여권 챙기기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-pack-passport"
+          ],
+          "completionMode": "check",
+          "doneWhen": "유효한 여권을 바로 꺼낼 수 있는 가방에 넣었다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        },
+        {
+          "referenceItemId": "item-pack-connectivity",
+          "title": "여행지 데이터 수단 준비하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-pack-connectivity"
+          ],
+          "completionMode": "check",
+          "doneWhen": "여행지에서 사용할 데이터 수단을 준비했다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-pack-passport",
+        "row-pack-connectivity"
+      ],
+      "expectedProjections": [
+        "checklist:markdown",
+        "checklist:plain_text",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "sheet:xlsx"
+      ],
+      "referenceReview": {
+        "readiness": "ready_for_internal_canary",
+        "hardFails": [],
+        "rightsDecision": "원문 row 제목과 짧은 실행 요약만 사용하고 상품 CTA와 본문 복제는 제외한다.",
+        "riskDecision": "항공사·국가별 규정은 고정 사실로 만들지 않고 공식 확인 링크로 처리한다."
+      }
+    },
+    {
+      "caseId": "case-04",
+      "fixtureId": "gf-pos-04-ordered-phase-procedure",
+      "fixtureKind": "positive",
+      "fixtureShape": "ordered_phase_procedure",
+      "name": "고용24 취업지원 시작 절차",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "고용24에서 구직 등록과 취업지원 시작 절차를 순서대로 끝낸다.",
+        "planningPattern": "phase_lifecycle",
+        "primaryArtifact": "checklist",
+        "riskLevel": "privacy_sensitive"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-work24-register",
+          "title": "고용24에서 구직 신청 등록하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-work24-register"
+          ],
+          "completionMode": "check",
+          "doneWhen": "고용24 구직 신청 등록을 완료했다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        },
+        {
+          "referenceItemId": "item-work24-apply",
+          "title": "취업지원 서비스 선택해 신청하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-work24-apply"
+          ],
+          "completionMode": "check",
+          "doneWhen": "본인에게 필요한 지원 서비스를 선택해 신청했다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-work24-register",
+        "row-work24-apply"
+      ],
+      "expectedProjections": [
+        "checklist:markdown",
+        "todo:markdown",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "sheet:xlsx"
+      ],
+      "referenceReview": {
+        "readiness": "ready_for_internal_canary",
+        "hardFails": [],
+        "rightsDecision": "공식 절차명과 원문 링크만 사용한다.",
+        "riskDecision": "민감한 구직·이력서 값은 canonical content와 export에 저장하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-05",
+      "fixtureId": "gf-pos-05-table-progress",
+      "fixtureKind": "positive",
+      "fixtureShape": "table_progress",
+      "name": "K-MOOC 15주 진도표",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "공개 강좌의 source-defined 주차를 따라가며 현재 진도와 메모를 남긴다.",
+        "planningPattern": "source_table_rows",
+        "primaryArtifact": "sheet",
+        "riskLevel": "low"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-kmooc-week-01",
+          "title": "1주차 강의와 퀴즈 완료하기",
+          "intent": "record",
+          "sourceRowIds": [
+            "row-kmooc-week-01"
+          ],
+          "completionMode": "record",
+          "doneWhen": "1주차 상태와 메모를 기록했다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        },
+        {
+          "referenceItemId": "item-kmooc-week-02",
+          "title": "2주차 강의와 퀴즈 완료하기",
+          "intent": "record",
+          "sourceRowIds": [
+            "row-kmooc-week-02"
+          ],
+          "completionMode": "record",
+          "doneWhen": "2주차 상태와 메모를 기록했다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-kmooc-week-01",
+        "row-kmooc-week-02"
+      ],
+      "expectedProjections": [
+        "sheet:csv",
+        "sheet:xlsx",
+        "checklist:markdown",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "todo:markdown"
+      ],
+      "referenceReview": {
+        "readiness": "ready_for_internal_canary",
+        "hardFails": [],
+        "rightsDecision": "공개 강좌의 주차 제목과 링크만 사용한다.",
+        "riskDecision": "진도 기록은 수료나 시험 결과 보장을 의미하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-06",
+      "fixtureId": "gf-pos-06-memo-first",
+      "fixtureKind": "positive",
+      "fixtureShape": "memo_first",
+      "name": "레시피 영상 실행 메모",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "memo",
+        "riskLevel": "low"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-recipe-video-follow",
+          "title": "선택한 레시피 영상 따라 만들기",
+          "intent": "use_resource",
+          "sourceRowIds": [
+            "row-recipe-video-resource"
+          ],
+          "completionMode": "check",
+          "doneWhen": "선택한 영상의 레시피를 한 번 따라 만들었다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-recipe-video-resource"
+      ],
+      "expectedProjections": [
+        "memo:markdown",
+        "memo:plain_text",
+        "checklist:plain_text"
+      ],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "sheet:xlsx"
+      ],
+      "referenceReview": {
+        "readiness": "ready_second_wave",
+        "hardFails": [],
+        "rightsDecision": "영상 자체를 복제하지 않고 제목·링크·짧은 실행 메모만 사용한다.",
+        "riskDecision": "알레르기와 식품 안전 판단을 FlowMe가 대신하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-07",
+      "fixtureId": "gf-pos-07-decision-hold",
+      "fixtureKind": "positive",
+      "fixtureShape": "decision_hold",
+      "name": "중고차 후보 결정·보류",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "중고차 점검 기준으로 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+        "planningPattern": "compare_decide",
+        "primaryArtifact": "hybrid",
+        "riskLevel": "financial_sensitive"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-used-car-decide",
+          "title": "후보 차량 구매·보류·제외 결정하기",
+          "intent": "decide",
+          "sourceRowIds": [
+            "row-used-car-decision"
+          ],
+          "completionMode": "decision",
+          "doneWhen": "결정 상태와 이유를 남겼다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-used-car-decision"
+      ],
+      "expectedProjections": [
+        "checklist:markdown",
+        "sheet:csv",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "todo:plain_text"
+      ],
+      "referenceReview": {
+        "readiness": "ready_second_wave",
+        "hardFails": [],
+        "rightsDecision": "공식 판단 기준과 링크만 사용한다.",
+        "riskDecision": "FlowMe는 구매 추천이나 차량 안전 판정을 제공하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-08",
+      "fixtureId": "gf-pos-08-evidence-caution",
+      "fixtureKind": "positive",
+      "fixtureShape": "evidence_caution",
+      "name": "영유아 건강검진 준비 증빙·주의",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "아이 검진 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+        "planningPattern": "phase_lifecycle",
+        "primaryArtifact": "checklist",
+        "riskLevel": "medical_sensitive"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-infant-checkup-confirm",
+          "title": "예약과 문진표 준비 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-infant-checkup-prep"
+          ],
+          "completionMode": "check",
+          "doneWhen": "예약과 문진표 준비 상태를 확인했다.",
+          "hasSchedule": false,
+          "canonicalSchedule": null
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-infant-checkup-prep"
+      ],
+      "expectedProjections": [
+        "checklist:markdown",
+        "sheet:csv",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "todo:markdown"
+      ],
+      "referenceReview": {
+        "readiness": "ready_second_wave",
+        "hardFails": [],
+        "rightsDecision": "공식 준비 항목과 링크만 사용한다.",
+        "riskDecision": "민감 메모는 사용자 overlay에만 저장하고 공개 content/export 기본값에 포함하지 않는다."
+      }
+    },
+    {
+      "caseId": "case-09",
+      "fixtureId": "gf-pos-09-resource-queue",
+      "fixtureKind": "positive",
+      "fixtureShape": "resource_queue",
+      "name": "30일 사진 prompt queue · Day 1-2 contract sample",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+        "planningPattern": "resource_queue",
+        "primaryArtifact": "calendar",
+        "riskLevel": "low"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-photo-day-01",
+          "title": "Day 1 prompt로 사진 찍기",
+          "intent": "use_resource",
+          "sourceRowIds": [
+            "row-photo-day-01"
+          ],
+          "completionMode": "check",
+          "doneWhen": "Day 1 prompt에 맞는 사진을 한 장 찍었다.",
+          "hasSchedule": true,
+          "canonicalSchedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "field-photo-start-date",
+            "dayOffset": 0,
+            "allDay": true
+          }
+        },
+        {
+          "referenceItemId": "item-photo-day-02",
+          "title": "Day 2 prompt로 사진 찍기",
+          "intent": "use_resource",
+          "sourceRowIds": [
+            "row-photo-day-02"
+          ],
+          "completionMode": "check",
+          "doneWhen": "Day 2 prompt에 맞는 사진을 한 장 찍었다.",
+          "hasSchedule": true,
+          "canonicalSchedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "field-photo-start-date",
+            "dayOffset": 1,
+            "allDay": true
+          }
+        }
+      ],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [
+        "row-photo-day-01",
+        "row-photo-day-02"
+      ],
+      "expectedProjections": [
+        "calendar:ics",
+        "checklist:markdown",
+        "sheet:csv",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "todo:markdown",
+        "sheet:tsv"
+      ],
+      "referenceReview": {
+        "readiness": "ready_for_internal_canary",
+        "hardFails": [],
+        "rightsDecision": "prompt 제목과 원문 링크만 사용하며 해설 본문은 복제하지 않는다.",
+        "riskDecision": "위험이 낮고 사진 촬영 장소·대상은 사용자가 안전을 판단한다."
+      }
+    },
+    {
+      "caseId": "case-10",
+      "fixtureId": "gf-pos-10-sparse-official-lifecycle",
+      "fixtureKind": "positive",
+      "fixtureShape": "sparse_official_lifecycle",
+      "name": "자동차 정기검사 날짜 창",
+      "expectedStatus": {
+        "generationState": "proposal",
+        "outcome": "complete",
+        "readiness": null,
+        "errorCode": null,
+        "recommendedDisposition": "review"
+      },
+      "expectedConversion": {
+        "userNeed": "내 차량의 검사 유효기간 안에 정기검사를 받고 필요할 때 재검사 조건을 확인한다.",
+        "planningPattern": "phase_lifecycle",
+        "primaryArtifact": "calendar",
+        "riskLevel": "safety_sensitive"
+      },
+      "expectedItems": [
+        {
+          "referenceItemId": "item-vehicle-inspection",
+          "title": "유효기간 안에 자동차 정기검사 받기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-inspection-window"
+          ],
+          "completionMode": "check",
+          "doneWhen": "공식 유효기간 안에 검사를 받고 결과를 확인했다.",
+          "hasSchedule": true,
+          "canonicalSchedule": {
+            "mode": "date_window",
+            "basis": "anchor_offset",
+            "anchorFieldId": "field-inspection-expiry-date",
+            "startDayOffset": -31,
+            "endDayOffset": 0,
+            "reminderDayOffset": -14
+          }
+        }
+      ],
+      "expectedOmittedRows": [
+        {
+          "sourceRowId": "row-inspection-agency-phases",
+          "reason": "관능·ABS·하체·전조등·배출가스 등 검사기관 내부 절차이며 사용자가 완료할 Item이 아니다."
+        }
+      ],
+      "accountingSourceRowIds": [
+        "row-inspection-window",
+        "row-inspection-agency-phases"
+      ],
+      "expectedProjections": [
+        "calendar:ics",
+        "checklist:markdown",
+        "memo:markdown"
+      ],
+      "forbiddenProjections": [
+        "sheet:xlsx",
+        "todo:markdown"
+      ],
+      "referenceReview": {
+        "readiness": "ready_second_wave",
+        "hardFails": [],
+        "rightsDecision": "공식 기한과 확인 링크만 사용한다.",
+        "riskDecision": "차종별 법정 기간을 자동 판정하지 않고 사용자가 공식 조회한 만료일을 입력한다."
+      }
+    },
+    {
+      "caseId": "case-11",
+      "fixtureId": "gf-neg-01-missing-source-rows",
+      "fixtureKind": "negative",
+      "fixtureShape": "missing_source_rows",
+      "name": "원문 row가 없는 파일 후보",
+      "expectedStatus": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "readiness": null,
+        "errorCode": "missing_source_rows",
+        "recommendedDisposition": "source_import_required"
+      },
+      "expectedConversion": null,
+      "expectedItems": [],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [],
+      "expectedProjections": [],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "checklist:markdown",
+        "todo:markdown",
+        "sheet:csv",
+        "memo:markdown"
+      ],
+      "referenceReview": {
+        "readiness": "source_import_required",
+        "hardFails": [
+          "missing_source_rows",
+          "source_file_not_imported"
+        ],
+        "rightsDecision": "원본 파일을 읽고 사용할 권리를 확인하기 전에는 변환하지 않는다.",
+        "riskDecision": "일반 지식으로 학습 row를 채우지 않는다."
+      }
+    },
+    {
+      "caseId": "case-12",
+      "fixtureId": "gf-neg-02-nonlocal-sensitive-source",
+      "fixtureKind": "negative",
+      "fixtureShape": "nonlocal_sensitive_source",
+      "name": "한국 적용성이 확인되지 않은 민감 출산 준비",
+      "expectedStatus": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "readiness": null,
+        "errorCode": "locale_applicability_unverified",
+        "recommendedDisposition": "hold"
+      },
+      "expectedConversion": null,
+      "expectedItems": [],
+      "expectedOmittedRows": [],
+      "accountingSourceRowIds": [],
+      "expectedProjections": [],
+      "forbiddenProjections": [
+        "calendar:ics",
+        "checklist:markdown",
+        "todo:markdown",
+        "sheet:csv",
+        "memo:markdown"
+      ],
+      "referenceReview": {
+        "readiness": "hold",
+        "hardFails": [
+          "locale_applicability_unverified",
+          "sensitive_context_mismatch"
+        ],
+        "rightsDecision": "상업 출처의 공개 재사용 범위도 확인되지 않았다.",
+        "riskDecision": "한국 병원·조리원 기준의 현지 source가 확보될 때까지 hold한다."
+      }
+    }
+  ]
+}

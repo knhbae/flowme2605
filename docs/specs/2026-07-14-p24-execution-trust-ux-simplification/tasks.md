@@ -80,4 +80,4 @@ The earlier dirty-worktree ownership block is closed on merged `main`; keep futu
 - [x] Replace the old P23/P24 ordering in `docs/ROADMAP.md`.
 - [x] Add this spec to `docs/specs/README.md`.
 - [ ] Add only settled interaction rules to `docs/DECISIONS.md` after P24-00C; do not record design proposals as decisions now.
-- [ ] Project only the active human gates to Notion when the connector and canonical GitHub links are available.
+- [x] Project only the active human gates to Notion; the 2026-07-15 operating home keeps observation, real Calendar import, and cross-environment restore at the top.

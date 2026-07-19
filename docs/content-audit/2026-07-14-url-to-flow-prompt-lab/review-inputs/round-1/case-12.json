@@ -1,0 +1,126 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-1",
+  "caseId": "case-12",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-12",
+    "requestId": "prompt-lab-v1-case-12",
+    "targetLocale": "ko-KR",
+    "maxItems": 7,
+    "userJob": "한국에서 출산을 준비하며 병원 입원 가방에 필요한 물품을 빠뜨리지 않고 챙긴다.",
+    "claimedScope": "번역된 출산 가방 체크리스트 전체를 한국 사용자용 체크리스트로 검토한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-stemcyte-hospital-bag",
+        "title": "StemCyte 출산 가방 55개",
+        "sourceType": "commercial_guide",
+        "originalUrl": "https://stemcyte.com/ko/hospital-bag-checklist/",
+        "canonicalUrl": "https://stemcyte.com/ko/hospital-bag-checklist/",
+        "locale": "ko-KR",
+        "countryContext": "US",
+        "publisher": "StemCyte",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "needs_review",
+        "riskLevel": "medical_sensitive",
+        "accessStatus": "partial",
+        "inspectionSummary": "산모, 아기, 동반자, 서류 등 55개 물품과 병원 제공품을 다루며 미국 병원, 보험, 제대혈 판매 맥락이 섞여 있다."
+      },
+      "supporting": []
+    },
+    "sourceRows": [],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-neg-02-nonlocal-sensitive-source",
+      "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json#R2-SC-031"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-12",
+    "fixtureId": "gf-neg-02-nonlocal-sensitive-source",
+    "fixtureKind": "negative",
+    "fixtureShape": "nonlocal_sensitive_source",
+    "name": "한국 적용성이 확인되지 않은 민감 출산 준비",
+    "expectedStatus": {
+      "generationState": "failed",
+      "outcome": "no_proposal",
+      "readiness": null,
+      "errorCode": "locale_applicability_unverified",
+      "recommendedDisposition": "hold"
+    },
+    "expectedConversion": null,
+    "expectedItems": [],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [],
+    "expectedProjections": [],
+    "forbiddenProjections": [
+      "calendar:ics",
+      "checklist:markdown",
+      "todo:markdown",
+      "sheet:csv",
+      "memo:markdown"
+    ],
+    "referenceReview": {
+      "readiness": "hold",
+      "hardFails": [
+        "locale_applicability_unverified",
+        "sensitive_context_mismatch"
+      ],
+      "rightsDecision": "상업 출처의 공개 재사용 범위도 확인되지 않았다.",
+      "riskDecision": "한국 병원·조리원 기준의 현지 source가 확보될 때까지 hold한다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.1",
+    "requestId": "prompt-lab-v1-case-12",
+    "caseId": "case-12",
+    "status": {
+      "generationState": "failed",
+      "outcome": "no_proposal",
+      "readiness": null,
+      "errorCode": "locale_applicability_unverified"
+    },
+    "sourceAssessment": {
+      "access": "partial",
+      "sourceShape": "checklist",
+      "primarySourceId": "source-stemcyte-hospital-bag",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": null,
+    "proposal": {
+      "proposalTitle": null,
+      "items": [],
+      "omittedRows": [],
+      "incompleteReason": "미국 병원, 보험, 제대혈 판매 맥락이 섞인 의료 민감 콘텐츠여서 한국 사용자에게 적용할 수 있는지 확인되지 않았다."
+    },
+    "projectionPlan": [],
+    "reviewHints": {
+      "recommendedDisposition": "hold",
+      "uncertainties": [
+        "한국 병원의 제공품과 입원 절차에 맞는지 확인되지 않았다.",
+        "체크리스트의 개별 SourceRow가 제공되지 않았다."
+      ],
+      "hardFailCodes": [
+        "locale_applicability_unverified"
+      ],
+      "humanReviewRequired": [
+        "한국의 병원, 의료, 보험, 행정 맥락에 대한 적용성을 확인한다.",
+        "지역 적용성을 확인한 뒤 행 단위 체크리스트를 확보한다."
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

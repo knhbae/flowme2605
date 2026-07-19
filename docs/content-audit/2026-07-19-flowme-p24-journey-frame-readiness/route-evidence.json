@@ -1,0 +1,64 @@
+{
+  "packageDate": "2026-07-19",
+  "productState": "implementation_complete_observation_not_started",
+  "observationReadiness": "not_ready_for_observation",
+  "observedUserSessionCount": 0,
+  "observedUserSessionTarget": 15,
+  "externalObservationRequested": false,
+  "externalObservationScheduled": false,
+  "implementation": {
+    "artifactFirstSavePreviewConnected": true,
+    "sourceBackedArtifactPreviewVisibleItemCount": 5,
+    "publicArtifactPreviewVisibleItemCount": 3,
+    "savePrimaryLabel": "그대로 저장",
+    "adjustSecondaryLabel": "조정하고 저장",
+    "lightweightAdjustmentVisible": true,
+    "fullEditorAddedBeforeSave": false,
+    "postSaveWholeFlowConfirmationConnected": true,
+    "postSaveWholeFlowItemCountVisible": true,
+    "postSaveWorkspaceCompetingCount": 0,
+    "returningMyFlowWorkspaceVisible": true,
+    "calendarUndatedTrayDefaultCollapsed": true,
+    "ordinaryHeldContentVisibleCount": 0,
+    "heldPostSaveActionCount": 0,
+    "heldLegacySavedFlowPostSaveActionCount": 0,
+    "zeroSelectedItemSaveEnabled": false,
+    "visibleAndAccessibleSaveNameAligned": true,
+    "sourceBackedOriginalMutationCount": 0,
+    "fourTabIaChanged": false
+  },
+  "copyAndDensity": {
+    "movingLongPromiseVisibleCount": 0,
+    "sourceDetailDefaultOpenCount": 0,
+    "publicDescriptionDefaultOpenCount": 0,
+    "publicReferenceDetailDefaultOpenCount": 0,
+    "myFlowSelectorLabel": "저장한 Flow",
+    "calendarUndatedTrayLabel": "날짜 없는 할 일"
+  },
+  "quality": {
+    "mobileViewport": "390x844",
+    "wideViewport": "1024x768",
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "taskCompleteButtonCount": 0,
+    "taskCompleteMixedControlCount": 0,
+    "normalRouteGuardrailHitCount": 0,
+    "independentReviewBlockingCount": 0,
+    "independentReviewHighCount": 0
+  },
+  "evidenceKinds": [
+    "current_command",
+    "current_browser",
+    "independent_agent_review",
+    "prior_artifact"
+  ],
+  "excludedEvidenceKinds": {
+    "observed_user": 0
+  },
+  "deployment": {
+    "productionUrl": "https://flowme2605.vercel.app",
+    "productionSha": "pending_merge",
+    "deploymentStatus": "pending_final_deploy"
+  }
+}

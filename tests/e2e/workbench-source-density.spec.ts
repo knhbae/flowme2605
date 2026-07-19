@@ -18,13 +18,24 @@ async function openAllWorkbenchDetails(page: import('@playwright/test').Page) {
   return listCard;
 }
 
+async function openPublicReferenceDetailsIfPresent(page: import('@playwright/test').Page) {
+  const details = page.getByTestId('public-flow-reference-details');
+  if (await details.isVisible().catch(() => false)) {
+    if ((await details.getAttribute('open')) === null) await details.locator('summary').first().click();
+  }
+}
+
+function getVisiblePublicSourceCard(page: import('@playwright/test').Page) {
+  return page.locator('[data-testid="flow-source-card"]:visible, [data-testid="flow-source-card-mobile"]:visible').first();
+}
+
 async function expectClosedSourceRoute(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
   await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
   await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ })).toHaveCount(0);
 }
 
 test.describe('field checklist workbench source density', () => {
@@ -34,9 +45,10 @@ test.describe('field checklist workbench source density', () => {
       await page.goto(route);
 
       const listCard = await openAllWorkbenchDetails(page);
+      await openPublicReferenceDetailsIfPresent(page);
 
       await expect(listCard.locator('details a[href]')).toHaveCount(0);
-      const sourceCard = page.getByTestId('flow-source-card').first();
+      const sourceCard = getVisiblePublicSourceCard(page);
       await expect(sourceCard).toHaveCount(1);
       await expect(sourceCard.locator('a[href]').first()).toHaveCount(1);
     });
@@ -98,13 +110,14 @@ test.describe('field checklist workbench source density', () => {
   test('/f/safe-inheritance-onestop keeps the official one-year window without unsupported urgency', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/safe-inheritance-onestop');
+    await openPublicReferenceDetailsIfPresent(page);
 
     await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
-    await expect(page.getByTestId('flow-source-card').locator('a[href]').first()).toHaveAttribute(
+    await expect(getVisiblePublicSourceCard(page).locator('a[href]').first()).toHaveAttribute(
       'href',
       'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02',
     );
-    await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ })).toBeVisible();
     const body = page.locator('body');
     await expect(body).toContainText('1년 이내');
     await expect(body).not.toContainText(/일부 재산[^\n]{0,100}6개월/u);
@@ -147,12 +160,13 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     for (const route of routes) {
       await page.goto(route.route);
+      await openPublicReferenceDetailsIfPresent(page);
       await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
-      await expect(page.getByTestId('flow-source-card').locator('a[href]').first()).toHaveAttribute(
+      await expect(getVisiblePublicSourceCard(page).locator('a[href]').first()).toHaveAttribute(
         'href',
         route.sourceUrl,
       );
-      await expect(page.getByRole('button', { name: '내 Flow에 저장' })).toBeVisible();
+      await expect(page.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ })).toBeVisible();
     }
   });
 

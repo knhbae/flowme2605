@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 서비스·플랫폼 전략 보고서 v2</title>
+  <style>
+    :root {
+      --ink: #101612;
+      --muted: #5d6862;
+      --line: #d9e0dc;
+      --paper: #ffffff;
+      --canvas: #e7ecef;
+      --green: #0d5b43;
+      --green-soft: #e7f3ee;
+      --coral: #ef684f;
+      --coral-soft: #fff0ec;
+      --blue: #2859d9;
+      --blue-soft: #edf2ff;
+      --amber: #9a6500;
+      --amber-soft: #fff5d9;
+      --shadow: 0 18px 50px rgba(22, 37, 30, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    button { font: inherit; }
+
+    .viewer-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px max(20px, calc((100vw - 1440px) / 2));
+      background: rgba(231, 236, 239, 0.94);
+      border-bottom: 1px solid rgba(93, 104, 98, 0.18);
+      backdrop-filter: blur(12px);
+    }
+    .viewer-toolbar strong { font-size: 14px; }
+    .viewer-actions { display: flex; align-items: center; gap: 10px; }
+    .viewer-actions a,
+    .viewer-actions button {
+      min-height: 36px;
+      padding: 8px 12px;
+      border: 1px solid #cbd4cf;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    main { padding: 28px 20px 72px; }
+    .slide {
+      position: relative;
+      scroll-margin-top: 68px;
+      width: min(1440px, calc(100vw - 40px));
+      aspect-ratio: 16 / 9;
+      min-height: 760px;
+      margin: 0 auto 30px;
+      padding: 48px 58px 44px;
+      overflow: hidden;
+      background: var(--paper);
+      border: 1px solid rgba(16, 22, 18, 0.08);
+      box-shadow: var(--shadow);
+    }
+    .slide::after {
+      content: attr(data-page);
+      position: absolute;
+      right: 34px;
+      bottom: 24px;
+      color: #7b857f;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .slide-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .slide-head span:last-child { color: #7b857f; font-weight: 600; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 1040px;
+      margin-bottom: 22px;
+      font-size: 58px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    h2 {
+      max-width: 1180px;
+      margin-bottom: 12px;
+      font-size: 42px;
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+    .lead {
+      max-width: 1080px;
+      color: #3d4742;
+      font-size: 21px;
+      line-height: 1.6;
+    }
+    .small { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .source-note { margin-top: 8px; color: #6b756f; font-size: 11px; line-height: 1.45; }
+    .source-note a { color: inherit; }
+    .accent { color: var(--green); }
+    .coral { color: var(--coral); }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(330px, 0.65fr);
+      gap: 54px;
+      align-items: start;
+      margin-top: 52px;
+    }
+    .position-statement {
+      padding: 24px 0;
+      border-top: 4px solid var(--green);
+      border-bottom: 1px solid var(--line);
+    }
+    .position-statement strong { display: block; font-size: 25px; line-height: 1.45; }
+    .position-statement p { margin: 12px 0 0; color: var(--muted); line-height: 1.65; }
+    .decision-block {
+      padding: 24px;
+      background: var(--green);
+      color: #fff;
+    }
+    .decision-block h3 { font-size: 18px; }
+    .decision-block p { margin: 10px 0 0; font-size: 16px; line-height: 1.65; }
+    .cover-flow {
+      display: grid;
+      grid-template-columns: 1fr 52px 1fr 52px 1fr;
+      align-items: center;
+      margin-top: 28px;
+    }
+    .cover-node {
+      min-height: 120px;
+      padding: 22px;
+      border-top: 3px solid var(--ink);
+      background: #f5f7f6;
+    }
+    .cover-node.core { border-color: var(--green); background: var(--green-soft); }
+    .cover-node strong { display: block; margin-bottom: 8px; font-size: 18px; }
+    .cover-arrow { text-align: center; color: var(--coral); font-size: 32px; font-weight: 900; }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 52px;
+      margin-top: 22px;
+      align-items: stretch;
+    }
+    .problem-list { display: grid; gap: 0; }
+    .problem-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .problem-row b {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      background: var(--coral-soft);
+      color: var(--coral);
+      font-size: 14px;
+    }
+    .problem-row strong { display: block; margin-bottom: 5px; font-size: 17px; }
+    .problem-row span { color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 48px 1fr;
+      align-items: center;
+      padding: 28px;
+      background: #f4f7f5;
+      border: 1px solid var(--line);
+    }
+    .mess {
+      position: relative;
+      min-height: 300px;
+      border: 1px dashed #aeb8b2;
+      background: #fff;
+    }
+    .mess i {
+      position: absolute;
+      display: block;
+      width: 110px;
+      height: 34px;
+      padding: 8px;
+      background: #eef1ef;
+      color: #56615b;
+      font-size: 12px;
+      font-style: normal;
+      text-align: center;
+      transform: rotate(var(--r));
+    }
+    .mess i:nth-child(1) { left: 20px; top: 28px; --r: -5deg; }
+    .mess i:nth-child(2) { right: 18px; top: 74px; --r: 4deg; }
+    .mess i:nth-child(3) { left: 46px; top: 140px; --r: 7deg; }
+    .mess i:nth-child(4) { right: 38px; top: 206px; --r: -4deg; }
+    .mess::after {
+      content: "다시 읽고, 옮겨 적고, 순서를 정함";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      color: var(--coral);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .clean-flow { display: grid; gap: 12px; }
+    .clean-step { padding: 17px; border-left: 4px solid var(--green); background: #fff; }
+    .clean-step b { display: block; margin-bottom: 4px; color: var(--green); font-size: 13px; }
+    .clean-step span { font-size: 15px; font-weight: 800; }
+
+    .screen-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 26px;
+    }
+    .screen-figure { margin: 0; min-width: 0; }
+    .screen-frame {
+      height: 294px;
+      overflow: hidden;
+      border: 1px solid #cfd8d3;
+      background: #f4f6f5;
+      box-shadow: 0 12px 26px rgba(17, 33, 25, 0.09);
+    }
+    .screen-frame img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .screen-figure figcaption { padding-top: 12px; }
+    .screen-figure figcaption b { display: block; margin-bottom: 5px; font-size: 15px; }
+    .screen-figure figcaption span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .screen-status {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 4px 7px;
+      border-radius: 4px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .competitor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 24px;
+      margin-top: 18px;
+    }
+    .competitor {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      min-height: 204px;
+      border-top: 3px solid var(--ink);
+      background: #f5f7f6;
+    }
+    .competitor img { width: 100%; height: 201px; object-fit: cover; object-position: center; display: block; }
+    .competitor-copy { padding: 14px; }
+    .competitor-copy strong { display: block; margin-bottom: 8px; font-size: 17px; }
+    .competitor-copy p { margin: 0 0 12px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .competitor-copy b { color: var(--coral); font-size: 12px; }
+
+    .priority-grid {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 42px;
+      margin-top: 28px;
+      align-items: stretch;
+    }
+    .calendar-visual {
+      margin: 0;
+      padding: 22px;
+      background: #f5f7f6;
+      border: 1px solid var(--line);
+    }
+    .calendar-visual img { width: 100%; height: 365px; object-fit: contain; display: block; background: #fff; }
+    .priority-table { display: grid; align-content: stretch; }
+    .priority-row {
+      display: grid;
+      grid-template-columns: 74px 1fr 116px;
+      gap: 16px;
+      align-items: center;
+      min-height: 112px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .priority-row:first-child { border-top: 3px solid var(--green); }
+    .priority-row .p {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      color: #fff;
+      background: var(--green);
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .priority-row.p1 .p { background: var(--blue); }
+    .priority-row.p2 .p { background: #727b76; }
+    .priority-row strong { display: block; margin-bottom: 5px; font-size: 17px; }
+    .priority-row p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .priority-row em { color: var(--green); font-size: 12px; font-style: normal; font-weight: 800; text-align: right; }
+
+    .wedge {
+      display: grid;
+      grid-template-columns: 0.9fr 48px 1.35fr 48px 0.95fr;
+      align-items: stretch;
+      margin-top: 30px;
+    }
+    .wedge-col { border-top: 4px solid var(--ink); }
+    .wedge-col h3 { padding: 18px 0 10px; }
+    .wedge-col .unit {
+      min-height: 64px;
+      margin-bottom: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: #f8f9f8;
+    }
+    .wedge-col .unit strong { display: block; font-size: 15px; }
+    .wedge-col .unit span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .wedge-col.core { border-color: var(--green); }
+    .wedge-col.core .unit { background: var(--green-soft); border-color: #b8d9ca; }
+    .wedge-arrow { display: grid; place-items: center; color: var(--coral); font-size: 32px; font-weight: 900; }
+    .wedge-proof {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .wedge-proof div { padding: 18px 0; border-top: 2px solid var(--green); }
+    .wedge-proof b { display: block; margin-bottom: 5px; font-size: 16px; }
+    .wedge-proof span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr 1fr 0.95fr;
+      gap: 18px;
+      margin-top: 34px;
+    }
+    .arch-lane { min-width: 0; }
+    .arch-lane > h3 { padding-bottom: 10px; border-bottom: 3px solid var(--ink); font-size: 17px; }
+    .arch-lane.core > h3 { border-color: var(--green); color: var(--green); }
+    .arch-item {
+      min-height: 72px;
+      margin-bottom: 10px;
+      padding: 15px;
+      background: #f5f7f6;
+      border-left: 3px solid #aeb8b2;
+    }
+    .arch-lane.core .arch-item { background: var(--green-soft); border-color: var(--green); }
+    .arch-item b { display: block; margin-bottom: 4px; font-size: 14px; }
+    .arch-item span { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .platform-definition {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+    .platform-definition p { margin: 0; font-size: 15px; line-height: 1.6; }
+    .platform-definition strong { color: var(--green); }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 28px;
+    }
+    .evidence-col { border-top: 4px solid var(--green); padding-top: 18px; }
+    .evidence-col.signal { border-color: var(--blue); }
+    .evidence-col.unknown { border-color: var(--coral); }
+    .evidence-col h3 { font-size: 19px; }
+    .evidence-item { padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .evidence-item b { display: block; margin-bottom: 5px; font-size: 15px; }
+    .evidence-item span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .metric-band {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .metric-band div { min-height: 108px; padding: 17px; background: #f5f7f6; }
+    .metric-band b { display: block; margin-bottom: 7px; color: var(--green); font-size: 26px; }
+    .metric-band span { color: #465049; font-size: 12px; line-height: 1.45; }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+      margin-top: 36px;
+    }
+    .roadmap-phase { position: relative; padding-top: 24px; border-top: 5px solid var(--green); }
+    .roadmap-phase:nth-child(2) { border-color: var(--blue); }
+    .roadmap-phase:nth-child(3) { border-color: var(--coral); }
+    .roadmap-phase time { display: block; margin-bottom: 12px; color: var(--green); font-size: 16px; font-weight: 900; }
+    .roadmap-phase:nth-child(2) time { color: var(--blue); }
+    .roadmap-phase:nth-child(3) time { color: var(--coral); }
+    .roadmap-phase h3 { font-size: 21px; }
+    .roadmap-phase p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .roadmap-phase ul { margin: 16px 0 0; padding-left: 18px; }
+    .roadmap-phase li { margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+    .non-goals {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 20px;
+      margin-top: 34px;
+      padding: 18px 20px;
+      background: #f3f5f4;
+      border-left: 4px solid #707a74;
+    }
+    .non-goals strong { font-size: 14px; }
+    .non-goals span { color: var(--muted); font-size: 13px; line-height: 1.55; }
+
+    .decision-list { margin-top: 30px; }
+    .decision-row {
+      display: grid;
+      grid-template-columns: 70px 1.25fr 1fr 1fr;
+      gap: 22px;
+      align-items: start;
+      padding: 20px 0;
+      border-top: 1px solid var(--line);
+    }
+    .decision-row:first-child { border-top: 4px solid var(--green); }
+    .decision-no {
+      color: var(--green);
+      font-size: 27px;
+      font-weight: 900;
+    }
+    .decision-row h3 { margin: 0; font-size: 18px; }
+    .decision-row p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .decision-row .recommend { color: var(--green); font-weight: 800; }
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px 18px;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .source-grid a { font-size: 11px; line-height: 1.45; }
+    .revision-note {
+      margin-top: 20px;
+      padding: 13px 16px;
+      background: var(--amber-soft);
+      color: #694900;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 900px) {
+      .viewer-toolbar { padding: 10px 12px; }
+      .viewer-toolbar strong { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .viewer-actions a { display: none; }
+      main { padding: 12px 8px 48px; }
+      .slide {
+        width: 100%;
+        min-height: 0;
+        aspect-ratio: auto;
+        margin-bottom: 14px;
+        padding: 28px 20px 52px;
+      }
+      .slide-head { margin-bottom: 18px; }
+      h1 { font-size: 38px; line-height: 1.14; }
+      h2 { font-size: 30px; line-height: 1.2; }
+      .lead { font-size: 17px; }
+      .cover-grid, .problem-grid, .priority-grid, .platform-definition { grid-template-columns: 1fr; gap: 22px; }
+      .cover-flow { grid-template-columns: 1fr; gap: 8px; }
+      .cover-arrow, .wedge-arrow { transform: rotate(90deg); min-height: 36px; }
+      .before-after { grid-template-columns: 1fr; gap: 12px; }
+      .screen-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .screen-frame { height: 290px; }
+      .competitor-grid { grid-template-columns: 1fr; }
+      .competitor { grid-template-columns: 1fr; }
+      .competitor img { height: 210px; }
+      .priority-row { grid-template-columns: 60px 1fr; }
+      .priority-row em { grid-column: 2; text-align: left; }
+      .wedge { grid-template-columns: 1fr; gap: 8px; }
+      .wedge-proof, .architecture, .evidence-grid, .roadmap { grid-template-columns: 1fr; }
+      .metric-band { grid-template-columns: repeat(2, 1fr); }
+      .decision-row { grid-template-columns: 50px 1fr; gap: 12px; }
+      .decision-row p { grid-column: 2; }
+      .source-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .screen-strip { grid-template-columns: 1fr; }
+      .screen-frame { height: 340px; }
+      .metric-band, .source-grid { grid-template-columns: 1fr; }
+      .non-goals { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      body { background: #fff; }
+      .viewer-toolbar { display: none; }
+      main { padding: 0; }
+      .slide {
+        width: 13.333in;
+        height: 7.5in;
+        min-height: 0;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="viewer-toolbar">
+    <strong>FlowMe 서비스 전략 보고서 · 2026-07-11</strong>
+    <div class="viewer-actions">
+      <a href="./2026-07-07-flowme-service-platform-strategy-slide-report-ceo-ko.html">이전 8장 보기</a>
+      <button type="button" onclick="window.print()">인쇄 / PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="slide" id="slide-1" data-page="01 / 10">
+      <div class="slide-head"><span>FLOWME SERVICE &amp; PLATFORM STRATEGY</span><span>CEO 보고용 · 2026-07-11</span></div>
+      <h1>FlowMe는 URL·메모를<br><span class="accent">바로 쓸 수 있는 계획</span>으로 바꾼다</h1>
+      <p class="lead">URL이나 메모에서 날짜, 할 일, 체크 항목을 정리해 실행 계획(Flow)으로 만든다. 사용자는 이를 FlowMe 캘린더와 내 Flow에서 쓰거나, 파일로 내보내 기존 앱에서 이어서 쓸 수 있다. 지금은 플랫폼 완성 단계가 아니라 이 과정이 실제 저장과 재사용으로 이어지는지 확인하는 단계다.</p>
+
+      <div class="cover-grid">
+        <div class="position-statement">
+          <strong>좋은 정보를 찾은 뒤 다시 읽고, 할 일을 뽑고, 다른 앱에 옮겨 적는 시간을 줄인다.</strong>
+          <p>캘린더, 할 일, 노트 앱을 대체하지 않는다. 사용자가 그 앱에 넣을 계획을 먼저 정리한다.</p>
+        </div>
+        <aside class="decision-block">
+          <h3>이번 보고서의 결론</h3>
+          <p>앞으로 90일은 URL 입력부터 Flow 저장·재사용까지 한 경로를 먼저 점검한다. 메모 입력과 서비스 직접 연동은 실제 사용 빈도를 확인한 뒤 하나씩 선택한다.</p>
+        </aside>
+      </div>
+
+      <div class="cover-flow" aria-label="FlowMe 핵심 사용자 흐름">
+        <div class="cover-node"><strong>입력</strong><span>URL · 메모 · 공유 링크</span></div>
+        <div class="cover-arrow">→</div>
+        <div class="cover-node core"><strong>FlowMe</strong><span>날짜 · 할 일 · 체크 항목 · 출처가 담긴 실행 계획</span></div>
+        <div class="cover-arrow">→</div>
+        <div class="cover-node"><strong>사용</strong><span>FlowMe 캘린더 · 내 Flow · 파일 내보내기</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-2" data-page="02 / 10">
+      <div class="slide-head"><span>사용자 문제</span><span>찾은 내용을 다시 정리하는 반복 작업</span></div>
+      <h2>문제는 정보 부족이 아니라,<br>찾은 내용을 <span class="coral">다시 정리하고 옮겨 적는 일</span>이다</h2>
+      <p class="lead">웹 글이나 영상에서 유용한 정보를 찾아도 바로 실행되지는 않는다. 사용자는 중요한 내용을 골라 날짜와 할 일로 바꾸고, 쓰는 앱마다 다시 입력해야 한다.</p>
+
+      <div class="problem-grid">
+        <div class="problem-list">
+          <div class="problem-row"><b>1</b><div><strong>자료가 흩어져 있다</strong><span>웹 글, 영상, 공식 안내, 개인 메모가 서로 다른 곳에 남는다.</span></div></div>
+          <div class="problem-row"><b>2</b><div><strong>실행 계획으로 다시 정리해야 한다</strong><span>사용자가 순서, 날짜, 준비물, 체크 항목을 직접 추린다.</span></div></div>
+          <div class="problem-row"><b>3</b><div><strong>실행 도구로 옮겨야 한다</strong><span>Calendar, Todo, 노트, 시트에 같은 내용을 다시 적는다.</span></div></div>
+          <div class="problem-row"><b>4</b><div><strong>출처와 수정본이 분리된다</strong><span>나중에는 왜 이 일을 넣었는지, 정보가 최신인지 알기 어렵다.</span></div></div>
+        </div>
+
+        <div class="before-after" aria-label="현재 수작업과 FlowMe 목표 흐름 비교">
+          <div class="mess"><i>브라우저 탭</i><i>메모</i><i>체크리스트</i><i>캘린더</i></div>
+          <div class="cover-arrow">→</div>
+          <div class="clean-flow">
+            <div class="clean-step"><b>입력</b><span>URL 또는 메모 한 번</span></div>
+            <div class="clean-step"><b>정리</b><span>실행 순서와 날짜를 확인</span></div>
+            <div class="clean-step"><b>실행</b><span>내 Flow 또는 기존 도구에서 이어가기</span></div>
+            <div class="clean-step"><b>회고</b><span>체크와 메모를 다음 수정에 반영</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="source-note">이 문제 정의는 현재 제품 가설이다. 실제 사용자 전환·재방문 수치로 검증된 결론은 아니다.</p>
+    </section>
+
+    <section class="slide" id="slide-3" data-page="03 / 10">
+      <div class="slide-head"><span>현재 제품 화면</span><span>구현 여부를 확인한 화면 / 사용자 검증 결과 아님</span></div>
+      <h2>현재 제품에는 URL 입력부터 저장·실행까지<br>필요한 <span class="accent">네 개의 화면</span>이 있다</h2>
+      <p class="lead">URL로 기존 Flow를 찾거나 직접 초안을 만들고, 캘린더와 내 Flow에서 이어서 쓸 수 있다. 다만 한 사용자가 이 네 단계를 반복해서 사용하는지는 아직 검증하지 않았다.</p>
+
+      <div class="screen-strip">
+        <figure class="screen-figure">
+          <div class="screen-status">현재 구현</div>
+          <div class="screen-frame"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/flowme-url-lookup.png" alt="FlowMe URL lookup hit 화면"></div>
+          <figcaption><b>1. 기존 Flow 찾기</b><span>같은 URL로 만든 Flow가 있으면 다시 생성하지 않고 먼저 보여준다.</span></figcaption>
+        </figure>
+        <figure class="screen-figure">
+          <div class="screen-status">현재 구현</div>
+          <div class="screen-frame"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/flowme-url-miss-draft.png" alt="FlowMe URL miss 직접 초안 화면"></div>
+          <figcaption><b>2. 없으면 직접 초안</b><span>사용자가 제목과 원하는 결과를 적고 저장 전 내용을 확인한다.</span></figcaption>
+        </figure>
+        <figure class="screen-figure">
+          <div class="screen-status">현재 구현</div>
+          <div class="screen-frame"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/flowme-calendar.png" alt="FlowMe Calendar 화면"></div>
+          <figcaption><b>3. 날짜로 실행</b><span>저장한 Flow의 날짜 있는 항목을 Calendar에서 다시 찾는다.</span></figcaption>
+        </figure>
+        <figure class="screen-figure">
+          <div class="screen-status">현재 구현</div>
+          <div class="screen-frame"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/flowme-my-flow.png" alt="FlowMe My Flow 화면"></div>
+          <figcaption><b>4. 내 Flow에서 이어가기</b><span>Flow 구조, 다음 실행 항목, 진행 상태를 개인 실행 기록으로 남긴다.</span></figcaption>
+        </figure>
+      </div>
+      <p class="source-note">화면 근거: 2026-07-02~2026-07-11 브라우저 자동 확인 화면. 현재 저장소의 내부 품질 확인 결과이며 실제 사용자 행동 증거는 아니다.</p>
+    </section>
+
+    <section class="slide" id="slide-4" data-page="04 / 10">
+      <div class="slide-head"><span>경쟁 제품 화면 비교</span><span>공식 제품 페이지 캡처</span></div>
+      <h2>기존의 할 일·문서·일정·자동화 앱을 대체하지 않는다</h2>
+      <p class="lead">이 제품들은 할 일 관리, 문서 작성, 일정 배치, 앱 연동을 이미 전문적으로 해결한다. FlowMe는 같은 기능을 복제하지 않고, 원문을 각 도구에서 쓸 계획으로 바꾸는 단계에 집중한다.</p>
+
+      <div class="competitor-grid">
+        <article class="competitor">
+          <a href="https://www.todoist.com/" target="_blank" rel="noreferrer"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/todoist-product.png" alt="Todoist Today와 task 입력 화면"></a>
+          <div class="competitor-copy"><strong>Todoist</strong><p>빠른 할 일 입력, Today/Upcoming, 우선순위와 반복 일정이 강점이다.</p><b>FlowMe가 맡을 일: 원문에서 할 일을 만들기</b></div>
+        </article>
+        <article class="competitor">
+          <a href="https://www.notion.com/product/notion-for-product-development" target="_blank" rel="noreferrer"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/notion-product.png" alt="Notion Product Home 화면"></a>
+          <div class="competitor-copy"><strong>Notion</strong><p>문서, 데이터베이스, 프로젝트를 한 공간에서 구성하는 능력이 강하다.</p><b>FlowMe가 맡을 일: 빈 문서 없이 실행 초안을 제공</b></div>
+        </article>
+        <article class="competitor">
+          <a href="https://reclaim.ai/" target="_blank" rel="noreferrer"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/reclaim-product.png" alt="Reclaim AI scheduling 제품 화면"></a>
+          <div class="competitor-copy"><strong>Reclaim</strong><p>회의, 집중 시간, 할 일을 빈 시간에 자동 배치하는 데 집중한다.</p><b>FlowMe가 맡을 일: 배치하기 전 실행 내용을 만들기</b></div>
+        </article>
+        <article class="competitor">
+          <a href="https://zapier.com/" target="_blank" rel="noreferrer"><img src="./assets/2026-07-11-flowme-platform-strategy-v2/zapier-builder.jpg" alt="Zapier visual workflow builder 화면"></a>
+          <div class="competitor-copy"><strong>Zapier</strong><p>앱 사이의 조건과 동작을 잇는 자동화, 대규모 연동 생태계가 강점이다.</p><b>FlowMe가 맡을 일: 자동화에 필요한 Flow를 제공</b></div>
+        </article>
+      </div>
+      <p class="source-note">화면 출처: 각 서비스 공식 제품 페이지. 제품 설명은 공개 기능을 요약한 것이며 독립 사용자 조사 결과가 아니다.</p>
+    </section>
+
+    <section class="slide" id="slide-5" data-page="05 / 10">
+      <div class="slide-head"><span>외부 연결 우선순위</span><span>사용자가 자주 보내는 곳부터 연결</span></div>
+      <h2><span class="accent">P0는 파일 내보내기</span>, 직접 연동은 한 곳씩</h2>
+      <p class="lead">초기에 여러 서비스 계정을 직접 연결하면 개발과 유지 부담이 커진다. 먼저 .ics, Markdown, 체크리스트로 어디서나 가져가게 하고, 실제 사용이 많은 목적지부터 직접 연결한다.</p>
+
+      <div class="priority-grid">
+        <figure class="calendar-visual">
+          <img src="./assets/2026-07-11-flowme-platform-strategy-v2/google-calendar-product.jpg" alt="Google Calendar 공식 제품 화면">
+          <figcaption class="source-note">대표 목적지: <a href="https://workspace.google.com/products/calendar/" target="_blank" rel="noreferrer">Google Calendar 공식 제품 페이지</a>. Outlook도 같은 .ics 경로로 우선 대응한다.</figcaption>
+        </figure>
+
+        <div class="priority-table">
+          <div class="priority-row">
+            <div class="p">P0</div>
+            <div><strong>파일·텍스트로 즉시 이동</strong><p>캘린더 파일(.ics), Markdown 문서, 체크리스트. Google/Outlook Calendar, Todoist, Notion, Obsidian 등에서 계정 연동 없이 쓸 수 있다.</p></div>
+            <em>지금 검증</em>
+          </div>
+          <div class="priority-row p1">
+            <div class="p">P1</div>
+            <div><strong>반복 사용이 많은 1~2곳만 직접 연결</strong><p>후보는 Google Calendar, Todoist, Notion, Sheets다. 내보내기 행동과 사용 요청이 확인된 뒤 선택한다.</p></div>
+            <em>증거 후 선택</em>
+          </div>
+          <div class="priority-row p2">
+            <div class="p">P2</div>
+            <div><strong>자동화·AI 생태계에 Flow 제공</strong><p>Zapier, MCP(AI 도구 연결 규격), 자동 일정 배치, 창작자 배포는 Flow와 사용 기록이 쌓인 뒤 확장한다.</p></div>
+            <em>플랫폼 단계</em>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-6" data-page="06 / 10">
+      <div class="slide-head"><span>제품의 핵심 역할</span><span>정보를 기존 앱에서 쓸 계획으로 바꾸기</span></div>
+      <h2>FlowMe의 핵심 역할은<br><span class="accent">원문을 바로 쓸 계획으로 바꾸는 일</span>이다</h2>
+      <p class="lead">사용자에게 캘린더나 노트 앱을 바꾸라고 요구하지 않는다. 이미 쓰는 앱에 넣을 날짜, 할 일, 체크 항목을 더 빨리 정리해 주는 것이 목표다.</p>
+
+      <div class="wedge">
+        <div class="wedge-col">
+          <h3>사용자가 넣는 자료</h3>
+          <div class="unit"><strong>URL</strong><span>글, 영상, 공식 안내, 공유 링크</span></div>
+          <div class="unit"><strong>메모</strong><span>오늘 할 일, 생각, 준비 목록</span></div>
+        </div>
+        <div class="wedge-arrow">→</div>
+        <div class="wedge-col core">
+          <h3>FlowMe가 정리할 내용</h3>
+          <div class="unit"><strong>날짜·할 일·순서</strong><span>반복 일정, 체크 항목, 메모까지 포함</span></div>
+          <div class="unit"><strong>출처와 내 수정 내용</strong><span>원문과 사용자가 바꾼 내용을 구분</span></div>
+          <div class="unit"><strong>기존 Flow 재사용</strong><span>같은 URL의 Flow를 먼저 찾고 필요하면 고쳐 씀</span></div>
+        </div>
+        <div class="wedge-arrow">→</div>
+        <div class="wedge-col">
+          <h3>사용할 곳</h3>
+          <div class="unit"><strong>FlowMe</strong><span>Calendar · 내 Flow</span></div>
+          <div class="unit"><strong>기존 도구</strong><span>Calendar · Todo · Note · Sheet</span></div>
+        </div>
+      </div>
+
+      <div class="wedge-proof">
+        <div><b>기존 앱을 바꾸라고 요구하지 않는다</b><span>사용자는 쓰던 캘린더·할 일·노트 앱을 계속 쓴다.</span></div>
+        <div><b>같은 자료를 다시 정리하지 않는다</b><span>같은 URL로 만든 Flow가 있으면 먼저 찾아 재사용한다.</span></div>
+        <div><b>AI 결과를 바로 실행하지 않는다</b><span>초안은 사용자가 확인하고 고친 뒤에만 저장한다.</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-7" data-page="07 / 10">
+      <div class="slide-head"><span>서비스·플랫폼 구조</span><span>하나의 Flow를 여러 사용처에서 재사용</span></div>
+      <h2>같은 Flow를 여러 화면과 도구에서<br><span class="accent">다시 쓸 때 플랫폼이 된다</span></h2>
+      <p class="lead">화면이나 연동 수가 많다고 플랫폼이 되는 것은 아니다. 한 번 만든 Flow가 내 캘린더, 다른 앱, 공유 링크에서 같은 출처와 구조를 유지한 채 쓰여야 한다.</p>
+
+      <div class="architecture">
+        <div class="arch-lane">
+          <h3>자료를 받는 곳</h3>
+          <div class="arch-item"><b>URL</b><span>현재 핵심 진입점</span></div>
+          <div class="arch-item"><b>개인 메모</b><span>URL 다음 입력 후보</span></div>
+          <div class="arch-item"><b>창작자 / 공식 출처</b><span>검토한 콘텐츠를 받는 경로</span></div>
+        </div>
+        <div class="arch-lane core">
+          <h3>한 번 만들고 다시 쓰는 Flow</h3>
+          <div class="arch-item"><b>실행 항목</b><span>날짜, 순서, 체크, 반복, 메모</span></div>
+          <div class="arch-item"><b>출처와 버전</b><span>원문, 확인일, 주의, 사용자 수정</span></div>
+          <div class="arch-item"><b>이동 가능한 결과</b><span>캘린더, 체크리스트, 문서, 시트</span></div>
+        </div>
+        <div class="arch-lane">
+          <h3>사용자 화면</h3>
+          <div class="arch-item"><b>Flow 찾기</b><span>찾고, 비교하고, 저장</span></div>
+          <div class="arch-item"><b>Calendar</b><span>날짜가 있는 항목 실행</span></div>
+          <div class="arch-item"><b>내 Flow</b><span>계속하기, 수정, 기록</span></div>
+        </div>
+        <div class="arch-lane">
+          <h3>Flow를 쓰는 곳</h3>
+          <div class="arch-item"><b>기존 도구</b><span>파일·텍스트·향후 API</span></div>
+          <div class="arch-item"><b>공유 링크</b><span>다른 사용자의 저장·수정</span></div>
+          <div class="arch-item"><b>창작자 / 자동화</b><span>저장·재사용 기록을 확인한 뒤 확장</span></div>
+        </div>
+      </div>
+
+      <div class="platform-definition">
+        <p><strong>현재:</strong> URL 입력과 네 개 기본 화면을 내부에서 점검하는 단계.</p>
+        <p><strong>목표:</strong> 같은 Flow를 여러 사용자와 도구가 다시 쓰고, 수정·완료 기록이 다음 버전을 개선하는 플랫폼.</p>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-8" data-page="08 / 10">
+      <div class="slide-head"><span>근거 수준</span><span>확인한 사실 · 참고 수치 · 아직 없는 데이터</span></div>
+      <h2>시장 규모와 FlowMe의 수요는 <span class="coral">별개</span>다</h2>
+      <p class="lead">Todoist, Zapier, Reclaim의 공개 수치는 관련 시장이 크다는 참고 자료다. 이 숫자만으로 FlowMe를 실제로 쓸 사람이 얼마나 되는지는 알 수 없다.</p>
+
+      <div class="evidence-grid">
+        <div class="evidence-col">
+          <h3>제품에서 확인한 것</h3>
+          <div class="evidence-item"><b>4개 기본 화면</b><span>홈 · Flow 찾기 · 캘린더 · 내 Flow 구조가 구현되어 있다.</span></div>
+          <div class="evidence-item"><b>기존 Flow 있음 / 없음 흐름</b><span>기존 Flow 찾기와 직접 초안 경로의 구현·품질 확인 자료가 있다.</span></div>
+          <div class="evidence-item"><b>저장 후 실행 화면</b><span>Calendar와 내 Flow의 브라우저 확인 자료가 있다.</span></div>
+        </div>
+        <div class="evidence-col signal">
+          <h3>외부 서비스 공개 수치</h3>
+          <div class="evidence-item"><b>Todoist: 50M+ professionals</b><span>공식 홈페이지에 공개된 수치다. 성숙한 할 일 시장의 규모를 보여주는 참고 자료다.</span></div>
+          <div class="evidence-item"><b>Zapier: 9,000+ apps</b><span>공식 보도자료에 공개된 수치다. 연동 생태계를 직접 따라갈 비용이 크다는 참고 자료다.</span></div>
+          <div class="evidence-item"><b>Reclaim: 524% availability</b><span>공식 제품 페이지에 공개된 성과 수치다. 독립 검증 수치는 아니다.</span></div>
+        </div>
+        <div class="evidence-col unknown">
+          <h3>사용자에게 확인해야 할 것</h3>
+          <div class="evidence-item"><b>입력 수요</b><span>사용자가 URL과 메모 중 무엇을 더 자주 넣는가.</span></div>
+          <div class="evidence-item"><b>이동 수요</b><span>저장, .ics, Markdown, checklist 중 무엇이 실제로 선택되는가.</span></div>
+          <div class="evidence-item"><b>반복 사용과 지불 의사</b><span>7일·30일 재방문, 완료, 유료 가치에 대한 데이터가 없다.</span></div>
+        </div>
+      </div>
+
+      <div class="metric-band">
+        <div><b>9,000+</b><span>Zapier가 공개한 연동 앱 수. 2026-07-10 확인.</span></div>
+        <div><b>3.4M</b><span>Zapier가 공개한 사용 기업 수.</span></div>
+        <div><b>50M+</b><span>Todoist가 공식 홈페이지에 표기한 professionals 수.</span></div>
+        <div><b>없음</b><span>이 보고서가 인용할 수 있는 FlowMe 실제 사용자 전환·재방문 수치.</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-9" data-page="09 / 10">
+      <div class="slide-head"><span>90일 우선순위</span><span>확장보다 먼저 답해야 할 질문</span></div>
+      <h2>앞으로 90일 안에 <span class="accent">세 가지 질문</span>에 답한다</h2>
+      <p class="lead">URL을 넣은 사용자가 Flow를 저장하는가. 저장한 Flow를 다시 열고 실행하는가. 그다음에는 메모, 직접 연동, 창작자 콘텐츠 중 무엇을 확장해야 하는가.</p>
+
+      <div class="roadmap">
+        <article class="roadmap-phase">
+          <time>0–30일</time>
+          <h3>URL 입력부터 저장까지 한 경로로 정리</h3>
+          <p>검색 결과가 있을 때, 없을 때, 직접 초안을 쓸 때의 화면과 저장 조건을 일관되게 맞춘다.</p>
+          <ul><li>대표 Flow 유형별 저장 가능·보류 기준</li><li>원문·주의사항·내 수정 내용 구분</li><li>캘린더·체크리스트·Markdown에 같은 정보 유지</li></ul>
+        </article>
+        <article class="roadmap-phase">
+          <time>31–60일</time>
+          <h3>저장한 Flow가 다시 쓰이는지 측정</h3>
+          <p>캘린더와 내 Flow에서 다음 할 일을 열고 완료하는 과정을 측정한다.</p>
+          <ul><li>저장 → 첫 할 일 열기 → 완료 표시</li><li>내 Flow 재방문과 수정 횟수</li><li>내보내기 형식 선택과 실패 이유</li></ul>
+        </article>
+        <article class="roadmap-phase">
+          <time>61–90일</time>
+          <h3>다음 확장 하나를 선택</h3>
+          <p>메모 입력, 직접 연동, 창작자 콘텐츠 중 실제 사용 근거가 가장 많은 하나만 선택한다.</p>
+          <ul><li>메모는 URL과 같은 Flow 형식으로 저장</li><li>직접 연동은 가장 많이 선택된 서비스 1곳</li><li>창작자 화면은 콘텐츠 품질과 저장 반응을 확인</li></ul>
+        </article>
+      </div>
+
+      <div class="non-goals"><strong>90일 동안 하지 않을 일</strong><span>Home 전면 재설계, 범용 AI 자동 실행, 여러 계정 연동 동시 구축, 전체 편집기, 거래·소셜 피드, 자동 발행. URL 입력·저장·재사용 데이터가 쌓인 뒤 다시 판단한다.</span></div>
+    </section>
+
+    <section class="slide" id="slide-10" data-page="10 / 10">
+      <div class="slide-head"><span>CEO 의사결정</span><span>오늘 정할 것 3개</span></div>
+      <h2>CEO가 오늘 결정할 <span class="accent">세 가지</span></h2>
+
+      <div class="decision-list">
+        <div class="decision-row">
+          <div class="decision-no">01</div>
+          <h3>FlowMe를 ‘정보를 실행 계획으로 바꾸는 서비스’로 정의할 것인가</h3>
+          <p class="recommend">추천: 승인. 캘린더·할 일·노트 앱을 대체하는 메시지는 쓰지 않는다.</p>
+          <p>보류하면 화면마다 다른 제품처럼 보이고, 기능 우선순위가 다시 넓어진다.</p>
+        </div>
+        <div class="decision-row">
+          <div class="decision-no">02</div>
+          <h3>90일 동안 URL 입력·저장·재사용 확인에 집중할 것인가</h3>
+          <p class="recommend">추천: 승인. 메모·직접 연동·창작자 화면은 현재 흐름의 결과를 보고 연다.</p>
+          <p>동시에 추진하면 입력, 실행, 공급 중 무엇이 효과를 냈는지 판단하기 어렵다.</p>
+        </div>
+        <div class="decision-row">
+          <div class="decision-no">03</div>
+          <h3>직접 연동보다 파일 내보내기를 먼저 만들 것인가</h3>
+          <p class="recommend">추천: 승인. 캘린더 파일(.ics), Markdown, 체크리스트를 먼저 안정화한다.</p>
+          <p>직접 연동은 실제 이동 행동이 확인된 목적지 한 곳부터 시작한다.</p>
+        </div>
+      </div>
+
+      <div class="source-grid" aria-label="근거 문서와 공식 출처">
+        <a href="../PRODUCT_PRINCIPLES.md">제품 원칙</a>
+        <a href="../SERVICE_STRUCTURE.md">현재 서비스 구조</a>
+        <a href="../DECISIONS.md">제품 결정 기록</a>
+        <a href="../IDEAS.md">보류·확장 아이디어</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/spec.md">URL 검색 구현 명세</a>
+        <a href="../specs/2026-07-05-url-lookup-production-slice/qa.md">URL 검색 품질 확인</a>
+        <a href="../specs/2026-07-11-url-first-ai-draft-gate/spec.md">AI 초안 저장 조건 명세</a>
+        <a href="./2026-07-09-flowme-product-direction-feedback-board-ko.html">제품 방향 피드백 보드</a>
+        <a href="https://www.todoist.com/" target="_blank" rel="noreferrer">Todoist 공식</a>
+        <a href="https://www.notion.com/product/notion-for-product-development" target="_blank" rel="noreferrer">Notion 공식</a>
+        <a href="https://workspace.google.com/products/calendar/" target="_blank" rel="noreferrer">Google Calendar 공식</a>
+        <a href="https://zapier.com/press" target="_blank" rel="noreferrer">Zapier newsroom</a>
+        <a href="https://reclaim.ai/features/scheduling-links" target="_blank" rel="noreferrer">Reclaim 공식</a>
+        <a href="./2026-07-07-flowme-service-platform-strategy-ceo-ko.html">이전 상세 근거 리포트</a>
+        <a href="./2026-07-07-flowme-service-platform-strategy-slide-report-ceo-ko.html">이전 8장 덱</a>
+      </div>
+
+      <p class="revision-note"><strong>개정 이유:</strong> 이전판의 URL 입력 편중, 로고 중심 비교, 공급자 홍보 수치 과대 노출, 실제 FlowMe 화면 부재를 바로잡았다. 이번 개정판은 새 전략을 추가하기보다 2026-07-11 현재 제품 방향을 한 흐름으로 다시 정리했다.</p>
+    </section>
+  </main>
+</body>
+</html>

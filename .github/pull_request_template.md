@@ -25,11 +25,14 @@
 
 ## Verification
 
+- [ ] `npm run security:audit` if runtime, dependencies, CI, or release tooling changed
 - [ ] `npm run docs:check`
 - [ ] `npm test`
 - [ ] `npm run build`
 - [ ] `npm run test:e2e`
 - [ ] Browser/manual check, if user-facing UI changed
+
+- Runtime / dependency audit residuals:
 
 ## Risks / Rollback
 

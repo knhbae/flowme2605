@@ -1,0 +1,227 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-1",
+  "caseId": "case-10",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-10",
+    "requestId": "prompt-lab-v1-case-10",
+    "targetLocale": "ko-KR",
+    "userJob": "내 차량의 검사 유효기간 안에 정기검사를 받고 필요할 때 재검사 조건을 확인한다.",
+    "maxItems": 7,
+    "claimedScope": "제공된 2개 SourceRow 범위만 변환한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-kotsa-regular-inspection",
+        "title": "TS 자동차 정기검사",
+        "sourceType": "official",
+        "originalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": "한국교통안전공단",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "allowed",
+        "riskLevel": "safety_sensitive",
+        "accessStatus": "fetched"
+      },
+      "supporting": [
+        {
+          "sourceId": "source-kotsa-inspection-procedure",
+          "title": "TS 자동차검사 절차",
+          "sourceType": "official",
+          "originalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104",
+          "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010104",
+          "locale": "ko-KR",
+          "countryContext": "KR",
+          "publisher": "한국교통안전공단",
+          "checkedAt": "2026-07-11",
+          "rightsStatus": "allowed",
+          "riskLevel": "safety_sensitive",
+          "accessStatus": "fetched"
+        }
+      ]
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-inspection-window",
+        "sourceId": "source-kotsa-regular-inspection",
+        "rowType": "date",
+        "title": "정기검사 유효기간",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-inspection-agency-phases",
+        "sourceId": "source-kotsa-inspection-procedure",
+        "rowType": "reference",
+        "title": "검사기관 내부 검사 단계",
+        "detail": null,
+        "order": 0
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-10-sparse-official-lifecycle:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-10",
+    "fixtureId": "gf-pos-10-sparse-official-lifecycle",
+    "fixtureKind": "positive",
+    "fixtureShape": "sparse_official_lifecycle",
+    "name": "자동차 정기검사 날짜 창",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "내 차량의 검사 유효기간 안에 정기검사를 받고 필요할 때 재검사 조건을 확인한다.",
+      "planningPattern": "phase_lifecycle",
+      "primaryArtifact": "calendar",
+      "riskLevel": "safety_sensitive"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-vehicle-inspection",
+        "title": "유효기간 안에 자동차 정기검사 받기",
+        "intent": "act",
+        "sourceRowIds": [
+          "row-inspection-window"
+        ],
+        "completionMode": "check",
+        "doneWhen": "공식 유효기간 안에 검사를 받고 결과를 확인했다.",
+        "hasSchedule": true,
+        "canonicalSchedule": {
+          "mode": "date_window",
+          "basis": "anchor_offset",
+          "anchorFieldId": "field-inspection-expiry-date",
+          "startDayOffset": -31,
+          "endDayOffset": 0,
+          "reminderDayOffset": -14
+        }
+      }
+    ],
+    "expectedOmittedRows": [
+      {
+        "sourceRowId": "row-inspection-agency-phases",
+        "reason": "관능·ABS·하체·전조등·배출가스 등 검사기관 내부 절차이며 사용자가 완료할 Item이 아니다."
+      }
+    ],
+    "accountingSourceRowIds": [
+      "row-inspection-window",
+      "row-inspection-agency-phases"
+    ],
+    "expectedProjections": [
+      "calendar:ics",
+      "checklist:markdown",
+      "memo:markdown"
+    ],
+    "forbiddenProjections": [
+      "sheet:xlsx",
+      "todo:markdown"
+    ],
+    "referenceReview": {
+      "readiness": "ready_second_wave",
+      "hardFails": [],
+      "rightsDecision": "공식 기한과 확인 링크만 사용한다.",
+      "riskDecision": "차종별 법정 기간을 자동 판정하지 않고 사용자가 공식 조회한 만료일을 입력한다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.1",
+    "requestId": "prompt-lab-v1-case-10",
+    "caseId": "case-10",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "official_lifecycle",
+      "primarySourceId": "source-kotsa-regular-inspection",
+      "supportingSourceIds": [
+        "source-kotsa-inspection-procedure"
+      ],
+      "receivedSourceRowIds": [
+        "row-inspection-window",
+        "row-inspection-agency-phases"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "차량 소유자로서 내 차량의 정기검사 유효기간 안에 검사를 받고 필요하면 재검사 조건을 확인한다.",
+      "lifeArea": "vehicle",
+      "planningPattern": "deadline_window",
+      "primaryArtifact": "todo",
+      "contentShape": "유효기간에 맞춘 단일 정기검사 행동"
+    },
+    "proposal": {
+      "proposalTitle": "정기검사 유효기간 안에 검사받기",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "정기검사 유효기간 안에 검사받기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-inspection-window"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "내 차량이 정기검사 유효기간 안에 검사를 받았다."
+          },
+          "memoCandidate": "재검사가 필요한 경우 조건을 확인한다.",
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [
+        {
+          "sourceRowId": "row-inspection-agency-phases",
+          "reason": "지원 출처의 검사기관 내부 단계는 사용자가 독립적으로 실행하거나 완료할 행동이 아니며 Flow 구조를 통제할 수 없다."
+        }
+      ],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "todo",
+        "applicability": "applicable",
+        "reason": "정기검사 받기는 사용자가 완료 여부를 확인할 수 있는 단일 행동이다."
+      },
+      {
+        "target": "calendar",
+        "applicability": "blocked",
+        "reason": "유효기간의 구체적인 날짜 표현이 SourceRow에 없어 일정을 만들 수 없다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "차량별 정기검사 유효기간의 구체적인 값이 제공되지 않았다.",
+        "재검사 조건을 설명하는 SourceRow가 제공되지 않았다."
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "공식 출처에서 해당 차량의 유효기간과 필요한 경우의 재검사 조건을 확인한다."
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

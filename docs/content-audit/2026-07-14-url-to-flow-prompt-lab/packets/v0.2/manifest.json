@@ -1,0 +1,106 @@
+{
+  "packetSetVersion": "flowme-url-to-flow-prompt-lab-packets-v0.2",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "generator": "scripts/content-audit/build-url-to-flow-prompt-lab-packets.mjs",
+  "disclosure": "Each packet contains one source-only case. expected-v1.json and canonical answers are intentionally excluded.",
+  "packets": [
+    {
+      "caseId": "case-01",
+      "requestId": "prompt-lab-v1-case-01",
+      "file": "case-01.md",
+      "sourceRowCount": 2,
+      "sourceAccess": "fetched",
+      "riskLevel": "medical_sensitive"
+    },
+    {
+      "caseId": "case-02",
+      "requestId": "prompt-lab-v1-case-02",
+      "file": "case-02.md",
+      "sourceRowCount": 1,
+      "sourceAccess": "fetched",
+      "riskLevel": "low"
+    },
+    {
+      "caseId": "case-03",
+      "requestId": "prompt-lab-v1-case-03",
+      "file": "case-03.md",
+      "sourceRowCount": 2,
+      "sourceAccess": "fetched",
+      "riskLevel": "low"
+    },
+    {
+      "caseId": "case-04",
+      "requestId": "prompt-lab-v1-case-04",
+      "file": "case-04.md",
+      "sourceRowCount": 2,
+      "sourceAccess": "fetched",
+      "riskLevel": "privacy_sensitive"
+    },
+    {
+      "caseId": "case-05",
+      "requestId": "prompt-lab-v1-case-05",
+      "file": "case-05.md",
+      "sourceRowCount": 2,
+      "sourceAccess": "fetched",
+      "riskLevel": "low"
+    },
+    {
+      "caseId": "case-06",
+      "requestId": "prompt-lab-v1-case-06",
+      "file": "case-06.md",
+      "sourceRowCount": 1,
+      "sourceAccess": "fetched",
+      "riskLevel": "low"
+    },
+    {
+      "caseId": "case-07",
+      "requestId": "prompt-lab-v1-case-07",
+      "file": "case-07.md",
+      "sourceRowCount": 1,
+      "sourceAccess": "fetched",
+      "riskLevel": "financial_sensitive"
+    },
+    {
+      "caseId": "case-08",
+      "requestId": "prompt-lab-v1-case-08",
+      "file": "case-08.md",
+      "sourceRowCount": 1,
+      "sourceAccess": "fetched",
+      "riskLevel": "medical_sensitive"
+    },
+    {
+      "caseId": "case-09",
+      "requestId": "prompt-lab-v1-case-09",
+      "file": "case-09.md",
+      "sourceRowCount": 2,
+      "sourceAccess": "fetched",
+      "riskLevel": "low"
+    },
+    {
+      "caseId": "case-10",
+      "requestId": "prompt-lab-v1-case-10",
+      "file": "case-10.md",
+      "sourceRowCount": 2,
+      "sourceAccess": "fetched",
+      "riskLevel": "safety_sensitive"
+    },
+    {
+      "caseId": "case-11",
+      "requestId": "prompt-lab-v1-case-11",
+      "file": "case-11.md",
+      "sourceRowCount": 0,
+      "sourceAccess": "unavailable",
+      "riskLevel": "low"
+    },
+    {
+      "caseId": "case-12",
+      "requestId": "prompt-lab-v1-case-12",
+      "file": "case-12.md",
+      "sourceRowCount": 0,
+      "sourceAccess": "partial",
+      "riskLevel": "medical_sensitive"
+    }
+  ]
+}

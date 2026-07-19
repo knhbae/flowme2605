@@ -1,0 +1,31 @@
+{
+  "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
+  "runId": "round-1-batch-a",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "modelEvidence": {
+    "provider": "not_available",
+    "model": "not_available",
+    "modelTier": "unclassified",
+    "evidenceKind": "in_session_same_model"
+  },
+  "timing": {
+    "startedAt": null,
+    "completedAt": null,
+    "latencyMs": null,
+    "evidenceKind": "not_available"
+  },
+  "usage": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "evidenceKind": "not_available"
+  },
+  "cost": {
+    "amount": null,
+    "currency": null,
+    "pricingRef": null,
+    "evidenceKind": "not_available"
+  },
+  "outputs": []
+}

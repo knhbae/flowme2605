@@ -1,0 +1,301 @@
+{
+  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v1",
+  "round": "round-1",
+  "blindRunLabel": "R1-C",
+  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+  "results": [
+    {
+      "caseId": "case-09",
+      "blindRunLabel": "R1-C",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": false,
+        "hardFailCodes": [
+          "conversion_schema"
+        ]
+      },
+      "reviewHardFailCodes": null,
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "conversion_schema 위반으로 실행 계약이 무효라 사용자 적합성 점수는 N/A다.",
+        "executionClarity": "validator를 통과하지 못한 제안이라 실행 명확성 점수는 N/A다.",
+        "contentFidelityAndCoverage": "스키마가 유효하지 않아 콘텐츠 충실도 점수는 N/A다.",
+        "portabilityAndNaturalArtifact": "유효한 변환 계약이 없어 목적지 이식성 점수는 N/A다.",
+        "cognitiveLoad": "무효 실행의 구조를 품질 비교에 쓰지 않으므로 인지 부하 점수는 N/A다.",
+        "copySpecificity": "validator 실패가 먼저 해결되어야 하므로 카피 점수는 N/A다.",
+        "sourceAndSafetySeparation": "유효한 제안 계약이 아니어서 출처·안전 분리 점수는 N/A다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 2,
+        "mappedUniqueRows": 2,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 2,
+        "keptOriginalItems": 0,
+        "itemKeepRate": 0,
+        "deletedItems": 2,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": true,
+        "burden": null
+      },
+      "contentQualityGatePassed": false,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "invalid_run",
+      "topFixes": [
+        "conversionDecision의 shape와 enum을 현재 계약에 맞춘 뒤 전체 제안을 다시 생성한다.",
+        "재생성 후 두 SourceRow의 accounting과 자연스러운 목적지를 다시 검증한다."
+      ],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": null
+      }
+    },
+    {
+      "caseId": "case-10",
+      "blindRunLabel": "R1-C",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": false,
+        "hardFailCodes": [
+          "conversion_schema",
+          "omission_schema",
+          "silent_source_omission",
+          "source_assessment_schema"
+        ]
+      },
+      "reviewHardFailCodes": null,
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "여러 계약 오류로 실행이 무효라 사용자 적합성 점수는 N/A다.",
+        "executionClarity": "validator를 통과하지 못한 제안이라 실행 명확성 점수는 N/A다.",
+        "contentFidelityAndCoverage": "omission_schema와 silent_source_omission이 있어 콘텐츠 충실도 점수는 N/A다.",
+        "portabilityAndNaturalArtifact": "source와 conversion shape가 무효라 목적지 이식성 점수는 N/A다.",
+        "cognitiveLoad": "무효 실행의 구조를 품질 비교에 쓰지 않으므로 인지 부하 점수는 N/A다.",
+        "copySpecificity": "계약 오류가 먼저 해결되어야 하므로 카피 점수는 N/A다.",
+        "sourceAndSafetySeparation": "SourceRow 제외가 유효하게 기록되지 않아 출처·안전 분리 점수는 N/A다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 2,
+        "mappedUniqueRows": 1,
+        "approvedOmittedRows": 1,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 1,
+        "keptOriginalItems": 0,
+        "itemKeepRate": 0,
+        "deletedItems": 1,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": true,
+        "burden": null
+      },
+      "contentQualityGatePassed": false,
+      "negativeGatePassed": null,
+      "fullUsabilityVerified": false,
+      "decision": "invalid_run",
+      "topFixes": [
+        "sourceAssessment와 conversionDecision을 현재 shape와 허용 enum으로 다시 생성한다.",
+        "row-inspection-agency-phases를 sourceRowId, reasonCode, reason이 있는 유효한 omission으로 기록하고 accounting을 다시 검증한다."
+      ],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": null
+      }
+    },
+    {
+      "caseId": "case-11",
+      "blindRunLabel": "R1-C",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": true,
+        "hardFailCodes": []
+      },
+      "reviewHardFailCodes": [],
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "원문 행 부재를 차단하는 음성 게이트라 사용자 적합성 점수는 N/A다.",
+        "executionClarity": "의도대로 Item이 생성되지 않아 실행 명확성 점수는 N/A다.",
+        "contentFidelityAndCoverage": "변환 콘텐츠 대신 missing_source_rows 게이트 일치를 확인하므로 N/A다.",
+        "portabilityAndNaturalArtifact": "투영을 의도적으로 생성하지 않은 음성 게이트라 N/A다.",
+        "cognitiveLoad": "제안 Item이 없어 인지 부하 점수는 N/A다.",
+        "copySpecificity": "평가할 제안 제목과 Item 문구가 없어 N/A다.",
+        "sourceAndSafetySeparation": "품질 점수 대신 source_import_required 경계의 정확성을 판정하므로 N/A다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 0,
+        "mappedUniqueRows": 0,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 0,
+        "keptOriginalItems": 0,
+        "itemKeepRate": null,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": false,
+        "burden": null
+      },
+      "contentQualityGatePassed": null,
+      "negativeGatePassed": true,
+      "fullUsabilityVerified": false,
+      "decision": "source_import_required",
+      "topFixes": [],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": "missing_source_rows와 source_import_required가 기대 상태와 일치하고 제안 Item과 투영이 비어 있어 교정 미리보기가 필요 없다."
+      }
+    },
+    {
+      "caseId": "case-12",
+      "blindRunLabel": "R1-C",
+      "reviewMethod": {
+        "reviewerKind": "in_session_model_proxy",
+        "modelIdentityBlinded": true,
+        "humanReviewer": false
+      },
+      "validator": {
+        "passed": false,
+        "hardFailCodes": [
+          "source_assessment_schema"
+        ]
+      },
+      "reviewHardFailCodes": null,
+      "scores": {
+        "userNeedFit": null,
+        "executionClarity": null,
+        "contentFidelityAndCoverage": null,
+        "portabilityAndNaturalArtifact": null,
+        "cognitiveLoad": null,
+        "copySpecificity": null,
+        "sourceAndSafetySeparation": null
+      },
+      "scoreComments": {
+        "userNeedFit": "source_assessment_schema 위반으로 음성 게이트 실행이 무효라 사용자 적합성 점수는 N/A다.",
+        "executionClarity": "validator를 통과하지 못한 실패 응답이라 실행 명확성 점수는 N/A다.",
+        "contentFidelityAndCoverage": "유효한 게이트 응답이 아니어서 콘텐츠 충실도 점수는 N/A다.",
+        "portabilityAndNaturalArtifact": "실패 응답의 계약이 무효라 목적지 이식성 점수는 N/A다.",
+        "cognitiveLoad": "무효 실행의 빈 구조를 품질 비교에 쓰지 않으므로 인지 부하 점수는 N/A다.",
+        "copySpecificity": "평가할 유효 제안 문구가 없어 카피 점수는 N/A다.",
+        "sourceAndSafetySeparation": "지역 적용성 판단 내용과 별개로 sourceAssessment 계약이 무효여서 N/A다."
+      },
+      "qualityAverage": null,
+      "sourceRowAccounting": {
+        "executableRows": 0,
+        "mappedUniqueRows": 0,
+        "approvedOmittedRows": 0,
+        "accountedSourceRowRate": 1
+      },
+      "correction": {
+        "reviewSeconds": null,
+        "reviewTimeEvidenceKind": "not_available",
+        "originalItemCount": 0,
+        "keptOriginalItems": 0,
+        "itemKeepRate": null,
+        "deletedItems": 0,
+        "mergedItems": 0,
+        "splitItems": 0,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
+        "sourceRefFixes": 0,
+        "omissionFixes": 0,
+        "scheduleRemovals": 0,
+        "destinationChanges": 0,
+        "riskBoundaryFixes": 0,
+        "fullRegenerationRequired": true,
+        "burden": null
+      },
+      "contentQualityGatePassed": null,
+      "negativeGatePassed": false,
+      "fullUsabilityVerified": false,
+      "decision": "invalid_run",
+      "topFixes": [
+        "sourceAssessment를 현재 shape와 허용 enum으로 다시 생성한 뒤 음성 게이트를 재검증한다."
+      ],
+      "correctedPreview": {
+        "title": null,
+        "items": [],
+        "destinations": [],
+        "reviewNote": null
+      }
+    }
+  ]
+}

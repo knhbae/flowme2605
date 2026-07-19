@@ -1,0 +1,4 @@
+interface:
+  display_name: "FLOW Work Closeout"
+  short_description: "Verify scope and publish state before closing work"
+  default_prompt: "Use $flow-work-closeout to verify and report the current FlowMe work before closing or publishing."

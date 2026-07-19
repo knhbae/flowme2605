@@ -4,6 +4,12 @@ This cycle mirrors the referenced harness guide while staying AI-agnostic.
 
 ## 1. Status
 
+Start with the read-only repo report:
+
+```powershell
+npm run workflow:session-start
+```
+
 Read:
 
 ```powershell
@@ -12,8 +18,10 @@ Get-Content -Raw agent.md
 Get-Content -Raw docs/STATUS.md
 Get-Content -Raw docs/ROADMAP.md
 Get-Content -Raw docs/IDEAS.md
+Get-Content -Raw docs/TOOLING.md
 Get-Content -Raw docs/specs/README.md
 git status --short --branch
+node --version
 ```
 
 Confirm current focus, branch, dirty files, and required verification.
@@ -26,10 +34,13 @@ For new work, define:
 - Files likely to change
 - Product constraints from `agent.md`
 - Verification commands
+- Runtime, dependency, data-access, and external-tool prerequisites
 - Out-of-scope items
 - Deferred ideas from `docs/IDEAS.md` that should influence or stay out of scope
 
 Keep detailed specs in `docs/specs/` or a tracker issue. Keep `docs/ROADMAP.md` short.
+
+When ambiguity could materially change the outcome, scope, risk, or success evidence, use the [Request Interview workflow](../workflows/request-interview.md) before fixing the scope. Inspect repo evidence first and ask only 1-3 high-information questions; skip the interview for clear or low-risk work.
 
 If a useful idea appears during implementation but is not part of the current scope, append it to `docs/IDEAS.md` instead of expanding the task.
 
@@ -80,6 +91,8 @@ Use [QA.md](./QA.md). Do not move to PR/release until required checks pass or sk
 
 ## 7. PR / Review
 
+Run `npm run workflow:closeout` and inspect the scoped diff before choosing verification and commit boundaries.
+
 Before opening a PR, create or update a PR history entry under `docs/pr-history/` using the naming pattern:
 
 ```text
@@ -104,16 +117,20 @@ After the PR is opened, update the PR history entry with the PR URL/number. If t
 On release:
 
 1. Confirm clean working tree except intended release changes.
-2. Confirm tests/build/required browser checks.
-3. Tag the release.
-4. Update `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/HISTORY.md`.
-5. Record user-facing changes and verification evidence.
+2. Confirm the active and configured Node.js version is supported by CI and the deployment target.
+3. Run `npm run security:audit` and disclose any remaining moderate or higher finding.
+4. Confirm tests, build, required browser checks, and downloadable CI failure evidence.
+5. Keep automated QA, preview smoke, and observed-user evidence as separate claims.
+6. Tag the release.
+7. Update `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/HISTORY.md`.
+8. Record user-facing changes, verification evidence, known risks, and rollback conditions.
 
 ## 9. Deploy
 
 Before deployment:
 
 - Confirm target environment and branch.
+- Confirm the deployment runtime matches `package.json` and is not EOL.
 - Run production build.
 - Deploy.
 - Smoke test the deployed URL.

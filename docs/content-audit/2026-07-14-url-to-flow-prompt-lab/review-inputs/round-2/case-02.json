@@ -1,0 +1,197 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-2",
+  "caseId": "case-02",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-02",
+    "requestId": "prompt-lab-v1-case-02",
+    "targetLocale": "ko-KR",
+    "userJob": "공식 주기에 맞춰 에어컨 필터 청소를 반복하고 완료 여부를 남긴다.",
+    "maxItems": 7,
+    "claimedScope": "제공된 1개 SourceRow 범위만 변환한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-samsung-aircon-filter",
+        "title": "삼성전자서비스 에어컨 필터 청소 안내",
+        "sourceType": "official",
+        "originalUrl": "https://www.samsungsvc.co.kr/solution/121273",
+        "canonicalUrl": "https://www.samsungsvc.co.kr/solution/121273",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": "삼성전자서비스",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "allowed",
+        "riskLevel": "low",
+        "accessStatus": "fetched"
+      },
+      "supporting": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-aircon-filter-4week",
+        "sourceId": "source-samsung-aircon-filter",
+        "rowType": "procedure",
+        "title": "극세 필터 4주에 한 번 청소",
+        "detail": "먼지 제거, 물세척, 그늘 건조",
+        "order": 0
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-02-fixed-routine:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-02",
+    "fixtureId": "gf-pos-02-fixed-routine",
+    "fixtureKind": "positive",
+    "fixtureShape": "fixed_routine",
+    "name": "에어컨 필터 4주 청소",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "공식 주기에 맞춰 에어컨 필터 청소를 반복하고 완료 여부를 남긴다.",
+      "planningPattern": "repeating_routine",
+      "primaryArtifact": "calendar",
+      "riskLevel": "low"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-aircon-filter-clean",
+        "title": "에어컨 극세 필터 청소하기",
+        "intent": "act",
+        "sourceRowIds": [
+          "row-aircon-filter-4week"
+        ],
+        "completionMode": "check",
+        "doneWhen": "필터를 청소하고 충분히 건조해 다시 장착했다.",
+        "hasSchedule": true,
+        "canonicalSchedule": {
+          "mode": "absolute",
+          "start": "2026-07-14",
+          "allDay": true,
+          "recurrence": {
+            "frequency": "weekly",
+            "interval": 4,
+            "sourceDefined": true
+          }
+        }
+      }
+    ],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [
+      "row-aircon-filter-4week"
+    ],
+    "expectedProjections": [
+      "calendar:ics",
+      "checklist:plain_text",
+      "memo:markdown"
+    ],
+    "forbiddenProjections": [
+      "sheet:csv",
+      "todo:markdown"
+    ],
+    "referenceReview": {
+      "readiness": "ready_for_internal_canary",
+      "hardFails": [],
+      "rightsDecision": "공식 주기와 짧은 방법 요약, 원문 링크만 사용한다.",
+      "riskDecision": "사용자 기기 모델이 다르면 공식 모델 안내를 다시 확인한다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.2",
+    "requestId": "prompt-lab-v1-case-02",
+    "caseId": "case-02",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "repeating_routine",
+      "primarySourceId": "source-samsung-aircon-filter",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-aircon-filter-4week"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "극세 필터를 4주에 한 번 청소하고 완료 여부를 남긴다.",
+      "lifeArea": "home_living",
+      "planningPattern": "repeating_routine",
+      "primaryArtifact": "hybrid",
+      "contentShape": "반복 주기가 있는 청소 체크 항목"
+    },
+    "proposal": {
+      "proposalTitle": "에어컨 극세 필터 청소",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "극세 필터 청소하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-aircon-filter-4week"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "극세 필터 청소를 마친 상태"
+          },
+          "memoCandidate": "먼지 제거, 물세척, 그늘 건조",
+          "groupingCandidate": null,
+          "scheduleCandidate": {
+            "sourceRowIds": [
+              "row-aircon-filter-4week"
+            ],
+            "sourceText": "4주에 한 번",
+            "parsedByRule": false
+          }
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "calendar",
+        "applicability": "applicable",
+        "reason": "SourceRow의 반복 표현을 파싱하지 않은 일정 후보로 유지한다."
+      },
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "청소 완료 여부를 확인 가능한 한 항목으로 유지한다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "반복 표현은 파싱되지 않은 원문 후보이다."
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "반복 일정 적용 전 주기 해석을 검토해야 한다."
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

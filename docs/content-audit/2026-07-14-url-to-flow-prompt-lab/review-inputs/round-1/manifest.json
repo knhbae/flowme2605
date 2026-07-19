@@ -1,0 +1,88 @@
+{
+  "reviewInputSetVersion": "flowme-url-to-flow-blind-review-inputs-v1",
+  "round": "round-1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "generator": "scripts/content-audit/build-url-to-flow-blind-review-inputs.mjs",
+  "disclosure": "Each case file contains one source packet, its hidden review expectation, and one raw proposal. Run-level model, timing, usage, and cost evidence is excluded. Validator results are not embedded in run logs, so reviewer status starts as null.",
+  "caseCount": 12,
+  "cases": [
+    {
+      "caseId": "case-01",
+      "file": "case-01.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-02",
+      "file": "case-02.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-03",
+      "file": "case-03.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-04",
+      "file": "case-04.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-05",
+      "file": "case-05.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-06",
+      "file": "case-06.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-07",
+      "file": "case-07.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-08",
+      "file": "case-08.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-09",
+      "file": "case-09.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-10",
+      "file": "case-10.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-11",
+      "file": "case-11.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    },
+    {
+      "caseId": "case-12",
+      "file": "case-12.json",
+      "promptVersion": "url-to-flow-prompt-v0.1",
+      "validatorPassed": null
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "evidence_grade": "automated_simulated",
+  "run_date": "2026-07-14",
+  "target": "local npm run dev (Next.js 15.5.20, port 3000)",
+  "preview_accessible": false,
+  "preview_block_reason": "Vercel deployment protection redirected to accounts.vercel.com login; login is a prohibited automated action",
+  "app_source_matches_baseline_commit": true,
+  "baseline_commit": "c14c262",
+  "dependency_versions_differ_from_baseline": true,
+  "personas": [
+    {
+      "id": "persona-1-anchor-backcalc-moving",
+      "label": "기준일 역산형 (이사)",
+      "sessions": [
+        {
+          "session": 1,
+          "focus": "발견→저장→착지",
+          "result": "supported",
+          "notes": "'이사일' anchor label 정확, D-30 계산 정확, My Flow/Calendar 착지 확인"
+        },
+        {
+          "session": 2,
+          "focus": "일정·구조 수정 → 완료·재개 → export",
+          "result": "partial",
+          "notes": "전체목록/Calendar/ICS는 override 정확반영(supported), My Flow 요약 위젯은 무시(B4 blocking-severity bug)"
+        },
+        {
+          "session": 3,
+          "focus": "재방문 → 과거 run → 회고 → 다시쓰기",
+          "result": "partial",
+          "notes": "reload persistence/회고/히스토리는 supported, '다시쓰기'의 override 유지 옵션은 동작 안 함(B5)"
+        }
+      ]
+    },
+    {
+      "id": "persona-2-dateless-checklist",
+      "label": "날짜 없는 체크리스트형 (신차 구매)",
+      "sessions": [
+        {
+          "session": 1,
+          "focus": "저장 → 날짜 없음 발견",
+          "result": "supported",
+          "notes": "저장 직후 /my가 빈 상태로 보였다가 reload 후 정상화된 간헐적 사례 1회 (H2)"
+        },
+        {
+          "session": 2,
+          "focus": "날짜 지정/변경/제거 → 완료/취소 → export",
+          "result": "partial",
+          "notes": "완료/Calendar/ICS 제외/memo export 유지는 전부 supported, My Flow 위젯은 날짜 없음으로 고정 표시(B4 재현)"
+        },
+        {
+          "session": 3,
+          "focus": "reload persistence, source-backed 구조 잠금",
+          "result": "supported",
+          "notes": "source-backed Flow에 add/delete/reorder 컨트롤 없음 실측 확인(M2: 안내 문구 없음)"
+        }
+      ]
+    },
+    {
+      "id": "persona-3-recurring-routine",
+      "label": "반복 루틴형 (홈트)",
+      "sessions": [
+        {
+          "session": 1,
+          "focus": "draft 생성, 날짜/요일 지정, 반복 설정",
+          "result": "supported",
+          "notes": "저장 시점 회차 그리드 미리보기가 4주 12회차를 정확하게 보여줌"
+        },
+        {
+          "session": 2,
+          "focus": "occurrence 완료/재개, skip, hold, series vs 단일 완료",
+          "result": "blocked",
+          "notes": "B2: 저장 후 오직 1회차만 My Flow/Calendar/ICS에 나타나 2/3회차 skip/hold 자체를 테스트할 수 없었음"
+        },
+        {
+          "session": 3,
+          "focus": "reload 후 occurrence 상태 유지, 반복 규칙 수정 시 과거 기록 보존",
+          "result": "partial",
+          "notes": "1회차의 완료 상태는 reload 후에도 유지되었으나 B2가 근본 원인이라 회차 자체가 없음"
+        }
+      ]
+    },
+    {
+      "id": "persona-4-personal-draft-restructure",
+      "label": "개인 초안·구조 편집형 (URL/메모 miss)",
+      "sessions": [
+        {
+          "session": 1,
+          "focus": "/flows miss 진입, 규칙 기반 분할, 초안 저장",
+          "result": "partial",
+          "notes": "저장은 되지만 B3: type:todo 항목 2/3개가 My Flow/export에서 완전히 비가시"
+        },
+        {
+          "session": 2,
+          "focus": "항목 추가/수정/삭제/undo/순서변경/완료",
+          "result": "supported",
+          "notes": "사용자가 직접 추가한 항목은 추가/삭제/undo/순서변경 모두 즉시 정상 동작"
+        },
+        {
+          "session": 3,
+          "focus": "reload persistence, 영구 복구",
+          "result": "supported",
+          "notes": "삭제 후 reload해도 '복구' 옵션이 유지됨, 클릭 시 정상 복구"
+        }
+      ]
+    },
+    {
+      "id": "persona-5-public-share-record-reuse",
+      "label": "공개 공유·기록·재사용형",
+      "sessions": [
+        {
+          "session": 1,
+          "focus": "/f/[slug] 진입, 저장 전 checkbox=preview 이해, Flow 단위 저장 1차 액션",
+          "result": "supported",
+          "notes": "'저장 전 미리보기' 라벨 명확, 상단/하단 두 곳에 '내 Flow에 저장' 주 CTA"
+        },
+        {
+          "session": 2,
+          "focus": "저장 후 실제 완료 checkbox, 열기/수정/완료 역할 분리",
+          "result": "supported",
+          "notes": "checkbox accessible name '완료 체크', 열기 버튼과 수정 버튼이 명확히 분리됨"
+        },
+        {
+          "session": 3,
+          "focus": "완료 run 회고·export, 새 run으로 다시쓰기, source 업데이트 기대 gap",
+          "result": "partial",
+          "notes": "회고/다시쓰기는 Persona 1에서 상세 검증됨(같은 코드 경로); source 업데이트 UI는 이번 세션에서 노출되지 않음(미검증)"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "supported": 8,
+    "hidden": 0,
+    "partial": 6,
+    "missing": 0,
+    "blocked": 1,
+    "not_tested": 0
+  },
+  "counts_note": "15개 persona×session 셀 기준. hidden/missing은 이번 실행에서 0건이었으나, 이는 기능 부재가 아니라 partial/blocked로 분류된 버그(B2–B5)가 대신 발견된 것이다."
+}

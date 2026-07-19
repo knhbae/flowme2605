@@ -1,0 +1,1071 @@
+{
+  "meta": {
+    "title": "FlowMe 콘텐츠·제작자·플랫폼·Vertical 생태계 전략 근거 원장",
+    "asOf": "2026-07-13",
+    "scope": "글로벌·한국, 콘텐츠/배포·제작자 수익·생산성·자동화/AI·Vertical",
+    "selectionFunnel": {
+      "longlist": 58,
+      "quantifiedComparison": 25,
+      "deepDiveClusters": 15,
+      "officialScreensUsed": 16
+    },
+    "evidenceLevels": {
+      "A": "회사 공시·IR·연차보고서 또는 회사가 직접 발표한 경영 수치",
+      "B": "공식 제품·도움말·가격·뉴스룸 자료",
+      "C": "공식 앱스토어 제품 화면·설명",
+      "D": "전략적 추론 또는 FlowMe 내부 집계. 외부 시장의 확인된 사실과 분리",
+      "ND": "공식 자료에서 확인하지 못했거나 서로 다른 기준이라 비교 제외"
+    },
+    "comparisonCaution": "MAU, 가입자, 일간 이용자, 유료 구독자, 매출, GMV, 제작자 지급액은 서로 다른 지표다. 본 원장은 같은 막대에서 합산하거나 순위를 매기지 않는다.",
+    "flowmeMeasurementStatus": "FlowMe의 반복 사용률, 제작자 전환율, 유료 전환율, 제휴 매출은 미측정이다. 모든 매출 계산은 가설 시나리오다."
+  },
+  "executiveConclusion": {
+    "position": "FlowMe는 콘텐츠 플랫폼과 생산성 도구 사이에 붙어, 출처가 있는 콘텐츠를 재사용 가능한 실행 Flow로 바꾸고 제작자 귀속과 사용자의 실행 이력을 함께 소유한다.",
+    "entryMarket": "초기 진입은 특정 Vertical 앱을 만드는 것이 아니라, 제작자가 이미 공급하는 '날짜·순서·완료 기준이 있는 학습·커리어 및 여행·생활 이벤트 콘텐츠'에서 시작한다.",
+    "partnerOrder": "P0 유통 채널(YouTube·NAVER·Brunchstory)과 Export 목적지(Calendar·Todo·Note), P1 제작자 운영/자동화, P2 직접 API와 유료 Flow 거래 순서다.",
+    "revenueOrder": "P0 외부 상품·예약·제휴 전환 추적 → P1 제작자 운영 구독 → P2 권리·환불·정산이 검증된 뒤 유료 Flow 거래 수수료다.",
+    "doNotCompete": "콘텐츠 호스팅, 범용 캘린더·할 일·노트 편집기, 전문 Vertical의 데이터 수집, 범용 AI 채팅과 정면 경쟁하지 않는다."
+  },
+  "currentFlowMe": {
+    "checkedAt": "2026-07-12T15:07:07.840Z",
+    "commandBasis": "현재 저장소 source-backed registry와 lifecycle 집계 명령의 실제 출력",
+    "metrics": [
+      { "label": "콘텐츠 번들", "value": 153, "unit": "개", "evidence": "D" },
+      { "label": "keep", "value": 44, "unit": "개", "evidence": "D" },
+      { "label": "fix", "value": 105, "unit": "개", "evidence": "D" },
+      { "label": "preview_only", "value": 2, "unit": "개", "evidence": "D" },
+      { "label": "hide", "value": 2, "unit": "개", "evidence": "D" },
+      { "label": "source-backed map", "value": 26, "unit": "개", "evidence": "D" },
+      { "label": "public catalog map", "value": 7, "unit": "개", "evidence": "D" },
+      { "label": "Home map", "value": 2, "unit": "개", "evidence": "D" },
+      { "label": "URL lookup map", "value": 10, "unit": "개", "evidence": "D" },
+      { "label": "제작자 결제·정산·계정 분석", "value": 0, "unit": "구현 확인", "evidence": "D" }
+    ],
+    "readinessGap": "현재 재고는 URL-first와 Export 계약을 검증할 수 있지만, 제작자 공급·귀속·성과 분석·수익 배분 운영은 아직 제품 증거가 없다.",
+    "localSources": [
+      "../PRODUCT_PRINCIPLES.md",
+      "../IDEAS.md",
+      "../DECISIONS.md",
+      "2026-07-12-flowme-ai-era-platform-strategy-ceo-ko.html",
+      "2026-07-12-flowme-user-creator-value-chain-ceo-ko.html",
+      "2026-07-11-flowme-service-platform-strategy-ceo-v2-ko.html",
+      "2026-07-05-flowme-export-pack-v1-strategy-ceo-ko.html",
+      "2026-07-05-flowme-source-version-trust-ledger-ceo-ko.html"
+    ]
+  },
+  "longlist": [
+    { "id": "L01", "name": "YouTube", "group": "content_distribution", "region": "global" },
+    { "id": "L02", "name": "TikTok", "group": "content_distribution", "region": "global" },
+    { "id": "L03", "name": "Instagram", "group": "content_distribution", "region": "global" },
+    { "id": "L04", "name": "NAVER Blog", "group": "content_distribution", "region": "korea" },
+    { "id": "L05", "name": "NAVER Cafe", "group": "content_distribution", "region": "korea" },
+    { "id": "L06", "name": "Brunchstory", "group": "content_distribution", "region": "korea" },
+    { "id": "L07", "name": "Substack", "group": "content_distribution", "region": "global" },
+    { "id": "L08", "name": "Pinterest", "group": "content_distribution", "region": "global" },
+    { "id": "L09", "name": "Reddit", "group": "content_distribution", "region": "global" },
+    { "id": "L10", "name": "Spotify Podcasts", "group": "content_distribution", "region": "global" },
+    { "id": "L11", "name": "Threads", "group": "content_distribution", "region": "global" },
+    { "id": "L12", "name": "LinkedIn", "group": "content_distribution", "region": "global" },
+    { "id": "L13", "name": "Patreon", "group": "creator_monetization", "region": "global" },
+    { "id": "L14", "name": "Gumroad", "group": "creator_monetization", "region": "global" },
+    { "id": "L15", "name": "Teachable", "group": "creator_monetization", "region": "global" },
+    { "id": "L16", "name": "Kajabi", "group": "creator_monetization", "region": "global" },
+    { "id": "L17", "name": "Udemy", "group": "creator_monetization", "region": "global" },
+    { "id": "L18", "name": "Coursera", "group": "creator_monetization", "region": "global" },
+    { "id": "L19", "name": "CLASS101", "group": "creator_monetization", "region": "korea" },
+    { "id": "L20", "name": "Notion Marketplace", "group": "creator_monetization", "region": "global" },
+    { "id": "L21", "name": "Shopify", "group": "creator_monetization", "region": "global" },
+    { "id": "L22", "name": "Stan Store", "group": "creator_monetization", "region": "global" },
+    { "id": "L23", "name": "Thinkific", "group": "creator_monetization", "region": "global" },
+    { "id": "L24", "name": "Hotmart", "group": "creator_monetization", "region": "global" },
+    { "id": "L25", "name": "Google Calendar", "group": "productivity", "region": "global" },
+    { "id": "L26", "name": "Outlook Calendar", "group": "productivity", "region": "global" },
+    { "id": "L27", "name": "Samsung Calendar", "group": "productivity", "region": "global_korea" },
+    { "id": "L28", "name": "Apple Calendar", "group": "productivity", "region": "global" },
+    { "id": "L29", "name": "Todoist", "group": "productivity", "region": "global" },
+    { "id": "L30", "name": "TickTick", "group": "productivity", "region": "global" },
+    { "id": "L31", "name": "Microsoft To Do", "group": "productivity", "region": "global" },
+    { "id": "L32", "name": "Notion", "group": "productivity", "region": "global" },
+    { "id": "L33", "name": "Obsidian", "group": "productivity", "region": "global" },
+    { "id": "L34", "name": "Google Sheets", "group": "productivity", "region": "global" },
+    { "id": "L35", "name": "Motion", "group": "productivity", "region": "global" },
+    { "id": "L36", "name": "Reclaim", "group": "productivity", "region": "global" },
+    { "id": "L37", "name": "Sunsama", "group": "productivity", "region": "global" },
+    { "id": "L38", "name": "Asana", "group": "productivity", "region": "global" },
+    { "id": "L39", "name": "Zapier", "group": "automation_ai", "region": "global" },
+    { "id": "L40", "name": "Make", "group": "automation_ai", "region": "global" },
+    { "id": "L41", "name": "IFTTT", "group": "automation_ai", "region": "global" },
+    { "id": "L42", "name": "n8n", "group": "automation_ai", "region": "global" },
+    { "id": "L43", "name": "ChatGPT", "group": "automation_ai", "region": "global" },
+    { "id": "L44", "name": "Gemini", "group": "automation_ai", "region": "global" },
+    { "id": "L45", "name": "Claude", "group": "automation_ai", "region": "global" },
+    { "id": "L46", "name": "MCP ecosystem", "group": "automation_ai", "region": "global" },
+    { "id": "L47", "name": "Duolingo", "group": "vertical", "vertical": "learning_career", "region": "global" },
+    { "id": "L48", "name": "Strava", "group": "vertical", "vertical": "fitness", "region": "global" },
+    { "id": "L49", "name": "MyFitnessPal", "group": "vertical", "vertical": "health_nutrition", "region": "global" },
+    { "id": "L50", "name": "Samsung Food", "group": "vertical", "vertical": "cooking_meal", "region": "global_korea" },
+    { "id": "L51", "name": "Mealime", "group": "vertical", "vertical": "cooking_meal", "region": "global" },
+    { "id": "L52", "name": "Wanderlog", "group": "vertical", "vertical": "travel", "region": "global" },
+    { "id": "L53", "name": "TripIt", "group": "vertical", "vertical": "travel", "region": "global" },
+    { "id": "L54", "name": "BabyCenter", "group": "vertical", "vertical": "parenting_family", "region": "global" },
+    { "id": "L55", "name": "Flo", "group": "vertical", "vertical": "health", "region": "global" },
+    { "id": "L56", "name": "Ohouse", "group": "vertical", "vertical": "home_life_event", "region": "korea_global" },
+    { "id": "L57", "name": "Rocket Money", "group": "vertical", "vertical": "finance", "region": "global" },
+    { "id": "L58", "name": "LegalZoom", "group": "vertical", "vertical": "legal_life_admin", "region": "global" }
+  ],
+  "scoreMethod": {
+    "type": "전략적 추론 점수",
+    "weights": {
+      "contentToExecutionGap": 25,
+      "artifactFit": 20,
+      "creatorIncentive": 15,
+      "distributionLeverage": 15,
+      "repeatDataPotential": 15,
+      "feasibilityRightsSafety": 10
+    },
+    "formula": "각 축 1~5점을 가중치에 맞게 환산해 100점으로 합산",
+    "warning": "시장 규모 점수가 아니다. 역할·권리·연결 방식 판정을 위한 FlowMe 적합도다."
+  },
+  "comparisonSet": [
+    {
+      "rank": 1,
+      "name": "YouTube",
+      "role": "creator_distribution",
+      "priority": "P0",
+      "decision": "제작자 유통 채널·원본 출처로 활용. 직접 동영상 플랫폼 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "2025 연간 매출", "value": 60, "unit": "USD bn+", "basis": "광고+구독", "date": "2025", "sourceId": "S01", "evidence": "A" },
+        { "label": "YPP 채널", "value": 3, "unit": "million+", "basis": "파트너 프로그램 채널", "date": "2024", "sourceId": "S02", "evidence": "B" },
+        { "label": "일일 업로드", "value": 20, "unit": "million videos", "basis": "회사 발표", "date": "2025-Q1", "sourceId": "S03", "evidence": "A" },
+        { "label": "Shorts 일일 조회", "value": 200, "unit": "billion+", "basis": "평균", "date": "2025", "sourceId": "S01", "evidence": "A" }
+      ],
+      "economics": "멤버십 순수익의 70%를 제작자에게 지급. 광고·구독·쇼핑·브랜드 협업이 공존.",
+      "flowGap": "발견·시청·수익화는 강하지만 시청 후 일정·체크·진도 실행은 기본 제품의 핵심이 아니다.",
+      "score": 88,
+      "unknowns": ["FlowMe 대상 카테고리별 URL→실행 전환율", "제작자별 Flow 부착 의향"]
+    },
+    {
+      "rank": 2,
+      "name": "NAVER Blog/Cafe",
+      "role": "creator_distribution",
+      "priority": "P0",
+      "decision": "한국 초기 공급·검색·커뮤니티 채널. URL 출처와 원문 귀속을 유지.",
+      "verifiedMetrics": [
+        { "label": "NAVER 2025 매출", "value": 12.035, "unit": "KRW tn", "basis": "연결 매출, Blog/Cafe 단독 아님", "date": "2025", "sourceId": "S08", "evidence": "A" },
+        { "label": "블로그 주간일기 참가", "value": 1.03, "unit": "million users", "basis": "6개월 캠페인", "date": "2022", "sourceId": "S10", "evidence": "B" },
+        { "label": "활성 창작자 성장", "value": 11, "unit": "% YoY", "basis": "NAVER Blog", "date": "2022", "sourceId": "S10", "evidence": "B" }
+      ],
+      "economics": "검색·광고·커머스·예약 생태계와 연결되지만 Blog/Cafe의 제작자 지급·매출은 별도 공시하지 않음.",
+      "flowGap": "한국 생활·여행·육아·재무 정보가 풍부하나 실행 구조와 최신성·권리 상태가 글마다 다르다.",
+      "score": 80,
+      "unknowns": ["Blog/Cafe 현재 MAU", "콘텐츠 카테고리별 제작자 수익", "크롤링·요약 허용 범위"]
+    },
+    {
+      "rank": 3,
+      "name": "Substack",
+      "role": "creator_distribution_commerce",
+      "priority": "P0",
+      "decision": "유료 뉴스레터·전문가 콘텐츠의 Flow 부가상품/리드 전환 채널로 활용.",
+      "verifiedMetrics": [
+        { "label": "거래 수수료", "value": 10, "unit": "%", "basis": "Substack 플랫폼 수수료, 결제비 별도", "date": "2025-12", "sourceId": "S12", "evidence": "B" }
+      ],
+      "economics": "유료 구독 매출의 10%와 Stripe 비용. 발행·구독·매출·유입·열람 분석 제공.",
+      "flowGap": "전문가 글과 구독 관계는 강하지만 독자의 실제 실행·완료 데이터는 약하다.",
+      "score": 80,
+      "unknowns": ["현재 총 가입자·유료 구독자 공식 수치", "외부 실행 링크의 전환 기준"]
+    },
+    {
+      "rank": 4,
+      "name": "Patreon",
+      "role": "creator_distribution_commerce",
+      "priority": "P0",
+      "decision": "멤버십 보상·유료 콘텐츠 옆 실행 Flow를 연결. 결제는 Patreon에 남긴다.",
+      "verifiedMetrics": [
+        { "label": "월 결제 팬", "value": 10, "unit": "million+", "basis": "회사 About", "date": "2026 확인", "sourceId": "S14", "evidence": "B" },
+        { "label": "제작자", "value": 300, "unit": "thousand+", "basis": "회사 About", "date": "2026 확인", "sourceId": "S14", "evidence": "B" },
+        { "label": "누적 제작자 수익", "value": 10, "unit": "USD bn+", "basis": "2013년 이후", "date": "2026 확인", "sourceId": "S14", "evidence": "B" },
+        { "label": "플랫폼 수수료", "value": 10, "unit": "%", "basis": "신규 표준 요금", "date": "2026-06", "sourceId": "S15", "evidence": "B" }
+      ],
+      "economics": "멤버십·일회성 판매·커뮤니티·분석을 제공하고 신규 표준 플랜은 10% 수수료.",
+      "flowGap": "팬 관계와 결제는 강하지만 창작자의 원본을 휴대 가능한 일정·체크·진도로 변환하는 계층은 약하다.",
+      "score": 80,
+      "unknowns": ["Flow 부착 시 유지율 변화", "Patreon 외부 링크 정책별 노출 효과"]
+    },
+    {
+      "rank": 5,
+      "name": "Brunchstory",
+      "role": "creator_distribution",
+      "priority": "P0",
+      "decision": "한국 전문가·작가의 원본 글을 Flow로 재활용하는 공급 채널. 원문 복제보다 귀속·제안 연결 중심.",
+      "verifiedMetrics": [
+        { "label": "작가", "value": 95, "unit": "thousand", "basis": "10주년", "date": "2025-09", "sourceId": "S11", "evidence": "B" },
+        { "label": "누적 게시글", "value": 8, "unit": "million", "basis": "10주년", "date": "2025-09", "sourceId": "S11", "evidence": "B" },
+        { "label": "원작 도서", "value": 10, "unit": "thousand+", "basis": "누적", "date": "2025-09", "sourceId": "S11", "evidence": "B" }
+      ],
+      "economics": "출간·강연·협업 제안과 멤버십이 있으나 제작자 수익 총액은 공식 미공개.",
+      "flowGap": "긴 글의 신뢰·맥락은 강하지만 독자의 다음 행동과 완료 피드백은 분리되어 있다.",
+      "score": 77,
+      "unknowns": ["멤버십 제작자·유료 독자 수", "작가가 Flow를 직접 발행할 의향"]
+    },
+    {
+      "rank": 6,
+      "name": "Teachable",
+      "role": "creator_operations_benchmark",
+      "priority": "P1",
+      "decision": "제작자 운영·진도·분석 벤치마크. P0에서 LMS를 만들지 않는다.",
+      "verifiedMetrics": [
+        { "label": "2024 학습자", "value": 12, "unit": "million nearly", "basis": "195개국, 연간", "date": "2024", "sourceId": "S22", "evidence": "B" },
+        { "label": "연간 결제 요금", "value": 29, "unit": "USD/month from", "basis": "Starter", "date": "2026 확인", "sourceId": "S23", "evidence": "B" },
+        { "label": "Starter 거래 수수료", "value": 7.5, "unit": "%", "basis": "Builder 이상 0%, 결제비 별도", "date": "2026 확인", "sourceId": "S23", "evidence": "B" }
+      ],
+      "economics": "구독형 SaaS+일부 플랜 거래 수수료. 강의·코칭·다운로드·멤버십·진도·수료·제휴 기능.",
+      "flowGap": "자체 강의 안의 진도는 강하지만 외부 원본 콘텐츠를 여러 실행 도구로 변환하는 범용 계층은 아니다.",
+      "score": 77,
+      "unknowns": ["Teachable 단독 현재 활성 제작자", "FlowMe식 외부 export 수요"]
+    },
+    {
+      "rank": 7,
+      "name": "CLASS101",
+      "role": "creator_marketplace_benchmark",
+      "priority": "P1",
+      "decision": "한국 학습·취미 제작자 공급과 구독 정산의 벤치마크. 콘텐츠 권리는 개별 협의.",
+      "verifiedMetrics": [
+        { "label": "구독 정산 풀", "value": 50, "unit": "%", "basis": "구독료×서비스 지급 풀 비율", "date": "2025-09 정책", "sourceId": "S31", "evidence": "B" }
+      ],
+      "economics": "구독 수익 풀을 수강 기여에 따라 배분. 사용자·매출·제작자 수 공식 최신 수치는 미확인.",
+      "flowGap": "콘텐츠·구독·학습은 결합되어 있으나 사용자가 자신의 캘린더·노트·체크리스트로 가져가는 계층은 약하다.",
+      "score": 77,
+      "unknowns": ["현재 구독자·크리에이터·매출", "외부 Flow 배포·제휴 정책"]
+    },
+    {
+      "rank": 8,
+      "name": "TikTok",
+      "role": "creator_distribution",
+      "priority": "P0",
+      "decision": "짧은 발견 콘텐츠의 출처·유입 채널. 초기 직접 API보다 공유 URL과 제작자 CTA 검증.",
+      "verifiedMetrics": [
+        { "label": "유럽 월 이용자", "value": 200, "unit": "million+", "basis": "EU/EEA 30개국", "date": "2025-H2", "sourceId": "S07", "evidence": "B" }
+      ],
+      "economics": "광고·쇼핑·크리에이터 프로그램이 있으나 글로벌 사용자·매출·지급액 공식 비교 가능 수치는 미공개.",
+      "flowGap": "발견 속도는 강하지만 짧은 영상의 조건·주의·순서를 실행물로 보존하기 어렵다.",
+      "score": 76,
+      "unknowns": ["글로벌 MAU 공식 수치", "FlowMe 대상 URL 공유·전환율"]
+    },
+    {
+      "rank": 9,
+      "name": "Instagram",
+      "role": "creator_distribution",
+      "priority": "P0",
+      "decision": "Reels·게시물의 유입 채널. 저장 기능을 대체하지 말고 실행 CTA와 출처 귀속만 제공.",
+      "verifiedMetrics": [
+        { "label": "월 이용자", "value": 3, "unit": "billion", "basis": "Instagram 커뮤니티", "date": "2025-09", "sourceId": "S05", "evidence": "B" },
+        { "label": "Reels 일일 재공유", "value": 4.5, "unit": "billion+", "basis": "Meta 플랫폼 전체", "date": "2025-09", "sourceId": "S05", "evidence": "B" }
+      ],
+      "economics": "광고·브랜드 협업·쇼핑. Instagram 단독 매출·제작자 지급액은 공식 분리 공시하지 않음.",
+      "flowGap": "저장·공유 이후 계획화가 약하고 원문이 짧아 AI 변환 시 맥락 손실 위험이 크다.",
+      "score": 76,
+      "unknowns": ["Instagram 단독 제작자 수익", "외부 링크 노출·전환의 계정별 차이"]
+    },
+    {
+      "rank": 10,
+      "name": "Udemy",
+      "role": "learning_marketplace_benchmark",
+      "priority": "P1",
+      "decision": "학습 제작자 규모·진도 데이터의 벤치마크. 강의 플랫폼을 복제하지 않는다.",
+      "verifiedMetrics": [
+        { "label": "매출", "value": 789.8, "unit": "USD m", "basis": "연간", "date": "2025", "sourceId": "S27", "evidence": "A" },
+        { "label": "강사", "value": 91, "unit": "thousand+", "basis": "연말", "date": "2025", "sourceId": "S28", "evidence": "A" },
+        { "label": "학습자", "value": 77, "unit": "million", "basis": "등록 학습자", "date": "2024", "sourceId": "S26", "evidence": "A" }
+      ],
+      "economics": "소비자 강의 거래+기업 구독. 2025 구독 매출은 566M달러로 전체의 72%.",
+      "flowGap": "플랫폼 내부 학습 진도는 강하나 제작자가 다른 채널에 올린 원본의 범용 실행 변환은 아니다.",
+      "score": 75,
+      "unknowns": ["합병 후 개별 브랜드 운영 정책", "외부 Flow 링크 허용·제휴 구조"]
+    },
+    {
+      "rank": 11,
+      "name": "Gumroad",
+      "role": "creator_checkout",
+      "priority": "P0",
+      "decision": "Flow에 원본 상품·템플릿·강의 구매 CTA를 연결. 결제·세금은 Gumroad에 남긴다.",
+      "verifiedMetrics": [
+        { "label": "직접 판매 수수료", "value": 10, "unit": "% + USD 0.50", "basis": "결제 처리비 별도", "date": "2026 확인", "sourceId": "S18", "evidence": "B" },
+        { "label": "Discover 수수료", "value": 30, "unit": "%", "basis": "마켓플레이스 발견 거래", "date": "2026 확인", "sourceId": "S18", "evidence": "B" }
+      ],
+      "economics": "월 구독료 없이 거래 수수료. 분석은 조회·구매·전환·매출·유입·해지와 CSV 제공.",
+      "flowGap": "파일 판매와 결제는 단순하지만 구매 후 사용·실행·완료 데이터는 상품 밖으로 흩어진다.",
+      "score": 74,
+      "unknowns": ["현재 GMV·판매자 수", "Flow 부착 상품의 반복 사용 효과"]
+    },
+    {
+      "rank": 12,
+      "name": "Kajabi",
+      "role": "creator_operations_benchmark",
+      "priority": "P1",
+      "decision": "올인원 제작자 SaaS의 기능·가격 상한 벤치마크. FlowMe는 더 좁은 실행·귀속 도구로 시작.",
+      "verifiedMetrics": [
+        { "label": "누적 제작자 수익", "value": 9, "unit": "USD bn", "basis": "Kajabi 고객 누적", "date": "2025", "sourceId": "S20", "evidence": "B" },
+        { "label": "누적 제작자 수익", "value": 6, "unit": "USD bn", "basis": "이전 회사 발표", "date": "2023-10", "sourceId": "S21", "evidence": "B" },
+        { "label": "연간 결제 요금", "value": 71, "unit": "USD/month from", "basis": "Starter", "date": "2026 확인", "sourceId": "S19", "evidence": "B" }
+      ],
+      "economics": "월 구독형, revenue sharing 없음. 코스·코칭·커뮤니티·멤버십·뉴스레터·퍼널 제공.",
+      "flowGap": "제작자 비즈니스 전체를 소유하지만 외부 콘텐츠와 사용자의 기존 실행 도구 사이의 중립 계층은 아니다.",
+      "score": 74,
+      "unknowns": ["현재 활성 제작자·유료 고객 수", "9B달러의 기간·환불 반영 기준"]
+    },
+    {
+      "rank": 13,
+      "name": "Coursera",
+      "role": "learning_platform_benchmark",
+      "priority": "P1",
+      "decision": "대규모 학습 수요·경로·자격의 벤치마크. 콘텐츠 공급 파트너가 아닌 비교 기준.",
+      "verifiedMetrics": [
+        { "label": "매출", "value": 757, "unit": "USD m", "basis": "연간", "date": "2025", "sourceId": "S30", "evidence": "A" },
+        { "label": "등록 학습자", "value": 197, "unit": "million", "basis": "연말", "date": "2025", "sourceId": "S30", "evidence": "A" },
+        { "label": "유료 기업 고객", "value": 1730, "unit": "organizations", "basis": "연말", "date": "2025", "sourceId": "S30", "evidence": "A" }
+      ],
+      "economics": "소비자 구독·자격·기업/기관 구독. 2026년 Udemy와 결합 완료.",
+      "flowGap": "플랫폼 내 경로와 자격은 강하지만 범용 제작자 원본→개인 실행 변환은 핵심이 아니다.",
+      "score": 72,
+      "unknowns": ["Udemy 결합 후 브랜드·강사 경제 정책", "외부 export 요구"]
+    },
+    {
+      "rank": 14,
+      "name": "Notion Marketplace",
+      "role": "creator_checkout_distribution",
+      "priority": "P0",
+      "decision": "Flow 템플릿·업무 결과물 유통의 가장 가까운 벤치마크. P0는 상호 링크·Markdown export.",
+      "verifiedMetrics": [
+        { "label": "Notion 사용자", "value": 100, "unit": "million+", "basis": "전체 Notion", "date": "2024-08", "sourceId": "S32", "evidence": "B" },
+        { "label": "Marketplace 수수료", "value": 8, "unit": "% + USD 0.40", "basis": "영문 도움말, FX 비용 별도", "date": "2026 확인", "sourceId": "S33", "evidence": "B" },
+        { "label": "판매 대금 보류", "value": 14, "unit": "days", "basis": "환불 대응", "date": "2026 확인", "sourceId": "S33", "evidence": "B" }
+      ],
+      "economics": "템플릿 판매, 쿠폰, 분석, webhooks, 구매·환불 이벤트. 지역별 도움말 수수료 표기가 달라 구현 전 재확인 필요.",
+      "flowGap": "재사용 템플릿은 강하지만 출처 콘텐츠·실제 완료 이력·다중 목적지 변환은 별도 설계가 필요하다.",
+      "score": 72,
+      "unknowns": ["Marketplace 판매자·GMV", "지역별 수수료 정책 차이"]
+    },
+    {
+      "rank": 15,
+      "name": "Notion",
+      "role": "export_destination_adjacent_competitor",
+      "priority": "P0",
+      "decision": "Markdown/복사 목적지. 데이터베이스·문서 편집기 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "사용자", "value": 100, "unit": "million+", "basis": "전체 사용자", "date": "2024-08", "sourceId": "S32", "evidence": "B" }
+      ],
+      "economics": "개인·팀 구독+AI·기업. 템플릿 Marketplace와 에이전트 기능으로 제작·실행 범위를 확대.",
+      "flowGap": "계획을 담는 도구는 강하지만 외부 원본의 신뢰·버전·제작자 귀속과 최소 실행 구조를 자동 보존하지 않는다.",
+      "score": 71,
+      "unknowns": ["FlowMe 사용자 중 Notion export 비율", "API 연결이 복사/Markdown보다 유의미한 시점"]
+    },
+    {
+      "rank": 16,
+      "name": "Ohouse",
+      "role": "vertical_distribution_partner_benchmark",
+      "priority": "P1",
+      "decision": "한국 콘텐츠→커머스→설치/이사 연결의 벤치마크. FlowMe는 생활 이벤트 체크·일정과 귀속에 한정.",
+      "verifiedMetrics": [
+        { "label": "회사 매출 변화", "value": 10, "unit": "x+", "basis": "5년 전 대비, 절대액 미공개", "date": "2025", "sourceId": "S49", "evidence": "B" }
+      ],
+      "economics": "콘텐츠·커뮤니티·커머스·시공·이사·설치. 파트너 정산을 월 2회에서 일 단위로 전환.",
+      "flowGap": "공간 관련 가치사슬은 강하지만 여러 플랫폼의 생활행정·계약·준비 콘텐츠를 중립적으로 실행물로 바꾸지는 않는다.",
+      "score": 69,
+      "unknowns": ["현재 MAU·거래액·제작자 지급", "외부 콘텐츠 제작자 제휴 모델"]
+    },
+    {
+      "rank": 17,
+      "name": "Obsidian",
+      "role": "export_destination",
+      "priority": "P0",
+      "decision": "Markdown 목적지·로컬 소유권 벤치마크. 지식 그래프·플러그인 생태계 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "공식 사용자·매출", "value": null, "unit": "ND", "basis": "비상장·공식 비교 수치 미확인", "date": "2026-07", "sourceId": "S52", "evidence": "ND" }
+      ],
+      "economics": "개인 무료, 상용·Sync·Publish 유료. 로컬 Markdown과 플러그인 생태계 중심.",
+      "flowGap": "사용자 소유 문서는 강하지만 원본 콘텐츠를 실행 계약으로 품질 보증하고 제작자에게 피드백하는 구조는 약하다.",
+      "score": 67,
+      "unknowns": ["활성 사용자", "FlowMe 대상 고객의 Obsidian 이용률"]
+    },
+    {
+      "rank": 18,
+      "name": "Samsung Food",
+      "role": "vertical_benchmark_hold",
+      "priority": "P1",
+      "decision": "레시피 URL→식단→장보기의 완성형 벤치마크. 영양·레시피 Vertical 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "글로벌 사용자", "value": 6, "unit": "million+", "basis": "104개국·8개 언어", "date": "2024-07", "sourceId": "S45", "evidence": "B" },
+        { "label": "공개 레시피", "value": 240, "unit": "thousand+", "basis": "App Store 설명", "date": "2026 확인", "sourceId": "S46", "evidence": "C" }
+      ],
+      "economics": "무료+프리미엄, 레시피 저장·식단·쇼핑리스트·가전·리테일 연결.",
+      "flowGap": "FlowMe가 원하는 변환 루프를 이미 한 Vertical에서 구현했다. 따라서 경쟁보다 계약 패턴을 학습해야 한다.",
+      "score": 65,
+      "unknowns": ["Food+ 유료 구독자·매출", "외부 export/API 범위"]
+    },
+    {
+      "rank": 19,
+      "name": "Google Calendar",
+      "role": "export_destination",
+      "priority": "P0",
+      "decision": ".ics 기본 목적지. P0에서 OAuth·캘린더 앱 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "Calendar 단독 사용자·매출", "value": null, "unit": "ND", "basis": "Google이 단독 지표 미공개", "date": "2026-07", "sourceId": "S34", "evidence": "ND" }
+      ],
+      "economics": "Google Workspace 구독·광고 생태계 안의 실행 도구. Gemini가 일정 추가까지 연결.",
+      "flowGap": "날짜는 잘 실행하지만 출처·조건·버전·제작자 귀속을 일정 객체만으로 충분히 보존하기 어렵다.",
+      "score": 64,
+      "unknowns": ["FlowMe .ics 다운로드→실제 추가율", "사용자별 Calendar 선호"]
+    },
+    {
+      "rank": 20,
+      "name": "ChatGPT / Gemini",
+      "role": "ai_component_expectation_competitor",
+      "priority": "P1",
+      "decision": "콘텐츠 이해·초안·개인화에 활용하되 출처·버전·사용 이력·외부 변환은 FlowMe가 소유.",
+      "verifiedMetrics": [
+        { "label": "ChatGPT 주간 이용자", "value": 900, "unit": "million+", "basis": "회사 발표", "date": "2026-02", "sourceId": "S38", "evidence": "B" },
+        { "label": "Gemini MAU", "value": 750, "unit": "million", "basis": "회사 발표", "date": "2025-Q4", "sourceId": "S01", "evidence": "A" }
+      ],
+      "economics": "소비자·팀·기업 구독과 API. 생성·요약·에이전트 기능이 빠르게 범용화.",
+      "flowGap": "한 번의 계획 생성은 쉬워져도 어떤 원본·버전에서 왔고, 누가 검토했고, 실제로 무엇이 실행됐는지 누적 자산화는 별개다.",
+      "score": 62,
+      "unknowns": ["AI 초안 대비 검토된 Flow 완료율 차이", "모델별 계획 품질·비용"]
+    },
+    {
+      "rank": 21,
+      "name": "TripIt",
+      "role": "vertical_benchmark_hold",
+      "priority": "P1",
+      "decision": "예약 메일→여정의 강한 Vertical. FlowMe는 예약 전 제작자 가이드→준비 Flow와 export에 집중.",
+      "verifiedMetrics": [
+        { "label": "사용자", "value": 22, "unit": "million+", "basis": "20주년", "date": "2026", "sourceId": "S47", "evidence": "B" },
+        { "label": "누적 여정", "value": 215, "unit": "million", "basis": "호스팅한 itinerary", "date": "2026", "sourceId": "S47", "evidence": "B" },
+        { "label": "Pro 연간 가격", "value": 48.99, "unit": "USD", "basis": "미국 App Store", "date": "2026 확인", "sourceId": "S48", "evidence": "C" }
+      ],
+      "economics": "무료+Pro 구독. 예약 메일 파싱, 일정·알림·지도·공유·캘린더 동기화.",
+      "flowGap": "예약 이후는 강하지만 크리에이터의 여행 콘텐츠를 실행 가능한 준비·판단·체크 구조로 귀속시키는 문제는 남는다.",
+      "score": 62,
+      "unknowns": ["콘텐츠 기반 사전 계획 사용률", "TripIt 제휴/API 정책"]
+    },
+    {
+      "rank": 22,
+      "name": "Todoist",
+      "role": "export_destination_adjacent_competitor",
+      "priority": "P0",
+      "decision": "checklist 목적지. 프로젝트·할 일 관리 전체를 다시 만들지 않는다.",
+      "verifiedMetrics": [
+        { "label": "전문가 사용자", "value": 50, "unit": "million+", "basis": "공식 홈페이지 주장", "date": "2026 확인", "sourceId": "S35", "evidence": "B" }
+      ],
+      "economics": "개인·팀 구독. 템플릿·자연어 일정·통합 제공.",
+      "flowGap": "할 일 실행은 강하지만 콘텐츠 원본의 신뢰·버전·제작자 귀속은 기본 객체가 아니다.",
+      "score": 62,
+      "unknowns": ["FlowMe checklist 복사→활성 프로젝트 전환", "API 연결의 추가 가치"]
+    },
+    {
+      "rank": 23,
+      "name": "Duolingo",
+      "role": "vertical_benchmark_hold",
+      "priority": "P1",
+      "decision": "반복 학습·습관 데이터의 최고 벤치마크. 언어·교육 Vertical 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "DAU", "value": 52.7, "unit": "million", "basis": "분기 말 지표", "date": "2025-Q4", "sourceId": "S41", "evidence": "A" },
+        { "label": "MAU", "value": 133.1, "unit": "million", "basis": "분기 말 지표", "date": "2025-Q4", "sourceId": "S41", "evidence": "A" },
+        { "label": "유료 구독자", "value": 12.2, "unit": "million", "basis": "분기 말", "date": "2025-Q4", "sourceId": "S41", "evidence": "A" },
+        { "label": "연간 bookings", "value": 1, "unit": "USD bn+", "basis": "연간", "date": "2025", "sourceId": "S42", "evidence": "A" }
+      ],
+      "economics": "광고+소비자 구독. 짧은 학습 단위·연속 실행·개인화·AI 콘텐츠 생산을 결합.",
+      "flowGap": "한 Vertical 안에서는 FlowMe보다 실행·반복 데이터가 깊다. FlowMe의 기회는 여러 제작자 원본을 동일 계약으로 이동시키는 수평 계층이다.",
+      "score": 57,
+      "unknowns": ["외부 제작자 콘텐츠를 Duolingo식 실행 단위로 가져올 수 있는 권리", "학습 외 카테고리 전이 가능성"]
+    },
+    {
+      "rank": 24,
+      "name": "Zapier",
+      "role": "automation_connector",
+      "priority": "P2",
+      "decision": "검증된 Flow export·webhook 수요가 생긴 뒤 연결. P0 자동화 플랫폼 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "연결 앱", "value": 9, "unit": "thousand+", "basis": "공식 도움말·Press", "date": "2026-07", "sourceId": "S36", "evidence": "B" },
+        { "label": "사용 기업", "value": 3.4, "unit": "million+", "basis": "공식 Press", "date": "2026 확인", "sourceId": "S37", "evidence": "B" }
+      ],
+      "economics": "작업·에이전트·테이블·인터페이스 구독. 연결 앱·파트너 생태계가 핵심.",
+      "flowGap": "연결은 강하지만 무엇을 안전하고 재사용 가능한 실행 단위로 바꿀지에 대한 콘텐츠·출처 계약은 제공하지 않는다.",
+      "score": 56,
+      "unknowns": ["FlowMe 사용자 중 자동화 반복 요구", "webhook·API 사용량과 비용"]
+    },
+    {
+      "rank": 25,
+      "name": "Strava",
+      "role": "vertical_benchmark_hold",
+      "priority": "P2",
+      "decision": "운동 실행·커뮤니티·센서 데이터의 벤치마크. 건강·운동 기록 경쟁 금지.",
+      "verifiedMetrics": [
+        { "label": "사용자", "value": 180, "unit": "million+", "basis": "185개국 이상", "date": "2025-12", "sourceId": "S44", "evidence": "B" }
+      ],
+      "economics": "무료+구독, 챌린지·경로·훈련·커뮤니티·기기 연동.",
+      "flowGap": "실행 후 활동 데이터는 매우 강하나 외부 제작자 루틴을 출처·버전과 함께 중립적으로 배포하는 층은 제한적이다.",
+      "score": 56,
+      "unknowns": ["창작자 훈련 계획 경제 규모", "건강·안전 책임과 API 정책"]
+    }
+  ],
+  "platformProfiles": [
+    {
+      "name": "YouTube",
+      "coreFormats": ["long-form video", "Shorts", "live", "podcast"],
+      "creatorFunctions": ["YouTube Studio analytics", "YPP", "membership", "shopping", "brand partnership"],
+      "planExecutionFunctions": "챕터·설명·고정 댓글은 있으나 일정·체크·진도 변환은 핵심 기능이 아님",
+      "connections": ["share URL", "embed", "YouTube Data API", "shopping affiliate"],
+      "dataOpportunity": ["source URL", "channel/creator", "published/updated date", "Flow CTA attribution"],
+      "rightsFreshnessRisk": "영상 저작권, 삭제·비공개·내용 변경, 자막 정확도, 플랫폼 약관",
+      "recentTrend": "2025 광고+구독 매출 600억달러 초과, Shorts 일 2,000억 조회, 일 2,000만 영상 업로드. 3개 지표의 기준은 서로 다름.",
+      "trendEvidence": ["S01", "S03"]
+    },
+    {
+      "name": "TikTok",
+      "coreFormats": ["short video", "live", "shop content"],
+      "creatorFunctions": ["creator analytics", "brand/shop programs", "live monetization"],
+      "planExecutionFunctions": "저장·공유는 강하지만 순서·날짜·완료 기준 보존은 약함",
+      "connections": ["share URL", "embed", "developer APIs by approval"],
+      "dataOpportunity": ["source URL", "creator", "caption", "Flow CTA click"],
+      "rightsFreshnessRisk": "짧은 맥락, 음악·영상 권리, 지역별 접근, 삭제·추천 변동",
+      "recentTrend": "2025년 하반기 유럽 월 이용자 2억 명 초과. 글로벌 비교 가능한 공식 3년 이용·매출 시계열은 미확인.",
+      "trendEvidence": ["S07"]
+    },
+    {
+      "name": "Instagram",
+      "coreFormats": ["Reels", "post", "Stories", "DM"],
+      "creatorFunctions": ["professional dashboard", "insights", "brand collaboration", "shopping"],
+      "planExecutionFunctions": "저장·재공유 뒤 실행 구조는 외부로 분리",
+      "connections": ["share URL", "embed", "Instagram Graph API for eligible accounts"],
+      "dataOpportunity": ["source URL", "creator", "caption", "repost/CTA attribution"],
+      "rightsFreshnessRisk": "외부 링크 노출 제약, 비공개 계정, 짧은 원문, 미디어 권리",
+      "recentTrend": "2025년 9월 MAU 30억 명 발표, Reels는 Meta 플랫폼에서 일 45억 회 이상 재공유. Instagram 단독 매출 시계열은 미공개.",
+      "trendEvidence": ["S05", "S06"]
+    },
+    {
+      "name": "NAVER Blog/Cafe",
+      "coreFormats": ["long-form post", "image", "community thread", "review/how-to"],
+      "creatorFunctions": ["search discovery", "statistics", "ad/affiliate/commerce links", "community management"],
+      "planExecutionFunctions": "글 안의 목록·일정은 구조화 객체가 아니며 완료 이력도 없음",
+      "connections": ["public URL", "NAVER search", "share", "서비스별 제한적 API"],
+      "dataOpportunity": ["canonical URL", "author/channel", "published date", "category", "source status"],
+      "rightsFreshnessRisk": "robots/약관, 카페 공개 범위, 사용자 개인정보, 오래된 생활 정보",
+      "recentTrend": "2022년 Blog 활성 창작자 11% 증가와 주간일기 103만 참가가 확인되나, 2023~2025 Blog/Cafe 단독 공식 시계열은 미공개.",
+      "trendEvidence": ["S08", "S10"]
+    },
+    {
+      "name": "Brunchstory",
+      "coreFormats": ["essay", "series", "Brunchbook", "membership post"],
+      "creatorFunctions": ["writer application", "curation", "publication/collaboration proposal", "membership"],
+      "planExecutionFunctions": "장문 맥락은 강하지만 독자의 일정·체크·완료 신호는 분리",
+      "connections": ["public URL", "share", "proposal contact"],
+      "dataOpportunity": ["source URL", "writer", "series/book relation", "published date"],
+      "rightsFreshnessRisk": "작가 원문 권리, 출간본과 버전 관계, 전문 조언 오인",
+      "recentTrend": "2025년 10주년 기준 작가 9.5만 명, 누적 글 800만 건, 원작 도서 1만 권 초과. 연도별 수익 시계열은 미공개.",
+      "trendEvidence": ["S11"]
+    },
+    {
+      "name": "Substack",
+      "coreFormats": ["newsletter", "web post", "podcast", "video", "chat"],
+      "creatorFunctions": ["email publishing", "paid subscription", "audience/source analytics", "recommendations"],
+      "planExecutionFunctions": "발행·열람은 추적하지만 실제 계획·완료는 핵심 기능이 아님",
+      "connections": ["email", "public URL", "RSS", "Stripe", "subscriber export"],
+      "dataOpportunity": ["source URL", "author", "subscriber source", "CTA attribution"],
+      "rightsFreshnessRisk": "유료 원문 접근 권리, 구독자 개인정보, 이메일 재배포 금지",
+      "recentTrend": "수수료 10% 구조와 분석 기능은 공식 확인. 현재 총 가입·유료 구독자의 비교 가능한 공식 3년 시계열은 미확인.",
+      "trendEvidence": ["S12", "S13"]
+    },
+    {
+      "name": "Patreon",
+      "coreFormats": ["membership post", "video/audio", "community", "one-time product"],
+      "creatorFunctions": ["tiers", "payments", "community", "audience/revenue analytics", "one-time sales"],
+      "planExecutionFunctions": "회원 혜택 소비는 추적하지만 외부 실행 artifact와 완료 기준은 약함",
+      "connections": ["public/paid pages", "email", "Discord and integrations", "external links"],
+      "dataOpportunity": ["creator attribution", "membership tier", "Flow usage by source", "outbound conversion"],
+      "rightsFreshnessRisk": "유료 콘텐츠 접근권, 회원 개인정보, 혜택 변경·환불",
+      "recentTrend": "현재 30만+ 제작자, 월 결제 팬 1,000만+, 누적 제작자 수익 100억달러+. 2024 일회성 월매출 4배 증가는 회사 발표이며 기준액 미공개.",
+      "trendEvidence": ["S14", "S15"]
+    },
+    {
+      "name": "Gumroad",
+      "coreFormats": ["digital download", "course", "membership", "software/license"],
+      "creatorFunctions": ["checkout", "email", "affiliate", "sales/conversion/referrer/churn analytics"],
+      "planExecutionFunctions": "구매·다운로드 이후 사용·완료는 상품 밖으로 이탈",
+      "connections": ["product URL", "affiliate links", "webhooks/API", "CSV export"],
+      "dataOpportunity": ["product/creator attribution", "purchase-to-Flow use", "referrer", "completion"],
+      "rightsFreshnessRisk": "디지털 상품 라이선스, 환불·세금, 구매자 개인정보",
+      "recentTrend": "현재 수수료와 분석 기능은 공식 확인. GMV·판매자·매출의 공식 3년 시계열은 미공개.",
+      "trendEvidence": ["S17", "S18"]
+    },
+    {
+      "name": "Teachable",
+      "coreFormats": ["course", "coaching", "digital download", "membership", "community"],
+      "creatorFunctions": ["checkout", "funnels", "affiliate", "student management", "progress/completion reports"],
+      "planExecutionFunctions": "플랫폼 내부 lesson·quiz·drip·진도·수료는 강함",
+      "connections": ["Zapier", "public API/OAuth on higher plans", "email", "external sales links"],
+      "dataOpportunity": ["enrollment", "lesson progress", "completion", "creator revenue"],
+      "rightsFreshnessRisk": "강의 권리, 학생 개인정보, Hotmart 합산 수치와 Teachable 단독 수치 구분",
+      "recentTrend": "2024년 연간 약 1,200만 학습자. 2025 요금제는 Starter 7.5%에서 상위 플랜 0%로 거래 수수료를 낮춤.",
+      "trendEvidence": ["S22", "S23"]
+    },
+    {
+      "name": "Kajabi",
+      "coreFormats": ["course", "coaching", "membership", "community", "newsletter", "podcast"],
+      "creatorFunctions": ["website", "email", "funnel", "checkout", "CRM", "analytics"],
+      "planExecutionFunctions": "자체 코스·코칭 안의 제공과 고객 운영은 강함",
+      "connections": ["integrations", "webhooks/API by plan", "email", "payments"],
+      "dataOpportunity": ["product sales", "customer lifecycle", "engagement", "creator attribution"],
+      "rightsFreshnessRisk": "회사 발표 누적 수익의 산정 기간·환불 기준, 고객 데이터 이동",
+      "recentTrend": "고객 누적 수익이 2023년 60억달러에서 2025년 90억달러로 증가. 활성 제작자·회사 매출 시계열은 미공개.",
+      "trendEvidence": ["S20", "S21"]
+    },
+    {
+      "name": "Udemy",
+      "coreFormats": ["on-demand course", "practice", "enterprise learning path"],
+      "creatorFunctions": ["course publishing", "marketplace discovery", "instructor analytics", "revenue share"],
+      "planExecutionFunctions": "강의 진도·수강·연습·기업 경로를 플랫폼 안에서 관리",
+      "connections": ["enterprise integrations", "API", "mobile/TV", "course links"],
+      "dataOpportunity": ["enrollment", "course progress", "skill demand", "instructor content"],
+      "rightsFreshnessRisk": "강의·강사 계약, 플랫폼 외 재배포, 합병 후 정책 변경",
+      "recentTrend": "매출 2022년 $629.1M → 2023 $728.9M → 2024 $786.6M → 2025 $789.8M. 2024 소비자 매출은 5% 감소.",
+      "trendEvidence": ["S24", "S25", "S26", "S27"]
+    },
+    {
+      "name": "Coursera",
+      "coreFormats": ["course", "professional certificate", "degree", "enterprise learning"],
+      "creatorFunctions": ["institution/industry partner publishing", "credential", "learner analytics"],
+      "planExecutionFunctions": "과정·경로·평가·자격을 플랫폼 안에서 구조화",
+      "connections": ["enterprise integrations", "partner tools", "mobile", "course links"],
+      "dataOpportunity": ["enrollment", "skill path", "completion", "credential"],
+      "rightsFreshnessRisk": "기관 콘텐츠 권리, 학습자 데이터, Udemy 결합 후 정책 변화",
+      "recentTrend": "매출 2022년 $523.8M → 2023 $635.8M → 2024 $694.7M → 2025 $757M. 2025 등록 학습자 1.97억 명.",
+      "trendEvidence": ["S29", "S30"]
+    },
+    {
+      "name": "CLASS101",
+      "coreFormats": ["subscription class", "individual class", "digital drawing/craft/lifestyle learning"],
+      "creatorFunctions": ["class publishing", "subscription settlement", "creator operations"],
+      "planExecutionFunctions": "강의 수강·진도는 제공하지만 사용자의 외부 도구 이동은 핵심이 아님",
+      "connections": ["class URL", "enterprise offering", "creator support"],
+      "dataOpportunity": ["class contribution", "watch/use contribution", "creator settlement"],
+      "rightsFreshnessRisk": "강의 계약·구독 정산 정책, 외부 재사용 권리",
+      "recentTrend": "2025년 9월부터 구독료의 50%를 서비스 지급 풀로 두는 정책을 공식 확인. 사용자·매출·제작자 수 3년 시계열은 미확인.",
+      "trendEvidence": ["S31"]
+    },
+    {
+      "name": "Notion Marketplace",
+      "coreFormats": ["template", "workspace system", "database/document pack"],
+      "creatorFunctions": ["listing", "checkout", "coupons", "sales analytics", "webhooks", "refund handling"],
+      "planExecutionFunctions": "템플릿을 복제해 사용자가 직접 관리하나 원본 콘텐츠 실행 이력은 분리",
+      "connections": ["Notion duplicate", "webhooks", "purchase/refund events", "external links"],
+      "dataOpportunity": ["template source", "creator", "purchase", "duplicate", "revenue source"],
+      "rightsFreshnessRisk": "템플릿 라이선스, 지역별 수수료 표기 차이, 환불·복제본 업데이트",
+      "recentTrend": "Notion 전체 사용자는 2020년 100만 명에서 2024년 1억 명 초과. Marketplace 판매자·GMV 시계열은 미공개.",
+      "trendEvidence": ["S32", "S33"]
+    },
+    {
+      "name": "Google Calendar",
+      "coreFormats": ["event", "task", "shared calendar", "appointment schedule"],
+      "creatorFunctions": ["일반 사용자는 제작자 판매 기능 없음"],
+      "planExecutionFunctions": "날짜·시간·반복·알림 실행은 강함",
+      "connections": [".ics", "Calendar API", "Workspace integrations", "Gemini"],
+      "dataOpportunity": ["event date/time", "completion proxy via attendance/task", "source URL in description"],
+      "rightsFreshnessRisk": "개인 일정·참석자 개인정보, 이벤트 업데이트와 원본 버전 불일치",
+      "recentTrend": "Calendar 단독 사용자·매출 시계열은 Google이 공개하지 않음. Gemini의 일정 생성으로 AI 연결 범위는 확대.",
+      "trendEvidence": ["S34", "S39"]
+    },
+    {
+      "name": "Todoist",
+      "coreFormats": ["task", "project", "section", "label", "template"],
+      "creatorFunctions": ["template sharing", "team workspace"],
+      "planExecutionFunctions": "기한·반복·체크·프로젝트 실행은 강함",
+      "connections": ["integrations", "API", "email", "calendar", "text import"],
+      "dataOpportunity": ["task import", "completion", "due date", "project placement"],
+      "rightsFreshnessRisk": "개인 할 일 데이터, 원본 출처 손실, API 권한",
+      "recentTrend": "공식 홈페이지는 5,000만+ 전문가 사용을 제시. 유료 사용자·매출 3년 시계열은 미공개.",
+      "trendEvidence": ["S35"]
+    },
+    {
+      "name": "Notion",
+      "coreFormats": ["page", "database", "wiki", "project", "AI agent"],
+      "creatorFunctions": ["template publishing", "Marketplace", "team/enterprise admin"],
+      "planExecutionFunctions": "문서·프로젝트·데이터베이스 안에서 계획·진도 관리",
+      "connections": ["Markdown/CSV export", "API", "webhooks", "integrations"],
+      "dataOpportunity": ["page/database structure", "template attribution", "user edits", "status"],
+      "rightsFreshnessRisk": "workspace 개인정보, 복제본과 원본 버전 분리, API 권한",
+      "recentTrend": "사용자 2020년 100만 명 → 2024년 1억 명 초과. 회사 매출·유료 사용자 시계열은 미공개.",
+      "trendEvidence": ["S32", "S33"]
+    },
+    {
+      "name": "Obsidian",
+      "coreFormats": ["local Markdown note", "link graph", "canvas", "plugin"],
+      "creatorFunctions": ["theme/plugin community", "Publish"],
+      "planExecutionFunctions": "플러그인·Markdown으로 계획 가능하지만 사용자가 직접 설계",
+      "connections": ["local files", "Markdown", "URI", "community plugins", "Sync/Publish"],
+      "dataOpportunity": ["portable Markdown", "user-owned edits", "links"],
+      "rightsFreshnessRisk": "로컬 개인 데이터, 플러그인 보안, 원본 귀속 메타데이터 부재",
+      "recentTrend": "활성 사용자·매출의 공식 비교 시계열은 미공개. 로컬 소유권과 Markdown 이동성은 지속되는 제품 원칙.",
+      "trendEvidence": ["S52"]
+    },
+    {
+      "name": "Zapier",
+      "coreFormats": ["workflow", "trigger/action", "table", "interface", "agent"],
+      "creatorFunctions": ["app partner program", "templates", "automation management"],
+      "planExecutionFunctions": "정의된 이벤트를 앱 간 자동 실행하지만 콘텐츠 품질 계약은 없음",
+      "connections": ["9,000+ apps", "webhook", "API", "AI models"],
+      "dataOpportunity": ["export event", "destination success/failure", "automation frequency"],
+      "rightsFreshnessRisk": "광범위한 권한·개인 데이터 전송, 자동화 오작동, 비용",
+      "recentTrend": "2026년 7월 기준 9,000+ 앱, 340만+ 기업과 약 8,000 파트너를 공식 제시. 매출 시계열은 미공개.",
+      "trendEvidence": ["S36", "S37"]
+    },
+    {
+      "name": "ChatGPT / Gemini",
+      "coreFormats": ["chat", "multimodal analysis", "deep research", "agent/tool action"],
+      "creatorFunctions": ["drafting", "analysis", "custom agents", "API"],
+      "planExecutionFunctions": "콘텐츠 요약·계획 초안·일정 생성은 가능하지만 지속적 출처·버전·실행 기록은 제품마다 다름",
+      "connections": ["APIs", "connectors", "Calendar/Workspace", "custom agents"],
+      "dataOpportunity": ["draft plan", "personalization input", "tool action"],
+      "rightsFreshnessRisk": "환각, 출처 누락, 민감 정보 전송, 모델·가격·기능 변화",
+      "recentTrend": "2026년 ChatGPT 주간 이용자 9억+, 2025 Q4 Gemini MAU 7.5억. 서로 다른 시점·지표로 직접 점유율 비교 불가.",
+      "trendEvidence": ["S01", "S38", "S39"]
+    },
+    {
+      "name": "Duolingo",
+      "coreFormats": ["bite-sized lesson", "streak", "practice", "quest", "AI conversation"],
+      "creatorFunctions": ["전문가/내부 콘텐츠 운영 중심, 개방형 제작자 판매는 핵심 아님"],
+      "planExecutionFunctions": "반복 학습·진도·보상·개인화·완료 피드백이 매우 강함",
+      "connections": ["mobile/web", "classroom", "subscription"],
+      "dataOpportunity": ["lesson completion", "streak", "skill progress", "retention"],
+      "rightsFreshnessRisk": "교육 품질·학습 데이터, 외부 콘텐츠 제작자 권리와 구조 불일치",
+      "recentTrend": "유료 구독자 2023 Q4 660만 → 2024 Q2 800만 → 2025 Q4 1,220만. 2025 bookings 10억달러 초과.",
+      "trendEvidence": ["S40", "S41", "S42", "S43"]
+    },
+    {
+      "name": "Strava",
+      "coreFormats": ["tracked activity", "route", "challenge", "community feed", "training"],
+      "creatorFunctions": ["club", "challenge", "partner integration", "coach ecosystem"],
+      "planExecutionFunctions": "센서 기반 운동 실행·기록·커뮤니티 피드백이 매우 강함",
+      "connections": ["wearables", "health platforms", "partner APIs"],
+      "dataOpportunity": ["activity completion", "route", "frequency", "community response"],
+      "rightsFreshnessRisk": "건강·위치·센서 개인정보, 훈련 안전, API 제한",
+      "recentTrend": "2025년 12월 1.8억+ 사용자와 185개국 이상을 공식 발표. 유료 구독·매출 시계열은 미공개.",
+      "trendEvidence": ["S44"]
+    },
+    {
+      "name": "Samsung Food",
+      "coreFormats": ["recipe", "meal plan", "shopping list", "guided cooking"],
+      "creatorFunctions": ["recipe save/share", "community recipe", "food creator/brand content"],
+      "planExecutionFunctions": "웹 레시피→주간 식단→쇼핑리스트→조리로 직접 변환",
+      "connections": ["recipe URL import", "retailers", "Samsung appliances", "sharing"],
+      "dataOpportunity": ["saved recipe", "meal schedule", "shopping list", "cooking preference"],
+      "rightsFreshnessRisk": "레시피 저작권, 영양·알레르기, 건강 데이터, 리테일 지역 차이",
+      "recentTrend": "2024년 7월 사용자 600만+, 104개국·8개 언어. 2026 앱스토어는 공개 레시피 24만+를 제시.",
+      "trendEvidence": ["S45", "S46"]
+    },
+    {
+      "name": "TripIt",
+      "coreFormats": ["itinerary", "reservation", "alert", "map", "travel document"],
+      "creatorFunctions": ["여행 제작자 판매보다 사용자 여정 관리 중심"],
+      "planExecutionFunctions": "예약 이메일→통합 여정→알림·지도·캘린더 동기화",
+      "connections": ["email forwarding", "calendar sync", "maps", "sharing"],
+      "dataOpportunity": ["reservation", "trip dates", "itinerary changes", "travel completion"],
+      "rightsFreshnessRisk": "예약·여권·위치 개인정보, 일정 변경 최신성, 여행 서비스 책임",
+      "recentTrend": "2026년 20주년 기준 2,200만+ 사용자, 누적 2.15억 여정. 연도별 유료 구독·매출은 미공개.",
+      "trendEvidence": ["S47", "S48"]
+    },
+    {
+      "name": "Ohouse",
+      "coreFormats": ["home content", "community", "commerce", "interior/moving/installation service"],
+      "creatorFunctions": ["content/community contribution", "brand/merchant partnership", "commerce/service partner"],
+      "planExecutionFunctions": "영감 콘텐츠→상품 탐색·구매·시공·이사·설치로 연결",
+      "connections": ["commerce", "O2O service", "partner settlement", "global services"],
+      "dataOpportunity": ["content-to-commerce path", "service booking", "partner fulfillment"],
+      "rightsFreshnessRisk": "사용자 주거 이미지·주소, 계약·시공 책임, 파트너 데이터",
+      "recentTrend": "회사는 2025년 매출이 5년 전 대비 10배 이상이라고 발표했으나 절대액·MAU·GMV 시계열은 미공개. 2025 파트너 일 정산 도입.",
+      "trendEvidence": ["S49", "S50", "S51"]
+    }
+  ],
+  "deepDiveClusters": [
+    { "id": "D01", "name": "YouTube", "why": "가장 큰 제작자 원본·검색·수익 채널" },
+    { "id": "D02", "name": "Instagram / TikTok", "why": "짧은 발견 콘텐츠와 계획화 공백" },
+    { "id": "D03", "name": "NAVER / Brunchstory", "why": "한국 장문·생활 정보·전문가 공급" },
+    { "id": "D04", "name": "Patreon / Substack", "why": "직접 팬 관계와 반복 수익" },
+    { "id": "D05", "name": "Gumroad / Notion Marketplace", "why": "디지털 상품·템플릿 결제" },
+    { "id": "D06", "name": "Teachable / Kajabi", "why": "제작자 운영·진도·분석 SaaS" },
+    { "id": "D07", "name": "Udemy / Coursera / CLASS101", "why": "학습 시장·정산·진도 벤치마크" },
+    { "id": "D08", "name": "Calendar / Todoist", "why": "P0 실행 목적지" },
+    { "id": "D09", "name": "Notion / Obsidian", "why": "Markdown·재사용·사용자 소유권" },
+    { "id": "D10", "name": "Zapier", "why": "P2 자동화 연결" },
+    { "id": "D11", "name": "ChatGPT / Gemini", "why": "AI 생성 기대와 Flow 데이터 차별화" },
+    { "id": "D12", "name": "Duolingo", "why": "반복 실행·학습 데이터의 Vertical 상한" },
+    { "id": "D13", "name": "Samsung Food", "why": "URL 레시피→식단→장보기 변환" },
+    { "id": "D14", "name": "TripIt", "why": "예약 정보→여정 변환" },
+    { "id": "D15", "name": "Ohouse", "why": "한국 콘텐츠→커머스→서비스 연결" }
+  ],
+  "verticalScores": [
+    {
+      "rank": 1,
+      "vertical": "학습·커리어",
+      "scores": { "demand": 19, "contentExecutionGap": 17, "creatorIncentive": 14, "artifactFit": 14, "distribution": 9, "repeatData": 10, "feasibility": 7 },
+      "total": 90,
+      "priority": "P0 유입",
+      "why": "Udemy·Coursera 합산 2025 매출이 15억달러를 넘고, Duolingo 유료 구독자 1,220만 명으로 반복 학습 지불 의사가 확인된다. FlowMe는 강의 플랫폼이 아니라 외부 전문가 콘텐츠의 실행·진도 보조로 진입한다.",
+      "limits": "교육 품질·저작권·학습 성과를 보증할 수 없고, 플랫폼 내부 코스는 이미 진도 기능이 강하다."
+    },
+    {
+      "rank": 2,
+      "vertical": "여행·일정형 이벤트",
+      "scores": { "demand": 18, "contentExecutionGap": 18, "creatorIncentive": 12, "artifactFit": 15, "distribution": 9, "repeatData": 8, "feasibility": 8 },
+      "total": 88,
+      "priority": "P0 유입",
+      "why": "영상·블로그의 정보가 날짜·예약·준비물로 흩어지고 Calendar/checklist 적합성이 가장 높다. TripIt의 2,200만 사용자·2.15억 여정은 구조화된 일정 수요를 보여준다.",
+      "limits": "예약 후 여정 관리는 TripIt·Wanderlog가 강하다. FlowMe는 예약 전 콘텐츠→준비 Flow에 한정한다."
+    },
+    {
+      "rank": 3,
+      "vertical": "이사·결혼·주거·생활행정",
+      "scores": { "demand": 17, "contentExecutionGap": 19, "creatorIncentive": 12, "artifactFit": 15, "distribution": 8, "repeatData": 8, "feasibility": 7 },
+      "total": 86,
+      "priority": "P0/P1 유입",
+      "why": "마감·서류·비교·예약이 동시에 발생하고 오늘의집처럼 콘텐츠에서 거래·서비스로 이어지는 한국 사례가 있다.",
+      "limits": "계약·법률·재무 단계는 잠금·주의·원문 확인이 필요하다."
+    },
+    {
+      "rank": 4,
+      "vertical": "요리·식단",
+      "scores": { "demand": 18, "contentExecutionGap": 15, "creatorIncentive": 13, "artifactFit": 15, "distribution": 8, "repeatData": 9, "feasibility": 5 },
+      "total": 83,
+      "priority": "P1",
+      "why": "레시피 원본→식단→쇼핑리스트가 명확하고 Samsung Food가 600만 사용자로 패턴을 검증했다.",
+      "limits": "Samsung Food 등 강한 Vertical과 영양·알레르기 안전 이슈가 있어 직접 전문화하면 불리하다."
+    },
+    {
+      "rank": 5,
+      "vertical": "육아·가족",
+      "scores": { "demand": 17, "contentExecutionGap": 17, "creatorIncentive": 12, "artifactFit": 14, "distribution": 7, "repeatData": 10, "feasibility": 3 },
+      "total": 80,
+      "priority": "P1 검토",
+      "why": "반복 일정·준비·발달 단계 콘텐츠가 많고 가족 공유 가치가 높다.",
+      "limits": "아동·건강·개인정보 민감도가 높아 제작자 검토와 사용자 확인 없이 자동 실행하면 안 된다."
+    },
+    {
+      "rank": 6,
+      "vertical": "운동·루틴",
+      "scores": { "demand": 19, "contentExecutionGap": 13, "creatorIncentive": 12, "artifactFit": 13, "distribution": 8, "repeatData": 10, "feasibility": 4 },
+      "total": 79,
+      "priority": "P1 검토",
+      "why": "Strava 1.8억 사용자처럼 반복 실행 데이터는 강하고 제작자 루틴 수요가 있다.",
+      "limits": "센서·건강 데이터와 안전 책임을 이미 Vertical이 깊게 소유한다. FlowMe는 콘텐츠 루틴 export까지만 검토한다."
+    },
+    {
+      "rank": 7,
+      "vertical": "건강",
+      "scores": { "demand": 20, "contentExecutionGap": 17, "creatorIncentive": 10, "artifactFit": 13, "distribution": 7, "repeatData": 10, "feasibility": 1 },
+      "total": 78,
+      "priority": "P2 잠금",
+      "why": "수요와 반복성은 가장 높지만, 높은 점수가 곧 진입 우선순위를 뜻하지 않는다.",
+      "limits": "의료 조언 오인·개인정보·안전 위험 때문에 공신력 있는 원문, caution, 검토 잠금이 선행되어야 한다."
+    },
+    {
+      "rank": 8,
+      "vertical": "재무·법률",
+      "scores": { "demand": 19, "contentExecutionGap": 17, "creatorIncentive": 10, "artifactFit": 13, "distribution": 7, "repeatData": 8, "feasibility": 2 },
+      "total": 76,
+      "priority": "P2 잠금",
+      "why": "세금·계약·신청의 마감과 체크리스트 수요는 크다.",
+      "limits": "법률·재무 조언 오인, 지역·시점별 최신성, 자격 문제 때문에 공식 출처 기반 읽기 전용 흐름부터 시작해야 한다."
+    }
+  ],
+  "trendSeries": [
+    {
+      "name": "온라인 학습 플랫폼 연간 매출",
+      "unit": "USD million",
+      "comparability": "각사 연결 매출, 같은 연도 기준",
+      "series": [
+        { "platform": "Udemy", "values": [{ "year": 2022, "value": 629.1, "sourceId": "S25" }, { "year": 2023, "value": 728.9, "sourceId": "S24" }, { "year": 2024, "value": 786.6, "sourceId": "S26" }, { "year": 2025, "value": 789.8, "sourceId": "S27" }] },
+        { "platform": "Coursera", "values": [{ "year": 2022, "value": 523.8, "sourceId": "S29" }, { "year": 2023, "value": 635.8, "sourceId": "S29" }, { "year": 2024, "value": 694.7, "sourceId": "S30" }, { "year": 2025, "value": 757, "sourceId": "S30" }] }
+      ],
+      "interpretation": "학습 수요는 크지만 Udemy 소비자 부문은 2024년 감소했고, 두 회사는 2026년 결합했다. FlowMe는 강의 마켓 경쟁보다 외부 콘텐츠의 실행·재사용에 집중해야 한다."
+    },
+    {
+      "name": "Duolingo 유료 구독자 마일스톤",
+      "unit": "million paid subscribers",
+      "comparability": "회사 분기 말 지표, 관측 간격이 동일하지 않음",
+      "series": [
+        { "platform": "Duolingo", "values": [{ "year": 2023.75, "value": 6.6, "sourceId": "S40" }, { "year": 2024.5, "value": 8, "sourceId": "S43" }, { "year": 2025.75, "value": 12.2, "sourceId": "S41" }] }
+      ],
+      "interpretation": "계획 자체보다 반복 실행·피드백·습관 데이터에 사용자가 지불한다는 신호다. 다만 이는 언어학습 Vertical의 성과다."
+    },
+    {
+      "name": "Kajabi 고객 누적 수익 마일스톤",
+      "unit": "USD billion cumulative",
+      "comparability": "회사 발표 누적치",
+      "series": [
+        { "platform": "Kajabi", "values": [{ "year": 2023.75, "value": 6, "sourceId": "S21" }, { "year": 2025.1, "value": 9, "sourceId": "S20" }] }
+      ],
+      "interpretation": "제작자는 콘텐츠 저장보다 판매·고객관리·반복 수익에 비용을 지불한다. FlowMe P1도 단순 생성기가 아니라 귀속·성과·재사용 도구여야 한다."
+    }
+  ],
+  "revenueBenchmarks": [
+    { "platform": "Patreon", "model": "membership_take_rate", "priceOrFee": "10% + 처리/환전/지급 비용", "sourceId": "S15" },
+    { "platform": "Substack", "model": "newsletter_take_rate", "priceOrFee": "10% + Stripe", "sourceId": "S12" },
+    { "platform": "Gumroad", "model": "digital_goods_take_rate", "priceOrFee": "직접 10%+$0.50, Discover 30%", "sourceId": "S18" },
+    { "platform": "Notion Marketplace", "model": "template_take_rate", "priceOrFee": "영문 도움말 8%+$0.40", "sourceId": "S33" },
+    { "platform": "Teachable", "model": "creator_saas_plus_fee", "priceOrFee": "$29~$309/월(연간 결제), Starter 7.5%, 상위 0%", "sourceId": "S23" },
+    { "platform": "Kajabi", "model": "creator_saas", "priceOrFee": "$71~$399/월(연간 결제), revenue sharing 없음", "sourceId": "S19" },
+    { "platform": "CLASS101", "model": "subscription_pool", "priceOrFee": "구독료의 50% 지급 풀", "sourceId": "S31" }
+  ],
+  "bottomUpScenarios": [
+    {
+      "stage": "P0 외부 전환",
+      "formula": "활성 제작자 100명 × 제작자당 Flow 5개 × Flow당 월 100회 사용 × 외부 전환 3% × 건당 기여 3,000원",
+      "monthlyRevenueKrw": 4500000,
+      "status": "가설·미측정",
+      "whatMustBeMeasured": ["Flow 열람", "원본/상품 CTA 클릭", "전환 귀속", "환불·취소", "제작자별 순증"]
+    },
+    {
+      "stage": "P1 제작자 운영 구독",
+      "formula": "유료 제작자 500명 × 월 39,000원",
+      "monthlyRevenueKrw": 19500000,
+      "status": "가설·미측정",
+      "whatMustBeMeasured": ["월 활성 제작자", "Flow 재발행·업데이트", "귀속 클릭·완료 리포트 사용", "월 유지율"]
+    },
+    {
+      "stage": "P2 유료 Flow 거래",
+      "formula": "월 10,000건 × 평균 7,000원 × 수수료 10%",
+      "monthlyRevenueKrw": 7000000,
+      "status": "가설·미측정, 권리·환불·정산 게이트 후",
+      "whatMustBeMeasured": ["구매 후 실행률", "환불률", "제작자 지급", "세금·정산 비용", "민감 영역 잠금"]
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "P0",
+      "goal": "콘텐츠→Flow→외부 실행의 가치와 제작자 귀속 증명",
+      "channels": ["YouTube", "NAVER Blog/Cafe", "Brunchstory", "Instagram/TikTok 공유 URL"],
+      "destinations": [".ics Calendar", "Markdown/Notion/Obsidian", "checklist/Todo"],
+      "monetization": ["원본 상품·예약·제휴 CTA", "귀속 클릭 측정"],
+      "build": ["제작자 채널/프로필", "원본 URL·버전·검토일", "Flow별 사용·export·완료 집계"],
+      "doNotBuild": ["네이티브 결제", "LMS", "캘린더/할 일 편집기", "OAuth 직접 연동"]
+    },
+    {
+      "phase": "P1",
+      "goal": "제작자가 반복 발행·수정·성과 확인에 비용을 지불하는지 검증",
+      "channels": ["Patreon", "Substack", "Gumroad", "CLASS101/교육 제작자"],
+      "destinations": ["Sheet/progress", "creator analytics", "선별 자동화"],
+      "monetization": ["제작자 운영 구독", "고급 분석·브랜딩·배포"],
+      "build": ["버전 비교", "fork/개인 수정 집계", "동의 기반 익명 실행 신호", "webhook 후보"],
+      "doNotBuild": ["모든 Vertical 전문 기능", "무제한 AI 자동 발행", "검증 전 범용 API"]
+    },
+    {
+      "phase": "P2",
+      "goal": "검증된 공급·수요·권리 위에서 플랫폼 거래와 에이전트 연결 확장",
+      "channels": ["Notion Marketplace류 거래", "Zapier/MCP/agent", "Vertical 파트너"],
+      "destinations": ["direct API", "calendar feed", "agent tools"],
+      "monetization": ["유료 Flow 거래 수수료", "기업/파트너 API"],
+      "build": ["권리·환불·정산", "민감 영역 검토", "partner API", "품질·신뢰 랭킹"],
+      "doNotBuild": ["검증 없는 종합 마켓플레이스", "민감 조언 자동 판매"]
+    }
+  ],
+  "screens": [
+    { "platform": "YouTube", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/youtube-creators.png", "proves": "제작·커뮤니티·수익·성장 도구를 제공하는 원본 유통 채널", "sourceId": "S53" },
+    { "platform": "Instagram", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/instagram-reels.png", "proves": "짧은 영상의 생성·시청·공유가 핵심이며 실행 도구는 아님", "sourceId": "S54" },
+    { "platform": "Brunchstory", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/brunchstory-product.png", "proves": "한국 장문 원본·작가 큐레이션과 발견 경험", "sourceId": "S55" },
+    { "platform": "CLASS101", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/class101-product.png", "proves": "한국 제작자 강의 구독과 카테고리 유통", "sourceId": "S56" },
+    { "platform": "Patreon", "path": "assets/2026-07-12-flowme-user-creator-value-chain/patreon-membership-official.png", "proves": "멤버십 단계와 팬 관계를 판매하는 구조", "sourceId": "S16" },
+    { "platform": "Gumroad", "path": "assets/2026-07-12-flowme-user-creator-value-chain/gumroad-sales-analytics-official.png", "proves": "판매·전환·유입 분석을 제작자에게 제공", "sourceId": "S17" },
+    { "platform": "Teachable", "path": "assets/2026-07-12-flowme-user-creator-value-chain/teachable-completion-report-official.png", "proves": "수강 진도·완료·참여 분석이 제작자 운영 가치", "sourceId": "S23" },
+    { "platform": "Notion Marketplace", "path": "assets/2026-07-12-flowme-user-creator-value-chain/notion-marketplace-official.webp", "proves": "템플릿을 상품화하고 귀속·거래 분석을 제공", "sourceId": "S33" },
+    { "platform": "Google Calendar", "path": "assets/2026-07-11-flowme-platform-strategy-v2/google-calendar-product.jpg", "proves": "시간 기반 실행 목적지", "sourceId": "S34" },
+    { "platform": "Todoist", "path": "assets/2026-07-11-flowme-platform-strategy-v2/todoist-product.png", "proves": "체크·기한·프로젝트 기반 실행 목적지", "sourceId": "S35" },
+    { "platform": "Zapier", "path": "assets/2026-07-11-flowme-platform-strategy-v2/zapier-builder.jpg", "proves": "검증 후 붙일 앱 간 자동화 계층", "sourceId": "S36" },
+    { "platform": "Gemini", "path": "assets/2026-07-12-flowme-ai-era-platform-strategy/gemini-calendar-official.png", "proves": "AI가 일정 생성·도구 실행까지 들어온 현재 기대 수준", "sourceId": "S39" },
+    { "platform": "Duolingo", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/duolingo-appstore.png", "proves": "짧은 학습 단위와 반복 실행을 제품화한 Vertical", "sourceId": "S57" },
+    { "platform": "Samsung Food", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/samsung-food-appstore.png", "proves": "레시피→식단→장보기로 이어지는 실행 변환", "sourceId": "S46" },
+    { "platform": "TripIt", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/tripit-appstore.png", "proves": "예약 정보→하나의 여정·알림·캘린더로 변환", "sourceId": "S48" },
+    { "platform": "Ohouse", "path": "assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/ohouse-official.png", "proves": "한국 콘텐츠·커뮤니티·커머스·서비스 연결 사례", "sourceId": "S49" }
+  ],
+  "sources": [
+    { "id": "S01", "title": "Alphabet 2025 Q4 Earnings Call", "url": "https://abc.xyz/investor/events/event-details/2026/2025-Q4-Earnings-Call-2026-Dr_C033hS6/default.aspx", "publisher": "Alphabet", "date": "2026-02", "level": "A", "supports": ["YouTube 2025 annual revenue >$60B", "Shorts >200B daily views", "Gemini 750M MAU"] },
+    { "id": "S02", "title": "YouTube 2024 CEO Letter", "url": "https://blog.youtube/inside-youtube/2024-letter-from-neal/", "publisher": "YouTube", "date": "2024", "level": "B", "supports": [">3M YPP channels", ">$70B paid in prior three years"] },
+    { "id": "S03", "title": "Alphabet 2025 Q1 Earnings Call", "url": "https://abc.xyz/investor/events/event-details/2025/2025-Q1-Earnings-Call/default.aspx", "publisher": "Alphabet", "date": "2025-04", "level": "A", "supports": ["20M YouTube uploads per day"] },
+    { "id": "S04", "title": "YouTube channel memberships revenue share", "url": "https://support.google.com/youtube/answer/7491256?hl=en", "publisher": "YouTube Help", "date": "2026 checked", "level": "B", "supports": ["creator receives 70% after applicable taxes and fees"] },
+    { "id": "S05", "title": "Instagram Reels-first experience and 3B MAU", "url": "https://about.fb.com/news/2025/09/in-india-instagram-debuts-a-reels-first-experience-for-its-mobile-app/", "publisher": "Meta", "date": "2025-09", "level": "B", "supports": ["Instagram 3B MAU", "Reels reshared 4.5B times daily across Meta"] },
+    { "id": "S06", "title": "Meta FY2025 Results", "url": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Fourth-Quarter-and-Full-Year-2025-Results/", "publisher": "Meta IR", "date": "2026-01", "level": "A", "supports": ["Family DAP 3.58B", "FY2025 revenue $200.97B"] },
+    { "id": "S07", "title": "TikTok EU transparency update", "url": "https://newsroom.tiktok.com/our-seventh-transparency-report-on-the-eu-code-of-conduct-on-disinformation?lang=en-150", "publisher": "TikTok", "date": "2026", "level": "B", "supports": [">200M monthly users across Europe in H2 2025"] },
+    { "id": "S08", "title": "NAVER 2025 annual results press release", "url": "https://navercorp.com/media/pressReleasesDetail?seq=34325", "publisher": "NAVER", "date": "2026", "level": "A", "supports": ["FY2025 revenue KRW 12.035T"] },
+    { "id": "S09", "title": "NAVER 4Q25 Earnings", "url": "https://www.navercorp.com/api/article/download/197f039a-83a5-4cdd-be24-02f61a5c003c", "publisher": "NAVER IR", "date": "2026", "level": "A", "supports": ["2025 revenue mix"] },
+    { "id": "S10", "title": "NAVER 2022 Blog report", "url": "https://navercorp.com/media/pressReleasesDetail?seq=30996", "publisher": "NAVER", "date": "2022", "level": "B", "supports": ["1.03M weekly diary participants", "active creators +11% YoY"] },
+    { "id": "S11", "title": "Brunchstory 10th anniversary", "url": "https://www.kakaocorp.com/page/detail/11710?lang=KOR", "publisher": "Kakao", "date": "2025-09", "level": "B", "supports": ["95K writers", "8M posts", ">10K books"] },
+    { "id": "S12", "title": "Substack pricing", "url": "https://support.substack.com/hc/en-us/articles/360037607131-How-much-does-Substack-cost", "publisher": "Substack", "date": "2025-12", "level": "B", "supports": ["10% transaction fee", "Stripe fees"] },
+    { "id": "S13", "title": "Substack subscriber dashboard", "url": "https://support.substack.com/hc/en-us/articles/360058529871-How-do-I-use-the-subscriber-dashboard-on-Substack", "publisher": "Substack", "date": "2026-04", "level": "B", "supports": ["source, opens, activity, revenue analytics"] },
+    { "id": "S14", "title": "Patreon About", "url": "https://www.patreon.com/about?l=en-gb", "publisher": "Patreon", "date": "2026 checked", "level": "B", "supports": [">10M paying fans", ">100M free memberships", ">300K creators", ">$10B earned"] },
+    { "id": "S15", "title": "Patreon creator fees", "url": "https://support.patreon.com/hc/en-us/articles/11111747095181-Creator-fees-overview", "publisher": "Patreon", "date": "2026-06", "level": "B", "supports": ["standard 10% platform fee"] },
+    { "id": "S16", "title": "Patreon pricing", "url": "https://www.patreon.com/pricing", "publisher": "Patreon", "date": "2026 checked", "level": "B", "supports": ["membership, one-time sales, community, analytics"] },
+    { "id": "S17", "title": "Gumroad analytics dashboard", "url": "https://gumroad.com/help/article/74-the-analytics-dashboard", "publisher": "Gumroad", "date": "2026 checked", "level": "B", "supports": ["views, conversion, revenue, referrers, churn, CSV"] },
+    { "id": "S18", "title": "Gumroad fees", "url": "https://gumroad.com/help/article/66-gumroads-fees", "publisher": "Gumroad", "date": "2026 checked", "level": "B", "supports": ["direct 10%+$0.50", "Discover 30%"] },
+    { "id": "S19", "title": "Kajabi pricing", "url": "https://www.kajabi.com/pricing", "publisher": "Kajabi", "date": "2026 checked", "level": "B", "supports": ["$71/$143/$199/$399 annual-billing monthly prices", "no revenue sharing"] },
+    { "id": "S20", "title": "Kajabi $9B creator revenue milestone", "url": "https://www.kajabi.com/updates/0-to-9-billion-how-kajabis-features-drive-growth-in-creator-revenue", "publisher": "Kajabi", "date": "2025", "level": "B", "supports": ["$9B cumulative creator earnings"] },
+    { "id": "S21", "title": "Kajabi $6B creator revenue milestone", "url": "https://www.kajabi.com/blog/kajabi-creators-earn-six-billion", "publisher": "Kajabi", "date": "2023-10", "level": "B", "supports": ["$6B cumulative creator revenue"] },
+    { "id": "S22", "title": "Teachable 2024 rewind", "url": "https://www.teachable.com/blog/2024-rewind", "publisher": "Teachable", "date": "2024", "level": "B", "supports": ["nearly 12M students in 195 countries", "Hotmart+Teachable $10B aggregate"] },
+    { "id": "S23", "title": "Teachable 2025 plan changes", "url": "https://support.teachable.com/en/articles/11682410-new-teachable-plans-in-june-2025", "publisher": "Teachable", "date": "2026-05 updated", "level": "B", "supports": ["$29/$69/$139/$309 annual plans", "Starter 7.5%, others 0%", "progress and engagement reports"] },
+    { "id": "S24", "title": "Udemy FY2023 results", "url": "https://investors.udemy.com/news-releases/news-release-details/udemy-reports-fourth-quarter-and-full-year-2023-results", "publisher": "Udemy IR", "date": "2024-02", "level": "A", "supports": ["2022 $629.1M", "2023 $728.9M", "69M learners"] },
+    { "id": "S25", "title": "Udemy FY2022 results", "url": "https://investors.udemy.com/news-releases/news-release-details/udemy-reports-fourth-quarter-and-full-year-2022-results", "publisher": "Udemy IR", "date": "2023-02", "level": "A", "supports": ["2022 revenue"] },
+    { "id": "S26", "title": "Udemy FY2024 results", "url": "https://investors.udemy.com/news-releases/news-release-details/udemy-reports-fourth-quarter-and-full-year-2024-results", "publisher": "Udemy IR", "date": "2025-02", "level": "A", "supports": ["2024 revenue $786.6M", "77M learners", "consumer revenue -5%"] },
+    { "id": "S27", "title": "Udemy FY2025 results", "url": "https://investors.udemy.com/news-releases/news-release-details/udemy-reports-fourth-quarter-and-full-year-2025-results", "publisher": "Udemy IR", "date": "2026", "level": "A", "supports": ["2025 revenue $789.8M", "subscription revenue $566M"] },
+    { "id": "S28", "title": "Udemy 2025 10-K", "url": "https://investors.udemy.com/static-files/68867703-a746-4b03-9bce-668e759d77ca", "publisher": "Udemy IR", "date": "2026", "level": "A", "supports": [">91K instructors"] },
+    { "id": "S29", "title": "Coursera FY2023 results", "url": "https://investor.coursera.com/news/news-details/2024/Coursera-Reports-Fourth-Quarter-and-Full-Year-2023-Financial-Results/default.aspx", "publisher": "Coursera IR", "date": "2024-02", "level": "A", "supports": ["2022 $523.8M", "2023 $635.8M"] },
+    { "id": "S30", "title": "Coursera FY2025 results", "url": "https://investor.coursera.com/news/news-details/2026/Coursera-Reports-Fourth-Quarter-and-Full-Year-2025-Financial-Results/default.aspx", "publisher": "Coursera IR", "date": "2026", "level": "A", "supports": ["2025 revenue $757M", "197M registered learners", "1,730 paid enterprise customers"] },
+    { "id": "S31", "title": "CLASS101 subscription settlement policy", "url": "https://help.class101.tv/creator-operations/subscription-settlement-policy", "publisher": "CLASS101", "date": "2025-09 effective", "level": "B", "supports": ["50% service payout pool rate"] },
+    { "id": "S32", "title": "Notion 100 million users", "url": "https://www.notion.com/blog/100-million-of-you", "publisher": "Notion", "date": "2024-09", "level": "B", "supports": [">100M users", "1M in 2020"] },
+    { "id": "S33", "title": "Selling on Notion Marketplace", "url": "https://www.notion.com/help/selling-on-marketplace", "publisher": "Notion", "date": "2026 checked", "level": "B", "supports": ["8%+$0.40 fee on English help", "14-day hold", "analytics and webhooks"] },
+    { "id": "S34", "title": "Google Calendar product", "url": "https://workspace.google.com/products/calendar/", "publisher": "Google", "date": "2026 checked", "level": "B", "supports": ["calendar scheduling and sharing features"] },
+    { "id": "S35", "title": "Todoist product", "url": "https://www.todoist.com/", "publisher": "Todoist", "date": "2026 checked", "level": "B", "supports": [">50M professionals", "templates and integrations"] },
+    { "id": "S36", "title": "What is Zapier", "url": "https://help.zapier.com/hc/en-us/articles/37518970271245-What-is-Zapier", "publisher": "Zapier", "date": "2026-07", "level": "B", "supports": [">9,000 apps", "AI model connections"] },
+    { "id": "S37", "title": "Zapier press", "url": "https://zapier.com/press", "publisher": "Zapier", "date": "2026 checked", "level": "B", "supports": [">3.4M businesses", "nearly 8K partners"] },
+    { "id": "S38", "title": "OpenAI update on mental health-related work", "url": "https://openai.com/index/update-on-mental-health-related-work/", "publisher": "OpenAI", "date": "2026-02", "level": "B", "supports": [">900M people use ChatGPT weekly"] },
+    { "id": "S39", "title": "Gemini connects to Calendar", "url": "https://blog.google/products/gemini/google-assistant-calendar-tasks-keep/", "publisher": "Google", "date": "2024", "level": "B", "supports": ["AI assistant can add calendar events and tasks"] },
+    { "id": "S40", "title": "Duolingo Q4 2023 shareholder letter", "url": "https://investors.duolingo.com/node/9446/pdf", "publisher": "Duolingo IR", "date": "2024", "level": "A", "supports": ["6.6M paid subscribers Q4 2023"] },
+    { "id": "S41", "title": "Duolingo company strategy overview", "url": "https://investors.duolingo.com/company-strategy-overview-0", "publisher": "Duolingo IR", "date": "2026 checked", "level": "A", "supports": ["52.7M DAU", "133.1M MAU", "12.2M paid Q4 2025", "AI content production trend"] },
+    { "id": "S42", "title": "Duolingo FY2025 results", "url": "https://investors.duolingo.com/news-releases/news-release-details/duolingo-reports-fourth-quarter-and-full-year-2025-results", "publisher": "Duolingo IR", "date": "2026", "level": "A", "supports": [">50M DAU", ">$1B bookings"] },
+    { "id": "S43", "title": "Duolingo Q2 2024 shareholder letter", "url": "https://investors.duolingo.com/node/9966/pdf", "publisher": "Duolingo IR", "date": "2024", "level": "A", "supports": ["100M MAU", "8M paid subscribers"] },
+    { "id": "S44", "title": "Strava 2025 Year in Sport", "url": "https://press.strava.com/en-gb/articles/strava-releases-12th-annual-year-in-sport-trend-report-2025", "publisher": "Strava", "date": "2025-12", "level": "B", "supports": [">180M users", ">185 countries"] },
+    { "id": "S45", "title": "Samsung Food IFA 2024", "url": "https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-ifa-2024%EC%84%9C-%EC%82%BC%EC%84%B1-%ED%91%B8%EB%93%9C-%EC%8B%A0%EA%B7%9C-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%84%A0%EB%B3%B4%EC%97%AC", "publisher": "Samsung Newsroom", "date": "2024", "level": "B", "supports": [">6M users", "104 countries", "8 languages"] },
+    { "id": "S46", "title": "Samsung Food App Store", "url": "https://apps.apple.com/us/app/samsung-food-meal-planner/id1133637674", "publisher": "Apple App Store / Samsung Food", "date": "2026 checked", "level": "C", "supports": [">240K public recipes", "recipe save, meal plan, shopping list"] },
+    { "id": "S47", "title": "TripIt 20th anniversary", "url": "https://www.tripit.com/web/tripit-20th-anniversary", "publisher": "TripIt", "date": "2026", "level": "B", "supports": [">22M users", "215M itineraries"] },
+    { "id": "S48", "title": "TripIt App Store", "url": "https://apps.apple.com/us/app/tripit-travel-planner/id311035142", "publisher": "Apple App Store / TripIt", "date": "2026 checked", "level": "C", "supports": ["itinerary, alerts, calendar sync", "$48.99 annual Pro"] },
+    { "id": "S49", "title": "Ohouse company overview", "url": "https://www.bucketplace.com/", "publisher": "Bucketplace", "date": "2026 checked", "level": "B", "supports": ["content, community, commerce, O2O model"] },
+    { "id": "S50", "title": "Ohouse content to problem solving", "url": "https://www.bucketplace.com/post/2025-05-30-%EC%A0%95%EB%9F%89%EA%B3%BC-%EC%A0%95%EC%84%B1-%EC%82%AC%EC%9D%B4%EC%97%90%EC%84%9C-%EC%83%88%EB%A1%9C%EC%9A%B4-%EA%B0%80%EB%8A%A5%EC%84%B1%EC%9D%84-%EB%B0%9C%EA%B2%AC%ED%95%9C%EB%8B%A4%EB%8A%94-%EA%B2%83/", "publisher": "Bucketplace", "date": "2025-05", "level": "B", "supports": ["content starts customer problem solving"] },
+    { "id": "S51", "title": "Ohouse daily settlement", "url": "https://www.bucketplace.com/en/post/2025-01-23-%EC%98%A4%EB%8A%98%EC%A7%91%EC%9D%80-%EA%B2%B0%EC%8B%AC%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4-%EC%9D%BC%EC%A0%95%EC%82%B0%EC%9D%84-%EB%8F%84%EC%9E%85%ED%95%98%EA%B8%B0%EB%A1%9C/", "publisher": "Bucketplace", "date": "2025-01", "level": "B", "supports": ["partner settlement changed from twice monthly to daily"] },
+    { "id": "S52", "title": "Obsidian product and pricing", "url": "https://obsidian.md/", "publisher": "Obsidian", "date": "2026 checked", "level": "B", "supports": ["local Markdown, Sync, Publish, plugins"] },
+    { "id": "S53", "title": "YouTube Creators product", "url": "https://www.youtube.com/creators/", "publisher": "YouTube", "date": "2026-07 captured", "level": "B", "supports": ["creator creation, community, monetization, growth tools"] },
+    { "id": "S54", "title": "Instagram Reels product", "url": "https://about.instagram.com/features/reels", "publisher": "Instagram", "date": "2026-07 captured", "level": "B", "supports": ["create, watch, share short videos"] },
+    { "id": "S55", "title": "Brunchstory product", "url": "https://brunch.co.kr/", "publisher": "Kakao", "date": "2026-07 captured", "level": "B", "supports": ["writer and long-form discovery interface"] },
+    { "id": "S56", "title": "CLASS101 product", "url": "https://class101.net/ko", "publisher": "CLASS101", "date": "2026-07 captured", "level": "B", "supports": ["subscription learning categories"] },
+    { "id": "S57", "title": "Duolingo App Store", "url": "https://apps.apple.com/us/app/duolingo-language-lessons/id570060128", "publisher": "Apple App Store / Duolingo", "date": "2026 checked", "level": "C", "supports": ["bite-sized learning product screens"] },
+    { "id": "S58", "title": "Wanderlog FAQ", "url": "https://wanderlog.com/blog/faq/", "publisher": "Wanderlog", "date": "2026 checked", "level": "B", "supports": ["itinerary, reservations, collaboration, checklist, calendar, expenses, PDF/Maps export"] }
+  ],
+  "decisionGates": [
+    {
+      "id": "CEO-1",
+      "decision": "초기 공급 시장을 학습·커리어 + 여행·생활 이벤트의 2개 상황군으로 승인할 것인가",
+      "recommendation": "승인. 제품 계약은 수평으로 유지하고 콘텐츠 수급·메시지만 두 상황군에 집중.",
+      "evidence": ["verticalScores", "currentFlowMe", "S24", "S30", "S47"],
+      "unmeasured": "각 상황군의 URL lookup→export→실행 완료율"
+    },
+    {
+      "id": "CEO-2",
+      "decision": "P0 제작자 가치를 판매 기능이 아닌 귀속·재사용·외부 전환 측정으로 제한할 것인가",
+      "recommendation": "승인. 결제·정산은 기존 플랫폼에 남기고 FlowMe는 creator channel, source/version, CTA attribution을 소유.",
+      "evidence": ["S14", "S17", "S23", "S33"],
+      "unmeasured": "제작자의 반복 발행률과 구독 지불 의사"
+    },
+    {
+      "id": "CEO-3",
+      "decision": "P0 연결을 .ics·Markdown·checklist로 고정하고 OAuth·Vertical 전문 기능을 보류할 것인가",
+      "recommendation": "승인. 사용 데이터로 destination을 증명한 뒤 P1/P2 API를 선택.",
+      "evidence": ["currentFlowMe", "S34", "S35", "S36", "S45", "S47"],
+      "unmeasured": "export별 실제 추가·재사용·완료율"
+    }
+  ]
+}

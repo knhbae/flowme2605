@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>FlowMe URL→Flow 백엔드 · 이해하기 쉬운 데이터 모델 보고서</title>
+  <style>
+    :root {
+      --ink: #121a17;
+      --muted: #59645f;
+      --line: #dbe2de;
+      --canvas: #edf1ef;
+      --paper: #ffffff;
+      --green: #0f654a;
+      --green-soft: #e7f3ee;
+      --blue: #285bd7;
+      --blue-soft: #eef3ff;
+      --coral: #bc493d;
+      --coral-soft: #fff0ed;
+      --amber: #916809;
+      --amber-soft: #fff7df;
+      --shadow: 0 24px 70px rgba(18, 26, 23, 0.13);
+      --radius: 4px;
+      --ui-font: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      --mono-font: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { height: 100%; background: var(--canvas); }
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--ui-font);
+      letter-spacing: -0.018em;
+    }
+    button, a { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    svg { display: block; }
+    [hidden] { display: none !important; }
+
+    .deck-app {
+      min-height: 100dvh;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+    .deck-viewport {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      overflow: auto;
+    }
+    .deck {
+      width: min(100%, 1280px);
+      position: relative;
+      background: var(--paper);
+      border: 1px solid #d4dbd7;
+      box-shadow: var(--shadow);
+    }
+    .js .deck { aspect-ratio: 16 / 9; overflow: hidden; }
+    html:not(.js) .slide { min-height: min(720px, 56.25vw); margin-bottom: 24px; }
+    .slide {
+      width: 100%;
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: 48px minmax(0, 1fr);
+      padding: 0 30px 26px;
+      background: var(--paper);
+      break-after: page;
+    }
+    .js .slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transform: translateX(18px); }
+    .js .slide.is-active { opacity: 1; pointer-events: auto; transform: none; z-index: 2; }
+    .slide::after {
+      content: "";
+      position: absolute;
+      inset: auto 30px 18px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--green) 0 10%, var(--line) 10% 100%);
+    }
+    .slide-header {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(220px, 0.8fr) 36px;
+      align-items: center;
+      gap: 22px;
+      border-bottom: 1px solid var(--line);
+      color: #3e4944;
+      font-size: 11px;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+    .slide-brand { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .slide-brand strong { color: var(--green); font-size: 13px; }
+    .slide-brand span { margin-left: 10px; color: #7b8580; font-weight: 560; }
+    .slide-progress { display: grid; grid-template-columns: repeat(18, 1fr); gap: 4px; }
+    .slide-progress i { height: 3px; background: #e2e7e4; }
+    .slide-progress i.on { background: var(--green); }
+    .slide-number { text-align: right; color: #4a554f; font: 700 13px/1 var(--mono-font); }
+    .slide-body {
+      min-width: 0;
+      min-height: 0;
+      position: relative;
+      padding: clamp(26px, 4.2vw, 56px) clamp(16px, 2.2vw, 34px) 30px;
+      overflow: hidden;
+    }
+    .slide-title {
+      max-width: 980px;
+      margin: 0;
+      font-size: clamp(34px, 4.1vw, 62px);
+      line-height: 1.08;
+      letter-spacing: -0.05em;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    h2.slide-title { font-size: clamp(31px, 3.3vw, 50px); }
+    .accent { color: var(--green); }
+    .accent-blue { color: var(--blue); }
+    .accent-coral { color: var(--coral); }
+    .lead {
+      max-width: 900px;
+      margin: 22px 0 0;
+      color: #49534f;
+      font-size: clamp(17px, 1.45vw, 22px);
+      line-height: 1.72;
+      word-break: keep-all;
+    }
+    .caption { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .micro { color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .code { font-family: var(--mono-font); letter-spacing: -0.03em; }
+    .rule-label {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .quick-example {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      padding: 12px 15px;
+      border-left: 4px solid var(--green);
+      background: #f4f8f6;
+      color: #34413b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .quick-example > b { color: var(--green); font: 850 11px/1.25 var(--mono-font); }
+    .quick-example p { margin: 0; }
+    .quick-example i { padding: 0 5px; color: #79847f; font-style: normal; }
+    .quick-example strong { color: var(--ink); }
+
+    .cover-layout { height: 100%; display: grid; grid-template-columns: 1.08fr 0.92fr; align-items: center; gap: 34px; }
+    .cover-copy { align-self: center; padding-bottom: 20px; }
+    .cover-copy .lead { max-width: 700px; }
+    .cover-copy .quick-example { margin-top: 28px; }
+    .cover-visual { width: min(100%, 440px); justify-self: end; }
+
+    .answer-layout { height: 100%; display: grid; grid-template-columns: 0.82fr 1.18fr; align-items: center; gap: 52px; }
+    .answer-core {
+      min-height: 290px;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      place-items: center;
+      padding: 24px;
+      position: relative;
+      border: 1px solid var(--line);
+    }
+    .answer-core::before, .answer-core::after { content: ""; position: absolute; background: var(--line); }
+    .answer-core::before { width: 1px; inset: -26px auto; }
+    .answer-core::after { height: 1px; inset: auto -26px; }
+    .item-word { position: relative; z-index: 1; color: var(--green); font-size: clamp(58px, 7vw, 100px); font-weight: 860; letter-spacing: -0.07em; }
+    .answer-example { width: 100%; padding-top: 13px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 8px 12px; text-align: left; }
+    .answer-example b { grid-row: 1 / span 2; color: var(--green); font: 850 11px/1.35 var(--mono-font); }
+    .answer-example strong { font-size: 15px; }
+    .answer-example span { color: var(--muted); font-size: 12px; }
+    .answer-list { display: grid; gap: 18px; }
+    .answer-row { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 18px; padding: 15px 0; border-top: 1px solid var(--line); }
+    .answer-row:first-child { border-top: 4px solid var(--green); }
+    .answer-row b { color: var(--green); font-size: 13px; }
+    .answer-row strong { display: block; font-size: clamp(18px, 1.6vw, 23px); }
+    .answer-row p { margin: 5px 0 0; color: var(--muted); line-height: 1.55; }
+
+    .projection-layout { height: 100%; display: grid; grid-template-rows: auto 1fr; gap: 22px; }
+    .projection-stage { min-height: 0; display: grid; grid-template-columns: 0.75fr 1.25fr; align-items: center; gap: 54px; }
+    .item-hub { display: grid; justify-items: center; gap: 12px; }
+    .item-disc {
+      width: min(19vw, 230px); aspect-ratio: 1;
+      display: grid; place-items: center;
+      border: 2px solid var(--ink); border-radius: 50%;
+      position: relative;
+      background: var(--paper);
+    }
+    .item-disc svg { width: 52%; color: var(--green); }
+    .item-hub strong { color: var(--green); font-size: 31px; }
+    .projection-list { display: grid; gap: 10px; }
+    .projection-row { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 16px; position: relative; padding: 12px 18px; border: 1px solid var(--line); }
+    .projection-row::before { content: ""; position: absolute; right: 100%; top: 50%; width: 56px; border-top: 1px dashed #8b9691; }
+    .projection-icon { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid currentColor; color: var(--blue); }
+    .projection-icon svg { width: 28px; height: 28px; }
+    .projection-row:nth-child(2) .projection-icon { color: var(--green); }
+    .projection-row:nth-child(3) .projection-icon { color: #2b9470; }
+    .projection-row:nth-child(4) .projection-icon { color: var(--blue); }
+    .projection-row strong { font-size: 18px; }
+    .projection-row span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+    .projection-foot { margin: 10px 0 0; padding-left: 18px; border-left: 3px solid var(--coral); color: #5e4844; font-size: 14px; font-weight: 720; }
+    .projection-foot strong { display: block; margin-bottom: 4px; color: var(--coral); font: 850 11px/1.2 var(--mono-font); }
+
+    .hierarchy-layout { height: 100%; display: grid; grid-template-rows: auto 1fr auto; gap: 28px; }
+    .hierarchy-track { min-height: 0; display: grid; grid-template-columns: repeat(9, auto); align-items: center; justify-content: space-between; gap: 10px; }
+    .hierarchy-node { width: clamp(125px, 13vw, 175px); min-height: 190px; display: grid; grid-template-rows: auto 1fr; border: 1px solid var(--line); }
+    .hierarchy-node.source { border-style: dashed; }
+    .hierarchy-node.item { border: 2px solid var(--green); background: var(--green-soft); }
+    .hierarchy-node b { padding: 14px; border-bottom: 1px solid var(--line); font-size: 17px; }
+    .hierarchy-node.item b { color: var(--green); }
+    .hierarchy-node div { display: grid; align-content: end; padding: 14px; }
+    .hierarchy-node strong { font-size: 12px; color: var(--muted); }
+    .hierarchy-node p { margin: 6px 0 0; font-size: 14px; line-height: 1.5; }
+    .arrow { width: 24px; height: 24px; color: #5a6560; }
+    .evidence-rail { padding: 12px 16px; border-left: 4px solid var(--blue); background: var(--blue-soft); color: #33415f; font-size: 14px; line-height: 1.55; }
+    .evidence-rail > b:first-child { margin-right: 10px; color: var(--blue); font: 850 11px/1.2 var(--mono-font); }
+    .evidence-rail .rail-note { display: block; margin-top: 4px; color: #65718a; font-size: 12px; }
+
+    .anatomy-layout { height: 100%; display: grid; grid-template-columns: 0.86fr 1.14fr; gap: 38px; align-items: center; }
+    .anatomy-item { min-height: 350px; padding: 28px; display: grid; grid-template-rows: auto 1fr auto; background: var(--ink); color: white; }
+    .anatomy-item h3 { margin: 0; font-size: 34px; }
+    .anatomy-item p { align-self: center; margin: 0; color: #c9d2ce; font-size: 18px; line-height: 1.7; }
+    .anatomy-item code { color: #7be1b7; font: 700 13px/1.5 var(--mono-font); }
+    .facet-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .facet { min-height: 118px; padding: 18px; border-top: 4px solid var(--green); background: #f7f9f8; }
+    .facet:nth-child(2) { border-color: var(--blue); }
+    .facet:nth-child(3) { border-color: #2f9272; }
+    .facet:nth-child(4) { border-color: var(--coral); }
+    .facet b { display: block; font-size: 17px; }
+    .facet p { margin: 7px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .facet-example { grid-column: 1 / -1; padding: 14px 18px; border: 1px solid var(--line); font-size: 14px; line-height: 1.55; }
+
+    .axis-layout { height: 100%; display: grid; grid-template-rows: auto 1fr; gap: 24px; }
+    .axis-table { min-height: 0; display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--ink); border-left: 1px solid var(--line); }
+    .axis-cell { padding: 18px 22px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .axis-cell b { display: flex; align-items: baseline; gap: 12px; font-size: 21px; }
+    .axis-cell b span { color: var(--green); font: 800 12px/1 var(--mono-font); }
+    .axis-cell p { margin: 10px 0 0; color: var(--muted); line-height: 1.55; }
+    .axis-cell em { display: block; margin-top: 12px; color: #34413b; font-style: normal; font-size: 13px; font-weight: 720; }
+
+    .ownership-layout { height: 100%; display: grid; grid-template-columns: 0.96fr 1.04fr; gap: 42px; align-items: center; }
+    .ownership-stack { display: grid; gap: 8px; }
+    .ownership-stack-label { padding: 8px 12px; border-left: 4px solid var(--blue); background: var(--blue-soft); color: #314260; font: 800 12px/1.35 var(--mono-font); }
+    .ownership-layer { min-height: 78px; padding: 15px 18px; display: grid; grid-template-columns: 36px 180px 1fr; gap: 12px; align-items: center; border: 1px solid var(--line); }
+    .ownership-layer i { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; color: var(--green); font-style: normal; font-size: 12px; font-weight: 850; }
+    .ownership-layer b { font-size: 16px; }
+    .ownership-layer span { color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .ownership-layer:nth-child(2) { background: var(--green-soft); }
+    .ownership-layer:nth-child(3) { background: var(--blue-soft); }
+    .ownership-layer:nth-child(4) { background: #f5f7f6; }
+    .ownership-callout { padding: 28px; border-top: 5px solid var(--green); background: #f6f8f7; }
+    .ownership-callout h3 { margin: 0; font-size: 27px; }
+    .ownership-callout ul { margin: 20px 0 0; padding: 0; list-style: none; }
+    .ownership-callout li { padding: 11px 0 11px 26px; position: relative; border-top: 1px solid var(--line); color: #3e4944; line-height: 1.45; }
+    .ownership-callout li::before { content: ""; position: absolute; left: 3px; top: 18px; width: 8px; height: 8px; background: var(--green); }
+
+    .storage-layout { height: 100%; display: grid; grid-template-rows: auto 1fr; gap: 22px; }
+    .storage-lanes { min-height: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--ink); }
+    .storage-lane { padding: 22px; border-right: 1px solid var(--line); display: grid; grid-template-rows: auto auto 1fr; gap: 11px; }
+    .storage-lane:first-child { border-left: 1px solid var(--line); }
+    .storage-lane .index { color: var(--green); font: 800 12px/1 var(--mono-font); }
+    .storage-lane h3 { margin: 0; font-size: 21px; }
+    .storage-lane p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .storage-lane ul { align-self: end; margin: 0; padding: 12px 0 0; border-top: 1px solid var(--line); list-style: none; color: #44504a; font-size: 13px; line-height: 1.6; }
+    .storage-lane li + li { margin-top: 5px; }
+    .storage-lane .storage-example { color: var(--ink); font-weight: 720; }
+    .storage-lane .storage-example b { display: block; margin-bottom: 4px; color: var(--green); font: 850 10px/1.2 var(--mono-font); }
+    .storage-lane .storage-entities { color: var(--muted); font: 650 10px/1.5 var(--mono-font); }
+    .storage-lane:nth-child(2) { background: var(--green-soft); }
+    .storage-lane:nth-child(3) { background: var(--blue-soft); }
+
+    .timing-layout { height: 100%; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 36px; align-items: center; }
+    .foundation { display: grid; gap: 8px; }
+    .foundation-row { min-height: 60px; display: grid; grid-template-columns: 44px 190px 1fr; align-items: center; gap: 12px; padding: 10px 16px; border: 1px solid var(--line); }
+    .foundation-row b { font-size: 17px; }
+    .foundation-row span { color: var(--muted); font-size: 13px; }
+    .foundation-row .step { color: var(--green); font: 850 12px/1 var(--mono-font); }
+    .foundation-row:nth-child(1), .foundation-row:nth-child(2) { background: var(--green-soft); }
+    .foundation-row:nth-child(5), .foundation-row:nth-child(6) { background: var(--blue-soft); }
+    .timing-answer { padding: 26px; border-top: 5px solid var(--blue); background: #f7f9ff; }
+    .timing-answer h3 { margin: 0; font-size: 29px; }
+    .timing-answer dl { margin: 22px 0 0; }
+    .timing-answer dt { margin-top: 13px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .timing-answer dd { margin: 4px 0 0; font-size: 16px; line-height: 1.45; }
+
+    .metrics-layout { height: 100%; display: grid; grid-template-rows: auto auto 1fr; gap: 22px; }
+    .metrics { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--ink); }
+    .metric { min-height: 125px; padding: 18px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .metric:first-child { border-left: 1px solid var(--line); }
+    .metric strong { display: block; color: var(--green); font-size: clamp(30px, 3vw, 45px); letter-spacing: -0.05em; }
+    .metric span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .metric.warn strong { color: var(--coral); }
+    .scatter-message { align-self: center; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
+    .scatter { display: flex; flex-wrap: wrap; gap: 7px; }
+    .scatter span { padding: 8px 10px; border: 1px solid var(--line); color: #55605b; font-size: 12px; }
+    .scatter .example-tag { flex-basis: 100%; padding: 0; border: 0; color: var(--green); font: 850 11px/1.2 var(--mono-font); }
+    .gather { min-width: 220px; padding: 22px; border: 2px solid var(--green); background: var(--green-soft); text-align: center; }
+    .gather b { color: var(--green); font-size: 22px; }
+    .gather p { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
+    .scatter-message .arrow { width: 34px; height: 34px; }
+
+    .case-layout { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 18px; }
+    .case-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 22px; }
+    .case-heading .slide-title { font-size: clamp(29px, 3vw, 44px); }
+    .case-index { min-width: 108px; padding: 10px 13px; border: 1px solid var(--green); color: var(--green); font: 850 12px/1.35 var(--mono-font); text-align: center; }
+    .case-stage { min-height: 0; display: grid; grid-template-columns: 0.82fr 24px 1.12fr 24px 1fr; align-items: stretch; gap: 12px; }
+    .case-arrow { width: 24px; height: 24px; align-self: center; color: #69746f; }
+    .case-panel { min-width: 0; padding: 16px 18px; border: 1px solid var(--line); border-top: 4px solid var(--blue); background: #fbfcff; }
+    .case-panel.canonical { border-top-color: var(--green); background: var(--green-soft); }
+    .case-panel.output { border-top-color: var(--ink); background: white; }
+    .case-panel-label { display: block; margin-bottom: 12px; color: var(--muted); font: 800 11px/1 var(--mono-font); letter-spacing: 0.04em; text-transform: uppercase; }
+    .case-panel h3 { margin: 0; font-size: 19px; line-height: 1.35; word-break: keep-all; }
+    .source-quote { margin: 18px 0 0; padding-left: 14px; border-left: 3px solid var(--blue); color: #27395c; font-size: 18px; font-weight: 760; line-height: 1.55; word-break: keep-all; }
+    .source-detail { margin: 15px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .data-stack { display: grid; gap: 7px; margin-top: 13px; }
+    .data-row { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; padding-top: 7px; border-top: 1px solid rgba(15, 101, 74, 0.2); }
+    .data-row:first-child { padding-top: 0; border-top: 0; }
+    .data-row b { color: var(--green); font: 800 11px/1.45 var(--mono-font); }
+    .data-row span { color: #34413b; font-size: 13px; font-weight: 650; line-height: 1.45; word-break: keep-all; }
+    .output-list { display: grid; gap: 8px; margin: 13px 0 0; padding: 0; list-style: none; }
+    .output-list li { position: relative; padding: 8px 8px 8px 31px; border-top: 1px solid var(--line); color: #36423c; font-size: 13px; line-height: 1.42; }
+    .output-list li::before { content: "\2713"; position: absolute; left: 7px; top: 8px; color: var(--green); font-weight: 900; }
+    .output-list li.no { color: #75514b; background: var(--coral-soft); }
+    .output-list li.no::before { content: "\00D7"; color: var(--coral); }
+    .output-list strong { display: block; color: var(--ink); font-size: 13px; }
+    .case-takeaway { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 14px; padding: 12px 16px; border-left: 4px solid var(--green); background: #f5f8f6; color: #3e4944; font-size: 14px; line-height: 1.48; }
+    .case-takeaway b { color: var(--green); font: 850 11px/1.2 var(--mono-font); text-transform: uppercase; }
+    .case-takeaway.danger { border-color: var(--coral); background: var(--coral-soft); }
+    .case-takeaway.danger b { color: var(--coral); }
+
+    .fixture-layout { height: 100%; display: grid; grid-template-columns: 0.88fr 1.12fr; gap: 34px; align-items: center; }
+    .fixture-score { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .fixture-total { padding: 25px; border-top: 5px solid var(--green); background: var(--green-soft); }
+    .fixture-total.stop { border-color: var(--coral); background: var(--coral-soft); }
+    .fixture-total strong { display: block; font-size: 50px; }
+    .fixture-total span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .shape-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 18px; }
+    .shape { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.35; }
+    .shape b { color: var(--green); font: 800 11px/1 var(--mono-font); margin-right: 7px; }
+    .gate-box { grid-column: 1 / -1; margin-top: 8px; padding: 13px 16px; border-left: 4px solid var(--coral); background: #fff8f6; color: #5b4541; font-size: 13px; line-height: 1.55; }
+
+    .roadmap-layout { height: 100%; display: grid; grid-template-rows: auto 1fr auto; gap: 24px; }
+    .roadmap { display: grid; grid-template-columns: repeat(7, 1fr); align-items: stretch; border-top: 1px solid var(--ink); border-left: 1px solid var(--line); }
+    .roadmap-step { min-width: 0; padding: 17px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; grid-template-rows: auto auto 1fr; gap: 11px; }
+    .roadmap-step .num { color: var(--green); font: 850 12px/1 var(--mono-font); }
+    .roadmap-step h3 { margin: 0; font-size: 17px; line-height: 1.3; word-break: keep-all; }
+    .roadmap-step p { margin: 0; align-self: end; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .roadmap-step.now { background: var(--green-soft); box-shadow: inset 0 4px var(--green); }
+    .roadmap-step.later { background: var(--blue-soft); }
+    .roadmap-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .roadmap-foot div { padding: 14px 16px; border-left: 4px solid var(--green); background: #f6f8f7; font-size: 13px; line-height: 1.5; }
+    .roadmap-foot div:last-child { border-color: var(--coral); }
+
+    .finish-layout { height: 100%; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 46px; align-items: center; }
+    .decision-list { margin: 28px 0 0; padding: 0; list-style: none; }
+    .decision-list li { position: relative; padding: 13px 0 13px 34px; border-top: 1px solid var(--line); font-size: 17px; line-height: 1.45; }
+    .decision-list li::before { content: ""; position: absolute; left: 5px; top: 18px; width: 13px; height: 13px; border: 2px solid var(--green); background: var(--green-soft); }
+    .start-signal { padding: 28px; background: var(--ink); color: white; }
+    .start-signal h3 { margin: 0; font-size: 28px; }
+    .start-signal p { margin: 16px 0 0; color: #ced7d3; font-size: 16px; line-height: 1.65; }
+    .reference-links { display: grid; gap: 8px; margin-top: 24px; }
+    .reference-links a { display: block; padding: 10px 12px; border: 1px solid #59635f; color: white; font-size: 12px; text-decoration: none; }
+    .reference-links a:hover { border-color: #91d4b8; }
+
+    .deck-controls {
+      min-height: 62px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 18px;
+      padding: 9px max(14px, calc((100vw - 1280px) / 2));
+      border-top: 1px solid #d2dad6;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+    }
+    .control-group { display: flex; align-items: center; gap: 8px; }
+    .control-group:last-child { justify-self: end; }
+    .control-button {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border: 1px solid #ccd5d0;
+      border-radius: var(--radius);
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 760;
+    }
+    .control-button:hover { border-color: var(--green); color: var(--green); }
+    .control-button:disabled { opacity: 0.38; cursor: not-allowed; }
+    .control-button svg { width: 16px; height: 16px; }
+    .page-status { min-width: 94px; text-align: center; color: var(--muted); font: 700 13px/1 var(--mono-font); }
+    .keyboard-hint { justify-self: start; color: #66716c; font-size: 11px; }
+    .keyboard-hint kbd { padding: 2px 5px; border: 1px solid #ccd5d0; border-bottom-width: 2px; background: white; font: 700 10px/1.4 var(--mono-font); }
+    .screen-reader-status { position: fixed; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+    dialog {
+      width: min(1040px, calc(100vw - 30px));
+      max-height: min(760px, calc(100dvh - 30px));
+      padding: 0;
+      border: 1px solid #cdd6d1;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+    dialog::backdrop { background: rgba(11, 18, 15, 0.62); }
+    .overview-header { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; padding: 17px 20px; border-bottom: 1px solid var(--line); background: white; }
+    .overview-header h2 { margin: 0; font-size: 20px; }
+    .overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 18px; }
+    .overview-card { min-height: 122px; padding: 14px; display: grid; grid-template-rows: auto 1fr; gap: 10px; border: 1px solid var(--line); background: #f8faf9; text-align: left; cursor: pointer; }
+    .overview-card:hover, .overview-card[aria-current="true"] { border-color: var(--green); background: var(--green-soft); }
+    .overview-card span { color: var(--green); font: 800 11px/1 var(--mono-font); }
+    .overview-card strong { align-self: end; font-size: 16px; line-height: 1.35; word-break: keep-all; }
+
+    :focus-visible { outline: 3px solid #7ca2ff; outline-offset: 3px; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .js .slide { transition: opacity 180ms ease, transform 180ms ease; }
+      .control-button, .overview-card { transition: border-color 150ms ease, color 150ms ease, background 150ms ease; }
+    }
+
+    @media (max-width: 1100px) {
+      .deck-viewport { padding: 10px; }
+      .slide { padding-left: 20px; padding-right: 20px; }
+      .slide::after { left: 20px; right: 20px; }
+      .slide-body { padding-left: 12px; padding-right: 12px; }
+      .hierarchy-track { gap: 4px; }
+      .hierarchy-node { width: 114px; min-height: 165px; }
+      .storage-lane { padding: 15px; }
+      .case-stage { grid-template-columns: 0.78fr 20px 1.1fr 20px 1fr; gap: 8px; }
+      .case-panel { padding: 13px 14px; }
+      .data-row { grid-template-columns: 72px minmax(0, 1fr); gap: 7px; }
+      .roadmap-step { padding: 13px 10px; }
+      .roadmap-step h3 { font-size: 14px; }
+      .control-button .wide-label, .keyboard-hint { display: none; }
+    }
+
+    @media (min-width: 681px) and (max-height: 820px) {
+      .js .deck { width: min(100%, 1280px, calc(177.7778dvh - 188.444px)); }
+      .slide-body { padding-top: 24px; padding-bottom: 22px; }
+      .hierarchy-layout { gap: 18px; }
+      .hierarchy-node { width: 145px; min-height: 160px; }
+      .anatomy-layout { gap: 28px; }
+      .anatomy-item { min-height: 300px; padding: 22px; }
+      .facet-list { gap: 10px; }
+      .facet { min-height: 100px; padding: 14px; }
+      .case-layout { gap: 13px; }
+      .case-stage { gap: 7px; }
+      .case-panel { padding-top: 12px; padding-bottom: 12px; }
+      .source-quote { margin-top: 12px; font-size: 16px; }
+      .source-detail { margin-top: 10px; }
+      .data-stack, .output-list { margin-top: 9px; }
+      .output-list { gap: 4px; }
+      .output-list li { padding-top: 6px; padding-bottom: 6px; }
+      .output-list li::before { top: 6px; }
+    }
+
+    @media (max-width: 680px) {
+      .deck-app { min-height: 100dvh; grid-template-rows: minmax(0, 1fr) auto; }
+      .deck-viewport { display: block; padding: 0; overflow: hidden; }
+      .deck { width: 100%; height: 100%; min-height: 0; aspect-ratio: auto; border: 0; box-shadow: none; }
+      .slide { grid-template-rows: 48px minmax(0, 1fr); padding: 0 12px 16px; }
+      .slide::after { display: none; }
+      .slide-header { grid-template-columns: minmax(0, 1fr) 28px; gap: 8px; }
+      .slide-brand span, .slide-progress { display: none; }
+      .slide-body { padding: 26px 4px 34px; overflow-y: auto; overscroll-behavior: contain; }
+      .slide-title, h2.slide-title { font-size: clamp(30px, 9.5vw, 42px); line-height: 1.12; }
+      .lead { margin-top: 16px; font-size: 16px; line-height: 1.68; }
+      .cover-layout, .answer-layout, .projection-stage, .anatomy-layout, .ownership-layout, .timing-layout, .fixture-layout, .finish-layout { grid-template-columns: 1fr; height: auto; align-items: start; gap: 28px; }
+      .cover-copy { padding-bottom: 0; }
+      .cover-note { margin-top: 20px; }
+      .cover-visual { width: 78%; justify-self: center; }
+      .answer-core { min-height: 178px; }
+      .answer-core::before, .answer-core::after { display: none; }
+      .answer-list { gap: 4px; }
+      .answer-row { grid-template-columns: 68px 1fr; }
+      .quick-example { grid-template-columns: 1fr; gap: 5px; }
+      .quick-example i { padding: 0 2px; }
+      .answer-core { min-height: 220px; }
+      .answer-example { grid-template-columns: 1fr; text-align: center; }
+      .answer-example b { grid-row: auto; }
+      .projection-layout, .hierarchy-layout, .axis-layout, .storage-layout, .metrics-layout, .case-layout, .roadmap-layout { height: auto; }
+      .projection-stage { gap: 30px; }
+      .item-disc { width: 150px; }
+      .projection-row::before { display: none; }
+      .hierarchy-track { grid-template-columns: 1fr; justify-content: stretch; }
+      .hierarchy-node { width: 100%; min-height: 0; grid-template-columns: 92px 1fr; grid-template-rows: 1fr; }
+      .hierarchy-node b { border-bottom: 0; border-right: 1px solid var(--line); }
+      .hierarchy-node div { align-content: center; }
+      .hierarchy-track > .arrow { transform: rotate(90deg); justify-self: center; }
+      .facet-list, .axis-table, .fixture-score, .shape-list, .roadmap-foot { grid-template-columns: 1fr; }
+      .facet-example, .gate-box { grid-column: auto; }
+      .ownership-layer { grid-template-columns: 30px 1fr; }
+      .ownership-layer span { grid-column: 2; }
+      .storage-lanes, .metrics, .roadmap { grid-template-columns: 1fr; }
+      .storage-lane { min-height: 190px; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .metric { min-height: 104px; border-left: 1px solid var(--line); }
+      .scatter-message { grid-template-columns: 1fr; }
+      .scatter-message .arrow { transform: rotate(90deg); justify-self: center; }
+      .case-heading { grid-template-columns: 1fr; align-items: start; }
+      .case-index { justify-self: start; }
+      .case-layout { grid-template-rows: auto auto auto; }
+      .case-stage { min-height: auto; grid-template-columns: 1fr; }
+      .case-stage > .case-arrow { transform: rotate(90deg); justify-self: center; }
+      .case-panel { padding: 18px; }
+      .case-takeaway { grid-template-columns: 1fr; gap: 6px; }
+      .foundation-row { grid-template-columns: 38px 1fr; }
+      .foundation-row span { grid-column: 2; }
+      .roadmap-step { min-height: 132px; }
+      .deck-controls { min-height: 58px; grid-template-columns: auto 1fr auto; padding: 8px 10px; }
+      .control-group:last-child .control-button:not(#overviewButton) { display: none; }
+      .page-status { min-width: 70px; }
+      .overview-grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      html, body { width: 13.333in; height: auto; background: white; }
+      body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .deck-app, .deck-viewport { display: block; min-height: 0; padding: 0; overflow: visible; }
+      .deck, .js .deck { width: 13.333in; height: auto !important; aspect-ratio: auto !important; border: 0; box-shadow: none; overflow: visible !important; }
+      .slide, .js .slide, .js .slide.is-active {
+        width: 13.333in;
+        height: 7.5in;
+        min-height: 7.5in;
+        display: grid !important;
+        position: relative !important;
+        inset: auto;
+        opacity: 1 !important;
+        pointer-events: auto;
+        transform: none !important;
+        transition: none !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide-body { overflow: hidden; }
+      .deck-controls, dialog, .screen-reader-status { display: none !important; }
+    }
+  </style>
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M4 12h15M14 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="icon-fullscreen" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icon-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-item" viewBox="0 0 64 64"><rect x="13" y="10" width="38" height="44" rx="3" fill="none" stroke="currentColor" stroke-width="3"/><path d="M22 23h4v4h-4zM32 25h11M22 35h4v4h-4zM32 37h11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="47" cy="48" r="10" fill="currentColor"/><path d="m42 48 4 4 7-8" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-calendar" viewBox="0 0 32 32"><rect x="4" y="6" width="24" height="22" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 3v6M23 3v6M4 12h24" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 32 32"><path d="m4 8 3 3 5-6M15 8h13M4 17l3 3 5-6M15 17h13M4 26l3 3 5-6M15 26h13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-sheet" viewBox="0 0 32 32"><rect x="4" y="4" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 11h24M4 18h24M11 4v24M20 4v24" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="icon-memo" viewBox="0 0 32 32"><rect x="5" y="4" width="22" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 11h12M10 16h12M10 21h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <main class="deck-app">
+    <div class="deck-viewport">
+      <article class="deck" id="deck" aria-label="FlowMe canonical data model presentation">
+        <section class="slide is-active" id="slide-01" data-title="Flow의 최소 단위는 ICS가 아니라 Item" role="group" aria-roledescription="slide" aria-labelledby="title-01">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>URL→Flow Backend</span></div><div class="slide-progress"></div><div class="slide-number">01</div></header>
+          <div class="slide-body cover-layout">
+            <div class="cover-copy">
+              <span class="rule-label">URL→Flow 백엔드의 핵심 결정</span>
+              <h1 class="slide-title" id="title-01">Flow의 최소 단위는<br><span class="accent">ICS가 아니라 Item</span>입니다</h1>
+              <p class="lead">URL 하나가 실행 가능한 계획이 되려면, 모든 결과를 담는 공통 데이터 그릇이 먼저 필요합니다.</p>
+              <div class="quick-example"><b>간단 예시</b><p><strong>원문 “여권”</strong><i>→</i><strong>Item “여권 챙기기”</strong><i>→</i><strong>체크리스트</strong><br>날짜가 없으므로 ICS는 만들지 않습니다.</p></div>
+            </div>
+            <svg class="cover-visual" viewBox="0 0 440 380" aria-label="URL에서 Item 중심 Flow로 변환되는 구조">
+              <g fill="none" stroke="#b7c3bd" stroke-width="1.5">
+                <path d="M60 95 220 22l160 73-160 76zM60 95v155l160 90 160-90V95M220 171v169"/>
+                <path d="M60 250 220 171l160 79M140 58v155l160 88M300 58v155l-160 88" stroke-dasharray="5 5"/>
+              </g>
+              <g transform="translate(152 118)">
+                <path d="M68 0 136 38 68 76 0 38Z" fill="#157252"/>
+                <path d="M0 38 68 76v84L0 121Z" fill="#0f5f46"/>
+                <path d="M136 38 68 76v84l68-39Z" fill="#0a4936"/>
+                <path d="M0 38 68 76l68-38M68 76v84" fill="none" stroke="white" stroke-width="3"/>
+              </g>
+              <circle cx="60" cy="95" r="5" fill="#0f654a"/><circle cx="220" cy="22" r="5" fill="#0f654a"/><circle cx="380" cy="95" r="5" fill="#0f654a"/>
+              <text x="220" y="370" text-anchor="middle" fill="#0f654a" font-family="Arial, sans-serif" font-size="18" font-weight="700">Canonical Item</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-02" data-title="Item은 혼자 상태를 갖는 최소 행동" role="group" aria-roledescription="slide" aria-labelledby="title-02">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Canonical Data Model</span></div><div class="slide-progress"></div><div class="slide-number">02</div></header>
+          <div class="slide-body answer-layout">
+            <div class="answer-core" aria-hidden="true"><span class="item-word">Item</span><div class="answer-example"><b>간단 예시</b><strong>예약 확인 완료 ≠ 기관 방문 완료</strong><span>서로 따로 끝나므로 건강검진 Item은 2개</span></div></div>
+            <div>
+              <span class="rule-label">Item의 경계</span>
+              <h2 class="slide-title" id="title-02">Item은 <span class="accent">‘혼자 상태를 갖는<br>최소 행동’</span>입니다</h2>
+              <div class="answer-list">
+                <div class="answer-row"><b>ITEM</b><div><strong>혼자 상태를 가질 수 있는 최소 행동</strong><p>완료·보류·결정·기록 중 하나를 독립적으로 할 수 있습니다.</p></div></div>
+                <div class="answer-row"><b>STEP</b><div><strong>Item을 이해하기 좋게 묶는 단계</strong><p>그룹일 뿐, 자식 Item의 완료 상태를 대신 저장하지 않습니다.</p></div></div>
+                <div class="answer-row"><b>SOURCE</b><div><strong>SourceRow가 행동의 근거를 증명</strong><p>어떤 원문 행에서 행동이 나왔는지 추적합니다.</p></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-03" data-title="한 번 저장하고 필요한 곳에서 다르게 사용" role="group" aria-roledescription="slide" aria-labelledby="title-03">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Projection</span></div><div class="slide-progress"></div><div class="slide-number">03</div></header>
+          <div class="slide-body projection-layout">
+            <div><span class="rule-label">하나의 Item, 여러 출력</span><h2 class="slide-title" id="title-03">한 번 저장하고,<br><span class="accent">필요한 곳에서 다르게 씁니다</span></h2></div>
+            <div class="projection-stage">
+              <div class="item-hub"><div class="item-disc"><svg aria-hidden="true"><use href="#icon-item"></use></svg></div><strong>Item</strong><p class="projection-foot"><strong>간단 예시</strong>“에어컨 극세 필터 청소하기” 하나 → 4주 반복 ICS + 매회 체크 + 청소 방법 Memo</p></div>
+              <div class="projection-list">
+                <div class="projection-row"><span class="projection-icon"><svg aria-hidden="true"><use href="#icon-calendar"></use></svg></span><div><strong>Calendar / ICS</strong><span>일정과 반복이 있을 때만</span></div></div>
+                <div class="projection-row"><span class="projection-icon"><svg aria-hidden="true"><use href="#icon-check"></use></svg></span><div><strong>Checklist / Todo</strong><span>완료·결정 기준을 순서대로</span></div></div>
+                <div class="projection-row"><span class="projection-icon"><svg aria-hidden="true"><use href="#icon-sheet"></use></svg></span><div><strong>Sheet</strong><span>Item은 행, 기록 Field는 열</span></div></div>
+                <div class="projection-row"><span class="projection-icon"><svg aria-hidden="true"><use href="#icon-memo"></use></svg></span><div><strong>Memo</strong><span>방법·링크·주의·출처를 손실 없이</span></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-04" data-title="Flow 구조는 네 단계" role="group" aria-roledescription="slide" aria-labelledby="title-04">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Hierarchy</span></div><div class="slide-progress"></div><div class="slide-number">04</div></header>
+          <div class="slide-body hierarchy-layout">
+            <div><span class="rule-label">구조</span><h2 class="slide-title" id="title-04">Flow의 구조는 <span class="accent">네 단계</span>면 충분합니다</h2></div>
+            <div class="hierarchy-track" aria-label="SourceRow에서 Bundle까지의 계층">
+              <article class="hierarchy-node source"><b>SourceRow</b><div><strong>근거</strong><p>원문 데이터의 한 행</p></div></article><svg class="arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node item"><b>Item</b><div><strong>실행</strong><p>독립 상태를 갖는 최소 행동</p></div></article><svg class="arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node"><b>Step</b><div><strong>단계</strong><p>관련 Item을 묶음</p></div></article><svg class="arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node"><b>Flow</b><div><strong>목표</strong><p>하나의 사용자 job</p></div></article><svg class="arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="hierarchy-node"><b>Bundle</b><div><strong>발견</strong><p>관련 Flow의 묶음</p></div></article>
+            </div>
+            <div class="evidence-rail"><b>간단 예시</b>원문 “여권” → Item “여권 챙기기” → Step “필수 준비물” → Flow “해외여행 준비물 체크” → Bundle “해외여행 준비물”<span class="rail-note">Field는 값, Memo는 방법·설명·주의를 맡고 SourceRow는 이 행동의 근거를 증명합니다.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-05" data-title="Item이 언제 어떻게 끝났는지 기억" role="group" aria-roledescription="slide" aria-labelledby="title-05">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Item Anatomy</span></div><div class="slide-progress"></div><div class="slide-number">05</div></header>
+          <div class="slide-body anatomy-layout">
+            <div class="anatomy-item"><h3>Canonical Item</h3><p>하나의 Item이 동시에<br><strong>반복되고</strong>, <strong>체크 가능하고</strong>,<br><strong>기록값</strong>과 <strong>주의</strong>를 가질 수 있습니다.</p><code>stable identity · independent state</code></div>
+            <div>
+              <span class="rule-label">서로 다른 정보를 한 타입에 압축하지 않기</span>
+              <h2 class="slide-title" id="title-05">Item 하나가<br><span class="accent">‘언제·어떻게·끝났는지’</span> 기억합니다</h2>
+              <div class="facet-list" style="margin-top:22px">
+                <article class="facet"><b>언제</b><p>고정일 · 기준일 ±N · 기간 · 반복</p></article>
+                <article class="facet"><b>어떻게 끝나는가</b><p>체크 · 선택/결정 · 값 기록</p></article>
+                <article class="facet"><b>무엇을 입력하는가</b><p>날짜 · 숫자 · 선택 · 파일 · 메모</p></article>
+                <article class="facet"><b>왜 믿을 수 있는가</b><p>원문 행 · 출처 · 주의 · 적용 범위</p></article>
+                <div class="facet-example"><strong>간단 예시:</strong> “자동차 정기검사 받기” 한 Item = 만료일 11월 30일 입력 + 10월 30일~11월 30일 기간 + 11월 16일 알림 + 완료 체크 + 결과·주의 Memo.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-06" data-title="카테고리는 네 가지 질문" role="group" aria-roledescription="slide" aria-labelledby="title-06">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Classification</span></div><div class="slide-progress"></div><div class="slide-number">06</div></header>
+          <div class="slide-body axis-layout">
+            <div><span class="rule-label">분류 축</span><h2 class="slide-title" id="title-06">카테고리는 한 줄이 아니라<br><span class="accent">네 가지 질문</span>입니다</h2></div>
+            <div class="axis-table">
+              <article class="axis-cell"><b><span>01</span>어느 생활 영역인가?</b><p>집·생활, 공부, 돈·행정, 건강, 여행, 일·커리어처럼 찾기 위한 선반입니다.</p><em>간단 예시: 에어컨 필터 청소 → 집·생활</em></article>
+              <article class="axis-cell"><b><span>02</span>어떤 진행 방식인가?</b><p>날짜 준비, 순서 절차, 반복 루틴, 표의 행, 비교·결정처럼 구조를 설명합니다.</p><em>간단 예시: 에어컨 필터 청소 → 4주 반복</em></article>
+              <article class="axis-cell"><b><span>03</span>어디에서 쓰는가?</b><p>달력, 체크리스트, 할 일, 표, 메모 중 가장 자연스러운 출력입니다.</p><em>간단 예시: 에어컨 필터 청소 → Calendar / ICS</em></article>
+              <article class="axis-cell"><b><span>04</span>실제로 무엇을 하는가?</b><p>행동, 확인, 결정, 기록, 자료 사용을 Item마다 조합합니다.</p><em>간단 예시: 필터 청소하기 → 행동 + 완료 체크</em></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-07" data-title="원문과 내 기록은 서로 덮어쓰지 않음" role="group" aria-roledescription="slide" aria-labelledby="title-07">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Ownership</span></div><div class="slide-progress"></div><div class="slide-number">07</div></header>
+          <div class="slide-body ownership-layout">
+            <div class="ownership-stack" aria-label="에어컨 필터 청소 예시의 데이터 우선순위">
+              <div class="ownership-stack-label">간단 예시 · 에어컨 필터 4주 청소</div>
+              <div class="ownership-layer"><i>1</i><b>원문·발행 콘텐츠</b><span>공식 “4주마다” 주기와 원문 링크</span></div>
+              <div class="ownership-layer"><i>2</i><b>개인 수정</b><span>내 시작일을 7월 14일로 설정</span></div>
+              <div class="ownership-layer"><i>3</i><b>실행 기록</b><span>7월 14일 회차를 청소 완료로 체크</span></div>
+              <div class="ownership-layer"><i>4</i><b>특정 회차 수정</b><span>이번 회차만 7월 15일로 이동</span></div>
+            </div>
+            <div>
+              <span class="rule-label">소유권</span>
+              <h2 class="slide-title" id="title-07">원문과 내 기록은<br><span class="accent">서로 덮어쓰지 않습니다</span></h2>
+              <div class="ownership-callout" style="margin-top:24px"><h3>사용자의 실행을 지키는 규칙</h3><ul><li>새 콘텐츠 버전은 저장한 Flow에 자동 적용하지 않습니다.</li><li>삭제된 Item에 개인 기록이 있으면 선택 전까지 보존합니다.</li><li>AI 생성 기록과 내부 품질 검토는 사용자 콘텐츠 밖에 둡니다.</li></ul></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-08" data-title="백엔드는 네 저장 영역" role="group" aria-roledescription="slide" aria-labelledby="title-08">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Storage Boundary</span></div><div class="slide-progress"></div><div class="slide-number">08</div></header>
+          <div class="slide-body storage-layout">
+            <div><span class="rule-label">저장소 구조</span><h2 class="slide-title" id="title-08">백엔드는 <span class="accent">네 개의 저장 영역</span>으로 나눕니다</h2><p class="lead">원문·검토된 콘텐츠·변환 작업·개인 실행을 한 JSON이나 한 테이블에 섞지 않습니다.</p></div>
+            <div class="storage-lanes">
+              <article class="storage-lane"><span class="index">01</span><h3>원문 보관</h3><p>URL과 추출 시점, 실제 원문 행을 변하지 않는 근거로 남깁니다.</p><ul><li class="storage-example"><b>간단 예시</b>“극세 필터 4주에 한 번”</li><li class="storage-entities">Source · Snapshot · SourceRow</li></ul></article>
+              <article class="storage-lane"><span class="index">02</span><h3>검토된 콘텐츠</h3><p>Flow·Step·Item을 버전 고정된 공통 모델로 보존합니다.</p><ul><li class="storage-example"><b>간단 예시</b>“에어컨 극세 필터 청소하기”</li><li class="storage-entities">Content version · Item · SourceRef</li></ul></article>
+              <article class="storage-lane"><span class="index">03</span><h3>변환 작업</h3><p>AI 초안, 검증 결과, 사람의 수정과 검토 상태를 저장합니다.</p><ul><li class="storage-example"><b>간단 예시</b>AI가 “2주” 제안 → 공식 4주와 달라 반려</li><li class="storage-entities">Request · Proposal · Review</li></ul></article>
+              <article class="storage-lane"><span class="index">04</span><h3>개인 실행</h3><p>저장한 Flow, 개인 수정, 반복 회차와 완료 기록을 분리합니다.</p><ul><li class="storage-example"><b>간단 예시</b>7월 14일 회차 완료 + 개인 메모</li><li class="storage-entities">User copy · Overlay · Execution run</li></ul></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-09" data-title="저장소는 먼저 LLM은 나중" role="group" aria-roledescription="slide" aria-labelledby="title-09">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>DB &amp; LLM Timing</span></div><div class="slide-progress"></div><div class="slide-number">09</div></header>
+          <div class="slide-body timing-layout">
+            <div class="foundation" aria-label="백엔드 준비 순서">
+              <div class="foundation-row"><span class="step">01</span><b>데이터 계약</b><span>어떤 결과만 저장 가능한지 정의</span></div>
+              <div class="foundation-row"><span class="step">02</span><b>검증기</b><span>잘못된 구조·출처·일정을 저장 전에 차단</span></div>
+              <div class="foundation-row"><span class="step">03</span><b>Repository / DB</b><span>출처·버전·개인 상태를 안전하게 보존</span></div>
+              <div class="foundation-row"><span class="step">04</span><b>URL 수집·추출</b><span>LLM 전에 원문 행과 권리·위험 확인</span></div>
+              <div class="foundation-row"><span class="step">05</span><b>Fake generator</b><span>상태·실패·재시도를 실제 비용 없이 검증</span></div>
+              <div class="foundation-row"><span class="step">06</span><b>실제 LLM</b><span>검증된 proposal만 만드는 교체 가능한 adapter</span></div>
+            </div>
+            <div>
+              <span class="rule-label">준비 시점</span>
+              <h2 class="slide-title" id="title-09">저장소는 먼저,<br><span class="accent-blue">LLM은 나중</span>입니다</h2>
+              <div class="timing-answer" style="margin-top:24px"><h3>DB: 필요합니다</h3><dl><dt>왜?</dt><dd>출처·버전·개인 수정·실행 이력을 지켜야 하기 때문입니다.</dd><dt>간단 예시 · LLM 없이 먼저 할 수 있는 일</dt><dd>공식 “4주마다” 원문 행 → 반복 간격 4 fixture → validator·DB 저장 계약 검증</dd></dl></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-10" data-title="문제는 데이터 양보다 의미의 분산" role="group" aria-roledescription="slide" aria-labelledby="title-10">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Current Inventory · 2026-07-11</span></div><div class="slide-progress"></div><div class="slide-number">10</div></header>
+          <div class="slide-body metrics-layout">
+            <div><span class="rule-label">현재 데이터 스냅샷</span><h2 class="slide-title" id="title-10">문제는 데이터의 양이 아니라<br><span class="accent">의미의 분산</span>입니다</h2></div>
+            <div class="metrics">
+              <div class="metric"><strong>593</strong><span>Flow bundles<br>여러 세대 콘텐츠</span></div>
+              <div class="metric"><strong>3,064</strong><span>Flow Items<br>stable ID 필요</span></div>
+              <div class="metric"><strong>781</strong><span>Flow Sections<br>Step 후보</span></div>
+              <div class="metric warn"><strong>90</strong><span>서로 다른 category 문자열</span></div>
+              <div class="metric warn"><strong>464/593</strong><span>primary destination 누락</span></div>
+            </div>
+            <div class="scatter-message">
+              <div class="scatter"><span class="example-tag">간단 예시 · 기존 건강검진 데이터</span><span>day_offset: -7</span><span>itemType: calendar</span><span>source link</span><span>완료 체크</span></div>
+              <svg class="arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <div class="gather"><b>Canonical Item</b><p>“검진 대상과 예약 상태 확인하기”<br>anchor offset -7 · completion · sourceRef</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-11" data-title="예시 1 · 에어컨 필터 4주 청소" role="group" aria-roledescription="slide" aria-labelledby="title-11">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Example 1 · Fixed Routine</span></div><div class="slide-progress"></div><div class="slide-number">11</div></header>
+          <div class="slide-body case-layout">
+            <div class="case-heading"><div><span class="rule-label">실제 예시 1 · 반복 루틴</span><h2 class="slide-title" id="title-11">“4주마다 청소”는 <span class="accent">반복 Item 하나</span>가 됩니다</h2></div><div class="case-index">SOURCE → ITEM → ICS</div></div>
+            <div class="case-stage">
+              <article class="case-panel source"><span class="case-panel-label">01 · 원문 행</span><h3>삼성전자서비스 안내</h3><p class="source-quote">“극세 필터 4주에 한 번 청소”</p><p class="source-detail">먼지 제거 → 필요 시 물세척 → 그늘에서 충분히 건조</p></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel canonical"><span class="case-panel-label">02 · Canonical data</span><h3>에어컨 극세 필터 청소하기</h3><div class="data-stack"><div class="data-row"><b>schedule</b><span>2026-07-14 시작 · 4주마다 반복 · sourceDefined</span></div><div class="data-row"><b>completion</b><span>청소·건조 후 다시 장착하면 완료</span></div><div class="data-row"><b>memo</b><span>청소 방법은 별도 설명으로 연결</span></div><div class="data-row"><b>sourceRef</b><span>공식 SourceRow 1개와 직접 연결</span></div></div></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel output"><span class="case-panel-label">03 · 실제 출력</span><h3>사용자 도구에는 이렇게 보임</h3><ul class="output-list"><li><strong>Calendar / ICS</strong>7월 14일부터 4주 반복 일정</li><li><strong>Checklist</strong>매 회차 청소 완료 체크</li><li><strong>Memo</strong>방법·공식 링크·모델 확인 주의</li><li class="no"><strong>생성하지 않음</strong>Sheet와 별도 Todo</li></ul></article>
+            </div>
+            <div class="case-takeaway"><b>왜 1 Item?</b><span>먼지 제거·물세척·건조는 독립 목표가 아니라 “필터 청소 완료”를 위한 방법이므로 Memo에 둡니다.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-12" data-title="예시 2 · 건강검진 D-7 준비" role="group" aria-roledescription="slide" aria-labelledby="title-12">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Example 2 · D-day Timeline</span></div><div class="slide-progress"></div><div class="slide-number">12</div></header>
+          <div class="slide-body case-layout">
+            <div class="case-heading"><div><span class="rule-label">실제 예시 2 · 기준일 타임라인</span><h2 class="slide-title" id="title-12">검진일 하나를 입력하면 <span class="accent">두 날짜</span>가 계산됩니다</h2></div><div class="case-index">2 ROWS → 2 ITEMS</div></div>
+            <div class="case-stage">
+              <article class="case-panel source"><span class="case-panel-label">01 · 원문 행</span><h3>국민건강보험 안내</h3><p class="source-quote">① 검진 대상·예약 확인<br>② 검진기관 방문</p><p class="source-detail">사용자 입력 예시: <strong>검진일 2026-08-20</strong></p></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel canonical"><span class="case-panel-label">02 · Canonical data</span><h3>Flow 1 · Step 2 · Item 2</h3><div class="data-stack"><div class="data-row"><b>D-7 Item</b><span>검진 대상과 예약 상태 확인하기 · offset −7</span></div><div class="data-row"><b>D-Day Item</b><span>검진기관 방문하기 · offset 0</span></div><div class="data-row"><b>Field</b><span>검진일 · date · 사용자 입력 · 필수</span></div><div class="data-row"><b>Caution</b><span>결과 해석은 하지 않고 공식 안내를 우선</span></div></div></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel output"><span class="case-panel-label">03 · 실제 출력</span><h3>검진일을 8월 20일로 입력하면</h3><ul class="output-list"><li><strong>8월 13일 · Calendar</strong>대상과 예약 상태 확인</li><li><strong>8월 20일 · Calendar</strong>예약한 검진기관 방문</li><li><strong>Checklist / Memo</strong>두 완료 기준 + 공식 출처 + 주의</li><li class="no"><strong>생성하지 않음</strong>검진 결과 해석과 XLSX</li></ul></article>
+            </div>
+            <div class="case-takeaway"><b>분해 기준</b><span>두 원문 행이 각각 다른 날짜와 완료 상태를 가지므로 Item도 2개입니다. Step은 “검진 전”과 “당일”을 묶기만 합니다.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-13" data-title="예시 3 · 해외여행 준비물 체크" role="group" aria-roledescription="slide" aria-labelledby="title-13">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Example 3 · Source Checklist</span></div><div class="slide-progress"></div><div class="slide-number">13</div></header>
+          <div class="slide-body case-layout">
+            <div class="case-heading"><div><span class="rule-label">실제 예시 3 · 날짜 없는 체크리스트</span><h2 class="slide-title" id="title-13">날짜가 없으면 <span class="accent-coral">ICS를 만들지 않습니다</span></h2></div><div class="case-index">CHECKLIST ONLY</div></div>
+            <div class="case-stage">
+              <article class="case-panel source"><span class="case-panel-label">01 · 원문 행</span><h3>해외여행 준비물 글</h3><p class="source-quote">① 여권<br>② 데이터 유심</p><p class="source-detail">원문에는 일정·마감·반복 규칙이 없습니다.</p></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel canonical"><span class="case-panel-label">02 · Canonical data</span><h3>필수 준비물 Step · Item 2개</h3><div class="data-stack"><div class="data-row"><b>Item 1</b><span>여권 챙기기 · 꺼내기 쉬운 가방에 넣으면 완료</span></div><div class="data-row"><b>Item 2</b><span>여행지 데이터 수단 준비하기</span></div><div class="data-row"><b>Memo</b><span>eSIM·유심·로밍 중 실제 수단과 개통 메모</span></div><div class="data-row"><b>schedule</b><span>없음 · 날짜 추측 금지</span></div></div></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel output"><span class="case-panel-label">03 · 실제 출력</span><h3>바로 체크를 시작하는 형태</h3><ul class="output-list"><li><strong>Checklist</strong>☐ 여권 챙기기</li><li><strong>Checklist</strong>☐ 여행지 데이터 수단 준비하기</li><li><strong>Memo</strong>선택한 데이터 수단·원문 링크</li><li class="no"><strong>생성하지 않음</strong>Calendar / ICS와 XLSX</li></ul></article>
+            </div>
+            <div class="case-takeaway danger"><b>중요한 빈칸</b><span>“날짜 없음”은 데이터 누락이 아니라 원문 충실성입니다. 사용자가 날짜를 정하기 전에는 백엔드도 날짜를 발명하지 않습니다.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-14" data-title="예시 4 · 중고차 후보 결정·보류" role="group" aria-roledescription="slide" aria-labelledby="title-14">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Example 4 · Decision &amp; Hold</span></div><div class="slide-progress"></div><div class="slide-number">14</div></header>
+          <div class="slide-body case-layout">
+            <div class="case-heading"><div><span class="rule-label">실제 예시 4 · 비교와 결정</span><h2 class="slide-title" id="title-14">체크 완료가 아니라 <span class="accent">결정 상태</span>를 저장합니다</h2></div><div class="case-index">DECISION → CSV</div></div>
+            <div class="case-stage">
+              <article class="case-panel source"><span class="case-panel-label">01 · 원문 행</span><h3>자동차365 구매가이드</h3><p class="source-quote">“차량 이력과 상태를 확인한 뒤 구매 판단”</p><p class="source-detail">FlowMe는 공식 확인 기준을 연결하지만 구매 결론을 대신 내리지 않습니다.</p></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel canonical"><span class="case-panel-label">02 · Canonical data</span><h3>후보 차량 구매·보류·제외 결정하기</h3><div class="data-stack"><div class="data-row"><b>completion</b><span>decision · 구매 진행 / 보류 / 후보 제외</span></div><div class="data-row"><b>Field</b><span>결정 이유 · long text · export 대상</span></div><div class="data-row"><b>Memo</b><span>보류 이유·추가 확인·다시 볼 날짜</span></div><div class="data-row"><b>Caution</b><span>차량 상태와 구매 적합성 판정 금지</span></div></div></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel output"><span class="case-panel-label">03 · 실제 출력</span><h3>결정과 이유를 옮기는 형태</h3><ul class="output-list"><li><strong>Checklist</strong>결정 옵션과 현재 상태</li><li><strong>Sheet / CSV</strong>상태 · 결정 이유 · 보류 메모 · 출처</li><li><strong>Memo</strong>공식 확인 경계와 추가 확인 항목</li><li class="no"><strong>생성하지 않음</strong>날짜 없는 Calendar / ICS</li></ul></article>
+            </div>
+            <div class="case-takeaway danger"><b>책임 경계</b><span>LLM은 선택지를 정리할 수 있지만 “이 차를 사라”는 결론은 canonical content로 저장할 수 없습니다.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-15" data-title="예시 5 · 자동차 정기검사 날짜 창" role="group" aria-roledescription="slide" aria-labelledby="title-15">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Example 5 · Official Date Window</span></div><div class="slide-progress"></div><div class="slide-number">15</div></header>
+          <div class="slide-body case-layout">
+            <div class="case-heading"><div><span class="rule-label">실제 예시 5 · 공식 기간</span><h2 class="slide-title" id="title-15">공식 절차가 길어도 <span class="accent">사용자 Item은 하나</span>일 수 있습니다</h2></div><div class="case-index">WINDOW → 1 REMINDER</div></div>
+            <div class="case-stage">
+              <article class="case-panel source"><span class="case-panel-label">01 · 원문 행</span><h3>TS 자동차 정기검사 안내</h3><p class="source-quote">정기검사 유효기간</p><p class="source-detail">기관 내부의 관능·ABS·하체·전조등·배출가스 검사는 사용자가 완료할 행동이 아닙니다.</p></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel canonical"><span class="case-panel-label">02 · Canonical data</span><h3>유효기간 안에 자동차 정기검사 받기</h3><div class="data-stack"><div class="data-row"><b>Field</b><span>만료일 2026-11-30 · 사용자 공식 조회값</span></div><div class="data-row"><b>window</b><span>2026-10-30 ~ 2026-11-30</span></div><div class="data-row"><b>reminder</b><span>만료 14일 전 · 2026-11-16</span></div><div class="data-row"><b>completion</b><span>기간 안에 검사하고 결과를 확인</span></div></div></article>
+              <svg class="case-arrow" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              <article class="case-panel output"><span class="case-panel-label">03 · 실제 출력</span><h3>기간 전체를 매일 만들지 않음</h3><ul class="output-list"><li><strong>Calendar / ICS</strong>11월 16일 알림 1개 + 기간 설명</li><li><strong>Checklist</strong>정기검사 완료 Item 1개</li><li><strong>Memo</strong>재검사 안내가 있을 때만 결과 메모</li><li class="no"><strong>생성하지 않음</strong>32개 일일 일정·기관 내부 단계·XLSX</li></ul></article>
+            </div>
+            <div class="case-takeaway"><b>희소해도 정상</b><span>공식 기한과 조건부 다음 행동이 분명하면 Item 하나짜리 Flow도 충분합니다. 항목 수를 늘리려고 내부 절차를 복제하지 않습니다.</span></div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-16" data-title="12개 대표 사례로 성공과 중단 기준 검증" role="group" aria-roledescription="slide" aria-labelledby="title-16">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Golden Fixtures</span></div><div class="slide-progress"></div><div class="slide-number">16</div></header>
+          <div class="slide-body fixture-layout">
+            <div>
+              <span class="rule-label">정적 계약 검증</span>
+              <h2 class="slide-title" id="title-16"><span class="accent">12개 대표 사례</span>로<br>성공과 중단 기준을<br>함께 검증했습니다</h2>
+              <p class="lead">앞의 실제 예시 5개도 이 fixture에서 가져왔습니다. 이는 사용자 검증이 아니라 backend가 만들어도 되는 구조를 확인하는 정적 계약입니다.</p>
+              <div class="fixture-score" style="margin-top:24px"><div class="fixture-total"><strong>10</strong><span>positive · canonical content 생성</span></div><div class="fixture-total stop"><strong>2</strong><span>negative · content 생성 중단</span></div></div>
+            </div>
+            <div>
+              <div class="shape-list">
+                <div class="shape"><b>01</b>D-day 일정</div><div class="shape"><b>02</b>반복 루틴</div>
+                <div class="shape"><b>03</b>원문 체크리스트</div><div class="shape"><b>04</b>순서 절차</div>
+                <div class="shape"><b>05</b>표·진도 기록</div><div class="shape"><b>06</b>메모 중심 실행</div>
+                <div class="shape"><b>07</b>결정·보류</div><div class="shape"><b>08</b>근거·주의</div>
+                <div class="shape"><b>09</b>자료 큐</div><div class="shape"><b>10</b>공식 기간</div>
+              </div>
+              <div class="gate-box"><strong>STOP 01</strong> 원문 행이 아직 없음 → <code>source_import_required</code><br><strong>STOP 02</strong> 국내 적용성이 확인되지 않은 민감 출처 → <code>hold</code><br>각 사례는 만들어야 할 출력과 만들면 안 되는 출력도 함께 검사합니다.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-17" data-title="다음 개발은 계약을 지키는 백엔드" role="group" aria-roledescription="slide" aria-labelledby="title-17">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Implementation Sequence</span></div><div class="slide-progress"></div><div class="slide-number">17</div></header>
+          <div class="slide-body roadmap-layout">
+            <div><span class="rule-label">다음 작업</span><h2 class="slide-title" id="title-17">다음 개발은 <span class="accent">계약을 지키는 백엔드</span>부터 시작합니다</h2></div>
+            <div class="roadmap">
+              <article class="roadmap-step now"><span class="num">01 · NEXT</span><h3>Runtime validator</h3><p>잘못된 draft 저장 차단</p></article>
+              <article class="roadmap-step now"><span class="num">02 · NEXT</span><h3>Compatibility adapter</h3><p>canonical → 현재 FlowBundle</p></article>
+              <article class="roadmap-step"><span class="num">03</span><h3>Projection parity</h3><p>Item 수·출처·일정·export 비교</p></article>
+              <article class="roadmap-step"><span class="num">04</span><h3>Repository / DB</h3><p>local → shadow-write</p></article>
+              <article class="roadmap-step"><span class="num">05</span><h3>URL intake</h3><p>fetch·extract·rights/risk</p></article>
+              <article class="roadmap-step later"><span class="num">06</span><h3>Fake provider</h3><p>실패·취소·재시도 검증</p></article>
+              <article class="roadmap-step later"><span class="num">07 · LATER</span><h3>Real LLM</h3><p>검증된 proposal만 생성</p></article>
+            </div>
+            <div class="roadmap-foot"><div><strong>1차 완료 기준</strong><br>기존 화면·Item 수·출처·date window·ICS/text/XLSX 의미가 바뀌지 않습니다.</div><div><strong>안전장치</strong><br>기존 local 데이터는 자동 삭제하지 않고 feature flag로 즉시 되돌립니다.</div></div>
+          </div>
+        </section>
+
+        <section class="slide" id="slide-18" data-title="이번 결정과 개발 시작 신호" role="group" aria-roledescription="slide" aria-labelledby="title-18">
+          <header class="slide-header"><div class="slide-brand"><strong>FlowMe</strong><span>Decision Summary</span></div><div class="slide-progress"></div><div class="slide-number">18</div></header>
+          <div class="slide-body finish-layout">
+            <div>
+              <span class="rule-label">결정 요약</span>
+              <h2 class="slide-title" id="title-18">ICS가 아니라 <span class="accent">Item</span>에서<br>시작합니다</h2>
+              <ul class="decision-list">
+                <li>Item은 최소 실행 단위, SourceRow는 최소 근거 단위입니다.</li>
+                <li>Step은 그룹이고, ICS·체크리스트·시트·메모는 projection입니다.</li>
+                <li>출처·발행 콘텐츠·개인 수정·실행 기록의 소유권을 분리합니다.</li>
+                <li>저장소는 필요하지만 실제 LLM 연결은 검증 이후입니다.</li>
+              </ul>
+            </div>
+            <aside class="start-signal">
+              <h3>개발 시작 신호</h3>
+              <p>Runtime validator와 canonical→FlowBundle adapter가 golden fixture를 통과하고, 현재 export 의미와 parity를 증명하면 repository와 URL intake 구현을 시작합니다.</p>
+              <nav class="reference-links" aria-label="상세 문서 링크">
+                <a href="2026-07-11-flow-canonical-data-model-review-ko.html">긴 형식 한국어 검토 보드</a>
+                <a href="../specs/2026-07-11-canonical-flow-data-model/spec.md">Canonical Flow 전체 스펙</a>
+                <a href="../specs/2026-07-11-canonical-flow-data-model/storage-api-contract.md">Storage / API 계약</a>
+                <a href="../specs/2026-07-11-canonical-flow-data-model/golden-fixtures-v1.json">12개 golden fixture JSON</a>
+              </nav>
+            </aside>
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <nav class="deck-controls" aria-label="슬라이드 탐색">
+      <div class="keyboard-hint"><kbd>←</kbd> <kbd>→</kbd> 이동 · <kbd>O</kbd> 개요 · <kbd>F</kbd> 전체화면</div>
+      <div class="control-group">
+        <button class="control-button" id="prevButton" type="button"><svg aria-hidden="true"><use href="#icon-chevron-left"></use></svg><span class="wide-label">이전</span></button>
+        <output class="page-status" id="pageStatus" aria-label="현재 슬라이드">01 / 18</output>
+        <button class="control-button" id="nextButton" type="button"><span class="wide-label">다음</span><svg aria-hidden="true"><use href="#icon-chevron-right"></use></svg></button>
+      </div>
+      <div class="control-group">
+        <button class="control-button" id="overviewButton" type="button"><svg aria-hidden="true"><use href="#icon-grid"></use></svg><span class="wide-label">개요</span></button>
+        <button class="control-button" id="fullscreenButton" type="button"><svg aria-hidden="true"><use href="#icon-fullscreen"></use></svg><span class="wide-label">전체화면</span></button>
+        <button class="control-button" id="printButton" type="button"><svg aria-hidden="true"><use href="#icon-print"></use></svg><span class="wide-label">인쇄/PDF</span></button>
+      </div>
+    </nav>
+  </main>
+
+  <p class="screen-reader-status" id="liveStatus" aria-live="polite"></p>
+
+  <dialog id="overviewDialog" aria-labelledby="overviewTitle">
+    <header class="overview-header"><h2 id="overviewTitle">슬라이드 개요</h2><button class="control-button" id="closeOverviewButton" type="button">닫기</button></header>
+    <div class="overview-grid" id="overviewGrid"></div>
+  </dialog>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prevButton = document.getElementById('prevButton');
+      const nextButton = document.getElementById('nextButton');
+      const overviewButton = document.getElementById('overviewButton');
+      const fullscreenButton = document.getElementById('fullscreenButton');
+      const printButton = document.getElementById('printButton');
+      const pageStatus = document.getElementById('pageStatus');
+      const liveStatus = document.getElementById('liveStatus');
+      const overviewDialog = document.getElementById('overviewDialog');
+      const overviewGrid = document.getElementById('overviewGrid');
+      const closeOverviewButton = document.getElementById('closeOverviewButton');
+      let currentIndex = 0;
+      let touchStartX = null;
+
+      const pad = (value) => String(value).padStart(2, '0');
+      const hashIndex = () => {
+        const match = location.hash.match(/^#slide-(\d{2})$/);
+        if (!match) return 0;
+        return Math.min(slides.length - 1, Math.max(0, Number(match[1]) - 1));
+      };
+
+      slides.forEach((slide, slideIndex) => {
+        const progress = slide.querySelector('.slide-progress');
+        progress.innerHTML = slides.map((_, index) => `<i class="${index <= slideIndex ? 'on' : ''}"></i>`).join('');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'overview-card';
+        button.dataset.index = String(slideIndex);
+        button.innerHTML = `<span>${pad(slideIndex + 1)}</span><strong>${slide.dataset.title}</strong>`;
+        button.addEventListener('click', () => {
+          overviewDialog.close();
+          showSlide(slideIndex, true);
+        });
+        overviewGrid.appendChild(button);
+      });
+
+      const isInteractiveTarget = (target) => Boolean(target.closest('a, button, input, textarea, select, summary, dialog'));
+
+      function showSlide(index, updateHash = true, announce = true) {
+        currentIndex = Math.min(slides.length - 1, Math.max(0, index));
+        slides.forEach((slide, slideIndex) => {
+          const active = slideIndex === currentIndex;
+          slide.classList.toggle('is-active', active);
+          slide.setAttribute('aria-hidden', String(!active));
+          slide.setAttribute('aria-current', active ? 'true' : 'false');
+          if (active) slide.querySelector('.slide-body').scrollTop = 0;
+        });
+        overviewGrid.querySelectorAll('.overview-card').forEach((button, indexValue) => {
+          button.setAttribute('aria-current', indexValue === currentIndex ? 'true' : 'false');
+        });
+        pageStatus.value = `${pad(currentIndex + 1)} / ${pad(slides.length)}`;
+        pageStatus.textContent = pageStatus.value;
+        prevButton.disabled = currentIndex === 0;
+        nextButton.disabled = currentIndex === slides.length - 1;
+        if (updateHash) history.replaceState(null, '', `#slide-${pad(currentIndex + 1)}`);
+        if (announce) liveStatus.textContent = `${currentIndex + 1} / ${slides.length}, ${slides[currentIndex].dataset.title}`;
+        document.title = `${pad(currentIndex + 1)} · ${slides[currentIndex].dataset.title} | FlowMe`;
+      }
+
+      prevButton.addEventListener('click', () => showSlide(currentIndex - 1));
+      nextButton.addEventListener('click', () => showSlide(currentIndex + 1));
+      overviewButton.addEventListener('click', () => {
+        overviewDialog.showModal();
+        overviewGrid.querySelector('[aria-current="true"]')?.focus();
+      });
+      closeOverviewButton.addEventListener('click', () => overviewDialog.close());
+      fullscreenButton.addEventListener('click', async () => {
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
+        else await document.exitFullscreen?.();
+      });
+      printButton.addEventListener('click', () => window.print());
+
+      document.addEventListener('keydown', (event) => {
+        if (isInteractiveTarget(event.target) || overviewDialog.open) return;
+        if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(event.key)) {
+          event.preventDefault();
+          showSlide(currentIndex + 1);
+        } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) {
+          event.preventDefault();
+          showSlide(currentIndex - 1);
+        } else if (event.key === 'Home') {
+          event.preventDefault();
+          showSlide(0);
+        } else if (event.key === 'End') {
+          event.preventDefault();
+          showSlide(slides.length - 1);
+        } else if (event.key.toLowerCase() === 'o') {
+          event.preventDefault();
+          overviewDialog.showModal();
+        } else if (event.key.toLowerCase() === 'f') {
+          event.preventDefault();
+          fullscreenButton.click();
+        }
+      });
+
+      document.getElementById('deck').addEventListener('touchstart', (event) => {
+        touchStartX = event.changedTouches[0].clientX;
+      }, { passive: true });
+      document.getElementById('deck').addEventListener('touchend', (event) => {
+        if (touchStartX === null) return;
+        const delta = event.changedTouches[0].clientX - touchStartX;
+        touchStartX = null;
+        if (Math.abs(delta) < 55) return;
+        showSlide(currentIndex + (delta < 0 ? 1 : -1));
+      }, { passive: true });
+
+      window.addEventListener('hashchange', () => showSlide(hashIndex(), false));
+      document.addEventListener('fullscreenchange', () => {
+        fullscreenButton.setAttribute('aria-pressed', String(Boolean(document.fullscreenElement)));
+      });
+
+      currentIndex = hashIndex();
+      showSlide(currentIndex, !location.hash, false);
+    })();
+  </script>
+</body>
+</html>

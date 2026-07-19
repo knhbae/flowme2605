@@ -39,6 +39,58 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-12 - 제작자 소유 원문을 실행 상품으로 바꾸는 양면 가치사슬
+
+**Idea:** FlowMe의 초기 진입점을 사용자 혼자 URL을 변환하는 도구로만 보지 않고, 원문 권리를 가진 제작자가 자신의 글·영상·강의·가이드를 검토된 Flow로 만들어 원문에 `FlowMe로 실행하기` 링크를 붙이는 양면 구조로 본다. 사용자는 원문을 대체한 복제본이 아니라 출처·버전·제작자 표시가 유지되는 실행 동반물을 저장·개인화·내보내고, 제작자는 동의된 집계 범위에서 미리보기·시작·저장·내보내기·재방문·업데이트 수락 신호를 확인해 다음 버전을 고친다. 제작자 참여는 초기 콘텐츠 공급과 유통 단계부터 시작하되, 네이티브 결제·마켓플레이스·공개 랭킹은 검증 뒤로 둔다. 초기에는 `원문 권리자 = Flow 제작자`인 소수 파트너로 시작해 출처 권리와 수익 분배 문제를 단순화하고, 외부 결제·제휴·예약 링크의 기여 측정부터 수익 가능성을 본다.
+
+**Why not now:** 현재 제작자 발행은 로컬 표시 수준이고 계정 기반 발행, 권리 계약, 집계 분석, 결제, 환불, 정산 기능이 없다. 또한 `.ics`·Markdown·체크리스트처럼 외부 도구로 자유롭게 내보낼수록 FlowMe가 실제 완료를 직접 관찰하기 어려워진다. 반대로 실행을 앱 안에 가두면 캘린더·할 일·노트 도구와 경쟁하고 사용자 휴대성을 훼손한다. 원문을 과도하게 요약·복제하면 제작자의 광고·제휴·구독 수익을 잠식할 수도 있으므로, 실행 동반물 범위와 원문 복귀·귀속 원칙이 먼저 필요하다.
+
+**Revisit when:** 원문 권리를 가진 제작자 5~10명을 설계 파트너로 모집할 수 있을 때, 제작자 원문에서 Flow 미리보기로 들어오는 링크·임베드 실험을 설계할 때, 사용자 시작·저장·내보내기·재방문 사건을 계정과 동의 경계 안에서 측정할 수 있을 때, 또는 외부 결제·제휴 전환을 Flow 단위로 귀속할 수 있을 때 다시 본다. 첫 검증은 제작 시간, 제작자의 두 번째 Flow 발행, 원문 방문자 대비 Flow 시작, 시작 대비 저장·내보내기, 재방문, 제작자 수익 기여를 각각 분리해 측정한다.
+
+**Source context:** 2026-07-12 전략 세션에서 사용자는 FlowMe가 사용자 측 콘텐츠-계획 전환뿐 아니라 제작자가 원본 콘텐츠를 더 잘 활용하고 추가 수익을 얻지 못하는 가치사슬의 약한 구간도 공략해야 한다고 제안했다. 공식 제품 비교에서는 YouTube·Patreon·Gumroad가 관심·구독·상품 판매를, Notion Marketplace가 템플릿 거래를, Teachable·Thinkific·Kajabi가 강의 안의 진도 분석을 지원하지만, 여러 원문을 사용자의 기존 실행 도구로 옮긴 뒤 제작자 업데이트와 연결하는 수평 구조는 별도 전략 공간으로 남는다는 가설을 도출했다. 상세 장표: [FlowMe 사용자·제작자 가치사슬 전략](./content-audit/2026-07-12-flowme-user-creator-value-chain-ceo-ko.html).
+
+### 2026-07-12 - 여행 중심 초기 콘텐츠 유입 포트폴리오
+
+**Idea:** 제품 구조는 여러 생활 영역에 공통으로 쓰되, 첫 공개 메시지는 날짜가 정해진 중요한 순간에 집중한다. 첫 콘텐츠군은 해외여행 짐 싸기, 공식 출국 순서, 원문 기반 2박 3일 일정으로 묶는다. 해외여행 짐 싸기는 같은 KKday 원문을 사용하는 기존 `travel-packing-list`를 기준본으로 삼아 신규 중복 ID를 만들지 않고 보강한다. 치앙마이 장기여행, 일본 eSIM, 기존 해외여행 D-14 계획은 이 기준본과 역할을 대조한 뒤 보강·대체·보류 상태를 정한다. 30일 사진 찍기·3일 반찬 만들기·면접 전날 준비·에어컨 필터 4주 청소는 반복, 원문 항목 묶기, 긴급성, 공식 주기를 확인하는 별도 내부 기준점으로 둔다.
+
+**Why not now:** 이 안은 전략 추천이지 공개 카탈로그 승인안이 아니다. 현재 근거는 원문 항목, 내부 점수, 외부 템플릿 사용 행동까지이며 FlowMe의 실제 유입·저장·내보내기·완료·재사용 성과는 미측정이다. 현재 코드에도 실행 콘텐츠 153개 중 대표 유지 46개, 보강 필요 103개가 있어 신규 수급보다 중복·노출·출처 생애주기 정리가 먼저다. 제작자·상업 원문의 사용 권리와 최신성도 공개 전 관문으로 남아 있다.
+
+**Revisit when:** CEO가 초기 콘텐츠 집중 방향을 승인하거나, 다음 콘텐츠 적용 세션에서 registry 묶음을 고르거나, 실제 사용자 관찰에서 다른 콘텐츠군의 저장·내보내기·재사용이 뚜렷하게 더 강하게 나타날 때 다시 본다.
+
+**Source context:** 2026-07-12 전략 세션에서 초기 공략 기반으로 볼 콘텐츠를 여러 관점에서 정리해 달라는 요청. CEO 보고서: [FlowMe 초기 콘텐츠 공략 전략](./content-audit/2026-07-12-flowme-initial-content-entry-strategy-ceo-ko.html).
+
+### 2026-07-12 - Direct URL-to-Flow ingress link
+
+**Idea:** Let a user skip opening FlowMe and pasting a source manually by composing a FlowMe ingress URL with the source they want to turn into a Flow. The canonical form should be an encoded query such as `https://flowme.app/import?url=<encoded-source-url>` or an equivalent `/flows?url=...` contract, not a raw source URL appended to the path. Opening it should preserve the submitted URL, run the existing canonical hit/needs-review/miss lookup, and land directly on the same lightweight review, customization, export, or candidate-request surface used by `/flows`. The same contract could later power browser search keywords, bookmarks, share sheets, publisher buttons, and third-party links without creating separate conversion logic.
+
+**Why not now:** The entry contract and abuse boundary are not settled. It must accept only supported `http`/`https` sources, encode nested URLs correctly, limit URL length, reject `javascript:`/`data:` and redirect abuse, avoid leaking sensitive query parameters through logs, analytics, referrers, or shared links, and preserve the current rule that a miss does not automatically crawl, call AI, publish, or become executable. It also needs an explicit UX decision on whether opening the link auto-runs lookup or first shows the detected source for confirmation.
+
+**Revisit when:** Observed users repeatedly show friction in the current visit-then-paste flow, an external creator/publisher needs a `FlowMe로 바꾸기` link, a browser shortcut or share-target PoC is scoped, or URL-first acquisition is promoted beyond the current in-app entry. Start with one web deep-link contract before considering a browser extension or native share sheet.
+
+**Source context:** User idea on 2026-07-12: combine the FlowMe URL with the source URL a user wants to transform so they can jump directly into conversion without first visiting the site and using the URL input.
+
+### 2026-07-11 - Local source imports for hospital preparation and recurring contracts
+
+**Idea:** Fill the next two remaining portfolio gaps with source import work rather than generated content. First, extract the image or downloadable rows from a Korean hospital or postpartum-care-center packing checklist so the strong 55-row foreign checklist can be replaced with locally applicable data. Second, find one Korean source that exposes actual renewal rows for utilities, insurance, subscriptions, leases, or other recurring household contracts instead of a generic money-management article.
+
+**Why not now:** The current Korean hospital article keeps its core checklist inside images, and the foreign text checklist includes American insurance and cord-blood sales context. The recurring-contract search did not yet find one primary source with complete due-date rows across services, so creating a bundle now would require invented fields or user planning.
+
+**Revisit when:** image/file extraction is available for the Korean hospital source, a hospital or public institution publishes a readable checklist, or a contract-management source exposes actual renewal date, notice window, cancellation, and document rows.
+
+**Source context:** 2026-07-11 portfolio expansion Round 2. See [Round 2 review](./content-audit/2026-07-11-content-portfolio-expansion-round2-review-ko.md) and [candidate board](./content-audit/2026-07-11-content-portfolio-expansion-round2-board-ko.html).
+
+### 2026-07-11 - Content expansion by life-area coverage portfolio
+
+**Idea:** Keep the existing source-to-Flow gate and detailed category taxonomy, but add a portfolio layer that tracks `life area x planning pattern` coverage. Prioritize source-backed candidates that fill empty user jobs, starting with travel/outings, general meal planning, work/career, recurring administration, home maintenance, and staged exercise. Travel should be a Flow Map of separate source-owned child Flows such as packing, official departure procedure, destination entry setup, and a real day-by-day itinerary, rather than one blended complete-guide Flow.
+
+**Why not now:** This review does not approve new catalog navigation, seed data, or broad app exposure. P22 still needs observed-user evidence, several candidate sources still need row extraction, and the proposed nine life-area labels have not been tested as user-facing browse categories.
+
+**Revisit when:** Selecting the next 3-4 breadth canaries, extracting travel/meal/career source rows, redesigning `/flows` category discovery after the catalog grows, or deciding whether a proposed category is a visible shelf, search tag, or internal coverage dimension.
+
+**Source context:** 2026-07-11 content-coverage review prompted by the gap between the earlier taxonomy/source scout and the current catalog, especially the absence of travel. See [content category coverage review](./content-audit/2026-07-11-flowme-content-category-coverage-review-ko.md) and [mobile review board](./content-audit/2026-07-11-flowme-content-category-coverage-board-ko.html).
+
+**Prepared evidence:** Eight source-backed bundles are now staged before app implementation: five first-canary candidates for travel preparation, a Busan itinerary, weekday lunchboxes, interview D-1, and four-week air-conditioner filter care; plus second-wave license renewal, 5km training, and kitten first-week bundles. See the [pre-app normalized data](./content-audit/2026-07-11-content-portfolio-preapp-v1.json) and [full mobile review board](./content-audit/2026-07-11-content-portfolio-preapp-board-ko.html). This preparation does not approve app insertion or public exposure.
+
 ### 2026-07-09 - Post-P16 product direction review queue
 
 **Idea:** Before continuing with more Claude Design polish cycles, run a scenario-based product-direction review around the current merged main. The review should separate first-time users, URL-first hit users, URL-first miss/candidate users, public `/f` share recipients, My Flow repeat users, Calendar-heavy users, and creator/studio explorers. The main open product questions are Calendar multi-Flow identity, My Flow today-action depth, public Flow-level versus Step-level save/export responsibility, URL-first item-level edit depth, URL-first miss-to-AI-draft flow, and whether Studio should remain a secondary surface until the execution hubs feel service-ready.

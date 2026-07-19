@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe 저장-개인화-실행 여정 결정</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15171a;
+      --muted: #62666d;
+      --line: #dfe2e6;
+      --soft: #f4f5f6;
+      --blue: #3157d5;
+      --blue-soft: #eef2ff;
+      --green: #1f7152;
+      --green-soft: #ebf7f1;
+      --amber: #8a5a00;
+      --amber-soft: #fff6df;
+      --red: #a33a35;
+      --red-soft: #fff0ee;
+      --panel: #ffffff;
+      --shadow: 0 16px 44px rgba(25, 31, 40, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #fafafa;
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); }
+    header {
+      background: #111820;
+      color: #fff;
+      padding: 54px 24px 48px;
+    }
+    header .inner, main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    header p { color: #cbd3dc; max-width: 780px; margin: 14px 0 0; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(34px, 5vw, 64px); line-height: 1.08; margin-bottom: 0; }
+    h2 { font-size: 30px; line-height: 1.25; margin-bottom: 14px; }
+    h3 { font-size: 18px; line-height: 1.35; margin-bottom: 8px; }
+    main { padding: 42px 0 80px; }
+    section { padding: 34px 0; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--blue); font-weight: 800; font-size: 13px; text-transform: uppercase; }
+    .lead { font-size: 18px; max-width: 820px; color: #3d4248; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: var(--soft);
+      color: #444b53;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .badge.recommended { background: var(--green-soft); color: var(--green); }
+    .badge.hold { background: var(--amber-soft); color: var(--amber); }
+    .verdict {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .verdict strong { font-size: 22px; }
+    .flowline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .flowline div { min-height: 92px; padding: 16px; border: 1px solid var(--line); background: #fff; }
+    .flowline b { display: block; color: var(--blue); margin-bottom: 6px; }
+    .grid-2, .grid-3 { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 20px; background: var(--panel); border: 1px solid var(--line); }
+    .card.problem { border-top: 4px solid var(--red); }
+    .card.good { border-top: 4px solid var(--green); }
+    .card p:last-child { margin-bottom: 0; }
+    .comparison > article { min-height: 250px; }
+    .comparison .selected { border: 2px solid var(--green); background: var(--green-soft); }
+    .comparison ul { padding-left: 20px; }
+    .screen-grid { display: grid; grid-template-columns: repeat(5, minmax(190px, 1fr)); gap: 14px; overflow-x: auto; padding-bottom: 8px; }
+    .phone {
+      width: 100%;
+      min-width: 190px;
+      min-height: 480px;
+      border: 8px solid #1c2025;
+      border-radius: 26px;
+      background: #fff;
+      padding: 18px 13px;
+      box-shadow: var(--shadow);
+    }
+    .phone .status { font-size: 10px; color: var(--muted); margin-bottom: 22px; }
+    .phone .kicker { color: var(--blue); font-size: 11px; font-weight: 800; }
+    .phone h3 { font-size: 21px; margin: 5px 0 8px; }
+    .phone p { font-size: 12px; color: var(--muted); }
+    .field { border: 1px solid var(--line); padding: 10px; margin: 10px 0; font-size: 12px; }
+    .row { border-top: 1px solid var(--line); padding: 10px 0; font-size: 12px; }
+    .row strong { display: block; }
+    .button { display: block; text-align: center; padding: 10px; background: var(--blue); color: white; font-weight: 800; font-size: 12px; margin-top: 10px; }
+    .button.secondary { background: white; color: var(--ink); border: 1px solid var(--line); }
+    .tray { padding: 10px; background: var(--amber-soft); color: var(--amber); font-size: 12px; margin-top: 12px; }
+    .capture-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    figure { margin: 0; background: #fff; border: 1px solid var(--line); padding: 12px; }
+    figure img { width: 100%; max-height: 520px; object-fit: contain; object-position: top; background: #f4f4f4; }
+    figcaption { font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .phase { display: grid; grid-template-columns: 90px minmax(0, 1fr) 150px; gap: 18px; padding: 16px 0; border-top: 1px solid var(--line); }
+    .phase b { color: var(--blue); }
+    .metric { font-size: 13px; color: var(--green); font-weight: 800; }
+    .note { padding: 16px; background: var(--blue-soft); border-left: 4px solid var(--blue); }
+    code { background: #eef0f2; padding: 2px 5px; border-radius: 4px; }
+    @media (max-width: 820px) {
+      header { padding: 38px 20px; }
+      .verdict, .grid-2, .grid-3, .capture-grid { grid-template-columns: 1fr; }
+      .flowline { grid-template-columns: 1fr; }
+      .phase { grid-template-columns: 72px 1fr; }
+      .phase .metric { grid-column: 2; }
+      section { padding: 28px 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="inner">
+      <span class="badge hold">P24-J0 · 구현 전 결정 게이트</span>
+      <h1>저장부터 실행까지,<br />화면의 순서를 다시 맞춥니다</h1>
+      <p>기능을 더 붙이기 전에 사용자가 전체 Flow를 보고, 필요한 만큼 고치고, 저장 결과를 확인한 뒤 Today와 Calendar로 이동하는 한 흐름을 검증합니다.</p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <p class="eyebrow">전체 판정</p>
+      <div class="verdict">
+        <strong>Bounded reset</strong>
+        <div>
+          <p><b>문구 몇 줄만 줄이는 것으로는 부족합니다.</b> post-save 전체 확인, save-versus-adjust, My Flow/Calendar 역할이 함께 어긋나 있습니다.</p>
+          <p><b>전면 재작성도 필요하지 않습니다.</b> 4탭, personal overlay, completion, Calendar/export 계약은 유지하고 첫 여정의 다섯 장면만 다시 설계합니다.</p>
+        </div>
+      </div>
+      <div class="flowline" aria-label="권장 사용자 여정">
+        <div><b>1 · 미리보기</b>전체 구조와 항목 수를 먼저 확인</div>
+        <div><b>2 · 선택</b>그대로 저장 또는 조정하고 저장</div>
+        <div><b>3 · 확인</b>저장 직후 전체 Flow를 바로 확인</div>
+        <div><b>4 · 실행</b>재방문 시 Today에서 지금 할 일 실행</div>
+        <div><b>5 · 일정</b>날짜 있는 일만 Calendar에서 실행</div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">왜 다시 봐야 하나</p>
+      <h2>기능은 연결됐지만 첫 여정이 그 기능을 설명하지 못합니다</h2>
+      <div class="grid-3">
+        <article class="card problem"><h3>설명으로 보충</h3><p>moving과 public 화면은 저장 artifact 대신 비슷한 promise를 여러 문장으로 반복합니다.</p></article>
+        <article class="card problem"><h3>저장 후 일부만 표시</h3><p>저장 직후 Today slice가 먼저 보여 전체 Flow가 제대로 들어왔는지 확인하기 어렵습니다.</p></article>
+        <article class="card problem"><h3>역할 혼동</h3><p>My Flow 범위 선택, Calendar, 날짜 없는 목록과 held 콘텐츠가 ordinary execution 흐름에서 경쟁합니다.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">대안 비교</p>
+      <h2>P24-J0에서 두 안을 같은 task로 시험합니다</h2>
+      <div class="grid-2 comparison">
+        <article class="card">
+          <span class="badge">대안 A</span>
+          <h3>빠른 저장을 유지하고 문구만 축소</h3>
+          <ul>
+            <li>현재 CTA와 post-save Today 유지</li>
+            <li>긴 설명을 한 문장으로 줄임</li>
+            <li>전체 Flow는 기존 `전체`에서 확인</li>
+          </ul>
+          <p><b>위험:</b> 저장 결과 확인과 save/adjust 경계 문제는 남습니다.</p>
+        </article>
+        <article class="card selected">
+          <span class="badge recommended">추천 가설 · 대안 B</span>
+          <h3>Artifact-first + 필요한 만큼 조정</h3>
+          <ul>
+            <li>저장 전 전체 artifact shape를 먼저 표시</li>
+            <li>`그대로 저장`과 `조정하고 저장` 분리</li>
+            <li>첫 저장 직후 전체 Flow를 기본 표시</li>
+            <li>재방문은 Today-first 유지</li>
+          </ul>
+          <p><b>내부 검토 필요:</b> 전체 preview가 1차 행동을 밀어내지 않는지 owner와 독립 reviewer가 확인합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">가설 wireframe</p>
+      <h2>최종 디자인이 아니라 테스트할 다섯 장면입니다</h2>
+      <div class="screen-grid">
+        <article class="phone">
+          <div class="status">Flow 미리보기</div>
+          <span class="kicker">이사 준비 · 5개 일정</span>
+          <h3>원룸 이사 D-30</h3>
+          <div class="field"><b>이사일</b><br />2026-08-04</div>
+          <div class="row"><strong>D-30 · 견적 후보 정하기</strong>7월 5일</div>
+          <div class="row"><strong>D-14 · 입주 일정 확인</strong>7월 21일</div>
+          <div class="row"><strong>D-7 · 주소 변경 준비</strong>7월 28일</div>
+          <p>2개 일정 더 보기</p>
+          <span class="button">그대로 저장</span>
+          <span class="button secondary">조정하고 저장</span>
+        </article>
+        <article class="phone">
+          <div class="status">필요한 만큼 조정</div>
+          <span class="kicker">원본은 그대로 유지</span>
+          <h3>내 이사 준비</h3>
+          <div class="field"><b>저장 이름</b><br />8월 이사 준비</div>
+          <div class="field"><b>이사일</b><br />2026-08-04</div>
+          <div class="row"><strong>포함할 일정</strong>5개 중 4개</div>
+          <p>제목·메모·세부 날짜는 저장 후에도 바꿀 수 있습니다.</p>
+          <span class="button">4개 일정 저장</span>
+          <span class="button secondary">취소</span>
+        </article>
+        <article class="phone">
+          <div class="status">저장 완료 · 첫 방문</div>
+          <span class="kicker">내 Flow에 저장됨</span>
+          <h3>8월 이사 준비</h3>
+          <p>이사일 8월 4일 · 전체 4개</p>
+          <div class="row"><strong>D-30 · 견적 후보 정하기</strong>7월 5일</div>
+          <div class="row"><strong>D-7 · 주소 변경 준비</strong>7월 28일</div>
+          <div class="row"><strong>D-1 · 마지막 점검</strong>8월 3일</div>
+          <div class="row"><strong>D-Day · 이사 당일</strong>8월 4일</div>
+          <span class="button">오늘 실행 시작</span>
+        </article>
+        <article class="phone">
+          <div class="status">My Flow · 재방문</div>
+          <span class="kicker">오늘 1개 남음</span>
+          <h3>오늘 할 일</h3>
+          <div class="row"><strong>견적 후보 2곳 확인</strong>8월 이사 준비 · 열기</div>
+          <p>완료한 일은 바로 되돌릴 수 있습니다.</p>
+          <h3 style="font-size:16px;margin-top:24px;">저장한 Flow</h3>
+          <div class="row"><strong>8월 이사 준비</strong>전체 1/4 완료</div>
+        </article>
+        <article class="phone">
+          <div class="status">Calendar · 날짜 실행</div>
+          <span class="kicker">2026년 7월</span>
+          <h3>오늘의 일정</h3>
+          <div class="row"><strong>09:00 · 견적 후보 확인</strong>8월 이사 준비</div>
+          <div class="tray"><b>날짜 없는 할 일 3개</b><br />날짜를 정해 Calendar에 놓기</div>
+          <p>실행 보류 콘텐츠는 이 화면에 표시하지 않습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">현재 화면 근거</p>
+      <h2>문제는 copy 하나가 아니라 화면 간 연결입니다</h2>
+      <div class="capture-grid">
+        <figure><img src="screenshots/02-moving-save-before-mobile-current.png" alt="현재 moving 저장 전 모바일 화면" /><figcaption>저장 결과를 여러 문장으로 반복해 설명합니다.</figcaption></figure>
+        <figure><img src="screenshots/03-post-save-today-mobile-current.png" alt="현재 저장 직후 Today 모바일 화면" /><figcaption>저장 직후 전체 Flow보다 Today slice가 먼저 보입니다.</figcaption></figure>
+        <figure><img src="screenshots/04-post-save-full-flow-after-two-actions-mobile-current.png" alt="현재 전체 Flow를 연 모바일 화면" /><figcaption>전체 artifact는 추가 탐색 뒤에 나타납니다.</figcaption></figure>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">단계별 진행</p>
+      <h2>각 gate를 통과해야 다음 개발로 넘어갑니다</h2>
+      <div class="phase"><b>P24-J0</b><div><strong>시뮬레이션·wireframe·내부 검토</strong><br />앱 코드를 바꾸지 않고 owner와 독립 reviewer가 대안 하나를 선택합니다.</div><span class="metric">현재 단계</span></div>
+      <div class="phase"><b>P24-J1</b><div><strong>저장 판단 화면</strong><br />artifact preview와 그대로/조정 저장을 구현합니다.</div><span class="metric">J0 승인 후</span></div>
+      <div class="phase"><b>P24-J2</b><div><strong>저장 직후 전체 확인</strong><br />첫 저장과 재방문 상태를 분리합니다.</div><span class="metric">depth 0</span></div>
+      <div class="phase"><b>P24-J3</b><div><strong>My Flow·Calendar 역할</strong><br />날짜 없는 tray와 held visibility를 정리합니다.</div><span class="metric">held 0</span></div>
+      <div class="phase"><b>P24-J4</b><div><strong>통합 개발·회귀</strong><br />세 대표 유형과 export/완료/반복 기준을 다시 확인합니다.</div><span class="metric">Blocking 0</span></div>
+      <div class="phase"><b>P24-J5</b><div><strong>독립 production 준비도 감사</strong><br />Blocking/High 0을 확인하고 owner에게 관찰 재개 여부를 판단할 자료를 전달합니다.</div><span class="metric">관찰 미요청</span></div>
+    </section>
+
+    <section>
+      <p class="eyebrow">이번에 답할 질문</p>
+      <h2>길게 묻지 않고 여섯 가지만 봅니다</h2>
+      <div class="note">
+        1. 설명 없이 무엇이 저장되는지 말하는가?<br />
+        2. 그대로 저장과 조정하고 저장의 차이를 아는가?<br />
+        3. 저장 직후 전체 Flow를 확인하는가?<br />
+        4. Today와 Calendar의 역할을 구분하는가?<br />
+        5. 날짜 없는 일을 어디서 일정에 넣는지 찾는가?<br />
+        6. 필요할 때 출처와 주의 정보를 찾는가?
+      </div>
+    </section>
+  </main>
+</body>
+</html>

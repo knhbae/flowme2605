@@ -1,0 +1,4 @@
+interface:
+  display_name: "FLOW Direction Capture"
+  short_description: "Route product and process direction to repo memory"
+  default_prompt: "Use $flow-direction-capture to classify and record this FlowMe product or process direction."

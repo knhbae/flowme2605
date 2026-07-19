@@ -1,0 +1,75 @@
+{
+  "status": "implementation_complete_observation_not_started",
+  "observedUsers": 0,
+  "journeys": [
+    {
+      "id": "moving-source-backed",
+      "viewport": "390x844",
+      "steps": [
+        "open artifact-first preview",
+        "set moving date",
+        "open lightweight adjustment",
+        "exclude one item and save",
+        "inspect four-item whole-Flow confirmation",
+        "continue to returning My Flow"
+      ],
+      "result": "passed",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "id": "vehicle-public-share",
+      "viewport": "390x844",
+      "steps": [
+        "open compact public preview",
+        "verify source/reference details collapsed",
+        "save whole Flow",
+        "open ten-item post-save confirmation"
+      ],
+      "result": "passed",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "id": "calendar-undated-boundary",
+      "viewport": "390x844",
+      "steps": [
+        "save an undated checklist and a dated Flow",
+        "open Calendar",
+        "verify undated tray collapsed",
+        "expand tray and retain dated grid"
+      ],
+      "result": "passed",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "id": "held-content-ordinary-surface",
+      "viewport": "390x844",
+      "steps": [
+        "seed held saved record",
+        "open ordinary My Flow",
+        "verify held map and child Flow are absent",
+        "verify local record remains"
+      ],
+      "result": "passed",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "id": "wide-role-language",
+      "viewport": "1024x768",
+      "steps": [
+        "save two Flows",
+        "open returning My Flow",
+        "verify selector is named saved Flow",
+        "open Calendar and verify stable layout"
+      ],
+      "result": "passed",
+      "evidenceKind": "current_browser"
+    }
+  ],
+  "humanObservation": {
+    "requested": false,
+    "scheduled": false,
+    "completedSessions": 0,
+    "targetSessions": 15,
+    "note": "Automated journeys and independent agent review are not observed-user evidence."
+  }
+}

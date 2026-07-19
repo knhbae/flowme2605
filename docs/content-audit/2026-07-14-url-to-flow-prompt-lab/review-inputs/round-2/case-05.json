@@ -1,0 +1,218 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-2",
+  "caseId": "case-05",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-05",
+    "requestId": "prompt-lab-v1-case-05",
+    "targetLocale": "ko-KR",
+    "userJob": "공개 강좌의 source-defined 주차를 따라가며 현재 진도와 메모를 남긴다.",
+    "maxItems": 7,
+    "claimedScope": "제공된 2개 SourceRow 범위만 변환한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-kmooc-hundred-schools",
+        "title": "K-MOOC 제자백가의 사상 강좌 운영 계획",
+        "sourceType": "official",
+        "originalUrl": "https://www.kmooc.kr/view/course/detail/6661",
+        "canonicalUrl": "https://www.kmooc.kr/view/course/detail/6661",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": "K-MOOC",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "allowed",
+        "riskLevel": "low",
+        "accessStatus": "fetched"
+      },
+      "supporting": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-kmooc-week-01",
+        "sourceId": "source-kmooc-hundred-schools",
+        "rowType": "table_row",
+        "title": "1주차 강의와 퀴즈",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-kmooc-week-02",
+        "sourceId": "source-kmooc-hundred-schools",
+        "rowType": "table_row",
+        "title": "2주차 강의와 퀴즈",
+        "detail": null,
+        "order": 1
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-05-table-progress:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-05",
+    "fixtureId": "gf-pos-05-table-progress",
+    "fixtureKind": "positive",
+    "fixtureShape": "table_progress",
+    "name": "K-MOOC 15주 진도표",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "공개 강좌의 source-defined 주차를 따라가며 현재 진도와 메모를 남긴다.",
+      "planningPattern": "source_table_rows",
+      "primaryArtifact": "sheet",
+      "riskLevel": "low"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-kmooc-week-01",
+        "title": "1주차 강의와 퀴즈 완료하기",
+        "intent": "record",
+        "sourceRowIds": [
+          "row-kmooc-week-01"
+        ],
+        "completionMode": "record",
+        "doneWhen": "1주차 상태와 메모를 기록했다.",
+        "hasSchedule": false,
+        "canonicalSchedule": null
+      },
+      {
+        "referenceItemId": "item-kmooc-week-02",
+        "title": "2주차 강의와 퀴즈 완료하기",
+        "intent": "record",
+        "sourceRowIds": [
+          "row-kmooc-week-02"
+        ],
+        "completionMode": "record",
+        "doneWhen": "2주차 상태와 메모를 기록했다.",
+        "hasSchedule": false,
+        "canonicalSchedule": null
+      }
+    ],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [
+      "row-kmooc-week-01",
+      "row-kmooc-week-02"
+    ],
+    "expectedProjections": [
+      "sheet:csv",
+      "sheet:xlsx",
+      "checklist:markdown",
+      "memo:markdown"
+    ],
+    "forbiddenProjections": [
+      "calendar:ics",
+      "todo:markdown"
+    ],
+    "referenceReview": {
+      "readiness": "ready_for_internal_canary",
+      "hardFails": [],
+      "rightsDecision": "공개 강좌의 주차 제목과 링크만 사용한다.",
+      "riskDecision": "진도 기록은 수료나 시험 결과 보장을 의미하지 않는다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.2",
+    "requestId": "prompt-lab-v1-case-05",
+    "caseId": "case-05",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "source_table_rows",
+      "primarySourceId": "source-kmooc-hundred-schools",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-kmooc-week-01",
+        "row-kmooc-week-02"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "공개 강좌의 제공된 두 주차를 따라가며 현재 진도와 메모를 남긴다.",
+      "lifeArea": "study_reading",
+      "planningPattern": "source_table_rows",
+      "primaryArtifact": "sheet",
+      "contentShape": "주차별 진도 기록 표"
+    },
+    "proposal": {
+      "proposalTitle": "제자백가 강좌 주차별 진도 기록",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "1주차 강의와 퀴즈 진도 기록하기",
+          "intent": "record",
+          "sourceRowIds": [
+            "row-kmooc-week-01"
+          ],
+          "completion": {
+            "mode": "record",
+            "doneWhen": "1주차 강의와 퀴즈의 현재 진도와 메모가 기록됨"
+          },
+          "memoCandidate": "1주차 강의와 퀴즈에 관한 메모를 함께 남긴다.",
+          "groupingCandidate": "강좌 주차별 진도",
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "2주차 강의와 퀴즈 진도 기록하기",
+          "intent": "record",
+          "sourceRowIds": [
+            "row-kmooc-week-02"
+          ],
+          "completion": {
+            "mode": "record",
+            "doneWhen": "2주차 강의와 퀴즈의 현재 진도와 메모가 기록됨"
+          },
+          "memoCandidate": "2주차 강의와 퀴즈에 관한 메모를 함께 남긴다.",
+          "groupingCandidate": "강좌 주차별 진도",
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "sheet",
+        "applicability": "applicable",
+        "reason": "두 SourceRow의 주차 순서와 진도 기록을 행 단위로 보존한다."
+      },
+      {
+        "target": "memo",
+        "applicability": "applicable",
+        "reason": "각 주차의 메모를 해당 진도 기록과 함께 보관할 수 있다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "주차 표시는 강좌 내 진행 순서이며 실제 일정 날짜는 입력에 없음"
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

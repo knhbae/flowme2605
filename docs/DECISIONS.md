@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Save before, first-save confirmation, and returning execution are distinct frames
+
+**Decision:** Keep the 4-tab IA and current source, personal overlay, execution, recurrence, and export contracts. On source-backed and public save-before surfaces, show the natural artifact and representative effective items before long explanation. Offer `그대로 저장` as the primary action and a bounded `조정하고 저장` path for personal title and included items. After the first save, show the whole saved Flow at depth 0 before entering the returning My Flow workspace; later visits remain task-first. Calendar keeps dated work in grid/agenda and preserves undated work in a collapsed tray. Content held for source or risk review stays stored but exposes no ordinary execution or post-save action until it becomes eligible again.
+
+**Reason:** The execution capabilities were already connected, but long promise copy, immediate Today reduction, ambiguous save-versus-adjust behavior, Calendar-like Flow filtering, expanded undated lists, and held content made the first-use journey hard to predict. Reordering the frames addresses those problems without replacing the durable execution model or adding another editor.
+
+**Applies to:** source-backed Flow Map save pages, public `/f` save shell, first-save `/my?savedMap=` and `/my?savedFlow=` states, returning My Flow, Calendar undated work, held/review visibility, accessible save labels, P24 evidence, and future first-use tests.
+
+**Reopen when:** observed users still cannot predict the saved artifact or distinguish save from adjustment, the first-save confirmation delays returning execution, a tested Calendar pattern handles undated work more clearly, or a held-content recovery surface is explicitly designed. Automated QA, owner review, and independent agents do not satisfy that observed-user condition.
+
+**Related docs:** [journey reset spec](./specs/2026-07-18-save-personalize-execute-journey-reset/spec.md), [P24 readiness package](./content-audit/2026-07-19-flowme-p24-journey-frame-readiness/README.md)
+
 ### 2026-07-14 - Execution notes stay lightweight, private, and separate from source correction
 
 **Decision:** A user may add an optional note directly from an execution row without opening the structural item editor. Personal execution notes and `원본에 알릴 점` are separate records. The latter remains an unsent local draft until a real delivery path exists. When a Flow completes, non-empty notes are collected automatically into separate groups; no rating, tag, or required review step is added. Reusing the Flow clears notes from the new current run while preserving them in the completed-run snapshot and history export.
@@ -46,6 +58,117 @@ Do not use this for:
 **Reopen when:** observed users cannot distinguish the note icon or the private/correction boundary, a real source-owner delivery workflow is introduced, or account-backed multi-device run history replaces local snapshots.
 
 **Related docs:** [P24 U4 evidence](./content-audit/2026-07-14-p24-u4-inline-execution-notes-evidence/README.md), [P24 feedback reconciliation](./content-audit/2026-07-14-flowme-p24-feedback-reconciliation/audit.md)
+### 2026-07-14 - Repeated collaboration uses canonical workflows with read-only automation
+
+**Decision:** Standardize four P0 collaboration workflows: Session Start, Request Interview, Direction Capture, and Work Closeout. Request Interview runs only when unresolved ambiguity could materially change the result; it inspects repo evidence first, asks one round of 1-3 high-information questions with a recommended default, and is skipped for clear low-risk work. Keep the canonical, tool-independent procedures in `docs/workflows/`; expose them through `.agents/skills/` and generated Claude/Codex copies; and limit `scripts/workflows/` to deterministic read-only repo inspection and verification recommendations. Reuse the existing doc graph, hooks, CI, QA commands, and selective Notion projection. Workflow automation must not decide product direction, promote backlog, claim user validation, update external systems, or commit, push, merge, deploy, or clean files automatically.
+
+**Reason:** The same orientation, request clarification, idea/decision routing, dirty-worktree inspection, verification selection, Notion review routing, and publish-state reporting recur across sessions. The user often contributes situated context, discomfort, and a desired change rather than a fixed implementation instruction, so a bounded clarification step prevents literal or solution-first execution without turning every task into an interview. Encoding the sequence reduces omissions and context rebuilding, while separating deterministic collection from judgment prevents stale scripts from becoming a second product authority.
+
+**Applies to:** Codex and Claude Code sessions, `docs/workflows/`, `.agents/skills/`, `.claude/skills/`, optional Codex user-scope skill copies, `scripts/workflows/`, package workflow commands, repo memory updates, Notion review projection, and task closeout reports.
+
+**Reopen when:** the four workflows become too broad or stale in real use, Request Interview delays clear tasks or still misses material intent, another repeated workflow has stable inputs and completion criteria across at least several tasks, or an agent platform provides a portable workflow primitive that preserves the same repo-first and human-gate boundaries.
+
+**Related docs:** [workflow index](./workflows/README.md), [workflow spec](./specs/2026-07-14-repeated-collaboration-workflows/spec.md), [harness README](./harness/README.md)
+
+### 2026-07-13 - Audit the personal execution lifecycle before further platform expansion
+
+**Decision:** Treat the next product milestone as execution-lifecycle completeness, not another broad UI-polish, Studio, creator, AI, or integration expansion. First audit completion reversal, optional scheduling, personal task add/delete/reorder, destructive-action recovery, destination projection, history, and reuse across representative Flow shapes. Implement only Blocking and High findings. Keep My Flow, Calendar, and every export on one effective personal Flow model while preserving source content, personal overlay, and execution run as separate owners. After the correction slices, require repeated-user observation before choosing account persistence, creator/update pilot, or production URL/AI backend.
+
+**Reason:** The app already connects intake, save, edit, execute, complete, export, and reuse, but users can still encounter lifecycle gaps when they reopen completion, add a date to an undated task, change task structure, or export a heavily personalized Flow. Adding more surfaces before these transitions are coherent would widen the product while weakening the core execution contract. Automated screenshots and E2E also cannot prove repeated-use understanding.
+
+**Applies to:** My Flow, Calendar, URL/memo drafts, public saved copies, personal overlay, run history, version review, Calendar/checklist/sheet/memo export, P23 planning, and observed-user QA.
+
+**Reopen when:** observed users show that structural editing is unnecessary, a canonical adapter cannot preserve the proposed personal structure safely, or continuity/account needs block the lifecycle before local editing does.
+
+**Related docs:** [Execution Lifecycle Completeness spec](./specs/2026-07-13-execution-lifecycle-completeness/spec.md), [done/next workboard](./content-audit/2026-07-13-flowme-done-next-workboard-ko.html), [P22 current reassessment](./content-audit/2026-07-11-claude-design-p22-current-reassessment-ko.md)
+
+### 2026-07-12 - URL-to-Flow uses a rich canonical core, rules-first conversion, and a split production gate
+
+**Decision:** Build URL-to-Flow as `safe intake/lookup -> snapshot -> SourceRow extraction -> deterministic structure -> bounded LLM semantic proposal -> validator -> human review -> explicit save -> projection`. Keep the canonical model richer than any external destination and require every adapter to state direct mapping, grouping/flattening, Memo fallback, omission, or forbidden loss. Item count is source-derived; an interactive `maxItems` value is a processing cap, not a target count. Do not invent actions or sequential dates to fill a draft, and do not save, publish, or write Calendar before review. Proceed now with runtime validation, compatibility adapters, projection parity, fake-provider failure fixtures, and cost instrumentation. Keep arbitrary production URL fetch, real LLM, automatic retry, and direct external-account writes at No-Go until rights/retention, URL security, privacy/provider policy, numeric cost/latency thresholds, rollback, and canary evidence close.
+
+**Reason:** The canonical content and storage contracts are strong enough to support deterministic implementation work, but existing Step-first export wording and the AI draft's fixed 3-7 count could cause source loss or invented actions. Production intake also adds SSRF, rights, retention, provider, cost, and failure-recovery risks that a model SDK or database choice does not solve. A rich core plus explicit adapters preserves one Item across calendar, checklist, sheet, and memo without reducing the source to ICS or cloning each destination.
+
+**Applies to:** URL intake, source fetching and extraction, canonical proposal generation, AI provider adapters, review/save states, persistence, migration, ICS/checklist/todo/sheet/memo exports, cost/latency controls, rights/privacy/security operations, and external-platform integration sequencing.
+
+**Reopen when:** golden fixtures cannot express representative source shapes without artificial complexity, observed users consistently need a different Item boundary, a selected provider/runtime changes the risk or cost envelope with verified evidence, or repeated export friction proves one narrow direct integration is worth its permission and support burden.
+
+**Related docs:** [backend readiness contract](./specs/2026-07-12-url-to-flow-backend-readiness/spec.md), [projection/loss matrix](./specs/2026-07-12-url-to-flow-backend-readiness/projection-loss-matrix.md), [rules vs LLM table](./specs/2026-07-12-url-to-flow-backend-readiness/conversion-decision-table.md), [risk/QA checklist](./specs/2026-07-12-url-to-flow-backend-readiness/risk-qa-checklist.md), [PPT-style decision deck](./content-audit/2026-07-12-flow-content-backend-goal-presentation-ko.html)
+
+### 2026-07-11 - Item is the canonical minimum execution unit; ICS and checklist are projections
+
+**Decision:** Use `SourceRow -> Item -> Step -> Flow -> Bundle/Flow Map` as the canonical hierarchy for new source conversion, backend, database, versioning, and export work. `Item` is the smallest unit that can independently hold completion, decision, record, hold, and occurrence state. `SourceRow` is the smallest provenance unit, and `Step` is an ordered semantic group that does not replace child Item state. Calendar/ICS, checklist/todo, sheet, and memo are projections of the same effective model rather than canonical storage or content units. Keep schedule, recurrence, completion, record fields, decision fields, memo, caution, and source support as orthogonal Item facets. Published source/content, internal review, user overlay, execution run, and occurrence override remain separate, with user edits and run state preserved across content-version review.
+
+This explicitly reopens the June bridge that described Step as the minimum saved/exportable row. That mapping remains only as a compatibility adapter for genuinely bundled legacy events. New canonical mapping is `FlowSection -> Step`, `FlowItem -> Item`, and `FlowItemDetail -> Memo/Field/SourceRef`; explicit nested source Items must not be flattened into detail prose.
+
+**Reason:** ICS cannot represent unscheduled checks, decisions, record fields, evidence, or cautions, while a checklist cannot represent recurrence, date windows, or structured records. The current primary `itemType` labels also mix time, behavior, and metadata, causing information loss. A stable Item plus independent facets allows one real action to project consistently to calendar, checklist, sheet, and memo while retaining source-row provenance and user state.
+
+**Applies to:** URL-to-Flow backend output, content conversion, source snapshots and rows, Flow/Step/Item naming, database and API contracts, My Flow copies and runs, version review, ICS/checklist/sheet/memo export, current-model compatibility adapters, and golden fixtures.
+
+**Reopen when:** representative source-backed fixtures cannot round-trip through the canonical model without invented actions, independently checkable Items consistently create unusable cognitive load in observed sessions, or an external interoperability standard can express the full execution, provenance, overlay, and version contract without loss.
+
+**Related docs:** [canonical model spec](./specs/2026-07-11-canonical-flow-data-model/spec.md), [reference contract](./specs/2026-07-11-canonical-flow-data-model/canonical-flow-contract.ts), [Korean review board](./content-audit/2026-07-11-flow-canonical-data-model-review-ko.html)
+
+### 2026-07-11 - Sparse lifecycle, operator template, and localization gates
+
+**Decision:** A source-backed Flow does not need multiple visible Items. An official lifecycle obligation may use one primary Item when the source defines a due date or date window, a real consequence, and any conditional next step; supporting inspection phases and fee tables stay in memo/detail. Creator/operator meta content may pass when the primary source supplies a complete reusable row set, a named audience, and a natural calendar, sheet, or checklist destination; broad strategy prose still fails. A translated sensitive source does not pass for Korean users unless its care, insurance, legal, document, and administrative context is locally applicable or explicitly reviewed.
+
+**Reason:** The Round 2 source review found three cases that topic-level rules handled poorly: automobile inspection is useful despite having only one primary user action, a complete 30-day creator calendar is executable despite being operator content, and a 55-row Korean-language hospital-bag page is unsafe to promote because its underlying context is American and commercially tied to cord-blood services. Item count, topic label, and translation language are therefore insufficient promotion signals.
+
+**Applies to:** source scouting, Source-to-Flow conversion, official renewal and inspection Flows, creator/operator templates, translated health and hospital sources, content portfolio promotion, `.agents/skills/flow-content-conversion`, and future app handoffs.
+
+**Reopen when:** observed users cannot act on a one-Item lifecycle Flow, the app gains verified locale-aware policy adapters, or creator templates require private analytics and goals that can be represented without expanding the current calendar/todo input model.
+
+**Related docs:** [source selection rules](./flow-rules/flow-content-source-selection.md), [Round 2 review](./content-audit/2026-07-11-content-portfolio-expansion-round2-review-ko.md), [Round 2 board](./content-audit/2026-07-11-content-portfolio-expansion-round2-board-ko.html)
+
+### 2026-07-11 - Source conversion and catalog promotion are separate gates
+
+**Decision:** Keep the existing Source-to-Flow Conversion Gate as the authority for whether one primary source can become one executable Flow. Evaluate catalog expansion separately with `lifeArea`, `planningPattern`, and `portfolioRole`. A candidate reaches `ready_for_internal_canary` only when its source rows, generated Item mapping, omitted/bundled content, minimal setup, export mapping, source/risk/rights boundary, score-by-score comments, and mobile review artifact are all present. Keep `ready_for_internal_canary`, `ready_second_wave`, app insertion, public exposure, and observed-user validation as different states. User-facing `contentBundles` must remain separate from internal `reviewRecords`.
+
+**Reason:** The prior rules were strong for evaluating one conversion but did not reliably explain which empty life problem to fill next or when a candidate was truly ready for an app handoff. Keeping the gates separate expands coverage without weakening source fidelity or leaking planning language into user content.
+
+**Applies to:** web source scouting, content portfolio planning, source-backed Flow/Map preparation, seed handoffs, score artifacts, mobile review HTML, `.agents/skills/flow-content-conversion`, and future `/flows` breadth canaries.
+
+**Reopen when:** observed users cannot understand the three coverage axes, the current app model cannot represent prepared artifacts without new fields, public rights review requires stricter promotion states, or catalog navigation adopts a tested user-facing taxonomy.
+
+**Related docs:** [source selection rules](./flow-rules/flow-content-source-selection.md), [pre-app review](./content-audit/2026-07-11-content-portfolio-preapp-review-ko.md), [mobile review board](./content-audit/2026-07-11-content-portfolio-preapp-board-ko.html), [implementation handoff](./content-audit/2026-07-11-content-portfolio-preapp-handoff-ko.md)
+
+### 2026-07-11 - Notion is a selective operations view, not the project source of truth
+
+**Decision:** Keep the existing repo document graph as FLOW's canonical project memory. The adopted FlowMe Notion operations board publishes only the active information a human needs to prioritize or unblock work: human decisions, requested input, result reviews, external actions, high-level AI work packages, blockers, next checkpoints, done-when conditions, and links to repo evidence. Map each projected item to a durable product direction, and use the operations home to show the user's current decisions and actions in the context of FLOW's larger product loop. The home also keeps a Now/Next/Expansion/Long-horizon map sourced from `docs/PRODUCT_PRINCIPLES.md` and `docs/IDEAS.md`; showing a deferred vision item there does not promote it into the active backlog. It must distinguish the product-validation Stage from implementation capability, show completed/conditional/unstarted gates and the current repo baseline, and state the evidence required for the next Stage or release-grade decision. After substantial strategy, research, UX, QA, or release work, classify any human follow-up as blocking decision, useful feedback, direct/external action, or ongoing awareness and surface only those items in the top feedback queue with an exact ask, recommendation, and checkpoint; AI-owned follow-up stays separate. Keep detailed AI subtasks, implementation plans, full specs, file-level notes, test logs, decision history, and research evidence in their existing repo locations. On mismatch, update the repo first and treat the Notion row as a stale projection; lack of Notion access must not block repo work.
+
+Every pinned review item must provide a directly openable primary artifact link. Use the committed GitHub file URL when available. If an essential HTML or Markdown artifact is still local and uncommitted, attach a dated Notion review snapshot plus the repo-local path, label the snapshot as non-canonical, and refresh the canonical link after commit.
+
+**Reason:** Notion can make the current human/AI handoff easier to scan, especially what the user must review before AI can continue. Duplicating the full backlog and technical detail would create a second source of truth, increase sync work, and quickly leave one side stale. AI execution detail also changes too frequently to be useful on the human-facing board.
+
+**Applies to:** the active FlowMe Notion home and work-item database, backlog/status reviews, AI-to-human review requests, cross-session handoffs, `docs/DECISIONS.md`, `docs/IDEAS.md`, `docs/STATUS.md`, `docs/specs/`, `docs/content-audit/`, PR evidence, and agents with or without Notion connector access.
+
+**Reopen when:** the team deliberately makes Notion the canonical project system, reliable automated sync removes duplicate-maintenance risk, Claude Code and other supported agents gain equivalent Notion access, or the repo document graph no longer supports the required planning workflow.
+
+**Related docs:** [00 FlowMe 운영 홈](https://app.notion.com/p/39ac0d8f693f81339a34fdb75552bc27), [agent guide](../agent.md), [harness README](./harness/README.md), [current backlog workboard](./content-audit/2026-07-02-backlog-workboard-ko.html)
+
+### 2026-07-10 - Supported runtime and dependency hygiene are release gates
+
+**Decision:** Use Node.js 24 as the supported local, CI, and Vercel runtime baseline. Keep direct dependencies outside known high-severity advisory ranges, run `npm run security:audit` in CI, retain Playwright failure artifacts, and use weekly grouped Dependabot updates for npm and GitHub Actions. A release-readiness claim must disclose any remaining moderate or higher audit finding instead of treating a passing build as sufficient.
+
+**Reason:** The 2026-07-10 refresh found the repository on EOL Node.js 20 with high-severity advisories affecting Next.js, Playwright, and transitive packages. The app and E2E suite can pass while the runtime or dependency supply chain is stale, so supported runtime and automated update evidence need to be explicit release gates.
+
+**Applies to:** `package.json`, `package-lock.json`, `.node-version`, `.github/workflows/ci.yml`, `.github/dependabot.yml`, `playwright.config.ts`, Vercel runtime selection, local verification, and release-readiness reviews.
+
+**Reopen when:** Node.js 24 nears end of support, Vercel changes its supported runtime set, a dependency audit produces a documented false positive that cannot be fixed, or CI audit availability becomes unreliable.
+
+**Related docs:** [TOOLING.md](./TOOLING.md), [tooling refresh board](./content-audit/2026-07-10-tooling-skills-settings-refresh-ko.html)
+
+### 2026-07-10 - FLOW user-scope skills are generated copies
+
+**Decision:** Keep `.agents/skills/` as the only canonical FLOW skill source. Continue generating `.claude/skills/` with `npm run skills:sync`, and allow `npm run skills:install:codex` to generate matching user-scope copies under `$CODEX_HOME/skills` for Codex tasks opened from the workspace parent. Never edit either generated target directly. Notion is adopted only as the selective operations projection defined above; PostHog, Sentry, Promptfoo, Expo, Linear, and office/calendar connectors remain trigger-gated. Do not install duplicate curated skills when an installed plugin already provides the same Figma, GitHub, browser, Sites, or deployment capability.
+
+**Reason:** The refresh found two stale global FLOW skills and no global Korean naturalness skill even though the repo copies were current. It also found several official skill names reported as uninstalled while equivalent plugin skills were already active. Explicit generated copies solve cross-session discovery without creating competing sources of truth or redundant tool instructions.
+
+**Applies to:** `.agents/skills/`, `.claude/skills/`, `$CODEX_HOME/skills`, `scripts/sync-skills.mjs`, `scripts/sync-codex-user-skills.mjs`, Codex tasks started above `flow-mvp/`, Claude Code discovery, and future plugin/skill reviews.
+
+**Reopen when:** Codex reliably discovers nested repository skills from the workspace parent, user-scope installation becomes unnecessary, or a connector/evaluation/observability tool reaches its adoption trigger in [TOOLING.md](./TOOLING.md).
+
+**Related docs:** [harness README](./harness/README.md), [TOOLING.md](./TOOLING.md), [tooling refresh board](./content-audit/2026-07-10-tooling-skills-settings-refresh-ko.html)
 
 ### 2026-07-05 - Planning insights are captured into the repo doc graph
 
@@ -181,6 +304,8 @@ Do not use this for:
 
 ### 2026-06-26 - My Flow Step export uses edited Step detail values
 
+> **Superseded for new canonical backend/export contracts on 2026-07-11:** Keep this as the current My Flow UI/runtime bridge only. The durable minimum is now canonical `Item`; the visible Step detail edits an Item or Item overlay while Step remains grouping. See the 2026-07-11 Item decision and 2026-07-12 backend-readiness decision.
+
 **Decision:** My Flow Step detail should regenerate portable text and calendar `.ics` output from the currently edited Step detail values: title, date, time, repeat preset, location, memo, checked Items, completion criteria, caution, and source URL. This action belongs inside the opened Step detail as a small `내 도구로 옮기기` area, not on the first saved-map or Flow inventory surface.
 
 **Reason:** The accepted model treats Step as the minimum unit that can become calendar, todo, sheet, memo, or progress row. If a user changes a Step date or memo inside My Flow but export still uses the original source row, saved execution becomes visual-only. Keeping export controls inside Step detail preserves the Stage 0 export-first loop without making My Flow look like a full project-management workspace.
@@ -192,6 +317,8 @@ Do not use this for:
 **Related docs:** [Creator Publish Gate and Step Contract](./specs/2026-06-26-creator-publish-step-contract/spec.md), [QA Notes](./specs/2026-06-26-creator-publish-step-contract/qa.md), [checkpoint report](./content-audit/2026-06-26-creator-publish-step-contract-ko.html)
 
 ### 2026-06-26 - Saved Flow Map persistence includes Step contracts
+
+> **Superseded for new canonical persistence on 2026-07-11:** Preserve this entry as a legacy bridge requirement. New persistence stores independently stateful canonical Items and their overlays; legacy Step contracts are regenerated through the compatibility adapter rather than defining the storage minimum.
 
 **Decision:** A saved source-backed Flow Map persistence record should keep each child Flow's Step contracts, not only child Flow metadata and Step IDs. Each Step contract carries the Step ID, title, destination, calendar metadata, text fallback, and optional source/risk metadata. The bridge snapshot used by current My Flow may remain, but the product-ready record must be rich enough for later calendar/todo/sheet regeneration and source review.
 
@@ -1307,6 +1434,8 @@ Do not use this for:
 
 ### 2026-06-18 - Parent-child Flow hierarchy uses Flow Map, Flow, Step, Item
 
+> **Superseded for canonical backend/export work on 2026-07-11:** Preserve this entry as the June runtime/UX bridge only. New canonical mapping makes `Item` the minimum independently stateful execution/projection unit and `Step` a semantic group. See the 2026-07-11 Item decision and the 2026-07-12 backend-readiness decision above.
+
 **Decision:** Use `Flow Map > Flow > Step > Item` as the working hierarchy for Flow of Flow and parent-child Flow modeling. A Flow Map is the upper map, a Flow is one executable content unit inside it, a Step is the minimum execution row that can become a calendar event, todo task, checklist row, sheet row, or progress row, and an Item is a detail field attached to a Step such as a memo prompt, URL, material, criterion, selected option, confirmation number, or calendar-event description variable. In FlowMe, Items may render as a nested checklist inside the Step detail when useful. In outside apps that do not support nested checklist items, Items should collapse into plain text in the calendar event description, todo note/body, sheet note column, or memo body. `Item` is optional and should not become a separate scheduled task unless the source truly requires it.
 
 **Reason:** The previous wording mixed internal terms such as Parent Flow, Child Flow, Execution Item, Flow Pack, and Flow List. The user clarified that the accepted single-Flow pattern already works, and Flow of Flow should extend it without inventing checklist rows. This naming keeps large structures understandable, treats Step as the exportable/schedulable execution unit, and allows Items to remain lightweight memo or event-description variables that degrade gracefully in external tools.
@@ -1347,6 +1476,8 @@ Do not use this for:
 
 ### 2026-06-23 - Official date windows stay metadata, not repeated tasks
 
+> **Canonical clarification (2026-07-12):** The no-expanded-daily-rows rule remains. In the new model the date window belongs to the relevant canonical `Item.schedule`, while `Step` remains grouping; legacy Step metadata is a compatibility adapter.
+
 **Decision:** Source-defined official eligibility windows, such as 영유아 건강검진 기간, should be stored as Step metadata (`date_window`) rather than modeled as multi-day `duration_days` task ranges. The Step remains one calendar/todo row. Calendar export creates one reminder event, while the official period and calculated date range are carried in event descriptions, workbook rows, and text fallback.
 
 **Reason:** The approved Flow Map direction keeps user complexity at calendar/todo level. A 검진 가능 기간 such as `생후 14~35일` is not 22 separate tasks. Expanding it into many daily rows would inflate progress, clutter calendars, and make official logistics look like FlowMe is managing medical decisions. Keeping the window as metadata preserves source fidelity without adding visible controls.
@@ -1356,6 +1487,8 @@ Do not use this for:
 **Reopen when:** real export or user behavior shows that a single reminder plus period text is insufficient and users need explicit start/end/reminder rules for official date windows.
 
 ### 2026-06-25 - My Flow Step detail carries portable calendar/task fields
+
+> **Canonical clarification (2026-07-12):** Preserve the current user-facing Step-detail UX vocabulary, but map independently stateful rows and portable schedule/completion values to canonical Items and user Item overlays. The visible label does not define the new storage minimum.
 
 **Decision:** A saved Step may carry user-edited calendar/task metadata: date, time, simple repeat preset, location, memo, and source/detail links. These fields belong inside the Step detail, not on the first saved-map or Flow inventory surface. Date changes should affect the My Flow calendar row; time, repeat preset, location, and memo should persist as Step-level local drafts.
 

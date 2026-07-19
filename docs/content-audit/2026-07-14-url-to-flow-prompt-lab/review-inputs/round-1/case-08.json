@@ -1,0 +1,187 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-1",
+  "caseId": "case-08",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.1",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-08",
+    "requestId": "prompt-lab-v1-case-08",
+    "targetLocale": "ko-KR",
+    "userJob": "아이 검진 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+    "maxItems": 7,
+    "claimedScope": "제공된 1개 SourceRow 범위만 변환한다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-nhis-infant-checkup",
+        "title": "국민건강보험 영유아 건강검진 안내",
+        "sourceType": "official",
+        "originalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+        "canonicalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": "국민건강보험공단",
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "allowed",
+        "riskLevel": "medical_sensitive",
+        "accessStatus": "fetched"
+      },
+      "supporting": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-infant-checkup-prep",
+        "sourceId": "source-nhis-infant-checkup",
+        "rowType": "check",
+        "title": "예약과 문진표 준비",
+        "detail": null,
+        "order": 0
+      }
+    ],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-pos-08-evidence-caution:source-only"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-08",
+    "fixtureId": "gf-pos-08-evidence-caution",
+    "fixtureKind": "positive",
+    "fixtureShape": "evidence_caution",
+    "name": "영유아 건강검진 준비 증빙·주의",
+    "expectedStatus": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null,
+      "recommendedDisposition": "review"
+    },
+    "expectedConversion": {
+      "userNeed": "아이 검진 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+      "planningPattern": "phase_lifecycle",
+      "primaryArtifact": "checklist",
+      "riskLevel": "medical_sensitive"
+    },
+    "expectedItems": [
+      {
+        "referenceItemId": "item-infant-checkup-confirm",
+        "title": "예약과 문진표 준비 확인하기",
+        "intent": "inspect",
+        "sourceRowIds": [
+          "row-infant-checkup-prep"
+        ],
+        "completionMode": "check",
+        "doneWhen": "예약과 문진표 준비 상태를 확인했다.",
+        "hasSchedule": false,
+        "canonicalSchedule": null
+      }
+    ],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [
+      "row-infant-checkup-prep"
+    ],
+    "expectedProjections": [
+      "checklist:markdown",
+      "sheet:csv",
+      "memo:markdown"
+    ],
+    "forbiddenProjections": [
+      "calendar:ics",
+      "todo:markdown"
+    ],
+    "referenceReview": {
+      "readiness": "ready_second_wave",
+      "hardFails": [],
+      "rightsDecision": "공식 준비 항목과 링크만 사용한다.",
+      "riskDecision": "민감 메모는 사용자 overlay에만 저장하고 공개 content/export 기본값에 포함하지 않는다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.1",
+    "requestId": "prompt-lab-v1-case-08",
+    "caseId": "case-08",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "check",
+      "primarySourceId": "source-nhis-infant-checkup",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-infant-checkup-prep"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "아이 검진의 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+      "lifeArea": "health",
+      "planningPattern": "preparation_check",
+      "primaryArtifact": "checklist",
+      "contentShape": "검진 준비 확인 항목"
+    },
+    "proposal": {
+      "proposalTitle": "영유아 검진 예약·문진표 준비 확인",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "예약과 문진표 준비 상태 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-infant-checkup-prep"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "예약과 문진표의 준비 상태가 확인됨"
+          },
+          "memoCandidate": "의료 판단은 공식 안내에 맡김",
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "예약과 문진표 준비 상태를 한 항목에서 확인할 수 있음"
+      },
+      {
+        "target": "memo",
+        "applicability": "applicable",
+        "reason": "공식 안내에 의료 판단을 맡긴다는 경계를 함께 보존할 수 있음"
+      },
+      {
+        "target": "calendar",
+        "applicability": "blocked",
+        "reason": "예약 준비만 제시되고 실제 검진 날짜는 제공되지 않음"
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "예약과 문진표의 구체 절차 및 실제 검진 일정이 SourceRow에 제공되지 않음"
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "의료 판단과 검진 적합성은 공식 안내 또는 의료진에게 확인"
+      ]
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

@@ -476,7 +476,7 @@ function FlowSourceFitStatus({ bundle }: { bundle: FlowBundle }) {
   );
 }
 
-function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle; className?: string }) {
+function SourceContentCard({ bundle, className = 'mt-5', testId = 'flow-source-card' }: { bundle: FlowBundle; className?: string; testId?: string }) {
   if (!bundle.flow.source_title && !bundle.flow.source_url) return null;
 
   const domain = getSourceDomain(bundle.flow.source_url);
@@ -491,7 +491,7 @@ function SourceContentCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle;
   ].filter(Boolean);
 
   return (
-    <section data-testid="flow-source-card" className={`${className} rounded-lg border border-slate-200 bg-white p-4 shadow-sm`}>
+    <section data-testid={testId} className={`${className} rounded-lg border border-slate-200 bg-white p-4 shadow-sm`}>
       <details>
         <summary className="cursor-pointer list-none">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -4650,6 +4650,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const currentUser = getCurrentUser();
   const isCalendarSurface = surface === 'calendar';
   const [savedMapIdParam, setSavedMapIdParam] = useState('');
+  const [savedFlowSlugParam, setSavedFlowSlugParam] = useState('');
   const [activeProgress, setActiveProgress] = useState<ReturnType<typeof getActiveFlowProgress>>([]);
   const [savedView, setSavedView] = useState<MyFlowView>(initialView);
   const [myFlowVisibleMonth, setMyFlowVisibleMonth] = useState(getMyFlowMonthStart(formatLocalDate(new Date())));
@@ -4714,7 +4715,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStructuralAddOpenSlug, setMyFlowStructuralAddOpenSlug] = useState('');
   const [myFlowStructuralAddTitle, setMyFlowStructuralAddTitle] = useState('');
   const [myFlowStructuralUndo, setMyFlowStructuralUndo] = useState<PersonalDraftStructuralUndo | null>(null);
-  const [myFlowUnscheduledTrayOpen, setMyFlowUnscheduledTrayOpen] = useState(true);
+  const [myFlowUnscheduledTrayOpen, setMyFlowUnscheduledTrayOpen] = useState(false);
   const [myFlowUnscheduledSelection, setMyFlowUnscheduledSelection] = useState<string[]>([]);
   const [myFlowUnscheduledTargetDate, setMyFlowUnscheduledTargetDate] = useState('');
   const [myFlowCalendarScheduleUndo, setMyFlowCalendarScheduleUndo] = useState<MyFlowCalendarScheduleUndo | null>(null);
@@ -4841,6 +4842,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     setSavedMapIdParam(params.get('savedMap') ?? '');
+    setSavedFlowSlugParam(params.get('savedFlow') ?? '');
     const mediaQuery = window.matchMedia('(max-width: 640px)');
     const mobileFlowQuery = window.matchMedia('(max-width: 767px)');
     const syncRoutineIconLimit = () => {
@@ -5113,9 +5115,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return items;
     }, []);
 
-  const workspaceSavedFlows = isCalendarSurface
-    ? savedFlows.filter(isMyFlowReadyContent)
-    : savedFlows;
+  const savedFlowMapSnapshots = Array.from(
+    Object.values(savedFlowMapBySlug).reduce((snapshots, snapshot) => snapshots.set(snapshot.mapId, snapshot), new Map<string, SavedFlowMapSnapshot>()).values(),
+  );
+  const executionHeldFlowSlugs = new Set(
+    savedFlowMapSnapshots.flatMap((snapshot) =>
+      getSourceBackedFlowMapQualityDecision(snapshot.mapId).publicExecutionEnabled === false
+        ? snapshot.flowSlugs
+        : [],
+    ),
+  );
+  const workspaceSavedFlows = savedFlows.filter(
+    (flow) => isMyFlowReadyContent(flow) && !executionHeldFlowSlugs.has(flow.progress.slug),
+  );
 
   useEffect(() => {
     if (selectedSavedFlowSlug !== 'all' && !workspaceSavedFlows.some((flow) => flow.progress.slug === selectedSavedFlowSlug)) {
@@ -5127,21 +5139,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ? workspaceSavedFlows
     : workspaceSavedFlows.filter((flow) => flow.progress.slug === selectedSavedFlowSlug);
   const visibleExecutionFlows = visibleSavedFlows.filter(isMyFlowReadyContent);
-  const savedFlowMapSnapshots = Array.from(
-    Object.values(savedFlowMapBySlug).reduce((snapshots, snapshot) => snapshots.set(snapshot.mapId, snapshot), new Map<string, SavedFlowMapSnapshot>()).values(),
-  );
   const myFlowMapUpdateNotices = savedFlowMapSnapshots.flatMap((snapshot) => {
     const notice = getMyFlowMapUpdateNotice(snapshot, savedFlowMapPersistenceById[snapshot.mapId]);
+    if (notice?.executionHeld) return [];
     if (notice && !notice.executionHeld && isMyFlowMapUpdateDismissed(notice, myFlowDismissedMapUpdates)) return [];
     return notice ? [notice] : [];
   });
   const postSaveMap = savedMapIdParam ? savedFlowMapSnapshots.find((snapshot) => snapshot.mapId === savedMapIdParam) : undefined;
   const postSaveFlows = postSaveMap
     ? savedFlows.filter((flow) => postSaveMap.flowSlugs.includes(flow.progress.slug))
-    : [];
-  const hasPostSavePanel = Boolean(postSaveMap && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || savedMapIdParam));
+    : savedFlowSlugParam
+      ? savedFlows.filter((flow) => flow.progress.slug === savedFlowSlugParam)
+      : [];
+  const postSaveExecutionHeld = postSaveFlows.length > 0 && postSaveFlows.every(
+    (flow) => !workspaceSavedFlows.some((candidate) => candidate.progress.slug === flow.progress.slug),
+  );
+  const postSaveQueryKey = postSaveMap?.mapId ?? savedFlowSlugParam;
+  const hasPostSavePanel = Boolean(postSaveQueryKey && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || postSaveQueryKey));
   const showPostSavePanel = hasPostSavePanel && !myFlowPostSaveWorkspaceOpen;
-  const showMyFlowWorkspace = workspaceSavedFlows.length > 0;
+  const showMyFlowWorkspace = workspaceSavedFlows.length > 0 && !showPostSavePanel;
   const shouldCollapseFlowInventory =
     savedFlows.length >= 6 &&
     selectedSavedFlowSlug === 'all' &&
@@ -6625,13 +6641,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   }, [isCalendarSurface, savedView, visibleSavedViewTabs]);
 
   useEffect(() => {
-    if (!showPostSavePanel || !savedMapIdParam || myFlowHandledSavedMapId === savedMapIdParam) return;
+    if (!showPostSavePanel || !postSaveQueryKey || myFlowHandledSavedMapId === postSaveQueryKey) return;
     setSelectedSavedFlowSlug('all');
     setSavedView('today');
     setMyFlowInventoryOpen(false);
     setMyFlowPostSaveWorkspaceOpen(false);
-    setMyFlowHandledSavedMapId(savedMapIdParam);
-  }, [myFlowHandledSavedMapId, savedMapIdParam, showPostSavePanel]);
+    setMyFlowHandledSavedMapId(postSaveQueryKey);
+  }, [myFlowHandledSavedMapId, postSaveQueryKey, showPostSavePanel]);
 
   useEffect(() => {
     const anchorMonthStart = getMyFlowMonthStart(calendarAnchor);
@@ -8146,6 +8162,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const getPostSaveContinuationRow = (): MyFlowCalendarRow | null => {
+    if (postSaveExecutionHeld) return null;
     if (postSavePrimaryContinuationRow) return postSavePrimaryContinuationRow;
     const postSaveFlowSlugs = new Set(postSaveFlows.map((flow) => flow.progress.slug));
     if (myFlowPrimaryContinuationRow && postSaveFlowSlugs.has(myFlowPrimaryContinuationRow.flow.progress.slug)) {
@@ -10413,43 +10430,79 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const renderPostSavePanel = () => {
-    if (!postSaveMap || postSaveFlows.length === 0) return null;
+    if (postSaveFlows.length === 0) return null;
     const postSaveContinuationRow = getPostSaveContinuationRow();
-    const postSaveHeading = postSaveContinuationRow
-      ? '내 Flow에 저장했습니다'
-      : '저장한 내용을 확인하세요';
+    const postSaveTitle = postSaveMap?.title ?? postSaveFlows[0]?.progress.title ?? '저장한 Flow';
+    const postSaveRowCount = postSaveFlows.reduce((count, flow) => count + flow.rows.length, 0);
     return (
       <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3 shadow-[0_8px_24px_rgba(27,26,23,0.05)] sm:p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
               <span data-testid="my-flow-post-save-confirmation" className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">내 Flow에 저장됨</span>
-              <span className="break-keep text-[#6E6B64]">{toUserFacingMapTitle(postSaveMap.title)}</span>
+              <span className="break-keep text-[#6E6B64]">{toUserFacingMapTitle(postSaveTitle)}</span>
             </div>
             <h3 className="mt-2 break-keep text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">
-              {postSaveHeading}
+              {postSaveExecutionHeld ? '저장 기록을 보관했어요' : '저장한 전체 Flow를 확인하세요'}
             </h3>
+            <p className="mt-1 text-sm font-medium text-slate-600">
+              {postSaveExecutionHeld
+                ? '현재 확인이 필요한 Flow라 실행 목록에는 표시하지 않아요.'
+                : `${postSaveRowCount}개 할 일이 저장되었습니다.`}
+            </p>
           </div>
-          <div className="grid shrink-0 gap-2 sm:w-44">
-            {postSaveContinuationRow ? (
+          {!postSaveExecutionHeld ? (
+            <div className="grid shrink-0 grid-cols-2 gap-2 sm:w-72">
+              {postSaveContinuationRow ? (
+                <button
+                  type="button"
+                  data-testid="my-flow-post-save-open-first"
+                  className="min-h-10 rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white"
+                  onClick={openMyFlowContinuationFromPostSave}
+                >
+                  첫 할 일 열기
+                </button>
+              ) : null}
               <button
                 type="button"
-                data-testid="my-flow-post-save-open-first"
-                className="min-h-10 rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white"
-                onClick={openMyFlowContinuationFromPostSave}
+                data-testid="my-flow-post-save-view-flow"
+                className="min-h-10 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm font-semibold text-[#3654FF]"
+                onClick={openMyFlowListFromPostSave}
               >
-                먼저 열기
+                전체에서 조정
               </button>
-            ) : null}
-            <button
-              type="button"
-              data-testid="my-flow-post-save-view-flow"
-              className="min-h-10 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm font-semibold text-[#3654FF]"
-              onClick={openMyFlowListFromPostSave}
-            >
-              전체 보기
-            </button>
-          </div>
+            </div>
+          ) : (
+            <p data-testid="my-flow-post-save-held-note" className="max-w-xs text-sm font-semibold text-slate-600">
+              원문 확인이 끝난 뒤 다시 실행할 수 있어요.
+            </p>
+          )}
+        </div>
+        <div data-testid="my-flow-post-save-artifact" className="mt-4 grid gap-3 border-t border-[#E7E4DD] pt-3">
+          {postSaveFlows.map((flow) => (
+            <section key={flow.progress.slug} data-testid="my-flow-post-save-flow" data-flow-slug={flow.progress.slug}>
+              {postSaveFlows.length > 1 ? (
+                <h4 className="mb-1.5 text-xs font-semibold text-[#6E6B64]">{getMyFlowExecutionFlowTitle(flow.progress.title)}</h4>
+              ) : null}
+              <ol className="grid gap-0 border-y border-[#F0EEE9]">
+                {flow.rows.map((row, index) => {
+                  const dateResolution = resolveSavedFlowRowDate(flow, row);
+                  const calendarRow: MyFlowCalendarRow = {
+                    ...row,
+                    flow,
+                    ...(dateResolution.date ? { date: dateResolution.date } : {}),
+                  };
+                  return (
+                    <li key={`${flow.progress.slug}-${row.id}`} data-testid="my-flow-post-save-step" className="grid grid-cols-[1.75rem_minmax(0,1fr)_auto] items-center gap-2 border-t border-[#F0EEE9] px-1 py-2.5 first:border-t-0">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#EEF1FF] text-[11px] font-semibold text-[#3654FF]" aria-hidden="true">{index + 1}</span>
+                      <span className="min-w-0 break-keep text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle(calendarRow)}</span>
+                      <span className="shrink-0 text-[11px] font-semibold text-slate-500">{dateResolution.date ? formatMyFlowDisplayDate(dateResolution.date) : '날짜 없음'}</span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          ))}
         </div>
       </section>
     );
@@ -12250,7 +12303,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
       </div>
 
-      {workspaceSavedFlows.length === 0 ? (
+      {workspaceSavedFlows.length === 0 && !showPostSavePanel ? (
         <section data-testid="my-flow-empty-state" className="border-y border-slate-200 bg-slate-50/70 px-1 py-8 sm:px-6 sm:py-10">
           <p className="text-sm font-semibold text-blue-700">{isCalendarSurface ? '날짜 항목 없음' : '저장한 콘텐츠 없음'}</p>
           <h2 className="mt-2 break-keep text-2xl font-semibold tracking-tight text-slate-950">
@@ -12269,7 +12322,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </section>
       ) : null}
 
-      {workspaceSavedFlows.length > 0 ? (
+      {workspaceSavedFlows.length > 0 || showPostSavePanel ? (
         <section className="mb-6">
           {showPostSavePanel ? renderPostSavePanel() : null}
           {showMyFlowWorkspace ? (
@@ -12311,7 +12364,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {showMyFlowScopeControl ? (
                   <div className="min-w-0 sm:w-72">
                     <label className="mb-1 block text-xs font-semibold text-slate-500" htmlFor="my-flow-scope">
-                      보기 범위
+                      저장한 Flow
                     </label>
                     <select
                       id="my-flow-scope"
@@ -12320,7 +12373,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       data-testid="my-flow-scope-select"
                       onChange={(event) => setSelectedSavedFlowSlug(event.target.value)}
                     >
-                      <option value="all">전체 Flow</option>
+                      <option value="all">모든 Flow</option>
                       {workspaceSavedFlows.map((flow) => (
                         <option key={flow.progress.slug} value={flow.progress.slug}>
                           {getMyFlowExecutionFlowTitle(flow.progress.title)}
@@ -14608,16 +14661,16 @@ export function PublicFlow({ slug }: { slug: string }) {
   const primaryDestination = inferPrimaryDestination(bundle);
   const publicHeroInput = isUserScheduledExactVideo(bundle) ? '시작일과 반복 요일' : getAnchorLabel(bundle);
   const publicHeroArtifact = getCatalogDestinationLabel(bundle);
-  const publicHeroPromise = isUserScheduledExactVideo(bundle)
-    ? `시작일과 요일을 고르면 저장됩니다: ${publicHeroArtifact}`
-    : getCatalogPromiseText(publicHeroInput, publicHeroArtifact);
-  const publicHeroFirstTask = getCatalogFirstTask(getFlowPreviewStepTitles(bundle), getCatalogReason(bundle));
+  const publicPreviewStepTitles = getFlowPreviewStepTitles(bundle);
+  const publicHeroPromise = `${publicHeroArtifact} · 실행 항목 ${executableCount}개`;
+  const publicHeroFirstTask = getCatalogFirstTask(publicPreviewStepTitles, getCatalogReason(bundle));
   const showPublicHeroSetup =
     !showExportFirstHero &&
     (
       isUserScheduledExactVideo(bundle) ||
       (!showTodayExecution && (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none'))
     );
+  const useP24CompactPublicFrame = showPublicHeroSetup && !compactJeonsePage;
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
 
   const toggle = (id: string) => {
@@ -14734,25 +14787,30 @@ export function PublicFlow({ slug }: { slug: string }) {
   };
   const renderPublicSaveActions = () =>
     showPublicSaveAction ? (
-      <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid sm:max-w-sm">
+      <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid sm:max-w-md sm:grid-cols-2">
         {savedFlowAt ? (
-          <Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href="/my">
+          <Link className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href={`/my?savedFlow=${encodeURIComponent(bundle.flow.slug)}`}>
             내 Flow에서 보기
           </Link>
         ) : (
-          <button
-            type="button"
-            className="min-h-11 rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
-            onClick={saveToMyFlow}
-          >
-            내 Flow에 저장
-          </button>
+          <>
+            <button
+              type="button"
+              className="min-h-11 rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+              onClick={saveToMyFlow}
+            >
+              그대로 저장
+            </button>
+            <button
+              type="button"
+              data-testid="public-flow-adjust-entry"
+              className="min-h-11 rounded-xl border border-[#D8D5CD] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
+              onClick={copyToEditableDraft}
+            >
+              내 버전으로 조정
+            </button>
+          </>
         )}
-        {bundle.flow.source_url ? (
-          <a className="inline-flex min-h-8 items-center justify-center text-sm font-semibold text-[#6E6B64] underline-offset-2 hover:text-[#3654FF] hover:underline" href={bundle.flow.source_url} target="_blank" rel="noreferrer">
-            원문은 아래에서 확인
-          </a>
-        ) : null}
       </div>
     ) : null;
   const renderPublicMobileSaveCta = () =>
@@ -14767,13 +14825,23 @@ export function PublicFlow({ slug }: { slug: string }) {
             <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
           </div>
           {savedFlowAt ? (
-            <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+            <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href={`/my?savedFlow=${encodeURIComponent(bundle.flow.slug)}`}>
               내 Flow에서 보기
             </Link>
           ) : (
-            <button className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" type="button" onClick={saveToMyFlow}>
-              내 Flow에 저장
-            </button>
+            <div className="flex shrink-0 gap-1.5">
+              <button className="min-h-11 rounded-md bg-[#3654FF] px-3 text-sm font-semibold text-white shadow-sm" type="button" onClick={saveToMyFlow}>
+                그대로 저장
+              </button>
+              <button
+                className="min-h-11 rounded-md border border-[#D8D5CD] bg-white px-3 text-xs font-semibold text-slate-700"
+                data-testid="public-flow-adjust-entry-mobile"
+                type="button"
+                onClick={copyToEditableDraft}
+              >
+                조정
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -14843,7 +14911,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     <main className={`min-h-screen bg-[#F5F7F6] px-4 text-slate-950 md:px-8 ${publicMobileClearanceClass}`}>
       {renderPublicMobileSaveCta()}
       <div className="mx-auto max-w-[1240px]">
-        <PublicFlowShareShell savedFlowAt={savedFlowAt} />
+        <PublicFlowShareShell savedFlowAt={savedFlowAt} flowSlug={bundle.flow.slug} />
 
         <header data-testid="public-flow-hero" className={compactJeonsePage ? 'border-b border-[#DDE4E0] pb-5 pt-1 md:pb-6' : 'border-b border-[#DDE4E0] pb-7 pt-2 md:pb-9 md:pt-4'}>
           <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500">
@@ -14858,22 +14926,33 @@ export function PublicFlow({ slug }: { slug: string }) {
             ) : null}
           </div>
           <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{publicDisplayTitle}</h1>
-          {bundle.flow.description ? <p className={compactJeonsePage ? 'mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base md:leading-7' : 'mt-4 max-w-3xl text-sm leading-6 text-slate-600 md:text-base md:leading-7'}>{bundle.flow.description}</p> : null}
           <div data-testid="public-flow-creator-attribution" className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#66706B]">
             <Link className="font-semibold text-[#1B1A17] underline-offset-2 hover:text-[#3654FF] hover:underline" href={getCreatorPath(bundle)}>
               by {getCreatorName(bundle)}
             </Link>
-            <span aria-hidden="true">·</span>
-            <span>원문 기준 실행본</span>
           </div>
+          {bundle.flow.description ? (
+            <details data-testid="public-flow-description" className="mt-3 max-w-3xl border-y border-[#DDE4E0] py-2 text-sm">
+              <summary className="min-h-8 cursor-pointer font-semibold text-[#59625E]">이 Flow 설명</summary>
+              <p className="mt-2 break-keep leading-6 text-slate-600">{bundle.flow.description}</p>
+            </details>
+          ) : null}
           {showPublicHeroSetup ? (
             <section className="mt-5 border-y border-[#DDE4E0] py-4">
               <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
               <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)] md:items-stretch">
                 {renderPublicHeroSetup()}
-                <div data-testid="public-flow-first-action-preview" className="px-1 py-2.5 md:flex md:flex-col md:justify-center md:border-l md:border-[#DDE4E0] md:pl-5">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
-                  <p className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
+                <div data-testid="public-flow-artifact-preview" className="px-1 py-2.5 md:border-l md:border-[#DDE4E0] md:pl-5">
+                  <p className="text-[11px] font-semibold text-[#8A857B]">저장될 Flow 구성</p>
+                  <ol className="mt-1 grid gap-1.5">
+                    {publicPreviewStepTitles.slice(0, 4).map((title, index) => (
+                      <li key={`${title}-${index}`} data-testid="public-flow-artifact-preview-row" className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-1.5 text-sm font-semibold text-[#1B1A17]">
+                        <span className="text-[11px] text-[#3654FF]" aria-hidden="true">{index + 1}</span>
+                        <span className="line-clamp-1 break-keep">{title}</span>
+                      </li>
+                    ))}
+                  </ol>
+                  {publicPreviewStepTitles.length > 4 ? <p className="mt-1.5 text-xs font-semibold text-[#8A857B]">외 {publicPreviewStepTitles.length - 4}개</p> : null}
                 </div>
               </div>
               {showPublicSaveAction ? <div className="mt-3">{renderPublicSaveActions()}</div> : null}
@@ -14891,7 +14970,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroArtifact}</p>
                 </div>
                 <div data-testid="public-flow-first-action-preview" className="px-1 py-2 sm:px-4">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">먼저 할 일</p>
+                  <p className="text-[11px] font-semibold text-[#8A857B]">첫 할 일</p>
                   <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
                 </div>
               </div>
@@ -14921,10 +15000,10 @@ export function PublicFlow({ slug }: { slug: string }) {
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
           <div className={showMobileWorkbenchFirst ? 'flex min-w-0 flex-col xl:block' : 'min-w-0'}>
-            <div className={showMobileWorkbenchFirst ? 'order-3 xl:hidden' : 'xl:hidden'}>
+            {!useP24CompactPublicFrame ? <div className={showMobileWorkbenchFirst ? 'order-3 xl:hidden' : 'xl:hidden'}>
               <FlowMigrationStatus bundle={bundle} />
               <FlowSourceFitStatus bundle={bundle} />
-            </div>
+            </div> : null}
 
             {showExportFirstHero ? (
               <ExportFirstHero
@@ -14945,25 +15024,29 @@ export function PublicFlow({ slug }: { slug: string }) {
             <div className={showMobileWorkbenchFirst ? 'order-1 xl:contents' : undefined}>{renderArtifactWorkbench()}</div>
           </div>
           <aside data-testid="flow-desktop-rail" className="hidden space-y-4 xl:sticky xl:top-6 xl:block">
-            <FlowMigrationStatus bundle={bundle} />
-            <FlowSourceFitStatus bundle={bundle} />
+            {!useP24CompactPublicFrame ? <FlowMigrationStatus bundle={bundle} /> : null}
+            {!useP24CompactPublicFrame ? <FlowSourceFitStatus bundle={bundle} /> : null}
             <SourceContentCard bundle={bundle} className="mt-0" />
-            <FlowWarningCard bundle={bundle} className="mt-0" />
+            {!useP24CompactPublicFrame ? <FlowWarningCard bundle={bundle} className="mt-0" /> : null}
           </aside>
         </div>
       ) : showMobileWorkbenchFirst ? (
         <div className="flex flex-col">
-          <div className="order-3 md:order-1">
+          {!useP24CompactPublicFrame ? <div className="order-3 md:order-1">
             <FlowMigrationStatus bundle={bundle} />
             <FlowSourceFitStatus bundle={bundle} />
-          </div>
+          </div> : null}
           <div className="order-2 md:order-2">{renderSetupSection()}</div>
           <div className="order-1 md:order-3">{renderArtifactWorkbench()}</div>
         </div>
       ) : (
         <>
-          <FlowMigrationStatus bundle={bundle} />
-          <FlowSourceFitStatus bundle={bundle} />
+          {!useP24CompactPublicFrame ? (
+            <>
+              <FlowMigrationStatus bundle={bundle} />
+              <FlowSourceFitStatus bundle={bundle} />
+            </>
+          ) : null}
 
           {showExportFirstHero ? (
             <ExportFirstHero
@@ -14988,9 +15071,9 @@ export function PublicFlow({ slug }: { slug: string }) {
       {showStorageNotice ? (
         <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <p>
-              <span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 이어서 보려면 저장 후 내 Flow의 데이터 관리에서 백업 파일을 받아두세요.
-            </p>
+            <p>{useP24CompactPublicFrame
+              ? '진행 상황은 이 브라우저에 저장됩니다. 백업은 내 Flow의 데이터 관리에서 할 수 있어요.'
+              : <><span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 이어서 보려면 저장 후 내 Flow의 데이터 관리에서 백업 파일을 받아두세요.</>}</p>
             <button
               className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700"
               onClick={() => {
@@ -15004,7 +15087,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         </section>
       ) : null}
 
-      {!shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
+      {!useP24CompactPublicFrame && !shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
 
       {showTodayExecution && !shouldUseSimplifiedFeedbackLayout(bundle) ? (
         <ExactVideoToolPreview
@@ -15064,7 +15147,23 @@ export function PublicFlow({ slug }: { slug: string }) {
       )}
 
       {!hideSharedPublicFooter ? (
-        <>
+        useP24CompactPublicFrame ? (
+          <details data-testid="public-flow-reference-details" className="my-5 border-y border-[#DDE4E0] bg-white py-3">
+            <summary className="min-h-9 cursor-pointer px-1 text-sm font-semibold text-[#59625E]">출처와 주의</summary>
+            <div className="mt-2 grid gap-3 border-t border-[#DDE4E0] pt-3">
+              <div className="px-1 text-sm text-[#6E6B64]">
+                <p className="font-semibold text-[#1B1A17]">{getCreatorName(bundle)}</p>
+                {getCreatorNote(bundle) ? <p className="mt-1 leading-6">{getCreatorNote(bundle)}</p> : null}
+              </div>
+              <FlowMigrationStatus bundle={bundle} />
+              <FlowSourceFitStatus bundle={bundle} />
+              {showDesktopReferenceRail
+                ? <SourceContentCard bundle={bundle} className="mt-0 xl:hidden" testId="flow-source-card-mobile" />
+                : <SourceContentCard bundle={bundle} className="mt-0" />}
+              <FlowWarningCard bundle={bundle} className="mt-0" />
+            </div>
+          </details>
+        ) : <>
           <section className="my-5 rounded-lg border border-[#DDE4E0] bg-white p-4 shadow-[0_1px_0_rgba(27,26,23,0.03)]">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -15158,7 +15257,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                 <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
               </div>
               {savedFlowAt ? (
-                <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href="/my">
+                <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href={`/my?savedFlow=${encodeURIComponent(bundle.flow.slug)}`}>
                   내 Flow에서 보기
                 </Link>
               ) : (
@@ -15179,7 +15278,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   );
 }
 
-function PublicFlowShareShell({ savedFlowAt }: { savedFlowAt?: string }) {
+function PublicFlowShareShell({ savedFlowAt, flowSlug }: { savedFlowAt?: string; flowSlug: string }) {
   return (
     <nav
       aria-label="공유 콘텐츠"
@@ -15190,7 +15289,7 @@ function PublicFlowShareShell({ savedFlowAt }: { savedFlowAt?: string }) {
         FLOW
       </Link>
       {savedFlowAt ? (
-        <Link className="inline-flex min-h-9 items-center rounded-md border border-[#DDE4E0] bg-white px-3 text-sm font-semibold text-[#59625E] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href="/my">
+        <Link className="inline-flex min-h-9 items-center rounded-md border border-[#DDE4E0] bg-white px-3 text-sm font-semibold text-[#59625E] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={`/my?savedFlow=${encodeURIComponent(flowSlug)}`}>
           내 Flow에서 보기
         </Link>
       ) : (

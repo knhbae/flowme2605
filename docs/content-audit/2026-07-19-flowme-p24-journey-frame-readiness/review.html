@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P24 Journey Readiness</title>
+  <style>
+    :root { color-scheme: light; --ink:#161616; --muted:#626262; --line:#dedede; --blue:#2f55e7; --soft:#f5f7fb; --hold:#fff4d8; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial,"Noto Sans KR",sans-serif; color:var(--ink); background:#fff; line-height:1.55; }
+    main { width:min(1180px,calc(100% - 32px)); margin:0 auto; padding:40px 0 72px; }
+    header { border-bottom:1px solid var(--line); padding-bottom:28px; }
+    h1 { margin:8px 0 12px; font-size:clamp(30px,5vw,54px); letter-spacing:0; line-height:1.08; }
+    h2 { margin:0 0 18px; font-size:24px; }
+    h3 { margin:0 0 8px; font-size:17px; }
+    p { margin:0 0 12px; }
+    .eyebrow { color:var(--blue); font-weight:700; }
+    .lede { max-width:760px; color:var(--muted); font-size:18px; }
+    .status { display:inline-flex; margin-top:16px; padding:7px 10px; border:1px solid #e2c66e; background:var(--hold); font-weight:700; font-size:13px; }
+    section { padding:32px 0; border-bottom:1px solid var(--line); }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .card { border:1px solid var(--line); padding:18px; min-width:0; }
+    .metric { font-size:28px; font-weight:800; }
+    .muted { color:var(--muted); }
+    .journey { display:grid; grid-template-columns:100px 1fr 90px; gap:16px; padding:16px 0; border-top:1px solid var(--line); align-items:start; }
+    .journey:first-of-type { border-top:0; }
+    .pass { color:#18743b; font-weight:700; }
+    .screens { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    figure { margin:0; border:1px solid var(--line); background:var(--soft); padding:10px; min-width:0; }
+    img { display:block; width:100%; height:420px; object-fit:contain; object-position:top; background:white; }
+    figcaption { padding-top:8px; color:var(--muted); font-size:13px; }
+    table { width:100%; border-collapse:collapse; }
+    th,td { padding:11px 10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:var(--soft); }
+    code { background:var(--soft); padding:2px 5px; }
+    @media (max-width:800px) { .grid,.screens { grid-template-columns:1fr; } .journey { grid-template-columns:1fr; gap:5px; } img { height:auto; max-height:620px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">FLOWME · P24 FINAL INTERNAL READINESS</div>
+    <h1>저장 전에 보고,<br />저장 직후 전체를 확인합니다.</h1>
+    <p class="lede">긴 설명과 첫 항목 축약 사이에서 잃었던 전체 Flow를 복구했습니다. 이번 결과는 구현과 자동 검증의 완료이며, 실제 사용자 관찰은 아직 시작하지 않았습니다.</p>
+    <div class="status">implementation complete · observation 0 / 15</div>
+  </header>
+
+  <section>
+    <h2>전체 판정</h2>
+    <div class="grid">
+      <div class="card"><div class="metric">J0-J5</div><h3>bounded journey reset</h3><p class="muted">4탭·schema·source 경계를 유지한 여정 재정렬</p></div>
+      <div class="card"><div class="metric">0</div><h3>ordinary held exposure</h3><p class="muted">저장 record는 보존하고 실행 화면에서는 제외</p></div>
+      <div class="card"><div class="metric">0 / 15</div><h3>observed users</h3><p class="muted">모집·요청·일정·세션 모두 미시작</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>한 여정으로 연결한 것</h2>
+    <div class="journey"><strong>저장 전</strong><div><h3>artifact first</h3><p>실제 할 일 3~5개와 결과 형태가 먼저 보이고 source/detail은 접힙니다.</p></div><span class="pass">PASS</span></div>
+    <div class="journey"><strong>선택</strong><div><h3>그대로 또는 조정</h3><p>개인 제목·포함 항목만 가볍게 조정하며 full editor를 만들지 않습니다.</p></div><span class="pass">PASS</span></div>
+    <div class="journey"><strong>첫 저장</strong><div><h3>whole Flow confirmation</h3><p>Today로 축약하기 전에 저장된 전체 목록과 수를 depth 0으로 확인합니다.</p></div><span class="pass">PASS</span></div>
+    <div class="journey"><strong>재방문</strong><div><h3>task-first My Flow</h3><p>확인을 끝낸 뒤에는 오늘·다음·지난 할 일을 실행하는 기존 workspace로 돌아갑니다.</p></div><span class="pass">PASS</span></div>
+    <div class="journey"><strong>Calendar</strong><div><h3>dated grid + undated tray</h3><p>날짜 있는 일은 grid/agenda, 날짜 없는 일은 기본 접힌 tray가 맡습니다.</p></div><span class="pass">PASS</span></div>
+  </section>
+
+  <section>
+    <h2>모바일·wide evidence</h2>
+    <div class="screens">
+      <figure><img src="screenshots/01-moving-artifact-first-mobile.png" alt="이사 Flow artifact-first 저장 전 화면" /><figcaption>이사 Flow: 실제 5개 할 일이 설명보다 먼저</figcaption></figure>
+      <figure><img src="screenshots/02-moving-light-adjustment-mobile.png" alt="이사 Flow 가벼운 조정 화면" /><figcaption>저장 전 lightweight adjustment</figcaption></figure>
+      <figure><img src="screenshots/03-moving-post-save-whole-flow-mobile.png" alt="이사 Flow 저장 직후 전체 확인" /><figcaption>제외 항목 반영 후 전체 Flow 확인</figcaption></figure>
+      <figure><img src="screenshots/05-vehicle-public-compact-mobile.png" alt="차량 점검 public compact preview" /><figcaption>public `/f`: compact preview와 전체 저장</figcaption></figure>
+      <figure><img src="screenshots/07-calendar-undated-tray-collapsed-mobile.png" alt="Calendar 날짜 없는 할 일 접힌 tray" /><figcaption>Calendar: undated tray 기본 접힘</figcaption></figure>
+      <figure><img src="screenshots/10-my-flow-saved-flow-selector-wide.png" alt="wide My Flow 저장한 Flow selector" /><figcaption>wide: 저장한 Flow 관리와 Calendar 역할 분리</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>회귀와 evidence 경계</h2>
+    <table>
+      <thead><tr><th>검증</th><th>결과</th><th>증거 성격</th></tr></thead>
+      <tbody>
+        <tr><td>unit / docs / build</td><td>최종 command 결과 기록</td><td><code>current_command</code></td></tr>
+        <tr><td>390px / 1024px journeys</td><td>overflow·console·accessible action 확인</td><td><code>current_browser</code></td></tr>
+        <tr><td>별도 read-only reviewer</td><td>Blocking/High 독립 확인</td><td><code>independent_agent_review</code></td></tr>
+        <tr><td>Claude Design 목업</td><td>진행 방향 비교</td><td><code>prior_artifact</code></td></tr>
+        <tr><td>실제 사용자</td><td>0 / 15, not scheduled</td><td><code>observed_user</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

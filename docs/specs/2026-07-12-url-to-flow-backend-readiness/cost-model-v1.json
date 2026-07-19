@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "flowme-url-to-flow-cost-model-v1",
+  "generatedAt": "2026-07-12",
+  "currency": "KRW",
+  "purpose": "Provider-neutral planning model. Default numbers are editable planning assumptions, not vendor quotes or approved budgets.",
+  "modelUnit": {
+    "requestDefinition": "One monthlyRequest is one accepted intake request, whether it is a cache hit or miss.",
+    "retryTreatment": "Retry attempts are not new intakes; retryRate and retryAttemptCostKrw fold their expected variable cost into the originating intake.",
+    "variableVsFullyLoaded": "variableCostPerIntakeKrw excludes allocated fixed monthly cost. fullyLoadedCostPerRequestKrw includes fixed monthly cost and is the owner Go/No-Go cost-per-intake metric."
+  },
+  "formula": {
+    "llmCostPerCallKrw": "((inputTokens / 1000000) * inputUsdPerMillion + (outputTokens / 1000000) * outputUsdPerMillion) * usdKrw",
+    "missCostKrw": "fetchExtractCostKrw + (llmCallRate * llmCostPerCallKrw) + validateStoreCostKrw + (retryRate * retryAttemptCostKrw)",
+    "humanReviewCostPerIntakeKrw": "humanReviewRate * reviewMinutes * (reviewerHourlyKrw / 60)",
+    "variableCostPerIntakeKrw": "lookupCostKrw + ((1 - cacheHitRate) * missCostKrw) + humanReviewCostPerIntakeKrw",
+    "monthlyCostKrw": "monthlyRequests * variableCostPerIntakeKrw + fixedMonthlyCostKrw",
+    "fullyLoadedCostPerRequestKrw": "monthlyCostKrw / max(1, monthlyRequests)",
+    "costPerSavedFlowKrw": "monthlyCostKrw / max(1, monthlyRequests * saveRate)",
+    "costPerFirstCompletedItemKrw": "monthlyCostKrw / max(1, monthlyRequests * saveRate * firstCompletionRate)"
+  },
+  "editableInputs": {
+    "monthlyRequests": 1000,
+    "cacheHitRate": 0.45,
+    "lookupCostKrw": 0.2,
+    "fetchExtractCostKrw": 12,
+    "llmCallRate": 0.6,
+    "inputTokens": 10000,
+    "outputTokens": 1200,
+    "inputUsdPerMillion": 0.5,
+    "outputUsdPerMillion": 2,
+    "usdKrw": 1400,
+    "validateStoreCostKrw": 3,
+    "retryRate": 0.05,
+    "retryAttemptCostKrw": 15,
+    "humanReviewRate": 0.15,
+    "reviewMinutes": 3,
+    "reviewerHourlyKrw": 30000,
+    "fixedMonthlyCostKrw": 50000,
+    "saveRate": 0.35,
+    "firstCompletionRate": 0.45,
+    "p95LatencySeconds": 15
+  },
+  "latencyMetric": {
+    "field": "p95LatencySeconds",
+    "cohort": "Accepted explicit generate actions on the uncached generation path.",
+    "startsAt": "Generate action accepted by the backend.",
+    "endsAt": "The request reaches generationState proposal or failed.",
+    "includes": [
+      "queue wait",
+      "fetch",
+      "structural extraction",
+      "semantic proposal",
+      "canonical validation"
+    ],
+    "excludes": [
+      "cache-hit lookup latency",
+      "human review",
+      "save transaction",
+      "external import or account write"
+    ],
+    "scenarioValueStatus": "Editable planning assumption, not calculated from component costs and not measured SLO evidence. Replace with canary telemetry before real-provider Go."
+  },
+  "scenarios": [
+    {
+      "id": "pilot",
+      "label": "Pilot",
+      "monthlyRequests": 100,
+      "cacheHitRate": 0.2,
+      "llmCallRate": 0.7,
+      "retryRate": 0.08,
+      "humanReviewRate": 0.3,
+      "fixedMonthlyCostKrw": 30000,
+      "saveRate": 0.3,
+      "firstCompletionRate": 0.4,
+      "p95LatencySeconds": 20
+    },
+    {
+      "id": "launch",
+      "label": "Launch",
+      "monthlyRequests": 1000,
+      "cacheHitRate": 0.45,
+      "llmCallRate": 0.6,
+      "retryRate": 0.05,
+      "humanReviewRate": 0.15,
+      "fixedMonthlyCostKrw": 50000,
+      "saveRate": 0.35,
+      "firstCompletionRate": 0.45,
+      "p95LatencySeconds": 15
+    },
+    {
+      "id": "scale",
+      "label": "Scale",
+      "monthlyRequests": 10000,
+      "cacheHitRate": 0.65,
+      "llmCallRate": 0.45,
+      "retryRate": 0.03,
+      "humanReviewRate": 0.08,
+      "fixedMonthlyCostKrw": 180000,
+      "saveRate": 0.4,
+      "firstCompletionRate": 0.5,
+      "p95LatencySeconds": 12
+    }
+  ],
+  "ownerDecisionThresholds": {
+    "maxCostPerIntakeKrw": null,
+    "maxCostPerSavedFlowKrw": null,
+    "maxCostPerFirstCompletedItemKrw": null,
+    "maxP95LatencySeconds": null,
+    "maxDailySpendKrw": null,
+    "maxMonthlySpendKrw": null,
+    "maxRequestsPerUserPerDay": null
+  },
+  "ownerThresholdSemantics": {
+    "maxCostPerIntakeKrw": "Compare with fullyLoadedCostPerRequestKrw, not variableCostPerIntakeKrw.",
+    "maxCostPerSavedFlowKrw": "Compare with costPerSavedFlowKrw; fixed monthly cost is included.",
+    "maxCostPerFirstCompletedItemKrw": "Compare with costPerFirstCompletedItemKrw; fixed monthly cost is included.",
+    "maxP95LatencySeconds": "Compare with measured uncached generation p95 using latencyMetric start/end/cohort; scenario p95LatencySeconds is only a placeholder until canary telemetry exists."
+  },
+  "requiredControls": [
+    "canonical URL cache and snapshot hash reuse",
+    "input byte and token caps",
+    "source-shape routing before LLM",
+    "LLM call only for semantic ambiguity",
+    "no automatic retry by default",
+    "attempt-level token, cost, latency, and fallback metrics",
+    "per-user rate limit and daily/monthly budget",
+    "deterministic-only mode and provider kill switch",
+    "raw snapshot TTL and storage budget",
+    "human-review queue capacity"
+  ],
+  "goNoGoRule": "Real-provider production is NO-GO while any ownerDecisionThreshold is null or provider pricing/retention has not been refreshed and approved."
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "FLOW Session Start"
+  short_description: "Inspect the current repo baseline before work"
+  default_prompt: "Use $flow-session-start to establish the current FlowMe repo baseline before starting work."

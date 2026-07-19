@@ -99,6 +99,13 @@ Roles are review lenses, not job titles. Most tasks should use only the roles ne
 - Checks console errors, screenshots, layout issues, and core flows.
 - Uses Playwright or an in-app browser depending on available tools.
 
+## Release Readiness Steward
+
+- Checks that the configured local, CI, and deployment runtimes are supported and consistent.
+- Reviews dependency audit output, Dependabot coverage, CI gates, Playwright failure artifacts, deployment smoke evidence, and rollback notes.
+- Separates green automated QA from real observed-user validation and blocks unsupported certainty in readiness scores.
+- Reports local changes, verification, commit, push, PR, merge, deploy, and remaining operational risk as separate states.
+
 ## Validation Observer
 
 - Plans and records observed user sessions without treating internal QA, screenshots, or green tests as validation.

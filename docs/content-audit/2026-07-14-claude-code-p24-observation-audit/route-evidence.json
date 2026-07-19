@@ -1,0 +1,101 @@
+{
+  "evidence_grade": "automated_simulated",
+  "target": "http://localhost:3000 (npm run dev, Next.js 15.5.20)",
+  "routes": [
+    {
+      "route": "/",
+      "hard_navigation": "ok",
+      "client_navigation": "ok",
+      "findings": [],
+      "note": "홈 CTA data-testid pattern confirmed via component map; content renders correctly on fresh localStorage"
+    },
+    {
+      "route": "/flows",
+      "hard_navigation": "hangs (infinite 'Flow를 불러오는 중입니다.' Suspense fallback, reproduced x2 across full dev-server restarts)",
+      "client_navigation": "ok",
+      "findings": ["H1"],
+      "note": "production build broken (B1) so could not cross-check against a production-parity server"
+    },
+    {
+      "route": "/flow-maps/moving-d30",
+      "hard_navigation": "ok",
+      "client_navigation": "ok",
+      "findings": [],
+      "note": "anchor label '이사일' confirmed both visually (text) and via accessible name on the date input"
+    },
+    {
+      "route": "/flow-maps/curated-new-car-purchase-guide",
+      "hard_navigation": "ok",
+      "client_navigation": "ok",
+      "findings": ["H2"],
+      "note": "1 of 5 save attempts across the whole session landed on an empty /my until reload"
+    },
+    {
+      "route": "/flow-maps/curated-allblanc-workout-park",
+      "hard_navigation": "ok",
+      "client_navigation": "ok",
+      "findings": [],
+      "note": "routes to /f/curated-allblanc-morning-workout for per-video weekday scheduling"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "hard_navigation": "ok",
+      "client_navigation": "ok",
+      "findings": ["B2"],
+      "note": "save-time occurrence grid preview correct (12/4wk); post-save Calendar/ICS show only 1 occurrence"
+    },
+    {
+      "route": "/f/source-backed-moving-d30",
+      "hard_navigation": "ok",
+      "client_navigation": "ok",
+      "findings": [],
+      "note": "pre-save preview labeled clearly; save CTA appears above and below content"
+    },
+    {
+      "route": "/my",
+      "hard_navigation": "ok (except transient 500 during dev-server instability incident, resolved by restart)",
+      "client_navigation": "ok",
+      "findings": ["B4", "B3", "H2", "H3"],
+      "note": "primary surface for the 'next task' widget staleness bug (B4) and the hidden todo-type items bug (B3)"
+    },
+    {
+      "route": "/calendar",
+      "hard_navigation": "ok",
+      "client_navigation": "ok",
+      "findings": ["B2"],
+      "note": "FullCalendar (.fc-daygrid) DOM inspected directly per-date to count .fc-event nodes"
+    },
+    {
+      "route": "npm run build",
+      "hard_navigation": "n/a",
+      "client_navigation": "n/a",
+      "findings": ["B1"],
+      "note": "exit code 1, reproduced twice, PageNotFoundError during 'Collecting page data'"
+    },
+    {
+      "route": "npm run start",
+      "hard_navigation": "n/a",
+      "client_navigation": "n/a",
+      "findings": ["B1"],
+      "note": "fails immediately: no valid .next production build present"
+    }
+  ],
+  "not_visited_this_session": [
+    "/flows/new",
+    "/flows/[id]/edit",
+    "/u/[creator]",
+    "/creators",
+    "/content-flows",
+    "/restart/moving-d30",
+    "/flow-lab/*",
+    "/ia-compare*"
+  ],
+  "console_errors_observed": 0,
+  "overflow_checks": [
+    { "route": "/my", "viewport": "390x844", "overflow": false },
+    { "route": "/my", "viewport": "1024x768", "overflow": false },
+    { "route": "/calendar", "viewport": "1024x768", "overflow": false },
+    { "route": "/f/curated-allblanc-morning-workout", "viewport": "1024x768", "overflow": false },
+    { "route": "/f/curated-allblanc-morning-workout", "viewport": "390x844", "overflow": false }
+  ]
+}

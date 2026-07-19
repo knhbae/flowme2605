@@ -1,0 +1,121 @@
+{
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "round": "round-2",
+  "caseId": "case-11",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "promptVersion": "url-to-flow-prompt-v0.2",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "rubric": {
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
+  },
+  "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "sourcePacket": {
+    "caseId": "case-11",
+    "requestId": "prompt-lab-v1-case-11",
+    "targetLocale": "ko-KR",
+    "maxItems": 7,
+    "userJob": "원본 학습 파일의 행을 실행 가능한 진도표로 옮겨 상태와 메모를 관리한다.",
+    "claimedScope": "원본 파일 전체를 변환하려 하지만 파일 본문과 source row는 아직 확보되지 않았다.",
+    "source": {
+      "primary": {
+        "sourceId": "source-computer-skills-pdf-unavailable",
+        "title": "컴퓨터 활용 학습 PDF 후보",
+        "sourceType": "file",
+        "originalUrl": null,
+        "canonicalUrl": null,
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "publisher": null,
+        "checkedAt": "2026-07-11",
+        "rightsStatus": "needs_review",
+        "riskLevel": "low",
+        "accessStatus": "unavailable",
+        "inspectionSummary": "파일 후보는 있으나 본문, 목차, 주차, 과제 행을 읽지 못했다."
+      },
+      "supporting": []
+    },
+    "sourceRows": [],
+    "inputEvidenceRefs": [
+      "golden-fixtures-v1.json#gf-neg-01-missing-source-rows"
+    ]
+  },
+  "hiddenExpectation": {
+    "caseId": "case-11",
+    "fixtureId": "gf-neg-01-missing-source-rows",
+    "fixtureKind": "negative",
+    "fixtureShape": "missing_source_rows",
+    "name": "원문 row가 없는 파일 후보",
+    "expectedStatus": {
+      "generationState": "failed",
+      "outcome": "no_proposal",
+      "readiness": null,
+      "errorCode": "missing_source_rows",
+      "recommendedDisposition": "source_import_required"
+    },
+    "expectedConversion": null,
+    "expectedItems": [],
+    "expectedOmittedRows": [],
+    "accountingSourceRowIds": [],
+    "expectedProjections": [],
+    "forbiddenProjections": [
+      "calendar:ics",
+      "checklist:markdown",
+      "todo:markdown",
+      "sheet:csv",
+      "memo:markdown"
+    ],
+    "referenceReview": {
+      "readiness": "source_import_required",
+      "hardFails": [
+        "missing_source_rows",
+        "source_file_not_imported"
+      ],
+      "rightsDecision": "원본 파일을 읽고 사용할 권리를 확인하기 전에는 변환하지 않는다.",
+      "riskDecision": "일반 지식으로 학습 row를 채우지 않는다."
+    }
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v0.2",
+    "requestId": "prompt-lab-v1-case-11",
+    "caseId": "case-11",
+    "status": {
+      "generationState": "failed",
+      "outcome": "no_proposal",
+      "readiness": null,
+      "errorCode": "missing_source_rows"
+    },
+    "sourceAssessment": {
+      "access": "unavailable",
+      "sourceShape": "unknown",
+      "primarySourceId": "source-computer-skills-pdf-unavailable",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": null,
+    "proposal": {
+      "proposalTitle": null,
+      "items": [],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [],
+    "reviewHints": {
+      "recommendedDisposition": "source_import_required",
+      "uncertainties": [
+        "원본 파일 본문과 학습 행이 확보되지 않았다."
+      ],
+      "hardFailCodes": [
+        "missing_source_rows"
+      ],
+      "humanReviewRequired": []
+    }
+  },
+  "validator": {
+    "passed": null,
+    "hardFailCodes": []
+  }
+}

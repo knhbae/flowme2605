@@ -1,0 +1,34 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 5
+    groups:
+      npm-patches:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+      fullcalendar-minor:
+        patterns:
+          - "@fullcalendar/*"
+        update-types:
+          - minor
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:15"
+      timezone: Asia/Seoul
+    groups:
+      github-actions:
+        patterns:
+          - "*"
