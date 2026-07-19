@@ -41,6 +41,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 ### Active Gate
 
 - [2026-07-19 P25 Execution Workspace Foundation](./2026-07-19-execution-workspace-foundation/spec.md) - active staged correction for whole-Flow hierarchy, optional scheduling, progressive personal adjustment, projection truth, completion/reopen, export scope, public simplification, and responsive workspace design. P25-00B owner prototype review precedes runtime workspace implementation; external observation remains deferred.
+- [2026-07-19 P25 Responsive Whole-Flow Workspace](./2026-07-19-responsive-whole-flow-workspace/spec.md) - active P25-02 implementation contract; P25-02A unifies first-save/return hierarchy and P25-02B completes mobile/wide workspace composition.
 
 ### Completed Or Closed
 

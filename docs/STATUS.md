@@ -3,7 +3,7 @@
 **Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
 **Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01A routine cadence and P25-01B memo intake/count parity are complete by current unit/browser evidence. Start P25-02 from the Option B complete-Flow workspace frame under the owner's instruction to continue P25 step by step; keep screen-level review and actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 correctness and P25-02A whole-Flow hierarchy are complete by current unit/browser evidence. Finish P25-02B responsive rail/outline/detail composition before opening P25-03; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-02 whole-Flow workspace implementation on the Option B working frame; P24 remains the deployed production baseline |
+| Active product gate | P25-02B responsive whole-Flow workspace composition; P24 remains the deployed production baseline |
 | User action now | No participant action. The owner may still review the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html), but the instruction to continue P25 authorizes the staged implementation baseline. |
-| AI action now | Implement P25-02 whole-Flow hierarchy and post-save handoff without weakening P25-01 projection/count truth |
+| AI action now | Replace the narrow wide selected-Flow card with the Option B rail/outline/detail workspace and finish mobile drill-in without weakening P25-01/02A truth |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P25-02A whole-Flow hierarchy: First-save and selected returning My Flow now read the same effective whole-Flow outline, the post-save action selects the saved Flow, local views read `지금 / 내 Flow / 완료`, and completion can be cancelled from the persistent completed view. Current targeted browser evidence is `2 / 2`, the P24 journey regression is `6 / 6`, the production build passes, and target overflow is `0`. The 1024px selected-Flow composition still leaves excessive empty canvas, so P25-02 is not complete until P25-02B connects the rail/outline/detail layout. See [P25-02A evidence](./content-audit/2026-07-19-p25-02a-whole-flow-hierarchy-evidence/README.md).
 
 - 2026-07-19 P25-01B memo split/count integrity: Removed the minimum-three-task filler behavior from memo and URL-miss drafts. Intake now maps only user-authored phrases, supports unambiguous Korean action-list splitting, rejects known application status copy, assigns deterministic intake IDs, and presents an explicit pre-save include/title review. Save consumes only accepted rows and cannot silently restore rejected suggestions. The representative browser journey parsed 3 phrases, accepted 2 after one exclusion and one rename, then preserved exactly 2 stable rows through save, reload, My Flow, whole/selected list export, one dated Calendar row, and one undated tray row. Current evidence: unit `524 / 524`, URL-first `19 / 19`, P24 execution trust `14 / 14`, plain-memo targeted `1 / 1`, production build pass, docs check pass, generic filler `0`, observed-user sessions `0`. See the [P25-01B evidence](./content-audit/2026-07-19-p25-01b-memo-split-count-evidence/README.md).
 
