@@ -71,8 +71,8 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 ## P25-05 - Execution and export
 
-- [ ] Normalize completion/undo/persistent reopen.
-- [ ] Separate series, occurrence, and internal checklist UI.
+- [x] Normalize completion/undo/persistent reopen.
+- [x] Separate series, occurrence, and internal checklist UI.
 - [ ] Put export scope before format.
 - [ ] Show exact counts and verify projection parity.
 

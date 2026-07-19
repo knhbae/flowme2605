@@ -7371,7 +7371,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     disabledReason?: string;
   }) => {
     const actionLabel = routine
-      ? (checked ? '이번 항목 완료 취소' : '이번 항목 완료')
+      ? (checked ? '이번 회차 완료 취소' : '이번 회차 완료 체크')
       : (checked ? '완료 취소' : '완료 체크');
     const ariaLabel = disabled && disabledReason
       ? `${title} ${disabledReason}`
@@ -8724,6 +8724,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       detailSurface?: MyFlowView;
       markerColor?: string;
       undatedMetaLabel?: string;
+      seriesDefinition?: boolean;
     } = {},
   ) => {
     const checked = isMyFlowRowChecked(row.flow, row);
@@ -8762,7 +8763,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const rowOpenAriaLabel = options.showOpenLabel
       ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
       : undefined;
-    const isRoutineExecution = options.kind === 'routine' || row.itemType?.primary === 'routine_session';
+    const isRoutineExecution = Boolean(
+      row.structuralOccurrenceId ||
+      options.kind === 'routine' ||
+      row.itemType?.primary === 'routine_session',
+    );
+    const isSeriesDefinition = Boolean(options.seriesDefinition);
     const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
     const routineDragKey = getMyFlowRowInstanceKey(row);
     const rowClassName = options.compact
@@ -8811,17 +8817,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }}
           className={rowClassName}
         >
-          <div className="flex shrink-0 items-center justify-center">
-            {renderTaskCompletionCheckbox({
-              title: displayTitle,
-              checked,
-              routine: isRoutineExecution,
-              compact: options.compact,
-              disabled: occurrenceCompletionDisabled,
-              disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
-              onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
-            })}
-          </div>
+          {!isSeriesDefinition ? (
+            <div className="flex shrink-0 items-center justify-center">
+              {renderTaskCompletionCheckbox({
+                title: displayTitle,
+                checked,
+                routine: isRoutineExecution,
+                compact: options.compact,
+                disabled: occurrenceCompletionDisabled,
+                disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
+                onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
+              })}
+            </div>
+          ) : null}
           <button
             className={rowButtonClassName}
             type="button"
@@ -8905,17 +8913,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }}
         className={rowClassName}
       >
-        <div className="flex shrink-0 items-center justify-center">
-          {renderTaskCompletionCheckbox({
-            title: displayTitle,
-            checked,
-            routine: isRoutineExecution,
-            compact: options.compact,
-            disabled: occurrenceCompletionDisabled,
-            disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
-            onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
-          })}
-        </div>
+        {!isSeriesDefinition ? (
+          <div className="flex shrink-0 items-center justify-center">
+            {renderTaskCompletionCheckbox({
+              title: displayTitle,
+              checked,
+              routine: isRoutineExecution,
+              compact: options.compact,
+              disabled: occurrenceCompletionDisabled,
+              disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
+              onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
+            })}
+          </div>
+        ) : null}
         <button
           className={rowButtonClassName}
           type="button"
@@ -9495,8 +9505,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPersonalDraftUserItem =
       isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
       row.structuralOwnership === 'user_created';
-    const isPersonalDraftRecurringSeries = Boolean(
-      isPersonalDraftUserItem && row.structuralRepeat && !row.structuralOccurrenceId,
+    const isRecurringSeriesDefinition = Boolean(
+      surfaceContext === 'flow' &&
+      !row.structuralOccurrenceId &&
+      (row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine'),
     );
     const isPersonalDraftOccurrence = Boolean(
       isPersonalDraftUserItem && row.structuralOccurrenceId,
@@ -10298,6 +10310,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-item-type={row.itemType?.primary ?? 'check_task'}
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
+        data-execution-level={isRecurringSeriesDefinition ? 'series' : row.structuralOccurrenceId ? 'occurrence' : 'item'}
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
         data-editor-advanced-expanded={isDetailEditing ? String(isEditorAdvancedExpanded) : undefined}
         data-default-primary-action-count={isDetailEditing ? undefined : '2'}
@@ -10377,7 +10390,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {routineProgressLabel}
               </span>
             ) : null}
-            {!isDetailEditing && !isPersonalDraftRecurringSeries && !options.parentOwnsCompletion ? renderTaskCompletionCheckbox({
+            {!isDetailEditing && !isRecurringSeriesDefinition && !options.parentOwnsCompletion ? renderTaskCompletionCheckbox({
               title: editorDraft.title,
               checked,
               routine: isRoutineRow,
@@ -10386,13 +10399,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
               onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
             }) : null}
-            {!isDetailEditing && isPersonalDraftRecurringSeries ? (
+            {!isDetailEditing && isRecurringSeriesDefinition ? (
               <Link
                 href="/calendar"
                 data-testid="personal-draft-recurrence-calendar-entry"
                 className="inline-flex min-h-8 items-center rounded-md border border-blue-200 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300"
               >
-                일정별로 확인
+                캘린더에서 회차별 실행
               </Link>
             ) : null}
             {!isDrawerMode && isDetailEditing ? (
@@ -10513,7 +10526,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </section>
         ) : null}
         {!isDetailEditing && detailChecklistItems.length > 0 ? (
-          <section data-testid="my-flow-item-checklist" className="mt-3 rounded-md bg-white px-3 py-3">
+          <section data-testid="my-flow-item-checklist" data-execution-level="subcheck" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-semibold text-slate-600">{detailChecklistLabel}</p>
               <span data-testid="my-flow-detail-checklist-progress" className="rounded-md bg-slate-50 px-2 py-1 text-[11px] font-semibold text-slate-500">
@@ -10529,6 +10542,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       className="mt-1 h-4 w-4 shrink-0"
                       type="checkbox"
                       checked={itemChecked}
+                      aria-label={`${itemText} 확인 항목 ${itemChecked ? '체크 취소' : '체크'}`}
                       onChange={() => toggleMyFlowStepItemCheck(row, itemIndex)}
                     />
                     <span className={itemChecked ? 'text-slate-400 line-through' : undefined}>{itemText}</span>
@@ -11032,6 +11046,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     );
                   }
                   if (options.interactive) {
+                    const seriesDefinition = Boolean(
+                      !row.structuralOccurrenceId &&
+                      (row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine'),
+                    );
                     return renderExecutionRow(row, {
                       compact: true,
                       openDetail: true,
@@ -11040,6 +11058,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       hideFlowMeta: true,
                       showOpenLabel: true,
                       detailSurface: 'flow',
+                      seriesDefinition,
                     });
                   }
                   return (
@@ -12496,6 +12515,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {visibleStepEntries.map(({ row: stepRow, index }) => {
               const stepOpen = Boolean(activeCompactRow && activeCompactRow.id === stepRow.id);
               const stepChecked = isMyFlowRowChecked(flow, stepRow);
+              const stepIsSeriesDefinition = Boolean(
+                !stepRow.structuralOccurrenceId &&
+                (stepRow.structuralRepeat || stepRow.flow.bundle.flow.structure_type === 'routine'),
+              );
               return (
                 <div
                   key={`step-${flow.progress.slug}-${stepRow.id}-${stepRow.date ?? index}`}
@@ -12504,7 +12527,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   data-structural-ownership={structuralEditEligible ? stepRow.structuralOwnership : undefined}
                   className="rounded-md bg-white ring-1 ring-blue-100"
                 >
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1">
+                  <div className={`grid items-center gap-1 ${stepIsSeriesDefinition ? 'grid-cols-[minmax(0,1fr)_auto]' : 'grid-cols-[auto_minmax(0,1fr)_auto]'}`}>
+                    {!stepIsSeriesDefinition ? (
+                      <div className="pl-2">
+                        {renderTaskCompletionCheckbox({
+                          title: getMyFlowRowDisplayTitle(stepRow),
+                          checked: stepChecked,
+                          routine: false,
+                          compact: true,
+                          onToggle: () => toggleSavedFlowItem(flow, stepRow.id, stepRow),
+                        })}
+                      </div>
+                    ) : null}
                     <button
                       type="button"
                       data-testid="my-flow-mobile-structure-step-row"
@@ -12546,7 +12580,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       className="px-3 pb-3"
                       data-testid="my-flow-mobile-structure-inline-detail"
                     >
-                      {renderMyFlowItemDetailEditor(activeCompactRow, 'inline', 'flow')}
+                      {renderMyFlowItemDetailEditor(activeCompactRow, 'inline', 'flow', { parentOwnsCompletion: !stepIsSeriesDefinition })}
                     </div>
                   ) : null}
                 </div>
@@ -13693,6 +13727,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <div>
                   <p className="text-sm font-semibold text-blue-700">실행 기록</p>
                   <h3 className="mt-1 text-xl font-semibold text-slate-950">완료한 일</h3>
+                  <p className="mt-1 text-xs font-medium text-slate-500">체크를 풀면 다시 진행으로 돌아갑니다.</p>
                 </div>
                 <span data-testid="my-flow-completed-count" className="shrink-0 text-xs font-semibold text-slate-500">
                   {myFlowCompletedRows.length}개
@@ -14413,7 +14448,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             className="min-h-10 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
             onClick={() => undoMyFlowCompletion(myFlowCompletionUndo)}
           >
-            실행 취소
+            되돌리기
           </button>
         </div>
       ) : null}

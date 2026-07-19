@@ -2329,10 +2329,13 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   const icsDownloadDir = icsEvidenceDir ? `${icsEvidenceDir}/downloads` : '';
   const executionEvidenceDir = process.env.FLOWME_P23_03_EVIDENCE_DIR;
   const executionScreenshotDir = executionEvidenceDir ? `${executionEvidenceDir}/screenshots` : '';
+  const completionEvidenceDir = process.env.FLOWME_P25_05A_EVIDENCE_DIR;
+  const completionScreenshotDir = completionEvidenceDir ? `${completionEvidenceDir}/screenshots` : '';
   if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
   if (icsScreenshotDir) fs.mkdirSync(icsScreenshotDir, { recursive: true });
   if (icsDownloadDir) fs.mkdirSync(icsDownloadDir, { recursive: true });
   if (executionScreenshotDir) fs.mkdirSync(executionScreenshotDir, { recursive: true });
+  if (completionScreenshotDir) fs.mkdirSync(completionScreenshotDir, { recursive: true });
 
   const openDraftFlow = async () => {
     await page.getByTestId('my-flow-view-flow').click();
@@ -2404,7 +2407,9 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .getByTestId('my-flow-mobile-structure-inline-detail')
     .getByTestId('my-flow-item-detail');
   await expect(seriesDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(seriesDetail).toHaveAttribute('data-execution-level', 'series');
   await expect(seriesDetail.getByTestId('personal-draft-recurrence-calendar-entry')).toBeVisible();
+  await expect(seriesDetail.getByTestId('personal-draft-recurrence-calendar-entry')).toHaveText('캘린더에서 회차별 실행');
   const seriesPortableExport = seriesDetail.getByTestId('my-flow-detail-portable-export');
   if (await seriesPortableExport.locator('summary').count()) {
     await seriesPortableExport.locator('summary').click();
@@ -2447,6 +2452,11 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     });
     await restorePlatformChromeAfterEvidence(page);
   }
+  if (completionScreenshotDir) {
+    await seriesDetail.screenshot({
+      path: `${completionScreenshotDir}/02-recurrence-series-definition-mobile.png`,
+    });
+  }
   await seriesDetail.getByTestId('personal-draft-recurrence-calendar-entry').click();
   await expect(page).toHaveURL(/\/calendar/);
   await selectCalendarDate('2026-07-13');
@@ -2456,6 +2466,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .filter({ hasText: recurringTitle });
   await expect(occurrenceRow).toHaveCount(1);
   await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'pending');
+  await expect(occurrenceRow.getByRole('checkbox', { name: /이번 회차 완료 체크$/ })).toHaveCount(1);
   const firstOccurrenceId = await occurrenceRow.getAttribute('data-occurrence-id');
   expect(firstOccurrenceId).toContain(':occurrence:2026-07-13T');
   await occurrenceRow.getByRole('checkbox').check();
@@ -2481,6 +2492,11 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
       path: `${screenshotDir}/01-personal-draft-occurrence-done-mobile.png`,
     });
     await restorePlatformChromeAfterEvidence(page);
+  }
+  if (completionScreenshotDir) {
+    await selectedDay.screenshot({
+      path: `${completionScreenshotDir}/03-recurrence-occurrence-control-mobile.png`,
+    });
   }
 
   await page.reload();

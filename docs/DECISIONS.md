@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Completion belongs to one executable level and remains reversible after reload
+
+**Decision:** A normal executable task has one row checkbox. Completing it exposes an immediate `되돌리기`, while the persistent `완료` view keeps the same checkbox available after reload. A recurrence series definition has no completion control; a projected occurrence has exactly one `이번 회차 완료 체크`; internal checklist checks remain a separate `subcheck` level. A published routine definition may drill into its next concrete occurrence, but the definition row itself does not become a second completion target.
+
+**Reason:** Completion previously changed vocabulary and placement by surface, and recurring definitions could look like executable occurrences. One control per executable level preserves confidence without hiding recovery after the snackbar disappears.
+
+**Applies to:** My Flow Today, whole-Flow mobile and wide workspaces, persistent completed records, Calendar occurrences, recurring personal drafts, published routines, detail checklists, and P25-05B export status handling.
+
+**Reopen when:** observed users cannot discover the persistent `완료` view, interpret `회차` incorrectly, or need completion history beyond the current local execution record.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-05A evidence](./content-audit/2026-07-19-p25-05a-completion-reopen-evidence/README.md)
+
 ### 2026-07-19 - Anytime tasks execute in My Flow and are only placed from Calendar
 
 **Decision:** An open task without a date is a valid `언제든 할 일`. My Flow owns its completion, detail, notes, and personal adjustment. Calendar exposes the same task only in a selection-only `일정에 놓기` queue, where the user may place it on today or a chosen date, or keep it Anytime without mutation. The Calendar queue never exposes task-completion controls. Removing a personal date returns the task to Anytime. Mobile composes selected-day agenda, month grid, then a compact drawer; wide composes placement queue, month grid, and selected-day agenda.

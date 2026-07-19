@@ -639,6 +639,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.clock.install({ time: new Date('2026-06-03T09:00:00+09:00') });
     await page.addInitScript(() => {
+      if (sessionStorage.getItem('flowme:p25:completion-seeded') === 'true') return;
       localStorage.clear();
       localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
         slug: 'moving-d30-basic',
@@ -650,6 +651,7 @@ test.describe('P24 execution trust regressions', () => {
         mode: 'custom',
         anchor: '2026-06-02',
       }));
+      sessionStorage.setItem('flowme:p25:completion-seeded', 'true');
     });
 
     await page.goto('/my');
@@ -672,8 +674,8 @@ test.describe('P24 execution trust regressions', () => {
     const snackbar = page.getByTestId('my-flow-completion-snackbar');
     await expect(snackbar).toBeVisible();
     await expect(snackbar).toContainText(title);
-    await expect(snackbar.getByTestId('my-flow-completion-undo')).toHaveText('실행 취소');
-    const evidenceDir = process.env.FLOWME_P24_U1_EVIDENCE_DIR;
+    await expect(snackbar.getByTestId('my-flow-completion-undo')).toHaveText('되돌리기');
+    const evidenceDir = process.env.FLOWME_P25_05A_EVIDENCE_DIR ?? process.env.FLOWME_P24_U1_EVIDENCE_DIR;
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
       await page.screenshot({
@@ -689,14 +691,22 @@ test.describe('P24 execution trust regressions', () => {
     await expect(restored.getByTestId('my-flow-task-complete-control')).not.toBeChecked();
 
     await restored.getByTestId('my-flow-task-complete-control').click();
-    const completedSection = page.getByTestId('my-flow-today-completed-list');
-    await expect(completedSection).toBeVisible();
-    await completedSection.getByTestId('my-flow-today-completed-toggle').click();
-    const completedRow = completedSection.locator(`article[data-item-id="${itemId}"]`);
+    await page.reload();
+    await page.getByTestId('my-flow-view-completed').click();
+    const completedView = page.getByTestId('my-flow-completed-view');
+    await expect(completedView).toContainText('체크를 풀면 다시 진행으로 돌아갑니다.');
+    const completedRow = completedView.locator(`article[data-item-id="${itemId}"]`);
     await expect(completedRow).toBeVisible();
     await expect(completedRow.getByTestId('my-flow-task-complete-control')).toBeChecked();
+    if (evidenceDir) {
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/01-persistent-completed-mobile.png`,
+        fullPage: true,
+      });
+    }
     await completedRow.getByTestId('my-flow-task-complete-control').click();
-    await expect(nowSection.locator(`[data-row-key="${rowKey}"]`)).toBeVisible();
+    await page.getByTestId('my-flow-view-today').click();
+    await expect(page.getByTestId('my-flow-now-section').locator(`[data-row-key="${rowKey}"]`)).toBeVisible();
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
@@ -1407,9 +1417,7 @@ test.describe('P24 execution trust regressions', () => {
     ]);
 
     await notePanel.getByRole('button', { name: /실행 메모 닫기/ }).click();
-    await firstRow.getByTestId('my-flow-mobile-structure-step-row').click();
-    const detail = firstRow.getByTestId('my-flow-mobile-structure-inline-detail');
-    await detail.getByTestId('my-flow-task-complete-control').click();
+    await firstRow.getByTestId('my-flow-task-complete-control').click();
 
     const feedback = mobileFlow.getByTestId('my-flow-completion-feedback');
     await expect(feedback.getByTestId('my-flow-completion-private-notes')).toContainText(

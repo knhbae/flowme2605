@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { expect, test } from '@playwright/test';
 
-const evidenceRoot = process.env.FLOWME_P25_WHOLE_FLOW_EVIDENCE_DIR;
+const evidenceRoot = process.env.FLOWME_P25_05A_EVIDENCE_DIR ?? process.env.FLOWME_P25_WHOLE_FLOW_EVIDENCE_DIR;
 
 async function captureEvidence(page: import('@playwright/test').Page, filename: string) {
   if (!evidenceRoot) return;
@@ -50,8 +50,11 @@ test.describe('P25 whole Flow workspace', () => {
     await captureEvidence(page, '02-returning-whole-flow-mobile.png');
 
     await mobileOutline.getByTestId('my-flow-task-complete-control').first().check();
+    await page.reload();
+    await page.getByTestId('my-flow-post-save-view-flow').click();
     await page.getByTestId('my-flow-view-completed').click();
     await expect(page.getByTestId('my-flow-completed-count')).toHaveText('1개');
+    await expect(page.getByTestId('my-flow-completed-view')).toContainText('체크를 풀면 다시 진행으로 돌아갑니다.');
     const completedControl = page.getByTestId('my-flow-completed-view').getByTestId('my-flow-task-complete-control').first();
     await expect(completedControl).toHaveAccessibleName(/완료 취소/);
     await completedControl.click();
