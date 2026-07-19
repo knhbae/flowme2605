@@ -1,9 +1,9 @@
 # Project Status
 
 **Last Updated:** 2026-07-19 (external observation deferred until product readiness)
-**Status:** v0.1.0 RELEASED / P24 OBSERVATION-READINESS CORRECTION
+**Status:** v0.1.0 RELEASED / P24 JOURNEY FRAME IMPLEMENTED, PRODUCTION CLOSEOUT PENDING
 **Current Version:** v0.1.0  
-**Primary Focus:** Complete P24-J0 internal journey decision, then P24-J1~J5 product correction and independent production-readiness audit. Do not recruit or ask external users to observe the product yet. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Merge and deploy the completed P24 journey-frame correction, verify the public production alias, and close P24 as `implementation_complete_observation_not_started`. Do not recruit or ask external users to observe the product yet. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P24-J0 save-personalize-execute internal journey decision; external observation is not scheduled and remains `0 / 15` |
-| User action now | Review and approve the P24-J0 wireframe direction only; participant recruitment is not requested |
-| AI action now | Compare current production, prior simulation, Claude mockups, and references; run internal scenario and independent design/QA review without changing app runtime |
+| Active product gate | P24-J5 merge, production deploy, and public-route verification; external observation is not scheduled and remains `0 / 15` |
+| User action now | No participant action. Review the deployed P24 journey only after production verification; recruitment is not requested |
+| AI action now | Merge the bounded journey reset, deploy it, verify production, and publish the final evidence package without claiming observed-user validation |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P24 journey-frame implementation: Completed the bounded save-personalize-execute reset in an isolated clean worktree. Source-backed and public save-before surfaces now lead with the effective Flow artifact, offer `그대로 저장` plus optional lightweight adjustment, and separate first-save whole-Flow confirmation from returning execution. Calendar keeps dated work in grid/agenda and dates undated work through a collapsed tray; ordinary My Flow/Calendar hide held content while preserving its saved record. Current branch evidence: unit `518 / 518`, docs check pass, production build pass with 18 route entries, full Flow E2E `194 / 194` before a final held-path hardening, final P24 journey `6 / 6`, and the affected P24/public/workbench accounting `58 / 58` after one stale selector was corrected and rerun. Mobile 390px and wide 1024px horizontal overflow and console errors are `0`; an independent read-only agent reported Blocking `0`, High `0`. The [P24 journey-frame readiness package](./content-audit/2026-07-19-flowme-p24-journey-frame-readiness/README.md) is automated/browser and independent-agent evidence only. Observed users remain `0 / 15`, no recruitment or scheduling occurred, and production merge/deploy verification is the remaining closeout step.
 
 - 2026-07-19 observation-readiness correction: The owner explicitly judged FlowMe not ready to ask external users for observation. P24 therefore ends with an internal production-readiness audit, not participant sessions. P24-J0 uses current-browser replay, owner review, independent Codex/Claude review, reference comparison, and simulated journeys to select the implementation frame; P24-J1~J4 implement it; P24-J5 verifies the deployed result. P24-00B remains a deferred shelf item at `0 / 15` until the owner explicitly reopens it after J5 reports Blocking/High `0`. No participant recruitment or prototype session is a current action.
 

@@ -4,6 +4,8 @@
 
 전면 IA·데이터 재작성은 하지 않는다. 문구 몇 줄만 줄이는 임시 수정도 하지 않는다. 4탭과 현재 데이터 계약을 보존하면서 **저장 판단, 최소 개인화, 저장 직후 확인, 재방문 실행**의 프레임만 다시 설계하는 bounded journey reset으로 진행한다.
 
+**2026-07-19 execution state:** P24-J0~J4의 결정·구현·로컬 회귀·독립 검토는 완료됐다. P24-J5의 merge, production deploy, public-route 재검증만 남았다. 관찰은 자동 재개하지 않는다.
+
 ## Files
 
 | File | Responsibility |

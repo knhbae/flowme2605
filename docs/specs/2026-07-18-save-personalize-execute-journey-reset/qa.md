@@ -57,10 +57,26 @@
 | Routine | one occurrence, one completion control이 유지된다. |
 | Accessibility | 완료·열기·수정·저장·조정 행동의 이름이 구분된다. |
 
+## Final implementation checks
+
+| Check | Current result | Evidence kind |
+| --- | --- | --- |
+| Unit | `518 / 518` | `current_command` |
+| Production build | Passed, 18 route entries | `current_command` |
+| Full Flow E2E | `194 / 194` before the final held-path hardening | `current_command` |
+| Final journey-frame E2E | `6 / 6` after held-path hardening | `current_command` |
+| P24/public/workbench affected accounting | `58 / 58`; one stale selector corrected and rerun | `current_command` |
+| Mobile/wide overflow | `0 / 0` at 390x844 and 1024x768 | `current_browser` |
+| Console errors | `0` | `current_browser` |
+| Independent review | Blocking `0`, High `0` | `independent_agent_review` |
+| Observed users | `0 / 15`, not scheduled | `observed_user` |
+
+The full Flow E2E result predates one narrowly scoped legacy `savedFlow` held-eligibility hardening. The changed path is covered by the final `6 / 6` journey-frame E2E. This distinction prevents a bounded prior command from being presented as a later full-suite run.
+
 ## Review Notes
 
 - Product constraint review: bounded journey reset; 4탭과 schema 유지.
 - Source/risk review: 세부 출처·주의는 삭제하지 않고 접힌 정보로 유지.
-- Browser review: current screenshots captured; proposed wireframes have not been implemented.
+- Browser review: selected artifact-first, optional-adjustment, first-save whole-Flow frame is implemented and captured at 390px and 1024px.
 - Residual risk: owner feedback and independent reviews can guide implementation but are not structured observed-user evidence.
-- Observation gate: external recruitment is explicitly deferred until P24-J5 is green and the owner reopens P24-00B.
+- Observation gate: external recruitment is explicitly deferred after P24-J5 and remains closed until the owner separately reopens P24-00B.

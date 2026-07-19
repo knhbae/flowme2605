@@ -358,9 +358,13 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   await expect(draftEditor).toContainText('7월 20일');
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
   await expect(page).toHaveURL(/\/my/);
+  if (await page.getByTestId('my-flow-post-save-panel').count()) {
+    await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
+    await page.getByTestId('my-flow-post-save-view-flow').click();
+  }
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.locator('body')).toContainText('주말 준비 초안');
-  await expect(page.locator('body')).toContainText('준비 범위 정하기');
+  await expect(page.locator('body')).toContainText('URL에서 따라 할 순서만 남겨두기');
 
   await page.goto('/flows');
   await expect(page.getByTestId('flow-url-supply-candidate-list')).toBeVisible();

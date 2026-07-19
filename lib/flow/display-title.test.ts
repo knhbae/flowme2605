@@ -391,6 +391,7 @@ test('user surface guardrail helpers lock positive and negative display cases', 
 
   assert.deepEqual(findTrailingFlowSuffixHits(['Moving Flow', 'FlowMe', 'Flow']), ['Moving Flow']);
   assert.deepEqual(findTrailingFlowSuffixHits(['FlowMe', 'Flow']), []);
+  assert.deepEqual(findTrailingFlowSuffixHits(['저장될 전체 Flow']), []);
 
   assert.deepEqual(findRawIsoDateHits(['Starts 2026-07-17', 'July 17']), ['Starts 2026-07-17']);
   assert.deepEqual(findRawIsoDateHits(['July 17']), []);

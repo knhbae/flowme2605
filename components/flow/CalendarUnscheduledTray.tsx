@@ -49,9 +49,9 @@ export function CalendarUnscheduledTray({
         onClick={onToggleExpanded}
       >
         <span className="min-w-0">
-          <span className="block text-sm font-bold text-slate-950">날짜 없음</span>
+          <span className="block text-sm font-bold text-slate-950">날짜 없는 할 일</span>
           <span className="mt-0.5 block truncate text-xs font-medium text-slate-500">
-            {items.length > 0 ? '캘린더에 놓을 할 일' : '모두 캘린더에 놓았습니다'}
+            {items.length > 0 ? '필요할 때 날짜에 놓기' : '모두 날짜에 놓았습니다'}
           </span>
         </span>
         <span className="inline-flex shrink-0 items-center gap-2">

@@ -31,6 +31,25 @@ async function expandMyFlowAdvancedEditor(detail: Locator) {
   return toggle;
 }
 
+async function openPostSaveWorkspaceIfPresent(page: Page) {
+  const panel = page.getByTestId('my-flow-post-save-panel');
+  if (await panel.isVisible().catch(() => false)) {
+    await panel.getByTestId('my-flow-post-save-view-flow').click();
+    await expect(panel).toHaveCount(0);
+  }
+}
+
+async function expandCalendarUnscheduledTray(page: Page) {
+  const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
+  await expect(tray).toBeVisible();
+  const toggle = tray.getByTestId('my-flow-calendar-unscheduled-toggle');
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
+    await toggle.click();
+  }
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  return tray;
+}
+
 async function captureWithoutPlatformChrome(
   page: Page,
   locator: Locator,
@@ -428,6 +447,7 @@ test.describe('P24 execution trust regressions', () => {
     await expect(
       page.locator('.fc-event').filter({ hasText: '관리사무소에 연락하기' }),
     ).toHaveCount(0);
+    await expandCalendarUnscheduledTray(page);
     await expect(
       page.getByTestId('my-flow-calendar-unscheduled-tray').getByText('관리사무소에 연락하기'),
     ).toBeVisible();
@@ -769,7 +789,7 @@ test.describe('P24 execution trust regressions', () => {
       await page.evaluate(() => localStorage.clear());
       await page.reload();
       const saveArea = page.getByTestId('public-flow-mobile-save-cta');
-      await saveArea.getByRole('button', { name: '내 Flow에 저장' }).click();
+      await saveArea.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ }).click();
       await expect.poll(() => page.evaluate(() =>
         Boolean(localStorage.getItem('flow:saved:new-car-delivery-check')),
       )).toBe(true);
@@ -779,6 +799,9 @@ test.describe('P24 execution trust regressions', () => {
         page.waitForURL(/\/my/, { timeout: 15_000 }),
         myFlowLink.click(),
       ]);
+      const postSavePanel = page.getByTestId('my-flow-post-save-panel');
+      await expect(postSavePanel).toBeVisible({ timeout: 10_000 });
+      await postSavePanel.getByTestId('my-flow-post-save-view-flow').click();
       await expect(page.getByTestId('my-flow-workspace')).toBeVisible({ timeout: 10_000 });
       await page.getByTestId('my-flow-view-flow').click();
       const savedFlow = page.locator(
@@ -815,7 +838,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.evaluate(() => localStorage.clear());
     await page.reload();
     await page.getByLabel('이사일').fill('2026-07-22');
-    await page.getByRole('button', { name: '저장하고 시작' }).click();
+    await page.getByRole('button', { name: '그대로 저장' }).click();
     await expect(page).toHaveURL('/my?savedMap=moving-d30');
     await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
     await page.getByTestId('my-flow-view-flow').click();
@@ -871,6 +894,7 @@ test.describe('P24 execution trust regressions', () => {
     await detail.getByTestId('my-flow-detail-save-changes').click();
 
     await page.reload();
+    await openPostSaveWorkspaceIfPresent(page);
     await page.getByTestId('my-flow-view-flow').click();
     detail = await openMovingEditor();
     await expect(detail).toHaveAttribute('data-editor-advanced-expanded', 'true');
@@ -994,8 +1018,7 @@ test.describe('P24 execution trust regressions', () => {
     ).toBeVisible();
 
     await page.goto('/calendar');
-    const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
-    await expect(tray).toBeVisible();
+    const tray = await expandCalendarUnscheduledTray(page);
     const evidenceDir = process.env.FLOWME_P24_U3_EVIDENCE_DIR;
     const trayItem = tray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
     const itemCheckbox = trayItem.getByRole('checkbox', { name: '충전기 챙기기 날짜 지정 대상으로 선택' });

@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Save before, first-save confirmation, and returning execution are distinct frames
+
+**Decision:** Keep the 4-tab IA and current source, personal overlay, execution, recurrence, and export contracts. On source-backed and public save-before surfaces, show the natural artifact and representative effective items before long explanation. Offer `그대로 저장` as the primary action and a bounded `조정하고 저장` path for personal title and included items. After the first save, show the whole saved Flow at depth 0 before entering the returning My Flow workspace; later visits remain task-first. Calendar keeps dated work in grid/agenda and preserves undated work in a collapsed tray. Content held for source or risk review stays stored but exposes no ordinary execution or post-save action until it becomes eligible again.
+
+**Reason:** The execution capabilities were already connected, but long promise copy, immediate Today reduction, ambiguous save-versus-adjust behavior, Calendar-like Flow filtering, expanded undated lists, and held content made the first-use journey hard to predict. Reordering the frames addresses those problems without replacing the durable execution model or adding another editor.
+
+**Applies to:** source-backed Flow Map save pages, public `/f` save shell, first-save `/my?savedMap=` and `/my?savedFlow=` states, returning My Flow, Calendar undated work, held/review visibility, accessible save labels, P24 evidence, and future first-use tests.
+
+**Reopen when:** observed users still cannot predict the saved artifact or distinguish save from adjustment, the first-save confirmation delays returning execution, a tested Calendar pattern handles undated work more clearly, or a held-content recovery surface is explicitly designed. Automated QA, owner review, and independent agents do not satisfy that observed-user condition.
+
+**Related docs:** [journey reset spec](./specs/2026-07-18-save-personalize-execute-journey-reset/spec.md), [P24 readiness package](./content-audit/2026-07-19-flowme-p24-journey-frame-readiness/README.md)
+
 ### 2026-07-14 - Execution notes stay lightweight, private, and separate from source correction
 
 **Decision:** A user may add an optional note directly from an execution row without opening the structural item editor. Personal execution notes and `원본에 알릴 점` are separate records. The latter remains an unsent local draft until a real delivery path exists. When a Flow completes, non-empty notes are collected automatically into separate groups; no rating, tag, or required review step is added. Reusing the Flow clears notes from the new current run while preserving them in the completed-run snapshot and history export.

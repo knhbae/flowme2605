@@ -1,7 +1,7 @@
 # Save, Personalize, Execute Journey Reset Spec
 
 **Date:** 2026-07-18
-**Status:** Proposed - internal journey decision and observation-readiness gate
+**Status:** Implemented - production closeout pending; observed-user validation not started
 **Owner:** Product owner + Codex
 **Related roadmap:** [P24 journey-frame correction](../../ROADMAP.md#p24-journey-frame-correction-gate)
 
@@ -10,6 +10,8 @@
 FlowMe의 첫 핵심 여정을 `콘텐츠 판단 -> 필요한 만큼 조정 -> 저장 -> 전체 결과 확인 -> 오늘 실행 -> 날짜 실행`으로 다시 정렬한다. 현재 기능과 4탭 IA를 유지하되, 긴 설명을 읽어야만 저장 결과를 이해하거나 저장 직후 전체 Flow를 찾기 위해 탭과 카드를 추가로 여는 문제를 먼저 해결한다.
 
 이번 spec의 첫 단계인 **P24-J0는 앱을 수정하지 않는다.** 현재 production, 기존 콘텐츠 편집 시뮬레이션, Claude Design 목업, 인접 서비스 패턴을 근거로 대안 와이어프레임을 만들고 owner review와 독립적인 heuristic review를 거쳐 구현안을 선택한다. 외부 사용자는 아직 요청하지 않는다.
+
+2026-07-19 update: J0에서 선택한 bounded frame은 J1~J4에서 구현됐고, 독립 read-only review는 Blocking/High 0을 기록했다. 남은 J5 범위는 merge, production deploy, public-route 재검증이다. 외부 사용자 관찰은 여전히 `0 / 15`, not scheduled다.
 
 ## Stage Fit
 

@@ -1,10 +1,12 @@
 {
   "reviewDate": "2026-07-19",
-  "status": "internal_observation_readiness_gate",
+  "status": "implemented_pending_production_closeout",
   "observedUserSessionCount": 0,
   "externalObservationRequested": false,
   "externalObservationReady": false,
-  "appRuntimeChanged": false,
+  "appRuntimeChanged": true,
+  "currentImplementationPackage": "../2026-07-19-flowme-p24-journey-frame-readiness/README.md",
+  "currentEvidenceNote": "The currentBrowser entries below preserve the pre-implementation J0 baseline. Current implementation evidence lives in currentImplementationPackage.",
   "currentEvidence": [
     {
       "kind": "current_browser",
@@ -71,8 +73,10 @@
     "hideHeldFromOrdinarySurfaces": true,
     "postSaveWholeFlowActionDepthTarget": 0,
     "prototypeTestsRequiredBeforeImplementation": 0,
-    "ownerReviewRequiredBeforeImplementation": true,
-    "independentReviewRequiredBeforeP24Close": true,
+    "ownerReviewRequiredBeforeImplementation": false,
+    "independentReviewRequiredBeforeP24Close": false,
+    "independentReviewBlockingCount": 0,
+    "independentReviewHighCount": 0,
     "p24CloseStateTarget": "implementation_complete_observation_not_started"
   }
 }
