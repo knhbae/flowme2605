@@ -315,8 +315,9 @@ test.describe('public share shell secondary browse order', () => {
     await page.getByTestId('my-flow-post-save-open-first').click();
     await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
 
-    const nowSection = page.getByTestId('my-flow-now-section');
+    const nowSection = page.getByTestId('my-flow-anytime-section');
     await expect(nowSection).toBeVisible();
+    await expect(nowSection).toContainText('언제든 할 일');
 
     const postSaveComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
     await expect(postSaveComplete).toBeVisible();

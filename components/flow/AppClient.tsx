@@ -4851,6 +4851,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const timeoutId = window.setTimeout(() => setMyFlowBatchAdjustmentUndo(null), 7000);
     return () => window.clearTimeout(timeoutId);
   }, [myFlowBatchAdjustmentUndo]);
+  useEffect(() => {
+    if (!isCalendarSurface || typeof window === 'undefined') return;
+    if (window.location.hash === '#calendar-placement-queue') {
+      setMyFlowUnscheduledTrayOpen(true);
+    }
+  }, [isCalendarSurface]);
   const savedViewTabs = [
     ['today', '지금'],
     ['calendar', '캘린더'],
@@ -5567,7 +5573,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarScheduleRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarRoutineRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
   const calendarScopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope));
-  const calendarUnscheduledRows: MyFlowCalendarRow[] = isMyFlowScenarioDemo ? [] : visibleExecutionFlows
+  const allCalendarUnscheduledRows: MyFlowCalendarRow[] = isMyFlowScenarioDemo ? [] : visibleExecutionFlows
     .flatMap((flow) =>
       flow.rows.flatMap((row) => {
         if (row.structuralOccurrenceId || isMyFlowRowChecked(flow, row)) return [];
@@ -5582,7 +5588,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }];
       }),
     )
-    .filter((row) => isMyFlowCalendarRowInScope(row, myFlowCalendarScope))
     .sort((left, right) => {
       const flowOrder = getMyFlowCalendarFlowTitle(left.flow).localeCompare(
         getMyFlowCalendarFlowTitle(right.flow),
@@ -5595,6 +5600,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         left.id.localeCompare(right.id)
       );
     });
+  const calendarUnscheduledRows = allCalendarUnscheduledRows.filter((row) =>
+    isMyFlowCalendarRowInScope(row, myFlowCalendarScope),
+  );
   const calendarUnscheduledTrayRowsByKey = new Map(
     calendarUnscheduledRows.map((row) => [
       `${row.flow.progress.slug}::${row.structuralProjectionStableId ?? row.id}`,
@@ -5620,6 +5628,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     selectedKeys: myFlowUnscheduledSelection,
     targetDate: calendarUnscheduledEffectiveTargetDate,
   });
+  const showCalendarPlacementQueue =
+    calendarUnscheduledTrayItems.length > 0 || Boolean(myFlowCalendarScheduleUndo);
   const calendarScopedDateSignature = calendarScopedRows.map((row) => [
     row.date ?? '',
     row.structuralScheduleProjection?.scheduleState ?? '',
@@ -5629,6 +5639,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarScopedScheduleRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
   const calendarScopedRoutineRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
   const myFlowTodayDate = occurrenceProjectionTodayDate;
+  const myFlowAnytimeRows = allCalendarUnscheduledRows;
+  const myFlowAnytimeVisibleLimit = isMyFlowMobileViewport ? 6 : 8;
+  const myFlowAnytimeVisibleRows = myFlowAnytimeRows.slice(0, myFlowAnytimeVisibleLimit);
+  const myFlowAnytimeHiddenCount = Math.max(0, myFlowAnytimeRows.length - myFlowAnytimeVisibleRows.length);
   const calendarAnchor =
     showDemoData && selectedSavedFlowSlug === 'all' && !isCalendarSurface
       ? myFlowTodayDate
@@ -5643,7 +5657,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     routine: calendarRoutineRows.length,
   };
   const getMyFlowRowStatusLabel = (row?: { date?: string } | null) => {
-    if (!row?.date) return '먼저 할 일';
+    if (!row?.date) return '언제든';
     if (row.date < myFlowTodayDate) return '지난 할 일';
     if (row.date === myFlowTodayDate) return '오늘 할 일';
     return '다음 할 일';
@@ -5738,12 +5752,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ...upcomingRows,
     ...routineNextRows,
     ...myFlowFallbackFutureRows,
-    ...myFlowFallbackUndatedRows,
     ...myFlowFallbackPastRows,
+  ];
+  const postSaveExecutionCandidateRows = [
+    ...myFlowExecutionCandidateRows,
+    ...myFlowFallbackUndatedRows,
   ];
   const postSaveFlowSlugSet = new Set(postSaveFlows.map((flow) => flow.progress.slug));
   const postSaveContinuationRows = showPostSavePanel
-    ? myFlowExecutionCandidateRows.reduce<MyFlowCalendarRow[]>((rows, row) => {
+    ? postSaveExecutionCandidateRows.reduce<MyFlowCalendarRow[]>((rows, row) => {
         if (!postSaveFlowSlugSet.has(row.flow.progress.slug)) return rows;
         const key = getMyFlowRowInstanceKey(row);
         if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === key)) return rows;
@@ -5752,7 +5769,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }, []).slice(0, 1)
     : [];
   const postSavePrimaryContinuationRow = postSaveContinuationRows[0] ?? null;
-  const hasMyFlowContinuationCandidate = postSaveContinuationRows.length > 0 || myFlowExecutionCandidateRows.length > 0;
+  const hasMyFlowContinuationCandidate =
+    postSaveContinuationRows.length > 0 ||
+    myFlowExecutionCandidateRows.length > 0 ||
+    myFlowAnytimeRows.length > 0;
   const myFlowNextDatedSummaryRow = [
     ...upcomingRows,
     ...routineNextRows,
@@ -5821,7 +5841,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : myFlowPrimaryContinuationIsFuture
           ? `${myFlowNowVisibleCount}개 예정`
           : `${myFlowNowVisibleCount}개 대기`
-    : '이어갈 할 일이 없습니다';
+    : myFlowAnytimeRows.length > 0
+      ? '오늘 일정 없음'
+      : '이어갈 할 일이 없습니다';
   const myFlowNowHelp = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
       ? '체크할 항목을 열어 완료합니다.'
@@ -5830,7 +5852,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : myFlowPrimaryContinuationIsFuture
           ? '필요하면 열어서 체크와 메모를 확인합니다.'
           : '날짜가 없어도 저장한 콘텐츠의 첫 항목부터 바로 열 수 있습니다.'
-    : '저장한 콘텐츠의 전체 목록을 확인하거나 새 콘텐츠를 찾아보세요.';
+    : myFlowAnytimeRows.length > 0
+      ? `언제든 할 일 ${myFlowAnytimeRows.length}개`
+      : '저장한 콘텐츠의 전체 목록을 확인하거나 새 콘텐츠를 찾아보세요.';
   const myFlowTodayUnifiedTitle = todayOpenCount > 0 ? `오늘 ${todayOpenCount}개 남음` : myFlowNowTitle;
   const myFlowTodayUnifiedHelp = todayOpenCount > 0 ? '오늘 끝낼 항목을 바로 체크할 수 있어요.' : myFlowNowHelp;
   const showMyFlowTodaySummary = false;
@@ -5841,7 +5865,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ...upcomingRows,
     ...routineNextRows,
     ...myFlowFallbackFutureRows,
-    ...myFlowFallbackUndatedRows,
   ].reduce<MyFlowCalendarRow[]>((rows, row) => {
     const key = getMyFlowRowInstanceKey(row);
     if (key === myFlowPrimaryContinuationKey) return rows;
@@ -7727,24 +7750,31 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowCalendarScheduleUndo(null);
   };
 
-  const applyMyFlowCalendarUnscheduledSchedule = () => {
+  const applyMyFlowCalendarUnscheduledSchedule = (explicitTargetDate?: string) => {
+    const schedulePreview = explicitTargetDate
+      ? buildCalendarUnscheduledSchedulePreview({
+          items: calendarUnscheduledTrayItems,
+          selectedKeys: myFlowUnscheduledSelection,
+          targetDate: explicitTargetDate,
+        })
+      : calendarUnscheduledSchedulePreview;
     if (
       typeof window === 'undefined' ||
       isMyFlowScenarioDemo ||
-      !calendarUnscheduledSchedulePreview.canApply ||
-      !calendarUnscheduledSchedulePreview.targetDate
+      !schedulePreview.canApply ||
+      !schedulePreview.targetDate
     ) return;
 
-    const selectedRows = calendarUnscheduledSchedulePreview.selectedItems
+    const selectedRows = schedulePreview.selectedItems
       .map((item) => calendarUnscheduledTrayRowsByKey.get(item.key))
       .filter((row): row is MyFlowCalendarRow => Boolean(row));
-    if (selectedRows.length !== calendarUnscheduledSchedulePreview.selectedCount) return;
+    if (selectedRows.length !== schedulePreview.selectedCount) return;
 
     const previousOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
     const nextOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
     const previousDateOverridesByKey: Record<string, string | null> = {};
     const nextDateOverrides = { ...myFlowDateOverrides };
-    const targetDate = calendarUnscheduledSchedulePreview.targetDate;
+    const targetDate = schedulePreview.targetDate;
 
     for (const row of selectedRows) {
       const personalUserItem =
@@ -7816,6 +7846,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowUnscheduledSelection([]);
     setMyFlowSelectedDate(targetDate);
     setMyFlowVisibleMonth(getMyFlowMonthStart(targetDate));
+  };
+
+  const keepMyFlowCalendarItemsAnytime = () => {
+    setMyFlowUnscheduledSelection([]);
+    setMyFlowCalendarScheduleUndo(null);
+    if (isMyFlowMobileViewport) setMyFlowUnscheduledTrayOpen(false);
   };
 
   const undoMyFlowCalendarUnscheduledSchedule = () => {
@@ -8687,6 +8723,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       showOpenLabel?: boolean;
       detailSurface?: MyFlowView;
       markerColor?: string;
+      undatedMetaLabel?: string;
     } = {},
   ) => {
     const checked = isMyFlowRowChecked(row.flow, row);
@@ -8697,7 +8734,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const displayTiming = options.kind === 'routine' || options.hideTimingMeta ? '' : formatMyFlowTimingChip(row.timing ?? '');
     const timingAccessibilityLabel = options.kind === 'routine' || options.hideTimingMeta ? undefined : getMyFlowTimingChipLabel(row.timing ?? '');
     const displaySection = options.hideSectionMeta ? '' : getMyFlowRowDisplaySectionLabel(row);
-    const displayDate = row.date ? formatMyFlowDisplayDate(row.date) : '';
+    const displayDate = row.date
+      ? formatMyFlowDisplayDate(row.date)
+      : options.undatedMetaLabel ?? '';
     const displayTimedSchedule = formatMyFlowTimedScheduleLabel(
       row.structuralScheduleProjection,
     );
@@ -8991,7 +9030,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   {rowTitle}
                 </span>
                 <span className="mt-1 block text-xs font-medium text-slate-500">
-                  {rowMeta || getMyFlowRowDisplaySectionLabel(row) || '날짜 없는 체크 항목'}
+                  {rowMeta || getMyFlowRowDisplaySectionLabel(row) || '언제든 할 일'}
                 </span>
               </span>
               <span className="shrink-0 pt-0.5 text-xs font-semibold text-blue-700">
@@ -9028,7 +9067,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const flowTitle = getMyFlowExecutionFlowTitle(row.flow.progress.title);
     const color = categoryColors[row.flow.bundle.flow.category] ?? '#2563EB';
     const scheduleLabel = [
-      row.date ? formatMyFlowDisplayDate(row.date, { includeWeekday: true }) : '날짜 없음',
+      row.date ? formatMyFlowDisplayDate(row.date, { includeWeekday: true }) : '언제든',
       formatMyFlowTimedScheduleLabel(row.structuralScheduleProjection),
     ].filter(Boolean).join(' · ');
 
@@ -9731,7 +9770,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   recurrenceEndMode: 'never',
                 })}
               >
-                날짜 없음
+                언제든
               </button>
               <button
                 type="button"
@@ -13202,6 +13241,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
               {savedView === 'today' ? (
                 <div className="mx-auto mb-4 grid min-w-0 max-w-4xl gap-4">
+                  {myFlowPrimaryContinuationRow ? (
                   <section data-testid="my-flow-now-section" className="grid min-w-0 gap-3 border-y border-blue-200 bg-blue-50/40 px-1 py-4 sm:px-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -13217,7 +13257,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       </div>
                       {myFlowPrimaryContinuationRow ? (
                         <span className="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
-                          {myFlowPrimaryContinuationRow.date ? formatMyFlowDisplayDate(myFlowPrimaryContinuationRow.date) : '날짜 없음'}
+                          {myFlowPrimaryContinuationRow.date ? formatMyFlowDisplayDate(myFlowPrimaryContinuationRow.date) : '언제든'}
                         </span>
                       ) : null}
                     </div>
@@ -13225,6 +13265,56 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', hideLeadLabel: true })
                     ) : null}
                   </section>
+                  ) : myFlowAnytimeRows.length === 0 ? (
+                    <section data-testid="my-flow-now-section" className="border-y border-slate-200 py-4">
+                      <p className="text-sm font-semibold text-blue-700">지금</p>
+                      <h3 data-testid="my-flow-today-remaining-count" className="mt-1 text-lg font-semibold text-slate-950">
+                        이어갈 할 일이 없습니다
+                      </h3>
+                    </section>
+                  ) : null}
+
+                  {myFlowAnytimeRows.length > 0 ? (
+                    <section data-testid="my-flow-anytime-section" className="min-w-0 border-y border-slate-200 py-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="text-lg font-semibold text-slate-950">언제든 할 일</h3>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <span data-testid="my-flow-anytime-count" className="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold text-slate-700">
+                            {myFlowAnytimeRows.length}
+                          </span>
+                          <Link
+                            href="/calendar#calendar-placement-queue"
+                            data-testid="my-flow-anytime-schedule-link"
+                            className="inline-flex min-h-9 items-center rounded-md px-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+                          >
+                            일정에 놓기
+                          </Link>
+                        </div>
+                      </div>
+                      <div data-testid="my-flow-anytime-list" className="mt-3 grid">
+                        {myFlowAnytimeVisibleRows.map((row) => renderExecutionRow(row, {
+                          compact: true,
+                          openDetail: true,
+                          inlineDetail: true,
+                          undatedMetaLabel: '언제든',
+                          showOpenLabel: true,
+                          detailSurface: 'today',
+                        }))}
+                      </div>
+                      {myFlowAnytimeHiddenCount > 0 ? (
+                        <button
+                          type="button"
+                          data-testid="my-flow-anytime-open-all"
+                          className="mt-3 min-h-10 w-full rounded-md bg-slate-50 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                          onClick={() => selectMyFlowView('flow')}
+                        >
+                          전체 Flow에서 {myFlowAnytimeHiddenCount}개 더 보기
+                        </button>
+                      ) : null}
+                    </section>
+                  ) : null}
 
                   {showMyFlowTodaySummary ? (
                   <section data-testid="my-flow-today-summary" className="min-w-0 border-y border-slate-200 py-4">
@@ -13628,6 +13718,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
           {savedView === 'calendar' ? (
             <div>
+              <div className={`grid gap-4 pb-0 ${showCalendarPlacementQueue
+                ? 'lg:grid-cols-[230px_minmax(0,1fr)_290px]'
+                : 'lg:grid-cols-[minmax(0,1fr)_320px]'} lg:gap-0`}>
+              {showCalendarPlacementQueue ? (
+              <div className="order-3 min-w-0 lg:order-1 lg:pr-4">
               <CalendarUnscheduledTray
                 items={calendarUnscheduledTrayItems}
                 selectedKeys={myFlowUnscheduledSelection.filter((key) =>
@@ -13636,6 +13731,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 targetDate={calendarUnscheduledEffectiveTargetDate}
                 preview={calendarUnscheduledSchedulePreview}
                 expanded={myFlowUnscheduledTrayOpen}
+                variant={isMyFlowMobileViewport ? 'drawer' : 'sidebar'}
                 undo={myFlowCalendarScheduleUndo ? {
                   count: myFlowCalendarScheduleUndo.count,
                   targetDateLabel: formatKoreanShortDate(myFlowCalendarScheduleUndo.targetDate),
@@ -13647,15 +13743,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   setMyFlowUnscheduledTargetDate(date);
                   setMyFlowCalendarScheduleUndo(null);
                 }}
-                onApply={applyMyFlowCalendarUnscheduledSchedule}
+                onPlaceToday={() => applyMyFlowCalendarUnscheduledSchedule(myFlowTodayDate)}
+                onKeepAnytime={keepMyFlowCalendarItemsAnytime}
+                onApply={() => applyMyFlowCalendarUnscheduledSchedule()}
                 onUndo={undoMyFlowCalendarUnscheduledSchedule}
               />
-              <div className="grid gap-4 pb-0 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.75fr)] lg:gap-0">
+              </div>
+              ) : null}
               <section
                 ref={myFlowCalendarCardRef}
                 data-testid="my-flow-calendar-card"
                 data-calendar-layout="month-overview"
-                className="order-2 min-w-0 py-2 sm:py-3 lg:order-1 lg:pr-5"
+                className="order-2 min-w-0 py-2 sm:py-3 lg:order-2 lg:px-4"
               >
                 <div className="hidden items-start justify-between gap-3 sm:flex">
                   <div>
@@ -13820,7 +13919,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 data-calendar-layout="selected-day-execution"
                 data-overflow-date={myFlowRoutineOverflowDate === myFlowSelectedDate ? myFlowRoutineOverflowDate : undefined}
                 data-schedule-overflow-date={myFlowScheduleOverflowDate === myFlowSelectedDate ? myFlowScheduleOverflowDate : undefined}
-                className="order-1 border-y border-slate-200 py-3 sm:py-4 lg:order-2 lg:border-y-0 lg:border-l lg:pl-5"
+                className="order-1 border-y border-slate-200 py-3 sm:py-4 lg:order-3 lg:border-y-0 lg:border-l lg:pl-4"
               >
                 <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
                 {!isMyFlowMobileViewport ? (

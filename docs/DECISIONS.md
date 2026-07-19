@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Anytime tasks execute in My Flow and are only placed from Calendar
+
+**Decision:** An open task without a date is a valid `언제든 할 일`. My Flow owns its completion, detail, notes, and personal adjustment. Calendar exposes the same task only in a selection-only `일정에 놓기` queue, where the user may place it on today or a chosen date, or keep it Anytime without mutation. The Calendar queue never exposes task-completion controls. Removing a personal date returns the task to Anytime. Mobile composes selected-day agenda, month grid, then a compact drawer; wide composes placement queue, month grid, and selected-day agenda.
+
+**Reason:** The previous full-width undated tray acted like a second execution list, while My Flow exposed only a fallback subset. Separating execution from placement makes an undated task useful immediately, prevents duplicate completion controls, and keeps Calendar date-first.
+
+**Applies to:** My Flow `지금`, Calendar placement queue, personal schedule overlays, completion undo, selected-day agenda, mobile/wide Calendar composition, and future P25 execution/export work.
+
+**Reopen when:** observed users interpret `언제든` as unfinished setup, cannot discover placement, or need a dedicated unscheduled planning surface beyond the current compact queue.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-04 evidence](./content-audit/2026-07-19-p25-04-anytime-calendar-placement-evidence/README.md)
+
 ### 2026-07-19 - Whole-Flow batch adjustment is a temporary mode with recoverable personal changes
 
 **Decision:** Multi-item adjustment appears only after `여러 할 일 조정` inside `전체 Flow`. While active, selection checkboxes replace completion controls and a single toolbar owns date assignment, explicit `언제든` conversion, selected export, and recoverable removal. Applying a date or removal returns to the ordinary list with immediate undo. Direct source-backed Flows may be selected for date/export but cannot be structurally removed; personal drafts use tombstones and source-backed personal copies use included-step overlays. Recurring date changes block until occurrence or series scope is chosen. Explicit date removal is stored as an additive personal unscheduled override and never deletes the source date.

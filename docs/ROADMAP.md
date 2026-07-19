@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P25 execution-workspace structural correction<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P25-04 Anytime task model and Calendar placement queue
+**Next Milestone:** P25-05 completion/reopen and export scope parity
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -39,7 +39,7 @@ Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25
 | P25-02B | Responsive whole-Flow workspace composition | Done by current browser evidence; selected Flow fills the canvas, mobile drills in, and 1024px supports outline/detail or rail/outline/detail without duplicate completion controls |
 | P25-03A | Progressive single-item adjustment | Done by current browser evidence; common values remain visible and advanced schedule stays collapsed with a concise saved-value summary |
 | P25-03B | Selected-item batch adjustment | Done by current unit/browser evidence; temporary selection replaces completion, previews date impact, preserves overlays, preselects export scope, and permits removal only with recovery |
-| P25-04 | Anytime task model and Calendar placement queue | Undated work can be found, executed, dated, moved, and cleared |
+| P25-04 | Anytime task model and Calendar placement queue | Done by current browser evidence; My Flow executes Anytime tasks and Calendar places selected tasks on today or a chosen date without duplicate completion controls |
 | P25-05 | Completion/reopen and export scope parity | One occurrence/control; immediate undo and persistent reopen; exact export counts |
 | P25-06/07 | Public artifact simplification and shared responsive visual language | Duplicate representation/copy/overflow/control variants reduced to zero targets |
 | P25-08 | Internal six-journey integration gate | Automated Blocking/High zero and owner readiness decision; no observed-user claim |
@@ -96,9 +96,9 @@ There is no active external-user gate. P24-J0~J5 remain the deployed baseline, w
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Now | AI | P25-04 Anytime and Calendar | Make undated work visible, executable, and schedulable from an explicit queue without duplicating My Flow | Dated and Anytime states have one predictable move/clear model on mobile and wide |
-| Completed | AI | P25-01~P25-03 correctness, whole-Flow workspace, and personal adjustment | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
-| Then | AI + owner checkpoints | P25-05~P25-07 staged implementation | Close one product/data/browser gate per slice | Approved frame is implemented without source/run ownership drift |
+| Now | AI | P25-05 execution and export | Normalize one-occurrence completion/reopen, then make scope and exact count precede export format | Completion and portable output have one predictable contract |
+| Completed | AI | P25-01~P25-04 correctness, whole-Flow workspace, personal adjustment, and Anytime placement | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
+| Then | AI + owner checkpoints | P25-06~P25-07 staged implementation | Close one product/data/browser gate per slice | Approved frame is implemented without source/run ownership drift |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
@@ -119,7 +119,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-The immediate implementation gate is P25-04: make the undated/Anytime state and Calendar placement path predictable before completion/export and public visual integration. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated. Do not open them as parallel product tracks.
+The immediate implementation gate is P25-05: make completion/reopen and export scope/count predictable before public and visual integration. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated. Do not open them as parallel product tracks.
 
 ## Gated Backlog
 

@@ -3,7 +3,7 @@
 **Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
 **Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 correctness, P25-02 whole-Flow workspace, and P25-03 personal adjustment are complete by current unit/browser evidence. Open P25-04 Anytime semantics and Calendar placement next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 correctness, P25-02 whole-Flow workspace, P25-03 personal adjustment, and P25-04 Anytime/Calendar placement are complete by current unit/browser evidence. Open P25-05 execution and export parity next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-04 Anytime task model and Calendar placement queue; P24 remains the deployed production baseline |
+| Active product gate | P25-05 completion/reopen and export scope parity; P24 remains the deployed production baseline |
 | User action now | No participant action. The owner may still review the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html), but the instruction to continue P25 authorizes the staged implementation baseline. |
-| AI action now | Make undated work understandable and schedulable without turning Calendar into a second task editor |
+| AI action now | Normalize one-occurrence completion/reopen and make export scope/count predictable before format choice |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P25-04 Anytime and Calendar placement: My Flow now owns execution of every open undated task in a dedicated `언제든 할 일` section, while Calendar owns a selection-only `일정에 놓기` queue. Users can place selected tasks on today or a chosen date, keep them Anytime without mutation, undo date assignment, and remove a date to return a task to the queue. Mobile uses agenda/grid/drawer composition; wide uses queue/grid/agenda columns. Calendar queue completion controls and duplicate Anytime execution rows are `0`; targeted Playwright is `1 / 1`, production build passes, and observed-user sessions remain `0`. See [P25-04 evidence](./content-audit/2026-07-19-p25-04-anytime-calendar-placement-evidence/README.md).
 
 - 2026-07-19 P25-03B bounded batch adjustment: `전체 Flow` now exposes temporary selection mode on mobile and wide. Selection checkboxes replace completion controls; users can preview and apply a date, return selected tasks to `언제든`, open existing export with the exact selection, and remove rows only where a persistent recovery path exists. Published source and completion state remain unchanged, explicit date removal is an additive personal override, recurring date edits require occurrence/series scope, and direct source-backed removal controls remain `0`. Current evidence: unit `525 / 525`, targeted Playwright `1 / 1`, mobile/wide overflow `0`, console errors `0`, observed-user sessions `0`. See [P25-03B evidence](./content-audit/2026-07-19-p25-03b-batch-adjustment-evidence/README.md).
 

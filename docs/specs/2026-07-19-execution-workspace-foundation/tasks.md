@@ -63,11 +63,11 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 ## P25-04 - Anytime and Calendar
 
-- [ ] Implement the approved Anytime/undated terminology and state cues.
-- [ ] Keep undated tasks executable in My Flow.
-- [ ] Add Calendar scheduling queue on mobile and wide.
-- [ ] Connect today/date/keep-undated and batch placement actions.
-- [ ] Verify no duplicate completion controls or missing tasks.
+- [x] Implement the approved Anytime/undated terminology and state cues.
+- [x] Keep undated tasks executable in My Flow.
+- [x] Add Calendar scheduling queue on mobile and wide.
+- [x] Connect today/date/keep-undated and batch placement actions.
+- [x] Verify no duplicate completion controls or missing tasks.
 
 ## P25-05 - Execution and export
 

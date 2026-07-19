@@ -1520,7 +1520,7 @@ test('curated source save lands in My Flow with user-facing overdue copy', async
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel).toContainText('5개 할 일');
+  await expect(postSavePanel).toContainText('5개 모두 저장됐어요');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(5);
   await expect(postSavePanel).not.toContainText('지난 일정 2026-07-01');
   await expect(postSavePanel).not.toContainText('다음 2026-07-01');
@@ -3944,7 +3944,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('원룸 이사 D-30 일정');
   await expect(postSavePanel).not.toContainText('원룸 이사 D-30 일정 지도');
-  await expect(postSavePanel).toContainText('5개 할 일');
+  await expect(postSavePanel).toContainText('5개 모두 저장됐어요');
   await expect(postSavePanel).not.toContainText('묶음');
   await expect(postSavePanel).toContainText('이사 방식과 견적 후보 정하기');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(5);

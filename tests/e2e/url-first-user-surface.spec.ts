@@ -2670,7 +2670,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .filter({ hasText: recurringTitle });
   await wideRecurringItem.getByTestId('personal-draft-order-item-open-wide').click();
   const wideSeriesDetail = wideDraftFlow
-    .getByTestId('my-flow-overview-inline-detail')
+    .getByTestId('my-flow-workspace-detail-pane')
     .getByTestId('my-flow-item-detail');
   const wideSeriesPortableExport = wideSeriesDetail.getByTestId('my-flow-detail-portable-export');
   if (await wideSeriesPortableExport.locator('summary').count()) {

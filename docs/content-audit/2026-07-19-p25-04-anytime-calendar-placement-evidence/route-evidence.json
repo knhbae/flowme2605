@@ -1,0 +1,49 @@
+{
+  "package": "P25-04 Anytime and Calendar placement",
+  "date": "2026-07-19",
+  "evidenceKind": "automated_browser",
+  "observedUserSessionCount": 0,
+  "routes": [
+    "/my",
+    "/calendar"
+  ],
+  "viewports": [
+    "390x844",
+    "1024x768"
+  ],
+  "markers": {
+    "myFlowAnytimeSectionVisible": true,
+    "myFlowAnytimeOpenItemCount": 2,
+    "myFlowAnytimeCompletionControlPattern": "row_checkbox",
+    "myFlowAnytimeCompletionReversible": true,
+    "myFlowAnytimeScheduleEntryVisible": true,
+    "calendarPlacementQueueVisible": true,
+    "calendarPlacementQueueCompletionControlCount": 0,
+    "calendarPlacementSelectionControlCount": 2,
+    "calendarPlacementKeepAnytimePreservesMembership": true,
+    "calendarPlacementTodayApplied": true,
+    "calendarPlacementChosenDateApplied": true,
+    "calendarPlacementUndoRestoresAnytime": true,
+    "calendarDateRemovalReturnsToPlacementQueue": true,
+    "calendarMobileCompositionOrder": [
+      "selected_day_agenda",
+      "month_grid",
+      "placement_queue"
+    ],
+    "calendarWideCompositionOrder": [
+      "placement_queue",
+      "month_grid",
+      "selected_day_agenda"
+    ],
+    "anytimeDuplicateExecutionRowCount": 0,
+    "calendarPlacementHorizontalOverflowCount": 0,
+    "calendarPlacementConsoleErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/00-my-flow-anytime-mobile.png",
+    "screenshots/01-calendar-placement-selection-mobile.png",
+    "screenshots/02-calendar-placement-composition-mobile.png",
+    "screenshots/03-calendar-placement-applied-mobile.png",
+    "screenshots/04-calendar-placement-wide.png"
+  ]
+}

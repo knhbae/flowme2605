@@ -114,7 +114,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.getByTestId('flow-map-save-all-mobile').click();
 
     await page.goto('/calendar');
-    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 없는 할 일');
+    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('일정에 놓기');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-toggle')).toHaveAttribute('aria-expanded', 'false');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-panel')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
