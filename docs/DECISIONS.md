@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Personal item adjustment starts with task, date state, and personal memo
+
+**Decision:** My Flow uses one `할 일 조정` action. The first editing surface shows the task title, its date or undated state, and `내 메모`. Time, duration, place, recurrence, and item-type-specific records live behind `세부 일정`, which starts collapsed even when values already exist; the collapsed control summarizes those values. Memo resizing is not a separate command. Published source fields stay immutable and edits continue through personal overlays.
+
+**Reason:** Showing every supported field made a simple date or memo change feel more complex than a calendar or todo tool. Automatically reopening advanced controls on revisit also made stored complexity dominate the common path. A compact default with a truthful summary keeps capability without making every user parse the full model.
+
+**Applies to:** My Flow mobile drill-in, wide detail pane, source-backed personal copies, personal draft user items, Calendar item detail, portable item export inputs, and P25-03 evidence.
+
+**Reopen when:** observed users cannot find advanced schedule controls, a content type demonstrably requires one advanced value at the default level, or a future dedicated editor replaces the shared detail surface.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-03A evidence](./content-audit/2026-07-19-p25-03a-progressive-adjustment-evidence/README.md)
+
 ### 2026-07-19 - Accepted draft phrases, not a target count, define the saved personal Flow
 
 **Decision:** Memo and URL-miss drafts may normalize user-authored phrases into action titles, but they must not add generic scope, ordering, or first-action rows to reach a minimum count. The pre-save inclusion/title review is the acceptance boundary. Only selected non-empty rows are saved, and their deterministic intake IDs must survive reload and downstream personal projections. Calendar and ICS remain eligible subsets because undated accepted rows stay in My Flow and list exports.

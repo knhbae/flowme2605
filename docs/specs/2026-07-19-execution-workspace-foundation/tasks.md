@@ -47,19 +47,19 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 ## P25-02 - Whole Flow workspace
 
-- [ ] Build shared responsive workspace primitives. P25-02A shared the outline contract; P25-02B wide/mobile composition remains.
+- [x] Build shared responsive workspace primitives.
 - [x] Implement post-save whole-Flow confirmation with full structure.
 - [x] Implement returning whole-Flow view and local `지금 / 내 Flow / 완료` model approved in P25-00B.
 - [x] Keep personal identity primary and source context secondary.
-- [ ] Verify mobile drill-in and wide pane behavior.
+- [x] Verify mobile drill-in and wide pane behavior.
 
 ## P25-03 - Personal adjustment
 
-- [ ] Implement compact default item drawer.
-- [ ] Move time/duration/recurrence to advanced schedule.
+- [x] Implement compact default item drawer.
+- [x] Move time/duration/recurrence to advanced schedule.
 - [ ] Add selected-item batch mode.
 - [ ] Implement date move/clear scopes and impact preview.
-- [ ] Connect source-backed personal adjustments through overlays only.
+- [x] Connect source-backed personal adjustments through overlays only.
 
 ## P25-04 - Anytime and Calendar
 

@@ -1,0 +1,38 @@
+{
+  "package": "P25-03A Progressive Item Adjustment",
+  "date": "2026-07-19",
+  "evidenceKind": "current_browser_and_current_command",
+  "observedUserSessionCount": 0,
+  "routes": [
+    "/my?savedMap=moving-d30",
+    "/my",
+    "/calendar"
+  ],
+  "markers": {
+    "itemAdjustmentEntryLabel": "할 일 조정",
+    "itemAdjustmentDefaultFieldLabels": ["할 일", "날짜", "내 메모"],
+    "itemAdjustmentDefaultDepth": 1,
+    "itemAdjustmentAdvancedLabel": "세부 일정",
+    "itemAdjustmentAdvancedCollapsedByDefault": true,
+    "itemAdjustmentAdvancedAutoExpandedAfterReload": false,
+    "itemAdjustmentStoredAdvancedSummaryVisible": true,
+    "defaultVisibleTimeInputCount": 0,
+    "defaultVisibleLocationInputCount": 0,
+    "defaultVisibleRepeatInputCount": 0,
+    "memoResizeCommandCount": 0,
+    "genericItemDecisionFieldCount": 0,
+    "eligibleDecisionFieldCountAfterDisclosure": 1,
+    "personalDraftTimeModeVisibleBeforeDisclosureCount": 0,
+    "personalDraftTimeModeVisibleAfterDisclosure": true,
+    "sourceMutationCount": 0,
+    "calendarProjectionRegressionCount": 0,
+    "portableExportRegressionCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "screenshotCount": 8,
+    "targetedPlaywrightPassed": 7,
+    "publicWorkbenchPlaywrightPassed": 44
+  },
+  "nextGate": "P25-03B selected-item batch adjustment"
+}

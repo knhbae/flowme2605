@@ -871,14 +871,12 @@ test.describe('P24 execution trust regressions', () => {
 
     const openMovingEditor = async () => {
       const flow = page.locator(
-        '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]',
+        '[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]',
       );
-      if ((await flow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
-        await flow.getByTestId('my-flow-mobile-structure-open').click();
-      }
-      await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
+      const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
+      await firstRow.getByRole('button', { name: /열기/ }).click();
       const detail = flow
-        .getByTestId('my-flow-mobile-structure-inline-detail')
+        .getByTestId('my-flow-inline-detail')
         .getByTestId('my-flow-item-detail');
       await enterMyFlowDetailEditMode(detail);
       return detail;
@@ -887,17 +885,19 @@ test.describe('P24 execution trust regressions', () => {
     let detail = await openMovingEditor();
     await expect(detail.getByTestId('my-flow-detail-title-input')).toBeVisible();
     await expect(detail.getByTestId('my-flow-detail-date-input')).toBeVisible();
-    await expect(detail.locator('input[type="time"]')).toBeVisible();
+    await expect(detail.locator('input[type="time"]')).toHaveCount(0);
     await expect(detail.getByTestId('my-flow-detail-memo')).toBeVisible();
     const advancedToggle = detail.getByTestId('my-flow-editor-advanced-toggle');
-    await expect(advancedToggle).toContainText('세부 설정');
+    await expect(advancedToggle).toContainText('세부 일정');
+    await expect(advancedToggle).toContainText('시간');
     await expect(advancedToggle).toContainText('장소');
     await expect(advancedToggle).toContainText('반복');
     await expect(advancedToggle).toHaveAttribute('aria-expanded', 'false');
     await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveCount(0);
     await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveCount(0);
     await expect(detail.getByTestId('my-flow-editor-intent-fields')).toHaveCount(0);
-    const evidenceDir = process.env.FLOWME_P24_U2_EVIDENCE_DIR;
+    const evidenceDir = process.env.FLOWME_P25_PROGRESSIVE_ADJUSTMENT_EVIDENCE_DIR
+      ?? process.env.FLOWME_P24_U2_EVIDENCE_DIR;
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
       await detail.screenshot({
@@ -906,6 +906,7 @@ test.describe('P24 execution trust regressions', () => {
     }
 
     await expandMyFlowAdvancedEditor(detail);
+    await expect(detail.locator('input[type="time"]')).toBeVisible();
     await expect(detail.locator('input[placeholder="장소 없음"]')).toBeVisible();
     await expect(detail.getByTestId('my-flow-detail-repeat-input')).toBeVisible();
     await expect(detail.getByTestId('my-flow-decision-fields')).toHaveCount(0);
@@ -923,7 +924,12 @@ test.describe('P24 execution trust regressions', () => {
     await openPostSaveWorkspaceIfPresent(page);
     await page.getByTestId('my-flow-view-flow').click();
     detail = await openMovingEditor();
-    await expect(detail).toHaveAttribute('data-editor-advanced-expanded', 'true');
+    await expect(detail).toHaveAttribute('data-editor-advanced-expanded', 'false');
+    await expect(detail.getByTestId('my-flow-editor-advanced-toggle')).toContainText('집');
+    await expect(detail.getByTestId('my-flow-editor-advanced-toggle')).toContainText('매주');
+    await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveCount(0);
+    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveCount(0);
+    await expandMyFlowAdvancedEditor(detail);
     await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveValue('집');
     await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveValue('weekly');
     await page.setViewportSize({ width: 1024, height: 768 });
@@ -993,7 +999,8 @@ test.describe('P24 execution trust regressions', () => {
     await expandMyFlowAdvancedEditor(detail);
     await expect(detail.getByTestId('my-flow-decision-fields')).toBeVisible();
     await expect(detail.getByTestId('my-flow-decision-status')).toBeVisible();
-    const evidenceDir = process.env.FLOWME_P24_U2_EVIDENCE_DIR;
+    const evidenceDir = process.env.FLOWME_P25_PROGRESSIVE_ADJUSTMENT_EVIDENCE_DIR
+      ?? process.env.FLOWME_P24_U2_EVIDENCE_DIR;
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
       await detail.screenshot({

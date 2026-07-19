@@ -4762,7 +4762,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     rowKey: string;
     expanded: boolean;
   } | null>(null);
-  const [myFlowExpandedMemoKey, setMyFlowExpandedMemoKey] = useState('');
+  const [, setMyFlowExpandedMemoKey] = useState('');
   const [myFlowEditingDetailKey, setMyFlowEditingDetailKey] = useState('');
   const [myFlowActiveRowKey, setMyFlowActiveRowKey] = useState('');
   const [myFlowDetailSurface, setMyFlowDetailSurface] = useState<MyFlowView | 'post-save' | ''>('');
@@ -9160,7 +9160,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const routineKey = getMyFlowRowInstanceKey(row);
     const isRoutineRepeatExpanded = myFlowExpandedRoutineKey === routineKey;
     const isAdvancedExpanded = myFlowExpandedAdvancedKey === routineKey;
-    const isMemoExpanded = myFlowExpandedMemoKey === routineKey;
     const typeSummary = getMyFlowDetailTypeSummary(row);
     const decisionDraft = getMyFlowDecisionDraft(row);
     const isDecisionRow = row.itemType?.primary === 'decision_hold' || Boolean(row.itemType?.secondary.includes('decision_hold'));
@@ -9236,17 +9235,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       (row.structuralCalendarIcsEligible ?? true);
     const portableExportSummary = canDownloadPortableCalendar ? '메모 · 체크리스트 · 시트 행 · 캘린더' : '메모 · 체크리스트 · 시트 행 · 날짜 필요';
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
-    const hasExpandableMemo = editorDraft.memo.trim().length > 0;
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
     const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
     const detailChecklistProgressLabel = `${detailChecklistLabel} ${Object.values(detailChecklistState).filter(Boolean).length}/${detailChecklistItems.length}`;
     const fieldClassName = 'mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
-    const textareaClassName = `${fieldClassName} ${isMemoExpanded ? 'min-h-52' : isDrawerMode ? 'h-28 min-h-28' : 'h-20 min-h-20'} resize-y font-normal leading-6`;
+    const textareaClassName = `${fieldClassName} h-28 min-h-28 resize-y font-normal leading-6`;
     const canEditDate = Boolean(
       row.calendarKey || isProgressFlow || isPersonalDraftUserItem || isOriginallyUndatedSavedItem,
     );
     const itemDateOverrideLabel = getSourceBackedFlowMapDateAnchorCopy().itemOverrideLabel;
-    const itemEditButtonLabel = canEditDate ? '제목·날짜·메모 수정' : '제목·메모 수정';
+    const itemEditButtonLabel = '할 일 조정';
     const itemEditButtonAriaLabel = `${editorDraft.title} ${itemEditButtonLabel}`;
     const itemEditCancelAriaLabel = `${editorDraft.title} 수정 취소`;
     const showTimeField =
@@ -9294,8 +9292,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ),
     );
     const editorAdvancedLabels = Array.from(new Set([
+      isPersonalDraftUserItem && editorDraft.date ? '시간' : '',
       isPersonalDraftUserItem && editorDraft.date ? '반복' : '',
       isPersonalDraftUserItem && editorDraft.date && editorDraft.scheduleMode === 'timed' ? '소요시간' : '',
+      showTimeField ? '시간' : '',
       showLocationField ? '장소' : '',
       showRepeatPresetField ? '반복' : '',
       isDecisionRow ? '결정' : '',
@@ -9303,26 +9303,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       showRoutineRepeatSettings && isRoutineRow ? '반복' : '',
     ].filter(Boolean)));
     const hasEditorAdvancedFields = editorAdvancedLabels.length > 0;
-    const hasStoredEditorAdvancedValues = Boolean(
-      personalDraftRecurrenceMode ||
-        personalDraftRecurrenceInvalid ||
-        personalDraftDurationInvalid ||
-        (
-          isPersonalDraftUserItem &&
-          editorDraft.scheduleMode === 'timed' &&
-          editorDraft.durationMinutes !== PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES
-        ) ||
-        editorDraft.location.trim() ||
-        (!isPersonalDraftUserItem && editorDraft.repeatPreset) ||
-        decisionDraft.decisionStatus !== 'undecided' ||
-        decisionDraft.nextReviewDate ||
-        logDraft.logValue.trim(),
-    );
     const editorAdvancedPreference =
       myFlowEditorAdvancedDisclosure?.rowKey === routineKey
         ? myFlowEditorAdvancedDisclosure.expanded
         : undefined;
-    const isEditorAdvancedExpanded = editorAdvancedPreference ?? hasStoredEditorAdvancedValues;
+    const isEditorAdvancedExpanded = editorAdvancedPreference ?? false;
     const scheduleSummaryRows = [
       editorDraft.date ? { label: '날짜', value: /^\d{4}-\d{2}-\d{2}$/.test(editorDraft.date) ? formatMyFlowDisplayDate(editorDraft.date) : editorDraft.date } : undefined,
       editorDraft.time ? { label: '시간', value: formatMyFlowLocalTimeLabel(editorDraft.time) } : undefined,
@@ -9346,6 +9331,32 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           : undefined,
       editorDraft.location ? { label: '장소', value: editorDraft.location } : undefined,
     ].filter((entry): entry is { label: string; value: string } => Boolean(entry));
+    const editorAdvancedValueSummary = [
+      editorDraft.time ? formatMyFlowLocalTimeLabel(editorDraft.time) : '',
+      isPersonalDraftUserItem && editorDraft.scheduleMode === 'timed'
+        ? formatMyFlowDurationLabel(editorDraft.durationMinutes)
+        : '',
+      personalDraftRecurrenceMode
+        ? formatPersonalDraftRecurrenceSummary(row.structuralRepeat, editorDraft.date)
+        : !isPersonalDraftUserItem && editorDraft.repeatPreset
+          ? editorDraft.repeatPreset === 'daily'
+            ? '매일'
+            : editorDraft.repeatPreset === 'weekly'
+              ? '매주'
+              : editorDraft.repeatPreset === 'monthly'
+                ? '매월'
+                : ''
+          : '',
+      editorDraft.location.trim(),
+      isDecisionRow && decisionDraft.decisionStatus !== 'undecided'
+        ? decisionDraft.decisionStatus === 'buy'
+          ? '구매'
+          : decisionDraft.decisionStatus === 'hold'
+            ? '보류'
+            : '거절'
+        : '',
+      isLogRow ? logDraft.logValue.trim() : '',
+    ].filter(Boolean).join(' · ');
     const editorAdvancedToggle = showEditableDetailFields && hasEditorAdvancedFields ? (
       <button
         type="button"
@@ -9358,8 +9369,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         })}
       >
         <span className="min-w-0">
-          <span>세부 설정</span>
-          <span className="ml-1 font-medium text-slate-500">· {editorAdvancedLabels.join(' · ')}</span>
+          <span>세부 일정</span>
+          <span className="ml-1 font-medium text-slate-500">
+            · {editorAdvancedValueSummary
+              ? editorAdvancedValueSummary
+              : editorAdvancedLabels.join(' · ')}
+          </span>
         </span>
         <span aria-hidden="true" className="shrink-0 text-slate-500">
           {isEditorAdvancedExpanded ? '⌃' : '⌄'}
@@ -9450,7 +9465,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 </button>
               </div>
             ) : null}
-            {editorDraft.date ? (
+            {editorAdvancedToggle ? <div className="mt-3">{editorAdvancedToggle}</div> : null}
+            {isEditorAdvancedExpanded && editorDraft.date ? (
               <fieldset
                 data-testid="personal-draft-time-mode-control"
                 className="mt-3 min-w-0 border-t border-slate-200 pt-3"
@@ -9520,7 +9536,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 ) : null}
               </fieldset>
             ) : null}
-            {editorAdvancedToggle ? <div className="mt-3">{editorAdvancedToggle}</div> : null}
             {isEditorAdvancedExpanded && editorDraft.date && editorDraft.scheduleMode === 'timed' ? (
               <div data-testid="personal-draft-duration-control" className="mt-3 border-t border-slate-200 pt-3">
                 <label className="block text-xs font-semibold text-slate-600">
@@ -9766,7 +9781,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         ) : null}
-        {showTimeField ? (
+        {!isPersonalDraftUserItem && editorAdvancedToggle ? <div className="sm:col-span-2">{editorAdvancedToggle}</div> : null}
+        {isEditorAdvancedExpanded && showTimeField ? (
           <label className="block text-xs font-semibold text-slate-600">
             시간
             <input
@@ -9777,7 +9793,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             />
           </label>
         ) : null}
-        {!isPersonalDraftUserItem && editorAdvancedToggle ? <div className="sm:col-span-2">{editorAdvancedToggle}</div> : null}
         {isEditorAdvancedExpanded && showLocationField ? (
           <label className="block text-xs font-semibold text-slate-600">
             장소
@@ -9953,7 +9968,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className={isInlineMobileMode ? 'min-w-0' : 'min-w-0 flex-1'}>
             {isDetailEditing ? (
               <label className="block text-xs font-semibold text-slate-600">
-                제목
+                할 일
                 <input
                   data-testid="my-flow-detail-title-input"
                   className={fieldClassName}
@@ -10241,19 +10256,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : occurrenceFields}
         {showEditableDetailFields ? (
           <label className="mt-3 block text-xs font-semibold text-slate-600">
-            메모
+            내 메모
             <textarea data-testid="my-flow-detail-memo" className={textareaClassName} value={editorDraft.memo} onChange={(event) => updateMyFlowEditingDraft(row, { memo: event.target.value })} />
           </label>
-        ) : null}
-        {hasExpandableMemo && isDetailEditing ? (
-          <button
-            type="button"
-            className="mt-2 rounded-md bg-white px-2 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
-            aria-expanded={isMemoExpanded}
-            onClick={() => setMyFlowExpandedMemoKey(isMemoExpanded ? '' : routineKey)}
-          >
-            {isMemoExpanded ? '메모 작게 보기' : '메모 크게 보기'}
-          </button>
         ) : null}
         {isDetailEditing && isEditorAdvancedExpanded && (isDecisionRow || isLogRow || (showRoutineRepeatSettings && isRoutineRow)) ? (
           <div
@@ -10312,14 +10317,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {isDetailEditing || (isDrawerMode && hasEditorChanges) ? (
-          <div data-testid="my-flow-detail-edit-actions" className="mt-3 flex flex-col gap-2 rounded-md border border-blue-100 bg-white px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs font-semibold text-slate-600">
-              {hasEditorChanges
-                ? isDrawerMode
-                  ? '메모 변경은 저장해야 반영됩니다.'
-                  : '저장하면 캘린더와 목록에도 함께 반영됩니다.'
-                : '제목·날짜·메모를 바꾼 뒤 저장하세요.'}
-            </p>
+          <div data-testid="my-flow-detail-edit-actions" className="mt-3 flex justify-end rounded-md border border-blue-100 bg-white px-3 py-2">
             <div className="flex gap-2">
               <button
                 className={`rounded-md px-3 py-2 text-xs font-semibold ${hasEditorChanges && !personalDraftTimedScheduleInvalid && !personalDraftRecurrenceInvalid ? 'bg-blue-700 text-white' : 'cursor-not-allowed bg-slate-100 text-slate-400'}`}

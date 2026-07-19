@@ -3,7 +3,7 @@
 **Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
 **Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 correctness and P25-02 whole-Flow hierarchy/responsive composition are complete by current unit/browser evidence. Open P25-03 progressive item adjustment next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 correctness, P25-02 whole-Flow workspace, and P25-03A progressive single-item adjustment are complete by current unit/browser evidence. Open P25-03B selected-item batch adjustment next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-03 progressive item adjustment; P24 remains the deployed production baseline |
+| Active product gate | P25-03B selected-item batch adjustment; P24 remains the deployed production baseline |
 | User action now | No participant action. The owner may still review the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html), but the instruction to continue P25 authorizes the staged implementation baseline. |
-| AI action now | Replace field-heavy adjustment with one progressive common-fields editor, then define a bounded selected-item batch path without weakening P25-01/02 truth |
+| AI action now | Add a bounded selection mode with date change/clear, include/exclude, and selected export preview without adding permanent row controls |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P25-03A progressive adjustment: My Flow now calls the action `할 일 조정`; the default editor keeps the task, date state, and personal memo visible while time, duration, location, recurrence, and eligible intent fields stay behind `세부 일정`. Saved advanced values are summarized without auto-expanding the form, and the redundant memo resize command was removed. Current targeted Playwright is `3 / 3`, production build passes, mobile/wide overflow and console errors are `0`, and observed-user sessions remain `0`. See [P25-03A evidence](./content-audit/2026-07-19-p25-03a-progressive-adjustment-evidence/README.md).
 
 - 2026-07-19 P25-02B responsive workspace: Selected or single Flows now use the full content width. At 1024px a single Flow uses outline/detail panes, while multiple Flows add a persistent Flow rail to form rail/outline/detail; the duplicate scope select is hidden at that breakpoint. Mobile keeps row-level drill-in, wide moves the active detail to the right pane, and the detail pane does not repeat the row completion control. Current targeted E2E is `3 / 3`, horizontal overflow is `0`, and observed-user sessions remain `0`. See [P25-02B evidence](./content-audit/2026-07-19-p25-02b-responsive-workspace-evidence/README.md).
 
