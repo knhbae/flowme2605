@@ -211,9 +211,7 @@ import {
   getSavedFlowRecord,
   getStoredAnchor,
   getWorkbenchState,
-  hasDismissedStorageNotice,
   cloneSeedBundles,
-  dismissStorageNotice,
   saveBundles,
   saveChecks,
   saveComparisonState,
@@ -15555,7 +15553,6 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
-  const [showStorageNotice, setShowStorageNotice] = useState(false);
   const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -15571,7 +15568,6 @@ export function PublicFlow({ slug }: { slug: string }) {
     setComparisonState(getComparisonState(slug));
     setWorkbenchState(getWorkbenchState(slug));
     setReactionLogs(getReactionLogs(slug));
-    setShowStorageNotice(found ? !isJeonsePrecheckFlow(found) && !hasDismissedStorageNotice() : false);
     setSavedFlowAt(getSavedFlowRecord(slug)?.savedAt);
   }, [slug]);
 
@@ -15627,17 +15623,13 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showPublicSaveAction = !showExportFirstHero;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
-  const publicHeroInput = isUserScheduledExactVideo(bundle) ? '시작일과 반복 요일' : getAnchorLabel(bundle);
-  const publicHeroArtifact = getCatalogDestinationLabel(bundle);
-  const publicPreviewStepTitles = getFlowPreviewStepTitles(bundle);
-  const publicHeroPromise = `${publicHeroArtifact} · 실행 항목 ${executableCount}개`;
-  const publicHeroFirstTask = getCatalogFirstTask(publicPreviewStepTitles, getCatalogReason(bundle));
   const showPublicHeroSetup =
     !showExportFirstHero &&
     (
       isUserScheduledExactVideo(bundle) ||
       (!showTodayExecution && (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none'))
     );
+  const showPublicSetupInput = showPublicHeroSetup && (bundle.flow.anchor_type !== 'none' || isUserScheduledExactVideo(bundle));
   const useP24CompactPublicFrame = showPublicHeroSetup && !compactJeonsePage;
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
 
@@ -15815,17 +15807,9 @@ export function PublicFlow({ slug }: { slug: string }) {
       </div>
     ) : null;
   const renderPublicHeroSetup = () => {
-    if (!showPublicHeroSetup) return null;
-    if (bundle.flow.anchor_type === 'none') {
-      return (
-        <div data-testid="public-flow-primary-setup" className="rounded-lg border border-[#DDE4E0] bg-white px-3 py-2.5">
-          <p className="text-[11px] font-semibold text-[#8A857B]">필요한 입력</p>
-          <p className="mt-1 text-sm font-semibold text-[#1B1A17]">입력 없이 바로 확인합니다.</p>
-        </div>
-      );
-    }
+    if (!showPublicSetupInput) return null;
     return (
-      <div data-testid="public-flow-primary-setup" className="rounded-lg border border-[#DDE4E0] bg-white px-3 py-3">
+      <div data-testid="public-flow-primary-setup" className="max-w-xl rounded-lg border border-[#DDE4E0] bg-white px-3 py-3">
         <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} compactSecondaryActions />
       </div>
     );
@@ -15905,64 +15889,8 @@ export function PublicFlow({ slug }: { slug: string }) {
               <p className="mt-2 break-keep leading-6 text-slate-600">{bundle.flow.description}</p>
             </details>
           ) : null}
-          {showPublicHeroSetup ? (
-            <section className="mt-5 border-y border-[#DDE4E0] py-4">
-              <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
-              <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)] md:items-stretch">
-                {renderPublicHeroSetup()}
-                <div data-testid="public-flow-artifact-preview" className="px-1 py-2.5 md:border-l md:border-[#DDE4E0] md:pl-5">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">저장될 Flow 구성</p>
-                  <ol className="mt-1 grid gap-1.5">
-                    {publicPreviewStepTitles.slice(0, 4).map((title, index) => (
-                      <li key={`${title}-${index}`} data-testid="public-flow-artifact-preview-row" className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-1.5 text-sm font-semibold text-[#1B1A17]">
-                        <span className="text-[11px] text-[#3654FF]" aria-hidden="true">{index + 1}</span>
-                        <span className="line-clamp-1 break-keep">{title}</span>
-                      </li>
-                    ))}
-                  </ol>
-                  {publicPreviewStepTitles.length > 4 ? <p className="mt-1.5 text-xs font-semibold text-[#8A857B]">외 {publicPreviewStepTitles.length - 4}개</p> : null}
-                </div>
-              </div>
-              {showPublicSaveAction ? <div className="mt-3">{renderPublicSaveActions()}</div> : null}
-            </section>
-          ) : (
-            <section className="mt-5 border-y border-[#DDE4E0] py-4">
-              <p data-testid="public-flow-result-promise" className="break-keep text-sm font-semibold leading-6 text-[#3654FF]">{publicHeroPromise}</p>
-              <div className="mt-3 grid gap-1 sm:grid-cols-3 sm:divide-x sm:divide-[#DDE4E0]">
-                <div className="px-1 py-2 sm:px-4">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">입력</p>
-                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroInput}</p>
-                </div>
-                <div className="px-1 py-2 sm:px-4">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">저장 결과</p>
-                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroArtifact}</p>
-                </div>
-                <div data-testid="public-flow-first-action-preview" className="px-1 py-2 sm:px-4">
-                  <p className="text-[11px] font-semibold text-[#8A857B]">첫 할 일</p>
-                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicHeroFirstTask}</p>
-                </div>
-              </div>
-            </section>
-          )}
-          {compactJeonsePage ? (
-            <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
-              <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">D-3 / D-Day / D+1</span>
-              <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-700">7개 체크</span>
-              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700">
-                출처 확인됨
-              </span>
-            </div>
-          ) : (
-            <>
-              <FlowHeroMeta bundle={bundle} hideAnchorStart={showPublicHeroSetup || showMobileWorkbenchFirst} />
-              <div className="mt-3 md:mt-4">
-                <FlowBadges bundle={bundle} />
-              </div>
-            </>
-          )}
-          {showPublicSaveAction ? (
-            !showPublicHeroSetup ? <div className="mt-4">{renderPublicSaveActions()}</div> : null
-          ) : null}
+          {showPublicSetupInput ? <section className="mt-4 border-t border-[#DDE4E0] pt-4">{renderPublicHeroSetup()}</section> : null}
+          {showPublicSaveAction ? <div className="mt-4">{renderPublicSaveActions()}</div> : null}
         </header>
 
       {showDesktopReferenceRail ? (
@@ -16035,25 +15963,6 @@ export function PublicFlow({ slug }: { slug: string }) {
           {renderArtifactWorkbench()}
         </>
       )}
-
-      {showStorageNotice ? (
-        <section className="my-5 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <p>{useP24CompactPublicFrame
-              ? '진행 상황은 이 브라우저에 저장됩니다. 백업은 내 Flow의 데이터 관리에서 할 수 있어요.'
-              : <><span className="font-semibold">진행 상황은 이 브라우저에 자동 저장됩니다.</span> 다른 기기에서 이어서 보려면 저장 후 내 Flow의 데이터 관리에서 백업 파일을 받아두세요.</>}</p>
-            <button
-              className="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:border-blue-300 hover:text-blue-700"
-              onClick={() => {
-                dismissStorageNotice();
-                setShowStorageNotice(false);
-              }}
-            >
-              확인
-            </button>
-          </div>
-        </section>
-      ) : null}
 
       {!useP24CompactPublicFrame && !shouldUseSimplifiedFeedbackLayout(bundle) ? <ArtifactPreview bundle={bundle} /> : null}
 
@@ -16219,9 +16128,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           <div className="mx-auto max-w-xl">
             <div className="flex items-center gap-3">
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold text-[#8A857B]">
-                  저장 전 미리보기 · {done > 0 ? `${done}개 미리 선택` : `${executableCount}개 항목`}
-                </p>
+                <p className="text-[11px] font-semibold text-[#8A857B]">Flow 전체 · {executableCount}개 항목</p>
                 <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
               </div>
               {savedFlowAt ? (

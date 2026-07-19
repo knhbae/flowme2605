@@ -397,14 +397,15 @@ test('wide home and My Flow keep action columns purposeful', async ({ page }) =>
 
   await page.goto('/f/vehicle-inspection-prep');
   const publicSetup = page.getByTestId('public-flow-primary-setup');
-  const publicArtifactPreview = page.getByTestId('public-flow-artifact-preview');
+  const publicArtifact = page.getByLabel('Flow artifact workbench');
   await expect(publicSetup).toBeVisible();
-  await expect(publicArtifactPreview).toBeVisible();
+  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveCount(0);
+  await expect(publicArtifact).toBeVisible();
   const publicSetupBox = await publicSetup.boundingBox();
-  const publicArtifactPreviewBox = await publicArtifactPreview.boundingBox();
+  const publicArtifactBox = await publicArtifact.boundingBox();
   expect(publicSetupBox).not.toBeNull();
-  expect(publicArtifactPreviewBox).not.toBeNull();
-  expect(publicArtifactPreviewBox!.height).toBeGreaterThan(publicSetupBox!.height * 0.85);
+  expect(publicArtifactBox).not.toBeNull();
+  expect(publicArtifactBox!.y).toBeGreaterThan(publicSetupBox!.y);
   await expectNoHorizontalOverflow(page);
 
   await page.goto('/flow-maps/moving-d30');
@@ -1969,7 +1970,7 @@ test('representative single flow saves into My Flow execution space', async ({ p
   await expect(page.getByText('자동차검사 D-14 준비 Flow').first()).toHaveCount(0);
 });
 
-test('public single Flow detail keeps input save and first action in the mobile hero', async ({ page }) => {
+test('public single Flow detail keeps setup and save before one complete artifact', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
   await page.evaluate(() => window.localStorage.clear());
@@ -1979,25 +1980,28 @@ test('public single Flow detail keeps input save and first action in the mobile 
   await expect(hero).toBeVisible();
   await expect(hero.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
   await expect(hero.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
-  await expect(hero.getByTestId('public-flow-result-promise')).toBeVisible();
   await expect(hero.getByTestId('public-flow-primary-setup')).toBeVisible();
   await expect(hero.getByTestId('public-flow-primary-setup').locator('input[type="date"]')).toBeVisible();
   await expect(hero.getByRole('button', { name: '아직 날짜가 안 정해졌어요' })).toBeHidden();
   await expect(hero.getByRole('button', { name: '그냥 예시로 둘러볼게요' })).toBeHidden();
   await expect(page.locator('input[type="date"]')).toHaveCount(1);
   await expect(hero).not.toContainText('검사일 입력으로 시작');
-  await expect(hero.getByTestId('public-flow-artifact-preview')).toContainText('자동차검사 기간과 예약 가능일 확인하기');
+  await expect(hero.getByTestId('public-flow-artifact-preview')).toHaveCount(0);
   await expect(hero.getByTestId('public-flow-save-actions')).toBeHidden();
+  const artifact = page.getByLabel('Flow artifact workbench');
+  await expect(artifact).toBeVisible();
+  await expect(artifact).toContainText('자동차검사 기간과 예약 가능일 확인하기');
+  await expect(artifact.getByRole('checkbox')).toHaveCount(0);
   const stickySave = page.getByTestId('public-flow-mobile-save-cta');
   await expect(stickySave.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ })).toBeVisible();
   await expectNoInternalUserSurfaceCopy(hero);
 
   const inputTop = await hero.getByTestId('public-flow-primary-setup').evaluate((element) => element.getBoundingClientRect().top);
-  const firstActionTop = await hero.getByTestId('public-flow-artifact-preview').evaluate((element) => element.getBoundingClientRect().top);
+  const artifactTop = await artifact.evaluate((element) => element.getBoundingClientRect().top);
   const heroBottom = await hero.evaluate((element) => element.getBoundingClientRect().bottom);
 
   expect(inputTop).toBeLessThan(560);
-  expect(firstActionTop).toBeLessThan(680);
+  expect(artifactTop).toBeLessThan(700);
   expect(heroBottom).toBeLessThan(844);
 
   await stickySave.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ }).click();
@@ -2101,7 +2105,7 @@ test('fridge and washer setup path is a visible input action before browse navig
   }
 });
 
-test('public no-anchor Flow detail shows the first action without a setup detour on mobile', async ({ page }) => {
+test('public no-anchor Flow detail opens directly into one read-only artifact on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/used-car-buying-check');
 
@@ -2109,13 +2113,14 @@ test('public no-anchor Flow detail shows the first action without a setup detour
   await expect(hero).toBeVisible();
   await expect(hero.getByRole('heading', { name: '중고차 구매 현장 점검' })).toBeVisible();
   await expect(hero.getByRole('heading', { name: '중고차 구매 현장 점검 Flow' })).toHaveCount(0);
-  await expect(hero.getByTestId('public-flow-result-promise')).toBeVisible();
-  await expect(hero.getByTestId('public-flow-primary-setup')).toContainText('입력 없이');
-  await expect(hero.getByTestId('public-flow-primary-setup').locator('input[type="date"]')).toHaveCount(0);
-  await expect(hero.getByTestId('public-flow-artifact-preview')).toContainText('총예산을 차량가');
+  await expect(hero.getByTestId('public-flow-primary-setup')).toHaveCount(0);
+  await expect(hero.getByTestId('public-flow-artifact-preview')).toHaveCount(0);
+  const artifact = page.getByLabel('Flow artifact workbench');
+  await expect(artifact).toContainText('총예산을 차량가');
+  await expect(artifact.getByRole('checkbox')).toHaveCount(0);
   await expectNoInternalUserSurfaceCopy(hero);
 
-  const firstActionTop = await hero.getByTestId('public-flow-artifact-preview').evaluate((element) => element.getBoundingClientRect().top);
+  const firstActionTop = await artifact.evaluate((element) => element.getBoundingClientRect().top);
   const heroBottom = await hero.evaluate((element) => element.getBoundingClientRect().bottom);
   const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
 
@@ -2278,17 +2283,19 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
-  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/24 완료');
+  await expect(page.getByTestId('my-flow-overview-card')).toContainText('이사 준비');
+  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toHaveCount(0);
   await expect(page.locator('a[href="/f/moving-d30-basic"]').first()).toBeVisible();
 
   await page.goto('/f/moving-d30-basic');
-  await page.getByLabel('저장 전 미리보기 선택: 이사 방식 정하기').check();
+  await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
 
   await page.goto('/my');
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
-  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toContainText('전체 1/24 완료');
+  await expect(page.getByTestId('my-flow-overview-card')).toContainText('이사 준비');
+  await expect(page.getByTestId('my-flow-overview-card').getByTestId('my-flow-overview-progress-summary')).toHaveCount(0);
   await expect(page.locator('a[href="/f/moving-d30-basic"]').first()).toBeVisible();
 
   await page.goto('/f/moving-d30-basic');
@@ -2786,12 +2793,12 @@ test('text editor shows a public-style parsed preview while drafting', async ({ 
   await expect(page.getByRole('link', { name: '제작자 프로필에서 보기' })).toBeVisible();
 });
 
-test('public moving flow calculates dates and updates progress', async ({ page }) => {
+test('public moving flow calculates dates without exposing execution progress before save', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
   await expect(page.getByText('1. 이사일 입력하기')).toBeVisible();
   await expect(page.getByText('예시 날짜로 미리보기')).toBeVisible();
-  await expect(page.getByText('실행 미리보기', { exact: true })).toBeVisible();
+  await expect(page.getByText('Flow 구성', { exact: true })).toBeVisible();
   await expect(page.getByTestId('artifact-list-card').getByRole('heading', { name: '다가오는 할 일' })).toBeVisible();
   await expect(page.getByText('이사 방식 정하기').first()).toBeVisible();
   await expect(page.getByText('2. 실행 항목 체크')).toHaveCount(0);
@@ -2807,7 +2814,7 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('베타 운영 중').first()).toHaveCount(0);
   await page.getByLabel('이사일').fill('2026-07-15');
   await expect(page.getByLabel('이사일')).toHaveValue('2026-07-15');
-  await expect(page.getByTestId('public-flow-result-promise')).toBeVisible();
+  await expect(page.getByTestId('public-flow-result-promise')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '지금 먼저 체크할 일' })).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-list-card')).toBeVisible();
   await expect(page.getByLabel('Flow artifact workbench').getByTestId('artifact-calendar-card')).toBeVisible();
@@ -2822,9 +2829,8 @@ test('public moving flow calculates dates and updates progress', async ({ page }
   await expect(page.getByText('월', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('일', { exact: true }).first()).toBeVisible();
 
-  await page.getByLabel('저장 전 미리보기 선택: 이사 방식 정하기').check();
-  await page.getByLabel('저장 전 미리보기 선택: 이사할 집 하자 점검하기').check();
-  await expect(workbench.getByTestId('public-flow-preview-summary')).toHaveText('24개 항목 미리보기');
+  await expect(workbench.getByRole('checkbox')).toHaveCount(0);
+  await expect(workbench.getByTestId('public-flow-preview-summary')).toHaveText('24개 항목');
 
   const downloadPromise = page.waitForEvent('download');
   workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
@@ -5445,12 +5451,13 @@ test('my flow mobile ux20 limits large inventory before showing all flows', asyn
   expect(routineRows).toBeLessThan(27);
 });
 
-test('flow item card makes detail and skipped states explicit', async ({ page }) => {
+test('public flow item card keeps detail reachable without execution controls', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-06-22');
 
   const workbench = page.getByLabel('Flow artifact workbench');
-  await expect(page.getByLabel('저장 전 미리보기 선택: 이사할 집 하자 점검하기')).toBeVisible();
+  await expect(workbench.getByRole('checkbox')).toHaveCount(0);
+  await expect(workbench.getByText('이사할 집 하자 점검하기')).toBeVisible();
   const firstDetail = workbench.getByTestId('artifact-list-card').locator('summary', { hasText: '자세히' }).first();
   await expect(firstDetail).toBeVisible();
 
@@ -5488,8 +5495,8 @@ test('computer skills final QA exports checklist and calendar without study prog
   await page.getByLabel('시험일').fill('2026-06-22');
   await expect(page.getByText('05-23').first()).toBeVisible();
 
-  await page.getByLabel('저장 전 미리보기 선택: 필기와 실기 시험 범위 나누기').check();
   let studyWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(studyWorkbench.getByRole('checkbox')).toHaveCount(0);
   const flowExport = studyWorkbench.getByTestId('public-flow-export-secondary-entry');
   await flowExport.getByTestId('public-flow-export-secondary-toggle').click();
   await expect(flowExport.getByRole('button', { name: /시트로 받기/ })).toBeEnabled();
@@ -5519,7 +5526,7 @@ test('risk-boundary QA keeps full-flow export available beside new-car evidence'
   await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-evidence-files').fill('door-scratch-4821.jpg, hud-test-20260603.mp4');
   await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-confirmation').fill('dealer confirmed scratch and will send written repair date');
   await holdSection.getByTestId('flow-hold-field-new-car-delivery-check-hold-next-check').fill('do not sign until repair memo is attached');
-  await workbench.locator('input[type="checkbox"]').first().check();
+  await expect(workbench.getByRole('checkbox')).toHaveCount(0);
   const flowExport = workbench.getByTestId('public-flow-export-secondary-entry');
   await flowExport.getByTestId('public-flow-export-secondary-toggle').click();
   await expect(flowExport.getByRole('button', { name: /시트로 받기/ })).toBeEnabled();
@@ -5550,12 +5557,12 @@ test('moving mobile keeps save sticky and full-flow export secondary', async ({ 
   await page.goto('/f/moving-d30-basic');
 
   await page.getByLabel('이사일').fill('2026-07-15');
-  await page.getByRole('checkbox', { name: /이사 방식 정하기/ }).first().check();
+  await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
   const mobileBar = page.getByTestId('mobile-export-bar');
   await expect(mobileBar).toBeVisible();
-  await expect(mobileBar.getByText('저장 전 미리보기 · 1개 미리 선택')).toBeVisible();
+  await expect(mobileBar.getByText('Flow 전체 · 24개 항목')).toBeVisible();
   await expect(mobileBar.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ })).toBeVisible();
   await expect(mobileBar.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(mobileBar.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
@@ -5569,13 +5576,11 @@ test('moving mobile keeps save sticky and full-flow export secondary', async ({ 
   await expect(flowExport.getByRole('button', { name: /메모로 복사/ })).toBeVisible();
 });
 
-test('wedding flow keeps the anchor and pre-save preview state within flow-level actions', async ({ page }) => {
+test('wedding flow keeps its anchor and read-only artifact within flow-level actions', async ({ page }) => {
   await page.goto('/f/wedding-d180-basic');
 
   await expect(page.getByRole('heading', { name: '결혼 준비 D-300 타임라인' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '결혼 준비 D-300 타임라인 Flow' })).toHaveCount(0);
-  await expect(page.getByText('평균 소요 10개월')).toBeVisible();
-  await expect(page.getByText('12개 항목', { exact: true })).toBeVisible();
   await expect(page.getByTestId('public-flow-primary-setup')).toContainText('예식일 입력');
   await expect(page.getByText('첫 행동:')).toHaveCount(0);
   await expect(page.getByText('원문과 근거')).toBeVisible();
@@ -5586,22 +5591,18 @@ test('wedding flow keeps the anchor and pre-save preview state within flow-level
   await expect(page.getByText(/예식일.*9월 15일/)).toBeVisible();
   await expect(page.getByText(/예식일 기준으로 날짜가 계산/)).toBeVisible();
 
-  const firstItemPreview = page.getByLabel('저장 전 미리보기 선택: 예식 날짜와 예상 하객 규모 정하기').first();
-  await expect(firstItemPreview).toBeVisible();
-  const firstItem = firstItemPreview.locator('xpath=ancestor::*[@data-testid="flow-item-card"][1]');
   const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(workbench.getByTestId('public-flow-preview-summary')).toHaveText('12개 항목');
+  await expect(workbench.getByRole('checkbox')).toHaveCount(0);
+  await expect(workbench.getByText('예식 날짜와 예상 하객 규모 정하기').first()).toBeVisible();
   await expect(workbench).toContainText('보증인원 변경 가능 기한');
   await expect(workbench.getByTestId('wedding-source-bridge')).toContainText('계약금/위약금');
   await expect(workbench).toContainText('하객 명단');
-  await firstItemPreview.check();
-  await expect(firstItemPreview).toBeChecked();
-  await expect(firstItem.getByRole('button', { name: '메모' })).toHaveCount(0);
-  await expect(firstItem.getByRole('button', { name: '해당 없음' })).toHaveCount(0);
   await expect(page.getByTestId('public-flow-export-secondary-entry')).toBeVisible();
 
   await page.reload();
   await expect(page.getByLabel('예식일')).toHaveValue('2026-09-15');
-  await expect(page.getByLabel('저장 전 미리보기 선택: 예식 날짜와 예상 하객 규모 정하기').first()).toBeChecked();
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' }).getByRole('checkbox')).toHaveCount(0);
 });
 
 test('current P1 flows expose new execution model surfaces', async ({ page }) => {
@@ -5769,7 +5770,7 @@ test('low-context date labels explain the required anchor', async ({ page }) => 
 test('no-anchor checklist skips date setup and hides calendar export', async ({ page }) => {
   await page.goto('/f/passport-renewal-docs');
 
-  await expect(page.getByTestId('public-flow-primary-setup')).toContainText('입력 없이 바로 확인합니다.');
+  await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
   const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   const flowExport = workbench.getByTestId('public-flow-export-secondary-entry');
   await expect(flowExport.getByRole('button', { name: /캘린더 파일 받기/ })).toHaveCount(0);
@@ -5786,9 +5787,11 @@ test('used-car checklist shows decision preview instead of calendar by default',
   await expect(workbench.getByTestId('flow-hold-section')).toContainText('구매 보류 메모');
   const checklist = workbench.getByTestId('artifact-list-card');
   await expect(checklist).toBeVisible();
-  await expect(checklist.getByRole('checkbox')).toHaveCount(8);
+  await expect(checklist.getByRole('checkbox')).toHaveCount(0);
+  await expect(checklist.getByTestId('public-flow-included-item-marker')).toHaveCount(8);
   await checklist.getByTestId('artifact-checklist-more-toggle').click();
-  await expect(checklist.getByRole('checkbox')).toHaveCount(15);
+  await expect(checklist.getByRole('checkbox')).toHaveCount(0);
+  await expect(checklist.getByTestId('public-flow-included-item-marker')).toHaveCount(15);
   await expect(checklist.getByRole('button', { name: '핵심 8개만 보기' })).toBeVisible();
   await expect(workbench).toContainText('카히스토리');
   await expect(workbench).toContainText('자동차등록원부');
@@ -5843,7 +5846,7 @@ test('artifact workbench shows the primary usable surface first', async ({ page 
   await page.goto('/f/moving-d30-basic');
   let workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench).toBeVisible();
-  await expect(workbench).toContainText('실행 미리보기');
+  await expect(workbench).toContainText('Flow 구성');
   await expect(workbench).toContainText('다가오는 할 일');
   await expect(workbench).toContainText('일정 한눈에 보기');
 
@@ -5867,20 +5870,22 @@ test('artifact workbench shows the primary usable surface first', async ({ page 
   await expect(workbench).toContainText('7일 재고 소진표');
 });
 
-test('common first screen keeps the execution preview concise and expandable', async ({ page }) => {
+test('common first screen keeps one read-only artifact concise and expandable', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
   const workbench = page.getByLabel('Flow artifact workbench');
   await expect(workbench).toBeVisible();
-  await expect(workbench.getByTestId('public-flow-preview-summary')).toHaveText('24개 항목 미리보기');
+  await expect(workbench.getByTestId('public-flow-preview-summary')).toHaveText('24개 항목');
   await expect(page.getByText('항목을 체크하면 이 브라우저에 자동 저장됩니다.')).toHaveCount(0);
 
   const listCard = workbench.getByTestId('artifact-list-card');
   await expect(listCard).toBeVisible();
   await expect(workbench.getByTestId('artifact-calendar-card')).toBeVisible();
-  await expect(listCard.getByRole('checkbox')).toHaveCount(8);
+  await expect(listCard.getByRole('checkbox')).toHaveCount(0);
+  await expect(listCard.getByTestId('public-flow-included-item-marker')).toHaveCount(8);
   await listCard.getByRole('button', { name: '나머지 16개 보기' }).click();
-  await expect(listCard.getByRole('checkbox')).toHaveCount(24);
+  await expect(listCard.getByRole('checkbox')).toHaveCount(0);
+  await expect(listCard.getByTestId('public-flow-included-item-marker')).toHaveCount(24);
   await expect(listCard.getByRole('button', { name: '처음 8개만 보기' })).toBeVisible();
 });
 
@@ -6071,9 +6076,9 @@ test('mobile full-flow export remains available without item-level duplicates', 
   await page.goto('/f/computer-skills-d30-study');
 
   await page.getByLabel('시험일').fill('2026-06-22');
-  await page.getByLabel('저장 전 미리보기 선택: 필기와 실기 시험 범위 나누기').check();
 
   const workbench = page.getByLabel('Flow artifact workbench');
+  await expect(workbench.getByRole('checkbox')).toHaveCount(0);
   const studyListCard = workbench.getByTestId('artifact-list-card');
   const studyCalendarCard = workbench.getByTestId('artifact-calendar-card');
 
@@ -6232,19 +6237,18 @@ test('mobile sensitive routes collapse secondary execution sections below the fi
   await expectPublicFlowRouteClosed(page, '/f/baby-food-menu-recipe');
 });
 
-test('artifact workbench saves local execution entries', async ({ page }) => {
+test('public artifact persists setup and notes without exposing execution completion', async ({ page }) => {
   await page.goto('/f/moving-d30-basic');
 
   await page.getByLabel('이사일').fill('2026-07-15');
   const workbench = page.getByLabel('Flow artifact workbench');
-  await expect(workbench.getByTestId('public-flow-preview-summary')).toHaveText('24개 항목 미리보기');
-  await workbench.getByLabel('저장 전 미리보기 선택: 이사 방식 정하기').click();
-  await expect(workbench.getByLabel('저장 전 미리보기 선택: 이사 방식 정하기')).toBeChecked();
+  await expect(workbench.getByTestId('public-flow-preview-summary')).toHaveText('24개 항목');
+  await expect(workbench.getByRole('checkbox')).toHaveCount(0);
 
   await page.reload();
   await expect(page.getByLabel('이사일')).toHaveValue('2026-07-15');
-  await expect(page.getByLabel('Flow artifact workbench').getByLabel('저장 전 미리보기 선택: 이사 방식 정하기')).toBeChecked();
-  await expect(page.getByLabel('Flow artifact workbench').getByTestId('public-flow-preview-summary')).toHaveText('24개 항목 미리보기');
+  await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
+  await expect(page.getByLabel('Flow artifact workbench').getByTestId('public-flow-preview-summary')).toHaveText('24개 항목');
   const reloadedMovingWorkbench = page.getByLabel('Flow artifact workbench');
   await expect(reloadedMovingWorkbench.getByTestId('artifact-list-card')).toBeVisible();
   await expect(reloadedMovingWorkbench.getByTestId('artifact-calendar-card')).toBeVisible();
@@ -6257,18 +6261,15 @@ test('artifact workbench saves local execution entries', async ({ page }) => {
   await page.goto('/f/english-study-30day-routine');
   const routineWorkbench = page.getByLabel('Flow artifact workbench');
   const routineLogCard = routineWorkbench.getByTestId('routine-session-log-card');
-  await routineLogCard.getByLabel('저장 전 미리보기 선택: 1회차').check();
+  await expect(routineLogCard.getByRole('checkbox')).toHaveCount(0);
   await routineLogCard.getByLabel('회차 메모: 1회차').fill('오답노트 20분 추가');
-  await routineLogCard.getByLabel('저장 전 미리보기 선택: 2회차').check();
   await routineLogCard.getByLabel('회차 메모: 2회차').fill('듣기 20분, 단어 30개');
-  await expect(routineLogCard.getByLabel('저장 전 미리보기 선택: 2회차')).toBeChecked();
 
   await page.reload();
   const reloadedRoutineWorkbench = page.getByLabel('Flow artifact workbench');
   const reloadedRoutineLogCard = reloadedRoutineWorkbench.getByTestId('routine-session-log-card');
-  await expect(reloadedRoutineLogCard.getByLabel('저장 전 미리보기 선택: 1회차')).toBeChecked();
+  await expect(reloadedRoutineLogCard.getByRole('checkbox')).toHaveCount(0);
   await expect(reloadedRoutineLogCard.getByLabel('회차 메모: 1회차')).toHaveValue('오답노트 20분 추가');
-  await expect(reloadedRoutineLogCard.getByLabel('저장 전 미리보기 선택: 2회차')).toBeChecked();
   await expect(reloadedRoutineLogCard.getByLabel('회차 메모: 2회차')).toHaveValue('듣기 20분, 단어 30개');
 
 });
@@ -6626,7 +6627,7 @@ test('approved promoted content-flow routes preserve executable source cues', as
     const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
     await expect(workbench).toBeVisible();
     if (route === '/f/used-car-buying-check') {
-      await expect(page.getByTestId('public-flow-primary-setup')).toContainText('입력 없이 바로 확인합니다.');
+      await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
       await expect(workbench.getByRole('heading', { name: '현장 체크리스트' })).toBeVisible();
       await expect(page.locator('body')).not.toContainText('방문/시승일 기록');
     }
@@ -6772,7 +6773,8 @@ test('current Allblanc source fit separates publication age, personal schedule, 
   expect(morningResponse?.status()).toBe(200);
   await openPublicReferenceDetailsIfPresent(page);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, follow/i);
-  await expect(page.getByTestId('public-flow-result-promise')).toContainText('실행 항목');
+  await expect(page.getByTestId('public-flow-result-promise')).toHaveCount(0);
+  await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
   await expect(page.locator('body')).toContainText('원문이 정한 운동 처방이 아니라 내 캘린더에 저장할 일정');
   await expect(page.locator('body')).toContainText('아침 5분 전신 운동 영상 열기');
   await expect(page.locator('body')).not.toContainText('추천 리듬');
@@ -7245,7 +7247,8 @@ test('promoted maintenance mobile routes show the date checklist before the next
     const nextCardTop = await page.getByTestId('maintenance-routine-next-card').evaluate((element) => element.getBoundingClientRect().top);
 
     expect(checklistTop).toBeLessThan(nextCardTop);
-    await expect(page.getByTestId('maintenance-routine-checklist-card').getByLabel(/저장 전 미리보기 선택:/).first()).toBeVisible();
+    await expect(page.getByTestId('maintenance-routine-checklist-card').getByRole('checkbox')).toHaveCount(0);
+    await expect(page.getByTestId('maintenance-routine-checklist-card').getByTestId('public-flow-included-item-marker').first()).toBeVisible();
   }
 });
 
@@ -7800,9 +7803,8 @@ test('approved pilot flow executes while review inventory stays out of public ro
   await expect(page.getByLabel('시작일')).toHaveCount(0);
   const samsungWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
   await expect(samsungWorkbench.getByTestId('routine-session-grid-card')).toHaveCount(0);
-  const firstCheck = samsungWorkbench.getByLabel('저장 전 미리보기 선택: 전원 플러그와 전용 차단기 확인하기');
-  await firstCheck.check();
-  await expect(firstCheck).toBeChecked();
+  await expect(samsungWorkbench.getByRole('checkbox')).toHaveCount(0);
+  await expect(samsungWorkbench.getByText('전원 플러그와 전용 차단기 확인하기')).toBeVisible();
 
   await expectPublicFlowRouteClosed(page, '/f/qnet-exam-application-prep');
 });

@@ -84,7 +84,9 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(3);
+    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(0);
+    await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
+    await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-description')).not.toHaveAttribute('open', '');
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
     await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' })).toHaveText('그대로 저장');

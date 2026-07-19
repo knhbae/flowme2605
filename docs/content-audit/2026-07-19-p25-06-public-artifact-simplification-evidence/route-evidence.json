@@ -1,0 +1,44 @@
+{
+  "package": "P25-06 public artifact simplification",
+  "date": "2026-07-19",
+  "evidenceKind": "automated_browser",
+  "observedUserSessionCount": 0,
+  "routes": [
+    "/f/vehicle-inspection-prep",
+    "/f/moving-d30-basic",
+    "/f/washer-tub-clean-monthly",
+    "/f/new-car-delivery-check",
+    "/f/used-car-buying-check",
+    "/f/fridge-cleanout-weekly-plan",
+    "/my"
+  ],
+  "viewports": [
+    "390x844",
+    "1024x768"
+  ],
+  "markers": {
+    "publicArtifactRepresentationCount": 1,
+    "publicHeroMiniArtifactCount": 0,
+    "publicPreSaveCompletionControlCount": 0,
+    "publicReadOnlyItemMarkerCountMinimum": 1,
+    "publicSaveDecisionSurfaceVisible": true,
+    "publicSavePrimaryLabel": "그대로 저장",
+    "publicAdjustEntryVisible": true,
+    "publicAdjustEntryLabel": "내 버전으로 조정",
+    "publicSourceDetailAccessPreserved": true,
+    "publicFlowLevelExportPreserved": true,
+    "publicRepeatedExplanationBandCount": 0,
+    "publicGenericNoInputSetupCardCount": 0,
+    "publicArtifactFirstViewportVisible": true,
+    "publicPostSaveCompletionContractPreserved": true,
+    "publicMobileHorizontalOverflowCount": 0,
+    "publicWideHorizontalOverflowCount": 0,
+    "publicConsoleErrorCount": 0,
+    "internalTermHitCount": 0
+  },
+  "screenshots": [
+    "screenshots/00-vehicle-before-mobile.png",
+    "screenshots/01-vehicle-after-mobile.png",
+    "screenshots/02-vehicle-after-wide.png"
+  ]
+}
