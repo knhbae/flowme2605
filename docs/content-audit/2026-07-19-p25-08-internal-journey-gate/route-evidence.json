@@ -1,0 +1,124 @@
+{
+  "packageId": "2026-07-19-p25-08-internal-journey-gate",
+  "generatedAt": "2026-07-20T04:37:28+09:00",
+  "branch": "codex/p25-ux-foundation-plan",
+  "baselineCommit": "8b11c49e844041745786e72345abe0c8298f3be8",
+  "evidenceKinds": [
+    "current_command",
+    "current_browser",
+    "heuristic"
+  ],
+  "internalGate": {
+    "result": "pass_after_internal_high_fix_owner_review_required",
+    "automatedBlockingCount": 0,
+    "automatedHighCount": 0,
+    "heuristicMediumCount": 3,
+    "observedUserSessionCount": 0,
+    "observedUserReadinessClaimed": false,
+    "externalRecruitmentOpen": false
+  },
+  "markers": {
+    "p25JourneyShapeCount": 6,
+    "p25MobileJourneyCount": 6,
+    "p25WideJourneyCount": 6,
+    "representativeJourneyTestCount": 9,
+    "representativeJourneyPassCount": 9,
+    "relevantFullRegressionTestCount": 81,
+    "relevantFullRegressionPassCount": 81,
+    "screenshotCount": 36,
+    "downloadArtifactCount": 5,
+    "journeysWithWholeArtifactEvidenceCount": 6,
+    "wholeFlowOutlineParityMismatchCount": 0,
+    "undatedExecutionDuplicateCount": 0,
+    "calendarQueueCompletionControlCount": 0,
+    "publicPreviewCompletionControlCount": 0,
+    "recurrenceOccurrenceParityMismatchCount": 0,
+    "seriesDefinitionCompletionControlCount": 0,
+    "occurrenceCompletionControlCount": 1,
+    "completionReopenFailureCount": 0,
+    "exportScopeCountMismatchCount": 0,
+    "memoAcceptedSavedReloadedCountMismatch": 0,
+    "heldOrdinaryExecutionRowCount": 0,
+    "heldRecoveryEntryVisible": true,
+    "wideAgendaOneCharacterWrapCount": 0,
+    "wideAgendaTitleMinWidthPx": 100,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "userFacingInternalTermHitCount": 0,
+    "observedUserSessionCount": 0,
+    "observedUserReadinessClaimed": false
+  },
+  "currentCommands": {
+    "productionBuild": {
+      "command": "npm.cmd run build",
+      "result": "pass",
+      "routeEntryCount": 18
+    },
+    "representativeJourneys": {
+      "result": "pass",
+      "passed": 9,
+      "failed": 0,
+      "note": "Initial run exposed two stale pre-P25 selectors; current-contract rerun passed."
+    },
+    "relevantFullRegression": {
+      "result": "pass",
+      "passed": 81,
+      "failed": 0,
+      "files": [
+        "tests/e2e/p25-whole-flow-workspace.spec.ts",
+        "tests/e2e/p24-execution-trust.spec.ts",
+        "tests/e2e/url-first-user-surface.spec.ts",
+        "tests/e2e/public-share-cta-order.spec.ts",
+        "tests/e2e/workbench-source-density.spec.ts"
+      ]
+    },
+    "targetedFlowMvp": {
+      "result": "pass",
+      "passed": 8,
+      "failed": 0,
+      "note": "Seven paths passed in the combined run; the completion-summary path passed after its stale whole-card copy assertion was narrowed to the current summary element."
+    },
+    "unit": {
+      "command": "npm.cmd test",
+      "result": "pass",
+      "passed": 526,
+      "failed": 0
+    },
+    "docsCheck": {
+      "command": "npm.cmd run docs:check",
+      "result": "pass",
+      "requiredFileCount": 14,
+      "localLinkCount": 2516
+    },
+    "gitDiffCheck": {
+      "command": "git diff --check",
+      "result": "pass",
+      "note": "Line-ending warnings only."
+    },
+    "reviewBoard": {
+      "result": "pass",
+      "viewports": [
+        "390x844",
+        "1024x768"
+      ],
+      "imageCount": 12,
+      "brokenImageCount": 0,
+      "horizontalOverflowCount": 0,
+      "consoleErrorCount": 0
+    }
+  },
+  "visualCorrection": {
+    "severityAtDiscovery": "high",
+    "route": "/calendar",
+    "viewport": "1024x768",
+    "problem": "Recurring agenda title collapsed to roughly one Korean character per line because trailing status competed for width.",
+    "change": "Moved recurring occurrence status into title metadata for selected-day rows.",
+    "regressionAssertion": "wide agenda title width >= 100px",
+    "result": "fixed_and_rerun"
+  },
+  "production": {
+    "url": "https://flowme2605.vercel.app",
+    "branchIncluded": false,
+    "note": "Production remains the merged P24/main baseline until this P25 branch is merged and deployed."
+  }
+}

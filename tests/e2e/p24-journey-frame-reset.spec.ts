@@ -84,7 +84,9 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(3);
+    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(0);
+    await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
+    await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-description')).not.toHaveAttribute('open', '');
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
     await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' })).toHaveText('그대로 저장');
@@ -114,7 +116,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.getByTestId('flow-map-save-all-mobile').click();
 
     await page.goto('/calendar');
-    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 없는 할 일');
+    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 정하기');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-toggle')).toHaveAttribute('aria-expanded', 'false');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-panel')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
@@ -166,7 +168,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await captureEvidence(page, '09a-held-post-save-preserved-mobile.png');
   });
 
-  test('wide My Flow names the selector as saved Flow management, not a viewing range', async ({ page }) => {
+  test('wide My Flow names saved Flow navigation as management, not a viewing range', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/flow-maps/moving-d30');
     await page.evaluate(() => window.localStorage.clear());
@@ -180,8 +182,11 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
 
-    await expect(page.getByLabel('저장한 Flow')).toBeVisible();
-    await expect(page.getByLabel('저장한 Flow')).toContainText('모든 Flow');
+    const flowRail = page.getByTestId('my-flow-list');
+    await expect(flowRail).toBeVisible();
+    await expect(flowRail).toContainText('Flow 목록');
+    await expect(flowRail.locator('button')).toHaveCount(2);
+    await expect(page.getByLabel('저장한 Flow')).toBeHidden();
     await expect(page.locator('body')).not.toContainText('보기 범위');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBe(0);

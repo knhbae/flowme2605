@@ -1,0 +1,185 @@
+{
+  "packageId": "2026-07-19-p25-08-internal-journey-gate",
+  "evidenceBoundary": {
+    "evidenceKind": "current_browser_and_current_command",
+    "observedUserSessionCount": 0,
+    "note": "Scripted browser checks are not observed-user validation."
+  },
+  "tapDepthMethod": "Count scripted button or checkbox activations after the stated start checkpoint. Text and date entry plus fixture setup are excluded.",
+  "summary": {
+    "journeyCount": 6,
+    "representativeTestCount": 9,
+    "representativeTestPassedCount": 9,
+    "relatedRegressionTestCount": 81,
+    "relatedRegressionPassedCount": 81,
+    "targetedFlowMvpTestCount": 8,
+    "targetedFlowMvpPassedCount": 8,
+    "unitTestCount": 526,
+    "unitTestPassedCount": 526,
+    "screenshotCount": 36,
+    "downloadArtifactCount": 5,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  },
+  "journeys": [
+    {
+      "id": "J1",
+      "flowShape": "anchor_inverse_timeline",
+      "label": "Moving preparation",
+      "fixture": "moving-d30",
+      "routes": ["/flow-maps/moving-d30", "/my?savedMap=moving-d30", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "tapDepth": {
+        "saveToWholeArtifact": 1,
+        "postSaveToReturningWorkspace": 1,
+        "completedViewToReopen": 2
+      },
+      "verifiedOutcomes": [
+        "Post-save and returning views expose the same five execution rows.",
+        "Completion survives reload and can be reopened.",
+        "The wide detail pane does not duplicate the row completion control."
+      ],
+      "projectionParity": "supported",
+      "accessibility": "supported",
+      "horizontalOverflowCount": 0,
+      "consoleErrorCount": 0,
+      "status": "supported",
+      "screenshots": [
+        "screenshots/01-moving/01-moving-01-post-save-whole-flow-mobile.png",
+        "screenshots/01-moving/01-moving-04-returning-whole-flow-wide.png"
+      ]
+    },
+    {
+      "id": "J2",
+      "flowShape": "undated_checklist",
+      "label": "Undated checklist",
+      "fixture": "travel-packing-list plus one personal undated item",
+      "routes": ["/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "tapDepth": {
+        "anytimeToCalendarQueue": 1,
+        "selectedQueueItemToApplyDate": 2,
+        "completeThenImmediateUndo": 2
+      },
+      "verifiedOutcomes": [
+        "Undated work remains executable in My Flow.",
+        "The Calendar queue is a placement surface, not a duplicate execution list.",
+        "Date assignment adds one event; date removal removes Calendar and ICS membership only."
+      ],
+      "projectionParity": "supported",
+      "accessibility": "supported",
+      "horizontalOverflowCount": 0,
+      "consoleErrorCount": 0,
+      "status": "supported",
+      "screenshots": [
+        "screenshots/02-undated/02-undated-placement-00-my-flow-anytime-mobile.png",
+        "screenshots/02-undated/02-undated-placement-04-calendar-placement-wide.png"
+      ]
+    },
+    {
+      "id": "J3",
+      "flowShape": "recurring_routine",
+      "label": "Recurring maintenance routine",
+      "fixture": "washer-tub-clean-monthly",
+      "routes": ["/f/washer-tub-clean-monthly", "/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "tapDepth": {
+        "publicSave": 1,
+        "occurrenceCompleteThenReopen": 2
+      },
+      "verifiedOutcomes": [
+        "The public preview is read-only and exposes four upcoming occurrences.",
+        "The series definition has no completion control; each occurrence has one reversible control.",
+        "Calendar and ICS keep the monthly recurrence and stable identity."
+      ],
+      "projectionParity": "supported",
+      "accessibility": "supported",
+      "horizontalOverflowCount": 0,
+      "consoleErrorCount": 0,
+      "status": "supported",
+      "screenshots": [
+        "screenshots/03-routine/03-routine-01-washer-monthly-preview-mobile.png",
+        "screenshots/03-routine/03-routine-03-washer-monthly-calendar-wide.png"
+      ]
+    },
+    {
+      "id": "J4",
+      "flowShape": "mixed_sequence_and_date",
+      "label": "Mixed sequence and schedule",
+      "fixture": "three-item travel preparation personal draft",
+      "routes": ["/flows", "/my"],
+      "viewports": ["390x844", "1024x768"],
+      "tapDepth": {
+        "batchSelectTwoAndApplyDate": 4,
+        "batchSelectedExportEntry": 4
+      },
+      "verifiedOutcomes": [
+        "Selection mode replaces completion controls while adjusting items.",
+        "Affected-count preview matches the selected count.",
+        "Batch date undo preserves completion and memo values."
+      ],
+      "projectionParity": "supported",
+      "accessibility": "supported",
+      "horizontalOverflowCount": 0,
+      "consoleErrorCount": 0,
+      "status": "supported",
+      "screenshots": [
+        "screenshots/04-mixed/04-mixed-00-batch-date-preview-mobile.png",
+        "screenshots/04-mixed/04-mixed-01-batch-selection-wide.png"
+      ]
+    },
+    {
+      "id": "J5",
+      "flowShape": "record_and_memo",
+      "label": "Memo split and record",
+      "fixture": "three-phrase moving memo draft",
+      "routes": ["/flows", "/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "tapDepth": {
+        "reviewAndSaveAfterTextEdits": 2,
+        "openWholeExport": 1
+      },
+      "verifiedOutcomes": [
+        "Three user phrases parse without generated filler.",
+        "Accepted-row count is stable after save and reload.",
+        "Whole and selected export counts match their visible scope."
+      ],
+      "projectionParity": "supported",
+      "accessibility": "supported",
+      "horizontalOverflowCount": 0,
+      "consoleErrorCount": 0,
+      "status": "supported",
+      "screenshots": [
+        "screenshots/05-record/05-record-export-00-memo-split-acceptance-mobile.png",
+        "screenshots/05-record/05-record-01-memo-split-items-wide.png"
+      ]
+    },
+    {
+      "id": "J6",
+      "flowShape": "personal_url_memo_draft",
+      "label": "Personal recurring draft",
+      "fixture": "URL miss daily recurrence draft",
+      "routes": ["/flows", "/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "tapDepth": {
+        "seriesToCalendar": 1,
+        "occurrenceCompleteThenReloadReopen": 2,
+        "heldRecoveryResume": 3
+      },
+      "verifiedOutcomes": [
+        "Series and occurrence identities remain distinct.",
+        "Done, reopened, skipped, held and resumed remain distinct states.",
+        "A held occurrence remains recoverable with its stable identity."
+      ],
+      "projectionParity": "supported",
+      "accessibility": "supported",
+      "horizontalOverflowCount": 0,
+      "consoleErrorCount": 0,
+      "status": "supported",
+      "screenshots": [
+        "screenshots/06-personal-draft/06-personal-recurrence-01-personal-draft-occurrence-done-mobile.png",
+        "screenshots/06-personal-draft/06-personal-recurrence-03-personal-draft-occurrence-calendar-wide.png"
+      ]
+    }
+  ]
+}

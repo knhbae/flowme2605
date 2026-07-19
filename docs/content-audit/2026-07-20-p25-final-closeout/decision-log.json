@@ -1,0 +1,38 @@
+{
+  "packageId": "2026-07-20-p25-final-closeout",
+  "program": "P25 Execution Workspace Foundation",
+  "decisionStatus": "internal_baseline_verified_merge_pending",
+  "selectedFrame": "option_b_whole_flow_workspace",
+  "decisionBasis": [
+    "owner_direction_to_complete_p25_with_substantial_changes_allowed",
+    "p25_08_current_command_and_browser_integration_gate"
+  ],
+  "observedUserSessionCount": 0,
+  "observedUserValidationClaimed": false,
+  "surfaces": [
+    { "id": "save", "decision": "keep", "p26": "review_public_copy_density" },
+    { "id": "post-save", "decision": "keep", "p26": null },
+    { "id": "my-flow", "decision": "keep", "p26": null },
+    { "id": "whole-flow", "decision": "keep", "p26": null },
+    { "id": "calendar", "decision": "keep", "p26": "review_1024_density" },
+    { "id": "adjust", "decision": "keep", "p26": "review_advanced_path_length" },
+    { "id": "batch", "decision": "keep", "p26": null },
+    { "id": "completion", "decision": "keep", "p26": null },
+    { "id": "export", "decision": "keep", "p26": null }
+  ],
+  "automatedUnresolved": { "blocking": 0, "high": 0, "medium": 3 },
+  "releaseVerification": {
+    "unit": { "passed": 526, "failed": 0 },
+    "playwright": { "passed": 285, "failed": 0, "files": 8, "execution": "bounded_serial_groups" },
+    "docs": { "requiredFiles": 14, "localLinks": 2527, "passed": true },
+    "build": { "pages": 18, "passed": true },
+    "security": { "high": 0, "critical": 0, "moderate": 2 },
+    "diffCheckPassed": true
+  },
+  "release": {
+    "branch": "codex/p25-ux-foundation-plan",
+    "mergeStatus": "pending",
+    "productionStatus": "p24_main_baseline_p25_verified_not_merged",
+    "productionUrl": "https://flowme2605.vercel.app"
+  }
+}

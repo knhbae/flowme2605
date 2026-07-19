@@ -1,0 +1,54 @@
+{
+  "package": "P25-07 integrated visual language",
+  "date": "2026-07-19",
+  "evidenceKind": "automated_browser",
+  "observedUserSessionCount": 0,
+  "routes": [
+    "/my?demo=ux12",
+    "/my",
+    "/calendar?demo=ux12",
+    "/calendar",
+    "/f/vehicle-inspection-prep",
+    "/f/moving-d30-basic"
+  ],
+  "viewports": [
+    "390x844",
+    "1024x768"
+  ],
+  "markers": {
+    "sharedVisualTokenConsumerCount": 5,
+    "sharedNavigationVisualLanguageUpdated": true,
+    "taskTitleBeforeMeta": true,
+    "taskCompletionTouchTargetMinPx": 44,
+    "taskNoteTouchTargetMinPx": 44,
+    "taskOpenVisibleLabel": "열기",
+    "taskOpenVocabularyVariantCount": 1,
+    "undatedTaskPrimaryLabel": "날짜 없는 할 일",
+    "undatedTaskMetaLabel": "날짜 없음",
+    "undatedTaskScheduleActionLabel": "날짜 정하기",
+    "calendarExplanatoryBandCount": 0,
+    "calendarRoutineLegendCount": 0,
+    "heldOrdinaryExecutionRowCount": 0,
+    "heldRecoveryEntryVisible": true,
+    "heldRecoveryStableOccurrenceIdPreserved": true,
+    "heldRecoveryReopenSupported": true,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "recurrenceConsoleErrorCount": 0,
+    "fixedNavigationCollisionCount": 0,
+    "internalTermHitCount": 0
+  },
+  "screenshots": [
+    "screenshots/00-before-my-mobile.png",
+    "screenshots/01-before-calendar-wide.png",
+    "screenshots/10-after-my-mobile.png",
+    "screenshots/11-after-my-wide.png",
+    "screenshots/12-after-calendar-mobile.png",
+    "screenshots/13-after-calendar-wide.png",
+    "screenshots/00-my-flow-anytime-mobile.png",
+    "screenshots/01-calendar-placement-selection-mobile.png",
+    "screenshots/02-calendar-placement-composition-mobile.png",
+    "screenshots/03-calendar-placement-applied-mobile.png",
+    "screenshots/04-calendar-placement-wide.png"
+  ]
+}

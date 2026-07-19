@@ -118,6 +118,9 @@ type PublicFlowUnitHierarchy = {
   preSaveCheckboxPreviewLabelCount: number;
   preSaveItemCheckboxPreviewCount: number;
   preSavePreviewControlCount: number;
+  includedItemMarkerCount: number;
+  heroArtifactPreviewCount: number;
+  artifactRepresentationCount: number;
   exportSecondaryEntryLabels: string[];
   itemLevelExportLikeLabels: string[];
   preSaveCheckboxLabels: string[];
@@ -148,6 +151,12 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
     const publicPreSaveCheckboxLabels = publicPreSaveCheckboxes
       .map((element) => element.getAttribute('aria-label') ?? '')
       .filter(Boolean);
+    const includedItemMarkers = Array.from(document.querySelectorAll('[data-testid="public-flow-included-item-marker"]'))
+      .filter(isVisible);
+    const heroArtifactPreviews = Array.from(document.querySelectorAll('[data-testid="public-flow-artifact-preview"]'))
+      .filter(isVisible);
+    const artifactWorkbenches = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"]'))
+      .filter(isVisible);
     const completionLikeCheckboxLabelPattern =
       /(완료|완료 체크|완료 취소|실행판 체크|회차 완료|이유식 완료|관리일 완료|관리 체크|전체 보기 체크|선택 일정 체크|단계 체크)/u;
     const previewCheckboxLabelPattern = /(미리보기|저장 전|선택|포함 표시|확인 표시)/u;
@@ -168,6 +177,9 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
         .length,
       preSaveItemCheckboxPreviewCount: previewCheckboxes.length,
       preSavePreviewControlCount: previewControls.length,
+      includedItemMarkerCount: includedItemMarkers.length,
+      heroArtifactPreviewCount: heroArtifactPreviews.length,
+      artifactRepresentationCount: heroArtifactPreviews.length + artifactWorkbenches.length,
       exportSecondaryEntryLabels: secondaryEntries.map(visibleText),
       itemLevelExportLikeLabels,
       preSaveCheckboxLabels: publicPreSaveCheckboxLabels,
@@ -259,15 +271,17 @@ test.describe('public share shell secondary browse order', () => {
   }
 
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
-    test(`${route} treats pre-save item checkboxes as preview selection, not completion`, async ({ page }) => {
+    test(`${route} keeps save-before items read-only and reserves completion for My Flow`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
 
       const hierarchy = await collectPublicFlowUnitHierarchy(page);
       expect(hierarchy.preSaveCheckboxCompletionLikeLabelCount).toBe(0);
-      if (hierarchy.preSaveCheckboxCount > 0) {
-        expect(hierarchy.preSaveCheckboxPreviewLabelCount).toBe(hierarchy.preSaveCheckboxCount);
-      }
+      expect(hierarchy.preSaveCheckboxCount).toBe(0);
+      expect(hierarchy.preSaveCheckboxPreviewLabelCount).toBe(0);
+      expect(hierarchy.heroArtifactPreviewCount).toBe(0);
+      expect(hierarchy.artifactRepresentationCount).toBe(1);
+      expect(hierarchy.includedItemMarkerCount + hierarchy.preSavePreviewControlCount).toBeGreaterThan(0);
     });
   }
 
@@ -293,9 +307,8 @@ test.describe('public share shell secondary browse order', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    const setup = page.getByTestId('public-flow-primary-setup');
-    await expect(setup).toBeVisible();
-    await expect(setup.locator('input[type="date"]')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
+    await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
 
     const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
     const saveButton = mobileSave.getByRole('button', { name: '그대로 저장' });
@@ -315,8 +328,9 @@ test.describe('public share shell secondary browse order', () => {
     await page.getByTestId('my-flow-post-save-open-first').click();
     await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
 
-    const nowSection = page.getByTestId('my-flow-now-section');
+    const nowSection = page.getByTestId('my-flow-anytime-section');
     await expect(nowSection).toBeVisible();
+    await expect(nowSection).toContainText('날짜 없는 할 일');
 
     const postSaveComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
     await expect(postSaveComplete).toBeVisible();

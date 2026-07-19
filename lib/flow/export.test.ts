@@ -795,19 +795,21 @@ test('fixed-length routines bound the recurring calendar event with UNTIL', () =
   assert.match(buildCalendarIcs(detox, '2026-06-08', ['월', '수', '금']), /UNTIL=20260705/);
 });
 
-test('open-ended daily habits keep recurring without an UNTIL bound', () => {
-  for (const slug of [
-    'reading-habit-30day',
-    'morning-routine-30day',
-    'morning-skincare-routine',
-    'home-cafe-daily',
-    'dog-walk-routine',
-  ]) {
+test('open-ended routines keep their published cadence instead of a weekly fallback', () => {
+  const expectedFrequencyBySlug = new Map([
+    ['reading-habit-30day', 'DAILY'],
+    ['morning-routine-30day', 'DAILY'],
+    ['morning-skincare-routine', 'DAILY'],
+    ['home-cafe-daily', 'WEEKLY'],
+    ['dog-walk-routine', 'DAILY'],
+  ]);
+  for (const [slug, frequency] of expectedFrequencyBySlug) {
     const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
     assert.ok(bundle, slug);
     assert.equal(bundle.flow.routine_duration_days, undefined, `${slug} should stay open-ended`);
     const ics = buildCalendarIcs(bundle, '2026-06-08', ['월', '수', '금']);
-    assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR/, `${slug} should recur weekly`);
+    assert.match(ics, new RegExp(`RRULE:FREQ=${frequency}`), `${slug} should preserve its cadence`);
+    if (frequency === 'WEEKLY') assert.match(ics, /BYDAY=MO,WE,FR/);
     assert.doesNotMatch(ics, /UNTIL=/, `${slug} should not be bounded`);
   }
 });

@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-19 - Advanced planner interactions after the P25 workspace model
+
+**Idea:** After P25 proves a coherent whole-Flow, Anytime, Calendar placement, personal adjustment, and export model, consider direct drag-and-drop scheduling, user-defined saved views, timezone controls, and one narrow external Calendar/Task integration. These may improve expert planning speed but must consume the same effective Flow projection and preserve source/personal/run ownership.
+
+**Why not now:** The current product still needs to make basic undated work, whole-Flow inspection, progressive adjustment, recurrence parity, completion recovery, and export scope understandable. Adding full planner gestures, view builders, or direct sync now would hide rather than solve those problems and would pull FlowMe toward Notion/Calendar/Todo replacement behavior.
+
+**Revisit when:** P25-08 reports internal Blocking/High zero, the owner explicitly reopens observation, and later evidence shows repeated demand for faster multi-item placement or one specific direct destination. Drag-and-drop must remain an accelerator, not the only accessible path.
+
+**Source context:** 2026-07-19 owner/Codex/Claude P25 UX feedback reconciliation. See the [P25 foundation spec](./specs/2026-07-19-execution-workspace-foundation/spec.md).
+
 ### 2026-07-12 - 제작자 소유 원문을 실행 상품으로 바꾸는 양면 가치사슬
 
 **Idea:** FlowMe의 초기 진입점을 사용자 혼자 URL을 변환하는 도구로만 보지 않고, 원문 권리를 가진 제작자가 자신의 글·영상·강의·가이드를 검토된 Flow로 만들어 원문에 `FlowMe로 실행하기` 링크를 붙이는 양면 구조로 본다. 사용자는 원문을 대체한 복제본이 아니라 출처·버전·제작자 표시가 유지되는 실행 동반물을 저장·개인화·내보내고, 제작자는 동의된 집계 범위에서 미리보기·시작·저장·내보내기·재방문·업데이트 수락 신호를 확인해 다음 버전을 고친다. 제작자 참여는 초기 콘텐츠 공급과 유통 단계부터 시작하되, 네이티브 결제·마켓플레이스·공개 랭킹은 검증 뒤로 둔다. 초기에는 `원문 권리자 = Flow 제작자`인 소수 파트너로 시작해 출처 권리와 수익 분배 문제를 단순화하고, 외부 결제·제휴·예약 링크의 기여 측정부터 수익 가능성을 본다.

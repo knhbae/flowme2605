@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P25-08 Internal Journey Gate</title>
+  <style>
+    :root {
+      --ink: #17201d;
+      --muted: #5d6964;
+      --line: #d8dfdc;
+      --soft: #f3f6f4;
+      --paper: #ffffff;
+      --green: #176b50;
+      --amber: #9a5b10;
+      --red: #a23631;
+      --blue: #245b8f;
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      color: var(--ink);
+      background: #e9eeeb;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: var(--blue); }
+    .page { width: min(1220px, 100%); margin: 0 auto; background: var(--paper); min-height: 100vh; }
+    header { padding: 34px 28px 26px; border-bottom: 1px solid var(--line); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 32px; line-height: 1.2; margin-bottom: 12px; letter-spacing: 0; }
+    h2 { font-size: 21px; margin-bottom: 14px; letter-spacing: 0; }
+    h3 { font-size: 16px; margin-bottom: 8px; letter-spacing: 0; }
+    p, li { font-size: 14px; line-height: 1.65; }
+    .sub { max-width: 800px; color: var(--muted); margin-bottom: 16px; }
+    .tag-row, .metric-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { padding: 6px 9px; border: 1px solid var(--line); background: var(--soft); font-size: 12px; font-weight: 700; }
+    .tag.pass { color: var(--green); border-color: #b8d6ca; background: #edf8f3; }
+    .tag.warn { color: var(--amber); border-color: #e2c79f; background: #fff8ed; }
+    main { padding: 26px 28px 56px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    .metric { min-width: 132px; flex: 1; padding: 14px; border-left: 3px solid var(--green); background: var(--soft); }
+    .metric strong { display: block; font-size: 23px; margin-bottom: 3px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .decision { display: grid; grid-template-columns: 120px 1fr; gap: 18px; align-items: start; }
+    .verdict { padding: 12px; text-align: center; border: 1px solid #b8d6ca; color: var(--green); background: #edf8f3; font-weight: 800; }
+    .journeys { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    article { border: 1px solid var(--line); background: var(--paper); }
+    .copy { padding: 16px; }
+    .meta { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+    .status { color: var(--green); font-size: 12px; font-weight: 800; }
+    .shots { display: grid; grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr); gap: 1px; background: var(--line); border-top: 1px solid var(--line); }
+    figure { margin: 0; background: #f8faf9; padding: 10px; min-width: 0; }
+    figure img { display: block; width: 100%; height: 330px; object-fit: contain; background: #eef2ef; }
+    figcaption { color: var(--muted); font-size: 11px; padding-top: 7px; }
+    .finding-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .finding { padding: 15px; border: 1px solid var(--line); }
+    .finding.medium { border-top: 3px solid var(--amber); }
+    .finding.fixed { border-top: 3px solid var(--green); }
+    .finding p { margin-bottom: 0; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 9px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--soft); }
+    .boundary { padding: 16px; border-left: 3px solid var(--blue); background: #f1f6fb; }
+    .boundary p:last-child { margin-bottom: 0; }
+    footer { padding: 22px 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    @media (max-width: 760px) {
+      header, main, footer { padding-left: 16px; padding-right: 16px; }
+      h1 { font-size: 26px; }
+      .journeys, .finding-grid { grid-template-columns: 1fr; }
+      .decision { grid-template-columns: 1fr; gap: 10px; }
+      .shots { grid-template-columns: 1fr; }
+      figure img { height: auto; max-height: 540px; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="tag-row">
+        <span class="tag pass">P25-08 INTERNAL PASS</span>
+        <span class="tag">CURRENT BROWSER + COMMAND</span>
+        <span class="tag warn">OBSERVED USERS 0</span>
+      </div>
+      <h1>FlowMe P25 통합 사용자 여정 게이트</h1>
+      <p class="sub">여섯 가지 Flow 형태를 저장, 전체 확인, 개인 조정, 실행, Calendar 배치, 완료·재개, export까지 다시 연결했다. 이 보드는 현재 브라우저·자동화·시각 검토 결과이며 실제 사용자 관찰 결과가 아니다.</p>
+      <div class="metric-grid">
+        <div class="metric"><strong>6</strong><span>Flow 형태</span></div>
+        <div class="metric"><strong>9 / 9</strong><span>대표 여정 테스트</span></div>
+        <div class="metric"><strong>81 / 81</strong><span>관련 회귀 테스트</span></div>
+        <div class="metric"><strong>36</strong><span>모바일·와이드 화면</span></div>
+        <div class="metric"><strong>0</strong><span>overflow / console error</span></div>
+        <div class="metric"><strong>0 / 15</strong><span>실제 관찰 세션</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>전체 판정</h2>
+        <div class="decision">
+          <div class="verdict">OWNER REVIEW</div>
+          <div>
+            <p><strong>자동화 기준 Blocking/High는 남아 있지 않다.</strong> 첫 통합 캡처에서 발견한 1024px Calendar 제목 붕괴는 반복 상태를 제목 아래 메타로 이동해 수정했고, 제목 최소 너비 회귀 테스트를 추가했다.</p>
+            <p>다만 public 설명 밀도, 1024px Calendar의 세 영역 밀도, 개인 초안 고급 편집 깊이는 실제 이해 가능성을 자동화로 확정할 수 없다. 다음 단계는 production 배포나 사용자 모집이 아니라 owner/Claude Design의 <strong>keep / change / defer</strong> 결정이다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>남은 판단</h2>
+        <div class="finding-grid">
+          <div class="finding fixed"><h3>해결됨 · Calendar 제목 폭</h3><p>반복 상태 badge가 제목 폭을 잠식하던 문제를 메타 영역으로 이동했다. wide agenda title 최소 100px을 테스트한다.</p></div>
+          <div class="finding medium"><h3>Medium · Public 설명 밀도</h3><p>preview가 읽기 전용 artifact로 정리됐지만 반복 Flow의 안내 문장은 아직 두 줄 이상이다. 이해에 필요한 정보인지 판단이 필요하다.</p></div>
+          <div class="finding medium"><h3>Medium · 고급 편집 깊이</h3><p>날짜·시간·소요 시간·반복·회차를 모두 지원하지만 전체 편집 경로는 길다. progressive disclosure의 실제 이해 가능성은 미검증이다.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>여섯 사용자 여정</h2>
+        <div class="journeys">
+          <article>
+            <div class="copy"><div class="meta">J1 · 기준일 역산형</div><h3>이사 준비 전체 Flow</h3><p>저장 직후와 재방문 모두 다섯 실행 항목을 같은 구조로 보여주고, 완료 후 다시 미완료로 돌릴 수 있다.</p><span class="status">SUPPORTED</span></div>
+            <div class="shots"><figure><img src="screenshots/01-moving/01-moving-01-post-save-whole-flow-mobile.png" alt="이사 준비 저장 직후 모바일"><figcaption>저장 직후 · 390px</figcaption></figure><figure><img src="screenshots/01-moving/01-moving-04-returning-whole-flow-wide.png" alt="이사 준비 재방문 와이드"><figcaption>재방문 · 1024px</figcaption></figure></div>
+          </article>
+          <article>
+            <div class="copy"><div class="meta">J2 · 날짜 없는 체크리스트형</div><h3>실행은 My Flow, 날짜 배치는 Calendar</h3><p>날짜 없는 할 일은 My Flow에 남고, Calendar queue에서는 완료가 아니라 선택·배치만 수행한다.</p><span class="status">SUPPORTED</span></div>
+            <div class="shots"><figure><img src="screenshots/02-undated/02-undated-placement-00-my-flow-anytime-mobile.png" alt="날짜 없는 할 일 모바일"><figcaption>My Flow 실행 · 390px</figcaption></figure><figure><img src="screenshots/02-undated/02-undated-placement-04-calendar-placement-wide.png" alt="날짜 배치 Calendar 와이드"><figcaption>Calendar 배치 · 1024px</figcaption></figure></div>
+          </article>
+          <article>
+            <div class="copy"><div class="meta">J3 · 반복 루틴형</div><h3>Series 설명과 occurrence 실행 분리</h3><p>public은 네 회차를 읽기 전용으로 예고하고, 저장 후 각 회차에 하나의 완료 컨트롤만 제공한다.</p><span class="status">SUPPORTED</span></div>
+            <div class="shots"><figure><img src="screenshots/03-routine/03-routine-01-washer-monthly-preview-mobile.png" alt="월간 반복 public preview"><figcaption>읽기 전용 preview · 390px</figcaption></figure><figure><img src="screenshots/03-routine/03-routine-03-washer-monthly-calendar-wide.png" alt="월간 반복 Calendar 와이드"><figcaption>Calendar occurrence · 1024px</figcaption></figure></div>
+          </article>
+          <article>
+            <div class="copy"><div class="meta">J4 · 순서·날짜 혼합형</div><h3>선택 항목 일괄 조정</h3><p>조정 모드에서는 완료 컨트롤을 선택 컨트롤로 교체하고, 영향 개수와 export 범위를 먼저 보여준다.</p><span class="status">SUPPORTED</span></div>
+            <div class="shots"><figure><img src="screenshots/04-mixed/04-mixed-00-batch-date-preview-mobile.png" alt="일괄 날짜 조정 모바일"><figcaption>영향 preview · 390px</figcaption></figure><figure><img src="screenshots/04-mixed/04-mixed-01-batch-selection-wide.png" alt="일괄 선택 와이드"><figcaption>선택 모드 · 1024px</figcaption></figure></div>
+          </article>
+          <article>
+            <div class="copy"><div class="meta">J5 · 기록·메모형</div><h3>입력 문장을 실행 항목으로 정확히 분할</h3><p>세 문장을 검토하고 두 항목만 저장한 뒤, 저장·새로고침·전체/선택 export가 같은 개수를 유지한다.</p><span class="status">SUPPORTED</span></div>
+            <div class="shots"><figure><img src="screenshots/05-record/05-record-export-00-memo-split-acceptance-mobile.png" alt="메모 분할 검토 모바일"><figcaption>저장 전 수용 경계 · 390px</figcaption></figure><figure><img src="screenshots/05-record/05-record-01-memo-split-items-wide.png" alt="메모 분할 저장 와이드"><figcaption>저장된 전체 Flow · 1024px</figcaption></figure></div>
+          </article>
+          <article>
+            <div class="copy"><div class="meta">J6 · 개인 초안·반복형</div><h3>반복 회차 상태와 복구</h3><p>완료·재개·건너뜀·보류를 구분하고, 보류 회차는 일반 실행에서 숨기되 같은 ID로 복구한다.</p><span class="status">SUPPORTED</span></div>
+            <div class="shots"><figure><img src="screenshots/06-personal-draft/06-personal-recurrence-01-personal-draft-occurrence-done-mobile.png" alt="개인 반복 회차 완료 모바일"><figcaption>회차 완료 · 390px</figcaption></figure><figure><img src="screenshots/06-personal-draft/06-personal-recurrence-03-personal-draft-occurrence-calendar-wide.png" alt="개인 반복 Calendar 와이드"><figcaption>반복 Calendar · 1024px</figcaption></figure></div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>계약 비교</h2>
+        <table>
+          <thead><tr><th>표면</th><th>1차 역할</th><th>현재 계약</th><th>남은 판단</th></tr></thead>
+          <tbody>
+            <tr><td>Public</td><td>전체 artifact 예측과 저장 결정</td><td>읽기 전용 preview, Flow 단위 저장</td><td>설명 문장 추가 감축</td></tr>
+            <tr><td>저장 직후</td><td>저장 결과 확인</td><td>전체 Flow outline 즉시 노출</td><td>없음</td></tr>
+            <tr><td>My Flow</td><td>지금 실행하고 전체 구조 열기</td><td>오늘/날짜 없음 실행, 전체 Flow drill-in</td><td>고급 편집 깊이</td></tr>
+            <tr><td>Calendar</td><td>날짜별 실행과 날짜 배치</td><td>dated agenda + undated placement queue</td><td>1024px 세 영역 밀도</td></tr>
+            <tr><td>Export</td><td>범위 선택 후 형식 선택</td><td>전체/선택/현재 항목과 exact count</td><td>실제 외부 도구 import는 별도 검증</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Evidence 경계</h2>
+        <div class="boundary">
+          <p><strong>확인됨:</strong> 현재 branch production-mode browser, Playwright interaction, 다운로드 내용, 현재 명령 결과, 390px/1024px 시각 검사.</p>
+          <p><strong>확인되지 않음:</strong> 처음 보는 사용자의 이해, 반복 사용 습관, 실제 Calendar 앱 import, 관찰 세션. 실제 사용자 수는 0명이다.</p>
+        </div>
+      </section>
+    </main>
+    <footer>P25-08 Internal Journey Gate · branch codex/p25-ux-foundation-plan · production URL is still the P24/main baseline.</footer>
+  </div>
+</body>
+</html>

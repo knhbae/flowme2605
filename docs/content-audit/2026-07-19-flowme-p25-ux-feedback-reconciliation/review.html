@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P25 UX 피드백 통합 보드</title>
+  <style>
+    :root {
+      --ink: #171a1f;
+      --muted: #5f6672;
+      --line: #dfe3e8;
+      --soft: #f6f7f8;
+      --blue: #2457d6;
+      --blue-soft: #edf3ff;
+      --green: #176b4d;
+      --green-soft: #eaf7f1;
+      --red: #a9362a;
+      --red-soft: #fff0ee;
+      --amber: #885b0b;
+      --amber-soft: #fff7df;
+      --white: #ffffff;
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--white);
+      color: var(--ink);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    code { padding: 0.08rem 0.28rem; border-radius: 4px; background: #eef0f2; font-size: 0.9em; }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+    .topbar { border-bottom: 1px solid var(--line); background: #fff; }
+    .topbar .shell { display: flex; min-height: 62px; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { font-size: 15px; font-weight: 800; }
+    .nav { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; font-weight: 700; }
+    .nav a { color: var(--muted); text-decoration: none; }
+    .hero { padding: 64px 0 46px; border-bottom: 1px solid var(--line); }
+    .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: 13px; font-weight: 800; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 860px; margin-bottom: 18px; font-size: 42px; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin-bottom: 12px; font-size: 28px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin-bottom: 8px; font-size: 18px; line-height: 1.35; letter-spacing: 0; }
+    .lead { max-width: 850px; color: var(--muted); font-size: 18px; }
+    .verdict { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .pill { display: inline-flex; min-height: 30px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800; }
+    .pill.red { border-color: #efc2bc; background: var(--red-soft); color: var(--red); }
+    .pill.green { border-color: #bfe1d1; background: var(--green-soft); color: var(--green); }
+    .pill.blue { border-color: #c8d7ff; background: var(--blue-soft); color: var(--blue); }
+    .band { padding: 50px 0; border-bottom: 1px solid var(--line); }
+    .band.soft { background: var(--soft); }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+    .section-head p { max-width: 680px; margin-bottom: 0; color: var(--muted); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); }
+    .panel { border: 1px solid var(--line); border-radius: var(--radius); background: #fff; padding: 18px; }
+    .grid-4 .panel { border: 0; border-radius: 0; }
+    .panel p:last-child { margin-bottom: 0; }
+    .source { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .finding { display: grid; grid-template-columns: 110px minmax(0, 1fr) minmax(220px, 0.8fr); border-top: 1px solid var(--line); padding: 18px 0; gap: 20px; }
+    .finding:last-child { border-bottom: 1px solid var(--line); }
+    .severity { align-self: start; border-radius: 4px; padding: 3px 7px; text-align: center; font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .severity.blocking { background: var(--red-soft); color: var(--red); }
+    .severity.high { background: var(--amber-soft); color: var(--amber); }
+    .severity.medium { background: var(--blue-soft); color: var(--blue); }
+    .finding p { margin-bottom: 0; color: var(--muted); }
+    .decision { border-left: 3px solid var(--green); padding-left: 14px; color: var(--green); font-weight: 700; }
+    .model { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); }
+    .model article { min-height: 180px; padding: 20px; border-right: 1px solid var(--line); }
+    .model article:last-child { border-right: 0; }
+    .model .num { display: block; margin-bottom: 22px; color: var(--blue); font-size: 12px; font-weight: 900; }
+    .state-table { width: 100%; border-collapse: collapse; background: #fff; }
+    .state-table th, .state-table td { border-bottom: 1px solid var(--line); padding: 12px 10px; text-align: left; vertical-align: top; }
+    .state-table th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .wireframes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .wireframe { border: 1px solid var(--line); background: #fff; padding: 16px; }
+    .screen { margin-top: 14px; border: 1px solid #bfc6cf; background: #fbfcfd; padding: 12px; font-size: 13px; }
+    .screen .bar { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-weight: 800; }
+    .screen .row { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+    .screen .action { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .button { display: inline-flex; min-height: 34px; align-items: center; border: 1px solid #bac2cd; border-radius: 4px; background: #fff; padding: 5px 9px; color: var(--ink); font-size: 12px; font-weight: 800; }
+    .button.primary { border-color: var(--blue); background: var(--blue); color: #fff; }
+    .sequence { counter-reset: stage; }
+    .stage { display: grid; grid-template-columns: 90px minmax(0, 1fr) 180px; gap: 20px; border-top: 1px solid var(--line); padding: 18px 0; }
+    .stage:last-child { border-bottom: 1px solid var(--line); }
+    .stage-id { color: var(--blue); font-weight: 900; }
+    .gate { color: var(--green); font-size: 13px; font-weight: 800; }
+    .refs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; }
+    .ref { border-top: 1px solid var(--line); padding: 14px 0; }
+    .ref p { margin-bottom: 0; color: var(--muted); }
+    .next { display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid #b9caff; background: var(--blue-soft); padding: 20px; }
+    .next p { margin-bottom: 0; color: #374868; }
+    footer { padding: 34px 0 60px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 760px) {
+      .shell { padding: 0 16px; }
+      .topbar .shell { align-items: flex-start; flex-direction: column; padding-top: 14px; padding-bottom: 14px; }
+      .nav { gap: 10px; }
+      .hero { padding: 42px 0 34px; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 23px; }
+      .lead { font-size: 16px; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .grid-3, .grid-4, .model, .wireframes, .refs { grid-template-columns: 1fr; }
+      .model article { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .model article:last-child { border-bottom: 0; }
+      .finding { grid-template-columns: 88px minmax(0, 1fr); }
+      .finding .decision { grid-column: 1 / -1; }
+      .stage { grid-template-columns: 74px minmax(0, 1fr); }
+      .stage .gate { grid-column: 1 / -1; }
+      .next { align-items: flex-start; flex-direction: column; }
+      .state-scroll { overflow-x: auto; }
+      .state-table { min-width: 720px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell">
+      <div class="brand">FLOW / P25 product reset</div>
+      <nav class="nav" aria-label="문서 이동">
+        <a href="#verdict">판정</a>
+        <a href="#model">제품 모델</a>
+        <a href="#screens">핵심 화면</a>
+        <a href="#sequence">실행 순서</a>
+        <a href="#references">레퍼런스</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="verdict">
+      <div class="shell">
+        <p class="eyebrow">2026-07-19 · owner + Codex + Claude Design reconciliation</p>
+        <h1>기능을 더 붙이는 단계가 아니라,<br />하나의 실행 작업공간으로 다시 묶을 단계</h1>
+        <p class="lead">P24는 저장·수정·완료·캘린더·내보내기를 연결했습니다. 그러나 사용자는 아직 전체 Flow, 날짜 없는 일, 조정, 실행 결과를 하나의 모델로 이해하기 어렵습니다. P25는 화면별 보정이 아니라 저장한 Flow를 중심으로 구조를 다시 고정합니다.</p>
+        <div class="verdict">
+          <span class="pill red">structural correction required</span>
+          <span class="pill blue">P25-00B prototype first</span>
+          <span class="pill green">external observation 0 / 15, deferred</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="shell">
+        <div class="section-head">
+          <div><p class="eyebrow">01 · Three inputs, one diagnosis</p><h2>세 피드백의 공통 원인</h2></div>
+          <p>표현은 다르지만 “각 화면이 서로 다른 객체를 중심으로 설계됐다”는 지점에서 수렴합니다.</p>
+        </div>
+        <div class="grid-3">
+          <article class="panel"><p class="source">OWNER</p><h3>기본 사용법이 안 보임</h3><p>날짜 없는 일을 어떻게 쓰는지 모르고, 조정은 사용자 니즈보다 필드를 나열한 느낌이며, 저장 결과와 전체 Flow도 만족스럽지 않음.</p></article>
+          <article class="panel"><p class="source">CODEX</p><h3>같은 Flow가 다른 결과가 됨</h3><p>월간 반복의 날짜·개수가 preview, Calendar, export에서 달라지고, 메모 분할·편집 밀도·My Flow hierarchy도 일관되지 않음.</p></article>
+          <article class="panel"><p class="source">CLAUDE DESIGN</p><h3>동작과 표현이 중복됨</h3><p>public artifact 중복, 완료 재개 은닉, undated tray 불안정, wide의 늘어난 mobile layout, 과도한 설명과 component 변형.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band soft">
+      <div class="shell">
+        <div class="section-head"><div><p class="eyebrow">02 · Priority</p><h2>먼저 고칠 것은 화면이 아니라 진실과 중심 객체</h2></div></div>
+        <div class="finding">
+          <div><span class="severity blocking">Blocking</span></div>
+          <div><h3>반복 일정과 export가 같은 Flow를 다르게 계산</h3><p>세탁조 월간 Flow가 public에는 매월 20일, Calendar에는 주간 월요일, export에는 0개로 보고됨.</p></div>
+          <div class="decision">P25-01A에서 canonical item / series / occurrence projection부터 고정</div>
+        </div>
+        <div class="finding">
+          <div><span class="severity high">High</span></div>
+          <div><h3>날짜 없음이 사용자 상태가 아님</h3><p>일을 할 수 있는지, Calendar에만 없는지, 나중에 정해야 하는지 UI가 답하지 않음.</p></div>
+          <div class="decision">My Flow에서는 언제든 실행, Calendar에서는 일정에 놓는 queue로 분리</div>
+        </div>
+        <div class="finding">
+          <div><span class="severity high">High</span></div>
+          <div><h3>전체 Flow가 저장의 결과이자 작업공간으로 남지 않음</h3><p>Today, child/source Flow, Flow 카드, 일부 항목이 서로 다른 중심처럼 보임.</p></div>
+          <div class="decision">whole Flow를 primary saved object로 두고 Today/Calendar/export를 projection으로 정의</div>
+        </div>
+        <div class="finding">
+          <div><span class="severity high">High</span></div>
+          <div><h3>조정이 “필요한 일”이 아니라 “가능한 필드”를 보여줌</h3><p>제목만 고치려는 사용자도 시간·소요·반복·메모·구조 control을 통과해야 함.</p></div>
+          <div class="decision">기본 drawer와 세부 일정, 선택 항목 batch mode를 분리</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="model">
+      <div class="shell">
+        <div class="section-head">
+          <div><p class="eyebrow">03 · Product model</p><h2>P25가 고정할 네 층</h2></div>
+          <p>기능을 어느 화면에 넣을지보다, 어떤 상태가 어느 층의 책임인지 먼저 고정합니다.</p>
+        </div>
+        <div class="model">
+          <article><span class="num">01</span><h3>Whole Flow artifact</h3><p>저장한 전체 계획/체크리스트/프로그램. 저장 직후와 재방문에서 같은 구조로 보입니다.</p></article>
+          <article><span class="num">02</span><h3>Personal adjustment</h3><p>내 이름, 포함 항목, 순서, 날짜, 메모. 원문은 유지하고 개인 overlay만 바뀝니다.</p></article>
+          <article><span class="num">03</span><h3>Execution</h3><p>지금 할 일, 완료, 완료 취소, 반복 회차. 한 회차에는 완료 control이 하나입니다.</p></article>
+          <article><span class="num">04</span><h3>Schedule & export</h3><p>Calendar와 외부 파일은 같은 effective Flow를 destination 규칙에 따라 투영합니다.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band soft">
+      <div class="shell">
+        <div class="section-head"><div><p class="eyebrow">04 · Date semantics</p><h2>`날짜 없음`을 제품 언어로 바꾸기</h2></div><p>날짜가 없다고 실행할 수 없는 것은 아닙니다. 날짜는 언제 보일지 정하는 속성입니다.</p></div>
+        <div class="state-scroll">
+          <table class="state-table">
+            <thead><tr><th>상태</th><th>사용자 의미</th><th>My Flow</th><th>Calendar</th><th>Export</th></tr></thead>
+            <tbody>
+              <tr><td>no date</td><td><strong>언제든 할 일</strong></td><td>실행·완료 가능</td><td>`일정에 놓기` queue, grid에는 없음</td><td>checklist/sheet/memo 포함, ICS 제외</td></tr>
+              <tr><td>dated</td><td><strong>예정된 할 일</strong></td><td>Flow와 시간 projection에 표시</td><td>grid/agenda 표시</td><td>eligible destination 포함</td></tr>
+              <tr><td>completed</td><td><strong>완료한 일</strong></td><td>완료 view에서 재개</td><td>기존 날짜/상태 정책 유지</td><td>destination 정책에 따라 상태 표현</td></tr>
+              <tr><td>held</td><td><strong>아직 실행하지 않는 기록</strong></td><td>ordinary 실행에서 숨김</td><td>숨김</td><td>ordinary export 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="screens">
+      <div class="shell">
+        <div class="section-head"><div><p class="eyebrow">05 · Screen contracts</p><h2>설명 대신 조작으로 이해시키는 화면</h2></div><p>아래는 구현 목업이 아니라 P25-00B에서 비교할 기준 구조입니다.</p></div>
+        <div class="wireframes">
+          <article class="wireframe">
+            <h3>저장 직후 / 전체 Flow</h3>
+            <p>Today 한 줄이 아니라 저장한 artifact 전체를 확인합니다.</p>
+            <div class="screen">
+              <div class="bar"><span>8월 이사 핵심</span><span>4개 할 일</span></div>
+              <div class="row"><span>□</span><span>이사 방식과 견적 후보 정하기</span><span>7/16</span></div>
+              <div class="row"><span>□</span><span>관리사무소 공유와 주소 변경 확인</span><span>언제든</span></div>
+              <div class="row"><span>□</span><span>계량기와 집 상태 사진 남기기</span><span>8/14</span></div>
+              <div class="action"><span class="button primary">시작</span><span class="button">조정</span><span class="button">가져가기</span></div>
+            </div>
+          </article>
+          <article class="wireframe">
+            <h3>Calendar / 일정에 놓기</h3>
+            <p>언제든 할 일은 사라지지 않고, 필요할 때 날짜만 부여합니다.</p>
+            <div class="screen">
+              <div class="bar"><span>일정에 놓기</span><span>8</span></div>
+              <div class="row"><span>□</span><span>차량 보험 증서 확인</span><span>⋯</span></div>
+              <div class="row"><span>□</span><span>타이어 공기압 확인</span><span>⋯</span></div>
+              <div class="action"><span class="button">오늘</span><span class="button primary">날짜 선택</span><span class="button">언제든 두기</span></div>
+            </div>
+          </article>
+          <article class="wireframe">
+            <h3>항목 조정 / progressive drawer</h3>
+            <p>흔한 수정만 먼저, 시간과 반복은 요청할 때만 엽니다.</p>
+            <div class="screen">
+              <div class="bar"><span>할 일 수정</span><span>닫기</span></div>
+              <p><strong>제목</strong><br />렌터카 예약 번호 확인</p>
+              <p><strong>언제</strong><br />언제든 · 날짜 선택</p>
+              <p><strong>내 메모</strong><br />예약 메일 링크</p>
+              <div class="bar"><span>세부 일정</span><span>펼치기</span></div>
+              <div class="action"><span class="button primary">저장</span></div>
+            </div>
+          </article>
+          <article class="wireframe">
+            <h3>선택 항목 / batch action</h3>
+            <p>여러 날짜를 옮기거나 export할 때 항목마다 폼을 열지 않습니다.</p>
+            <div class="screen">
+              <div class="bar"><span>3개 선택</span><span>선택 해제</span></div>
+              <div class="row"><span>☑</span><span>숙소 확인</span><span>7/20</span></div>
+              <div class="row"><span>☑</span><span>렌터카 확인</span><span>7/20</span></div>
+              <div class="row"><span>☑</span><span>준비물 점검</span><span>언제든</span></div>
+              <div class="action"><span class="button primary">날짜 이동</span><span class="button">날짜 지우기</span><span class="button">가져가기</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band soft" id="sequence">
+      <div class="shell">
+        <div class="section-head"><div><p class="eyebrow">06 · Gated delivery</p><h2>한 단계씩 닫는 P25 순서</h2></div><p>다음 단계는 앞 단계가 컴파일됐기 때문이 아니라, 제품·데이터·브라우저 gate가 통과했을 때만 시작합니다.</p></div>
+        <div class="sequence">
+          <article class="stage"><div class="stage-id">P25-00B</div><div><h3>핵심 화면 대안과 owner 결정</h3><p>save, whole Flow, My Flow, Calendar, 조정, export를 390/1024에서 A/B 비교. 앱 코드는 바꾸지 않음.</p></div><div class="gate">Gate: 화면별 keep/change/reject</div></article>
+          <article class="stage"><div class="stage-id">P25-01</div><div><h3>projection·반복·입력 정확성</h3><p>같은 item/occurrence/count를 모든 destination이 읽고, memo split이 filler를 만들지 않게 함.</p></div><div class="gate">Gate: 날짜·개수 parity</div></article>
+          <article class="stage"><div class="stage-id">P25-02</div><div><h3>responsive whole Flow workspace</h3><p>저장 직후와 재방문에서 같은 전체 구조. mobile drill-in, wide pane composition.</p></div><div class="gate">Gate: 전체 artifact 즉시 확인</div></article>
+          <article class="stage"><div class="stage-id">P25-03</div><div><h3>progressive·batch 개인 조정</h3><p>기본 drawer, 세부 일정, 선택 날짜 이동/지우기/포함/export.</p></div><div class="gate">Gate: common edit 1 drawer</div></article>
+          <article class="stage"><div class="stage-id">P25-04</div><div><h3>Anytime와 Calendar 배치</h3><p>날짜 없이 실행, Calendar에 선택 배치, 다시 날짜 지우기.</p></div><div class="gate">Gate: find/execute/schedule/clear</div></article>
+          <article class="stage"><div class="stage-id">P25-05</div><div><h3>완료·재개·export scope</h3><p>한 회차 한 control, 즉시 undo와 persistent reopen, 범위 먼저 선택.</p></div><div class="gate">Gate: recovery·count parity</div></article>
+          <article class="stage"><div class="stage-id">P25-06/07</div><div><h3>public 단순화와 공통 visual language</h3><p>artifact 한 번, 설명 최소화, shared rows/drawers/status/responsive tokens.</p></div><div class="gate">Gate: duplicate/copy/overflow 0</div></article>
+          <article class="stage"><div class="stage-id">P25-08</div><div><h3>내부 시뮬레이션 마감</h3><p>6개 Flow 유형의 전 여정을 모바일/와이드에서 재현. 실제 사용자 관찰로 계산하지 않음.</p></div><div class="gate">Gate: Blocking/High 0 + owner 판단</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="references">
+      <div class="shell">
+        <div class="section-head"><div><p class="eyebrow">07 · Official patterns</p><h2>참고하되 그대로 복제하지 않을 것</h2></div></div>
+        <div class="refs">
+          <article class="ref"><h3>Things</h3><p>Today/Upcoming/Anytime/Someday로 “언제 보일지”를 분리하고 schedule clear로 Anytime 복귀. FlowMe의 undated 모델에 적용.</p></article>
+          <article class="ref"><h3>Structured</h3><p>unscheduled inbox와 timeline을 분리하고 replan/undo를 제공. Calendar queue와 회복 경로에 적용.</p></article>
+          <article class="ref"><h3>Google Calendar + Tasks</h3><p>날짜 있는 task만 Calendar에 보이고 task list는 별도. 날짜는 Calendar membership 속성으로 적용.</p></article>
+          <article class="ref"><h3>Todoist</h3><p>row completion, immediate undo, completed view의 재개. 반복 회차 한계는 FlowMe에서 명시적으로 보완.</p></article>
+          <article class="ref"><h3>Notion</h3><p>공개 page를 private copy로 복제하고 같은 data를 여러 view로 표현. source/personal과 projection 원칙에 적용.</p></article>
+          <article class="ref"><h3>Wanderlog</h3><p>guide/list/reservation/daily itinerary를 구분하고 multi-item 이동을 지원. source, whole Flow, schedule, batch action 분리에 적용.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band soft">
+      <div class="shell">
+        <div class="next">
+          <div><p class="eyebrow">Next goal</p><h2>P25-00B 핵심 작업공간 prototype 결정</h2><p>앱을 다시 뜯기 전에 모바일/와이드 대안을 비교하고 owner의 keep/change/reject를 받습니다.</p></div>
+          <a class="button primary" href="./prompt-ko.md">복붙용 목표 열기</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell">이 보드는 owner/product review와 agent heuristic evidence를 통합한 내부 계획 산출물입니다. 실제 사용자 관찰은 0건이며 P25 중 요청하지 않습니다.</div></footer>
+</body>
+</html>

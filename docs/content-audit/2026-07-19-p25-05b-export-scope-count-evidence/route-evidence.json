@@ -1,0 +1,49 @@
+{
+  "package": "P25-05B export scope and count",
+  "date": "2026-07-19",
+  "evidenceKind": "automated_browser",
+  "observedUserSessionCount": 0,
+  "routes": [
+    "/flows",
+    "/my",
+    "/my?demo=source-backed"
+  ],
+  "viewports": [
+    "390x844",
+    "1024x768"
+  ],
+  "markers": {
+    "exportScopeBeforeFormat": true,
+    "flowWholeExportScopeLabel": "Flow 전체",
+    "selectedExportScopeLabel": "직접 선택",
+    "currentItemExportScopeLabel": "현재 항목",
+    "flowWholeExportIncludedCount": {
+      "personalDraft": 2,
+      "sourceBackedMoving": 5
+    },
+    "selectedExportIncludedCount": 2,
+    "currentItemExportIncludedCount": 1,
+    "personalDraftWholeCalendarCount": 1,
+    "personalDraftWholeListCount": 2,
+    "sourceBackedSelectedCalendarCount": 2,
+    "sourceBackedSelectedListCount": 2,
+    "exportDestinationCountMismatchCount": 0,
+    "completionStateChangedExportMembershipCount": 0,
+    "duplicateExportRowCount": 0,
+    "sourceBackedExportBehaviorChanged": false,
+    "internalTermHitCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/00-memo-split-acceptance-mobile.png",
+    "screenshots/00-personal-draft-selected-export-mobile.png",
+    "screenshots/01-source-backed-selected-export-mobile.png",
+    "screenshots/02-personal-draft-whole-export-wide.png",
+    "screenshots/03-source-backed-item-export-mobile.png"
+  ],
+  "downloads": [
+    "downloads/personal-draft-selected-calendar.ics"
+  ]
+}

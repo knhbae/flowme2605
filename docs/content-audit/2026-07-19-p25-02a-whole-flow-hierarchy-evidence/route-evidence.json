@@ -1,0 +1,23 @@
+{
+  "phase": "P25-02A",
+  "evidenceKind": "current_browser_automation",
+  "observedUserSessions": 0,
+  "postSaveWholeFlowVisible": true,
+  "postSaveEffectiveItemCount": 5,
+  "postSaveAndReturningOutlineContractShared": true,
+  "postSaveSelectsSavedFlowOnEntry": true,
+  "myFlowLocalViewLabels": ["지금", "내 Flow", "완료"],
+  "mobileWholeFlowVisibleAtDepthZero": true,
+  "mobileWholeFlowVisibleItemCount": 5,
+  "wideWholeFlowVisibleItemCount": 5,
+  "persistentCompletedViewVisible": true,
+  "completionCancelFromCompletedView": true,
+  "completedCountAfterReopen": 0,
+  "mobileHorizontalOverflowCount": 0,
+  "wideHorizontalOverflowCount": 0,
+  "wideThreePaneConnected": false,
+  "wideExcessEmptyCanvasPresent": true,
+  "p25TargetedE2e": "2/2",
+  "p24JourneyRegressionE2e": "6/6",
+  "productionBuild": "pass"
+}

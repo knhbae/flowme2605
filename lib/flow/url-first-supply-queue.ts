@@ -62,9 +62,12 @@ export type UrlFirstSupplyCandidateAvailability = {
 };
 
 export type UrlFirstDraftItemSuggestion = {
+  id: string;
+  sourceText: string;
   title: string;
   memo: string;
   dayOffset: number;
+  needsReview: boolean;
 };
 
 export const URL_FIRST_SUPPLY_CANDIDATE_PRODUCTION_CHECKLIST = [
@@ -80,7 +83,7 @@ function clean(value?: string): string {
 }
 
 function getMemoBasedCandidateTitle(value: string): string {
-  const firstThought = splitUrlFirstDraftRequestLines(value)[0] ?? clean(value);
+  const firstThought = splitUserAuthoredDraftPhrases(value)[0] ?? clean(value);
   if (firstThought.length <= 60) return firstThought;
   return `${firstThought.slice(0, 57).trimEnd()}...`;
 }
@@ -94,12 +97,48 @@ function getUrlFirstDraftTopic(candidate: UrlFirstSupplyCandidate): string {
   return title.length >= 2 ? title : '이번 준비';
 }
 
-function splitUrlFirstDraftRequestLines(value: string): string[] {
+const DRAFT_SYSTEM_STATE_COPY = [
+  '바로 시작할 Flow를 찾지 못했어요',
+  '준비된 Flow가 없어요',
+  'Flow를 불러오는 중입니다',
+  '초안 요청 정리본',
+] as const;
+
+function isDraftSystemStateCopy(value: string): boolean {
+  const normalized = value.replace(/\s+/gu, ' ').trim();
+  return DRAFT_SYSTEM_STATE_COPY.some((copy) => normalized === copy || normalized.startsWith(`${copy} `));
+}
+
+function isLikelyActionClause(value: string): boolean {
+  return /(?:한다|하기|해요|합니다|함|싶음|싶어요|확인|정리|비교|준비|선택|점검|기록|예약|연락|신청|구매|작성|제출|변경|이동|챙기기|남기기|보내기|보기)$/u.test(value.trim());
+}
+
+function expandUnambiguousActionList(value: string): string[] {
+  const parts = value
+    .split(/\s*(?:,|，|그리고)\s*/u)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length < 2 || !parts.every(isLikelyActionClause)) return [value];
+  return parts;
+}
+
+export function splitUserAuthoredDraftPhrases(value: string): string[] {
   return value
     .replace(/\r/gu, '\n')
     .split(/\n+|[.!?;]+|\s*(?:→|->)\s*/u)
     .map((line) => line.replace(/^\s*(?:[-*•·]|\d+[.)])\s*/u, '').replace(/\s+/gu, ' ').trim())
-    .filter((line) => line.length >= 2);
+    .filter((line) => line.length >= 2 && !isDraftSystemStateCopy(line))
+    .flatMap(expandUnambiguousActionList);
+}
+
+function createDraftSuggestionId(kind: 'memo' | 'url', sourceText: string): string {
+  let hash = 0x811c9dc5;
+  const input = `${kind}:${sourceText.normalize('NFC').toLocaleLowerCase('ko-KR')}`;
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return `${kind}-${(hash >>> 0).toString(36)}`;
 }
 
 function toUrlFirstDraftActionTitle(value: string): string {
@@ -118,29 +157,25 @@ function toUrlFirstDraftActionTitle(value: string): string {
 }
 
 export function buildUrlFirstDraftItemSuggestions(candidate: UrlFirstSupplyCandidate): UrlFirstDraftItemSuggestion[] {
-  const topic = getUrlFirstDraftTopic(candidate);
   const suggestions: Omit<UrlFirstDraftItemSuggestion, 'dayOffset'>[] = [];
   const seen = new Set<string>();
-  const addSuggestion = (title: string, memo: string) => {
-    const normalizedTitle = clean(title);
+  const addSuggestion = (sourceText: string) => {
+    const normalizedSourceText = clean(sourceText);
+    const normalizedTitle = toUrlFirstDraftActionTitle(normalizedSourceText);
     if (!normalizedTitle || seen.has(normalizedTitle) || suggestions.length >= 7) return;
     seen.add(normalizedTitle);
-    suggestions.push({ title: normalizedTitle, memo });
+    suggestions.push({
+      id: createDraftSuggestionId('url', normalizedSourceText),
+      sourceText: normalizedSourceText,
+      title: normalizedTitle,
+      memo: '',
+      needsReview: true,
+    });
   };
 
-  addSuggestion(`${topic} 범위 정하기`, '내가 쓴 제목에서 제안한 항목입니다. 저장 후 제목과 메모를 다시 바꿀 수 있어요.');
-  splitUrlFirstDraftRequestLines(candidate.memo).slice(0, 5).forEach((line) => {
-    const actionTitle = toUrlFirstDraftActionTitle(line);
-    if (actionTitle) addSuggestion(actionTitle, '내가 남긴 메모에서 제안한 항목입니다.');
-  });
-  if (suggestions.length < 2) {
-    addSuggestion('원문에서 꼭 따라 할 내용 고르기', '원문 링크를 열어 실제로 필요한 내용만 남겨보세요.');
-  }
-  addSuggestion(`${topic} 실행 순서를 기준일에 맞춰 나누기`, '기준일을 바꾸면 따로 조정하지 않은 날짜가 함께 다시 맞춰집니다.');
-
-  while (suggestions.length < 3) {
-    addSuggestion(`${topic} 첫 행동 시작하기`, '저장 후 My Flow에서 날짜와 메모를 내 상황에 맞게 손볼 수 있어요.');
-  }
+  const memoPhrases = splitUserAuthoredDraftPhrases(candidate.memo).slice(0, 7);
+  if (memoPhrases.length > 0) memoPhrases.forEach(addSuggestion);
+  else if (!isDraftSystemStateCopy(candidate.title)) addSuggestion(getUrlFirstDraftTopic(candidate));
 
   return suggestions.map((suggestion, dayOffset) => ({ ...suggestion, dayOffset }));
 }
@@ -148,25 +183,21 @@ export function buildUrlFirstDraftItemSuggestions(candidate: UrlFirstSupplyCandi
 export function buildMemoDraftItemSuggestions(input: string): UrlFirstDraftItemSuggestion[] {
   const suggestions: Omit<UrlFirstDraftItemSuggestion, 'dayOffset'>[] = [];
   const seen = new Set<string>();
-  const addSuggestion = (title: string, memo: string) => {
-    const normalizedTitle = clean(title);
+  const addSuggestion = (sourceText: string) => {
+    const normalizedSourceText = clean(sourceText);
+    const normalizedTitle = toUrlFirstDraftActionTitle(normalizedSourceText);
     if (!normalizedTitle || seen.has(normalizedTitle) || suggestions.length >= 7) return;
     seen.add(normalizedTitle);
-    suggestions.push({ title: normalizedTitle, memo });
+    suggestions.push({
+      id: createDraftSuggestionId('memo', normalizedSourceText),
+      sourceText: normalizedSourceText,
+      title: normalizedTitle,
+      memo: '',
+      needsReview: false,
+    });
   };
 
-  splitUrlFirstDraftRequestLines(input).slice(0, 6).forEach((line) => {
-    const actionTitle = toUrlFirstDraftActionTitle(line);
-    if (actionTitle) addSuggestion(actionTitle, '내가 붙여넣은 메모에서 나눈 할 일입니다.');
-  });
-  if (suggestions.length < 2) {
-    addSuggestion('이번 준비의 범위 정하기', '메모에서 이번에 실제로 할 부분만 남겨보세요.');
-  }
-  addSuggestion('할 일을 실행할 순서 정하기', '저장 후 날짜와 순서를 내 상황에 맞게 다시 바꿀 수 있어요.');
-
-  while (suggestions.length < 3) {
-    addSuggestion('첫 행동 시작하기', '저장 후 My Flow에서 제목과 메모를 다시 손볼 수 있어요.');
-  }
+  splitUserAuthoredDraftPhrases(input).slice(0, 7).forEach(addSuggestion);
 
   return suggestions.map((suggestion, dayOffset) => ({ ...suggestion, dayOffset }));
 }

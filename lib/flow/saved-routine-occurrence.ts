@@ -108,6 +108,56 @@ function parseRrule(value?: string): Record<string, string> {
   );
 }
 
+function parseNaturalRepeatRule(
+  value: string | undefined,
+  warnings: string[],
+): Record<string, string> {
+  const label = (value ?? '').trim();
+  if (!label || /(?:^|;)FREQ=/i.test(label)) return {};
+  const compact = label.replace(/\s+/g, '');
+
+  if (/\d+~\d+일마다/.test(compact)) {
+    warnings.push('ambiguous_natural_repeat_range_not_projected');
+    return {};
+  }
+
+  const explicitWeekdays = label
+    .split(/[\s,/·]+/)
+    .flatMap((part) => {
+      const normalized = part.replace(/요일$/, '');
+      const weekday = KOREAN_WEEKDAY_TO_ISO[normalized];
+      return weekday ? [weekday] : [];
+    });
+  const byday = Array.from(new Set(explicitWeekdays)).join(',');
+
+  const monthInterval = compact.match(/(\d+)개월마다/);
+  if (monthInterval || /매월|월\d+회/.test(compact)) {
+    return {
+      FREQ: 'MONTHLY',
+      ...(monthInterval ? { INTERVAL: monthInterval[1] } : {}),
+    };
+  }
+
+  const weekInterval = compact.match(/(\d+)주마다/);
+  if (weekInterval || /매주|주\d+회|주마다/.test(compact)) {
+    return {
+      FREQ: 'WEEKLY',
+      ...(weekInterval ? { INTERVAL: weekInterval[1] } : {}),
+      ...(byday ? { BYDAY: byday } : {}),
+    };
+  }
+
+  const dayInterval = compact.match(/(\d+)일마다/);
+  if (dayInterval || /매일|하루/.test(compact)) {
+    return {
+      FREQ: 'DAILY',
+      ...(dayInterval ? { INTERVAL: dayInterval[1] } : {}),
+    };
+  }
+
+  return {};
+}
+
 function parseFrequency(
   fields: Record<string, string>,
   repeatPreset?: string,
@@ -205,7 +255,10 @@ export function resolveSavedRoutineRecurrence(
   if (!identityNamespace.trim() || !definition.itemId.trim() || !isPlainDate(definition.startDate)) {
     return { warnings: ['invalid_saved_routine_identity_or_start'] };
   }
-  const fields = parseRrule(definition.sourceRepeatRule);
+  const rruleFields = parseRrule(definition.sourceRepeatRule);
+  const fields = rruleFields.FREQ
+    ? rruleFields
+    : parseNaturalRepeatRule(definition.sourceRepeatRule, warnings);
   const frequency = parseFrequency(fields, definition.repeatPreset);
   if (!frequency) return { warnings };
   const interval = parseInterval(fields.INTERVAL, warnings);

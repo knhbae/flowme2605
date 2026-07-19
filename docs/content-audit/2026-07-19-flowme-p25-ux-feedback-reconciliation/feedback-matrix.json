@@ -1,0 +1,136 @@
+{
+  "date": "2026-07-19",
+  "verdict": "structural_correction_required",
+  "observedUserSessions": 0,
+  "inputs": [
+    {
+      "id": "owner",
+      "evidenceKind": "owner_feedback",
+      "summary": "Undated work, adjustment, post-save confidence, and whole Flow remain unsatisfactory."
+    },
+    {
+      "id": "codex",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "summary": "Found recurrence projection mismatch, memo parsing failure, dense editor, incoherent My Flow hierarchy, and export-scope ambiguity."
+    },
+    {
+      "id": "claude_design",
+      "evidenceKind": [
+        "heuristic_design_review",
+        "prior_package_screenshot"
+      ],
+      "summary": "Found duplicated public artifact representations, weak completion recovery, broken undated tray layout, stretched wide UI, and excessive copy/components."
+    }
+  ],
+  "themes": [
+    {
+      "id": "whole_flow_center",
+      "severity": "high",
+      "owner": "Post-save and whole Flow are not convincing.",
+      "codex": "Personal map, child Flow, Today, and All compete; lists may truncate.",
+      "claude": "Post-save continuation and wide My Flow are structurally weak.",
+      "decision": "Make the complete personal Flow the primary saved object; Today, Calendar, and exports are projections.",
+      "plannedSlices": ["P25-00B", "P25-02A", "P25-02B"]
+    },
+    {
+      "id": "undated_model",
+      "severity": "high",
+      "owner": "It is unclear how a task without a date is meant to be used.",
+      "codex": "The tray concept is plausible but hard to discover and poorly composed.",
+      "claude": "Ordering and mobile bottom-navigation overlap make the tray unreliable.",
+      "decision": "Treat no-date work as actionable Anytime work in My Flow; Calendar offers a scheduling queue.",
+      "plannedSlices": ["P25-00B", "P25-04A", "P25-04B"]
+    },
+    {
+      "id": "adjustment_progression",
+      "severity": "high",
+      "owner": "Adjustment appears roughly designed and not based on diverse needs.",
+      "codex": "The item editor can expose seven inputs and twenty buttons.",
+      "claude": "Use a lightweight item row and progressive detail sheet.",
+      "decision": "Default to title, date state, and note; reveal advanced schedule separately; add selection-based batch actions.",
+      "plannedSlices": ["P25-00B", "P25-03A", "P25-03B"]
+    },
+    {
+      "id": "projection_truth",
+      "severity": "blocking",
+      "owner": "The experience cannot improve if saved and scheduled results are not trustworthy.",
+      "codex": "Monthly recurrence has incompatible dates/counts across preview, Calendar, and export.",
+      "claude": "Recurring program/occurrence language remains unclear.",
+      "decision": "Fix canonical item/series/occurrence projection before runtime workspace redesign.",
+      "plannedSlices": ["P25-01A"]
+    },
+    {
+      "id": "public_artifact_copy",
+      "severity": "medium",
+      "owner": "Public vehicle journey is acceptable but still explains too much.",
+      "codex": "Preview checkboxes look like completion and explanatory bands repeat.",
+      "claude": "The same Flow appears three times and save actions duplicate.",
+      "decision": "Show one artifact preview, inclusion semantics, one save decision, and one source/caution disclosure.",
+      "plannedSlices": ["P25-06"]
+    },
+    {
+      "id": "completion_reopen",
+      "severity": "medium",
+      "owner": "Completion reversal has been hard to find in repeated use.",
+      "codex": "Immediate undo exists but persistent reopen is hard to discover.",
+      "claude": "Completion is hidden behind Open and differs by context.",
+      "decision": "Keep one row-level checkbox, immediate undo, and a persistent completed view with reopen.",
+      "plannedSlices": ["P25-05A"]
+    },
+    {
+      "id": "export_scope",
+      "severity": "medium",
+      "owner": "Per-item export is not meaningful; whole or selected export should be obvious.",
+      "codex": "Scope is only clear after opening and recurrence output differs from Calendar.",
+      "claude": "Export competes with save and lacks clear hierarchy.",
+      "decision": "Select current, selected, or whole Flow before choosing format; show exact eligible count.",
+      "plannedSlices": ["P25-05B"]
+    },
+    {
+      "id": "responsive_visual_system",
+      "severity": "medium",
+      "owner": "Overall UI still does not feel like a mature planning/execution service.",
+      "codex": "Wide surfaces underuse space and mobile editors are too dense.",
+      "claude": "Wide layout is stretched mobile; components and helper text are excessive.",
+      "decision": "Build shared responsive workspace components and apply them after object/state contracts are fixed.",
+      "plannedSlices": ["P25-02A", "P25-07"]
+    }
+  ],
+  "referencePatterns": [
+    {
+      "product": "Things",
+      "adopt": "Today/Upcoming/Anytime/Someday separate when work should surface; clearing schedule returns to active undated work.",
+      "avoid": "Copying the exact Apple-only IA or terminology without testing."
+    },
+    {
+      "product": "Structured",
+      "adopt": "Inbox-to-timeline scheduling boundary and replan/undo model.",
+      "avoid": "Making drag-and-drop mandatory for basic scheduling."
+    },
+    {
+      "product": "Google Calendar and Tasks",
+      "adopt": "Only dated tasks appear on the Calendar; task lists remain separately accessible.",
+      "avoid": "Turning FlowMe into another event calendar."
+    },
+    {
+      "product": "Todoist",
+      "adopt": "One completion control, immediate undo, persistent completed view.",
+      "avoid": "Collapsing recurring series and occurrence history into one task state."
+    },
+    {
+      "product": "Notion",
+      "adopt": "Duplicate public material into an editable personal copy; multiple views share one source of truth.",
+      "avoid": "Unrestricted property-heavy full editor."
+    },
+    {
+      "product": "Wanderlog",
+      "adopt": "Separate guide/source, whole plan, daily itinerary, reservations, and checklists; support batch movement.",
+      "avoid": "Travel-specific navigation as a universal Flow model."
+    }
+  ],
+  "nextGate": "P25-00B_core_workspace_prototype_owner_decision"
+}

@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FlowMe//Scoped Flow Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:url-draft-1784488209153-rpwbp::flow-e815f3d6-82c1-4010-add8-2a444d65f4d
+ 3-draft-item-memo-13ktcrm@flowme.local
+DTSTAMP:20260719T191010Z
+DTSTART;VALUE=DATE:20260830
+DTEND;VALUE=DATE:20260831
+SUMMARY:이사 업체 견적 비교하기
+DESCRIPTION:이사 업체 견적 비교하기\nFlow: 이사 전 확인할
+  일\n구간: 메모에서 나눈 할 일\n일정: 2026-08-30\n\n원문:
+  내 메모\n
+END:VEVENT
+END:VCALENDAR

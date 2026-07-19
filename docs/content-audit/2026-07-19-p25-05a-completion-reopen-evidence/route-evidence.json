@@ -1,0 +1,42 @@
+{
+  "package": "P25-05A completion and reopen",
+  "date": "2026-07-19",
+  "evidenceKind": "automated_browser",
+  "observedUserSessionCount": 0,
+  "routes": [
+    "/my",
+    "/calendar",
+    "/f/washer-tub-clean-monthly"
+  ],
+  "viewports": [
+    "390x844",
+    "1024x768"
+  ],
+  "markers": {
+    "immediateUndoLabel": "되돌리기",
+    "persistentCompletedViewVisible": true,
+    "persistentReopenAfterReload": true,
+    "completionControlPattern": "left_row_checkbox",
+    "completionControlCountPerItem": 1,
+    "completionButtonCount": 0,
+    "recurrenceSeriesCompletionControlCount": 0,
+    "recurrenceOccurrenceCompletionControlCount": 1,
+    "recurrenceOccurrenceAccessibleAction": "이번 회차 완료 체크",
+    "publishedRoutineDefinitionCompletionControlCount": 0,
+    "publishedRoutineDrillInExecutionLevel": "occurrence",
+    "internalChecklistExecutionLevel": "subcheck",
+    "internalChecklistAccessibleContextPresent": true,
+    "completionMembershipUnrelatedOccurrenceChangeCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/00-today-completion-undo-mobile.png",
+    "screenshots/01-persistent-completed-mobile.png",
+    "screenshots/02-recurrence-series-definition-mobile.png",
+    "screenshots/03-recurrence-occurrence-control-mobile.png",
+    "screenshots/04-published-routine-series-mobile.png",
+    "screenshots/04-returning-whole-flow-wide.png"
+  ]
+}

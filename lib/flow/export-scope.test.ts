@@ -25,6 +25,7 @@ test('whole Flow export keeps execution states but excludes structural removals'
   assert.deepEqual(plan.itemsByDestination.memo.map((item) => item.key), ['dated', 'undated', 'skipped']);
   assert.equal(plan.countByDestination.calendar, 2);
   assert.equal(plan.countByDestination.checklist, 3);
+  assert.equal(plan.includedCount, 3);
   assert.equal(plan.excludedCount, 1);
   assert.equal(plan.tombstonedCount, 1);
   assert.equal(plan.canExport, true);
@@ -85,4 +86,21 @@ test('duplicate and malformed keys never duplicate an exported row', () => {
 
   assert.equal(plan.duplicateKeyCount, 1);
   assert.equal(plan.items.filter((item) => item.key === 'dated').length, 1);
+});
+
+test('completion and reopen never change export membership or destination counts', () => {
+  const donePlan = buildFlowExportScopePlan({
+    scope: 'flow',
+    items: items.map((item) => ({ ...item, status: item.key === 'undated' ? 'done' : item.status })),
+    flowTitle: '여행 준비',
+  });
+  const reopenedPlan = buildFlowExportScopePlan({
+    scope: 'flow',
+    items: items.map((item) => ({ ...item, status: item.key === 'undated' ? 'reopened' : item.status })),
+    flowTitle: '여행 준비',
+  });
+
+  assert.deepEqual(reopenedPlan.items.map((item) => item.key), donePlan.items.map((item) => item.key));
+  assert.deepEqual(reopenedPlan.countByDestination, donePlan.countByDestination);
+  assert.equal(reopenedPlan.includedCount, donePlan.includedCount);
 });

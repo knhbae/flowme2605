@@ -35,6 +35,126 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-20 - Option B is the P25 internal release baseline
+
+**Decision:** Keep the P25 Option B whole-Flow workspace contract across save-before, post-save, My Flow, whole Flow, Calendar, item adjustment, batch adjustment, completion/reopen, and export. Treat the owner's instruction to complete P25 and permit substantial changes as implementation authorization. Treat P25-08 current command/browser evidence with unresolved automated Blocking/High `0` as the internal integration gate. Defer only public copy density, 1024px Calendar density, and advanced-editor path length to P26-00 comparison work.
+
+**Reason:** The nine-surface model is already implemented and shares one effective personal Flow, source-safe overlays, execution state, Calendar placement, and scoped export. Reopening the architecture without a contradictory Blocking/High signal would create another redesign loop. The three remaining issues are bounded comprehension and density hypotheses rather than model failures.
+
+**Applies to:** P25 release closeout, P26 planning, public save-before, first-save and returning My Flow, Calendar placement, progressive editing, batch mode, completion history, portable export, and related regression suites.
+
+**Reopen when:** production smoke exposes a Blocking/High regression, owner or Claude Design identifies a concrete structural contradiction, or later observed users consistently fail the same task under the current frame. Automated simulations remain insufficient to claim usability validation.
+
+**Related docs:** [P25 final closeout](./content-audit/2026-07-20-p25-final-closeout/README.md), [P25-08 evidence](./content-audit/2026-07-19-p25-08-internal-journey-gate/README.md), [P25-00B decision](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/README.md)
+
+### 2026-07-19 - Portable export chooses scope before format and counts the effective projection
+
+**Decision:** My Flow names three export scopes: `Flow 전체`, `직접 선택`, and `현재 항목`. Scope appears before format, and every visible count comes from `buildFlowExportScopePlan`: whole and selected list counts use effective included rows, current item resolves to one row, and each destination uses its own eligibility count. Undated rows remain valid for checklist, sheet, and memo but not Calendar/ICS. Completion and reopen do not change export membership; exclusion and tombstone do.
+
+**Reason:** Raw source length, checkbox count, and output count previously appeared beside one another without one source of truth. A user needs to predict exactly what will leave FlowMe before choosing calendar, checklist, sheet, or memo.
+
+**Applies to:** My Flow whole-Flow export, batch-selected export, item-detail portable export, personal drafts, source-backed personal copies, Calendar eligibility, filename scope suffixes, and P25-08 journey checks.
+
+**Reopen when:** observed users cannot distinguish `직접 선택` from structural inclusion, expect Calendar to contain undated rows, or need a cross-Flow export scope.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-05B evidence](./content-audit/2026-07-19-p25-05b-export-scope-count-evidence/README.md)
+
+### 2026-07-19 - Completion belongs to one executable level and remains reversible after reload
+
+**Decision:** A normal executable task has one row checkbox. Completing it exposes an immediate `되돌리기`, while the persistent `완료` view keeps the same checkbox available after reload. A recurrence series definition has no completion control; a projected occurrence has exactly one `이번 회차 완료 체크`; internal checklist checks remain a separate `subcheck` level. A published routine definition may drill into its next concrete occurrence, but the definition row itself does not become a second completion target.
+
+**Reason:** Completion previously changed vocabulary and placement by surface, and recurring definitions could look like executable occurrences. One control per executable level preserves confidence without hiding recovery after the snackbar disappears.
+
+**Applies to:** My Flow Today, whole-Flow mobile and wide workspaces, persistent completed records, Calendar occurrences, recurring personal drafts, published routines, detail checklists, and P25-05B export status handling.
+
+**Reopen when:** observed users cannot discover the persistent `완료` view, interpret `회차` incorrectly, or need completion history beyond the current local execution record.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-05A evidence](./content-audit/2026-07-19-p25-05a-completion-reopen-evidence/README.md)
+
+### 2026-07-19 - Anytime tasks execute in My Flow and are only placed from Calendar
+
+**Decision:** An open task without a date is a valid `언제든 할 일`. My Flow owns its completion, detail, notes, and personal adjustment. Calendar exposes the same task only in a selection-only `일정에 놓기` queue, where the user may place it on today or a chosen date, or keep it Anytime without mutation. The Calendar queue never exposes task-completion controls. Removing a personal date returns the task to Anytime. Mobile composes selected-day agenda, month grid, then a compact drawer; wide composes placement queue, month grid, and selected-day agenda.
+
+**Reason:** The previous full-width undated tray acted like a second execution list, while My Flow exposed only a fallback subset. Separating execution from placement makes an undated task useful immediately, prevents duplicate completion controls, and keeps Calendar date-first.
+
+**Applies to:** My Flow `지금`, Calendar placement queue, personal schedule overlays, completion undo, selected-day agenda, mobile/wide Calendar composition, and future P25 execution/export work.
+
+**Reopen when:** observed users interpret `언제든` as unfinished setup, cannot discover placement, or need a dedicated unscheduled planning surface beyond the current compact queue.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-04 evidence](./content-audit/2026-07-19-p25-04-anytime-calendar-placement-evidence/README.md)
+
+### 2026-07-19 - Whole-Flow batch adjustment is a temporary mode with recoverable personal changes
+
+**Decision:** Multi-item adjustment appears only after `여러 할 일 조정` inside `전체 Flow`. While active, selection checkboxes replace completion controls and a single toolbar owns date assignment, explicit `언제든` conversion, selected export, and recoverable removal. Applying a date or removal returns to the ordinary list with immediate undo. Direct source-backed Flows may be selected for date/export but cannot be structurally removed; personal drafts use tombstones and source-backed personal copies use included-step overlays. Recurring date changes block until occurrence or series scope is chosen. Explicit date removal is stored as an additive personal unscheduled override and never deletes the source date.
+
+**Reason:** Permanent selection controls would add a second checkbox meaning beside task completion and make every row heavier. Batch actions also need an impact boundary, source-safe ownership, and a real recovery path before destructive controls can appear.
+
+**Applies to:** My Flow mobile and wide whole-Flow workspaces, personal date overrides, personal structural tombstones, source-backed personal-copy inclusion, selected portable export, recurrence date movement, undo evidence, and P25-04 scheduling semantics.
+
+**Reopen when:** observed users cannot find the mode, need cross-Flow selection, or recurrence-heavy users demonstrate a safe and understandable multi-series scope model.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-03B evidence](./content-audit/2026-07-19-p25-03b-batch-adjustment-evidence/README.md)
+
+### 2026-07-19 - Personal item adjustment starts with task, date state, and personal memo
+
+**Decision:** My Flow uses one `할 일 조정` action. The first editing surface shows the task title, its date or undated state, and `내 메모`. Time, duration, place, recurrence, and item-type-specific records live behind `세부 일정`, which starts collapsed even when values already exist; the collapsed control summarizes those values. Memo resizing is not a separate command. Published source fields stay immutable and edits continue through personal overlays.
+
+**Reason:** Showing every supported field made a simple date or memo change feel more complex than a calendar or todo tool. Automatically reopening advanced controls on revisit also made stored complexity dominate the common path. A compact default with a truthful summary keeps capability without making every user parse the full model.
+
+**Applies to:** My Flow mobile drill-in, wide detail pane, source-backed personal copies, personal draft user items, Calendar item detail, portable item export inputs, and P25-03 evidence.
+
+**Reopen when:** observed users cannot find advanced schedule controls, a content type demonstrably requires one advanced value at the default level, or a future dedicated editor replaces the shared detail surface.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-03A evidence](./content-audit/2026-07-19-p25-03a-progressive-adjustment-evidence/README.md)
+
+### 2026-07-19 - Accepted draft phrases, not a target count, define the saved personal Flow
+
+**Decision:** Memo and URL-miss drafts may normalize user-authored phrases into action titles, but they must not add generic scope, ordering, or first-action rows to reach a minimum count. The pre-save inclusion/title review is the acceptance boundary. Only selected non-empty rows are saved, and their deterministic intake IDs must survive reload and downstream personal projections. Calendar and ICS remain eligible subsets because undated accepted rows stay in My Flow and list exports.
+
+**Reason:** The prior minimum-three behavior contradicted the visible claim that only user text was used and could make a saved Flow appear more complete than the user's input. Count integrity and source mapping must be trustworthy before redesigning the whole-Flow workspace.
+
+**Applies to:** `/flows` memo intake, URL-miss draft continuation, `url-first-supply-queue`, personal draft bundle creation, My Flow effective rows, Calendar eligibility, checklist/sheet/memo export counts, and P25 evidence.
+
+**Reopen when:** a real AI proposal lane is introduced with explicit provenance and review, or observed users require richer semantic grouping. A model-generated suggestion still cannot be represented as a user-authored source phrase.
+
+**Related docs:** [P25-01B spec](./specs/2026-07-19-memo-draft-split-count-integrity/spec.md), [P25-01B evidence](./content-audit/2026-07-19-p25-01b-memo-split-count-evidence/README.md)
+
+### 2026-07-19 - Published routine cadence is canonical and ambiguous cadence does not invent dates
+
+**Decision:** Public preview, source-specific workbench, saved My Flow Calendar, and ICS must consume one effective routine projection. A valid item-level recurrence rule has priority; otherwise one stable carrier may represent an unambiguous Flow-level daily, weekly, or monthly cadence. User-selected weekdays refine a weekly cadence only and cannot turn daily or monthly source cadence into a weekly fallback. Ambiguous natural ranges such as `7~10일마다` return a warning and no invented future occurrence. Source items and occurrence execution records remain unchanged. Portable saved-routine UIDs derive from stable series identity without exposing raw source item IDs.
+
+**Reason:** Independent recurrence generators allowed the same source to appear monthly before save, weekly after save, and one-off in export. That destroys trust in every later visual redesign. Rejecting ambiguity is safer than presenting precise dates that the source did not provide.
+
+**Applies to:** public routine preview, maintenance workbench, My Flow Calendar, source-backed occurrence completion/reopen, Calendar/ICS export, recurrence fixtures, and P25 parity evidence.
+
+**Reopen when:** a reviewed source has a condition-based cadence that requires a first-class state model, multiple independent repeating items in one Flow need separate series export, or a migration plan is required for already-imported portable UIDs.
+
+**Related docs:** [P25-01A spec](./specs/2026-07-19-canonical-effective-routine-projection/spec.md), [P25-01A evidence](./content-audit/2026-07-19-p25-01a-canonical-projection-evidence/README.md)
+
+### 2026-07-19 - P25 centers the complete personal Flow and treats dates as optional scheduling
+
+**Decision:** Treat the P24 deployment as an implementation baseline, not a finished UX. P25 must center the complete personal Flow as the saved object; My Flow `지금`, Calendar, completion history, and exports are projections of that object. A task without a date remains actionable and exportable as an Anytime task; Calendar only places dated work on its grid and exposes an explicit scheduling queue for undated work. Personal changes use overlays and never mutate published source. Common item adjustment shows title, date/Anytime state, and note first; time, duration, recurrence, source detail, and batch operations are progressively disclosed. Before runtime workspace implementation, P25-00B compares mobile/wide prototypes and records owner decisions. Before visual recurrence work, P25-01 makes every consumer use one effective item/series/occurrence projection.
+
+**Reason:** The owner cannot yet understand how undated work is meant to be used, finds adjustment rough and overcomplicated, and does not trust the post-save or whole-Flow experience. Codex found concrete recurrence and memo-count mismatches, while Claude Design found duplicated public artifacts, hidden completion recovery, weak wide composition, and excessive copy. These are one model problem, not independent route polish tasks.
+
+**Applies to:** public/source-backed save-before pages, post-save confirmation, My Flow local views, whole-Flow detail, personal overlays, Calendar undated placement, recurrence projection, completion/reopen, export scope, responsive components, P25 evidence, and future readiness review.
+
+**Reopen when:** P25-00B owner review selects a materially different mental model, canonical projection cannot preserve current source/personal/run ownership, or later observed users consistently understand and prefer a different dated/undated and whole-Flow relationship. Automated agent reviews alone do not satisfy the observed-user condition.
+
+**Related docs:** [P25 foundation spec](./specs/2026-07-19-execution-workspace-foundation/spec.md), [P25 feedback reconciliation](./content-audit/2026-07-19-flowme-p25-ux-feedback-reconciliation/README.md)
+
+### 2026-07-19 - P25 uses title-first execution rows and separates held occurrence recovery
+
+**Decision:** Use one shared responsive visual contract for My Flow, Calendar placement, export, execution notes, navigation, and bottom sheets. Compact execution rows show the effective task title before date and Flow metadata, use one visible `열기` label, and provide at least 44px completion and note targets. Flow colors identify ownership but do not color every command. User-facing undated language is `날짜 없는 할 일`, `날짜 없음`, `날짜 정하기`, and `날짜 없애기`; `Anytime` may remain an internal model term only. A personal recurring occurrence in `held` state is excluded from Today and Calendar ordinary execution while its execution record and stable occurrence ID remain available in a collapsed `보류한 일정` recovery entry under My Flow.
+
+**Reason:** The previous UI required users to parse Flow/date chips before the task title, mixed 32-36px controls, repeated Calendar explanation and legends, and used `언제든` without explaining how undated work participates in execution. A held occurrence also looked like ordinary actionable work even though its completion control was disabled. One title-first row and a separate recovery shelf reduce interpretation without changing source, overlay, recurrence, or execution ownership.
+
+**Applies to:** My Flow Today/whole-Flow/completed rows, Calendar agenda, Calendar date-free placement, execution notes, portable export entry, responsive navigation, personal recurrence held/reopen, and P25 visual evidence.
+
+**Reopen when:** observed users still cannot find date-free work or held recovery, 44px controls materially reduce information density on target devices, or a tested alternative row hierarchy produces faster and more accurate execution. Automated visual review alone does not satisfy the observed-user condition.
+
+**Related docs:** [P25-07 evidence](./content-audit/2026-07-19-p25-07-integrated-visual-language-evidence/README.md), [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md)
+
 ### 2026-07-19 - Save before, first-save confirmation, and returning execution are distinct frames
 
 **Decision:** Keep the 4-tab IA and current source, personal overlay, execution, recurrence, and export contracts. On source-backed and public save-before surfaces, show the natural artifact and representative effective items before long explanation. Offer `그대로 저장` as the primary action and a bounded `조정하고 저장` path for personal title and included items. After the first save, show the whole saved Flow at depth 0 before entering the returning My Flow workspace; later visits remain task-first. Calendar keeps dated work in grid/agenda and preserves undated work in a collapsed tray. Content held for source or risk review stays stored but exposes no ordinary execution or post-save action until it becomes eligible again.

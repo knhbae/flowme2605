@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  FLOW_UI_COMPACT_ACTION_CLASS,
+  FLOW_UI_SELECTION_ROW_CLASS,
+} from './flow-ui';
+
 export type FlowItemMultiSelectItem = {
   key: string;
   title: string;
@@ -29,34 +34,34 @@ export function FlowItemMultiSelect({
   const allSelected = items.length > 0 && items.every((item) => selectedKeySet.has(item.key));
 
   return (
-    <div>
-      <div className="flex items-center justify-between gap-3 pb-2">
-        <p className="text-xs font-semibold text-slate-500">할 일 선택</p>
+    <div className="min-w-0">
+      <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#E7E4DD]">
+        <p className="text-xs font-semibold text-[#6E6B64]">할 일 선택</p>
         <button
           type="button"
-          className="rounded-md px-2 py-1 text-xs font-bold text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className={FLOW_UI_COMPACT_ACTION_CLASS}
           onClick={onToggleAll}
         >
           {allSelected ? '선택 해제' : '모두 선택'}
         </button>
       </div>
-      <div className={`divide-y divide-slate-100 overflow-y-auto border-y border-slate-100 ${maxHeightClassName}`}>
+      <div className={`overflow-y-auto ${maxHeightClassName}`}>
         {items.map((item) => (
           <label
             key={item.key}
             data-testid={itemTestId}
-            className="flex min-h-12 cursor-pointer items-center gap-3 py-2 hover:bg-slate-50"
+            className={FLOW_UI_SELECTION_ROW_CLASS}
           >
             <input
               type="checkbox"
-              className="h-5 w-5 shrink-0 accent-blue-700"
+              className="h-5 w-5 shrink-0 rounded border-[#A7A39A] accent-[#3654FF] focus:outline-none focus:ring-2 focus:ring-[#3654FF]/25"
               checked={selectedKeySet.has(item.key)}
               aria-label={selectionAriaLabel(item)}
               onChange={() => onToggleItem(item.key)}
             />
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-semibold text-slate-900">{item.title}</span>
-              {item.meta ? <span className="mt-0.5 block truncate text-xs font-medium text-slate-500">{item.meta}</span> : null}
+              <span className="block truncate text-sm font-semibold text-[#1B1A17]">{item.title}</span>
+              {item.meta ? <span className="mt-0.5 block truncate text-xs font-medium text-[#6E6B64]">{item.meta}</span> : null}
             </span>
           </label>
         ))}

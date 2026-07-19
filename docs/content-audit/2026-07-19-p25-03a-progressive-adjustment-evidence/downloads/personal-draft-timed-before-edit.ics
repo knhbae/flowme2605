@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//My Flow Step Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:personal-structural:url-draft-1784472584226-b3xsm:personal-item-cc6cb32
+ d-a506-4e1b-8a5a-ce5ba7335b8b@flowme.local
+DTSTAMP:20260719T144946Z
+DTSTART;TZID=Asia/Seoul:20260812T093000
+DTEND;TZID=Asia/Seoul:20260812T101500
+SUMMARY:보험 서류 챙기기
+DESCRIPTION:보험 서류 챙기기\nFlow: 출발 시간 준비\n구간:
+  내가 추가한 할 일\n일정: 2026-08-12 09:30 · 예상 45분\n\n메
+ 모: 보험 서류 챙기기\n\n처리한 뒤 완료 체크합니다.\n
+END:VEVENT
+END:VCALENDAR

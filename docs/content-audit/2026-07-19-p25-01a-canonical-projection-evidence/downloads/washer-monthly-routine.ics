@@ -1,0 +1,32 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FlowMe//Personal Calendar Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:saved-routine-j36h7x@flowme.local
+DTSTAMP:20260719T130229Z
+DTSTART;VALUE=DATE:20260720
+DTEND;VALUE=DATE:20260721
+RRULE:FREQ=MONTHLY;BYMONTHDAY=20
+SUMMARY:통세척 코스 돌리고 문 열어 건조하기
+DESCRIPTION:통세척 코스 돌리고 문 열어 건조하기\nFlow: 세
+ 탁기 통세척 월간 관리\n구간: 월간 통세척\n일정: 2026-07-
+ 20\n\n완료 기준: 통세척 코스가 끝났고 세탁기 문을 열어
+  내부 건조 상태로 두었습니다.\n\n메모: 세탁조 안쪽 습
+ 기와 잔여 세제는 냄새와 오염감의 반복 원인이 되므로\
+ , 세척보다 건조까지 끝내야 루틴이 완성됩니다.\n\n세탁
+ 물 없이 내 모델 설명서의 통세척/통살균 코스를 실행한
+  뒤 문을 열어 내부 물기를 말립니다. 세제나 클리너는
+  설명서에서 허용한 종류와 양만 사용합니다.\n\n통세척
+  코스가 끝났고 세탁기 문을 열어 내부 건조 상태로 두
+ 었습니다.\n\n주의: 세제 사용량\, 고온 코스 가능 여부\,
+  무세제 통세척 지원 여부는 세탁기 모델 설명서를 우선
+ 합니다.\n\n원문: 세탁기 통세척 방법 완벽 가이드 https://
+ raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%
+ EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C\n
+URL:https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8
+ %EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9
+ C
+END:VEVENT
+END:VCALENDAR

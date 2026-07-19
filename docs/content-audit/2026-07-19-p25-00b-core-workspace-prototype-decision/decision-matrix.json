@@ -1,0 +1,228 @@
+{
+  "package": "P25-00B Core Execution Workspace Prototype Decision",
+  "date": "2026-07-19",
+  "runtimeChanged": false,
+  "observedUserSessionCount": 0,
+  "recommendedOption": "B",
+  "decisionStatus": "adopted_as_p25_internal_implementation_baseline",
+  "decisionBasis": "Owner directed the staged P25 program to completion and allowed substantial structural change; P25-08 current command/browser evidence reports zero unresolved automated Blocking or High findings.",
+  "observedUserValidation": false,
+  "finalDecisions": {
+    "save": "keep_option_b_defer_public_copy_density_to_p26",
+    "post-save": "keep_option_b",
+    "my-flow": "keep_option_b",
+    "whole-flow": "keep_option_b",
+    "calendar": "keep_option_b_defer_wide_density_to_p26",
+    "adjust": "keep_option_b_defer_advanced_path_length_to_p26",
+    "batch": "keep_option_b",
+    "completion": "keep_option_b",
+    "export": "keep_option_b"
+  },
+  "productModel": [
+    "whole_flow_artifact",
+    "personal_adjustment_overlay",
+    "task_or_occurrence_execution",
+    "calendar_and_export_projection"
+  ],
+  "scenarios": [
+    {
+      "id": "moving",
+      "label": "이사 기준일 역산형",
+      "primaryNeed": "이사일 기준 전체 일정과 직접 바꾼 항목 날짜를 함께 이해",
+      "states": ["anchor_relative", "personal_date_override", "anytime"]
+    },
+    {
+      "id": "vehicle",
+      "label": "차량 날짜 선택형 체크리스트",
+      "primaryNeed": "날짜 없이 실행하다 필요한 항목만 Calendar에 배치",
+      "states": ["anytime", "dated", "completed", "reopened"]
+    },
+    {
+      "id": "routine",
+      "label": "월간 청소 반복형",
+      "primaryNeed": "series와 한 회차를 구분하고 destination count를 일치",
+      "states": ["recurring_series", "occurrence", "done", "reopened"]
+    },
+    {
+      "id": "trip",
+      "label": "여행·프로젝트 그룹형",
+      "primaryNeed": "예약·짐·일정 묶음과 전체 구조를 한눈에 확인",
+      "states": ["grouped", "dated", "timed", "anytime"]
+    },
+    {
+      "id": "record",
+      "label": "냉장고 정리 기록형",
+      "primaryNeed": "행동과 기록을 분리하되 같은 Flow에서 유지",
+      "states": ["task", "record_note", "recurring"]
+    },
+    {
+      "id": "draft",
+      "label": "URL·메모 개인 초안형",
+      "primaryNeed": "사용자 문장을 잃거나 부풀리지 않고 구조·일정을 직접 조정",
+      "states": ["personal_item", "anytime", "timed", "reordered"]
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "save",
+      "primaryObject": "whole_flow_artifact_before_save",
+      "optionA": "현재 public 구조를 줄이고 상위 3개와 전체 보기 제공",
+      "optionB": "실제 전체 Flow와 날짜 상태를 먼저 보여주고 그대로 저장·먼저 조정 제공",
+      "recommendation": "B",
+      "firstAction": "전체 구조를 훑고 저장 또는 조정 선택",
+      "visibleControls": ["그대로 저장", "먼저 조정"],
+      "progressiveControls": ["원문과 주의사항"],
+      "targetDepth": 0,
+      "removedCopy": ["UI가 이미 보여주는 저장 결과 설명", "같은 약속의 반복 문단"],
+      "sourcePersonalBoundary": "원본 Flow는 읽기 전용이고 조정은 저장될 개인 사본 미리보기",
+      "mobile": "한 열 전체 artifact와 하단 save bar",
+      "wide": "artifact outline과 save decision을 같은 첫 화면에 배치",
+      "ownerQuestion": "전체 항목을 저장 전에 보여주고 그대로 저장·먼저 조정을 병렬 제공할지"
+    },
+    {
+      "id": "post-save",
+      "primaryObject": "saved_whole_flow",
+      "optionA": "저장 확인 뒤 오늘 첫 항목과 전체 보기",
+      "optionB": "짧은 저장 확인 뒤 같은 whole Flow component 전체 표시",
+      "recommendation": "B",
+      "firstAction": "저장된 전체 결과 확인",
+      "visibleControls": ["바로 시작", "조정", "가져가기"],
+      "progressiveControls": ["항목 상세"],
+      "targetDepth": 0,
+      "removedCopy": ["저장 기능 설명", "Today 한 행이 저장 결과를 대신하는 프레이밍"],
+      "sourcePersonalBoundary": "개인 Flow 이름이 1차, 출처는 2차",
+      "mobile": "저장 배너 아래 전체 outline",
+      "wide": "whole Flow workspace로 바로 착지",
+      "ownerQuestion": "저장 직후 Today가 아니라 전체 Flow를 기본 착지로 사용할지"
+    },
+    {
+      "id": "my-flow",
+      "primaryObject": "personal_execution_hub",
+      "optionA": "오늘·전체·완료의 기존 카드 대시보드 정리",
+      "optionB": "지금·내 Flow·완료를 분리하고 wide에서 Flow rail 사용",
+      "recommendation": "B",
+      "firstAction": "지금 실행하거나 저장한 Flow 열기",
+      "visibleControls": ["완료 체크", "열기", "내 Flow 열기"],
+      "progressiveControls": ["Flow 조정", "원문"],
+      "targetDepth": 1,
+      "removedCopy": ["진행률 대시보드 설명", "다음 할 일과 다음 항목 중복"],
+      "sourcePersonalBoundary": "개인 Flow rail이 1차, source child identity는 상세에서만 노출",
+      "mobile": "지금·내 Flow·완료 local tabs와 drill-in",
+      "wide": "Flow rail, 실행 목록, 선택 Flow 요약 3-pane",
+      "ownerQuestion": "local IA를 지금·내 Flow·완료로 고정할지"
+    },
+    {
+      "id": "whole-flow",
+      "primaryObject": "complete_saved_artifact",
+      "optionA": "accordion 목록과 inline detail",
+      "optionB": "모바일 drill-in, wide rail·outline·detail 3-pane",
+      "recommendation": "B",
+      "firstAction": "전체 구조에서 항목 선택",
+      "visibleControls": ["완료 체크", "열기", "조정", "가져가기"],
+      "progressiveControls": ["세부 일정", "원문과 참고"],
+      "targetDepth": 1,
+      "removedCopy": ["설명 카드", "5개 미리보기 후 별도 전체 sheet"],
+      "sourcePersonalBoundary": "effective personal item을 표시하고 source context는 disclosure로 유지",
+      "mobile": "outline 뒤 선택 항목 detail sheet",
+      "wide": "Flow rail·outline·detail가 동시에 보임",
+      "ownerQuestion": "저장 직후와 재방문에서 같은 whole Flow component를 재사용할지"
+    },
+    {
+      "id": "calendar",
+      "primaryObject": "dated_execution_projection",
+      "optionA": "grid 아래 날짜 없는 전체 실행 목록",
+      "optionB": "dated grid와 별도 일정에 놓기 queue",
+      "recommendation": "B",
+      "firstAction": "선택일 실행 또는 언제든 항목 일정 배치",
+      "visibleControls": ["선택일 완료", "오늘 배치", "날짜 선택"],
+      "progressiveControls": ["여러 항목 선택", "날짜 지우기"],
+      "targetDepth": 1,
+      "removedCopy": ["날짜 없는 할 일의 정의 문단", "Calendar 안의 두 번째 실행 목록"],
+      "sourcePersonalBoundary": "Calendar는 effective date가 있는 projection만 grid에 표시",
+      "mobile": "selected-day agenda 뒤 compact placement drawer",
+      "wide": "placement queue, grid, selected-day agenda 3-column",
+      "ownerQuestion": "My Flow의 언제든과 Calendar의 일정에 놓기를 다른 역할로 부를지"
+    },
+    {
+      "id": "adjust",
+      "primaryObject": "personal_item_overlay",
+      "optionA": "현재 필드를 한 editing stack에 유지",
+      "optionB": "제목·언제·메모 기본 drawer와 세부 일정 disclosure",
+      "recommendation": "B",
+      "firstAction": "자주 바꾸는 값 수정",
+      "visibleControls": ["제목", "언제든/날짜", "내 메모", "저장"],
+      "progressiveControls": ["시간", "소요 시간", "반복", "원문"],
+      "targetDepth": 1,
+      "removedCopy": ["콘텐츠와 무관한 범용 결정 상태", "메모 크게 보기 중복"],
+      "sourcePersonalBoundary": "source item 불변, 저장은 personal overlay만 변경",
+      "mobile": "한 bottom drawer에서 공통 수정 완료",
+      "wide": "오른쪽 detail pane에서 동일 필드 사용",
+      "ownerQuestion": "기본 수정 필드를 제목·언제·메모로 제한할지"
+    },
+    {
+      "id": "batch",
+      "primaryObject": "selected_effective_items",
+      "optionA": "Flow 기준일 전체 이동만 제공",
+      "optionB": "선택 항목의 날짜 이동·지우기·포함·export와 impact preview",
+      "recommendation": "B",
+      "firstAction": "항목 선택 후 하나의 batch command 실행",
+      "visibleControls": ["선택", "날짜 이동", "날짜 지우기", "포함/제외", "가져가기"],
+      "progressiveControls": ["전체 일정 이동", "반복 범위"],
+      "targetDepth": 1,
+      "removedCopy": ["어떤 항목이 변하는지 없는 전체 이동 안내"],
+      "sourcePersonalBoundary": "batch 결과도 personal overlay이며 source order/schedule은 불변",
+      "mobile": "선택 mode 하단 command bar",
+      "wide": "outline 다중 선택과 오른쪽 before/after preview",
+      "ownerQuestion": "항목 선택 mode에 네 가지 batch action을 둘지"
+    },
+    {
+      "id": "completion",
+      "primaryObject": "task_or_occurrence_execution_state",
+      "optionA": "즉시 undo만 제공하고 later reopen은 상세에서 수행",
+      "optionB": "즉시 undo와 완료 local tab의 persistent reopen 제공",
+      "recommendation": "B",
+      "firstAction": "한 row의 체크로 완료 또는 재개",
+      "visibleControls": ["완료 체크", "되돌리기", "재개"],
+      "progressiveControls": ["회차 메모", "전체 series 설정"],
+      "targetDepth": 0,
+      "removedCopy": ["한 occurrence의 중복 완료 control"],
+      "sourcePersonalBoundary": "completion은 execution run이며 structure를 변경하지 않음",
+      "mobile": "완료 snackbar와 완료 tab",
+      "wide": "같은 row pattern과 persistent history",
+      "ownerQuestion": "완료 직후 undo와 나중 재개를 모두 1탭으로 제공할지"
+    },
+    {
+      "id": "export",
+      "primaryObject": "explicit_projection_scope",
+      "optionA": "형식을 먼저 고르고 현재 열어본 항목을 암묵적으로 출력",
+      "optionB": "현재·선택·Flow 전체 범위와 예상 개수를 먼저 선택",
+      "recommendation": "B",
+      "firstAction": "보낼 범위 선택",
+      "visibleControls": ["현재", "선택", "Flow 전체", "형식", "가져가기"],
+      "progressiveControls": ["destination eligibility 사유"],
+      "targetDepth": 1,
+      "removedCopy": ["범위를 숨긴 형식 버튼", "item export를 Flow export처럼 보이게 하는 제목"],
+      "sourcePersonalBoundary": "모든 format은 같은 effective projection과 explicit scope를 사용",
+      "mobile": "scope radio 뒤 2열 format",
+      "wide": "scope와 format을 같은 작업면에서 비교",
+      "ownerQuestion": "모든 export를 범위 → 개수 → 형식 순서로 고정할지"
+    }
+  ],
+  "prototypeEvidence": {
+    "currentProductionCaptureCount": 14,
+    "proposedScreenCaptureCount": 24,
+    "interactiveReviewCaptureCount": 2,
+    "mobileWidth": 390,
+    "wideWidth": 1024,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "appRuntimeChanged": false,
+    "schemaChanged": false
+  },
+  "nextGates": {
+    "P25-01A": "projection and recurrence truth can proceed after screen-object agreement; no visual implementation dependency",
+    "P25-02": "requires owner decisions for local tabs, whole Flow frame, and responsive panes",
+    "P25-03": "requires owner decisions for progressive fields and batch action set",
+    "P25-04": "requires owner decision on 언제든 할 일 and 일정에 놓기 labels"
+  }
+}
