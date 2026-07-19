@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
-**Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
+**Last Updated:** 2026-07-19 (P25 internal UX foundation integrated; owner review next; external observation deferred)
+**Status:** v0.1.0 RELEASED / P25 INTERNAL GATE COMPLETE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 through P25-07 are complete by current unit/browser evidence. Run P25-08 six-journey integration next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Review the completed P25-08 six-journey package and decide keep/change/defer before opening another implementation phase. P25-01 through P25-08 are complete by current command/browser evidence. Actual user validation remains explicitly open at `0 / 15`; do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-08 internal six-journey integration; P24 remains the deployed production baseline |
-| User action now | No participant action. The owner may still review the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html), but the instruction to continue P25 authorizes the staged implementation baseline. |
-| AI action now | Re-run six representative journeys across save, adjustment, date placement, execution, completion/reopen, export, and reuse |
+| Active product gate | P25 owner/Claude Design keep/change/defer review; P24 remains the deployed production baseline |
+| User action now | Review the [P25-08 integrated journey package](./content-audit/2026-07-19-p25-08-internal-journey-gate/README.md); no participant recruitment yet |
+| AI action now | Preserve the green P25 integration baseline and convert owner/design findings into a bounded P26 backlog |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P25-08 integrated journey gate: six representative Flow shapes were replayed across save, whole-artifact confirmation, personal adjustment, date placement, completion/reopen, export, and recurrence recovery. Current evidence: representative journeys `9 / 9`, related regression `81 / 81`, screenshots `36`, download artifacts `5`, horizontal overflow `0`, console/page errors `0`, observed-user sessions `0`. The first wide Calendar capture exposed a High title-width regression; recurrence status now sits in row metadata and a `>= 100px` title-width assertion guards the fix. See [P25-08 evidence](./content-audit/2026-07-19-p25-08-internal-journey-gate/README.md). This closes the automated internal gate only; owner/Claude Design review is next and production remains P24 until merge/deploy.
 
 - 2026-07-19 P25-06/P25-07 public and visual integration: public save-before now shows one read-only artifact and one save decision surface; actual completion remains post-save. My Flow, Calendar placement, export, note, and navigation now share bounded surfaces, neutral action states, title-first rows, and 44px completion/note targets. User-facing undated vocabulary is `날짜 없는 할 일 / 날짜 없음 / 날짜 정하기`; held occurrences leave Today/Calendar ordinary execution but remain recoverable under `보류한 일정`. Current evidence: production build, P25/public regression `36 / 36`, recurrence hold/reopen `1 / 1`, undated placement `1 / 1`, mobile/wide overflow `0`, observed-user sessions `0`. See [P25-06 evidence](./content-audit/2026-07-19-p25-06-public-artifact-simplification-evidence/README.md) and [P25-07 evidence](./content-audit/2026-07-19-p25-07-integrated-visual-language-evidence/README.md).
 

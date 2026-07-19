@@ -12,6 +12,15 @@ async function captureEvidence(page: import('@playwright/test').Page, filename: 
   await page.screenshot({ path: path.join(screenshotsDir, filename), fullPage: true });
 }
 
+function collectConsoleErrors(page: import('@playwright/test').Page) {
+  const errors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  page.on('pageerror', (error) => errors.push(error.message));
+  return errors;
+}
+
 async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
@@ -28,6 +37,7 @@ async function saveMovingFlow(page: import('@playwright/test').Page) {
 
 test.describe('P25 whole Flow workspace', () => {
   test('mobile keeps the complete saved Flow visible and exposes a persistent completed view', async ({ page }) => {
+    const consoleErrors = collectConsoleErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await saveMovingFlow(page);
 
@@ -76,9 +86,11 @@ test.describe('P25 whole Flow workspace', () => {
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBe(0);
+    expect(consoleErrors).toEqual([]);
   });
 
   test('wide selected Flow uses the same whole-Flow outline contract', async ({ page }) => {
+    const consoleErrors = collectConsoleErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/flow-maps/moving-d30');
     await page.evaluate(() => window.localStorage.clear());
@@ -113,9 +125,11 @@ test.describe('P25 whole Flow workspace', () => {
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBe(0);
+    expect(consoleErrors).toEqual([]);
   });
 
   test('wide multi-Flow workspace exposes rail, outline, and detail without competing scope controls', async ({ page }) => {
+    const consoleErrors = collectConsoleErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await saveMovingFlow(page);
 
@@ -147,5 +161,6 @@ test.describe('P25 whole Flow workspace', () => {
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBe(0);
+    expect(consoleErrors).toEqual([]);
   });
 });

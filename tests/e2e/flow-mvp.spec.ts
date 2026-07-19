@@ -4579,8 +4579,13 @@ test('source-backed undated checklist can add and remove a personal date', async
   await page.goto('/my');
   await page.getByTestId('my-flow-view-flow').click();
   const wideFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="travel-packing-list"]');
-  await wideFlow.getByTestId('my-flow-next-action-open').click();
-  const wideDetail = wideFlow.getByTestId('my-flow-overview-inline-detail').getByTestId('my-flow-item-detail');
+  await wideFlow
+    .getByTestId('my-flow-whole-flow-outline')
+    .getByTestId('my-flow-execution-row-shell')
+    .first()
+    .getByRole('button', { name: /열기/ })
+    .click();
+  const wideDetail = wideFlow.getByTestId('my-flow-workspace-detail-pane').getByTestId('my-flow-item-detail');
   await enterMyFlowDetailEditMode(wideDetail);
   await expect(wideDetail.getByTestId('my-flow-detail-date-input')).toHaveValue('2026-07-24');
   if (evidenceDir) {
@@ -6966,7 +6971,7 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-20');
 
   const preview = page.getByTestId('maintenance-routine-next-card');
-  await expect(preview.getByRole('checkbox')).toHaveCount(4);
+  await expect(preview.getByRole('checkbox')).toHaveCount(0);
   for (const label of ['7월 20일', '8월 20일', '9월 20일', '10월 20일']) {
     await expect(preview).toContainText(label);
   }
@@ -7046,6 +7051,13 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await expectNoHorizontalOverflow(page);
+  const wideAgendaTitle = page
+    .getByTestId('my-flow-calendar-selected-day')
+    .getByTestId('my-flow-row-title')
+    .filter({ hasText: '통세척 코스 돌리고 문 열어 건조하기' });
+  const wideAgendaTitleBox = await wideAgendaTitle.boundingBox();
+  expect(wideAgendaTitleBox).not.toBeNull();
+  expect(wideAgendaTitleBox!.width).toBeGreaterThanOrEqual(100);
   if (evidenceDir) {
     await page.screenshot({ path: `${evidenceDir}/screenshots/03-washer-monthly-calendar-wide.png`, fullPage: true });
   }
@@ -7325,7 +7337,9 @@ test('completed My Flow separates private reflection from an unsent source corre
   await page.getByTestId('my-flow-view-flow').click();
   const wideFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
   await expect(wideFlow.getByTestId('my-flow-completion-feedback')).toBeVisible();
-  await expect(wideFlow).toContainText('남은 실행 항목이 없습니다.');
+  await expect(
+    wideFlow.getByTestId('my-flow-workspace-flow-summary').getByText('남은 할 일이 없습니다', { exact: true }),
+  ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
   await page.evaluate(() => {

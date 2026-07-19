@@ -86,9 +86,9 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 ## P25-08 - Internal gate
 
-- [ ] Run six end-to-end simulated journeys.
-- [ ] Capture mobile and wide screenshots.
-- [ ] Record parity, tap depth, accessibility, overflow, and console evidence.
-- [ ] Run unit, docs, build, and relevant full E2E.
-- [ ] Produce owner readiness decision package.
-- [ ] Keep real-user observation at `0 / 15` unless explicitly reopened later.
+- [x] Run six end-to-end simulated journeys.
+- [x] Capture mobile and wide screenshots.
+- [x] Record parity, tap depth, accessibility, overflow, and console evidence.
+- [x] Run unit, docs, build, and relevant full E2E.
+- [x] Produce owner readiness decision package.
+- [x] Keep real-user observation at `0 / 15` unless explicitly reopened later.

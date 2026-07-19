@@ -8741,6 +8741,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       markerColor?: string;
       undatedMetaLabel?: string;
       seriesDefinition?: boolean;
+      routineStatusInMeta?: boolean;
     } = {},
   ) => {
     const checked = isMyFlowRowChecked(row.flow, row);
@@ -8774,16 +8775,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       row.structuralOccurrenceId &&
       (occurrenceExecutionState === 'skipped' || occurrenceExecutionState === 'held'),
     );
-    const hasRowMeta = showDateMeta || Boolean(displayTimedSchedule) || Boolean(displayTiming) || showSectionMeta || showFlowChip || showProgressMeta || Boolean(occurrenceStatusLabel);
-    const rowOpenAriaContext = [flowChipLabel, displayDate].filter(Boolean).join(' · ');
-    const rowOpenAriaLabel = options.showOpenLabel
-      ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
-      : undefined;
     const isRoutineExecution = Boolean(
       row.structuralOccurrenceId ||
       options.kind === 'routine' ||
       row.itemType?.primary === 'routine_session',
     );
+    const hasRowMeta = showDateMeta || Boolean(displayTimedSchedule) || Boolean(displayTiming) || showSectionMeta || showFlowChip || showProgressMeta || Boolean(occurrenceStatusLabel) || Boolean(options.routineStatusInMeta && isRoutineExecution);
+    const rowOpenAriaContext = [flowChipLabel, displayDate].filter(Boolean).join(' · ');
+    const rowOpenAriaLabel = options.showOpenLabel
+      ? `${displayTitle} 열기${rowOpenAriaContext ? ` · ${rowOpenAriaContext}` : ''}`
+      : undefined;
     const isSeriesDefinition = Boolean(options.seriesDefinition);
     const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
     const routineDragKey = getMyFlowRowInstanceKey(row);
@@ -8880,12 +8881,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     {occurrenceStatusLabel}
                   </span>
                 ) : null}
+                {options.routineStatusInMeta && isRoutineExecution ? (
+                  <span data-testid="my-flow-routine-progress-pill" className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+                    {routineProgressLabel}
+                  </span>
+                ) : null}
                 </span>
               ) : null}
             </span>
           </button>
           {renderMyFlowExecutionNoteButton(row)}
-          {isRoutineExecution ? (
+          {isRoutineExecution && !options.routineStatusInMeta ? (
             <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
               {routineProgressLabel}
             </span>
@@ -8976,13 +8982,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   {occurrenceStatusLabel}
                 </span>
               ) : null}
+              {options.routineStatusInMeta && isRoutineExecution ? (
+                <span data-testid="my-flow-routine-progress-pill" className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+                  {routineProgressLabel}
+                </span>
+              ) : null}
               </span>
             ) : null}
             {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
         </button>
         {renderMyFlowExecutionNoteButton(row)}
-        {isRoutineExecution ? (
+        {isRoutineExecution && !options.routineStatusInMeta ? (
           <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
             {routineProgressLabel}
           </span>
@@ -14081,6 +14092,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                               showOpenLabel: true,
                               detailSurface: 'calendar',
                               markerColor: flowMarker.color,
+                              routineStatusInMeta: true,
                             }))}
                           </div>
                         </section>

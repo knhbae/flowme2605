@@ -559,11 +559,11 @@ test('personal draft structural items add, complete, tombstone, and undo without
 
   await addedItem.getByTestId('my-flow-mobile-structure-step-row').click();
   let detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  const complete = detail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 체크' });
+  const complete = addedItem.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 체크' });
   await complete.focus();
   await expect(complete).toBeFocused();
   await page.keyboard.press('Space');
-  const reopen = detail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 취소' });
+  const reopen = addedItem.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 취소' });
   await expect(reopen).toBeChecked();
   await reopen.press('Space');
   await expect(complete).not.toBeChecked();
@@ -722,7 +722,7 @@ test('personal draft order and persistent recovery survive reload without changi
   editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await detail.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 체크' }).check();
+  await editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 체크' }).check();
 
   const orderBeforeMove = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
     (elements) => elements.map((element) => element.getAttribute('data-item-id')),
@@ -769,7 +769,7 @@ test('personal draft order and persistent recovery survive reload without changi
   editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(detail.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
+  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
   await detail.getByTestId('personal-draft-delete-item').click();
 
   await page.reload();
@@ -802,7 +802,7 @@ test('personal draft order and persistent recovery survive reload without changi
   expect(restoredOrder).toEqual(orderAfterMove);
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(detail.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
+  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
   const restoredReadSummary = detail.getByTestId('my-flow-detail-read-summary');
   await restoredReadSummary.locator('summary').click();
   await restoredReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
@@ -1341,7 +1341,7 @@ test('personal draft structural list exports share effective items across checkl
   detail = draftFlow
     .getByTestId('my-flow-mobile-structure-inline-detail')
     .getByTestId('my-flow-item-detail');
-  await detail.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 체크' }).check();
+  await editedSourceItem.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 체크' }).check();
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
 
   await draftFlow.getByTestId('personal-draft-add-entry').click();
@@ -1459,7 +1459,7 @@ test('personal draft structural list exports share effective items across checkl
   detail = draftFlow
     .getByTestId('my-flow-mobile-structure-inline-detail')
     .getByTestId('my-flow-item-detail');
-  await detail.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 취소' }).uncheck();
+  await editedSourceItem.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 취소' }).uncheck();
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   const checklistReopened = await copyListExport(draftFlow, 'checklist');
   expect(checklistReopened).toContain('- [ ] 여권과 예약 정보 최종 확인');
