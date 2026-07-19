@@ -1,7 +1,7 @@
 {
   "packageId": "2026-07-20-p25-final-closeout",
   "program": "P25 Execution Workspace Foundation",
-  "decisionStatus": "internal_baseline_verified_merge_pending",
+  "decisionStatus": "released_internal_baseline_observation_not_started",
   "selectedFrame": "option_b_whole_flow_workspace",
   "decisionBasis": [
     "owner_direction_to_complete_p25_with_substantial_changes_allowed",
@@ -23,16 +23,29 @@
   "automatedUnresolved": { "blocking": 0, "high": 0, "medium": 3 },
   "releaseVerification": {
     "unit": { "passed": 526, "failed": 0 },
-    "playwright": { "passed": 285, "failed": 0, "files": 8, "execution": "bounded_serial_groups" },
-    "docs": { "requiredFiles": 14, "localLinks": 2527, "passed": true },
+    "playwright": { "passed": 286, "failed": 0, "files": 8, "execution": "bounded_serial_groups" },
+    "docs": { "requiredFiles": 14, "localLinks": 2528, "passed": true },
     "build": { "pages": 18, "passed": true },
     "security": { "high": 0, "critical": 0, "moderate": 2 },
     "diffCheckPassed": true
   },
   "release": {
-    "branch": "codex/p25-ux-foundation-plan",
-    "mergeStatus": "pending",
-    "productionStatus": "p24_main_baseline_p25_verified_not_merged",
-    "productionUrl": "https://flowme2605.vercel.app"
+    "branch": "main",
+    "foundationPullRequest": "https://github.com/knhbae/flowme2605/pull/136",
+    "hotfixPullRequest": "https://github.com/knhbae/flowme2605/pull/137",
+    "foundationMergeSha": "bd5f201c49fa102660ee6e4ede214f91b50c8e42",
+    "productionMergeSha": "b0fb899cabfc7476c8b06dbb754dfd6567b879d0",
+    "mergeStatus": "merged",
+    "mainCiStatus": "success",
+    "mainCiUrl": "https://github.com/knhbae/flowme2605/actions/runs/29706770789",
+    "productionStatus": "ready_smoke_passed",
+    "productionUrl": "https://flowme2605.vercel.app",
+    "deploymentDashboardUrl": "https://vercel.com/flowme/flowme2605/8HsqNxe84bkRK9G6U642BC8URh7g",
+    "anonymousAccessVerified": true,
+    "routeViewportChecks": 12,
+    "httpFailureCount": 0,
+    "redirectedOffCanonicalCount": 0,
+    "horizontalOverflowCount": 0,
+    "consolePageErrorCount": 0
   }
 }

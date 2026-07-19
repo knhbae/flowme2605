@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-20<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P25 verified release candidate<br>
+**Current Validation Stage:** internal alpha / P25 released, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P25 merge and production deploy; then P26-00 comprehension/density decision audit
+**Next Milestone:** P26-00 comprehension/density decision audit
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -44,7 +44,7 @@ Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25
 | P25-06/07 | Public artifact simplification and shared responsive visual language | Done by current browser evidence; one read-only public artifact, title-first execution rows, shared actions/sheets, explicit date-free language, and held-occurrence recovery |
 | P25-08 | Internal six-journey integration gate | Done by current command/browser evidence: six shapes, representative `9 / 9`, related regression `81 / 81`, screenshots `36`, automated Blocking/High `0`; observed users remain `0 / 15` |
 
-P25 implementation and full clean-worktree release verification are complete in the release-candidate branch. Option B is frozen as the internal baseline because the owner explicitly asked the agent to complete the full P25 program and allowed substantial changes; this is implementation authorization, not observed-user validation. Current verification is unit `526 / 526`, Playwright `285 / 285`, docs `2527` links, production build green, and high/critical audit findings `0`. Release still requires merge, Vercel deployment, and production smoke.
+P25 is released as the internal production baseline. Foundation PR #136 merged as `bd5f201c`; production smoke then exposed a timezone-boundary hydration issue, which hotfix PR #137 fixed and merged as `b0fb899c`. The canonical Vercel service is anonymous and READY. Current verification is unit `526 / 526`, Playwright `286 / 286`, production build green, high/critical audit findings `0`, and live smoke `12 / 12` with HTTP/redirect/overflow/console-page error counts all `0`. Option B remains implementation authorization and automated evidence, not observed-user validation.
 
 ### Stage 0 First Flag MVP
 
@@ -92,15 +92,15 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P24-J0~J5 remain the deployed baseline until the P25 release candidate is merged and production-verified. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P25 is the deployed internal baseline. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
 | Completed | AI | P25-06/P25-07 public artifact and visual integration | Preserve one public artifact and shared responsive action vocabulary | Current browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-01~P25-05 correctness, whole-Flow workspace, personal adjustment, Anytime placement, completion, and export | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-08 internal six-journey gate | Preserve current mobile/wide integration evidence | Automated Blocking/High 0 and owner decision package exist; observed users remain 0 |
-| Active | AI | P25 release closeout | Full regression, merge, deploy, and live smoke | Production serves the verified P25 commit and release docs state the final truth |
-| Next | AI, then owner/Claude Design | P26-00 comprehension and density decision | Compare public copy, wide Calendar, and advanced-editor alternatives | One bounded P26-01 implementation slice is selected without claiming observed-user validation |
+| Completed | AI | P25 release closeout | Preserve PR #136/#137 and final live-smoke evidence | Production serves `b0fb899c`; observed users remain 0 |
+| Active | AI, then owner/Claude Design | P26-00 comprehension and density decision | Compare public copy, wide Calendar, and advanced-editor alternatives | One bounded P26-01 implementation slice is selected without claiming observed-user validation |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |

@@ -40,9 +40,11 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-19 P25 Execution Workspace Foundation](./2026-07-19-execution-workspace-foundation/spec.md) - implementation, internal integration, and full release verification are complete; the active gate is merge, Vercel deploy, and production smoke. External observation remains deferred.
+- No implementation spec is active. The next gate is the docs/prototype-only [P26-00 comprehension and density audit](../content-audit/2026-07-20-p25-final-closeout/next-goal-p26-ko.md); external observation remains deferred.
 
 ### Completed Or Closed
+
+- [2026-07-19 P25 Execution Workspace Foundation](./2026-07-19-execution-workspace-foundation/spec.md) - released through PR #136 and hydration hotfix PR #137; canonical production smoke passed `12 / 12`, while observed-user sessions remain `0 / 15`.
 
 - [2026-07-19 P25 Responsive Whole-Flow Workspace](./2026-07-19-responsive-whole-flow-workspace/spec.md) - completed P25-02 contract for shared first-save/return hierarchy and mobile/wide whole-Flow composition.
 

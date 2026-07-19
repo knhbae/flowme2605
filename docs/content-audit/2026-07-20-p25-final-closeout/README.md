@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-20
 
-**Status:** internal implementation and full release verification complete; merge and production deployment pending
+**Status:** released to production; internal verification complete, observed-user validation not started
 
 **Observed-user sessions:** `0 / 15`
 
@@ -12,7 +12,9 @@ P25 rebuilt the current product around one complete personal Flow rather than ad
 
 P25-08 reports no unresolved automated Blocking or High finding. That closes the internal implementation gate, not observed usability. Three Medium hypotheses move to P26: public explanatory-copy density, 1024px Calendar density, and advanced-editor path length.
 
-The final release command set is green in the clean P25 worktree: unit `526 / 526`, full Playwright `285 / 285`, docs `14` required files and `2527` local links, production build `18 / 18` pages, high/critical security findings `0`, and `git diff --check` errors `0`. The full E2E suite was executed as bounded serial groups because one monolithic run exceeded the local time budget and a fully parallel diagnostic run caused server contention; neither invalid attempt is counted as evidence.
+The final release command set is green in the clean P25 worktree: unit `526 / 526`, full Playwright `286 / 286`, docs `14` required files and `2528` local links, production build `18 / 18` pages, high/critical security findings `0`, and `git diff --check` errors `0`. The full E2E suite was executed as bounded serial groups because one monolithic run exceeded the local time budget and a fully parallel diagnostic run caused server contention; neither invalid attempt is counted as evidence.
+
+P25 foundation PR [#136](https://github.com/knhbae/flowme2605/pull/136) merged as `bd5f201c49fa102660ee6e4ede214f91b50c8e42`. Its first production smoke exposed one timezone-boundary hydration regression on the public monthly-routine route. Hotfix PR [#137](https://github.com/knhbae/flowme2605/pull/137) fixed that regression and merged as `b0fb899cabfc7476c8b06dbb754dfd6567b879d0`; its `main` CI run passed. The canonical Vercel deployment is anonymous and READY. Final production smoke passed `12 / 12` route/viewport checks with HTTP failures `0`, off-canonical redirects `0`, horizontal overflow `0`, and console/page errors `0`.
 
 ## Package
 
@@ -22,6 +24,8 @@ The final release command set is green in the clean P25 worktree: unit `526 / 52
 - [Responsive visual review board](./review.html)
 - [Next detailed P26-00 goal](./next-goal-p26-ko.md)
 - [P25-08 integrated browser evidence](../2026-07-19-p25-08-internal-journey-gate/README.md)
+- [Final production smoke result](./production-smoke/results.json)
+- Production screenshots: `production-smoke/screenshots/` (`12` files)
 
 ## P25 Closure Matrix
 
@@ -47,4 +51,4 @@ The final release command set is green in the clean P25 worktree: unit `526 / 52
 
 ## Release Boundary
 
-The release is not complete until this verified branch is merged into `main`, the Vercel deployment is anonymous and READY, and representative production routes are smoke-tested. Until then, `https://flowme2605.vercel.app` remains the P24 production baseline.
+P25 is released at <https://flowme2605.vercel.app> on `main` commit `b0fb899cabfc7476c8b06dbb754dfd6567b879d0`. Production availability and browser smoke close the release boundary only. Observed-user sessions remain `0 / 15`, so this package does not claim first-use comprehension, repeated-use value, or usability validation.
