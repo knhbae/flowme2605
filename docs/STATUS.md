@@ -3,7 +3,7 @@
 **Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
 **Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. First complete P25-00B core-screen prototypes and an owner decision, then fix projection truth before runtime UI restructuring. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Run P25 as an internal execution-workspace correction. The P25-00B A/B prototype and six-shape simulation are ready; obtain the owner screen decisions while P25-01 correctness work proceeds independently. Do not start P25-02 runtime restructuring before the frame decision. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,15 +11,16 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-00B core workspace prototype and owner decision; P24 remains the deployed implementation baseline |
-| User action now | Review P25 mobile/wide alternatives and mark keep/change/reject; no participant action |
-| AI action now | Build the P25-00B decision package without changing runtime, then implement only the approved staged slices |
+| Active product gate | P25-00B prototype ready, owner screen decision pending; P24 remains the deployed implementation baseline |
+| User action now | Open the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html) and mark keep/change/reject; no participant action |
+| AI action now | Start P25-01A/B correctness independently; keep P25-02 UI implementation gated by the owner frame decision |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
 
 - 2026-07-19 P25 UX foundation reset: The owner, Codex production/source review, and Claude Design heuristic review agree that P24 is not yet a satisfying execution workspace. The unresolved problems are structural: `날짜 없는 할 일` lacks a clear user model, adjustment exposes fields rather than user intent, post-save and returning whole-Flow views do not hold one stable hierarchy, public preview/copy is repetitive, wide layouts remain stretched mobile surfaces, and a reported monthly recurrence differs across preview, Calendar, and export. P25 therefore starts with a docs-only reconciliation and a P25-00B owner prototype gate, then fixes canonical projection truth before runtime workspace implementation. The committed planning baseline is the [P25 execution workspace spec](./specs/2026-07-19-execution-workspace-foundation/spec.md) and [feedback reconciliation board](./content-audit/2026-07-19-flowme-p25-ux-feedback-reconciliation/README.md). This planning package does not change app runtime or count as observed-user validation; sessions remain `0 / 15` and recruitment remains closed.
+- 2026-07-19 P25-00B prototype gate: Current production was recaptured at 390/1024 and compared with options A/B across save-before, post-save, My Flow, whole Flow, Calendar placement, progressive adjustment, batch change, completion/reopen, and export scope. Six Flow shapes are switchable in the [interactive decision package](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/README.md). Browser evidence reports 40 current/proposed/review captures, horizontal overflow 0, and console errors 0. Option B is the agent recommendation, but owner keep/change/reject remains pending; this is not observed-user evidence and does not authorize P25-02 runtime UI work yet.
 
 - 2026-07-19 P24 production closeout: PR [#128](https://github.com/knhbae/flowme2605/pull/128) merged as `616025bf`, GitHub Docs/Unit/Build and Playwright jobs passed, and Vercel production deployment `dpl_HSZz4qJM2MUqqoA9H4Xn5RtmoCx5` reached `READY` at <https://flowme2605.vercel.app>. Current production browser checks confirmed the mobile moving post-save whole Flow (`5` rows), public vehicle post-save whole Flow (`10` rows), wide My Flow, wide Calendar, and collapsed undated tray with horizontal overflow `0` and console errors `0`. P24 is therefore closed as `implementation_complete_observation_not_started`, not as user-validated or observation-ready. Observed users remain `0 / 15`; no recruitment, request, scheduling, or session occurred.
 

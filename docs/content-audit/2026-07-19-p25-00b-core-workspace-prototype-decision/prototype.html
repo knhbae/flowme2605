@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P25 핵심 작업공간 프로토타입</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18211d;
+      --muted: #66716b;
+      --subtle: #8a938e;
+      --line: #dce2de;
+      --line-strong: #c9d1cc;
+      --paper: #ffffff;
+      --canvas: #f4f6f3;
+      --soft: #edf1ee;
+      --green: #2f6b54;
+      --green-soft: #e5f2eb;
+      --blue: #2b5fb8;
+      --blue-soft: #eaf0fb;
+      --amber: #a85d22;
+      --amber-soft: #fff1df;
+      --red: #a64a43;
+      --red-soft: #fbeae8;
+      --shadow: 0 14px 34px rgba(24, 33, 29, 0.11);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    button, input, select, textarea { font: inherit; letter-spacing: 0; }
+    button, select { cursor: pointer; }
+    button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible {
+      outline: 3px solid rgba(43, 95, 184, 0.28);
+      outline-offset: 2px;
+    }
+    a { color: inherit; }
+    .review-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 68px;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(14px);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 8px;
+      color: white;
+      background: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .brand strong { display: block; font-size: 15px; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; }
+    .review-status { display: flex; align-items: center; gap: 8px; }
+    .review-status span {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--amber-soft);
+      color: #78451d;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .review-layout {
+      display: grid;
+      grid-template-columns: 284px minmax(0, 1fr);
+      min-height: calc(100vh - 68px);
+    }
+    .review-sidebar {
+      position: sticky;
+      top: 68px;
+      align-self: start;
+      height: calc(100vh - 68px);
+      overflow: auto;
+      padding: 20px 16px 28px;
+      border-right: 1px solid var(--line);
+      background: #fafbf9;
+    }
+    .control-block + .control-block { margin-top: 20px; }
+    .control-label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .select {
+      width: 100%;
+      min-height: 42px;
+      padding: 0 34px 0 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      color: var(--ink);
+      background: white;
+    }
+    .segmented {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 8px;
+      background: var(--soft);
+    }
+    .segmented button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .segmented button[aria-pressed="true"] {
+      color: var(--ink);
+      background: white;
+      box-shadow: 0 1px 4px rgba(24, 33, 29, 0.12);
+    }
+    .surface-nav { display: grid; gap: 4px; }
+    .surface-nav button {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      align-items: center;
+      min-height: 44px;
+      padding: 8px 9px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      text-align: left;
+    }
+    .surface-nav button[aria-current="true"] {
+      border-color: #bed5c8;
+      color: var(--ink);
+      background: var(--green-soft);
+    }
+    .surface-index { color: var(--subtle); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .surface-name { font-size: 13px; font-weight: 700; }
+    .surface-check { color: var(--green); font-size: 11px; font-weight: 800; }
+    .sidebar-note {
+      margin-top: 22px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: white;
+      font-size: 12px;
+    }
+    .review-main { min-width: 0; padding: 28px clamp(18px, 4vw, 52px) 64px; }
+    .review-copy { max-width: 920px; margin: 0 auto 24px; }
+    .review-copy .eyebrow { color: var(--blue); font-size: 11px; font-weight: 800; }
+    .review-copy h1 { max-width: 760px; margin: 7px 0 8px; font-size: 28px; line-height: 1.25; }
+    .review-copy p { max-width: 760px; margin: 0; color: var(--muted); }
+    .review-copy .recommendation {
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #22533f;
+      background: var(--green-soft);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .prototype-stage {
+      display: grid;
+      min-height: 760px;
+      place-items: start center;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(#edf0ec 1px, transparent 1px),
+        linear-gradient(90deg, #edf0ec 1px, transparent 1px),
+        #f7f8f6;
+      background-size: 24px 24px;
+      overflow: auto;
+    }
+    .device-shell {
+      width: 390px;
+      min-height: 844px;
+      border: 1px solid #bfc7c2;
+      border-radius: 24px;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .device-shell[data-device="wide"] { width: min(1024px, 100%); min-height: 768px; border-radius: 12px; }
+    .prototype-app { position: relative; min-height: inherit; background: #f7f8f6; }
+    .app-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: white;
+    }
+    .app-topbar strong { font-size: 17px; letter-spacing: 0; }
+    .app-topbar nav { display: flex; align-items: center; gap: 4px; }
+    .app-topbar nav span {
+      padding: 8px 11px;
+      border-radius: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .app-topbar nav .active { color: white; background: var(--ink); }
+    .icon-button {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      color: var(--ink);
+      background: white;
+      font-size: 18px;
+    }
+    .app-body { padding: 18px 16px 86px; }
+    .wide .app-body { padding: 24px 24px 30px; }
+    .app-bottom-nav {
+      position: absolute;
+      inset: auto 10px 10px;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      min-height: 58px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 8px 24px rgba(24, 33, 29, 0.14);
+    }
+    .app-bottom-nav span { display: grid; place-items: center; border-radius: 6px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .app-bottom-nav .active { color: white; background: var(--ink); }
+    .eyebrow { color: var(--green); font-size: 11px; font-weight: 800; }
+    .screen-title { margin: 4px 0 6px; font-size: 24px; line-height: 1.25; }
+    .screen-subtitle { margin: 0; color: var(--muted); font-size: 13px; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 3px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .chip.green { border-color: #b9ddc9; color: #225d43; background: var(--green-soft); }
+    .chip.blue { border-color: #cbd9f3; color: #244f96; background: var(--blue-soft); }
+    .chip.amber { border-color: #efd0ad; color: #7b431a; background: var(--amber-soft); }
+    .section { margin-top: 20px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .section-head h2 { margin: 0; font-size: 16px; }
+    .section-head span { color: var(--muted); font-size: 11px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .card-pad { padding: 14px; }
+    .artifact-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+    .summary-cell { padding: 10px; border: 1px solid var(--line); border-radius: 7px; background: #fafbf9; }
+    .summary-cell span { display: block; color: var(--muted); font-size: 10px; }
+    .summary-cell strong { display: block; margin-top: 3px; font-size: 13px; }
+    .task-list { overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .task-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 34px;
+      padding: 7px 11px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      background: #f5f7f5;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .task-row {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      min-height: 62px;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .task-row:last-child { border-bottom: 0; }
+    .check {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      color: white;
+      background: white;
+      font-size: 13px;
+    }
+    .task-row.done .check { border-color: var(--green); background: var(--green); }
+    .task-row.done .task-title { color: var(--subtle); text-decoration: line-through; }
+    .task-title { display: block; font-size: 13px; font-weight: 750; line-height: 1.35; }
+    .task-meta { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .row-action { min-width: 40px; min-height: 36px; border: 0; color: var(--blue); background: transparent; font-size: 11px; font-weight: 800; }
+    .primary, .secondary, .quiet, .danger {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .primary { border: 1px solid var(--green); color: white; background: var(--green); }
+    .secondary { border: 1px solid var(--line-strong); color: var(--ink); background: white; }
+    .quiet { border: 0; color: var(--blue); background: transparent; }
+    .danger { border: 1px solid #e6c6c2; color: var(--red); background: var(--red-soft); }
+    .action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .action-row .primary { flex: 1; }
+    .sticky-action {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      gap: 8px;
+      margin: 18px -16px -86px;
+      padding: 12px 16px 18px;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.97);
+    }
+    .sticky-action .primary { flex: 1; }
+    .notice { display: flex; align-items: center; gap: 9px; padding: 11px; border: 1px solid #b9ddc9; border-radius: 8px; color: #225d43; background: var(--green-soft); }
+    .notice strong { font-size: 13px; }
+    .notice span { color: #47745e; font-size: 11px; }
+    .local-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin: 18px 0; padding: 3px; border-radius: 8px; background: var(--soft); }
+    .local-tabs span { display: grid; min-height: 38px; place-items: center; border-radius: 6px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .local-tabs .active { color: white; background: var(--green); }
+    .flow-card { padding: 13px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .flow-card + .flow-card { margin-top: 9px; }
+    .flow-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .flow-card h3 { margin: 0; font-size: 15px; }
+    .progress { height: 5px; margin-top: 11px; overflow: hidden; border-radius: 999px; background: #e5e9e6; }
+    .progress i { display: block; width: 36%; height: 100%; background: var(--green); }
+    .workspace {
+      display: grid;
+      grid-template-columns: 210px minmax(320px, 1fr) minmax(280px, 0.82fr);
+      min-height: 650px;
+      margin-top: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    .workspace-pane { min-width: 0; padding: 14px; }
+    .workspace-pane + .workspace-pane { border-left: 1px solid var(--line); }
+    .workspace-rail { background: #f5f7f5; }
+    .rail-item { padding: 10px; border-radius: 7px; color: var(--muted); font-size: 12px; }
+    .rail-item + .rail-item { margin-top: 4px; }
+    .rail-item.active { color: var(--ink); background: white; box-shadow: 0 1px 4px rgba(24,33,29,.09); }
+    .rail-item strong { display: block; }
+    .rail-item span { display: block; margin-top: 2px; font-size: 10px; }
+    .detail-title { margin: 5px 0 4px; font-size: 18px; line-height: 1.3; }
+    .detail-meta { color: var(--muted); font-size: 11px; }
+    .form-grid { display: grid; gap: 12px; margin-top: 15px; }
+    .field label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .field input, .field textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      color: var(--ink);
+      background: white;
+    }
+    .field textarea { min-height: 78px; resize: vertical; }
+    .field-stack { display: grid; gap: 8px; }
+    .field-stack .fake-field { min-height: 42px; padding: 10px; border: 1px solid var(--line-strong); border-radius: 7px; background: white; }
+    .disclosure { margin-top: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); background: #fafbf9; font-size: 12px; font-weight: 700; }
+    .calendar-layout { display: grid; gap: 14px; margin-top: 16px; }
+    .wide .calendar-layout { grid-template-columns: 250px minmax(0, 1fr) 280px; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .calendar-grid .day {
+      min-height: 60px;
+      padding: 6px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+    }
+    .wide .calendar-grid .day { min-height: 88px; }
+    .calendar-grid .day:nth-child(7n) { border-right: 0; }
+    .calendar-grid .day.selected { outline: 2px solid var(--blue); outline-offset: -2px; }
+    .event-dot { display: block; width: 100%; margin-top: 5px; overflow: hidden; color: var(--green); font-size: 9px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+    .queue { border: 1px solid #efd0ad; border-radius: 8px; background: #fffaf3; }
+    .queue-head { display: flex; align-items: center; justify-content: space-between; padding: 11px; border-bottom: 1px solid #efdcc6; }
+    .queue-head strong { font-size: 13px; }
+    .queue-item { display: grid; grid-template-columns: 26px 1fr; gap: 8px; padding: 10px 11px; border-bottom: 1px solid #f0dfcc; }
+    .queue-item:last-child { border-bottom: 0; }
+    .queue-item span { font-size: 12px; font-weight: 700; }
+    .queue-item small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .placement-bar { display: flex; gap: 7px; padding: 10px; border-top: 1px solid #efdcc6; }
+    .placement-bar button { flex: 1; min-height: 38px; }
+    .selection-bar { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; padding: 10px; border: 1px solid #cbd9f3; border-radius: 8px; background: var(--blue-soft); }
+    .selection-bar strong { width: 100%; color: #244f96; font-size: 12px; }
+    .selection-bar button { min-height: 36px; padding: 0 10px; border: 1px solid #b9cae8; border-radius: 6px; color: #244f96; background: white; font-size: 11px; font-weight: 800; }
+    .scope-options { display: grid; gap: 8px; }
+    .scope-option { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 8px; min-height: 56px; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .scope-option.selected { border-color: #9fb6df; background: var(--blue-soft); }
+    .radio { display: grid; width: 20px; height: 20px; place-items: center; border: 1px solid var(--line-strong); border-radius: 999px; background: white; }
+    .scope-option.selected .radio::after { width: 10px; height: 10px; border-radius: 999px; background: var(--blue); content: ""; }
+    .scope-option strong { display: block; font-size: 12px; }
+    .scope-option span { color: var(--muted); font-size: 10px; }
+    .format-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+    .format { min-height: 64px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .format strong { display: block; font-size: 12px; }
+    .format span { color: var(--muted); font-size: 10px; }
+    .snackbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 11px 12px; border-radius: 8px; color: white; background: #26322d; }
+    .snackbar span { font-size: 12px; }
+    .snackbar button { min-height: 34px; border: 0; color: #a9d7bf; background: transparent; font-size: 12px; font-weight: 800; }
+    .legacy-stack { display: grid; gap: 8px; margin-top: 14px; padding: 12px; border: 1px solid #d6e1f4; border-radius: 8px; background: #eef4ff; }
+    .legacy-stack .fake-field { min-height: 42px; padding: 10px; border: 1px solid #c7d5ec; border-radius: 7px; background: white; }
+    .legacy-note { margin-top: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); background: white; font-size: 11px; }
+    .decision-panel { max-width: 920px; margin: 24px auto 0; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .decision-panel h2 { margin: 0 0 4px; font-size: 17px; }
+    .decision-panel p { margin: 0; color: var(--muted); font-size: 12px; }
+    .decision-question { margin-top: 14px; padding: 11px; border-left: 3px solid var(--green); background: #f6f8f6; font-weight: 700; }
+    .decision-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 12px; }
+    .decision-actions button { min-height: 42px; border: 1px solid var(--line-strong); border-radius: 7px; color: var(--muted); background: white; font-weight: 800; }
+    .decision-actions button.active[data-value="keep"] { border-color: #8fc4a7; color: #225d43; background: var(--green-soft); }
+    .decision-actions button.active[data-value="change"] { border-color: #e1b983; color: #7b431a; background: var(--amber-soft); }
+    .decision-actions button.active[data-value="reject"] { border-color: #e0a9a4; color: var(--red); background: var(--red-soft); }
+    .decision-panel textarea { width: 100%; min-height: 72px; margin-top: 10px; padding: 10px; border: 1px solid var(--line-strong); border-radius: 7px; resize: vertical; }
+    .decision-footer { display: flex; justify-content: flex-end; margin-top: 9px; }
+    .current-links { max-width: 920px; margin: 16px auto 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #fafbf9; }
+    .current-links summary { cursor: pointer; font-weight: 800; }
+    .current-links div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .current-links a { color: var(--blue); font-size: 12px; }
+    .capture .review-header, .capture .review-sidebar, .capture .review-copy, .capture .decision-panel, .capture .current-links { display: none; }
+    .capture .review-layout { display: block; min-height: 0; }
+    .capture .review-main { padding: 0; }
+    .capture .prototype-stage { min-height: 0; padding: 0; border: 0; border-radius: 0; background: white; overflow: visible; }
+    .capture .device-shell { width: 390px; min-height: 844px; border: 0; border-radius: 0; box-shadow: none; }
+    .capture .device-shell[data-device="wide"] { width: 1024px; min-height: 768px; }
+
+    @media (max-width: 880px) {
+      .review-header { position: static; padding: 10px 14px; }
+      .review-status span:not(:last-child) { display: none; }
+      .review-layout { display: block; }
+      .review-sidebar { position: static; width: auto; height: auto; padding: 14px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .surface-nav { grid-template-columns: repeat(3, 1fr); }
+      .surface-nav button { grid-template-columns: 20px 1fr; min-height: 48px; }
+      .surface-check { display: none; }
+      .sidebar-note { display: none; }
+      .review-main { padding: 20px 10px 52px; }
+      .review-copy h1 { font-size: 23px; }
+      .prototype-stage { padding: 8px 0; border-right: 0; border-left: 0; }
+      .device-shell { max-width: 100%; border-radius: 0; box-shadow: none; }
+      .decision-panel, .current-links { margin-right: 6px; margin-left: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="review-header">
+    <div class="brand">
+      <div class="brand-mark">F</div>
+      <div><strong>P25 핵심 작업공간</strong><span>구조 결정용 정적 프로토타입</span></div>
+    </div>
+    <div class="review-status"><span>외부 관찰 전</span><span>추천안 B</span></div>
+  </header>
+
+  <div class="review-layout">
+    <aside class="review-sidebar">
+      <div class="control-block">
+        <label class="control-label" for="scenario">Flow 유형</label>
+        <select class="select" id="scenario"></select>
+      </div>
+      <div class="control-block">
+        <span class="control-label">대안</span>
+        <div class="segmented" id="option-controls">
+          <button type="button" data-option="a">A 최소 수정</button>
+          <button type="button" data-option="b">B 작업공간</button>
+        </div>
+      </div>
+      <div class="control-block">
+        <span class="control-label">화면 폭</span>
+        <div class="segmented" id="device-controls">
+          <button type="button" data-device="mobile">390px</button>
+          <button type="button" data-device="wide">1024px</button>
+        </div>
+      </div>
+      <div class="control-block">
+        <span class="control-label">검토 화면</span>
+        <nav class="surface-nav" id="surface-nav"></nav>
+      </div>
+      <div class="sidebar-note">A는 기존 route 구조를 최대한 유지합니다. B는 저장한 전체 Flow를 정본으로 두고 지금·Calendar·export를 같은 데이터의 투영으로 재배치합니다.</div>
+    </aside>
+
+    <main class="review-main">
+      <section class="review-copy">
+        <div class="eyebrow" id="surface-eyebrow"></div>
+        <h1 id="surface-title"></h1>
+        <p id="surface-description"></p>
+        <span class="recommendation" id="surface-recommendation"></span>
+      </section>
+
+      <section class="prototype-stage" aria-label="FlowMe 화면 프로토타입">
+        <div class="device-shell" id="device-shell" data-device="mobile">
+          <div id="prototype-root"></div>
+        </div>
+      </section>
+
+      <section class="decision-panel">
+        <h2>이 화면 결정</h2>
+        <p>결정은 이 브라우저에만 저장됩니다. 구현 전 화면 계약으로 옮길 수 있습니다.</p>
+        <div class="decision-question" id="decision-question"></div>
+        <div class="decision-actions" id="decision-actions">
+          <button type="button" data-value="keep">유지</button>
+          <button type="button" data-value="change">수정</button>
+          <button type="button" data-value="reject">기각</button>
+        </div>
+        <textarea id="decision-note" aria-label="이 화면에 대한 결정 메모" placeholder="어떤 점을 바꾸거나 유지할지 적어주세요."></textarea>
+        <div class="decision-footer"><button class="secondary" id="copy-decisions" type="button">결정 JSON 복사</button></div>
+      </section>
+
+      <details class="current-links">
+        <summary>현재 production 비교 캡처</summary>
+        <div id="current-links"></div>
+      </details>
+    </main>
+  </div>
+
+  <script>
+    const scenarios = {
+      moving: {
+        label: "이사 · 기준일 역산형",
+        title: "8월 이사 준비",
+        sourceTitle: "이사 준비 D-30",
+        kind: "일정형",
+        anchor: "이사일 8월 15일",
+        span: "D-30부터 이사일까지",
+        count: 6,
+        today: 2,
+        anytime: 1,
+        groups: [
+          { label: "D-30 · 7월 16일", items: ["이사 방식과 견적 후보 정하기", "버릴 물건과 가져갈 물건 나누기"] },
+          { label: "D-14 · 8월 1일", items: ["이사업체 예약 확정하기", "관리사무소에 이사 일정 알리기"] },
+          { label: "D-1 · 8월 14일", items: ["귀중품과 당일 가방 따로 챙기기"] },
+          { label: "언제든", items: ["새집에 필요한 물건 메모하기"] },
+        ],
+        detail: { title: "이사업체 예약 확정하기", date: "8월 1일", note: "예약번호와 담당자 연락처만 남겨두기" },
+      },
+      vehicle: {
+        label: "차량 점검 · 날짜 선택형",
+        title: "자동차검사 준비",
+        sourceTitle: "자동차검사 D-14 준비",
+        kind: "체크리스트",
+        anchor: "검사일은 나중에 정해도 됨",
+        span: "10개 확인 항목",
+        count: 10,
+        today: 0,
+        anytime: 7,
+        groups: [
+          { label: "언제든 할 일", items: ["자동차검사 기간과 예약 가능일 확인하기", "차량번호와 예약 정보 확인하기", "가까운 검사소와 수수료 확인하기", "자동차등록증 보관 위치 확인하기", "타이어와 등화 장치 미리 살펴보기", "예약 변경 방법 저장하기", "검사소 운영 시간 확인하기"] },
+          { label: "7월 24일", items: ["검사 당일 가져갈 서류 챙기기", "예약 시간보다 여유 있게 도착하기"] },
+          { label: "검사 후", items: ["검사 결과와 재검사 필요 항목 기록하기"] },
+        ],
+        detail: { title: "차량번호와 예약 정보 확인하기", date: "언제든", note: "예약번호를 받은 뒤 이 메모에 남기기" },
+      },
+      routine: {
+        label: "세탁조 청소 · 반복 루틴형",
+        title: "세탁조 월간 청소",
+        sourceTitle: "세탁조 청소 월간 루틴",
+        kind: "반복 일정",
+        anchor: "매월 20일",
+        span: "다음 4회",
+        count: 4,
+        today: 1,
+        anytime: 0,
+        groups: [
+          { label: "7월 20일", items: ["세탁조 클리너 넣고 표준 코스 돌리기"] },
+          { label: "8월 20일", items: ["세탁조 클리너 넣고 표준 코스 돌리기"] },
+          { label: "9월 20일", items: ["세탁조 클리너 넣고 표준 코스 돌리기"] },
+          { label: "10월 20일", items: ["세탁조 클리너 넣고 표준 코스 돌리기"] },
+        ],
+        detail: { title: "7월 세탁조 청소", date: "7월 20일 · 종일", note: "청소 뒤 문을 열어 충분히 말리기" },
+      },
+      trip: {
+        label: "제주 여행 · 그룹 혼합형",
+        title: "제주 3박 4일 준비",
+        sourceTitle: "제주 가족여행 준비",
+        kind: "프로젝트",
+        anchor: "출발일 8월 8일",
+        span: "4개 묶음 · 12개 할 일",
+        count: 12,
+        today: 1,
+        anytime: 3,
+        groups: [
+          { label: "예약", items: ["항공권 탑승자 정보 확인하기", "렌터카 인수 장소 저장하기", "숙소 체크인 시간 확인하기"] },
+          { label: "짐", items: ["가족별 필수 짐 체크하기", "날씨 확인 후 겉옷 정하기", "상비약과 충전기 챙기기", "아이 간식과 물병 준비하기"] },
+          { label: "일정", items: ["첫날 동선 한 번 확인하기", "비 오는 날 대체 장소 저장하기", "마지막 날 반납 시간을 일정에 넣기", "가족이 원하는 장소 한 곳씩 표시하기", "공항으로 출발할 시간 확인하기"] },
+        ],
+        detail: { title: "렌터카 인수 장소 저장하기", date: "8월 8일 · 오전 10:30", note: "셔틀 탑승 위치와 예약번호" },
+      },
+      record: {
+        label: "냉장고 정리 · 기록형",
+        title: "냉장고 정리와 식재료 기록",
+        sourceTitle: "주간 냉장고 정리",
+        kind: "체크 + 기록",
+        anchor: "매주 일요일",
+        span: "5개 할 일 · 기록 1개",
+        count: 5,
+        today: 2,
+        anytime: 1,
+        groups: [
+          { label: "정리", items: ["유통기한 지난 식재료 비우기", "이번 주 먼저 먹을 식재료 앞으로 옮기기"] },
+          { label: "기록", items: ["남은 채소와 단백질 메모하기", "다음 장보기 목록에 필요한 것 추가하기"] },
+          { label: "언제든", items: ["보관 용기 부족한지 확인하기"] },
+        ],
+        detail: { title: "남은 채소와 단백질 메모하기", date: "7월 19일", note: "애호박 1개, 달걀 6개, 두부 1모" },
+      },
+      draft: {
+        label: "개인 메모 · 초안형",
+        title: "주말 집 정리",
+        sourceTitle: "내 메모에서 만든 Flow",
+        kind: "개인 초안",
+        anchor: "기준일 없음",
+        span: "직접 만든 6개 할 일",
+        count: 6,
+        today: 1,
+        anytime: 4,
+        groups: [
+          { label: "토요일", items: ["옷장 안 입는 옷 상자에 담기", "중고 판매할 물건 사진 찍기"] },
+          { label: "언제든 할 일", items: ["기부처 운영 시간 확인하기", "택배 상자 구하기", "정리 후 살 물건 메모하기"] },
+          { label: "일요일", items: ["남은 물건 제자리 정리하기"] },
+        ],
+        detail: { title: "중고 판매할 물건 사진 찍기", date: "토요일 · 오후 2:00 · 45분", note: "창가에서 앞·뒤·라벨 사진 찍기" },
+      },
+    };
+
+    const surfaces = [
+      { id: "save", label: "저장 전", eyebrow: "01 · SAVE-BEFORE", title: "설명보다 실제 Flow를 먼저 판단", description: "첫 화면에서 긴 사용법 대신 저장될 전체 구조와 조정 가능 범위를 확인합니다.", question: "저장 전에 실제 항목 전체와 ‘그대로 저장/먼저 조정’을 함께 보여주는 B안을 유지할까요?", current: ["01-public-vehicle-mobile.png", "01b-public-vehicle-mobile-full.png"] },
+      { id: "post-save", label: "저장 직후", eyebrow: "02 · POST-SAVE", title: "저장 성공보다 저장된 전체 결과를 확인", description: "확인 배너는 짧게 유지하고 같은 whole Flow 구조를 바로 보여줍니다.", question: "저장 직후 Today 한 행이 아니라 저장한 전체 Flow를 바로 여는 B안을 유지할까요?", current: ["02-post-save-vehicle-mobile.png", "02b-post-save-vehicle-mobile-full.png"] },
+      { id: "my-flow", label: "My Flow", eyebrow: "03 · RETURNING HUB", title: "지금과 전체 Flow와 완료 기록을 분리", description: "실행 허브는 지금 할 일, 저장한 Flow, 완료 기록을 같은 레벨에서 섞지 않습니다.", question: "My Flow의 local IA를 ‘지금 / 내 Flow / 완료’로 고정하고, wide는 Flow rail을 사용하는 B안이 맞을까요?", current: ["03-my-flow-structure-mobile.png", "06-my-flow-structure-wide.png"] },
+      { id: "whole-flow", label: "전체 Flow", eyebrow: "04 · WHOLE ARTIFACT", title: "목록과 상세가 같은 Flow 안에서 이어짐", description: "모바일은 drill-in, wide는 rail·outline·detail 3-pane으로 같은 구조를 사용합니다.", question: "저장 직후와 재방문에서 동일한 whole-Flow component를 사용하는 B안을 유지할까요?", current: ["03b-my-flow-structure-mobile-full.png", "06b-my-flow-structure-wide-full.png"] },
+      { id: "calendar", label: "Calendar", eyebrow: "05 · PLACE ON CALENDAR", title: "Calendar는 날짜 실행, 날짜 없는 일은 배치 대기", description: "날짜 없는 항목을 Calendar grid에 억지로 넣지 않고 별도 ‘일정에 놓기’ queue에서 선택합니다.", question: "My Flow에서는 ‘언제든 할 일’, Calendar에서는 ‘일정에 놓기’로 역할을 분리할까요?", current: ["05-calendar-vehicle-mobile.png", "07-calendar-vehicle-wide.png"] },
+      { id: "adjust", label: "항목 조정", eyebrow: "06 · PROGRESSIVE EDIT", title: "자주 바꾸는 값만 먼저, 일정 세부는 필요할 때", description: "기본 drawer는 제목·언제·메모만 보여주고 시간·소요·반복은 접습니다.", question: "기본 조정을 제목·언제·메모로 제한하고 시간·반복을 ‘세부 일정’으로 접는 B안을 유지할까요?", current: ["04-item-adjustment-mobile.png", "04b-item-adjustment-mobile-full.png"] },
+      { id: "batch", label: "여러 항목", eyebrow: "07 · BATCH CHANGE", title: "선택한 항목의 날짜와 포함 범위를 한 번에 조정", description: "Flow 전체 이동, 선택 항목 이동, 이 항목만을 실행 전에 구분합니다.", question: "항목 선택 모드에서 날짜 이동·날짜 지우기·포함/제외·가져가기를 제공할까요?", current: [] },
+      { id: "completion", label: "완료·재개", eyebrow: "08 · REVERSIBLE EXECUTION", title: "완료 직후 되돌리기와 나중 재개를 모두 제공", description: "한 occurrence에는 하나의 완료 control만 두고 완료 기록에서 같은 항목을 재개합니다.", question: "즉시 undo와 완료 목록의 영구 재개를 같은 실행 계약으로 고정할까요?", current: [] },
+      { id: "export", label: "가져가기", eyebrow: "09 · EXPORT SCOPE", title: "형식보다 먼저 무엇을 보낼지 선택", description: "현재 항목, 선택 항목, Flow 전체 범위를 먼저 고르고 예상 개수를 확인합니다.", question: "모든 export에서 범위 → 예상 개수 → 형식 순서를 고정할까요?", current: [] },
+    ];
+
+    const state = {
+      scenario: "vehicle",
+      option: "b",
+      device: "mobile",
+      surface: "save",
+    };
+
+    const params = new URLSearchParams(location.search);
+    if (scenarios[params.get("scenario")]) state.scenario = params.get("scenario");
+    if (["a", "b"].includes(params.get("option"))) state.option = params.get("option");
+    if (["mobile", "wide"].includes(params.get("device"))) state.device = params.get("device");
+    if (surfaces.some((surface) => surface.id === params.get("surface"))) state.surface = params.get("surface");
+    if (params.get("capture") === "1") document.body.classList.add("capture");
+
+    const scenarioSelect = document.querySelector("#scenario");
+    Object.entries(scenarios).forEach(([value, scenario]) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = scenario.label;
+      scenarioSelect.append(option);
+    });
+
+    const nav = document.querySelector("#surface-nav");
+    surfaces.forEach((surface, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.surface = surface.id;
+      button.innerHTML = `<span class="surface-index">${String(index + 1).padStart(2, "0")}</span><span class="surface-name">${surface.label}</span><span class="surface-check">결정</span>`;
+      nav.append(button);
+    });
+
+    function flatItems(scenario) {
+      return scenario.groups.flatMap((group) => group.items.map((title) => ({ group: group.label, title })));
+    }
+
+    function taskRows(scenario, limit = 6, { selectable = false, completed = false } = {}) {
+      return flatItems(scenario).slice(0, limit).map((item, index) => `
+        <div class="task-row ${completed && index === 0 ? "done" : ""}">
+          <span class="check">${completed && index === 0 ? "✓" : selectable && index < 3 ? "✓" : ""}</span>
+          <span><span class="task-title">${item.title}</span><span class="task-meta">${item.group}${index === 0 && scenario.detail.date.includes("오후") ? ` · ${scenario.detail.date.split(" · ").slice(1).join(" · ")}` : ""}</span></span>
+          <button class="row-action" type="button">열기</button>
+        </div>`).join("");
+    }
+
+    function groupedRows(scenario, limit = 20) {
+      let count = 0;
+      return scenario.groups.map((group) => {
+        const rows = group.items.map((title) => {
+          if (count >= limit) return "";
+          count += 1;
+          return `<div class="task-row"><span class="check"></span><span><span class="task-title">${title}</span><span class="task-meta">${group.label}</span></span><button class="row-action" type="button">열기</button></div>`;
+        }).join("");
+        return rows ? `<div class="task-group"><span>${group.label}</span><span>${group.items.length}개</span></div>${rows}` : "";
+      }).join("");
+    }
+
+    function appShell(content, active = "내 Flow") {
+      const wide = state.device === "wide";
+      return `<div class="prototype-app ${wide ? "wide" : "mobile"}">
+        <header class="app-topbar"><strong>FLOW</strong>${wide ? `<nav>${["홈", "Flow 찾기", "캘린더", "내 Flow"].map((item) => `<span class="${item === active ? "active" : ""}">${item}</span>`).join("")}</nav>` : ""}<button class="icon-button" type="button" aria-label="메뉴" title="메뉴">≡</button></header>
+        <div class="app-body">${content}</div>
+        ${wide ? "" : `<nav class="app-bottom-nav">${["홈", "Flow 찾기", "캘린더", "내 Flow"].map((item) => `<span class="${item === active ? "active" : ""}">${item}</span>`).join("")}</nav>`}
+      </div>`;
+    }
+
+    function artifactHeader(scenario, kicker) {
+      return `<div class="eyebrow">${kicker}</div><h1 class="screen-title">${scenario.title}</h1><p class="screen-subtitle">${scenario.sourceTitle}</p><div class="meta-row"><span class="chip green">${scenario.kind}</span><span class="chip">${scenario.span}</span><span class="chip blue">${scenario.anchor}</span></div>`;
+    }
+
+    function renderSave(scenario) {
+      if (state.option === "a") {
+        return appShell(`${artifactHeader(scenario, "공유받은 Flow")}
+          <div class="card card-pad section"><div class="field"><label>기준</label><input value="${scenario.anchor}" readonly /></div><div class="legacy-note">기준을 정하면 실행 항목이 일정에 맞춰 저장됩니다.</div></div>
+          <section class="section"><div class="section-head"><h2>저장될 구성</h2><span>${scenario.count}개</span></div><div class="task-list">${taskRows(scenario, 3)}</div><button class="quiet" type="button">전체 구성 보기</button></section>
+          <div class="sticky-action"><button class="primary" type="button">내 Flow에 저장</button><button class="secondary" type="button">조정</button></div>`, "Flow 찾기");
+      }
+      return appShell(`${artifactHeader(scenario, "저장할 전체 Flow")}
+        <div class="artifact-summary"><div class="summary-cell"><span>저장되는 항목</span><strong>${scenario.count}개 전체</strong></div><div class="summary-cell"><span>날짜 상태</span><strong>${scenario.anytime ? `일정 ${scenario.count - scenario.anytime} · 언제든 ${scenario.anytime}` : scenario.anchor}</strong></div></div>
+        <section class="section"><div class="section-head"><h2>전체 구성</h2><span>저장 후에도 조정 가능</span></div><div class="task-list">${groupedRows(scenario)}</div></section>
+        <div class="sticky-action"><button class="secondary" type="button">먼저 조정</button><button class="primary" type="button">이 Flow 저장</button></div>`, "Flow 찾기");
+    }
+
+    function renderPostSave(scenario) {
+      if (state.option === "a") {
+        return appShell(`<div class="notice"><strong>내 Flow에 저장됨</strong><span>${scenario.count}개 항목</span></div>${artifactHeader(scenario, "오늘 실행")}
+          <section class="section"><div class="section-head"><h2>먼저 할 일</h2><span>${scenario.today || 1}개</span></div><div class="task-list">${taskRows(scenario, 1)}</div></section>
+          <div class="action-row"><button class="primary" type="button">시작</button><button class="secondary" type="button">전체 보기</button></div>`, "내 Flow");
+      }
+      return appShell(`<div class="notice"><strong>저장됐어요</strong><span>전체 구성을 확인하고 바로 시작하거나 조정할 수 있어요.</span></div>
+        <section class="section">${artifactHeader(scenario, "내 Flow · 전체 저장 결과")}<div class="action-row"><button class="primary" type="button">바로 시작</button><button class="secondary" type="button">조정</button><button class="secondary" type="button">가져가기</button></div></section>
+        <section class="section"><div class="section-head"><h2>전체 Flow</h2><span>${scenario.count}개 모두 저장됨</span></div><div class="task-list">${groupedRows(scenario)}</div></section>`, "내 Flow");
+    }
+
+    function renderMyFlow(scenario) {
+      const wide = state.device === "wide";
+      if (state.option === "a") {
+        return appShell(`${artifactHeader(scenario, "내 실행 공간")}<div class="local-tabs"><span class="active">오늘</span><span>전체</span><span>완료</span></div>
+          <div class="card card-pad"><div class="section-head"><h2>진행 중인 Flow</h2><span>1개</span></div><div class="artifact-summary"><div class="summary-cell"><span>오늘 남음</span><strong>${scenario.today}개</strong></div><div class="summary-cell"><span>전체 진행</span><strong>2/${scenario.count} 완료</strong></div></div></div>
+          <section class="section"><div class="section-head"><h2>지금 볼 할 일</h2><span>우선순위</span></div><div class="task-list">${taskRows(scenario, 3)}</div></section>`, "내 Flow");
+      }
+      if (wide) {
+        return appShell(`<div class="eyebrow">내 실행 공간</div><h1 class="screen-title">지금 할 일과 저장한 Flow</h1><div class="local-tabs"><span class="active">지금</span><span>내 Flow</span><span>완료</span></div>
+          <div class="workspace"><aside class="workspace-pane workspace-rail"><div class="control-label">내 Flow</div><div class="rail-item active"><strong>${scenario.title}</strong><span>${scenario.count}개 · ${scenario.today}개 오늘</span></div><div class="rail-item"><strong>주간 생활 정리</strong><span>5개 · 언제든 2</span></div></aside><section class="workspace-pane"><div class="section-head"><h2>지금</h2><span>한 행은 한 실행</span></div><div class="task-list">${taskRows(scenario, 5)}</div></section><aside class="workspace-pane"><div class="eyebrow">선택한 Flow</div><h2 class="detail-title">${scenario.title}</h2><p class="detail-meta">${scenario.span} · ${scenario.anchor}</p><div class="artifact-summary"><div class="summary-cell"><span>오늘</span><strong>${scenario.today}개</strong></div><div class="summary-cell"><span>언제든</span><strong>${scenario.anytime}개</strong></div></div><div class="action-row"><button class="primary" type="button">전체 Flow 열기</button></div></aside></div>`, "내 Flow");
+      }
+      return appShell(`<div class="eyebrow">내 실행 공간</div><h1 class="screen-title">내 Flow</h1><div class="local-tabs"><span class="active">지금</span><span>내 Flow</span><span>완료</span></div>
+        <section><div class="section-head"><h2>오늘</h2><span>${scenario.today}개 남음</span></div><div class="task-list">${taskRows(scenario, Math.max(1, scenario.today))}</div></section>
+        ${scenario.anytime ? `<section class="section"><div class="section-head"><h2>언제든 할 일</h2><span>${scenario.anytime}개</span></div><div class="task-list">${taskRows(scenario, 2)}</div></section>` : ""}
+        <section class="section"><div class="section-head"><h2>내 Flow</h2><span>전체 구조</span></div><div class="flow-card"><div class="flow-card-head"><div><h3>${scenario.title}</h3><span class="task-meta">${scenario.span}</span></div><button class="row-action" type="button">열기</button></div><div class="progress"><i></i></div></div></section>`, "내 Flow");
+    }
+
+    function renderWholeFlow(scenario) {
+      const wide = state.device === "wide";
+      if (state.option === "a" || !wide) {
+        return appShell(`${artifactHeader(scenario, state.option === "a" ? "저장한 콘텐츠" : "내 Flow · 전체")}
+          <div class="action-row"><button class="secondary" type="button">전체 조정</button><button class="secondary" type="button">가져가기</button></div>
+          <section class="section"><div class="section-head"><h2>${state.option === "a" ? "전체 목록" : "전체 Flow"}</h2><span>${scenario.count}개</span></div><div class="task-list">${groupedRows(scenario)}</div></section>
+          ${state.option === "b" ? `<div class="card card-pad section"><div class="eyebrow">선택한 할 일</div><h2 class="detail-title">${scenario.detail.title}</h2><p class="detail-meta">${scenario.detail.date}</p><p class="screen-subtitle">${scenario.detail.note}</p><div class="action-row"><button class="primary" type="button">완료</button><button class="secondary" type="button">조정</button></div></div>` : ""}`, "내 Flow");
+      }
+      return appShell(`${artifactHeader(scenario, "내 Flow · 전체")}
+        <div class="workspace"><aside class="workspace-pane workspace-rail"><div class="control-label">내 Flow</div><div class="rail-item active"><strong>${scenario.title}</strong><span>${scenario.span}</span></div><div class="rail-item"><strong>차량 점검</strong><span>10개 · 언제든 7</span></div><div class="rail-item"><strong>주간 생활 정리</strong><span>5개 · 완료 2</span></div></aside><section class="workspace-pane"><div class="section-head"><h2>전체 Flow</h2><span>${scenario.count}개</span></div><div class="task-list">${groupedRows(scenario)}</div></section><aside class="workspace-pane"><div class="eyebrow">할 일 상세</div><h2 class="detail-title">${scenario.detail.title}</h2><p class="detail-meta">${scenario.detail.date}</p><p class="screen-subtitle">${scenario.detail.note}</p><div class="action-row"><button class="primary" type="button">완료</button><button class="secondary" type="button">조정</button></div><div class="disclosure">세부 일정 · 원문 보기</div></aside></div>`, "내 Flow");
+    }
+
+    function calendarGrid(scenario) {
+      const days = Array.from({ length: 35 }, (_, index) => index + 1);
+      const eventDays = [5, 12, 24, 26, 28, 30, 31].slice(0, Math.min(7, Math.max(0, scenario.count - scenario.anytime)));
+      return `<div class="calendar-grid">${days.map((day) => `<div class="day ${day === 19 ? "selected" : ""}">${day <= 31 ? day : ""}${eventDays.includes(day) ? `<span class="event-dot">${scenario.title}</span>` : ""}</div>`).join("")}</div>`;
+    }
+
+    function queue(scenario) {
+      const items = flatItems(scenario).slice(0, scenario.anytime);
+      if (!items.length) return `<div class="queue"><div class="queue-head"><strong>일정에 놓기</strong><span class="chip">0개</span></div><div class="card-pad"><span class="screen-subtitle">날짜를 정할 언제든 할 일이 없습니다.</span></div></div>`;
+      return `<div class="queue"><div class="queue-head"><strong>일정에 놓기</strong><span class="chip amber">${items.length}개</span></div>${items.map((item, index) => `<div class="queue-item"><span class="check">${index < 2 ? "✓" : ""}</span><span>${item.title}<small>지금은 언제든 할 일</small></span></div>`).join("")}<div class="placement-bar"><button class="secondary" type="button">오늘</button><button class="primary" type="button">날짜 선택</button></div></div>`;
+    }
+
+    function renderCalendar(scenario) {
+      const wide = state.device === "wide";
+      if (state.option === "a") {
+        return appShell(`<div class="eyebrow">날짜별 실행</div><h1 class="screen-title">캘린더</h1><div class="section"><div class="section-head"><h2>7월</h2><span>날짜 항목 ${scenario.count - scenario.anytime}개</span></div>${calendarGrid(scenario)}</div>
+          <section class="section"><div class="section-head"><h2>날짜 없는 할 일</h2><span>${scenario.anytime}개</span></div><div class="task-list">${taskRows(scenario, Math.max(2, scenario.anytime))}</div></section>`, "캘린더");
+      }
+      if (wide) {
+        return appShell(`<div class="eyebrow">날짜별 실행</div><h1 class="screen-title">캘린더</h1><div class="calendar-layout">${queue(scenario)}<section><div class="section-head"><h2>7월</h2><span>날짜가 있는 항목만</span></div>${calendarGrid(scenario)}</section><aside><div class="section-head"><h2>7월 19일</h2><span>${scenario.today}개</span></div>${scenario.today ? `<div class="task-list">${taskRows(scenario, scenario.today)}</div>` : `<div class="card card-pad"><span class="screen-subtitle">이 날짜에는 할 일이 없습니다.</span></div>`}</aside></div>`, "캘린더");
+      }
+      return appShell(`<div class="eyebrow">날짜별 실행</div><h1 class="screen-title">캘린더</h1><div class="section"><div class="section-head"><h2>7월</h2><span>날짜가 있는 항목만</span></div>${calendarGrid(scenario)}</div><section class="section"><div class="section-head"><h2>7월 19일</h2><span>${scenario.today}개</span></div>${scenario.today ? `<div class="task-list">${taskRows(scenario, scenario.today)}</div>` : `<div class="card card-pad"><span class="screen-subtitle">이 날짜에는 할 일이 없습니다.</span></div>`}</section><section class="section">${queue(scenario)}</section>`, "캘린더");
+    }
+
+    function renderAdjust(scenario) {
+      if (state.option === "a") {
+        return appShell(`${artifactHeader(scenario, "할 일 수정")}<div class="legacy-stack"><div class="fake-field">제목 · ${scenario.detail.title}</div><div class="fake-field">날짜 · ${scenario.detail.date}</div><div class="fake-field">시간 · --:--</div><div class="fake-field">세부 설정 · 장소 · 반복</div><div class="fake-field">메모 · ${scenario.detail.note}</div><div class="fake-field">결정 상태 · 미정</div><div class="fake-field">원문과 상세</div><button class="primary" type="button">변경 저장</button></div>`, "내 Flow");
+      }
+      return appShell(`<div class="eyebrow">${scenario.title}</div><h1 class="screen-title">할 일 조정</h1><div class="card card-pad section"><div class="form-grid"><div class="field"><label>할 일</label><input value="${scenario.detail.title}" readonly /></div><div class="field"><label>언제</label><div class="segmented"><button type="button" aria-pressed="${scenario.detail.date === "언제든"}">언제든</button><button type="button" aria-pressed="${scenario.detail.date !== "언제든"}">날짜</button></div></div>${scenario.detail.date !== "언제든" ? `<div class="field"><label>날짜</label><input value="${scenario.detail.date.split(" · ")[0]}" readonly /></div>` : ""}<div class="field"><label>내 메모</label><textarea readonly>${scenario.detail.note}</textarea></div></div><div class="disclosure">세부 일정 · 시간, 소요 시간, 반복</div><div class="disclosure">원문과 참고 내용</div><div class="action-row"><button class="primary" type="button">저장</button><button class="secondary" type="button">취소</button></div></div>`, "내 Flow");
+    }
+
+    function renderBatch(scenario) {
+      if (state.option === "a") {
+        return appShell(`${artifactHeader(scenario, "전체 Flow 조정")}<section class="section"><div class="section-head"><h2>날짜 이동</h2><span>Flow 전체</span></div><div class="card card-pad"><div class="field"><label>새 기준일</label><input value="8월 22일" readonly /></div><div class="legacy-note">직접 바꾼 날짜는 유지됩니다.</div><div class="action-row"><button class="primary" type="button">전체 이동</button></div></div></section>`, "내 Flow");
+      }
+      return appShell(`${artifactHeader(scenario, "여러 할 일 조정")}<section class="section"><div class="section-head"><h2>항목 선택</h2><span>3/${scenario.count} 선택</span></div><div class="task-list">${taskRows(scenario, 6, { selectable: true })}</div><div class="selection-bar"><strong>선택한 3개</strong><button type="button">날짜 이동</button><button type="button">날짜 지우기</button><button type="button">포함/제외</button><button type="button">가져가기</button></div></section><div class="card card-pad section"><div class="eyebrow">변경 전 확인</div><h2 class="detail-title">3개 항목을 8월 3일로 이동</h2><p class="screen-subtitle">기존 기준일과 다른 개인 날짜로 저장됩니다. 나머지 ${scenario.count - 3}개는 바뀌지 않습니다.</p><div class="action-row"><button class="primary" type="button">3개 이동</button><button class="secondary" type="button">취소</button></div></div>`, "내 Flow");
+    }
+
+    function renderCompletion(scenario) {
+      if (state.option === "a") {
+        return appShell(`${artifactHeader(scenario, "오늘 실행")}<div class="task-list section">${taskRows(scenario, 3, { completed: true })}</div><div class="snackbar"><span>1개 완료했어요.</span><button type="button">되돌리기</button></div><div class="legacy-note">완료 취소는 전체 목록에서 항목을 다시 열어 체크를 해제합니다.</div>`, "내 Flow");
+      }
+      return appShell(`<div class="eyebrow">실행 기록</div><h1 class="screen-title">완료와 재개</h1><div class="local-tabs"><span>지금</span><span>내 Flow</span><span class="active">완료</span></div><div class="snackbar"><span>‘${scenario.detail.title}’ 완료</span><button type="button">되돌리기</button></div><section class="section"><div class="section-head"><h2>오늘 완료</h2><span>1개</span></div><div class="task-list"><div class="task-row done"><span class="check">✓</span><span><span class="task-title">${scenario.detail.title}</span><span class="task-meta">${scenario.title} · ${scenario.detail.date}</span></span><button class="row-action" type="button">재개</button></div></div></section><section class="section"><div class="section-head"><h2>이전 완료</h2><span>기록 유지</span></div><div class="task-list">${taskRows(scenario, 2, { completed: true })}</div></section>`, "내 Flow");
+    }
+
+    function renderExport(scenario) {
+      if (state.option === "a") {
+        return appShell(`${artifactHeader(scenario, "가져가기")}<section class="section"><div class="section-head"><h2>형식 선택</h2><span>현재 열어본 항목</span></div><div class="format-grid"><div class="format"><strong>캘린더 파일</strong><span>날짜 일정</span></div><div class="format"><strong>체크리스트</strong><span>복사</span></div><div class="format"><strong>시트 파일</strong><span>다운로드</span></div><div class="format"><strong>메모 문서</strong><span>복사</span></div></div></section>`, "내 Flow");
+      }
+      return appShell(`<div class="eyebrow">${scenario.title}</div><h1 class="screen-title">가져가기</h1><p class="screen-subtitle">먼저 보낼 범위를 고른 뒤 형식을 선택합니다.</p><section class="section"><div class="section-head"><h2>범위</h2><span>예상 개수 확인</span></div><div class="scope-options"><div class="scope-option"><span class="radio"></span><span><strong>현재 할 일</strong><span>${scenario.detail.title}</span></span><strong>1개</strong></div><div class="scope-option"><span class="radio"></span><span><strong>선택한 할 일</strong><span>직접 고른 항목</span></span><strong>3개</strong></div><div class="scope-option selected"><span class="radio"></span><span><strong>Flow 전체</strong><span>제외한 항목은 빼고 보냄</span></span><strong>${scenario.count}개</strong></div></div></section><section class="section"><div class="section-head"><h2>형식</h2><span>Flow 전체 ${scenario.count}개</span></div><div class="format-grid"><div class="format"><strong>캘린더</strong><span>${scenario.count - scenario.anytime}개 일정</span></div><div class="format"><strong>체크리스트</strong><span>${scenario.count}개 할 일</span></div><div class="format"><strong>시트</strong><span>${scenario.count}개 행</span></div><div class="format"><strong>메모</strong><span>전체 구조</span></div></div><div class="action-row"><button class="primary" type="button">가져가기</button></div></section>`, "내 Flow");
+    }
+
+    const renderers = {
+      save: renderSave,
+      "post-save": renderPostSave,
+      "my-flow": renderMyFlow,
+      "whole-flow": renderWholeFlow,
+      calendar: renderCalendar,
+      adjust: renderAdjust,
+      batch: renderBatch,
+      completion: renderCompletion,
+      export: renderExport,
+    };
+
+    function decisionKey() { return `${state.surface}:${state.option}`; }
+    function getDecisions() {
+      try { return JSON.parse(localStorage.getItem("flowme-p25-prototype-decisions") || "{}"); }
+      catch { return {}; }
+    }
+    function saveDecision(patch) {
+      const decisions = getDecisions();
+      decisions[decisionKey()] = { ...(decisions[decisionKey()] || {}), ...patch, updatedAt: new Date().toISOString() };
+      localStorage.setItem("flowme-p25-prototype-decisions", JSON.stringify(decisions));
+    }
+
+    function render() {
+      const scenario = scenarios[state.scenario];
+      const surface = surfaces.find((entry) => entry.id === state.surface);
+      document.querySelector("#surface-eyebrow").textContent = surface.eyebrow;
+      document.querySelector("#surface-title").textContent = surface.title;
+      document.querySelector("#surface-description").textContent = surface.description;
+      document.querySelector("#surface-recommendation").textContent = state.option === "b" ? "추천 · B 작업공간 구조안" : "비교 · A 최소 변경안";
+      document.querySelector("#decision-question").textContent = surface.question;
+      scenarioSelect.value = state.scenario;
+      document.querySelectorAll("[data-option]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.option === state.option)));
+      document.querySelectorAll("[data-device]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.device === state.device)));
+      document.querySelectorAll("[data-surface]").forEach((button) => button.setAttribute("aria-current", String(button.dataset.surface === state.surface)));
+      const shell = document.querySelector("#device-shell");
+      shell.dataset.device = state.device;
+      document.querySelector("#prototype-root").innerHTML = renderers[state.surface](scenario);
+
+      const decisions = getDecisions();
+      const current = decisions[decisionKey()] || {};
+      document.querySelectorAll("#decision-actions button").forEach((button) => button.classList.toggle("active", button.dataset.value === current.decision));
+      document.querySelector("#decision-note").value = current.note || "";
+      document.querySelector("#current-links").innerHTML = surface.current.length
+        ? surface.current.map((file) => `<a href="./screenshots/current/${file}" target="_blank" rel="noreferrer">${file}</a>`).join("")
+        : "<span>현재 화면에 독립 surface가 없어 prototype 비교로 판단합니다.</span>";
+    }
+
+    scenarioSelect.addEventListener("change", (event) => { state.scenario = event.target.value; render(); });
+    document.querySelector("#option-controls").addEventListener("click", (event) => { const button = event.target.closest("button[data-option]"); if (!button) return; state.option = button.dataset.option; render(); });
+    document.querySelector("#device-controls").addEventListener("click", (event) => { const button = event.target.closest("button[data-device]"); if (!button) return; state.device = button.dataset.device; render(); });
+    nav.addEventListener("click", (event) => { const button = event.target.closest("button[data-surface]"); if (!button) return; state.surface = button.dataset.surface; render(); });
+    document.querySelector("#decision-actions").addEventListener("click", (event) => { const button = event.target.closest("button[data-value]"); if (!button) return; saveDecision({ decision: button.dataset.value }); render(); });
+    document.querySelector("#decision-note").addEventListener("input", (event) => saveDecision({ note: event.target.value }));
+    document.querySelector("#copy-decisions").addEventListener("click", async () => {
+      const payload = { prototype: "P25-00B", decisions: getDecisions() };
+      await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+      const button = document.querySelector("#copy-decisions");
+      button.textContent = "복사됨";
+      setTimeout(() => { button.textContent = "결정 JSON 복사"; }, 1200);
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -14,6 +14,9 @@ Work one gated slice at a time. Do not start the next slice because the previous
 
 ### P25-00B - Core-screen prototype and owner decision
 
+**Status:** Interactive A/B package and six-shape simulation complete; owner keep/change/reject pending.
+**Package:** [P25-00B prototype decision](../../content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/README.md).
+
 Create current/proposed 390px and 1024px wireframes for:
 
 1. public/save-before artifact,

@@ -10,16 +10,16 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 - [x] Refresh official reference patterns.
 - [x] Define the P25 product model, sequence, gates, and non-goals.
 - [x] Update canonical status, roadmap, decisions, ideas, and reference docs.
-- [ ] Run docs and workboard visual verification.
+- [x] Run docs and workboard visual verification.
 
 ## P25-00B - Prototype decision
 
-- [ ] Capture the current six core surfaces at 390px and 1024px.
-- [ ] Draw at least two alternative frames for save, whole Flow, My Flow, Calendar, adjustment, and export.
-- [ ] Simulate moving, vehicle checklist, routine, trip plan, record flow, and memo draft.
+- [x] Capture the current six core surfaces at 390px and 1024px.
+- [x] Draw at least two alternative frames for save, whole Flow, My Flow, Calendar, adjustment, and export.
+- [x] Simulate moving, vehicle checklist, routine, trip plan, record flow, and memo draft.
 - [ ] Record owner keep/change/reject decisions per surface.
 - [ ] Freeze labels, local tabs, drawer depth, and dated/undated behavior.
-- [ ] Publish the implementation-ready screen contract without changing app runtime.
+- [x] Publish the implementation-ready screen contract without changing app runtime.
 
 ## P25-01 - Correctness
 

@@ -1,0 +1,226 @@
+[
+  {
+    "kind": "capture",
+    "name": "01-public-vehicle-mobile",
+    "label": "public save-before mobile",
+    "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": false,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 2690,
+    "title": "자동차검사 D-14 준비 | FlowMe"
+  },
+  {
+    "kind": "capture",
+    "name": "01b-public-vehicle-mobile-full",
+    "label": "public save-before mobile full",
+    "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": true,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 2690,
+    "title": "자동차검사 D-14 준비 | FlowMe"
+  },
+  {
+    "kind": "capture",
+    "name": "02-post-save-vehicle-mobile",
+    "label": "post-save My Flow mobile",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": false,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 1031,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "02b-post-save-vehicle-mobile-full",
+    "label": "post-save My Flow mobile full",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": true,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 1031,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "03-my-flow-structure-mobile",
+    "label": "returning whole Flow mobile",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": false,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 844,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "03b-my-flow-structure-mobile-full",
+    "label": "returning whole Flow mobile full",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": true,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 844,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "04-item-adjustment-mobile",
+    "label": "item adjustment mobile",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": false,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 1812,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "04b-item-adjustment-mobile-full",
+    "label": "item adjustment mobile full",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": true,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 1812,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "05-calendar-vehicle-mobile",
+    "label": "calendar after undated Flow save mobile",
+    "url": "https://flowme2605.vercel.app/calendar",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": false,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 1276,
+    "title": "캘린더"
+  },
+  {
+    "kind": "capture",
+    "name": "05b-calendar-vehicle-mobile-full",
+    "label": "calendar after undated Flow save mobile full",
+    "url": "https://flowme2605.vercel.app/calendar",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "fullPage": true,
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "scrollHeight": 1276,
+    "title": "캘린더"
+  },
+  {
+    "kind": "capture",
+    "name": "06-my-flow-structure-wide",
+    "label": "returning whole Flow wide",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "fullPage": false,
+    "horizontalOverflow": false,
+    "scrollWidth": 1024,
+    "clientWidth": 1024,
+    "scrollHeight": 1425,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "06b-my-flow-structure-wide-full",
+    "label": "returning whole Flow wide full",
+    "url": "https://flowme2605.vercel.app/my",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "fullPage": true,
+    "horizontalOverflow": false,
+    "scrollWidth": 1024,
+    "clientWidth": 1024,
+    "scrollHeight": 1425,
+    "title": "내 Flow"
+  },
+  {
+    "kind": "capture",
+    "name": "07-calendar-vehicle-wide",
+    "label": "calendar after undated Flow save wide",
+    "url": "https://flowme2605.vercel.app/calendar",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "fullPage": false,
+    "horizontalOverflow": false,
+    "scrollWidth": 1024,
+    "clientWidth": 1024,
+    "scrollHeight": 1055,
+    "title": "캘린더"
+  },
+  {
+    "kind": "capture",
+    "name": "07b-calendar-vehicle-wide-full",
+    "label": "calendar after undated Flow save wide full",
+    "url": "https://flowme2605.vercel.app/calendar",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "fullPage": true,
+    "horizontalOverflow": false,
+    "scrollWidth": 1024,
+    "clientWidth": 1024,
+    "scrollHeight": 1055,
+    "title": "캘린더"
+  }
+]

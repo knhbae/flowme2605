@@ -27,11 +27,12 @@ Owner, Codex, and Claude Design feedback reopened the product frame after P24 im
 
 Detailed scope: [P25 Execution Workspace Foundation](./specs/2026-07-19-execution-workspace-foundation/spec.md).
 Review board: [P25 UX feedback reconciliation](./content-audit/2026-07-19-flowme-p25-ux-feedback-reconciliation/README.md).
+Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/README.md).
 
 | Slice | Purpose | Gate |
 | --- | --- | --- |
 | P25-00A | Reconcile owner/Codex/Claude feedback and official references | Done; structural correction and staged scope recorded |
-| P25-00B | Compare core mobile/wide workspace prototypes and capture owner decisions | Screen-level keep/change/reject; no runtime change |
+| P25-00B | Compare core mobile/wide workspace prototypes and capture owner decisions | A/B prototype and six-shape simulation ready; owner keep/change/reject pending; no runtime change |
 | P25-01A | Canonical effective item/series/occurrence projection | Preview, My Flow, Calendar, ICS, and list export dates/counts match |
 | P25-01B | Memo draft split and count integrity | No invented filler; accepted preview equals saved/exported items |
 | P25-02 | Responsive whole-Flow workspace and post-save handoff | Full artifact reachable; no unexplained truncation |
@@ -93,8 +94,8 @@ There is no active external-user gate. P24-J0~J5 remain the deployed baseline, w
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Now | AI + owner direction | P25-00B core workspace prototype decision | Compare mobile/wide alternatives for save, whole Flow, My Flow, Calendar, adjustment, and export | Owner keep/change/reject decisions are recorded; runtime unchanged |
-| Next | AI | P25-01A/B correctness | Fix effective projection, recurrence, memo split, and count parity | Representative dates/counts match across consumers |
+| Now | Owner direction | P25-00B core workspace prototype decision | Review the prepared mobile/wide A/B package for save, whole Flow, My Flow, Calendar, adjustment, and export | Owner keep/change/reject decisions are recorded; runtime unchanged |
+| In parallel | AI | P25-01A/B correctness | Fix effective projection, recurrence, memo split, and count parity without depending on visual labels | Representative dates/counts match across consumers |
 | Then | AI + owner checkpoints | P25-02~P25-07 staged implementation | Close one product/data/browser gate per slice | Approved frame is implemented without source/run ownership drift |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
