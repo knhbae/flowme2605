@@ -10548,6 +10548,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     flow: MySavedFlow,
     options: {
       interactive?: boolean;
+      inlineDetail?: boolean;
       postSave?: boolean;
       showHeading?: boolean;
     } = {},
@@ -10592,7 +10593,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     return renderExecutionRow(row, {
                       compact: true,
                       openDetail: true,
-                      inlineDetail: true,
+                      inlineDetail: options.inlineDetail ?? isMyFlowMobileViewport,
                       minimalMeta: true,
                       hideFlowMeta: true,
                       showOpenLabel: true,
@@ -12056,7 +12057,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         key={flow.progress.slug}
         data-testid="my-flow-overview-card"
         data-flow-slug={flow.progress.slug}
-        className={`rounded-lg border p-4 ${cardToneClass}`}
+        className={`min-w-0 rounded-lg border p-4 ${showWholeFlowOutline ? 'md:col-span-full' : ''} ${cardToneClass}`}
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
@@ -12151,18 +12152,70 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           {nextExecutionRow ? renderMyFlowExecutionNotePanel(nextExecutionRow) : null}
         </div> : null}
         {executionReady && showWholeFlowOutline ? (
-          <div className="mt-4" data-testid="my-flow-whole-flow-workspace">
-            {renderMyFlowWholeFlowOutline(flow, { interactive: true, showHeading: true })}
+          <div
+            className="mt-4 min-w-0 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] lg:items-start lg:gap-4"
+            data-testid="my-flow-whole-flow-workspace"
+            data-workspace-layout={isMyFlowMobileViewport ? 'mobile-drill-in' : 'wide-outline-detail'}
+          >
+            <div className="min-w-0" data-testid="my-flow-workspace-outline-pane">
+              {renderMyFlowWholeFlowOutline(flow, {
+                interactive: true,
+                inlineDetail: isMyFlowMobileViewport,
+                showHeading: true,
+              })}
+            </div>
+            <aside
+              data-testid="my-flow-workspace-detail-pane"
+              className="hidden min-w-0 rounded-md border border-slate-200 bg-slate-50 p-3 lg:sticky lg:top-4 lg:block"
+            >
+              {activeOverviewRow ? (
+                renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow', { parentOwnsCompletion: true })
+              ) : (
+                <div data-testid="my-flow-workspace-flow-summary" className="grid gap-3">
+                  <div>
+                    <p className="text-xs font-semibold text-blue-700">다음 할 일</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-950">
+                      {nextExecutionRow ? getMyFlowRowDisplayTitle(nextExecutionRow) : '남은 할 일이 없습니다'}
+                    </p>
+                    {nextExecutionRow ? (
+                      <p className="mt-1 text-xs font-semibold text-slate-500">
+                        {[nextExecutionRow.date ? formatMyFlowDisplayDate(nextExecutionRow.date) : '언제든', formatMyFlowTimedScheduleLabel(nextExecutionRow.structuralScheduleProjection)].filter(Boolean).join(' · ')}
+                      </p>
+                    ) : null}
+                  </div>
+                  {nextExecutionRow ? (
+                    <button
+                      type="button"
+                      data-testid="my-flow-workspace-next-open"
+                      className="inline-flex min-h-9 w-full items-center justify-center rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white"
+                      aria-label={getMyFlowOpenActionAriaLabel(getMyFlowRowDisplayTitle(nextExecutionRow), '열기')}
+                      onClick={() => openMyFlowRowFromFlowTab(flow, nextExecutionRow)}
+                    >
+                      열기
+                    </button>
+                  ) : null}
+                  <div className="border-t border-slate-200 pt-3">
+                    <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-600">
+                      <span>전체 진행</span>
+                      <span data-testid="my-flow-workspace-progress-summary" className="text-slate-950">{progressSummary}</span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200" role="img" aria-label={`전체 진행 ${progressSummary}`}>
+                      <div className="h-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </aside>
           </div>
         ) : null}
         {executionReady ? renderPersonalDraftStructuralControls(flow) : null}
         {executionReady ? renderMyFlowExportPanel(flow) : null}
-        {executionReady && activeOverviewRow ? (
+        {executionReady && activeOverviewRow && !showWholeFlowOutline ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
             {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow')}
           </div>
         ) : null}
-        {executionReady || retiredPersonalCopy ? <div className="mt-4">
+        {(executionReady || retiredPersonalCopy) && (!showWholeFlowOutline || isMyFlowMobileViewport) ? <div className="mt-4">
           <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-700">
             <span>진행</span>
             <span data-testid="my-flow-overview-progress-summary" className="text-slate-950">{progressSummary}</span>
@@ -12521,10 +12574,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             data-testid="my-flow-workspace"
             data-surface-role={isCalendarSurface ? 'date-first' : 'task-first'}
             ref={myFlowWorkspaceRef}
-            className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'xl:grid-cols-[280px_minmax(0,1fr)]' : ''}`}
+            className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'lg:grid-cols-[210px_minmax(0,1fr)]' : ''}`}
           >
             {showMyFlowSidebar ? (
-              <aside data-testid="my-flow-list" className="hidden max-h-[calc(100vh-2rem)] self-start overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-sm xl:sticky xl:top-4 xl:block">
+              <aside data-testid="my-flow-list" className="hidden max-h-[calc(100vh-2rem)] self-start overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-sm lg:sticky lg:top-4 lg:block">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold uppercase text-slate-500">실행 목록</p>
@@ -12553,7 +12606,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {showMyFlowWorkspaceControls ? (
               <div className="mb-5 border-y border-slate-200 py-3 sm:flex sm:items-end sm:justify-between sm:gap-3">
                 {showMyFlowScopeControl ? (
-                  <div className="min-w-0 sm:w-72">
+                  <div className={`min-w-0 sm:w-72 ${showMyFlowSidebar ? 'lg:hidden' : ''}`}>
                     <label className="mb-1 block text-xs font-semibold text-slate-500" htmlFor="my-flow-scope">
                       저장한 Flow
                     </label>
@@ -13000,7 +13053,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
                 </>
               ) : (
-                <div className={`grid gap-3 ${myFlowReuseDraft?.versionMode === 'latest' ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
+                <div className={`grid gap-3 ${visibleSavedFlows.length === 1 || myFlowReuseDraft?.versionMode === 'latest' ? 'grid-cols-1' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
                   {visibleSavedFlows.map((flow) => renderSavedFlowOverviewCard(flow))}
                 </div>
               )}

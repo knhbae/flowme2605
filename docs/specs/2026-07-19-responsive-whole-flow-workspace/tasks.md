@@ -11,8 +11,7 @@
 
 ## P25-02B
 
-- [ ] Use wide Flow rail, outline, and detail panes without the current empty canvas.
-- [ ] Keep mobile outline and item drill-in within one selected Flow.
-- [ ] Remove duplicated summary/next-item representations from a selected Flow.
-- [ ] Verify 390px and 1024px visual balance, keyboard path, overflow, and console errors.
-
+- [x] Use wide Flow rail, outline, and detail panes without the current empty canvas.
+- [x] Keep mobile outline and item drill-in within one selected Flow.
+- [x] Remove duplicated summary/next-item representations from a selected Flow.
+- [x] Verify 390px and 1024px visual balance, keyboard path, overflow, and console errors.

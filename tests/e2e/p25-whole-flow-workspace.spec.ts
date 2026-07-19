@@ -17,7 +17,12 @@ async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-  await page.getByTestId('flow-map-save-all-mobile').click();
+  const wideSave = page.getByTestId('flow-map-save-all');
+  if (await wideSave.isVisible()) {
+    await wideSave.click();
+  } else {
+    await page.getByTestId('flow-map-save-all-mobile').click();
+  }
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
 }
 
@@ -70,11 +75,59 @@ test.describe('P25 whole Flow workspace', () => {
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
 
     const selectedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const responsiveWorkspace = selectedFlow.getByTestId('my-flow-whole-flow-workspace');
     const workspaceOutline = selectedFlow.getByTestId('my-flow-whole-flow-outline');
+    await expect(responsiveWorkspace).toHaveAttribute('data-workspace-layout', 'wide-outline-detail');
     await expect(workspaceOutline).toHaveAttribute('data-outline-mode', 'workspace');
     await expect(workspaceOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
     await expect(page.getByTestId('my-flow-view-completed')).toBeVisible();
+    const selectedFlowBox = await selectedFlow.boundingBox();
+    expect(selectedFlowBox).not.toBeNull();
+    expect(selectedFlowBox!.width).toBeGreaterThan(700);
+
+    const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
+    await expect(detailPane).toBeVisible();
+    await expect(detailPane.getByTestId('my-flow-workspace-flow-summary')).toBeVisible();
+    await workspaceOutline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+    await expect(detailPane.getByTestId('my-flow-workspace-flow-summary')).toHaveCount(0);
+    await expect(detailPane.getByRole('button', { name: '닫기' })).toBeVisible();
+    await expect(detailPane.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await expect(workspaceOutline.getByTestId('my-flow-inline-detail')).toHaveCount(0);
     await captureEvidence(page, '04-returning-whole-flow-wide.png');
+
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBe(0);
+  });
+
+  test('wide multi-Flow workspace exposes rail, outline, and detail without competing scope controls', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await saveMovingFlow(page);
+
+    await page.goto('/flow-maps/middle-school-math-1');
+    await page.getByTestId('flow-map-save-all').click();
+    await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+    await page.getByTestId('my-flow-post-save-view-flow').click();
+
+    const rail = page.getByTestId('my-flow-list');
+    const selectedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
+    const outlinePane = selectedFlow.getByTestId('my-flow-workspace-outline-pane');
+    const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
+    await expect(rail).toBeVisible();
+    await expect(outlinePane).toBeVisible();
+    await expect(detailPane).toBeVisible();
+    await expect(page.getByTestId('my-flow-scope-select')).toBeHidden();
+
+    const [railBox, outlineBox, detailBox] = await Promise.all([
+      rail.boundingBox(),
+      outlinePane.boundingBox(),
+      detailPane.boundingBox(),
+    ]);
+    expect(railBox).not.toBeNull();
+    expect(outlineBox).not.toBeNull();
+    expect(detailBox).not.toBeNull();
+    expect(railBox!.x).toBeLessThan(outlineBox!.x);
+    expect(outlineBox!.x).toBeLessThan(detailBox!.x);
+    await captureEvidence(page, '05-multi-flow-three-pane-wide.png');
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBe(0);

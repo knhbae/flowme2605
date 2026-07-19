@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P25 execution-workspace structural correction<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P25-02B wide rail/outline/detail and mobile drill-in completion
+**Next Milestone:** P25-03 progressive item editor and bounded batch adjustment
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -36,7 +36,7 @@ Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25
 | P25-01A | Canonical routine series/occurrence projection | Done by current unit/browser evidence; public preview, My Flow Calendar, and ICS now share source cadence and stable occurrence identity |
 | P25-01B | Memo draft split and count integrity | Done by current unit/browser evidence; no generic filler, explicit acceptance, stable IDs, and accepted/saved/reloaded/list-export parity |
 | P25-02A | Whole-Flow hierarchy and post-save handoff | Done by current browser evidence; exact full artifact, saved-Flow selection, local `지금 / 내 Flow / 완료`, and persistent completion cancel |
-| P25-02B | Responsive whole-Flow workspace composition | Next; remove wide empty canvas and complete rail/outline/detail plus mobile drill-in |
+| P25-02B | Responsive whole-Flow workspace composition | Done by current browser evidence; selected Flow fills the canvas, mobile drills in, and 1024px supports outline/detail or rail/outline/detail without duplicate completion controls |
 | P25-03 | Progressive item editor and selected-item batch adjustment | Common edit is one drawer; batch date/include/export impact is previewed |
 | P25-04 | Anytime task model and Calendar placement queue | Undated work can be found, executed, dated, moved, and cleared |
 | P25-05 | Completion/reopen and export scope parity | One occurrence/control; immediate undo and persistent reopen; exact export counts |

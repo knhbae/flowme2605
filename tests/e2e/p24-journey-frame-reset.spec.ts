@@ -166,7 +166,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await captureEvidence(page, '09a-held-post-save-preserved-mobile.png');
   });
 
-  test('wide My Flow names the selector as saved Flow management, not a viewing range', async ({ page }) => {
+  test('wide My Flow names saved Flow navigation as management, not a viewing range', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/flow-maps/moving-d30');
     await page.evaluate(() => window.localStorage.clear());
@@ -180,8 +180,11 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
 
-    await expect(page.getByLabel('저장한 Flow')).toBeVisible();
-    await expect(page.getByLabel('저장한 Flow')).toContainText('모든 Flow');
+    const flowRail = page.getByTestId('my-flow-list');
+    await expect(flowRail).toBeVisible();
+    await expect(flowRail).toContainText('Flow 목록');
+    await expect(flowRail.locator('button')).toHaveCount(2);
+    await expect(page.getByLabel('저장한 Flow')).toBeHidden();
     await expect(page.locator('body')).not.toContainText('보기 범위');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBe(0);
