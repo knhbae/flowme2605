@@ -131,6 +131,18 @@ Do not use this for:
 
 **Related docs:** [P25 foundation spec](./specs/2026-07-19-execution-workspace-foundation/spec.md), [P25 feedback reconciliation](./content-audit/2026-07-19-flowme-p25-ux-feedback-reconciliation/README.md)
 
+### 2026-07-19 - P25 uses title-first execution rows and separates held occurrence recovery
+
+**Decision:** Use one shared responsive visual contract for My Flow, Calendar placement, export, execution notes, navigation, and bottom sheets. Compact execution rows show the effective task title before date and Flow metadata, use one visible `열기` label, and provide at least 44px completion and note targets. Flow colors identify ownership but do not color every command. User-facing undated language is `날짜 없는 할 일`, `날짜 없음`, `날짜 정하기`, and `날짜 없애기`; `Anytime` may remain an internal model term only. A personal recurring occurrence in `held` state is excluded from Today and Calendar ordinary execution while its execution record and stable occurrence ID remain available in a collapsed `보류한 일정` recovery entry under My Flow.
+
+**Reason:** The previous UI required users to parse Flow/date chips before the task title, mixed 32-36px controls, repeated Calendar explanation and legends, and used `언제든` without explaining how undated work participates in execution. A held occurrence also looked like ordinary actionable work even though its completion control was disabled. One title-first row and a separate recovery shelf reduce interpretation without changing source, overlay, recurrence, or execution ownership.
+
+**Applies to:** My Flow Today/whole-Flow/completed rows, Calendar agenda, Calendar date-free placement, execution notes, portable export entry, responsive navigation, personal recurrence held/reopen, and P25 visual evidence.
+
+**Reopen when:** observed users still cannot find date-free work or held recovery, 44px controls materially reduce information density on target devices, or a tested alternative row hierarchy produces faster and more accurate execution. Automated visual review alone does not satisfy the observed-user condition.
+
+**Related docs:** [P25-07 evidence](./content-audit/2026-07-19-p25-07-integrated-visual-language-evidence/README.md), [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md)
+
 ### 2026-07-19 - Save before, first-save confirmation, and returning execution are distinct frames
 
 **Decision:** Keep the 4-tab IA and current source, personal overlay, execution, recurrence, and export contracts. On source-backed and public save-before surfaces, show the natural artifact and representative effective items before long explanation. Offer `그대로 저장` as the primary action and a bounded `조정하고 저장` path for personal title and included items. After the first save, show the whole saved Flow at depth 0 before entering the returning My Flow workspace; later visits remain task-first. Calendar keeps dated work in grid/agenda and preserves undated work in a collapsed tray. Content held for source or risk review stays stored but exposes no ordinary execution or post-save action until it becomes eligible again.

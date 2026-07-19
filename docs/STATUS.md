@@ -3,7 +3,7 @@
 **Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
 **Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 through P25-05 are complete by current unit/browser evidence. Open P25-06/P25-07 public artifact and visual integration next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 through P25-07 are complete by current unit/browser evidence. Run P25-08 six-journey integration next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,19 +11,21 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-06/P25-07 public artifact and visual integration; P24 remains the deployed production baseline |
+| Active product gate | P25-08 internal six-journey integration; P24 remains the deployed production baseline |
 | User action now | No participant action. The owner may still review the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html), but the instruction to continue P25 authorizes the staged implementation baseline. |
-| AI action now | Remove duplicated public artifact/copy, make preview inclusion explicit, and consolidate responsive visual vocabulary |
+| AI action now | Re-run six representative journeys across save, adjustment, date placement, execution, completion/reopen, export, and reuse |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
 
+- 2026-07-19 P25-06/P25-07 public and visual integration: public save-before now shows one read-only artifact and one save decision surface; actual completion remains post-save. My Flow, Calendar placement, export, note, and navigation now share bounded surfaces, neutral action states, title-first rows, and 44px completion/note targets. User-facing undated vocabulary is `날짜 없는 할 일 / 날짜 없음 / 날짜 정하기`; held occurrences leave Today/Calendar ordinary execution but remain recoverable under `보류한 일정`. Current evidence: production build, P25/public regression `36 / 36`, recurrence hold/reopen `1 / 1`, undated placement `1 / 1`, mobile/wide overflow `0`, observed-user sessions `0`. See [P25-06 evidence](./content-audit/2026-07-19-p25-06-public-artifact-simplification-evidence/README.md) and [P25-07 evidence](./content-audit/2026-07-19-p25-07-integrated-visual-language-evidence/README.md).
+
 - 2026-07-19 P25-05B export scope and count parity: My Flow now presents `Flow 전체`, `직접 선택`, and `현재 항목` before format. All visible counts come from the canonical export plan; destination cards use destination eligibility, so undated tasks remain in list exports while Calendar counts only dated rows. Current evidence: unit `526 / 526`, production build, personal-draft and source-backed mobile/wide browser scenarios pass, count mismatch and completion-membership change are `0`, and observed-user sessions remain `0`. See [P25-05B evidence](./content-audit/2026-07-19-p25-05b-export-scope-count-evidence/README.md).
 
 - 2026-07-19 P25-05A completion and reopen: normal tasks now use one row checkbox, immediate feedback says `되돌리기`, and the persistent `완료` view reopens the same task after reload. Recurrence definitions expose no completion control, Calendar occurrences expose one `이번 회차 완료 체크`, and internal checklist checks are explicitly marked as subchecks. Current evidence: unit `525 / 525`, production build and targeted mobile/wide browser scenarios pass, completion/series/occurrence control counts are `1 / 0 / 1`, and observed-user sessions remain `0`. See [P25-05A evidence](./content-audit/2026-07-19-p25-05a-completion-reopen-evidence/README.md).
 
-- 2026-07-19 P25-04 Anytime and Calendar placement: My Flow now owns execution of every open undated task in a dedicated `언제든 할 일` section, while Calendar owns a selection-only `일정에 놓기` queue. Users can place selected tasks on today or a chosen date, keep them Anytime without mutation, undo date assignment, and remove a date to return a task to the queue. Mobile uses agenda/grid/drawer composition; wide uses queue/grid/agenda columns. Calendar queue completion controls and duplicate Anytime execution rows are `0`; targeted Playwright is `1 / 1`, production build passes, and observed-user sessions remain `0`. See [P25-04 evidence](./content-audit/2026-07-19-p25-04-anytime-calendar-placement-evidence/README.md).
+- 2026-07-19 P25-04 date-free work and Calendar placement: My Flow now owns execution of every open undated task in a dedicated `날짜 없는 할 일` section, while Calendar owns a selection-only `날짜 정하기` queue. Users can place selected tasks on today or a chosen date, keep them without a date and without mutation, undo date assignment, and remove a date to return a task to the queue. Mobile uses agenda/grid/drawer composition; wide uses queue/grid/agenda columns. Calendar queue completion controls and duplicate date-free execution rows are `0`; targeted Playwright is `1 / 1`, production build passes, and observed-user sessions remain `0`. See [P25-04 evidence](./content-audit/2026-07-19-p25-04-anytime-calendar-placement-evidence/README.md).
 
 - 2026-07-19 P25-03B bounded batch adjustment: `전체 Flow` now exposes temporary selection mode on mobile and wide. Selection checkboxes replace completion controls; users can preview and apply a date, return selected tasks to `언제든`, open existing export with the exact selection, and remove rows only where a persistent recovery path exists. Published source and completion state remain unchanged, explicit date removal is an additive personal override, recurring date edits require occurrence/series scope, and direct source-backed removal controls remain `0`. Current evidence: unit `525 / 525`, targeted Playwright `1 / 1`, mobile/wide overflow `0`, console errors `0`, observed-user sessions `0`. See [P25-03B evidence](./content-audit/2026-07-19-p25-03b-batch-adjustment-evidence/README.md).
 

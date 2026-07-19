@@ -330,7 +330,7 @@ test.describe('public share shell secondary browse order', () => {
 
     const nowSection = page.getByTestId('my-flow-anytime-section');
     await expect(nowSection).toBeVisible();
-    await expect(nowSection).toContainText('언제든 할 일');
+    await expect(nowSection).toContainText('날짜 없는 할 일');
 
     const postSaveComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
     await expect(postSaveComplete).toBeVisible();

@@ -5,6 +5,14 @@ import type {
   CalendarUnscheduledTrayItem,
 } from '@/lib/flow/calendar-unscheduled-tray';
 import { FlowItemMultiSelect } from './FlowItemMultiSelect';
+import {
+  FLOW_UI_COMPACT_ACTION_CLASS,
+  FLOW_UI_INPUT_CLASS,
+  FLOW_UI_PRIMARY_ACTION_CLASS,
+  FLOW_UI_SECONDARY_ACTION_CLASS,
+  FLOW_UI_STATUS_INFO_CLASS,
+  FLOW_UI_SURFACE_CLASS,
+} from './flow-ui';
 
 type CalendarUnscheduledTrayProps = {
   items: CalendarUnscheduledTrayItem[];
@@ -46,15 +54,15 @@ export function CalendarUnscheduledTray({
   const headerContent = (
     <>
       <span className="min-w-0">
-        <span className="block text-sm font-bold text-slate-950">일정에 놓기</span>
-        <span className="mt-0.5 block truncate text-xs font-medium text-slate-500">
-          언제든 할 일
+        <span className="block text-sm font-semibold text-[#1B1A17]">날짜 정하기</span>
+        <span className="mt-0.5 block truncate text-xs font-medium text-[#6E6B64]">
+          날짜 없는 할 일
         </span>
       </span>
       <span className="inline-flex shrink-0 items-center gap-2">
         <span
           data-testid="my-flow-calendar-unscheduled-count"
-          className="inline-flex min-w-7 justify-center rounded-md bg-blue-50 px-2 py-1 text-xs font-black text-blue-700"
+          className="inline-flex min-w-7 justify-center rounded-md bg-[#F3F1EC] px-2 py-1 text-xs font-semibold text-[#5C5952]"
         >
           {items.length}
         </span>
@@ -73,8 +81,8 @@ export function CalendarUnscheduledTray({
       data-testid="my-flow-calendar-unscheduled-tray"
       data-layout={variant}
       className={variant === 'sidebar'
-        ? 'min-w-0 self-start rounded-lg border border-slate-200 bg-white p-3 shadow-sm lg:sticky lg:top-4'
-        : 'border-y border-slate-200 bg-white py-2'}
+        ? `min-w-0 self-start p-3 lg:sticky lg:top-4 ${FLOW_UI_SURFACE_CLASS}`
+        : 'border-y border-[#E7E4DD] bg-white py-2'}
     >
       {variant === 'drawer' ? (
         <button
@@ -87,7 +95,7 @@ export function CalendarUnscheduledTray({
           {headerContent}
         </button>
       ) : (
-        <div className="flex min-h-11 items-center justify-between gap-3 border-b border-slate-100 pb-2">
+        <div className="flex min-h-11 items-center justify-between gap-3 border-b border-[#E7E4DD] pb-2">
           {headerContent}
         </div>
       )}
@@ -95,16 +103,16 @@ export function CalendarUnscheduledTray({
       {undo ? (
         <div
           data-testid="my-flow-calendar-unscheduled-undo"
-          className="mt-2 flex min-h-11 items-center justify-between gap-3 border-l-2 border-blue-600 bg-blue-50 px-3 py-2"
+          className={`mt-2 flex min-h-11 items-center justify-between gap-3 ${FLOW_UI_STATUS_INFO_CLASS}`}
           role="status"
         >
-          <p className="text-sm font-semibold text-blue-950">
+          <p className="text-sm font-semibold">
             {undo.count}개를 {undo.targetDateLabel}에 놓았습니다.
           </p>
           <button
             type="button"
             data-testid="my-flow-calendar-unscheduled-undo-action"
-            className="shrink-0 rounded-md px-2 py-1 text-sm font-bold text-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={FLOW_UI_COMPACT_ACTION_CLASS}
             onClick={onUndo}
           >
             되돌리기
@@ -119,7 +127,7 @@ export function CalendarUnscheduledTray({
               items={items.map((item) => ({
                 key: item.key,
                 title: item.title,
-                meta: `언제든 · ${item.flowTitle}`,
+                meta: `날짜 없음 · ${item.flowTitle}`,
               }))}
               selectedKeys={selectedKeys}
               itemTestId="my-flow-calendar-unscheduled-item"
@@ -132,7 +140,7 @@ export function CalendarUnscheduledTray({
           <div className="mt-3 grid gap-2">
             <p
               data-testid="my-flow-calendar-unscheduled-preview"
-              className="text-xs font-semibold text-slate-600"
+              className="text-xs font-semibold text-[#6E6B64]"
             >
               {preview.selectedCount > 0
                 ? `${preview.selectedCount}개 선택`
@@ -143,7 +151,7 @@ export function CalendarUnscheduledTray({
                 type="button"
                 data-testid="my-flow-calendar-unscheduled-today"
                 aria-label="선택한 할 일을 오늘 일정에 놓기"
-                className="min-h-10 rounded-md bg-blue-700 px-3 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+                className={FLOW_UI_PRIMARY_ACTION_CLASS}
                 disabled={preview.selectedCount === 0}
                 onClick={onPlaceToday}
               >
@@ -152,20 +160,20 @@ export function CalendarUnscheduledTray({
               <button
                 type="button"
                 data-testid="my-flow-calendar-unscheduled-keep"
-                aria-label="선택한 할 일을 언제든 할 일로 유지"
-                className="min-h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 hover:border-blue-200 hover:text-blue-700 disabled:cursor-not-allowed disabled:text-slate-300"
+                aria-label="선택한 할 일을 날짜 없이 유지"
+                className={FLOW_UI_SECONDARY_ACTION_CLASS}
                 disabled={preview.selectedCount === 0}
                 onClick={onKeepAnytime}
               >
-                언제든
+                날짜 없이
               </button>
             </div>
-            <label className="grid gap-1 text-xs font-bold text-slate-600">
+            <label className="grid gap-1 text-xs font-semibold text-[#6E6B64]">
               다른 날짜
               <input
                 type="date"
                 data-testid="my-flow-calendar-unscheduled-date"
-                className="min-h-11 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className={FLOW_UI_INPUT_CLASS}
                 value={targetDate}
                 onChange={(event) => onTargetDateChange(event.target.value)}
               />
@@ -173,7 +181,7 @@ export function CalendarUnscheduledTray({
             <button
               type="button"
               data-testid="my-flow-calendar-unscheduled-apply"
-              className="min-h-11 rounded-md bg-blue-700 px-4 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className={FLOW_UI_PRIMARY_ACTION_CLASS}
               disabled={!preview.canApply}
               onClick={onApply}
             >

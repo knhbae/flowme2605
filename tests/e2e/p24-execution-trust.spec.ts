@@ -1240,7 +1240,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.getByTestId('my-flow-view-today').click();
     const anytimeSection = page.getByTestId('my-flow-anytime-section');
     const anytimeRow = anytimeSection.getByTestId('my-flow-execution-row-shell').filter({ hasText: '충전기 챙기기' });
-    await expect(anytimeSection).toContainText('언제든 할 일');
+    await expect(anytimeSection).toContainText('날짜 없는 할 일');
     await expect(anytimeRow).toHaveCount(1);
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
@@ -1259,7 +1259,7 @@ test.describe('P24 execution trust regressions', () => {
     await expect(page).toHaveURL(/\/calendar#calendar-placement-queue$/);
     const tray = await expandCalendarUnscheduledTray(page);
     const trayItem = tray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
-    await expect(tray).toContainText('일정에 놓기');
+    await expect(tray).toContainText('날짜 정하기');
     await expect(tray.getByRole('checkbox', { name: /완료로 표시/ })).toHaveCount(0);
     const itemCheckbox = trayItem.getByRole('checkbox', { name: '충전기 챙기기 일정에 놓을 항목으로 선택' });
     await itemCheckbox.focus();

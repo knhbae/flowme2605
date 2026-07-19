@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P25 execution-workspace structural correction<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P25-06/P25-07 public artifact and visual integration
+**Next Milestone:** P25-08 internal six-journey integration gate
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -41,7 +41,7 @@ Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25
 | P25-03B | Selected-item batch adjustment | Done by current unit/browser evidence; temporary selection replaces completion, previews date impact, preserves overlays, preselects export scope, and permits removal only with recovery |
 | P25-04 | Anytime task model and Calendar placement queue | Done by current browser evidence; My Flow executes Anytime tasks and Calendar places selected tasks on today or a chosen date without duplicate completion controls |
 | P25-05 | Completion/reopen and export scope parity | Done by current unit/browser evidence: one occurrence/control, persistent reopen, scope before format, and canonical destination counts. |
-| P25-06/07 | Public artifact simplification and shared responsive visual language | Duplicate representation/copy/overflow/control variants reduced to zero targets |
+| P25-06/07 | Public artifact simplification and shared responsive visual language | Done by current browser evidence; one read-only public artifact, title-first execution rows, shared actions/sheets, explicit date-free language, and held-occurrence recovery |
 | P25-08 | Internal six-journey integration gate | Automated Blocking/High zero and owner readiness decision; no observed-user claim |
 
 P25 implementation must proceed in this order. Option B is the working P25-02 frame because the owner explicitly asked the agent to continue the full P25 program and allowed substantial changes; this is implementation authorization, not observed-user validation or a final screen-by-screen approval. No visually persuasive recurrence UI ships while P25-01 parity is failing.
@@ -96,7 +96,7 @@ There is no active external-user gate. P24-J0~J5 remain the deployed baseline, w
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Now | AI | P25-06/P25-07 public artifact and visual integration | Remove duplicate save-before representations/copy and consolidate responsive action vocabulary | Public preview is one artifact with explicit inclusion semantics and shared visual rules |
+| Completed | AI | P25-06/P25-07 public artifact and visual integration | Preserve one public artifact and shared responsive action vocabulary | Current browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-01~P25-05 correctness, whole-Flow workspace, personal adjustment, Anytime placement, completion, and export | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
 | Then | AI + owner checkpoint | P25-08 internal six-journey gate | Re-run current mobile/wide journeys after integration | Automated Blocking/High 0 and owner readiness decision package exist |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
@@ -119,7 +119,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-The immediate implementation gate is P25-06/P25-07: P25-05 now has one reversible completion contract and one canonical scope/count export contract, so simplify public save-before and consolidate responsive visual language before the P25-08 integration gate. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated. Do not open them as parallel product tracks.
+The immediate implementation gate is P25-08: P25-06/P25-07 now provide one public artifact representation and a shared responsive visual language, so re-run the six representative journeys before making any readiness claim. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated. Do not open them as parallel product tracks.
 
 ## Gated Backlog
 

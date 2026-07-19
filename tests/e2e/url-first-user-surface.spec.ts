@@ -2576,10 +2576,8 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   await expect(holdAction).toHaveAccessibleName(`${recurringTitle} 이번 일정 잠시 보류`);
   await holdAction.focus();
   await holdAction.press('Enter');
-  await expect(secondOccurrenceRow).toHaveAttribute('data-occurrence-state', 'held');
-  await expect(secondOccurrenceRow.getByTestId('personal-draft-occurrence-row-status')).toHaveText('보류');
-  await expect(secondOccurrenceRow.getByRole('checkbox')).toBeDisabled();
-  await expect(page.locator('.fc-event[aria-label*="매일 준비물 다시 확인하기"]')).toHaveCount(3);
+  await expect(page.locator(`article[data-occurrence-id="${secondOccurrenceId}"]`)).toHaveCount(0);
+  await expect(page.locator('.fc-event[aria-label*="매일 준비물 다시 확인하기"]')).toHaveCount(2);
   if (executionScreenshotDir) {
     await hideNextDevOverlay(page);
     await hidePlatformChromeForEvidence(page);
@@ -2589,20 +2587,30 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     await restorePlatformChromeAfterEvidence(page);
   }
 
-  await page.reload();
+  await page.goto('/my');
+  await page.getByTestId('my-flow-view-flow').click();
+  const heldRecovery = page.getByTestId('my-flow-held-recovery');
+  await expect(heldRecovery).toBeVisible();
+  await expect(heldRecovery).toContainText('보류한 일정');
+  await heldRecovery.locator('summary').click();
+  const heldRecoveryRow = heldRecovery
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: recurringTitle });
+  await expect(heldRecoveryRow).toHaveCount(1);
+  await expect(heldRecoveryRow).toHaveAttribute('data-occurrence-state', 'held');
+  expect(await heldRecoveryRow.getAttribute('data-occurrence-id')).toBe(secondOccurrenceId);
+  await heldRecoveryRow.getByRole('button', { name: new RegExp(`${recurringTitle} 열기`) }).click();
+  occurrenceStateDetail = heldRecovery.getByTestId('my-flow-item-detail');
+  await occurrenceStateDetail.getByTestId('personal-draft-occurrence-resume').click();
+  await expect(heldRecoveryRow).toHaveCount(0);
+  await page.goto('/calendar');
   await selectCalendarDate('2026-07-14');
   secondOccurrenceRow = page
     .getByTestId('my-flow-calendar-selected-day')
     .locator('article[data-occurrence-id]')
     .filter({ hasText: recurringTitle });
-  await expect(secondOccurrenceRow).toHaveAttribute('data-occurrence-state', 'held');
-  expect(await secondOccurrenceRow.getAttribute('data-occurrence-id')).toBe(secondOccurrenceId);
-  await secondOccurrenceRow.getByRole('button', { name: new RegExp(`${recurringTitle} 열기`) }).click();
-  occurrenceStateDetail = page
-    .getByTestId('my-flow-calendar-selected-day')
-    .getByTestId('my-flow-item-detail');
-  await occurrenceStateDetail.getByTestId('personal-draft-occurrence-resume').click();
   await expect(secondOccurrenceRow).toHaveAttribute('data-occurrence-state', 'reopened');
+  expect(await secondOccurrenceRow.getAttribute('data-occurrence-id')).toBe(secondOccurrenceId);
   const storedOccurrenceStates = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('flow:my-flow:occurrence-execution') || '{}'),
   );

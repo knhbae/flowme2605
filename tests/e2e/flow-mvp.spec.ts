@@ -3521,8 +3521,8 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await page.goto('/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
-  await expect(page.getByText('색과 라벨로 Flow를 구분하고, 반복 항목은 아이콘으로 표시합니다.')).toBeVisible();
-  await expect(page.getByTestId('my-flow-routine-legend')).toBeVisible();
+  await expect(page.getByText('색과 라벨로 Flow를 구분하고, 반복 항목은 아이콘으로 표시합니다.')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-routine-legend')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-calendar-scope-filter')).toBeVisible();
   await expect(page.getByTestId('my-flow-calendar-scope-all')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('my-flow-calendar-scope-routine').click();
@@ -3901,7 +3901,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
   const anytimeSection = page.getByTestId('my-flow-anytime-section');
-  await expect(anytimeSection).toContainText('언제든 할 일');
+  await expect(anytimeSection).toContainText('날짜 없는 할 일');
   await anytimeSection.getByRole('button', { name: /5\. 기본도형 열기/ }).click();
   const flowDetail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
   await expect(flowDetail).toBeVisible();

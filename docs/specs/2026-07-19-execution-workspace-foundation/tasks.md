@@ -23,9 +23,9 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 ## P25-01 - Correctness
 
-- [ ] Connect a canonical effective item/occurrence projection to all consumers.
-- [ ] Remove invented recurrence fallbacks.
-- [ ] Add recurrence/count parity fixtures and E2E.
+- [x] Connect a canonical effective item/occurrence projection to all consumers.
+- [x] Remove invented recurrence fallbacks.
+- [x] Add recurrence/count parity fixtures and E2E.
 - [x] Add memo split preview and remove count-filling generic items.
 - [x] Verify representative routine and personal-draft counts/dates across their eligible destinations.
 
@@ -78,11 +78,11 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 ## P25-06/P25-07 - Public and visual integration
 
-- [ ] Reduce public save-before to one artifact representation.
-- [ ] Replace preview completion-like controls with inclusion semantics.
-- [ ] Remove repeated explanation bands.
-- [ ] Apply shared components, responsive tokens, and action vocabulary.
-- [ ] Recheck held/review visual language.
+- [x] Reduce public save-before to one artifact representation.
+- [x] Replace non-functional preview completion controls with read-only artifact rows and an explicit whole-Flow save decision.
+- [x] Remove repeated explanation bands.
+- [x] Apply shared components, responsive tokens, and action vocabulary.
+- [x] Remove held occurrences from ordinary execution while preserving a recovery entry.
 
 ## P25-08 - Internal gate
 
