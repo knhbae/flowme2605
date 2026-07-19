@@ -1859,11 +1859,28 @@ function RoutineWorkbench({
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
 }) {
+  const [hydratedLocalDate, setHydratedLocalDate] = useState('');
+
+  useEffect(() => {
+    setHydratedLocalDate(formatLocalDate(new Date()));
+  }, []);
+
+  const effectiveStartDate = anchor || hydratedLocalDate;
+  if (!effectiveStartDate) {
+    return (
+      <div
+        aria-hidden="true"
+        data-testid="routine-calendar-hydration-placeholder"
+        className="min-h-48 rounded-lg border border-[#E7E4DD] bg-[#FAFAF8]"
+      />
+    );
+  }
+
   if (maintenanceRoutineSlugs.has(bundle.flow.slug)) {
     return (
       <MaintenanceRoutineWorkbench
         bundle={bundle}
-        anchor={anchor}
+        anchor={effectiveStartDate}
         weekdays={weekdays}
         checks={checks}
         workbenchState={workbenchState}
@@ -1874,7 +1891,7 @@ function RoutineWorkbench({
     );
   }
 
-  const startDate = anchor || formatLocalDate(nextMonday(new Date()));
+  const startDate = anchor || formatLocalDate(nextMonday(new Date(`${effectiveStartDate}T00:00:00`)));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
   const weekCount = getRoutineWeekCount(bundle);
   const occurrences = expandRoutineOccurrences(startDate, selectedWeekdays, weekCount);
