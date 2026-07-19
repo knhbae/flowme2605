@@ -3736,7 +3736,7 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
 
   const mathCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
   await expect(mathCard).toContainText('단원별 개념 진도');
-  await expect(mathCard.getByTestId('my-flow-workspace-progress-summary')).toContainText('전체 0/8 완료');
+  await expect(mathCard.getByTestId('my-flow-overview-progress-summary')).toContainText('전체 0/8 완료');
   await expect(mathCard.getByTestId('my-flow-overview-progress-bar')).toBeVisible();
   await expect(mathCard).not.toContainText('0%');
   await expect(mathCard.getByRole('button', { name: '진도 보기' })).toBeVisible();
