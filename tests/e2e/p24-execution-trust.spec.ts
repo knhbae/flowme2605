@@ -360,11 +360,19 @@ test.describe('P24 execution trust regressions', () => {
 
     const lookup = page.getByTestId('flow-url-lookup-entry');
     await lookup.getByLabel('URL 또는 메모').fill(
-      '이사 견적을 비교한다. 관리사무소에 연락한다.',
+      '이사 견적을 비교한다. 관리사무소에 연락한다. 주소 변경 대상을 확인한다.',
     );
     await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
     const editor = page.getByTestId('flow-memo-draft-editor');
     await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
+    await editor.getByLabel('1번째 할 일 제목').fill('이사 업체 견적 비교하기');
+    await editor.getByRole('checkbox', { name: '관리사무소에 연락하기 저장에 포함' }).uncheck();
+    await expect(editor.getByText('2/3개 선택')).toBeVisible();
+    if (exportEvidenceDir) {
+      await editor.screenshot({
+        path: `${exportEvidenceDir}/screenshots/00-memo-split-acceptance-mobile.png`,
+      });
+    }
     await editor.getByLabel('메모 초안 제목').fill('이사 전 확인할 일');
     await editor.getByLabel('메모 초안 첫 할 일 날짜').fill('2026-08-30');
     await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
@@ -378,26 +386,36 @@ test.describe('P24 execution trust regressions', () => {
       await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
     }
     const effectiveItems = draftFlow.getByTestId('personal-draft-effective-item');
-    await expect(effectiveItems).toHaveCount(3);
-    await expect(draftFlow).toContainText('이사 견적을 비교하기');
-    await expect(draftFlow).toContainText('관리사무소에 연락하기');
-    await expect(draftFlow).toContainText('할 일을 실행할 순서 정하기');
+    await expect(effectiveItems).toHaveCount(2);
+    await expect(draftFlow).toContainText('이사 업체 견적 비교하기');
+    await expect(draftFlow).toContainText('주소 변경 대상을 확인하기');
+    await expect(draftFlow).not.toContainText('관리사무소에 연락하기');
+    await expect(draftFlow).not.toContainText('할 일을 실행할 순서 정하기');
+    const savedItemIds = await page.evaluate(() => {
+      const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{
+        flow?: { slug?: string };
+        items?: Array<{ id?: string }>;
+      }>;
+      return bundles.find((bundle) => bundle.flow?.slug?.startsWith('url-draft-'))?.items?.map((item) => item.id) ?? [];
+    });
+    expect(savedItemIds).toHaveLength(2);
 
     const exportPanel = draftFlow.getByTestId('personal-draft-list-export');
     await expect(exportPanel.getByTestId('personal-draft-list-export-toggle')).toHaveText('가져가기');
     await exportPanel.getByTestId('personal-draft-list-export-toggle').click();
     await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toHaveAttribute('aria-pressed', 'true');
-    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('전체 Flow · 3개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('전체 Flow · 2개');
     await exportPanel.getByTestId('personal-draft-copy-memo').click();
     const copiedMemo = await page.evaluate(() => navigator.clipboard.readText());
-    expect(copiedMemo).toContain('할 일 3개');
-    expect(copiedMemo).toContain('이사 견적을 비교하기');
-    expect(copiedMemo).toContain('관리사무소에 연락하기');
-    expect(copiedMemo).toContain('할 일을 실행할 순서 정하기');
+    expect(copiedMemo).toContain('할 일 2개');
+    expect(copiedMemo).toContain('이사 업체 견적 비교하기');
+    expect(copiedMemo).toContain('주소 변경 대상을 확인하기');
+    expect(copiedMemo).not.toContain('관리사무소에 연락하기');
+    expect(copiedMemo).not.toContain('할 일을 실행할 순서 정하기');
 
     await exportPanel.getByTestId('my-flow-export-scope-selected').click();
-    await exportPanel.getByRole('checkbox', { name: '이사 견적을 비교하기 가져갈 항목으로 선택' }).check();
-    await exportPanel.getByRole('checkbox', { name: '관리사무소에 연락하기 가져갈 항목으로 선택' }).check();
+    await exportPanel.getByRole('checkbox', { name: '이사 업체 견적 비교하기 가져갈 항목으로 선택' }).check();
+    await exportPanel.getByRole('checkbox', { name: '주소 변경 대상을 확인하기 가져갈 항목으로 선택' }).check();
     await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('선택한 항목 · 2개');
     await expect(exportPanel.getByTestId('my-flow-export-calendar')).toHaveAccessibleName('캘린더 파일 1개');
     const calendarDownloadPromise = page.waitForEvent('download');
@@ -408,8 +426,8 @@ test.describe('P24 execution trust regressions', () => {
     expect(calendarDownloadPath).toBeTruthy();
     const selectedCalendar = fs.readFileSync(calendarDownloadPath!, 'utf8').replaceAll('\r\n ', '');
     expect(selectedCalendar.match(/BEGIN:VEVENT/g)).toHaveLength(1);
-    expect(selectedCalendar).toContain('SUMMARY:이사 견적을 비교하기');
-    expect(selectedCalendar).not.toContain('관리사무소에 연락하기');
+    expect(selectedCalendar).toContain('SUMMARY:이사 업체 견적 비교하기');
+    expect(selectedCalendar).not.toContain('주소 변경 대상을 확인하기');
     if (exportEvidenceDir) {
       await calendarDownload.saveAs(`${exportEvidenceDir}/downloads/personal-draft-selected-calendar.ics`);
       await captureWithoutPlatformChrome(
@@ -420,8 +438,8 @@ test.describe('P24 execution trust regressions', () => {
     }
     await exportPanel.getByTestId('personal-draft-copy-checklist').click();
     const selectedChecklist = await page.evaluate(() => navigator.clipboard.readText());
-    expect(selectedChecklist).toContain('이사 견적을 비교하기');
-    expect(selectedChecklist).toContain('관리사무소에 연락하기');
+    expect(selectedChecklist).toContain('이사 업체 견적 비교하기');
+    expect(selectedChecklist).toContain('주소 변경 대상을 확인하기');
     expect(selectedChecklist).not.toContain('할 일을 실행할 순서 정하기');
 
     const evidenceDir = process.env.FLOWME_P24_F3B_EVIDENCE_DIR;
@@ -439,17 +457,25 @@ test.describe('P24 execution trust regressions', () => {
     if ((await draftFlow.getByTestId('personal-draft-effective-item').count()) === 0) {
       await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
     }
-    await expect(draftFlow.getByTestId('personal-draft-effective-item')).toHaveCount(3);
+    await expect(draftFlow.getByTestId('personal-draft-effective-item')).toHaveCount(2);
+    const reloadedItemIds = await page.evaluate(() => {
+      const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{
+        flow?: { slug?: string };
+        items?: Array<{ id?: string }>;
+      }>;
+      return bundles.find((bundle) => bundle.flow?.slug?.startsWith('url-draft-'))?.items?.map((item) => item.id) ?? [];
+    });
+    expect(reloadedItemIds).toEqual(savedItemIds);
 
     await page.goto('/calendar');
     await page.getByTestId('my-flow-month-picker').fill('2026-08');
     await expect(page.locator('.fc-daygrid-day[data-date="2026-08-30"] .fc-event')).toHaveCount(1);
     await expect(
-      page.locator('.fc-event').filter({ hasText: '관리사무소에 연락하기' }),
+      page.locator('.fc-event').filter({ hasText: '주소 변경 대상을 확인하기' }),
     ).toHaveCount(0);
     await expandCalendarUnscheduledTray(page);
     await expect(
-      page.getByTestId('my-flow-calendar-unscheduled-tray').getByText('관리사무소에 연락하기'),
+      page.getByTestId('my-flow-calendar-unscheduled-tray').getByText('주소 변경 대상을 확인하기'),
     ).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
@@ -460,7 +486,7 @@ test.describe('P24 execution trust regressions', () => {
     const wideDraftFlow = page.locator(
       '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
     );
-    await expect(wideDraftFlow).toContainText('전체 0/3 완료');
+    await expect(wideDraftFlow).toContainText('전체 0/2 완료');
     if (exportEvidenceDir) {
       await wideDraftFlow.getByTestId('personal-draft-list-export-toggle').click();
       await captureWithoutPlatformChrome(

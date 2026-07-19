@@ -11,6 +11,7 @@ import {
   normalizeUrlFirstSupplyCandidates,
   recordUrlFirstSupplyCandidateLookup,
   removeUrlFirstSupplyCandidate,
+  splitUserAuthoredDraftPhrases,
   updateUrlFirstSupplyCandidate,
   upsertUrlFirstSupplyCandidate,
   URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY,
@@ -19,16 +20,47 @@ import {
 test('memo draft suggestions use only user-written sentences and stay editable', () => {
   const suggestions = buildMemoDraftItemSuggestions('이사 견적을 비교한다. 관리사무소에 연락한다. 주소 변경 대상을 확인한다.');
 
-  assert.equal(suggestions.length, 4);
-  assert.deepEqual(suggestions.map((item) => item.dayOffset), [0, 1, 2, 3]);
+  assert.equal(suggestions.length, 3);
+  assert.deepEqual(suggestions.map((item) => item.dayOffset), [0, 1, 2]);
   assert.match(suggestions[0].title, /이사 견적/);
   assert.match(suggestions[1].title, /관리사무소/);
-  assert.ok(suggestions.slice(0, 3).every((item) => item.title.endsWith('하기')));
+  assert.ok(suggestions.every((item) => item.title.endsWith('하기')));
   assert.ok(suggestions.every((item) => !item.title.includes('한다 정리하기')));
+  assert.deepEqual(suggestions.map((item) => item.sourceText), [
+    '이사 견적을 비교한다',
+    '관리사무소에 연락한다',
+    '주소 변경 대상을 확인한다',
+  ]);
+  assert.equal(new Set(suggestions.map((item) => item.id)).size, suggestions.length);
+  assert.ok(suggestions.every((item) => item.memo === '' && item.needsReview === false));
   assert.ok(suggestions.every((item) => !/AI|자동 생성|sourceTrace|Step|Item/.test(`${item.title} ${item.memo}`)));
 });
 
-test('URL-first draft suggestions deterministically expand title and memo into dated actions', () => {
+test('memo draft parsing never fills a sparse memo with generic tasks', () => {
+  const suggestions = buildMemoDraftItemSuggestions('관리사무소에 연락한다.');
+
+  assert.equal(suggestions.length, 1);
+  assert.equal(suggestions[0]?.title, '관리사무소에 연락하기');
+  assert.ok(suggestions.every((item) => !/범위 정하기|실행할 순서|첫 행동/u.test(item.title)));
+});
+
+test('memo draft parser splits only unambiguous Korean action lists', () => {
+  assert.deepEqual(
+    splitUserAuthoredDraftPhrases('이사 견적 비교, 관리사무소 연락, 주소 변경 확인'),
+    ['이사 견적 비교', '관리사무소 연락', '주소 변경 확인'],
+  );
+  assert.deepEqual(
+    splitUserAuthoredDraftPhrases('여권, 지갑, 우산 챙기기'),
+    ['여권, 지갑, 우산 챙기기'],
+  );
+});
+
+test('memo draft parser excludes known application state copy from executable titles', () => {
+  assert.deepEqual(buildMemoDraftItemSuggestions('바로 시작할 Flow를 찾지 못했어요.'), []);
+  assert.deepEqual(buildMemoDraftItemSuggestions('Flow를 불러오는 중입니다.'), []);
+});
+
+test('URL-first draft suggestions map only user-authored desired-result phrases', () => {
   const candidate = {
     canonicalUrl: 'https://example.com/moving-plan',
     originalUrl: 'https://example.com/moving-plan?utm_source=user',
@@ -40,16 +72,16 @@ test('URL-first draft suggestions deterministically expand title and memo into d
 
   const suggestions = buildUrlFirstDraftItemSuggestions(candidate);
 
-  assert.equal(suggestions.length, 5);
-  assert.deepEqual(suggestions.map((suggestion) => suggestion.dayOffset), [0, 1, 2, 3, 4]);
-  assert.equal(suggestions[0].title, '이사 준비 범위 정하기');
+  assert.equal(suggestions.length, 3);
+  assert.deepEqual(suggestions.map((suggestion) => suggestion.dayOffset), [0, 1, 2]);
   assert.ok(suggestions.some((suggestion) => suggestion.title === '전입신고 준비하기'));
   assert.ok(suggestions.some((suggestion) => suggestion.title === '업체 견적 비교하기'));
   assert.ok(suggestions.some((suggestion) => suggestion.title === '짐 정리 순서 정하기'));
-  assert.equal(suggestions.at(-1)?.title, '이사 준비 실행 순서를 기준일에 맞춰 나누기');
+  assert.ok(suggestions.every((suggestion) => suggestion.needsReview));
+  assert.ok(suggestions.every((suggestion) => !/범위 정하기|실행 순서를 기준일/u.test(suggestion.title)));
 });
 
-test('URL-first draft suggestions keep a sparse request at a useful three-action minimum', () => {
+test('URL-first draft suggestions keep a sparse request honest instead of filling a minimum count', () => {
   const candidate = {
     canonicalUrl: 'https://example.com/weekend',
     originalUrl: 'https://example.com/weekend',
@@ -61,9 +93,10 @@ test('URL-first draft suggestions keep a sparse request at a useful three-action
 
   const suggestions = buildUrlFirstDraftItemSuggestions(candidate);
 
-  assert.equal(suggestions.length, 3);
-  assert.deepEqual(suggestions.map((suggestion) => suggestion.dayOffset), [0, 1, 2]);
-  assert.ok(suggestions.every((suggestion) => suggestion.title.length > 0 && suggestion.memo.length > 0));
+  assert.equal(suggestions.length, 1);
+  assert.deepEqual(suggestions.map((suggestion) => suggestion.dayOffset), [0]);
+  assert.ok(suggestions.every((suggestion) => suggestion.title.length > 0 && suggestion.sourceText.length > 0));
+  assert.equal(suggestions[0]?.sourceText, '주말 준비');
 });
 
 test('miss URL lookup can be saved as a local production candidate request', () => {

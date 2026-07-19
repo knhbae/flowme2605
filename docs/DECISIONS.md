@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Accepted draft phrases, not a target count, define the saved personal Flow
+
+**Decision:** Memo and URL-miss drafts may normalize user-authored phrases into action titles, but they must not add generic scope, ordering, or first-action rows to reach a minimum count. The pre-save inclusion/title review is the acceptance boundary. Only selected non-empty rows are saved, and their deterministic intake IDs must survive reload and downstream personal projections. Calendar and ICS remain eligible subsets because undated accepted rows stay in My Flow and list exports.
+
+**Reason:** The prior minimum-three behavior contradicted the visible claim that only user text was used and could make a saved Flow appear more complete than the user's input. Count integrity and source mapping must be trustworthy before redesigning the whole-Flow workspace.
+
+**Applies to:** `/flows` memo intake, URL-miss draft continuation, `url-first-supply-queue`, personal draft bundle creation, My Flow effective rows, Calendar eligibility, checklist/sheet/memo export counts, and P25 evidence.
+
+**Reopen when:** a real AI proposal lane is introduced with explicit provenance and review, or observed users require richer semantic grouping. A model-generated suggestion still cannot be represented as a user-authored source phrase.
+
+**Related docs:** [P25-01B spec](./specs/2026-07-19-memo-draft-split-count-integrity/spec.md), [P25-01B evidence](./content-audit/2026-07-19-p25-01b-memo-split-count-evidence/README.md)
+
 ### 2026-07-19 - Published routine cadence is canonical and ambiguous cadence does not invent dates
 
 **Decision:** Public preview, source-specific workbench, saved My Flow Calendar, and ICS must consume one effective routine projection. A valid item-level recurrence rule has priority; otherwise one stable carrier may represent an unambiguous Flow-level daily, weekly, or monthly cadence. User-selected weekdays refine a weekly cadence only and cannot turn daily or monthly source cadence into a weekly fallback. Ambiguous natural ranges such as `7~10일마다` return a warning and no invented future occurrence. Source items and occurrence execution records remain unchanged. Portable saved-routine UIDs derive from stable series identity without exposing raw source item IDs.

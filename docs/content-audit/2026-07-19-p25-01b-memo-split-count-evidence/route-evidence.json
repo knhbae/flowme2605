@@ -1,0 +1,39 @@
+{
+  "date": "2026-07-19",
+  "status": "implementation_and_current_automated_browser_verification_complete",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": ["current_unit", "current_browser", "current_download", "visual_inspection"],
+  "routes": ["/flows", "/my", "/calendar", "/u/my-flow-studio"],
+  "viewports": [
+    { "width": 390, "height": 844 },
+    { "width": 1024, "height": 768 }
+  ],
+  "markers": {
+    "memoDraftSourcePhraseMappingReady": true,
+    "memoDraftGenericFillerItemCount": 0,
+    "memoDraftApplicationStateTitleCount": 0,
+    "memoDraftParsedPreviewCount": 3,
+    "memoDraftAcceptedPreviewCount": 2,
+    "memoDraftSavedBundleItemCount": 2,
+    "memoDraftReloadedEffectiveItemCount": 2,
+    "memoDraftWholeListExportItemCount": 2,
+    "memoDraftCalendarEligibleItemCount": 1,
+    "memoDraftUnscheduledTrayItemCount": 1,
+    "memoDraftAcceptedStableIdentityAfterReload": true,
+    "memoDraftSparseRequestItemCount": 1,
+    "memoDraftAcceptanceBoundaryVisible": true,
+    "memoDraftTitleEditableBeforeSave": true,
+    "memoDraftExcludeBeforeSaveSupported": true,
+    "sourceBackedDraftIntakeBehaviorChanged": false,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  },
+  "verification": {
+    "unitTests": "524/524 pass",
+    "urlFirstUserSurfaceE2e": "19/19 pass",
+    "p24ExecutionTrustE2e": "14/14 pass",
+    "plainMemoTargetedE2e": "1/1 pass",
+    "productionBuild": "pass",
+    "docsCheck": "pass"
+  }
+}

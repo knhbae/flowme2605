@@ -347,15 +347,13 @@ test('URL-first miss and saved-candidate states hide production-only wording fro
   const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
   await expect(draftEditor).toBeVisible();
   await expect(draftEditor.getByTestId('flow-url-miss-draft-flow-title')).toBeVisible();
-  await expect(draftEditor.getByTestId('flow-url-miss-draft-item')).toHaveCount(3);
+  await expect(draftEditor.getByTestId('flow-url-miss-draft-item')).toHaveCount(1);
   await expect(draftEditor.getByTestId('flow-url-miss-draft-item').nth(0)).toHaveAttribute('data-draft-day-offset', '0');
-  await expect(draftEditor.getByTestId('flow-url-miss-draft-item').nth(2)).toHaveAttribute('data-draft-day-offset', '2');
   await expectCleanUrlFirstUserSurface(draftEditor);
   await expectNoHorizontalOverflow(page);
   await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('주말 준비 초안');
   await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
   await expect(draftEditor).toContainText('7월 18일');
-  await expect(draftEditor).toContainText('7월 20일');
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
   await expect(page).toHaveURL(/\/my/);
   if (await page.getByTestId('my-flow-post-save-panel').count()) {
@@ -404,7 +402,7 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
   await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('주말 준비 초안');
   await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
-  await expect(draftEditor.getByTestId('flow-url-miss-draft-item')).toHaveCount(3);
+  await expect(draftEditor.getByTestId('flow-url-miss-draft-item')).toHaveCount(1);
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);
@@ -415,8 +413,8 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
     }>;
     return bundles.find((bundle) => bundle.flow?.slug?.startsWith('url-draft-'));
   });
-  expect(storedDraftBundle?.items).toHaveLength(3);
-  expect(storedDraftBundle?.items?.map((item) => item.day_offset)).toEqual([0, 1, 2]);
+  expect(storedDraftBundle?.items).toHaveLength(1);
+  expect(storedDraftBundle?.items?.map((item) => item.day_offset)).toEqual([0]);
   await page.getByTestId('my-flow-view-flow').click();
   const mobileDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
   await expect(mobileDraftFlow).toBeVisible();
@@ -427,7 +425,7 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   await expect(mobileSettings).toBeVisible();
   await expect(mobileSettings.getByTestId('my-flow-anchor-edit-entry')).toBeVisible();
   await expect(mobileSettings.getByTestId('my-flow-draft-item-inclusion-settings')).toBeVisible();
-  await expect(mobileSettings.getByTestId('my-flow-draft-item-inclusion-settings').getByRole('checkbox')).toHaveCount(3);
+  await expect(mobileSettings.getByTestId('my-flow-draft-item-inclusion-settings').getByRole('checkbox')).toHaveCount(1);
   await expect(mobileSettings).toContainText('전체 일정 기준');
   await expect(mobileSettings).toContainText('해당 할 일만');
   await mobileSettings.getByTestId('my-flow-personal-copy-start-date-input').fill('2026-07-25');
@@ -686,7 +684,7 @@ test('personal draft order and persistent recovery survive reload without changi
 
   const result = page.getByTestId('flow-url-lookup-result');
   await result.getByLabel('Flow 이름').fill('주말 준비 순서 초안 요청');
-  await result.getByLabel('원하는 결과').fill('준비 순서를 바꾸고 빠진 할 일을 다시 복구하고 싶음');
+  await result.getByLabel('원하는 결과').fill('준비 순서를 정한다. 빠진 할 일을 확인한다. 관리실에 연락한다.');
   await result.getByRole('button', { name: '초안 준비하기' }).click();
 
   const candidateCard = page.getByTestId('flow-url-supply-candidate-list').locator('article').filter({ hasText: '주말 준비 순서 초안 요청' });
@@ -895,7 +893,7 @@ test('personal draft structural Calendar and ICS projections share effective ite
 
   const result = page.getByTestId('flow-url-lookup-result');
   await result.getByLabel('Flow 이름').fill('여행 출발 준비 초안 요청');
-  await result.getByLabel('원하는 결과').fill('일정을 정한 할 일과 날짜 없는 할 일을 함께 관리하고 싶음');
+  await result.getByLabel('원하는 결과').fill('항공권을 확인한다. 숙소 예약을 확인한다. 짐 목록을 정리한다.');
   await result.getByRole('button', { name: '초안 준비하기' }).click();
 
   const candidateCard = page
@@ -1281,7 +1279,7 @@ test('personal draft structural list exports share effective items across checkl
 
   const result = page.getByTestId('flow-url-lookup-result');
   await result.getByLabel('Flow 이름').fill('여행 준비 목록 초안 요청');
-  await result.getByLabel('원하는 결과').fill('준비할 일을 고쳐서 체크리스트와 시트, 메모로 가져가고 싶음');
+  await result.getByLabel('원하는 결과').fill('항공권을 확인한다. 숙소 예약을 확인한다. 짐 목록을 정리한다.');
   await result.getByRole('button', { name: '초안 준비하기' }).click();
 
   const candidateCard = page
@@ -2764,7 +2762,7 @@ test('URL-first miss draft appears in Studio draft shelf and returns to My Flow 
   const draftEditor = candidateCard.getByTestId('flow-url-miss-draft-editor');
   await draftEditor.getByTestId('flow-url-miss-draft-flow-title').fill('스튜디오에서 이어갈 초안');
   await draftEditor.getByTestId('flow-url-miss-draft-anchor-date').fill('2026-07-18');
-  await expect(draftEditor.getByTestId('flow-url-miss-draft-item')).toHaveCount(3);
+  await expect(draftEditor.getByTestId('flow-url-miss-draft-item')).toHaveCount(1);
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);

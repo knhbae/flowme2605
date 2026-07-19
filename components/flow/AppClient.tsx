@@ -1315,13 +1315,11 @@ type PersonalDraftFlowSource =
       kind: 'url';
       originalUrl: string;
       defaultTitle: string;
-      suggestions: UrlFirstDraftItemSuggestion[];
     }
   | {
       kind: 'memo';
       memo: string;
       defaultTitle: string;
-      suggestions: UrlFirstDraftItemSuggestion[];
     };
 
 function normalizeDraftText(value: string, fallback: string): string {
@@ -1350,14 +1348,19 @@ function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: 
   const sectionTitle = source.kind === 'memo' ? '메모에서 나눈 할 일' : '손볼 초안 항목';
   const title = normalizeDraftText(input.flowTitle, source.defaultTitle);
   const anchor = isIsoDateString(input.anchorDate) ? input.anchorDate : undefined;
-  const suggestions = (input.items.length > 0 ? input.items : source.suggestions).slice(0, 7);
+  const suggestions = input.items
+    .map((suggestion) => ({ ...suggestion, title: suggestion.title.replace(/\s+/g, ' ').trim() }))
+    .filter((suggestion) => suggestion.title.length > 0)
+    .slice(0, 7);
+  if (suggestions.length === 0) throw new Error('draft_items_required');
   const items = suggestions.map<FlowItem>((suggestion, index) => {
     const dayOffset = source.kind === 'memo' ? (index === 0 ? 0 : undefined) : suggestion.dayOffset;
+    const suggestionId = suggestion.id.replace(/[^a-z0-9-]/giu, '').slice(0, 48) || `item-${index + 1}`;
     return {
-      id: `${id}-draft-item-${index + 1}`,
+      id: `${id}-draft-item-${suggestionId}`,
       flow_id: id,
       section_id: sectionId,
-      title: normalizeDraftText(suggestion.title, `${title} 할 일 ${index + 1}`),
+      title: suggestion.title,
       ...(suggestion.memo.trim() ? { description: suggestion.memo.trim() } : {}),
       type: anchor && dayOffset !== undefined ? 'calendar' : 'todo',
       ...(dayOffset !== undefined ? { day_offset: dayOffset } : {}),
@@ -1392,7 +1395,10 @@ function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: 
         usage_count: 0,
         copy_count: 0,
         tags: source.kind === 'memo' ? ['내 초안', '내 메모'] : ['내 초안'],
-        raw_text: `# ${title}\n\n## ${sectionTitle}\n${items.map((item) => `- ${item.title}${item.description ? `\n  메모: ${item.description}` : ''}`).join('\n')}${source.kind === 'memo' ? `\n\n## 처음 붙여넣은 메모\n${source.memo.trim()}` : ''}`,
+        raw_text: `# ${title}\n\n## ${sectionTitle}\n${items.map((item, index) => {
+          const sourceText = suggestions[index]?.sourceText.trim();
+          return `- ${item.title}${sourceText && sourceText !== item.title ? `\n  처음 문장: ${sourceText}` : ''}${item.description ? `\n  메모: ${item.description}` : ''}`;
+        }).join('\n')}${source.kind === 'memo' ? `\n\n## 처음 붙여넣은 메모\n${source.memo.trim()}` : ''}`,
         created_at: now,
         updated_at: now,
       },
@@ -1431,7 +1437,6 @@ function createUrlFirstDraftFlowPackage(candidate: UrlFirstSupplyCandidate, inpu
       kind: 'url',
       originalUrl: candidate.originalUrl,
       defaultTitle: `${getUrlSupplyCandidateDisplayTitle(candidate)} 초안`,
-      suggestions: buildUrlFirstDraftItemSuggestions(candidate),
     },
     input,
   );
@@ -1443,7 +1448,6 @@ function createMemoDraftFlowPackage(memo: string, input: UrlFirstDraftFlowInput)
       kind: 'memo',
       memo,
       defaultTitle: '내 메모 초안',
-      suggestions: buildMemoDraftItemSuggestions(memo),
     },
     input,
   );
@@ -1525,6 +1529,90 @@ function getMemoDraftDefaultTitle(input: string): string {
   return firstLine.length > 38 ? `${firstLine.slice(0, 38).trim()}…` : firstLine;
 }
 
+type DraftItemReviewRow = UrlFirstDraftItemSuggestion & {
+  included: boolean;
+};
+
+function createDraftItemReviewRows(items: UrlFirstDraftItemSuggestion[]): DraftItemReviewRow[] {
+  return items.map((item) => ({ ...item, included: true }));
+}
+
+function getAcceptedDraftItems(items: DraftItemReviewRow[]): UrlFirstDraftItemSuggestion[] {
+  return items
+    .filter((item) => item.included && item.title.trim().length > 0)
+    .map(({ included: _included, ...item }) => ({ ...item, title: item.title.replace(/\s+/g, ' ').trim() }));
+}
+
+function DraftItemAcceptanceList({
+  items,
+  onChange,
+  listTestId,
+  itemTestId,
+  dateLabel,
+}: {
+  items: DraftItemReviewRow[];
+  onChange: (items: DraftItemReviewRow[]) => void;
+  listTestId: string;
+  itemTestId: string;
+  dateLabel: (item: DraftItemReviewRow, index: number) => string;
+}) {
+  const selectedCount = items.filter((item) => item.included).length;
+  const updateItem = (id: string, patch: Partial<DraftItemReviewRow>) => {
+    onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  };
+
+  return (
+    <div data-testid={listTestId} className="grid gap-2 rounded-lg bg-[#F7FBF4] p-2.5 md:col-span-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs font-semibold text-[#176D5D]">저장할 할 일</p>
+        <span className="text-[11px] font-semibold text-[#8A857B]">{selectedCount}/{items.length}개 선택</span>
+      </div>
+      {items.length > 0 ? (
+        <ol className="grid gap-1.5">
+          {items.map((item, index) => (
+            <li
+              key={item.id}
+              data-testid={itemTestId}
+              data-draft-item-id={item.id}
+              data-draft-day-offset={item.dayOffset}
+              data-draft-included={item.included ? 'true' : 'false'}
+              className={`grid grid-cols-[1.5rem_minmax(0,1fr)] gap-2 rounded-md border px-2.5 py-2 ${item.included ? 'border-[#DDE6D8] bg-white' : 'border-transparent bg-[#F1F0EC] opacity-70'}`}
+            >
+              <input
+                type="checkbox"
+                className="mt-1 h-5 w-5 accent-[#176D5D]"
+                checked={item.included}
+                aria-label={`${item.title || `${index + 1}번째 할 일`} 저장에 포함`}
+                onChange={(event) => updateItem(item.id, { included: event.target.checked })}
+              />
+              <div className="min-w-0">
+                <label className="block">
+                  <span className="sr-only">{index + 1}번째 할 일 제목</span>
+                  <input
+                    className="min-h-9 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-1.5 text-xs font-semibold leading-5 text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10 disabled:bg-transparent"
+                    aria-label={`${index + 1}번째 할 일 제목`}
+                    value={item.title}
+                    maxLength={100}
+                    disabled={!item.included}
+                    onChange={(event) => updateItem(item.id, { title: event.target.value })}
+                  />
+                </label>
+                <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+                  {item.included ? dateLabel(item, index) : '저장하지 않음'}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="rounded-md bg-white px-2.5 py-2 text-xs font-semibold leading-5 text-[#6E6B64]">
+          할 일로 나눌 문장을 한 줄씩 적어주세요.
+        </p>
+      )}
+    </div>
+  );
+}
+
 function FlowMemoDraftPanel({
   memo,
   onSaveDraftFlow,
@@ -1533,21 +1621,30 @@ function FlowMemoDraftPanel({
   onSaveDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
 }) {
   const memoItems = useMemo(() => buildMemoDraftItemSuggestions(memo), [memo]);
+  const [draftItems, setDraftItems] = useState<DraftItemReviewRow[]>(() => createDraftItemReviewRows(memoItems));
   const [draftTitle, setDraftTitle] = useState(() => getMemoDraftDefaultTitle(memo));
   const [draftAnchorDate, setDraftAnchorDate] = useState('');
   const [feedback, setFeedback] = useState('');
 
   useEffect(() => {
+    setDraftItems(createDraftItemReviewRows(memoItems));
     setDraftTitle(getMemoDraftDefaultTitle(memo));
     setDraftAnchorDate('');
     setFeedback('');
-  }, [memo]);
+  }, [memo, memoItems]);
+
+  const acceptedItems = getAcceptedDraftItems(draftItems);
+  const hasBlankSelectedTitle = draftItems.some((item) => item.included && item.title.trim().length === 0);
 
   const saveDraftFlow = () => {
+    if (acceptedItems.length === 0 || hasBlankSelectedTitle) {
+      setFeedback(hasBlankSelectedTitle ? '저장할 할 일의 제목을 입력해 주세요.' : '저장할 할 일을 하나 이상 선택해 주세요.');
+      return;
+    }
     const saved = onSaveDraftFlow(memo, {
       flowTitle: draftTitle,
       anchorDate: draftAnchorDate,
-      items: memoItems,
+      items: acceptedItems,
     });
     if (!saved.saved) {
       setFeedback(saved.error ?? '메모 초안을 저장하지 못했습니다.');
@@ -1569,7 +1666,7 @@ function FlowMemoDraftPanel({
       <div className="md:col-span-2">
         <p className="text-xs font-semibold text-[#176D5D]">내 메모에서 시작</p>
         <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
-          자동으로 내용을 덧붙이지 않고, 내가 쓴 문장만 할 일로 나눴어요.
+          내가 쓴 문장만 나눴어요. 저장할 항목을 확인해 주세요.
         </p>
       </div>
       <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
@@ -1597,38 +1694,25 @@ function FlowMemoDraftPanel({
           첫 번째 할 일만 캘린더에 넣습니다. 나머지는 저장 후 필요한 날짜만 정할 수 있어요.
         </span>
       </label>
-      <div data-testid="flow-memo-draft-suggestion-list" className="grid gap-2 rounded-lg bg-[#F7FBF4] p-2.5 md:col-span-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs font-semibold text-[#176D5D]">메모에서 나눈 할 일</p>
-          <span className="text-[11px] font-semibold text-[#8A857B]">{memoItems.length}개 · 저장 후 수정 가능</span>
-        </div>
-        <ol className="grid gap-1.5">
-          {memoItems.map((item, index) => (
-            <li
-              key={`memo-draft-suggestion-${index}`}
-              data-testid="flow-memo-draft-item"
-              className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-2 rounded-md bg-white px-2.5 py-2"
-            >
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#E8F2ED] text-[11px] font-semibold text-[#176D5D]">{index + 1}</span>
-              <div className="min-w-0">
-                <p className="break-keep text-xs font-semibold leading-5 text-[#1B1A17]">{item.title}</p>
-                <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
-                  {draftAnchorDate
-                    ? index === 0
-                      ? formatKoreanShortDate(new Date(draftAnchorDate), { includeWeekday: true })
-                      : '날짜 없음 · 저장 후 필요할 때 추가'
-                    : '날짜 미정'}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </div>
+      <DraftItemAcceptanceList
+        items={draftItems}
+        onChange={setDraftItems}
+        listTestId="flow-memo-draft-suggestion-list"
+        itemTestId="flow-memo-draft-item"
+        dateLabel={(item, index) => {
+          const acceptedIndex = draftItems.slice(0, index).filter((candidate) => candidate.included && candidate.title.trim()).length;
+          if (!draftAnchorDate) return '날짜 미정';
+          return acceptedIndex === 0
+            ? formatKoreanShortDate(new Date(draftAnchorDate), { includeWeekday: true })
+            : '날짜 없음 · 저장 후 필요할 때 추가';
+        }}
+      />
       <div className="flex flex-wrap items-center gap-2 md:col-span-2">
         <button
           type="submit"
           data-testid="flow-memo-draft-save"
-          className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+          disabled={acceptedItems.length === 0 || hasBlankSelectedTitle}
+          className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246] disabled:cursor-not-allowed disabled:bg-[#A5B7AF]"
         >
           내 Flow에 초안 저장
         </button>
@@ -2120,10 +2204,13 @@ function FlowUrlSupplyCandidateCard({
   const [draftTitle, setDraftTitle] = useState(displayTitle);
   const [draftAnchorDate, setDraftAnchorDate] = useState('');
   const [draftSaveTargetHref, setDraftSaveTargetHref] = useState('');
-  const draftItems = useMemo(
+  const generatedDraftItems = useMemo(
     () => buildUrlFirstDraftItemSuggestions(candidate),
     [candidate.canonicalUrl, candidate.title, candidate.memo],
   );
+  const [draftItems, setDraftItems] = useState<DraftItemReviewRow[]>(() => createDraftItemReviewRows(generatedDraftItems));
+  const acceptedDraftItems = getAcceptedDraftItems(draftItems);
+  const hasBlankSelectedDraftTitle = draftItems.some((item) => item.included && item.title.trim().length === 0);
   const userSummaryMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
   const productionStatusNote = executable
     ? '이미 Flow로 준비됐어요. Flow 결과로 이동해 바로 시작할 수 있어요.'
@@ -2132,13 +2219,14 @@ function FlowUrlSupplyCandidateCard({
   useEffect(() => {
     setEditTitle(candidate.title);
     setEditMemo(candidate.memo);
+    setDraftItems(createDraftItemReviewRows(generatedDraftItems));
     setDraftTitle(getUrlSupplyCandidateDisplayTitle(candidate));
     setDraftAnchorDate('');
     setFeedback('');
     setDraftSaveTargetHref('');
     setIsEditing(false);
     setShowDraftEditor(false);
-  }, [candidate.canonicalUrl, candidate.title, candidate.memo]);
+  }, [candidate.canonicalUrl, candidate.title, candidate.memo, generatedDraftItems]);
 
   const copyUserSummaryMarkdown = async () => {
     try {
@@ -2180,10 +2268,14 @@ function FlowUrlSupplyCandidateCard({
 
   const saveDraftFlow = () => {
     setDraftSaveTargetHref('');
+    if (acceptedDraftItems.length === 0 || hasBlankSelectedDraftTitle) {
+      setFeedback(hasBlankSelectedDraftTitle ? '저장할 할 일의 제목을 입력해 주세요.' : '저장할 할 일을 하나 이상 선택해 주세요.');
+      return;
+    }
     const saved = onSaveDraftFlow(candidate, {
       flowTitle: draftTitle,
       anchorDate: draftAnchorDate,
-      items: draftItems,
+      items: acceptedDraftItems,
     });
     if (!saved.saved) {
       setFeedback(saved.error ?? '초안을 저장하지 못했습니다.');
@@ -2219,7 +2311,7 @@ function FlowUrlSupplyCandidateCard({
               <p className="text-xs font-semibold text-[#176D5D]">앱 안에서 이어가기</p>
               <h3 className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">직접 손볼 초안으로 시작</h3>
               <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
-                내가 쓴 제목과 메모에서 여러 할 일을 제안합니다. 저장 후 My Flow에서 필요한 것만 남기고 날짜와 메모를 고칠 수 있어요.
+                내가 쓴 내용에서 나눈 할 일을 확인한 뒤 저장합니다.
               </p>
             </div>
             <button
@@ -2268,41 +2360,25 @@ function FlowUrlSupplyCandidateCard({
                   날짜를 넣으면 캘린더에 첫 할 일이 표시됩니다. 저장 후 My Flow에서 다시 바꿀 수 있습니다.
                 </span>
               </label>
-              <div data-testid="flow-url-miss-draft-suggestion-list" className="grid gap-2 rounded-lg bg-white p-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-[#176D5D]">제안한 할 일</p>
-                  <span className="text-[11px] font-semibold text-[#8A857B]">{draftItems.length}개 · 저장 후 수정</span>
-                </div>
-                <ol className="grid gap-1.5">
-                  {draftItems.map((item, index) => (
-                    <li
-                      key={`${candidate.canonicalUrl}-draft-suggestion-${index}`}
-                      data-testid="flow-url-miss-draft-item"
-                      data-draft-day-offset={item.dayOffset}
-                      className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-2 rounded-md bg-[#FAFAF8] px-2.5 py-2"
-                    >
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#E8F2ED] text-[11px] font-semibold text-[#176D5D]">{index + 1}</span>
-                      <div className="min-w-0">
-                        <p className="break-keep text-xs font-semibold leading-5 text-[#1B1A17]">{item.title}</p>
-                        <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
-                          {draftAnchorDate
-                            ? `${formatKoreanShortDate(addDays(new Date(draftAnchorDate), item.dayOffset), { includeWeekday: true })}`
-                            : item.dayOffset === 0 ? '기준일' : `기준일 +${item.dayOffset}일`}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+              <DraftItemAcceptanceList
+                items={draftItems}
+                onChange={setDraftItems}
+                listTestId="flow-url-miss-draft-suggestion-list"
+                itemTestId="flow-url-miss-draft-item"
+                dateLabel={(item) => draftAnchorDate
+                  ? formatKoreanShortDate(addDays(new Date(draftAnchorDate), item.dayOffset), { includeWeekday: true })
+                  : item.dayOffset === 0 ? '기준일' : `기준일 +${item.dayOffset}일`}
+              />
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="submit"
                   data-testid="flow-url-miss-draft-save"
-                  className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+                  disabled={acceptedDraftItems.length === 0 || hasBlankSelectedDraftTitle}
+                  className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246] disabled:cursor-not-allowed disabled:bg-[#A5B7AF]"
                 >
                   내 Flow에 초안 저장
                 </button>
-                <span className="text-xs font-semibold text-[#6E6B64]">제안 항목은 저장 후 다시 손볼 수 있어요</span>
+                <span className="text-xs font-semibold text-[#6E6B64]">선택한 항목만 저장됩니다</span>
               </div>
             </form>
           ) : null}

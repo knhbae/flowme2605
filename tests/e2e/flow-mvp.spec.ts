@@ -526,11 +526,11 @@ test('flow finding turns a plain memo into an editable private draft and lands i
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('내 메모');
   await expect(result).toContainText('메모를 실행할 초안으로 정리했어요');
-  await expect(result).toContainText('자동으로 내용을 덧붙이지 않고');
+  await expect(result).toContainText('내가 쓴 문장만 나눴어요');
   await expect(result).not.toContainText(/AI가|자동 생성|source-backed|sourceTrace|Markdown/);
   const editor = result.getByTestId('flow-memo-draft-editor');
   await expect(editor).toBeVisible();
-  await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(4);
+  await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
   await editor.getByLabel('메모 초안 제목').fill('우리 집 이사 준비');
   await editor.getByLabel('메모 초안 첫 할 일 날짜').fill('2026-08-30');
   await expect(editor).toContainText('첫 번째 할 일만 캘린더에 넣습니다');

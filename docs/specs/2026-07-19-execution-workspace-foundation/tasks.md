@@ -26,8 +26,8 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 - [ ] Connect a canonical effective item/occurrence projection to all consumers.
 - [ ] Remove invented recurrence fallbacks.
 - [ ] Add recurrence/count parity fixtures and E2E.
-- [ ] Add memo split preview and remove count-filling generic items.
-- [ ] Verify representative Flow counts and dates across every destination.
+- [x] Add memo split preview and remove count-filling generic items.
+- [x] Verify representative routine and personal-draft counts/dates across their eligible destinations.
 
 ### P25-01A - Canonical routine projection
 
@@ -39,11 +39,11 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 ### P25-01B - Memo split and count integrity
 
-- [ ] Inventory memo draft preview, saved bundle, whole Flow, My Flow, and export counts.
-- [ ] Remove generic count-filling items and error/status sentences from executable titles.
-- [ ] Add an explicit split preview and acceptance boundary before save.
-- [ ] Make accepted item identities and counts survive save, reload, and every list export.
-- [ ] Verify representative memo, URL miss, source-backed, and routine counts without starting P25-02 UI restructuring.
+- [x] Inventory memo draft preview, saved bundle, whole Flow, My Flow, and export counts.
+- [x] Remove generic count-filling items and error/status sentences from executable titles.
+- [x] Add an explicit split preview and acceptance boundary before save.
+- [x] Make accepted item identities and counts survive save, reload, and every list export.
+- [x] Verify representative memo, URL miss, source-backed, and routine counts without starting P25-02 UI restructuring.
 
 ## P25-02 - Whole Flow workspace
 

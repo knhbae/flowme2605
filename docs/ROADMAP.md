@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P25 execution-workspace structural correction<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P25-01B memo split/count integrity plus P25-00B owner workspace decision
+**Next Milestone:** P25-02 responsive whole-Flow workspace using the P25-00B Option B working frame
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -32,9 +32,9 @@ Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25
 | Slice | Purpose | Gate |
 | --- | --- | --- |
 | P25-00A | Reconcile owner/Codex/Claude feedback and official references | Done; structural correction and staged scope recorded |
-| P25-00B | Compare core mobile/wide workspace prototypes and capture owner decisions | A/B prototype and six-shape simulation ready; owner keep/change/reject pending; no runtime change |
+| P25-00B | Compare core mobile/wide workspace prototypes and capture owner decisions | A/B prototype and six-shape simulation complete; Option B adopted as the working implementation frame under the owner's instruction to continue P25 step by step; screen-level review remains open |
 | P25-01A | Canonical routine series/occurrence projection | Done by current unit/browser evidence; public preview, My Flow Calendar, and ICS now share source cadence and stable occurrence identity |
-| P25-01B | Memo draft split and count integrity | No invented filler; accepted preview equals saved/exported items |
+| P25-01B | Memo draft split and count integrity | Done by current unit/browser evidence; no generic filler, explicit acceptance, stable IDs, and accepted/saved/reloaded/list-export parity |
 | P25-02 | Responsive whole-Flow workspace and post-save handoff | Full artifact reachable; no unexplained truncation |
 | P25-03 | Progressive item editor and selected-item batch adjustment | Common edit is one drawer; batch date/include/export impact is previewed |
 | P25-04 | Anytime task model and Calendar placement queue | Undated work can be found, executed, dated, moved, and cleared |
@@ -42,7 +42,7 @@ Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25
 | P25-06/07 | Public artifact simplification and shared responsive visual language | Duplicate representation/copy/overflow/control variants reduced to zero targets |
 | P25-08 | Internal six-journey integration gate | Automated Blocking/High zero and owner readiness decision; no observed-user claim |
 
-P25 implementation must proceed in this order. P25-02 runtime UI does not start before the P25-00B owner decision, and no visually persuasive recurrence UI ships while P25-01 parity is failing.
+P25 implementation must proceed in this order. Option B is the working P25-02 frame because the owner explicitly asked the agent to continue the full P25 program and allowed substantial changes; this is implementation authorization, not observed-user validation or a final screen-by-screen approval. No visually persuasive recurrence UI ships while P25-01 parity is failing.
 
 ### Stage 0 First Flag MVP
 

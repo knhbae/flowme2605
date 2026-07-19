@@ -1,0 +1,39 @@
+{
+  "date": "2026-07-19",
+  "fixtures": [
+    {
+      "id": "three_sentences_accept_two",
+      "sourcePhraseCount": 3,
+      "previewCount": 3,
+      "acceptedCount": 2,
+      "savedCount": 2,
+      "reloadedCount": 2,
+      "listExportCount": 2,
+      "calendarEligibleCount": 1,
+      "undatedCount": 1,
+      "genericFillerCount": 0
+    },
+    {
+      "id": "sparse_single_sentence",
+      "sourcePhraseCount": 1,
+      "previewCount": 1,
+      "genericFillerCount": 0
+    },
+    {
+      "id": "unambiguous_action_commas",
+      "input": "이사 견적 비교, 관리사무소 연락, 주소 변경 확인",
+      "sourcePhraseCount": 3
+    },
+    {
+      "id": "noun_list_not_split",
+      "input": "여권, 지갑, 우산 챙기기",
+      "sourcePhraseCount": 1
+    },
+    {
+      "id": "application_state_copy",
+      "input": "바로 시작할 Flow를 찾지 못했어요.",
+      "sourcePhraseCount": 0,
+      "executableItemCount": 0
+    }
+  ]
+}
