@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-19",
+  "evidenceKind": "current_automated_browser_and_unit",
+  "observedUserSessionCount": 0,
+  "routes": [
+    {
+      "route": "/my",
+      "fixture": "memo_draft_three_items",
+      "viewports": [
+        "390x844",
+        "1024x768"
+      ]
+    },
+    {
+      "route": "/my?demo=source-backed",
+      "fixture": "direct_source_backed",
+      "viewports": [
+        "1024x768"
+      ]
+    }
+  ],
+  "markers": {
+    "wholeFlowBatchEntryVisible": true,
+    "batchSelectionReplacesCompletionControl": true,
+    "batchSelectedCount": 3,
+    "batchDateImpactPreviewVisible": true,
+    "batchDateSetPersisted": true,
+    "batchDateRemovalPersistedAsAnytime": true,
+    "batchDateUndoVisible": true,
+    "batchSelectedExportScopeCount": 2,
+    "batchSelectedExportPreselectedCount": 2,
+    "batchRemoveUsesPersonalRecovery": true,
+    "batchRemoveUndoRestoresItems": true,
+    "batchRecurringDateChangeRequiresScope": true,
+    "batchSourceMutationCount": 0,
+    "directSourceBackedRemoveControlCount": 0,
+    "batchPermanentSelectionControlCount": 0,
+    "batchMobileHorizontalOverflowCount": 0,
+    "batchWideHorizontalOverflowCount": 0,
+    "batchConsoleErrorCount": 0
+  },
+  "verification": {
+    "unit": {
+      "passed": 525,
+      "failed": 0
+    },
+    "targetedPlaywright": {
+      "passed": 1,
+      "failed": 0
+    },
+    "p24ExecutionTrustPlaywright": {
+      "passed": 15,
+      "failed": 0
+    },
+    "urlFirstStructuralSchedulePlaywright": {
+      "passed": 7,
+      "failed": 0
+    },
+    "publicShareWorkbenchPlaywright": {
+      "passed": 44,
+      "failed": 0
+    },
+    "build": "pass",
+    "docsCheck": "pass",
+    "gitDiffCheck": "pass_with_existing_line_ending_warnings"
+  }
+}

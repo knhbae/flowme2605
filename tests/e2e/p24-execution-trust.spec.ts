@@ -831,7 +831,7 @@ test.describe('P24 execution trust regressions', () => {
       await expect(page.getByTestId('my-flow-workspace')).toBeVisible({ timeout: 10_000 });
       await page.getByTestId('my-flow-view-flow').click();
       const savedFlow = page.locator(
-        '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="new-car-delivery-check"]',
+        '[data-flow-slug="new-car-delivery-check"]:is([data-testid="my-flow-mobile-structure-row"], [data-testid="my-flow-overview-card"])',
       );
       await expect(savedFlow).toBeVisible({ timeout: 10_000 });
       await expect(savedFlow).toContainText('신차 인수');
@@ -1011,6 +1011,159 @@ test.describe('P24 execution trust regressions', () => {
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
     ).toBeLessThanOrEqual(1);
     expect(consoleErrors).toEqual([]);
+  });
+
+  test('whole Flow batch mode moves, clears, exports, removes, and restores selected draft items', async ({ page }) => {
+    test.setTimeout(180_000);
+    page.setDefaultTimeout(15_000);
+    const evidenceDir = process.env.FLOWME_P25_BATCH_ADJUSTMENT_EVIDENCE_DIR;
+    if (evidenceDir) fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/flows');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    const lookup = page.getByTestId('flow-url-lookup-entry');
+    await lookup.getByLabel('URL 또는 메모').fill(
+      '여권을 확인한다. 보험 서류를 챙긴다. 숙소 주소를 적는다.',
+    );
+    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    const editor = page.getByTestId('flow-memo-draft-editor');
+    await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
+    await editor.getByLabel('메모 초안 제목').fill('여행 출발 준비');
+    await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
+
+    await expect(page).toHaveURL(/\/my/);
+    await openPostSaveWorkspaceIfPresent(page);
+    await page.getByTestId('my-flow-view-flow').click();
+    const draftFlow = page
+      .getByTestId('my-flow-mobile-structure-row')
+      .filter({ hasText: '여행 출발 준비' });
+    await expect(draftFlow).toBeVisible();
+    const batchToggle = draftFlow.getByTestId('my-flow-batch-mode-toggle');
+    await batchToggle.click();
+    const outline = draftFlow.getByTestId('my-flow-whole-flow-outline');
+    await expect(outline).toBeVisible();
+    await expect(outline.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    const batchRows = outline.getByTestId('my-flow-batch-selectable-row');
+    await expect(batchRows).toHaveCount(3);
+    await batchRows.nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    await batchRows.nth(1).getByTestId('my-flow-batch-item-checkbox').check();
+    const toolbar = outline.getByTestId('my-flow-batch-toolbar');
+    await expect(toolbar.getByTestId('my-flow-batch-selected-count')).toHaveText('2개 선택');
+    await toolbar.getByTestId('my-flow-batch-target-date').fill('2026-09-02');
+    await expect(toolbar.getByTestId('my-flow-batch-impact-preview')).toContainText('2개가 바뀝니다');
+    if (evidenceDir) {
+      await captureWithoutPlatformChrome(
+        page,
+        outline,
+        `${evidenceDir}/screenshots/00-batch-date-preview-mobile.png`,
+      );
+    }
+    await toolbar.getByTestId('my-flow-batch-apply-date').click();
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toContainText('2개 날짜');
+    const movedOverrideCount = await page.evaluate(() => {
+      const values = Object.values(JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'));
+      return values.filter((value) => value === '2026-09-02').length;
+    });
+    expect(movedOverrideCount).toBe(2);
+    await draftFlow.getByTestId('my-flow-batch-undo-action').click();
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toHaveCount(0);
+
+    await batchToggle.click();
+    await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    await outline.getByTestId('my-flow-batch-selectable-row').nth(1).getByTestId('my-flow-batch-item-checkbox').check();
+    await outline.getByTestId('my-flow-batch-export-selected').click();
+    const exportPanel = draftFlow.getByTestId('my-flow-export-panel');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-selected')).toHaveAttribute('aria-pressed', 'true');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('선택한 항목 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-selectable-item')).toHaveCount(3);
+    await expect(exportPanel.getByTestId('my-flow-export-selectable-item').locator('input:checked')).toHaveCount(2);
+    await exportPanel.getByRole('button', { name: /가져가기 닫기/ }).click();
+
+    await batchToggle.click();
+    await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    await outline.getByTestId('my-flow-batch-target-date').fill('2026-09-03');
+    await outline.getByTestId('my-flow-batch-apply-date').click();
+    await batchToggle.click();
+    await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    await outline.getByTestId('my-flow-batch-operation-remove-date').click();
+    await expect(outline.getByTestId('my-flow-batch-impact-preview')).toContainText('1개가 바뀝니다');
+    await outline.getByTestId('my-flow-batch-apply-date').click();
+    const removedOverrideState = await page.evaluate(() => {
+      const values = Object.values(JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'));
+      return {
+        removedCount: values.filter((value) => value === '__flowme_unscheduled__').length,
+        staleMovedDateCount: values.filter((value) => value === '2026-09-03').length,
+      };
+    });
+    expect(removedOverrideState).toEqual({ removedCount: 1, staleMovedDateCount: 0 });
+    await draftFlow.getByTestId('my-flow-batch-undo-action').click();
+
+    await batchToggle.click();
+    await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    await outline.getByTestId('my-flow-batch-remove-selected').click();
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toContainText('1개를 Flow에서 뺐어요');
+    await expect(draftFlow.getByTestId('my-flow-mobile-structure-step-row')).toHaveCount(2);
+    await draftFlow.getByTestId('my-flow-batch-undo-action').click();
+    await expect(draftFlow.getByTestId('my-flow-mobile-structure-step-row')).toHaveCount(3);
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const wideDraftFlow = page
+      .getByTestId('my-flow-overview-card')
+      .filter({ hasText: '여행 출발 준비' });
+    await expect(wideDraftFlow).toBeVisible();
+    const wideOutline = wideDraftFlow.getByTestId('my-flow-whole-flow-outline');
+    await wideOutline.getByTestId('my-flow-batch-mode-toggle').click();
+    await wideOutline.getByTestId('my-flow-batch-select-all').click();
+    await expect(wideOutline.getByTestId('my-flow-batch-selected-count')).toHaveText('3개 선택');
+    if (evidenceDir) {
+      await captureWithoutPlatformChrome(
+        page,
+        wideDraftFlow,
+        `${evidenceDir}/screenshots/01-batch-selection-wide.png`,
+      );
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    ).toBeLessThanOrEqual(1);
+    expect(consoleErrors).toEqual([]);
+
+    await page.goto('/my?demo=source-backed');
+    await page.getByTestId('my-flow-view-flow').click();
+    await page.getByTestId('my-flow-list').getByRole('button').first().click();
+    const sourceBackedOutline = page.getByTestId('my-flow-whole-flow-outline').first();
+    await sourceBackedOutline.getByTestId('my-flow-batch-mode-toggle').click();
+    await sourceBackedOutline.getByTestId('my-flow-batch-item-checkbox').first().check();
+    await expect(sourceBackedOutline.getByTestId('my-flow-batch-remove-selected')).toHaveCount(0);
+    if (evidenceDir) {
+      await captureWithoutPlatformChrome(
+        page,
+        sourceBackedOutline,
+        `${evidenceDir}/screenshots/02-source-backed-selection-without-remove.png`,
+      );
+    }
+
+    await page.goto('/my?demo=ux12');
+    await page.getByTestId('my-flow-view-flow').click();
+    await page.getByTestId('my-flow-filter-washer-tub-clean-monthly').click();
+    const routineOutline = page.getByTestId('my-flow-whole-flow-outline');
+    await routineOutline.getByTestId('my-flow-batch-mode-toggle').click();
+    await routineOutline.getByTestId('my-flow-batch-item-checkbox').first().check();
+    await expect(routineOutline.getByTestId('my-flow-batch-impact-preview')).toContainText('이번 회차·이후·전체 범위를 먼저 고르세요');
+    await expect(routineOutline.getByTestId('my-flow-batch-apply-date')).toBeDisabled();
+    if (evidenceDir) {
+      await captureWithoutPlatformChrome(
+        page,
+        routineOutline,
+        `${evidenceDir}/screenshots/03-routine-batch-scope-block.png`,
+      );
+    }
   });
 
   test('Calendar schedules an undated personal draft item with preview, undo, and reload persistence', async ({ page }) => {

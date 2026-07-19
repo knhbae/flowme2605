@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Whole-Flow batch adjustment is a temporary mode with recoverable personal changes
+
+**Decision:** Multi-item adjustment appears only after `여러 할 일 조정` inside `전체 Flow`. While active, selection checkboxes replace completion controls and a single toolbar owns date assignment, explicit `언제든` conversion, selected export, and recoverable removal. Applying a date or removal returns to the ordinary list with immediate undo. Direct source-backed Flows may be selected for date/export but cannot be structurally removed; personal drafts use tombstones and source-backed personal copies use included-step overlays. Recurring date changes block until occurrence or series scope is chosen. Explicit date removal is stored as an additive personal unscheduled override and never deletes the source date.
+
+**Reason:** Permanent selection controls would add a second checkbox meaning beside task completion and make every row heavier. Batch actions also need an impact boundary, source-safe ownership, and a real recovery path before destructive controls can appear.
+
+**Applies to:** My Flow mobile and wide whole-Flow workspaces, personal date overrides, personal structural tombstones, source-backed personal-copy inclusion, selected portable export, recurrence date movement, undo evidence, and P25-04 scheduling semantics.
+
+**Reopen when:** observed users cannot find the mode, need cross-Flow selection, or recurrence-heavy users demonstrate a safe and understandable multi-series scope model.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-03B evidence](./content-audit/2026-07-19-p25-03b-batch-adjustment-evidence/README.md)
+
 ### 2026-07-19 - Personal item adjustment starts with task, date state, and personal memo
 
 **Decision:** My Flow uses one `할 일 조정` action. The first editing surface shows the task title, its date or undated state, and `내 메모`. Time, duration, place, recurrence, and item-type-specific records live behind `세부 일정`, which starts collapsed even when values already exist; the collapsed control summarizes those values. Memo resizing is not a separate command. Published source fields stay immutable and edits continue through personal overlays.

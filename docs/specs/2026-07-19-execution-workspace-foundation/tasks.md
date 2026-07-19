@@ -57,8 +57,8 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 - [x] Implement compact default item drawer.
 - [x] Move time/duration/recurrence to advanced schedule.
-- [ ] Add selected-item batch mode.
-- [ ] Implement date move/clear scopes and impact preview.
+- [x] Add selected-item batch mode.
+- [x] Implement selected date set/clear scope and impact preview.
 - [x] Connect source-backed personal adjustments through overlays only.
 
 ## P25-04 - Anytime and Calendar

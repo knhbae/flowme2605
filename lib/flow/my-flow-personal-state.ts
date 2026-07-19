@@ -7,6 +7,7 @@ export const MY_FLOW_ITEM_DRAFTS_STORAGE_KEY = 'flow:my-flow:item-drafts';
 export const MY_FLOW_DATE_OVERRIDES_STORAGE_KEY = 'flow:my-flow:date-overrides';
 export const MY_FLOW_OCCURRENCE_EXECUTION_STORAGE_KEY =
   'flow:my-flow:occurrence-execution';
+export const MY_FLOW_DATE_REMOVED_OVERRIDE = '__flowme_unscheduled__';
 
 export type StoredMyFlowItemDraft = {
   why?: string;
@@ -78,6 +79,13 @@ export function resolveMyFlowEffectiveDate(options: {
     options.itemId,
     options.sourceDate,
   );
+  if (options.dateOverrides?.[overrideKey] === MY_FLOW_DATE_REMOVED_OVERRIDE) {
+    return {
+      originalDate,
+      overrideKey,
+      source: 'execution_override',
+    };
+  }
   const candidates: Array<{
     source: Exclude<MyFlowEffectiveDateSource, 'none'>;
     date?: string;

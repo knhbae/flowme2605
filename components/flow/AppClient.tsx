@@ -17,6 +17,7 @@ import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 import { MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
+import { planDateMovement, type DateMovementPlan } from '@/lib/flow/date-movement';
 import {
   buildCalendarUnscheduledSchedulePreview,
   type CalendarUnscheduledTrayItem,
@@ -63,6 +64,7 @@ import {
 } from '@/lib/flow/flow-version-review';
 import {
   getFlowOccurrenceExecutionRecords,
+  MY_FLOW_DATE_REMOVED_OVERRIDE,
   getFlowScopedMyFlowPersonalExecutionState,
   getMyFlowDateOverrideKey,
   getMyFlowOccurrenceExecutionStorageKey,
@@ -3162,6 +3164,23 @@ type MyFlowExportPanelState = {
   selectedKeys: string[];
 };
 
+type MyFlowBatchAdjustmentState = {
+  flowSlug: string;
+  selectedKeys: string[];
+  operation: 'set_date' | 'remove_date';
+  targetDate: string;
+};
+
+type MyFlowBatchAdjustmentUndo = {
+  flowSlug: string;
+  count: number;
+  label: string;
+  previousDateOverrides?: Record<string, string>;
+  previousStructuralOverlay?: PersonalStructuralOverlay;
+  previousSavedMapSnapshot?: SourceBackedFlowMapSavedSnapshot;
+  previousPersistenceRecord?: SourceBackedFlowMapPersistenceRecord;
+};
+
 type MyFlowScopeExportItem = {
   key: string;
   panelItem: FlowExportPanelItem;
@@ -4470,6 +4489,10 @@ function getMyFlowRowInstanceKey(row: MyFlowCalendarRow): string {
   return row.calendarKey ?? `${row.flow.progress.slug}::${row.id}::${row.date ?? 'none'}`;
 }
 
+function getMyFlowBatchSelectionKey(flowSlug: string, row: MyFlowRow): string {
+  return `${flowSlug}::${row.structuralProjectionStableId ?? baseStateId(row.id)}`;
+}
+
 function mapPersonalDraftProjectionRowToMyFlowRow(
   bundle: FlowBundle,
   sourceRows: MyFlowRow[],
@@ -4797,6 +4820,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowUnscheduledTargetDate, setMyFlowUnscheduledTargetDate] = useState('');
   const [myFlowCalendarScheduleUndo, setMyFlowCalendarScheduleUndo] = useState<MyFlowCalendarScheduleUndo | null>(null);
   const [myFlowExportPanel, setMyFlowExportPanel] = useState<MyFlowExportPanelState | null>(null);
+  const [myFlowBatchAdjustment, setMyFlowBatchAdjustment] = useState<MyFlowBatchAdjustmentState | null>(null);
+  const [myFlowBatchAdjustmentUndo, setMyFlowBatchAdjustmentUndo] = useState<MyFlowBatchAdjustmentUndo | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
@@ -4821,6 +4846,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 5000);
     return () => window.clearTimeout(timeoutId);
   }, [myFlowCalendarScheduleUndo]);
+  useEffect(() => {
+    if (!myFlowBatchAdjustmentUndo) return;
+    const timeoutId = window.setTimeout(() => setMyFlowBatchAdjustmentUndo(null), 7000);
+    return () => window.clearTimeout(timeoutId);
+  }, [myFlowBatchAdjustmentUndo]);
   const savedViewTabs = [
     ['today', '지금'],
     ['calendar', '캘린더'],
@@ -4850,6 +4880,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowExpandedAdvancedKey('');
     setMyFlowExpandedMemoKey('');
     setMyFlowExpandedRoutineKey('');
+    setMyFlowBatchAdjustment(null);
     setMyFlowRoutineOverflowDate('');
     setMyFlowScheduleOverflowDate('');
   };
@@ -7385,6 +7416,297 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     } catch {
       return false;
     }
+  };
+
+  const updateMyFlowBatchAdjustment = (patch: Partial<MyFlowBatchAdjustmentState>) => {
+    setMyFlowBatchAdjustment((current) => current ? { ...current, ...patch } : current);
+  };
+
+  const openMyFlowBatchAdjustment = (flow: MySavedFlow) => {
+    resetMyFlowRowDetailState();
+    setMyFlowBatchAdjustment({
+      flowSlug: flow.progress.slug,
+      selectedKeys: [],
+      operation: 'set_date',
+      targetDate: myFlowTodayDate,
+    });
+    setMyFlowBatchAdjustmentUndo(null);
+  };
+
+  const toggleMyFlowBatchItem = (key: string) => {
+    setMyFlowBatchAdjustment((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        selectedKeys: current.selectedKeys.includes(key)
+          ? current.selectedKeys.filter((selectedKey) => selectedKey !== key)
+          : [...current.selectedKeys, key],
+      };
+    });
+  };
+
+  const getMyFlowBatchRows = (flow: MySavedFlow): MyFlowCalendarRow[] =>
+    flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
+
+  const buildMyFlowBatchDatePlan = (
+    flow: MySavedFlow,
+    rows: MyFlowCalendarRow[],
+  ): DateMovementPlan | null => {
+    if (myFlowBatchAdjustment?.flowSlug !== flow.progress.slug) return null;
+    const selectedKeys = new Set(myFlowBatchAdjustment.selectedKeys);
+    const items = rows.map((row) => {
+      const selectionKey = getMyFlowBatchSelectionKey(flow.progress.slug, row);
+      const sourceItem = flow.bundle.items.find((item) => item.id === baseStateId(row.id));
+      const committedDraft = getMyFlowRowDraft(row);
+      const schedule: PersonalStructuralSchedule | undefined = row.structuralSchedule ?? (
+        row.date
+          ? {
+              mode: 'fixed_date',
+              date: row.date,
+              ...(row.structuralScheduleProjection?.startTime ?? committedDraft.time
+                ? { time: row.structuralScheduleProjection?.startTime ?? committedDraft.time }
+                : {}),
+              ...(row.structuralScheduleProjection?.durationMinutes ?? committedDraft.durationMinutes
+                ? { durationMinutes: row.structuralScheduleProjection?.durationMinutes ?? committedDraft.durationMinutes }
+                : {}),
+              ...(row.structuralScheduleProjection?.timeZone
+                ? { timeZone: row.structuralScheduleProjection.timeZone }
+                : {}),
+              ...(row.structuralRepeat ? { repeat: row.structuralRepeat } : {}),
+            }
+          : undefined
+      );
+      return {
+        itemId: selectionKey,
+        title: getMyFlowRowDisplayTitle(row),
+        ...(schedule ? { schedule } : {}),
+        ...(row.date ? { effectiveDate: row.date } : {}),
+        dateOwnership: typeof sourceItem?.day_offset === 'number' && !row.calendarKey
+          ? 'linked' as const
+          : row.date
+            ? 'fixed' as const
+            : 'unscheduled' as const,
+        ...(typeof sourceItem?.day_offset === 'number' ? { linkedDayOffset: sourceItem.day_offset } : {}),
+        included: true,
+        tombstoned: false,
+        ...(row.structuralProjectionOrderRank !== undefined
+          ? { personalOrderRank: row.structuralProjectionOrderRank }
+          : {}),
+        executionState: row.structuralOccurrenceExecutionState ?? (
+          isItemStateSkipped(flow.itemStates, row.id)
+            ? 'skipped' as const
+            : isMyFlowRowChecked(flow, row)
+              ? 'done' as const
+              : 'pending' as const
+        ),
+      };
+    });
+    return planDateMovement({
+      identityNamespace: flow.progress.slug,
+      ...(flow.anchor ? { anchorDate: flow.anchor } : {}),
+      items,
+    }, {
+      scope: 'selected',
+      operation: myFlowBatchAdjustment.operation,
+      itemIds: items.filter((item) => selectedKeys.has(item.itemId)).map((item) => item.itemId),
+      ...(myFlowBatchAdjustment.operation === 'set_date'
+        ? { targetDate: myFlowBatchAdjustment.targetDate }
+        : {}),
+      updatedAt: new Date().toISOString(),
+    });
+  };
+
+  const applyMyFlowBatchDateAdjustment = (flow: MySavedFlow) => {
+    if (
+      typeof window === 'undefined' ||
+      isMyFlowScenarioDemo ||
+      myFlowBatchAdjustment?.flowSlug !== flow.progress.slug
+    ) return;
+    const rows = getMyFlowBatchRows(flow);
+    const plan = buildMyFlowBatchDatePlan(flow, rows);
+    if (!plan?.canApply) return;
+    const selectedKeySet = new Set(myFlowBatchAdjustment.selectedKeys);
+    const selectedRows = rows.filter((row) => selectedKeySet.has(
+      getMyFlowBatchSelectionKey(flow.progress.slug, row),
+    ));
+    if (selectedRows.length !== plan.preview.counts.selectedCount) return;
+    if (selectedRows.some((row) => Boolean(
+      row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine'
+    ))) return;
+
+    const previousDateOverrides = { ...myFlowDateOverrides };
+    const nextDateOverrides = { ...myFlowDateOverrides };
+    const previousStructuralOverlay = isPersonalDraftStructuralEditEligible(flow.bundle)
+      ? myFlowStructuralOverlaysBySlug[flow.progress.slug] ?? createPersonalDraftStructuralOverlay(flow.bundle)
+      : undefined;
+    let nextStructuralOverlay = previousStructuralOverlay;
+
+    for (const row of selectedRows) {
+      const isPersonalUserItem = Boolean(
+        nextStructuralOverlay && row.structuralOwnership === 'user_created',
+      );
+      if (isPersonalUserItem && nextStructuralOverlay) {
+        const nextDate = myFlowBatchAdjustment.operation === 'set_date'
+          ? myFlowBatchAdjustment.targetDate
+          : '';
+        const scheduled = setPersonalDraftUserItemDate({
+          overlay: nextStructuralOverlay,
+          itemId: row.structuralProjectionStableId ?? row.id,
+          date: nextDate,
+        });
+        if (!scheduled) return;
+        nextStructuralOverlay = scheduled.overlay;
+        continue;
+      }
+      const overrideKey = row.calendarKey ?? resolveSavedFlowRowDate(flow, row).overrideKey;
+      nextDateOverrides[overrideKey] = myFlowBatchAdjustment.operation === 'set_date'
+        ? myFlowBatchAdjustment.targetDate
+        : MY_FLOW_DATE_REMOVED_OVERRIDE;
+    }
+
+    try {
+      if (nextStructuralOverlay && nextStructuralOverlay !== previousStructuralOverlay) {
+        savePersonalStructuralOverlay(window.localStorage, nextStructuralOverlay);
+      }
+      saveStoredMyFlowDateOverrides(nextDateOverrides);
+    } catch {
+      return;
+    }
+
+    if (nextStructuralOverlay && nextStructuralOverlay !== previousStructuralOverlay) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        [flow.progress.slug]: nextStructuralOverlay as PersonalStructuralOverlay,
+      }));
+    }
+    setMyFlowDateOverrides(nextDateOverrides);
+    setMyFlowBatchAdjustmentUndo({
+      flowSlug: flow.progress.slug,
+      count: selectedRows.length,
+      label: myFlowBatchAdjustment.operation === 'set_date'
+        ? `${selectedRows.length}개 날짜를 ${formatMyFlowDisplayDate(myFlowBatchAdjustment.targetDate)}로 바꿨어요.`
+        : `${selectedRows.length}개를 언제든 할 일로 돌렸어요.`,
+      previousDateOverrides,
+      ...(previousStructuralOverlay ? { previousStructuralOverlay } : {}),
+    });
+    setMyFlowBatchAdjustment(null);
+  };
+
+  const removeMyFlowBatchItems = (flow: MySavedFlow) => {
+    if (
+      typeof window === 'undefined' ||
+      isMyFlowScenarioDemo ||
+      myFlowBatchAdjustment?.flowSlug !== flow.progress.slug ||
+      myFlowBatchAdjustment.selectedKeys.length === 0
+    ) return;
+    const selectedKeySet = new Set(myFlowBatchAdjustment.selectedKeys);
+    const rows = getMyFlowBatchRows(flow).filter((row) => selectedKeySet.has(
+      getMyFlowBatchSelectionKey(flow.progress.slug, row),
+    ));
+    if (rows.length === 0) return;
+
+    if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
+      const previousStructuralOverlay =
+        myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
+        createPersonalDraftStructuralOverlay(flow.bundle);
+      let nextOverlay = previousStructuralOverlay;
+      for (const row of rows) {
+        const deleted = deletePersonalDraftStructuralItem({
+          bundle: flow.bundle,
+          overlay: nextOverlay,
+          itemId: row.structuralProjectionStableId ?? row.id,
+        });
+        if (!deleted) return;
+        nextOverlay = deleted.overlay;
+      }
+      if (!saveMyFlowStructuralOverlay(flow, nextOverlay)) return;
+      setMyFlowBatchAdjustmentUndo({
+        flowSlug: flow.progress.slug,
+        count: rows.length,
+        label: `${rows.length}개를 Flow에서 뺐어요.`,
+        previousStructuralOverlay,
+      });
+      setMyFlowBatchAdjustment(null);
+      resetMyFlowRowDetailState();
+      return;
+    }
+
+    if (!flow.savedMap?.personalCopy) return;
+    const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
+    const previousPersistenceRecord = savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId];
+    const currentIncluded = previousSavedMapSnapshot.personalCopy?.includedStepIdsByFlow[flow.progress.slug] ?? [];
+    const removedIds = new Set(rows.map((row) => baseStateId(row.id)));
+    const nextIncluded = currentIncluded.filter((itemId) => !removedIds.has(itemId));
+    if (nextIncluded.length === 0) {
+      updateMyFlowBatchAdjustment({ selectedKeys: [] });
+      return;
+    }
+    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(previousSavedMapSnapshot, {
+      title: previousSavedMapSnapshot.title,
+      anchor: previousSavedMapSnapshot.anchor,
+      savedAt: new Date().toISOString(),
+      includedStepIdsByFlow: {
+        ...previousSavedMapSnapshot.personalCopy?.includedStepIdsByFlow,
+        [flow.progress.slug]: nextIncluded,
+      },
+      stepOverridesByFlow: previousSavedMapSnapshot.personalCopy?.stepOverridesByFlow,
+      baselineRecord: previousPersistenceRecord,
+    });
+    if (!adjusted) return;
+    window.localStorage.setItem(
+      getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
+      JSON.stringify(adjusted.snapshot),
+    );
+    window.localStorage.setItem(
+      getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
+      JSON.stringify(adjusted.persistenceRecord),
+    );
+    setMyFlowBatchAdjustmentUndo({
+      flowSlug: flow.progress.slug,
+      count: rows.length,
+      label: `${rows.length}개를 Flow에서 뺐어요.`,
+      previousSavedMapSnapshot,
+      ...(previousPersistenceRecord ? { previousPersistenceRecord } : {}),
+    });
+    setMyFlowBatchAdjustment(null);
+    resetMyFlowRowDetailState();
+    refreshSavedFlowState();
+  };
+
+  const undoMyFlowBatchAdjustment = () => {
+    if (typeof window === 'undefined' || !myFlowBatchAdjustmentUndo) return;
+    try {
+      if (myFlowBatchAdjustmentUndo.previousDateOverrides) {
+        saveStoredMyFlowDateOverrides(myFlowBatchAdjustmentUndo.previousDateOverrides);
+        setMyFlowDateOverrides(myFlowBatchAdjustmentUndo.previousDateOverrides);
+      }
+      if (myFlowBatchAdjustmentUndo.previousStructuralOverlay) {
+        const restored = savePersonalStructuralOverlay(
+          window.localStorage,
+          myFlowBatchAdjustmentUndo.previousStructuralOverlay,
+        );
+        setMyFlowStructuralOverlaysBySlug((current) => ({
+          ...current,
+          [myFlowBatchAdjustmentUndo.flowSlug]: restored,
+        }));
+      }
+      if (myFlowBatchAdjustmentUndo.previousSavedMapSnapshot) {
+        window.localStorage.setItem(
+          getSourceBackedFlowMapSnapshotStorageKey(myFlowBatchAdjustmentUndo.previousSavedMapSnapshot.mapId),
+          JSON.stringify(myFlowBatchAdjustmentUndo.previousSavedMapSnapshot),
+        );
+      }
+      if (myFlowBatchAdjustmentUndo.previousPersistenceRecord) {
+        window.localStorage.setItem(
+          getSourceBackedFlowMapPersistenceStorageKey(myFlowBatchAdjustmentUndo.previousPersistenceRecord.map.id),
+          JSON.stringify(myFlowBatchAdjustmentUndo.previousPersistenceRecord),
+        );
+      }
+    } catch {
+      return;
+    }
+    setMyFlowBatchAdjustmentUndo(null);
+    refreshSavedFlowState();
   };
 
   const toggleMyFlowCalendarUnscheduledItem = (key: string) => {
@@ -10542,6 +10864,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
+  const renderMyFlowBatchUndo = (flow: MySavedFlow) => {
+    const batchUndo = myFlowBatchAdjustmentUndo?.flowSlug === flow.progress.slug
+      ? myFlowBatchAdjustmentUndo
+      : null;
+    if (!batchUndo) return null;
+    return (
+      <div data-testid="my-flow-batch-undo" role="status" className="mb-3 flex items-center justify-between gap-3 rounded-md bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
+        <span>{batchUndo.label}</span>
+        <button
+          type="button"
+          data-testid="my-flow-batch-undo-action"
+          className="min-h-8 shrink-0 rounded-md border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800"
+          onClick={undoMyFlowBatchAdjustment}
+        >
+          되돌리기
+        </button>
+      </div>
+    );
+  };
+
   const renderMyFlowWholeFlowOutline = (
     flow: MySavedFlow,
     options: {
@@ -10552,6 +10894,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     } = {},
   ) => {
     const rows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
+    const batchActive = Boolean(
+      options.interactive && myFlowBatchAdjustment?.flowSlug === flow.progress.slug,
+    );
+    const batchSelectedKeySet = new Set(
+      batchActive ? myFlowBatchAdjustment?.selectedKeys ?? [] : [],
+    );
+    const batchRowKeys = rows.map((row) => getMyFlowBatchSelectionKey(flow.progress.slug, row));
+    const batchAllSelected = batchRowKeys.length > 0 && batchRowKeys.every((key) => batchSelectedKeySet.has(key));
+    const batchDatePlan = batchActive ? buildMyFlowBatchDatePlan(flow, rows) : null;
+    const batchRecurringSelectionBlocked = (
+      batchDatePlan?.blockedReason === 'recurring_item_requires_occurrence_or_series_scope' ||
+      rows.some((row) => (
+        batchSelectedKeySet.has(getMyFlowBatchSelectionKey(flow.progress.slug, row)) &&
+        Boolean(row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine')
+      ))
+    );
+    const batchCanRemove = isPersonalDraftStructuralEditEligible(flow.bundle) || Boolean(flow.savedMap?.personalCopy);
     const sections = Array.from(
       rows.reduce<Map<string, MyFlowCalendarRow[]>>((groups, row) => {
         const label = getMyFlowRowDisplaySectionLabel(row) || '할 일';
@@ -10572,10 +10931,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       >
         {options.showHeading ? (
           <div className="mb-2 flex items-center justify-between gap-3">
-            <h4 className="text-sm font-semibold text-slate-950">전체 Flow</h4>
-            <span className="text-xs font-semibold text-slate-500">{rows.length}개</span>
+            <div className="min-w-0">
+              <h4 className="text-sm font-semibold text-slate-950">전체 Flow</h4>
+              <span className="text-xs font-semibold text-slate-500">{rows.length}개</span>
+            </div>
+            {options.interactive && rows.length > 0 ? (
+              <button
+                type="button"
+                data-testid="my-flow-batch-mode-toggle"
+                aria-pressed={batchActive}
+                className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
+                onClick={() => batchActive ? setMyFlowBatchAdjustment(null) : openMyFlowBatchAdjustment(flow)}
+              >
+                {batchActive ? '선택 취소' : '여러 할 일 조정'}
+              </button>
+            ) : null}
           </div>
         ) : null}
+        {renderMyFlowBatchUndo(flow)}
         <div className="grid gap-3">
           {sections.map(([section, sectionRows]) => (
             <section key={`${flow.progress.slug}-${section}`} data-testid="my-flow-whole-flow-section">
@@ -10587,6 +10960,38 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ) : null}
               <div className="border-y border-slate-200">
                 {sectionRows.map((row, index) => {
+                  const batchKey = getMyFlowBatchSelectionKey(flow.progress.slug, row);
+                  if (batchActive) {
+                    const selected = batchSelectedKeySet.has(batchKey);
+                    const recurring = Boolean(row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine');
+                    return (
+                      <label
+                        key={`batch-${flow.progress.slug}-${batchKey}`}
+                        data-testid="my-flow-batch-selectable-row"
+                        data-item-id={row.structuralProjectionStableId ?? row.id}
+                        data-selected={selected ? 'true' : 'false'}
+                        className={`grid cursor-pointer grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2 border-t px-1 py-2.5 first:border-t-0 ${selected ? 'border-blue-100 bg-blue-50' : 'border-slate-200 bg-white hover:bg-slate-50'}`}
+                      >
+                        <span className="flex h-8 w-8 items-center justify-center">
+                          <input
+                            data-testid="my-flow-batch-item-checkbox"
+                            type="checkbox"
+                            checked={selected}
+                            aria-label={`${getMyFlowRowDisplayTitle(row)} 조정할 항목으로 선택`}
+                            className="h-4 w-4 rounded border-slate-300 accent-blue-700 focus:ring-2 focus:ring-blue-200"
+                            onChange={() => toggleMyFlowBatchItem(batchKey)}
+                          />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block break-keep text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</span>
+                          <span className="mt-0.5 block text-[11px] font-semibold text-slate-500">
+                            {row.date ? formatMyFlowDisplayDate(row.date) : '언제든'}
+                          </span>
+                        </span>
+                        {recurring ? <span className="shrink-0 rounded bg-emerald-50 px-1.5 py-1 text-[10px] font-semibold text-emerald-700">반복</span> : null}
+                      </label>
+                    );
+                  }
                   if (options.interactive) {
                     return renderExecutionRow(row, {
                       compact: true,
@@ -10620,6 +11025,115 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </section>
           ))}
         </div>
+        {batchActive ? (
+          <section
+            data-testid="my-flow-batch-toolbar"
+            className="sticky bottom-20 z-20 mt-3 rounded-lg border border-blue-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.16)] md:static md:shadow-sm"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-slate-950">
+                <span data-testid="my-flow-batch-selected-count">{batchSelectedKeySet.size}개 선택</span>
+                <span className="ml-1 text-xs text-slate-500">· 전체 {rows.length}개</span>
+              </p>
+              <button
+                type="button"
+                data-testid="my-flow-batch-select-all"
+                className="min-h-8 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700"
+                onClick={() => updateMyFlowBatchAdjustment({ selectedKeys: batchAllSelected ? [] : batchRowKeys })}
+              >
+                {batchAllSelected ? '전체 해제' : '전체 선택'}
+              </button>
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-1 rounded-md bg-slate-100 p-1" role="group" aria-label="선택한 할 일 날짜 조정">
+              <button
+                type="button"
+                data-testid="my-flow-batch-operation-set-date"
+                aria-pressed={myFlowBatchAdjustment?.operation === 'set_date'}
+                className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment?.operation === 'set_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                onClick={() => updateMyFlowBatchAdjustment({ operation: 'set_date' })}
+              >
+                날짜 지정
+              </button>
+              <button
+                type="button"
+                data-testid="my-flow-batch-operation-remove-date"
+                aria-pressed={myFlowBatchAdjustment?.operation === 'remove_date'}
+                className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment?.operation === 'remove_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                onClick={() => updateMyFlowBatchAdjustment({ operation: 'remove_date' })}
+              >
+                언제든으로
+              </button>
+            </div>
+
+            {myFlowBatchAdjustment?.operation === 'set_date' ? (
+              <label className="mt-3 block text-xs font-semibold text-slate-600">
+                옮길 날짜
+                <input
+                  data-testid="my-flow-batch-target-date"
+                  type="date"
+                  value={myFlowBatchAdjustment.targetDate}
+                  className="mt-1 min-h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  onChange={(event) => updateMyFlowBatchAdjustment({ targetDate: event.target.value })}
+                />
+              </label>
+            ) : null}
+
+            <div data-testid="my-flow-batch-impact-preview" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-600">
+              {batchSelectedKeySet.size === 0 ? (
+                <span>바꿀 할 일을 선택하세요.</span>
+              ) : batchRecurringSelectionBlocked ? (
+                <span>반복 일정은 항목을 열어 이번 회차·이후·전체 범위를 먼저 고르세요.</span>
+              ) : batchDatePlan?.canApply ? (
+                <span>
+                  {batchDatePlan.preview.counts.changedCount}개가 바뀝니다. 완료 기록과 개인 메모는 유지됩니다.
+                  {flow.anchor ? ' 전체 일정 이동은 위의 기준일 바꾸기에서 할 수 있어요.' : ''}
+                </span>
+              ) : (
+                <span>날짜와 선택 항목을 확인하세요.</span>
+              )}
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <button
+                type="button"
+                data-testid="my-flow-batch-apply-date"
+                disabled={!batchDatePlan?.canApply || batchRecurringSelectionBlocked}
+                className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+                onClick={() => applyMyFlowBatchDateAdjustment(flow)}
+              >
+                날짜 적용
+              </button>
+              <button
+                type="button"
+                data-testid="my-flow-batch-export-selected"
+                disabled={batchSelectedKeySet.size === 0}
+                className="min-h-10 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                onClick={() => {
+                  setMyFlowExportPanel({
+                    flowSlug: flow.progress.slug,
+                    scope: 'selected',
+                    selectedKeys: Array.from(batchSelectedKeySet),
+                  });
+                  setMyFlowBatchAdjustment(null);
+                }}
+              >
+                선택 내보내기
+              </button>
+              {batchCanRemove ? (
+                <button
+                  type="button"
+                  data-testid="my-flow-batch-remove-selected"
+                  disabled={batchSelectedKeySet.size === 0}
+                  className="min-h-10 rounded-md border border-rose-200 bg-white px-3 py-2 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 sm:col-span-2"
+                  onClick={() => removeMyFlowBatchItems(flow)}
+                >
+                  Flow에서 빼기
+                </button>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
       </section>
     );
   };
@@ -11820,6 +12334,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       Boolean(activeCompactRow)
     );
     const stepRows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
+    const batchActive = Boolean(myFlowBatchAdjustment?.flowSlug === flow.progress.slug);
     const stepEntries = stepRows.map((row, index) => ({ row, index }));
     const allStepsVisible = forceWholeFlowOpen || myFlowExpandedStructureStepSlug === flow.progress.slug;
     const shouldLimitStepRows = stepEntries.length > MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT && !allStepsVisible;
@@ -11920,9 +12435,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ) : null}
         {renderMyFlowPersonalCopySettings(flow)}
         {renderMyFlowDirectAnchorSettings(flow)}
-        {executionReady ? renderMyFlowCompletionFeedback(flow) : null}
-        {executionReady ? renderMyFlowReuseNotice(flow) : null}
-        {executionReady && flowExpanded ? (
+        {executionReady && !batchActive ? renderMyFlowCompletionFeedback(flow) : null}
+        {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
+        {executionReady && flowExpanded && stepRows.length > 0 ? (
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
+            <p className="text-xs font-semibold text-slate-500">전체 Flow · {stepRows.length}개</p>
+            <button
+              type="button"
+              data-testid="my-flow-batch-mode-toggle"
+              aria-pressed={batchActive}
+              className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
+              onClick={() => batchActive ? setMyFlowBatchAdjustment(null) : openMyFlowBatchAdjustment(flow)}
+            >
+              {batchActive ? '선택 취소' : '여러 할 일 조정'}
+            </button>
+          </div>
+        ) : null}
+        {!batchActive ? renderMyFlowBatchUndo(flow) : null}
+        {executionReady && flowExpanded && !batchActive ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
               const stepOpen = Boolean(activeCompactRow && activeCompactRow.id === stepRow.id);
@@ -12007,9 +12537,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         ) : null}
-        {executionReady && flowExpanded ? renderPersonalDraftStructuralControls(flow) : null}
-        {executionReady ? renderMyFlowExportPanel(flow) : null}
-        {flowExpanded ? renderMyFlowExcludedSteps(flow) : null}
+        {executionReady && flowExpanded && batchActive ? (
+          <div className="mt-3">
+            {renderMyFlowWholeFlowOutline(flow, {
+              interactive: true,
+              inlineDetail: true,
+            })}
+          </div>
+        ) : null}
+        {executionReady && flowExpanded && !batchActive ? renderPersonalDraftStructuralControls(flow) : null}
+        {executionReady && !batchActive ? renderMyFlowExportPanel(flow) : null}
+        {flowExpanded && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
       </article>
     );
   };
@@ -12039,6 +12577,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const hiddenInInventory = hiddenFlowSlugSet.has(flow.progress.slug);
     const showHideToggle = savedFlows.length > 1 && !isMyFlowMobileViewport;
     const showWholeFlowOutline = selectedSavedFlowSlug === flow.progress.slug || visibleSavedFlows.length === 1;
+    const batchActive = Boolean(myFlowBatchAdjustment?.flowSlug === flow.progress.slug);
     const activeOverviewRow =
       myFlowDetailSurface === 'flow' && myFlowActiveRow && myFlowDetailOpen && myFlowActiveRow.flow.progress.slug === flow.progress.slug
         ? myFlowActiveRow
@@ -12151,7 +12690,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </div> : null}
         {executionReady && showWholeFlowOutline ? (
           <div
-            className="mt-4 min-w-0 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] lg:items-start lg:gap-4"
+            className={`mt-4 min-w-0 ${batchActive ? '' : 'lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] lg:items-start lg:gap-4'}`}
             data-testid="my-flow-whole-flow-workspace"
             data-workspace-layout={isMyFlowMobileViewport ? 'mobile-drill-in' : 'wide-outline-detail'}
           >
@@ -12162,7 +12701,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 showHeading: true,
               })}
             </div>
-            <aside
+            {!batchActive ? <aside
               data-testid="my-flow-workspace-detail-pane"
               className="hidden min-w-0 rounded-md border border-slate-200 bg-slate-50 p-3 lg:sticky lg:top-4 lg:block"
             >
@@ -12203,11 +12742,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </div>
                 </div>
               )}
-            </aside>
+            </aside> : null}
           </div>
         ) : null}
-        {executionReady ? renderPersonalDraftStructuralControls(flow) : null}
-        {executionReady ? renderMyFlowExportPanel(flow) : null}
+        {executionReady && !batchActive ? renderPersonalDraftStructuralControls(flow) : null}
+        {executionReady && !batchActive ? renderMyFlowExportPanel(flow) : null}
         {executionReady && activeOverviewRow && !showWholeFlowOutline ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
             {renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow')}
@@ -12227,10 +12766,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <div className="h-full bg-blue-700" style={{ width: `${flow.percent}%` }} />
           </div>
         </div> : null}
-        {executionReady ? renderMyFlowCompletionFeedback(flow) : null}
-        {executionReady ? renderMyFlowReuseNotice(flow) : null}
-        {executionReady ? renderMyFlowExcludedSteps(flow) : null}
-        <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
+        {executionReady && !batchActive ? renderMyFlowCompletionFeedback(flow) : null}
+        {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
+        {executionReady && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
+        {!batchActive ? <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
           <Link
             className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
             href={sourceHref}
@@ -12249,7 +12788,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {hiddenInInventory ? '목록에 보이기' : '목록에서 숨기기'}
             </button>
           ) : null}
-        </div>
+        </div> : null}
       </section>
     );
   };

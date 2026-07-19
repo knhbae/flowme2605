@@ -14,6 +14,7 @@ import {
 } from './local-data-backup';
 import {
   getFlowOccurrenceExecutionRecords,
+  MY_FLOW_DATE_REMOVED_OVERRIDE,
   getFlowScopedMyFlowPersonalExecutionState,
   getMyFlowOccurrenceExecutionStorageKey,
   getStoredMyFlowOccurrenceExecutionRecords,
@@ -262,6 +263,25 @@ test('effective My Flow dates resolve a manually scheduled undated item without 
     source: 'execution_override',
   });
   assert.deepEqual(sourceItems, [{ id: itemId, title: '여권 확인' }]);
+});
+
+test('explicit personal date removal wins over source and personal-copy dates without deleting identity', () => {
+  const flowSlug = 'source-backed-moving-d30';
+  const itemId = 'moving-method-quotes';
+  const overrideKey = `${flowSlug}::${itemId}::2026-07-06`;
+  const resolved = resolveMyFlowEffectiveDate({
+    flowSlug,
+    itemId,
+    sourceDate: '2026-07-06',
+    personalCopyDateOverride: '2026-07-07',
+    dateOverrides: { [overrideKey]: MY_FLOW_DATE_REMOVED_OVERRIDE },
+  });
+
+  assert.deepEqual(resolved, {
+    originalDate: '2026-07-06',
+    overrideKey,
+    source: 'execution_override',
+  });
 });
 
 test('reuse rekeys fixed personal dates to the new anchor row without changing their value', () => {

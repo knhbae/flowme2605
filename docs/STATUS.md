@@ -3,7 +3,7 @@
 **Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
 **Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 correctness, P25-02 whole-Flow workspace, and P25-03A progressive single-item adjustment are complete by current unit/browser evidence. Open P25-03B selected-item batch adjustment next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 correctness, P25-02 whole-Flow workspace, and P25-03 personal adjustment are complete by current unit/browser evidence. Open P25-04 Anytime semantics and Calendar placement next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-03B selected-item batch adjustment; P24 remains the deployed production baseline |
+| Active product gate | P25-04 Anytime task model and Calendar placement queue; P24 remains the deployed production baseline |
 | User action now | No participant action. The owner may still review the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html), but the instruction to continue P25 authorizes the staged implementation baseline. |
-| AI action now | Add a bounded selection mode with date change/clear, include/exclude, and selected export preview without adding permanent row controls |
+| AI action now | Make undated work understandable and schedulable without turning Calendar into a second task editor |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P25-03B bounded batch adjustment: `전체 Flow` now exposes temporary selection mode on mobile and wide. Selection checkboxes replace completion controls; users can preview and apply a date, return selected tasks to `언제든`, open existing export with the exact selection, and remove rows only where a persistent recovery path exists. Published source and completion state remain unchanged, explicit date removal is an additive personal override, recurring date edits require occurrence/series scope, and direct source-backed removal controls remain `0`. Current evidence: unit `525 / 525`, targeted Playwright `1 / 1`, mobile/wide overflow `0`, console errors `0`, observed-user sessions `0`. See [P25-03B evidence](./content-audit/2026-07-19-p25-03b-batch-adjustment-evidence/README.md).
 
 - 2026-07-19 P25-03A progressive adjustment: My Flow now calls the action `할 일 조정`; the default editor keeps the task, date state, and personal memo visible while time, duration, location, recurrence, and eligible intent fields stay behind `세부 일정`. Saved advanced values are summarized without auto-expanding the form, and the redundant memo resize command was removed. Current targeted Playwright is `3 / 3`, production build passes, mobile/wide overflow and console errors are `0`, and observed-user sessions remain `0`. See [P25-03A evidence](./content-audit/2026-07-19-p25-03a-progressive-adjustment-evidence/README.md).
 
