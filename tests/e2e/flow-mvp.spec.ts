@@ -7061,6 +7061,30 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
   expect(consoleErrors).toEqual([]);
 });
 
+test('public routine hydration stays stable across opposite browser time zones', async ({ browser }) => {
+  for (const timezoneId of ['Pacific/Kiritimati', 'Pacific/Pago_Pago']) {
+    const context = await browser.newContext({
+      timezoneId,
+      viewport: { width: 390, height: 844 },
+    });
+    const page = await context.newPage();
+    const hydrationErrors: string[] = [];
+    page.on('pageerror', (error) => {
+      if (/hydration|418/i.test(error.message)) hydrationErrors.push(error.message);
+    });
+    page.on('console', (message) => {
+      if (message.type() === 'error' && /hydration|418/i.test(message.text())) hydrationErrors.push(message.text());
+    });
+
+    await page.goto('/f/washer-tub-clean-monthly');
+    await expect(page.getByTestId('public-flow-preview-summary')).toBeVisible();
+    await expect(page.getByTestId('maintenance-routine-checklist-card')).toBeVisible();
+    await page.waitForTimeout(100);
+    expect(hydrationErrors).toEqual([]);
+    await context.close();
+  }
+});
+
 test('current medium-risk sources separate publication, revision, recheck, and executable scope', async ({ page }) => {
   const evidenceDir = process.env.FLOWME_MEDIUM_SOURCE_EVIDENCE_DIR;
   if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
