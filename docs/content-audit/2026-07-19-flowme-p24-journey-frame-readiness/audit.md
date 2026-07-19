@@ -79,6 +79,16 @@
 
 The bounded rerun and the earlier full-suite result are reported separately. Neither is promoted to observed-user evidence.
 
+## Production closeout
+
+- PR: `#128`
+- merge SHA: `616025bf79e5573f66ff7ef3d25c228075b391cf`
+- Vercel deployment: `dpl_HSZz4qJM2MUqqoA9H4Xn5RtmoCx5`, `READY`
+- public alias: <https://flowme2605.vercel.app>
+- mobile production: moving post-save rows `5`, public vehicle post-save rows `10`, horizontal overflow `0`, console errors `0`
+- wide production: My Flow and Calendar rendered, undated tray `aria-expanded=false`, horizontal overflow `0`, console errors `0`
+- evidence kind: `current_browser` and `deployment_record`, not `observed_user`
+
 ## 잔여 위험
 
 1. artifact preview는 대표 항목만 먼저 보여주므로 사용자가 접힌 전체 구조를 충분히 예측하는지는 실제 관찰이 필요하다.

@@ -69,6 +69,8 @@
 | Mobile/wide overflow | `0 / 0` at 390x844 and 1024x768 | `current_browser` |
 | Console errors | `0` | `current_browser` |
 | Independent review | Blocking `0`, High `0` | `independent_agent_review` |
+| Production deploy | `dpl_HSZz4qJM2MUqqoA9H4Xn5RtmoCx5` READY, merge `616025bf` | `deployment_record` |
+| Production browser | moving `5` rows, vehicle `10` rows, mobile/wide overflow and console errors `0` | `current_browser` |
 | Observed users | `0 / 15`, not scheduled | `observed_user` |
 
 The full Flow E2E result predates one narrowly scoped legacy `savedFlow` held-eligibility hardening. The changed path is covered by the final `6 / 6` journey-frame E2E. This distinction prevents a bounded prior command from being presented as a later full-suite run.

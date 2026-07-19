@@ -1,9 +1,9 @@
 # Project Status
 
 **Last Updated:** 2026-07-19 (external observation deferred until product readiness)
-**Status:** v0.1.0 RELEASED / P24 JOURNEY FRAME IMPLEMENTED, PRODUCTION CLOSEOUT PENDING
+**Status:** v0.1.0 RELEASED / P24 IMPLEMENTATION COMPLETE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Merge and deploy the completed P24 journey-frame correction, verify the public production alias, and close P24 as `implementation_complete_observation_not_started`. Do not recruit or ask external users to observe the product yet. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Hold P24 at `implementation_complete_observation_not_started` and `not_ready_for_observation`. Do not recruit or ask external users to observe the product until the owner explicitly reopens P24-00B. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P24-J5 merge, production deploy, and public-route verification; external observation is not scheduled and remains `0 / 15` |
-| User action now | No participant action. Review the deployed P24 journey only after production verification; recruitment is not requested |
-| AI action now | Merge the bounded journey reset, deploy it, verify production, and publish the final evidence package without claiming observed-user validation |
+| Active product gate | P24 internal implementation is closed; external observation remains deferred, not scheduled, and `0 / 15` |
+| User action now | No participant action. The owner may review production privately; recruitment is not requested |
+| AI action now | Preserve the deployed P24 baseline and do not auto-open P24-00B or claim user validation |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P24 production closeout: PR [#128](https://github.com/knhbae/flowme2605/pull/128) merged as `616025bf`, GitHub Docs/Unit/Build and Playwright jobs passed, and Vercel production deployment `dpl_HSZz4qJM2MUqqoA9H4Xn5RtmoCx5` reached `READY` at <https://flowme2605.vercel.app>. Current production browser checks confirmed the mobile moving post-save whole Flow (`5` rows), public vehicle post-save whole Flow (`10` rows), wide My Flow, wide Calendar, and collapsed undated tray with horizontal overflow `0` and console errors `0`. P24 is therefore closed as `implementation_complete_observation_not_started`, not as user-validated or observation-ready. Observed users remain `0 / 15`; no recruitment, request, scheduling, or session occurred.
 
 - 2026-07-19 P24 journey-frame implementation: Completed the bounded save-personalize-execute reset in an isolated clean worktree. Source-backed and public save-before surfaces now lead with the effective Flow artifact, offer `그대로 저장` plus optional lightweight adjustment, and separate first-save whole-Flow confirmation from returning execution. Calendar keeps dated work in grid/agenda and dates undated work through a collapsed tray; ordinary My Flow/Calendar hide held content while preserving its saved record. Current branch evidence: unit `518 / 518`, docs check pass, production build pass with 18 route entries, full Flow E2E `194 / 194` before a final held-path hardening, final P24 journey `6 / 6`, and the affected P24/public/workbench accounting `58 / 58` after one stale selector was corrected and rerun. Mobile 390px and wide 1024px horizontal overflow and console errors are `0`; an independent read-only agent reported Blocking `0`, High `0`. The [P24 journey-frame readiness package](./content-audit/2026-07-19-flowme-p24-journey-frame-readiness/README.md) is automated/browser and independent-agent evidence only. Observed users remain `0 / 15`, no recruitment or scheduling occurred, and production merge/deploy verification is the remaining closeout step.
 

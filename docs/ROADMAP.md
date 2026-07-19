@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / observation-readiness correction<br>
 **Next Version:** v0.2.0 (observation-ready product frame)<br>
-**Next Milestone:** P24-J5 production closeout for the implemented journey-frame correction
+**Next Milestone:** Owner-only readiness review; P24-00B remains deferred until explicitly reopened
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -41,13 +41,14 @@ Detailed status lives in the [P24 completion audit](./content-audit/2026-07-14-p
 | P24-00OPS1 | Public anonymous production URL | Done |
 | P24-00OPS2 | Controlled dependency upgrade with high `0`, build/E2E, and rollback | Done |
 | P24-J0 | Save, personalize, execute journey decision package | Done; artifact-first, optional adjustment, first-save whole-Flow frame selected |
-| P24-J1 | Save decision surface | Done in current branch; merge/deploy pending |
-| P24-J2 | Post-save full artifact | Done in current branch; merge/deploy pending |
-| P24-J3 | My Flow/Calendar/held role cleanup | Done in current branch; merge/deploy pending |
-| P24-J4 | Integration and regression | Done locally; automated Blocking/High 0 and browser evidence captured |
+| P24-J1 | Save decision surface | Done and deployed |
+| P24-J2 | Post-save full artifact | Done and deployed |
+| P24-J3 | My Flow/Calendar/held role cleanup | Done and deployed |
+| P24-J4 | Integration and regression | Done; automated Blocking/High 0 and browser evidence captured |
+| P24-J5 | Internal production readiness | Done; PR #128, merge `616025bf`, production READY |
 | P24-00B | Five real participants x three sessions | Deferred until explicit owner reopen after P24-J5, `0 / 15` |
 | P24-00C | Keep/change/defer and observed fixes | Pending P24-00B |
-| P24 final | Internal regression, production deploy, and observation-readiness package | In progress; merge/deploy/public verification remain |
+| P24 final | Internal regression, production deploy, and observation-readiness package | Done as `implementation_complete_observation_not_started`; observed users `0 / 15` |
 
 ## P24 Journey-Frame Correction Gate
 
@@ -66,13 +67,12 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is one active product gate. P24-J5 merges, deploys, and verifies the already-implemented first-use frame; external user observation remains outside the current execution queue.
+There is no active external-user gate. P24-J0~J5 are complete internally; external user observation remains outside the execution queue until the owner explicitly reopens P24-00B.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Now | AI | P24-J5 production closeout | Commit, push, merge, deploy, and verify the public alias | Deployed SHA and evidence are recorded |
-| Completed locally | AI + owner direction | P24-J0~J4 bounded implementation | Selected and implemented the artifact-first, optional-adjustment, whole-Flow confirmation frame | Regression green; independent Blocking/High 0 |
-| After deployment | Owner only | Readiness decision | Review the public P24 frame and explicitly decide whether it is ready to show users | Observation remains closed unless explicitly reopened |
+| Now | Owner only | Readiness decision | Review the public P24 frame privately and explicitly decide whether it is ready to show users | Observation remains closed unless explicitly reopened |
+| Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | Regression green; independent Blocking/High 0 |
 | Deferred | User, by explicit decision | P24-00B observed sessions | Reopen only when the owner judges the product ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
 | Parallel human check | User | Real Calendar import and duplicate import | Import the same ICS twice in one configured app | Result and duplicate behavior are recorded |
