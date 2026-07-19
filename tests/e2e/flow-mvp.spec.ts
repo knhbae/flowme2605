@@ -6951,6 +6951,94 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
   expect(consoleErrors).toEqual([]);
 });
 
+test('monthly maintenance routine keeps preview, Calendar, completion, and ICS on one source cadence', async ({ page }) => {
+  test.setTimeout(90_000);
+  const evidenceDir = process.env.FLOWME_P25_CANONICAL_PROJECTION_EVIDENCE_DIR;
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  if (evidenceDir) {
+    fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
+    fs.mkdirSync(`${evidenceDir}/downloads`, { recursive: true });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/f/washer-tub-clean-monthly');
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByTestId('public-flow-anchor-input').fill('2026-07-20');
+
+  const preview = page.getByTestId('maintenance-routine-next-card');
+  await expect(preview.getByRole('checkbox')).toHaveCount(4);
+  for (const label of ['7월 20일', '8월 20일', '9월 20일', '10월 20일']) {
+    await expect(preview).toContainText(label);
+  }
+  await expect(preview).toContainText('매월 1회');
+  if (evidenceDir) {
+    await preview.screenshot({ path: `${evidenceDir}/screenshots/01-washer-monthly-preview-mobile.png` });
+  }
+
+  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' }).click();
+  await expect.poll(() => page.evaluate(() => Boolean(
+    window.localStorage.getItem('flow:saved:washer-tub-clean-monthly'),
+  ))).toBe(true);
+
+  await page.goto('/calendar');
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  const julyCell = page.locator('.fc-daygrid-day[data-date="2026-07-20"]');
+  await expect(julyCell.getByTestId('my-flow-routine-icon')).toHaveCount(1);
+  await julyCell.getByTestId('my-flow-calendar-date-button').click();
+
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  const row = selectedDay
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: '통세척 코스 돌리고 문 열어 건조하기' });
+  await expect(row).toHaveCount(1);
+  const occurrenceId = await row.getAttribute('data-occurrence-id');
+  expect(occurrenceId).toBeTruthy();
+  const complete = row.getByRole('checkbox', { name: /이번 항목 완료$/ });
+  await complete.click();
+  await expect(row).toHaveAttribute('data-occurrence-state', 'done');
+  await row.getByRole('checkbox', { name: /이번 항목 완료 취소$/ }).click();
+  await expect(row).toHaveAttribute('data-occurrence-id', occurrenceId!);
+  await expect(row).toHaveAttribute('data-occurrence-state', 'reopened');
+
+  await row.getByRole('button').first().click();
+  const detail = selectedDay.getByTestId('my-flow-item-detail');
+  await expect(detail).toHaveAttribute('data-occurrence-id', occurrenceId!);
+  const tools = await openMyFlowDetailTools(detail);
+  const downloadPromise = page.waitForEvent('download');
+  await tools.getByTestId('my-flow-detail-download-ics').click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  expect(downloadPath).toBeTruthy();
+  const unfoldedIcs = fs.readFileSync(downloadPath!, 'utf8').replaceAll('\r\n ', '');
+  expect((unfoldedIcs.match(/BEGIN:VEVENT/g) ?? [])).toHaveLength(1);
+  expect(unfoldedIcs).toContain('DTSTART;VALUE=DATE:20260720');
+  expect(unfoldedIcs).toContain('RRULE:FREQ=MONTHLY;BYMONTHDAY=20');
+  expect(unfoldedIcs).not.toMatch(/source-backed|sourceTrace|\bStep\b|\bItem\b/iu);
+  if (evidenceDir) {
+    await download.saveAs(`${evidenceDir}/downloads/washer-monthly-routine.ics`);
+  }
+  await detail.getByRole('button', { name: '닫기', exact: true }).click();
+  if (evidenceDir) {
+    await selectedDay.screenshot({ path: `${evidenceDir}/screenshots/02-washer-monthly-agenda-mobile.png` });
+  }
+
+  await page.getByRole('button', { name: '다음 달' }).click();
+  await expect(page.getByRole('heading', { name: '2026년 8월' })).toBeVisible();
+  await expect(page.locator('.fc-daygrid-day[data-date="2026-08-20"] [data-testid="my-flow-routine-icon"]')).toHaveCount(1);
+  await expectNoHorizontalOverflow(page);
+
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await page.screenshot({ path: `${evidenceDir}/screenshots/03-washer-monthly-calendar-wide.png`, fullPage: true });
+  }
+  expect(consoleErrors).toEqual([]);
+});
+
 test('current medium-risk sources separate publication, revision, recheck, and executable scope', async ({ page }) => {
   const evidenceDir = process.env.FLOWME_MEDIUM_SOURCE_EVIDENCE_DIR;
   if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });

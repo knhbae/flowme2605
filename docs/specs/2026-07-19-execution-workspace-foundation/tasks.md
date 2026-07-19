@@ -29,6 +29,22 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 - [ ] Add memo split preview and remove count-filling generic items.
 - [ ] Verify representative Flow counts and dates across every destination.
 
+### P25-01A - Canonical routine projection
+
+- [x] Share source cadence across public preview, workbench, My Flow Calendar, and ICS.
+- [x] Preserve daily, weekly, and monthly cadence without a generic weekly fallback.
+- [x] Refuse ambiguous natural cadence instead of inventing future dates.
+- [x] Preserve source data, occurrence execution state, and stable portable identity.
+- [x] Add monthly/weekly fixtures, browser journeys, screenshots, and ICS evidence.
+
+### P25-01B - Memo split and count integrity
+
+- [ ] Inventory memo draft preview, saved bundle, whole Flow, My Flow, and export counts.
+- [ ] Remove generic count-filling items and error/status sentences from executable titles.
+- [ ] Add an explicit split preview and acceptance boundary before save.
+- [ ] Make accepted item identities and counts survive save, reload, and every list export.
+- [ ] Verify representative memo, URL miss, source-backed, and routine counts without starting P25-02 UI restructuring.
+
 ## P25-02 - Whole Flow workspace
 
 - [ ] Build shared responsive workspace primitives.

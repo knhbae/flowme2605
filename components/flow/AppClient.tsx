@@ -22,6 +22,7 @@ import {
   type CalendarUnscheduledTrayItem,
 } from '@/lib/flow/calendar-unscheduled-tray';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
+import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
@@ -5380,34 +5381,54 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const generatedRoutineRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) => {
     if (flow.bundle.flow.structure_type !== 'routine' || !flow.anchor) return [];
     if (baseCalendarRows.some((row) => row.flow.progress.slug === flow.progress.slug)) return [];
-    const nextRow = getSavedFlowNextRow(flow);
-    if (!nextRow) return [];
+    const carrierRow = flow.rows[0];
+    if (!carrierRow) return [];
     const routineWeekdays = getMyFlowRoutineWeekdays(flow);
-    const routineEndDate = myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate;
-    return expandRoutineOccurrences({
-      startDate: flow.anchor,
-      repeatLabel: flow.bundle.repeatRules?.[0] ?? '',
-      weekdays: routineWeekdays,
-      weeks: 4,
-    }).filter((occurrence) => !routineEndDate || occurrence.date <= routineEndDate).map((occurrence) => {
-      const originalDate = occurrence.date;
-      const dateResolution = resolveMyFlowEffectiveDate({
-        flowSlug: flow.progress.slug,
-        itemId: nextRow.id,
-        sourceDate: originalDate,
-        dateOverrides: myFlowDateOverrides,
-        personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, nextRow.id),
-      });
-      return {
-        ...nextRow,
-        originalDate,
-        calendarKey: dateResolution.overrideKey,
-        date: dateResolution.date,
-        timing: nextRow.timing ?? `${occurrence.sessionIndex}회차 · ${occurrence.weekday}요일`,
-        section: nextRow.section || '루틴',
+    const executionRecords = getFlowOccurrenceExecutionRecords(
+      flow.progress.slug,
+      myFlowOccurrenceExecutionRecords,
+    );
+    return [occurrenceVisibleRange, occurrenceExecutionRange]
+      .flatMap((range) => buildEffectiveRoutineProjection({
+        bundle: flow.bundle,
+        identityNamespace: flow.progress.slug,
+        rows: [{ ...carrierRow, date: flow.anchor }],
+        startDate: flow.anchor,
+        selectedWeekdays: routineWeekdays,
+        range,
+        executionRecords,
+        resolveOccurrenceDate: ({ itemId, originalDate }) => {
+          const dateResolution = resolveMyFlowEffectiveDate({
+            flowSlug: flow.progress.slug,
+            itemId,
+            sourceDate: originalDate,
+            dateOverrides: myFlowDateOverrides,
+            personalCopyDateOverride: getMyFlowPersonalCopyStepDateOverride(flow, itemId),
+          });
+          return {
+            date: dateResolution.date,
+            overrideKey: dateResolution.overrideKey,
+          };
+        },
+      }).rows)
+      .reduce<MyFlowRow[]>((rows, row) => {
+        const key = row.structuralOccurrenceId ?? `${row.id}:${row.date ?? 'none'}`;
+        if (!rows.some((entry) => (entry.structuralOccurrenceId ?? `${entry.id}:${entry.date ?? 'none'}`) === key)) {
+          rows.push(row);
+        }
+        return rows;
+      }, [])
+      .filter((row) => row.date)
+      .map((row) => ({
+        ...row,
+        originalDate: row.structuralOccurrenceOriginalDate ?? row.date ?? '',
+        calendarKey:
+          row.structuralOccurrenceDateOverrideKey ??
+          `${flow.progress.slug}::occurrence::${row.structuralOccurrenceId ?? row.id}`,
+        timing: row.timing,
+        section: row.section || '루틴',
         flow,
-      };
-    });
+      }));
   });
   const calendarRows = [...baseCalendarRows, ...manuallyScheduledRows, ...generatedRoutineRows].sort((a, b) => {
     const dateOrder = (a.date ?? '').localeCompare(b.date ?? '');
@@ -15929,6 +15950,31 @@ type CalendarEntry = ScheduleEntry & {
   dayIndex: number;
 };
 
+function getEffectiveRoutinePreviewRows(
+  bundle: FlowBundle,
+  startDate: string,
+  selectedWeekdays: string[],
+  requestedLimit?: number,
+) {
+  const carrier = bundle.items.slice().sort((left, right) => left.order - right.order)[0];
+  if (!carrier || !startDate) return [];
+  const projection = buildEffectiveRoutineProjection({
+    bundle,
+    identityNamespace: bundle.flow.slug,
+    rows: [{ id: carrier.id, date: startDate, title: toContentDisplayTitle(bundle.flow.title) }],
+    startDate,
+    selectedWeekdays,
+    range: {
+      start: startDate,
+      end: formatDate(addDays(new Date(`${startDate}T00:00:00`), 370)),
+    },
+  });
+  const series = projection.seriesByItemId[carrier.id];
+  const frequency = series?.revisions[0]?.rule.frequency;
+  const limit = requestedLimit ?? (frequency === 'monthly' ? 4 : 12);
+  return projection.connected ? projection.rows.slice(0, limit) : [];
+}
+
 function occurrenceCheckId(id: string, date: string): string {
   return `${id}__${date}`;
 }
@@ -16200,12 +16246,18 @@ function TopExecutionPreview({
     const repeatLabel = bundle.repeatRules?.[0] ?? '주 3회';
     const selectedWeekdays = getRoutineWeekdayLabels(repeatLabel, weekdays);
     const startDate = anchor || formatLocalDate(nextMonday(new Date()));
-    const occurrences = expandRoutineOccurrences({
-      startDate,
-      repeatLabel,
-      weekdays: selectedWeekdays,
-      weeks: 2,
-    }).slice(0, 6);
+    const occurrences = model.uxType === 'routine'
+      ? getEffectiveRoutinePreviewRows(bundle, startDate, selectedWeekdays, 6).map((row, index) => ({
+          date: row.date ?? '',
+          weekday: row.date ? ['일', '월', '화', '수', '목', '금', '토'][new Date(`${row.date}T00:00:00`).getDay()] : '',
+          sessionIndex: index + 1,
+        }))
+      : expandRoutineOccurrences({
+          startDate,
+          repeatLabel,
+          weekdays: selectedWeekdays,
+          weeks: 2,
+        }).slice(0, 6);
     const firstSection = bundle.sections[0];
     const sessionItems = bundle.items.filter((item) => item.section_id === firstSection?.id).slice(0, 5);
 
@@ -16214,7 +16266,9 @@ function TopExecutionPreview({
         <div className="rounded-lg border border-gray-200 bg-white p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm font-semibold text-blue-700">반복 달력 미리보기</p>
-            <span className="text-xs font-semibold text-gray-500">{selectedWeekdays.join(' · ')} 반복</span>
+            <span className="text-xs font-semibold text-gray-500">
+              {model.uxType === 'routine' ? repeatLabel : `${selectedWeekdays.join(' · ')} 반복`}
+            </span>
           </div>
           <div className="mt-3 grid gap-2 sm:grid-cols-3">
             {occurrences.map((occurrence) => (
@@ -16224,6 +16278,9 @@ function TopExecutionPreview({
                 <p className="text-sm text-gray-600">{occurrence.date.slice(5)}</p>
               </div>
             ))}
+            {occurrences.length === 0 ? (
+              <p className="sm:col-span-3 text-sm text-gray-600">다음 실행일을 직접 정해주세요.</p>
+            ) : null}
           </div>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -16469,12 +16526,10 @@ function RoutineMonthRenderer({
 
   const repeatLabel = bundle.repeatRules?.[0] ?? '주 3회';
   const selectedWeekdays = getRoutineWeekdayLabels(repeatLabel, weekdays);
-  const occurrences = expandRoutineOccurrences({
-    startDate: anchor,
-    repeatLabel,
-    weekdays: selectedWeekdays,
-    weeks: 4,
-  });
+  const occurrences = getEffectiveRoutinePreviewRows(bundle, anchor, selectedWeekdays).map((row, index) => ({
+    date: row.date ?? '',
+    sessionIndex: index + 1,
+  }));
   const months = Array.from(new Set(occurrences.map((occurrence) => monthKey(occurrence.date)))).sort();
   const sessionSummary = bundle.sections
     .map((section) => {
@@ -16482,6 +16537,14 @@ function RoutineMonthRenderer({
       return count ? `${section.title} ${count}개` : section.title;
     })
     .slice(0, 2);
+
+  if (occurrences.length === 0) {
+    return (
+      <section className="rounded-lg border border-gray-200 bg-white p-5 text-sm text-gray-600">
+        다음 실행일을 직접 정해주세요.
+      </section>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -16492,7 +16555,7 @@ function RoutineMonthRenderer({
               <h2 className="text-xl font-semibold">{month}</h2>
               <p className="mt-1 text-sm font-semibold text-blue-700">루틴 회차</p>
             </div>
-            <p className="text-sm font-semibold text-gray-600">{selectedWeekdays.join(' · ')} 반복</p>
+            <p className="text-sm font-semibold text-gray-600">{repeatLabel}</p>
           </div>
           <div className="mt-4 overflow-x-auto">
             <div className="grid min-w-[760px] grid-cols-7 gap-2">

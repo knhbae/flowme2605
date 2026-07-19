@@ -88,8 +88,21 @@ function formatTimestamp(value?: string): string {
   return date.toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
 }
 
+function hashPortableIdentity(value: string): string {
+  let hash = 2_166_136_261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16_777_619);
+  }
+  return (hash >>> 0).toString(36);
+}
+
 function toUid(value: string): string {
-  return `${clean(value).replaceAll(/[^a-zA-Z0-9._:%-]+/g, '-') || 'calendar-event'}@flowme.local`;
+  const normalized = clean(value);
+  const portableIdentity = normalized.startsWith('saved-routine:')
+    ? `saved-routine-${hashPortableIdentity(normalized)}`
+    : normalized;
+  return `${portableIdentity.replaceAll(/[^a-zA-Z0-9._:%-]+/g, '-') || 'calendar-event'}@flowme.local`;
 }
 
 function parseOccurrenceSlot(occurrenceId: string): RecurrenceSlot | undefined {

@@ -44,6 +44,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Completed Or Closed
 
+- [2026-07-19 P25-01A Canonical Effective Routine Projection](./2026-07-19-canonical-effective-routine-projection/spec.md) - completed correctness slice under the active P25 gate; public preview, saved Calendar, and ICS now share source-faithful routine cadence, while P25-01B memo/count integrity remains next.
 - [2026-07-18 Save, Personalize, Execute Journey Reset](./2026-07-18-save-personalize-execute-journey-reset/spec.md) - P24-J0~J5 implemented and deployed the artifact-first baseline; owner/Codex/Claude feedback reopened the broader execution-workspace frame under P25.
 - [2026-07-14 P24 Execution Trust and UX Simplification](./2026-07-14-p24-execution-trust-ux-simplification/spec.md) - implementation and operations prep are complete; its 5 participants x 3 sessions protocol remains deferred and is not the active gate.
 - [2026-07-14 URL-to-FLOW Prompt Lab v1](./2026-07-14-url-to-flow-prompt-lab/spec.md) - completed controlled prompt-contract experiment; real provider, latency, cost, and observed usability remain unproven.

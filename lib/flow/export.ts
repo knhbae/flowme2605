@@ -1,7 +1,9 @@
 import { addDays, formatDate, formatLocalDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
 import { getComparisonConfig, getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
+import { buildEffectiveRoutineProjection } from './effective-routine-projection';
 import { foldIcsContentLine } from './ics';
+import { buildPersonalStructuralRecurrenceIcs } from './personal-structural-recurrence-ics';
 import { timingLabel } from './parser';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
@@ -791,6 +793,32 @@ export function buildIcsCalendar(
 
 export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: string[] = []): string {
   const startDate = anchor || formatLocalDate(new Date());
+  const carrierItem = bundle.items.slice().sort((left, right) => left.order - right.order)[0];
+  if (carrierItem && bundle.flow.structure_type === 'routine') {
+    const projection = buildEffectiveRoutineProjection({
+      bundle,
+      identityNamespace: bundle.flow.slug,
+      rows: [{ id: carrierItem.id, date: startDate }],
+      startDate,
+      selectedWeekdays: weekdays,
+      range: {
+        start: startDate,
+        end: formatDate(addDays(new Date(`${startDate}T00:00:00`), 370)),
+      },
+    });
+    const series = projection.seriesByItemId[carrierItem.id];
+    if (projection.connected && series) {
+      return buildPersonalStructuralRecurrenceIcs({
+        identityNamespace: bundle.flow.slug,
+        itemId: carrierItem.id,
+        title: bundle.flow.title,
+        description: buildIcsDescription(bundle),
+        date: startDate,
+        repeat: series,
+        sourceUrl: bundle.flow.source_url,
+      }).ics;
+    }
+  }
   const byday = weekdays.map((day) => icsWeekdays[day]).filter(Boolean).join(',');
   const lines = [
     'BEGIN:VCALENDAR',

@@ -1,0 +1,59 @@
+{
+  "package": "P25-01A canonical effective routine projection",
+  "date": "2026-07-19",
+  "evidenceKind": [
+    "current_unit_test",
+    "current_build",
+    "current_browser_automation",
+    "current_visual_inspection"
+  ],
+  "observedUserSessionCount": 0,
+  "baselineCommit": "a21e6674a891f9037bb4ed6d1988b5a5a41b5bdc",
+  "routes": [
+    "/f/washer-tub-clean-monthly",
+    "/calendar",
+    "/f/curated-allblanc-morning-workout"
+  ],
+  "markers": {
+    "canonicalRoutineProjectionReady": true,
+    "canonicalRoutineProjectionConnectedConsumers": [
+      "public_preview",
+      "maintenance_workbench",
+      "my_flow_calendar",
+      "calendar_ics"
+    ],
+    "monthlySourceCadencePreserved": true,
+    "weeklySourceCadencePreserved": true,
+    "dailySourceCadencePreserved": true,
+    "inventedWeeklyFallbackCount": 0,
+    "ambiguousNaturalCadenceInventedOccurrenceCount": 0,
+    "washerPreviewOccurrenceDates": [
+      "2026-07-20",
+      "2026-08-20",
+      "2026-09-20",
+      "2026-10-20"
+    ],
+    "washerCalendarOccurrenceCountOnSelectedDate": 1,
+    "washerIcsEventCount": 1,
+    "washerIcsRule": "FREQ=MONTHLY;BYMONTHDAY=20",
+    "portableUidStableAfterAnchorEdit": true,
+    "portableUidRawSourceItemIdHitCount": 0,
+    "completionStateChangedOccurrenceMembershipCount": 0,
+    "completionReopenPreservedOccurrenceIdentity": true,
+    "sourceMutationCount": 0,
+    "sourceBackedWeeklyBehaviorChanged": false,
+    "routineDuplicateOccurrenceCount": 0,
+    "routineDuplicateIcsEventCount": 0,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "unitTestPassCount": 521,
+    "unitTestFailCount": 0,
+    "targetedPlaywrightPassCount": 2,
+    "targetedPlaywrightFailCount": 0,
+    "productionBuildPassed": true,
+    "appRuntimeChanged": true,
+    "wholeFlowWorkspaceChanged": false,
+    "observedUserValidated": false
+  }
+}

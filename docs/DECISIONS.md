@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Published routine cadence is canonical and ambiguous cadence does not invent dates
+
+**Decision:** Public preview, source-specific workbench, saved My Flow Calendar, and ICS must consume one effective routine projection. A valid item-level recurrence rule has priority; otherwise one stable carrier may represent an unambiguous Flow-level daily, weekly, or monthly cadence. User-selected weekdays refine a weekly cadence only and cannot turn daily or monthly source cadence into a weekly fallback. Ambiguous natural ranges such as `7~10일마다` return a warning and no invented future occurrence. Source items and occurrence execution records remain unchanged. Portable saved-routine UIDs derive from stable series identity without exposing raw source item IDs.
+
+**Reason:** Independent recurrence generators allowed the same source to appear monthly before save, weekly after save, and one-off in export. That destroys trust in every later visual redesign. Rejecting ambiguity is safer than presenting precise dates that the source did not provide.
+
+**Applies to:** public routine preview, maintenance workbench, My Flow Calendar, source-backed occurrence completion/reopen, Calendar/ICS export, recurrence fixtures, and P25 parity evidence.
+
+**Reopen when:** a reviewed source has a condition-based cadence that requires a first-class state model, multiple independent repeating items in one Flow need separate series export, or a migration plan is required for already-imported portable UIDs.
+
+**Related docs:** [P25-01A spec](./specs/2026-07-19-canonical-effective-routine-projection/spec.md), [P25-01A evidence](./content-audit/2026-07-19-p25-01a-canonical-projection-evidence/README.md)
+
 ### 2026-07-19 - P25 centers the complete personal Flow and treats dates as optional scheduling
 
 **Decision:** Treat the P24 deployment as an implementation baseline, not a finished UX. P25 must center the complete personal Flow as the saved object; My Flow `지금`, Calendar, completion history, and exports are projections of that object. A task without a date remains actionable and exportable as an Anytime task; Calendar only places dated work on its grid and exposes an explicit scheduling queue for undated work. Personal changes use overlays and never mutate published source. Common item adjustment shows title, date/Anytime state, and note first; time, duration, recurrence, source detail, and batch operations are progressively disclosed. Before runtime workspace implementation, P25-00B compares mobile/wide prototypes and records owner decisions. Before visual recurrence work, P25-01 makes every consumer use one effective item/series/occurrence projection.

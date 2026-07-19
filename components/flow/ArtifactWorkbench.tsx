@@ -14,6 +14,7 @@ import {
 } from '@/lib/flow/artifact-fields';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
@@ -1894,6 +1895,7 @@ function RoutineWorkbench({
       <MaintenanceRoutineWorkbench
         bundle={bundle}
         anchor={anchor}
+        weekdays={weekdays}
         checks={checks}
         workbenchState={workbenchState}
         onWorkbenchChange={onWorkbenchChange}
@@ -2157,12 +2159,6 @@ function nextMonday(date: Date): Date {
   return next;
 }
 
-function addMonths(date: Date, months: number): Date {
-  const next = new Date(date);
-  next.setMonth(next.getMonth() + months);
-  return next;
-}
-
 function expandRoutineOccurrences(startDate: string, weekdays: string[], weeks: number): RoutineOccurrence[] {
   const start = new Date(startDate);
   const days = new Set(weekdays);
@@ -2365,6 +2361,7 @@ function SpreadsheetWorkbench({
 function MaintenanceRoutineWorkbench({
   bundle,
   anchor,
+  weekdays,
   checks,
   workbenchState,
   onWorkbenchChange,
@@ -2373,6 +2370,7 @@ function MaintenanceRoutineWorkbench({
 }: {
   bundle: FlowBundle;
   anchor: string;
+  weekdays: string[];
   checks: Record<string, boolean>;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
@@ -2398,12 +2396,24 @@ function MaintenanceRoutineWorkbench({
     : isDrainFilter
       ? '예: 5C 표시 없음 / 잔수 제거 완료 / 부드러운 솔로 청소 / 재조립 후 누수 없음'
       : '예: 겉흙은 말랐고 잎 처짐 없음, 다음 확인일에 화분 방향만 돌리기';
-  const occurrenceDates = isTubCleaning
-    ? [0, 1, 2, 3].map((months) => formatDate(addMonths(new Date(startDate), months)))
-    : isDrainFilter
-      ? [0, 7, 14, 21].map((days) => formatDate(addDays(new Date(startDate), days)))
-      : [0, 10, 20, 30].map((days) => formatDate(addDays(new Date(startDate), days)));
   const items = getExecutableItems(bundle);
+  const carrierItem = items[0] ?? bundle.items.slice().sort((left, right) => left.order - right.order)[0];
+  const recurrenceProjection = carrierItem
+    ? buildEffectiveRoutineProjection({
+        bundle,
+        identityNamespace: bundle.flow.slug,
+        rows: [{ id: carrierItem.id, date: startDate }],
+        startDate,
+        selectedWeekdays: weekdays,
+        range: {
+          start: startDate,
+          end: formatDate(addDays(new Date(`${startDate}T00:00:00`), 370)),
+        },
+      })
+    : undefined;
+  const occurrenceDates = recurrenceProjection?.connected
+    ? recurrenceProjection.rows.flatMap((row) => row.date ? [row.date] : []).slice(0, 4)
+    : [startDate];
   const maintenanceResult = workbenchState.memoCards.maintenanceResult ?? '';
   const maintenanceResultOptions = ['물주기 완료', '오늘은 보류', '관찰 메모'];
   const sourceBridge = isTubCleaning
