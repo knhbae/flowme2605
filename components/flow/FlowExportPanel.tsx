@@ -47,15 +47,23 @@ export function FlowExportPanel({
   onSelectedKeysChange,
   onExport,
 }: FlowExportPanelProps) {
-  const plan = buildFlowExportScopePlan({
-    scope,
+  const flowPlan = buildFlowExportScopePlan({
+    scope: 'flow',
+    items,
+    flowTitle,
+  });
+  const selectedPlan = buildFlowExportScopePlan({
+    scope: 'selected',
     items,
     selectedKeys,
     flowTitle,
   });
-  const selectableItems = items.filter((item) => !item.excluded && !item.tombstoned);
-  const validSelectedCount = selectableItems.filter((item) => selectedKeys.includes(item.key)).length;
-  const scopeCount = scope === 'flow' ? plan.includedCount : validSelectedCount;
+  const plan = scope === 'flow' ? flowPlan : selectedPlan;
+  const selectableItems = items.filter(
+    (item) => !item.excluded && !item.tombstoned && item.listEligible !== false,
+  );
+  const selectedCount = selectedPlan.includedCount;
+  const scopeLabel = scope === 'flow' ? 'Flow 전체' : '직접 선택';
 
   return (
     <section
@@ -74,7 +82,12 @@ export function FlowExportPanel({
       </button>
 
       {open ? (
-        <div data-testid="my-flow-export-panel" className="mt-3 border-t border-slate-100 pt-3">
+        <div
+          data-testid="my-flow-export-panel"
+          data-export-scope={scope}
+          data-export-included-count={plan.includedCount}
+          className="mt-3 border-t border-slate-100 pt-3"
+        >
           <div className="flex items-center justify-between gap-3">
             <h4 className="text-sm font-bold text-slate-950">무엇을 가져갈까요?</h4>
             <button
@@ -101,7 +114,7 @@ export function FlowExportPanel({
               className={`min-h-10 rounded-md px-3 py-2 text-sm font-bold ${scope === 'flow' ? 'bg-white text-blue-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               onClick={() => onScopeChange('flow')}
             >
-              전체 Flow · {items.length}개
+              Flow 전체 · {flowPlan.includedCount}개
             </button>
             <button
               type="button"
@@ -110,7 +123,7 @@ export function FlowExportPanel({
               className={`min-h-10 rounded-md px-3 py-2 text-sm font-bold ${scope === 'selected' ? 'bg-white text-blue-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               onClick={() => onScopeChange('selected')}
             >
-              선택한 항목 · {validSelectedCount}개
+              직접 선택 · {selectedCount}개
             </button>
           </div>
 
@@ -130,7 +143,7 @@ export function FlowExportPanel({
                 }}
                 onToggleAll={() => {
                   onSelectedKeysChange(
-                    validSelectedCount === selectableItems.length
+                    selectedCount === selectableItems.length
                       ? []
                       : selectableItems.map((item) => item.key),
                   );
@@ -142,7 +155,7 @@ export function FlowExportPanel({
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             <p data-testid="my-flow-export-scope-summary" className="text-sm font-bold text-slate-900">
-              {scope === 'flow' ? '전체 Flow' : '선택한 항목'} · {scopeCount}개
+              {scopeLabel} · {plan.includedCount}개
             </p>
             <p className="text-xs font-semibold text-slate-500">
               캘린더 {plan.countByDestination.calendar}개
@@ -150,7 +163,7 @@ export function FlowExportPanel({
           </div>
 
           <div className="mt-3">
-            <p className="text-xs font-semibold text-slate-500">형식 선택</p>
+            <p className="text-xs font-semibold text-slate-500">형식</p>
             <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {(['calendar', 'checklist', 'sheet', 'memo'] as const).map((destination) => {
                 const count = plan.countByDestination[destination];
@@ -166,6 +179,7 @@ export function FlowExportPanel({
                     }
                     disabled={disabled}
                     aria-label={`${destinationCopy[destination].label} ${count}개`}
+                    data-export-count={count}
                     className="min-h-12 rounded-md border border-slate-200 bg-white px-3 py-2 text-left hover:border-blue-300 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
                     onClick={() => onExport(destination, plan)}
                   >

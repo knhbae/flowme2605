@@ -44,6 +44,7 @@ import {
   type MyFlowPortableStepExportInput,
 } from '@/lib/flow/my-flow-step-export';
 import {
+  buildFlowExportScopePlan,
   type FlowExportDestination,
   type FlowExportScopePlan,
 } from '@/lib/flow/export-scope';
@@ -9606,6 +9607,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const canDownloadPortableCalendar =
       canBuildMyFlowStepIcs(portableExportInput) &&
       (row.structuralCalendarIcsEligible ?? true);
+    const currentItemExportPlan = buildFlowExportScopePlan({
+      scope: 'item',
+      items: [{
+        key: portableExportStableStepId,
+        title: editorDraft.title,
+        calendarEligible: canDownloadPortableCalendar,
+      }],
+      currentItemKey: portableExportStableStepId,
+      flowTitle: portableExportInput.flowTitle,
+    });
+    const currentItemExportCount = currentItemExportPlan.includedCount;
     const portableExportSummary = canDownloadPortableCalendar ? '메모 · 체크리스트 · 시트 행 · 캘린더' : '메모 · 체크리스트 · 시트 행 · 날짜 필요';
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
@@ -10711,8 +10723,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {shouldCollapsePortableExport ? (
-          <details data-testid="my-flow-detail-portable-export" className={isDetailEditing ? 'hidden' : 'mt-3 rounded-md bg-white px-3 py-3'}>
-            <summary className="cursor-pointer text-xs font-semibold text-slate-700">원문 · 이 항목 가져가기</summary>
+          <details
+            data-testid="my-flow-detail-portable-export"
+            data-export-scope="item"
+            data-export-included-count={currentItemExportCount}
+            className={isDetailEditing ? 'hidden' : 'mt-3 rounded-md bg-white px-3 py-3'}
+          >
+            <summary className="cursor-pointer text-xs font-semibold text-slate-700">
+              현재 항목 가져가기 · {currentItemExportCount}개
+            </summary>
             {primaryLink ? (
               <a
                 data-testid="my-flow-detail-source-link"
@@ -10725,7 +10744,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">이 항목 가져가기 · 1개</p>
+              <p className="text-xs font-semibold text-slate-700">형식</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {portableExportSummary}
               </span>
@@ -10742,7 +10761,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
-                {FLOW_EXPORT_LABELS.memoCopy}
+                {FLOW_EXPORT_LABELS.memoCopy} · {currentItemExportCount}개
               </button>
               <button
                 type="button"
@@ -10750,7 +10769,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepChecklistText(portableExportInput, portableExportKey)}
               >
-                체크리스트 복사
+                체크리스트 복사 · {currentItemExportCount}개
               </button>
               <button
                 type="button"
@@ -10758,7 +10777,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepSheetRow(portableExportInput, portableExportKey)}
               >
-                시트 행 복사
+                시트 행 복사 · {currentItemExportCount}개
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -10767,7 +10786,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
                   onClick={() => downloadMyFlowStepCalendar(portableExportInput, portableExportKey, `${row.flow.progress.slug}-${row.id}`)}
                 >
-                  {FLOW_EXPORT_LABELS.calendarFile}
+                  {FLOW_EXPORT_LABELS.calendarFile} · {currentItemExportPlan.countByDestination.calendar}개
                 </button>
               ) : (
                 <button
@@ -10776,7 +10795,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="cursor-not-allowed rounded-md bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-400"
                   disabled
                 >
-                  날짜 필요
+                  캘린더 파일 · 0개
                 </button>
               )}
               {myFlowStepCopiedKey === portableExportKey ? (
@@ -10788,9 +10807,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </div>
           </details>
         ) : (
-          <section data-testid="my-flow-detail-portable-export" className="mt-3 rounded-md bg-white px-3 py-3">
+          <section
+            data-testid="my-flow-detail-portable-export"
+            data-export-scope="item"
+            data-export-included-count={currentItemExportCount}
+            className="mt-3 rounded-md bg-white px-3 py-3"
+          >
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">이 항목 가져가기 · 1개</p>
+              <p className="text-xs font-semibold text-slate-700">현재 항목 가져가기 · {currentItemExportCount}개</p>
               <span className="text-[11px] font-semibold text-slate-500">
                 {portableExportSummary}
               </span>
@@ -10807,7 +10831,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
               >
-                {FLOW_EXPORT_LABELS.memoCopy}
+                {FLOW_EXPORT_LABELS.memoCopy} · {currentItemExportCount}개
               </button>
               <button
                 type="button"
@@ -10815,7 +10839,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepChecklistText(portableExportInput, portableExportKey)}
               >
-                체크리스트 복사
+                체크리스트 복사 · {currentItemExportCount}개
               </button>
               <button
                 type="button"
@@ -10823,7 +10847,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
                 onClick={() => copyMyFlowStepSheetRow(portableExportInput, portableExportKey)}
               >
-                시트 행 복사
+                시트 행 복사 · {currentItemExportCount}개
               </button>
               {canDownloadPortableCalendar ? (
                 <button
@@ -10832,7 +10856,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
                   onClick={() => downloadMyFlowStepCalendar(portableExportInput, portableExportKey, `${row.flow.progress.slug}-${row.id}`)}
                 >
-                  {FLOW_EXPORT_LABELS.calendarFile}
+                  {FLOW_EXPORT_LABELS.calendarFile} · {currentItemExportPlan.countByDestination.calendar}개
                 </button>
               ) : (
                 <button
@@ -10841,7 +10865,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   className="cursor-not-allowed rounded-md bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-400"
                   disabled
                 >
-                  날짜 필요
+                  캘린더 파일 · 0개
                 </button>
               )}
               {myFlowStepCopiedKey === portableExportKey ? (

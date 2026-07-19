@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-19 - Portable export chooses scope before format and counts the effective projection
+
+**Decision:** My Flow names three export scopes: `Flow 전체`, `직접 선택`, and `현재 항목`. Scope appears before format, and every visible count comes from `buildFlowExportScopePlan`: whole and selected list counts use effective included rows, current item resolves to one row, and each destination uses its own eligibility count. Undated rows remain valid for checklist, sheet, and memo but not Calendar/ICS. Completion and reopen do not change export membership; exclusion and tombstone do.
+
+**Reason:** Raw source length, checkbox count, and output count previously appeared beside one another without one source of truth. A user needs to predict exactly what will leave FlowMe before choosing calendar, checklist, sheet, or memo.
+
+**Applies to:** My Flow whole-Flow export, batch-selected export, item-detail portable export, personal drafts, source-backed personal copies, Calendar eligibility, filename scope suffixes, and P25-08 journey checks.
+
+**Reopen when:** observed users cannot distinguish `직접 선택` from structural inclusion, expect Calendar to contain undated rows, or need a cross-Flow export scope.
+
+**Related docs:** [P25 foundation plan](./specs/2026-07-19-execution-workspace-foundation/plan.md), [P25-05B evidence](./content-audit/2026-07-19-p25-05b-export-scope-count-evidence/README.md)
+
 ### 2026-07-19 - Completion belongs to one executable level and remains reversible after reload
 
 **Decision:** A normal executable task has one row checkbox. Completing it exposes an immediate `되돌리기`, while the persistent `완료` view keeps the same checkbox available after reload. A recurrence series definition has no completion control; a projected occurrence has exactly one `이번 회차 완료 체크`; internal checklist checks remain a separate `subcheck` level. A published routine definition may drill into its next concrete occurrence, but the definition row itself does not become a second completion target.

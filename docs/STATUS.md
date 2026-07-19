@@ -3,7 +3,7 @@
 **Last Updated:** 2026-07-19 (P25 internal UX foundation active; external observation deferred)
 **Status:** v0.1.0 RELEASED / P25 STRUCTURAL CORRECTION ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 through P25-04 and P25-05A completion/reopen are complete by current unit/browser evidence. Open P25-05B export scope/count parity next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
+**Primary Focus:** Run P25 as an internal execution-workspace correction. P25-01 through P25-05 are complete by current unit/browser evidence. Open P25-06/P25-07 public artifact and visual integration next; keep actual user validation explicitly open. Do not recruit or ask external users to observe the product. Automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25-05B export scope and exact-count parity; P24 remains the deployed production baseline |
+| Active product gate | P25-06/P25-07 public artifact and visual integration; P24 remains the deployed production baseline |
 | User action now | No participant action. The owner may still review the [P25-00B prototype](./content-audit/2026-07-19-p25-00b-core-workspace-prototype-decision/prototype.html), but the instruction to continue P25 authorizes the staged implementation baseline. |
-| AI action now | Make Flow 전체, 직접 선택, and 현재 항목 scope/count predictable before export format choice |
+| AI action now | Remove duplicated public artifact/copy, make preview inclusion explicit, and consolidate responsive visual vocabulary |
 | Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
+
+- 2026-07-19 P25-05B export scope and count parity: My Flow now presents `Flow 전체`, `직접 선택`, and `현재 항목` before format. All visible counts come from the canonical export plan; destination cards use destination eligibility, so undated tasks remain in list exports while Calendar counts only dated rows. Current evidence: unit `526 / 526`, production build, personal-draft and source-backed mobile/wide browser scenarios pass, count mismatch and completion-membership change are `0`, and observed-user sessions remain `0`. See [P25-05B evidence](./content-audit/2026-07-19-p25-05b-export-scope-count-evidence/README.md).
 
 - 2026-07-19 P25-05A completion and reopen: normal tasks now use one row checkbox, immediate feedback says `되돌리기`, and the persistent `완료` view reopens the same task after reload. Recurrence definitions expose no completion control, Calendar occurrences expose one `이번 회차 완료 체크`, and internal checklist checks are explicitly marked as subchecks. Current evidence: unit `525 / 525`, production build and targeted mobile/wide browser scenarios pass, completion/series/occurrence control counts are `1 / 0 / 1`, and observed-user sessions remain `0`. See [P25-05A evidence](./content-audit/2026-07-19-p25-05a-completion-reopen-evidence/README.md).
 

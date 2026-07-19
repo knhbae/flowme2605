@@ -73,8 +73,8 @@ Only the active slice belongs in an implementation PR. Later checkboxes are sequ
 
 - [x] Normalize completion/undo/persistent reopen.
 - [x] Separate series, occurrence, and internal checklist UI.
-- [ ] Put export scope before format.
-- [ ] Show exact counts and verify projection parity.
+- [x] Put export scope before format.
+- [x] Show exact counts and verify projection parity.
 
 ## P25-06/P25-07 - Public and visual integration
 

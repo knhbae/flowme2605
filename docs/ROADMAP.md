@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P25 execution-workspace structural correction<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P25-05B export scope and exact-count parity
+**Next Milestone:** P25-06/P25-07 public artifact and visual integration
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -40,7 +40,7 @@ Prototype gate: [P25-00B core workspace decision](./content-audit/2026-07-19-p25
 | P25-03A | Progressive single-item adjustment | Done by current browser evidence; common values remain visible and advanced schedule stays collapsed with a concise saved-value summary |
 | P25-03B | Selected-item batch adjustment | Done by current unit/browser evidence; temporary selection replaces completion, previews date impact, preserves overlays, preselects export scope, and permits removal only with recovery |
 | P25-04 | Anytime task model and Calendar placement queue | Done by current browser evidence; My Flow executes Anytime tasks and Calendar places selected tasks on today or a chosen date without duplicate completion controls |
-| P25-05 | Completion/reopen and export scope parity | P25-05A done: one occurrence/control, immediate undo, persistent reopen, and series/subcheck separation. P25-05B active: exact scope/count parity before format. |
+| P25-05 | Completion/reopen and export scope parity | Done by current unit/browser evidence: one occurrence/control, persistent reopen, scope before format, and canonical destination counts. |
 | P25-06/07 | Public artifact simplification and shared responsive visual language | Duplicate representation/copy/overflow/control variants reduced to zero targets |
 | P25-08 | Internal six-journey integration gate | Automated Blocking/High zero and owner readiness decision; no observed-user claim |
 
@@ -96,9 +96,9 @@ There is no active external-user gate. P24-J0~J5 remain the deployed baseline, w
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Now | AI | P25-05B export scope and exact counts | Reuse the canonical export plan for Flow 전체, 직접 선택, and 현재 항목 before format | Portable output has one predictable scope/count contract |
-| Completed | AI | P25-01~P25-04 correctness, whole-Flow workspace, personal adjustment, and Anytime placement | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
-| Then | AI + owner checkpoints | P25-06~P25-07 staged implementation | Close one product/data/browser gate per slice | Approved frame is implemented without source/run ownership drift |
+| Now | AI | P25-06/P25-07 public artifact and visual integration | Remove duplicate save-before representations/copy and consolidate responsive action vocabulary | Public preview is one artifact with explicit inclusion semantics and shared visual rules |
+| Completed | AI | P25-01~P25-05 correctness, whole-Flow workspace, personal adjustment, Anytime placement, completion, and export | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
+| Then | AI + owner checkpoint | P25-08 internal six-journey gate | Re-run current mobile/wide journeys after integration | Automated Blocking/High 0 and owner readiness decision package exist |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
@@ -119,7 +119,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-The immediate implementation gate is P25-05B: completion/reopen is closed by P25-05A, so make export scope/count predictable before public and visual integration. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated. Do not open them as parallel product tracks.
+The immediate implementation gate is P25-06/P25-07: P25-05 now has one reversible completion contract and one canonical scope/count export contract, so simplify public save-before and consolidate responsive visual language before the P25-08 integration gate. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated. Do not open them as parallel product tracks.
 
 ## Gated Backlog
 

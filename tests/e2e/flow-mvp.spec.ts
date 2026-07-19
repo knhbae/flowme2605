@@ -3894,24 +3894,22 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
-  await expect(page.getByTestId('my-flow-now-section')).toContainText('먼저 할 일');
-  await expectTextOccurrenceAtMost(page.getByTestId('my-flow-now-section'), '먼저 할 일', 1);
-  await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('1. 소인수분해');
-  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
-  await expect(page.getByTestId('my-flow-now-section').locator('h3')).not.toContainText('지난 할 일');
+  const anytimeSection = page.getByTestId('my-flow-anytime-section');
+  await expect(anytimeSection).toContainText('언제든 할 일');
+  await anytimeSection.getByRole('button', { name: /5\. 기본도형 열기/ }).click();
   const flowDetail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
   await expect(flowDetail).toBeVisible();
   await expect(flowDetail).not.toContainText('Step 실행');
   await expect(flowDetail).not.toContainText('Item');
   await expect(flowDetail).not.toContainText('확인할 항목');
   await expect(flowDetail).toContainText(/확인 항목|개념 항목/);
-  await expectFirstContinuationTitleNotRepeated(page.getByTestId('my-flow-now-section'));
+  await expect(anytimeSection.getByTestId('my-flow-inline-detail')).toBeVisible();
   const itemChecklist = flowDetail.getByTestId('my-flow-item-checklist');
-  await expect(itemChecklist).toContainText('거듭제곱');
+  await expect(itemChecklist).toContainText('점, 선, 면, 직선, 반직선, 선분');
   await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정');
-  await expect(flowDetail.getByTestId('my-flow-detail-portable-export').locator('summary')).toContainText('원문 · 이 항목 가져가기');
-  await itemChecklist.getByLabel('거듭제곱').check();
-  await expect(flowDetail.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/8');
+  await expect(flowDetail.getByTestId('my-flow-detail-portable-export').locator('summary')).toContainText('현재 항목 가져가기 · 1개');
+  await itemChecklist.getByLabel('점, 선, 면, 직선, 반직선, 선분').check();
+  await expect(flowDetail.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/15');
 });
 
 test('source-backed moving map saves one dated timeline into My Flow calendar', async ({ page }) => {

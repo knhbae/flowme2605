@@ -407,7 +407,13 @@ test.describe('P24 execution trust regressions', () => {
     await expect(exportPanel.getByTestId('personal-draft-list-export-toggle')).toHaveText('가져가기');
     await exportPanel.getByTestId('personal-draft-list-export-toggle').click();
     await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toHaveAttribute('aria-pressed', 'true');
-    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('전체 Flow · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toHaveText('Flow 전체 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('Flow 전체 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-panel')).toHaveAttribute('data-export-included-count', '2');
+    await expect(exportPanel.getByTestId('my-flow-export-calendar')).toHaveAttribute('data-export-count', '1');
+    await expect(exportPanel.getByTestId('personal-draft-copy-checklist')).toHaveAttribute('data-export-count', '2');
+    await expect(exportPanel.getByTestId('personal-draft-copy-sheet')).toHaveAttribute('data-export-count', '2');
+    await expect(exportPanel.getByTestId('personal-draft-copy-memo')).toHaveAttribute('data-export-count', '2');
     await exportPanel.getByTestId('personal-draft-copy-memo').click();
     const copiedMemo = await page.evaluate(() => navigator.clipboard.readText());
     expect(copiedMemo).toContain('할 일 2개');
@@ -419,7 +425,7 @@ test.describe('P24 execution trust regressions', () => {
     await exportPanel.getByTestId('my-flow-export-scope-selected').click();
     await exportPanel.getByRole('checkbox', { name: '이사 업체 견적 비교하기 가져갈 항목으로 선택' }).check();
     await exportPanel.getByRole('checkbox', { name: '주소 변경 대상을 확인하기 가져갈 항목으로 선택' }).check();
-    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('선택한 항목 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('직접 선택 · 2개');
     await expect(exportPanel.getByTestId('my-flow-export-calendar')).toHaveAccessibleName('캘린더 파일 1개');
     const calendarDownloadPromise = page.waitForEvent('download');
     await exportPanel.getByTestId('my-flow-export-calendar').click();
@@ -531,7 +537,9 @@ test.describe('P24 execution trust regressions', () => {
     await expect(exportSurface.getByTestId('my-flow-export-entry')).toHaveText('가져가기');
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveAttribute('aria-pressed', 'true');
-    await expect(exportSurface.getByTestId('my-flow-export-scope-summary')).toContainText('전체 Flow');
+    await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveText('Flow 전체 · 5개');
+    await expect(exportSurface.getByTestId('my-flow-export-scope-summary')).toHaveText('Flow 전체 · 5개');
+    await expect(exportSurface.getByTestId('my-flow-export-panel')).toHaveAttribute('data-export-included-count', '5');
     await expect(exportSurface.getByTestId('my-flow-export-checklist')).toBeEnabled();
 
     await exportSurface.getByTestId('my-flow-export-scope-selected').click();
@@ -542,7 +550,11 @@ test.describe('P24 execution trust regressions', () => {
     );
     await choices.nth(0).getByRole('checkbox').check();
     await choices.nth(1).getByRole('checkbox').check();
-    await expect(exportSurface.getByTestId('my-flow-export-scope-summary')).toHaveText('선택한 항목 · 2개');
+    await expect(exportSurface.getByTestId('my-flow-export-scope-summary')).toHaveText('직접 선택 · 2개');
+    await expect(exportSurface.getByTestId('my-flow-export-calendar')).toHaveAttribute('data-export-count', '2');
+    await expect(exportSurface.getByTestId('my-flow-export-checklist')).toHaveAttribute('data-export-count', '2');
+    await expect(exportSurface.getByTestId('my-flow-export-sheet')).toHaveAttribute('data-export-count', '2');
+    await expect(exportSurface.getByTestId('my-flow-export-memo')).toHaveAttribute('data-export-count', '2');
     await exportSurface.getByTestId('my-flow-export-memo').click();
     const copied = await page.evaluate(() => navigator.clipboard.readText());
     expect(copied).toContain(selectedTitles[0]);
@@ -563,8 +575,15 @@ test.describe('P24 execution trust regressions', () => {
       .getByTestId('my-flow-mobile-structure-inline-detail')
       .getByTestId('my-flow-item-detail');
     await expect(detail.getByTestId('my-flow-detail-portable-export').locator('summary')).toHaveText(
-      '원문 · 이 항목 가져가기',
+      '현재 항목 가져가기 · 1개',
     );
+    await expect(detail.getByTestId('my-flow-detail-portable-export')).toHaveAttribute('data-export-scope', 'item');
+    await expect(detail.getByTestId('my-flow-detail-portable-export')).toHaveAttribute('data-export-included-count', '1');
+    await detail.getByTestId('my-flow-detail-portable-export').locator('summary').click();
+    await expect(detail.getByTestId('my-flow-detail-copy-portable-text')).toContainText('1개');
+    await expect(detail.getByTestId('my-flow-detail-copy-checklist-text')).toContainText('1개');
+    await expect(detail.getByTestId('my-flow-detail-copy-sheet-row')).toContainText('1개');
+    await expect(detail.getByTestId('my-flow-detail-download-ics')).toContainText('1개');
     if (exportEvidenceDir) {
       await captureWithoutPlatformChrome(
         page,
@@ -1094,7 +1113,8 @@ test.describe('P24 execution trust regressions', () => {
     await outline.getByTestId('my-flow-batch-export-selected').click();
     const exportPanel = draftFlow.getByTestId('my-flow-export-panel');
     await expect(exportPanel.getByTestId('my-flow-export-scope-selected')).toHaveAttribute('aria-pressed', 'true');
-    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('선택한 항목 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-selected')).toHaveText('직접 선택 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('직접 선택 · 2개');
     await expect(exportPanel.getByTestId('my-flow-export-selectable-item')).toHaveCount(3);
     await expect(exportPanel.getByTestId('my-flow-export-selectable-item').locator('input:checked')).toHaveCount(2);
     await exportPanel.getByRole('button', { name: /가져가기 닫기/ }).click();
