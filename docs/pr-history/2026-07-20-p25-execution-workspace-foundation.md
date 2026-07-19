@@ -2,9 +2,11 @@
 
 - Date: 2026-07-20
 - Branch: `codex/p25-ux-foundation-plan`
-- PR URL: pending
-- Status: Draft
-- Deploy URL: pending
+- PR URL: https://github.com/knhbae/flowme2605/pull/136
+- Status: Merged and deployed
+- Foundation merge: `bd5f201c49fa102660ee6e4ede214f91b50c8e42`
+- Production hotfix: https://github.com/knhbae/flowme2605/pull/137 (`b0fb899cabfc7476c8b06dbb754dfd6567b879d0`)
+- Deploy URL: https://flowme2605.vercel.app
 
 ## Why
 
@@ -51,26 +53,27 @@ P24 connected the lifecycle but still made saved results, date-free work, whole-
 ## Verification
 
 - Unit: `526 / 526`
-- Playwright: `285 / 285` across `8` files, bounded serial groups
-- Docs: `14` required files and `2527` local links
+- Playwright: `286 / 286` across `8` files, bounded serial groups
+- Docs: `14` required files and `2528` local links
 - Production build: `18 / 18` pages
 - Security: high `0`, critical `0`; two moderate nested Next/PostCSS findings disclosed
 - `git diff --check`: pass
 - P25-08 browser evidence: representative `9 / 9`, related regression `81 / 81`, screenshots `36`, downloads `5`, overflow `0`, console/page errors `0`
+- Production smoke: `12 / 12` route/viewport checks; HTTP failure, off-canonical redirect, horizontal overflow, and console/page error counts `0`
 
 ## Risks
 
 - The P25 frame is internally verified but not observed with participants.
 - Two moderate transitive PostCSS advisories remain; `npm audit fix --force` was intentionally not used because it proposes a breaking Next downgrade.
-- Production behavior must still be confirmed after merge and Vercel deployment.
+- Production is verified on the canonical anonymous URL. First-use comprehension and repeated-use value remain unobserved.
 
 ## Follow-ups
 
-- Merge and deploy the verified P25 branch, then run anonymous production smoke on representative routes.
 - Run P26-00 as a docs/prototype-only comparison of the three deferred Medium hypotheses.
 
 ## Links
 
 - Closeout: `docs/content-audit/2026-07-20-p25-final-closeout/README.md`
 - Production: https://flowme2605.vercel.app
-- PR: pending
+- Foundation PR: https://github.com/knhbae/flowme2605/pull/136
+- Hydration hotfix PR: https://github.com/knhbae/flowme2605/pull/137

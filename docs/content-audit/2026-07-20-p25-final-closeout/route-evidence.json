@@ -22,29 +22,41 @@
     "sourcePersonalRunBoundaryRegressionCount": 0,
     "finalUnitPassCount": 526,
     "finalUnitFailureCount": 0,
-    "finalE2ePassCount": 285,
+    "finalE2ePassCount": 286,
     "finalE2eFailureCount": 0,
     "finalE2eFileCount": 8,
-    "docsLocalLinkCount": 2527,
+    "docsLocalLinkCount": 2528,
     "securityHighCount": 0,
     "securityCriticalCount": 0,
     "securityModerateCount": 2,
     "dateFreeSourceOrderRegressionCount": 0,
-    "p25MergedToMain": false,
+    "p25MergedToMain": true,
+    "p25MainCiPassed": true,
     "p25ProductionDeploymentReady": true,
-    "p25ProductionSmokePass": false
+    "p25ProductionSmokePass": true,
+    "p25ReleasePrCount": 2,
+    "productionRouteViewportCheckCount": 12,
+    "productionHttpFailureCount": 0,
+    "productionRedirectOffCanonicalCount": 0,
+    "productionHorizontalOverflowCount": 0,
+    "productionConsolePageErrorCount": 0,
+    "productionHydrationRegressionCount": 0
   },
   "finalVerification": {
     "securityAudit": "pass_high_critical_zero_moderate_two_disclosed",
-    "docsCheck": "pass_14_required_files_2527_links",
+    "docsCheck": "pass_14_required_files_2528_links",
     "unit": "pass_526_of_526",
     "productionBuild": "pass_18_of_18_pages",
-    "fullE2e": "pass_285_of_285_bounded_serial_groups",
+    "fullE2e": "pass_286_of_286_bounded_serial_groups",
     "diffCheck": "pass"
   },
   "production": {
     "url": "https://flowme2605.vercel.app",
-    "includesP25": false,
-    "anonymousAccessVerified": false
+    "deploymentDashboardUrl": "https://vercel.com/flowme/flowme2605/8HsqNxe84bkRK9G6U642BC8URh7g",
+    "mainCiUrl": "https://github.com/knhbae/flowme2605/actions/runs/29706770789",
+    "foundationMergeSha": "bd5f201c49fa102660ee6e4ede214f91b50c8e42",
+    "productionMergeSha": "b0fb899cabfc7476c8b06dbb754dfd6567b879d0",
+    "includesP25": true,
+    "anonymousAccessVerified": true
   }
 }

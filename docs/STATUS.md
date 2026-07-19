@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P25 full release verification green; merge and deploy next; external observation deferred)
-**Status:** v0.1.0 RELEASED / P25 VERIFIED RELEASE CANDIDATE, OBSERVATION NOT STARTED
+**Last Updated:** 2026-07-20 (P25 production released and smoke-verified; external observation not started)
+**Status:** v0.1.0 RELEASED / P25 RELEASED, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Merge the fully verified clean P25 branch, deploy it to production, and smoke-test the live routes. The Option B nine-surface contract is frozen as the owner-directed internal implementation baseline. Current verification is unit `526 / 526`, Playwright `285 / 285`, docs `2527` links, production build green, and high/critical audit findings `0`. Actual user validation remains explicitly open at `0 / 15`; automated QA and simulated personas are not user validation.
+**Primary Focus:** Start P26-00 as a docs/prototype comparison of public copy density, 1024px Calendar density, and advanced-editor path length. P25 Option B is released at <https://flowme2605.vercel.app> as the owner-directed internal baseline. Current verification is unit `526 / 526`, Playwright `286 / 286`, production build green, final live smoke `12 / 12`, and high/critical audit findings `0`. Actual user validation remains explicitly open at `0 / 15`; automated QA and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,15 +11,17 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P25 PR/merge, Vercel deploy, and production smoke; P24 remains deployed until that succeeds |
-| User action now | No participant recruitment; P25 production review starts only after deployment is verified |
-| AI action now | Complete the [P25 final closeout](./content-audit/2026-07-20-p25-final-closeout/README.md), release P25, then start P26-00 as a docs/prototype decision audit |
-| Blocked by evidence | Keep/change/defer synthesis, persistence choice, creator/update pilot, and production URL/AI backend |
+| Active product gate | P26-00 comprehension/density decision audit over the released P25 baseline |
+| User action now | Optional owner review of current P25 production; no participant recruitment |
+| AI action now | Compare bounded alternatives for public copy, wide Calendar density, and the advanced-editor path; do not implement until one P26-01 slice is selected |
+| Blocked by evidence | Keep/change/defer synthesis, account persistence choice, creator/update pilot, and real AI backend |
 | Completed planning | P23 local lifecycle closure, Prompt Lab v1 controlled experiment, repeated collaboration workflow setup |
 
 ## Recent Direction Notes
 
-- 2026-07-20 P25 final internal decision and release verification: The nine Option B surfaces are frozen as the internal release baseline under the owner's explicit instruction to complete P25 and allow substantial changes. This closes the pending P25-00B implementation decision without claiming screen-by-screen usability approval. Final clean-worktree verification passes unit `526 / 526`, Playwright `285 / 285`, docs `2527` links, production build `18 / 18` pages, high/critical audit findings `0`, and diff-check errors `0`. A date-free source-row fallback-order defect found during regression was fixed without changing source/personal/run ownership. Public copy density, 1024px Calendar density, and advanced-editor path length move to P26-00 as Medium comparison work. Merge, Vercel deployment, and production smoke remain before P25 is released. See the [P25 final closeout](./content-audit/2026-07-20-p25-final-closeout/README.md). Observed users remain `0 / 15`.
+- 2026-07-20 P25 production release: Foundation PR [#136](https://github.com/knhbae/flowme2605/pull/136) merged as `bd5f201c`; its first live smoke exposed a timezone-boundary hydration regression on the public monthly-routine route. Hotfix PR [#137](https://github.com/knhbae/flowme2605/pull/137) added a deterministic hydration frame and opposite-timezone regression coverage, then merged as `b0fb899c`. The canonical Vercel production is anonymous and READY. Final smoke passed `12 / 12` route/viewport checks with HTTP failures, off-canonical redirects, horizontal overflow, and console/page errors all `0`. Full E2E is now `286 / 286`; observed users remain `0 / 15`. See the [P25 final closeout](./content-audit/2026-07-20-p25-final-closeout/README.md).
+
+- 2026-07-20 P25 final internal decision and release verification: The nine Option B surfaces are frozen as the internal release baseline under the owner's explicit instruction to complete P25 and allow substantial changes. This closes the pending P25-00B implementation decision without claiming screen-by-screen usability approval. Final clean-worktree verification passes unit `526 / 526`, Playwright `286 / 286`, docs `2528` links, production build `18 / 18` pages, high/critical audit findings `0`, and diff-check errors `0`. A date-free source-row fallback-order defect found during regression was fixed without changing source/personal/run ownership. Public copy density, 1024px Calendar density, and advanced-editor path length move to P26-00 as Medium comparison work. See the newer production-release note above for merge, deployment, and smoke truth. Observed users remain `0 / 15`.
 
 - 2026-07-19 P25-08 integrated journey gate: six representative Flow shapes were replayed across save, whole-artifact confirmation, personal adjustment, date placement, completion/reopen, export, and recurrence recovery. Current evidence: representative journeys `9 / 9`, related regression `81 / 81`, screenshots `36`, download artifacts `5`, horizontal overflow `0`, console/page errors `0`, observed-user sessions `0`. The first wide Calendar capture exposed a High title-width regression; recurrence status now sits in row metadata and a `>= 100px` title-width assertion guards the fix. See [P25-08 evidence](./content-audit/2026-07-19-p25-08-internal-journey-gate/README.md). This closes the automated internal gate only; owner/Claude Design review is next and production remains P24 until merge/deploy.
 

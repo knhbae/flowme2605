@@ -1,7 +1,7 @@
 # P25 Execution Workspace Foundation Spec
 
 **Date:** 2026-07-19
-**Status:** Implemented; internal integration gate complete, production release pending
+**Status:** Released to production; internal integration and live smoke complete, observed-user validation not started
 **Owner:** Product owner + implementation agent
 **Related roadmap:** [P25 execution workspace correction](../../ROADMAP.md#p25-execution-workspace-correction)
 
