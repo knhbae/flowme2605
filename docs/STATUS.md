@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~14 complete; P26-15 Calendar filter/date move next)
+**Last Updated:** 2026-07-20 (P26-01~15 complete; P26-16 unified export scope/result next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, and P26-14 makes undated work and batch placement explicit in Calendar. P26-15 next aligns Flow filtering, grid/agenda counts, and single/batch date moves. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, P26-14 makes undated work and batch placement explicit, and P26-15 aligns Calendar Flow scope, grid/agenda counts, and reversible date movement. P26-16 next unifies export scope, count, format, and result receipt. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-15 Calendar Flow filter, count parity, and date move |
+| Active product gate | P26-16 unified export scope, count, format, and result receipt |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Make one Flow scope drive Calendar grid, agenda, counts, and single/batch date movement |
+| AI action now | Make one export scope drive destination counts, generated payload, and result receipt |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-15 Calendar Flow filter and date move: Calendar now uses `전체 / 반복만 / 개별 Flow` as one scope for the month grid, selected-day agenda, counts, and undated tray. Individual Flow controls show color, initial, title, and month count; the redundant wide saved-Flow select is absent. A same-date fixture keeps `2 Flow / 6 items` aligned, and cross-Flow date movement shows a commit preview before atomically moving 2 items, preserving completion, supporting undo, and persisting after reload. Routine occurrences use a distinct label and the same preview path. Dedicated Playwright is `2 / 2`, affected regression scenarios are `4 / 4`, build is `18 / 18`, and mobile/wide overflow plus console/page errors are `0`. Observed-user sessions remain `0`. See [P26-15 evidence](./content-audit/2026-07-20-p26-15-calendar-flow-filter-date-move-evidence/README.md).
 
 - 2026-07-20 P26-14 undated inbox and batch scheduling: Calendar now names the object `날짜 없는 할 일` with the subtitle `아직 일정에 놓지 않은 실행 항목`. Mobile exposes a collapsed drawer between selected-day execution and the month grid; wide keeps a persistent rail. One-item placement and undo produce `10 -> 9 -> 10`, three-item placement persists as `10 -> 7`, removing a date returns the item to the inbox with undo, and Calendar export changes from 0 to 3 VEVENTs without duplicates. Recurring series definitions, completed items, and completion-like controls remain absent. Dedicated Playwright is `1 / 1`; full unit is `556 / 556`; build is `18 / 18`; overflow and console/page errors are `0`. Observed-user sessions remain `0`. See [P26-14 evidence](./content-audit/2026-07-20-p26-14-undated-batch-scheduling-evidence/README.md).
 

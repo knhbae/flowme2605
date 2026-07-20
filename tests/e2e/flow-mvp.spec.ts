@@ -3490,10 +3490,12 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-calendar-scope-routine')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText(/반복 항목 · \d+개 항목/);
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="scheduled_task"]')).toHaveCount(0);
-  await page.getByTestId('my-flow-calendar-scope-schedule').click();
-  await expect(page.getByTestId('my-flow-calendar-scope-schedule')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText(/날짜 항목 · \d+개 항목/);
-  await expect(page.locator('[data-testid="my-flow-routine-icon"]')).toHaveCount(0);
+  const firstFlowScope = page.locator('[data-testid^="my-flow-calendar-scope-flow-"]').first();
+  const firstFlowScopeLabel = await firstFlowScope.locator('span').nth(1).textContent();
+  await firstFlowScope.click();
+  await expect(firstFlowScope).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText(firstFlowScopeLabel?.trim() ?? '');
+  await expect(page.getByTestId('my-flow-selected-date-group')).toHaveCount(1);
   await page.getByTestId('my-flow-calendar-scope-all').click();
   await expect(page.getByTestId('my-flow-calendar-scope-all')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
@@ -5046,6 +5048,10 @@ test('my flow ux12 drags one routine icon to another calendar date', async ({ pa
 
   await sourceRoutineIcon.dragTo(page.locator('.fc-daygrid-day[data-date="2026-06-04"]'));
 
+  await expect(page.getByTestId('my-flow-calendar-date-move-panel')).toBeVisible();
+  await expect(page.getByTestId('my-flow-calendar-date-move-preview')).toContainText('6월 3일 → 6월 4일');
+  await page.getByTestId('my-flow-calendar-date-move-apply').click();
+
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-icon"]').and(page.locator(`[aria-label="${sourceRoutineLabel}"]`))).toHaveCount(0);
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-04"] [data-testid="my-flow-routine-icon"]').and(page.locator(`[aria-label="${sourceRoutineLabel}"]`))).toHaveCount(1);
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('6월 4일');
@@ -5062,6 +5068,9 @@ test('my flow ux12 drags an overflow routine row to another calendar date', asyn
 
   await overflowRoutineRow.dragTo(page.locator('.fc-daygrid-day[data-date="2026-06-04"]'));
 
+  await expect(page.getByTestId('my-flow-calendar-date-move-panel')).toBeVisible();
+  await page.getByTestId('my-flow-calendar-date-move-apply').click();
+
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText('6월 4일');
   await expect(page.getByTestId('my-flow-calendar-selected-day').locator(`article[data-routine-key="${overflowRoutineKey}"]`)).toHaveCount(1);
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-overflow"]')).toContainText('+1');
@@ -5076,6 +5085,7 @@ test('my flow ux12 calendar routine rows show the current occurrence state witho
   const routineIcon = page.locator('.fc-daygrid-day[data-date="2026-06-03"] [data-testid="my-flow-routine-icon"]').first();
   await expect(routineIcon).toBeVisible();
   await routineIcon.dragTo(page.locator('.fc-daygrid-day[data-date="2026-06-04"]'));
+  await page.getByTestId('my-flow-calendar-date-move-apply').click();
 
   await page.locator('.fc-daygrid-day[data-date="2026-06-04"]').getByTestId('my-flow-calendar-date-button').click();
   const todayRoutineRow = page.getByTestId('my-flow-calendar-selected-day').locator('article[data-item-type="routine_session"]').first();

@@ -63,9 +63,9 @@
 
 - [x] P26-14 on-demand undated tray
 - [x] P26-14 batch scheduling preview/undo
-- [ ] P26-15 Flow filter
-- [ ] P26-15 grid/agenda/count parity
-- [ ] P26-15 single/batch date move
+- [x] P26-15 Flow filter
+- [x] P26-15 grid/agenda/count parity
+- [x] P26-15 single/batch date move
 - [ ] P26-16 scope/count/format/result receipt
 
 ## P26-17~18 Integration

@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
+import { CalendarDateMovePanel } from './CalendarDateMovePanel';
 import { CalendarUnscheduledTray } from './CalendarUnscheduledTray';
 import { FlowDiscoveryCard, type FlowDiscoveryCardView } from './FlowDiscoveryCard';
 import { FlowSaveBeforeFrame, type FlowSaveBeforePreviewRow } from './FlowSaveBeforeFrame';
@@ -35,6 +36,17 @@ import {
   buildCalendarUnscheduledSchedulePreview,
   type CalendarUnscheduledTrayItem,
 } from '@/lib/flow/calendar-unscheduled-tray';
+import {
+  buildCalendarDateMovePreview,
+  type CalendarDateMoveItem,
+} from '@/lib/flow/calendar-date-move';
+import {
+  getCalendarFlowScopeForFlow,
+  getCalendarFlowSlugFromScope,
+  isCalendarFlowRowInScope,
+  normalizeCalendarFlowScope,
+  type CalendarFlowScope,
+} from '@/lib/flow/calendar-flow-scope';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import {
@@ -3470,14 +3482,27 @@ type MyFlowCompletionUndo = {
   occurrenceSeriesId?: string;
   occurrenceRevisionId?: string;
 };
-type MyFlowCalendarScheduleUndo = {
-  kind: 'scheduled' | 'removed';
-  count: number;
-  targetDate: string;
+type MyFlowCalendarDateMutationSnapshot = {
   previousOverlaysBySlug: Record<string, PersonalStructuralOverlay>;
   previousDateOverridesByKey: Record<string, string | null>;
   previousSavedMapSnapshot?: SavedFlowMapSnapshot;
   previousPersistenceRecord?: SourceBackedFlowMapPersistenceRecord;
+  demoOnly?: boolean;
+};
+type MyFlowCalendarScheduleUndo = MyFlowCalendarDateMutationSnapshot & {
+  kind: 'scheduled' | 'removed';
+  count: number;
+  targetDate: string;
+};
+type MyFlowCalendarDateMoveDraft = {
+  sourceDate: string;
+  targetDate: string;
+  selectedKeys: string[];
+};
+type MyFlowCalendarDateMoveUndo = MyFlowCalendarDateMutationSnapshot & {
+  count: number;
+  sourceDate: string;
+  targetDate: string;
 };
 type MyFlowCompletionFeedbackDraft = {
   flowSlug: string;
@@ -4641,7 +4666,7 @@ type MyFlowCalendarRow = MyFlowRow & {
   originalDate?: string;
   calendarKey?: string;
 };
-type MyFlowCalendarScope = 'all' | 'map' | 'schedule' | 'routine';
+type MyFlowCalendarScope = CalendarFlowScope;
 type MyFlowRoutineCalendarIcon = {
   key: string;
   title: string;
@@ -4769,10 +4794,10 @@ function getMyFlowPersonalCopyStepDraft(row: MyFlowCalendarRow): MyFlowItemDraft
 }
 
 function isMyFlowCalendarRowInScope(row: MyFlowCalendarRow, scope: MyFlowCalendarScope): boolean {
-  if (scope === 'map') return Boolean(row.flow.savedMap);
-  if (scope === 'schedule') return row.flow.bundle.flow.structure_type !== 'routine';
-  if (scope === 'routine') return row.flow.bundle.flow.structure_type === 'routine';
-  return true;
+  return isCalendarFlowRowInScope({
+    flowSlug: row.flow.progress.slug,
+    isRoutine: row.flow.bundle.flow.structure_type === 'routine',
+  }, scope);
 }
 
 function getMyFlowCalendarShortTitle(title: string): string {
@@ -5012,6 +5037,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowUnscheduledSelection, setMyFlowUnscheduledSelection] = useState<string[]>([]);
   const [myFlowUnscheduledTargetDate, setMyFlowUnscheduledTargetDate] = useState('');
   const [myFlowCalendarScheduleUndo, setMyFlowCalendarScheduleUndo] = useState<MyFlowCalendarScheduleUndo | null>(null);
+  const [myFlowCalendarDateMoveDraft, setMyFlowCalendarDateMoveDraft] = useState<MyFlowCalendarDateMoveDraft | null>(null);
+  const [myFlowCalendarDateMoveUndo, setMyFlowCalendarDateMoveUndo] = useState<MyFlowCalendarDateMoveUndo | null>(null);
   const [myFlowExportPanel, setMyFlowExportPanel] = useState<MyFlowExportPanelState | null>(null);
   const [postSaveExportPickerOpen, setPostSaveExportPickerOpen] = useState(false);
   const [myFlowBatchAdjustment, setMyFlowBatchAdjustment] = useState<MyFlowBatchAdjustmentState | null>(null);
@@ -5053,6 +5080,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 8000);
     return () => window.clearTimeout(timeoutId);
   }, [myFlowCalendarScheduleUndo]);
+  useEffect(() => {
+    if (!myFlowCalendarDateMoveUndo) return;
+    const timeoutId = window.setTimeout(() => setMyFlowCalendarDateMoveUndo(null), 8000);
+    return () => window.clearTimeout(timeoutId);
+  }, [myFlowCalendarDateMoveUndo]);
+  useEffect(() => {
+    if (!myFlowCalendarDateMoveDraft) return;
+    if (myFlowCalendarDateMoveDraft.sourceDate === myFlowSelectedDate) return;
+    setMyFlowCalendarDateMoveDraft(null);
+  }, [myFlowCalendarDateMoveDraft, myFlowSelectedDate]);
   useEffect(() => {
     if (!myFlowBatchAdjustmentUndo) return;
     const timeoutId = window.setTimeout(() => setMyFlowBatchAdjustmentUndo(null), 7000);
@@ -5559,7 +5596,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 20 && savedView === 'flow';
   const showFlowInventory = savedView === 'flow' || !shouldCollapseFlowInventory || myFlowInventoryOpen;
   const showFlowExecutionMetricsInInventory = false;
-  const showMyFlowScopeControl = !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
+  const showMyFlowScopeControl = !isCalendarSurface && !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
   const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
     isUrlFirstDraftSavedFlow(flow)
       ? myFlowDateOverrides[getPersonalDraftProjectionValueKey(flow.progress.slug, rowId)]
@@ -5969,41 +6006,52 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const calendarCells = getMyFlowMonthCells(myFlowVisibleMonth);
   const monthAllCalendarRows = calendarRows.filter((row) => row.date?.startsWith(myFlowVisibleMonth.slice(0, 7)));
   const monthCalendarRows = calendarScopedRows.filter((row) => row.date?.startsWith(myFlowVisibleMonth.slice(0, 7)));
-  const myFlowCalendarScopeTotalCounts: Record<MyFlowCalendarScope, number> = {
-    all: calendarRows.length,
-    map: calendarRows.filter((row) => Boolean(row.flow.savedMap)).length,
-    schedule: calendarScheduleRows.length,
-    routine: calendarRoutineRows.length,
-  };
   const getMyFlowRowStatusLabel = (row?: { date?: string } | null) => {
     if (!row?.date) return '날짜 없음';
     if (row.date < myFlowTodayDate) return '지난 할 일';
     if (row.date === myFlowTodayDate) return '오늘 할 일';
     return '다음 할 일';
   };
-  const myFlowCalendarScopeMonthCounts: Record<MyFlowCalendarScope, number> = {
-    all: monthAllCalendarRows.length,
-    map: monthAllCalendarRows.filter((row) => Boolean(row.flow.savedMap)).length,
-    schedule: monthAllCalendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine').length,
-    routine: monthAllCalendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine').length,
-  };
-  const myFlowCalendarAllScopeLabel = isCalendarSurface ? '모든 저장 콘텐츠' : '모든 Flow';
-  const myFlowCalendarSavedScopeLabel = isCalendarSurface ? '저장 콘텐츠' : '저장 Flow';
-  const myFlowCalendarScopeOptions: Array<{ id: MyFlowCalendarScope; label: string; count: number }> = [
-    { id: 'all', label: myFlowCalendarAllScopeLabel, count: myFlowCalendarScopeMonthCounts.all },
-    ...(myFlowCalendarScopeTotalCounts.map > 0 && myFlowCalendarScopeTotalCounts.map < myFlowCalendarScopeTotalCounts.all
-      ? [{ id: 'map' as const, label: myFlowCalendarSavedScopeLabel, count: myFlowCalendarScopeMonthCounts.map }]
+  const calendarFilterRows = [...calendarRows, ...allCalendarUnscheduledRows];
+  const myFlowCalendarAllScopeLabel = '모든 Flow';
+  const calendarFilterFlows = visibleExecutionFlows
+    .filter((flow) => calendarFilterRows.some((row) => row.flow.progress.slug === flow.progress.slug))
+    .map((flow) => {
+      const marker = getMyFlowCalendarFlowMarker(flow);
+      const id = getCalendarFlowScopeForFlow(flow.progress.slug);
+      return {
+        id,
+        label: marker.title,
+        count: monthAllCalendarRows.filter((row) => isMyFlowCalendarRowInScope(row, id)).length,
+        totalCount: calendarFilterRows.filter((row) => isMyFlowCalendarRowInScope(row, id)).length,
+        marker,
+      };
+    })
+    .sort((left, right) => left.label.localeCompare(right.label, 'ko'));
+  const routineMonthCount = monthAllCalendarRows.filter((row) => isMyFlowCalendarRowInScope(row, 'routine')).length;
+  const routineTotalCount = calendarFilterRows.filter((row) => isMyFlowCalendarRowInScope(row, 'routine')).length;
+  const myFlowCalendarScopeOptions: Array<{
+    id: MyFlowCalendarScope;
+    label: string;
+    count: number;
+    totalCount: number;
+    marker?: MyFlowFlowMarker;
+  }> = [
+    {
+      id: 'all',
+      label: myFlowCalendarAllScopeLabel,
+      count: monthAllCalendarRows.length,
+      totalCount: calendarFilterRows.length,
+    },
+    ...(routineTotalCount > 0
+      ? [{ id: 'routine' as const, label: '반복만', count: routineMonthCount, totalCount: routineTotalCount }]
       : []),
-    ...(myFlowCalendarScopeTotalCounts.schedule > 0 && myFlowCalendarScopeTotalCounts.schedule < myFlowCalendarScopeTotalCounts.all
-      ? [{ id: 'schedule' as const, label: '날짜 항목', count: myFlowCalendarScopeMonthCounts.schedule }]
-      : []),
-    ...(myFlowCalendarScopeTotalCounts.routine > 0
-      ? [{ id: 'routine' as const, label: '반복 항목', count: myFlowCalendarScopeMonthCounts.routine }]
-      : []),
+    ...calendarFilterFlows,
   ];
-  const visibleMyFlowCalendarScopeOptions = isMyFlowMobileViewport
-    ? myFlowCalendarScopeOptions.filter((option) => option.id === 'all' || option.id === myFlowCalendarScope || option.count > 0)
-    : myFlowCalendarScopeOptions;
+  const visibleMyFlowCalendarScopeOptions = myFlowCalendarScopeOptions;
+  const calendarFilterFlowSlugSignature = calendarFilterFlows
+    .map((option) => getCalendarFlowSlugFromScope(option.id) ?? '')
+    .join('|');
   const showMyFlowCalendarScopeFilter = visibleMyFlowCalendarScopeOptions.length > 1;
   const myFlowCalendarScopeLabel = myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? myFlowCalendarAllScopeLabel;
   const moveMyFlowCalendarMonth = (nextMonth: string) => {
@@ -6028,7 +6076,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
     const scopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, scope));
     setMyFlowCalendarScope(scope);
-    setMyFlowSelectedDate(findFirstMyFlowDateInMonth(scopedRows, myFlowVisibleMonth));
+    setMyFlowSelectedDate((currentDate) => (
+      scopedRows.some((row) => row.date === currentDate)
+        ? currentDate
+        : findFirstMyFlowDateInMonth(scopedRows, myFlowVisibleMonth)
+    ));
     setMyFlowActiveRowKey('');
     setMyFlowRoutineOverflowDate('');
     setMyFlowScheduleOverflowDate('');
@@ -6038,6 +6090,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowEditingDetailKey('');
     setMyFlowDetailSurface('');
     setMyFlowDetailOpen(false);
+    setMyFlowCalendarDateMoveDraft(null);
+    setMyFlowCalendarDateMoveUndo(null);
   };
   const myFlowWeekEndDate = formatDate(addDays(new Date(`${myFlowTodayDate}T00:00:00`), 7));
   const todayScheduleRows = calendarScheduleRows.filter((row) => row.date === myFlowTodayDate);
@@ -6220,6 +6274,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowSelectedDateRows = calendarScopedScheduleRows.filter((row) => row.date === myFlowSelectedDate);
   const myFlowSelectedDateRoutineRows = calendarScopedRoutineRows.filter((row) => row.date === myFlowSelectedDate);
   const myFlowSelectedDateAllRows = [...myFlowSelectedDateRows, ...myFlowSelectedDateRoutineRows];
+  const myFlowCalendarDateMoveRowsByKey = new Map(
+    myFlowSelectedDateAllRows.map((row) => [getMyFlowRowInstanceKey(row), row]),
+  );
+  const myFlowCalendarDateMoveItems: CalendarDateMoveItem[] = myFlowSelectedDateAllRows.map((row) => ({
+    key: getMyFlowRowInstanceKey(row),
+    flowSlug: row.flow.progress.slug,
+    flowTitle: getMyFlowCalendarFlowTitle(row.flow),
+    title: getMyFlowRowDisplayTitle(row),
+    sourceDate: row.date ?? myFlowSelectedDate,
+    kind: row.structuralOccurrenceId ? 'occurrence' : 'task',
+    completed: isMyFlowRowChecked(row.flow, row),
+  }));
+  const myFlowCalendarDateMovePreview = buildCalendarDateMovePreview({
+    items: myFlowCalendarDateMoveItems,
+    selectedKeys: myFlowCalendarDateMoveDraft?.selectedKeys ?? [],
+    targetDate: myFlowCalendarDateMoveDraft?.targetDate ?? '',
+  });
   const myFlowSelectedDateRoutineOverflowCount = Math.max(0, myFlowSelectedDateRoutineRows.length - myFlowRoutineIconLimit);
   const myFlowSelectedDateScheduleLimit = MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT;
   const myFlowSelectedDateScheduleOverflowCount = Math.max(0, myFlowSelectedDateRows.length - myFlowSelectedDateScheduleLimit);
@@ -7189,10 +7260,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   useEffect(() => {
-    if (myFlowCalendarScope === 'all') return;
-    if (myFlowCalendarScopeTotalCounts[myFlowCalendarScope] > 0) return;
-    setMyFlowCalendarScope('all');
-  }, [myFlowCalendarScope, myFlowCalendarScopeTotalCounts.map, myFlowCalendarScopeTotalCounts.schedule, myFlowCalendarScopeTotalCounts.routine]);
+    const normalizedScope = normalizeCalendarFlowScope(
+      myFlowCalendarScope,
+      calendarFilterFlowSlugSignature.split('|').filter(Boolean),
+      routineTotalCount > 0,
+    );
+    if (normalizedScope !== myFlowCalendarScope) setMyFlowCalendarScope(normalizedScope);
+  }, [myFlowCalendarScope, calendarFilterFlowSlugSignature, routineTotalCount]);
 
   useEffect(() => {
     if (isCalendarSurface) {
@@ -8251,6 +8325,144 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     refreshSavedFlowState();
   };
 
+  const persistMyFlowCalendarRowsDate = (
+    rows: MyFlowCalendarRow[],
+    targetDate: string,
+  ): MyFlowCalendarDateMutationSnapshot | null => {
+    if (typeof window === 'undefined' || !targetDate || rows.length === 0) return null;
+
+    if (isMyFlowScenarioDemo) {
+      const previousDateOverridesByKey: Record<string, string | null> = {};
+      const nextDatesByKey: Record<string, string> = {};
+      for (const row of rows) {
+        const dateOverrideKey = row.structuralOccurrenceId
+          ? row.structuralOccurrenceDateOverrideKey ?? row.calendarKey
+          : row.calendarKey ?? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id);
+        if (!dateOverrideKey) return null;
+        previousDateOverridesByKey[dateOverrideKey] = myFlowDateOverrides[dateOverrideKey] ?? null;
+        nextDatesByKey[dateOverrideKey] = targetDate;
+      }
+      updateMyFlowDateOverrideState((current) => ({ ...current, ...nextDatesByKey }));
+      return {
+        previousOverlaysBySlug: {},
+        previousDateOverridesByKey,
+        demoOnly: true,
+      };
+    }
+
+    const previousOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const nextOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const previousDateOverridesByKey: Record<string, string | null> = {};
+    const nextDateOverrides = { ...myFlowDateOverrides };
+
+    for (const row of rows) {
+      const personalUserItem =
+        isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
+        row.structuralOwnership === 'user_created' &&
+        !row.structuralOccurrenceId;
+      if (personalUserItem) {
+        const flowSlug = row.flow.progress.slug;
+        const currentOverlay =
+          nextOverlaysBySlug[flowSlug] ??
+          myFlowStructuralOverlaysBySlug[flowSlug] ??
+          createPersonalDraftStructuralOverlay(row.flow.bundle);
+        if (!previousOverlaysBySlug[flowSlug]) previousOverlaysBySlug[flowSlug] = currentOverlay;
+        const scheduled = setPersonalDraftUserItemDate({
+          overlay: currentOverlay,
+          itemId: row.structuralProjectionStableId ?? row.id,
+          date: targetDate,
+        });
+        if (!scheduled) return null;
+        nextOverlaysBySlug[flowSlug] = scheduled.overlay;
+        continue;
+      }
+
+      const dateOverrideKey = row.structuralOccurrenceId
+        ? row.structuralOccurrenceDateOverrideKey ?? row.calendarKey
+        : isPersonalDraftStructuralEditEligible(row.flow.bundle)
+          ? getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)
+          : row.calendarKey ?? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id);
+      if (!dateOverrideKey) return null;
+      if (!Object.prototype.hasOwnProperty.call(previousDateOverridesByKey, dateOverrideKey)) {
+        previousDateOverridesByKey[dateOverrideKey] = myFlowDateOverrides[dateOverrideKey] ?? null;
+      }
+      nextDateOverrides[dateOverrideKey] = targetDate;
+    }
+
+    const savedOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    try {
+      Object.entries(nextOverlaysBySlug).forEach(([flowSlug, overlay]) => {
+        savedOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
+      });
+      if (Object.keys(previousDateOverridesByKey).length > 0) saveStoredMyFlowDateOverrides(nextDateOverrides);
+    } catch {
+      try {
+        Object.values(previousOverlaysBySlug).forEach((overlay) => {
+          savePersonalStructuralOverlay(window.localStorage, overlay);
+        });
+        saveStoredMyFlowDateOverrides(myFlowDateOverrides);
+      } catch {
+        // Keep the current projection when local persistence is unavailable.
+      }
+      return null;
+    }
+
+    if (Object.keys(savedOverlaysBySlug).length > 0) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({ ...current, ...savedOverlaysBySlug }));
+    }
+    if (Object.keys(previousDateOverridesByKey).length > 0) setMyFlowDateOverrides(nextDateOverrides);
+    return { previousOverlaysBySlug, previousDateOverridesByKey };
+  };
+
+  const restoreMyFlowCalendarDateMutation = (
+    snapshot: MyFlowCalendarDateMutationSnapshot,
+  ): boolean => {
+    if (typeof window === 'undefined') return false;
+    const restoredOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
+    const restoredDateOverrides = { ...myFlowDateOverrides };
+    Object.entries(snapshot.previousDateOverridesByKey).forEach(([key, value]) => {
+      if (value === null) delete restoredDateOverrides[key];
+      else restoredDateOverrides[key] = value;
+    });
+
+    if (snapshot.demoOnly) {
+      setMyFlowDateOverrides(restoredDateOverrides);
+      return true;
+    }
+
+    try {
+      Object.entries(snapshot.previousOverlaysBySlug).forEach(([flowSlug, overlay]) => {
+        restoredOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
+      });
+      if (Object.keys(snapshot.previousDateOverridesByKey).length > 0) {
+        saveStoredMyFlowDateOverrides(restoredDateOverrides);
+      }
+      if (snapshot.previousSavedMapSnapshot) {
+        window.localStorage.setItem(
+          getSourceBackedFlowMapSnapshotStorageKey(snapshot.previousSavedMapSnapshot.mapId),
+          JSON.stringify(snapshot.previousSavedMapSnapshot),
+        );
+      }
+      if (snapshot.previousPersistenceRecord) {
+        window.localStorage.setItem(
+          getSourceBackedFlowMapPersistenceStorageKey(snapshot.previousPersistenceRecord.map.id),
+          JSON.stringify(snapshot.previousPersistenceRecord),
+        );
+      }
+    } catch {
+      return false;
+    }
+
+    if (Object.keys(restoredOverlaysBySlug).length > 0) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({ ...current, ...restoredOverlaysBySlug }));
+    }
+    if (Object.keys(snapshot.previousDateOverridesByKey).length > 0) {
+      setMyFlowDateOverrides(restoredDateOverrides);
+    }
+    refreshSavedFlowState();
+    return true;
+  };
+
   const toggleMyFlowCalendarUnscheduledItem = (key: string) => {
     setMyFlowUnscheduledSelection((current) =>
       current.includes(key)
@@ -8289,79 +8501,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       .filter((row): row is MyFlowCalendarRow => Boolean(row));
     if (selectedRows.length !== schedulePreview.selectedCount) return;
 
-    const previousOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
-    const nextOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
-    const previousDateOverridesByKey: Record<string, string | null> = {};
-    const nextDateOverrides = { ...myFlowDateOverrides };
     const targetDate = schedulePreview.targetDate;
-
-    for (const row of selectedRows) {
-      const personalUserItem =
-        isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
-        row.structuralOwnership === 'user_created';
-      if (personalUserItem) {
-        const flowSlug = row.flow.progress.slug;
-        const currentOverlay =
-          nextOverlaysBySlug[flowSlug] ??
-          myFlowStructuralOverlaysBySlug[flowSlug] ??
-          createPersonalDraftStructuralOverlay(row.flow.bundle);
-        if (!previousOverlaysBySlug[flowSlug]) {
-          previousOverlaysBySlug[flowSlug] = currentOverlay;
-        }
-        const scheduled = setPersonalDraftUserItemDate({
-          overlay: currentOverlay,
-          itemId: row.structuralProjectionStableId ?? row.id,
-          date: targetDate,
-        });
-        if (!scheduled) return;
-        nextOverlaysBySlug[flowSlug] = scheduled.overlay;
-        continue;
-      }
-
-      const dateOverrideKey = isPersonalDraftStructuralEditEligible(row.flow.bundle)
-        ? getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)
-        : row.calendarKey ?? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id);
-      if (!Object.prototype.hasOwnProperty.call(previousDateOverridesByKey, dateOverrideKey)) {
-        previousDateOverridesByKey[dateOverrideKey] = myFlowDateOverrides[dateOverrideKey] ?? null;
-      }
-      nextDateOverrides[dateOverrideKey] = targetDate;
-    }
-
-    const savedOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
-    try {
-      Object.entries(nextOverlaysBySlug).forEach(([flowSlug, overlay]) => {
-        savedOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
-      });
-      if (Object.keys(previousDateOverridesByKey).length > 0) {
-        saveStoredMyFlowDateOverrides(nextDateOverrides);
-      }
-    } catch {
-      try {
-        Object.values(previousOverlaysBySlug).forEach((overlay) => {
-          savePersonalStructuralOverlay(window.localStorage, overlay);
-        });
-        saveStoredMyFlowDateOverrides(myFlowDateOverrides);
-      } catch {
-        // Keep the screen usable even when local storage is unavailable.
-      }
-      return;
-    }
-
-    if (Object.keys(savedOverlaysBySlug).length > 0) {
-      setMyFlowStructuralOverlaysBySlug((current) => ({
-        ...current,
-        ...savedOverlaysBySlug,
-      }));
-    }
-    if (Object.keys(previousDateOverridesByKey).length > 0) {
-      setMyFlowDateOverrides(nextDateOverrides);
-    }
+    const mutationSnapshot = persistMyFlowCalendarRowsDate(selectedRows, targetDate);
+    if (!mutationSnapshot) return;
     setMyFlowCalendarScheduleUndo({
       kind: 'scheduled',
       count: selectedRows.length,
       targetDate,
-      previousOverlaysBySlug,
-      previousDateOverridesByKey,
+      ...mutationSnapshot,
     });
     setMyFlowUnscheduledSelection([]);
     setMyFlowSelectedDate(targetDate);
@@ -8369,49 +8516,77 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const undoMyFlowCalendarUnscheduledSchedule = () => {
-    if (typeof window === 'undefined' || !myFlowCalendarScheduleUndo) return;
-    const { previousOverlaysBySlug, previousDateOverridesByKey } = myFlowCalendarScheduleUndo;
-    const restoredOverlaysBySlug: Record<string, PersonalStructuralOverlay> = {};
-    const restoredDateOverrides = { ...myFlowDateOverrides };
-    Object.entries(previousDateOverridesByKey).forEach(([key, value]) => {
-      if (value === null) delete restoredDateOverrides[key];
-      else restoredDateOverrides[key] = value;
-    });
-
-    try {
-      Object.entries(previousOverlaysBySlug).forEach(([flowSlug, overlay]) => {
-        restoredOverlaysBySlug[flowSlug] = savePersonalStructuralOverlay(window.localStorage, overlay);
-      });
-      if (Object.keys(previousDateOverridesByKey).length > 0) {
-        saveStoredMyFlowDateOverrides(restoredDateOverrides);
-      }
-      if (myFlowCalendarScheduleUndo.previousSavedMapSnapshot) {
-        window.localStorage.setItem(
-          getSourceBackedFlowMapSnapshotStorageKey(myFlowCalendarScheduleUndo.previousSavedMapSnapshot.mapId),
-          JSON.stringify(myFlowCalendarScheduleUndo.previousSavedMapSnapshot),
-        );
-      }
-      if (myFlowCalendarScheduleUndo.previousPersistenceRecord) {
-        window.localStorage.setItem(
-          getSourceBackedFlowMapPersistenceStorageKey(myFlowCalendarScheduleUndo.previousPersistenceRecord.map.id),
-          JSON.stringify(myFlowCalendarScheduleUndo.previousPersistenceRecord),
-        );
-      }
-    } catch {
-      return;
-    }
-
-    if (Object.keys(restoredOverlaysBySlug).length > 0) {
-      setMyFlowStructuralOverlaysBySlug((current) => ({
-        ...current,
-        ...restoredOverlaysBySlug,
-      }));
-    }
-    if (Object.keys(previousDateOverridesByKey).length > 0) {
-      setMyFlowDateOverrides(restoredDateOverrides);
-    }
+    if (!myFlowCalendarScheduleUndo) return;
+    if (!restoreMyFlowCalendarDateMutation(myFlowCalendarScheduleUndo)) return;
     setMyFlowCalendarScheduleUndo(null);
-    refreshSavedFlowState();
+  };
+
+  const openMyFlowCalendarDateMove = (row?: MyFlowCalendarRow, targetDate = '') => {
+    const sourceDate = row?.date ?? myFlowSelectedDate;
+    if (!sourceDate) return;
+    setMyFlowSelectedDate(sourceDate);
+    setMyFlowVisibleMonth(getMyFlowMonthStart(sourceDate));
+    setMyFlowCalendarDateMoveUndo(null);
+    setMyFlowCalendarDateMoveDraft({
+      sourceDate,
+      targetDate,
+      selectedKeys: row ? [getMyFlowRowInstanceKey(row)] : [],
+    });
+    setMyFlowActiveRowKey('');
+    setMyFlowEditingDetailKey('');
+    setMyFlowDetailOpen(false);
+    scrollMyFlowSelectedDayOnMobile();
+  };
+
+  const toggleMyFlowCalendarDateMoveItem = (key: string) => {
+    setMyFlowCalendarDateMoveDraft((current) => current ? {
+      ...current,
+      selectedKeys: current.selectedKeys.includes(key)
+        ? current.selectedKeys.filter((item) => item !== key)
+        : [...current.selectedKeys, key],
+    } : current);
+    setMyFlowCalendarDateMoveUndo(null);
+  };
+
+  const toggleAllMyFlowCalendarDateMoveItems = () => {
+    const visibleKeys = myFlowCalendarDateMoveItems.map((item) => item.key);
+    setMyFlowCalendarDateMoveDraft((current) => {
+      if (!current) return current;
+      const allSelected = visibleKeys.length > 0 && visibleKeys.every((key) => current.selectedKeys.includes(key));
+      return { ...current, selectedKeys: allSelected ? [] : visibleKeys };
+    });
+    setMyFlowCalendarDateMoveUndo(null);
+  };
+
+  const applyMyFlowCalendarDateMove = () => {
+    if (!myFlowCalendarDateMoveDraft || !myFlowCalendarDateMovePreview.canApply || !myFlowCalendarDateMovePreview.targetDate) return;
+    const selectedRows = myFlowCalendarDateMovePreview.selectedItems
+      .map((item) => myFlowCalendarDateMoveRowsByKey.get(item.key))
+      .filter((row): row is MyFlowCalendarRow => Boolean(row));
+    if (selectedRows.length !== myFlowCalendarDateMovePreview.selectedCount) return;
+    const mutationSnapshot = persistMyFlowCalendarRowsDate(
+      selectedRows,
+      myFlowCalendarDateMovePreview.targetDate,
+    );
+    if (!mutationSnapshot) return;
+    setMyFlowCalendarDateMoveUndo({
+      count: selectedRows.length,
+      sourceDate: myFlowCalendarDateMoveDraft.sourceDate,
+      targetDate: myFlowCalendarDateMovePreview.targetDate,
+      ...mutationSnapshot,
+    });
+    setMyFlowCalendarDateMoveDraft(null);
+    setMyFlowSelectedDate(myFlowCalendarDateMovePreview.targetDate);
+    setMyFlowVisibleMonth(getMyFlowMonthStart(myFlowCalendarDateMovePreview.targetDate));
+  };
+
+  const undoMyFlowCalendarDateMove = () => {
+    if (!myFlowCalendarDateMoveUndo) return;
+    if (!restoreMyFlowCalendarDateMutation(myFlowCalendarDateMoveUndo)) return;
+    const sourceDate = myFlowCalendarDateMoveUndo.sourceDate;
+    setMyFlowCalendarDateMoveUndo(null);
+    setMyFlowSelectedDate(sourceDate);
+    setMyFlowVisibleMonth(getMyFlowMonthStart(sourceDate));
   };
 
   const addMyFlowPersonalDraftItem = (flow: MySavedFlow) => {
@@ -9366,7 +9541,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         getMyFlowRowInstanceKey(myFlowActiveRow) === getMyFlowRowInstanceKey(row),
       );
       return (
-        <div key={`${routineDragKey}-${options.kind ?? 'schedule'}`} data-testid="my-flow-execution-row-shell" className="grid gap-1.5">
+        <div
+          key={`${routineDragKey}-${options.kind ?? 'schedule'}`}
+          data-testid="my-flow-execution-row-shell"
+          data-flow-slug={row.flow.progress.slug}
+          data-calendar-item-kind={row.structuralOccurrenceId ? 'occurrence' : 'task'}
+          className="grid gap-1.5"
+        >
         <article
           data-item-id={row.id}
           data-row-key={routineDragKey}
@@ -9710,18 +9891,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
-  const moveMyFlowCalendarRow = (row: MyFlowCalendarRow, nextDate: string) => {
-    if (!row.calendarKey || !nextDate) return;
-    updateMyFlowDateOverrideState((current) => ({ ...current, [row.calendarKey as string]: nextDate }));
-    setMyFlowSelectedDate(nextDate);
-    setMyFlowActiveRowKey(row.calendarKey);
-    setMyFlowVisibleMonth(getMyFlowMonthStart(nextDate));
-  };
-
-  const moveMyFlowRoutineByKey = (routineKey: string, nextDate: string) => {
+  const prepareMyFlowRoutineDateMove = (routineKey: string, nextDate: string) => {
     const row = calendarRows.find((item) => item.flow.bundle.flow.structure_type === 'routine' && getMyFlowRowInstanceKey(item) === routineKey);
     if (!row) return;
-    moveMyFlowCalendarRow(row, nextDate);
+    openMyFlowCalendarDateMove(row, nextDate);
     setMyFlowRoutineOverflowDate('');
     setMyFlowScheduleOverflowDate('');
     setMyFlowExpandedRoutineKey('');
@@ -9976,7 +10149,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       if (!routineKey) return;
       if (!(event instanceof DragEvent) && myFlowDraggingRoutineDateRef.current === dateStr) return;
       event.preventDefault();
-      moveMyFlowRoutineByKey(routineKey, dateStr);
+      prepareMyFlowRoutineDateMove(routineKey, dateStr);
       myFlowDraggingRoutineKeyRef.current = '';
       myFlowDraggingRoutineDateRef.current = '';
     };
@@ -10046,12 +10219,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       info.revert();
       return;
     }
-    updateMyFlowDateOverrideState((current) => ({ ...current, [calendarKey]: nextDate }));
-    setMyFlowSelectedDate(nextDate);
-    setMyFlowActiveRowKey(calendarKey);
-    setMyFlowEditingDetailKey('');
-    setMyFlowDetailOpen(true);
-    setMyFlowVisibleMonth(getMyFlowMonthStart(nextDate));
+    const row = calendarRows.find((item) => getMyFlowRowInstanceKey(item) === calendarKey);
+    info.revert();
+    if (!row) return;
+    openMyFlowCalendarDateMove(row, nextDate);
   };
 
   const handleMyFlowCalendarDateClick = (info: DateClickArg) => {
@@ -14970,27 +15141,37 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     className={`mt-2 grid-flow-col auto-cols-max overflow-x-auto sm:mt-3 sm:inline-grid ${FLOW_UI_SEGMENTED_CLASS}`}
                     aria-label="캘린더 표시 범위"
                   >
-                    {visibleMyFlowCalendarScopeOptions.map((option) => (
-                      <button
-                        key={option.id}
-                        type="button"
-                        data-testid={`my-flow-calendar-scope-${option.id}`}
-                        aria-pressed={myFlowCalendarScope === option.id}
-                        className={`min-h-10 shrink-0 rounded-md px-2.5 text-xs font-semibold ${myFlowCalendarScope === option.id ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
-                        onClick={() => selectMyFlowCalendarScope(option.id)}
-                      >
-                        {isMyFlowMobileViewport
-                          ? option.id === 'all'
-                            ? '전체'
-                            : option.id === 'map'
-                              ? '저장'
-                              : option.id === 'schedule'
-                                ? '날짜'
-                                : '반복'
-                          : option.label}
-                        <span className="ml-1 text-[10px] font-semibold text-slate-500">{option.count}</span>
-                      </button>
-                    ))}
+                    {visibleMyFlowCalendarScopeOptions.map((option) => {
+                      const flowSlug = getCalendarFlowSlugFromScope(option.id);
+                      const selected = myFlowCalendarScope === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          data-testid={flowSlug
+                            ? `my-flow-calendar-scope-flow-${flowSlug}`
+                            : `my-flow-calendar-scope-${option.id}`}
+                          data-flow-slug={flowSlug}
+                          aria-label={`${option.label}, ${formatMyFlowMonthHeading(myFlowVisibleMonth)} 일정 ${option.count}개`}
+                          aria-pressed={selected}
+                          className={`flex min-h-10 max-w-44 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold ${selected ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                          onClick={() => selectMyFlowCalendarScope(option.id)}
+                        >
+                          {option.marker ? (
+                            <span
+                              data-testid="my-flow-calendar-filter-marker"
+                              aria-hidden="true"
+                              className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] text-[9px] font-black text-white"
+                              style={{ backgroundColor: option.marker.color }}
+                            >
+                              {option.marker.initial}
+                            </span>
+                          ) : null}
+                          <span className="truncate">{option.id === 'all' ? '전체' : option.label}</span>
+                          <span className={`shrink-0 text-[10px] font-semibold ${selected ? 'text-white/75' : 'text-slate-500'}`}>{option.count}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : null}
                 <div className="mt-2 flex min-h-12 items-center justify-between gap-2 border-y border-[#E7E4DD] py-2 sm:mt-4">
@@ -15102,23 +15283,50 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 data-schedule-overflow-date={myFlowScheduleOverflowDate === myFlowSelectedDate ? myFlowScheduleOverflowDate : undefined}
                 className="order-1 border-y border-slate-200 py-3 sm:py-4 lg:order-3 lg:border-y-0 lg:border-l lg:pl-4"
               >
-                <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
-                {!isMyFlowMobileViewport ? (
-                  <p data-testid="my-flow-selected-day-summary" className="mt-1 text-xs font-semibold text-slate-500">
-                    {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateAllRows.length}개 항목 · {myFlowSelectedDateOpenCount}개 남음
-                  </p>
-                ) : null}
-                {myFlowRoutineOverflowDate === myFlowSelectedDate && myFlowSelectedDateRoutineOverflowCount > 0 ? (
+                <div className="flex items-start justify-between gap-3">
+                  <div aria-live="polite" aria-atomic="true">
+                    <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
+                    <p data-testid="my-flow-selected-day-summary" className="mt-1 text-xs font-semibold text-slate-500">
+                      {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateAllRows.length}개 항목 · {myFlowSelectedDateOpenCount}개 남음
+                    </p>
+                  </div>
+                  {myFlowSelectedDateAllRows.length > 0 && !myFlowCalendarDateMoveDraft ? (
+                    <button
+                      type="button"
+                      data-testid="my-flow-calendar-date-move-entry"
+                      aria-label={`${formatMyFlowDisplayDate(myFlowSelectedDate)} 할 일 날짜 옮기기`}
+                      className={FLOW_UI_COMPACT_ACTION_CLASS}
+                      onClick={() => openMyFlowCalendarDateMove()}
+                    >
+                      날짜 옮기기
+                    </button>
+                  ) : null}
+                </div>
+                <CalendarDateMovePanel
+                  open={Boolean(myFlowCalendarDateMoveDraft)}
+                  items={myFlowCalendarDateMoveItems}
+                  selectedKeys={myFlowCalendarDateMoveDraft?.selectedKeys ?? []}
+                  targetDate={myFlowCalendarDateMoveDraft?.targetDate ?? ''}
+                  preview={myFlowCalendarDateMovePreview}
+                  undo={myFlowCalendarDateMoveUndo ?? undefined}
+                  onToggleItem={toggleMyFlowCalendarDateMoveItem}
+                  onToggleAll={toggleAllMyFlowCalendarDateMoveItems}
+                  onTargetDateChange={(targetDate) => setMyFlowCalendarDateMoveDraft((current) => current ? { ...current, targetDate } : current)}
+                  onApply={applyMyFlowCalendarDateMove}
+                  onCancel={() => setMyFlowCalendarDateMoveDraft(null)}
+                  onUndo={undoMyFlowCalendarDateMove}
+                />
+                {!myFlowCalendarDateMoveDraft && myFlowRoutineOverflowDate === myFlowSelectedDate && myFlowSelectedDateRoutineOverflowCount > 0 ? (
                   <p data-testid="my-flow-selected-day-overflow-note" className="mt-2 rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
                     +{myFlowSelectedDateRoutineOverflowCount} 반복 항목 포함
                   </p>
                 ) : null}
-                {myFlowScheduleOverflowDate === myFlowSelectedDate && myFlowSelectedDateScheduleOverflowCount > 0 ? (
+                {!myFlowCalendarDateMoveDraft && myFlowScheduleOverflowDate === myFlowSelectedDate && myFlowSelectedDateScheduleOverflowCount > 0 ? (
                   <p data-testid="my-flow-selected-day-schedule-overflow-note" className="mt-2 rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
                     +{myFlowSelectedDateScheduleOverflowCount} 날짜 항목 포함
                   </p>
                 ) : null}
-                {myFlowSelectedDateAllRows.length > 0 ? (
+                {myFlowCalendarDateMoveDraft ? null : myFlowSelectedDateAllRows.length > 0 ? (
                   <div data-testid="my-flow-selected-date-groups" className="mt-3 grid">
                     {myFlowSelectedDateGroups.map((group) => {
                       const groupOpenCount = group.rows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
@@ -15130,6 +15338,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           key={group.key}
                           data-testid="my-flow-selected-date-group"
                           data-density="compact"
+                          data-flow-slug={group.rows[0]?.flow.progress.slug}
+                          data-group-kind={group.kind}
                           data-flow-marker-key={flowMarker.key}
                           className="border-t border-slate-200 py-3 first:border-t-0 first:pt-0"
                         >
