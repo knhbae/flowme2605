@@ -4960,6 +4960,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     rowKey: string;
     expanded: boolean;
   } | null>(null);
+  const [myFlowEditorDiscardPromptOpen, setMyFlowEditorDiscardPromptOpen] = useState(false);
   const [, setMyFlowExpandedMemoKey] = useState('');
   const [myFlowEditingDetailKey, setMyFlowEditingDetailKey] = useState('');
   const [myFlowActiveRowKey, setMyFlowActiveRowKey] = useState('');
@@ -5029,6 +5030,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const timeoutId = window.setTimeout(() => setMyFlowBatchAdjustmentUndo(null), 7000);
     return () => window.clearTimeout(timeoutId);
   }, [myFlowBatchAdjustmentUndo]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isMyFlowMobileViewport || !myFlowEditingDetailKey) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMyFlowMobileViewport, myFlowEditingDetailKey]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !myFlowEditingDetailKey || Object.keys(myFlowEditingDrafts).length === 0) return;
+    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warnBeforeUnload);
+    return () => window.removeEventListener('beforeunload', warnBeforeUnload);
+  }, [myFlowEditingDetailKey, myFlowEditingDrafts]);
   useEffect(() => {
     if (!isCalendarSurface || typeof window === 'undefined') return;
     if (window.location.hash === '#calendar-placement-queue') {
@@ -5067,11 +5087,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowBatchAdjustment(null);
     setMyFlowRoutineOverflowDate('');
     setMyFlowScheduleOverflowDate('');
+    setMyFlowEditorDiscardPromptOpen(false);
+    setMyFlowEditorAdvancedDisclosure(null);
   };
   const selectMyFlowView = (
     id: typeof savedViewTabs[number][0],
     historyMode: 'push' | 'replace' | 'none' = 'push',
   ) => {
+    if (myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
+      setMyFlowEditorDiscardPromptOpen(true);
+      return;
+    }
     setMyFlowPostSaveWorkspaceOpen(true);
     closeMyFlowTransientDetail();
     setSavedView(id);
@@ -5953,6 +5979,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const showMyFlowCalendarScopeFilter = visibleMyFlowCalendarScopeOptions.length > 1;
   const myFlowCalendarScopeLabel = myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? myFlowCalendarAllScopeLabel;
   const moveMyFlowCalendarMonth = (nextMonth: string) => {
+    if (myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
+      setMyFlowEditorDiscardPromptOpen(true);
+      return;
+    }
     setMyFlowVisibleMonth(nextMonth);
     setMyFlowSelectedDate(findFirstMyFlowDateInMonth(calendarScopedRows, nextMonth));
     setMyFlowActiveRowKey('');
@@ -5964,6 +5994,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowDetailOpen(false);
   };
   const selectMyFlowCalendarScope = (scope: MyFlowCalendarScope) => {
+    if (myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
+      setMyFlowEditorDiscardPromptOpen(true);
+      return;
+    }
     const scopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, scope));
     setMyFlowCalendarScope(scope);
     setMyFlowSelectedDate(findFirstMyFlowDateInMonth(scopedRows, myFlowVisibleMonth));
@@ -6760,12 +6794,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }
       }
     }
+    setMyFlowEditorDiscardPromptOpen(false);
+    setMyFlowEditorAdvancedDisclosure(null);
     discardMyFlowEditingDraft(row);
-    closeMyFlowRowDetail();
+    closeMyFlowRowDetail(true);
   };
   const cancelMyFlowEditingDraft = (row: MyFlowCalendarRow) => {
+    setMyFlowEditorDiscardPromptOpen(false);
+    setMyFlowEditorAdvancedDisclosure(null);
     discardMyFlowEditingDraft(row);
-    closeMyFlowRowDetail();
+    closeMyFlowRowDetail(true);
   };
   const copyMyFlowStepText = async (text: string, key: string, feedback: string) => {
     try {
@@ -8265,10 +8303,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowDetailSurface('');
     setMyFlowDetailOpen(false);
     setMyFlowExecutionNoteDraft(null);
+    setMyFlowEditorDiscardPromptOpen(false);
+    setMyFlowEditorAdvancedDisclosure(null);
   };
 
   const openMyFlowRowDetail = (row: MyFlowCalendarRow, surface: MyFlowView | 'post-save' = savedView) => {
     const key = getMyFlowRowInstanceKey(row);
+    if (
+      myFlowEditingDetailKey &&
+      Object.keys(myFlowEditingDrafts).length > 0 &&
+      key !== myFlowActiveRowKey
+    ) {
+      setMyFlowEditorDiscardPromptOpen(true);
+      return;
+    }
     if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
       myFlowDetailReturnFocusRef.current = document.activeElement;
     }
@@ -8626,7 +8674,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const openMyFlowRowFromFlowTab = (flow: MySavedFlow, row: MyFlowRow) => {
     const flowRow = getMyFlowRowForFlowTab(flow, row);
     if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(flowRow)) {
-      resetMyFlowRowDetailState();
+      closeMyFlowRowDetail();
       return;
     }
     setMyFlowExpandedStructureSlug(flow.progress.slug);
@@ -9802,13 +9850,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     scrollMyFlowSelectedDayOnMobile();
   };
 
-  const closeMyFlowRowDetail = () => {
+  const closeMyFlowRowDetail = (force = false): boolean => {
+    if (!force && myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
+      setMyFlowEditorDiscardPromptOpen(true);
+      return false;
+    }
     resetMyFlowRowDetailState();
     const returnTarget = myFlowDetailReturnFocusRef.current;
     myFlowDetailReturnFocusRef.current = null;
     if (returnTarget?.isConnected) {
       window.setTimeout(() => returnTarget.focus(), 0);
     }
+    return true;
   };
 
   const renderMyFlowItemDetailEditor = (
@@ -9906,6 +9959,51 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       editorDraft.date || canonicalRoutineSeries?.revisions[0]?.effectiveFrom || '';
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
+    const editorDialogTitleId = `my-flow-item-editor-${routineKey.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+    const requestMyFlowEditorCancel = () => {
+      if (hasEditorChanges) {
+        setMyFlowEditorDiscardPromptOpen(true);
+        return;
+      }
+      cancelMyFlowEditingDraft(row);
+    };
+    const focusVisibleMyFlowEditorTitle = () => {
+      if (typeof window === 'undefined') return;
+      window.setTimeout(() => {
+        const visibleEditor = Array.from(document.querySelectorAll<HTMLElement>(
+          '[data-testid="my-flow-item-detail"][data-detail-mode="edit"]',
+        )).find((element) => element.getClientRects().length > 0);
+        visibleEditor
+          ?.querySelector<HTMLInputElement>('[data-testid="my-flow-detail-title-input"]')
+          ?.focus({ preventScroll: true });
+      }, 100);
+    };
+    const handleMyFlowEditorKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+      if (!isDetailEditing) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        if (myFlowEditorDiscardPromptOpen) {
+          setMyFlowEditorDiscardPromptOpen(false);
+        } else {
+          requestMyFlowEditorCancel();
+        }
+        return;
+      }
+      if (!isMyFlowMobileViewport || event.key !== 'Tab') return;
+      const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      )).filter((element) => element.getClientRects().length > 0);
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
     const portableExportInput: MyFlowPortableStepExportInput = {
       flowTitle: getMyFlowPortableExportFlowTitle(row.flow),
       stepId: portableExportStableStepId,
@@ -10242,6 +10340,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <input
                         data-testid="personal-draft-time-input"
                         aria-label={`${editorDraft.title} 시작 시간`}
+                        aria-invalid={personalDraftTimeInvalid || undefined}
+                        aria-describedby={personalDraftTimeInvalid ? 'personal-draft-time-validation' : undefined}
                         className={fieldClassName}
                         type="time"
                         value={editorDraft.time}
@@ -10250,6 +10350,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     </label>
                     {personalDraftTimeInvalid ? (
                       <p
+                        id="personal-draft-time-validation"
                         data-testid="personal-draft-time-validation"
                         role="alert"
                         className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700"
@@ -10269,6 +10370,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <input
                       data-testid="personal-draft-duration-input"
                       aria-label={`${editorDraft.title} 예상 소요 시간`}
+                      aria-invalid={personalDraftDurationInvalid || undefined}
+                      aria-describedby={personalDraftDurationInvalid ? 'personal-draft-duration-validation' : undefined}
                       className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                       type="number"
                       min={PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES}
@@ -10287,6 +10390,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 </p>
                 {personalDraftDurationInvalid ? (
                   <p
+                    id="personal-draft-duration-validation"
                     data-testid="personal-draft-duration-validation"
                     role="alert"
                     className="mt-2 rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700"
@@ -10299,6 +10403,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {isEditorAdvancedExpanded && editorDraft.date ? (
               <fieldset
                 data-testid="personal-draft-recurrence-control"
+                aria-describedby={personalDraftRecurrenceInvalid ? 'personal-draft-recurrence-validation' : undefined}
                 className="mt-3 min-w-0 border-t border-slate-200 pt-3"
               >
                 <legend className="text-xs font-semibold text-slate-600">반복</legend>
@@ -10343,6 +10448,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <input
                           data-testid="personal-draft-recurrence-interval"
                           aria-label={`${editorDraft.title} 반복 간격`}
+                          aria-invalid={personalDraftRecurrenceInvalid || undefined}
                           className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-14 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           type="number"
                           min={1}
@@ -10459,6 +10565,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     ) : null}
                     {personalDraftRecurrenceInvalid ? (
                       <p
+                        id="personal-draft-recurrence-validation"
                         data-testid="personal-draft-recurrence-validation"
                         role="alert"
                         className="rounded-md bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700 sm:col-span-2"
@@ -10665,15 +10772,39 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-execution-level={isRecurringSeriesDefinition ? 'series' : row.structuralOccurrenceId ? 'occurrence' : 'item'}
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
         data-editor-advanced-expanded={isDetailEditing ? String(isEditorAdvancedExpanded) : undefined}
+        data-editor-layout={isDetailEditing ? (isMyFlowMobileViewport ? 'mobile-full-screen' : 'wide-detail-pane') : undefined}
         data-default-primary-action-count={isDetailEditing ? undefined : '2'}
+        role={isDetailEditing ? 'dialog' : undefined}
+        aria-modal={isDetailEditing && isMyFlowMobileViewport ? true : undefined}
+        aria-labelledby={isDetailEditing ? editorDialogTitleId : undefined}
+        onKeyDown={handleMyFlowEditorKeyDown}
         className={
-          mode === 'inline'
+          isDetailEditing && isMyFlowMobileViewport
+            ? 'fixed inset-0 z-[80] overflow-y-auto bg-[#F7F8F5] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]'
+            : mode === 'inline'
             ? 'mt-2 rounded-lg border border-blue-100 bg-blue-50 p-3'
             : mode === 'panel'
               ? 'rounded-md border border-blue-100 bg-white p-3'
               : 'space-y-3'
         }
       >
+        {isDetailEditing ? (
+          <header className="sticky top-0 z-10 -mx-1 mb-3 flex items-start justify-between gap-3 border-b border-slate-200 bg-[#F7F8F5]/95 px-1 pb-3 pt-1 backdrop-blur-sm">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-blue-700">빠른 조정</p>
+              <h3 id={editorDialogTitleId} className="mt-0.5 truncate text-base font-semibold text-slate-950">할 일 수정</h3>
+            </div>
+            <button
+              type="button"
+              data-testid="my-flow-editor-cancel"
+              className="min-h-10 shrink-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-slate-300"
+              aria-label={itemEditCancelAriaLabel}
+              onClick={requestMyFlowEditorCancel}
+            >
+              취소
+            </button>
+          </header>
+        ) : null}
         {row.structuralOccurrenceId ? (
           <p
             data-testid="personal-draft-occurrence-status"
@@ -10694,7 +10825,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           <div className={isInlineMobileMode ? 'min-w-0' : 'min-w-0 flex-1'}>
             {isDetailEditing ? (
               <label className="block text-xs font-semibold text-slate-600">
-                할 일
+                제목
                 <input
                   data-testid="my-flow-detail-title-input"
                   className={fieldClassName}
@@ -10760,22 +10891,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 캘린더에서 회차별 실행
               </Link>
             ) : null}
-            {!isDrawerMode && isDetailEditing ? (
-              <button
-                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-                type="button"
-                data-testid="my-flow-detail-edit-toggle"
-                data-my-flow-item-edit-entry="true"
-                aria-pressed="true"
-                aria-label={itemEditCancelAriaLabel}
-                onClick={() => {
-                  cancelMyFlowEditingDraft(row);
-                  setMyFlowEditingDetailKey('');
-                }}
-              >
-                수정 취소
-              </button>
-            ) : null}
             {!isDetailEditing ? (
               <button
                 className={`rounded-md px-3 py-2 text-xs font-semibold ${
@@ -10784,7 +10899,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     : 'border border-slate-200 bg-white text-slate-700'
                 }`}
                 type="button"
-                onClick={closeMyFlowRowDetail}
+                onClick={() => closeMyFlowRowDetail()}
               >
                 닫기
               </button>
@@ -10949,11 +11064,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     aria-label={isDetailEditing ? itemEditCancelAriaLabel : itemEditButtonAriaLabel}
                     onClick={() => {
                       if (isDetailEditing) {
-                        cancelMyFlowEditingDraft(row);
-                        setMyFlowEditingDetailKey('');
+                        requestMyFlowEditorCancel();
                         return;
                       }
+                      setMyFlowEditorDiscardPromptOpen(false);
+                      setMyFlowEditorAdvancedDisclosure({ rowKey: routineKey, expanded: false });
                       setMyFlowEditingDetailKey(portableExportKey);
+                      focusVisibleMyFlowEditorTitle();
                     }}
                   >
                     {isDetailEditing ? '수정 취소' : itemEditButtonLabel}
@@ -11055,8 +11172,41 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {showRoutineRepeatSettings && isRoutineRow ? routineRepeatSettings : null}
           </div>
         ) : null}
+        {isDetailEditing && myFlowEditorDiscardPromptOpen ? (
+          <div
+            data-testid="my-flow-editor-discard-prompt"
+            role="alert"
+            className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-3"
+          >
+            <p className="text-sm font-semibold text-amber-950">저장하지 않은 변경을 버릴까요?</p>
+            <div className="mt-3 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                autoFocus
+                className="min-h-10 rounded-md border border-amber-200 bg-white px-3 py-2 text-xs font-semibold text-amber-900"
+                onClick={() => setMyFlowEditorDiscardPromptOpen(false)}
+              >
+                계속 수정
+              </button>
+              <button
+                type="button"
+                data-testid="my-flow-editor-confirm-discard"
+                className="min-h-10 rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white"
+                onClick={() => cancelMyFlowEditingDraft(row)}
+              >
+                변경 버리기
+              </button>
+            </div>
+          </div>
+        ) : null}
         {isDetailEditing || (isDrawerMode && hasEditorChanges) ? (
-          <div data-testid="my-flow-detail-edit-actions" className="mt-3 flex justify-end rounded-md border border-blue-100 bg-white px-3 py-2">
+          <div
+            data-testid="my-flow-detail-edit-actions"
+            data-editor-actions-sticky={isDetailEditing ? 'true' : undefined}
+            className={`mt-3 flex justify-end rounded-md border border-blue-100 bg-white px-3 py-2 ${
+              isDetailEditing ? 'sticky bottom-0 z-10 shadow-[0_-8px_20px_rgba(15,23,42,0.08)]' : ''
+            }`}
+          >
             <div className="flex gap-2">
               <button
                 className={`rounded-md px-3 py-2 text-xs font-semibold ${hasEditorChanges && !personalDraftTimedScheduleInvalid && !personalDraftRecurrenceInvalid ? 'bg-blue-700 text-white' : 'cursor-not-allowed bg-slate-100 text-slate-400'}`}
@@ -11066,7 +11216,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 onClick={() => {
                   if (!hasEditorChanges || personalDraftTimedScheduleInvalid || personalDraftRecurrenceInvalid) return;
                   saveMyFlowEditingDraft(row);
-                  setMyFlowEditingDetailKey('');
                 }}
               >
                 변경 저장
@@ -11229,7 +11378,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </div>
           </section>
         )}
-        {isDrawerMode && hasAdvancedMeta ? (
+        {!isDetailEditing && isDrawerMode && hasAdvancedMeta ? (
           <div className="rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
             {attachmentLabel ? (
               <p>
@@ -11251,7 +11400,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         ) : null}
-        {!isDrawerMode && hasAdvancedMeta ? (
+        {!isDetailEditing && !isDrawerMode && hasAdvancedMeta ? (
           <div className="mt-2 text-xs font-semibold text-slate-600">
             <button
               type="button"

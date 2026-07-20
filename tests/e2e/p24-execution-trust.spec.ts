@@ -895,17 +895,27 @@ test.describe('P24 execution trust regressions', () => {
     await page.evaluate(() => localStorage.clear());
     await page.reload();
     await page.getByLabel('이사일').fill('2026-07-22');
-    await page.getByRole('button', { name: '그대로 저장' }).click();
+    await page.getByRole('button', { name: '그대로 시작' }).click();
     await expect(page).toHaveURL('/my?savedMap=moving-d30');
     await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
     await page.getByTestId('my-flow-view-flow').click();
 
     const openMovingEditor = async () => {
       const flow = page.locator(
-        '[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]',
-      );
-      const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
-      await firstRow.getByRole('button', { name: /열기/ }).click();
+        ':is([data-testid="my-flow-overview-card"], [data-testid="my-flow-mobile-structure-row"])',
+      ).first();
+      await expect(flow).toBeVisible({ timeout: 10_000 });
+      const compactOpen = flow.getByTestId('my-flow-mobile-structure-open');
+      if ((await compactOpen.count()) > 0 && (await compactOpen.getAttribute('aria-expanded')) !== 'true') {
+        await compactOpen.click();
+      }
+      const outline = flow.getByTestId('my-flow-whole-flow-outline');
+      if ((await outline.getByTestId('my-flow-execution-row-shell').count()) === 0) {
+        await outline.getByTestId('my-flow-whole-flow-section-toggle').first().click();
+      }
+      const firstRow = outline.getByTestId('my-flow-execution-row-shell').first();
+      await expect(firstRow).toBeVisible({ timeout: 10_000 });
+      await firstRow.locator('button').first().click();
       const detail = flow
         .getByTestId('my-flow-inline-detail')
         .getByTestId('my-flow-item-detail');
@@ -1009,19 +1019,22 @@ test.describe('P24 execution trust regressions', () => {
     await page.reload();
     await page.getByTestId('my-flow-view-flow').click();
     const flow = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="used-car-buying-check"]',
+      ':is([data-testid="my-flow-overview-card"], [data-testid="my-flow-mobile-structure-row"])[data-flow-slug="used-car-buying-check"]',
     );
-    if ((await flow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
-      await flow.getByTestId('my-flow-mobile-structure-open').click();
+    await expect(flow).toBeVisible({ timeout: 10_000 });
+    const compactOpen = flow.getByTestId('my-flow-mobile-structure-open');
+    if ((await compactOpen.count()) > 0 && (await compactOpen.getAttribute('aria-expanded')) !== 'true') {
+      await compactOpen.click();
     }
-    const showAllSteps = flow.getByRole('button', { name: /전체 단계 보기/ });
-    if ((await showAllSteps.count()) > 0) await showAllSteps.click();
-    const decisionRow = flow
-      .getByTestId('my-flow-mobile-structure-step-row')
+    const outline = flow.getByTestId('my-flow-whole-flow-outline');
+    const decisionGroup = outline.getByRole('button', { name: /계약 전 확인/ });
+    if ((await decisionGroup.getAttribute('aria-expanded')) !== 'true') await decisionGroup.click();
+    const decisionRow = outline
+      .getByTestId('my-flow-execution-row-shell')
       .filter({ hasText: '최종 구매/보류/거절' });
-    await decisionRow.click();
-    const detail = flow
-      .getByTestId('my-flow-mobile-structure-inline-detail')
+    await decisionRow.getByRole('button', { name: /열기/ }).click();
+    const detail = decisionRow
+      .getByTestId('my-flow-inline-detail')
       .getByTestId('my-flow-item-detail');
     await enterMyFlowDetailEditMode(detail);
     const toggle = detail.getByTestId('my-flow-editor-advanced-toggle');

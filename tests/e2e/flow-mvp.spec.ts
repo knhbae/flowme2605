@@ -5267,15 +5267,18 @@ test('my flow and calendar details separate execution from explicit editing', as
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto('/my?demo=ux12');
   await page.getByTestId('my-flow-view-flow').click();
-  await page.getByTestId('my-flow-inventory-toggle').click();
+  await page.getByTestId('my-flow-filter-used-car-buying-check').click();
 
   const usedCarCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="used-car-buying-check"]');
-  await usedCarCard.getByTestId('my-flow-next-action-open').click();
+  const usedCarOutline = usedCarCard.getByTestId('my-flow-whole-flow-outline');
+  const usedCarFirstRow = usedCarOutline.getByTestId('my-flow-execution-row-shell').first();
+  await usedCarFirstRow.locator('button').first().click();
   let detail = usedCarCard.getByTestId('my-flow-item-detail');
   await expect(detail).toHaveAttribute('data-detail-mode', 'execute');
   await expect(detail).toHaveAttribute('data-default-primary-action-count', '2');
   await expect(detail.getByTestId('my-flow-detail-title-input')).toHaveCount(0);
-  await expect(detail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(1);
+  await expect(usedCarFirstRow.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+  await expect(detail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(0);
   await expect(detail.getByRole('button', { name: '닫기', exact: true })).toBeVisible();
   await expect(detail.getByTestId('my-flow-detail-edit-toggle')).not.toBeVisible();
   await expect(detail.getByTestId('my-flow-detail-source-link')).not.toBeVisible();
@@ -5290,9 +5293,11 @@ test('my flow and calendar details separate execution from explicit editing', as
   await detail.getByTestId('my-flow-detail-memo').fill('취소할 편집 메모');
   await expect(detail.getByRole('button', { name: '변경 저장' })).toBeEnabled();
   await detail.getByRole('button', { name: /수정 취소/ }).click();
+  await expect(detail.getByTestId('my-flow-editor-discard-prompt')).toBeVisible();
+  await detail.getByTestId('my-flow-editor-confirm-discard').click();
   await expect(detail).toHaveCount(0);
 
-  await usedCarCard.getByTestId('my-flow-next-action-open').click();
+  await usedCarFirstRow.locator('button').first().click();
   detail = usedCarCard.getByTestId('my-flow-item-detail');
   await enterMyFlowDetailEditMode(detail);
   await detail.getByTestId('my-flow-detail-memo').fill('저장한 편집 메모');

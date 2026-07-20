@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~09 complete; P26-10 progressive item editor next)
+**Last Updated:** 2026-07-20 (P26-01~10 complete; P26-11 structural and batch editing next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08 separates My Flow into `지금 / Flow 목록 / 완료`, and P26-09 makes a selected whole Flow readable as adaptive groups. P26-10 next separates quick item edits from advanced schedule and recurrence settings. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08 separates My Flow into `지금 / Flow 목록 / 완료`, P26-09 makes a selected whole Flow readable as adaptive groups, and P26-10 separates quick item edits from advanced schedule and recurrence settings. P26-11 next separates structural and batch editing from single-item adjustment. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-10 quick/advanced item editor |
+| Active product gate | P26-11 structural and batch editing |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Keep common item changes in one quick frame and move uncommon schedule controls behind advanced disclosure |
+| AI action now | Keep add/delete/restore/reorder and multi-item moves in an explicit structural/batch mode outside the single-item quick editor |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-10 quick/advanced editor: My Flow and Calendar now share a contained item editor. Mobile 390px uses a full-screen dialog with title/date/memo first, advanced time/location/recurrence collapsed, safe-area/sticky actions, dirty-state guard, focus trap, and focus return. Wide 1024px keeps the same editor in the existing 17~20rem detail pane beside the whole-Flow outline. Dedicated Playwright is `3 / 3`, affected compatibility scenarios are `10 / 10`, build is `18 / 18`, and overflow/console/page errors are `0`. Observed-user sessions remain `0`. See [P26-10 evidence](./content-audit/2026-07-20-p26-10-quick-advanced-editor-evidence/README.md).
 
 - 2026-07-20 P26-09 whole-Flow reading: Saved Flow rows now use a pure, source-preserving reading model. Three- and ten-item fixtures remain fully visible; the 24-item moving Flow shows `6단계 / 기간 / 완료 수`, opens only the next actionable phase by default, groups repeated same-date rows under one date header, and expands to all 24 items on demand. Row-level memo actions are `0`; execution notes moved into the opened detail and remain saveable and included in completion feedback. The held multi-Flow receipt preserves canonical `18` rows while showing `14` by default and `18` after expansion. Dedicated Playwright is `4 / 4`, build is `18 / 18`, overflow and console/page errors are `0`; observed-user sessions remain `0`. See [P26-09 evidence](./content-audit/2026-07-20-p26-09-whole-flow-reading-evidence/README.md).
 
