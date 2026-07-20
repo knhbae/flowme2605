@@ -16,6 +16,7 @@ import { FlowDiscoveryCard, type FlowDiscoveryCardView } from './FlowDiscoveryCa
 import { FlowSaveBeforeFrame, type FlowSaveBeforePreviewRow } from './FlowSaveBeforeFrame';
 import { FlowExecutionNotePanel } from './FlowExecutionNotePanel';
 import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
+import { PostSaveDecisionHub } from './PostSaveDecisionHub';
 import {
   FLOW_UI_COMPACT_ACTION_CLASS,
   FLOW_UI_EXECUTION_ROW_CLASS,
@@ -75,6 +76,7 @@ import {
   buildPostSaveHref,
   parsePostSaveHandoff,
 } from '@/lib/flow/post-save-receipt';
+import { buildPostSaveDecisionSummary } from '@/lib/flow/post-save-decision-hub';
 import {
   getRuntimeArchivedFlowPolicy,
   isRetiredPersonalCopyBundle,
@@ -4974,6 +4976,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowUnscheduledTargetDate, setMyFlowUnscheduledTargetDate] = useState('');
   const [myFlowCalendarScheduleUndo, setMyFlowCalendarScheduleUndo] = useState<MyFlowCalendarScheduleUndo | null>(null);
   const [myFlowExportPanel, setMyFlowExportPanel] = useState<MyFlowExportPanelState | null>(null);
+  const [postSaveExportPickerOpen, setPostSaveExportPickerOpen] = useState(false);
   const [myFlowBatchAdjustment, setMyFlowBatchAdjustment] = useState<MyFlowBatchAdjustmentState | null>(null);
   const [myFlowBatchAdjustmentUndo, setMyFlowBatchAdjustmentUndo] = useState<MyFlowBatchAdjustmentUndo | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
@@ -7023,6 +7026,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setSavedView('today');
     setMyFlowInventoryOpen(false);
     setMyFlowPostSaveWorkspaceOpen(false);
+    setPostSaveExportPickerOpen(false);
+    setMyFlowExportPanel(null);
     setMyFlowHandledSavedMapId(postSaveQueryKey);
   }, [myFlowHandledSavedMapId, postSaveQueryKey, showPostSavePanel]);
 
@@ -8908,6 +8913,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const scrollMyFlowPostSaveTargetIntoView = (target: 'calendar' | 'checklist' | 'flow') => {
     window.setTimeout(() => {
       const targetRef = target === 'calendar' ? myFlowCalendarCardRef.current : myFlowWorkspaceRef.current;
+      targetRef?.focus({ preventScroll: true });
       targetRef?.scrollIntoView({ block: 'start', behavior: 'auto' });
     }, 0);
   };
@@ -8918,6 +8924,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setSavedView('flow');
     setSelectedSavedFlowSlug(postSaveFlows.length === 1 ? postSaveFlows[0].progress.slug : 'all');
     scrollMyFlowPostSaveTargetIntoView('flow');
+  };
+
+  const toggleMyFlowPostSaveExport = () => {
+    if (postSaveFlows.length === 1) {
+      const flowSlug = postSaveFlows[0].progress.slug;
+      const alreadyOpen = myFlowExportPanel?.flowSlug === flowSlug;
+      setPostSaveExportPickerOpen(false);
+      setMyFlowExportPanel(alreadyOpen ? null : { flowSlug, scope: 'flow', selectedKeys: [] });
+      return;
+    }
+
+    setPostSaveExportPickerOpen((open) => {
+      if (open) setMyFlowExportPanel(null);
+      return !open;
+    });
   };
 
   const renderExecutionRow = (
@@ -11464,22 +11485,35 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (postSaveFlows.length === 0) return null;
     const postSaveContinuationRow = getPostSaveContinuationRow();
     const postSaveTitle = postSaveMap?.title ?? postSaveFlows[0]?.progress.title ?? '저장한 Flow';
+    const postSaveDecisionItems = postSaveFlows.flatMap((flow) =>
+      flow.rows.map((row) => {
+        const effectiveRow = getMyFlowRowForFlowTab(flow, row);
+        const stableItemId =
+          effectiveRow.structuralOccurrenceId ??
+          effectiveRow.structuralProjectionStableId ??
+          effectiveRow.id;
+        const recurrenceKey = effectiveRow.structuralOccurrenceSeriesId ?? (
+          effectiveRow.structuralRepeat || flow.bundle.flow.structure_type === 'routine'
+            ? `${flow.progress.slug}::${stableItemId}`
+            : undefined
+        );
+        return {
+          flowSlug: flow.progress.slug,
+          itemId: stableItemId,
+          ...(effectiveRow.date ? { date: effectiveRow.date } : {}),
+          section: getMyFlowRowDisplaySectionLabel(effectiveRow),
+          ...(recurrenceKey ? { recurrenceKey } : {}),
+        };
+      }),
+    );
     const postSaveReceipt = buildCanonicalPostSaveReceipt({
       title: postSaveTitle,
-      items: postSaveFlows.flatMap((flow) =>
-        flow.rows.map((row) => {
-          const effectiveRow = getMyFlowRowForFlowTab(flow, row);
-          return {
-            flowSlug: flow.progress.slug,
-            itemId:
-              effectiveRow.structuralOccurrenceId ??
-              effectiveRow.structuralProjectionStableId ??
-              effectiveRow.id,
-            ...(effectiveRow.date ? { date: effectiveRow.date } : {}),
-          };
-        }),
-      ),
+      items: postSaveDecisionItems,
     });
+    const decisionSummary = buildPostSaveDecisionSummary(postSaveDecisionItems);
+    const exportExpanded = postSaveExportPickerOpen || postSaveFlows.some(
+      (flow) => myFlowExportPanel?.flowSlug === flow.progress.slug,
+    );
     return (
       <section
         data-testid="my-flow-post-save-panel"
@@ -11489,51 +11523,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-receipt-undated-count={postSaveReceipt.undatedCount}
         data-receipt-invalid-date-count={postSaveReceipt.invalidDateCount}
         data-receipt-duplicate-identity-count={postSaveReceipt.duplicateIdentityCount}
-        className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3 shadow-[0_8px_24px_rgba(27,26,23,0.05)] sm:p-4"
       >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-              <span data-testid="my-flow-post-save-confirmation" className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-[#3654FF]">내 Flow에 저장됨</span>
-              <span className="break-keep text-[#6E6B64]">{toUserFacingMapTitle(postSaveTitle)}</span>
-            </div>
-            <h3 className="mt-2 break-keep text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">
-              {postSaveExecutionHeld ? '저장 기록을 보관했어요' : '저장된 전체 Flow'}
-            </h3>
-            <p data-testid="my-flow-post-save-receipt-summary" className="mt-1 text-sm font-medium text-slate-600">
-              {postSaveExecutionHeld
-                ? '현재 확인이 필요한 Flow라 실행 목록에는 표시하지 않아요.'
-                : postSaveReceipt.summary}
-            </p>
-          </div>
-          {!postSaveExecutionHeld ? (
-            <div className="grid shrink-0 grid-cols-2 gap-2 sm:w-72">
-              {postSaveContinuationRow ? (
-                <button
-                  type="button"
-                  data-testid="my-flow-post-save-open-first"
-                  className="min-h-10 rounded-xl bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white"
-                  onClick={openMyFlowContinuationFromPostSave}
-                >
-                  바로 시작
-                </button>
-              ) : null}
-              <button
-                type="button"
-                data-testid="my-flow-post-save-view-flow"
-                className="min-h-10 rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm font-semibold text-[#3654FF]"
-                onClick={openMyFlowListFromPostSave}
-              >
-                내 Flow 열기
-              </button>
-            </div>
-          ) : (
-            <p data-testid="my-flow-post-save-held-note" className="max-w-xs text-sm font-semibold text-slate-600">
-              원문 확인이 끝난 뒤 다시 실행할 수 있어요.
-            </p>
-          )}
-        </div>
-        <div data-testid="my-flow-post-save-artifact" className="mt-4 grid gap-3 border-t border-[#E7E4DD] pt-3">
+        <PostSaveDecisionHub
+          title={toUserFacingMapTitle(postSaveTitle)}
+          receiptSummary={postSaveReceipt.summary}
+          metrics={decisionSummary.metrics}
+          held={postSaveExecutionHeld}
+          canStart={Boolean(postSaveContinuationRow)}
+          exportLabel={postSaveFlows.length > 1 ? 'Flow별 가져가기' : '가져가기'}
+          exportExpanded={exportExpanded}
+          onStart={openMyFlowContinuationFromPostSave}
+          onViewFlow={openMyFlowListFromPostSave}
+          onOpenExport={toggleMyFlowPostSaveExport}
+          exportContent={exportExpanded ? renderMyFlowPostSaveExportContent() : undefined}
+        >
           {postSaveFlows.map((flow) => (
             <section key={flow.progress.slug} data-testid="my-flow-post-save-flow" data-flow-slug={flow.progress.slug}>
               {postSaveFlows.length > 1 ? (
@@ -11542,7 +11545,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {renderMyFlowWholeFlowOutline(flow, { postSave: true })}
             </section>
           ))}
-        </div>
+        </PostSaveDecisionHub>
       </section>
     );
   };
@@ -12426,7 +12429,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
-  const renderMyFlowExportPanel = (flow: MySavedFlow) => {
+  const renderMyFlowExportPanel = (flow: MySavedFlow, options: { showEntry?: boolean } = {}) => {
     const items = getMyFlowScopeExportItems(flow);
     if (items.length === 0) return null;
     const active = myFlowExportPanel?.flowSlug === flow.progress.slug;
@@ -12447,6 +12450,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         selectedKeys={active ? myFlowExportPanel.selectedKeys : []}
         feedback={feedback}
         legacyPersonalDraft={isPersonalDraftStructuralEditEligible(flow.bundle)}
+        showEntry={options.showEntry}
         onOpenChange={(open) => {
           setMyFlowExportPanel(open
             ? { flowSlug: flow.progress.slug, scope: 'flow', selectedKeys: [] }
@@ -12470,6 +12474,56 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           void exportMyFlowScope(flow, destination, plan);
         }}
       />
+    );
+  };
+
+  const renderMyFlowPostSaveExportContent = () => {
+    const activeFlow = postSaveFlows.find((flow) => myFlowExportPanel?.flowSlug === flow.progress.slug);
+    if (postSaveFlows.length === 1) {
+      return activeFlow ? renderMyFlowExportPanel(activeFlow, { showEntry: false }) : null;
+    }
+
+    if (!postSaveExportPickerOpen) return null;
+    return (
+      <section data-testid="my-flow-post-save-export-picker" className="pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-semibold text-[#1B1A17]">가져갈 Flow 선택</h3>
+            <p className="mt-0.5 text-xs font-medium text-[#6E6B64]">각 Flow의 전체 항목을 같은 범위로 가져갑니다.</p>
+          </div>
+          <button
+            type="button"
+            aria-label="Flow별 가져가기 닫기"
+            className={FLOW_UI_ICON_ACTION_CLASS}
+            onClick={() => {
+              setPostSaveExportPickerOpen(false);
+              setMyFlowExportPanel(null);
+            }}
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div className="mt-3 grid gap-1 border-y border-[#E7E4DD]">
+          {postSaveFlows.map((flow) => {
+            const selected = activeFlow?.progress.slug === flow.progress.slug;
+            return (
+              <button
+                key={flow.progress.slug}
+                type="button"
+                data-testid="my-flow-post-save-export-flow"
+                data-flow-slug={flow.progress.slug}
+                aria-pressed={selected}
+                className={`flex min-h-12 items-center justify-between gap-3 border-b border-[#E7E4DD] px-1 py-2 text-left last:border-b-0 ${selected ? 'text-[#3654FF]' : 'text-[#1B1A17]'}`}
+                onClick={() => setMyFlowExportPanel({ flowSlug: flow.progress.slug, scope: 'flow', selectedKeys: [] })}
+              >
+                <span className="min-w-0 truncate text-sm font-semibold">{getMyFlowPortableExportFlowTitle(flow)}</span>
+                <span className="shrink-0 text-xs font-semibold text-[#8A857B]">{getMyFlowScopeExportItems(flow).length}개</span>
+              </button>
+            );
+          })}
+        </div>
+        {activeFlow ? renderMyFlowExportPanel(activeFlow, { showEntry: false }) : null}
+      </section>
     );
   };
 
@@ -13477,6 +13531,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             data-testid="my-flow-workspace"
             data-surface-role={isCalendarSurface ? 'date-first' : 'task-first'}
             ref={myFlowWorkspaceRef}
+            tabIndex={-1}
             className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'lg:grid-cols-[210px_minmax(0,1fr)]' : ''}`}
           >
             {showMyFlowSidebar ? (

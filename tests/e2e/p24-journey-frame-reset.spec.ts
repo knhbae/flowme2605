@@ -162,7 +162,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
     await page.goto('/my?savedFlow=alt-phone-sk7-self-activation');
     const postSave = page.getByTestId('my-flow-post-save-panel');
-    await expect(postSave).toContainText('저장 기록을 보관했어요');
+    await expect(postSave.getByTestId('my-flow-post-save-confirmation')).toHaveText('저장 기록 보관됨');
     await expect(postSave.getByTestId('my-flow-post-save-held-note')).toBeVisible();
     await expect(postSave.getByTestId('my-flow-post-save-open-first')).toHaveCount(0);
     await expect(postSave.getByTestId('my-flow-post-save-view-flow')).toHaveCount(0);

@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-07",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "47d1780",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser"
+  ],
+  "markers": {
+    "postSaveDecisionHubConnected": true,
+    "postSaveWholeFlowVisibleWithoutNavigation": true,
+    "postSaveReceiptCountMismatchCount": 0,
+    "postSavePrimaryStartVisible": true,
+    "postSaveWholeFlowEntryVisible": true,
+    "postSaveCalendarEntryVisible": true,
+    "postSaveExportEntryVisible": true,
+    "postSaveActionPathCount": 4,
+    "postSaveMultiFlowExportRequiresFlowSelection": true,
+    "postSaveHeldExecutionActionCount": 0,
+    "postSaveDuplicateRunAfterReloadCount": 0,
+    "postSaveDuplicateCompletionControlCount": 0,
+    "postSaveHorizontalOverflowCount": 0,
+    "postSaveConsoleErrorCount": 0,
+    "postSavePageErrorCount": 0,
+    "postSaveExportFocusManaged": true,
+    "multiFlowAggregateExportConnected": false,
+    "observedUserValidated": false
+  },
+  "routes": [
+    {
+      "id": "public-undated-mobile",
+      "route": "/my?savedFlow=vehicle-inspection-prep",
+      "origin": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "flowCount": 1,
+      "totalCount": 10,
+      "datedCount": 0,
+      "undatedCount": 10,
+      "actionPathCount": 4,
+      "exportScope": "flow"
+    },
+    {
+      "id": "moving-wide",
+      "route": "/my?savedMap=moving-d30",
+      "origin": "/flow-maps/moving-d30",
+      "viewport": "1024x768",
+      "flowCount": 1,
+      "totalCount": 5,
+      "dateRange": "7월 16일 - 8월 15일",
+      "phaseCount": 2,
+      "actionPathCount": 4
+    },
+    {
+      "id": "opic-multi-wide",
+      "route": "/my?savedMap=curated-opic-mock-course",
+      "origin": "/flow-maps/curated-opic-mock-course",
+      "viewport": "1024x768",
+      "flowCount": 2,
+      "totalCount": 19,
+      "exportPickerFlowCount": 2,
+      "aggregateExportClaimed": false
+    },
+    {
+      "id": "url-first-hit-wide",
+      "route": "/my?savedMap=middle-school-math-1",
+      "origin": "/flows",
+      "viewport": "1024x768",
+      "flowCount": 1,
+      "totalCount": 8,
+      "datedCount": 0,
+      "undatedCount": 8
+    },
+    {
+      "id": "memo-draft-mobile",
+      "route": "/my?savedFlow=url-draft-*",
+      "origin": "/flows",
+      "viewport": "390x844",
+      "flowCount": 1,
+      "totalCount": 3,
+      "datedCount": 1,
+      "undatedCount": 2
+    },
+    {
+      "id": "held-mobile",
+      "route": "/my?demo=source-backed&savedMap=baby-health-schedule",
+      "viewport": "390x844",
+      "held": true,
+      "executionActionCount": 0
+    }
+  ],
+  "verification": {
+    "unit": {
+      "passed": 549,
+      "failed": 0
+    },
+    "playwrightPostSaveAndReceipt": {
+      "passed": 7,
+      "failed": 0
+    },
+    "playwrightAccessibilityFixAndHub": {
+      "passed": 5,
+      "failed": 0
+    },
+    "playwrightCrossRegressionSingleWorker": {
+      "passed": 46,
+      "failed": 0
+    },
+    "playwrightFullFlowFirstRun": {
+      "passed": 195,
+      "failed": 1,
+      "failureFixedAndTargetedPass": true,
+      "failureKind": "duplicate_accessible_heading"
+    },
+    "playwrightFullFlowAfterFix": {
+      "firstSegmentStartedCount": 179,
+      "firstSegmentAssertionFailureCount": 0,
+      "firstSegmentStoppedByCommandTimeout": true,
+      "tailSegmentPassed": 20,
+      "tailSegmentFailed": 0,
+      "coveredScenarioCount": 196
+    },
+    "build": {
+      "passed": true,
+      "routeCount": 18
+    },
+    "docsCheck": {
+      "passed": true,
+      "requiredFileCount": 14,
+      "linkCount": 2599
+    },
+    "fullRegression": {
+      "coveredScenarioCount": 196,
+      "singleRunAllGreen": false,
+      "allCoveredScenariosGreenAfterFix": true,
+      "note": "The post-fix run hit the 10-minute command cap after starting 179/196 with zero assertion failures; the final 20 scenarios passed in a bounded follow-up run"
+    }
+  }
+}

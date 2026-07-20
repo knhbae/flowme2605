@@ -47,7 +47,7 @@
 - [x] unsupported popularity/social proof removal
 - [x] P26-06B save-before dual path
 - [x] P26-06C wedding independent entries
-- [ ] P26-07 post-save whole-Flow hub
+- [x] P26-07 post-save whole-Flow hub
 
 ## P26-08~13 My Flow And Editing
 

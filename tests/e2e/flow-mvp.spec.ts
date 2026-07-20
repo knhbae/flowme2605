@@ -1664,7 +1664,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(movingPostSave).not.toContainText('지난 일정');
   await expect(movingPostSave).not.toContainText('5개 Step');
   await expect(movingPostSave.getByTestId('my-flow-post-save-step')).toHaveCount(5);
-  await expect(movingPostSave.getByTestId('my-flow-post-save-open-first')).toContainText('바로 시작');
+  await expect(movingPostSave.getByTestId('my-flow-post-save-open-first')).toContainText('첫 할 일 시작');
   await expect(movingPostSave.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
   await movingPostSave.getByTestId('my-flow-post-save-open-first').click();
   await expectTodaySummaryIsQuietSupport(page);

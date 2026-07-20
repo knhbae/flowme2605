@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~06 complete; P26-07 post-save whole-Flow hub next)
+**Last Updated:** 2026-07-20 (P26-01~07 complete; P26-08 My Flow local IA next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation. P26-06 now unifies Home/catalog discovery and public/source-backed save-before around one evidence-first Flow grammar. P26-07 next restructures the post-save whole-Flow action hub without reopening those contracts. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06 unifies discovery/save-before, and P26-07 turns the canonical receipt into a whole-Flow decision hub. P26-08 next fixes the local `지금 / Flow 목록 / 완료` information architecture without reopening those contracts. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-07 post-save whole-Flow hub |
+| Active product gate | P26-08 My Flow local IA |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Implement the post-save whole-Flow confirmation and action hub |
+| AI action now | Separate My Flow execution queue, saved Flow inventory, and completion history |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-07 post-save decision hub: The canonical receipt now shows the saved Flow title, item count, date range/undated count, phase count, and recurrence count from the same effective rows as the whole-Flow outline. One frame exposes `첫 할 일 시작 / 전체 Flow 보기 / Calendar / 가져가기`; multi-Flow saves choose an honest child Flow before export, while held content keeps execution actions at `0`. Current evidence includes full unit `549 / 549`, dedicated hub/receipt Playwright `7 / 7`, production build `18 / 18`, reload duplicate run `0`, mobile/wide overflow `0`, console/page errors `0`, and seven representative screenshots. This remains automated/browser evidence with observed-user sessions `0`. See [P26-07 evidence](./content-audit/2026-07-20-p26-07-post-save-decision-hub-evidence/README.md).
 
 - 2026-07-20 P26-06 unified discovery/save-before: Home and `/flows` now share one evidence-first Flow card that leads with title, verified source, representative items, required input, result, and count. Unsupported popularity and social proof are absent. Wedding and Allblanc alternatives are independent Flow entries. Public `/f` and source-backed `/flow-maps` share an artifact-first frame with the whole Flow preview before setup and one `start / adjust` decision. Long promises moved out, detailed source/safety stays collapsed, mobile map bottom overlap and opposite-timezone hydration were fixed. Current evidence includes unit `546 / 546`, full Flow E2E `196 / 196`, dedicated Playwright `4 / 4`, targeted stale-contract reruns `5 / 5`, docs check with `2,591` links, production build `18 / 18`, mobile/wide overflow `0`, console/page errors `0`, and six screenshots. This remains automated/browser evidence with observed-user sessions `0`. See [P26-06 evidence](./content-audit/2026-07-20-p26-06-discovery-save-before-evidence/README.md).
 

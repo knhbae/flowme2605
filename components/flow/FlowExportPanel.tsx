@@ -30,6 +30,7 @@ type FlowExportPanelProps = {
   selectedKeys: string[];
   feedback?: string;
   legacyPersonalDraft?: boolean;
+  showEntry?: boolean;
   onOpenChange: (open: boolean) => void;
   onScopeChange: (scope: Exclude<FlowExportScope, 'item'>) => void;
   onSelectedKeysChange: (keys: string[]) => void;
@@ -51,6 +52,7 @@ export function FlowExportPanel({
   selectedKeys,
   feedback,
   legacyPersonalDraft = false,
+  showEntry = true,
   onOpenChange,
   onScopeChange,
   onSelectedKeysChange,
@@ -102,23 +104,25 @@ export function FlowExportPanel({
       data-testid={legacyPersonalDraft ? 'personal-draft-list-export' : 'my-flow-export-surface'}
       className="mt-3 border-t border-slate-200 pt-3"
     >
-      <button
-        type="button"
-        data-testid={legacyPersonalDraft ? 'personal-draft-list-export-toggle' : 'my-flow-export-entry'}
-        aria-expanded={open}
-        aria-label={`${flowTitle} 가져가기`}
-        className={FLOW_UI_SECONDARY_ACTION_CLASS}
-        onClick={() => onOpenChange(!open)}
-      >
-        가져가기
-      </button>
+      {showEntry ? (
+        <button
+          type="button"
+          data-testid={legacyPersonalDraft ? 'personal-draft-list-export-toggle' : 'my-flow-export-entry'}
+          aria-expanded={open}
+          aria-label={`${flowTitle} 가져가기`}
+          className={FLOW_UI_SECONDARY_ACTION_CLASS}
+          onClick={() => onOpenChange(!open)}
+        >
+          가져가기
+        </button>
+      ) : null}
 
       {open ? (
         <div
           data-testid="my-flow-export-panel"
           data-export-scope={scope}
           data-export-included-count={plan.includedCount}
-          className="mt-3 border-t border-[#E7E4DD] pt-3"
+          className={showEntry ? 'mt-3 border-t border-[#E7E4DD] pt-3' : ''}
         >
           <div className="flex items-center justify-between gap-3">
             <h4 className="text-base font-semibold text-[#1B1A17]">무엇을 가져갈까요?</h4>

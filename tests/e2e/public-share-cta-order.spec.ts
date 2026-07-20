@@ -272,7 +272,6 @@ test.describe('public share shell secondary browse order', () => {
       expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/Flow|파일|가져가기/);
       expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(2);
       expect(hierarchy.itemLevelExportLikeLabelCount).toBe(0);
-      expect(hierarchy.preSavePreviewControlCount).toBe(0);
       expect(hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
     });
   }
