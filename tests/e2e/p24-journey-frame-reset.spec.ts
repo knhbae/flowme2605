@@ -187,7 +187,8 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     const flowRail = page.getByTestId('my-flow-list');
     await expect(flowRail).toBeVisible();
     await expect(flowRail).toContainText('Flow 목록');
-    await expect(flowRail.locator('button')).toHaveCount(2);
+    await expect(flowRail.locator('button')).toHaveCount(3);
+    await expect(flowRail.getByTestId('my-flow-filter-all')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByLabel('저장한 Flow')).toBeHidden();
     await expect(page.locator('body')).not.toContainText('보기 범위');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

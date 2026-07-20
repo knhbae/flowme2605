@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~08 complete; P26-09 adaptive whole-Flow reading next)
+**Last Updated:** 2026-07-20 (P26-01~09 complete; P26-10 progressive item editor next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, and P26-08 separates My Flow into `지금 / Flow 목록 / 완료`. P26-09 next makes the selected whole Flow adapt to timeline, checklist, routine, project, and record content without reopening those contracts. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08 separates My Flow into `지금 / Flow 목록 / 완료`, and P26-09 makes a selected whole Flow readable as adaptive groups. P26-10 next separates quick item edits from advanced schedule and recurrence settings. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-09 adaptive whole-Flow reading |
+| Active product gate | P26-10 quick/advanced item editor |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Group the selected whole Flow by content shape while preserving the P26-08 local roles |
+| AI action now | Keep common item changes in one quick frame and move uncommon schedule controls behind advanced disclosure |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-09 whole-Flow reading: Saved Flow rows now use a pure, source-preserving reading model. Three- and ten-item fixtures remain fully visible; the 24-item moving Flow shows `6단계 / 기간 / 완료 수`, opens only the next actionable phase by default, groups repeated same-date rows under one date header, and expands to all 24 items on demand. Row-level memo actions are `0`; execution notes moved into the opened detail and remain saveable and included in completion feedback. The held multi-Flow receipt preserves canonical `18` rows while showing `14` by default and `18` after expansion. Dedicated Playwright is `4 / 4`, build is `18 / 18`, overflow and console/page errors are `0`; observed-user sessions remain `0`. See [P26-09 evidence](./content-audit/2026-07-20-p26-09-whole-flow-reading-evidence/README.md).
 
 - 2026-07-20 P26-08 My Flow local IA: The page now reads as `My Flow`, with three local roles: `지금` for the cross-Flow execution queue, `Flow 목록` for saved plans and their whole workspace, and `완료` for reopenable execution history. URL query, browser history, reload, keyboard tab navigation, and detail focus return are preserved. Mobile uses direct inventory rather than a second sheet; wide uses an explicit `모든 Flow` rail for 2~19 Flow and grouped inventory for 20+. Current evidence includes local IA unit `3 / 3`, existing unit `549 / 549`, dedicated Playwright `4 / 4`, affected existing scenarios `16 / 16`, production build `18 / 18`, and overflow/console/page errors `0`. The large full Flow spec did not produce a final aggregate before the 10-minute command cap, so no full-suite claim is made. Observed-user sessions remain `0`. See [P26-08 evidence](./content-audit/2026-07-20-p26-08-my-flow-local-ia-evidence/README.md).
 

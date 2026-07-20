@@ -4391,10 +4391,13 @@ test('source-backed creator saved preview opens the requested My Flow map demo',
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('영유아 검진·접종 일정');
   await expect(postSavePanel).not.toContainText('영유아 검진·접종 일정 지도');
-  await expect(postSavePanel).toContainText('저장 기록을 보관했어요');
+  await expect(postSavePanel).toContainText('저장 기록 보관됨');
   await expect(postSavePanel).toContainText('현재 확인이 필요한 Flow라 실행 목록에는 표시하지 않아요.');
   await expect(postSavePanel.getByTestId('my-flow-post-save-held-note')).toBeVisible();
   await expect(postSavePanel).not.toContainText('묶음');
+  await expect(postSavePanel).toHaveAttribute('data-receipt-total-count', '18');
+  await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(14);
+  await postSavePanel.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(18);
 });
 

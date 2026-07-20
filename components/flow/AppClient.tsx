@@ -83,6 +83,7 @@ import {
   summarizeMyFlowLocalIa,
   type MyFlowWorkspaceView,
 } from '@/lib/flow/my-flow-local-ia';
+import { buildWholeFlowReadingModel } from '@/lib/flow/whole-flow-reading';
 import {
   getRuntimeArchivedFlowPolicy,
   isRetiredPersonalCopyBundle,
@@ -4335,6 +4336,18 @@ function formatMyFlowDisplayDate(date: string, options: { includeWeekday?: boole
   return `${label} (${weekday})`;
 }
 
+function formatMyFlowDisplayDateRange(startDate?: string, endDate?: string): string {
+  if (!startDate) return '날짜 없음';
+  const resolvedEndDate = endDate ?? startDate;
+  if (startDate === resolvedEndDate) return formatMyFlowDisplayDate(startDate);
+  const startYear = startDate.slice(0, 4);
+  const endYear = resolvedEndDate.slice(0, 4);
+  if (startYear !== endYear) {
+    return `${Number(startYear)}년 ${formatMyFlowDisplayDate(startDate)} - ${Number(endYear)}년 ${formatMyFlowDisplayDate(resolvedEndDate)}`;
+  }
+  return `${formatMyFlowDisplayDate(startDate)} - ${formatMyFlowDisplayDate(resolvedEndDate)}`;
+}
+
 function formatMyFlowLocalTimeLabel(time?: string): string {
   if (!isPersonalStructuralLocalTime(time)) return '';
   const [hourValue, minuteValue] = time.split(':').map(Number);
@@ -4954,6 +4967,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowDetailOpen, setMyFlowDetailOpen] = useState(false);
   const [myFlowExpandedStructureSlug, setMyFlowExpandedStructureSlug] = useState('');
   const [myFlowExpandedStructureStepSlug, setMyFlowExpandedStructureStepSlug] = useState('');
+  const [myFlowWholeFlowOpenGroups, setMyFlowWholeFlowOpenGroups] = useState<Record<string, string[]>>({});
   const [myFlowCompletionUndo, setMyFlowCompletionUndo] = useState<MyFlowCompletionUndo | null>(null);
   const [myFlowInventoryOpen, setMyFlowInventoryOpen] = useState(false);
   const [myFlowTodayCompletedOpen, setMyFlowTodayCompletedOpen] = useState(false);
@@ -8275,7 +8289,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
   };
 
-  const openMyFlowExecutionNote = (row: MyFlowCalendarRow) => {
+  const openMyFlowExecutionNote = (
+    row: MyFlowCalendarRow,
+    options: { preserveDetail?: boolean } = {},
+  ) => {
     const rowKey = getMyFlowRowInstanceKey(row);
     if (
       myFlowExecutionNoteDraft?.flowSlug === row.flow.progress.slug &&
@@ -8291,7 +8308,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const detail = getMyFlowRowDisplayDetail(row);
     const sourceUrl = detail.links?.find((link) => /^https?:\/\//u.test(link.url))?.url
       ?? row.flow.bundle.flow.source_url;
-    resetMyFlowRowDetailState();
+    const noteBelongsToOpenDetail = myFlowDetailOpen && myFlowActiveRowKey === rowKey;
+    if (!options.preserveDetail && !noteBelongsToOpenDetail) resetMyFlowRowDetailState();
     setMyFlowExecutionNoteDraft({
       flowSlug: row.flow.progress.slug,
       rowKey,
@@ -8342,7 +8360,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     });
   };
 
-  const renderMyFlowExecutionNoteButton = (row: MyFlowCalendarRow) => {
+  const renderMyFlowExecutionNoteButton = (
+    row: MyFlowCalendarRow,
+    options: { preserveDetail?: boolean } = {},
+  ) => {
     const rowKey = getMyFlowRowInstanceKey(row);
     const notes = getMyFlowExecutionNotesForItem(
       myFlowExecutionNotesBySlug[row.flow.progress.slug] ?? [],
@@ -8368,7 +8389,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         onMouseDown={(event) => event.stopPropagation()}
         onClick={(event) => {
           event.stopPropagation();
-          openMyFlowExecutionNote(row);
+          openMyFlowExecutionNote(row, options);
         }}
       >
         <span aria-hidden="true" className="text-[11px]">메모</span>
@@ -9015,6 +9036,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       undatedMetaLabel?: string;
       seriesDefinition?: boolean;
       routineStatusInMeta?: boolean;
+      hideExecutionNoteAction?: boolean;
     } = {},
   ) => {
     const checked = isMyFlowRowChecked(row.flow, row);
@@ -9164,14 +9186,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ) : null}
             </span>
           </button>
-          {renderMyFlowExecutionNoteButton(row)}
+          {!options.hideExecutionNoteAction ? renderMyFlowExecutionNoteButton(row) : null}
           {isRoutineExecution && !options.routineStatusInMeta ? (
             <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
               {routineProgressLabel}
             </span>
           ) : null}
       </article>
-      {renderMyFlowExecutionNotePanel(row)}
+      {!options.hideExecutionNoteAction ? renderMyFlowExecutionNotePanel(row) : null}
       {activeInlineDetail && myFlowActiveRow ? (
         <div
           ref={(node) => {
@@ -9267,14 +9289,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
         </button>
-        {renderMyFlowExecutionNoteButton(row)}
+        {!options.hideExecutionNoteAction ? renderMyFlowExecutionNoteButton(row) : null}
         {isRoutineExecution && !options.routineStatusInMeta ? (
           <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
             {routineProgressLabel}
           </span>
         ) : null}
       </article>
-      {renderMyFlowExecutionNotePanel(row)}
+      {!options.hideExecutionNoteAction ? renderMyFlowExecutionNotePanel(row) : null}
       </div>
     );
   };
@@ -10780,6 +10802,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ) : null}
           </div>
         </div>
+        {surfaceContext === 'flow' && !isDetailEditing ? (
+          <section
+            data-testid="my-flow-detail-execution-note"
+            className="mt-3 rounded-md border border-slate-200 bg-white px-3 py-2"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-slate-600">실행 메모</p>
+              {renderMyFlowExecutionNoteButton(row, { preserveDetail: true })}
+            </div>
+            {renderMyFlowExecutionNotePanel(row)}
+          </section>
+        ) : null}
         {isPersonalDraftOccurrence && !isDetailEditing && occurrenceExecutionState !== 'done' ? (
           <section
             data-testid="personal-draft-occurrence-execution-actions"
@@ -11306,16 +11340,38 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ))
     );
     const batchCanRemove = isPersonalDraftStructuralEditEligible(flow.bundle) || Boolean(flow.savedMap?.personalCopy);
-    const sections = Array.from(
-      rows.reduce<Map<string, MyFlowCalendarRow[]>>((groups, row) => {
-        const label = getMyFlowRowDisplaySectionLabel(row) || '할 일';
-        const sectionRows = groups.get(label) ?? [];
-        sectionRows.push(row);
-        groups.set(label, sectionRows);
-        return groups;
-      }, new Map()).entries(),
+    const readingModel = buildWholeFlowReadingModel({
+      structureType: flow.bundle.flow.structure_type,
+      rows: rows.map((row) => ({
+        ...row,
+        section: getMyFlowRowDisplaySectionLabel(row),
+        completed: isMyFlowRowChecked(flow, row),
+      })),
+    });
+    const explicitOpenGroupKeys = myFlowWholeFlowOpenGroups[flow.progress.slug];
+    const openGroupKeySet = new Set(
+      explicitOpenGroupKeys ?? readingModel.groups.filter((group) => group.defaultOpen).map((group) => group.key),
     );
-    const showSectionLabels = sections.length > 1 || sections[0]?.[0] !== '할 일';
+    const allReadingGroupsOpen = readingModel.groups.every((group) => openGroupKeySet.has(group.key));
+    const readingDateRange = formatMyFlowDisplayDateRange(readingModel.startDate, readingModel.endDate);
+    const readingGroupSummary = readingModel.mode === 'routine'
+      ? readingModel.groups.length === 1
+        ? `구성 ${readingModel.totalCount}개`
+        : `${readingModel.groups.length}구간`
+      : readingModel.mode === 'checklist'
+        ? readingModel.groups.length === 1
+          ? `체크 ${readingModel.totalCount}개`
+          : `${readingModel.groups.length}묶음`
+        : `${readingModel.groups.length}단계`;
+    const setReadingGroupOpen = (groupKey: string, open: boolean) => {
+      const next = new Set(openGroupKeySet);
+      if (open) next.add(groupKey);
+      else next.delete(groupKey);
+      setMyFlowWholeFlowOpenGroups((current) => ({
+        ...current,
+        [flow.progress.slug]: Array.from(next),
+      }));
+    };
 
     return (
       <section
@@ -11345,86 +11401,160 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           </div>
         ) : null}
         {renderMyFlowBatchUndo(flow)}
-        <div className="grid gap-3">
-          {sections.map(([section, sectionRows]) => (
-            <section key={`${flow.progress.slug}-${section}`} data-testid="my-flow-whole-flow-section">
-              {showSectionLabels ? (
-                <div className="mb-1.5 flex items-center justify-between gap-2">
-                  <h5 className="truncate text-xs font-semibold text-slate-500">{section}</h5>
-                  <span className="shrink-0 text-[11px] font-semibold text-slate-400">{sectionRows.length}</span>
-                </div>
-              ) : null}
-              <div className="border-y border-slate-200">
-                {sectionRows.map((row, index) => {
-                  const batchKey = getMyFlowBatchSelectionKey(flow.progress.slug, row);
-                  if (batchActive) {
-                    const selected = batchSelectedKeySet.has(batchKey);
-                    const recurring = Boolean(row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine');
-                    return (
-                      <label
-                        key={`batch-${flow.progress.slug}-${batchKey}`}
-                        data-testid="my-flow-batch-selectable-row"
-                        data-item-id={row.structuralProjectionStableId ?? row.id}
-                        data-selected={selected ? 'true' : 'false'}
-                        className={`grid cursor-pointer grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2 border-t px-1 py-2.5 first:border-t-0 ${selected ? 'border-blue-100 bg-blue-50' : 'border-slate-200 bg-white hover:bg-slate-50'}`}
-                      >
-                        <span className="flex h-8 w-8 items-center justify-center">
-                          <input
-                            data-testid="my-flow-batch-item-checkbox"
-                            type="checkbox"
-                            checked={selected}
-                            aria-label={`${getMyFlowRowDisplayTitle(row)} 조정할 항목으로 선택`}
-                            className="h-4 w-4 rounded border-slate-300 accent-blue-700 focus:ring-2 focus:ring-blue-200"
-                            onChange={() => toggleMyFlowBatchItem(batchKey)}
-                          />
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block break-keep text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</span>
-                          <span className="mt-0.5 block text-[11px] font-semibold text-slate-500">
-                            {row.date ? formatMyFlowDisplayDate(row.date) : '날짜 없음'}
-                          </span>
-                        </span>
-                        {recurring ? <span className="shrink-0 rounded bg-emerald-50 px-1.5 py-1 text-[10px] font-semibold text-emerald-700">반복</span> : null}
-                      </label>
-                    );
-                  }
-                  if (options.interactive) {
-                    const seriesDefinition = Boolean(
-                      !row.structuralOccurrenceId &&
-                      (row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine'),
-                    );
-                    return renderExecutionRow(row, {
-                      compact: true,
-                      openDetail: true,
-                      inlineDetail: options.inlineDetail ?? isMyFlowMobileViewport,
-                      minimalMeta: true,
-                      hideFlowMeta: true,
-                      showOpenLabel: true,
-                      detailSurface: 'flow',
-                      seriesDefinition,
-                    });
-                  }
-                  return (
-                    <div
-                      key={`${flow.progress.slug}-${row.id}-${row.date ?? index}`}
-                      data-testid={options.postSave ? 'my-flow-post-save-step' : 'my-flow-whole-flow-row'}
-                      className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2 border-t border-slate-200 px-1 py-2.5 first:border-t-0"
-                    >
-                      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-50 text-[10px] font-semibold text-blue-700" aria-hidden="true">
-                        {index + 1}
-                      </span>
-                      <span className="min-w-0 break-keep text-sm font-semibold text-slate-950">
-                        {getMyFlowRowDisplayTitle(row)}
-                      </span>
-                      <span className="shrink-0 text-[11px] font-semibold text-slate-500">
-                        {row.date ? formatMyFlowDisplayDate(row.date) : '날짜 없음'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
+        <div
+          data-testid="my-flow-whole-flow-reading-summary"
+          data-reading-mode={readingModel.mode}
+          className="mb-3 flex flex-wrap items-center justify-between gap-2 border-y border-slate-200 py-2"
+        >
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-slate-600">
+            <span>{readingGroupSummary}</span>
+            <span>{readingDateRange}</span>
+            <span>{readingModel.completedCount}/{readingModel.totalCount} 완료</span>
+          </div>
+          {readingModel.disclosureRequired ? (
+            <button
+              type="button"
+              data-testid="my-flow-whole-flow-toggle-all-groups"
+              className="min-h-8 shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+              onClick={() => setMyFlowWholeFlowOpenGroups((current) => ({
+                ...current,
+                [flow.progress.slug]: allReadingGroupsOpen
+                  ? readingModel.groups.filter((group) => group.defaultOpen).map((group) => group.key)
+                  : readingModel.groups.map((group) => group.key),
+              }))}
+            >
+              {allReadingGroupsOpen ? '한 단계만 보기' : '전체 펼치기'}
+            </button>
+          ) : null}
+        </div>
+        <div className="grid gap-2">
+          {readingModel.groups.map((group) => {
+            const groupOpen = openGroupKeySet.has(group.key);
+            const groupContentId = `whole-flow-${flow.progress.slug}-${group.key}`.replace(/[^a-zA-Z0-9_-]/g, '-');
+            const groupDateRange = formatMyFlowDisplayDateRange(group.startDate, group.endDate);
+            const groupHeader = (
+              <>
+                <span className="min-w-0 text-left">
+                  <span className="block break-keep text-sm font-semibold text-slate-950">{group.label}</span>
+                  <span className="mt-0.5 block text-[11px] font-semibold text-slate-500">
+                    {groupDateRange} · {group.totalCount}개 · {group.completedCount}/{group.totalCount} 완료
+                  </span>
+                </span>
+                {readingModel.groups.length > 1 ? (
+                  <span aria-hidden="true" className="shrink-0 text-sm text-slate-500">{groupOpen ? '⌃' : '⌄'}</span>
+                ) : null}
+              </>
+            );
+            return (
+              <section
+                key={`${flow.progress.slug}-${group.key}`}
+                data-testid="my-flow-whole-flow-section"
+                data-group-open={groupOpen ? 'true' : 'false'}
+                className="overflow-hidden rounded-md border border-slate-200 bg-white"
+              >
+                {readingModel.groups.length > 1 ? (
+                  <button
+                    type="button"
+                    data-testid="my-flow-whole-flow-section-toggle"
+                    aria-expanded={groupOpen}
+                    aria-controls={groupContentId}
+                    className="flex min-h-12 w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-200"
+                    onClick={() => setReadingGroupOpen(group.key, !groupOpen)}
+                  >
+                    {groupHeader}
+                  </button>
+                ) : (
+                  <div className="flex min-h-12 items-center justify-between gap-3 px-3 py-2">{groupHeader}</div>
+                )}
+                {groupOpen ? (
+                  <div id={groupContentId} data-testid="my-flow-whole-flow-section-content" className="border-t border-slate-200 px-2">
+                    {group.dateClusters.map((cluster) => (
+                      <div key={`${group.key}-${cluster.key}`} data-testid={cluster.showSharedDate ? 'my-flow-whole-flow-date-group' : undefined}>
+                        {cluster.showSharedDate && cluster.date ? (
+                          <div className="flex items-center justify-between border-t border-slate-100 px-1 pb-1 pt-2 first:border-t-0">
+                            <span className="text-[11px] font-semibold text-slate-500">{formatMyFlowDisplayDate(cluster.date)}</span>
+                            <span className="text-[11px] font-semibold text-slate-400">{cluster.rows.length}개</span>
+                          </div>
+                        ) : null}
+                        {cluster.rows.map((row) => {
+                          const rowIndex = readingModel.rows.indexOf(row);
+                          const batchKey = getMyFlowBatchSelectionKey(flow.progress.slug, row);
+                          if (batchActive) {
+                            const selected = batchSelectedKeySet.has(batchKey);
+                            const recurring = Boolean(row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine');
+                            return (
+                              <label
+                                key={`batch-${flow.progress.slug}-${batchKey}`}
+                                data-testid="my-flow-batch-selectable-row"
+                                data-item-id={row.structuralProjectionStableId ?? row.id}
+                                data-selected={selected ? 'true' : 'false'}
+                                className={`grid cursor-pointer grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2 border-t px-1 py-2.5 first:border-t-0 ${selected ? 'border-blue-100 bg-blue-50' : 'border-slate-200 bg-white hover:bg-slate-50'}`}
+                              >
+                                <span className="flex h-8 w-8 items-center justify-center">
+                                  <input
+                                    data-testid="my-flow-batch-item-checkbox"
+                                    type="checkbox"
+                                    checked={selected}
+                                    aria-label={`${getMyFlowRowDisplayTitle(row)} 조정할 항목으로 선택`}
+                                    className="h-4 w-4 rounded border-slate-300 accent-blue-700 focus:ring-2 focus:ring-blue-200"
+                                    onChange={() => toggleMyFlowBatchItem(batchKey)}
+                                  />
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block break-keep text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</span>
+                                  <span className="mt-0.5 block text-[11px] font-semibold text-slate-500">
+                                    {row.date ? formatMyFlowDisplayDate(row.date) : '날짜 없음'}
+                                  </span>
+                                </span>
+                                {recurring ? <span className="shrink-0 rounded bg-emerald-50 px-1.5 py-1 text-[10px] font-semibold text-emerald-700">반복</span> : null}
+                              </label>
+                            );
+                          }
+                          if (options.interactive) {
+                            const seriesDefinition = Boolean(
+                              !row.structuralOccurrenceId &&
+                              (row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine'),
+                            );
+                            return renderExecutionRow(row, {
+                              compact: true,
+                              openDetail: true,
+                              inlineDetail: options.inlineDetail ?? isMyFlowMobileViewport,
+                              minimalMeta: true,
+                              hideFlowMeta: true,
+                              showOpenLabel: true,
+                              detailSurface: 'flow',
+                              seriesDefinition,
+                              suppressDateMeta: cluster.showSharedDate,
+                              hideExecutionNoteAction: true,
+                            });
+                          }
+                          return (
+                            <div
+                              key={`${flow.progress.slug}-${row.id}-${row.date ?? rowIndex}`}
+                              data-testid={options.postSave ? 'my-flow-post-save-step' : 'my-flow-whole-flow-row'}
+                              className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2 border-t border-slate-100 px-1 py-2.5 first:border-t-0"
+                            >
+                              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-50 text-[10px] font-semibold text-blue-700" aria-hidden="true">
+                                {rowIndex + 1}
+                              </span>
+                              <span className="min-w-0 break-keep text-sm font-semibold text-slate-950">
+                                {getMyFlowRowDisplayTitle(row)}
+                              </span>
+                              {!cluster.showSharedDate ? (
+                                <span className="shrink-0 text-[11px] font-semibold text-slate-500">
+                                  {row.date ? formatMyFlowDisplayDate(row.date) : '날짜 없음'}
+                                </span>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </section>
+            );
+          })}
         </div>
         {batchActive ? (
           <section
@@ -12911,8 +13041,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </button>
           </div>
         ) : null}
-        {!batchActive ? renderMyFlowBatchUndo(flow) : null}
-        {executionReady && flowExpanded && !batchActive ? (
+        {!batchActive && structuralEditEligible ? renderMyFlowBatchUndo(flow) : null}
+        {executionReady && flowExpanded && !batchActive && !structuralEditEligible ? (
+          <div data-testid="my-flow-mobile-adaptive-outline" className="mt-3">
+            {renderMyFlowWholeFlowOutline(flow, {
+              interactive: true,
+              inlineDetail: true,
+            })}
+          </div>
+        ) : null}
+        {executionReady && flowExpanded && !batchActive && structuralEditEligible ? (
           <div data-testid="my-flow-mobile-structure-step-list" className="mt-3 grid gap-2">
             {visibleStepEntries.map(({ row: stepRow, index }) => {
               const stepOpen = Boolean(activeCompactRow && activeCompactRow.id === stepRow.id);

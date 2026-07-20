@@ -52,8 +52,8 @@
 ## P26-08~13 My Flow And Editing
 
 - [x] P26-08 My Flow local IA
-- [ ] P26-09 adaptive whole-Flow groups
-- [ ] P26-09 same-date within-Flow grouping
+- [x] P26-09 adaptive whole-Flow groups
+- [x] P26-09 same-date within-Flow grouping
 - [ ] P26-10 quick/advanced editor
 - [ ] P26-11 structural/batch mode
 - [ ] P26-12 one completion control/undo/reopen

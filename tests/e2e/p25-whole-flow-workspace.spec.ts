@@ -58,18 +58,19 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(mobileOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
     await expect(savedFlow.getByTestId('my-flow-next-action')).toHaveCount(0);
     const firstExecutionRow = mobileOutline.getByTestId('my-flow-execution-row-shell').first();
-    const [completionBox, noteBox, titleBox, metaBox] = await Promise.all([
+    const [completionBox, titleBox, metaBox] = await Promise.all([
       firstExecutionRow.getByTestId('my-flow-task-complete-label').boundingBox(),
-      firstExecutionRow.getByRole('button', { name: /실행 메모/ }).boundingBox(),
       firstExecutionRow.getByTestId('my-flow-row-title').boundingBox(),
       firstExecutionRow.getByTestId('my-flow-row-date-meta').boundingBox(),
     ]);
     expect(completionBox?.width).toBeGreaterThanOrEqual(44);
     expect(completionBox?.height).toBeGreaterThanOrEqual(44);
-    expect(noteBox?.width).toBeGreaterThanOrEqual(44);
-    expect(noteBox?.height).toBeGreaterThanOrEqual(44);
     expect(titleBox?.y).toBeLessThanOrEqual(metaBox?.y ?? Number.MAX_SAFE_INTEGER);
+    await expect(firstExecutionRow.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
     await expect(firstExecutionRow.getByTestId('my-flow-row-open-label')).toHaveText('열기');
+    await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
+    await expect(firstExecutionRow.getByTestId('my-flow-detail-execution-note')).toBeVisible();
+    await firstExecutionRow.getByTestId('my-flow-item-detail').getByRole('button', { name: '닫기' }).click();
     await captureEvidence(page, '02-returning-whole-flow-mobile.png');
 
     await mobileOutline.getByTestId('my-flow-task-complete-control').first().check();

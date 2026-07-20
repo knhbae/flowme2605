@@ -570,10 +570,9 @@ test.describe('P24 execution trust regressions', () => {
     }
 
     await flow.getByTestId('my-flow-mobile-structure-open').click();
-    await flow.getByTestId('my-flow-mobile-structure-step-row').first().click();
-    const detail = flow
-      .getByTestId('my-flow-mobile-structure-inline-detail')
-      .getByTestId('my-flow-item-detail');
+    const firstExecutionRow = flow.getByTestId('my-flow-execution-row-shell').first();
+    await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
+    const detail = firstExecutionRow.getByTestId('my-flow-item-detail');
     await expect(detail.getByTestId('my-flow-detail-portable-export').locator('summary')).toHaveText(
       '현재 항목 가져가기 · 1개',
     );
@@ -1073,9 +1072,9 @@ test.describe('P24 execution trust regressions', () => {
     await expect(page).toHaveURL(/\/my/);
     await openPostSaveWorkspaceIfPresent(page);
     await page.getByTestId('my-flow-view-flow').click();
-    const draftFlow = page
-      .getByTestId('my-flow-mobile-structure-row')
-      .filter({ hasText: '여행 출발 준비' });
+    const draftFlow = page.locator(
+      '[data-flow-slug]:is([data-testid="my-flow-mobile-structure-row"], [data-testid="my-flow-overview-card"])',
+    ).filter({ hasText: '여행 출발 준비' });
     await expect(draftFlow).toBeVisible();
     const batchToggle = draftFlow.getByTestId('my-flow-batch-mode-toggle');
     await batchToggle.click();
@@ -1142,9 +1141,9 @@ test.describe('P24 execution trust regressions', () => {
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
     await outline.getByTestId('my-flow-batch-remove-selected').click();
     await expect(draftFlow.getByTestId('my-flow-batch-undo')).toContainText('1개를 Flow에서 뺐어요');
-    await expect(draftFlow.getByTestId('my-flow-mobile-structure-step-row')).toHaveCount(2);
+    await expect(draftFlow.getByTestId('my-flow-execution-row-shell')).toHaveCount(2);
     await draftFlow.getByTestId('my-flow-batch-undo-action').click();
-    await expect(draftFlow.getByTestId('my-flow-mobile-structure-step-row')).toHaveCount(3);
+    await expect(draftFlow.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
 
     await page.setViewportSize({ width: 1024, height: 768 });
     const wideDraftFlow = page
@@ -1169,8 +1168,10 @@ test.describe('P24 execution trust regressions', () => {
 
     await page.goto('/my?demo=source-backed');
     await page.getByTestId('my-flow-view-flow').click();
-    await page.getByTestId('my-flow-list').getByRole('button').first().click();
-    const sourceBackedOutline = page.getByTestId('my-flow-whole-flow-outline').first();
+    await page.getByTestId('my-flow-filter-source-backed-moving-d30').click();
+    const sourceBackedOutline = page
+      .locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]')
+      .getByTestId('my-flow-whole-flow-outline');
     await sourceBackedOutline.getByTestId('my-flow-batch-mode-toggle').click();
     await sourceBackedOutline.getByTestId('my-flow-batch-item-checkbox').first().check();
     await expect(sourceBackedOutline.getByTestId('my-flow-batch-remove-selected')).toHaveCount(0);
@@ -1396,15 +1397,15 @@ test.describe('P24 execution trust regressions', () => {
       `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`,
     );
     await mobileFlow.getByTestId('my-flow-mobile-structure-open').click();
-    const firstRow = mobileFlow.getByTestId('personal-draft-effective-item').first().or(
-      mobileFlow.locator('[data-testid="my-flow-mobile-structure-step-list"] > div').first(),
-    );
-    const noteEntry = firstRow.getByTestId('my-flow-inline-note-open');
+    const firstRow = mobileFlow.getByTestId('my-flow-execution-row-shell').first();
+    await firstRow.getByRole('button', { name: /열기/ }).click();
+    const detailNote = firstRow.getByTestId('my-flow-detail-execution-note');
+    const noteEntry = detailNote.getByTestId('my-flow-inline-note-open');
     await expect(noteEntry).toBeVisible();
     await expect(noteEntry).toHaveAttribute('aria-expanded', 'false');
     await noteEntry.click();
 
-    const notePanel = firstRow.getByTestId('my-flow-inline-note-panel');
+    const notePanel = detailNote.getByTestId('my-flow-inline-note-panel');
     await expect(notePanel).toBeVisible();
     await notePanel.getByTestId('my-flow-inline-note-private-input').fill(
       '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
