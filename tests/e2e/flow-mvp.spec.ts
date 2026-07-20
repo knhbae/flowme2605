@@ -2941,7 +2941,7 @@ test('my flow management uses today and flow locally while calendar is global', 
   await expect(inlineDetail).toBeVisible();
   await firstExecutionRow.getByTestId('my-flow-task-complete-control').check();
   await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toBeChecked();
-  await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveAccessibleName(/완료 취소/);
+  await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveAccessibleName(/다시 열기/);
 });
 
 test('my flow today puts the executable slot before the summary on mobile', async ({ page }) => {
@@ -3548,7 +3548,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(selectedCalendarGroup.getByTestId('my-flow-group-section-label')).toContainText('범위 쪼개기');
   await expect(selectedCalendarRow.getByTestId('my-flow-row-timing-chip')).toHaveCount(0);
   await expect(selectedCalendarRow.getByTestId('my-flow-row-section-label')).toHaveCount(0);
-  await expect(selectedCalendarRow.getByRole('checkbox', { name: /완료 취소$/ })).toBeVisible();
+  await expect(selectedCalendarRow.getByRole('checkbox', { name: /다시 열기$/ })).toBeVisible();
   await selectedCalendarRow.getByRole('button').first().click();
   const selectedCalendarDetail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
   await expect(selectedCalendarDetail.getByTestId('my-flow-detail-timing-chip')).toHaveCount(0);
@@ -6835,7 +6835,7 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
   const firstCompletion = firstRow.getByRole('checkbox', { name: /이번 회차 완료 체크$/ });
   await firstCompletion.click();
   await expect(firstRow).toHaveAttribute('data-occurrence-state', 'done');
-  await expect(firstRow.getByRole('checkbox', { name: /이번 회차 완료 취소$/ })).toBeChecked();
+  await expect(firstRow.getByRole('checkbox', { name: /이번 회차 다시 열기$/ })).toBeChecked();
   await expect(firstRow.getByTestId('my-flow-routine-progress-pill')).toHaveText('이번 회차 완료');
   const completionSnackbar = page.getByTestId('my-flow-completion-snackbar');
   await expect(completionSnackbar).toContainText('아침 5분 전신 운동 영상 열기');
@@ -6863,7 +6863,7 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
 
   const reopenedRow = await selectRoutineRow('2026-07-15');
   await expect(reopenedRow).toHaveAttribute('data-occurrence-id', firstOccurrenceId!);
-  const reopenedCompletion = reopenedRow.getByRole('checkbox', { name: /이번 회차 완료 취소$/ });
+  const reopenedCompletion = reopenedRow.getByRole('checkbox', { name: /이번 회차 다시 열기$/ });
   await reopenedCompletion.click();
   await expect(reopenedRow).toHaveAttribute('data-occurrence-state', 'reopened');
   await expect(reopenedRow.getByTestId('my-flow-routine-progress-pill')).toHaveText('이번 회차 다시 진행');
@@ -6966,7 +6966,7 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
   );
   await expect(savedRoutineFlow).toBeVisible();
   await savedRoutineFlow.getByTestId('my-flow-mobile-structure-open').click();
-  const routineSeriesList = savedRoutineFlow.getByTestId('my-flow-mobile-structure-step-list');
+  const routineSeriesList = savedRoutineFlow.getByTestId('my-flow-whole-flow-outline');
   await expect(routineSeriesList.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await expect(routineSeriesList.locator('[data-execution-level="series"]')).toHaveCount(3);
   await expect(savedRoutineFlow).toContainText('반복 설정');
@@ -6990,7 +6990,11 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
     await savedRoutineFlow.screenshot({ path: `${evidenceDir}/screenshots/05-washer-series-export-mobile.png` });
   }
 
-  await routineSeriesList.getByTestId('my-flow-mobile-structure-step-row').first().click();
+  await routineSeriesList
+    .getByTestId('my-flow-execution-row-shell')
+    .first()
+    .getByRole('button', { name: /열기/ })
+    .click();
   const routineSeriesDetail = savedRoutineFlow.getByTestId('my-flow-item-detail');
   await expect(routineSeriesDetail).toHaveAttribute('data-execution-level', 'series');
   await expect(routineSeriesDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
@@ -7017,7 +7021,7 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
   const complete = row.getByRole('checkbox', { name: /이번 회차 완료 체크$/ });
   await complete.click();
   await expect(row).toHaveAttribute('data-occurrence-state', 'done');
-  await row.getByRole('checkbox', { name: /이번 회차 완료 취소$/ }).click();
+  await row.getByRole('checkbox', { name: /이번 회차 다시 열기$/ }).click();
   await expect(row).toHaveAttribute('data-occurrence-id', occurrenceId!);
   await expect(row).toHaveAttribute('data-occurrence-state', 'reopened');
 

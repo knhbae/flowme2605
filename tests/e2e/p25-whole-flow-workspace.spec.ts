@@ -79,9 +79,9 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await page.getByTestId('my-flow-view-completed').click();
     await expect(page.getByTestId('my-flow-completed-count')).toHaveText('1개');
-    await expect(page.getByTestId('my-flow-completed-view')).toContainText('체크를 풀면 다시 진행으로 돌아갑니다.');
+    await expect(page.getByTestId('my-flow-completed-view')).toContainText('체크를 풀면 같은 할 일을 다시 열 수 있습니다.');
     const completedControl = page.getByTestId('my-flow-completed-view').getByTestId('my-flow-task-complete-control').first();
-    await expect(completedControl).toHaveAccessibleName(/완료 취소/);
+    await expect(completedControl).toHaveAccessibleName(/다시 열기/);
     await completedControl.click();
     await expect(page.getByTestId('my-flow-completed-count')).toHaveText('0개');
     await captureEvidence(page, '03-completed-reopen-mobile.png');

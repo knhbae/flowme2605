@@ -705,9 +705,15 @@ test.describe('P24 execution trust regressions', () => {
     await runnable.getByTestId('my-flow-task-complete-control').click();
     const snackbar = page.getByTestId('my-flow-completion-snackbar');
     await expect(snackbar).toBeVisible();
+    await expect(snackbar).toHaveAttribute('aria-live', 'polite');
+    await expect(snackbar).toHaveAttribute('data-completion-result', 'completed');
     await expect(snackbar).toContainText(title);
     await expect(snackbar.getByTestId('my-flow-completion-undo')).toHaveText('되돌리기');
-    const evidenceDir = process.env.FLOWME_P25_05A_EVIDENCE_DIR ?? process.env.FLOWME_P24_U1_EVIDENCE_DIR;
+    await expect(snackbar.getByTestId('my-flow-completion-undo')).toBeFocused();
+    const snackbarBox = await snackbar.boundingBox();
+    const mobileTabsBox = await page.getByTestId('platform-mobile-tabs').boundingBox();
+    expect((snackbarBox?.y ?? 0) + (snackbarBox?.height ?? 0)).toBeLessThanOrEqual((mobileTabsBox?.y ?? 0) + 2);
+    const evidenceDir = process.env.FLOWME_P26_12_EVIDENCE_DIR ?? process.env.FLOWME_P25_05A_EVIDENCE_DIR ?? process.env.FLOWME_P24_U1_EVIDENCE_DIR;
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
       await page.screenshot({
@@ -721,15 +727,17 @@ test.describe('P24 execution trust regressions', () => {
     const restored = nowSection.locator(`[data-testid="my-flow-mobile-continuation-card"][data-row-key="${rowKey}"]`);
     await expect(restored).toBeVisible();
     await expect(restored.getByTestId('my-flow-task-complete-control')).not.toBeChecked();
+    await expect(restored.getByTestId('my-flow-task-complete-control')).toBeFocused();
 
     await restored.getByTestId('my-flow-task-complete-control').click();
     await page.reload();
     await page.getByTestId('my-flow-view-completed').click();
     const completedView = page.getByTestId('my-flow-completed-view');
-    await expect(completedView).toContainText('체크를 풀면 다시 진행으로 돌아갑니다.');
+    await expect(completedView).toContainText('체크를 풀면 같은 할 일을 다시 열 수 있습니다.');
     const completedRow = completedView.locator(`article[data-item-id="${itemId}"]`);
     await expect(completedRow).toBeVisible();
     await expect(completedRow.getByTestId('my-flow-task-complete-control')).toBeChecked();
+    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveAccessibleName(/다시 열기$/);
     if (evidenceDir) {
       await page.screenshot({
         path: `${evidenceDir}/screenshots/01-persistent-completed-mobile.png`,
@@ -737,9 +745,43 @@ test.describe('P24 execution trust regressions', () => {
       });
     }
     await completedRow.getByTestId('my-flow-task-complete-control').click();
-    await page.getByTestId('my-flow-view-today').click();
-    await expect(page.getByTestId('my-flow-now-section').locator(`[data-row-key="${rowKey}"]`)).toBeVisible();
+    const reopenNotice = page.getByTestId('my-flow-completion-snackbar');
+    await expect(reopenNotice).toHaveAttribute('data-completion-result', 'reopened');
+    await expect(reopenNotice).toContainText('다시 열림');
+    await expect(reopenNotice.getByTestId('my-flow-completion-open')).toHaveText('항목 보기');
+    await expect(reopenNotice.getByTestId('my-flow-completion-open')).toBeFocused();
+    await reopenNotice.getByTestId('my-flow-completion-open').click();
+    await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="my-flow-item-detail"]:visible')).toHaveCount(1);
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const wideFlow = page.getByTestId('my-flow-overview-card').filter({
+      has: page.locator(`article[data-row-key="${rowKey}"]`),
+    });
+    await expect(wideFlow).toHaveCount(1);
+    const wideRow = wideFlow.locator(`article[data-row-key="${rowKey}"]`);
+    const wideCompletion = wideRow.getByTestId('my-flow-task-complete-control');
+    const wideDetailPane = wideFlow.getByTestId('my-flow-workspace-detail-pane');
+    await expect(wideDetailPane).toBeVisible();
+    const wideDetail = page.locator('[data-testid="my-flow-item-detail"]:visible');
+    await expect(wideDetail).toHaveCount(1);
+    expect(await wideDetail.getAttribute('data-item-id')).toBe(itemId);
+    await expect(wideCompletion).not.toBeChecked();
+    await wideCompletion.focus();
+    await wideCompletion.click();
+    const wideNotice = page.getByTestId('my-flow-completion-snackbar');
+    await expect(wideNotice.getByTestId('my-flow-completion-undo')).toBeFocused();
+    await wideNotice.getByTestId('my-flow-completion-undo').click();
+    await expect(wideCompletion).not.toBeChecked();
+    await expect(wideCompletion).toBeFocused();
+    await expect(wideDetail).toBeVisible();
+    if (evidenceDir) {
+      await page.screenshot({
+        path: `${evidenceDir}/screenshots/05-wide-completion-undo-focus.png`,
+        fullPage: true,
+      });
+    }
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
     ).toBeLessThanOrEqual(1);

@@ -37,6 +37,11 @@ import {
 } from '@/lib/flow/calendar-unscheduled-tray';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
+import {
+  buildCompletionControlPresentation,
+  buildCompletionNoticePresentation,
+  type CompletionResult,
+} from '@/lib/flow/completion-presentation';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
@@ -3452,10 +3457,14 @@ type MyFlowRoutineRuleDraft = {
 };
 type MyFlowCompletionUndo = {
   kind: 'row' | 'occurrence';
+  result: CompletionResult;
   flowSlug: string;
   rowId: string;
   rowKey: string;
   title: string;
+  occurrenceDateLabel?: string;
+  recurring: boolean;
+  originView: 'today' | 'calendar' | 'flow' | 'completed';
   occurrenceId?: string;
   occurrenceSeriesId?: string;
   occurrenceRevisionId?: string;
@@ -4971,6 +4980,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowExpandedStructureStepSlug, setMyFlowExpandedStructureStepSlug] = useState('');
   const [myFlowWholeFlowOpenGroups, setMyFlowWholeFlowOpenGroups] = useState<Record<string, string[]>>({});
   const [myFlowCompletionUndo, setMyFlowCompletionUndo] = useState<MyFlowCompletionUndo | null>(null);
+  const [myFlowCompletionNoticePaused, setMyFlowCompletionNoticePaused] = useState(false);
   const [myFlowInventoryOpen, setMyFlowInventoryOpen] = useState(false);
   const [myFlowTodayCompletedOpen, setMyFlowTodayCompletedOpen] = useState(false);
   const [myFlowRoutineOverflowDate, setMyFlowRoutineOverflowDate] = useState('');
@@ -5014,12 +5024,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowDetailReturnFocusRef = useRef<HTMLElement | null>(null);
   const myFlowDraggingRoutineKeyRef = useRef('');
   const myFlowDraggingRoutineDateRef = useRef('');
+  const myFlowCompletionNoticeActionRef = useRef<HTMLButtonElement | null>(null);
   const showDemoData = Boolean(myFlowDemoMode);
 
   useEffect(() => {
     if (!myFlowCompletionUndo) return;
-    const timeoutId = window.setTimeout(() => setMyFlowCompletionUndo(null), 5000);
+    if (myFlowCompletionNoticePaused) return;
+    const timeoutId = window.setTimeout(() => setMyFlowCompletionUndo(null), 8000);
     return () => window.clearTimeout(timeoutId);
+  }, [myFlowCompletionNoticePaused, myFlowCompletionUndo]);
+  useEffect(() => {
+    if (!myFlowCompletionUndo) {
+      setMyFlowCompletionNoticePaused(false);
+      return;
+    }
+    const animationFrame = window.requestAnimationFrame(() => {
+      myFlowCompletionNoticeActionRef.current?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(animationFrame);
   }, [myFlowCompletionUndo]);
   useEffect(() => {
     if (!myFlowCalendarScheduleUndo) return;
@@ -7223,6 +7245,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const title = rowContext
       ? getMyFlowRowDisplayTitle(rowContext)
       : toUserFacingSourceTitle(flow.rows.find((row) => row.id === rowId)?.title ?? rowId);
+    const originView = isCalendarSurface
+      ? 'calendar'
+      : savedView === 'completed'
+        ? 'completed'
+        : savedView === 'flow'
+          ? 'flow'
+          : 'today';
+    const recurring = Boolean(
+      rowContext?.structuralOccurrenceId ||
+      rowContext?.itemType?.primary === 'routine_session',
+    );
+    const occurrenceDateLabel = recurring && rowContext?.date
+      ? formatMyFlowDisplayDate(rowContext.date)
+      : undefined;
 
     if (
       rowContext?.structuralOccurrenceId &&
@@ -7240,16 +7276,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       if (nextState === 'done') {
         setMyFlowCompletionUndo({
           kind: 'occurrence',
+          result: 'completed',
           flowSlug: flow.progress.slug,
           rowId,
           rowKey,
           title,
+          ...(occurrenceDateLabel ? { occurrenceDateLabel } : {}),
+          recurring: true,
+          originView,
           occurrenceId: rowContext.structuralOccurrenceId,
           occurrenceSeriesId: rowContext.structuralOccurrenceSeriesId,
           occurrenceRevisionId: rowContext.structuralOccurrenceRevisionId,
         });
       } else {
-        setMyFlowCompletionUndo((current) => current?.rowKey === rowKey ? null : current);
+        setMyFlowCompletionUndo({
+          kind: 'occurrence',
+          result: 'reopened',
+          flowSlug: flow.progress.slug,
+          rowId,
+          rowKey,
+          title,
+          ...(occurrenceDateLabel ? { occurrenceDateLabel } : {}),
+          recurring: true,
+          originView,
+          occurrenceId: rowContext.structuralOccurrenceId,
+          occurrenceSeriesId: rowContext.structuralOccurrenceSeriesId,
+          occurrenceRevisionId: rowContext.structuralOccurrenceRevisionId,
+        });
       }
       return;
     }
@@ -7266,13 +7319,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (nextChecked) {
       setMyFlowCompletionUndo({
         kind: 'row',
+        result: 'completed',
         flowSlug: flow.progress.slug,
         rowId,
         rowKey,
         title,
+        recurring,
+        originView,
       });
     } else {
-      setMyFlowCompletionUndo((current) => current?.rowKey === rowKey ? null : current);
+      setMyFlowCompletionUndo({
+        kind: 'row',
+        result: 'reopened',
+        flowSlug: flow.progress.slug,
+        rowId,
+        rowKey,
+        title,
+        recurring,
+        originView,
+      });
     }
     if (isMyFlowScenarioDemo) {
       setChecksBySlug((current) => ({ ...current, [flow.progress.slug]: nextChecks }));
@@ -7283,7 +7348,58 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     refreshSavedFlowState();
   };
 
+  const focusMyFlowCompletionControl = (rowKey: string) => {
+    window.setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        const row = Array.from(document.querySelectorAll<HTMLElement>('[data-row-key]'))
+          .find((candidate) => (
+            candidate.getAttribute('data-row-key') === rowKey &&
+            candidate.getClientRects().length > 0
+          ));
+        row?.querySelector<HTMLInputElement>('[data-testid="my-flow-task-complete-control"]')
+          ?.focus({ preventScroll: true });
+      });
+    }, 0);
+  };
+
+  const openMyFlowCompletionNoticeItem = (notice: MyFlowCompletionUndo) => {
+    setMyFlowCompletionUndo(null);
+    if (notice.originView !== 'completed') {
+      focusMyFlowCompletionControl(notice.rowKey);
+      return;
+    }
+
+    const targetRow = [...calendarRows, ...myFlowAllRows]
+      .find((row) => getMyFlowRowInstanceKey(row) === notice.rowKey);
+    if (!targetRow) {
+      setSelectedSavedFlowSlug(notice.flowSlug);
+      selectMyFlowView('flow');
+      return;
+    }
+    const targetReadingModel = buildWholeFlowReadingModel({
+      structureType: targetRow.flow.bundle.flow.structure_type,
+      rows: targetRow.flow.rows.map((row) => {
+        const rowWithFlow: MyFlowCalendarRow = { ...row, flow: targetRow.flow };
+        return {
+          ...rowWithFlow,
+          section: getMyFlowRowDisplaySectionLabel(rowWithFlow),
+          completed: isMyFlowRowChecked(targetRow.flow, rowWithFlow),
+        };
+      }),
+    });
+    setMyFlowWholeFlowOpenGroups((current) => ({
+      ...current,
+      [notice.flowSlug]: targetReadingModel.groups.map((group) => group.key),
+    }));
+    setSelectedSavedFlowSlug(notice.flowSlug);
+    openMyFlowRowFromFlowTab(targetRow.flow, targetRow);
+  };
+
   const undoMyFlowCompletion = (undo: MyFlowCompletionUndo) => {
+    if (undo.result !== 'completed') {
+      openMyFlowCompletionNoticeItem(undo);
+      return;
+    }
     const flow = savedFlows.find((candidate) => candidate.progress.slug === undo.flowSlug);
     if (!flow) {
       setMyFlowCompletionUndo(null);
@@ -7313,6 +7429,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         return next;
       });
       setMyFlowCompletionUndo(null);
+      focusMyFlowCompletionControl(undo.rowKey);
       return;
     }
 
@@ -7328,11 +7445,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowCompletionUndo(null);
     if (isMyFlowScenarioDemo) {
       setChecksBySlug((current) => ({ ...current, [flow.progress.slug]: nextChecks }));
+      focusMyFlowCompletionControl(undo.rowKey);
       return;
     }
     saveChecks(flow.progress.slug, nextChecks);
     recordMyFlowCompletionState(flow, nextChecks);
     refreshSavedFlowState();
+    focusMyFlowCompletionControl(undo.rowKey);
   };
 
   const completeSavedFlow = (flow: MySavedFlow) => {
@@ -7676,6 +7795,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     routine = false,
     compact = false,
     detail = false,
+    occurrenceDateLabel,
     disabled = false,
     disabledReason = '',
   }: {
@@ -7685,15 +7805,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     routine?: boolean;
     compact?: boolean;
     detail?: boolean;
+    occurrenceDateLabel?: string;
     disabled?: boolean;
     disabledReason?: string;
   }) => {
-    const actionLabel = routine
-      ? (checked ? '이번 회차 완료 취소' : '이번 회차 완료 체크')
-      : (checked ? '완료 취소' : '완료 체크');
-    const ariaLabel = disabled && disabledReason
-      ? `${title} ${disabledReason}`
-      : `${title} ${actionLabel}`;
+    const presentation = buildCompletionControlPresentation({
+      title,
+      checked,
+      recurring: routine,
+      ...(occurrenceDateLabel ? { occurrenceDateLabel } : {}),
+      ...(disabled && disabledReason ? { disabledReason } : {}),
+    });
+    const ariaLabel = presentation.accessibleName;
     const shellSize = compact ? 'h-11 w-11' : detail ? 'h-11 w-11' : 'h-11 w-11';
 
     return (
@@ -9199,6 +9322,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 title: displayTitle,
                 checked,
                 routine: isRoutineExecution,
+                occurrenceDateLabel: isRoutineExecution ? displayDate : undefined,
                 compact: options.compact,
                 disabled: occurrenceCompletionDisabled,
                 disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
@@ -9301,6 +9425,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               title: displayTitle,
               checked,
               routine: isRoutineExecution,
+              occurrenceDateLabel: isRoutineExecution ? displayDate : undefined,
               compact: options.compact,
               disabled: occurrenceCompletionDisabled,
               disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
@@ -9402,6 +9527,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {renderTaskCompletionCheckbox({
               title: rowTitle,
               checked,
+              routine: Boolean(
+                row.structuralOccurrenceId ||
+                row.itemType?.primary === 'routine_session',
+              ),
+              occurrenceDateLabel: row.date ? formatMyFlowDisplayDate(row.date) : undefined,
               onToggle: () => toggleSavedFlowItem(flow, row.id, row),
             })}
           </span>
@@ -10781,6 +10911,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return (
       <section
         data-testid="my-flow-item-detail"
+        data-item-id={row.id}
+        data-row-key={getMyFlowRowInstanceKey(row)}
         data-item-type={row.itemType?.primary ?? 'check_task'}
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
@@ -10892,6 +11024,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               title: editorDraft.title,
               checked,
               routine: isRoutineRow,
+              occurrenceDateLabel: isRoutineRow && row.date ? formatMyFlowDisplayDate(row.date) : undefined,
               detail: true,
               disabled: occurrenceExecutionPaused,
               disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
@@ -13301,7 +13434,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         {renderTaskCompletionCheckbox({
                           title: getMyFlowRowDisplayTitle(stepRow),
                           checked: stepChecked,
-                          routine: false,
+                          routine: Boolean(
+                            stepRow.structuralOccurrenceId ||
+                            stepRow.itemType?.primary === 'routine_session',
+                          ),
+                          occurrenceDateLabel: stepRow.date ? formatMyFlowDisplayDate(stepRow.date) : undefined,
                           compact: true,
                           onToggle: () => toggleSavedFlowItem(flow, stepRow.id, stepRow),
                         })}
@@ -14590,7 +14727,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <div>
                   <p className="text-sm font-semibold text-blue-700">실행 기록</p>
                    <h2 className="mt-1 text-xl font-semibold text-slate-950">완료한 일</h2>
-                  <p className="mt-1 text-xs font-medium text-slate-500">체크를 풀면 다시 진행으로 돌아갑니다.</p>
+                  <p className="mt-1 text-xs font-medium text-slate-500">체크를 풀면 같은 할 일을 다시 열 수 있습니다.</p>
                 </div>
                 <span data-testid="my-flow-completed-count" className="shrink-0 text-xs font-semibold text-slate-500">
                   {myFlowCompletedRows.length}개
@@ -15280,20 +15417,49 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       {myFlowCompletionUndo ? (
         <div
           data-testid="my-flow-completion-snackbar"
+          data-completion-result={myFlowCompletionUndo.result}
+          data-notice-layout="fixed-above-nav"
           role="status"
           aria-live="polite"
           className="fixed inset-x-3 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-center gap-3 rounded-md bg-slate-950 px-4 py-3 text-white shadow-xl md:bottom-6"
+          onMouseEnter={() => setMyFlowCompletionNoticePaused(true)}
+          onMouseLeave={() => setMyFlowCompletionNoticePaused(false)}
+          onFocusCapture={() => setMyFlowCompletionNoticePaused(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+              setMyFlowCompletionNoticePaused(false);
+            }
+          }}
         >
           <p className="min-w-0 flex-1 truncate text-sm font-semibold">
-            “{myFlowCompletionUndo.title}” 완료
+            {buildCompletionNoticePresentation({
+              title: myFlowCompletionUndo.title,
+              result: myFlowCompletionUndo.result,
+              recurring: myFlowCompletionUndo.recurring,
+              ...(myFlowCompletionUndo.occurrenceDateLabel
+                ? { occurrenceDateLabel: myFlowCompletionUndo.occurrenceDateLabel }
+                : {}),
+            }).message}
           </p>
           <button
+            ref={myFlowCompletionNoticeActionRef}
             type="button"
-            data-testid="my-flow-completion-undo"
+            data-testid={myFlowCompletionUndo.result === 'completed'
+              ? 'my-flow-completion-undo'
+              : 'my-flow-completion-open'}
             className="min-h-10 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
-            onClick={() => undoMyFlowCompletion(myFlowCompletionUndo)}
+            onClick={() => myFlowCompletionUndo.result === 'completed'
+              ? undoMyFlowCompletion(myFlowCompletionUndo)
+              : openMyFlowCompletionNoticeItem(myFlowCompletionUndo)}
           >
-            되돌리기
+            {buildCompletionNoticePresentation({
+              title: myFlowCompletionUndo.title,
+              result: myFlowCompletionUndo.result,
+              recurring: myFlowCompletionUndo.recurring,
+              ...(myFlowCompletionUndo.occurrenceDateLabel
+                ? { occurrenceDateLabel: myFlowCompletionUndo.occurrenceDateLabel }
+                : {}),
+            }).actionLabel}
           </button>
         </div>
       ) : null}

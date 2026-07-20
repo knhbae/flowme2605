@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~11 complete; P26-12 completion undo/reopen next)
+**Last Updated:** 2026-07-20 (P26-01~12 complete; P26-13 reuse/anchor policy next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~11 establish My Flow local IA, adaptive whole-Flow reading, progressive item editing, and a separate structural/batch mode. P26-12 next makes completion, immediate undo, and reopen one reversible execution contract. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, and P26-08~12 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, and one reversible completion contract. P26-13 next separates anchor-linked dates from fixed personal dates when reusing a Flow. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-12 completion undo and reopen |
+| Active product gate | P26-13 reuse and anchor-linked/fixed date policy |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Keep one completion control per occurrence and provide stable immediate undo plus persistent reopen without mixing structural edit state |
+| AI action now | Preserve past run history while making reuse policy explicit for anchor-linked and personally fixed dates |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-12 completion undo and reopen: Ordinary tasks now use `완료 체크 / 다시 열기`, while recurring tasks include occurrence date and `이번 회차` scope in the same checkbox. Completion shows an action-focused, focus-pausing undo status above mobile navigation; undo restores the same visible row focus. Persistent reopen shows a receipt and returns to the same item detail. Mobile/wide item or occurrence identity, structural membership, and export membership remain stable. Current unit is `3 / 3`, dedicated completion/recurrence Playwright is `2 / 2`, affected compatibility scenarios are `9 / 9`, build is `18 / 18`, and overflow/console/page errors are `0`. Observed-user sessions remain `0`. See [P26-12 evidence](./content-audit/2026-07-20-p26-12-completion-reopen-evidence/README.md).
 
 - 2026-07-20 P26-11 structural and batch mode: Personal drafts now keep execution and structure changes in separate modes. Normal mode shows completion and `열기`; `구성 편집` shows one personal-order list with add, selection, keyboard reorder, date disclosure, recoverable removal, immediate undo, and reload-safe recovery. Mobile uses a fixed toolbar above the 4-tab nav, while wide keeps it inline. Stable ID, order persistence, and checklist export order pass; source-backed structure edit controls, overflow, and console/page errors are `0`. Current dedicated Playwright is `1 / 1` and affected compatibility scenarios are `6 / 6`; observed-user sessions remain `0`. See [P26-11 evidence](./content-audit/2026-07-20-p26-11-structural-edit-mode-evidence/README.md).
 

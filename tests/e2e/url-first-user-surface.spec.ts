@@ -614,7 +614,7 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await complete.focus();
   await expect(complete).toBeFocused();
   await page.keyboard.press('Space');
-  const reopen = addedItem.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 취소' });
+  const reopen = addedItem.getByRole('checkbox', { name: '관리실에 후속 전화하기 다시 열기' });
   await expect(reopen).toBeChecked();
   await reopen.press('Space');
   await expect(complete).not.toBeChecked();
@@ -820,7 +820,7 @@ test('personal draft order and persistent recovery survive reload without changi
   editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
+  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 다시 열기' })).toBeChecked();
   await removePersonalDraftItemInStructureMode(page, draftFlow, '관리실에 변경 내용 확인하기');
 
   await page.reload();
@@ -856,7 +856,7 @@ test('personal draft order and persistent recovery survive reload without changi
   editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
+  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 다시 열기' })).toBeChecked();
   const restoredReadSummary = detail.getByTestId('my-flow-detail-read-summary');
   await restoredReadSummary.locator('summary').click();
   await restoredReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
@@ -1116,7 +1116,7 @@ test('personal draft structural Calendar and ICS projections share effective ite
   await complete.check();
   await expect(userCalendarRow).toBeVisible();
   const reopen = userCalendarRow.getByRole('checkbox', {
-    name: '교통편 앱 오프라인 저장 완료 취소',
+    name: '교통편 앱 오프라인 저장 다시 열기',
   });
   await reopen.uncheck();
   await expect(userCalendarRow).toBeVisible();
@@ -1509,7 +1509,7 @@ test('personal draft structural list exports share effective items across checkl
   detail = draftFlow
     .getByTestId('my-flow-mobile-structure-inline-detail')
     .getByTestId('my-flow-item-detail');
-  await editedSourceItem.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 취소' }).uncheck();
+  await editedSourceItem.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 다시 열기' }).uncheck();
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   const checklistReopened = await copyListExport(draftFlow, 'checklist');
   expect(checklistReopened).toContain('- [ ] 여권과 예약 정보 최종 확인');
@@ -1693,7 +1693,7 @@ test('personal draft user-created item date can be set, moved, and removed acros
   await expect(calendarRow).toContainText('여행자 보험 서류 챙기기');
   await calendarRow.getByRole('checkbox', { name: '여행자 보험 서류 챙기기 완료 체크' }).check();
   await expect(calendarRow).toBeVisible();
-  await calendarRow.getByRole('checkbox', { name: '여행자 보험 서류 챙기기 완료 취소' }).uncheck();
+  await calendarRow.getByRole('checkbox', { name: '여행자 보험 서류 챙기기 다시 열기' }).uncheck();
   await calendarRow.getByRole('button', { name: /여행자 보험 서류 챙기기 열기/ }).click();
   let calendarDetail = selectedDay.getByTestId('my-flow-item-detail');
   const portableExport = calendarDetail.getByTestId('my-flow-detail-portable-export');
@@ -1986,7 +1986,7 @@ test('personal draft user-created item time and all-day mode persist across Cale
   await expect(timedCalendarRow.getByTestId('personal-draft-timed-meta')).toHaveText('오전 9:30 · 45분');
   await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 완료 체크' }).check();
   await expect(timedCalendarRow).toBeVisible();
-  await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 완료 취소' }).uncheck();
+  await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 다시 열기' }).uncheck();
   const firstIcs = await downloadCalendarFromRow(
     timedCalendarRow,
     'personal-draft-timed-before-edit.ics',
@@ -2364,7 +2364,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   const icsDownloadDir = icsEvidenceDir ? `${icsEvidenceDir}/downloads` : '';
   const executionEvidenceDir = process.env.FLOWME_P23_03_EVIDENCE_DIR;
   const executionScreenshotDir = executionEvidenceDir ? `${executionEvidenceDir}/screenshots` : '';
-  const completionEvidenceDir = process.env.FLOWME_P25_05A_EVIDENCE_DIR;
+  const completionEvidenceDir = process.env.FLOWME_P26_12_EVIDENCE_DIR ?? process.env.FLOWME_P25_05A_EVIDENCE_DIR;
   const completionScreenshotDir = completionEvidenceDir ? `${completionEvidenceDir}/screenshots` : '';
   if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
   if (icsScreenshotDir) fs.mkdirSync(icsScreenshotDir, { recursive: true });
@@ -2503,6 +2503,16 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .filter({ hasText: recurringTitle });
   await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'done');
   await expect(occurrenceRow.getByRole('checkbox')).toBeChecked();
+  const occurrenceUndoNotice = page.getByTestId('my-flow-completion-snackbar');
+  await expect(occurrenceUndoNotice).toHaveAttribute('data-completion-result', 'completed');
+  await expect(occurrenceUndoNotice).toContainText('7월 13일 완료');
+  await expect(occurrenceUndoNotice.getByTestId('my-flow-completion-undo')).toBeFocused();
+  await occurrenceUndoNotice.getByTestId('my-flow-completion-undo').click();
+  await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'reopened');
+  await expect(occurrenceRow.getByRole('checkbox')).not.toBeChecked();
+  await expect(occurrenceRow.getByRole('checkbox')).toBeFocused();
+  await occurrenceRow.getByRole('checkbox').check();
+  await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'done');
   const storedDone = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('flow:my-flow:occurrence-execution') || '{}'),
   );
@@ -2541,6 +2551,11 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .filter({ hasText: recurringTitle });
   await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'reopened');
   await expect(occurrenceRow.getByRole('checkbox')).not.toBeChecked();
+  const occurrenceReopenNotice = page.getByTestId('my-flow-completion-snackbar');
+  await expect(occurrenceReopenNotice).toHaveAttribute('data-completion-result', 'reopened');
+  await expect(occurrenceReopenNotice).toContainText('7월 13일 다시 열림');
+  await occurrenceReopenNotice.getByTestId('my-flow-completion-open').click();
+  await expect(occurrenceRow.getByRole('checkbox')).toBeFocused();
   if (screenshotDir) {
     await hideNextDevOverlay(page);
     await hidePlatformChromeForEvidence(page);
@@ -2711,16 +2726,25 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
       path: `${executionScreenshotDir}/02-personal-draft-occurrence-state-actions-wide.png`,
     });
   }
+  if (completionScreenshotDir) {
+    await hideNextDevOverlay(page);
+    await page.getByTestId('my-flow-calendar-selected-day').screenshot({
+      path: `${completionScreenshotDir}/04-recurrence-occurrence-wide.png`,
+    });
+  }
 
   await page.goto('/my');
   await openMyFlowView(page);
   const wideDraftFlow = page.locator(
     '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
   );
-  const wideRecurringItem = wideDraftFlow
-    .getByTestId('personal-draft-order-item-wide')
+  const wideOutline = wideDraftFlow.getByTestId('my-flow-whole-flow-outline');
+  const toggleAllGroups = wideOutline.getByTestId('my-flow-whole-flow-toggle-all-groups');
+  if (await toggleAllGroups.count()) await toggleAllGroups.click();
+  const wideRecurringItem = wideOutline
+    .getByTestId('my-flow-execution-row-shell')
     .filter({ hasText: recurringTitle });
-  await wideRecurringItem.getByTestId('personal-draft-order-item-open-wide').click();
+  await wideRecurringItem.getByRole('button', { name: new RegExp(`${recurringTitle} .*`) }).click();
   const wideSeriesDetail = wideDraftFlow
     .getByTestId('my-flow-workspace-detail-pane')
     .getByTestId('my-flow-item-detail');
