@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-04 deterministic memo segmentation and pre-save review implemented; P26-05 projection identity next)
+**Last Updated:** 2026-07-20 (P26-01~05 correctness foundation complete; P26-06 discovery/save implementation next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and the target journey. P26-01 separates transient example dates from explicit custom/undated saved intent. P26-02 gives all save routes one reload-safe whole-Flow receipt. P26-03 separates recurrence definitions from executable occurrences. P26-04 now preserves deterministic source-fragment/item boundaries and lets users split, merge, exclude, rename, and reorder before save without generated filler. P26-05 projection identity is the remaining correctness gate. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 now close date intent, save receipt, recurrence, memo segmentation, canonical projection identity, and rollback-safe personal-draft migration as the correctness foundation. P26-06 starts the discovery/save restructuring without reopening those contracts. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-05 projection identity and migration foundation |
+| Active product gate | P26-06 unified discovery and save-before |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Complete projection identity and migration before broad visual restructuring |
+| AI action now | Implement unified Flow discovery cards and the bounded start/adjust decision |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-05 projection identity: Canonical item, run, occurrence, export, and Calendar event identities are now explicit instead of being rebuilt independently by each consumer. Personal structural projection rows carry the shared identity; batch selection, Calendar undated placement, and export scope reuse the same item key. Legacy personal-draft title/memo/date keys migrate once to a stable overlay key with a versioned backup manifest, malformed-data preservation, unrelated-Flow isolation, and full rollback on write failure. Current evidence includes targeted unit `7 / 7`, full unit `546 / 546`, P26/URL-first/whole-Flow Playwright `31 / 31`, public/workbench regression `44 / 44`, docs check with `2,584` links, production build `18 / 18`, migrated My Flow/Calendar/export mismatch `0`, source-backed migration applied `false`, overflow `0`, and console/page errors `0`. This is automated/browser evidence, not observed-user validation. See [P26-05 evidence](./content-audit/2026-07-20-p26-05-projection-identity-evidence/README.md).
 
 - 2026-07-20 P26-04 deterministic memo segmentation: Memo and URL-miss input now use stable source-fragment and suggestion IDs, split mixed Korean action lists without splitting object lists, and preserve one fragment to many item mappings. The pre-save review groups source text once and supports include/exclude, rename, split, merge, and keyboard up/down reorder. The 제주 fixture produces 5 candidates; after one exclusion, saved/receipt/reload/memo-export counts remain `4 / 4 / 4 / 4`, duplicate/missing mapping, generic filler, internal-term, overflow, and console/page error counts are `0`. Current evidence includes full unit `539 / 539`, P26-04/save-receipt/plain-memo Playwright `5 / 5`, URL-first regression `19 / 19`, public/workbench regression `44 / 44`, docs check with `2,578` links, and production build `18 / 18`. This is automated/browser evidence, not observed-user validation. See [P26-04 evidence](./content-audit/2026-07-20-p26-04-memo-segmentation-evidence/README.md).
 

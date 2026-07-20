@@ -36,7 +36,9 @@
 - [x] P26-03 public/My Flow UID·RRULE parity and series-definition tray exclusion
 - [x] P26-04 deterministic memo segmentation and empty guard
 - [x] P26-04 source-fragment mapping, pre-save split/merge/exclude/reorder, save/reload/export count parity
-- [ ] P26-05 projection identity harness
+- [x] P26-05 canonical item/run/occurrence/export identity harness
+- [x] P26-05 versioned legacy personal-draft value migration and rollback
+- [x] P26-05 My Flow/Calendar/export browser identity parity
 
 ## P26-06~07 Discovery And Save
 

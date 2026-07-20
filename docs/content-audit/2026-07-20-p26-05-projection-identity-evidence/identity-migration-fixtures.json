@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "identity-separation",
+      "itemKey": "moving-copy::packing",
+      "executionKey": "moving-copy::run::run-2::item::packing",
+      "occurrenceProjectionKey": "moving-copy::occurrence::packing-occurrence-2026-08-03",
+      "calendarEventIdentitySeed": "packing-series"
+    },
+    {
+      "id": "completion-and-reorder",
+      "destinationMembershipChanged": false,
+      "itemKeyChanged": false
+    },
+    {
+      "id": "source-user-collision",
+      "duplicateItemIdentityCount": 1,
+      "sourcePreserved": true
+    },
+    {
+      "id": "duplicate-and-orphan-occurrence",
+      "duplicateOccurrenceIdentityCount": 1,
+      "orphanOccurrenceCount": 1,
+      "validOccurrenceCount": 1
+    },
+    {
+      "id": "legacy-value-migration",
+      "canonicalKey": "draft-flow::source-a::draft-overlay",
+      "legacyValuesBackedUp": true,
+      "unrelatedFlowPreserved": true,
+      "secondRun": "already_current"
+    },
+    {
+      "id": "malformed-storage",
+      "storageChanged": false,
+      "manifestCreated": false
+    },
+    {
+      "id": "write-failure",
+      "rollbackMismatchCount": 0
+    }
+  ]
+}

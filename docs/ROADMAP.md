@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-05 projection identity and migration gate
+**Next Milestone:** P26-06 unified discovery and save-before
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -31,8 +31,8 @@ Decision package: [P26-00C product-object and journey decision](./content-audit/
 | Stage | Slices | Purpose | State |
 | --- | --- | --- | --- |
 | Decision | P26-00C | One Flow object, integrated discovery card, dual save/adjust path, adaptive whole Flow, Calendar tray/editor decision | Complete as internal implementation contract |
-| Correctness | P26-01~05 | Date intent, canonical receipt, recurrence, memo segmentation, projection identity | P26-01~04 complete; P26-05 next |
-| Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Pending correctness |
+| Correctness | P26-01~05 | Date intent, canonical receipt, recurrence, memo segmentation, projection identity | Complete as current command/browser evidence |
+| Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | P26-06 next |
 | My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Pending |
 | Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Pending |
 | Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | Pending |
@@ -139,7 +139,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-P26-00C is selected. P26-01 date intent, P26-02 canonical save receipt, P26-03 recurrence series/occurrence parity, and P26-04 deterministic memo segmentation are complete as internal evidence. Continue with P26-05 projection identity before changing runtime visual composition. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+P26-00C is selected. P26-01~05 correctness foundation is complete as internal evidence: date intent, canonical save receipt, recurrence series/occurrence parity, deterministic memo segmentation, and canonical projection identity with rollback-safe migration. Continue with P26-06 discovery/save restructuring. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

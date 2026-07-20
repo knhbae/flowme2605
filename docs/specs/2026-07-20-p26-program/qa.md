@@ -98,6 +98,20 @@
 - generic filler와 user-facing internal-term hit count는 `0`이다.
 - 390/1024 horizontal overflow와 console/page error count는 `0`이다.
 
+### P26-05 Projection Identity And Migration
+
+- item key는 reorder, title/date/memo edit, completion/reopen 뒤에도 같다.
+- run key와 occurrence projection key는 canonical item key와 책임이 분리된다.
+- whole/selected/current export가 같은 canonical item key를 사용한다.
+- source/user-created collision에서 source item loss count는 `0`이다.
+- duplicate occurrence와 orphan occurrence는 정상 item을 삭제하지 않는다.
+- legacy item draft/date override는 stable `draft-overlay` key로 한 번만 이전된다.
+- legacy value loss, unrelated Flow mutation, malformed storage mutation count는 `0`이다.
+- migration write failure rollback mismatch count는 `0`이다.
+- source-backed projection migration applied는 `false`다.
+- migrated My Flow/Calendar/export identity mismatch count는 `0`이다.
+- 390/1024 horizontal overflow와 console/page error count는 `0`이다.
+
 ## UX assertions
 
 - Flow/Flow Map user-facing card pattern count `1`.

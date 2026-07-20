@@ -201,6 +201,20 @@ My Flow의 same-date 묶음은 한 Flow 안에서만 적용한다. 서로 다른
 
 관련 evidence: [P26-04 memo evidence](../../content-audit/2026-07-20-p26-04-memo-segmentation-evidence/README.md)
 
+## P26-05 canonical projection identity 계약
+
+- canonical item key는 `flowId::itemId`이며 순서, 제목, 날짜, 완료 상태를 포함하지 않는다.
+- 개인 제목·메모·날짜 값은 `flowId::itemId::draft-overlay` 한 key에 투영한다.
+- execution run, recurrence series/revision/occurrence, export item, Calendar event seed는 서로 다른 책임의 key를 갖되 같은 stable item을 참조한다.
+- completion/reopen/skip/hold는 execution state이며 item membership이나 canonical item key를 바꾸지 않는다.
+- source와 user-created item ID가 충돌하면 source를 보존하고 진단 수치로 기록한다.
+- My Flow, Today, Calendar, ICS, checklist, sheet, memo destination은 같은 projection matrix에서 eligibility를 읽는다.
+- 개인 draft의 legacy 날짜 suffix key는 version 1 migration으로 stable overlay key에 합친다.
+- legacy raw 값은 migration manifest에 보존하고, malformed storage는 변경하지 않으며, write 실패 시 관련 값을 모두 rollback한다.
+- migration은 URL-first miss 또는 메모 개인 draft에만 적용하며 source-backed/published Flow에는 적용하지 않는다.
+
+관련 evidence: [P26-05 projection identity evidence](../../content-audit/2026-07-20-p26-05-projection-identity-evidence/README.md)
+
 ## 후속 시각 참조 원칙
 
 `2026-07-19-flow-content-usage-preview-ko.html`에서 재사용할 것은 구성 원리다.

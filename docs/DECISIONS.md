@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-20 - P26 uses one canonical item identity across personal projections
+
+**Decision:** Use `flowId::itemId` as the stable personal item key across My Flow, Today, Calendar, export scope, and list destinations. Keep execution run and recurrence occurrence keys separate from item identity. Personal title, memo, and date values use one stable `draft-overlay` key. Legacy date-suffixed personal-draft keys migrate once through a versioned manifest that preserves old values, leaves malformed storage untouched, isolates unrelated Flows, and rolls back all writes on failure. Apply this migration only to eligible personal drafts, never to source-backed/published Flow records.
+
+**Reason:** Consumer-specific key assembly and date-suffixed legacy keys could let one item appear as different rows after date edits, reload, completion, Calendar placement, or export scope changes. A shared identity contract closes this correctness gate before P26 changes discovery, post-save, Calendar, and export composition.
+
+**Applies to:** personal structural projection, personal value overlay, batch selection, Calendar undated placement, My Flow/Today/Calendar rows, recurrence occurrences, Flow/selected/item export scope, localStorage migration, and P26 regression evidence.
+
+**Reopen when:** account-backed persistence introduces a server-issued immutable item ID, a source publisher changes stable source item IDs across versions, or provider synchronization requires a different event migration contract. UI restructuring alone does not reopen it.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-05 projection identity evidence](./content-audit/2026-07-20-p26-05-projection-identity-evidence/README.md)
+
 ### 2026-07-20 - P26 uses one user-facing Flow object and dual start/adjust paths
 
 **Decision:** Present one user-facing `Flow` object across Home, Flow finding, save-before, post-save, My Flow, Calendar, and export. Keep `Flow Map` as an internal source-bundle or aggregate concept rather than a separate user card and save grammar. Discovery cards use the order `concrete job -> verified source -> representative artifact -> required input -> result shape`; undefined popularity, validation counts, ratings, and stage reviews stay hidden. Save-before offers `그대로 시작` and `내게 맞게 조정` over the same effective artifact. Whole-Flow bodies adapt to timeline, checklist, routine, project, record, and personal-draft shapes while preserving one shell. Calendar remains date-first with an explicit Flow filter and an on-demand undated placement tray. Personal editing uses quick, advanced, structure, and batch modes rather than one always-expanded form.

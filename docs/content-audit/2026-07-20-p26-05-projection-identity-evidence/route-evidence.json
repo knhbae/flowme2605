@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-05",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "83e3a12",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser"
+  ],
+  "scenario": {
+    "route": "/flows -> /my -> /calendar",
+    "viewports": ["390x844", "1024x768"],
+    "fixture": "personal memo draft with legacy item draft and date override keys"
+  },
+  "markers": {
+    "canonicalProjectionIdentitySchemaVersion": 1,
+    "canonicalProjectionMatrixConnected": true,
+    "personalStructuralRowsCarryCanonicalIdentity": true,
+    "itemKeyChangedAfterReorderCount": 0,
+    "itemKeyChangedAfterDateEditCount": 0,
+    "itemKeyChangedAfterCompletionReopenCount": 0,
+    "occurrenceIdentityDuplicateCount": 0,
+    "sourceUserCollisionSourceLossCount": 0,
+    "wholeSelectedItemExportIdentityMismatchCount": 0,
+    "legacyProjectionMigrationConnected": true,
+    "legacyProjectionValueLossCount": 0,
+    "unrelatedFlowValueChangedCount": 0,
+    "malformedProjectionStorageMutationCount": 0,
+    "migrationRollbackMismatchCount": 0,
+    "migrationSchemaVersion": 1,
+    "migratedMyFlowCalendarExportIdentityMismatchCount": 0,
+    "sourceBackedProjectionMigrationApplied": false,
+    "appUiChanged": false,
+    "horizontalOverflowCount": 0,
+    "consolePageErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/01-migrated-personal-draft-mobile.png",
+    "screenshots/02-migrated-calendar-wide.png"
+  ]
+}
+

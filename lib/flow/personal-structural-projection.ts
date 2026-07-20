@@ -17,6 +17,10 @@ import {
   type PersonalStructuralScheduleProjection,
 } from './personal-structural-schedule';
 import type { FlowBundle, FlowItem } from './types';
+import {
+  buildCanonicalFlowProjectionIdentity,
+  type CanonicalFlowProjectionIdentity,
+} from './projection-identity';
 
 export const PERSONAL_STRUCTURAL_PROJECTION_DESTINATIONS = [
   'myFlow',
@@ -37,6 +41,7 @@ export type PersonalStructuralProjectionDestinationEligibility = Record<
 
 export type PersonalStructuralProjectionRow<TSource = unknown> = {
   itemId: string;
+  projectionIdentity: CanonicalFlowProjectionIdentity;
   ownership: PersonalStructuralItemOwnership;
   title: string;
   personalMemo?: string;
@@ -133,6 +138,11 @@ export function buildPersonalStructuralProjection<TSource>(options: {
     const calendarReady = item.projectionEligibility.calendar && Boolean(calendarDate);
     return {
       itemId: item.itemId,
+      projectionIdentity: buildCanonicalFlowProjectionIdentity({
+        flowId: options.structuralOverlay.savedCopyId,
+        itemId: item.itemId,
+        ownership: item.ownership,
+      }),
       ownership: item.ownership,
       title: item.title,
       ...(item.personalMemo ? { personalMemo: item.personalMemo } : {}),

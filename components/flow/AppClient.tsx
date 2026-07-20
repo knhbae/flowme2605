@@ -88,7 +88,9 @@ import {
 } from '@/lib/flow/flow-version-review';
 import {
   getFlowOccurrenceExecutionRecords,
+  MY_FLOW_DATE_OVERRIDES_STORAGE_KEY,
   MY_FLOW_DATE_REMOVED_OVERRIDE,
+  MY_FLOW_ITEM_DRAFTS_STORAGE_KEY,
   getFlowScopedMyFlowPersonalExecutionState,
   getMyFlowDateOverrideKey,
   getMyFlowOccurrenceExecutionStorageKey,
@@ -103,6 +105,10 @@ import {
   saveStoredMyFlowOccurrenceExecutionRecords,
   type StoredMyFlowItemDraft,
 } from '@/lib/flow/my-flow-personal-state';
+import {
+  buildCanonicalFlowItemKey,
+  migrateProjectionIdentityStorage,
+} from '@/lib/flow/projection-identity';
 import { expandPersonalDraftCalendarOccurrenceRows } from '@/lib/flow/personal-draft-calendar-occurrence';
 import {
   expandSavedRoutineOccurrenceRows,
@@ -4678,7 +4684,10 @@ function getMyFlowRowInstanceKey(row: MyFlowCalendarRow): string {
 }
 
 function getMyFlowBatchSelectionKey(flowSlug: string, row: MyFlowRow): string {
-  return `${flowSlug}::${row.structuralProjectionStableId ?? baseStateId(row.id)}`;
+  return buildCanonicalFlowItemKey(
+    flowSlug,
+    row.structuralProjectionStableId ?? baseStateId(row.id),
+  );
 }
 
 function mapPersonalDraftProjectionRowToMyFlowRow(
@@ -5173,7 +5182,31 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const refreshSavedFlowState = () => {
     const progress = getActiveFlowProgress(myFlowBundles);
     const mapIndex = getSavedFlowMapIndexByFlowSlug();
+    const structuralOverlayEntries = typeof window !== 'undefined'
+      ? progress.flatMap((item) => {
+          const bundle = myFlowBundles.find((entry) => entry.flow.slug === item.slug);
+          if (!bundle || !isPersonalDraftStructuralEditEligible(bundle)) return [];
+          const loaded = loadOrMigratePersonalStructuralOverlay(window.localStorage, {
+            savedCopyId: bundle.flow.slug,
+            flowId: bundle.flow.id,
+          });
+          migrateProjectionIdentityStorage(window.localStorage, {
+            flowId: bundle.flow.slug,
+            itemIds: [
+              ...bundle.items.map((flowItem) => flowItem.id),
+              ...loaded.overlay.userItems.map((userItem) => userItem.itemId),
+            ],
+            itemDraftStorageKey: MY_FLOW_ITEM_DRAFTS_STORAGE_KEY,
+            dateOverrideStorageKey: MY_FLOW_DATE_OVERRIDES_STORAGE_KEY,
+          });
+          return [[bundle.flow.slug, loaded.overlay] as const];
+        })
+      : [];
     setActiveProgress(progress);
+    if (typeof window !== 'undefined') {
+      setMyFlowItemDrafts(getStoredMyFlowItemDrafts());
+      setMyFlowDateOverrides(getStoredMyFlowDateOverrides());
+    }
     setChecksBySlug(Object.fromEntries(progress.map((item) => [item.slug, getChecks(item.slug)])));
     setSavedFlowMapBySlug(mapIndex);
     setSavedFlowMapPersistenceById(
@@ -5204,17 +5237,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
     if (typeof window !== 'undefined') {
       setMyFlowStructuralOverlaysBySlug(
-        Object.fromEntries(
-          progress.flatMap((item) => {
-            const bundle = myFlowBundles.find((entry) => entry.flow.slug === item.slug);
-            if (!bundle || !isPersonalDraftStructuralEditEligible(bundle)) return [];
-            const loaded = loadOrMigratePersonalStructuralOverlay(window.localStorage, {
-              savedCopyId: bundle.flow.slug,
-              flowId: bundle.flow.id,
-            });
-            return [[bundle.flow.slug, loaded.overlay] as const];
-          }),
-        ),
+        Object.fromEntries(structuralOverlayEntries),
       );
     }
   };
@@ -5273,8 +5296,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
     if (demoMode === 'legacy') seedMyFlowDemoState(myFlowBundles);
-    setMyFlowItemDrafts(getStoredMyFlowItemDrafts());
-    setMyFlowDateOverrides(getStoredMyFlowDateOverrides());
     setMyFlowHiddenFlowSlugs(getStoredMyFlowHiddenFlowSlugs());
     setMyFlowDismissedMapUpdates(getMyFlowDismissedMapUpdates());
     setMyFlowExpandedMapUpdateId('');
@@ -5828,12 +5849,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   );
   const calendarUnscheduledTrayRowsByKey = new Map(
     calendarUnscheduledRows.map((row) => [
-      `${row.flow.progress.slug}::${row.structuralProjectionStableId ?? row.id}`,
+      buildCanonicalFlowItemKey(
+        row.flow.progress.slug,
+        row.structuralProjectionStableId ?? baseStateId(row.id),
+      ),
       row,
     ]),
   );
   const calendarUnscheduledTrayItems: CalendarUnscheduledTrayItem[] = calendarUnscheduledRows.map((row) => ({
-    key: `${row.flow.progress.slug}::${row.structuralProjectionStableId ?? row.id}`,
+    key: buildCanonicalFlowItemKey(
+      row.flow.progress.slug,
+      row.structuralProjectionStableId ?? baseStateId(row.id),
+    ),
     flowSlug: row.flow.progress.slug,
     flowTitle: getMyFlowCalendarFlowTitle(row.flow),
     itemId: row.id,
@@ -8406,7 +8433,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const title = getMyFlowRowDisplayTitle(row);
       const primaryLink = detail.links?.[0];
       const stableItemId = row.structuralProjectionStableId ?? baseStateId(row.id);
-      const key = `${flow.progress.slug}::${stableItemId}`;
+      const key = buildCanonicalFlowItemKey(flow.progress.slug, stableItemId);
       const routineSeries =
         routineProjection?.seriesByItemId[row.id] ??
         routineProjection?.seriesByItemId[baseStateId(row.id)];
@@ -9800,7 +9827,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const shouldCollapsePortableExport = isInlineMode;
     const portableExportKey = getMyFlowRowInstanceKey(row);
     const portableExportStableStepId = row.structuralProjectionStableId
-      ? `${row.flow.progress.slug}::${row.structuralProjectionStableId}`
+      ? buildCanonicalFlowItemKey(
+          row.flow.progress.slug,
+          row.structuralProjectionStableId,
+        )
       : portableExportKey;
     const canonicalRoutineProjection = isRoutineRow
       ? buildMyFlowCanonicalRoutineProjection(row.flow)
