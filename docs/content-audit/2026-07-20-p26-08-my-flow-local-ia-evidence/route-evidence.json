@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-08",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "1d4a362",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser"
+  ],
+  "markers": {
+    "myFlowPageTitle": "My Flow",
+    "myFlowLocalTabLabels": ["지금", "Flow 목록", "완료"],
+    "myFlowLocalTabRoleCount": 3,
+    "myFlowLocalTabUrlStateConnected": true,
+    "myFlowLocalTabBackReloadPreserved": true,
+    "myFlowNowCrossFlowQueueVisible": true,
+    "myFlowInventoryDirectOnMobile": true,
+    "myFlowMobileSecondaryInventorySheetVisible": false,
+    "myFlowCompletedReopenableHistoryVisible": true,
+    "myFlowHeldOrdinaryInventoryCount": 0,
+    "myFlowWideThreeFlowAllRailSelected": true,
+    "myFlowWideTwentyPlusRailCount": 0,
+    "myFlowDetailFocusReturnPreserved": true,
+    "myFlowMobileGlobalAndLocalNavigationDistinct": true,
+    "myFlowInventoryExecutionStatusBoardCount": 0,
+    "myFlowInventoryPriorityCardCount": 0,
+    "myFlowHorizontalOverflowCount": 0,
+    "myFlowConsoleErrorCount": 0,
+    "myFlowPageErrorCount": 0,
+    "observedUserValidated": false
+  },
+  "states": [
+    {
+      "savedFlowCount": 0,
+      "viewport": "390x844",
+      "localTabsVisible": true,
+      "urlBackReloadPreserved": true
+    },
+    {
+      "savedFlowCount": 1,
+      "viewport": "390x844",
+      "nowInventoryCompletedDistinct": true,
+      "completionReopenable": true,
+      "detailFocusReturnPreserved": true
+    },
+    {
+      "savedFlowCount": 3,
+      "viewport": "1024x768",
+      "allOverviewRailSelected": true,
+      "flowSelectionVisible": true
+    },
+    {
+      "savedFlowCountMinimum": 20,
+      "viewport": "1024x768",
+      "denseRailVisible": false,
+      "groupedInventoryVisible": true
+    }
+  ],
+  "verification": {
+    "localIaUnit": { "passed": 3, "failed": 0 },
+    "existingUnit": { "passed": 549, "failed": 0 },
+    "playwrightDedicated": { "passed": 4, "failed": 0 },
+    "playwrightAffectedExisting": { "passed": 16, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "fullFlowSingleRun": {
+      "completed": false,
+      "stoppedByCommandTimeout": true,
+      "commandLimitMinutes": 10,
+      "note": "No final aggregate result is claimed; dedicated and affected scenarios passed separately"
+    }
+  }
+}

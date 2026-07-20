@@ -49,7 +49,7 @@ test.describe('P25 whole Flow workspace', () => {
 
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
     await expect(page.getByTestId('my-flow-view-today')).toHaveText('지금');
-    await expect(page.getByTestId('my-flow-view-flow')).toHaveText('내 Flow');
+    await expect(page.getByTestId('my-flow-view-flow')).toHaveText('Flow 목록');
     await expect(page.getByTestId('my-flow-view-completed')).toHaveText('완료');
 
     const savedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
@@ -74,7 +74,8 @@ test.describe('P25 whole Flow workspace', () => {
 
     await mobileOutline.getByTestId('my-flow-task-complete-control').first().check();
     await page.reload();
-    await page.getByTestId('my-flow-post-save-view-flow').click();
+    await expect(page).toHaveURL(/view=flows/);
+    await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await page.getByTestId('my-flow-view-completed').click();
     await expect(page.getByTestId('my-flow-completed-count')).toHaveText('1개');
     await expect(page.getByTestId('my-flow-completed-view')).toContainText('체크를 풀면 다시 진행으로 돌아갑니다.');

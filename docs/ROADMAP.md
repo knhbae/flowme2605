@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-08 My Flow local IA
+**Next Milestone:** P26-09 adaptive whole-Flow reading
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -33,7 +33,7 @@ Decision package: [P26-00C product-object and journey decision](./content-audit/
 | Decision | P26-00C | One Flow object, integrated discovery card, dual save/adjust path, adaptive whole Flow, Calendar tray/editor decision | Complete as internal implementation contract |
 | Correctness | P26-01~05 | Date intent, canonical receipt, recurrence, memo segmentation, projection identity | Complete as current command/browser evidence |
 | Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Complete as current browser evidence |
-| My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Pending |
+| My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | P26-08 complete; P26-09 next |
 | Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Pending |
 | Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | Pending |
 
@@ -139,7 +139,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-P26-00C is selected. P26-01~05 correctness foundation and P26-06~07 discovery/save journey are complete as internal evidence. Continue with P26-08 My Flow local IA, then P26-09 adaptive whole-Flow reading. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+P26-00C is selected. P26-01~05 correctness foundation, P26-06~07 discovery/save journey, and P26-08 My Flow local IA are complete as internal evidence. Continue with P26-09 adaptive whole-Flow reading. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

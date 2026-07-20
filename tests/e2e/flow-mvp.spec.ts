@@ -2281,7 +2281,7 @@ test('my flow workspace separates copied or drafted flows from public discovery'
   await page.goto('/my');
 
   await expect(page).toHaveTitle(/내 Flow/);
-  await expect(page.getByRole('heading', { name: '내 Flow', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Flow', exact: true })).toBeVisible();
   await expect(page.getByText('Creator Studio')).toHaveCount(0);
   await expect(page.getByText('사용자가 곧 제작자입니다')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toHaveCount(0);
@@ -2920,7 +2920,7 @@ test('my flow management uses today and flow locally while calendar is global', 
   await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '이 날짜로 시작' }).click();
 
   await page.goto('/my');
-  await expect(page.getByRole('heading', { name: '내 Flow', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'My Flow', exact: true })).toBeVisible();
   await expect(page.getByTestId('my-flow-view-today')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-calendar')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
@@ -2936,7 +2936,7 @@ test('my flow management uses today and flow locally while calendar is global', 
   const movingFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
   const firstExecutionRow = movingFlow.getByTestId('my-flow-execution-row-shell').first();
   await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
-  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-selected', 'true');
   const inlineDetail = movingFlow.getByTestId('my-flow-workspace-detail-pane').getByTestId('my-flow-item-detail');
   await expect(inlineDetail).toBeVisible();
   await firstExecutionRow.getByTestId('my-flow-task-complete-control').check();
@@ -3140,20 +3140,17 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
   await expect(mobileHub).toBeVisible();
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText(/\d+개 저장/);
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/\d+개 남음/);
-  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(4);
+  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(6);
   const compactStructureTexts = (await page.getByTestId('my-flow-mobile-structure-row').allInnerTexts()).join(' ');
   expect(compactStructureTexts).not.toMatch(/일정 흐름|체크 흐름|반복 흐름/);
-  await expect(page.getByTestId('my-flow-mobile-inventory-open')).toContainText('2개 더 보기');
+  await expect(page.getByTestId('my-flow-mobile-inventory-open')).toHaveCount(0);
   const overdueCompactRow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]');
   await expect(overdueCompactRow).toContainText('지난 할 일');
   await expect(overdueCompactRow).not.toContainText('다음 할 일');
 
-  const inventoryOpenButton = page.getByTestId('my-flow-mobile-inventory-open');
-  await inventoryOpenButton.scrollIntoViewIfNeeded();
-  await expectElementClearsFixedLayer(inventoryOpenButton, mobileTabs, 12);
-
   const lastCompactRow = page.getByTestId('my-flow-mobile-structure-row').last();
   await lastCompactRow.scrollIntoViewIfNeeded();
+  await expectElementClearsFixedLayer(lastCompactRow, mobileTabs, 12);
   await lastCompactRow.getByTestId('my-flow-mobile-structure-open').click();
   await expect(lastCompactRow.getByTestId('my-flow-mobile-structure-step-list')).toBeVisible();
   await expect(lastCompactRow.getByTestId('my-flow-mobile-structure-step-row').first()).toBeVisible();
@@ -3162,44 +3159,12 @@ test('my flow long saved list keeps final mobile rows and actions above fixed na
   await expect(compactInlineDetail).toBeVisible();
   await expectElementClearsFixedLayer(compactInlineDetail, mobileTabs, 12);
 
-  await inventoryOpenButton.click();
-  const inventorySheet = page.getByTestId('my-flow-inventory-sheet');
-  const inventoryPanel = inventorySheet.locator('section');
-  await expect(inventorySheet).toBeVisible();
-  await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(6);
-  const firstInventoryRow = inventorySheet.getByTestId('my-flow-group-row').first();
-  await expect(firstInventoryRow.getByTestId('my-flow-inventory-progress-summary')).toContainText(/전체 \d+\/\d+ 완료/);
-  await expect(firstInventoryRow).not.toContainText(/\b\d+\/\d+\b(?!\s*완료|개 콘텐츠)/);
-  await expect(firstInventoryRow).not.toContainText(/\b\d+%\b/);
-  await inventorySheet.getByTestId('my-flow-group-row').last().scrollIntoViewIfNeeded();
-
-  const lastInventoryRow = inventorySheet.getByTestId('my-flow-group-row').last();
-  const lastInventoryAction = lastInventoryRow.getByRole('button').first();
-  const lastInventorySource = lastInventoryRow.getByRole('link').first();
-  await expect(lastInventoryAction).toBeVisible();
-  await expect(lastInventorySource).toBeVisible();
-
-  const panelBox = await inventoryPanel.boundingBox();
-  const rowBox = await lastInventoryRow.boundingBox();
-  const actionBox = await lastInventoryAction.boundingBox();
-  const sourceBox = await lastInventorySource.boundingBox();
-  expect(panelBox).not.toBeNull();
-  expect(rowBox).not.toBeNull();
-  expect(actionBox).not.toBeNull();
-  expect(sourceBox).not.toBeNull();
-  expect(rowBox!.y + rowBox!.height).toBeLessThanOrEqual(panelBox!.y + panelBox!.height - 12);
-  expect(actionBox!.y + actionBox!.height).toBeLessThanOrEqual(panelBox!.y + panelBox!.height - 12);
-  expect(sourceBox!.y + sourceBox!.height).toBeLessThanOrEqual(panelBox!.y + panelBox!.height - 12);
-
   await testInfo.attach('p7-03-my-flow-long-list-clearance', {
     body: JSON.stringify({
       savedCount: 6,
-      visibleMobileStructureRows: 4,
-      inventorySheetRows: 6,
-      inventoryOpenButtonClearsTabs: true,
-      lastInventoryRowBottomGap: Math.round(panelBox!.y + panelBox!.height - (rowBox!.y + rowBox!.height)),
-      lastInventoryActionBottomGap: Math.round(panelBox!.y + panelBox!.height - (actionBox!.y + actionBox!.height)),
-      lastInventorySourceBottomGap: Math.round(panelBox!.y + panelBox!.height - (sourceBox!.y + sourceBox!.height)),
+      visibleMobileStructureRows: 6,
+      directInventory: true,
+      secondaryInventorySheetVisible: false,
     }, null, 2),
     contentType: 'application/json',
   });
@@ -3459,7 +3424,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(page.getByTestId('my-flow-demo-badge')).toContainText('UX12');
   await expect(page.getByRole('heading', { name: '내 Flow 스튜디오' })).toHaveCount(0);
   await expect(page.getByText('아직 만든 내 버전이 없습니다')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-view-today')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-view-today')).toHaveAttribute('aria-selected', 'true');
   await expectTodaySummaryIsQuietSupport(page);
   await expect(page.getByTestId('my-flow-now-section')).toBeVisible();
   await expect(page.getByTestId('my-flow-now-section')).not.toContainText('위 카드에서');
@@ -3480,41 +3445,11 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(firstCompletedTodayRow).not.toContainText('큰 일정 확정');
   await expect(firstCompletedTodayRow).not.toContainText('결혼 준비 Flow');
   await page.getByTestId('my-flow-view-flow').click();
-  const statusBoard = page.getByTestId('my-flow-status-board');
-  await expect(statusBoard).toBeVisible();
-  await expect(statusBoard).not.toContainText('Flow 상태판');
-  await expect(statusBoard).toContainText('저장한 콘텐츠 정리');
-  await expect(statusBoard).toContainText('진행 중');
-  await expect(statusBoard).toContainText('평균 진행');
-  await expect(statusBoard).toContainText('다음 실행');
-  await expect(statusBoard).toContainText('지난 할 일');
+  await expect(page.getByTestId('my-flow-status-board')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-priority-section')).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 2, name: '저장한 Flow' })).toBeVisible();
   await expect(page.getByTestId('my-flow-overview-summary')).not.toContainText('전체 Flow 운영');
-  const prioritySection = page.getByTestId('my-flow-priority-section');
-  await expect(prioritySection).toBeVisible();
-  await expect(prioritySection).toContainText('지금 볼 할 일');
-  await expect(prioritySection).toContainText('오늘 남음 0');
-  await expect(prioritySection).not.toContainText('오늘 4');
-  await expect(prioritySection).toContainText('지난 할 일 2');
-  await expect(prioritySection).toContainText('7일 안 1');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first()).toContainText('다음 7일');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first()).toContainText('컴퓨터활용능력 1급 학습');
-  const firstPriorityOpen = prioritySection.locator('[data-testid="my-flow-priority-card"]').first().locator('button').filter({ hasText: '열기' });
-  await expect(firstPriorityOpen).toHaveText('열기');
-  await expect(firstPriorityOpen).toHaveAttribute('aria-label', /.+ 열기$/);
-  await expect(firstPriorityOpen).not.toContainText('항목 열기');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('지난 할 일');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').nth(1)).toContainText('이사 준비');
-  await firstPriorityOpen.click();
-  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
-  const priorityDetail = prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByTestId('my-flow-priority-inline-detail');
-  await expect(priorityDetail).toContainText('메모·일정');
-  await expect(priorityDetail).not.toContainText('기출 회독 목표 정하기');
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByRole('checkbox', { name: /완료 체크$/ })).toBeVisible();
-  await firstPriorityOpen.click();
-  await expect(prioritySection.locator('[data-testid="my-flow-priority-card"]').first().getByTestId('my-flow-priority-inline-detail')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-inventory-toggle')).toContainText('전체 Flow 보기');
-  await page.getByTestId('my-flow-inventory-toggle').click();
+  await expect(page.getByTestId('my-flow-inventory-toggle')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(16);
   await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="washer-tub-clean-monthly"]')).toBeVisible();
   await expect(page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="travel-packing-list"]')).toBeVisible();
@@ -3527,7 +3462,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   await expect(firstOverviewCard.getByTestId('my-flow-next-action-open')).toHaveText('열기');
   await expect(firstOverviewCard.getByTestId('my-flow-next-action-open')).toHaveAttribute('aria-label', /.+ 열기$/);
   await firstOverviewCard.getByTestId('my-flow-next-action-open').click();
-  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-selected', 'true');
   await expect(firstOverviewCard.getByTestId('my-flow-overview-inline-detail')).toContainText('필요 없는 물건 정리하기');
   await expect(page.getByTestId('my-flow-view-checklist')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-view-routine')).toHaveCount(0);
@@ -3748,7 +3683,7 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
   await page.goto('/my?demo=source-backed');
 
   await expect(page.getByTestId('my-flow-demo-badge')).toContainText('원문 기반');
-  await expect(page.getByTestId('my-flow-view-today')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-view-today')).toHaveAttribute('aria-selected', 'true');
 
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(2);
@@ -3771,7 +3706,7 @@ test('my flow source-backed demo renders bridge bundles without publishing them 
   await expect(mathCard.getByRole('button', { name: '진도 보기' })).toBeVisible();
 
   await mathCard.getByTestId('my-flow-next-action-open').click();
-  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-selected', 'true');
   await expect(mathCard.getByTestId('my-flow-overview-inline-detail')).toContainText('소인수분해');
   await expect(mathCard.getByTestId('my-flow-overview-inline-detail')).toContainText('거듭제곱');
   await expect(mathCard.getByTestId('my-flow-detail-checklist-progress')).toContainText(/^(확인 항목|개념 항목) \d+\/\d+$/);
@@ -3784,7 +3719,7 @@ test('my flow source-backed demo stays lightweight on mobile inventory', async (
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByRole('button', { name: 'Flow 찾기' })).toHaveCount(0);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-mobile-flow-hub')).toContainText('저장한 콘텐츠');
+  await expect(page.getByTestId('my-flow-mobile-flow-hub')).toContainText('Flow 목록');
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/오늘 0|다음 0|지난 할 일 0/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(2);
   const movingMobileCard = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]');
@@ -3858,7 +3793,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(mathCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
 
   await mathCard.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
-  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-selected', 'true');
   const detailSection = mathCard.getByTestId('my-flow-workspace-detail-pane');
   await expect(detailSection.getByTestId('my-flow-item-detail')).toBeVisible();
   await expect(detailSection).not.toContainText('Mathbang');
@@ -4903,19 +4838,14 @@ test('current source-backed routes keep source link checklist and memo in my flo
   }
 });
 
-test('my flow ux20 demo keeps large flow inventories grouped and collapsed', async ({ page }) => {
+test('my flow ux20 demo keeps large flow inventories grouped without a dense rail', async ({ page }) => {
   await page.goto('/my?demo=ux20');
 
   await expect(page.getByTestId('my-flow-demo-badge')).toContainText('UX20');
   await page.getByTestId('my-flow-view-flow').click();
   await expect(page.getByTestId('my-flow-list')).toHaveCount(0);
-  const priorityCardCount = await page.getByTestId('my-flow-priority-card').count();
-  expect(priorityCardCount).toBeGreaterThan(0);
-  expect(priorityCardCount).toBeLessThanOrEqual(4);
-  await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-inventory-toggle')).toContainText('27');
-
-  await page.getByTestId('my-flow-inventory-toggle').click();
+  await expect(page.getByTestId('my-flow-priority-card')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-inventory-toggle')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(27);
   await expect(page.getByTestId('my-flow-demo-group')).toHaveCount(14);
 
@@ -4938,7 +4868,6 @@ test('my flow inventory can hide and restore a flow without removing today data'
   await page.goto('/my?demo=ux20');
 
   await page.getByTestId('my-flow-view-flow').click();
-  await page.getByTestId('my-flow-inventory-toggle').click();
   const firstCard = page.getByTestId('my-flow-overview-card').first();
   const firstTitle = await firstCard.locator('h3').innerText();
   await firstCard.getByTestId('my-flow-hide-toggle').click();
@@ -5168,7 +5097,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
 
   await page.goto('/my');
 
-  await expect(page.getByText('오늘, 다음, 지난 할 일을 먼저 봅니다.')).toBeVisible();
+  await expect(page.getByText('지금 할 일과 저장한 Flow를 관리합니다.')).toBeVisible();
   await expect(page.getByTestId('my-flow-now-section')).toContainText('지난 할 일');
   await expect(page.getByTestId('my-flow-single-summary')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-single-continue')).toHaveCount(0);
@@ -5181,7 +5110,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
   await expect(page.getByTestId('my-flow-overdue-list')).toContainText('지난 할 일');
   await expect(page.getByTestId('my-flow-overdue-open-sheet')).toBeVisible();
   await page.getByTestId('my-flow-view-flow').click();
-  await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('저장한 콘텐츠');
+  await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('Flow 목록');
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('1개 저장');
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/오늘 0|다음 0|지난 할 일 0/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(1);
@@ -5393,17 +5322,12 @@ test('my flow mobile keeps checklist and routine work inside flow and calendar s
   await expect(page.getByTestId('my-flow-view-routine')).toHaveCount(0);
 
   await page.getByTestId('my-flow-view-flow').click();
-  await page.getByTestId('my-flow-mobile-inventory-open').click();
-  const inventorySheet = page.getByRole('dialog', { name: '전체 Flow 목록' });
-  await expect(inventorySheet).toBeVisible();
-  await expect(inventorySheet.getByTestId('my-flow-list-filter-all')).toHaveAttribute('aria-pressed', 'true');
-  await expect(inventorySheet.getByTestId('my-flow-list-filter-routine')).toBeVisible();
-  await inventorySheet.getByTestId('my-flow-list-filter-routine').click();
-  await expect(inventorySheet.getByTestId('my-flow-list-filter-routine')).toHaveAttribute('aria-pressed', 'true');
-  await expect(inventorySheet.getByTestId('my-flow-group-row').first()).toContainText('Flow');
-
-  await inventorySheet.getByRole('button', { name: '닫기', exact: true }).click();
-  await expect(inventorySheet).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-inventory-sheet')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-list-filter-all')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-list-filter-routine')).toBeVisible();
+  await page.getByTestId('my-flow-list-filter-routine').click();
+  await expect(page.getByTestId('my-flow-list-filter-routine')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('my-flow-mobile-structure-row').first()).toContainText('통세척');
   await page.goto('/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
@@ -5414,7 +5338,7 @@ test('my flow mobile keeps checklist and routine work inside flow and calendar s
   await expect(page.locator('[data-testid="my-flow-routine-icon"]').first()).toBeVisible();
 });
 
-test('my flow mobile status board opens actionable flow lists', async ({ page }) => {
+test('my flow mobile Flow list exposes direct inventory and filters', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/my?demo=ux12');
 
@@ -5423,9 +5347,9 @@ test('my flow mobile status board opens actionable flow lists', async ({ page })
   await expect(page.getByTestId('my-flow-overview-summary')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-status-board')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-priority-section')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-mobile-flow-hub')).toContainText('저장한 콘텐츠');
+  await expect(page.getByTestId('my-flow-mobile-flow-hub')).toContainText('Flow 목록');
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/오늘 0|다음 0|지난 할 일 0/);
-  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(4);
+  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(16);
   const firstStructureRow = page.getByTestId('my-flow-mobile-structure-row').first();
   await expect(firstStructureRow.getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 \d+\/\d+ 완료/);
   await expect(firstStructureRow).not.toContainText(/\d+%/);
@@ -5441,23 +5365,14 @@ test('my flow mobile status board opens actionable flow lists', async ({ page })
   await expect(firstStructureRow.getByTestId('my-flow-inline-action-hint')).toBeVisible();
   await expect(firstStructureRow.getByTestId('my-flow-inline-action-hint')).toContainText('바로 할 일');
   await expect(firstStructureRow.getByTestId('my-flow-inline-action-hint')).not.toContainText('Step');
-  await expect(page.getByTestId('my-flow-mobile-inventory-open')).toContainText('전체 Flow 목록 열기');
+  await expect(page.getByTestId('my-flow-mobile-inventory-open')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-status-overdue')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-status-next')).toHaveCount(0);
-  await page.getByTestId('my-flow-mobile-inventory-open').click();
-  const inventorySheet = page.getByRole('dialog', { name: '전체 Flow 목록' });
-  await expect(inventorySheet).toBeVisible();
-  await expect(inventorySheet.getByTestId('my-flow-list-filter-all')).toHaveAttribute('aria-pressed', 'true');
-  await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(16);
-  await expect(inventorySheet.getByRole('button', { name: '완료 체크' })).toHaveCount(0);
-  await inventorySheet.getByRole('button', { name: '닫기', exact: true }).click();
-
-  await page.getByTestId('my-flow-mobile-inventory-open').click();
-  const openInventorySheet = page.getByRole('dialog', { name: '전체 Flow 목록' });
-  await expect(openInventorySheet).toBeVisible();
-  await openInventorySheet.getByTestId('my-flow-list-filter-open').click();
-  await expect(openInventorySheet.getByTestId('my-flow-list-filter-open')).toHaveAttribute('aria-pressed', 'true');
-  const openFlowCount = await openInventorySheet.getByTestId('my-flow-group-row').count();
+  await expect(page.getByTestId('my-flow-list-filter-all')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: '완료 체크' })).toHaveCount(0);
+  await page.getByTestId('my-flow-list-filter-open').click();
+  await expect(page.getByTestId('my-flow-list-filter-open')).toHaveAttribute('aria-pressed', 'true');
+  const openFlowCount = await page.getByTestId('my-flow-mobile-structure-row').count();
   expect(openFlowCount).toBeGreaterThan(0);
   expect(openFlowCount).toBeLessThan(16);
 });
@@ -5467,19 +5382,16 @@ test('my flow mobile ux20 limits large inventory before showing all flows', asyn
   await page.goto('/my?demo=ux20');
 
   await page.getByTestId('my-flow-view-flow').click();
+  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(8);
+  await expect(page.getByTestId('my-flow-mobile-inventory-open')).toContainText('19개 더 보기');
+
   await page.getByTestId('my-flow-mobile-inventory-open').click();
-  const inventorySheet = page.getByRole('dialog', { name: '전체 Flow 목록' });
-  await expect(inventorySheet).toBeVisible();
-  await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(8);
-  await expect(inventorySheet.getByTestId('my-flow-mobile-large-inventory-toggle')).toContainText('전체 Flow 보기 27개');
+  await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(27);
+  await expect(page.getByTestId('my-flow-mobile-inventory-open')).toHaveCount(0);
 
-  await inventorySheet.getByTestId('my-flow-mobile-large-inventory-toggle').click();
-  await expect(inventorySheet.getByTestId('my-flow-group-row')).toHaveCount(27);
-  await expect(inventorySheet.getByTestId('my-flow-mobile-large-inventory-toggle')).toHaveCount(0);
-
-  await inventorySheet.getByTestId('my-flow-list-filter-routine').click();
-  await expect(inventorySheet.getByTestId('my-flow-list-filter-routine')).toHaveAttribute('aria-pressed', 'true');
-  const routineRows = await inventorySheet.getByTestId('my-flow-group-row').count();
+  await page.getByTestId('my-flow-list-filter-routine').click();
+  await expect(page.getByTestId('my-flow-list-filter-routine')).toHaveAttribute('aria-pressed', 'true');
+  const routineRows = await page.getByTestId('my-flow-mobile-structure-row').count();
   expect(routineRows).toBeGreaterThan(0);
   expect(routineRows).toBeLessThan(27);
 });
