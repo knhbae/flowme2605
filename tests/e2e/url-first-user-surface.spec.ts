@@ -241,7 +241,7 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
   await expectCleanUrlFirstUserSurface(result);
   await expectUrlFirstExportModesAvoidTechnicalFormatLabels(result);
 
-  await result.getByRole('button', { name: '조금 고쳐 시작' }).click();
+  await result.getByRole('button', { name: '내게 맞게 조정' }).click();
   const customPanel = result.getByTestId('flow-url-custom-start-panel');
   await expect(customPanel).toBeVisible();
   await expect(result).not.toContainText('Markdown');

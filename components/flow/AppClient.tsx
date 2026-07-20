@@ -12,6 +12,8 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } 
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
 import { CalendarUnscheduledTray } from './CalendarUnscheduledTray';
+import { FlowDiscoveryCard, type FlowDiscoveryCardView } from './FlowDiscoveryCard';
+import { FlowSaveBeforeFrame, type FlowSaveBeforePreviewRow } from './FlowSaveBeforeFrame';
 import { FlowExecutionNotePanel } from './FlowExecutionNotePanel';
 import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 import {
@@ -42,7 +44,7 @@ import {
   type MyFlowExecutionNote,
   type MyFlowExecutionNoteKind,
 } from '@/lib/flow/execution-notes';
-import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } from '@/lib/flow/flow-run-history';
 import {
   buildMyFlowStepChecklistText,
@@ -190,6 +192,7 @@ import {
   getSourceBackedFlowMapPersistenceStorageKey,
   getSourceBackedFlowMapSnapshotStorageKey,
   mergeSourceBackedMyFlowBundles,
+  sourceBackedMyFlowBundles,
   type SourceBackedFlowMapUpdateAssessment,
   type SourceBackedFlowMapSavedSnapshot,
   type SourceBackedFlowMapPersonalCopyStepOverride,
@@ -380,10 +383,6 @@ const flowCreatorDisplayOverrideSlugs = new Set([
 ]);
 const serviceCatalogFlowSlugs = new Set([
   'jeonse-contract-precheck-docs',
-]);
-const publicHeroSetupFlowSlugs = new Set([
-  ...serviceCatalogFlowSlugs,
-  'vehicle-inspection-prep',
 ]);
 const publicServiceFlowStatusHiddenSlugs = new Set([
   'moving-d30-basic',
@@ -658,20 +657,6 @@ function matchesCatalogIntent(searchText: string, intent: CatalogIntent): boolea
   if (!filter) return true;
   const normalizedText = normalizeCatalogText(searchText);
   return filter.terms.some((term) => normalizedText.includes(normalizeCatalogText(term)));
-}
-
-function getCatalogScaleText(counts: { flows?: number; steps: number; items: number }): string {
-  return `할 일 ${counts.steps}개`;
-}
-
-function getCatalogFirstTask(previewSteps: string[], fallback: string): string {
-  return previewSteps[0] ?? fallback;
-}
-
-function getCatalogPromiseText(input: string, artifact: string): string {
-  if (input.includes('없음')) return `바로 저장됩니다: ${artifact}`;
-  const inputLabel = input.endsWith(' 입력') ? input.slice(0, -3) : input;
-  return `${inputLabel}만 넣으면 저장됩니다: ${artifact}`;
 }
 
 function isJeonsePrecheckFlow(bundle: FlowBundle): boolean {
@@ -1057,49 +1042,24 @@ function DirectoryFlowCard({ bundle }: { bundle: FlowBundle }) {
   const count = getFlowItemCount(bundle);
   const input = getAnchorLabel(bundle);
   const artifact = getCatalogDestinationLabel(bundle);
-  const firstTask = getCatalogFirstTask(previewStepTitles, getCatalogReason(bundle));
-  const promise = getCatalogPromiseText(input, artifact);
+  const view: FlowDiscoveryCardView = {
+    id: bundle.flow.id,
+    href: `/f/${bundle.flow.slug}`,
+    title: displayTitle,
+    categoryLabel: bundle.flow.category,
+    sourceLabel: bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : undefined,
+    previewItems: previewStepTitles,
+    inputLabel: input,
+    resultLabel: artifact,
+    itemCount: count,
+  };
 
-  return (
-    <Link
-      data-testid="single-flow-catalog-card"
-      aria-label={displayTitle}
-      className="block h-full rounded-2xl border border-[#E7E4DD] bg-white p-3.5 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
-      href={`/f/${bundle.flow.slug}`}
-    >
-      <article className="flex h-full min-w-0 flex-col justify-between gap-2.5">
-        <div>
-          <div className="flex items-center justify-between gap-2 text-[11px] font-semibold text-[#8A857B]">
-            <span className="min-w-0 truncate">{bundle.flow.category}</span>
-            <span data-testid="flow-card-support-meta" className="shrink-0 text-[#8A857B]">
-              체크 {count}개
-            </span>
-          </div>
-          <h3 className="mt-2 break-keep text-base font-semibold leading-snug text-[#1B1A17] sm:text-lg">{displayTitle}</h3>
-          <p className="mt-1 break-keep text-sm font-semibold leading-5 text-[#3654FF]">{promise}</p>
-          <div className="mt-2 rounded-xl bg-[#FAFAF8] px-3 py-2">
-            <p className="line-clamp-1 text-sm font-semibold text-[#1B1A17]">
-              <span className="mr-1 text-[11px] text-[#6E6B64]">먼저 할 일</span>
-              {firstTask}
-            </p>
-          </div>
-        </div>
-        <div className="pt-1 text-sm">
-          <span
-            data-testid="flow-card-primary-action"
-            className="inline-flex items-center gap-1 rounded-lg py-1 text-sm font-semibold text-[#3654FF]"
-          >
-            {FLOW_ENTRY_DETAIL_CTA_LABEL}
-          </span>
-          <span aria-hidden="true" className="ml-1 text-[#3654FF]">›</span>
-        </div>
-      </article>
-    </Link>
-  );
+  return <FlowDiscoveryCard view={view} testId="single-flow-catalog-card" />;
 }
 
 type FlowMapCatalogLink = {
   id: string;
+  href: string;
   title: string;
   summary: string;
   categoryLabel: string;
@@ -1110,6 +1070,7 @@ type FlowMapCatalogLink = {
   recommendedFlowSlug: string;
   recommendedFlowTitle: string;
   sourceUrl: string;
+  sourceTitle: string;
   sourceUrlCount: number;
   sourceSignal: string;
   previewSteps: string[];
@@ -1167,42 +1128,26 @@ function getChildFlowCatalogSearchText(
 }
 
 function FlowMapCatalogCard({ item }: { item: FlowMapCatalogLink }) {
-  const firstTask = getCatalogFirstTask(item.previewSteps, item.recommendedFlowTitle);
-  const promise = getCatalogPromiseText(item.input, item.artifact);
-  const scaleText = getCatalogScaleText(item.counts);
+  const view: FlowDiscoveryCardView = {
+    id: item.id,
+    href: item.href,
+    title: item.title,
+    categoryLabel: item.categoryLabel,
+    sourceLabel: toUserFacingSourceTitle(item.sourceTitle),
+    previewItems: item.previewSteps,
+    inputLabel: item.input,
+    resultLabel: item.artifact,
+    itemCount: item.counts.steps,
+  };
 
   return (
-    <article
-      data-testid="flow-map-catalog-card"
-      data-map-id={item.id}
-      data-source-kind={item.sourceKind}
-      className="flex min-w-0 flex-col rounded-2xl border border-[#E7E4DD] bg-white p-3.5 transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
-    >
-      <div className="flex items-center justify-between gap-2 text-[11px] font-semibold text-[#8A857B]">
-        <span className="min-w-0 truncate">{item.categoryLabel}</span>
-        <span data-testid="flow-card-support-meta" className="shrink-0 text-[#8A857B]">
-          {scaleText}
-        </span>
-      </div>
-      <h3 className="mt-2 break-keep text-base font-semibold leading-snug text-[#1B1A17] sm:text-lg">{item.title}</h3>
-      <p className="mt-1 break-keep text-sm font-semibold leading-5 text-[#3654FF]">{promise}</p>
-      <div className="mt-2 rounded-xl bg-[#FAFAF8] px-3 py-2">
-        <p className="line-clamp-1 text-sm font-semibold text-[#1B1A17]">
-          <span className="mr-1 text-[11px] text-[#6E6B64]">먼저 할 일</span>
-          {firstTask}
-        </p>
-      </div>
-      <div className="mt-auto pt-3">
-        <Link
-          data-testid="flow-map-detail-link"
-          className="inline-flex items-center gap-1 rounded-lg py-1 text-sm font-semibold text-[#3654FF] hover:text-[#2945E8]"
-          href={`/flow-maps/${item.id}`}
-        >
-          <span data-testid="flow-card-primary-action">{FLOW_ENTRY_DETAIL_CTA_LABEL}</span>
-          <span aria-hidden="true">›</span>
-        </Link>
-      </div>
-    </article>
+    <FlowDiscoveryCard
+      view={view}
+      testId="flow-map-catalog-card"
+      actionTestId="flow-map-detail-link"
+      mapId={item.id}
+      sourceKind={item.sourceKind}
+    />
   );
 }
 
@@ -2116,7 +2061,7 @@ function FlowUrlLookupResult({
           <div className="grid grid-cols-2 gap-1 rounded-lg bg-[#F7FBF4] p-1 sm:col-span-3" aria-label="시작 방식">
             {[
               { mode: 'direct' as const, label: '그대로 시작' },
-              { mode: 'custom' as const, label: '조금 고쳐 시작' },
+              { mode: 'custom' as const, label: '내게 맞게 조정' },
             ].map((item) => (
               <button
                 key={item.mode}
@@ -2773,7 +2718,6 @@ export function FlowList() {
   const [category, setCategory] = useState(initialCategory);
   const [tag, setTag] = useState(initialTag);
   const [structure, setStructure] = useState('전체');
-  const [sort, setSort] = useState<'popular' | 'recent'>('popular');
   const [catalogQuery, setCatalogQuery] = useState('');
   const [catalogIntent, setCatalogIntent] = useState<CatalogIntent>('all');
   const [urlLookupInput, setUrlLookupInput] = useState('');
@@ -2795,10 +2739,7 @@ export function FlowList() {
       const structureMatched = effectiveStructure === '전체' || getStructureLabel(bundle) === effectiveStructure;
       return categoryMatched && tagMatched && structureMatched;
     })
-    .sort((a, b) => {
-      if (sort === 'recent') return new Date(b.flow.updated_at).getTime() - new Date(a.flow.updated_at).getTime();
-      return (b.flow.usage_count ?? 0) - (a.flow.usage_count ?? 0);
-    });
+    .sort((a, b) => new Date(b.flow.updated_at).getTime() - new Date(a.flow.updated_at).getTime());
   const visibleFlowMapCatalogLinks = flowMapCatalogLinks.filter((item) => {
     const searchText = getFlowMapCatalogSearchText(item);
     return matchesCatalogQuery(searchText, catalogQuery) && matchesCatalogIntent(searchText, catalogIntent);
@@ -2944,10 +2885,10 @@ export function FlowList() {
           <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
             <h1 className="break-keep text-2xl font-semibold tracking-tight text-[#1B1A17] sm:text-3xl">URL·메모로 Flow 찾기</h1>
             <span data-testid="flow-catalog-count" className="text-sm font-semibold text-[#8A857B]">
-              {hasCatalogFilter ? `${visibleCatalogCount}/${totalCatalogCount}개 콘텐츠` : `${totalCatalogCount}개 콘텐츠`}
+              {hasCatalogFilter ? `Flow ${visibleCatalogCount}/${totalCatalogCount}개` : `Flow ${totalCatalogCount}개`}
             </span>
           </div>
-          <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">준비된 Flow를 찾거나 내 초안으로 이어갑니다.</p>
+          <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">링크나 메모로 찾고, 준비된 Flow를 비교하세요.</p>
         </div>
         <FlowUrlLookupEntry
           input={urlLookupInput}
@@ -3033,13 +2974,6 @@ export function FlowList() {
                     {structures.map((item) => (
                       <option key={item} value={item}>{item}</option>
                     ))}
-                  </select>
-                </label>
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold text-[#6E6B64]">정렬</span>
-                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={sort} onChange={(event) => setSort(event.target.value as typeof sort)}>
-                    <option value="popular">인기순</option>
-                    <option value="recent">최신순</option>
                   </select>
                 </label>
               </div>
@@ -3128,6 +3062,7 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
       .slice(0, 3);
   return {
     id: map.id,
+    href: `/flow-maps/${map.id}`,
     title: toContentDisplayTitle(display.title),
     summary: display.summary,
     categoryLabel: display.note,
@@ -3141,6 +3076,7 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
     recommendedFlowSlug: recommendedFlowSlug,
     recommendedFlowTitle: toContentDisplayTitle(recommendedFlow?.title ?? recommendedFlowSlug),
     sourceUrl: map.sourceUrl,
+    sourceTitle: map.sourceTitle,
     sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
     previewSteps,
@@ -3149,9 +3085,44 @@ const homeFlowMapBaselineLinks = getSourceBackedHomepageFlowMaps().map((map) => 
   };
 });
 
-const currentSourceBackedCatalogLinks = getPublicCatalogSourceBackedFlowMaps().map((map) => {
+const currentSourceBackedCatalogLinks = getPublicCatalogSourceBackedFlowMaps().flatMap((map) => {
   const publishPackage = buildSourceBackedFlowMapPublishPackage(map.id);
   const childFlows = publishPackage?.public.childFlows ?? [];
+  if (publishPackage?.public.saveMode === 'choose_child') {
+    return childFlows.map((flow) => {
+      const childBundle = sourceBackedMyFlowBundles.find((bundle) => bundle.flow.slug === flow.slug);
+      const input = childBundle && childBundle.flow.anchor_type !== 'none'
+        ? getAnchorInputLabel(childBundle)
+        : '입력 없음';
+      return {
+        id: flow.slug,
+        href: `/f/${flow.slug}`,
+        title: toContentDisplayTitle(flow.title),
+        summary: childBundle?.flow.description ?? map.summary,
+        categoryLabel: childBundle?.flow.category ?? map.categoryLabel ?? '실행 콘텐츠',
+        userFacingStatus: map.userFacingStatus ?? '확인 가능',
+        input,
+        artifact: childBundle ? getCatalogDestinationLabel(childBundle) : map.artifacts[0] ?? '저장 항목',
+        note: map.categoryLabel ?? '실행 콘텐츠',
+        reason: childBundle?.flow.description ?? map.summary,
+        flowCount: 1,
+        counts: {
+          flows: 1,
+          steps: flow.steps.length,
+          items: flow.steps.reduce((sum, step) => sum + step.detailItemCount, 0),
+        },
+        recommendedFlowSlug: flow.slug,
+        recommendedFlowTitle: toContentDisplayTitle(flow.title),
+        sourceUrl: childBundle?.flow.source_url ?? map.sourceUrl,
+        sourceTitle: childBundle?.flow.source_title ?? map.sourceTitle,
+        sourceUrlCount: 1,
+        sourceSignal: childBundle ? getCatalogSourceSignal(childBundle) : '원문 연결',
+        previewSteps: flow.steps.slice(0, 3).map((step) => step.title),
+        searchText: [map.title, map.userLabel, map.categoryLabel, map.sourceTitle, flow.title, ...flow.steps.map((step) => step.title)].filter(Boolean).join(' '),
+        sourceKind: 'curated-source',
+      };
+    });
+  }
   const recommendedFlowSlug = map.recommendedFlowSlug ?? map.flowSlugs[0] ?? map.id;
   const recommendedFlow = childFlows.find((flow) => flow.slug === recommendedFlowSlug) ?? childFlows[0];
   const counts = getFlowMapCatalogCounts(map.flowSlugs.length, publishPackage, map.counts);
@@ -3159,8 +3130,9 @@ const currentSourceBackedCatalogLinks = getPublicCatalogSourceBackedFlowMaps().m
     childFlows
       .flatMap((flow) => flow.steps.slice(0, 1).map((step) => step.title))
       .slice(0, 3);
-  return {
+  return [{
     id: map.id,
+    href: `/flow-maps/${map.id}`,
     title: toUserFacingMapTitle(map.title),
     summary: map.summary,
     categoryLabel: map.categoryLabel ?? '실행 콘텐츠',
@@ -3174,12 +3146,13 @@ const currentSourceBackedCatalogLinks = getPublicCatalogSourceBackedFlowMaps().m
     recommendedFlowSlug,
     recommendedFlowTitle: toContentDisplayTitle(recommendedFlow?.title ?? recommendedFlowSlug),
     sourceUrl: map.sourceUrl,
+    sourceTitle: map.sourceTitle,
     sourceUrlCount: map.sourceUrlCount ?? 1,
     sourceSignal: '원문 연결',
     previewSteps,
     searchText: [map.title, map.userLabel, map.categoryLabel, map.sourceTitle, ...map.artifacts, getChildFlowCatalogSearchText(childFlows)].filter(Boolean).join(' '),
     sourceKind: 'curated-source',
-  };
+  }];
 });
 
 const flowMapCatalogLinks = [
@@ -3192,46 +3165,27 @@ const flowMapCatalogLinks = [
 const HOME_RECOMMENDATION_LIMIT = 3;
 const homeRecommendedFlowMapLinks = homeFlowMapBaselineLinks.slice(0, HOME_RECOMMENDATION_LIMIT);
 
-function getHomeRecommendationPromise(item: FlowMapCatalogLink): string {
-  const inputLabel = item.input === '입력 없음' ? '입력 없이' : `${item.input}만 넣으면`;
-  const countSuffix = item.input === '입력 없음' || item.counts.steps <= 0 ? '' : ` · 할 일 ${item.counts.steps}개`;
-  return `${inputLabel} ${item.artifact}${countSuffix}`;
-}
-
 function HomeRecommendationCard({ item, variant = 'secondary' }: { item: FlowMapCatalogLink; variant?: 'primary' | 'secondary' }) {
-  const promise = getHomeRecommendationPromise(item);
-  const firstTask = getCatalogFirstTask(item.previewSteps, item.recommendedFlowTitle);
   const isPrimary = variant === 'primary';
+  const view: FlowDiscoveryCardView = {
+    id: item.id,
+    href: item.href,
+    title: item.title,
+    categoryLabel: item.categoryLabel,
+    sourceLabel: toUserFacingSourceTitle(item.sourceTitle),
+    previewItems: item.previewSteps,
+    inputLabel: item.input,
+    resultLabel: item.artifact,
+    itemCount: item.counts.steps,
+  };
 
   return (
-    <Link
-      data-testid={isPrimary ? 'home-primary-flow-card' : 'home-secondary-flow-card'}
-      data-home-recommendation-card="true"
-      className={[
-        'block rounded-lg border border-[#E7E4DD] bg-white transition hover:border-[#3654FF]/40 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]',
-        isPrimary ? 'p-4 md:p-5' : 'p-3.5',
-      ].join(' ')}
-      href={`/flow-maps/${item.id}`}
-    >
-      <p className="text-[11px] font-semibold text-[#8A857B]">{item.categoryLabel} · {item.sourceSignal}</p>
-      <h2 className={isPrimary ? 'mt-2 text-2xl font-semibold leading-snug text-[#1B1A17]' : 'mt-1.5 text-base font-semibold leading-snug text-[#1B1A17]'}>
-        {item.title}
-      </h2>
-      <p
-        data-testid={isPrimary ? 'home-primary-flow-promise' : undefined}
-        className={isPrimary ? 'mt-3 border-y border-[#E7E4DD] py-2.5 text-sm font-semibold leading-5 text-[#1B1A17]' : 'mt-2 break-keep text-sm font-semibold leading-5 text-[#3654FF]'}
-      >
-        {promise}
-      </p>
-      {isPrimary ? (
-        <p className="mt-2 break-keep text-sm leading-6 text-[#6E6B64]">{item.summary}</p>
-      ) : (
-        <p className="mt-2 line-clamp-1 break-keep text-sm leading-5 text-[#6E6B64]">{firstTask}</p>
-      )}
-      <p className={isPrimary ? 'mt-4 border-t border-[#E7E4DD] pt-3 text-sm font-semibold text-[#3654FF]' : 'mt-3 text-sm font-semibold text-[#3654FF]'}>
-        {FLOW_ENTRY_DETAIL_CTA_LABEL}
-      </p>
-    </Link>
+    <FlowDiscoveryCard
+      view={view}
+      testId={isPrimary ? 'home-primary-flow-card' : 'home-secondary-flow-card'}
+      emphasis={isPrimary ? 'primary' : 'standard'}
+      homeRecommendation
+    />
   );
 }
 
@@ -3259,29 +3213,32 @@ export function HomeLanding() {
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-12">
       <div className="mx-auto max-w-6xl">
       <PlatformNav />
-      <section className="grid gap-6 py-6 md:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <section className="grid gap-7 py-6 md:py-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
         <div className="max-w-2xl">
           <h1 className="break-keep text-3xl font-semibold leading-tight tracking-tight text-gray-950 md:text-5xl">
-            콘텐츠를 일정과 할 일로 저장
+            무엇을 준비하고 있나요?
           </h1>
-          <p className="mt-4 max-w-2xl break-keep text-base leading-7 text-gray-600 md:text-lg md:leading-8">
-            블로그, 유튜브, 공식 안내에서 따라 할 부분만 골라 일정과 체크리스트로 저장합니다.
+          <p className="mt-3 max-w-xl break-keep text-base leading-7 text-gray-600">
+            링크나 메모를 넣거나, 준비된 Flow를 바로 열어보세요.
           </p>
-          <div className="mt-5 flex flex-wrap gap-3 md:mt-7">
+          <div className="mt-5 md:mt-7">
             <Link
               data-testid="home-url-first-entry"
-              className="inline-flex min-h-12 w-full flex-col items-start justify-center rounded-lg bg-[#3654FF] px-5 py-3 text-left text-sm font-semibold text-white hover:bg-[#2945E8] sm:w-auto sm:min-w-[19rem]"
+              className="group flex min-h-16 w-full items-center justify-between gap-4 rounded-lg border border-[#D8D5CD] bg-white px-4 py-3 text-left hover:border-[#3654FF]/50 hover:shadow-[0_8px_24px_rgba(27,26,23,0.06)]"
               href="/flows"
             >
-              <span>URL이나 메모로 Flow 찾기</span>
-              <span className="mt-0.5 text-xs font-medium text-white/80">· 링크 붙여넣기 · 요청 메모 · 준비된 Flow 확인</span>
+              <span>
+                <span className="block text-sm font-semibold text-[#1B1A17]">URL이나 메모로 Flow 찾기</span>
+                <span className="mt-0.5 block text-xs font-medium text-[#6E6B64]">링크 또는 할 일을 붙여넣기</span>
+              </span>
+              <span className="text-lg font-semibold text-[#3654FF] group-hover:translate-x-0.5" aria-hidden="true">→</span>
             </Link>
           </div>
         </div>
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold text-[#3654FF]">바로 시작</p>
-            <p className="text-xs font-medium text-[#8A857B]">{homeRecommendedFlowMapLinks.length}개 추천</p>
+            <p className="text-sm font-semibold text-[#1B1A17]">바로 시작할 준비</p>
+            <p className="text-xs font-medium text-[#8A857B]">{homeRecommendedFlowMapLinks.length}개</p>
           </div>
           {primaryMap ? <HomeRecommendationCard item={primaryMap} variant="primary" /> : null}
           {secondaryMaps.length > 0 ? (
@@ -15857,6 +15814,34 @@ function PublishSuccessPanel({ bundle }: { bundle: FlowBundle }) {
   );
 }
 
+function getPublicSaveBeforePreviewRows(bundle: FlowBundle, anchor: string): FlowSaveBeforePreviewRow[] {
+  // Server rendering has no trustworthy browser-local "today" yet. Keep the
+  // structural preview available, then project concrete dates after hydration.
+  const scheduleEntries = anchor ? getScheduleEntries(bundle, anchor) : [];
+  const scheduleById = new Map(scheduleEntries.map((entry) => [entry.id, entry]));
+  const itemRows = bundle.items
+    .slice()
+    .sort((a, b) => a.order - b.order)
+    .map((item) => {
+      const scheduled = scheduleById.get(item.id);
+      return {
+        id: item.id,
+        timing: scheduled?.timing || (item.day_offset !== undefined ? timingLabel(item.day_offset, item.duration_days) : undefined),
+        title: item.title,
+        summary: item.description,
+      };
+    });
+
+  if (itemRows.length > 0) return itemRows;
+
+  return scheduleEntries.map((entry) => ({
+    id: entry.id,
+    timing: entry.timing,
+    title: entry.title,
+    summary: entry.meta,
+  }));
+}
+
 export function PublicFlow({ slug }: { slug: string }) {
   const { bundles, persist } = useBundles();
   const [bundle, setBundle] = useState<FlowBundle | null>(() => mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find((item) => item.flow.slug === slug) ?? null);
@@ -15875,7 +15860,12 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
   const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
+  const [publicPreviewToday, setPublicPreviewToday] = useState('');
   const anchorPersistenceSlugRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    setPublicPreviewToday(formatLocalDate(new Date()));
+  }, []);
 
   useEffect(() => {
     const found = mergeSourceBackedMyFlowBundles(getBundles()).find((item) => item.flow.slug === slug) ?? null;
@@ -15945,7 +15935,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   if (!bundle) return <main className="p-8">Flow를 찾을 수 없습니다.</main>;
 
   const publicDisplayTitle = toContentDisplayTitle(bundle.flow.title);
-  const exampleAnchor = getPreviewAnchor(bundle, 'example', '');
+  const exampleAnchor = getPreviewAnchor(bundle, 'example', '', publicPreviewToday);
   const dateIntent = resolvePublicDateIntent({
     anchorType: bundle.flow.anchor_type,
     mode: anchorMode,
@@ -15963,23 +15953,18 @@ export function PublicFlow({ slug }: { slug: string }) {
   const exportDone = done || workbenchDone;
   const canExportCalendar = hasCalendarSchedule(bundle) && dateIntent.calendarEligible;
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
-  const showExportFirstHero = isExportFirstHeroRoute(bundle);
   const showMobileWorkbenchFirst = shouldShowMobileWorkbenchFirst(bundle);
   const showDesktopReferenceRail = shouldUseDesktopReferenceRail(bundle);
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
-  const showPublicSaveAction = !showExportFirstHero;
+  const showPublicSaveAction = true;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
-  const showPublicHeroSetup =
-    !showExportFirstHero &&
-    (
-      isUserScheduledExactVideo(bundle) ||
-      (!showTodayExecution && (publicHeroSetupFlowSlugs.has(bundle.flow.slug) || bundle.flow.anchor_type === 'none'))
-    );
+  const showPublicHeroSetup = true;
   const showPublicSetupInput = showPublicHeroSetup && (bundle.flow.anchor_type !== 'none' || isUserScheduledExactVideo(bundle));
-  const useP24CompactPublicFrame = showPublicHeroSetup && !compactJeonsePage;
+  const useP24CompactPublicFrame = !compactJeonsePage;
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
+  const publicSaveBeforeRows = getPublicSaveBeforePreviewRows(bundle, displayAnchor);
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -16129,7 +16114,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               className="min-h-11 rounded-xl border border-[#D8D5CD] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
               onClick={copyToEditableDraft}
             >
-              내 버전으로 조정
+              내게 맞게 조정
             </button>
           </>
         )}
@@ -16176,7 +16161,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const renderPublicHeroSetup = () => {
     if (!showPublicSetupInput) return null;
     return (
-      <div data-testid="public-flow-primary-setup" className="max-w-xl rounded-lg border border-[#DDE4E0] bg-white px-3 py-3">
+      <div data-testid="public-flow-primary-setup" className="max-w-xl">
         <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={changeAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} compactSecondaryActions />
       </div>
     );
@@ -16208,7 +16193,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   );
   const showCalendarExportAction = canExportCalendar && bundle.flow.primary_destination !== 'internal_check';
   const renderSetupSection = () =>
-    !showTodayExecution && !showExportFirstHero && !showPublicHeroSetup ? (
+    !showTodayExecution && !showPublicHeroSetup ? (
       <section
         data-testid="public-flow-primary-setup"
         className={compactJeonsePage ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-4' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}
@@ -16232,33 +16217,21 @@ export function PublicFlow({ slug }: { slug: string }) {
       <div className="mx-auto max-w-[1240px]">
         <PublicFlowShareShell savedFlowAt={savedFlowAt} flowSlug={bundle.flow.slug} />
 
-        <header data-testid="public-flow-hero" className={compactJeonsePage ? 'border-b border-[#DDE4E0] pb-5 pt-1 md:pb-6' : 'border-b border-[#DDE4E0] pb-7 pt-2 md:pb-9 md:pt-4'}>
-          <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500">
-            <span>{bundle.flow.category}</span>
-            <span aria-hidden="true">·</span>
-            <span>{getPublicFlowKindLabel(bundle)}</span>
-            {bundle.flow.source_title && !compactJeonsePage ? (
-              <>
-                <span aria-hidden="true">·</span>
-                <span>{getCatalogSourceSignal(bundle)}</span>
-              </>
-            ) : null}
-          </div>
-          <h1 className={compactJeonsePage ? 'mt-2 max-w-3xl text-2xl font-bold tracking-normal text-slate-950 md:text-3xl' : 'mt-2 max-w-4xl text-2xl font-bold tracking-normal text-slate-950 md:mt-3 md:text-4xl'}>{publicDisplayTitle}</h1>
-          <div data-testid="public-flow-creator-attribution" className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#66706B]">
-            <Link className="font-semibold text-[#1B1A17] underline-offset-2 hover:text-[#3654FF] hover:underline" href={getCreatorPath(bundle)}>
-              by {getCreatorName(bundle)}
-            </Link>
-          </div>
-          {bundle.flow.description ? (
-            <details data-testid="public-flow-description" className="mt-3 max-w-3xl border-y border-[#DDE4E0] py-2 text-sm">
-              <summary className="min-h-8 cursor-pointer font-semibold text-[#59625E]">이 Flow 설명</summary>
-              <p className="mt-2 break-keep leading-6 text-slate-600">{bundle.flow.description}</p>
-            </details>
-          ) : null}
-          {showPublicSetupInput ? <section className="mt-4 border-t border-[#DDE4E0] pt-4">{renderPublicHeroSetup()}</section> : null}
-          {showPublicSaveAction ? <div className="mt-4">{renderPublicSaveActions()}</div> : null}
-        </header>
+        <FlowSaveBeforeFrame
+          rootTestId="public-flow-hero"
+          previewTestId="public-flow-artifact-preview"
+          previewRowTestId="public-flow-artifact-preview-row"
+          title={publicDisplayTitle}
+          categoryLabel={bundle.flow.category}
+          sourceLabel={bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : getCreatorName(bundle)}
+          sourceHref={bundle.flow.source_url}
+          inputLabel={bundle.flow.anchor_type === 'none' ? '날짜 없이 시작' : getAnchorInputLabel(bundle)}
+          resultLabel={getCatalogDestinationLabel(bundle)}
+          itemCount={Math.max(bundle.items.length, publicSaveBeforeRows.length)}
+          previewRows={publicSaveBeforeRows}
+          setup={showPublicSetupInput ? renderPublicHeroSetup() : undefined}
+          actions={showPublicSaveAction ? renderPublicSaveActions() : undefined}
+        />
 
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
@@ -16267,23 +16240,6 @@ export function PublicFlow({ slug }: { slug: string }) {
               <FlowMigrationStatus bundle={bundle} />
               <FlowSourceFitStatus bundle={bundle} />
             </div> : null}
-
-            {showExportFirstHero ? (
-              <ExportFirstHero
-                bundle={bundle}
-                anchor={anchor}
-                displayAnchor={displayAnchor}
-                mode={anchorMode}
-                onModeChange={changeAnchorMode}
-                onAnchorChange={setAnchor}
-                weekdays={weekdaySelection}
-                onWeekdaysChange={setWeekdaySelection}
-                savedFlowAt={savedFlowAt}
-                onSaveToMyFlow={saveToMyFlow}
-                saveActionLabel={saveActionLabel}
-                saveDisabled={!dateIntent.canSave}
-              />
-            ) : null}
 
             <div className={showMobileWorkbenchFirst ? 'order-2 xl:contents' : undefined}>{renderSetupSection()}</div>
             <div className={showMobileWorkbenchFirst ? 'order-1 xl:contents' : undefined}>{renderArtifactWorkbench()}</div>
@@ -16311,23 +16267,6 @@ export function PublicFlow({ slug }: { slug: string }) {
               <FlowMigrationStatus bundle={bundle} />
               <FlowSourceFitStatus bundle={bundle} />
             </>
-          ) : null}
-
-          {showExportFirstHero ? (
-            <ExportFirstHero
-              bundle={bundle}
-              anchor={anchor}
-              displayAnchor={displayAnchor}
-              mode={anchorMode}
-              onModeChange={changeAnchorMode}
-              onAnchorChange={setAnchor}
-              weekdays={weekdaySelection}
-              onWeekdaysChange={setWeekdaySelection}
-              savedFlowAt={savedFlowAt}
-              onSaveToMyFlow={saveToMyFlow}
-              saveActionLabel={saveActionLabel}
-              saveDisabled={!dateIntent.canSave}
-            />
           ) : null}
 
           {renderSetupSection()}
@@ -16560,10 +16499,6 @@ function PublicFlowSecondaryBrowseLink() {
   );
 }
 
-function isExportFirstHeroRoute(bundle: FlowBundle) {
-  return bundle.flow.slug === 'moving-d30-basic';
-}
-
 function shouldShowMobileWorkbenchFirst(bundle: FlowBundle) {
   return (
     bundle.flow.structure_type === 'routine' ||
@@ -16592,144 +16527,10 @@ function shouldUseDesktopReferenceRail(bundle: FlowBundle) {
   ].includes(bundle.flow.slug);
 }
 
-function compactDateLabel(value: string) {
-  if (!value) return '';
-  return formatKoreanShortDate(value);
-}
-
-function getExportFirstPreviewEntries(bundle: FlowBundle, anchor: string): ScheduleEntry[] {
-  if (!anchor) return [];
-  const seen = new Set<string>();
-  const entries = getScheduleEntries(bundle, anchor).sort((a, b) => a.startDate.localeCompare(b.startDate));
-  const grouped: ScheduleEntry[] = [];
-
-  for (const entry of entries) {
-    const key = entry.timing || entry.startDate;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    grouped.push(entry);
-  }
-
-  if (grouped.length <= 3) return grouped;
-
-  const dayOfEntry = grouped.find((entry) => entry.timing === 'D-Day' || entry.startDate === anchor);
-  return [grouped[0], grouped[1], dayOfEntry ?? grouped[2]].filter(
-    (entry, index, list): entry is ScheduleEntry => Boolean(entry) && list.findIndex((item) => item?.id === entry.id) === index,
-  );
-}
-
 function getMobileExportSheetSummary(bundle: FlowBundle, anchor: string, executableCount: number) {
   if (bundle.flow.slug === 'moving-d30-basic' && anchor) return `이사일 ${anchor} 기준 ${executableCount}개 항목`;
   if (anchor) return `${anchor} 기준 ${executableCount}개 항목`;
   return `${executableCount}개 항목`;
-}
-
-function ExportFirstHero({
-  bundle,
-  anchor,
-  displayAnchor,
-  mode,
-  onModeChange,
-  onAnchorChange,
-  weekdays,
-  onWeekdaysChange,
-  savedFlowAt,
-  onSaveToMyFlow,
-  saveActionLabel,
-  saveDisabled,
-}: {
-  bundle: FlowBundle;
-  anchor: string;
-  displayAnchor: string;
-  mode: AnchorMode;
-  onModeChange: (value: AnchorMode) => void;
-  onAnchorChange: (value: string) => void;
-  weekdays: string[];
-  onWeekdaysChange: (value: string[]) => void;
-  savedFlowAt?: string;
-  onSaveToMyFlow: () => void;
-  saveActionLabel: string;
-  saveDisabled: boolean;
-}) {
-  const previewEntries = getExportFirstPreviewEntries(bundle, displayAnchor);
-  const remainingCount = Math.max(getScheduleEntries(bundle, displayAnchor).length - previewEntries.length, 0);
-
-  return (
-    <section aria-label="Export-first flow hero" className="my-7 border-b border-[#DDE4E0] pb-7">
-      <div className="grid gap-6 md:grid-cols-[1.12fr_0.88fr] md:items-start md:gap-8">
-        <div>
-          <p className="text-sm font-semibold text-[#3654FF]">저장 전 일정 확인</p>
-          <h2 className="mt-1 text-xl font-bold tracking-normal text-[#1B1A17] md:text-2xl">이사일을 정하면 할 일 날짜가 맞춰집니다</h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[#66706B]">먼저 중요한 날짜만 확인하고, 저장 후 내 Flow에서 각 할 일을 다시 조정할 수 있습니다.</p>
-
-          <div className="mt-5 border-y border-[#DDE4E0] py-4">
-            <p className="text-sm font-semibold text-[#4A4842]">이렇게 일정이 잡혀요</p>
-            <div className="mt-3 divide-y divide-[#E5EAE7]">
-              {previewEntries.map((entry) => (
-                <div key={entry.id} className="grid grid-cols-[3.2rem_5.8rem_minmax(0,1fr)] items-baseline gap-2 py-2 text-sm first:pt-0 last:pb-0">
-                  <span className="font-semibold text-[#6E6B64]">{entry.timing}</span>
-                  <span className="font-medium text-[#6E6B64]">{formatKoreanShortDate(entry.startDate)}</span>
-                  <span className="min-w-0 text-[#1B1A17]">{entry.title}</span>
-                </div>
-              ))}
-            </div>
-            {remainingCount > 0 ? <p className="mt-3 text-xs font-medium text-[#6E6B64]">+ 나머지 {remainingCount}개 항목</p> : null}
-          </div>
-        </div>
-
-        <div className="border-t border-[#DDE4E0] pt-5 md:border-l md:border-t-0 md:pl-8 md:pt-0">
-          <p className="text-sm font-semibold text-[#1B1A17]">{getSetupStepTitle(bundle)}</p>
-          <p className="mt-1 text-sm leading-6 text-[#6E6B64]">{getSetupStepDescription(bundle)}</p>
-          <div className="mt-4">
-            <AnchorInput
-              bundle={bundle}
-              anchor={anchor}
-              displayAnchor={displayAnchor}
-              mode={mode}
-              onModeChange={onModeChange}
-              onChange={onAnchorChange}
-              weekdays={weekdays}
-              onWeekdaysChange={onWeekdaysChange}
-              compactSecondaryActions
-            />
-          </div>
-          <div className="mt-4" data-testid="moving-save-actions">
-            {savedFlowAt ? (
-              <div className="rounded-lg border border-[#CFE8DA] bg-[#EAF7F0] p-3 text-sm text-[#1B1A17]">
-                <p className="font-semibold">내 Flow에 담았어요</p>
-                <p className="mt-1 text-xs leading-5 text-[#1F8A5B]">이제 FLOW 안에서 체크하거나 외부 도구로도 보낼 수 있습니다.</p>
-              </div>
-            ) : null}
-            {savedFlowAt ? (
-              <Link
-                className="mt-3 flex w-full items-center justify-center rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
-                href={buildPostSaveHref({ kind: 'flow', id: bundle.flow.slug })}
-              >
-                내 Flow에서 보기
-              </Link>
-            ) : (
-              <button
-                type="button"
-                className="w-full rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-slate-300"
-                disabled={saveDisabled}
-                onClick={onSaveToMyFlow}
-              >
-                {saveActionLabel}
-              </button>
-            )}
-            <p className="mt-3 text-center text-xs leading-5 text-[#737B77]">파일로 가져가기는 실행 미리보기 아래에서 선택할 수 있어요.</p>
-          </div>
-          {displayAnchor ? (
-            <p className="mt-2 text-center text-xs font-medium text-[#6E6B64]">
-              {mode === 'example'
-                ? `예시로 ${bundle.items.length}개 항목을 미리 봅니다.`
-                : `${compactDateLabel(previewEntries[0]?.startDate ?? displayAnchor)}부터 ${bundle.items.length}개 항목을 옮깁니다.`}
-            </p>
-          ) : null}
-        </div>
-      </div>
-    </section>
-  );
 }
 
 function AnchorInput({
@@ -17121,17 +16922,18 @@ function nextMonday(date: Date): Date {
   return addDays(date, add);
 }
 
-function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: string): string {
+function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: string, localToday = ''): string {
   if (bundle.flow.anchor_type === 'none') return '';
   if (mode === 'custom') return customAnchor;
   if (mode === 'undated') return '';
-  const today = new Date();
-  if (bundle.flow.content_type === 'meal_plan') return formatLocalDate(today);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(localToday)) return '';
+  const today = new Date(`${localToday}T00:00:00`);
+  if (bundle.flow.content_type === 'meal_plan') return localToday;
   if (bundle.flow.category.includes('결혼')) return formatDate(addDays(today, 180));
   if (bundle.flow.category.includes('이사')) return formatDate(addDays(today, 30));
   if (bundle.flow.category.includes('여행')) return formatDate(addDays(today, 14));
   if (bundle.flow.structure_type === 'routine') return formatDate(nextMonday(today));
-  return formatLocalDate(today);
+  return localToday;
 }
 
 function getAnchorModeLabel(mode: AnchorMode): string {
@@ -17141,10 +16943,10 @@ function getAnchorModeLabel(mode: AnchorMode): string {
 }
 
 function getPublicSaveActionLabel(bundle: FlowBundle, resolution: PublicDateIntentResolution): string {
-  if (bundle.flow.anchor_type === 'none') return '그대로 저장';
+  if (bundle.flow.anchor_type === 'none') return '그대로 시작';
   if (!resolution.canSave) return '날짜를 먼저 정하세요';
-  if (resolution.persistedMode === 'custom') return '이 날짜로 저장';
-  return '날짜 없이 저장';
+  if (resolution.persistedMode === 'custom') return '이 날짜로 시작';
+  return '날짜 없이 시작';
 }
 
 function getEarliestOffset(bundle: FlowBundle): number {
@@ -17270,7 +17072,7 @@ function getPublicViews(bundle: FlowBundle, hasScheduleAnchor = false): { id: Pu
 }
 
 function getScheduleEntries(bundle: FlowBundle, anchor: string): ScheduleEntry[] {
-  if (!anchor && bundle.flow.structure_type !== 'checklist') return [];
+  if (!anchor) return [];
   const personalMemoDraft = isPersonalMemoDraftBundle(bundle);
   if (bundle.flow.content_type === 'meal_plan') {
     return (bundle.mealSlots ?? []).map((slot) => {

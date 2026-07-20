@@ -26,6 +26,8 @@ const CLOSED_REVIEW_FLOW_ROUTES = [
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 
+const PUBLIC_START_ACTION_PATTERN = /그대로 시작|날짜 없이 시작|이 날짜로 시작/;
+
 async function collectFocusableEntries(page: Page) {
   return page.evaluate<FocusableEntry[]>(() => {
     const selector = [
@@ -118,6 +120,7 @@ type PublicFlowUnitHierarchy = {
   preSaveCheckboxPreviewLabelCount: number;
   preSaveItemCheckboxPreviewCount: number;
   preSavePreviewControlCount: number;
+  preSavePreviewRowCount: number;
   includedItemMarkerCount: number;
   heroArtifactPreviewCount: number;
   artifactRepresentationCount: number;
@@ -155,6 +158,8 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
       .filter(isVisible);
     const heroArtifactPreviews = Array.from(document.querySelectorAll('[data-testid="public-flow-artifact-preview"]'))
       .filter(isVisible);
+    const heroArtifactPreviewRows = Array.from(document.querySelectorAll('[data-testid="public-flow-artifact-preview-row"]'))
+      .filter(isVisible);
     const artifactWorkbenches = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"]'))
       .filter(isVisible);
     const completionLikeCheckboxLabelPattern =
@@ -177,6 +182,7 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
         .length,
       preSaveItemCheckboxPreviewCount: previewCheckboxes.length,
       preSavePreviewControlCount: previewControls.length,
+      preSavePreviewRowCount: heroArtifactPreviewRows.length,
       includedItemMarkerCount: includedItemMarkers.length,
       heroArtifactPreviewCount: heroArtifactPreviews.length,
       artifactRepresentationCount: heroArtifactPreviews.length + artifactWorkbenches.length,
@@ -195,7 +201,7 @@ test.describe('public share shell secondary browse order', () => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
 
-      const visibleSaveActions = await page.getByRole('button', { name: /그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장/ }).evaluateAll((elements) =>
+      const visibleSaveActions = await page.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN }).evaluateAll((elements) =>
         elements.filter((element) => {
           const style = window.getComputedStyle(element);
           const rect = element.getBoundingClientRect();
@@ -230,11 +236,9 @@ test.describe('public share shell secondary browse order', () => {
           entry.testId === 'public-flow-primary-setup' ||
           entry.testId === 'public-flow-mobile-save-cta' ||
           entry.testId === 'public-flow-save-actions' ||
-          entry.testId === 'moving-save-actions' ||
-          entry.text.includes('내 Flow에 저장') ||
-          entry.text.includes('그대로 저장') ||
-          entry.text.includes('날짜 없이 저장') ||
-          entry.text.includes('이 날짜로 저장'),
+          entry.text.includes('그대로 시작') ||
+          entry.text.includes('날짜 없이 시작') ||
+          entry.text.includes('이 날짜로 시작'),
       );
 
       expect(browseIndex).toBeGreaterThanOrEqual(0);
@@ -252,8 +256,8 @@ test.describe('public share shell secondary browse order', () => {
       expect(stickyPrimaryEntries.length).toBeGreaterThan(0);
 
       const [primaryEntry] = stickyPrimaryEntries;
-      expect(primaryEntry.accessibleName).toMatch(/그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장|내 Flow에서 보기/);
-      expect(primaryEntry.text).toMatch(/그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장|내 Flow에서 보기/);
+      expect(primaryEntry.accessibleName).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작|내 Flow에서 보기/);
+      expect(primaryEntry.text).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작|내 Flow에서 보기/);
       expect(primaryEntry.text).not.toMatch(/도구|파일|받기|복사|시트|캘린더|xlsx|ics/i);
     });
   }
@@ -268,7 +272,8 @@ test.describe('public share shell secondary browse order', () => {
       expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/Flow|파일|가져가기/);
       expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(2);
       expect(hierarchy.itemLevelExportLikeLabelCount).toBe(0);
-      expect(hierarchy.preSavePreviewControlCount).toBeGreaterThan(0);
+      expect(hierarchy.preSavePreviewControlCount).toBe(0);
+      expect(hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
     });
   }
 
@@ -281,9 +286,9 @@ test.describe('public share shell secondary browse order', () => {
       expect(hierarchy.preSaveCheckboxCompletionLikeLabelCount).toBe(0);
       expect(hierarchy.preSaveCheckboxCount).toBe(0);
       expect(hierarchy.preSaveCheckboxPreviewLabelCount).toBe(0);
-      expect(hierarchy.heroArtifactPreviewCount).toBe(0);
-      expect(hierarchy.artifactRepresentationCount).toBe(1);
-      expect(hierarchy.includedItemMarkerCount + hierarchy.preSavePreviewControlCount).toBeGreaterThan(0);
+      expect(hierarchy.heroArtifactPreviewCount).toBe(1);
+      expect(hierarchy.artifactRepresentationCount).toBe(2);
+      expect(hierarchy.includedItemMarkerCount + hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
     });
   }
 
@@ -296,7 +301,7 @@ test.describe('public share shell secondary browse order', () => {
       await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
       await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
       await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
-      await expect(page.getByRole('button', { name: /그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장/ })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN })).toHaveCount(0);
       await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
       await expect(page.getByTestId('mobile-export-bar')).toHaveCount(0);
       await expect(page.getByRole('checkbox')).toHaveCount(0);
@@ -313,7 +318,7 @@ test.describe('public share shell secondary browse order', () => {
     await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
 
     const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
-    const saveButton = mobileSave.getByRole('button', { name: '그대로 저장' });
+    const saveButton = mobileSave.getByRole('button', { name: '그대로 시작' });
     await expect(saveButton).toBeVisible();
     await saveButton.focus();
     await expect(saveButton).toBeFocused();

@@ -68,7 +68,7 @@ test('public save lands on a reload-safe whole-Flow receipt on mobile', async ({
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
-  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 저장' }).click();
+  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
   await page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' }).click();
 
   const handoff = /\/my\?savedFlow=vehicle-inspection-prep$/;

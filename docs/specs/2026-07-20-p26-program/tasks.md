@@ -42,11 +42,11 @@
 
 ## P26-06~07 Discovery And Save
 
-- [ ] P26-06A unified discovery card
-- [ ] P26-06A source/result/input/preview hierarchy
-- [ ] unsupported popularity/social proof removal
-- [ ] P26-06B save-before dual path
-- [ ] P26-06C wedding independent entries
+- [x] P26-06A unified discovery card
+- [x] P26-06A source/result/input/preview hierarchy
+- [x] unsupported popularity/social proof removal
+- [x] P26-06B save-before dual path
+- [x] P26-06C wedding independent entries
 - [ ] P26-07 post-save whole-Flow hub
 
 ## P26-08~13 My Flow And Editing

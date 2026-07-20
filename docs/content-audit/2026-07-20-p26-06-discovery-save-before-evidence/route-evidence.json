@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-06",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "3ebdc72",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "prior_design_artifact"
+  ],
+  "referenceArtifact": "docs/content-audit/2026-07-19-flow-content-usage-preview-ko.html",
+  "markers": {
+    "singleUserFacingFlowObject": true,
+    "homeUnifiedDiscoveryCardCount": 2,
+    "catalogUnifiedDiscoveryCardCount": 9,
+    "discoveryCardRepresentativeItemMin": 1,
+    "discoveryCardRepresentativeItemMax": 3,
+    "discoveryCardSourceVisible": true,
+    "unsupportedPopularityOrSocialProofHitCount": 0,
+    "weddingIndependentEntryCount": 2,
+    "allblancIndependentEntryCount": 2,
+    "publicSaveBeforeArtifactFirst": true,
+    "publicSaveBeforePreviewRowCount": 5,
+    "publicSaveBeforeSingleDecisionSurfaceCount": 1,
+    "publicSaveBeforeStartAndAdjustPathVisible": true,
+    "sourceBackedSaveBeforeUsesSharedGrammar": true,
+    "publicLongPromiseHitCount": 0,
+    "publicDetailedSourceInitiallyExpanded": false,
+    "publicRoutineOppositeTimezoneHydrationErrorCount": 0,
+    "mobileChooseChildFixedNavOverlapCount": 0,
+    "homePrimaryCardExcessStretchCount": 0,
+    "horizontalOverflowCount": 0,
+    "consolePageErrorCount": 0,
+    "sourceSchemaChanged": false,
+    "personalOverlaySchemaChanged": false,
+    "executionOrExportSchemaChanged": false,
+    "appUiChanged": true
+  },
+  "screenshots": [
+    "screenshots/01-home-unified-flow-card-mobile.png",
+    "screenshots/02-catalog-independent-flow-entry-mobile.png",
+    "screenshots/03-public-save-before-mobile.png",
+    "screenshots/04-source-backed-save-before-mobile.png",
+    "screenshots/05-wedding-independent-choice-fallback-mobile.png",
+    "screenshots/06-public-save-before-wide.png"
+  ]
+}

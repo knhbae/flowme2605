@@ -41,9 +41,9 @@ test('example date stays preview-only and saves an undated public Flow on mobile
   await expect(exportEntry.getByRole('button', { name: /캘린더 파일 받기/ })).toHaveCount(0);
 
   const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
-  await expect(mobileSave.getByRole('button', { name: '날짜 없이 저장' })).toBeVisible();
+  await expect(mobileSave.getByRole('button', { name: '날짜 없이 시작' })).toBeVisible();
   await capture(page, '01-example-preview-mobile.png');
-  await mobileSave.getByRole('button', { name: '날짜 없이 저장' }).click();
+  await mobileSave.getByRole('button', { name: '날짜 없이 시작' }).click();
 
   const state = await page.evaluate(() => ({
     saved: JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null'),
@@ -68,13 +68,13 @@ test('custom public date is the only path that persists an anchor and enables IC
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-28');
   await expect(page.getByTestId('public-flow-date-intent-custom')).toHaveAttribute('aria-pressed', 'true');
   const desktopSave = page.getByTestId('public-flow-save-actions');
-  await expect(desktopSave.getByRole('button', { name: '이 날짜로 저장' })).toBeVisible();
+  await expect(desktopSave.getByRole('button', { name: '이 날짜로 시작' })).toBeVisible();
 
   const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
   await expect(exportEntry.getByRole('button', { name: /캘린더 파일 받기/ })).toBeVisible();
   await capture(page, '02-custom-date-wide.png');
-  await desktopSave.getByRole('button', { name: '이 날짜로 저장' }).click();
+  await desktopSave.getByRole('button', { name: '이 날짜로 시작' }).click();
 
   const state = await page.evaluate(() => ({
     saved: JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null'),
@@ -95,7 +95,7 @@ test('explicit undated intent survives reload without promoting the example date
   await expect(page.getByTestId('public-flow-date-intent-undated')).toHaveAttribute('aria-pressed', 'true');
   await page.reload();
   await expect(page.getByTestId('public-flow-date-intent-undated')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 저장' })).toBeVisible();
+  await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' })).toBeVisible();
   await capture(page, '03-explicit-undated-mobile.png');
 });
 

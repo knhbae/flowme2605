@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~05 correctness foundation complete; P26-06 discovery/save implementation next)
+**Last Updated:** 2026-07-20 (P26-01~06 complete; P26-07 post-save whole-Flow hub next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 now close date intent, save receipt, recurrence, memo segmentation, canonical projection identity, and rollback-safe personal-draft migration as the correctness foundation. P26-06 starts the discovery/save restructuring without reopening those contracts. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation. P26-06 now unifies Home/catalog discovery and public/source-backed save-before around one evidence-first Flow grammar. P26-07 next restructures the post-save whole-Flow action hub without reopening those contracts. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-06 unified discovery and save-before |
+| Active product gate | P26-07 post-save whole-Flow hub |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Implement unified Flow discovery cards and the bounded start/adjust decision |
+| AI action now | Implement the post-save whole-Flow confirmation and action hub |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-06 unified discovery/save-before: Home and `/flows` now share one evidence-first Flow card that leads with title, verified source, representative items, required input, result, and count. Unsupported popularity and social proof are absent. Wedding and Allblanc alternatives are independent Flow entries. Public `/f` and source-backed `/flow-maps` share an artifact-first frame with the whole Flow preview before setup and one `start / adjust` decision. Long promises moved out, detailed source/safety stays collapsed, mobile map bottom overlap and opposite-timezone hydration were fixed. Current evidence includes unit `546 / 546`, full Flow E2E `196 / 196`, dedicated Playwright `4 / 4`, targeted stale-contract reruns `5 / 5`, docs check with `2,591` links, production build `18 / 18`, mobile/wide overflow `0`, console/page errors `0`, and six screenshots. This remains automated/browser evidence with observed-user sessions `0`. See [P26-06 evidence](./content-audit/2026-07-20-p26-06-discovery-save-before-evidence/README.md).
 
 - 2026-07-20 P26-05 projection identity: Canonical item, run, occurrence, export, and Calendar event identities are now explicit instead of being rebuilt independently by each consumer. Personal structural projection rows carry the shared identity; batch selection, Calendar undated placement, and export scope reuse the same item key. Legacy personal-draft title/memo/date keys migrate once to a stable overlay key with a versioned backup manifest, malformed-data preservation, unrelated-Flow isolation, and full rollback on write failure. Current evidence includes targeted unit `7 / 7`, full unit `546 / 546`, P26/URL-first/whole-Flow Playwright `31 / 31`, public/workbench regression `44 / 44`, docs check with `2,584` links, production build `18 / 18`, migrated My Flow/Calendar/export mismatch `0`, source-backed migration applied `false`, overflow `0`, and console/page errors `0`. This is automated/browser evidence, not observed-user validation. See [P26-05 evidence](./content-audit/2026-07-20-p26-05-projection-identity-evidence/README.md).
 

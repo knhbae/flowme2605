@@ -42,9 +42,9 @@ export function SourceBackedFlowMapSaveButton({ mapId, mapTitle, savedFlows, set
   const allStepIds = savedFlows.flatMap((flow) => flow.steps.map((step) => step.id));
   const selectedStepIdSet = new Set(selectedStepIds);
   const selectedCount = selectedStepIds.length;
-  const saveButtonLabel = adjusting ? `선택한 ${selectedCount}개 저장` : '그대로 저장';
+  const saveButtonLabel = adjusting ? `선택한 ${selectedCount}개로 시작` : '그대로 시작';
   const mobileSaveButtonLabel = needsAnchor && !anchor
-    ? `${setupInput?.label ?? '날짜'} 입력`
+    ? `${setupInput?.label ?? '날짜'} 정하기`
     : saveButtonLabel;
   const setupInputHint = setupInput
     ? `${setupInput.label}에 맞춰 할 일 날짜가 정해집니다.`
@@ -214,7 +214,7 @@ export function SourceBackedFlowMapSaveButton({ mapId, mapTitle, savedFlows, set
           aria-expanded={adjusting}
           onClick={() => setAdjusting((open) => !open)}
         >
-          {adjusting ? '조정 접기' : '조정하고 저장'}
+          {adjusting ? '조정 접기' : '내게 맞게 조정'}
         </button>
       </div>
       <div className="fixed inset-x-0 bottom-[calc(4.625rem+env(safe-area-inset-bottom))] z-30 border-y border-[#E7E4DD] bg-white/95 px-4 py-2 shadow-[0_-8px_20px_rgba(27,26,23,0.06)] backdrop-blur sm:hidden" data-testid="flow-map-mobile-sticky-save">
