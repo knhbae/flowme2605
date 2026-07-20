@@ -374,6 +374,21 @@ test('calendar start package keeps calendar artifact mode for dated saved flows'
   assert.equal(started.savedMapSnapshot?.anchor, '2026-08-01');
 });
 
+test('direct Flow start package lands on the canonical saved Flow receipt', () => {
+  const mapResult = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL);
+  const { flowMapId: _flowMapId, ...directFlowResult } = mapResult;
+  const started = buildUrlFirstStartPackage(directFlowResult, {
+    startDate: '2026-08-01',
+    exportMode: 'calendar',
+    savedAt: '2026-07-05T00:00:00.000Z',
+  });
+
+  assert.equal(started.status, 'ready');
+  assert.equal(started.flowMapId, undefined);
+  assert.equal(started.flowSlug, 'curated-ajd-moving-d30');
+  assert.equal(started.targetHref, '/my?savedFlow=curated-ajd-moving-d30');
+});
+
 test('customized start package stores a personal title and excludes unchecked steps only in My Flow state', () => {
   const result = lookupUrlFirstP0Input('https://mathbang.net/13?utm_source=share');
   const started = buildUrlFirstStartPackage(result, {

@@ -151,6 +151,18 @@ My Flow의 same-date 묶음은 한 Flow 안에서만 적용한다. 서로 다른
 
 `example` 상태에서 저장을 누르면 CTA에 표시된 대로 undated 사본을 만든다. saved record에는 `custom | undated`만 들어간다. legacy example record의 preview anchor는 migration metadata로 보존하되 실행 날짜로 투영하지 않는다. source schedule, personal overlay, execution run은 이 migration으로 변경하지 않는다.
 
+## 저장 handoff와 영수증 계약
+
+- public Flow와 개인 draft는 `/my?savedFlow={flowId}`로 이동한다.
+- source-backed Flow Map과 URL-first map hit은 `/my?savedMap={mapId}`로 이동한다.
+- bare `/my`는 일반 재방문 화면이며 신규 저장 완료 handoff로 사용하지 않는다.
+- receipt의 할 일 수는 별도 raw snapshot이 아니라 post-save whole-Flow outline이 실제로 그리는 effective row를 집계한다.
+- receipt는 `할 일 N개`, `날짜 있음 N개`, 필요한 경우 `날짜 없음 N개`만 보여준다. 긴 성공 설명이나 숨은 집계 기준을 추가하지 않는다.
+- receipt total은 outline effective row 합과 같고, dated + undated는 total과 같아야 한다.
+- malformed date와 duplicate stable identity는 행을 조용히 버리지 않고 진단 수치로 기록한다.
+- handoff query와 local persistence는 새로고침 후에도 같은 whole-Flow receipt를 복구해야 한다.
+- post-save action hub의 대규모 시각 개편은 P26-07에서 다룬다. P26-02는 route와 count correctness만 고정한다.
+
 ## Export 역할
 
 모든 portable export는 `범위 -> 예상 개수 -> 형식 -> 결과 receipt` 순서를 따른다.

@@ -12,6 +12,7 @@ import {
   type SourceBackedMyFlowMap,
 } from './source-backed-my-flow';
 import { toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
+import { buildPostSaveHref } from './post-save-receipt';
 import type { FlowItemState } from './types';
 
 export const AJD_MOVING_SOURCE_URL =
@@ -762,7 +763,7 @@ export function buildUrlFirstStartPackage(
       canSaveToMyFlow: true,
       startDate,
       exportMode: options.exportMode,
-      targetHref: `/my?savedMap=${encodeURIComponent(result.flowMapId)}`,
+      targetHref: buildPostSaveHref({ kind: 'map', id: result.flowMapId }),
       flowMapId: result.flowMapId,
       ...(result.flowSlug ? { flowSlug: result.flowSlug } : {}),
       savedFlows: stepSelection.selectedFlowSlugs.map((slug) => ({
@@ -783,7 +784,7 @@ export function buildUrlFirstStartPackage(
       canSaveToMyFlow: true,
       startDate,
       exportMode: options.exportMode,
-      targetHref: '/my',
+      targetHref: buildPostSaveHref({ kind: 'flow', id: result.flowSlug }),
       flowSlug: result.flowSlug,
       savedFlows: [
         {

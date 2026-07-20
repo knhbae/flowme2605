@@ -211,7 +211,9 @@ async function expectTodaySummaryIsQuietSupport(page: Page) {
 
 async function openPostSaveWorkspaceIfPresent(page: Page) {
   const panel = page.getByTestId('my-flow-post-save-panel');
-  if (await panel.isVisible().catch(() => false)) {
+  const hasPostSaveHandoff = /[?&]saved(?:Flow|Map)=/.test(page.url());
+  if (hasPostSaveHandoff) await expect(panel).toBeVisible();
+  if (hasPostSaveHandoff || (await panel.isVisible().catch(() => false))) {
     await panel.getByTestId('my-flow-post-save-view-flow').click();
     await expect(panel).toHaveCount(0);
   }
@@ -566,6 +568,7 @@ test('flow finding turns a plain memo into an editable private draft and lands i
   await expect(page.locator('body')).not.toContainText('기준 D-Day');
   await expectNoHorizontalOverflow(page);
 
+  await page.goto('/my');
   await page.getByTestId('my-flow-view-flow').click();
   const memoDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
   await expect(memoDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toContainText('첫 할 일 날짜');
@@ -1521,7 +1524,7 @@ test('curated source save lands in My Flow with user-facing overdue copy', async
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel).toContainText('5개 모두 저장됐어요');
+  await expect(postSavePanel.getByTestId('my-flow-post-save-receipt-summary')).toContainText('할 일 5개');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(5);
   await expect(postSavePanel).not.toContainText('지난 일정 2026-07-01');
   await expect(postSavePanel).not.toContainText('다음 2026-07-01');
@@ -1672,7 +1675,7 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(mathPostSave.getByTestId('my-flow-post-save-confirmation')).not.toContainText('1. 소인수분해');
   await expect(mathPostSave).toContainText('중1 수학 목차 진도표');
   await expect(mathPostSave.getByRole('heading', { name: '저장된 전체 Flow' })).toBeVisible();
-  await expect(mathPostSave).toContainText('8개 모두 저장됐어요');
+  await expect(mathPostSave.getByTestId('my-flow-post-save-receipt-summary')).toContainText('할 일 8개');
   await expect(mathPostSave).not.toContainText('8개 Step');
   await expect(mathPostSave.getByTestId('my-flow-post-save-step')).toHaveCount(8);
   await mathPostSave.getByTestId('my-flow-post-save-open-first').click();
@@ -1697,8 +1700,12 @@ test('product IA v2 keeps discovery simple and saved execution clear', async ({ 
   await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
   await page.getByTestId('my-flow-post-save-open-first').click();
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
-  await expect(page.getByTestId('my-flow-now-section')).toContainText('자동차검사 준비');
-  await expect(page.getByTestId('my-flow-now-section')).not.toContainText('자동차검사 D-14 준비 Flow');
+  await expect(
+    page
+      .getByTestId('my-flow-anytime-section')
+      .getByRole('button', { name: /자동차검사 기간과 예약 가능일 확인하기 열기 · 자동차검사 준비 · 날짜 없음/ }),
+  ).toBeVisible();
+  await expect(page.getByTestId('my-flow-anytime-section')).not.toContainText('자동차검사 D-14 준비 Flow');
 });
 
 test('my flow and calendar true empty states offer one content-picking action', async ({ page }) => {
@@ -2872,7 +2879,7 @@ test('moving mobile saves to My Flow before external export', async ({ page }) =
   await saveActions.getByRole('button', { name: /그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장/ }).click();
 
   await expect(page.getByText('내 Flow에 담았어요')).toBeVisible();
-  await expect(saveActions.getByRole('link', { name: '내 Flow에서 보기' })).toHaveAttribute('href', '/my');
+  await expect(saveActions.getByRole('link', { name: '내 Flow에서 보기' })).toHaveAttribute('href', '/my?savedFlow=moving-d30-basic');
   await expect(saveActions.getByRole('button', { name: /파일 받기|메모로 복사/ })).toHaveCount(0);
   const flowExport = page.getByTestId('public-flow-export-secondary-entry');
   await flowExport.getByTestId('public-flow-export-secondary-toggle').click();
@@ -2881,7 +2888,10 @@ test('moving mobile saves to My Flow before external export', async ({ page }) =
   await expect(flowExport.getByRole('button', { name: '메모로 복사' })).toBeVisible();
 
   await saveActions.getByRole('link', { name: '내 Flow에서 보기' }).click();
-  await expect(page).toHaveURL('/my');
+  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
+  const postSave = page.getByTestId('my-flow-post-save-panel');
+  await expect(postSave).toBeVisible();
+  await postSave.getByTestId('my-flow-post-save-open-first').click();
   await expect(page.getByTestId('my-flow-view-today')).toBeVisible();
   await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
   await expect(page.getByTestId('my-flow-single-summary')).toHaveCount(0);
@@ -3814,7 +3824,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(postSavePanel.getByRole('heading', { name: '1. 소인수분해' })).toHaveCount(0);
   await expect(postSavePanel).toContainText('중1 수학 목차 진도표');
   await expect(postSavePanel).not.toContainText('Mathbang');
-  await expect(postSavePanel).toContainText('8개 모두 저장됐어요');
+  await expect(postSavePanel.getByTestId('my-flow-post-save-receipt-summary')).toContainText('할 일 8개');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(8);
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
@@ -3949,7 +3959,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('원룸 이사 D-30 일정');
   await expect(postSavePanel).not.toContainText('원룸 이사 D-30 일정 지도');
-  await expect(postSavePanel).toContainText('5개 모두 저장됐어요');
+  await expect(postSavePanel.getByTestId('my-flow-post-save-receipt-summary')).toContainText('할 일 5개');
   await expect(postSavePanel).not.toContainText('묶음');
   await expect(postSavePanel).toContainText('이사 방식과 견적 후보 정하기');
   await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(5);

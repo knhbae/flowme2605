@@ -63,6 +63,17 @@
 - legacy example anchor remains recoverable as migration metadata.
 - public save CTA text matches the effective saved intent.
 
+### P26-02 Save Receipt And Route Parity
+
+- public, source-backed map, URL-first hit, memo/URL draft save가 canonical `savedFlow | savedMap` handoff를 사용한다.
+- bare `/my` 신규 저장 handoff count `0`.
+- receipt total과 rendered whole-Flow effective row 합의 mismatch count `0`.
+- dated + undated와 total의 mismatch count `0`.
+- malformed date와 duplicate identity가 정상 행을 삭제하는 count `0`.
+- 저장 직후 empty hydration count `0`.
+- reload 후 handoff, receipt title, total/dated/undated count가 유지된다.
+- public/Flow Map/URL-first/memo draft의 390/1024 horizontal overflow와 console/page error count `0`.
+
 ## UX assertions
 
 - Flow/Flow Map user-facing card pattern count `1`.

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-20",
+  "evidenceKind": ["current_source", "current_command", "current_browser"],
+  "observedUserSessionCount": 0,
+  "markers": {
+    "canonicalPostSaveHandoffConnected": true,
+    "publicPostSaveReceiptVisible": true,
+    "urlFirstHitPostSaveReceiptVisible": true,
+    "personalDraftPostSaveReceiptVisible": true,
+    "sourceBackedMapPostSaveReceiptVisible": true,
+    "receiptCountMatchesRenderedWholeFlow": true,
+    "receiptDatedUndatedSumMismatchCount": 0,
+    "postSaveReceiptPersistsAfterReload": true,
+    "postSaveHydrationEmptyStateCount": 0,
+    "routeHandoffMismatchCount": 0,
+    "duplicateIdentityCount": 0,
+    "invalidDateCount": 0,
+    "horizontalOverflowCount": 0,
+    "consolePageErrorCount": 0
+  },
+  "routes": [
+    {
+      "source": "/f/vehicle-inspection-prep",
+      "destination": "/my?savedFlow=vehicle-inspection-prep",
+      "viewport": "390x844",
+      "total": 10,
+      "dated": 0,
+      "undated": 10,
+      "reloadPreserved": true
+    },
+    {
+      "source": "/flow-maps/moving-d30",
+      "destination": "/my?savedMap=moving-d30",
+      "viewport": "1024x768",
+      "total": 5,
+      "dated": 5,
+      "undated": 0,
+      "reloadPreserved": true
+    },
+    {
+      "source": "/flows (URL-first hit)",
+      "destination": "/my?savedMap=middle-school-math-1",
+      "viewport": "1024x768",
+      "total": 8,
+      "dated": 0,
+      "undated": 8,
+      "reloadPreserved": true
+    },
+    {
+      "source": "/flows (memo draft)",
+      "destination": "/my?savedFlow=url-draft-*",
+      "viewport": "390x844",
+      "total": 3,
+      "dated": 1,
+      "undated": 2,
+      "reloadPreserved": true
+    }
+  ]
+}

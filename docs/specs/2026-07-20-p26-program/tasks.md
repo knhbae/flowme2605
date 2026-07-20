@@ -29,8 +29,8 @@
 
 - [x] P26-01 local/example/anchor date intent
 - [x] P26-01 override/reuse regression
-- [ ] P26-02 canonical save receipt
-- [ ] P26-02 route parity and hydration
+- [x] P26-02 canonical save receipt
+- [x] P26-02 route parity and hydration
 - [ ] P26-03 series/occurrence projection
 - [ ] P26-03 completion/reopen/skip/hold
 - [ ] P26-04 memo segmentation and empty guard

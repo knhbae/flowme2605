@@ -10,6 +10,7 @@ import {
   type SourceBackedFlowMapPersonalCopy,
 } from '@/lib/flow/source-backed-my-flow';
 import { getItemStates, saveFlowRecord, saveItemStates, type SavedFlowArtifactMode } from '@/lib/flow/storage';
+import { buildPostSaveHref } from '@/lib/flow/post-save-receipt';
 
 type SourceBackedFlowMapSaveButtonProps = {
   mapId: string;
@@ -127,7 +128,7 @@ export function SourceBackedFlowMapSaveButton({ mapId, mapTitle, savedFlows, set
     });
     window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(mapId), JSON.stringify(savedMapSnapshot));
     window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(mapId), JSON.stringify(persistenceRecord));
-    window.location.href = `/my?savedMap=${encodeURIComponent(mapId)}`;
+    window.location.href = buildPostSaveHref({ kind: 'map', id: mapId });
   };
 
   return (

@@ -69,6 +69,11 @@ import {
   type PublicDateIntentResolution,
 } from '@/lib/flow/public-date-intent';
 import {
+  buildCanonicalPostSaveReceipt,
+  buildPostSaveHref,
+  parsePostSaveHandoff,
+} from '@/lib/flow/post-save-receipt';
+import {
   getRuntimeArchivedFlowPolicy,
   isRetiredPersonalCopyBundle,
 } from '@/lib/flow/runtime-content-policy';
@@ -2668,7 +2673,7 @@ export function FlowList() {
       return {
         saved: true,
         slug: draftPackage.bundle.flow.slug,
-        targetHref: '/my',
+        targetHref: buildPostSaveHref({ kind: 'flow', id: draftPackage.bundle.flow.slug }),
       };
     } catch {
       return {
@@ -2739,7 +2744,7 @@ export function FlowList() {
           saved: true,
           reused: true,
           slug: existingDraft.flow.slug,
-          targetHref: '/my',
+          targetHref: buildPostSaveHref({ kind: 'flow', id: existingDraft.flow.slug }),
         };
       }
 
@@ -2758,7 +2763,7 @@ export function FlowList() {
       return {
         saved: true,
         slug: draftPackage.bundle.flow.slug,
-        targetHref: '/my',
+        targetHref: buildPostSaveHref({ kind: 'flow', id: draftPackage.bundle.flow.slug }),
       };
     } catch {
       return {
@@ -4973,9 +4978,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    setSavedMapIdParam(params.get('savedMap') ?? '');
-    setSavedFlowSlugParam(params.get('savedFlow') ?? '');
+    const postSaveHandoff = parsePostSaveHandoff(window.location.search);
+    setSavedMapIdParam(postSaveHandoff?.kind === 'map' ? postSaveHandoff.id : '');
+    setSavedFlowSlugParam(postSaveHandoff?.kind === 'flow' ? postSaveHandoff.id : '');
     const mediaQuery = window.matchMedia('(max-width: 640px)');
     const mobileFlowQuery = window.matchMedia('(max-width: 767px)');
     const syncRoutineIconLimit = () => {
@@ -11039,6 +11044,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-testid="my-flow-whole-flow-outline"
         data-flow-slug={flow.progress.slug}
         data-outline-mode={options.postSave ? 'post-save' : 'workspace'}
+        data-effective-row-count={rows.length}
         className="min-w-0"
       >
         {options.showHeading ? (
@@ -11259,9 +11265,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (postSaveFlows.length === 0) return null;
     const postSaveContinuationRow = getPostSaveContinuationRow();
     const postSaveTitle = postSaveMap?.title ?? postSaveFlows[0]?.progress.title ?? '저장한 Flow';
-    const postSaveRowCount = postSaveFlows.reduce((count, flow) => count + flow.rows.length, 0);
+    const postSaveReceipt = buildCanonicalPostSaveReceipt({
+      title: postSaveTitle,
+      items: postSaveFlows.flatMap((flow) =>
+        flow.rows.map((row) => {
+          const effectiveRow = getMyFlowRowForFlowTab(flow, row);
+          return {
+            flowSlug: flow.progress.slug,
+            itemId:
+              effectiveRow.structuralOccurrenceId ??
+              effectiveRow.structuralProjectionStableId ??
+              effectiveRow.id,
+            ...(effectiveRow.date ? { date: effectiveRow.date } : {}),
+          };
+        }),
+      ),
+    });
     return (
-      <section data-testid="my-flow-post-save-panel" className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3 shadow-[0_8px_24px_rgba(27,26,23,0.05)] sm:p-4">
+      <section
+        data-testid="my-flow-post-save-panel"
+        data-receipt-flow-count={postSaveReceipt.flowCount}
+        data-receipt-total-count={postSaveReceipt.totalCount}
+        data-receipt-dated-count={postSaveReceipt.datedCount}
+        data-receipt-undated-count={postSaveReceipt.undatedCount}
+        data-receipt-invalid-date-count={postSaveReceipt.invalidDateCount}
+        data-receipt-duplicate-identity-count={postSaveReceipt.duplicateIdentityCount}
+        className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-3 shadow-[0_8px_24px_rgba(27,26,23,0.05)] sm:p-4"
+      >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
@@ -11271,10 +11301,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <h3 className="mt-2 break-keep text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">
               {postSaveExecutionHeld ? '저장 기록을 보관했어요' : '저장된 전체 Flow'}
             </h3>
-            <p className="mt-1 text-sm font-medium text-slate-600">
+            <p data-testid="my-flow-post-save-receipt-summary" className="mt-1 text-sm font-medium text-slate-600">
               {postSaveExecutionHeld
                 ? '현재 확인이 필요한 Flow라 실행 목록에는 표시하지 않아요.'
-                : `${postSaveRowCount}개 모두 저장됐어요. 바로 시작하거나 필요한 부분만 조정하세요.`}
+                : postSaveReceipt.summary}
             </p>
           </div>
           {!postSaveExecutionHeld ? (
@@ -15821,6 +15851,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
   };
   const saveActionLabel = getPublicSaveActionLabel(bundle, dateIntent);
+  const postSaveHref = buildPostSaveHref({ kind: 'flow', id: bundle.flow.slug });
   const openExportActions = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setShowMobileExportSheet(true);
@@ -15832,7 +15863,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     showPublicSaveAction ? (
       <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid sm:max-w-md sm:grid-cols-2">
         {savedFlowAt ? (
-          <Link className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href={`/my?savedFlow=${encodeURIComponent(bundle.flow.slug)}`}>
+          <Link className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]" href={postSaveHref}>
             내 Flow에서 보기
           </Link>
         ) : (
@@ -15869,7 +15900,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
           </div>
           {savedFlowAt ? (
-            <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href={`/my?savedFlow=${encodeURIComponent(bundle.flow.slug)}`}>
+            <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href={postSaveHref}>
               내 Flow에서 보기
             </Link>
           ) : (
@@ -16225,7 +16256,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                 <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicDisplayTitle}</p>
               </div>
               {savedFlowAt ? (
-                <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href={`/my?savedFlow=${encodeURIComponent(bundle.flow.slug)}`}>
+                <Link className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm" href={postSaveHref}>
                   내 Flow에서 보기
                 </Link>
               ) : (
@@ -16258,7 +16289,7 @@ function PublicFlowShareShell({ savedFlowAt, flowSlug }: { savedFlowAt?: string;
         FLOW
       </Link>
       {savedFlowAt ? (
-        <Link className="inline-flex min-h-9 items-center rounded-md border border-[#DDE4E0] bg-white px-3 text-sm font-semibold text-[#59625E] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={`/my?savedFlow=${encodeURIComponent(flowSlug)}`}>
+        <Link className="inline-flex min-h-9 items-center rounded-md border border-[#DDE4E0] bg-white px-3 text-sm font-semibold text-[#59625E] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={buildPostSaveHref({ kind: 'flow', id: flowSlug })}>
           내 Flow에서 보기
         </Link>
       ) : (
@@ -16425,7 +16456,7 @@ function ExportFirstHero({
             {savedFlowAt ? (
               <Link
                 className="mt-3 flex w-full items-center justify-center rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
-                href="/my"
+                href={buildPostSaveHref({ kind: 'flow', id: bundle.flow.slug })}
               >
                 내 Flow에서 보기
               </Link>

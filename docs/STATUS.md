@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01 date intent contract implemented; foundation regression in progress)
+**Last Updated:** 2026-07-20 (P26-02 canonical save receipt and route parity implemented; P26-03 recurrence parity next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and the target journey. P26-01 now separates transient example dates from explicit custom/undated saved intent and exposes all three choices on public save-before. P26-02~05 receipt, recurrence, memo segmentation, and projection identity remain next. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and the target journey. P26-01 separates transient example dates from explicit custom/undated saved intent. P26-02 now gives public, Flow Map, URL-first, and personal draft saves one reload-safe whole-Flow receipt whose total is derived from the rendered effective rows. P26-03~05 recurrence, memo segmentation, and projection identity remain next. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-01 regression closeout, then P26-02~05 correctness foundation |
+| Active product gate | P26-03 recurrence parity, then P26-04 memo and P26-05 identity foundation |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Close P26-01 regressions, then fix save receipt, recurrence, memo segmentation, and projection identity before broad visual restructuring |
+| AI action now | Fix recurrence series/occurrence parity, memo segmentation, and projection identity before broad visual restructuring |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-02 canonical save receipt: Public Flow and personal draft saves now hand off with `savedFlow`; source-backed Flow Map and URL-first map hits use `savedMap`. The post-save receipt counts the same effective rows rendered in its whole-Flow outline and reports dated/undated scope without a second raw snapshot. Current browser fixtures are public vehicle `10 / 0 / 10`, moving `5 / 5 / 0`, URL-first math `8 / 0 / 8`, and memo draft `3 / 1 / 2` for total/dated/undated; all survive reload with count mismatch, empty hydration, invalid date, duplicate identity, horizontal overflow, and console/page errors at `0`. This is automated/browser evidence, not observed-user validation. See [P26-02 evidence](./content-audit/2026-07-20-p26-02-save-receipt-route-parity-evidence/README.md).
 
 - 2026-07-20 P26-01 date intent: Public save-before now exposes `날짜 정하기 / 날짜 없이 / 예시만 보기`, while the sticky primary names the actual save result as `이 날짜로 저장 / 날짜 없이 저장`. Example anchors remain preview-only; saved records normalize to additive `dateIntent: custom | undated`; only valid custom dates enter Calendar/ICS; and legacy example saves preserve the old preview value as migration metadata while becoming undated. Current slice evidence includes pure/storage `57 / 57`, full unit `532 / 532`, affected existing Playwright `62 / 62`, P26-01 Playwright `4 / 4`, docs check pass with 2,547 links, production build `18 / 18`, mobile/wide overflow `0`, and console/page errors `0`. This is automated/browser evidence, not observed-user validation. See [P26-01 evidence](./content-audit/2026-07-20-p26-01-date-intent-evidence/README.md).
 
