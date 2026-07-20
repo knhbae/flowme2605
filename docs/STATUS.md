@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~13 complete; P26-14 undated inbox/batch scheduling next)
+**Last Updated:** 2026-07-20 (P26-01~14 complete; P26-15 Calendar filter/date move next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, and P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, one reversible completion contract, and independent reuse with explicit anchor-linked/fixed-date policy. P26-14 next makes undated work and batch placement explicit in Calendar. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, and P26-14 makes undated work and batch placement explicit in Calendar. P26-15 next aligns Flow filtering, grid/agenda counts, and single/batch date moves. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-14 undated inbox and batch scheduling |
+| Active product gate | P26-15 Calendar Flow filter, count parity, and date move |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Make undated work visible and batch-placeable without mixing it into dated Calendar execution |
+| AI action now | Make one Flow scope drive Calendar grid, agenda, counts, and single/batch date movement |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-14 undated inbox and batch scheduling: Calendar now names the object `날짜 없는 할 일` with the subtitle `아직 일정에 놓지 않은 실행 항목`. Mobile exposes a collapsed drawer between selected-day execution and the month grid; wide keeps a persistent rail. One-item placement and undo produce `10 -> 9 -> 10`, three-item placement persists as `10 -> 7`, removing a date returns the item to the inbox with undo, and Calendar export changes from 0 to 3 VEVENTs without duplicates. Recurring series definitions, completed items, and completion-like controls remain absent. Dedicated Playwright is `1 / 1`; full unit is `556 / 556`; build is `18 / 18`; overflow and console/page errors are `0`. Observed-user sessions remain `0`. See [P26-14 evidence](./content-audit/2026-07-20-p26-14-undated-batch-scheduling-evidence/README.md).
 
 - 2026-07-20 P26-13 reuse with a new anchor: Completed dated Flows now expose a context-aware `새 이사일/기준일로 다시 쓰기` action and a compact old/new anchor preview. Anchor-linked dates, fixed personal date keep/reset, completion reset, and past-run preservation are visible before commit. The existing run registry remains canonical: a new run ID is created, old completion/memo/reflection/correction data remain archived, and new-run ICS uses the new anchor. Current unit is `556 / 556`; dated reset, date-free, fixed-date keep, version-review, and feedback compatibility Playwright scenarios are `6 / 6`; build is `18 / 18`; overflow and console/page errors are `0`. Observed-user sessions remain `0`. See [P26-13 evidence](./content-audit/2026-07-20-p26-13-reuse-anchor-policy-evidence/README.md).
 

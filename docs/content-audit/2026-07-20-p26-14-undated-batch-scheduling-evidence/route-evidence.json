@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-14",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "0e421eb",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "prior_design_artifact"
+  ],
+  "markers": {
+    "publicUndatedIntentVisible": true,
+    "publicUndatedOutcomeCopy": "Calendar에는 넣지 않고 My Flow에 저장합니다.",
+    "undatedInboxTitle": "날짜 없는 할 일",
+    "undatedInboxSubtitle": "아직 일정에 놓지 않은 실행 항목",
+    "undatedInitialCount": 10,
+    "calendarIcsCountBeforePlacement": 0,
+    "singleScheduleCountAfter": 9,
+    "singleScheduleAgendaCount": 1,
+    "singleUndoRestoresCount": 10,
+    "singleUndoAgendaCount": 0,
+    "multiSelectedCount": 3,
+    "multiScheduleCountAfter": 7,
+    "multiScheduleAgendaCount": 3,
+    "multiScheduleCountAfterReload": 7,
+    "dateRemovalReturnsToInbox": true,
+    "dateRemovalInboxCount": 8,
+    "dateRemovalUndoVisible": true,
+    "dateRemovalUndoRestoresDate": true,
+    "dateRemovalUndoInboxCount": 7,
+    "calendarIcsCountAfterPlacement": 3,
+    "calendarIcsVeventCount": 3,
+    "calendarIcsDuplicateEventCount": 0,
+    "recurringSeriesDefinitionTrayCount": 0,
+    "completedItemTrayCount": 0,
+    "trayCompletionLikeCheckboxCount": 0,
+    "selectAllTenDoesNotShiftCommitControl": true,
+    "mobileLayoutOrder": "selected_day_then_undated_inbox_then_month_grid",
+    "wideLayoutOrder": "undated_inbox_then_month_grid_then_selected_day",
+    "zeroItemPolicy": "hidden_without_undo",
+    "sourceMutationCount": 0,
+    "storageSchemaChanged": false,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "observedUserValidated": false
+  },
+  "viewports": [
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "fixture": "public vehicle inspection Flow",
+      "undatedIntentVisible": true
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "fixture": "vehicle inspection Flow saved without dates",
+      "layout": "drawer",
+      "initialCount": 10,
+      "afterBatchCount": 7
+    },
+    {
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "fixture": "vehicle inspection Flow with three scheduled items",
+      "layout": "sidebar",
+      "remainingCount": 7
+    },
+    {
+      "route": "/my?view=flows",
+      "viewport": "1024x768",
+      "fixture": "vehicle inspection Flow with three scheduled items",
+      "calendarExportCount": 3
+    }
+  ],
+  "verification": {
+    "p26UndatedBatchSchedulingE2e": { "passed": 1, "failed": 0 },
+    "affectedRegressionE2e": { "passed": 3, "failed": 0 },
+    "fullUnit": { "passed": 556, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "securityAudit": { "high": 0, "critical": 0, "moderate": 2 },
+    "docsCheck": { "passed": true, "localLinkCount": 2641 },
+    "diffCheck": { "passed": true }
+  }
+}

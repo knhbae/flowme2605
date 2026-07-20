@@ -4,6 +4,7 @@ import type {
   CalendarUnscheduledSchedulePreview,
   CalendarUnscheduledTrayItem,
 } from '@/lib/flow/calendar-unscheduled-tray';
+import { formatKoreanShortDate } from '@/lib/flow/date';
 import { FlowItemMultiSelect } from './FlowItemMultiSelect';
 import {
   FLOW_UI_COMPACT_ACTION_CLASS,
@@ -21,13 +22,12 @@ type CalendarUnscheduledTrayProps = {
   preview: CalendarUnscheduledSchedulePreview;
   expanded: boolean;
   variant: 'drawer' | 'sidebar';
-  undo?: { count: number; targetDateLabel: string };
+  undo?: { kind: 'scheduled' | 'removed'; count: number; targetDateLabel: string };
   onToggleExpanded: () => void;
   onToggleItem: (key: string) => void;
   onToggleAll: () => void;
   onTargetDateChange: (date: string) => void;
   onPlaceToday: () => void;
-  onKeepAnytime: () => void;
   onApply: () => void;
   onUndo: () => void;
 };
@@ -45,7 +45,6 @@ export function CalendarUnscheduledTray({
   onToggleAll,
   onTargetDateChange,
   onPlaceToday,
-  onKeepAnytime,
   onApply,
   onUndo,
 }: CalendarUnscheduledTrayProps) {
@@ -54,14 +53,15 @@ export function CalendarUnscheduledTray({
   const headerContent = (
     <>
       <span className="min-w-0">
-        <span className="block text-sm font-semibold text-[#1B1A17]">날짜 정하기</span>
-        <span className="mt-0.5 block truncate text-xs font-medium text-[#6E6B64]">
-          날짜 없는 할 일
+        <span className="block text-sm font-semibold text-[#1B1A17]">날짜 없는 할 일</span>
+        <span className="mt-0.5 block text-xs font-medium leading-4 text-[#6E6B64]">
+          아직 일정에 놓지 않은 실행 항목
         </span>
       </span>
       <span className="inline-flex shrink-0 items-center gap-2">
         <span
           data-testid="my-flow-calendar-unscheduled-count"
+          aria-label={`날짜 없는 할 일 ${items.length}개`}
           className="inline-flex min-w-7 justify-center rounded-md bg-[#F3F1EC] px-2 py-1 text-xs font-semibold text-[#5C5952]"
         >
           {items.length}
@@ -107,11 +107,16 @@ export function CalendarUnscheduledTray({
           role="status"
         >
           <p className="text-sm font-semibold">
-            {undo.count}개를 {undo.targetDateLabel}에 놓았습니다.
+            {undo.kind === 'removed'
+              ? `${undo.count}개가 날짜 없는 할 일로 돌아왔습니다.`
+              : `${undo.count}개를 ${undo.targetDateLabel}에 놓았습니다.`}
           </p>
           <button
             type="button"
             data-testid="my-flow-calendar-unscheduled-undo-action"
+            aria-label={undo.kind === 'removed'
+              ? `${undo.count}개를 ${undo.targetDateLabel} 일정으로 되돌리기`
+              : `${undo.count}개 일정 배치 되돌리기`}
             className={FLOW_UI_COMPACT_ACTION_CLASS}
             onClick={onUndo}
           >
@@ -143,33 +148,23 @@ export function CalendarUnscheduledTray({
               className="text-xs font-semibold text-[#6E6B64]"
             >
               {preview.selectedCount > 0
-                ? `${preview.selectedCount}개 선택`
+                ? `${preview.selectedCount}개 선택 · Flow ${preview.affectedFlowCount}개${preview.targetDate ? ` → ${formatKoreanShortDate(preview.targetDate)}` : ''}`
                 : '놓을 할 일을 선택하세요'}
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div>
               <button
                 type="button"
                 data-testid="my-flow-calendar-unscheduled-today"
                 aria-label="선택한 할 일을 오늘 일정에 놓기"
-                className={FLOW_UI_PRIMARY_ACTION_CLASS}
+                className={`w-full ${FLOW_UI_SECONDARY_ACTION_CLASS}`}
                 disabled={preview.selectedCount === 0}
                 onClick={onPlaceToday}
               >
-                오늘
-              </button>
-              <button
-                type="button"
-                data-testid="my-flow-calendar-unscheduled-keep"
-                aria-label="선택한 할 일을 날짜 없이 유지"
-                className={FLOW_UI_SECONDARY_ACTION_CLASS}
-                disabled={preview.selectedCount === 0}
-                onClick={onKeepAnytime}
-              >
-                날짜 없이
+                오늘에 놓기
               </button>
             </div>
             <label className="grid gap-1 text-xs font-semibold text-[#6E6B64]">
-              다른 날짜
+              날짜 선택
               <input
                 type="date"
                 data-testid="my-flow-calendar-unscheduled-date"
@@ -185,7 +180,7 @@ export function CalendarUnscheduledTray({
               disabled={!preview.canApply}
               onClick={onApply}
             >
-              이 날짜에 놓기
+              {preview.selectedCount > 0 ? `선택한 ${preview.selectedCount}개를 이 날짜에 놓기` : '이 날짜에 놓기'}
             </button>
           </div>
         </div>

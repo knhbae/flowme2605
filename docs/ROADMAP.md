@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-14 undated inbox and batch scheduling
+**Next Milestone:** P26-15 Calendar Flow filter, count parity, and date move
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -34,7 +34,7 @@ Decision package: [P26-00C product-object and journey decision](./content-audit/
 | Correctness | P26-01~05 | Date intent, canonical receipt, recurrence, memo segmentation, projection identity | Complete as current command/browser evidence |
 | Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Complete as current browser evidence |
 | My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Complete as current command/browser evidence |
-| Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Pending |
+| Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | P26-14 complete; P26-15 next |
 | Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | Pending |
 
 P26 is an internal product and implementation program. It does not reopen participant recruitment until the owner explicitly chooses to do so.
@@ -121,7 +121,9 @@ There is no active external-user gate. P25 is the deployed internal baseline. Ex
 | Completed | AI | P26-10 quick/advanced item editor | Keep title/date/memo immediately editable and disclose uncommon schedule controls only when needed | Mobile full-screen and wide detail-pane edit paths pass current browser evidence |
 | Completed | AI | P26-11 structural and batch editing | Separate add/delete/restore/reorder and multi-item changes from single-item quick adjustment | Personal draft structure is recoverable, projection-safe, and source-backed controls remain absent |
 | Completed | AI | P26-12 completion undo and reopen | Preserve one occurrence/control while making completion immediately and persistently reversible | Undo and reopen preserve run/occurrence identity without structural mutation |
-| Active | AI, then owner/Claude Design | P26-13 reuse and anchor policy | Separate anchor-linked and personally fixed dates without rewriting past runs | Reuse preview and saved result preserve date intent, identity, and history |
+| Completed | AI | P26-13 reuse and anchor policy | Preserve separate anchor-linked and personally fixed dates without rewriting past runs | Reuse preview and saved result preserve date intent, identity, and history |
+| Completed | AI | P26-14 undated inbox and batch scheduling | Preserve one explicit undated object and atomic placement/undo | Mobile drawer, wide rail, persistence, removal undo, and ICS count parity remain green |
+| Active | AI, then owner/Claude Design | P26-15 Calendar Flow filter and date move | Keep Flow scope, grid, agenda, count, and single/batch movement on one projection | Filter mismatch is 0 and date movement has preview plus rollback |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
@@ -142,7 +144,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-P26-00C is selected. P26-01~05 correctness foundation, P26-06~07 discovery/save journey, and P26-08~12 My Flow IA, whole-Flow reading, progressive/structural editing, and reversible completion are complete as internal evidence. Continue with P26-13 reuse and anchor policy. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+P26-00C is selected. P26-01~05 correctness foundation, P26-06~07 discovery/save journey, P26-08~13 My Flow IA/editing/completion/reuse, and P26-14 undated Calendar placement are complete as internal evidence. Continue with P26-15 Calendar Flow filtering, grid/agenda/count parity, and reversible single/batch date moves. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

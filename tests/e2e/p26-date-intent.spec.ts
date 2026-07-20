@@ -58,7 +58,10 @@ test('example date stays preview-only and saves an undated public Flow on mobile
   await expect(page.getByTestId('my-flow-post-save-artifact')).toBeVisible();
   await page.goto('/calendar');
   await expect(page.getByRole('button', { name: /자동차검사 기간과 예약 가능일 확인하기 상세 열기/ })).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 정하기');
+  await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 없는 할 일');
+  await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText(
+    '아직 일정에 놓지 않은 실행 항목',
+  );
 });
 
 test('custom public date is the only path that persists an anchor and enables ICS', async ({ page }) => {

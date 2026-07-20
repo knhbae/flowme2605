@@ -3471,10 +3471,13 @@ type MyFlowCompletionUndo = {
   occurrenceRevisionId?: string;
 };
 type MyFlowCalendarScheduleUndo = {
+  kind: 'scheduled' | 'removed';
   count: number;
   targetDate: string;
   previousOverlaysBySlug: Record<string, PersonalStructuralOverlay>;
   previousDateOverridesByKey: Record<string, string | null>;
+  previousSavedMapSnapshot?: SavedFlowMapSnapshot;
+  previousPersistenceRecord?: SourceBackedFlowMapPersistenceRecord;
 };
 type MyFlowCompletionFeedbackDraft = {
   flowSlug: string;
@@ -5047,7 +5050,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   }, [myFlowCompletionUndo]);
   useEffect(() => {
     if (!myFlowCalendarScheduleUndo) return;
-    const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 5000);
+    const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 8000);
     return () => window.clearTimeout(timeoutId);
   }, [myFlowCalendarScheduleUndo]);
   useEffect(() => {
@@ -6640,7 +6643,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const editingDraft = myFlowEditingDrafts[key];
     if (!editingDraft) return;
     const { date, ...itemDraft } = editingDraft;
+    const sourceRow = getMyFlowRows(row.flow.bundle, row.flow.anchor).find(
+      (candidate) => baseStateId(candidate.id) === baseStateId(row.id),
+    );
+    const removesDateToUnscheduled = date === '' && Boolean(row.date) && !sourceRow?.date;
+    let dateRemovalUndo: MyFlowCalendarScheduleUndo | null = null;
     if (row.flow.savedMap?.personalCopy) {
+      if (removesDateToUnscheduled) {
+        const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(row.flow.savedMap);
+        dateRemovalUndo = {
+          kind: 'removed',
+          count: 1,
+          targetDate: row.date as string,
+          previousOverlaysBySlug: {},
+          previousDateOverridesByKey: {},
+          previousSavedMapSnapshot,
+          ...(savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId]
+            ? { previousPersistenceRecord: savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId] }
+            : {}),
+        };
+      }
       const { title, memo, ...remainingItemDraft } = itemDraft;
       const personalPatch: MyFlowItemDraft = {
         ...(title !== undefined ? { title } : {}),
@@ -6698,6 +6720,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         let structuralOverlay =
           myFlowStructuralOverlaysBySlug[row.flow.progress.slug] ??
           createPersonalDraftStructuralOverlay(row.flow.bundle);
+        if (removesDateToUnscheduled) {
+          dateRemovalUndo = {
+            kind: 'removed',
+            count: 1,
+            targetDate: row.date as string,
+            previousOverlaysBySlug: { [row.flow.progress.slug]: structuralOverlay },
+            previousDateOverridesByKey: {},
+          };
+        }
         const currentSchedule = structuralBaseRow.structuralScheduleProjection;
         const nextDate = date ?? currentSchedule?.calendarDate ?? '';
         const nextMode = scheduleMode ?? (
@@ -6774,6 +6805,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       }
       if (!structuralUserItem && date !== undefined) {
         const draftDateKey = getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id);
+        if (removesDateToUnscheduled && Object.prototype.hasOwnProperty.call(myFlowDateOverrides, draftDateKey)) {
+          dateRemovalUndo = {
+            kind: 'removed',
+            count: 1,
+            targetDate: row.date as string,
+            previousOverlaysBySlug: {},
+            previousDateOverridesByKey: { [draftDateKey]: myFlowDateOverrides[draftDateKey] ?? null },
+          };
+        }
         updateMyFlowDateOverrideState((current) => {
           const next = { ...current };
           if (date) {
@@ -6804,6 +6844,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const manualScheduleKey = !row.date ? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id) : '';
       const scheduleKey = row.calendarKey ?? manualScheduleKey;
       if (scheduleKey && date !== undefined) {
+        if (removesDateToUnscheduled && Object.prototype.hasOwnProperty.call(myFlowDateOverrides, scheduleKey)) {
+          dateRemovalUndo = {
+            kind: 'removed',
+            count: 1,
+            targetDate: row.date as string,
+            previousOverlaysBySlug: {},
+            previousDateOverridesByKey: { [scheduleKey]: myFlowDateOverrides[scheduleKey] ?? null },
+          };
+        }
         updateMyFlowDateOverrideState((current) => {
           const next = { ...current };
           if (date) {
@@ -6818,6 +6867,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           setMyFlowVisibleMonth(getMyFlowMonthStart(date));
         }
       }
+    }
+    if (dateRemovalUndo) {
+      setMyFlowCalendarScheduleUndo(dateRemovalUndo);
+      setMyFlowUnscheduledSelection([]);
+      if (isMyFlowMobileViewport) setMyFlowUnscheduledTrayOpen(true);
     }
     setMyFlowEditorDiscardPromptOpen(false);
     setMyFlowEditorAdvancedDisclosure(null);
@@ -8303,6 +8357,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowDateOverrides(nextDateOverrides);
     }
     setMyFlowCalendarScheduleUndo({
+      kind: 'scheduled',
       count: selectedRows.length,
       targetDate,
       previousOverlaysBySlug,
@@ -8311,12 +8366,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowUnscheduledSelection([]);
     setMyFlowSelectedDate(targetDate);
     setMyFlowVisibleMonth(getMyFlowMonthStart(targetDate));
-  };
-
-  const keepMyFlowCalendarItemsAnytime = () => {
-    setMyFlowUnscheduledSelection([]);
-    setMyFlowCalendarScheduleUndo(null);
-    if (isMyFlowMobileViewport) setMyFlowUnscheduledTrayOpen(false);
   };
 
   const undoMyFlowCalendarUnscheduledSchedule = () => {
@@ -8336,6 +8385,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       if (Object.keys(previousDateOverridesByKey).length > 0) {
         saveStoredMyFlowDateOverrides(restoredDateOverrides);
       }
+      if (myFlowCalendarScheduleUndo.previousSavedMapSnapshot) {
+        window.localStorage.setItem(
+          getSourceBackedFlowMapSnapshotStorageKey(myFlowCalendarScheduleUndo.previousSavedMapSnapshot.mapId),
+          JSON.stringify(myFlowCalendarScheduleUndo.previousSavedMapSnapshot),
+        );
+      }
+      if (myFlowCalendarScheduleUndo.previousPersistenceRecord) {
+        window.localStorage.setItem(
+          getSourceBackedFlowMapPersistenceStorageKey(myFlowCalendarScheduleUndo.previousPersistenceRecord.map.id),
+          JSON.stringify(myFlowCalendarScheduleUndo.previousPersistenceRecord),
+        );
+      }
     } catch {
       return;
     }
@@ -8350,6 +8411,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowDateOverrides(restoredDateOverrides);
     }
     setMyFlowCalendarScheduleUndo(null);
+    refreshSavedFlowState();
   };
 
   const addMyFlowPersonalDraftItem = (flow: MySavedFlow) => {
@@ -14352,6 +14414,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <h3 className="text-lg font-semibold text-slate-950">날짜 없는 할 일</h3>
+                          <p className="mt-0.5 text-xs font-medium text-slate-500">아직 일정에 놓지 않은 실행 항목</p>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
                           <span data-testid="my-flow-anytime-count" className="rounded-md bg-slate-100 px-2 py-1 text-xs font-bold text-slate-700">
@@ -14859,7 +14922,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 ? 'lg:grid-cols-[230px_minmax(0,1fr)_290px]'
                 : 'lg:grid-cols-[minmax(0,1fr)_320px]'} lg:gap-0`}>
               {showCalendarPlacementQueue ? (
-              <div className="order-3 min-w-0 lg:order-1 lg:pr-4">
+              <div className="order-2 min-w-0 lg:order-1 lg:pr-4">
               <CalendarUnscheduledTray
                 items={calendarUnscheduledTrayItems}
                 selectedKeys={myFlowUnscheduledSelection.filter((key) =>
@@ -14870,6 +14933,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 expanded={myFlowUnscheduledTrayOpen}
                 variant={isMyFlowMobileViewport ? 'drawer' : 'sidebar'}
                 undo={myFlowCalendarScheduleUndo ? {
+                  kind: myFlowCalendarScheduleUndo.kind,
                   count: myFlowCalendarScheduleUndo.count,
                   targetDateLabel: formatKoreanShortDate(myFlowCalendarScheduleUndo.targetDate),
                 } : undefined}
@@ -14881,7 +14945,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   setMyFlowCalendarScheduleUndo(null);
                 }}
                 onPlaceToday={() => applyMyFlowCalendarUnscheduledSchedule(myFlowTodayDate)}
-                onKeepAnytime={keepMyFlowCalendarItemsAnytime}
                 onApply={() => applyMyFlowCalendarUnscheduledSchedule()}
                 onUndo={undoMyFlowCalendarUnscheduledSchedule}
               />
@@ -14891,7 +14954,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 ref={myFlowCalendarCardRef}
                 data-testid="my-flow-calendar-card"
                 data-calendar-layout="month-overview"
-                className="order-2 min-w-0 py-2 sm:py-3 lg:order-2 lg:px-4"
+                className="order-3 min-w-0 py-2 sm:py-3 lg:order-2 lg:px-4"
               >
                 <div className="hidden items-start justify-between gap-3 sm:flex">
                   <div>
@@ -17435,7 +17498,7 @@ function AnchorInput({
         ) : mode === 'example' ? (
           <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">예시 날짜 {displayAnchorLabel}로 미리 봅니다.</p>
         ) : mode === 'undated' ? (
-          <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">날짜 없이 할 일만 저장합니다.</p>
+          <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">Calendar에는 넣지 않고 My Flow에 저장합니다.</p>
         ) : null}
       </div>
     );
@@ -17495,7 +17558,7 @@ function AnchorInput({
       ) : mode === 'example' ? (
         <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">예시 날짜로 미리보기 · {label} {displayAnchorLabel}</p>
       ) : mode === 'undated' ? (
-        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">날짜 없이 할 일만 저장합니다.</p>
+        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">Calendar에는 넣지 않고 My Flow에 저장합니다.</p>
       ) : null}
       {bundle.flow.structure_type === 'routine' && shouldShowWeekdaySelection(bundle) ? (
         <div>

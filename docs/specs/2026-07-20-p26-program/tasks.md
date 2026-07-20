@@ -61,8 +61,8 @@
 
 ## P26-14~16 Calendar And Export
 
-- [ ] P26-14 on-demand undated tray
-- [ ] P26-14 batch scheduling preview/undo
+- [x] P26-14 on-demand undated tray
+- [x] P26-14 batch scheduling preview/undo
 - [ ] P26-15 Flow filter
 - [ ] P26-15 grid/agenda/count parity
 - [ ] P26-15 single/batch date move
