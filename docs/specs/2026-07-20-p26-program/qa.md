@@ -51,6 +51,18 @@
 - effective stable item ID가 surface마다 같다.
 - source mutation count `0`.
 
+### P26-01 Date Intent
+
+- public date intent option count `3`.
+- example preview persisted anchor count `0`.
+- saved date intent invalid value count `0`.
+- custom blank save is blocked.
+- undated My Flow dated row and Calendar/ICS event count `0`.
+- custom date My Flow/Calendar projection count is non-zero and duplicate count `0`.
+- explicit undated selection survives reload.
+- legacy example anchor remains recoverable as migration metadata.
+- public save CTA text matches the effective saved intent.
+
 ## UX assertions
 
 - Flow/Flow Map user-facing card pattern count `1`.

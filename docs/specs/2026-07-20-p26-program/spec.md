@@ -139,6 +139,18 @@ My Flow의 same-date 묶음은 한 Flow 안에서만 적용한다. 서로 다른
 - 390px은 grid + agenda + 필요 시 tray를 사용한다.
 - 1024px은 3개 pane을 항상 강제하지 않고 현재 작업에 따라 grid/agenda 또는 tray/grid를 보여준다.
 
+## 공개 저장 날짜 의도 계약
+
+공개 Flow의 날짜는 세 상태로 분리한다.
+
+| 상태 | 저장 | Calendar/ICS | 의미 |
+| --- | --- | --- | --- |
+| `custom` | 유효한 anchor 저장 | 포함 | 사용자가 직접 고른 날짜 |
+| `undated` | anchor 없이 저장 | 제외 | 할 일만 먼저 저장 |
+| `example` | 저장 schema에 허용하지 않음 | 제외 | artifact preview 전용 |
+
+`example` 상태에서 저장을 누르면 CTA에 표시된 대로 undated 사본을 만든다. saved record에는 `custom | undated`만 들어간다. legacy example record의 preview anchor는 migration metadata로 보존하되 실행 날짜로 투영하지 않는다. source schedule, personal overlay, execution run은 이 migration으로 변경하지 않는다.
+
 ## Export 역할
 
 모든 portable export는 `범위 -> 예상 개수 -> 형식 -> 결과 receipt` 순서를 따른다.

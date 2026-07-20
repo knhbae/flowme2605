@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-00C product-object and journey contract selected; correctness implementation next)
+**Last Updated:** 2026-07-20 (P26-01 date intent contract implemented; foundation regression in progress)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object, an integrated discovery hierarchy, dual `그대로 시작 / 내게 맞게 조정` paths, content-shape adaptive whole-Flow bodies, an on-demand Calendar placement tray, and quick/advanced edit modes. P26-01~05 correctness work is next; runtime UI has not changed yet. P25 remains released at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and the target journey. P26-01 now separates transient example dates from explicit custom/undated saved intent and exposes all three choices on public save-before. P26-02~05 receipt, recurrence, memo segmentation, and projection identity remain next. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-01~05 correctness foundation over the P26-00C screen contract |
+| Active product gate | P26-01 regression closeout, then P26-02~05 correctness foundation |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Fix date intent, save receipt, recurrence, memo segmentation, and projection identity before runtime visual restructuring |
+| AI action now | Close P26-01 regressions, then fix save receipt, recurrence, memo segmentation, and projection identity before broad visual restructuring |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-01 date intent: Public save-before now exposes `날짜 정하기 / 날짜 없이 / 예시만 보기`, while the sticky primary names the actual save result as `이 날짜로 저장 / 날짜 없이 저장`. Example anchors remain preview-only; saved records normalize to additive `dateIntent: custom | undated`; only valid custom dates enter Calendar/ICS; and legacy example saves preserve the old preview value as migration metadata while becoming undated. Current slice evidence includes pure/storage `57 / 57`, full unit `532 / 532`, affected existing Playwright `62 / 62`, P26-01 Playwright `4 / 4`, docs check pass with 2,547 links, production build `18 / 18`, mobile/wide overflow `0`, and console/page errors `0`. This is automated/browser evidence, not observed-user validation. See [P26-01 evidence](./content-audit/2026-07-20-p26-01-date-intent-evidence/README.md).
 
 - 2026-07-20 P26-00C product-object and journey decision: Current production and the clean `48571af` source were compared with a proposed 390/1024 prototype. User-facing discovery now targets one `Flow` card grammar instead of separate Flow/Flow Map patterns; cards use job, verified source, representative artifact, required input, and result shape; save-before offers `그대로 시작` and `내게 맞게 조정` over the same effective artifact; whole-Flow grouping adapts to timeline/checklist/routine/project/record content; Calendar keeps an on-demand undated placement tray and explicit Flow filter; edit uses quick, advanced, structure, and batch modes. The package contains `16` proposed and `10` current production captures with HTTP failure, overflow, and console error counts all `0`. This is an internal implementation contract, not observed-user validation. See [P26-00C evidence](./content-audit/2026-07-20-p26-00c-product-object-journey-decision/README.md).
 

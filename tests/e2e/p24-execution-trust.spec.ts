@@ -847,7 +847,7 @@ test.describe('P24 execution trust regressions', () => {
       await page.evaluate(() => localStorage.clear());
       await page.reload();
       const saveArea = page.getByTestId('public-flow-mobile-save-cta');
-      await saveArea.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ }).click();
+      await saveArea.getByRole('button', { name: /그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장/ }).click();
       await expect.poll(() => page.evaluate(() =>
         Boolean(localStorage.getItem('flow:saved:new-car-delivery-check')),
       )).toBe(true);

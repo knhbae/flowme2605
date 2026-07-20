@@ -195,7 +195,7 @@ test.describe('public share shell secondary browse order', () => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
 
-      const visibleSaveActions = await page.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ }).evaluateAll((elements) =>
+      const visibleSaveActions = await page.getByRole('button', { name: /그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장/ }).evaluateAll((elements) =>
         elements.filter((element) => {
           const style = window.getComputedStyle(element);
           const rect = element.getBoundingClientRect();
@@ -232,7 +232,9 @@ test.describe('public share shell secondary browse order', () => {
           entry.testId === 'public-flow-save-actions' ||
           entry.testId === 'moving-save-actions' ||
           entry.text.includes('내 Flow에 저장') ||
-          entry.text.includes('그대로 저장'),
+          entry.text.includes('그대로 저장') ||
+          entry.text.includes('날짜 없이 저장') ||
+          entry.text.includes('이 날짜로 저장'),
       );
 
       expect(browseIndex).toBeGreaterThanOrEqual(0);
@@ -250,8 +252,8 @@ test.describe('public share shell secondary browse order', () => {
       expect(stickyPrimaryEntries.length).toBeGreaterThan(0);
 
       const [primaryEntry] = stickyPrimaryEntries;
-      expect(primaryEntry.accessibleName).toMatch(/그대로 저장|내 Flow에 저장|내 Flow에서 보기/);
-      expect(primaryEntry.text).toMatch(/그대로 저장|내 Flow에 저장|내 Flow에서 보기/);
+      expect(primaryEntry.accessibleName).toMatch(/그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장|내 Flow에서 보기/);
+      expect(primaryEntry.text).toMatch(/그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장|내 Flow에서 보기/);
       expect(primaryEntry.text).not.toMatch(/도구|파일|받기|복사|시트|캘린더|xlsx|ics/i);
     });
   }
@@ -294,7 +296,7 @@ test.describe('public share shell secondary browse order', () => {
       await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
       await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
       await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
-      await expect(page.getByRole('button', { name: /그대로 저장|내 Flow에 저장/ })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /그대로 저장|내 Flow에 저장|날짜 없이 저장|이 날짜로 저장/ })).toHaveCount(0);
       await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
       await expect(page.getByTestId('mobile-export-bar')).toHaveCount(0);
       await expect(page.getByRole('checkbox')).toHaveCount(0);

@@ -61,6 +61,14 @@ import {
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
 import { getPublicFlowIndexingPolicy } from '@/lib/flow/route-indexing-policy';
 import {
+  isValidPublicAnchorDate,
+  normalizePublicDateIntentMode,
+  resolvePublicDateIntent,
+  shouldPersistPublicDateIntent,
+  type PublicDateIntentMode,
+  type PublicDateIntentResolution,
+} from '@/lib/flow/public-date-intent';
+import {
   getRuntimeArchivedFlowPolicy,
   isRetiredPersonalCopyBundle,
 } from '@/lib/flow/runtime-content-policy';
@@ -213,6 +221,7 @@ import {
   getCompletedFlowRuns,
   getComparisonState,
   getItemStates,
+  migrateLegacyPublicExampleDateIntent,
   getMyFlowCompletionFeedback,
   getMyFlowExecutionNotes,
   getMyFlowStepItemChecks,
@@ -15575,7 +15584,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const { bundles, persist } = useBundles();
   const [bundle, setBundle] = useState<FlowBundle | null>(() => mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find((item) => item.flow.slug === slug) ?? null);
   const [anchor, setAnchor] = useState('');
-  const [anchorMode, setAnchorMode] = useState<AnchorMode>('custom');
+  const [anchorMode, setAnchorMode] = useState<AnchorMode>('example');
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [itemStates, setItemStates] = useState<Record<string, FlowItemState>>({});
   const [comparisonState, setComparisonState] = useState<FlowComparisonState>(() => getComparisonState(slug));
@@ -15589,21 +15598,27 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
   const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
+  const anchorPersistenceSlugRef = useRef<string | null>(null);
 
   useEffect(() => {
     const found = mergeSourceBackedMyFlowBundles(getBundles()).find((item) => item.flow.slug === slug) ?? null;
+    const migration = migrateLegacyPublicExampleDateIntent(slug);
     const storedAnchor = getStoredAnchor(slug);
-    const hasStoredAnchor = Boolean(storedAnchor.anchor) || storedAnchor.mode !== 'custom';
-    const defaultAnchorMode: AnchorMode = found && found.flow.anchor_type !== 'none' ? 'example' : 'custom';
+    const normalizedStoredMode = normalizePublicDateIntentMode(storedAnchor.mode);
+    const hasStoredIntent =
+      (normalizedStoredMode === 'custom' && isValidPublicAnchorDate(storedAnchor.anchor)) ||
+      normalizedStoredMode === 'undated';
+    const defaultAnchorMode: AnchorMode = found && found.flow.anchor_type !== 'none' ? 'example' : 'undated';
+    anchorPersistenceSlugRef.current = null;
     setBundle(found);
-    setAnchor(storedAnchor.anchor);
-    setAnchorMode(hasStoredAnchor && isAnchorMode(storedAnchor.mode) ? storedAnchor.mode : defaultAnchorMode);
+    setAnchor(normalizedStoredMode === 'custom' && isValidPublicAnchorDate(storedAnchor.anchor) ? storedAnchor.anchor : '');
+    setAnchorMode(hasStoredIntent ? normalizedStoredMode : defaultAnchorMode);
     setChecks(getChecks(slug));
     setItemStates(getItemStates(slug));
     setComparisonState(getComparisonState(slug));
     setWorkbenchState(getWorkbenchState(slug));
     setReactionLogs(getReactionLogs(slug));
-    setSavedFlowAt(getSavedFlowRecord(slug)?.savedAt);
+    setSavedFlowAt(migration.record?.savedAt ?? getSavedFlowRecord(slug)?.savedAt);
   }, [slug]);
 
   useEffect(() => {
@@ -15611,7 +15626,13 @@ export function PublicFlow({ slug }: { slug: string }) {
   }, [checks, slug]);
 
   useEffect(() => {
-    saveStoredAnchor(slug, { mode: anchorMode, anchor });
+    if (anchorPersistenceSlugRef.current !== slug) {
+      anchorPersistenceSlugRef.current = slug;
+      return;
+    }
+    if (!shouldPersistPublicDateIntent(anchorMode)) return;
+    if (anchorMode === 'custom' && !isValidPublicAnchorDate(anchor)) return;
+    saveStoredAnchor(slug, { mode: anchorMode, anchor: anchorMode === 'custom' ? anchor : '' });
   }, [anchor, anchorMode, slug]);
 
   useEffect(() => {
@@ -15637,10 +15658,25 @@ export function PublicFlow({ slug }: { slug: string }) {
     return () => window.removeEventListener('scroll', update);
   }, []);
 
+  const changeAnchorMode = (nextMode: AnchorMode) => {
+    setAnchorMode(nextMode);
+    if (!shouldPersistPublicDateIntent(nextMode)) return;
+    if (nextMode === 'custom' && !isValidPublicAnchorDate(anchor)) return;
+    saveStoredAnchor(slug, { mode: nextMode, anchor: nextMode === 'custom' ? anchor : '' });
+  };
+
   if (!bundle) return <main className="p-8">Flow를 찾을 수 없습니다.</main>;
 
   const publicDisplayTitle = toContentDisplayTitle(bundle.flow.title);
-  const displayAnchor = getPreviewAnchor(bundle, anchorMode, anchor);
+  const exampleAnchor = getPreviewAnchor(bundle, 'example', '');
+  const dateIntent = resolvePublicDateIntent({
+    anchorType: bundle.flow.anchor_type,
+    mode: anchorMode,
+    customAnchor: anchor,
+    exampleAnchor,
+  });
+  const displayAnchor = dateIntent.previewAnchor;
+  const exportAnchor = dateIntent.savedAnchor ?? '';
   const views = getPublicViews(bundle, Boolean(displayAnchor));
   const activeView = views.some((item) => item.id === view) ? view : 'list';
   const executableIds = getExecutableCheckIds(bundle, displayAnchor).filter((id) => !isItemStateSkipped(itemStates, id));
@@ -15648,7 +15684,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const done = executableIds.filter((id) => checks[id]).length;
   const workbenchDone = Object.values(workbenchState.occurrences).filter((state) => state.done).length;
   const exportDone = done || workbenchDone;
-  const canExportCalendar = hasCalendarSchedule(bundle);
+  const canExportCalendar = hasCalendarSchedule(bundle) && dateIntent.calendarEligible;
   const showTodayExecution = isFitnessExactVideoFlow(bundle);
   const showExportFirstHero = isExportFirstHeroRoute(bundle);
   const showMobileWorkbenchFirst = shouldShowMobileWorkbenchFirst(bundle);
@@ -15706,7 +15742,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
   };
   const copy = async () => {
-    const text = buildText(bundle, checks, displayAnchor, itemStates, comparisonState, workbenchState);
+    const text = buildText(bundle, checks, exportAnchor, itemStates, comparisonState, workbenchState);
     try {
       await navigator.clipboard.writeText(text);
       setCopyState(FLOW_EXPORT_FEEDBACK.memoCopied);
@@ -15726,7 +15762,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   };
   const downloadExcel = async () => {
     setDownloadState(FLOW_EXPORT_FEEDBACK.sheetPreparing);
-    const sheets = buildWorkbookSheets(bundle, checks, displayAnchor, {
+    const sheets = buildWorkbookSheets(bundle, checks, exportAnchor, {
       weekdays: weekdaySelection,
       reactionLogs,
       itemStates,
@@ -15746,10 +15782,11 @@ export function PublicFlow({ slug }: { slug: string }) {
     window.setTimeout(() => setDownloadState(''), 1600);
   };
   const downloadCalendar = () => {
+    if (!canExportCalendar || !exportAnchor) return;
     setCalendarState(FLOW_EXPORT_FEEDBACK.calendarPreparing);
     const ics = hasDatedCalendarSchedule(bundle)
-      ? buildIcsCalendar(bundle, checks, displayAnchor, itemStates)
-      : buildCalendarIcs(bundle, displayAnchor, weekdaySelection);
+      ? buildIcsCalendar(bundle, checks, exportAnchor, itemStates)
+      : buildCalendarIcs(bundle, exportAnchor, weekdaySelection);
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -15766,13 +15803,24 @@ export function PublicFlow({ slug }: { slug: string }) {
     window.location.href = `/flows/${next.flow.id}/edit`;
   };
   const saveToMyFlow = () => {
+    if (!dateIntent.canSave) {
+      document.querySelector<HTMLInputElement>('[data-testid="public-flow-anchor-input"]')?.focus();
+      return;
+    }
+    if (dateIntent.previewOnly) changeAnchorMode('undated');
+    saveStoredAnchor(bundle.flow.slug, {
+      mode: dateIntent.persistedMode,
+      anchor: dateIntent.savedAnchor ?? '',
+    });
     const record = saveFlowRecord(bundle.flow.slug, {
       selectedArtifactMode: canExportCalendar && bundle.flow.primary_destination !== 'internal_check' ? 'calendar' : 'checklist',
-      anchor: displayAnchor || undefined,
+      dateIntent: dateIntent.persistedMode,
+      anchor: dateIntent.savedAnchor,
       ...(bundle.flow.structure_type === 'routine' ? { weekdays: weekdaySelection } : {}),
     });
     setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
   };
+  const saveActionLabel = getPublicSaveActionLabel(bundle, dateIntent);
   const openExportActions = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setShowMobileExportSheet(true);
@@ -15792,9 +15840,10 @@ export function PublicFlow({ slug }: { slug: string }) {
             <button
               type="button"
               className="min-h-11 rounded-xl bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+              disabled={!dateIntent.canSave}
               onClick={saveToMyFlow}
             >
-              그대로 저장
+              {saveActionLabel}
             </button>
             <button
               type="button"
@@ -15825,8 +15874,13 @@ export function PublicFlow({ slug }: { slug: string }) {
             </Link>
           ) : (
             <div className="flex shrink-0 gap-1.5">
-              <button className="min-h-11 rounded-md bg-[#3654FF] px-3 text-sm font-semibold text-white shadow-sm" type="button" onClick={saveToMyFlow}>
-                그대로 저장
+              <button
+                className="min-h-11 rounded-md bg-[#3654FF] px-3 text-sm font-semibold text-white shadow-sm disabled:bg-slate-300"
+                type="button"
+                disabled={!dateIntent.canSave}
+                onClick={saveToMyFlow}
+              >
+                {saveActionLabel}
               </button>
               <button
                 className="min-h-11 rounded-md border border-[#D8D5CD] bg-white px-3 text-xs font-semibold text-slate-700"
@@ -15845,7 +15899,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     if (!showPublicSetupInput) return null;
     return (
       <div data-testid="public-flow-primary-setup" className="max-w-xl rounded-lg border border-[#DDE4E0] bg-white px-3 py-3">
-        <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} compactSecondaryActions />
+        <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={changeAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} compactSecondaryActions />
       </div>
     );
   };
@@ -15887,7 +15941,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             {!compactJeonsePage ? <p className="mt-1 text-sm text-slate-600">{getSetupStepDescription(bundle)}</p> : null}
             <p className={compactJeonsePage ? 'mt-1 text-sm text-slate-600' : 'mt-1 text-sm text-slate-500'}>{getSetupStepHelp(bundle)}</p>
             <div className={compactJeonsePage ? 'mt-4 max-w-3xl' : 'mt-4'}>
-              <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={setAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
+              <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={changeAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} />
             </div>
           </div>
         </div>
@@ -15942,12 +15996,14 @@ export function PublicFlow({ slug }: { slug: string }) {
                 anchor={anchor}
                 displayAnchor={displayAnchor}
                 mode={anchorMode}
-                onModeChange={setAnchorMode}
+                onModeChange={changeAnchorMode}
                 onAnchorChange={setAnchor}
                 weekdays={weekdaySelection}
                 onWeekdaysChange={setWeekdaySelection}
                 savedFlowAt={savedFlowAt}
                 onSaveToMyFlow={saveToMyFlow}
+                saveActionLabel={saveActionLabel}
+                saveDisabled={!dateIntent.canSave}
               />
             ) : null}
 
@@ -15985,12 +16041,14 @@ export function PublicFlow({ slug }: { slug: string }) {
               anchor={anchor}
               displayAnchor={displayAnchor}
               mode={anchorMode}
-              onModeChange={setAnchorMode}
+              onModeChange={changeAnchorMode}
               onAnchorChange={setAnchor}
               weekdays={weekdaySelection}
               onWeekdaysChange={setWeekdaySelection}
               savedFlowAt={savedFlowAt}
               onSaveToMyFlow={saveToMyFlow}
+              saveActionLabel={saveActionLabel}
+              saveDisabled={!dateIntent.canSave}
             />
           ) : null}
 
@@ -16007,7 +16065,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           anchor={anchor}
           displayAnchor={displayAnchor}
           anchorMode={anchorMode}
-          onAnchorModeChange={setAnchorMode}
+          onAnchorModeChange={changeAnchorMode}
           onAnchorChange={setAnchor}
           weekdays={weekdaySelection}
           onWeekdaysChange={setWeekdaySelection}
@@ -16102,7 +16160,7 @@ export function PublicFlow({ slug }: { slug: string }) {
               <div>
                 <h2 id="mobile-export-title" className="text-lg font-semibold text-[#1B1A17]">어디로 가져갈까요</h2>
                 <p className="mt-1 text-sm text-[#6E6B64]">
-                  {getMobileExportSheetSummary(bundle, displayAnchor, executableCount)}
+                  {getMobileExportSheetSummary(bundle, exportAnchor, executableCount)}
                 </p>
               </div>
               <button className="shrink-0 whitespace-nowrap rounded-xl border border-[#D8D5CD] px-3 py-1.5 text-sm font-semibold text-[#6E6B64]" onClick={() => setShowMobileExportSheet(false)}>
@@ -16173,10 +16231,11 @@ export function PublicFlow({ slug }: { slug: string }) {
               ) : (
                 <button
                   type="button"
-                  className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm"
+                  className="shrink-0 rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm disabled:bg-slate-300"
+                  disabled={!dateIntent.canSave}
                   onClick={saveToMyFlow}
                 >
-                  내 Flow에 저장
+                  {saveActionLabel}
                 </button>
               )}
             </div>
@@ -16298,6 +16357,8 @@ function ExportFirstHero({
   onWeekdaysChange,
   savedFlowAt,
   onSaveToMyFlow,
+  saveActionLabel,
+  saveDisabled,
 }: {
   bundle: FlowBundle;
   anchor: string;
@@ -16309,6 +16370,8 @@ function ExportFirstHero({
   onWeekdaysChange: (value: string[]) => void;
   savedFlowAt?: string;
   onSaveToMyFlow: () => void;
+  saveActionLabel: string;
+  saveDisabled: boolean;
 }) {
   const previewEntries = getExportFirstPreviewEntries(bundle, displayAnchor);
   const remainingCount = Math.max(getScheduleEntries(bundle, displayAnchor).length - previewEntries.length, 0);
@@ -16369,17 +16432,20 @@ function ExportFirstHero({
             ) : (
               <button
                 type="button"
-                className="w-full rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8]"
+                className="w-full rounded-md bg-[#3654FF] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-slate-300"
+                disabled={saveDisabled}
                 onClick={onSaveToMyFlow}
               >
-                내 Flow에 저장
+                {saveActionLabel}
               </button>
             )}
             <p className="mt-3 text-center text-xs leading-5 text-[#737B77]">파일로 가져가기는 실행 미리보기 아래에서 선택할 수 있어요.</p>
           </div>
           {displayAnchor ? (
             <p className="mt-2 text-center text-xs font-medium text-[#6E6B64]">
-              {compactDateLabel(previewEntries[0]?.startDate ?? displayAnchor)}부터 {bundle.items.length}개 항목을 옮깁니다.
+              {mode === 'example'
+                ? `예시로 ${bundle.items.length}개 항목을 미리 봅니다.`
+                : `${compactDateLabel(previewEntries[0]?.startDate ?? displayAnchor)}부터 ${bundle.items.length}개 항목을 옮깁니다.`}
             </p>
           ) : null}
         </div>
@@ -16431,12 +16497,15 @@ function AnchorInput({
 
   if (isJeonsePrecheckFlow(bundle)) {
     const secondaryActions = (
-      <div className="grid grid-cols-2 gap-2">
-        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'undecided' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('undecided')}>
-          날짜 미정
+      <div data-testid="public-flow-date-intent" className="grid grid-cols-3 gap-2" role="group" aria-label="날짜 저장 방식">
+        <button data-testid="public-flow-date-intent-custom" aria-pressed={mode === 'custom'} className={`rounded-md border px-2 py-2 text-center text-xs font-semibold ${mode === 'custom' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('custom')}>
+          날짜 정하기
         </button>
-        <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('example')}>
-          예시 보기
+        <button data-testid="public-flow-date-intent-undated" aria-pressed={mode === 'undated'} className={`rounded-md border px-2 py-2 text-center text-xs font-semibold ${mode === 'undated' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('undated')}>
+          날짜 없이
+        </button>
+        <button data-testid="public-flow-date-intent-example" aria-pressed={mode === 'example'} className={`rounded-md border px-2 py-2 text-center text-xs font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('example')}>
+          예시만 보기
         </button>
       </div>
     );
@@ -16466,34 +16535,30 @@ function AnchorInput({
             </button>
           </div>
         </label>
-        {compactSecondaryActions ? (
-          <details className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm">
-            <summary className="cursor-pointer text-xs font-semibold text-[#6E6B64]">다른 방법</summary>
-            <div className="mt-2">{secondaryActions}</div>
-          </details>
-        ) : (
-          secondaryActions
-        )}
+        {secondaryActions}
         {mode === 'custom' && anchor ? (
           <p className={`rounded-md border px-3 py-2 text-sm ${isPast ? 'border-red-200 bg-red-50 text-red-800' : isClose ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-emerald-200 bg-emerald-50 text-emerald-800'}`}>
             {isPast ? `${label}이 이미 지났어요.` : `${label} ${selectedDateLabel} 기준으로 일정이 조정됐습니다.`}
           </p>
         ) : mode === 'example' ? (
           <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">예시 날짜 {displayAnchorLabel}로 미리 봅니다.</p>
-        ) : mode === 'undecided' ? (
-          <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">날짜를 정하면 모든 일정이 다시 계산됩니다.</p>
+        ) : mode === 'undated' ? (
+          <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">날짜 없이 할 일만 저장합니다.</p>
         ) : null}
       </div>
     );
   }
 
   const secondaryActions = (
-    <div className="grid gap-2 sm:grid-cols-2">
-      <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'undecided' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('undecided')}>
-        아직 날짜가 안 정해졌어요
+    <div data-testid="public-flow-date-intent" className="grid grid-cols-3 gap-2" role="group" aria-label="날짜 저장 방식">
+      <button data-testid="public-flow-date-intent-custom" aria-pressed={mode === 'custom'} className={`rounded-md border px-2 py-2 text-center text-xs font-semibold ${mode === 'custom' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('custom')}>
+        날짜 정하기
       </button>
-      <button className={`rounded-md border px-3 py-2 text-left text-sm font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('example')}>
-        그냥 예시로 둘러볼게요
+      <button data-testid="public-flow-date-intent-undated" aria-pressed={mode === 'undated'} className={`rounded-md border px-2 py-2 text-center text-xs font-semibold ${mode === 'undated' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('undated')}>
+        날짜 없이
+      </button>
+      <button data-testid="public-flow-date-intent-example" aria-pressed={mode === 'example'} className={`rounded-md border px-2 py-2 text-center text-xs font-semibold ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('example')}>
+        예시만 보기
       </button>
     </div>
   );
@@ -16523,37 +16588,22 @@ function AnchorInput({
           </button>
         </div>
       </label>
-      {compactSecondaryActions ? (
-        <details className="rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm">
-          <summary className="cursor-pointer text-xs font-semibold text-[#6E6B64]">다른 방법</summary>
-          <div className="mt-2">{secondaryActions}</div>
-        </details>
-      ) : (
-        <>
-          <div className="flex items-center gap-3 text-xs font-semibold text-gray-400">
-            <span className="h-px flex-1 bg-gray-200" />
-            또는
-            <span className="h-px flex-1 bg-gray-200" />
-          </div>
-          {secondaryActions}
-        </>
-      )}
+      {secondaryActions}
       {mode === 'custom' && anchor ? (
         <div className={`rounded-md border p-3 text-sm ${isPast ? 'border-red-200 bg-red-50 text-red-800' : isClose ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-emerald-200 bg-emerald-50 text-emerald-800'}`}>
           {isPast ? (
-            `${label}이 이미 지났어요. 다른 날짜를 입력하시겠어요?`
+            `${label}이 이미 지났어요.`
           ) : (
             <>
               <span className="font-semibold">{label}: {selectedDateLabel}</span>
-              {daysUntil !== null ? ` (D-${daysUntil})` : ''} 으로 모든 항목이 자동 조정됐어요.
-              {isClose ? ` ${label}까지 ${daysUntil}일밖에 남지 않아 일부 초기 단계는 빠르게 처리하거나 건너뛸 수 있어요.` : null}
+              {isClose ? ' · 가까운 일정부터 시작합니다.' : null}
             </>
           )}
         </div>
       ) : mode === 'example' ? (
         <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">예시 날짜로 미리보기 · {label} {displayAnchorLabel}</p>
-      ) : mode === 'undecided' ? (
-        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">날짜 없이 항목만 먼저 둘러봅니다. 날짜를 넣으면 모든 일정이 다시 계산됩니다.</p>
+      ) : mode === 'undated' ? (
+        <p className="rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">날짜 없이 할 일만 저장합니다.</p>
       ) : null}
       {bundle.flow.structure_type === 'routine' && shouldShowWeekdaySelection(bundle) ? (
         <div>
@@ -16785,7 +16835,7 @@ function itemDate(anchor: string, item: FlowItem) {
 }
 
 type PublicView = 'list' | 'week' | 'month' | 'recipes';
-type AnchorMode = 'custom' | 'example' | 'undecided';
+type AnchorMode = PublicDateIntentMode;
 
 function nextMonday(date: Date): Date {
   const day = date.getDay();
@@ -16796,7 +16846,7 @@ function nextMonday(date: Date): Date {
 function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: string): string {
   if (bundle.flow.anchor_type === 'none') return '';
   if (mode === 'custom') return customAnchor;
-  if (mode === 'undecided') return '';
+  if (mode === 'undated') return '';
   const today = new Date();
   if (bundle.flow.content_type === 'meal_plan') return formatLocalDate(today);
   if (bundle.flow.category.includes('결혼')) return formatDate(addDays(today, 180));
@@ -16808,12 +16858,15 @@ function getPreviewAnchor(bundle: FlowBundle, mode: AnchorMode, customAnchor: st
 
 function getAnchorModeLabel(mode: AnchorMode): string {
   if (mode === 'custom') return '내 날짜 기준';
-  if (mode === 'undecided') return '날짜 미정';
+  if (mode === 'undated') return '날짜 없이 저장';
   return '예시 날짜로 미리보기';
 }
 
-function isAnchorMode(value: string): value is AnchorMode {
-  return value === 'custom' || value === 'example' || value === 'undecided';
+function getPublicSaveActionLabel(bundle: FlowBundle, resolution: PublicDateIntentResolution): string {
+  if (bundle.flow.anchor_type === 'none') return '그대로 저장';
+  if (!resolution.canSave) return '날짜를 먼저 정하세요';
+  if (resolution.persistedMode === 'custom') return '이 날짜로 저장';
+  return '날짜 없이 저장';
 }
 
 function getEarliestOffset(bundle: FlowBundle): number {

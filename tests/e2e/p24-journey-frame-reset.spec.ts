@@ -89,11 +89,11 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-description')).not.toHaveAttribute('open', '');
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
-    await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' })).toHaveText('그대로 저장');
+    await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 저장' })).toHaveText('날짜 없이 저장');
     await expect(page.getByTestId('public-flow-reference-details')).not.toHaveAttribute('open', '');
     await captureEvidence(page, '05-vehicle-public-compact-mobile.png');
 
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' }).click();
+    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 저장' }).click();
     const savedLink = page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' });
     await expect(savedLink).toHaveAttribute('href', '/my?savedFlow=vehicle-inspection-prep');
     await savedLink.click();
@@ -110,7 +110,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/f/vehicle-inspection-prep');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' }).click();
+    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 저장' }).click();
 
     await page.goto('/flow-maps/middle-school-math-1');
     await page.getByTestId('flow-map-save-all-mobile').click();
@@ -178,7 +178,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.getByTestId('my-flow-post-save-view-flow').click();
 
     await page.goto('/f/vehicle-inspection-prep');
-    await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '그대로 저장' }).click();
+    await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '날짜 없이 저장' }).click();
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
 

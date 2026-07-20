@@ -27,8 +27,8 @@
 
 ## P26-01~05 Foundation
 
-- [ ] P26-01 local/example/anchor date intent
-- [ ] P26-01 override/reuse regression
+- [x] P26-01 local/example/anchor date intent
+- [x] P26-01 override/reuse regression
 - [ ] P26-02 canonical save receipt
 - [ ] P26-02 route parity and hydration
 - [ ] P26-03 series/occurrence projection
