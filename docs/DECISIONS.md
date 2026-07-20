@@ -59,6 +59,18 @@ Do not use this for:
 
 **Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-03 recurrence evidence](./content-audit/2026-07-20-p26-03-recurrence-series-occurrence-evidence/README.md)
 
+### 2026-07-20 - Memo intake preserves source fragments and lets users repair boundaries before save
+
+**Decision:** Memo and URL-miss intake may deterministically split user-authored text at bounded Korean list boundaries, but it must not generate missing actions or rewrite meaning. Each source fragment and suggested item gets a stable deterministic ID. One fragment may support multiple items; manual split, merge, exclusion, rename, and reorder happen before save and preserve fragment ownership. Ambiguous object lists stay together until the user explicitly splits them. The review UI shows each source fragment once, with its result items beside or below it.
+
+**Reason:** A single unfamiliar clause previously collapsed an entire comma list into one long task, while showing source text per item would replace the parsing error with copy density. Stable fragment-to-item ownership makes the saved result inspectable without inventing content and prepares the P26-05 projection identity gate.
+
+**Applies to:** `/flows` memo intake, URL-miss draft review, personal draft item creation, pre-save include/split/merge/reorder, saved item detail mapping, receipt counts, and list export order.
+
+**Reopen when:** observed users need semantic suggestions rather than deterministic boundaries, multilingual intake becomes a release requirement, or a real AI provider passes the separate proposal/review/privacy/cost gate.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-04 memo evidence](./content-audit/2026-07-20-p26-04-memo-segmentation-evidence/README.md)
+
 ### 2026-07-20 - Option B is the released P25 internal production baseline
 
 **Decision:** Keep the P25 Option B whole-Flow workspace contract across save-before, post-save, My Flow, whole Flow, Calendar, item adjustment, batch adjustment, completion/reopen, and export. Treat the owner's instruction to complete P25 and permit substantial changes as implementation authorization. Treat P25-08 current command/browser evidence with unresolved automated Blocking/High `0` as the internal integration gate. Foundation PR #136 and hydration hotfix PR #137 are the released production baseline at `b0fb899c`. Defer only public copy density, 1024px Calendar density, and advanced-editor path length to P26-00 comparison work.

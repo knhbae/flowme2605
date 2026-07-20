@@ -187,6 +187,20 @@ My Flow의 same-date 묶음은 한 Flow 안에서만 적용한다. 서로 다른
 
 관련 evidence: [P26-03 recurrence evidence](../../content-audit/2026-07-20-p26-03-recurrence-series-occurrence-evidence/README.md)
 
+## 메모 source fragment / draft item 계약
+
+- memo와 URL-miss input은 newline, checkbox, ordinal, 문장부호, arrow, 보수적 comma/`그리고` list만 deterministic하게 분리한다.
+- parser는 사용자가 쓰지 않은 행동, 세부 단계, 날짜, 의미를 생성하지 않는다.
+- source fragment와 draft suggestion은 deterministic stable ID를 가진다.
+- 한 source fragment는 여러 draft item을 만들 수 있고 item은 하나 이상의 source fragment를 참조할 수 있다.
+- 목적어 나열처럼 불확실한 목록은 하나로 유지하고 사용자가 저장 전 직접 나눈다.
+- 저장 전 review는 include/exclude, title edit, split, merge, up/down reorder를 제공한다.
+- 390px에서는 source fragment당 disclosure 하나, 1024px에서는 source/result 2열을 사용하며 source text를 item마다 반복하지 않는다.
+- accepted order가 saved item order와 list export order의 입력이 된다.
+- 저장된 item detail은 source fragment ID와 원문을 additive하게 보존하지만 내부 ID를 사용자 화면/export에 노출하지 않는다.
+
+관련 evidence: [P26-04 memo evidence](../../content-audit/2026-07-20-p26-04-memo-segmentation-evidence/README.md)
+
 ## 후속 시각 참조 원칙
 
 `2026-07-19-flow-content-usage-preview-ko.html`에서 재사용할 것은 구성 원리다.

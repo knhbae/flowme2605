@@ -86,6 +86,18 @@
 - exact-video 4주 preview의 Calendar/ICS end-boundary mismatch count는 `0`이다.
 - recurrence duplicate occurrence count와 source mutation count는 `0`이다.
 
+### P26-04 Memo Segmentation And Review
+
+- 제주 대표 메모는 topic 중복 없이 action candidate `5`개로 분리된다.
+- `여권, 지갑, 우산 챙기기` object list false split count는 `0`이다.
+- source fragment ID와 suggestion ID는 같은 입력에서 재실행해도 같다.
+- 같은 source fragment의 visible source copy는 review group당 `1`회다.
+- 저장 전 split, merge, exclude, reorder, keyboard reorder가 동작한다.
+- accepted/saved/receipt/reloaded/list-export count mismatch는 `0`이다.
+- saved item source-fragment mapping missing과 duplicate ID count는 `0`이다.
+- generic filler와 user-facing internal-term hit count는 `0`이다.
+- 390/1024 horizontal overflow와 console/page error count는 `0`이다.
+
 ## UX assertions
 
 - Flow/Flow Map user-facing card pattern count `1`.

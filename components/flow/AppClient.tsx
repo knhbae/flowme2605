@@ -205,6 +205,8 @@ import {
   normalizeUrlFirstSupplyCandidates,
   recordUrlFirstSupplyCandidateLookup,
   removeUrlFirstSupplyCandidate,
+  mergeDraftItemSuggestions,
+  splitDraftItemSuggestion,
   updateUrlFirstSupplyCandidate,
   upsertUrlFirstSupplyCandidate,
   URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY,
@@ -1421,7 +1423,7 @@ function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: 
         copy_count: 0,
         tags: source.kind === 'memo' ? ['내 초안', '내 메모'] : ['내 초안'],
         raw_text: `# ${title}\n\n## ${sectionTitle}\n${items.map((item, index) => {
-          const sourceText = suggestions[index]?.sourceText.trim();
+          const sourceText = suggestions[index]?.sourceFragmentText.trim();
           return `- ${item.title}${sourceText && sourceText !== item.title ? `\n  처음 문장: ${sourceText}` : ''}${item.description ? `\n  메모: ${item.description}` : ''}`;
         }).join('\n')}${source.kind === 'memo' ? `\n\n## 처음 붙여넣은 메모\n${source.memo.trim()}` : ''}`,
         created_at: now,
@@ -1436,10 +1438,12 @@ function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: 
         },
       ],
       items,
-      itemDetails:
-        source.kind === 'url'
-          ? items.map((item) => ({
-              item_id: item.id,
+      itemDetails: items.map((item, index) => ({
+        item_id: item.id,
+        source_fragment_ids: suggestions[index]?.sourceFragmentIds ?? [],
+        source_fragment_text: suggestions[index]?.sourceFragmentText ?? suggestions[index]?.sourceText ?? '',
+        ...(source.kind === 'url'
+          ? {
               links: [
                 {
                   label: '원문 링크',
@@ -1447,8 +1451,9 @@ function createPersonalDraftFlowPackage(source: PersonalDraftFlowSource, input: 
                   type: 'reference' as const,
                 },
               ],
-            }))
-          : [],
+            }
+          : {}),
+      })),
       warnings: [],
     },
     ...(anchor ? { anchor } : {}),
@@ -1565,7 +1570,11 @@ function createDraftItemReviewRows(items: UrlFirstDraftItemSuggestion[]): DraftI
 function getAcceptedDraftItems(items: DraftItemReviewRow[]): UrlFirstDraftItemSuggestion[] {
   return items
     .filter((item) => item.included && item.title.trim().length > 0)
-    .map(({ included: _included, ...item }) => ({ ...item, title: item.title.replace(/\s+/g, ' ').trim() }));
+    .map(({ included: _included, ...item }, acceptedIndex) => ({
+      ...item,
+      title: item.title.replace(/\s+/g, ' ').trim(),
+      dayOffset: acceptedIndex,
+    }));
 }
 
 function DraftItemAcceptanceList({
@@ -1582,8 +1591,71 @@ function DraftItemAcceptanceList({
   dateLabel: (item: DraftItemReviewRow, index: number) => string;
 }) {
   const selectedCount = items.filter((item) => item.included).length;
+  const [splitItemId, setSplitItemId] = useState('');
+  const [splitText, setSplitText] = useState('');
+  const [reviewFeedback, setReviewFeedback] = useState('');
+  const sourceGroups = items.reduce<Array<{
+    key: string;
+    sourceText: string;
+    rows: Array<{ item: DraftItemReviewRow; index: number }>;
+  }>>((groups, item, index) => {
+    const key = `${item.sourceFragmentIds.join('|')}:${item.sourceFragmentText}`;
+    const previous = groups[groups.length - 1];
+    if (previous?.key === key) {
+      previous.rows.push({ item, index });
+    } else {
+      groups.push({ key, sourceText: item.sourceFragmentText, rows: [{ item, index }] });
+    }
+    return groups;
+  }, []);
   const updateItem = (id: string, patch: Partial<DraftItemReviewRow>) => {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  };
+  const moveItem = (index: number, offset: -1 | 1) => {
+    const targetIndex = index + offset;
+    if (targetIndex < 0 || targetIndex >= items.length) return;
+    const next = [...items];
+    [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+    onChange(next);
+    setReviewFeedback(`${items[index].title} 순서를 바꿨어요.`);
+  };
+  const mergeWithPrevious = (index: number) => {
+    if (index <= 0) return;
+    const previous = items[index - 1];
+    const current = items[index];
+    const merged = mergeDraftItemSuggestions(previous, current);
+    onChange([
+      ...items.slice(0, index - 1),
+      { ...merged, included: previous.included || current.included },
+      ...items.slice(index + 1),
+    ]);
+    setSplitItemId('');
+    setReviewFeedback('두 할 일을 하나로 합쳤어요. 제목을 확인해 주세요.');
+  };
+  const openSplitEditor = (item: DraftItemReviewRow) => {
+    setSplitItemId(item.id);
+    setSplitText(item.title);
+    setReviewFeedback('');
+  };
+  const applySplit = (item: DraftItemReviewRow) => {
+    const values = splitText.split(/\n+/u).map((value) => value.trim()).filter(Boolean);
+    if (values.length < 2) {
+      setReviewFeedback('두 줄 이상으로 나눠 적어주세요.');
+      return;
+    }
+    if (items.length - 1 + values.length > 12) {
+      setReviewFeedback('저장 전 검토 항목은 12개까지 나눌 수 있어요.');
+      return;
+    }
+    const splitItems = splitDraftItemSuggestion(item, values).map((splitItem) => ({
+      ...splitItem,
+      included: item.included,
+    }));
+    const index = items.findIndex((candidate) => candidate.id === item.id);
+    onChange([...items.slice(0, index), ...splitItems, ...items.slice(index + 1)]);
+    setSplitItemId('');
+    setSplitText('');
+    setReviewFeedback(`${splitItems.length}개 할 일로 나눴어요.`);
   };
 
   return (
@@ -1593,39 +1665,121 @@ function DraftItemAcceptanceList({
         <span className="text-[11px] font-semibold text-[#8A857B]">{selectedCount}/{items.length}개 선택</span>
       </div>
       {items.length > 0 ? (
-        <ol className="grid gap-1.5">
-          {items.map((item, index) => (
+        <ol className="grid gap-2">
+          {sourceGroups.map((group) => (
             <li
-              key={item.id}
-              data-testid={itemTestId}
-              data-draft-item-id={item.id}
-              data-draft-day-offset={item.dayOffset}
-              data-draft-included={item.included ? 'true' : 'false'}
-              className={`grid grid-cols-[1.5rem_minmax(0,1fr)] gap-2 rounded-md border px-2.5 py-2 ${item.included ? 'border-[#DDE6D8] bg-white' : 'border-transparent bg-[#F1F0EC] opacity-70'}`}
+              key={group.key}
+              data-testid="draft-source-group"
+              className="rounded-md border border-[#DDE6D8] bg-white p-2 md:grid md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-3"
             >
-              <input
-                type="checkbox"
-                className="mt-1 h-5 w-5 accent-[#176D5D]"
-                checked={item.included}
-                aria-label={`${item.title || `${index + 1}번째 할 일`} 저장에 포함`}
-                onChange={(event) => updateItem(item.id, { included: event.target.checked })}
-              />
-              <div className="min-w-0">
-                <label className="block">
-                  <span className="sr-only">{index + 1}번째 할 일 제목</span>
-                  <input
-                    className="min-h-9 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-1.5 text-xs font-semibold leading-5 text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10 disabled:bg-transparent"
-                    aria-label={`${index + 1}번째 할 일 제목`}
-                    value={item.title}
-                    maxLength={100}
-                    disabled={!item.included}
-                    onChange={(event) => updateItem(item.id, { title: event.target.value })}
-                  />
-                </label>
-                <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
-                  {item.included ? dateLabel(item, index) : '저장하지 않음'}
-                </p>
+              <div className="min-w-0 md:pt-1">
+                <div className="hidden md:block" data-testid="draft-item-source-fragment">
+                  <p className="text-[10px] font-semibold text-[#8A857B]">내가 적은 문장</p>
+                  <p className="mt-0.5 break-words text-xs leading-5 text-[#514D46]">{group.sourceText}</p>
+                </div>
+                <details className="mb-2 md:hidden" data-testid="draft-item-source-disclosure">
+                  <summary className="cursor-pointer text-[11px] font-semibold text-[#6E6B64]">내가 적은 문장</summary>
+                  <p className="mt-1 break-words text-xs leading-5 text-[#514D46]">{group.sourceText}</p>
+                </details>
               </div>
+              <ol className="grid min-w-0 gap-1.5">
+                {group.rows.map(({ item, index }) => (
+                  <li
+                    key={item.id}
+                    data-testid={itemTestId}
+                    data-draft-item-id={item.id}
+                    data-draft-day-offset={item.dayOffset}
+                    data-draft-included={item.included ? 'true' : 'false'}
+                    data-source-fragment-ids={item.sourceFragmentIds.join(',')}
+                    className={`grid grid-cols-[1.5rem_minmax(0,1fr)] gap-2 rounded-md px-1.5 py-1.5 ${item.included ? 'bg-white' : 'bg-[#F1F0EC] opacity-70'}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-5 w-5 accent-[#176D5D]"
+                      checked={item.included}
+                      aria-label={`${item.title || `${index + 1}번째 할 일`} 저장에 포함`}
+                      onChange={(event) => updateItem(item.id, { included: event.target.checked })}
+                    />
+                    <div className="min-w-0">
+                  <label className="block">
+                    <span className="sr-only">{index + 1}번째 할 일 제목</span>
+                    <input
+                      className="min-h-9 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-1.5 text-xs font-semibold leading-5 text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10 disabled:bg-transparent"
+                      aria-label={`${index + 1}번째 할 일 제목`}
+                      value={item.title}
+                      maxLength={100}
+                      disabled={!item.included}
+                      onChange={(event) => updateItem(item.id, { title: event.target.value })}
+                    />
+                  </label>
+                  <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+                    {item.included ? dateLabel(item, index) : '저장하지 않음'}
+                  </p>
+                  <div className="mt-1 flex flex-wrap items-center gap-1">
+                    <button
+                      type="button"
+                      className={FLOW_UI_ICON_ACTION_CLASS}
+                      aria-label={`${item.title} 위로 이동`}
+                      title="위로 이동"
+                      disabled={index === 0}
+                      onClick={() => moveItem(index, -1)}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className={FLOW_UI_ICON_ACTION_CLASS}
+                      aria-label={`${item.title} 아래로 이동`}
+                      title="아래로 이동"
+                      disabled={index === items.length - 1}
+                      onClick={() => moveItem(index, 1)}
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      className={FLOW_UI_COMPACT_ACTION_CLASS}
+                      aria-label={`${item.title} 직접 나누기`}
+                      onClick={() => openSplitEditor(item)}
+                    >
+                      나누기
+                    </button>
+                    {index > 0 ? (
+                      <button
+                        type="button"
+                        className={FLOW_UI_COMPACT_ACTION_CLASS}
+                        aria-label={`${items[index - 1].title}와 ${item.title} 합치기`}
+                        onClick={() => mergeWithPrevious(index)}
+                      >
+                        합치기
+                      </button>
+                    ) : null}
+                  </div>
+                  {splitItemId === item.id ? (
+                    <div className="mt-2 grid gap-1.5 rounded-md border border-[#DDE6D8] bg-[#FAFAF8] p-2" data-testid="draft-item-split-editor">
+                      <label className="grid gap-1 text-[11px] font-semibold text-[#514D46]">
+                        한 줄에 할 일 하나
+                        <textarea
+                          className="min-h-20 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-2 text-xs leading-5 text-[#1B1A17] outline-none focus:border-[#176D5D]"
+                          aria-label={`${item.title} 나눌 할 일`}
+                          value={splitText}
+                          onChange={(event) => setSplitText(event.target.value)}
+                        />
+                      </label>
+                      <div className="flex flex-wrap gap-1.5">
+                        <button type="button" className={FLOW_UI_COMPACT_ACTION_CLASS} onClick={() => applySplit(item)}>
+                          나누어 적용
+                        </button>
+                        <button type="button" className={FLOW_UI_COMPACT_ACTION_CLASS} onClick={() => setSplitItemId('')}>
+                          취소
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </li>
           ))}
         </ol>
@@ -1634,6 +1788,7 @@ function DraftItemAcceptanceList({
           할 일로 나눌 문장을 한 줄씩 적어주세요.
         </p>
       )}
+      {reviewFeedback ? <p role="status" className="text-[11px] font-semibold text-[#3654FF]">{reviewFeedback}</p> : null}
     </div>
   );
 }

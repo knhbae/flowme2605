@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-04",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "2329f344c2b2dd3125d13144cd36979499fe09fd",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser"
+  ],
+  "scenario": {
+    "route": "/flows -> /my",
+    "input": "8월 제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인",
+    "viewports": [
+      "390x844",
+      "1024x768"
+    ]
+  },
+  "markers": {
+    "deterministicMemoSegmentationConnected": true,
+    "memoRepresentativeActionCandidateCount": 5,
+    "memoTopicDuplicatedAsActionCount": 0,
+    "memoObjectListFalseSplitCount": 0,
+    "memoGenericFillerCount": 0,
+    "memoSourceFragmentIdStable": true,
+    "memoSuggestionIdStable": true,
+    "memoSourceToItemOneToManyPreserved": true,
+    "memoSourceGroupVisibleCount": 1,
+    "memoSourceTextRepeatedPerItemCount": 0,
+    "memoReviewSplitSupported": true,
+    "memoReviewMergeSupported": true,
+    "memoReviewExcludeSupported": true,
+    "memoReviewReorderSupported": true,
+    "memoReviewKeyboardReorderSupported": true,
+    "memoReviewCandidateCountBeforeSave": 5,
+    "memoReviewAcceptedCountBeforeSave": 4,
+    "memoSavedItemCount": 4,
+    "memoReceiptItemCount": 4,
+    "memoReloadedItemCount": 4,
+    "memoListExportItemCount": 4,
+    "memoCountMismatchCount": 0,
+    "memoDuplicateSuggestionIdCount": 0,
+    "memoDuplicateSavedItemIdCount": 0,
+    "memoSourceFragmentMappingMissingCount": 0,
+    "memoExportOrderPreserved": true,
+    "memoInternalTermHitCount": 0,
+    "memoHorizontalOverflowCount": 0,
+    "memoConsolePageErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/01-memo-five-actions-review-mobile.png",
+    "screenshots/02-memo-source-result-review-wide.png",
+    "screenshots/03-memo-saved-export-mobile.png"
+  ]
+}
+

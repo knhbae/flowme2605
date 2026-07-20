@@ -34,7 +34,8 @@
 - [x] P26-03 series/occurrence projection
 - [x] P26-03 completion/reopen/skip/hold
 - [x] P26-03 public/My Flow UID·RRULE parity and series-definition tray exclusion
-- [ ] P26-04 memo segmentation and empty guard
+- [x] P26-04 deterministic memo segmentation and empty guard
+- [x] P26-04 source-fragment mapping, pre-save split/merge/exclude/reorder, save/reload/export count parity
 - [ ] P26-05 projection identity harness
 
 ## P26-06~07 Discovery And Save
