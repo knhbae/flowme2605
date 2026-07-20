@@ -80,13 +80,13 @@
 
 ## P26-19~20 Closeout
 
-- [ ] six-shape journey harness
+- [x] six-shape journey harness
 - [ ] full unit test
 - [ ] docs check
 - [ ] production build
 - [ ] targeted and full E2E
 - [ ] security audit
-- [ ] mobile/wide screenshots
+- [x] mobile/wide screenshots
 - [ ] final review package
 - [ ] commit/push/PR/merge
 - [ ] Vercel production deploy and smoke

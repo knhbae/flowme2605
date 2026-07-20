@@ -1,0 +1,49 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FlowMe//Scoped Flow Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:vehicle-inspection-prep::flow-vehicle-inspection-prep-item-0@flowme.loc
+ al
+DTSTAMP:20260720T010006Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:자동차검사 기간과 예약 가능일 확인하기
+DESCRIPTION:자동차검사 기간과 예약 가능일 확인하기\nFlow:
+  자동차검사 준비\n구간: 검사 기간 확인\n일정: 2026-07-29\
+ n\n완료 기준: 차량별 검사 가능 기간과 예약 후보일을
+  기록했다.\n\n원문: TS한국교통안전공단 정기검사 대상·
+ 기준·유효기간 안내 https://main.kotsa.or.kr/portal/contents.do?me
+ nuCode=01010200\n
+URL:https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200
+END:VEVENT
+BEGIN:VEVENT
+UID:vehicle-inspection-prep::flow-vehicle-inspection-prep-item-1@flowme.loc
+ al
+DTSTAMP:20260720T010006Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:차량번호와 예약 정보 확인하기
+DESCRIPTION:차량번호와 예약 정보 확인하기\nFlow: 자동차검
+ 사 준비\n구간: 검사 기간 확인\n일정: 2026-07-29\n\n완료 기
+ 준: 차량번호와 검사소\, 예약 시각을 바로 열 수 있게
+  저장했다.\n\n원문: TS한국교통안전공단 정기검사 대상·
+ 기준·유효기간 안내 https://main.kotsa.or.kr/portal/contents.do?me
+ nuCode=01010200\n
+URL:https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200
+END:VEVENT
+BEGIN:VEVENT
+UID:vehicle-inspection-prep::flow-vehicle-inspection-prep-item-2@flowme.loc
+ al
+DTSTAMP:20260720T010006Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:가까운 검사소와 수수료 확인하기
+DESCRIPTION:가까운 검사소와 수수료 확인하기\nFlow: 자동차
+ 검사 준비\n구간: 검사 기간 확인\n일정: 2026-07-29\n\n원문:
+  TS한국교통안전공단 정기검사 대상·기준·유효기간 안
+ 내 https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200\n
+URL:https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200
+END:VEVENT
+END:VCALENDAR

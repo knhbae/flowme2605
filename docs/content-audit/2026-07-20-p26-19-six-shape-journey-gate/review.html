@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P26-19 Six Shape Journey Gate</title>
+  <style>
+    :root { color-scheme: light; --ink:#171713; --muted:#66645d; --line:#dddcd4; --paper:#f7f7f3; --blue:#2458e6; --green:#0f7658; --amber:#9a5b00; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.55 Arial, sans-serif; letter-spacing:0; }
+    header, main { width:min(1180px, calc(100% - 32px)); margin:auto; }
+    header { padding:48px 0 28px; border-bottom:1px solid var(--line); }
+    h1 { margin:0; font-size:clamp(30px, 5vw, 54px); line-height:1.05; }
+    h2 { margin:0 0 14px; font-size:24px; }
+    h3 { margin:0; font-size:18px; }
+    p { margin:8px 0 0; }
+    .eyebrow { color:var(--blue); font-weight:700; }
+    .lede { max-width:760px; color:var(--muted); font-size:17px; }
+    .stats { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:1px; margin-top:28px; background:var(--line); border:1px solid var(--line); }
+    .stat { background:white; padding:16px; }
+    .stat strong { display:block; font-size:24px; }
+    main { padding:32px 0 64px; }
+    section { margin-top:34px; }
+    .journeys { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    article { border:1px solid var(--line); background:white; border-radius:8px; overflow:hidden; }
+    article .copy { padding:18px; }
+    .tag { display:inline-block; color:var(--green); background:#ebf7f2; padding:3px 7px; border-radius:4px; font-size:12px; font-weight:700; }
+    figure { margin:0; background:#ecece7; border-top:1px solid var(--line); }
+    img { display:block; width:100%; max-height:620px; object-fit:contain; object-position:top; }
+    .findings { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .finding { padding:18px; border-left:4px solid var(--amber); background:white; }
+    .evidence { padding:18px; background:#111; color:#f7f7f3; overflow:auto; }
+    code { font-family:Consolas, monospace; }
+    @media (max-width:760px) { .stats { grid-template-columns:repeat(2,1fr); } .journeys,.findings { grid-template-columns:1fr; } header,main { width:min(100% - 24px,1180px); } }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">P26-19 · current browser internal gate</p>
+    <h1>여섯 Flow 형태가 한 실행 계약으로 이어지는가</h1>
+    <p class="lede">발견과 저장 이후 전체 Flow 확인, 조정, 일정 배치, 완료 취소, export를 390px과 1024px에서 다시 연결했다. 자동화 결과이며 실제 사용자 관찰은 0건이다.</p>
+    <div class="stats">
+      <div class="stat"><span>형태</span><strong>6</strong></div>
+      <div class="stat"><span>대표 테스트</span><strong>7/7</strong></div>
+      <div class="stat"><span>P24 회귀</span><strong>15/15</strong></div>
+      <div class="stat"><span>스크린샷</span><strong>34</strong></div>
+      <div class="stat"><span>사용자 관찰</span><strong>0</strong></div>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>현재 여정</h2>
+      <div class="journeys">
+        <article><div class="copy"><span class="tag">SUPPORTED</span><h3>기준일 역산형</h3><p>저장 receipt에서 5개 전체 Flow를 확인하고 완료·다시 열기까지 유지한다.</p></div><figure><img src="screenshots/01-anchor-inverse-timeline/01-post-save-whole-flow-mobile.png" alt="이사 Flow 저장 결과 모바일"></figure></article>
+        <article><div class="copy"><span class="tag">SUPPORTED</span><h3>날짜 없는 체크형</h3><p>날짜 없이 저장하고 Calendar tray에서 1개 또는 여러 항목을 배치·되돌린다.</p></div><figure><img src="screenshots/02-undated-checklist/06-undated-inbox-wide.png" alt="날짜 없는 할 일 Calendar wide"></figure></article>
+        <article><div class="copy"><span class="tag">SUPPORTED</span><h3>반복 루틴형</h3><p>series는 설정, occurrence는 실행으로 분리하고 완료·다시 열기와 RRULE을 맞춘다.</p></div><figure><img src="screenshots/03-recurring-routine/02-washer-monthly-agenda-mobile.png" alt="세탁조 반복 회차 모바일"></figure></article>
+        <article><div class="copy"><span class="tag">SUPPORTED</span><h3>순서·날짜 혼합형</h3><p>구성 편집에서 선택, 순서, 날짜 이동, export, 제거·복구 범위를 명확히 둔다.</p></div><figure><img src="screenshots/04-mixed-sequence-date/01-batch-selection-wide.png" alt="여행 준비 구조 편집 wide"></figure></article>
+        <article><div class="copy"><span class="tag">SUPPORTED</span><h3>기록·메모형</h3><p>원문 한 덩어리에서 5개 행동을 검토하고 4개 선택 결과를 그대로 저장·export한다.</p></div><figure><img src="screenshots/05-record-memo/01-memo-five-actions-review-mobile.png" alt="메모 분할 검토 모바일"></figure></article>
+        <article><div class="copy"><span class="tag">SUPPORTED</span><h3>개인 초안형</h3><p>반복 회차의 완료, 재개, 건너뜀, 보류, 복귀와 stable UID를 유지한다.</p></div><figure><img src="screenshots/06-personal-draft/occurrence-03-personal-draft-occurrence-calendar-wide.png" alt="개인 반복 초안 Calendar wide"></figure></article>
+      </div>
+    </section>
+    <section>
+      <h2>디자인 판단</h2>
+      <div class="findings">
+        <div class="finding"><h3>Keep</h3><p>저장 직후 전체 Flow, compact execution row, source fragment와 실행 항목 분리, destination별 export receipt.</p></div>
+        <div class="finding"><h3>Medium</h3><p>모바일 batch control 밀도, wide undated tray 제목 생략, 긴 Calendar composition, recurring detail action 밀도.</p></div>
+      </div>
+    </section>
+    <section>
+      <h2>Evidence 경계</h2>
+      <div class="evidence"><code>current_command + current_browser + current_screenshot + heuristic<br>observed_user_session_count = 0<br>production_verified = false<br>next = P26-20 release gate</code></div>
+    </section>
+  </main>
+</body>
+</html>
