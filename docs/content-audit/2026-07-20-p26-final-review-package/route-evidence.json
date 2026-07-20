@@ -1,0 +1,75 @@
+{
+  "packageId": "2026-07-20-p26-final-review-package",
+  "status": "release_candidate_external_gates_pending",
+  "baselineCommit": "f9ca294732c22f330859766159809e227e2c6555",
+  "evidenceKinds": [
+    "current_command",
+    "current_browser",
+    "current_screenshot",
+    "heuristic",
+    "prior_design_artifact",
+    "owner_direction"
+  ],
+  "markers": {
+    "p26DecisionAndImplementationSliceCount": 20,
+    "p26ClosedBeforeReleaseSliceCount": 20,
+    "p26FinalReleaseGateComplete": false,
+    "automatedBlockingCount": 0,
+    "automatedHighCount": 0,
+    "heuristicMediumCount": 4,
+    "observedUserSessionCount": 0,
+    "observedUserValidationClaimed": false,
+    "representativeJourneyShapeCount": 6,
+    "representativeCurrentBrowserPassCount": 7,
+    "representativeCurrentBrowserFailureCount": 0,
+    "migratedP24RegressionPassCount": 15,
+    "finalPretestPassCount": 13,
+    "finalUnitPassCount": 564,
+    "finalUnitFailureCount": 0,
+    "docsRequiredFileCount": 14,
+    "docsLocalLinkCount": 2711,
+    "buildStaticPageCount": 18,
+    "buildFailedPageCount": 0,
+    "fullE2eInventoryCount": 327,
+    "fullE2eInitialShardPassCount": 326,
+    "fullE2eInitialShardFailureCount": 1,
+    "fullE2eFinalIsolatedPassCount": 1,
+    "fullE2eUniqueScenarioCoveredCount": 327,
+    "fullE2eUniqueScenarioUncoveredCount": 0,
+    "securityCriticalCount": 0,
+    "securityHighCount": 0,
+    "securityModerateCount": 2,
+    "p26ReleaseCandidateAppRuntimeChangeCount": 0,
+    "p26ReleaseCandidateTestFileChangeCount": 3,
+    "p26MergedToMain": false,
+    "p26ProductionDeploymentReady": false,
+    "p26ProductionSmokePass": false
+  },
+  "finalVerification": {
+    "unit": "pass_564_of_564",
+    "docsCheck": "pass_14_required_files_2711_links",
+    "productionBuild": "pass_18_of_18_pages",
+    "fullE2e": "pass_exact_accounting_326_of_327_then_only_failure_1_of_1_after_test_only_migration",
+    "securityAudit": "pass_high_critical_zero_moderate_two_disclosed",
+    "diffCheck": "pass_with_line_ending_warnings_only"
+  },
+  "priorDesignArtifact": {
+    "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-19-flow-content-usage-preview-ko.html",
+    "evidenceKind": "prior_design_artifact",
+    "treatedAsCurrentImplementation": false,
+    "patternsRetainedForComparison": [
+      "minimal input near artifact preview",
+      "compact source rail",
+      "concise execution rows",
+      "destination preview"
+    ]
+  },
+  "production": {
+    "canonicalUrl": "https://flowme2605.vercel.app",
+    "releaseCommit": null,
+    "mergeCommit": null,
+    "deploymentUrl": null,
+    "anonymousAccessVerified": false,
+    "smokeResultPath": null
+  }
+}

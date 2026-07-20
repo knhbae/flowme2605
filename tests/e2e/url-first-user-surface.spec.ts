@@ -1110,14 +1110,12 @@ test('personal draft structural Calendar and ICS projections share effective ite
   let userCalendarRow = selectedDay.locator(
     `[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${scheduledUserId}"]`,
   );
-  const complete = userCalendarRow.getByRole('checkbox', {
-    name: '교통편 앱 오프라인 저장 완료 체크',
-  });
+  const complete = userCalendarRow.getByTestId('my-flow-task-complete-control');
+  await expect(complete).toHaveAttribute('aria-label', /교통편 앱 오프라인 저장.*완료 체크$/);
   await complete.check();
   await expect(userCalendarRow).toBeVisible();
-  const reopen = userCalendarRow.getByRole('checkbox', {
-    name: '교통편 앱 오프라인 저장 다시 열기',
-  });
+  const reopen = userCalendarRow.getByTestId('my-flow-task-complete-control');
+  await expect(reopen).toHaveAttribute('aria-label', /교통편 앱 오프라인 저장.*다시 열기$/);
   await reopen.uncheck();
   await expect(userCalendarRow).toBeVisible();
 
@@ -2254,9 +2252,9 @@ test('personal draft recurrence rules persist without changing item date or time
     '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
   );
   const wideOrderItem = wideDraftFlow
-    .getByTestId('personal-draft-order-item-wide')
+    .getByTestId('my-flow-execution-row-shell')
     .filter({ hasText: '보험 서류 다시 확인하기' });
-  await wideOrderItem.getByTestId('personal-draft-order-item-open-wide').click();
+  await wideOrderItem.getByRole('button', { name: /열기/ }).click();
   const wideDetail = wideDraftFlow
     .getByTestId('my-flow-workspace-detail-pane')
     .getByTestId('my-flow-item-detail');

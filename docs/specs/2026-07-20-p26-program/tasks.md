@@ -81,13 +81,13 @@
 ## P26-19~20 Closeout
 
 - [x] six-shape journey harness
-- [ ] full unit test
-- [ ] docs check
-- [ ] production build
-- [ ] targeted and full E2E
-- [ ] security audit
+- [x] full unit test
+- [x] docs check
+- [x] production build
+- [x] targeted and full E2E inventory through exact shard accounting
+- [x] security audit
 - [x] mobile/wide screenshots
-- [ ] final review package
+- [x] final review package
 - [ ] commit/push/PR/merge
 - [ ] Vercel production deploy and smoke
-- [ ] Claude/Codex review prompt
+- [x] Claude/Codex review prompt

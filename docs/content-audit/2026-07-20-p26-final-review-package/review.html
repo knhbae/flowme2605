@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P26 Final Review</title>
+  <style>
+    :root { color-scheme: light; --ink:#1b2430; --muted:#5b6675; --line:#d8dee7; --paper:#ffffff; --soft:#f4f6f8; --teal:#087a70; --amber:#9a5b00; --red:#b42318; --blue:#2457a6; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif; color:var(--ink); background:var(--paper); letter-spacing:0; }
+    header { padding:32px max(24px, calc((100vw - 1120px)/2)); border-bottom:1px solid var(--line); background:var(--soft); }
+    h1 { margin:0 0 10px; font-size:clamp(28px, 4vw, 44px); line-height:1.15; }
+    h2 { margin:0 0 16px; font-size:24px; }
+    h3 { margin:0 0 8px; font-size:17px; }
+    p { margin:0 0 12px; line-height:1.65; }
+    main { max-width:1120px; margin:0 auto; }
+    section { padding:32px 24px; border-bottom:1px solid var(--line); }
+    .eyebrow { color:var(--teal); font-weight:800; font-size:13px; text-transform:uppercase; }
+    .lede { max-width:780px; color:var(--muted); font-size:17px; }
+    .status { display:inline-flex; align-items:center; min-height:32px; padding:5px 10px; margin-top:8px; border:1px solid #d59c46; background:#fff7e8; color:#6e4200; border-radius:6px; font-weight:750; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--line); }
+    .metric { padding:18px; border-right:1px solid var(--line); }
+    .metric:last-child { border-right:0; }
+    .metric strong { display:block; font-size:24px; color:var(--teal); }
+    .metric span { color:var(--muted); font-size:13px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { padding:12px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:var(--soft); }
+    .journeys { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .journey { border-top:4px solid var(--teal); padding:16px 0 0; }
+    .journey img { width:100%; aspect-ratio:16/10; object-fit:cover; object-position:top; border:1px solid var(--line); background:var(--soft); }
+    .journey p { color:var(--muted); font-size:14px; }
+    .findings { display:grid; grid-template-columns:1fr 1fr; gap:18px 28px; }
+    .finding { border-left:3px solid var(--amber); padding-left:14px; }
+    .boundary { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    ul { margin:8px 0 0; padding-left:20px; line-height:1.7; }
+    a { color:var(--blue); }
+    code { background:var(--soft); padding:2px 5px; border-radius:4px; }
+    footer { max-width:1120px; margin:0 auto; padding:24px; color:var(--muted); font-size:13px; }
+    @media (max-width:760px) { .metrics, .journeys, .findings, .boundary { grid-template-columns:1fr; } .metric { border-right:0; border-bottom:1px solid var(--line); } .metric:last-child { border-bottom:0; } section { padding:26px 18px; } header { padding:26px 18px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">P26 final review</div>
+    <h1>FlowMe 실행 공간 구조 교정 마감</h1>
+    <p class="lede">한 개의 Flow를 발견하고, 전체를 확인하고, 내 상황에 맞게 조정하고, 실행·일정·완료·내보내기·재사용까지 이어지는 계약을 현재 source와 browser evidence로 다시 묶었다.</p>
+    <div class="status">Release candidate · external gates pending</div>
+  </header>
+  <main>
+    <section>
+      <h2>현재 판정</h2>
+      <div class="metrics">
+        <div class="metric"><strong>0</strong><span>automated Blocking / High</span></div>
+        <div class="metric"><strong>327</strong><span>unique E2E scenarios covered</span></div>
+        <div class="metric"><strong>564</strong><span>unit tests passed</span></div>
+        <div class="metric"><strong>0</strong><span>observed-user sessions</span></div>
+      </div>
+      <p style="margin-top:16px">내부 correctness와 integration gate는 통과했다. PR·merge·canonical production deploy·smoke가 완료되기 전까지 P26을 released로 부르지 않는다.</p>
+    </section>
+    <section>
+      <h2>사용자 여정 6종</h2>
+      <div class="journeys">
+        <article class="journey"><img src="../2026-07-20-p26-19-six-shape-journey-gate/screenshots/01-anchor-inverse-timeline/01-post-save-whole-flow-mobile.png" alt="이사 Flow 저장 후 전체 Flow 모바일 화면"><h3>기준일 역산</h3><p>저장 receipt, 전체 Flow, 완료와 다시 열기, 기준일 재사용.</p></article>
+        <article class="journey"><img src="../2026-07-20-p26-19-six-shape-journey-gate/screenshots/02-undated-checklist/04-three-items-scheduled-mobile.png" alt="날짜 없는 항목 세 개를 Calendar에 배치한 화면"><h3>날짜 없는 체크</h3><p>My Flow 실행, Calendar 선택 배치, 날짜 제거와 undo, ICS.</p></article>
+        <article class="journey"><img src="../2026-07-20-p26-19-six-shape-journey-gate/screenshots/03-recurring-routine/02-washer-monthly-agenda-mobile.png" alt="월간 반복 루틴의 Calendar 회차 화면"><h3>반복 루틴</h3><p>series와 occurrence 분리, 한 회차 완료·재개, RRULE과 UID.</p></article>
+        <article class="journey"><img src="../2026-07-20-p26-19-six-shape-journey-gate/screenshots/04-mixed-sequence-date/00-batch-date-preview-mobile.png" alt="선택 항목 날짜 이동 preview 화면"><h3>순서·날짜 혼합</h3><p>구조 편집, 선택 범위, 원자적 날짜 이동과 영향 preview.</p></article>
+        <article class="journey"><img src="../2026-07-20-p26-19-six-shape-journey-gate/screenshots/05-record-memo/01-memo-five-actions-review-mobile.png" alt="메모를 다섯 실행 항목으로 나눈 review 화면"><h3>기록·메모</h3><p>원문 fragment, split·merge·exclude·reorder, 저장·export 수 일치.</p></article>
+        <article class="journey"><img src="../2026-07-20-p26-19-six-shape-journey-gate/screenshots/06-personal-draft/occurrence-02-personal-draft-occurrence-reopened-mobile.png" alt="개인 초안 반복 회차를 다시 연 화면"><h3>개인 초안</h3><p>URL miss, 개인 구조·일정·반복, 회차별 상태와 stable identity.</p></article>
+      </div>
+    </section>
+    <section>
+      <h2>계약 결과</h2>
+      <table>
+        <thead><tr><th>영역</th><th>정본 계약</th><th>판정</th></tr></thead>
+        <tbody>
+          <tr><td>Discovery</td><td>한 Flow 카드, 검증된 source, 대표 항목, 필요한 입력, 결과</td><td>Keep</td></tr>
+          <tr><td>Save</td><td>전체 artifact preview 뒤 그대로 시작 또는 조정</td><td>Keep</td></tr>
+          <tr><td>My Flow</td><td>지금 / Flow 목록 / 완료와 adaptive whole-Flow reading</td><td>Keep</td></tr>
+          <tr><td>Calendar</td><td>날짜 배치, Flow scope, 날짜 없는 inbox, occurrence 실행</td><td>Keep</td></tr>
+          <tr><td>Export</td><td>scope → format → actual result receipt</td><td>Keep</td></tr>
+          <tr><td>Ownership</td><td>source / personal / run / occurrence / event / export identity 분리</td><td>Keep</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>남은 Medium 가설</h2>
+      <div class="findings">
+        <article class="finding"><h3>모바일 batch editor</h3><p>선택·이동·날짜·삭제가 한 모드에 밀집한다. 행동 수는 유지하되 단계와 workbar를 비교해야 한다.</p></article>
+        <article class="finding"><h3>wide 날짜 없는 rail</h3><p>긴 제목이 좁은 열에서 생략된다. 선택 식별을 detail 또는 tooltip으로 보완할지 비교가 필요하다.</p></article>
+        <article class="finding"><h3>모바일 Calendar composition</h3><p>tray와 month grid가 한 페이지를 길게 만든다. 역할을 숨기지 않고 압축하는 대안이 필요하다.</p></article>
+        <article class="finding"><h3>반복 회차 detail</h3><p>상태·메모·내보내기가 모두 도달 가능하지만 위계가 조밀하다. 현재 회차 행동을 먼저 읽히게 할 수 있다.</p></article>
+      </div>
+    </section>
+    <section>
+      <h2>참고안 경계</h2>
+      <div class="boundary">
+        <div><h3>차용할 패턴</h3><ul><li>최소 입력과 결과 preview의 근접성</li><li>compact source rail</li><li>간결한 실행 row</li><li>destination별 결과 preview</li></ul></div>
+        <div><h3>차용하지 않을 주장</h3><ul><li>참고 HTML을 current implementation으로 취급</li><li>정적 화면을 실행 가능성 증거로 사용</li><li>긴 설명으로 IA 문제를 덮기</li><li>자동 simulation을 user validation으로 표현</li></ul></div>
+      </div>
+    </section>
+    <section>
+      <h2>검증과 외부 경계</h2>
+      <p><code>unit 564/564</code> · <code>build 18/18</code> · <code>E2E 327 unique</code> · <code>security high/critical 0</code></p>
+      <p>아직 남은 외부 경계: commit/push, PR/merge, Vercel production READY, anonymous access, mobile/wide production smoke. 완료 뒤 이 보드와 <a href="./route-evidence.json">route evidence</a>를 최종 상태로 갱신한다.</p>
+    </section>
+  </main>
+  <footer>Evidence kinds: current_command, current_browser, current_screenshot, heuristic, prior_design_artifact. Observed users: 0.</footer>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{
+  "packageId": "2026-07-20-p26-final-review-package",
+  "decisionStatus": "accepted_internal_release_candidate",
+  "observedUserSessionCount": 0,
+  "decisions": [
+    {
+      "area": "product object",
+      "decision": "Use one user-facing Flow object across discovery, save, execution and export.",
+      "status": "keep"
+    },
+    {
+      "area": "discovery",
+      "decision": "Lead with title, verified source, representative items, required input and result; do not invent popularity proof.",
+      "status": "keep"
+    },
+    {
+      "area": "save-before",
+      "decision": "Show the complete artifact before one start-or-adjust decision.",
+      "status": "keep"
+    },
+    {
+      "area": "post-save",
+      "decision": "Confirm the save with truthful counts and expose the complete effective Flow in the same decision frame.",
+      "status": "keep"
+    },
+    {
+      "area": "My Flow",
+      "decision": "Separate cross-Flow now work, saved Flow inventory and completed history while preserving whole-Flow reading.",
+      "status": "keep"
+    },
+    {
+      "area": "editing",
+      "decision": "Keep quick value edits, advanced schedule edits, structural changes and batch movement as distinct modes.",
+      "status": "keep_with_medium_density_follow_up"
+    },
+    {
+      "area": "Calendar",
+      "decision": "Use Calendar for dated placement, explicit Flow scope and an on-demand undated inbox; preserve one occurrence per executable control.",
+      "status": "keep_with_medium_composition_follow_up"
+    },
+    {
+      "area": "export",
+      "decision": "Expose scope and predicted count before format, then report the actual generated result.",
+      "status": "keep"
+    },
+    {
+      "area": "identity and ownership",
+      "decision": "Preserve source, personal overlay, run, occurrence, Calendar event and export identities as separate owners.",
+      "status": "keep"
+    },
+    {
+      "area": "prior design reference",
+      "decision": "Use the local content-usage preview only for minimal-input, source-rail, compact-row and destination-preview comparison.",
+      "status": "reference_not_runtime_truth"
+    },
+    {
+      "area": "human validation",
+      "decision": "Do not recruit or claim observed-user validation from automated simulation; observed session count remains zero.",
+      "status": "defer_until_owner_reopens"
+    }
+  ]
+}
+

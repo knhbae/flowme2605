@@ -38,7 +38,10 @@ test('example date stays preview-only and saves an undated public Flow on mobile
 
   const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-  await expect(exportEntry.getByRole('button', { name: /캘린더 파일 받기/ })).toHaveCount(0);
+  const calendarOption = exportEntry.getByRole('button', { name: /캘린더 파일 받기/ });
+  await expect(calendarOption).toBeDisabled();
+  await expect(calendarOption).toHaveAttribute('data-export-count', '0');
+  await expect(calendarOption).toHaveAttribute('data-export-state', 'disabled');
 
   const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
   await expect(mobileSave.getByRole('button', { name: '날짜 없이 시작' })).toBeVisible();
