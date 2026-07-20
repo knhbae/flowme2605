@@ -4,13 +4,33 @@
 :root {
   --flowme-bg: #fafaf8;
   --flowme-surface: #ffffff;
+  --flowme-surface-subtle: #fafaf8;
+  --flowme-surface-selected: #f5f7ff;
   --flowme-text: #1b1a17;
+  --flowme-text-secondary: #5c5952;
+  --flowme-text-tertiary: #8a857b;
   --flowme-muted: #6e6b64;
   --flowme-border: #e7e4dd;
+  --flowme-border-strong: #d8d5cd;
   --flowme-soft: #f3f1ec;
   --flowme-action: #3654ff;
   --flowme-action-hover: #2945e8;
+  --flowme-action-strong: #242d68;
+  --flowme-action-soft: #eef1ff;
+  --flowme-focus: rgba(54, 84, 255, 0.24);
   --flowme-trust: #1f8a5b;
+  --flowme-positive: #1f8a5b;
+  --flowme-positive-strong: #175c40;
+  --flowme-positive-soft: #eff8f3;
+  --flowme-warning: #a16207;
+  --flowme-warning-strong: #713f12;
+  --flowme-warning-soft: #fff7e8;
+  --flowme-danger: #dc2626;
+  --flowme-danger-strong: #991b1b;
+  --flowme-danger-soft: #fff1f2;
+  --flowme-danger-border: #fecdd3;
+  --flowme-danger-focus: rgba(220, 38, 38, 0.2);
+  --flowme-disabled: #d8d5cd;
   --flowme-mobile-tab-clearance: calc(6.5rem + env(safe-area-inset-bottom));
   --flowme-mobile-save-clearance: calc(8.5rem + env(safe-area-inset-bottom));
   --flowme-mobile-map-save-clearance: calc(9.25rem + env(safe-area-inset-bottom));
@@ -20,6 +40,7 @@
 body {
   background: var(--flowme-bg);
   color: var(--flowme-text);
+  letter-spacing: 0;
 }
 
 @media (max-width: 767px) {
@@ -46,164 +67,6 @@ body {
   .flowme-mobile-export-clearance {
     padding-bottom: 2.5rem;
   }
-}
-
-/* ==========================================
-   ✨ FLOW Premium Dark & Glassmorphism Theme
-   ========================================== */
-.premium-dark {
-  background-color: #030712 !important; /* slate-950 */
-  color: #f9fafb !important; /* slate-50 */
-}
-
-/* Glassmorphism for main content cards */
-.premium-dark .rounded-lg.border.bg-white,
-.premium-dark .rounded-md.border.bg-white {
-  background-color: rgba(15, 23, 42, 0.75) !important; /* slate-900 with transparency */
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border-color: rgba(99, 102, 241, 0.25) !important; /* indigo border glow */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-  color: #f9fafb !important;
-}
-
-/* Nested cards / grey container boxes */
-.premium-dark .rounded-lg.border.bg-slate-50,
-.premium-dark .rounded-md.border.bg-slate-50 {
-  background-color: rgba(30, 41, 59, 0.45) !important; /* slate-800 with transparency */
-  backdrop-filter: blur(12px) !important;
-  border-color: rgba(99, 102, 241, 0.15) !important;
-  color: #f3f4f6 !important;
-}
-
-.premium-dark .bg-slate-50\/60 {
-  background-color: rgba(30, 41, 59, 0.3) !important;
-}
-
-/* Text color overrides */
-.premium-dark .text-slate-950,
-.premium-dark .text-gray-950,
-.premium-dark .text-slate-900,
-.premium-dark .text-gray-900 {
-  color: #ffffff !important;
-}
-
-.premium-dark .text-slate-600,
-.premium-dark .text-gray-600,
-.premium-dark .text-slate-500,
-.premium-dark .text-gray-500 {
-  color: #94a3b8 !important; /* slate-400 */
-}
-
-.premium-dark .text-slate-700,
-.premium-dark .text-gray-700 {
-  color: #cbd5e1 !important; /* slate-300 */
-}
-
-.premium-dark .border-slate-200,
-.premium-dark .border-gray-200,
-.premium-dark .border-gray-100 {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-/* Primary color & Action button upgrades (Neon Indigo / Violet gradient) */
-.premium-dark .text-blue-700,
-.premium-dark .text-blue-800 {
-  color: #818cf8 !important; /* indigo-400 */
-}
-
-.premium-dark .bg-blue-700,
-.premium-dark .hover\:bg-blue-800:hover {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
-  color: #ffffff !important;
-  border: 0 !important;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5) !important;
-  transition: all 0.3s ease !important;
-}
-
-.premium-dark .bg-blue-50 {
-  background-color: rgba(99, 102, 241, 0.15) !important;
-  color: #c7d2fe !important;
-  border-color: rgba(99, 102, 241, 0.3) !important;
-}
-
-.premium-dark .border-blue-100 {
-  border-color: rgba(99, 102, 241, 0.2) !important;
-}
-
-/* Emerald/Green alerts/badges (Source Verified) */
-.premium-dark .bg-emerald-50 {
-  background-color: rgba(16, 185, 129, 0.15) !important;
-  color: #a7f3d0 !important;
-  border-color: rgba(16, 185, 129, 0.3) !important;
-}
-
-.premium-dark .text-emerald-700,
-.premium-dark .text-emerald-800 {
-  color: #34d399 !important;
-}
-
-.premium-dark .border-emerald-200 {
-  border-color: rgba(16, 185, 129, 0.3) !important;
-}
-
-/* Amber/Orange caution cards */
-.premium-dark .bg-amber-50 {
-  background-color: rgba(245, 158, 11, 0.15) !important;
-  color: #fde68a !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
-}
-
-.premium-dark .text-amber-800,
-.premium-dark .text-amber-950,
-.premium-dark .text-amber-900 {
-  color: #fbbf24 !important;
-}
-
-.premium-dark .border-amber-200 {
-  border-color: rgba(245, 158, 11, 0.3) !important;
-}
-
-/* Inputs, dropdowns, and text fields inside dark cards */
-.premium-dark input,
-.premium-dark select,
-.premium-dark textarea {
-  background-color: #1e293b !important; /* slate-800 */
-  border-color: #334155 !important; /* slate-700 */
-  color: #ffffff !important;
-}
-
-.premium-dark input::placeholder,
-.premium-dark textarea::placeholder {
-  color: #64748b !important; /* slate-500 */
-}
-
-.premium-dark input:focus,
-.premium-dark select:focus,
-.premium-dark textarea:focus {
-  border-color: #818cf8 !important;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.3) !important;
-}
-
-/* Checkboxes and other small details */
-.premium-dark input[type="checkbox"] {
-  accent-color: #6366f1 !important;
-}
-
-.premium-dark .line-through {
-  color: #64748b !important; /* slate-500 for checked items */
-}
-
-.premium-dark details {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  background-color: rgba(30, 41, 59, 0.3) !important;
-}
-
-/* Mini Calendar Date cells */
-.premium-dark .bg-white.text-blue-700 {
-  background-color: rgba(99, 102, 241, 0.2) !important;
-  color: #a5b4fc !important;
 }
 
 /* My Flow calendar density */

@@ -1,6 +1,7 @@
 'use client';
 
 import type { FlowExportResultReceipt } from '@/lib/flow/export-scope';
+import { FlowReceipt } from './FlowExecutionPrimitives';
 
 const scopeLabels = {
   flow: 'Flow 전체',
@@ -19,7 +20,7 @@ export function FlowExportReceipt({ receipt }: { receipt: FlowExportResultReceip
   const successful = receipt.status === 'success';
 
   return (
-    <div
+    <FlowReceipt
       data-testid="flow-export-result-receipt"
       data-export-scope={receipt.scope}
       data-export-destination={receipt.destination}
@@ -27,17 +28,15 @@ export function FlowExportReceipt({ receipt }: { receipt: FlowExportResultReceip
       data-export-omitted-count={receipt.omittedCount}
       role="status"
       aria-live="polite"
-      className={`mt-3 border-l-2 px-3 py-2 ${
-        successful
-          ? 'border-[#1F8A5B] bg-[#EFF8F3] text-[#175C40]'
-          : 'border-rose-500 bg-rose-50 text-rose-800'
-      }`}
+      compact
+      tone={successful ? 'success' : 'error'}
+      label={`${scopeLabels[receipt.scope]} · ${destinationLabels[receipt.destination]}`}
+      title={receipt.message}
+      className="mt-3"
     >
-      <p className="text-sm font-semibold">{receipt.message}</p>
-      <p className="mt-1 text-xs font-medium">
-        {scopeLabels[receipt.scope]} · {destinationLabels[receipt.destination]}
-        {receipt.omittedCount > 0 ? ` · ${receipt.omittedCount}개 제외` : ''}
-      </p>
+      {receipt.omittedCount > 0 ? (
+        <p className="mt-1 text-xs font-medium">{receipt.omittedCount}개 제외</p>
+      ) : null}
       {!successful ? (
         <p className="mt-1 text-xs font-medium">잠시 후 다시 시도해 주세요.</p>
       ) : receipt.filename ? (
@@ -47,6 +46,6 @@ export function FlowExportReceipt({ receipt }: { receipt: FlowExportResultReceip
       ) : (
         <p className="mt-1 text-xs font-medium">클립보드에 담았습니다.</p>
       )}
-    </div>
+    </FlowReceipt>
   );
 }

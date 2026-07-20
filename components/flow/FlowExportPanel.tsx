@@ -11,6 +11,8 @@ import {
 } from '@/lib/flow/export-scope';
 import { FlowItemMultiSelect } from './FlowItemMultiSelect';
 import { FlowExportReceipt } from './FlowExportReceipt';
+import { FlowExportPlan, FlowPlanStep } from './FlowExecutionPrimitives';
+import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
 import {
   FLOW_UI_ICON_ACTION_CLASS,
   FLOW_UI_SECONDARY_ACTION_CLASS,
@@ -96,9 +98,9 @@ export function FlowExportPanel({
   }, [flowTitle, scope, selectedKeys.join('|')]);
 
   return (
-    <section
+    <FlowExportPlan
       data-testid={legacyPersonalDraft ? 'personal-draft-list-export' : 'my-flow-export-surface'}
-      className="mt-3 border-t border-slate-200 pt-3"
+      className="mt-3"
     >
       {showEntry ? (
         <button
@@ -109,7 +111,7 @@ export function FlowExportPanel({
           className={FLOW_UI_SECONDARY_ACTION_CLASS}
           onClick={() => onOpenChange(!open)}
         >
-          가져가기
+          {FLOW_EXECUTION_ACTIONS.exportFlow.label}
         </button>
       ) : null}
 
@@ -122,8 +124,8 @@ export function FlowExportPanel({
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-semibold text-[#8A857B]">가져가기</p>
-              <h4 className="text-base font-semibold text-[#1B1A17]">범위와 결과를 확인하세요</h4>
+              <p className="text-[11px] font-semibold text-[var(--flowme-text-tertiary)]">{FLOW_EXECUTION_ACTIONS.exportFlow.label}</p>
+              <h4 className="text-base font-semibold text-[var(--flowme-text)]">범위와 결과 확인</h4>
             </div>
             {showClose ? (
               <button
@@ -138,15 +140,15 @@ export function FlowExportPanel({
             ) : null}
           </div>
 
-          <p className="mt-3 text-xs font-semibold text-[#6E6B64]">1 · 범위</p>
+          <FlowPlanStep index={1} label="범위" />
           {fixedScope ? (
             <div
               data-testid="my-flow-export-scope-control"
-              className="mt-1 flex min-h-11 items-center justify-between border-y border-[#E7E4DD] py-2"
+              className="mt-1 flex min-h-11 items-center justify-between border-y border-[var(--flowme-border)] py-2"
               aria-label="가져갈 범위"
             >
-              <span className="text-sm font-semibold text-[#1B1A17]">Flow 전체</span>
-              <span className="text-xs font-semibold text-[#6E6B64]">{flowPlan.includedCount}개</span>
+              <span className="text-sm font-semibold text-[var(--flowme-text)]">Flow 전체</span>
+              <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{flowPlan.includedCount}개</span>
             </div>
           ) : (
             <div
@@ -202,18 +204,18 @@ export function FlowExportPanel({
             </div>
           ) : null}
 
-          <p className="mt-3 text-xs font-semibold text-[#6E6B64]">2 · 예상 결과</p>
-          <div className="mt-1 flex flex-wrap items-center justify-between gap-2 border-y border-[#E7E4DD] py-2">
-            <p data-testid="my-flow-export-scope-summary" className="text-sm font-semibold text-[#1B1A17]">
+          <FlowPlanStep index={2} label="예상 결과" />
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-2 border-y border-[var(--flowme-border)] py-2">
+            <p data-testid="my-flow-export-scope-summary" className="text-sm font-semibold text-[var(--flowme-text)]">
               {scopeLabel} · {plan.includedCount}개
             </p>
-            <p data-testid="my-flow-export-calendar-summary" className="text-xs font-semibold text-[#6E6B64]">
+            <p data-testid="my-flow-export-calendar-summary" className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
               {plan.metrics.recurringSeriesCount > 0
                 ? `반복 일정 ${plan.metrics.recurringSeriesCount}개 · 표시 회차 ${plan.metrics.visibleOccurrenceCount}개`
                 : `캘린더 ${plan.countByDestination.calendar}개`}
             </p>
           </div>
-          <div data-testid="my-flow-export-eligibility-summary" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-[#6E6B64]">
+          <div data-testid="my-flow-export-eligibility-summary" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-[var(--flowme-text-secondary)]">
             <span>날짜 있음 {plan.metrics.datedCount}개</span>
             <span>날짜 없음 {plan.metrics.undatedCount}개</span>
             {plan.excludedCount + plan.tombstonedCount > 0 ? (
@@ -222,8 +224,8 @@ export function FlowExportPanel({
           </div>
 
           <div className="mt-3">
-            <p className="text-xs font-semibold text-[#6E6B64]">3 · 형식</p>
-            <div className={`mt-1 grid grid-cols-2 overflow-hidden border-y border-[#E7E4DD] ${destinations.length > 2 ? 'sm:grid-cols-4' : ''}`}>
+            <FlowPlanStep index={3} label="형식" />
+            <div className={`mt-1 grid grid-cols-2 overflow-hidden border-y border-[var(--flowme-border)] ${destinations.length > 2 ? 'sm:grid-cols-4' : ''}`}>
               {destinations.map((destination) => {
                 const copy = destinationCopyOverride?.[destination] ?? destinationCopy[destination];
                 const count = plan.countByDestination[destination];
@@ -244,14 +246,14 @@ export function FlowExportPanel({
                     disabled={disabled}
                     aria-label={`${copy.label} ${count}개`}
                     data-export-count={count}
-                    className="min-h-14 border-b border-r border-[#E7E4DD] bg-white px-3 py-2 text-left transition hover:bg-[#FAFAF8] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#3654FF]/20 disabled:cursor-not-allowed disabled:bg-[#FAFAF8] disabled:text-[#A7A39A] sm:border-b-0 last:border-r-0"
+                    className="min-h-14 border-b border-r border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-3 py-2 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0"
                     onClick={async () => {
                       const nextReceipt = await onExport(destination, plan);
                       if (nextReceipt) setReceipt(nextReceipt);
                     }}
                   >
                     <span className="block text-sm font-bold">{copy.label}</span>
-                    <span className="mt-0.5 block text-[11px] font-semibold text-[#6E6B64]">
+                    <span className="mt-0.5 block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
                       {disabled
                         ? disabledReason
                         : `${copy.result} · ${count}개${omitted > 0 ? ` · ${omitted}개 제외` : ''}`}
@@ -264,7 +266,7 @@ export function FlowExportPanel({
 
           {receipt ? (
             <div>
-              <p className="mt-3 text-xs font-semibold text-[#6E6B64]">4 · 완료</p>
+              <FlowPlanStep index={4} label="완료" />
               <FlowExportReceipt receipt={receipt} />
             </div>
           ) : null}
@@ -280,6 +282,6 @@ export function FlowExportPanel({
           ) : null}
         </div>
       ) : null}
-    </section>
+    </FlowExportPlan>
   );
 }

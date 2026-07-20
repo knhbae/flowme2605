@@ -56,7 +56,7 @@ export function PlatformNav() {
         data-testid="platform-nav"
       >
         <div className="flex items-center justify-between gap-3">
-          <Link className="inline-flex min-h-10 items-center text-lg font-semibold tracking-tight text-[#1B1A17]" href="/">
+          <Link className="inline-flex min-h-10 items-center text-lg font-semibold text-[#1B1A17]" href="/">
             FLOW
           </Link>
 

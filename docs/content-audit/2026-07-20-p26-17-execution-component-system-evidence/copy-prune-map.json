@@ -1,0 +1,38 @@
+{
+  "evidenceKind": "current_source",
+  "copyBudget": {
+    "eyebrow": 18,
+    "title": 48,
+    "summary": 72,
+    "helper": 48,
+    "action": 14,
+    "meta": 32
+  },
+  "changes": [
+    {
+      "before": "three disconnected pills for input, output, and item count",
+      "after": "내 조건 / 저장 결과 / 전체 structured summary",
+      "reason": "comparison_before_decision"
+    },
+    {
+      "before": "범위와 결과를 확인하세요",
+      "after": "범위와 결과 확인",
+      "reason": "command_heading_not_instruction_sentence"
+    },
+    {
+      "before": "현재 확인이 필요한 Flow라 실행 목록에는 표시하지 않아요.",
+      "after": "확인 후 실행 목록에 표시할 수 있어요.",
+      "reason": "short_state_and_next_condition"
+    },
+    {
+      "before": "Calendar",
+      "after": "캘린더",
+      "reason": "same_action_same_user_language"
+    }
+  ],
+  "markers": {
+    "actionCopyBudgetViolationCount": 0,
+    "negativeLetterSpacingKeySurfaceCount": 0,
+    "newInternalTermHitCount": 0
+  }
+}

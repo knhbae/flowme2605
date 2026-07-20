@@ -1,0 +1,76 @@
+{
+  "capturedAt": "2026-07-20",
+  "evidenceKind": ["current_source", "current_command", "current_browser", "prior_design_artifact", "reference_pattern"],
+  "observedUserSessionCount": 0,
+  "routes": [
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "markers": {
+        "sharedArtifactSummaryConnected": true,
+        "sharedScheduleIntentConnected": true,
+        "visiblePrimaryActionMaxCount": 1,
+        "horizontalOverflowCount": 0,
+        "browserConsoleErrorCount": 0
+      }
+    },
+    {
+      "route": "/my?postSave=vehicle-inspection-prep",
+      "viewport": "390x844",
+      "markers": {
+        "sharedReceiptConnected": true,
+        "sharedFlowOutlineRowConnected": true,
+        "sharedExportPlanConnected": true,
+        "safetyCopyHierarchyDistinct": true,
+        "visiblePrimaryActionMaxCount": 1,
+        "horizontalOverflowCount": 0,
+        "browserConsoleErrorCount": 0
+      }
+    },
+    {
+      "route": "/my?view=flows",
+      "fixture": "moving-d30-basic anchor 2026-08-15",
+      "viewport": "1024x768",
+      "markers": {
+        "sharedFlowOutlineRowConnected": true,
+        "sharedExecutionRowConnected": true,
+        "sharedEditorShellConnected": true,
+        "visibleFocusFailureCount": 0,
+        "horizontalOverflowCount": 0,
+        "browserConsoleErrorCount": 0
+      }
+    },
+    {
+      "route": "/my?demo=source-backed&savedMap=baby-health-schedule",
+      "viewport": "390x844",
+      "markers": {
+        "sharedReceiptConnected": true,
+        "receiptTone": "warning",
+        "visibleExecutionPrimaryCount": 0,
+        "horizontalOverflowCount": 0,
+        "browserConsoleErrorCount": 0
+      }
+    }
+  ],
+  "aggregate": {
+    "sharedArtifactSummaryConnected": true,
+    "sharedScheduleIntentConnected": true,
+    "sharedFlowOutlineRowConnected": true,
+    "sharedExecutionRowConnected": true,
+    "sharedReceiptConnected": true,
+    "sharedEditorShellConnected": true,
+    "sharedExportPlanConnected": true,
+    "routeSpecificDuplicatePrimitiveCountInTargetSurfaces": 0,
+    "actionLabelMismatchCountInSharedContract": 0,
+    "copyBudgetViolationCount": 0,
+    "cardRadiusOver8KeySurfaceCount": 0,
+    "touchTargetBelow44PrimaryActionCount": 0,
+    "visibleFocusFailureCount": 0,
+    "longKoreanTitleOverflowCount": 0,
+    "horizontalOverflowCount": 0,
+    "browserConsoleErrorCount": 0,
+    "sourceMutationCount": 0,
+    "persistenceSchemaChanged": false,
+    "observedUserSessionCount": 0
+  }
+}

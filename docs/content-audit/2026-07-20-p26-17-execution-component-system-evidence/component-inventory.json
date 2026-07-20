@@ -1,0 +1,48 @@
+{
+  "evidenceKind": "current_source_and_browser",
+  "observedUserSessionCount": 0,
+  "components": [
+    {
+      "name": "ArtifactSummary",
+      "marker": "data-flow-ui=artifact-summary",
+      "connectedSurfaces": ["public_save_before", "flow_map_save_before"],
+      "role": "content_identity_and_source"
+    },
+    {
+      "name": "ScheduleIntent",
+      "marker": "data-flow-ui=schedule-intent",
+      "connectedSurfaces": ["public_save_before", "flow_map_save_before"],
+      "role": "input_result_item_count"
+    },
+    {
+      "name": "FlowOutlineRow",
+      "marker": "data-flow-ui=outline-row",
+      "connectedSurfaces": ["post_save", "my_flow_whole_flow"],
+      "role": "whole_flow_group"
+    },
+    {
+      "name": "ExecutionRow",
+      "marker": "data-flow-ui=execution-row",
+      "connectedSurfaces": ["my_flow", "calendar_agenda", "whole_flow"],
+      "role": "completion_open_and_context"
+    },
+    {
+      "name": "Receipt",
+      "marker": "data-flow-ui=receipt",
+      "connectedSurfaces": ["post_save", "held", "export_result"],
+      "role": "semantic_result_state"
+    },
+    {
+      "name": "EditorShell",
+      "marker": "data-flow-ui=editor-shell",
+      "connectedSurfaces": ["my_flow_mobile", "my_flow_wide", "calendar_detail"],
+      "role": "quick_and_advanced_editing"
+    },
+    {
+      "name": "ExportPlan",
+      "marker": "data-flow-ui=export-plan",
+      "connectedSurfaces": ["post_save_export", "my_flow_export", "personal_draft_export"],
+      "role": "scope_result_format_receipt"
+    }
+  ]
+}

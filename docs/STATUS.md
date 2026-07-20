@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~16 complete; P26-17 execution component/copy system next)
+**Last Updated:** 2026-07-20 (P26-01~17 complete; P26-18 responsive workspace next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, P26-14~16 align undated placement, Calendar movement, and one export scope/result contract. P26-17 next unifies execution components, visual tokens, and action copy. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, P26-14~16 align undated placement, Calendar movement, and one export scope/result contract, and P26-17 unifies execution primitives, semantic tokens, and action copy. P26-18 next closes mobile/wide workspace composition and interaction states. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-17 execution component, visual token, and action-copy system |
+| Active product gate | P26-18 responsive workspace composition and interaction states |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Make repeated execution actions use shared components, tokens, and concise copy |
+| AI action now | Close 390 drill-in/sheet and 1024 task-focused pane composition, target, focus, error, disabled, and loading states |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-17 execution component and copy system: public save-before, post-save, whole Flow, execution rows, item editing, export planning, and result receipts now use shared `ArtifactSummary`, `ScheduleIntent`, `FlowOutlineRow`, `ExecutionRow`, `Receipt`, `EditorShell`, and `ExportPlan` primitives. Semantic palette tokens replace route-specific success/warning/error/action colors on these surfaces; action labels have a tested copy budget; negative heading letter spacing and an unused legacy dark/glass theme were removed. Dedicated plus affected Playwright is `17 / 17`, full unit is `564 / 564` with contract/pretest `10 / 10`, docs check passes `2,665` links, build is `18 / 18`, and mobile/wide overflow plus browser errors are `0`. The local content-usage preview was used only as a prior pattern reference. Observed-user sessions remain `0`. See [P26-17 evidence](./content-audit/2026-07-20-p26-17-execution-component-system-evidence/README.md).
 
 - 2026-07-20 P26-16 unified export scope and result: public whole Flow, My Flow whole/selected, and current-item exports now use one scope plan and actual-output receipt. Moving public Calendar export predicts and creates 24 events; vehicle inspection stays disabled at 0 until scheduled and then creates 1 event; selected and current-item outputs produce 2 and 1 rows; monthly washer export separates 1 series from 4 visible occurrences and creates one RRULE event. Latest personal-draft list and Calendar/ICS scenarios pass, dedicated P26-16 Playwright is `3 / 3`, affected current regressions are `55 / 55`, full unit is `564 / 564`, build is `18 / 18`, and mobile/wide overflow plus browser errors are `0`. One obsolete P24 memo-draft selector scenario is excluded rather than presented as a current product failure or pass; P26-19 must retire or migrate it. Observed-user sessions remain `0`. See [P26-16 evidence](./content-audit/2026-07-20-p26-16-unified-export-evidence/README.md).
 
