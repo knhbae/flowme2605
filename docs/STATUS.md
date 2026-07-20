@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-20 source gates complete; external release gates pending)
-**Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
+**Last Updated:** 2026-07-20 (P26 released; automated gates complete, observation not started)
+**Status:** v0.1.0 RELEASED / P26 COMPLETE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Complete the external boundary of the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C~19 have closed the product contract and six-shape internal journey gate. P26-20 source gates and its [final review package](./content-audit/2026-07-20-p26-final-review-package/README.md) are complete; commit/push, PR/merge, canonical Vercel deployment, and production smoke remain before P26 can be called released. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Preserve the released [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md) and use its [final review package](./content-audit/2026-07-20-p26-final-review-package/README.md) to choose bounded P27 comparisons. PR #139 merged as `0a33dd84`; canonical production is READY at <https://flowme2605.vercel.app>; production smoke is `12 / 12`. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,15 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-20 commit/push, PR/merge, Vercel deploy, and production smoke |
-| User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Publish the verified release candidate, merge it, then verify canonical production on mobile and wide |
+| Active product gate | P26 released; select a bounded P27 comparison without reopening stable ownership contracts |
+| User action now | Optional review of current production and P26 final package; no participant recruitment |
+| AI action now | Compare the four Medium visual hypotheses and propose a narrow P27 backlog |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
 
-- 2026-07-20 P26-20 release candidate: the current source gates pass with pretest `13 / 13`, unit `564 / 564`, docs `14` required files and `2,711` links, build `18 / 18`, and high/critical security findings `0` with two moderate Next/PostCSS findings disclosed. The complete E2E inventory is covered by exact accounting: `326 / 327` in the bounded serial run plus the sole failed stale accessible-name expectation `1 / 1` after a test-only migration, covering all `327` unique scenarios. P26-20 changes no app/runtime source. PR/merge/deploy/production smoke are still pending, so P26 is not yet marked released. See [P26 final review package](./content-audit/2026-07-20-p26-final-review-package/README.md).
+- 2026-07-20 P26-20 released: source gates pass with pretest `13 / 13`, unit `564 / 564`, build `18 / 18`, and high/critical security findings `0` with two moderate Next/PostCSS findings disclosed. Local exact E2E accounting covers all `327` scenarios and final GitHub CI passes `327 / 327`. PR #139 merged as `0a33dd84`; Vercel deployment `dpl_E5mNsqgVsRWNPefjAg5zXoNUEXYy` is READY at the canonical URL. Production smoke passes `12 / 12` with HTTP/redirect/overflow/console/page error counts all `0`. P26-20 changes no app/runtime source. Observed-user sessions remain `0`. See [P26 final review package](./content-audit/2026-07-20-p26-final-review-package/README.md).
 
 - 2026-07-20 P26-19 six content-shape journey gate: anchor inverse timeline, undated checklist, recurring routine, mixed sequence/date, record/memo, and URL-miss personal draft now run from one reproducible current-browser harness. Representative scenarios are `7 / 7`; stale P24 selectors were migrated without lowering behavior assertions and the full execution-trust file is `15 / 15`; screenshots are `34`, ICS downloads `6`, overflow and console/page errors `0`, and automated Blocking/High `0`. Visual review retains four Medium density refinements for later rather than reopening product contracts. The local content-usage preview was compared only as a prior design artifact. Observed-user sessions remain `0`. See [P26-19 evidence](./content-audit/2026-07-20-p26-19-six-shape-journey-gate/README.md).
 

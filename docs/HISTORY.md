@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-07-20 - P26 Structural Correction Production Baseline
+
+- Released one coherent Flow object across discovery, complete save-before preview, post-save receipt, My Flow execution, Calendar placement, reversible completion, explicit export scope, and run reuse.
+- Merged [PR #139](https://github.com/knhbae/flowme2605/pull/139) as `0a33dd84d955b831130aaed3cd315e9526148e1e` and deployed Vercel release `dpl_E5mNsqgVsRWNPefjAg5zXoNUEXYy` to <https://flowme2605.vercel.app>.
+- Verified unit `564 / 564`, GitHub CI Playwright `327 / 327`, production build `18 / 18`, high/critical audit findings `0`, and production smoke `12 / 12` with HTTP/redirect/overflow/console-page error counts all `0`.
+- Published the [P26 final review package](./content-audit/2026-07-20-p26-final-review-package/README.md). No semantic version tag was created, and observed-user sessions remain `0`.
+
 ## 2026-07-20 - P25 Execution Workspace Production Baseline
 
 - Released the whole-Flow execution workspace: responsive saved-Flow structure, date-free execution and Calendar placement, progressive and batch adjustment, reversible completion, scoped export, and a simplified public artifact.

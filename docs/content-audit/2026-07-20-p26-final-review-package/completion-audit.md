@@ -2,7 +2,7 @@
 
 ## Findings
 
-No unresolved automated Blocking or High finding remains in the current P26 release candidate. The final E2E pass exposed stale tests rather than runtime regressions: selectors still targeted removed completion buttons, old editor/cancel behavior, legacy layout classes, and obsolete export labels. Assertions were migrated to the current row-only completion, contained editor, shared export, and adaptive reading contracts. App/runtime source was not changed.
+No unresolved automated Blocking or High finding remains in the released P26 baseline. The final E2E pass exposed stale tests rather than runtime regressions: selectors still targeted removed completion buttons, old editor/cancel behavior, legacy layout classes, and obsolete export labels. Assertions were migrated to the current row-only completion, contained editor, shared export, and adaptive reading contracts. App/runtime source was not changed in P26-20.
 
 Four Medium visual hypotheses remain:
 
@@ -37,7 +37,7 @@ These are suitable for comparative P27 prototypes and observed comprehension wor
 | P26-17 | closed | [Execution component and copy system](../2026-07-20-p26-17-execution-component-system-evidence/README.md) |
 | P26-18 | closed | [Responsive workspace](../2026-07-20-p26-18-responsive-workspace-evidence/README.md) |
 | P26-19 | closed as internal journey gate | [Six content-shape journey gate](../2026-07-20-p26-19-six-shape-journey-gate/README.md) |
-| P26-20 | source gates complete; external release pending | this package plus pending PR/merge/deploy/smoke evidence |
+| P26-20 | closed and released | this package, PR #139, canonical deployment, and production smoke evidence |
 
 ## Contract Result
 
@@ -76,14 +76,15 @@ These are suitable for comparative P27 prototypes and observed comprehension wor
 | --- | --- |
 | Pretest | `13 / 13` |
 | Unit | `564 / 564` |
-| Docs | `14` required files, `2,711` local links |
+| Docs | `14` required files, `2,713` local links |
 | Build | `18 / 18` pages |
-| E2E | `326 / 327` bounded serial + the sole failed test `1 / 1` after test-only migration; all `327` unique scenarios covered |
+| E2E | local exact accounting covers all `327`; final GitHub CI passes `327 / 327` in one job |
 | Security | critical `0`, high `0`, moderate `2` disclosed |
 | Diff check | no whitespace errors; Windows line-ending warnings only |
 | App/runtime changes in P26-20 | `0` |
+| Production smoke | `12 / 12`; HTTP, redirect, overflow, console, and page error counts `0` |
 | Observed users | `0` |
 
 ## Release Boundary
 
-This audit closes internal source and browser readiness only. P26 is not released until the intended commit is pushed, its PR is merged, the canonical Vercel deployment is READY and anonymous, and production smoke passes on mobile and wide routes. Those external states must be recorded after they occur.
+P26 is released at <https://flowme2605.vercel.app>. PR #139 merged as `0a33dd84d955b831130aaed3cd315e9526148e1e`; Vercel deployment `dpl_E5mNsqgVsRWNPefjAg5zXoNUEXYy` is READY and aliased to the canonical URL. Production smoke passed `12 / 12` route/viewport checks at 390x844 and 1024x768 with HTTP failures, off-canonical redirects, horizontal overflow, console errors, and page errors all `0`. This closes the automated release boundary, not observed-user validation; that count remains `0`.

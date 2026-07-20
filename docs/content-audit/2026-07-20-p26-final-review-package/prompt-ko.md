@@ -19,8 +19,9 @@ https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-20-p26
 2. completion-audit.md
 3. route-evidence.json
 4. decision-log.json
-5. P26-19 six-shape evidence와 screenshots
-6. current source
+5. production-smoke/results.json과 screenshots
+6. P26-19 six-shape evidence와 screenshots
+7. current source
 
 P26-19 six-shape evidence
 https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-20-p26-19-six-shape-journey-gate

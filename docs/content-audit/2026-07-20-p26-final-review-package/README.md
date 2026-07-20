@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-20 KST
 
-**Current status:** release candidate; source gates complete, PR/merge/deploy/production smoke pending
+**Current status:** released to canonical production; automated release gates complete
 
 **Observed-user sessions:** `0`
 
@@ -10,7 +10,7 @@
 
 P26-00C through P26-19 now form one internally coherent execution workspace: users discover one `Flow`, inspect the complete artifact before saving, adjust a personal copy, execute dated and undated work, reopen completion, place work on Calendar, export an explicit scope, and reuse a completed run without collapsing source, personal overlay, run, or occurrence ownership.
 
-The current release-candidate gates are green by current command evidence. Unit is `564 / 564`, docs check covers `14` required files and `2,711` local links, production build renders `18 / 18` pages, and security has high/critical `0` with two disclosed moderate Next/PostCSS findings. The complete E2E inventory is covered by exact shard accounting: a bounded serial run passed `326 / 327`, and its only failing stale accessible-name expectation passed `1 / 1` after a test-only migration. This covers all `327` unique scenarios without claiming a single monolithic `327 / 327` run.
+The release gates are green by current command, CI, and production-browser evidence. Unit is `564 / 564`, docs check covers `14` required files and `2,713` local links, production build renders `18 / 18` pages, and security has high/critical `0` with two disclosed moderate Next/PostCSS findings. Local E2E exact accounting covered all `327` unique scenarios, and the final GitHub CI run passed all `327` scenarios in one job.
 
 No app/runtime source changed in P26-20. The three modified E2E files migrate stale selectors and copy expectations to the P26-08~18 product contract while preserving behavior assertions.
 
@@ -26,8 +26,10 @@ The local `2026-07-19-flow-content-usage-preview-ko.html` was used only as a `pr
 - [Responsive review board](./review.html)
 - [Claude Design and Codex review prompt](./prompt-ko.md)
 - [P26-19 six-shape browser evidence](../2026-07-20-p26-19-six-shape-journey-gate/README.md)
+- [Canonical production smoke](./production-smoke/results.json)
+- Production screenshots: `production-smoke/screenshots/` (`12` files)
 
-Production smoke evidence will be added under `production-smoke/` after the release candidate is merged and deployed to the canonical Vercel URL.
+P26 was merged through [PR #139](https://github.com/knhbae/flowme2605/pull/139) as `0a33dd84d955b831130aaed3cd315e9526148e1e`, deployed as Vercel deployment `dpl_E5mNsqgVsRWNPefjAg5zXoNUEXYy`, and verified at <https://flowme2605.vercel.app>.
 
 ## Evidence Boundary
 
@@ -46,8 +48,8 @@ Production smoke evidence will be added under `production-smoke/` after the rele
 | Unit/docs/build | pass |
 | Complete E2E inventory | covered by exact shard accounting |
 | Security | high/critical 0; moderate 2 disclosed |
-| Commit/push | pending |
-| PR/merge | pending |
-| Canonical production deploy | pending |
-| Production smoke | pending |
+| Commit/push | complete (`9651da2` final PR head) |
+| PR/merge | complete ([#139](https://github.com/knhbae/flowme2605/pull/139), `0a33dd8`) |
+| Canonical production deploy | READY and anonymous at <https://flowme2605.vercel.app> |
+| Production smoke | `12 / 12`; HTTP/redirect/overflow/console/page error counts `0` |
 | Observed-user validation | not started (`0`) |

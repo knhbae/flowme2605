@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-20<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
+**Current Validation Stage:** internal alpha / P26 released, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-20 PR/merge, canonical production deploy, and smoke
+**Next Milestone:** P27 bounded UX comparisons over the released P26 contracts
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -35,7 +35,7 @@ Decision package: [P26-00C product-object and journey decision](./content-audit/
 | Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Complete as current browser evidence |
 | My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Complete as current command/browser evidence |
 | Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Complete as current command/browser evidence |
-| Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | P26-20 source gates complete; external release gates pending |
+| Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | Complete and released; production smoke `12 / 12` |
 
 P26 is an internal product and implementation program. It does not reopen participant recruitment until the owner explicitly chooses to do so.
 
@@ -128,7 +128,7 @@ There is no active external-user gate. P25 is the deployed internal baseline. Ex
 | Completed | AI, then owner/Claude Design | P26-17 execution component and copy system | Preserve shared execution primitives, tokens, and action labels without changing product ownership contracts | Shared summary/outline/row/receipt/editor/export primitives pass current command/browser evidence |
 | Completed | AI, then owner/Claude Design | P26-18 responsive execution workspace | Preserve mobile drill-in/sheets, wide task-focused panes, and explicit pending/error states | Overflow/overlap and keyboard blockers are 0 at 390x844 and 1024x768 |
 | Completed | AI, then owner/Claude Design | P26-19 six content-shape journey gate | Preserve six representative Flow shapes as one reproducible current command/browser harness | `7 / 7` representative and `15 / 15` migrated P24 regressions stay green; observed users remain 0 |
-| Active | AI, then owner/Claude Design | P26-20 final release gate | Publish the verified source candidate, merge/deploy, and verify canonical production | Exact E2E accounting and production smoke are green and release state is explicit |
+| Completed | AI, then owner/Claude Design | P26-20 final release gate | Preserve PR #139, canonical deployment, and final production evidence | CI E2E `327 / 327`, production smoke `12 / 12`, and release state is explicit |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
@@ -149,7 +149,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-P26-00C~19 and the P26-20 current-source release gates are complete as internal evidence. Continue with the remaining P26-20 external boundary: intentional commit/push, PR/merge, canonical Vercel production deployment, and mobile/wide production smoke. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+P26-00C~20 is merged, deployed, and production-smoked. Use the four remaining Medium hypotheses as bounded P27 comparison candidates: mobile batch-editor density, wide undated-rail title inspection, mobile Calendar composition, and recurring-occurrence detail hierarchy. Do not reopen stable identity/projection contracts without current regression evidence. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 
