@@ -3968,6 +3968,7 @@ test('source-backed moving map saves one dated timeline into My Flow calendar', 
 });
 
 test('P19 task completion controls use one checkbox pattern in My Flow and Calendar', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-07-20T10:00:00+09:00') });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/moving-d30');
 
@@ -3981,6 +3982,9 @@ test('P19 task completion controls use one checkbox pattern in My Flow and Calen
   const nowComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
   await expect(nowComplete).toHaveAttribute('type', 'checkbox');
   await expect(nowComplete).toHaveAttribute('aria-label', /완료/);
+  const completedControlLabel = await nowComplete.getAttribute('aria-label');
+  expect(completedControlLabel).toBeTruthy();
+  const completedTaskTitle = (completedControlLabel ?? '').replace(/ (?:완료 체크|완료|다시 열기)$/, '');
   await nowComplete.click();
   await expect.poll(() => page.evaluate(() =>
     Object.keys(window.localStorage)
@@ -3992,12 +3996,20 @@ test('P19 task completion controls use one checkbox pattern in My Flow and Calen
   await expect(inlineDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
 
   await page.goto('/calendar');
+  await page.getByRole('button', { name: '이전 달' }).click();
+  await page.locator('.fc-daygrid-day[data-date="2026-06-22"]').getByTestId('my-flow-calendar-date-button').click();
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
-  const calendarComplete = selectedDateGroup.getByTestId('my-flow-task-complete-control').first();
+  const escapedTaskTitle = completedTaskTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const calendarComplete = selectedDateGroup.getByRole('checkbox', {
+    name: new RegExp(`^${escapedTaskTitle}.*(?:완료 체크|다시 열기)$`),
+  });
+  await expect(calendarComplete).toHaveCount(1);
   await expect(calendarComplete).toHaveAttribute('type', 'checkbox');
-  await expect(calendarComplete).toHaveAttribute('aria-label', /완료 체크|다시 열기/);
+  await expect(calendarComplete).toHaveAttribute('aria-label', /다시 열기$/);
   await expect(calendarComplete).toBeChecked();
-  await expect(selectedDateGroup.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
+  await expect(
+    selectedDateGroup.getByRole('button', { name: /^완료$/ }),
+  ).toHaveCount(0);
 });
 
 test('review-hold Flow Maps keep current official source access without new save or stale schedule rows', async ({ page }) => {
