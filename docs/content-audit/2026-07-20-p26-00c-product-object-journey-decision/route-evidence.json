@@ -1,0 +1,47 @@
+{
+  "package": "P26-00C Product Object & Journey Decision",
+  "baselineSha": "48571afeb63dc06a321e5ab49ccf50522bfa7c29",
+  "evidenceBoundary": {
+    "currentSource": true,
+    "currentProductionCapturesPending": false,
+    "proposedPrototypeCapturesPending": false,
+    "observedUserSessionCount": 0
+  },
+  "markers": {
+    "appRuntimeChanged": false,
+    "dataSchemaChanged": false,
+    "userFacingPrimaryObject": "Flow",
+    "flowMapSeparateUserCardSelected": false,
+    "discoveryHierarchy": ["job", "verified_source", "artifact_preview", "required_input", "result_shape"],
+    "unverifiedSocialProofAllowed": false,
+    "unsupportedPopularityAllowed": false,
+    "saveBeforePaths": ["start_as_is", "adjust_for_me"],
+    "postSavePrimaryObject": "saved_whole_flow",
+    "wholeFlowGrouping": "adaptive_content_shape",
+    "quickEditorDefaultFieldCountMax": 3,
+    "calendarUndatedTrayMode": "on_demand",
+    "calendarFlowFilterRequired": true,
+    "exportOrder": ["scope", "expected_count", "format", "result"],
+    "weddingIndependentEntryCount": 2,
+    "weddingPostEntryVariantChooserCount": 0,
+    "currentProductionScreenshotCount": 10,
+    "proposedPrototypeScreenshotCount": 16,
+    "prototypeHorizontalOverflowCount": 0,
+    "prototypeConsoleErrorCount": 0,
+    "productionHttpFailureCount": 0,
+    "productionHorizontalOverflowCount": 0,
+    "productionConsoleErrorCount": 0,
+    "currentPublicSaveMobileVisibleTextBlockCount": 63,
+    "proposedPublicSaveMobileVisibleTextBlockCount": 12,
+    "currentPublicSaveMobileVisibleActionCount": 16,
+    "proposedPublicSaveMobileVisibleActionCount": 8,
+    "freshBrowserSavedStateReplayed": false
+  },
+  "surfaces": [
+    {"route": "/", "purpose": "start from URL/memo or a representative Flow"},
+    {"route": "/flows", "purpose": "compare Flow entries with one information grammar"},
+    {"route": "/f/[slug]", "purpose": "inspect the whole artifact and choose start or adjust"},
+    {"route": "/my", "purpose": "execute now and manage saved whole Flows"},
+    {"route": "/calendar", "purpose": "execute by date and place undated work"}
+  ]
+}

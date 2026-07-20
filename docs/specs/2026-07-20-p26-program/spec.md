@@ -1,0 +1,231 @@
+# P26 FlowMe 실행 UX 구조 교정 프로그램
+
+## 문서 상태
+
+- 작성일: 2026-07-20
+- 기준선: `origin/main` `48571afeb63dc06a321e5ab49ccf50522bfa7c29`
+- production: <https://flowme2605.vercel.app>
+- 상태: approved for staged implementation
+- 실제 관찰 사용자: `0`
+- 최종 판정: `bounded_structural_correction_required`
+
+P26은 P25를 폐기하는 전면 재작성도, 색과 간격만 바꾸는 polish도 아니다. P25가 연결한 whole-Flow, personal overlay, reversible completion, Calendar placement, portable export 계약은 유지한다. 그 위에서 날짜·반복·저장 결과의 정확성을 먼저 닫고, 사용자가 `무엇을 발견하고 -> 무엇을 저장하며 -> 어디까지 조정하고 -> 어디서 실행하는가`를 설명 없이 이해하도록 핵심 화면 구조를 교정한다.
+
+자동화, 화면 시뮬레이션, 오너 피드백, prior design artifact는 실제 사용자 관찰과 구분한다. P26 종료 시에도 실제 관찰이 없으면 observed-user count는 `0`이다.
+
+## 입력 근거
+
+| 근거 | 사용 범위 | evidence kind | 한계 |
+| --- | --- | --- | --- |
+| 오너 피드백 | 카드 정보, Flow/Flow Map 통일, 조정 자유도, Calendar filter, same-date grouping | `owner_feedback` | 재현 로그가 아닌 제품 판단 |
+| P25 production/source | 현재 route, state, projection, component 계약 | `current_production_interaction`, `current_source` | 각 slice 시작 시 재검증 필요 |
+| P25/P26 구조화 audit | 날짜·반복·receipt·projection·journey 위험 | `current_package_screenshot`, `heuristic_simulation` | 실제 사용자 증거 아님 |
+| Claude Design (9) | progressive editor, undo, undated tray, export scope, occurrence control, 단계 메모 | `prior_design_artifact` | 목업 제안이며 구현 정답 아님 |
+| 캘린더·todo·project 도구 패턴 | filter, inbox, quick edit, project receipt, batch move | `reference_pattern` | 외형 복제 금지 |
+
+## 제품 객체 결정
+
+### 사용자에게는 Flow 하나만 보인다
+
+- `Flow`는 사용자가 발견하고, 저장하고, 조정하고, 실행하고, 내보내는 단위다.
+- `Flow Map`은 source bundle, creator 구조, 내부 aggregate 모델로 남을 수 있다.
+- Home과 `/flows`에서 Flow와 Flow Map이 서로 다른 카드·상세·저장 문법을 사용하지 않는다.
+- 여러 child Flow를 하나의 chooser에 숨기지 않는다. 서로 다른 결과물을 주는 결혼 준비 참고표 2종은 각각 독립 entry가 된다.
+
+### source, personal, run, occurrence 소유권
+
+| 소유자 | 책임 | 변경 주체 |
+| --- | --- | --- |
+| source/version | 원본 제목, 설명, 순서, 일정 단서, 출처, 게시 버전 | creator/content pipeline |
+| personal overlay | 개인 이름, 포함/제외, alias, 메모, 날짜, 구조 변경, 순서 | 사용자 |
+| execution run | pending, done, reopened, skipped, held, 완료 시각 | 사용자 실행 |
+| occurrence | 반복 series의 특정 회차 identity와 회차 override | recurrence adapter + 사용자 |
+
+화면 개편이 이 경계를 우회해 source를 직접 변경하거나 completion을 structure에 저장하면 실패다.
+
+## 발견 카드 계약
+
+카드의 시각적 우선순위는 다음으로 고정한다.
+
+1. 구체적인 사용자 일 또는 결과물 제목
+2. 검증 가능한 source 이름·성격·최근 확인일
+3. 대표 artifact preview 2~3개
+4. 필요한 입력을 짧은 control/chip으로 표시
+5. 결과 범위와 item 수
+
+예: 긴 문장 `이사일만 넣으면 D-30 일정과 할 일 5개를 저장합니다` 대신 다음을 분리한다.
+
+- 제목: `이사 준비 D-30`
+- source: `원문: 확인된 이사 체크리스트`
+- preview: `견적 확정`, `주소 변경`, `전날 점검`
+- input: `이사일 필요`
+- result: `5개 일정 · D-30~D-Day`
+
+실제 집계 계약이 없는 `N명 검증`, 별점, 인기 item, 단계별 aggregate review, `인기순`은 production에서 금지한다. source authority도 실제 원문과 검토 상태가 확인될 때만 표시한다.
+
+## 저장과 조정 결정
+
+한 경로를 강요하지 않고 같은 artifact에서 두 경로를 제공한다.
+
+- `그대로 시작`: 필요한 최소 입력 후 개인 실행 사본을 만들고 whole-Flow receipt로 이동한다.
+- `내게 맞게 조정`: source를 덮어쓰지 않는 개인 작업 사본을 열어 일정·항목·순서·메모를 바꾼 뒤 저장하거나 내보낸다.
+
+두 경로는 같은 effective item resolver와 projection을 사용한다. 저장 전 full planner는 만들지 않지만, 조정 경로를 include/exclude만 있는 얕은 화면으로 제한하지도 않는다.
+
+Studio UI를 My Flow에 복사하지 않는다. Studio는 source/creator/version/publish를, My Flow는 personal overlay와 execution을 담당한다. 날짜 picker, row editor, reorder 같은 primitive만 공유할 수 있다.
+
+## surface별 한 문장 목적
+
+| surface | 목적 | 첫 번째 객체 | 주 행동 |
+| --- | --- | --- | --- |
+| Home `/` | 바로 쓸 Flow 또는 URL/memo 시작점을 찾는다 | 추천 Flow | 열기 또는 URL/memo 입력 |
+| Flow 찾기 `/flows` | 같은 카드 문법으로 검색·비교한다 | Flow catalog | Flow 열기 |
+| Save-before | 저장될 전체 artifact와 필요한 입력을 확인한다 | whole Flow preview | 그대로 시작 / 조정 |
+| Post-save | 방금 저장된 전체 Flow와 다음 행동을 확인한다 | saved whole Flow receipt | 시작 / 조정 / 가져가기 |
+| My Flow `/my` | 지금 할 일과 저장한 Flow를 실행·관리한다 | task/occurrence + Flow | 완료 / 열기 / Flow 조정 |
+| Calendar `/calendar` | 날짜별 실행과 일정 배치를 관리한다 | dated projection | 선택일 실행 / 날짜 배치 |
+| Export | 범위와 예상 개수를 확인하고 외부 형식으로 가져간다 | explicit scope | 범위 선택 / 형식 선택 |
+
+## content-shape adaptive whole-Flow
+
+공통 shell은 통일하지만 본문을 한 목록으로 강제하지 않는다.
+
+| shape | 기본 grouping | 핵심 metadata | Calendar 관계 |
+| --- | --- | --- | --- |
+| anchor timeline | 날짜·milestone | D-day, fixed override | dated rows만 projection |
+| undated checklist | section | 선택 날짜, subcheck | 선택한 항목만 배치 |
+| routine | series + occurrence | 빈도, 다음 회차 | occurrence projection |
+| project/travel | phase + dated task | phase, 예약/시간 | mixed projection |
+| record/memo | row/table | field, note | Calendar opt-in |
+| personal draft | editable outline | personal structure | explicit scheduling |
+
+My Flow의 same-date 묶음은 한 Flow 안에서만 적용한다. 서로 다른 Flow를 날짜만 같다고 하나의 무명 그룹으로 합치지 않는다.
+
+## 편집 모델
+
+### 실행 mode
+
+- 제목, 날짜/시간, 완료 상태, 짧은 메모만 읽는다.
+- 완료 체크박스는 task/occurrence당 하나다.
+- `열기`는 상세 이동이다.
+
+### quick edit
+
+- 제목
+- 언제: 날짜 없음 / 날짜 / 시간
+- 내 메모
+
+### advanced edit
+
+- 소요 시간
+- 반복
+- 구조 추가·삭제·복구·순서
+- source와 콘텐츠 형태에 실제로 필요한 필드만 표시
+
+### batch mode
+
+- 명시적으로 진입한다.
+- 선택 중 completion control을 selection checkbox로 바꾼다.
+- 날짜 이동/지우기, 포함/제외, 선택 export를 제공한다.
+- 적용 전 대상 수와 before/after impact를 보여주고 즉시 undo를 제공한다.
+
+## Calendar 역할
+
+- Calendar는 날짜 우선 실행 화면이다.
+- grid/agenda에는 dated item과 occurrence만 보인다.
+- 날짜 없는 항목은 실행 목록이 아니라 `일정에 놓기` 작업 tray로만 접근한다.
+- `전체 / 특정 Flow` filter를 명시적으로 제공한다.
+- filter는 grid, selected-day agenda, count에 동일하게 적용된다.
+- 390px은 grid + agenda + 필요 시 tray를 사용한다.
+- 1024px은 3개 pane을 항상 강제하지 않고 현재 작업에 따라 grid/agenda 또는 tray/grid를 보여준다.
+
+## Export 역할
+
+모든 portable export는 `범위 -> 예상 개수 -> 형식 -> 결과 receipt` 순서를 따른다.
+
+- 범위: `Flow 전체`, `선택한 항목`, `현재 항목`
+- 형식: Calendar/ICS, checklist, sheet, memo
+- preview count와 실제 output count는 일치해야 한다.
+- undated item은 list export에는 포함하고 Calendar/ICS에서는 제외한다.
+- internal term이나 raw schema label을 노출하지 않는다.
+
+## P26 실행 단계
+
+### Stage 0: 결정과 정확성
+
+- P26-00C product object, save/adjust, adaptive whole-Flow decision
+- P26-01 date intent correctness
+- P26-02 canonical save receipt and route parity
+- P26-03 recurrence series/occurrence parity
+- P26-04 memo segmentation integrity
+- P26-05 projection identity gate
+
+### Stage 1: 발견과 저장
+
+- P26-06A unified discovery card
+- P26-06B unified save-before
+- P26-06C independent wedding entries
+- P26-07 post-save whole-Flow hub
+
+### Stage 2: My Flow와 조정
+
+- P26-08 My Flow IA and content-shape selector
+- P26-09 adaptive whole-Flow reading model
+- P26-10 quick/advanced editor
+- P26-11 structural and batch editing
+- P26-12 completion/reopen/undo
+- P26-13 reuse and anchor policy
+
+### Stage 3: Calendar와 export
+
+- P26-14 undated inbox and batch scheduling
+- P26-15 Calendar Flow filter/group/date move
+- P26-16 unified export scope/result
+
+### Stage 4: integration
+
+- P26-17 visual/copy/component system
+- P26-18 responsive workspace
+- P26-19 six-journey harness
+- P26-20 final audit, release, deploy
+
+## 비기능 품질 기준
+
+- 390x844, 1024x768에서 horizontal overflow와 fixed overlap `0`
+- interactive target 최소 44x44
+- visible keyboard focus
+- icon button은 lucide 등 익숙한 icon과 accessible name 사용
+- body/input text 최소 16px on mobile input
+- 한 화면의 primary CTA는 하나
+- 긴 설명을 state/action label 대신 사용하지 않음
+- candidate/user copy internal term hit `0`
+- normal-route guardrail hit `0`
+- source mutation `0`
+- identity/count mismatch `0`
+
+## 이번 프로그램에서 하지 않을 것
+
+- 계정, DB, cloud sync
+- 실제 AI provider/API
+- OAuth 또는 직접 Calendar/Notion/Todo 동기화
+- 5번째 primary tab
+- Studio를 primary app으로 승격
+- public `/f`를 4-tab app shell에 편입
+- 검증되지 않은 social proof
+- source-backed 원본 직접 수정
+- 자동 시뮬레이션을 실제 사용자 관찰로 표현
+
+## P26 종료 기준
+
+1. 날짜·receipt·반복·memo·projection foundation이 green이다.
+2. Flow와 Flow Map이 사용자-facing에서 하나의 Flow 문법으로 읽힌다.
+3. card와 save-before가 긴 설명 없이 artifact, source, input, result를 보여준다.
+4. 그대로 시작과 내게 맞게 조정이 같은 effective Flow를 만든다.
+5. 저장 직후 전체 Flow가 확인되고 post-save receipt가 route별로 일치한다.
+6. quick/advanced/batch editing이 source를 덮어쓰지 않는다.
+7. 완료·완료 취소·skip·hold가 명확히 구분된다.
+8. Calendar filter, undated placement, single/batch date move, undo가 일관된다.
+9. export scope/count/output이 일치한다.
+10. six content shapes의 모바일/wide journey가 통과한다.
+11. Blocking/High automated finding이 `0`이다.
+12. observed-user count는 실제 실행값으로 정확히 기록된다.

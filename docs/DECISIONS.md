@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-20 - P26 uses one user-facing Flow object and dual start/adjust paths
+
+**Decision:** Present one user-facing `Flow` object across Home, Flow finding, save-before, post-save, My Flow, Calendar, and export. Keep `Flow Map` as an internal source-bundle or aggregate concept rather than a separate user card and save grammar. Discovery cards use the order `concrete job -> verified source -> representative artifact -> required input -> result shape`; undefined popularity, validation counts, ratings, and stage reviews stay hidden. Save-before offers `그대로 시작` and `내게 맞게 조정` over the same effective artifact. Whole-Flow bodies adapt to timeline, checklist, routine, project, record, and personal-draft shapes while preserving one shell. Calendar remains date-first with an explicit Flow filter and an on-demand undated placement tray. Personal editing uses quick, advanced, structure, and batch modes rather than one always-expanded form.
+
+**Reason:** Current production and owner feedback show that long promise copy, separate Flow/Flow Map card patterns, generic whole-Flow rows, and an always-dense Calendar/editor make existing capabilities hard to predict. The P26-00C prototype reduced the representative public save frame from `63` to `12` visible text blocks and from `16` to `8` actions while preserving the whole artifact and two intentional start depths. This is an internal design/implementation decision, not observed-user proof.
+
+**Applies to:** P26 program, Home, `/flows`, public save-before, post-save receipt, My Flow whole-Flow workspace, Calendar filtering and placement, personal adjustment, export scope, discovery metrics, wedding Flow entries, and shared component contracts.
+
+**Reopen when:** current-browser implementation cannot preserve source/personal/run/occurrence ownership, representative content shapes require a different primary object, verified observed users consistently fail the dual path or adaptive grouping, or a real popularity/review aggregation contract is introduced.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-00C decision package](./content-audit/2026-07-20-p26-00c-product-object-journey-decision/README.md)
+
 ### 2026-07-20 - Option B is the released P25 internal production baseline
 
 **Decision:** Keep the P25 Option B whole-Flow workspace contract across save-before, post-save, My Flow, whole Flow, Calendar, item adjustment, batch adjustment, completion/reopen, and export. Treat the owner's instruction to complete P25 and permit substantial changes as implementation authorization. Treat P25-08 current command/browser evidence with unresolved automated Blocking/High `0` as the internal integration gate. Foundation PR #136 and hydration hotfix PR #137 are the released production baseline at `b0fb899c`. Defer only public copy density, 1024px Calendar density, and advanced-editor path length to P26-00 comparison work.

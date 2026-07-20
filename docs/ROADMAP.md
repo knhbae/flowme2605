@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-20<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P25 released, observation not started<br>
+**Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-00 comprehension/density decision audit
+**Next Milestone:** P26-01~05 correctness foundation
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,24 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P26 Structural Correction Program
+
+P26 preserves P25's source/personal/run ownership, whole-Flow artifact, reversible completion, Calendar placement, and scoped export. It corrects the product object, discovery hierarchy, save/adjust journey, content-shape reading model, Calendar density/filtering, and editing discoverability after first closing date, recurrence, receipt, memo, and projection correctness.
+
+Detailed scope: [P26 program spec](./specs/2026-07-20-p26-program/spec.md).
+Decision package: [P26-00C product-object and journey decision](./content-audit/2026-07-20-p26-00c-product-object-journey-decision/README.md).
+
+| Stage | Slices | Purpose | State |
+| --- | --- | --- | --- |
+| Decision | P26-00C | One Flow object, integrated discovery card, dual save/adjust path, adaptive whole Flow, Calendar tray/editor decision | Complete as internal implementation contract |
+| Correctness | P26-01~05 | Date intent, canonical receipt, recurrence, memo segmentation, projection identity | Next |
+| Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Pending correctness |
+| My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Pending |
+| Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Pending |
+| Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | Pending |
+
+P26 is an internal product and implementation program. It does not reopen participant recruitment until the owner explicitly chooses to do so.
 
 ## P25 Execution Workspace Correction
 
@@ -121,7 +139,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Release the verified P25 baseline first. Then run the [P26-00 comprehension and density decision goal](./content-audit/2026-07-20-p25-final-closeout/next-goal-p26-ko.md) without changing runtime UI. It compares only the three deferred Medium hypotheses and selects one bounded P26-01 slice. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+P26-00C is selected. Start P26-01~05 with date intent and canonical save receipt, then re-evaluate recurrence, memo segmentation, and projection identity from current tests before changing runtime visual composition. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 
