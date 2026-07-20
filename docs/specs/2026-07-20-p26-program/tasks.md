@@ -66,7 +66,7 @@
 - [x] P26-15 Flow filter
 - [x] P26-15 grid/agenda/count parity
 - [x] P26-15 single/batch date move
-- [ ] P26-16 scope/count/format/result receipt
+- [x] P26-16 scope/count/format/result receipt
 
 ## P26-17~18 Integration
 

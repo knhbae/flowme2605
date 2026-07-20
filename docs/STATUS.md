@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~15 complete; P26-16 unified export scope/result next)
+**Last Updated:** 2026-07-20 (P26-01~16 complete; P26-17 execution component/copy system next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, P26-14 makes undated work and batch placement explicit, and P26-15 aligns Calendar Flow scope, grid/agenda counts, and reversible date movement. P26-16 next unifies export scope, count, format, and result receipt. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, P26-14~16 align undated placement, Calendar movement, and one export scope/result contract. P26-17 next unifies execution components, visual tokens, and action copy. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-16 unified export scope, count, format, and result receipt |
+| Active product gate | P26-17 execution component, visual token, and action-copy system |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Make one export scope drive destination counts, generated payload, and result receipt |
+| AI action now | Make repeated execution actions use shared components, tokens, and concise copy |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-16 unified export scope and result: public whole Flow, My Flow whole/selected, and current-item exports now use one scope plan and actual-output receipt. Moving public Calendar export predicts and creates 24 events; vehicle inspection stays disabled at 0 until scheduled and then creates 1 event; selected and current-item outputs produce 2 and 1 rows; monthly washer export separates 1 series from 4 visible occurrences and creates one RRULE event. Latest personal-draft list and Calendar/ICS scenarios pass, dedicated P26-16 Playwright is `3 / 3`, affected current regressions are `55 / 55`, full unit is `564 / 564`, build is `18 / 18`, and mobile/wide overflow plus browser errors are `0`. One obsolete P24 memo-draft selector scenario is excluded rather than presented as a current product failure or pass; P26-19 must retire or migrate it. Observed-user sessions remain `0`. See [P26-16 evidence](./content-audit/2026-07-20-p26-16-unified-export-evidence/README.md).
 
 - 2026-07-20 P26-15 Calendar Flow filter and date move: Calendar now uses `전체 / 반복만 / 개별 Flow` as one scope for the month grid, selected-day agenda, counts, and undated tray. Individual Flow controls show color, initial, title, and month count; the redundant wide saved-Flow select is absent. A same-date fixture keeps `2 Flow / 6 items` aligned, and cross-Flow date movement shows a commit preview before atomically moving 2 items, preserving completion, supporting undo, and persisting after reload. Routine occurrences use a distinct label and the same preview path. Dedicated Playwright is `2 / 2`, affected regression scenarios are `4 / 4`, build is `18 / 18`, and mobile/wide overflow plus console/page errors are `0`. Observed-user sessions remain `0`. See [P26-15 evidence](./content-audit/2026-07-20-p26-15-calendar-flow-filter-date-move-evidence/README.md).
 

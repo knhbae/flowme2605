@@ -17,6 +17,7 @@ import { FlowDiscoveryCard, type FlowDiscoveryCardView } from './FlowDiscoveryCa
 import { FlowSaveBeforeFrame, type FlowSaveBeforePreviewRow } from './FlowSaveBeforeFrame';
 import { FlowExecutionNotePanel } from './FlowExecutionNotePanel';
 import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
+import { FlowExportReceipt } from './FlowExportReceipt';
 import { PostSaveDecisionHub } from './PostSaveDecisionHub';
 import {
   FLOW_UI_COMPACT_ACTION_CLASS,
@@ -75,7 +76,9 @@ import {
 } from '@/lib/flow/my-flow-step-export';
 import {
   buildFlowExportScopePlan,
+  buildFlowExportResultReceipt,
   type FlowExportDestination,
+  type FlowExportResultReceipt,
   type FlowExportScopePlan,
 } from '@/lib/flow/export-scope';
 import { getSourceFitAudit } from '@/lib/flow/source-fit';
@@ -5027,6 +5030,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowStepCopiedKey, setMyFlowStepCopiedKey] = useState('');
   const [myFlowStepCopiedLabel, setMyFlowStepCopiedLabel] = useState<string>(FLOW_EXPORT_FEEDBACK.memoCopied);
   const [myFlowStepDownloadedKey, setMyFlowStepDownloadedKey] = useState('');
+  const [myFlowCurrentItemExportReceipt, setMyFlowCurrentItemExportReceipt] = useState<{
+    key: string;
+    receipt: FlowExportResultReceipt;
+  } | null>(null);
   const [myFlowPersonalCopySettingsDraft, setMyFlowPersonalCopySettingsDraft] = useState<MyFlowPersonalCopySettingsDraft | null>(null);
   const [myFlowDirectAnchorSettingsDraft, setMyFlowDirectAnchorSettingsDraft] = useState<MyFlowDirectAnchorSettingsDraft | null>(null);
   const [myFlowStructuralOverlaysBySlug, setMyFlowStructuralOverlaysBySlug] = useState<Record<string, PersonalStructuralOverlay>>({});
@@ -6955,9 +6962,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     discardMyFlowEditingDraft(row);
     closeMyFlowRowDetail(true);
   };
-  const copyMyFlowStepText = async (text: string, key: string, feedback: string) => {
+  const copyMyFlowStepText = async (text: string, key: string, feedback: string): Promise<boolean> => {
+    let copied = false;
     try {
       await navigator.clipboard.writeText(text);
+      copied = true;
       setMyFlowStepCopiedKey(key);
       setMyFlowStepCopiedLabel(feedback);
     } catch {
@@ -6968,7 +6977,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       textarea.style.left = '-9999px';
       document.body.appendChild(textarea);
       textarea.select();
-      const copied = document.execCommand('copy');
+      copied = document.execCommand('copy');
       document.body.removeChild(textarea);
       setMyFlowStepCopiedKey(copied ? key : '');
       setMyFlowStepCopiedLabel(copied ? feedback : '');
@@ -6977,27 +6986,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowStepCopiedKey('');
       setMyFlowStepCopiedLabel(FLOW_EXPORT_FEEDBACK.memoCopied);
     }, 1600);
+    return copied;
   };
-  const copyMyFlowStepPortableText = async (input: MyFlowPortableStepExportInput, key: string) => {
-    await copyMyFlowStepText(buildMyFlowStepPortableText(input), key, FLOW_EXPORT_FEEDBACK.memoCopied);
-  };
-  const copyMyFlowStepChecklistText = async (input: MyFlowPortableStepExportInput, key: string) => {
-    await copyMyFlowStepText(buildMyFlowStepChecklistText(input), key, '체크리스트 복사됨');
-  };
-  const copyMyFlowStepSheetRow = async (input: MyFlowPortableStepExportInput, key: string) => {
-    await copyMyFlowStepText(buildMyFlowStepSheetTsv(input), key, '시트 행 복사됨');
-  };
-  const downloadMyFlowStepCalendar = (input: MyFlowPortableStepExportInput, key: string, fileBase: string) => {
-    if (!canBuildMyFlowStepIcs(input)) return;
+  const downloadMyFlowStepCalendar = (
+    input: MyFlowPortableStepExportInput,
+    key: string,
+    fileBase: string,
+    filename?: string,
+  ): number => {
+    if (!canBuildMyFlowStepIcs(input)) return 0;
     const ics = buildMyFlowStepIcs(input);
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `${fileBase.replace(/[^a-z0-9가-힣_-]+/gi, '-')}.ics`;
+    link.download = filename ?? `${fileBase.replace(/[^a-z0-9가-힣_-]+/gi, '-')}.ics`;
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     setMyFlowStepDownloadedKey(key);
     window.setTimeout(() => setMyFlowStepDownloadedKey(''), 1600);
+    return (ics.match(/BEGIN:VEVENT/g) ?? []).length;
   };
   const myFlowCalendarScheduleRows = calendarScopedScheduleRows.filter((row) => {
     if (!row.date) return true;
@@ -8977,7 +8984,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           meta: scheduleMeta,
           ...(routineSeries
             ? {
-                calendarSeriesId: routineSeries.seriesId,
+                recurrenceSeriesId: routineSeries.seriesId,
                 calendarVisibleOccurrenceCount:
                   routineOccurrenceCountBySeriesId.get(routineSeries.seriesId) ?? 0,
               }
@@ -9004,7 +9011,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     flow: MySavedFlow,
     destination: FlowExportDestination,
     plan: FlowExportScopePlan,
-  ) => {
+  ): Promise<FlowExportResultReceipt | undefined> => {
     const items = getMyFlowScopeExportItems(flow);
     const destinationKeys = new Set(plan.itemsByDestination[destination].map((item) => item.key));
     const scopedItems = items.filter((item) => destinationKeys.has(item.key));
@@ -9021,7 +9028,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
       setMyFlowStepDownloadedKey(exportKey);
       window.setTimeout(() => setMyFlowStepDownloadedKey(''), 1600);
-      return;
+      const outputCount = (ics.match(/BEGIN:VEVENT/g) ?? []).length;
+      return buildFlowExportResultReceipt({
+        plan,
+        destination,
+        resultKind: 'download',
+        outputCount,
+        filename: plan.filenameByDestination.calendar,
+      });
     }
 
     const artifacts = buildPersonalStructuralListExportArtifactsFromRows({
@@ -9040,7 +9054,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       : destination === 'checklist'
         ? '체크리스트 복사됨'
         : '시트로 복사됨';
-    await copyMyFlowStepText(output, exportKey, feedback);
+    const copied = await copyMyFlowStepText(output, exportKey, feedback);
+    return buildFlowExportResultReceipt({
+      plan,
+      destination,
+      resultKind: 'copy',
+      outputCount: copied ? scopedItems.length : 0,
+      status: copied ? 'success' : 'error',
+    });
   };
 
   const toggleMyFlowStructureFlow = (flow: MySavedFlow) => {
@@ -10445,6 +10466,48 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     });
     const currentItemExportCount = currentItemExportPlan.includedCount;
     const portableExportSummary = canDownloadPortableCalendar ? '메모 · 체크리스트 · 시트 행 · 캘린더' : '메모 · 체크리스트 · 시트 행 · 날짜 필요';
+    const currentItemReceipt = myFlowCurrentItemExportReceipt?.key === portableExportKey
+      ? myFlowCurrentItemExportReceipt.receipt
+      : null;
+    const exportCurrentMyFlowItem = async (destination: FlowExportDestination) => {
+      let receipt: FlowExportResultReceipt;
+      if (destination === 'calendar') {
+        const outputCount = downloadMyFlowStepCalendar(
+          portableExportInput,
+          portableExportKey,
+          `${row.flow.progress.slug}-${row.id}`,
+          currentItemExportPlan.filenameByDestination.calendar,
+        );
+        receipt = buildFlowExportResultReceipt({
+          plan: currentItemExportPlan,
+          destination,
+          resultKind: 'download',
+          outputCount,
+          status: outputCount > 0 ? 'success' : 'error',
+          filename: currentItemExportPlan.filenameByDestination.calendar,
+        });
+      } else {
+        const output = destination === 'memo'
+          ? buildMyFlowStepPortableText(portableExportInput)
+          : destination === 'checklist'
+            ? buildMyFlowStepChecklistText(portableExportInput)
+            : buildMyFlowStepSheetTsv(portableExportInput);
+        const feedback = destination === 'memo'
+          ? FLOW_EXPORT_FEEDBACK.memoCopied
+          : destination === 'checklist'
+            ? FLOW_EXPORT_FEEDBACK.checklistCopied
+            : '시트 행 복사됨';
+        const copied = await copyMyFlowStepText(output, portableExportKey, feedback);
+        receipt = buildFlowExportResultReceipt({
+          plan: currentItemExportPlan,
+          destination,
+          resultKind: 'copy',
+          outputCount: copied ? 1 : 0,
+          status: copied ? 'success' : 'error',
+        });
+      }
+      setMyFlowCurrentItemExportReceipt({ key: portableExportKey, receipt });
+    };
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
     const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
@@ -11638,9 +11701,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </a>
             ) : null}
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">형식</p>
+              <p className="text-xs font-semibold text-slate-700">2 · 예상 결과</p>
               <span className="text-[11px] font-semibold text-slate-500">
-                {portableExportSummary}
+                {currentItemExportPlan.metrics.datedCount > 0 ? '날짜 있음' : '날짜 없음'} · {portableExportSummary}
               </span>
             </div>
             {showPersonalCopyPortableExportNote ? (
@@ -11648,12 +11711,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 원본 출처는 유지하고, 복사/파일은 내 개인 사본 기준으로 만듭니다.
               </p>
             ) : null}
-            <div className="mt-2 flex flex-wrap gap-2">
+            <p className="mt-3 text-xs font-semibold text-slate-700">3 · 형식</p>
+            <div className="mt-1 flex flex-wrap gap-2">
               <button
                 type="button"
                 data-testid="my-flow-detail-copy-portable-text"
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
-                onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
+                onClick={() => void exportCurrentMyFlowItem('memo')}
               >
                 {FLOW_EXPORT_LABELS.memoCopy} · {currentItemExportCount}개
               </button>
@@ -11661,7 +11725,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-detail-copy-checklist-text"
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
-                onClick={() => copyMyFlowStepChecklistText(portableExportInput, portableExportKey)}
+                onClick={() => void exportCurrentMyFlowItem('checklist')}
               >
                 체크리스트 복사 · {currentItemExportCount}개
               </button>
@@ -11669,7 +11733,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-detail-copy-sheet-row"
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
-                onClick={() => copyMyFlowStepSheetRow(portableExportInput, portableExportKey)}
+                onClick={() => void exportCurrentMyFlowItem('sheet')}
               >
                 시트 행 복사 · {currentItemExportCount}개
               </button>
@@ -11678,7 +11742,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   type="button"
                   data-testid="my-flow-detail-download-ics"
                   className="rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
-                  onClick={() => downloadMyFlowStepCalendar(portableExportInput, portableExportKey, `${row.flow.progress.slug}-${row.id}`)}
+                  onClick={() => void exportCurrentMyFlowItem('calendar')}
                 >
                   {FLOW_EXPORT_LABELS.calendarFile} · {currentItemExportPlan.countByDestination.calendar}개
                 </button>
@@ -11699,6 +11763,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">{FLOW_EXPORT_FEEDBACK.calendarReady}</span>
               ) : null}
             </div>
+            {currentItemReceipt ? <FlowExportReceipt receipt={currentItemReceipt} /> : null}
           </details>
         ) : (
           <section
@@ -11708,9 +11773,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             className="mt-3 rounded-md bg-white px-3 py-3"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-slate-700">현재 항목 가져가기 · {currentItemExportCount}개</p>
+              <p className="text-xs font-semibold text-slate-700">1 · 범위 · 현재 항목 {currentItemExportCount}개</p>
               <span className="text-[11px] font-semibold text-slate-500">
-                {portableExportSummary}
+                {currentItemExportPlan.metrics.datedCount > 0 ? '날짜 있음' : '날짜 없음'}
               </span>
             </div>
             {showPersonalCopyPortableExportNote ? (
@@ -11718,12 +11783,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 원본 출처는 유지하고, 복사/파일은 내 개인 사본 기준으로 만듭니다.
               </p>
             ) : null}
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-slate-700">2 · 예상 결과</p>
+              <span className="text-[11px] font-semibold text-slate-500">{portableExportSummary}</span>
+            </div>
+            <p className="mt-3 text-xs font-semibold text-slate-700">3 · 형식</p>
+            <div className="mt-1 flex flex-wrap gap-2">
               <button
                 type="button"
                 data-testid="my-flow-detail-copy-portable-text"
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
-                onClick={() => copyMyFlowStepPortableText(portableExportInput, portableExportKey)}
+                onClick={() => void exportCurrentMyFlowItem('memo')}
               >
                 {FLOW_EXPORT_LABELS.memoCopy} · {currentItemExportCount}개
               </button>
@@ -11731,7 +11801,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-detail-copy-checklist-text"
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
-                onClick={() => copyMyFlowStepChecklistText(portableExportInput, portableExportKey)}
+                onClick={() => void exportCurrentMyFlowItem('checklist')}
               >
                 체크리스트 복사 · {currentItemExportCount}개
               </button>
@@ -11739,7 +11809,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-detail-copy-sheet-row"
                 className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-blue-200 hover:text-blue-700"
-                onClick={() => copyMyFlowStepSheetRow(portableExportInput, portableExportKey)}
+                onClick={() => void exportCurrentMyFlowItem('sheet')}
               >
                 시트 행 복사 · {currentItemExportCount}개
               </button>
@@ -11748,7 +11818,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   type="button"
                   data-testid="my-flow-detail-download-ics"
                   className="rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
-                  onClick={() => downloadMyFlowStepCalendar(portableExportInput, portableExportKey, `${row.flow.progress.slug}-${row.id}`)}
+                  onClick={() => void exportCurrentMyFlowItem('calendar')}
                 >
                   {FLOW_EXPORT_LABELS.calendarFile} · {currentItemExportPlan.countByDestination.calendar}개
                 </button>
@@ -11769,6 +11839,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <span data-testid="my-flow-detail-download-feedback" className="inline-flex min-h-8 items-center rounded-md bg-blue-50 px-2 text-[11px] font-semibold text-blue-700">{FLOW_EXPORT_FEEDBACK.calendarReady}</span>
               ) : null}
             </div>
+            {currentItemReceipt ? <FlowExportReceipt receipt={currentItemReceipt} /> : null}
           </section>
         )}
         {!isDetailEditing && isDrawerMode && hasAdvancedMeta ? (
@@ -13377,7 +13448,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }));
         }}
         onExport={(destination, plan) => {
-          void exportMyFlowScope(flow, destination, plan);
+          return exportMyFlowScope(flow, destination, plan);
         }}
       />
     );
@@ -17051,6 +17122,43 @@ export function PublicFlow({ slug }: { slug: string }) {
   const useP24CompactPublicFrame = !compactJeonsePage;
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
   const publicSaveBeforeRows = getPublicSaveBeforePreviewRows(bundle, displayAnchor);
+  const publicCalendarPreviewIcs = canExportCalendar && exportAnchor
+    ? (
+        hasDatedCalendarSchedule(bundle)
+          ? buildIcsCalendar(bundle, checks, exportAnchor, itemStates)
+          : buildCalendarIcs(bundle, exportAnchor, weekdaySelection)
+      )
+    : '';
+  const publicCalendarPreviewEventCount = (publicCalendarPreviewIcs.match(/BEGIN:VEVENT/g) ?? []).length;
+  const publicRoutineVisibleOccurrenceCount = bundle.flow.structure_type === 'routine'
+    ? getEffectiveRoutinePreviewRows(bundle, displayAnchor, weekdaySelection).length
+    : 0;
+  const publicScheduledItemIds = new Set(
+    getScheduleEntries(bundle, exportAnchor).map((entry) => entry.id),
+  );
+  const publicFirstScheduledItemId =
+    publicSaveBeforeRows.find((row) => publicScheduledItemIds.has(row.id))?.id ??
+    (publicCalendarPreviewEventCount > 0 ? publicSaveBeforeRows[0]?.id : undefined);
+  const publicExportScopeItems: FlowExportPanelItem[] = publicSaveBeforeRows.map((row) => {
+    const calendarEligible = publicScheduledItemIds.has(row.id) || (
+      publicScheduledItemIds.size === 0 && row.id === publicFirstScheduledItemId
+    );
+    return {
+      key: row.id,
+      title: row.title,
+      calendarEligible,
+      ...(calendarEligible
+        ? { calendarOutputCount: row.id === publicFirstScheduledItemId ? publicCalendarPreviewEventCount : 0 }
+        : {}),
+      status: checks[row.id] ? 'done' : 'pending',
+      ...(bundle.flow.structure_type === 'routine' && row.id === publicFirstScheduledItemId
+        ? {
+            recurrenceSeriesId: `${bundle.flow.slug}::series`,
+            calendarVisibleOccurrenceCount: publicRoutineVisibleOccurrenceCount,
+          }
+        : {}),
+    };
+  });
 
   const toggle = (id: string) => {
     setChecks((value) => {
@@ -17089,10 +17197,12 @@ export function PublicFlow({ slug }: { slug: string }) {
       };
     });
   };
-  const copy = async () => {
+  const copy = async (): Promise<boolean> => {
     const text = buildText(bundle, checks, exportAnchor, itemStates, comparisonState, workbenchState);
+    let copied = false;
     try {
       await navigator.clipboard.writeText(text);
+      copied = true;
       setCopyState(FLOW_EXPORT_FEEDBACK.memoCopied);
     } catch {
       const textarea = document.createElement('textarea');
@@ -17102,47 +17212,89 @@ export function PublicFlow({ slug }: { slug: string }) {
       textarea.style.left = '-9999px';
       document.body.appendChild(textarea);
       textarea.select();
-      const copied = document.execCommand('copy');
+      copied = document.execCommand('copy');
       document.body.removeChild(textarea);
       setCopyState(copied ? FLOW_EXPORT_FEEDBACK.memoCopied : FLOW_EXPORT_FEEDBACK.copyFailed);
     }
     window.setTimeout(() => setCopyState(''), 1600);
+    return copied;
   };
-  const downloadExcel = async () => {
+  const downloadExcel = async (): Promise<boolean> => {
     setDownloadState(FLOW_EXPORT_FEEDBACK.sheetPreparing);
-    const sheets = buildWorkbookSheets(bundle, checks, exportAnchor, {
-      weekdays: weekdaySelection,
-      reactionLogs,
-      itemStates,
-      comparisonState,
-      workbenchState,
-    });
-    const buffer = await buildXlsxBuffer(sheets);
-    const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${bundle.flow.slug}.xlsx`;
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-    setDownloadState(FLOW_EXPORT_FEEDBACK.sheetReady);
-    window.setTimeout(() => setDownloadState(''), 1600);
+    try {
+      const sheets = buildWorkbookSheets(bundle, checks, exportAnchor, {
+        weekdays: weekdaySelection,
+        reactionLogs,
+        itemStates,
+        comparisonState,
+        workbenchState,
+      });
+      const buffer = await buildXlsxBuffer(sheets);
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${bundle.flow.slug}.xlsx`;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      setDownloadState(FLOW_EXPORT_FEEDBACK.sheetReady);
+      window.setTimeout(() => setDownloadState(''), 1600);
+      return true;
+    } catch {
+      setDownloadState('시트 파일을 만들지 못했어요');
+      window.setTimeout(() => setDownloadState(''), 2400);
+      return false;
+    }
   };
-  const downloadCalendar = () => {
-    if (!canExportCalendar || !exportAnchor) return;
+  const downloadCalendar = (filename = `${bundle.flow.slug}.ics`): number => {
+    if (!canExportCalendar || !exportAnchor) return 0;
     setCalendarState(FLOW_EXPORT_FEEDBACK.calendarPreparing);
-    const ics = hasDatedCalendarSchedule(bundle)
-      ? buildIcsCalendar(bundle, checks, exportAnchor, itemStates)
-      : buildCalendarIcs(bundle, exportAnchor, weekdaySelection);
+    const ics = publicCalendarPreviewIcs;
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `${bundle.flow.slug}.ics`;
+    link.download = filename;
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     setCalendarState(FLOW_EXPORT_FEEDBACK.calendarReady);
     window.setTimeout(() => setCalendarState(''), 1600);
+    return (ics.match(/BEGIN:VEVENT/g) ?? []).length;
+  };
+  const exportPublicFlowScope = async (
+    destination: FlowExportDestination,
+    plan: FlowExportScopePlan,
+  ): Promise<FlowExportResultReceipt> => {
+    if (destination === 'calendar') {
+      const outputCount = downloadCalendar(plan.filenameByDestination.calendar);
+      return buildFlowExportResultReceipt({
+        plan,
+        destination,
+        resultKind: 'download',
+        outputCount,
+        status: outputCount > 0 ? 'success' : 'error',
+        filename: plan.filenameByDestination.calendar,
+      });
+    }
+    if (destination === 'sheet') {
+      const downloaded = await downloadExcel();
+      return buildFlowExportResultReceipt({
+        plan,
+        destination,
+        resultKind: 'download',
+        outputCount: downloaded ? plan.countByDestination.sheet : 0,
+        status: downloaded ? 'success' : 'error',
+        filename: downloaded ? `${bundle.flow.slug}.xlsx` : undefined,
+      });
+    }
+    const copied = await copy();
+    return buildFlowExportResultReceipt({
+      plan,
+      destination,
+      resultKind: 'copy',
+      outputCount: copied ? plan.countByDestination[destination] : 0,
+      status: copied ? 'success' : 'error',
+    });
   };
   const copyToEditableDraft = () => {
     if (!bundle) return;
@@ -17267,6 +17419,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       exportActions={{
         done: exportDone,
         canExportCalendar,
+        flowItems: publicExportScopeItems,
         copyState,
         downloadState,
         calendarState,
@@ -17274,6 +17427,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         onDownloadExcel: downloadExcel,
         onDownloadCalendar: downloadCalendar,
         onCopyToEditableDraft: copyToEditableDraft,
+        onExportFlow: exportPublicFlowScope,
       }}
     />
   );
@@ -17472,7 +17626,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             </div>
             <div className="mt-5 grid gap-2">
               {showCalendarExportAction ? (
-                <button data-testid="mobile-export-calendar" aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${publicDisplayTitle} .ics 일정`} className="flex items-center gap-3 rounded-xl bg-[#EEF1FF] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={downloadCalendar}>
+                <button data-testid="mobile-export-calendar" aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${publicDisplayTitle} .ics 일정`} className="flex items-center gap-3 rounded-xl bg-[#EEF1FF] px-4 py-3 text-left text-sm font-semibold text-[#1B1A17] disabled:text-[#A7A39A]" disabled={done === 0} onClick={() => { downloadCalendar(); }}>
                   <span aria-hidden="true" className="h-3 w-3 rounded-sm border border-[#3654FF] bg-white" />
                   <span className="flex-1">
                     <span className="block">{FLOW_EXPORT_LABELS.calendarFile}</span>

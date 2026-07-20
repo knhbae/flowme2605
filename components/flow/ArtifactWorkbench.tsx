@@ -16,9 +16,15 @@ import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEn
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
+import type {
+  FlowExportDestination,
+  FlowExportResultReceipt,
+  FlowExportScopePlan,
+} from '@/lib/flow/export-scope';
 import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
 import { stripUserFacingInternalLines } from '@/lib/flow/user-surface-guardrails';
+import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 
 type ArtifactWorkbenchProps = {
   bundle: FlowBundle;
@@ -37,6 +43,7 @@ type ArtifactWorkbenchProps = {
 type ArtifactExportActions = {
   done: number;
   canExportCalendar: boolean;
+  flowItems: FlowExportPanelItem[];
   copyState: string;
   downloadState: string;
   calendarState: string;
@@ -44,6 +51,10 @@ type ArtifactExportActions = {
   onDownloadExcel: () => void;
   onDownloadCalendar: () => void;
   onCopyToEditableDraft: () => void;
+  onExportFlow: (
+    destination: FlowExportDestination,
+    plan: FlowExportScopePlan,
+  ) => FlowExportResultReceipt | void | Promise<FlowExportResultReceipt | void>;
 };
 
 type ArtifactExportActionKind = 'copy' | 'excel' | 'calendar' | 'draft';
@@ -256,39 +267,31 @@ function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportAct
         <span className="hidden shrink-0 text-xs font-semibold text-[#737B77] group-open:inline">접기</span>
       </summary>
       <div className="mt-3 rounded-lg border border-[#DDE4E0] bg-white p-3 sm:p-4">
-        <div className="grid w-full gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {actions.canExportCalendar ? (
-            <button
-              type="button"
-              data-testid="public-flow-export-format-option"
-              className={FLOWME_BUTTON_SECONDARY_CLASS}
-              aria-label={`${FLOW_EXPORT_LABELS.calendarFile}: ${displayTitle}`}
-              onClick={actions.onDownloadCalendar}
-            >
-              {FLOW_EXPORT_LABELS.calendarFile}
-            </button>
-          ) : null}
+        <FlowExportPanel
+          flowTitle={displayTitle}
+          items={actions.flowItems}
+          open
+          scope="flow"
+          selectedKeys={[]}
+          fixedScope
+          showEntry={false}
+          showClose={false}
+          destinations={['calendar', 'sheet', 'memo']}
+          destinationCopyOverride={{
+            calendar: { label: FLOW_EXPORT_LABELS.calendarFile, result: '날짜 있는 항목' },
+            sheet: { label: FLOW_EXPORT_LABELS.sheetFile, result: 'Flow 전체' },
+            memo: { label: FLOW_EXPORT_LABELS.memoCopy, result: 'Flow 전체' },
+          }}
+          destinationTestId={() => 'public-flow-export-format-option'}
+          onOpenChange={() => undefined}
+          onScopeChange={() => undefined}
+          onSelectedKeysChange={() => undefined}
+          onExport={actions.onExportFlow}
+        />
+        <div className="mt-3 border-t border-[#E7E4DD] pt-3">
           <button
             type="button"
-            data-testid="public-flow-export-format-option"
-            className={FLOWME_BUTTON_SECONDARY_CLASS}
-            aria-label={`${FLOW_EXPORT_LABELS.sheetFile}: ${displayTitle}`}
-            onClick={actions.onDownloadExcel}
-          >
-            {FLOW_EXPORT_LABELS.sheetFile}
-          </button>
-          <button
-            type="button"
-            data-testid="public-flow-export-format-option"
-            className={FLOWME_BUTTON_SECONDARY_CLASS}
-            aria-label={`${FLOW_EXPORT_LABELS.memoCopy}: ${displayTitle}`}
-            onClick={actions.onCopyText}
-          >
-            {FLOW_EXPORT_LABELS.memoCopy}
-          </button>
-          <button
-            type="button"
-            data-testid="public-flow-export-format-option"
+            data-testid="public-flow-editable-draft-action"
             className={FLOWME_BUTTON_SECONDARY_CLASS}
             aria-label={`${FLOW_EXPORT_LABELS.editableDraft}: ${displayTitle}`}
             onClick={actions.onCopyToEditableDraft}
@@ -296,7 +299,6 @@ function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportAct
             {FLOW_EXPORT_LABELS.editableDraft}
           </button>
         </div>
-        <ArtifactExportStatus actions={actions} />
       </div>
     </details>
   );
