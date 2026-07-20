@@ -295,10 +295,14 @@ test.describe('P24 execution trust regressions', () => {
     );
     const feedback = flow.getByTestId('my-flow-completion-feedback');
     await expect(feedback).toBeVisible();
+    await expect(feedback.getByTestId('my-flow-reuse-open')).toHaveText('새 이사일로 다시 쓰기');
     await feedback.getByTestId('my-flow-reuse-open').click();
     const reusePanel = feedback.getByTestId('my-flow-reuse-panel');
     await reusePanel.getByTestId('my-flow-reuse-anchor-input').fill(nextAnchor);
     await reusePanel.getByLabel('내가 바꾼 날짜 유지').check();
+    await expect(reusePanel.getByTestId('my-flow-reuse-current-anchor')).toHaveText('8월 10일');
+    await expect(reusePanel.getByTestId('my-flow-reuse-next-anchor')).toHaveText('10월 20일');
+    await expect(reusePanel.getByTestId('my-flow-reuse-fixed-date-result')).toHaveText('1개 유지');
     const evidenceDir = process.env.FLOWME_P24_F2B_EVIDENCE_DIR;
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });

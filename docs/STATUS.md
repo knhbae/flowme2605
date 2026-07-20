@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~12 complete; P26-13 reuse/anchor policy next)
+**Last Updated:** 2026-07-20 (P26-01~13 complete; P26-14 undated inbox/batch scheduling next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, and P26-08~12 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, and one reversible completion contract. P26-13 next separates anchor-linked dates from fixed personal dates when reusing a Flow. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, and P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, one reversible completion contract, and independent reuse with explicit anchor-linked/fixed-date policy. P26-14 next makes undated work and batch placement explicit in Calendar. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-13 reuse and anchor-linked/fixed date policy |
+| Active product gate | P26-14 undated inbox and batch scheduling |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Preserve past run history while making reuse policy explicit for anchor-linked and personally fixed dates |
+| AI action now | Make undated work visible and batch-placeable without mixing it into dated Calendar execution |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-13 reuse with a new anchor: Completed dated Flows now expose a context-aware `새 이사일/기준일로 다시 쓰기` action and a compact old/new anchor preview. Anchor-linked dates, fixed personal date keep/reset, completion reset, and past-run preservation are visible before commit. The existing run registry remains canonical: a new run ID is created, old completion/memo/reflection/correction data remain archived, and new-run ICS uses the new anchor. Current unit is `556 / 556`; dated reset, date-free, fixed-date keep, version-review, and feedback compatibility Playwright scenarios are `6 / 6`; build is `18 / 18`; overflow and console/page errors are `0`. Observed-user sessions remain `0`. See [P26-13 evidence](./content-audit/2026-07-20-p26-13-reuse-anchor-policy-evidence/README.md).
 
 - 2026-07-20 P26-12 completion undo and reopen: Ordinary tasks now use `완료 체크 / 다시 열기`, while recurring tasks include occurrence date and `이번 회차` scope in the same checkbox. Completion shows an action-focused, focus-pausing undo status above mobile navigation; undo restores the same visible row focus. Persistent reopen shows a receipt and returns to the same item detail. Mobile/wide item or occurrence identity, structural membership, and export membership remain stable. Current unit is `3 / 3`, dedicated completion/recurrence Playwright is `2 / 2`, affected compatibility scenarios are `9 / 9`, build is `18 / 18`, and overflow/console/page errors are `0`. Observed-user sessions remain `0`. See [P26-12 evidence](./content-audit/2026-07-20-p26-12-completion-reopen-evidence/README.md).
 

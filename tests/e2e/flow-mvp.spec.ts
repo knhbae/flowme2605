@@ -7456,11 +7456,15 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   await feedback.getByTestId('my-flow-source-correction-open').click();
   await feedback.getByTestId('my-flow-source-correction-note').fill('관리사무소 운영 시간을 먼저 확인하도록 원본 순서를 검토해 주세요.');
   await feedback.getByTestId('my-flow-source-correction-save').click();
+  await expect(feedback.getByTestId('my-flow-reuse-open')).toHaveText('새 이사일로 다시 쓰기');
   await feedback.getByTestId('my-flow-reuse-open').click();
   const reusePanel = feedback.getByTestId('my-flow-reuse-panel');
-  await expect(feedback).toContainText('지난 실행은 기록으로 남기고 완료 상태만 새로 시작합니다.');
+  await expect(feedback).toContainText('지난 실행은 보관하고 완료 체크만 새로 시작합니다.');
   await expect(reusePanel.getByTestId('my-flow-reuse-anchor-input')).toHaveAccessibleName('새 이사일');
   await expect(reusePanel.getByTestId('my-flow-reuse-fixed-date-policy')).toContainText('따로 바꾼 날짜 1개');
+  await expect(reusePanel.getByTestId('my-flow-reuse-current-anchor')).toHaveText('8월 10일');
+  await expect(reusePanel.getByTestId('my-flow-reuse-next-anchor')).toHaveText('선택 필요');
+  await expect(reusePanel.getByTestId('my-flow-reuse-previous-run-result')).toHaveText('그대로 보관');
   await expectNoInternalUserSurfaceCopy(reusePanel);
   await expectNoUserFacingRawIsoDate(reusePanel);
   await expectNoUserFacingDisplayLeakage(reusePanel);
@@ -7468,17 +7472,38 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   await reusePanel.getByTestId('my-flow-reuse-start').click();
   await expect(reusePanel.getByTestId('my-flow-reuse-error')).toHaveText('이사일을 선택해 주세요.');
   await reusePanel.getByTestId('my-flow-reuse-anchor-input').fill('2026-10-20');
+  await expect(reusePanel.getByTestId('my-flow-reuse-next-anchor')).toHaveText('10월 20일');
+  await expect(reusePanel.getByTestId('my-flow-reuse-linked-date-result')).toHaveText(`${movingBundle?.items.length}개 재배치`);
   await reusePanel.getByTestId('my-flow-reuse-start').click();
   await expect(reusePanel.getByTestId('my-flow-reuse-error')).toHaveText('따로 바꾼 날짜를 어떻게 처리할지 선택해 주세요.');
   await reusePanel.getByLabel('새 이사일에 맞추기').check();
+  await expect(reusePanel.getByTestId('my-flow-reuse-fixed-date-result')).toHaveText('1개 재계산');
   if (evidenceDir) {
     await reusePanel.scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${evidenceDir}/01-completed-flow-reuse-mobile.png` });
   }
-  await reusePanel.getByTestId('my-flow-reuse-start').click();
+  await page.setViewportSize({ width: 1024, height: 900 });
+  const wideReuseFlow = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`);
+  const wideReusePanel = wideReuseFlow.getByTestId('my-flow-reuse-panel');
+  await expect(wideReusePanel).toBeVisible();
+  await expect(wideReusePanel.getByTestId('my-flow-reuse-current-anchor')).toHaveText('8월 10일');
+  await expect(wideReusePanel.getByTestId('my-flow-reuse-next-anchor')).toHaveText('10월 20일');
+  await expect(wideReusePanel.getByTestId('my-flow-reuse-fixed-date-result')).toHaveText('1개 재계산');
+  await expectNoHorizontalOverflow(page);
+  if (evidenceDir) {
+    await wideReusePanel.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${evidenceDir}/02-completed-flow-reuse-wide.png`, fullPage: true });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileReusePanel = page
+    .locator(`[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`)
+    .getByTestId('my-flow-reuse-panel');
+  await expect(mobileReusePanel).toBeVisible();
+  await mobileReusePanel.getByTestId('my-flow-reuse-start').click();
 
   await page.getByTestId('my-flow-view-flow').click();
   await expect(mobileFlow.getByTestId('my-flow-reuse-status')).toContainText('새 이사일 10월 20일로 시작했어요. 지난 실행은 기록으로 남아 있어요.');
+  await expect(mobileFlow.getByTestId('my-flow-reuse-status-detail')).toHaveText('따로 고친 날짜 1개 재계산 · 완료 체크 새로 시작');
   await expect(mobileFlow.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
   const pastRuns = mobileFlow.getByTestId('my-flow-past-runs');
   await expect(pastRuns.locator(':scope > summary')).toHaveText('지난 실행 1회');
@@ -7557,6 +7582,18 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   });
   expect(state.itemDrafts[state.originalDraftKey]).toBeUndefined();
 
+  await mobileFlow.getByTestId('my-flow-export-entry').click();
+  const newRunExport = mobileFlow.getByTestId('my-flow-export-panel');
+  await expect(newRunExport.getByTestId('my-flow-export-scope-summary')).toContainText('Flow 전체');
+  const calendarDownloadPromise = page.waitForEvent('download');
+  await newRunExport.getByTestId('my-flow-export-calendar').click();
+  const calendarDownload = await calendarDownloadPromise;
+  const calendarDownloadPath = await calendarDownload.path();
+  expect(calendarDownloadPath).toBeTruthy();
+  const newRunIcs = fs.readFileSync(calendarDownloadPath as string, 'utf8');
+  expect(newRunIcs).toContain('DTSTART;VALUE=DATE:20261020');
+  expect(newRunIcs).not.toContain('DTSTART;VALUE=DATE:20260810');
+
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.reload();
   await page.getByTestId('my-flow-view-flow').click();
@@ -7604,7 +7641,10 @@ test('completed date-free My Flow reuses the current copy without asking for a d
   await feedback.getByTestId('my-flow-reuse-open').click();
   const reusePanel = feedback.getByTestId('my-flow-reuse-panel');
   await expect(reusePanel.getByTestId('my-flow-reuse-anchor-input')).toHaveCount(0);
+  await expect(feedback.getByTestId('my-flow-reuse-open')).toHaveText('접기');
   await expect(reusePanel).toContainText('현재 항목과 내가 고친 내용은 유지하고 완료 체크만 비웁니다.');
+  await expect(reusePanel.getByTestId('my-flow-reuse-linked-date-result')).toHaveText(`${flowBundle?.items.length}개 유지`);
+  await expect(reusePanel.getByTestId('my-flow-reuse-previous-run-result')).toHaveText('그대로 보관');
   if (evidenceDir) {
     await reusePanel.scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${evidenceDir}/04-date-free-reuse-mobile.png` });

@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-13 reuse and anchor-linked/fixed date policy
+**Next Milestone:** P26-14 undated inbox and batch scheduling
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -33,7 +33,7 @@ Decision package: [P26-00C product-object and journey decision](./content-audit/
 | Decision | P26-00C | One Flow object, integrated discovery card, dual save/adjust path, adaptive whole Flow, Calendar tray/editor decision | Complete as internal implementation contract |
 | Correctness | P26-01~05 | Date intent, canonical receipt, recurrence, memo segmentation, projection identity | Complete as current command/browser evidence |
 | Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Complete as current browser evidence |
-| My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | P26-08~12 complete; P26-13 next |
+| My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Complete as current command/browser evidence |
 | Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Pending |
 | Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | Pending |
 

@@ -57,7 +57,7 @@
 - [x] P26-10 quick/advanced editor
 - [x] P26-11 structural/batch mode
 - [x] P26-12 one completion control/undo/reopen
-- [ ] P26-13 reuse anchor-linked/fixed policy
+- [x] P26-13 reuse anchor-linked/fixed policy
 
 ## P26-14~16 Calendar And Export
 

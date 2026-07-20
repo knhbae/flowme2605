@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-13",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "5bb0a9c",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "reference_pattern"
+  ],
+  "markers": {
+    "reuseEntryLabelByFlow": {
+      "moving": "새 이사일로 다시 쓰기",
+      "genericDated": "새 {Flow별 기준일 라벨}로 다시 쓰기",
+      "dateFree": "새 실행으로 다시 쓰기"
+    },
+    "reuseCreatesIndependentRun": true,
+    "previousRunPreserved": true,
+    "previousRunCompletionPreserved": true,
+    "previousRunPersonalValuesPreserved": true,
+    "previousRunReflectionPreserved": true,
+    "previousRunCorrectionDraftPreserved": true,
+    "newRunCompletionReset": true,
+    "reusePreviewVisibleByViewport": {
+      "390x844": true,
+      "1024x900": true
+    },
+    "reusePreviewOldAnchor": "2026-08-10",
+    "reusePreviewNewAnchor": "2026-10-20",
+    "anchorLinkedDateRecalculatedCount": 24,
+    "fixedDateOverrideCount": 1,
+    "fixedDatePolicyRequiredWhenNeeded": true,
+    "fixedDateKeepPolicyApplied": true,
+    "fixedDateResetPolicyApplied": true,
+    "fixedDateKeepRekeyedToNewAnchorIdentity": true,
+    "reuseReceiptVisible": true,
+    "newRunIcsUsesNewAnchor": true,
+    "newRunIcsOldAnchorEventCount": 0,
+    "dateFreeReuseAnchorInputCount": 0,
+    "dateFreeReuseItemSetPreserved": true,
+    "reviewedVersionReuseBehaviorChanged": false,
+    "sourceMutationCount": 0,
+    "storageSchemaChanged": false,
+    "horizontalOverflowCount": 0,
+    "fixedBottomNavigationOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "observedUserValidated": false
+  },
+  "viewports": [
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "fixture": "moving-d30-basic completed run with one fixed date",
+      "policy": "reset_to_anchor",
+      "previewVisible": true
+    },
+    {
+      "route": "/my",
+      "viewport": "1024x900",
+      "fixture": "moving-d30-basic completed run with one fixed date",
+      "policy": "reset_to_anchor",
+      "oldNewComparisonVisible": true
+    },
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "fixture": "passport-renewal-docs completed date-free run",
+      "anchorInputCount": 0
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844 and 1024x768",
+      "fixture": "moving-d30-basic keep-fixed-date run",
+      "fixedDateVisibleCount": 1
+    }
+  ],
+  "verification": {
+    "reusePreviewUnit": { "passed": 4, "failed": 0 },
+    "playwrightResetAndDateFree": { "passed": 2, "failed": 0 },
+    "playwrightKeepFixedDate": { "passed": 1, "failed": 0 },
+    "playwrightCompatibility": { "passed": 3, "failed": 0 },
+    "fullUnit": { "passed": 556, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "securityAudit": { "high": 0, "critical": 0, "moderate": 2 },
+    "docsCheck": { "passed": true, "localLinkCount": 2630 },
+    "diffCheck": { "passed": true }
+  }
+}

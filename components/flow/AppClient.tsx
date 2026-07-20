@@ -94,6 +94,7 @@ import {
   isRetiredPersonalCopyBundle,
 } from '@/lib/flow/runtime-content-policy';
 import { countFlowRunFixedDateOverrides, type FlowRunFixedDatePolicy } from '@/lib/flow/flow-run-reuse';
+import { buildFlowRunReusePreview } from '@/lib/flow/flow-run-reuse-preview';
 import {
   buildFlowVersionReview,
   buildFlowVersionReviewPersonalCopy,
@@ -3510,6 +3511,7 @@ type MyFlowReuseDraft = {
 type MyFlowReuseNotice = {
   flowSlug: string;
   message: string;
+  detail: string;
 };
 const MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY = 'flow:my-flow:hidden-flows';
 const MY_FLOW_WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
@@ -7781,6 +7783,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : requiresAnchor
           ? `새 ${anchorContext.label} ${formatMyFlowDisplayDate(anchor)}로 시작했어요. 지난 실행은 기록으로 남아 있어요.`
           : '새 실행을 시작했어요. 지난 실행은 기록으로 남아 있어요.',
+      detail: [
+        myFlowReuseDraft.fixedDatePolicy === 'keep_fixed_dates'
+          ? `따로 고친 날짜 ${myFlowReuseDraft.fixedDateOverrideCount}개 유지`
+          : myFlowReuseDraft.fixedDatePolicy === 'reset_to_anchor'
+            ? `따로 고친 날짜 ${myFlowReuseDraft.fixedDateOverrideCount}개 재계산`
+            : '',
+        '완료 체크 새로 시작',
+      ].filter(Boolean).join(' · '),
     });
     setSelectedSavedFlowSlug('all');
     setSavedView('today');
@@ -12553,6 +12563,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <>
         <div data-testid="my-flow-reuse-status" className="mt-3 rounded-md bg-emerald-50 px-3 py-2 text-sm font-semibold leading-5 text-emerald-800" role="status">
           {myFlowReuseNotice.message}
+          <span data-testid="my-flow-reuse-status-detail" className="mt-1 block text-xs font-medium text-emerald-700">
+            {myFlowReuseNotice.detail}
+          </span>
         </div>
         {renderMyFlowRunHistory(flow)}
       </>
@@ -12578,6 +12591,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const requiresAnchor = anchorContext.required;
     const anchorLabel = anchorContext.label;
     const newAnchorLabel = `새 ${anchorLabel}`;
+    const reuseEntryLabel = requiresAnchor ? `새 ${anchorLabel}로 다시 쓰기` : '새 실행으로 다시 쓰기';
     const versionNotice = getMyFlowVersionNoticeForFlow(flow);
     const versionReviewItems = versionNotice?.versionReview?.items.filter(
       (item) => item.flowSlug === flow.progress.slug,
@@ -12585,6 +12599,32 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const correctionRows = Array.from(
       new Map(flow.rows.map((row) => [baseStateId(row.id), row] as const)).values(),
     );
+    const reuseAnchor = activeReuseDraft?.anchor.trim() ?? '';
+    const reuseAnchorValid = /^\d{4}-\d{2}-\d{2}$/.test(reuseAnchor);
+    const reusePreview = activeReuseDraft
+      ? buildFlowRunReusePreview({
+          requiresAnchor,
+          currentAnchor: flow.anchor,
+          ...(reuseAnchorValid ? { nextAnchor: reuseAnchor } : {}),
+          currentRows: getMyFlowRows(flow.bundle, flow.anchor).map((row) => ({
+            id: baseStateId(row.id),
+            date: row.date,
+          })),
+          nextRows: (requiresAnchor && !reuseAnchorValid ? [] : getMyFlowRows(flow.bundle, reuseAnchor || flow.anchor)).map((row) => ({
+            id: baseStateId(row.id),
+            date: row.date,
+          })),
+          fixedDateOverrideCount: activeReuseDraft.fixedDateOverrideCount,
+          fixedDatePolicy: activeReuseDraft.fixedDatePolicy,
+        })
+      : null;
+    const fixedDatePreviewLabel = !reusePreview || reusePreview.fixedDateOutcome === 'not_needed'
+      ? ''
+      : reusePreview.fixedDateOutcome === 'kept'
+        ? `${reusePreview.retainedFixedDateOverrideCount}개 유지`
+        : reusePreview.fixedDateOutcome === 'reset'
+          ? `${reusePreview.resetFixedDateOverrideCount}개 재계산`
+          : '처리 방법 선택 필요';
 
     return (
       <section data-testid="my-flow-completion-feedback" className="mt-4 border-t border-slate-200 pt-4">
@@ -12773,9 +12813,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         <div className="mt-4 border-t border-slate-100 pt-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900">같은 준비를 다시 시작하나요?</p>
+              <p className="text-sm font-semibold text-slate-900">같은 Flow를 다시 쓰나요?</p>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                지난 실행은 기록으로 남기고 완료 상태만 새로 시작합니다.
+                지난 실행은 보관하고 완료 체크만 새로 시작합니다.
               </p>
             </div>
             <button
@@ -12785,7 +12825,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               className="min-h-9 shrink-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300"
               onClick={() => (activeReuseDraft ? setMyFlowReuseDraft(null) : openMyFlowReuse(flow))}
             >
-              {activeReuseDraft ? '접기' : '이 Flow 다시 쓰기'}
+              {activeReuseDraft ? '접기' : reuseEntryLabel}
             </button>
           </div>
           {activeReuseDraft ? (
@@ -12898,7 +12938,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     onChange={(event) => updateMyFlowReuseDraft({ anchor: event.target.value })}
                   />
                   <span className="text-xs font-medium leading-5 text-slate-600">
-                    {newAnchorLabel}에 맞춰 전체 일정을 다시 계산합니다.
+                    기준에 연결된 날짜를 새 일정으로 옮깁니다.
                   </span>
                 </label>
               ) : (
@@ -12935,6 +12975,67 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   </div>
                 </fieldset>
               ) : null}
+              {reusePreview ? (
+                <section
+                  id={`my-flow-reuse-preview-${flow.progress.slug}`}
+                  data-testid="my-flow-reuse-preview"
+                  className="border-y border-blue-100 py-3"
+                  aria-label={`${flowTitle} 새 실행 미리보기`}
+                  aria-live="polite"
+                >
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <h5 className="text-sm font-semibold text-slate-950">새 실행 미리보기</h5>
+                    <span data-testid="my-flow-reuse-preview-flow-title" className="text-xs font-semibold text-slate-600">{flowTitle}</span>
+                  </div>
+                  {requiresAnchor ? (
+                    <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2" data-testid="my-flow-reuse-anchor-comparison">
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-semibold text-slate-500">현재 {anchorLabel}</p>
+                        <p data-testid="my-flow-reuse-current-anchor" className="mt-0.5 text-sm font-semibold text-slate-900">
+                          {reusePreview.currentAnchor ? formatMyFlowDisplayDate(reusePreview.currentAnchor) : '기록 없음'}
+                        </p>
+                        {reusePreview.currentRange ? (
+                          <p className="mt-0.5 text-[11px] leading-4 text-slate-500">{formatMyFlowDisplayDateRange(reusePreview.currentRange.start, reusePreview.currentRange.end)}</p>
+                        ) : null}
+                      </div>
+                      <span className="text-base font-semibold text-blue-600" aria-hidden="true">→</span>
+                      <div className="min-w-0 text-right">
+                        <p className="text-[11px] font-semibold text-slate-500">{newAnchorLabel}</p>
+                        <p data-testid="my-flow-reuse-next-anchor" className="mt-0.5 text-sm font-semibold text-slate-900">
+                          {reusePreview.nextAnchor ? formatMyFlowDisplayDate(reusePreview.nextAnchor) : '선택 필요'}
+                        </p>
+                        {reusePreview.nextRange ? (
+                          <p className="mt-0.5 text-[11px] leading-4 text-slate-500">{formatMyFlowDisplayDateRange(reusePreview.nextRange.start, reusePreview.nextRange.end)}</p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+                  <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
+                    <div className="flex items-center justify-between gap-3 border-t border-blue-100 pt-2">
+                      <dt className="text-slate-600">{requiresAnchor ? '기준에 연결된 일정' : '현재 구성'}</dt>
+                      <dd data-testid="my-flow-reuse-linked-date-result" className="font-semibold text-slate-950">
+                        {requiresAnchor
+                          ? reusePreview.ready ? `${reusePreview.linkedDateChangeCount}개 재배치` : '날짜 선택 필요'
+                          : `${reusePreview.nextUndatedItemCount + reusePreview.nextDatedItemCount}개 유지`}
+                      </dd>
+                    </div>
+                    {fixedDatePreviewLabel ? (
+                      <div className="flex items-center justify-between gap-3 border-t border-blue-100 pt-2">
+                        <dt className="text-slate-600">따로 고친 날짜</dt>
+                        <dd data-testid="my-flow-reuse-fixed-date-result" className="font-semibold text-slate-950">{fixedDatePreviewLabel}</dd>
+                      </div>
+                    ) : null}
+                    <div className="flex items-center justify-between gap-3 border-t border-blue-100 pt-2">
+                      <dt className="text-slate-600">완료 체크</dt>
+                      <dd className="font-semibold text-slate-950">비우고 새로 시작</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 border-t border-blue-100 pt-2">
+                      <dt className="text-slate-600">지난 실행</dt>
+                      <dd data-testid="my-flow-reuse-previous-run-result" className="font-semibold text-slate-950">그대로 보관</dd>
+                    </div>
+                  </dl>
+                </section>
+              ) : null}
               {activeReuseDraft.status ? (
                 <p data-testid="my-flow-reuse-error" className="text-xs font-semibold text-amber-700" role="status">
                   {activeReuseDraft.status}
@@ -12952,6 +13053,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <button
                   type="button"
                   data-testid="my-flow-reuse-start"
+                  aria-describedby={`my-flow-reuse-preview-${flow.progress.slug}`}
                   className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white"
                   onClick={() => startMyFlowReuse(flow)}
                 >
