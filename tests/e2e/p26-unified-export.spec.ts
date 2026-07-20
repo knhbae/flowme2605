@@ -69,8 +69,11 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await page.goto('/f/vehicle-inspection-prep');
   const undatedEntry = page.getByTestId('public-flow-export-secondary-entry');
   await undatedEntry.getByTestId('public-flow-export-secondary-toggle').click();
-  const undatedCalendar = undatedEntry.getByRole('button', { name: /캘린더 파일 받기 0개/ });
+  const undatedCalendar = undatedEntry
+    .getByTestId('public-flow-export-format-option')
+    .filter({ hasText: '캘린더 파일' });
   await expect(undatedCalendar).toBeDisabled();
+  await expect(undatedCalendar).toHaveAccessibleName(/캘린더 파일.*사용 불가/);
   await expect(undatedCalendar).toContainText('날짜 있는 항목이 없어요');
 
   await page.getByTestId('public-flow-date-intent-undated').click();

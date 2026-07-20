@@ -17,7 +17,7 @@ export const FLOW_UI_TERTIARY_ACTION_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
 
 export const FLOW_UI_COMPACT_ACTION_CLASS =
-  'inline-flex min-h-10 items-center justify-center rounded-md px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
+  'inline-flex min-h-11 items-center justify-center rounded-md px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
 
 export const FLOW_UI_ICON_ACTION_CLASS =
   'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-sm font-semibold text-[var(--flowme-text-secondary)] transition hover:border-[var(--flowme-text-tertiary)] hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
@@ -44,7 +44,7 @@ export const FLOW_UI_STATUS_INFO_CLASS =
   'border-l-2 border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] px-3 py-2 text-sm text-[var(--flowme-action-strong)]';
 
 export const FLOW_UI_SHEET_CLASS =
-  'absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-lg bg-[var(--flowme-surface)] p-4 shadow-[0_-12px_36px_rgba(27,26,23,0.16)]';
+  'absolute inset-x-0 bottom-0 max-h-[86dvh] overflow-y-auto overscroll-contain rounded-t-lg bg-[var(--flowme-surface)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 shadow-[0_-12px_36px_rgba(27,26,23,0.16)]';
 
 export const FLOW_UI_DANGER_ACTION_CLASS =
   'inline-flex min-h-11 items-center justify-center rounded-md border border-[var(--flowme-danger-border)] bg-[var(--flowme-surface)] px-3 py-2 text-sm font-semibold text-[var(--flowme-danger-strong)] transition hover:bg-[var(--flowme-danger-soft)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)]';

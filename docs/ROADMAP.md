@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-18 responsive execution workspace
+**Next Milestone:** P26-19 six content-shape journey gate
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -35,7 +35,7 @@ Decision package: [P26-00C product-object and journey decision](./content-audit/
 | Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Complete as current browser evidence |
 | My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Complete as current command/browser evidence |
 | Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Complete as current command/browser evidence |
-| Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | P26-17 complete; P26-18 next |
+| Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | P26-17~18 complete; P26-19 next |
 
 P26 is an internal product and implementation program. It does not reopen participant recruitment until the owner explicitly chooses to do so.
 
@@ -126,7 +126,8 @@ There is no active external-user gate. P25 is the deployed internal baseline. Ex
 | Completed | AI, then owner/Claude Design | P26-15 Calendar Flow filter and date move | Keep Flow scope, grid, agenda, count, and single/batch movement on one projection | Filter mismatch is 0 and date movement has preview plus rollback |
 | Completed | AI, then owner/Claude Design | P26-16 unified export scope and result | Keep selected scope, destination count, generated payload, and result receipt on one projection | Export count mismatch and duplicate rows are 0 |
 | Completed | AI, then owner/Claude Design | P26-17 execution component and copy system | Preserve shared execution primitives, tokens, and action labels without changing product ownership contracts | Shared summary/outline/row/receipt/editor/export primitives pass current command/browser evidence |
-| Active | AI, then owner/Claude Design | P26-18 responsive execution workspace | Compose mobile drill-in/sheets and wide task-focused panes from the P26-17 primitives | Overflow/overlap and keyboard blockers are 0 at 390x844 and 1024x768 |
+| Completed | AI, then owner/Claude Design | P26-18 responsive execution workspace | Preserve mobile drill-in/sheets, wide task-focused panes, and explicit pending/error states | Overflow/overlap and keyboard blockers are 0 at 390x844 and 1024x768 |
+| Active | AI, then owner/Claude Design | P26-19 six content-shape journey gate | Exercise six representative Flow shapes with current command/browser evidence | Blocking/High regression 0 and exact current journey accounting exists |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
@@ -147,7 +148,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-P26-00C is selected. P26-01~05 correctness foundation, P26-06~07 discovery/save journey, P26-08~13 My Flow IA/editing/completion/reuse, P26-14~16 Calendar/export alignment, and P26-17 execution component/copy system are complete as internal evidence. Continue with P26-18 responsive workspace composition. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+P26-00C is selected. P26-01~05 correctness foundation, P26-06~07 discovery/save journey, P26-08~13 My Flow IA/editing/completion/reuse, P26-14~16 Calendar/export alignment, and P26-17~18 execution component/copy/responsive integration are complete as internal evidence. Continue with P26-19 six content-shape journey gate. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

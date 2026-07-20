@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   buildFlowExportScopePlan,
   type FlowExportDestination,
@@ -75,6 +75,8 @@ export function FlowExportPanel({
   onExport,
 }: FlowExportPanelProps) {
   const [receipt, setReceipt] = useState<FlowExportResultReceipt | null>(null);
+  const [pendingDestination, setPendingDestination] = useState<FlowExportDestination | null>(null);
+  const receiptContainerRef = useRef<HTMLDivElement>(null);
   const flowPlan = buildFlowExportScopePlan({
     scope: 'flow',
     items,
@@ -95,7 +97,16 @@ export function FlowExportPanel({
 
   useEffect(() => {
     setReceipt(null);
+    setPendingDestination(null);
   }, [flowTitle, scope, selectedKeys.join('|')]);
+
+  useEffect(() => {
+    if (!receipt) return;
+    const frame = window.requestAnimationFrame(() => {
+      receiptContainerRef.current?.scrollIntoView({ block: 'nearest' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [receipt]);
 
   return (
     <FlowExportPlan
@@ -161,7 +172,7 @@ export function FlowExportPanel({
                 type="button"
                 data-testid="my-flow-export-scope-flow"
                 aria-pressed={scope === 'flow'}
-                className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold ${scope === 'flow' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'flow' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                 onClick={() => onScopeChange('flow')}
               >
                 Flow 전체 · {flowPlan.includedCount}개
@@ -170,7 +181,7 @@ export function FlowExportPanel({
                 type="button"
                 data-testid="my-flow-export-scope-selected"
                 aria-pressed={scope === 'selected'}
-                className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold ${scope === 'selected' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'selected' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                 onClick={() => onScopeChange('selected')}
               >
                 직접 선택 · {selectedCount}개
@@ -230,6 +241,8 @@ export function FlowExportPanel({
                 const copy = destinationCopyOverride?.[destination] ?? destinationCopy[destination];
                 const count = plan.countByDestination[destination];
                 const disabled = count === 0;
+                const pending = pendingDestination === destination;
+                const anotherDestinationPending = pendingDestination !== null && !pending;
                 const omitted = plan.metrics.omittedCountByDestination[destination];
                 const disabledReason = destination === 'calendar' && plan.includedCount > 0
                   ? '날짜 있는 항목이 없어요'
@@ -243,16 +256,40 @@ export function FlowExportPanel({
                         ? `personal-draft-copy-${destination}`
                         : `my-flow-export-${destination}`
                     )}
-                    disabled={disabled}
-                    aria-label={`${copy.label} ${count}개`}
+                    disabled={disabled || anotherDestinationPending}
+                    aria-busy={pending || undefined}
+                    aria-label={pending
+                      ? `${copy.label} 준비 중`
+                      : disabled
+                        ? `${copy.label} 사용 불가, ${disabledReason}`
+                        : `${copy.label} ${count}개`}
+                    title={disabled ? disabledReason : undefined}
                     data-export-count={count}
+                    data-export-state={pending ? 'pending' : disabled ? 'disabled' : 'ready'}
                     className="min-h-14 border-b border-r border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-3 py-2 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0"
                     onClick={async () => {
-                      const nextReceipt = await onExport(destination, plan);
-                      if (nextReceipt) setReceipt(nextReceipt);
+                      if (pendingDestination) return;
+                      setPendingDestination(destination);
+                      setReceipt(null);
+                      try {
+                        const nextReceipt = await onExport(destination, plan);
+                        if (nextReceipt) setReceipt(nextReceipt);
+                      } catch {
+                        setReceipt({
+                          scope: plan.scope,
+                          destination,
+                          resultKind: destination === 'calendar' ? 'download' : 'copy',
+                          status: 'error',
+                          outputCount: 0,
+                          omittedCount: plan.includedCount,
+                          message: '가져오지 못했습니다',
+                        });
+                      } finally {
+                        setPendingDestination(null);
+                      }
                     }}
                   >
-                    <span className="block text-sm font-bold">{copy.label}</span>
+                    <span className="block text-sm font-bold">{pending ? '준비 중...' : copy.label}</span>
                     <span className="mt-0.5 block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
                       {disabled
                         ? disabledReason
@@ -265,7 +302,7 @@ export function FlowExportPanel({
           </div>
 
           {receipt ? (
-            <div>
+            <div ref={receiptContainerRef}>
               <FlowPlanStep index={4} label="완료" />
               <FlowExportReceipt receipt={receipt} />
             </div>

@@ -74,9 +74,9 @@
 - [x] `2026-07-19-flow-content-usage-preview-ko.html`의 source rail / compact row / destination preview 패턴을 current product primitive와 비교
 - [x] shared card/row/editor/receipt/export primitives
 - [x] copy budget and internal-term scan
-- [ ] mobile 390 composition
-- [ ] wide 1024 composition
-- [ ] keyboard/focus/target/error/loading states
+- [x] mobile 390 composition
+- [x] wide 1024 composition
+- [x] keyboard/focus/target/error/loading states
 
 ## P26-19~20 Closeout
 

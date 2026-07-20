@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~17 complete; P26-18 responsive workspace next)
+**Last Updated:** 2026-07-20 (P26-01~18 complete; P26-19 six-journey gate next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, P26-14~16 align undated placement, Calendar movement, and one export scope/result contract, and P26-17 unifies execution primitives, semantic tokens, and action copy. P26-18 next closes mobile/wide workspace composition and interaction states. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~13 establish My Flow local IA, adaptive whole-Flow reading, progressive/structural editing, reversible completion, and independent reuse, P26-14~16 align undated placement, Calendar movement, and one export scope/result contract, and P26-17~18 unify execution primitives, copy, and responsive workspaces. P26-19 next exercises six content-shape journeys as one current browser gate. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-18 responsive workspace composition and interaction states |
+| Active product gate | P26-19 six content-shape journey harness |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Close 390 drill-in/sheet and 1024 task-focused pane composition, target, focus, error, disabled, and loading states |
+| AI action now | Run anchor, undated, routine, mixed-order, memo, and personal-draft journeys from discovery through execution/export without reusing prior evidence |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-18 responsive execution workspace: mobile navigation, workbar, notice, bottom sheet, and full-screen editor now use one offset/layer contract; status and inventory sheets trap focus, lock body scroll, close with Escape, and return focus. Wide My Flow detail and Calendar agenda remain viewport-bounded. Export exposes ready/pending/disabled/error states and scrolls result receipts above the fixed navigation. Dedicated Playwright is `3 / 3`, affected regressions are `20 / 20`, full unit is `564 / 564` with pretest `13 / 13`, docs check passes `2,675` links, build is `18 / 18`, high/critical audit findings are `0`, and mobile/wide overlap, overflow, keyboard blockers, and browser errors are `0`. Observed-user sessions remain `0`. See [P26-18 evidence](./content-audit/2026-07-20-p26-18-responsive-workspace-evidence/README.md).
 
 - 2026-07-20 P26-17 execution component and copy system: public save-before, post-save, whole Flow, execution rows, item editing, export planning, and result receipts now use shared `ArtifactSummary`, `ScheduleIntent`, `FlowOutlineRow`, `ExecutionRow`, `Receipt`, `EditorShell`, and `ExportPlan` primitives. Semantic palette tokens replace route-specific success/warning/error/action colors on these surfaces; action labels have a tested copy budget; negative heading letter spacing and an unused legacy dark/glass theme were removed. Dedicated plus affected Playwright is `17 / 17`, full unit is `564 / 564` with contract/pretest `10 / 10`, docs check passes `2,665` links, build is `18 / 18`, and mobile/wide overflow plus browser errors are `0`. The local content-usage preview was used only as a prior pattern reference. Observed-user sessions remain `0`. See [P26-17 evidence](./content-audit/2026-07-20-p26-17-execution-component-system-evidence/README.md).
 

@@ -34,7 +34,7 @@ const secondaryNavItems: NavItem[] = [
 ];
 
 function primaryLinkClass(active: boolean) {
-  return `inline-flex min-h-10 items-center rounded-md px-3 text-sm font-semibold transition ${
+  return `inline-flex min-h-11 items-center rounded-md px-3 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
     active ? 'bg-[#1B1A17] text-white' : 'text-[#6E6B64] hover:bg-[#F3F1EC] hover:text-[#1B1A17]'
   }`;
 }
@@ -56,7 +56,7 @@ export function PlatformNav() {
         data-testid="platform-nav"
       >
         <div className="flex items-center justify-between gap-3">
-          <Link className="inline-flex min-h-10 items-center text-lg font-semibold text-[#1B1A17]" href="/">
+          <Link className="inline-flex min-h-11 items-center text-lg font-semibold text-[#1B1A17] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" href="/">
             FLOW
           </Link>
 
@@ -106,9 +106,10 @@ export function PlatformNav() {
       </nav>
 
       <nav
-        className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 grid grid-cols-4 gap-1 rounded-lg border border-[#E7E4DD] bg-white/95 p-1 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
+        className="fixed inset-x-3 bottom-[var(--flowme-mobile-tabs-offset)] z-40 grid grid-cols-4 gap-1 rounded-lg border border-[#E7E4DD] bg-white/95 p-1 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
         aria-label="주요 화면"
         data-testid="platform-mobile-tabs"
+        data-layer-priority="navigation"
       >
         {primaryNavItems.map((item) => {
           const active = item.match(pathname);

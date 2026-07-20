@@ -31,7 +31,11 @@
   --flowme-danger-border: #fecdd3;
   --flowme-danger-focus: rgba(220, 38, 38, 0.2);
   --flowme-disabled: #d8d5cd;
-  --flowme-mobile-tab-clearance: calc(6.5rem + env(safe-area-inset-bottom));
+  --flowme-mobile-tabs-offset: calc(0.75rem + env(safe-area-inset-bottom));
+  --flowme-mobile-tabs-height: 3.625rem;
+  --flowme-mobile-layer-gap: 0.5rem;
+  --flowme-mobile-workbar-bottom: calc(var(--flowme-mobile-tabs-offset) + var(--flowme-mobile-tabs-height) + var(--flowme-mobile-layer-gap));
+  --flowme-mobile-tab-clearance: calc(var(--flowme-mobile-workbar-bottom) + 1.5rem);
   --flowme-mobile-save-clearance: calc(8.5rem + env(safe-area-inset-bottom));
   --flowme-mobile-map-save-clearance: calc(9.25rem + env(safe-area-inset-bottom));
   --flowme-mobile-export-clearance: calc(16rem + env(safe-area-inset-bottom));
@@ -45,7 +49,8 @@ body {
 
 @media (max-width: 767px) {
   html {
-    scroll-padding-bottom: var(--flowme-mobile-export-clearance);
+    scroll-padding-top: 5rem;
+    scroll-padding-bottom: var(--flowme-mobile-tab-clearance);
   }
 
   .flowme-mobile-save-clearance {

@@ -20,6 +20,7 @@ import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 import { FlowExportReceipt } from './FlowExportReceipt';
 import { PostSaveDecisionHub } from './PostSaveDecisionHub';
 import {
+  FlowBottomSheet,
   FlowEditorShell,
   FlowExecutionRow,
   FlowOutlineRow,
@@ -35,7 +36,6 @@ import {
   FLOW_UI_SEGMENTED_CLASS,
   FLOW_UI_SEGMENT_ACTIVE_CLASS,
   FLOW_UI_SEGMENT_IDLE_CLASS,
-  FLOW_UI_SHEET_CLASS,
   FLOW_UI_SURFACE_CLASS,
 } from './flow-ui';
 import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
@@ -12027,7 +12027,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-outline-mode={options.postSave ? 'post-save' : 'workspace'}
         data-structure-edit-mode={structuralEditMode ? 'true' : 'false'}
         data-effective-row-count={rows.length}
-        className={`min-w-0 ${batchActive ? 'pb-56 md:pb-0' : ''}`}
+        className={`min-w-0 ${batchActive ? 'pb-[calc(var(--flowme-mobile-tab-clearance)+11rem)] md:pb-0' : ''}`}
       >
         {options.showHeading ? (
           <div className="mb-2 flex items-center justify-between gap-3">
@@ -12041,7 +12041,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 data-testid="my-flow-batch-mode-toggle"
                 data-structure-edit-toggle={isPersonalDraftStructuralEditEligible(flow.bundle) ? 'true' : 'false'}
                 aria-pressed={batchActive}
-                className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
+                className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
                 onClick={() => batchActive ? closeMyFlowBatchAdjustment() : openMyFlowBatchAdjustment(flow)}
               >
                 {structuralEditMode
@@ -12077,7 +12077,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <button
               type="button"
               data-testid="my-flow-whole-flow-toggle-all-groups"
-              className="min-h-8 shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+              className="min-h-11 shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               onClick={() => setMyFlowWholeFlowOpenGroups((current) => ({
                 ...current,
                 [flow.progress.slug]: allReadingGroupsOpen
@@ -12130,7 +12130,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                                 data-selected={selected ? 'true' : 'false'}
                                 className={`grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2 border-t px-1 py-2.5 first:border-t-0 ${selected ? 'border-blue-100 bg-blue-50' : 'border-slate-200 bg-white'}`}
                               >
-                                <label className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md hover:bg-blue-50">
+                                <label className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-md hover:bg-blue-50 focus-within:ring-2 focus-within:ring-[var(--flowme-focus)]">
                                   <input
                                     data-testid="my-flow-batch-item-checkbox"
                                     type="checkbox"
@@ -12208,7 +12208,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             data-testid="my-flow-batch-toolbar"
             data-toolbar-layout={isMyFlowMobileViewport ? 'fixed-above-nav' : 'inline'}
             aria-label={structuralEditMode ? '구성 편집 도구' : '여러 할 일 조정 도구'}
-            className="fixed inset-x-3 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 max-h-[calc(100dvh-8rem)] overflow-y-auto rounded-lg border border-blue-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.18)] md:static md:mt-3 md:max-h-none md:overflow-visible md:shadow-sm"
+            data-layer-priority="workbar"
+            className="fixed inset-x-3 bottom-[var(--flowme-mobile-workbar-bottom)] z-[50] max-h-[calc(100dvh-var(--flowme-mobile-tab-clearance)-4rem)] overflow-y-auto overscroll-contain rounded-lg border border-blue-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.18)] md:static md:mt-3 md:max-h-none md:overflow-visible md:shadow-sm"
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-slate-950">
@@ -12225,7 +12226,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 type="button"
                 data-testid="my-flow-batch-select-all"
-                className="min-h-8 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700"
+                className="min-h-11 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => updateMyFlowBatchAdjustment({ selectedKeys: batchAllSelected ? [] : batchRowKeys })}
               >
                 {batchAllSelected ? '전체 해제' : '전체 선택'}
@@ -12238,7 +12239,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     type="button"
                     data-testid="my-flow-batch-operation-set-date"
                     aria-pressed={myFlowBatchAdjustment.operation === 'set_date'}
-                    className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment.operation === 'set_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                    className={`min-h-11 rounded-md px-2 py-1.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${myFlowBatchAdjustment.operation === 'set_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
                     onClick={() => updateMyFlowBatchAdjustment({ operation: 'set_date' })}
                   >
                     날짜 지정
@@ -12247,7 +12248,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     type="button"
                     data-testid="my-flow-batch-operation-remove-date"
                     aria-pressed={myFlowBatchAdjustment.operation === 'remove_date'}
-                    className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment.operation === 'remove_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                    className={`min-h-11 rounded-md px-2 py-1.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${myFlowBatchAdjustment.operation === 'remove_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
                     onClick={() => updateMyFlowBatchAdjustment({ operation: 'remove_date' })}
                   >
                     날짜 없애기
@@ -12260,7 +12261,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       data-testid="my-flow-batch-target-date"
                       type="date"
                       value={myFlowBatchAdjustment.targetDate}
-                      className="mt-1 min-h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="mt-1 min-h-11 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:text-sm"
                       onChange={(event) => updateMyFlowBatchAdjustment({ targetDate: event.target.value })}
                     />
                   </label>
@@ -12281,7 +12282,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <button
                     type="button"
                     data-testid="my-flow-batch-date-tool-back"
-                    className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                    className="min-h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                     onClick={() => updateMyFlowBatchAdjustment({ activeTool: 'none' })}
                   >
                     이전
@@ -12290,7 +12291,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     type="button"
                     data-testid="my-flow-batch-apply-date"
                     disabled={!batchDatePlan?.canApply || batchRecurringSelectionBlocked}
-                    className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+                    className="min-h-11 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
                     onClick={() => applyMyFlowBatchDateAdjustment(flow)}
                   >
                     날짜 적용
@@ -12307,7 +12308,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     type="button"
                     data-testid="my-flow-batch-open-date-tool"
                     disabled={batchSelectedKeySet.size === 0}
-                    className="min-h-10 rounded-md border border-blue-200 bg-white px-2 py-2 text-xs font-semibold text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                    className="min-h-11 rounded-md border border-blue-200 bg-white px-2 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                     onClick={() => updateMyFlowBatchAdjustment({ activeTool: 'date' })}
                   >
                     날짜
@@ -12316,7 +12317,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-batch-export-selected"
                 disabled={batchSelectedKeySet.size === 0}
-                className="min-h-10 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                className="min-h-11 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                 onClick={() => {
                   setMyFlowExportPanel({
                     flowSlug: flow.progress.slug,
@@ -12333,7 +12334,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   type="button"
                   data-testid="my-flow-batch-remove-selected"
                   disabled={batchSelectedKeySet.size === 0}
-                  className="min-h-10 rounded-md border border-rose-200 bg-white px-2 py-2 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                  className="min-h-11 rounded-md border border-rose-200 bg-white px-2 py-2 text-xs font-semibold text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                   onClick={() => removeMyFlowBatchItems(flow)}
                 >
                   목록에서 빼기
@@ -13378,7 +13379,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             disabled={disabled}
             aria-label={`${displayTitle} ${label}`}
             title={`${displayTitle} ${label}`}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-300"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-300"
             onClick={() => moveMyFlowPersonalDraftItem(flow, row.id, direction)}
           >
             <span aria-hidden="true">{icon}</span>
@@ -14005,7 +14006,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-personal-copy-settings-open"
                 aria-label={`${flowTitle} ${personalCopySettingsLabel}`}
-                className="mt-3 inline-flex min-h-9 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowPersonalCopySettings(flow)}
               >
                 {personalCopySettingsLabel}
@@ -14016,7 +14017,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 type="button"
                 data-testid="my-flow-direct-anchor-settings-open"
                 aria-label={`${flowTitle} ${directAnchorCopy.editLabel}`}
-                className="mt-3 inline-flex min-h-9 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowDirectAnchorSettings(flow)}
               >
                 {directAnchorCopy.editLabel}
@@ -14038,7 +14039,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <button
                   type="button"
                   data-testid="my-flow-next-action-open"
-                  className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
+                  className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
                   aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
                   onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
                 >
@@ -14067,7 +14068,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </div>
             {!batchActive ? <aside
               data-testid="my-flow-workspace-detail-pane"
-              className="hidden min-w-0 rounded-md border border-slate-200 bg-slate-50 p-3 lg:sticky lg:top-4 lg:block"
+            className="hidden min-w-0 rounded-md border border-slate-200 bg-slate-50 p-3 lg:sticky lg:top-4 lg:block lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto lg:overscroll-contain"
             >
               {activeOverviewRow ? (
                 renderMyFlowItemDetailEditor(activeOverviewRow, 'inline', 'flow', { parentOwnsCompletion: true })
@@ -14088,7 +14089,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <button
                       type="button"
                       data-testid="my-flow-workspace-next-open"
-                      className="inline-flex min-h-9 w-full items-center justify-center rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       aria-label={getMyFlowOpenActionAriaLabel(getMyFlowRowDisplayTitle(nextExecutionRow), '열기')}
                       onClick={() => openMyFlowRowFromFlowTab(flow, nextExecutionRow)}
                     >
@@ -14412,7 +14413,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   );
 
   return (
-    <main className={`mx-auto max-w-[1240px] px-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
+    <main className={`mx-auto max-w-[1240px] px-4 pb-[var(--flowme-mobile-tab-clearance)] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
       <PlatformNav />
       <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
         <div>
@@ -14647,7 +14648,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           <Link
                             href="/calendar#calendar-placement-queue"
                             data-testid="my-flow-anytime-schedule-link"
-                            className="inline-flex min-h-9 items-center rounded-md px-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+                            className="inline-flex min-h-11 items-center rounded-md px-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                           >
                             날짜 정하기
                           </Link>
@@ -14667,7 +14668,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <button
                           type="button"
                           data-testid="my-flow-anytime-open-all"
-                          className="mt-3 min-h-10 w-full rounded-md bg-slate-50 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                          className="mt-3 min-h-11 w-full rounded-md bg-slate-50 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                           onClick={() => selectMyFlowView('flow')}
                         >
                           전체 Flow에서 {myFlowAnytimeHiddenCount}개 더 보기
@@ -14733,7 +14734,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <h3 className="text-sm font-semibold text-slate-700">다음 예정</h3>
                         <button
                           type="button"
-                          className="min-h-9 rounded-md px-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+                          className="min-h-11 rounded-md px-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                           onClick={() => selectMyFlowView('flow')}
                         >
                           전체 보기
@@ -14756,7 +14757,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <button
                           type="button"
                           data-testid="my-flow-overdue-open-sheet"
-                          className="min-h-9 shrink-0 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800"
+                          className="min-h-11 shrink-0 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                           onClick={() => setMyFlowStatusSheet('overdue')}
                         >
                           지난 할 일 보기
@@ -14789,7 +14790,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <button
                           type="button"
                           data-testid="my-flow-today-completed-toggle"
-                          className="min-h-9 rounded-md px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                          className="min-h-11 rounded-md px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                           aria-expanded={myFlowTodayCompletedOpen}
                           aria-label={`완료한 할 일 ${todayCompletedRows.length}개 ${myFlowTodayCompletedOpen ? '접기' : '보기'}`}
                           onClick={() => setMyFlowTodayCompletedOpen((open) => !open)}
@@ -15207,7 +15208,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                           data-flow-slug={flowSlug}
                           aria-label={`${option.label}, ${formatMyFlowMonthHeading(myFlowVisibleMonth)} 일정 ${option.count}개`}
                           aria-pressed={selected}
-                          className={`flex min-h-10 max-w-44 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold ${selected ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                          className={`flex min-h-11 max-w-44 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${selected ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                           onClick={() => selectMyFlowCalendarScope(option.id)}
                         >
                           {option.marker ? (
@@ -15243,7 +15244,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       id="my-flow-month-picker"
                       data-testid="my-flow-month-picker"
                       aria-label="월 선택"
-                      className="mt-0.5 min-h-7 rounded-md border border-slate-200 bg-white px-2 text-xs font-bold text-slate-700 sm:mt-1 sm:min-h-8"
+                      className="mt-0.5 min-h-11 rounded-md border border-slate-200 bg-white px-2 text-base font-bold text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--flowme-focus)] sm:mt-1 sm:text-sm"
                       type="month"
                       value={myFlowVisibleMonth.slice(0, 7)}
                       onChange={(event) => {
@@ -15334,7 +15335,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 data-calendar-layout="selected-day-execution"
                 data-overflow-date={myFlowRoutineOverflowDate === myFlowSelectedDate ? myFlowRoutineOverflowDate : undefined}
                 data-schedule-overflow-date={myFlowScheduleOverflowDate === myFlowSelectedDate ? myFlowScheduleOverflowDate : undefined}
-                className="order-1 border-y border-slate-200 py-3 sm:py-4 lg:order-3 lg:border-y-0 lg:border-l lg:pl-4"
+                className="order-1 border-y border-slate-200 py-3 sm:py-4 lg:order-3 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto lg:overscroll-contain lg:border-y-0 lg:border-l lg:pl-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div aria-live="polite" aria-atomic="true">
@@ -15642,38 +15643,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ) : null}
 
       {myFlowStatusSheet ? (
-        <div
-          className="fixed inset-0 z-50 bg-slate-950/40"
-          role="dialog"
-          aria-modal="true"
-          aria-label={myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 할 일'}
-          data-testid="my-flow-status-sheet"
+        <FlowBottomSheet
+          testId="my-flow-status-sheet"
+          headingId="my-flow-status-sheet-title"
+          eyebrow={myFlowStatusSheet === 'overdue' ? '놓친 항목 정리' : '다가오는 항목 정리'}
+          title={myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 할 일'}
+          className="md:left-1/2 md:max-w-lg md:-translate-x-1/2"
+          onClose={() => setMyFlowStatusSheet(null)}
         >
-          <button
-            className="absolute inset-0 h-full w-full cursor-default"
-            type="button"
-            aria-label="목록 닫기"
-            onClick={() => setMyFlowStatusSheet(null)}
-          />
-          <section className={`${FLOW_UI_SHEET_CLASS} md:left-1/2 md:max-w-lg md:-translate-x-1/2`}>
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-300" />
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-blue-700">
-                  {myFlowStatusSheet === 'overdue' ? '놓친 항목 정리' : '다가오는 항목 정리'}
-                </p>
-                <h3 className="mt-1 text-xl font-semibold text-slate-950">
-                  {myFlowStatusSheet === 'overdue' ? '지난 할 일' : '다음 할 일'}
-                </h3>
-              </div>
-              <button
-                type="button"
-                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"
-                onClick={() => setMyFlowStatusSheet(null)}
-              >
-                닫기
-              </button>
-            </div>
             <div className="mt-4 grid gap-3">
               {myFlowStatusSheet === 'overdue' ? myFlowStatusOverdueGroups.map((group) => (
                 <section
@@ -15712,7 +15689,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                         <p className="text-base font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</p>
                         <button
                           type="button"
-                          className="mt-3 min-h-9 rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                          className="mt-3 min-h-11 rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                           aria-label={getMyFlowStatusSheetOpenAriaLabel(row, group)}
                           onClick={() => {
                             setMyFlowStatusSheet(null);
@@ -15743,7 +15720,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <p className="mt-1 text-base font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</p>
                   <button
                     type="button"
-                    className="mt-3 min-h-9 rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300"
+                    className="mt-3 min-h-11 rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                     aria-label={getMyFlowStatusSheetOpenAriaLabel(row)}
                     onClick={() => {
                       setMyFlowStatusSheet(null);
@@ -15758,42 +15735,21 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <p className="rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">지금 확인할 Flow가 없습니다.</p>
               ) : null}
             </div>
-          </section>
-        </div>
+        </FlowBottomSheet>
       ) : null}
 
       {myFlowInventorySheetOpen ? (
-        <div
-          className="fixed inset-0 z-50 bg-slate-950/40 md:hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-label="전체 Flow 목록"
-          data-testid="my-flow-inventory-sheet"
+        <FlowBottomSheet
+          testId="my-flow-inventory-sheet"
+          headingId="my-flow-inventory-sheet-title"
+          eyebrow="전체 Flow 목록"
+          title="필요한 Flow만 열기"
+          className="md:hidden"
+          onClose={() => setMyFlowInventorySheetOpen(false)}
         >
-          <button
-            className="absolute inset-0 h-full w-full cursor-default"
-            type="button"
-            aria-label="목록 닫기"
-            onClick={() => setMyFlowInventorySheetOpen(false)}
-          />
-          <section className={FLOW_UI_SHEET_CLASS}>
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-300" />
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-blue-700">전체 Flow 목록</p>
-                <h3 className="mt-1 text-xl font-semibold text-slate-950">필요한 Flow만 열기</h3>
-              </div>
-              <button
-                type="button"
-                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"
-                onClick={() => setMyFlowInventorySheetOpen(false)}
-              >
-                닫기
-              </button>
-            </div>
             <div className="mt-4 grid gap-3">
               <input
-                className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                className="min-h-11 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-base font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 sm:text-sm"
                 type="search"
                 placeholder="Flow 검색"
                 value={flowListQuery}
@@ -15838,8 +15794,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <p className="rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">조건에 맞는 Flow가 없습니다.</p>
               ) : null}
             </div>
-          </section>
-        </div>
+        </FlowBottomSheet>
       ) : null}
 
       {myFlowCompletionUndo ? (
@@ -15849,7 +15804,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           data-notice-layout="fixed-above-nav"
           role="status"
           aria-live="polite"
-          className="fixed inset-x-3 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-center gap-3 rounded-md bg-slate-950 px-4 py-3 text-white shadow-xl md:bottom-6"
+          data-layer-priority="notice"
+          className="fixed inset-x-3 bottom-[var(--flowme-mobile-workbar-bottom)] z-[60] mx-auto flex max-w-md items-center gap-3 rounded-md bg-slate-950 px-4 py-3 text-white shadow-xl md:bottom-6"
           onMouseEnter={() => setMyFlowCompletionNoticePaused(true)}
           onMouseLeave={() => setMyFlowCompletionNoticePaused(false)}
           onFocusCapture={() => setMyFlowCompletionNoticePaused(true)}
@@ -15875,7 +15831,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             data-testid={myFlowCompletionUndo.result === 'completed'
               ? 'my-flow-completion-undo'
               : 'my-flow-completion-open'}
-            className="min-h-10 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="min-h-11 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
             onClick={() => myFlowCompletionUndo.result === 'completed'
               ? undoMyFlowCompletion(myFlowCompletionUndo)
               : openMyFlowCompletionNoticeItem(myFlowCompletionUndo)}

@@ -1,12 +1,17 @@
 'use client';
 
-import type {
-  ComponentPropsWithoutRef,
-  ReactNode,
+import {
+  useEffect,
+  useRef,
+  type ComponentPropsWithoutRef,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
 } from 'react';
 
 import {
   FLOW_UI_EXECUTION_ROW_CLASS,
+  FLOW_UI_SECONDARY_ACTION_CLASS,
+  FLOW_UI_SHEET_CLASS,
   FLOW_UI_SURFACE_CLASS,
 } from './flow-ui';
 
@@ -250,6 +255,101 @@ export function FlowEditorShell({
     <section {...props} data-flow-ui="editor-shell" className={`${layoutClass} ${className}`}>
       {children}
     </section>
+  );
+}
+
+export function FlowBottomSheet({
+  testId,
+  headingId,
+  eyebrow,
+  title,
+  onClose,
+  className = '',
+  children,
+}: {
+  testId: string;
+  headingId: string;
+  eyebrow?: string;
+  title: string;
+  onClose: () => void;
+  className?: string;
+  children: ReactNode;
+}) {
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const frame = window.requestAnimationFrame(() => closeButtonRef.current?.focus({ preventScroll: true }));
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.body.style.overflow = previousOverflow;
+      returnFocus?.focus({ preventScroll: true });
+    };
+  }, []);
+
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      onClose();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+    ) ?? []).filter((element) => element.getClientRects().length > 0);
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[80] bg-slate-950/40" data-flow-ui="bottom-sheet-layer">
+      <button
+        className="absolute inset-0 h-full w-full cursor-default"
+        type="button"
+        tabIndex={-1}
+        aria-label={`${title} 닫기`}
+        onClick={onClose}
+      />
+      <section
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        data-testid={testId}
+        data-flow-ui="bottom-sheet"
+        data-layer-priority="dialog"
+        className={`${FLOW_UI_SHEET_CLASS} ${className}`}
+        onKeyDown={handleKeyDown}
+      >
+        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-300" aria-hidden="true" />
+        <header className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            {eyebrow ? <p className="text-sm font-semibold text-[var(--flowme-action)]">{eyebrow}</p> : null}
+            <h2 id={headingId} className="mt-1 break-keep text-xl font-semibold text-[var(--flowme-text)]">{title}</h2>
+          </div>
+          <button
+            ref={closeButtonRef}
+            type="button"
+            className={`${FLOW_UI_SECONDARY_ACTION_CLASS} shrink-0`}
+            onClick={onClose}
+          >
+            닫기
+          </button>
+        </header>
+        {children}
+      </section>
+    </div>
   );
 }
 

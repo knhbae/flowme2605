@@ -1,0 +1,55 @@
+{
+  "mobile": [
+    {
+      "surface": "platform_navigation",
+      "composition": "fixed_bottom_tabs",
+      "layerPriority": 40,
+      "minimumTargetPx": 44
+    },
+    {
+      "surface": "structure_edit_workbar",
+      "composition": "fixed_above_navigation",
+      "layerPriority": 50,
+      "minimumTargetPx": 44
+    },
+    {
+      "surface": "completion_notice",
+      "composition": "fixed_above_navigation",
+      "layerPriority": 60,
+      "minimumTargetPx": 44
+    },
+    {
+      "surface": "status_and_inventory",
+      "composition": "modal_bottom_sheet",
+      "layerPriority": 80,
+      "focusTrap": true,
+      "escapeClose": true,
+      "returnFocus": true
+    },
+    {
+      "surface": "item_editor",
+      "composition": "full_screen_dialog",
+      "layerPriority": 80,
+      "focusTrap": true
+    }
+  ],
+  "wide": [
+    {
+      "surface": "my_flow",
+      "composition": "outline_detail_or_rail_outline_detail",
+      "detailViewportBounded": true
+    },
+    {
+      "surface": "calendar",
+      "composition": "undated_tray_month_grid_selected_day_agenda",
+      "agendaViewportBounded": true
+    }
+  ],
+  "exportStates": [
+    "ready",
+    "pending",
+    "disabled",
+    "success_receipt",
+    "error_receipt"
+  ]
+}
