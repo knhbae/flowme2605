@@ -39,6 +39,22 @@ async function openPostSaveWorkspaceIfPresent(page: Page) {
   }
 }
 
+async function setPersonalDraftStructureEditMode(flow: Locator, open: boolean) {
+  const toggle = flow.getByTestId('my-flow-batch-mode-toggle').first();
+  await expect(toggle).toBeVisible();
+  const active = (await toggle.getAttribute('aria-pressed')) === 'true';
+  if (active !== open) await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', open ? 'true' : 'false');
+}
+
+async function addPersonalDraftItem(flow: Locator, title: string) {
+  await setPersonalDraftStructureEditMode(flow, true);
+  await flow.getByTestId('personal-draft-add-entry').click();
+  await flow.getByTestId('personal-draft-add-title').fill(title);
+  await flow.getByTestId('personal-draft-add-title').press('Enter');
+  await setPersonalDraftStructureEditMode(flow, false);
+}
+
 async function expandCalendarUnscheduledTray(page: Page) {
   const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
   await expect(tray).toBeVisible();
@@ -108,9 +124,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.getByTestId('my-flow-view-flow').click();
     const draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
     await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
-    await draftFlow.getByTestId('personal-draft-add-entry').click();
-    await draftFlow.getByTestId('personal-draft-add-title').fill('오늘 확인할 일');
-    await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+    await addPersonalDraftItem(draftFlow, '오늘 확인할 일');
 
     const item = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '오늘 확인할 일' });
     await item.getByTestId('my-flow-mobile-structure-step-row').click();
@@ -1100,6 +1114,7 @@ test.describe('P24 execution trust regressions', () => {
     await batchRows.nth(1).getByTestId('my-flow-batch-item-checkbox').check();
     const toolbar = outline.getByTestId('my-flow-batch-toolbar');
     await expect(toolbar.getByTestId('my-flow-batch-selected-count')).toHaveText('2개 선택');
+    await toolbar.getByTestId('my-flow-batch-open-date-tool').click();
     await toolbar.getByTestId('my-flow-batch-target-date').fill('2026-09-02');
     await expect(toolbar.getByTestId('my-flow-batch-impact-preview')).toContainText('2개가 바뀝니다');
     if (evidenceDir) {
@@ -1119,7 +1134,6 @@ test.describe('P24 execution trust regressions', () => {
     await draftFlow.getByTestId('my-flow-batch-undo-action').click();
     await expect(draftFlow.getByTestId('my-flow-batch-undo')).toHaveCount(0);
 
-    await batchToggle.click();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(1).getByTestId('my-flow-batch-item-checkbox').check();
     await outline.getByTestId('my-flow-batch-export-selected').click();
@@ -1133,10 +1147,11 @@ test.describe('P24 execution trust regressions', () => {
 
     await batchToggle.click();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    await outline.getByTestId('my-flow-batch-open-date-tool').click();
     await outline.getByTestId('my-flow-batch-target-date').fill('2026-09-03');
     await outline.getByTestId('my-flow-batch-apply-date').click();
-    await batchToggle.click();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    await outline.getByTestId('my-flow-batch-open-date-tool').click();
     await outline.getByTestId('my-flow-batch-operation-remove-date').click();
     await expect(outline.getByTestId('my-flow-batch-impact-preview')).toContainText('1개가 바뀝니다');
     await outline.getByTestId('my-flow-batch-apply-date').click();
@@ -1150,13 +1165,13 @@ test.describe('P24 execution trust regressions', () => {
     expect(removedOverrideState).toEqual({ removedCount: 1, staleMovedDateCount: 0 });
     await draftFlow.getByTestId('my-flow-batch-undo-action').click();
 
-    await batchToggle.click();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
+    page.once('dialog', (dialog) => dialog.accept());
     await outline.getByTestId('my-flow-batch-remove-selected').click();
     await expect(draftFlow.getByTestId('my-flow-batch-undo')).toContainText('1개를 Flow에서 뺐어요');
-    await expect(draftFlow.getByTestId('my-flow-execution-row-shell')).toHaveCount(2);
+    await expect(outline.getByTestId('my-flow-batch-selectable-row')).toHaveCount(2);
     await draftFlow.getByTestId('my-flow-batch-undo-action').click();
-    await expect(draftFlow.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
+    await expect(outline.getByTestId('my-flow-batch-selectable-row')).toHaveCount(3);
 
     await page.setViewportSize({ width: 1024, height: 768 });
     const wideDraftFlow = page
@@ -1164,7 +1179,8 @@ test.describe('P24 execution trust regressions', () => {
       .filter({ hasText: '여행 출발 준비' });
     await expect(wideDraftFlow).toBeVisible();
     const wideOutline = wideDraftFlow.getByTestId('my-flow-whole-flow-outline');
-    await wideOutline.getByTestId('my-flow-batch-mode-toggle').click();
+    const wideToggle = wideOutline.getByTestId('my-flow-batch-mode-toggle');
+    if ((await wideToggle.getAttribute('aria-pressed')) !== 'true') await wideToggle.click();
     await wideOutline.getByTestId('my-flow-batch-select-all').click();
     await expect(wideOutline.getByTestId('my-flow-batch-selected-count')).toHaveText('3개 선택');
     if (evidenceDir) {
@@ -1202,6 +1218,7 @@ test.describe('P24 execution trust regressions', () => {
     const routineOutline = page.getByTestId('my-flow-whole-flow-outline');
     await routineOutline.getByTestId('my-flow-batch-mode-toggle').click();
     await routineOutline.getByTestId('my-flow-batch-item-checkbox').first().check();
+    await routineOutline.getByTestId('my-flow-batch-open-date-tool').click();
     await expect(routineOutline.getByTestId('my-flow-batch-impact-preview')).toContainText('이번 회차·이후·전체 범위를 먼저 고르세요');
     await expect(routineOutline.getByTestId('my-flow-batch-apply-date')).toBeDisabled();
     if (evidenceDir) {
@@ -1243,9 +1260,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.getByTestId('my-flow-view-flow').click();
     const draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
     await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
-    await draftFlow.getByTestId('personal-draft-add-entry').click();
-    await draftFlow.getByTestId('personal-draft-add-title').fill('충전기 챙기기');
-    await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+    await addPersonalDraftItem(draftFlow, '충전기 챙기기');
     await expect(
       draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '충전기 챙기기' }),
     ).toBeVisible();

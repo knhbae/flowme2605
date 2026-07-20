@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-01~10 complete; P26-11 structural and batch editing next)
+**Last Updated:** 2026-07-20 (P26-01~11 complete; P26-12 completion undo/reopen next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08 separates My Flow into `지금 / Flow 목록 / 완료`, P26-09 makes a selected whole Flow readable as adaptive groups, and P26-10 separates quick item edits from advanced schedule and recurrence settings. P26-11 next separates structural and batch editing from single-item adjustment. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and target journey. P26-01~05 close the correctness foundation, P26-06~07 unify discovery/save and the post-save hub, P26-08~11 establish My Flow local IA, adaptive whole-Flow reading, progressive item editing, and a separate structural/batch mode. P26-12 next makes completion, immediate undo, and reopen one reversible execution contract. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-11 structural and batch editing |
+| Active product gate | P26-12 completion undo and reopen |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Keep add/delete/restore/reorder and multi-item moves in an explicit structural/batch mode outside the single-item quick editor |
+| AI action now | Keep one completion control per occurrence and provide stable immediate undo plus persistent reopen without mixing structural edit state |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-11 structural and batch mode: Personal drafts now keep execution and structure changes in separate modes. Normal mode shows completion and `열기`; `구성 편집` shows one personal-order list with add, selection, keyboard reorder, date disclosure, recoverable removal, immediate undo, and reload-safe recovery. Mobile uses a fixed toolbar above the 4-tab nav, while wide keeps it inline. Stable ID, order persistence, and checklist export order pass; source-backed structure edit controls, overflow, and console/page errors are `0`. Current dedicated Playwright is `1 / 1` and affected compatibility scenarios are `6 / 6`; observed-user sessions remain `0`. See [P26-11 evidence](./content-audit/2026-07-20-p26-11-structural-edit-mode-evidence/README.md).
 
 - 2026-07-20 P26-10 quick/advanced editor: My Flow and Calendar now share a contained item editor. Mobile 390px uses a full-screen dialog with title/date/memo first, advanced time/location/recurrence collapsed, safe-area/sticky actions, dirty-state guard, focus trap, and focus return. Wide 1024px keeps the same editor in the existing 17~20rem detail pane beside the whole-Flow outline. Dedicated Playwright is `3 / 3`, affected compatibility scenarios are `10 / 10`, build is `18 / 18`, and overflow/console/page errors are `0`. Observed-user sessions remain `0`. See [P26-10 evidence](./content-audit/2026-07-20-p26-10-quick-advanced-editor-evidence/README.md).
 

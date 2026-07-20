@@ -3319,6 +3319,7 @@ type MyFlowBatchAdjustmentState = {
   selectedKeys: string[];
   operation: 'set_date' | 'remove_date';
   targetDate: string;
+  activeTool: 'none' | 'date';
 };
 
 type MyFlowBatchAdjustmentUndo = {
@@ -7764,13 +7765,22 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   const openMyFlowBatchAdjustment = (flow: MySavedFlow) => {
     resetMyFlowRowDetailState();
+    setMyFlowStructuralAddOpenSlug('');
+    setMyFlowStructuralAddTitle('');
     setMyFlowBatchAdjustment({
       flowSlug: flow.progress.slug,
       selectedKeys: [],
       operation: 'set_date',
       targetDate: myFlowTodayDate,
+      activeTool: 'none',
     });
     setMyFlowBatchAdjustmentUndo(null);
+  };
+
+  const closeMyFlowBatchAdjustment = () => {
+    setMyFlowBatchAdjustment(null);
+    setMyFlowStructuralAddOpenSlug('');
+    setMyFlowStructuralAddTitle('');
   };
 
   const toggleMyFlowBatchItem = (key: string) => {
@@ -7929,7 +7939,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       previousDateOverrides,
       ...(previousStructuralOverlay ? { previousStructuralOverlay } : {}),
     });
-    setMyFlowBatchAdjustment(null);
+    if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
+      updateMyFlowBatchAdjustment({ selectedKeys: [], activeTool: 'none' });
+    } else {
+      setMyFlowBatchAdjustment(null);
+    }
   };
 
   const removeMyFlowBatchItems = (flow: MySavedFlow) => {
@@ -7946,6 +7960,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (rows.length === 0) return;
 
     if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
+      if (!window.confirm(`선택한 ${rows.length}개 할 일을 목록에서 뺄까요? 나중에 구성 편집에서 복구할 수 있어요.`)) return;
       const previousStructuralOverlay =
         myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
         createPersonalDraftStructuralOverlay(flow.bundle);
@@ -7966,7 +7981,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         label: `${rows.length}개를 Flow에서 뺐어요.`,
         previousStructuralOverlay,
       });
-      setMyFlowBatchAdjustment(null);
+      updateMyFlowBatchAdjustment({ selectedKeys: [], activeTool: 'none' });
       resetMyFlowRowDetailState();
       return;
     }
@@ -10904,7 +10919,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 닫기
               </button>
             ) : null}
-            {!isDetailEditing && isPersonalDraftStructuralEditEligible(row.flow.bundle) ? (
+            {!isDetailEditing &&
+            isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
+            myFlowBatchAdjustment?.flowSlug === row.flow.progress.slug ? (
               <button
                 type="button"
                 data-testid="personal-draft-delete-item"
@@ -11475,6 +11492,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const batchActive = Boolean(
       options.interactive && myFlowBatchAdjustment?.flowSlug === flow.progress.slug,
     );
+    const structuralEditMode = batchActive && isPersonalDraftStructuralEditEligible(flow.bundle);
     const batchSelectedKeySet = new Set(
       batchActive ? myFlowBatchAdjustment?.selectedKeys ?? [] : [],
     );
@@ -11489,21 +11507,47 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ))
     );
     const batchCanRemove = isPersonalDraftStructuralEditEligible(flow.bundle) || Boolean(flow.savedMap?.personalCopy);
-    const readingModel = buildWholeFlowReadingModel({
+    const effectiveReadingRows = rows.map((row) => ({
+      ...row,
+      section: getMyFlowRowDisplaySectionLabel(row),
+      completed: isMyFlowRowChecked(flow, row),
+    }));
+    const standardReadingModel = buildWholeFlowReadingModel({
       structureType: flow.bundle.flow.structure_type,
-      rows: rows.map((row) => ({
-        ...row,
-        section: getMyFlowRowDisplaySectionLabel(row),
-        completed: isMyFlowRowChecked(flow, row),
-      })),
+      rows: effectiveReadingRows,
     });
+    const readingModel = structuralEditMode
+      ? {
+          ...standardReadingModel,
+          mode: 'checklist' as const,
+          groups: [{
+            key: 'group:structure-edit',
+            label: '할 일 순서',
+            rows: effectiveReadingRows,
+            dateClusters: effectiveReadingRows.map((row, index) => ({
+              key: `structure:${row.id}:${index}`,
+              ...(row.date ? { date: row.date } : {}),
+              rows: [row],
+              showSharedDate: false,
+            })),
+            completedCount: effectiveReadingRows.filter((row) => row.completed).length,
+            totalCount: effectiveReadingRows.length,
+            ...(standardReadingModel.startDate ? { startDate: standardReadingModel.startDate } : {}),
+            ...(standardReadingModel.endDate ? { endDate: standardReadingModel.endDate } : {}),
+            defaultOpen: true,
+          }],
+          disclosureRequired: false,
+        }
+      : standardReadingModel;
     const explicitOpenGroupKeys = myFlowWholeFlowOpenGroups[flow.progress.slug];
     const openGroupKeySet = new Set(
       explicitOpenGroupKeys ?? readingModel.groups.filter((group) => group.defaultOpen).map((group) => group.key),
     );
     const allReadingGroupsOpen = readingModel.groups.every((group) => openGroupKeySet.has(group.key));
     const readingDateRange = formatMyFlowDisplayDateRange(readingModel.startDate, readingModel.endDate);
-    const readingGroupSummary = readingModel.mode === 'routine'
+    const readingGroupSummary = structuralEditMode
+      ? `구성 ${readingModel.totalCount}개`
+      : readingModel.mode === 'routine'
       ? readingModel.groups.length === 1
         ? `구성 ${readingModel.totalCount}개`
         : `${readingModel.groups.length}구간`
@@ -11527,8 +11571,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-testid="my-flow-whole-flow-outline"
         data-flow-slug={flow.progress.slug}
         data-outline-mode={options.postSave ? 'post-save' : 'workspace'}
+        data-structure-edit-mode={structuralEditMode ? 'true' : 'false'}
         data-effective-row-count={rows.length}
-        className="min-w-0"
+        className={`min-w-0 ${batchActive ? 'pb-56 md:pb-0' : ''}`}
       >
         {options.showHeading ? (
           <div className="mb-2 flex items-center justify-between gap-3">
@@ -11536,21 +11581,35 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <h4 className="text-sm font-semibold text-slate-950">전체 Flow</h4>
               <span className="text-xs font-semibold text-slate-500">{rows.length}개</span>
             </div>
-            {options.interactive && rows.length > 0 ? (
+            {options.interactive && (rows.length > 0 || isPersonalDraftStructuralEditEligible(flow.bundle)) ? (
               <button
                 type="button"
                 data-testid="my-flow-batch-mode-toggle"
+                data-structure-edit-toggle={isPersonalDraftStructuralEditEligible(flow.bundle) ? 'true' : 'false'}
                 aria-pressed={batchActive}
                 className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
-                onClick={() => batchActive ? setMyFlowBatchAdjustment(null) : openMyFlowBatchAdjustment(flow)}
+                onClick={() => batchActive ? closeMyFlowBatchAdjustment() : openMyFlowBatchAdjustment(flow)}
               >
-                {batchActive ? '선택 취소' : '여러 할 일 조정'}
+                {structuralEditMode
+                  ? '편집 끝내기'
+                  : isPersonalDraftStructuralEditEligible(flow.bundle)
+                    ? '구성 편집'
+                    : batchActive
+                      ? '선택 취소'
+                      : '여러 할 일 조정'}
               </button>
             ) : null}
           </div>
         ) : null}
+        {structuralEditMode ? (
+          <div data-testid="my-flow-structure-edit-mode" className="mb-2 flex items-center justify-between border-b border-blue-100 pb-2">
+            <p className="text-sm font-semibold text-blue-700">구성 편집</p>
+            <span className="text-xs font-semibold text-slate-500">{rows.length}개</span>
+          </div>
+        ) : null}
+        {structuralEditMode ? renderPersonalDraftStructuralControls(flow) : null}
         {renderMyFlowBatchUndo(flow)}
-        <div
+        {!structuralEditMode ? <div
           data-testid="my-flow-whole-flow-reading-summary"
           data-reading-mode={readingModel.mode}
           className="mb-3 flex flex-wrap items-center justify-between gap-2 border-y border-slate-200 py-2"
@@ -11560,7 +11619,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span>{readingDateRange}</span>
             <span>{readingModel.completedCount}/{readingModel.totalCount} 완료</span>
           </div>
-          {readingModel.disclosureRequired ? (
+          {readingModel.disclosureRequired && !batchActive ? (
             <button
               type="button"
               data-testid="my-flow-whole-flow-toggle-all-groups"
@@ -11575,10 +11634,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               {allReadingGroupsOpen ? '한 단계만 보기' : '전체 펼치기'}
             </button>
           ) : null}
-        </div>
+        </div> : null}
         <div className="grid gap-2">
           {readingModel.groups.map((group) => {
-            const groupOpen = openGroupKeySet.has(group.key);
+            const groupOpen = batchActive || openGroupKeySet.has(group.key);
             const groupContentId = `whole-flow-${flow.progress.slug}-${group.key}`.replace(/[^a-zA-Z0-9_-]/g, '-');
             const groupDateRange = formatMyFlowDisplayDateRange(group.startDate, group.endDate);
             const groupHeader = (
@@ -11589,7 +11648,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     {groupDateRange} · {group.totalCount}개 · {group.completedCount}/{group.totalCount} 완료
                   </span>
                 </span>
-                {readingModel.groups.length > 1 ? (
+                {structuralEditMode ? null : readingModel.groups.length > 1 ? (
                   <span aria-hidden="true" className="shrink-0 text-sm text-slate-500">{groupOpen ? '⌃' : '⌄'}</span>
                 ) : null}
               </>
@@ -11616,7 +11675,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   <div className="flex min-h-12 items-center justify-between gap-3 px-3 py-2">{groupHeader}</div>
                 )}
                 {groupOpen ? (
-                  <div id={groupContentId} data-testid="my-flow-whole-flow-section-content" className="border-t border-slate-200 px-2">
+                  <div id={groupContentId} data-testid="my-flow-whole-flow-section-content" className={`${structuralEditMode ? '' : 'border-t border-slate-200'} px-2`}>
                     {group.dateClusters.map((cluster) => (
                       <div key={`${group.key}-${cluster.key}`} data-testid={cluster.showSharedDate ? 'my-flow-whole-flow-date-group' : undefined}>
                         {cluster.showSharedDate && cluster.date ? (
@@ -11632,14 +11691,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                             const selected = batchSelectedKeySet.has(batchKey);
                             const recurring = Boolean(row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine');
                             return (
-                              <label
+                              <div
                                 key={`batch-${flow.progress.slug}-${batchKey}`}
                                 data-testid="my-flow-batch-selectable-row"
                                 data-item-id={row.structuralProjectionStableId ?? row.id}
+                                data-structural-ownership={row.structuralOwnership}
                                 data-selected={selected ? 'true' : 'false'}
-                                className={`grid cursor-pointer grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2 border-t px-1 py-2.5 first:border-t-0 ${selected ? 'border-blue-100 bg-blue-50' : 'border-slate-200 bg-white hover:bg-slate-50'}`}
+                                className={`grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2 border-t px-1 py-2.5 first:border-t-0 ${selected ? 'border-blue-100 bg-blue-50' : 'border-slate-200 bg-white'}`}
                               >
-                                <span className="flex h-8 w-8 items-center justify-center">
+                                <label className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md hover:bg-blue-50">
                                   <input
                                     data-testid="my-flow-batch-item-checkbox"
                                     type="checkbox"
@@ -11648,15 +11708,24 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                                     className="h-4 w-4 rounded border-slate-300 accent-blue-700 focus:ring-2 focus:ring-blue-200"
                                     onChange={() => toggleMyFlowBatchItem(batchKey)}
                                   />
-                                </span>
+                                  <span className="sr-only">{getMyFlowRowDisplayTitle(row)} 선택</span>
+                                </label>
                                 <span className="min-w-0">
                                   <span className="block break-keep text-sm font-semibold text-slate-950">{getMyFlowRowDisplayTitle(row)}</span>
-                                  <span className="mt-0.5 block text-[11px] font-semibold text-slate-500">
-                                    {row.date ? formatMyFlowDisplayDate(row.date) : '날짜 없음'}
+                                  <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+                                    <span>{row.date ? formatMyFlowDisplayDate(row.date) : '날짜 없음'}</span>
+                                    {structuralEditMode && row.structuralOwnership === 'user_created' ? (
+                                      <span className="rounded bg-blue-50 px-1.5 py-0.5 text-blue-700">내가 추가</span>
+                                    ) : null}
                                   </span>
                                 </span>
-                                {recurring ? <span className="shrink-0 rounded bg-emerald-50 px-1.5 py-1 text-[10px] font-semibold text-emerald-700">반복</span> : null}
-                              </label>
+                                <span className="flex shrink-0 items-center gap-1">
+                                  {recurring ? <span className="rounded bg-emerald-50 px-1.5 py-1 text-[10px] font-semibold text-emerald-700">반복</span> : null}
+                                  {structuralEditMode
+                                    ? renderPersonalDraftReorderControls(flow, row, rowIndex, rows.length)
+                                    : null}
+                                </span>
+                              </div>
                             );
                           }
                           if (options.interactive) {
@@ -11708,11 +11777,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {batchActive ? (
           <section
             data-testid="my-flow-batch-toolbar"
-            className="sticky bottom-20 z-20 mt-3 rounded-lg border border-blue-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.16)] md:static md:shadow-sm"
+            data-toolbar-layout={isMyFlowMobileViewport ? 'fixed-above-nav' : 'inline'}
+            aria-label={structuralEditMode ? '구성 편집 도구' : '여러 할 일 조정 도구'}
+            className="fixed inset-x-3 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 max-h-[calc(100dvh-8rem)] overflow-y-auto rounded-lg border border-blue-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.18)] md:static md:mt-3 md:max-h-none md:overflow-visible md:shadow-sm"
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-slate-950">
-                <span data-testid="my-flow-batch-selected-count">{batchSelectedKeySet.size}개 선택</span>
+                <span
+                  data-testid="my-flow-batch-selected-count"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  {batchSelectedKeySet.size}개 선택
+                </span>
                 <span className="ml-1 text-xs text-slate-500">· 전체 {rows.length}개</span>
               </p>
               <button
@@ -11724,66 +11802,87 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {batchAllSelected ? '전체 해제' : '전체 선택'}
               </button>
             </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-1 rounded-md bg-slate-100 p-1" role="group" aria-label="선택한 할 일 날짜 조정">
-              <button
-                type="button"
-                data-testid="my-flow-batch-operation-set-date"
-                aria-pressed={myFlowBatchAdjustment?.operation === 'set_date'}
-                className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment?.operation === 'set_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
-                onClick={() => updateMyFlowBatchAdjustment({ operation: 'set_date' })}
-              >
-                날짜 지정
-              </button>
-              <button
-                type="button"
-                data-testid="my-flow-batch-operation-remove-date"
-                aria-pressed={myFlowBatchAdjustment?.operation === 'remove_date'}
-                className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment?.operation === 'remove_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
-                onClick={() => updateMyFlowBatchAdjustment({ operation: 'remove_date' })}
-              >
-                날짜 없애기
-              </button>
-            </div>
-
-            {myFlowBatchAdjustment?.operation === 'set_date' ? (
-              <label className="mt-3 block text-xs font-semibold text-slate-600">
-                옮길 날짜
-                <input
-                  data-testid="my-flow-batch-target-date"
-                  type="date"
-                  value={myFlowBatchAdjustment.targetDate}
-                  className="mt-1 min-h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  onChange={(event) => updateMyFlowBatchAdjustment({ targetDate: event.target.value })}
-                />
-              </label>
-            ) : null}
-
-            <div data-testid="my-flow-batch-impact-preview" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-600">
-              {batchSelectedKeySet.size === 0 ? (
-                <span>바꿀 할 일을 선택하세요.</span>
-              ) : batchRecurringSelectionBlocked ? (
-                <span>반복 일정은 항목을 열어 이번 회차·이후·전체 범위를 먼저 고르세요.</span>
-              ) : batchDatePlan?.canApply ? (
-                <span>
-                  {batchDatePlan.preview.counts.changedCount}개가 바뀝니다. 완료 기록과 개인 메모는 유지됩니다.
-                  {flow.anchor ? ' 전체 일정 이동은 위의 기준일 바꾸기에서 할 수 있어요.' : ''}
-                </span>
-              ) : (
-                <span>날짜와 선택 항목을 확인하세요.</span>
-              )}
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <button
-                type="button"
-                data-testid="my-flow-batch-apply-date"
-                disabled={!batchDatePlan?.canApply || batchRecurringSelectionBlocked}
-                className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
-                onClick={() => applyMyFlowBatchDateAdjustment(flow)}
-              >
-                날짜 적용
-              </button>
+            {myFlowBatchAdjustment?.activeTool === 'date' ? (
+              <div data-testid="my-flow-batch-date-tool" className="mt-3 border-t border-slate-200 pt-3">
+                <div className="grid grid-cols-2 gap-1 rounded-md bg-slate-100 p-1" role="group" aria-label="선택한 할 일 날짜 조정">
+                  <button
+                    type="button"
+                    data-testid="my-flow-batch-operation-set-date"
+                    aria-pressed={myFlowBatchAdjustment.operation === 'set_date'}
+                    className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment.operation === 'set_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                    onClick={() => updateMyFlowBatchAdjustment({ operation: 'set_date' })}
+                  >
+                    날짜 지정
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="my-flow-batch-operation-remove-date"
+                    aria-pressed={myFlowBatchAdjustment.operation === 'remove_date'}
+                    className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold ${myFlowBatchAdjustment.operation === 'remove_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                    onClick={() => updateMyFlowBatchAdjustment({ operation: 'remove_date' })}
+                  >
+                    날짜 없애기
+                  </button>
+                </div>
+                {myFlowBatchAdjustment.operation === 'set_date' ? (
+                  <label className="mt-3 block text-xs font-semibold text-slate-600">
+                    옮길 날짜
+                    <input
+                      data-testid="my-flow-batch-target-date"
+                      type="date"
+                      value={myFlowBatchAdjustment.targetDate}
+                      className="mt-1 min-h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      onChange={(event) => updateMyFlowBatchAdjustment({ targetDate: event.target.value })}
+                    />
+                  </label>
+                ) : null}
+                <div data-testid="my-flow-batch-impact-preview" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-600">
+                  {batchRecurringSelectionBlocked ? (
+                    <span>반복 일정은 항목을 열어 이번 회차·이후·전체 범위를 먼저 고르세요.</span>
+                  ) : batchDatePlan?.canApply ? (
+                    <span>
+                      {batchDatePlan.preview.counts.changedCount}개가 바뀝니다. 완료 기록과 개인 메모는 유지됩니다.
+                      {flow.anchor ? ' 전체 일정 이동은 위의 기준일 바꾸기에서 할 수 있어요.' : ''}
+                    </span>
+                  ) : (
+                    <span>날짜와 선택 항목을 확인하세요.</span>
+                  )}
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    data-testid="my-flow-batch-date-tool-back"
+                    className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                    onClick={() => updateMyFlowBatchAdjustment({ activeTool: 'none' })}
+                  >
+                    이전
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="my-flow-batch-apply-date"
+                    disabled={!batchDatePlan?.canApply || batchRecurringSelectionBlocked}
+                    className="min-h-10 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+                    onClick={() => applyMyFlowBatchDateAdjustment(flow)}
+                  >
+                    날짜 적용
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="mt-2 text-xs font-medium text-slate-500">
+                  {batchSelectedKeySet.size > 0 ? '선택한 할 일에 적용할 작업을 고르세요.' : '할 일을 선택하거나 화살표로 순서를 바꾸세요.'}
+                </p>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    data-testid="my-flow-batch-open-date-tool"
+                    disabled={batchSelectedKeySet.size === 0}
+                    className="min-h-10 rounded-md border border-blue-200 bg-white px-2 py-2 text-xs font-semibold text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                    onClick={() => updateMyFlowBatchAdjustment({ activeTool: 'date' })}
+                  >
+                    날짜
+                  </button>
               <button
                 type="button"
                 data-testid="my-flow-batch-export-selected"
@@ -11795,23 +11894,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     scope: 'selected',
                     selectedKeys: Array.from(batchSelectedKeySet),
                   });
-                  setMyFlowBatchAdjustment(null);
+                  closeMyFlowBatchAdjustment();
                 }}
               >
-                선택 내보내기
+                가져가기
               </button>
               {batchCanRemove ? (
                 <button
                   type="button"
                   data-testid="my-flow-batch-remove-selected"
                   disabled={batchSelectedKeySet.size === 0}
-                  className="min-h-10 rounded-md border border-rose-200 bg-white px-3 py-2 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 sm:col-span-2"
+                  className="min-h-10 rounded-md border border-rose-200 bg-white px-2 py-2 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                   onClick={() => removeMyFlowBatchItems(flow)}
                 >
-                  Flow에서 빼기
+                  목록에서 빼기
                 </button>
               ) : null}
-            </div>
+                </div>
+              </>
+            )}
           </section>
         ) : null}
       </section>
@@ -12731,12 +12832,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
-  const renderPersonalDraftReorderControls = (
+  function renderPersonalDraftReorderControls(
     flow: MySavedFlow,
     row: MyFlowRow,
     index: number,
     itemCount: number,
-  ) => {
+  ) {
     const displayTitle = getMyFlowRowDisplayTitle(getMyFlowRowForFlowTab(flow, row));
     return (
       <div
@@ -12812,7 +12913,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         }}
       />
     );
-  };
+  }
 
   const renderMyFlowPostSaveExportContent = () => {
     const activeFlow = postSaveFlows.find((flow) => myFlowExportPanel?.flowSlug === flow.progress.slug);
@@ -12864,7 +12965,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     );
   };
 
-  const renderPersonalDraftStructuralControls = (flow: MySavedFlow) => {
+  function renderPersonalDraftStructuralControls(flow: MySavedFlow) {
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return null;
     const addOpen = myFlowStructuralAddOpenSlug === flow.progress.slug;
     const undo = myFlowStructuralUndo?.flowSlug === flow.progress.slug
@@ -12874,14 +12975,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
       createPersonalDraftStructuralOverlay(flow.bundle);
     const removedItems = resolvePersonalDraftStructuralItems(flow.bundle, overlay).tombstonedItems;
-    const wideOrderRows = flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row));
     const inputId = `personal-draft-add-title-${flow.progress.slug}`;
 
     return (
       <section
         data-testid="personal-draft-structural-controls"
         data-structural-edit-eligible="true"
-        className="mt-3 border-t border-slate-200 pt-3"
+        className="mb-3"
       >
         {flow.rows.length === 0 ? (
           <p data-testid="personal-draft-empty-state" className="mb-3 text-sm font-semibold text-slate-700">
@@ -12946,35 +13046,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               })}
             </ul>
           </details>
-        ) : null}
-        {wideOrderRows.length > 0 ? (
-          <div data-testid="personal-draft-order-list-wide" className="mb-3 hidden border-b border-slate-200 pb-3 md:block">
-            <p className="mb-2 text-xs font-semibold text-slate-500">할 일 순서</p>
-            <ul className="grid gap-1.5">
-              {wideOrderRows.map((row, index) => (
-                <li
-                  key={`wide-order-${flow.progress.slug}-${row.id}`}
-                  data-testid="personal-draft-order-item-wide"
-                  data-item-id={row.id}
-                  className="flex min-w-0 items-center justify-between gap-2 rounded-md bg-slate-50 px-2 py-1.5"
-                >
-                  <button
-                    type="button"
-                    data-testid="personal-draft-order-item-open-wide"
-                    aria-label={`${getMyFlowRowDisplayTitle(row)} 열기`}
-                    className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded px-1 py-1 text-left text-sm font-semibold text-slate-700 hover:bg-white hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
-                    onClick={() => openMyFlowRowFromFlowTab(flow, row)}
-                  >
-                    <span className="min-w-0 truncate" title={getMyFlowRowDisplayTitle(row)}>
-                      {getMyFlowRowDisplayTitle(row)}
-                    </span>
-                    <span className="shrink-0 text-xs font-semibold text-blue-700">열기</span>
-                  </button>
-                  {renderPersonalDraftReorderControls(flow, row, index, wideOrderRows.length)}
-                </li>
-              ))}
-            </ul>
-          </div>
         ) : null}
         {addOpen ? (
           <form
@@ -13174,7 +13245,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {renderMyFlowDirectAnchorSettings(flow)}
         {executionReady && !batchActive ? renderMyFlowCompletionFeedback(flow) : null}
         {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
-        {executionReady && flowExpanded && stepRows.length > 0 ? (
+        {executionReady && flowExpanded && (stepRows.length > 0 || structuralEditEligible) ? (
           <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
             <p className="text-xs font-semibold text-slate-500">
               {flow.bundle.flow.structure_type === 'routine' ? '반복 설정' : '전체 Flow'} · {stepRows.length}개
@@ -13182,11 +13253,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <button
               type="button"
               data-testid="my-flow-batch-mode-toggle"
+              data-structure-edit-toggle={structuralEditEligible ? 'true' : 'false'}
               aria-pressed={batchActive}
               className={`min-h-9 shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
-              onClick={() => batchActive ? setMyFlowBatchAdjustment(null) : openMyFlowBatchAdjustment(flow)}
+              onClick={() => batchActive ? closeMyFlowBatchAdjustment() : openMyFlowBatchAdjustment(flow)}
             >
-              {batchActive ? '선택 취소' : '여러 할 일 조정'}
+              {batchActive && structuralEditEligible
+                ? '편집 끝내기'
+                : structuralEditEligible
+                  ? '구성 편집'
+                  : batchActive
+                    ? '선택 취소'
+                    : '여러 할 일 조정'}
             </button>
           </div>
         ) : null}
@@ -13255,9 +13333,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     </button>
                     <div className="flex shrink-0 items-center gap-1">
                       {renderMyFlowExecutionNoteButton(stepRow)}
-                      {structuralEditEligible
-                        ? renderPersonalDraftReorderControls(flow, stepRow, index, stepEntries.length)
-                        : null}
                     </div>
                   </div>
                   {myFlowExecutionNoteDraft?.flowSlug === flow.progress.slug && myFlowExecutionNoteDraft.rowKey === getMyFlowRowInstanceKey(stepRow) ? (
@@ -13310,7 +13385,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             })}
           </div>
         ) : null}
-        {executionReady && flowExpanded && !batchActive ? renderPersonalDraftStructuralControls(flow) : null}
         {executionReady && !batchActive ? renderMyFlowExportPanel(flow) : null}
         {flowExpanded && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
       </article>
@@ -13510,7 +13584,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             </aside> : null}
           </div>
         ) : null}
-        {executionReady && !batchActive ? renderPersonalDraftStructuralControls(flow) : null}
         {executionReady && !batchActive ? renderMyFlowExportPanel(flow) : null}
         {executionReady && activeOverviewRow && !showWholeFlowOutline ? (
           <div className="mt-3" data-testid="my-flow-overview-inline-detail">
@@ -16402,7 +16475,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     if (!shouldPersistPublicDateIntent(nextMode)) return;
     if (nextMode === 'custom' && !isValidPublicAnchorDate(anchor)) return;
     saveStoredAnchor(slug, { mode: nextMode, anchor: nextMode === 'custom' ? anchor : '' });
-  };
+  }
 
   if (!bundle) return <main className="p-8">Flow를 찾을 수 없습니다.</main>;
 
