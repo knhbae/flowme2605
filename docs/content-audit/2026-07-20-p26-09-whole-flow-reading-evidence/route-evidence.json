@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-09",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "81e3d17",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser"
+  ],
+  "markers": {
+    "wholeFlowReadingModelConnected": true,
+    "wholeFlowLongDisclosureThreshold": 10,
+    "wholeFlowThreeItemAllVisible": true,
+    "wholeFlowTenItemAllVisible": true,
+    "wholeFlowTwentyFourItemGroupCount": 6,
+    "wholeFlowTwentyFourDefaultOpenGroupCount": 1,
+    "wholeFlowTwentyFourDefaultVisibleRowCount": 4,
+    "wholeFlowTwentyFourExpandedRowCount": 24,
+    "wholeFlowSameDateSharedHeaderVisible": true,
+    "wholeFlowRepeatedDateMetaWithinSharedGroupCount": 0,
+    "wholeFlowRowExecutionNoteActionCount": 0,
+    "wholeFlowDetailExecutionNoteEntryVisible": true,
+    "wholeFlowDetailExecutionNoteSaveWorks": true,
+    "wholeFlowKeyboardDisclosureWorks": true,
+    "wholeFlowMobileFixedOverlapCount": 0,
+    "wholeFlowHorizontalOverflowCount": 0,
+    "wholeFlowConsoleErrorCount": 0,
+    "wholeFlowPageErrorCount": 0,
+    "wholeFlowSourceMutationCount": 0,
+    "wholeFlowCanonicalRowLossCount": 0,
+    "wholeFlowSchemaChanged": false,
+    "personalDraftStructuralRendererPreserved": true,
+    "heldReceiptCanonicalCount": 18,
+    "heldReceiptDefaultVisibleRowCount": 14,
+    "heldReceiptExpandedVisibleRowCount": 18,
+    "optionalTimelineToggleAdded": false,
+    "observedUserValidated": false
+  },
+  "fixtures": [
+    {
+      "shape": "routine",
+      "itemCount": 3,
+      "viewport": "390x844",
+      "defaultVisibleRowCount": 3,
+      "disclosureRequired": false
+    },
+    {
+      "shape": "checklist",
+      "itemCount": 10,
+      "viewport": "390x844",
+      "defaultVisibleRowCount": 10,
+      "disclosureRequired": false
+    },
+    {
+      "shape": "timeline",
+      "itemCount": 24,
+      "viewport": "390x844",
+      "groupCount": 6,
+      "defaultVisibleRowCount": 4,
+      "expandedVisibleRowCount": 24,
+      "disclosureRequired": true
+    },
+    {
+      "shape": "timeline",
+      "itemCount": 24,
+      "viewport": "1024x768",
+      "outlineDetailTogether": true
+    }
+  ],
+  "verification": {
+    "wholeFlowReadingUnit": { "passed": 4, "failed": 0 },
+    "existingUnit": { "passed": 549, "failed": 0 },
+    "playwrightDedicated": { "passed": 4, "failed": 0 },
+    "playwrightCompatibility": { "passed": 7, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "docsCheck": { "passed": true },
+    "diffCheck": { "passed": true }
+  }
+}

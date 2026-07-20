@@ -3,12 +3,13 @@ import type {
   PersonalItemValueOverlay,
   PersonalStructuralOverlay,
 } from './personal-structural-overlay';
+import { buildCanonicalFlowValueKey } from './projection-identity';
 
 export function getPersonalDraftProjectionValueKey(
   flowSlug: string,
   itemId: string,
 ): string {
-  return `${flowSlug}::${itemId}::draft-overlay`;
+  return buildCanonicalFlowValueKey(flowSlug, itemId);
 }
 
 function hasOwn<T extends object>(value: T, key: PropertyKey): boolean {

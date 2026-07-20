@@ -1,0 +1,525 @@
+{
+  "generatedAt": "2026-07-20T03:17:25.384Z",
+  "productionBase": "https://flowme2605.vercel.app",
+  "evidenceBoundary": {
+    "prototype": "heuristic_simulation",
+    "production": "current_production_interaction",
+    "observedUserSessionCount": 0,
+    "freshBrowserSavedStateNote": "savedMap query does not hydrate browser-local saved state by itself; saved-state Calendar comparison remains prior artifact evidence until an interaction fixture is replayed."
+  },
+  "prototype": [
+    {
+      "surface": "home",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/home-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 3,
+      "visibleTextBlockCount": 9,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "catalog",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/catalog-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 6,
+      "visibleTextBlockCount": 16,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "save",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/save-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 12,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "post",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/post-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 9,
+      "visibleTextBlockCount": 11,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "my",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/my-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 10,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "calendar",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/calendar-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 10,
+      "visibleTextBlockCount": 9,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "editor",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/editor-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 7,
+      "visibleTextBlockCount": 2,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "export",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "screenshots/proposed/export-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 2,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "home",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/home-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 3,
+      "visibleTextBlockCount": 9,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "catalog",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/catalog-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 6,
+      "visibleTextBlockCount": 16,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "save",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/save-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 12,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "post",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/post-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 9,
+      "visibleTextBlockCount": 11,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "my",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/my-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 10,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "calendar",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/calendar-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 10,
+      "visibleTextBlockCount": 9,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "editor",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/editor-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 7,
+      "visibleTextBlockCount": 2,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "surface": "export",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "screenshots/proposed/export-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 2,
+      "visibleLegacyCopyCount": 0,
+      "title": "FlowMe P26 제품 객체·여정 결정 프로토타입",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    }
+  ],
+  "production": [
+    {
+      "id": "home",
+      "route": "/",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/",
+      "screenshot": "screenshots/current/home-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 9,
+      "visibleTextBlockCount": 15,
+      "visibleLegacyCopyCount": 0,
+      "title": "",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "flows",
+      "route": "/flows",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/flows",
+      "screenshot": "screenshots/current/flows-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 22,
+      "visibleTextBlockCount": 25,
+      "visibleLegacyCopyCount": 0,
+      "title": "",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "public-vehicle",
+      "route": "/f/vehicle-inspection-prep",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+      "screenshot": "screenshots/current/public-vehicle-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 16,
+      "visibleTextBlockCount": 63,
+      "visibleLegacyCopyCount": 0,
+      "title": "자동차검사 D-14 준비 | FlowMe",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "my-moving",
+      "route": "/my?savedMap=moving-d30",
+      "stateBoundary": "fresh_browser_query_only",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?savedMap=moving-d30",
+      "screenshot": "screenshots/current/my-moving-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 7,
+      "visibleLegacyCopyCount": 0,
+      "title": "내 Flow",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "calendar-moving",
+      "route": "/calendar?savedMap=moving-d30",
+      "stateBoundary": "fresh_browser_query_only",
+      "device": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?savedMap=moving-d30",
+      "screenshot": "screenshots/current/calendar-moving-mobile.png",
+      "bodyScrollWidth": 390,
+      "bodyClientWidth": 390,
+      "horizontalOverflow": false,
+      "visibleActionCount": 7,
+      "visibleTextBlockCount": 6,
+      "visibleLegacyCopyCount": 0,
+      "title": "캘린더",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "home",
+      "route": "/",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/",
+      "screenshot": "screenshots/current/home-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 9,
+      "visibleTextBlockCount": 15,
+      "visibleLegacyCopyCount": 0,
+      "title": "",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "flows",
+      "route": "/flows",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/flows",
+      "screenshot": "screenshots/current/flows-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 22,
+      "visibleTextBlockCount": 25,
+      "visibleLegacyCopyCount": 0,
+      "title": "",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "public-vehicle",
+      "route": "/f/vehicle-inspection-prep",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+      "screenshot": "screenshots/current/public-vehicle-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 15,
+      "visibleTextBlockCount": 59,
+      "visibleLegacyCopyCount": 0,
+      "title": "자동차검사 D-14 준비 | FlowMe",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "my-moving",
+      "route": "/my?savedMap=moving-d30",
+      "stateBoundary": "fresh_browser_query_only",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?savedMap=moving-d30",
+      "screenshot": "screenshots/current/my-moving-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 8,
+      "visibleTextBlockCount": 7,
+      "visibleLegacyCopyCount": 0,
+      "title": "내 Flow",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    },
+    {
+      "id": "calendar-moving",
+      "route": "/calendar?savedMap=moving-d30",
+      "stateBoundary": "fresh_browser_query_only",
+      "device": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "status": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?savedMap=moving-d30",
+      "screenshot": "screenshots/current/calendar-moving-wide.png",
+      "bodyScrollWidth": 1024,
+      "bodyClientWidth": 1024,
+      "horizontalOverflow": false,
+      "visibleActionCount": 7,
+      "visibleTextBlockCount": 7,
+      "visibleLegacyCopyCount": 0,
+      "title": "캘린더",
+      "consoleErrorCount": 0,
+      "consoleErrors": []
+    }
+  ],
+  "summary": {
+    "proposedScreenshotCount": 16,
+    "currentProductionScreenshotCount": 10,
+    "prototypeHorizontalOverflowCount": 0,
+    "prototypeConsoleErrorCount": 0,
+    "productionHorizontalOverflowCount": 0,
+    "productionConsoleErrorCount": 0,
+    "productionHttpFailureCount": 0
+  }
+}

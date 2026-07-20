@@ -1,0 +1,84 @@
+{
+  "packageId": "2026-07-20-p26-19-six-shape-journey-gate",
+  "evidenceBoundary": {
+    "evidenceKinds": ["current_command", "current_browser", "current_screenshot", "heuristic"],
+    "observedUserSessionCount": 0,
+    "note": "Scripted browser journeys and screenshot review are not observed-user validation."
+  },
+  "summary": {
+    "journeyCount": 6,
+    "representativeTestCount": 7,
+    "representativeTestPassedCount": 7,
+    "migratedP24RegressionCount": 15,
+    "migratedP24RegressionPassedCount": 15,
+    "screenshotCount": 34,
+    "downloadArtifactCount": 6,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0
+  },
+  "journeys": [
+    {
+      "id": "J1",
+      "shape": "anchor_inverse_timeline",
+      "fixture": "moving-d30",
+      "routes": ["/flow-maps/moving-d30", "/my?savedMap=moving-d30"],
+      "viewports": ["390x844", "1024x768"],
+      "verified": ["five-row save receipt", "returning whole-Flow parity", "completion and reopen", "wide outline/detail"],
+      "status": "supported",
+      "screenshots": 4
+    },
+    {
+      "id": "J2",
+      "shape": "undated_checklist",
+      "fixture": "vehicle-inspection-prep",
+      "routes": ["/f/vehicle-inspection-prep", "/calendar", "/my?view=flows"],
+      "viewports": ["390x844", "1024x768"],
+      "verified": ["undated start", "Calendar tray", "single and three-item placement", "date removal undo", "three-event ICS"],
+      "status": "supported",
+      "screenshots": 6,
+      "downloads": 1
+    },
+    {
+      "id": "J3",
+      "shape": "recurring_routine",
+      "fixture": "washer-tub-clean-monthly",
+      "routes": ["/f/washer-tub-clean-monthly", "/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "verified": ["four-occurrence preview", "series and occurrence separation", "done and reopened", "stable RRULE and UID"],
+      "status": "supported",
+      "screenshots": 5,
+      "downloads": 3
+    },
+    {
+      "id": "J4",
+      "shape": "mixed_sequence_and_date",
+      "fixture": "travel preparation memo draft",
+      "routes": ["/flows", "/my"],
+      "viewports": ["390x844", "1024x768"],
+      "verified": ["structural selection mode", "two-item date move and undo", "selected export", "remove and restore"],
+      "status": "supported",
+      "screenshots": 4
+    },
+    {
+      "id": "J5",
+      "shape": "record_and_memo",
+      "fixture": "Jeju travel five-action memo",
+      "routes": ["/flows", "/my"],
+      "viewports": ["390x844", "1024x768"],
+      "verified": ["five source-backed fragments", "merge split exclude reorder", "four-row save reload export parity"],
+      "status": "supported",
+      "screenshots": 3
+    },
+    {
+      "id": "J6",
+      "shape": "personal_url_miss_draft",
+      "fixture": "daily count-three personal recurrence",
+      "routes": ["/flows", "/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "verified": ["series and occurrence identity", "done reopen skip hold resume", "reload persistence", "stable ICS UID"],
+      "status": "supported",
+      "screenshots": 12,
+      "downloads": 2
+    }
+  ]
+}

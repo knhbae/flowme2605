@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "public-undated-checklist",
+      "total": 10,
+      "dated": 0,
+      "undated": 10,
+      "renderedEffectiveRows": 10
+    },
+    {
+      "id": "source-backed-anchor-timeline",
+      "total": 5,
+      "dated": 5,
+      "undated": 0,
+      "renderedEffectiveRows": 5
+    },
+    {
+      "id": "url-first-undated-learning-checklist",
+      "total": 8,
+      "dated": 0,
+      "undated": 8,
+      "renderedEffectiveRows": 8
+    },
+    {
+      "id": "memo-mixed-draft",
+      "total": 3,
+      "dated": 1,
+      "undated": 2,
+      "renderedEffectiveRows": 3
+    }
+  ],
+  "defensiveFixtures": {
+    "malformedDateRowsDropped": 0,
+    "duplicateIdentityRowsDropped": 0,
+    "malformedDateReportedAsUndated": true,
+    "duplicateIdentityReported": true
+  }
+}

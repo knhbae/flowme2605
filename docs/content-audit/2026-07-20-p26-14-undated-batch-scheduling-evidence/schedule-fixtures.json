@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-14",
+  "fixture": "vehicle-inspection-prep saved with explicit undated intent",
+  "date": "2026-07-20",
+  "transitions": [
+    {
+      "action": "save_without_dates",
+      "undatedCount": 10,
+      "selectedDayCount": 0,
+      "calendarExportCount": 0
+    },
+    {
+      "action": "schedule_one",
+      "targetDate": "2026-07-28",
+      "selectedCount": 1,
+      "undatedCount": 9,
+      "selectedDayCount": 1
+    },
+    {
+      "action": "undo_schedule_one",
+      "undatedCount": 10,
+      "selectedDayCount": 0
+    },
+    {
+      "action": "schedule_three",
+      "targetDate": "2026-07-29",
+      "selectedCount": 3,
+      "undatedCount": 7,
+      "selectedDayCount": 3
+    },
+    {
+      "action": "reload",
+      "undatedCount": 7,
+      "selectedDayCount": 3
+    },
+    {
+      "action": "remove_one_date",
+      "undatedCount": 8,
+      "selectedDayCount": 2,
+      "undoVisible": true
+    },
+    {
+      "action": "undo_date_removal",
+      "undatedCount": 7,
+      "selectedDayCount": 3
+    },
+    {
+      "action": "export_calendar",
+      "calendarExportCount": 3,
+      "veventCount": 3,
+      "duplicateVeventCount": 0
+    }
+  ],
+  "membershipPolicy": {
+    "undatedPendingItem": "included",
+    "scheduledItem": "excluded",
+    "completedItem": "excluded",
+    "recurringSeriesDefinition": "excluded",
+    "recurringOccurrenceWithoutDate": "not_generated",
+    "selectionCheckboxMeaning": "schedule_selection"
+  }
+}

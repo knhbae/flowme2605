@@ -1,0 +1,46 @@
+{
+  "p26Slice": "P26-18",
+  "status": "complete_as_current_command_and_browser_evidence",
+  "evidenceKinds": [
+    "current_command",
+    "current_browser",
+    "current_screenshot",
+    "current_source"
+  ],
+  "observedUserSessionCount": 0,
+  "viewports": {
+    "mobile": "390x844",
+    "wide": "1024x768"
+  },
+  "responsiveWorkspaceContractReady": true,
+  "mobileComposition": "drill_in_and_sheets",
+  "wideMyFlowComposition": "rail_outline_detail_or_outline_detail",
+  "wideCalendarComposition": "tray_grid_agenda",
+  "bottomSheetFocusTrap": true,
+  "bottomSheetEscapeClose": true,
+  "bottomSheetReturnsFocus": true,
+  "bottomSheetBodyScrollLock": true,
+  "minimumCoreInteractiveTargetPx": 44,
+  "mobileFixedLayerOverlapCount": 0,
+  "horizontalOverflowCount": 0,
+  "keyboardBlockerCount": 0,
+  "consoleOrPageErrorCount": 0,
+  "exportPendingStateVisible": true,
+  "exportDisabledStateReasonVisible": true,
+  "exportErrorReceiptVisible": true,
+  "exportResultObscuredByNavigationCount": 0,
+  "appSchemaChanged": false,
+  "screenshotCount": 7,
+  "verification": {
+    "targetedUnit": { "passed": 6, "total": 6 },
+    "pretest": { "passed": 13, "total": 13 },
+    "fullUnit": { "passed": 564, "total": 564 },
+    "dedicatedPlaywright": { "passed": 3, "total": 3 },
+    "affectedPlaywright": { "passed": 20, "total": 20 },
+    "buildRoutes": { "passed": 18, "total": 18 },
+    "docsLocalLinkCount": 2675,
+    "securityHighCount": 0,
+    "securityCriticalCount": 0,
+    "securityModerateCount": 2
+  }
+}

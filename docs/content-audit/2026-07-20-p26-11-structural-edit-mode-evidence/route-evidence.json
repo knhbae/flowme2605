@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-11",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "40d88ec",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "reference_pattern"
+  ],
+  "markers": {
+    "normalModeStructuralControlCount": 0,
+    "normalModeTaskCompleteVisible": true,
+    "structureEditModeVisible": true,
+    "structureEditModeFlattensPersonalOrder": true,
+    "structureEditAddEntryVisible": true,
+    "structureEditReorderControlCountMobile": 8,
+    "structureEditReorderControlCountWide": 8,
+    "structureEditSelectionCountLiveRegion": true,
+    "structureEditDeleteConfirmationVisible": true,
+    "structureEditImmediateUndoVisible": true,
+    "structureEditPersistentRecoveryAfterReload": true,
+    "structureEditRestoreStableId": true,
+    "structureEditOrderPersistedAfterReload": true,
+    "structureEditExportOrderMatchesEffectiveOrder": true,
+    "mobileToolbarLayout": "fixed_above_bottom_nav",
+    "mobileToolbarBottomNavOverlapCount": 0,
+    "wideToolbarLayout": "inline",
+    "sourceBackedStructuralEditToggleCount": 0,
+    "sourceBackedStructuralEditControlCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "sourceMutationCount": 0,
+    "storageSchemaChanged": false,
+    "observedUserValidated": false
+  },
+  "viewports": [
+    {
+      "route": "/my?view=flows",
+      "viewport": "390x844",
+      "toolbarLayout": "fixed-above-nav",
+      "bottomNavOverlapCount": 0
+    },
+    {
+      "route": "/my?view=flows",
+      "viewport": "1024x768",
+      "toolbarLayout": "inline"
+    },
+    {
+      "route": "/my?demo=source-backed",
+      "viewport": "390x844",
+      "structuralEditControlCount": 0
+    }
+  ],
+  "verification": {
+    "playwrightDedicated": { "passed": 1, "failed": 0 },
+    "playwrightCompatibility": { "passed": 6, "failed": 0 },
+    "unit": { "passed": 549, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "docsCheck": { "passed": true },
+    "diffCheck": { "passed": true }
+  }
+}

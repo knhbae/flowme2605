@@ -1,0 +1,122 @@
+{
+  "generatedAt": "2026-07-20T21:29:56.856Z",
+  "startedAt": "2026-07-20T21:29:09.245Z",
+  "finishedAt": "2026-07-20T21:29:56.856Z",
+  "head": "bb2f10b326d03ceb6ce512632bd3ed5df84c94c3",
+  "command": "npx playwright test tests/e2e/p25-whole-flow-workspace.spec.ts tests/e2e/p26-undated-batch-scheduling.spec.ts tests/e2e/flow-mvp.spec.ts tests/e2e/p24-execution-trust.spec.ts tests/e2e/p26-memo-segmentation.spec.ts tests/e2e/url-first-user-surface.spec.ts --grep \"mobile keeps the complete saved Flow visible|wide selected Flow uses the same whole-Flow outline contract|undated public Flow supports atomic one and many scheduling|monthly maintenance routine keeps preview|whole Flow batch mode moves|memo intake preserves source fragments|personal draft recurrence expands into Calendar occurrences\" --workers=1 --reporter=line",
+  "exitCode": 0,
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_command",
+    "current_browser"
+  ],
+  "journeys": [
+    {
+      "id": "01-anchor-inverse-timeline",
+      "label": "Anchor inverse timeline",
+      "tests": [
+        "mobile keeps the complete saved Flow visible",
+        "wide selected Flow uses the same whole-Flow outline contract"
+      ],
+      "screenshots": [
+        "screenshots/01-anchor-inverse-timeline/01-post-save-whole-flow-mobile.png",
+        "screenshots/01-anchor-inverse-timeline/02-returning-whole-flow-mobile.png",
+        "screenshots/01-anchor-inverse-timeline/03-completed-reopen-mobile.png",
+        "screenshots/01-anchor-inverse-timeline/04-returning-whole-flow-wide.png"
+      ],
+      "downloads": []
+    },
+    {
+      "id": "02-undated-checklist",
+      "label": "Undated checklist",
+      "tests": [
+        "undated public Flow supports atomic one and many scheduling"
+      ],
+      "screenshots": [
+        "screenshots/02-undated-checklist/01-public-undated-intent-mobile.png",
+        "screenshots/02-undated-checklist/02-undated-inbox-collapsed-mobile.png",
+        "screenshots/02-undated-checklist/03-single-date-preview-mobile.png",
+        "screenshots/02-undated-checklist/04-three-items-scheduled-mobile.png",
+        "screenshots/02-undated-checklist/05-date-removal-undo-mobile.png",
+        "screenshots/02-undated-checklist/06-undated-inbox-wide.png"
+      ],
+      "downloads": [
+        "downloads/02-undated-checklist/vehicle-inspection-three-items.ics"
+      ]
+    },
+    {
+      "id": "03-recurring-routine",
+      "label": "Recurring routine",
+      "tests": [
+        "monthly maintenance routine keeps preview"
+      ],
+      "screenshots": [
+        "screenshots/03-recurring-routine/01-washer-monthly-preview-mobile.png",
+        "screenshots/03-recurring-routine/02-washer-monthly-agenda-mobile.png",
+        "screenshots/03-recurring-routine/03-washer-monthly-calendar-wide.png",
+        "screenshots/03-recurring-routine/04-published-routine-series-mobile.png",
+        "screenshots/03-recurring-routine/05-washer-series-export-mobile.png"
+      ],
+      "downloads": [
+        "downloads/03-recurring-routine/washer-monthly-routine.ics",
+        "downloads/03-recurring-routine/washer-my-flow-monthly-routine.ics",
+        "downloads/03-recurring-routine/washer-public-monthly-routine.ics"
+      ]
+    },
+    {
+      "id": "04-mixed-sequence-date",
+      "label": "Mixed sequence and date",
+      "tests": [
+        "whole Flow batch mode moves"
+      ],
+      "screenshots": [
+        "screenshots/04-mixed-sequence-date/00-batch-date-preview-mobile.png",
+        "screenshots/04-mixed-sequence-date/01-batch-selection-wide.png",
+        "screenshots/04-mixed-sequence-date/02-source-backed-selection-without-remove.png",
+        "screenshots/04-mixed-sequence-date/03-routine-batch-scope-block.png"
+      ],
+      "downloads": []
+    },
+    {
+      "id": "05-record-memo",
+      "label": "Record and memo",
+      "tests": [
+        "memo intake preserves source fragments"
+      ],
+      "screenshots": [
+        "screenshots/05-record-memo/01-memo-five-actions-review-mobile.png",
+        "screenshots/05-record-memo/02-memo-source-result-review-wide.png",
+        "screenshots/05-record-memo/03-memo-saved-export-mobile.png"
+      ],
+      "downloads": []
+    },
+    {
+      "id": "06-personal-draft",
+      "label": "Personal URL miss draft",
+      "tests": [
+        "personal draft recurrence expands into Calendar occurrences"
+      ],
+      "screenshots": [
+        "screenshots/06-personal-draft/completion-02-recurrence-series-definition-mobile.png",
+        "screenshots/06-personal-draft/completion-03-recurrence-occurrence-control-mobile.png",
+        "screenshots/06-personal-draft/completion-04-recurrence-occurrence-wide.png",
+        "screenshots/06-personal-draft/execution-00-personal-draft-occurrence-skipped-mobile.png",
+        "screenshots/06-personal-draft/execution-01-personal-draft-occurrence-held-mobile.png",
+        "screenshots/06-personal-draft/execution-02-personal-draft-occurrence-state-actions-wide.png",
+        "screenshots/06-personal-draft/ics-00-personal-draft-recurrence-ics-entry-mobile.png",
+        "screenshots/06-personal-draft/ics-01-personal-draft-recurrence-ics-entry-wide.png",
+        "screenshots/06-personal-draft/occurrence-00-personal-draft-series-calendar-entry-mobile.png",
+        "screenshots/06-personal-draft/occurrence-01-personal-draft-occurrence-done-mobile.png",
+        "screenshots/06-personal-draft/occurrence-02-personal-draft-occurrence-reopened-mobile.png",
+        "screenshots/06-personal-draft/occurrence-03-personal-draft-occurrence-calendar-wide.png"
+      ],
+      "downloads": [
+        "downloads/06-personal-draft/ics-personal-draft-recurrence-after-reopen.ics",
+        "downloads/06-personal-draft/ics-personal-draft-recurrence-before-completion.ics"
+      ]
+    }
+  ]
+}

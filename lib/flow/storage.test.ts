@@ -103,6 +103,7 @@ import {
   getCompletedFlowRuns,
   getFlowRunRegistry,
   getItemStates,
+  migrateLegacyPublicExampleDateIntent,
   getMyFlowCompletionFeedback,
   getMyFlowExecutionNotes,
   getMyFlowStepItemChecks,
@@ -116,6 +117,7 @@ import {
   normalizeSavedFlowMapSnapshot,
   normalizeSavedFlowRecord,
   recordFlowCompletionState,
+  saveFlowRecord,
   saveMyFlowCompletionFeedback,
   saveMyFlowExecutionNote,
   saveMyFlowStepItemChecks,
@@ -2972,6 +2974,7 @@ test('saved flow record normalization keeps explicit save metadata', () => {
       slug: 'moving-d30-basic',
       savedAt: '2026-05-27T00:00:00.000Z',
       selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
       anchor: '2026-06-26',
       weekdays: ['월', '목'],
     },
@@ -2986,8 +2989,83 @@ test('saved flow record normalization keeps explicit save metadata', () => {
       slug: 'moving-d30-basic',
       savedAt: '2026-05-27T00:00:00.000Z',
       selectedArtifactMode: 'calendar',
+      dateIntent: 'undated',
     },
   );
+});
+
+test('saved flow records persist only custom or undated date intent', () => {
+  const localStorage = memoryStorage();
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: { localStorage } });
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: localStorage });
+
+  try {
+    const custom = saveFlowRecord('vehicle-inspection-prep', {
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+      anchor: '2026-08-20',
+    });
+    assert.equal(custom?.dateIntent, 'custom');
+    assert.equal(custom?.anchor, '2026-08-20');
+
+    const undated = saveFlowRecord('vehicle-inspection-prep', {
+      selectedArtifactMode: 'checklist',
+      dateIntent: 'undated',
+      anchor: '2026-08-20',
+    });
+    assert.equal(undated?.dateIntent, 'undated');
+    assert.equal(undated?.anchor, undefined);
+  } finally {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('legacy example saves migrate to undated without discarding the old preview anchor', () => {
+  const localStorage = memoryStorage({
+    'flow:vehicle-inspection-prep:anchorDate': JSON.stringify({
+      mode: 'example',
+      anchor: '',
+    }),
+    'flow:saved:vehicle-inspection-prep': JSON.stringify({
+      slug: 'vehicle-inspection-prep',
+      savedAt: '2026-07-20T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-08-03',
+    }),
+  });
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: { localStorage } });
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: localStorage });
+
+  try {
+    const migration = migrateLegacyPublicExampleDateIntent('vehicle-inspection-prep');
+    assert.equal(migration.migrated, true);
+    assert.equal(migration.preservedExampleAnchor, '2026-08-03');
+    assert.deepEqual(getSavedFlowRecord('vehicle-inspection-prep'), {
+      slug: 'vehicle-inspection-prep',
+      savedAt: '2026-07-20T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'undated',
+      legacyExampleAnchor: '2026-08-03',
+    });
+    assert.deepEqual(getStoredAnchor('vehicle-inspection-prep'), {
+      mode: 'undated',
+      anchor: '',
+    });
+  } finally {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
 });
 
 test('active flow progress can use an injected bundle list for source-backed records', () => {

@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FlowMe//Personal Calendar Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:personal-recurrence:url-draft-1784582983076-i4wn7:personal-item-6da5e90
+ 8-5448-44de-a46b-1919129f584b@flowme.local
+DTSTAMP:20260720T212945Z
+DTSTART;VALUE=DATE:20260713
+DTEND;VALUE=DATE:20260714
+RRULE:FREQ=DAILY;COUNT=3
+SUMMARY:매일 준비물 다시 확인하기
+DESCRIPTION:매일 준비물 다시 확인하기\nFlow: 반복 일정 확
+ 인\n구간: 내가 추가한 할 일\n일정: 2026-07-13\n반복: 매일\
+ n\n메모: 매일 준비물 다시 확인하기\n\n처리한 뒤 완료
+  체크합니다.\n
+END:VEVENT
+END:VCALENDAR

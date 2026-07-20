@@ -20,10 +20,21 @@ export type FlowExportScopeItem = {
   key: string;
   title: string;
   calendarEligible: boolean;
+  calendarOutputCount?: number;
   listEligible?: boolean;
+  recurrenceSeriesId?: string;
+  calendarVisibleOccurrenceCount?: number;
   excluded?: boolean;
   tombstoned?: boolean;
   status?: FlowExportScopeItemStatus;
+};
+
+export type FlowExportScopeMetrics = {
+  datedCount: number;
+  undatedCount: number;
+  recurringSeriesCount: number;
+  visibleOccurrenceCount: number;
+  omittedCountByDestination: Record<FlowExportDestination, number>;
 };
 
 export type FlowExportScopePlan = {
@@ -39,6 +50,20 @@ export type FlowExportScopePlan = {
   tombstonedCount: number;
   duplicateKeyCount: number;
   canExport: boolean;
+  metrics: FlowExportScopeMetrics;
+};
+
+export type FlowExportResultKind = 'download' | 'copy';
+
+export type FlowExportResultReceipt = {
+  scope: FlowExportScope;
+  destination: FlowExportDestination;
+  resultKind: FlowExportResultKind;
+  status: 'success' | 'error';
+  outputCount: number;
+  omittedCount: number;
+  filename?: string;
+  message: string;
 };
 
 const DESTINATION_EXTENSIONS: Record<FlowExportDestination, string> = {
@@ -123,6 +148,10 @@ export function buildFlowExportScopePlan(options: {
   const visibleItems = requestedItems.filter((item) => !item.excluded && !item.tombstoned);
   const listItems = visibleItems.filter((item) => item.listEligible !== false);
   const calendarItems = visibleItems.filter((item) => item.calendarEligible);
+  const calendarOutputCount = calendarItems.reduce(
+    (count, item) => count + Math.max(0, Math.trunc(item.calendarOutputCount ?? 1)),
+    0,
+  );
   const itemsByDestination = {
     calendar: calendarItems,
     checklist: listItems,
@@ -141,6 +170,27 @@ export function buildFlowExportScopePlan(options: {
       `${fileBase}-${scopeSuffix}-${DESTINATION_SUFFIXES[destination]}.${DESTINATION_EXTENSIONS[destination]}`,
     ]),
   ) as Record<FlowExportDestination, string>;
+  const recurringSeriesItems = calendarItems.filter((item) => item.recurrenceSeriesId);
+  const recurringSeriesCount = new Set(
+    recurringSeriesItems.map((item) => item.recurrenceSeriesId),
+  ).size;
+  const visibleOccurrenceCountBySeries = new Map<string, number>();
+  recurringSeriesItems.forEach((item) => {
+    if (!item.recurrenceSeriesId) return;
+    visibleOccurrenceCountBySeries.set(
+      item.recurrenceSeriesId,
+      Math.max(
+        visibleOccurrenceCountBySeries.get(item.recurrenceSeriesId) ?? 0,
+        item.calendarVisibleOccurrenceCount ?? 0,
+      ),
+    );
+  });
+  const omittedCountByDestination = Object.fromEntries(
+    FLOW_EXPORT_DESTINATIONS.map((destination) => [
+      destination,
+      Math.max(0, requestedItems.length - itemsByDestination[destination].length),
+    ]),
+  ) as Record<FlowExportDestination, number>;
 
   return {
     scope: options.scope,
@@ -150,7 +200,7 @@ export function buildFlowExportScopePlan(options: {
     items: visibleItems,
     itemsByDestination,
     countByDestination: {
-      calendar: calendarItems.length,
+      calendar: calendarOutputCount,
       checklist: listItems.length,
       sheet: listItems.length,
       memo: listItems.length,
@@ -160,5 +210,49 @@ export function buildFlowExportScopePlan(options: {
     tombstonedCount: requestedItems.filter((item) => item.tombstoned).length,
     duplicateKeyCount: normalized.duplicateKeyCount,
     canExport: listItems.length > 0,
+    metrics: {
+      datedCount: calendarItems.length,
+      undatedCount: listItems.filter((item) => !item.calendarEligible).length,
+      recurringSeriesCount,
+      visibleOccurrenceCount: Array.from(visibleOccurrenceCountBySeries.values())
+        .reduce((count, value) => count + value, 0),
+      omittedCountByDestination,
+    },
+  };
+}
+
+const DESTINATION_RESULT_LABELS: Record<FlowExportDestination, string> = {
+  calendar: '캘린더 일정',
+  checklist: '체크리스트 항목',
+  sheet: '시트 행',
+  memo: '메모 항목',
+};
+
+export function buildFlowExportResultReceipt(options: {
+  plan: FlowExportScopePlan;
+  destination: FlowExportDestination;
+  resultKind: FlowExportResultKind;
+  outputCount: number;
+  status?: 'success' | 'error';
+  filename?: string;
+}): FlowExportResultReceipt {
+  const status = options.status ?? 'success';
+  const outputCount = Math.max(0, Math.trunc(options.outputCount));
+  const omittedCount = options.plan.metrics.omittedCountByDestination[options.destination];
+  const resultLabel = DESTINATION_RESULT_LABELS[options.destination];
+  const targetLabel = options.resultKind === 'download' ? '파일로 만들었어요' : '복사했어요';
+  const message = status === 'success'
+    ? `${resultLabel} ${outputCount}개를 ${targetLabel}`
+    : `${resultLabel}을 만들지 못했어요`;
+
+  return {
+    scope: options.plan.scope,
+    destination: options.destination,
+    resultKind: options.resultKind,
+    status,
+    outputCount,
+    omittedCount,
+    ...(options.filename ? { filename: options.filename } : {}),
+    message,
   };
 }

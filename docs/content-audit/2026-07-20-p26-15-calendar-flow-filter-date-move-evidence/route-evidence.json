@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-15",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "9731d5c",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "reference_pattern",
+    "prior_design_artifact"
+  ],
+  "markers": {
+    "calendarFlowScopeContract": "all_routine_specific_flow",
+    "calendarSpecificFlowFilterVisible": true,
+    "calendarSpecificFlowFilterMarkerIncludesColorInitialTitle": true,
+    "calendarLegacySavedFlowScopeControlCount": 0,
+    "calendarSameDateFlowCount": 2,
+    "calendarSameDateAgendaGroupCount": 2,
+    "calendarSameDateItemCount": 6,
+    "calendarVehicleScopeGridItemCount": 2,
+    "calendarVehicleScopeAgendaGroupCount": 1,
+    "calendarScopeGridAgendaCountMismatch": 0,
+    "calendarScopePreservesSelectedDateWhenPossible": true,
+    "calendarDateMovePreviewVisible": true,
+    "calendarDateMoveSelectedItemCount": 2,
+    "calendarDateMoveAffectedFlowCount": 2,
+    "calendarDateMoveOccurrenceLabelDistinct": true,
+    "calendarDateMoveOrdinaryLabelDistinct": true,
+    "calendarDateMoveUsesAtomicCommit": true,
+    "calendarDateMoveUndoVisible": true,
+    "calendarDateMoveUndoRestoresSourceDate": true,
+    "calendarDateMovePersistsAfterReload": true,
+    "calendarDateMovePreservesCompletion": true,
+    "calendarOccurrenceMovePreservesSeries": true,
+    "calendarDateMoveKeyboardCommit": true,
+    "calendarDateMoveDragUsesSamePreview": true,
+    "calendarDateMoveSourceMutationCount": 0,
+    "calendarDateMoveStorageSchemaChanged": false,
+    "calendarMobileHorizontalOverflowCount": 0,
+    "calendarWideHorizontalOverflowCount": 0,
+    "calendarConsoleErrorCount": 0,
+    "calendarPageErrorCount": 0,
+    "observedUserValidated": false
+  },
+  "viewports": [
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "fixture": "moving-d30 plus two scheduled vehicle inspection items",
+      "sameDateFlowCount": 2,
+      "sameDateItemCount": 6,
+      "filter": "all_then_specific_flow"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "fixture": "cross-Flow selected date move",
+      "selectedItemCount": 2,
+      "affectedFlowCount": 2,
+      "undo": true,
+      "reloadPersistence": true
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewport": "390x844",
+      "fixture": "routine occurrence move",
+      "occurrenceLabel": "반복 회차",
+      "keyboardCommit": true
+    },
+    {
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "fixture": "vehicle Flow filter after cross-Flow move",
+      "layout": "undated_rail_grid_agenda",
+      "legacyScopeControlCount": 0
+    }
+  ],
+  "verification": {
+    "p26CalendarFilterDateMoveE2e": { "passed": 2, "failed": 0 },
+    "affectedRegressionE2e": { "passed": 4, "failed": 0 },
+    "newUnit": { "passed": 5, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "fullUnit": { "passed": 561, "failed": 0 },
+    "p26UndatedAndPublicRegressionE2e": { "passed": 45, "failed": 0 },
+    "securityAudit": { "high": 0, "critical": 0, "moderate": 2 },
+    "docsCheck": { "passed": true, "localLinkCount": 2649 },
+    "diffCheck": { "passed": true }
+  }
+}

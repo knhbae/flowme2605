@@ -23,14 +23,16 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.reload();
 
     await expect(page.getByTestId('flow-map-artifact-preview-row')).toHaveCount(5);
-    await expect(page.getByTestId('flow-map-result-promise')).toHaveText('전체 Flow · 할 일 5개');
+    await expect(page.getByTestId('flow-map-hero')).toContainText('저장될 전체 Flow');
+    await expect(page.getByTestId('flow-map-hero')).toContainText('할 일 5개');
+    await expect(page.getByTestId('flow-map-hero')).toContainText('원문 · 이사 준비 체크리스트');
     await expect(page.locator('body')).not.toContainText('이사일 1개를 넣으면 원문 체크리스트');
     await expect(page.getByTestId('flow-map-execution-outline')).not.toHaveAttribute('open', '');
-    await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveAccessibleName('그대로 저장');
+    await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveAccessibleName('그대로 시작');
     await captureEvidence(page, '01-moving-artifact-first-mobile.png');
 
     await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-    await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveAccessibleName('그대로 저장');
+    await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveAccessibleName('그대로 시작');
     await page.getByTestId('flow-map-adjust-save-mobile').click();
     const adjustPanel = page.getByTestId('flow-map-adjust-panel');
     await expect(adjustPanel).toBeVisible();
@@ -72,10 +74,10 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
     const saveButton = page.getByTestId('flow-map-save-all-mobile');
     await expect(saveButton).toBeDisabled();
-    await expect(saveButton).toHaveAccessibleName('선택한 0개 저장');
+    await expect(saveButton).toHaveAccessibleName('선택한 0개로 시작');
     await page.getByTestId('flow-map-adjust-save-mobile').click();
     await expect(saveButton).toBeDisabled();
-    await expect(saveButton).toHaveAccessibleName('그대로 저장');
+    await expect(saveButton).toHaveAccessibleName('그대로 시작');
   });
 
   test('public save preview stays compact and opens the saved whole Flow', async ({ page }) => {
@@ -84,16 +86,16 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(5);
     await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
     await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-description')).not.toHaveAttribute('open', '');
+    await expect(page.getByTestId('public-flow-description')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
-    await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' })).toHaveText('그대로 저장');
+    await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' })).toHaveText('날짜 없이 시작');
     await expect(page.getByTestId('public-flow-reference-details')).not.toHaveAttribute('open', '');
     await captureEvidence(page, '05-vehicle-public-compact-mobile.png');
 
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' }).click();
+    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
     const savedLink = page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' });
     await expect(savedLink).toHaveAttribute('href', '/my?savedFlow=vehicle-inspection-prep');
     await savedLink.click();
@@ -110,13 +112,16 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/f/vehicle-inspection-prep');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '그대로 저장' }).click();
+    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
 
     await page.goto('/flow-maps/middle-school-math-1');
     await page.getByTestId('flow-map-save-all-mobile').click();
 
     await page.goto('/calendar');
-    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 정하기');
+    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 없는 할 일');
+    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText(
+      '아직 일정에 놓지 않은 실행 항목',
+    );
     await expect(page.getByTestId('my-flow-calendar-unscheduled-toggle')).toHaveAttribute('aria-expanded', 'false');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-panel')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
@@ -160,7 +165,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
     await page.goto('/my?savedFlow=alt-phone-sk7-self-activation');
     const postSave = page.getByTestId('my-flow-post-save-panel');
-    await expect(postSave).toContainText('저장 기록을 보관했어요');
+    await expect(postSave.getByTestId('my-flow-post-save-confirmation')).toHaveText('저장 기록 보관됨');
     await expect(postSave.getByTestId('my-flow-post-save-held-note')).toBeVisible();
     await expect(postSave.getByTestId('my-flow-post-save-open-first')).toHaveCount(0);
     await expect(postSave.getByTestId('my-flow-post-save-view-flow')).toHaveCount(0);
@@ -178,14 +183,15 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.getByTestId('my-flow-post-save-view-flow').click();
 
     await page.goto('/f/vehicle-inspection-prep');
-    await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '그대로 저장' }).click();
+    await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '날짜 없이 시작' }).click();
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
 
     const flowRail = page.getByTestId('my-flow-list');
     await expect(flowRail).toBeVisible();
     await expect(flowRail).toContainText('Flow 목록');
-    await expect(flowRail.locator('button')).toHaveCount(2);
+    await expect(flowRail.locator('button')).toHaveCount(3);
+    await expect(flowRail.getByTestId('my-flow-filter-all')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByLabel('저장한 Flow')).toBeHidden();
     await expect(page.locator('body')).not.toContainText('보기 범위');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

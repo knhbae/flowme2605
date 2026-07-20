@@ -43,7 +43,13 @@ function addPlainDateDays(value: string, days: number): string | undefined {
 }
 
 function getRoutineEndDate(bundle: FlowBundle, startDate: string): string | undefined {
-  const durationDays = bundle.flow.routine_duration_days;
+  // User-scheduled exact-video Flows promise a four-week calendar preview.
+  const durationDays = bundle.flow.routine_duration_days ?? (
+    bundle.flow.tags?.includes('exact-video') &&
+    bundle.flow.tags?.includes('schedule-user-choice')
+      ? 28
+      : undefined
+  );
   return durationDays && durationDays > 0
     ? addPlainDateDays(startDate, durationDays - 1)
     : undefined;
@@ -80,6 +86,7 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
   rows: TRow[];
   startDate: string;
   selectedWeekdays?: string[];
+  endDate?: string;
   range: { start: string; end: string };
   executionRecords?: PersonalStructuralOccurrenceExecutionRecord[];
   resolveOccurrenceDate?: (input: {
@@ -107,7 +114,9 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
     return unchanged();
   }
 
-  const endDate = getRoutineEndDate(options.bundle, options.startDate);
+  const endDate = isPlainDate(options.endDate)
+    ? options.endDate
+    : getRoutineEndDate(options.bundle, options.startDate);
   const definitions: Record<string, SavedRoutineRecurrenceDefinition | undefined> = {};
   const repeatRuleByItemId: Record<string, string> = {};
   const seriesByItemId: Record<string, PersonalStructuralRecurrenceSeries> = {};

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-16",
+  "fixtures": [
+    {
+      "id": "public-moving-whole",
+      "route": "/f/moving-d30-basic",
+      "scope": "flow",
+      "included": 24,
+      "dated": 24,
+      "undated": 0,
+      "calendarPreview": 24,
+      "calendarActualEvents": 24,
+      "filename": "moving-d30-basic-all-calendar.ics"
+    },
+    {
+      "id": "public-vehicle-undated",
+      "route": "/f/vehicle-inspection-prep",
+      "scope": "flow",
+      "calendarPreview": 0,
+      "calendarDisabled": true,
+      "disabledReason": "날짜 있는 항목이 없어요"
+    },
+    {
+      "id": "saved-vehicle-one-scheduled",
+      "route": "/my?view=flows",
+      "scope": "flow",
+      "calendarPreview": 1,
+      "calendarActualEvents": 1
+    },
+    {
+      "id": "source-backed-selected-two",
+      "route": "/my?demo=source-backed",
+      "scope": "selected",
+      "included": 2,
+      "memoActualRows": 2,
+      "currentItemActualRows": 1
+    },
+    {
+      "id": "public-washer-monthly-series",
+      "route": "/f/washer-tub-clean-monthly",
+      "scope": "flow",
+      "included": 3,
+      "dated": 1,
+      "undated": 2,
+      "recurringSeries": 1,
+      "visibleOccurrences": 4,
+      "calendarActualEvents": 1,
+      "rrule": "FREQ=MONTHLY;BYMONTHDAY=20"
+    },
+    {
+      "id": "personal-draft-effective-three",
+      "route": "/my",
+      "scope": "flow",
+      "included": 3,
+      "checklistItemLines": 3,
+      "sheetHeaderLines": 1,
+      "sheetItemLines": 3,
+      "memoItems": 3,
+      "scheduledIcsEvents": 1,
+      "personalOrderPreserved": true,
+      "sourceTraceInternalHitCount": 0
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-20T15:03:47.4793713+09:00",
+  "baselineCommit": "cd0259cab71007312c8ab04c2bdb06fbcfaa1bac",
+  "observedUserCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser"
+  ],
+  "markers": {
+    "canonicalRoutineProjectionConnected": true,
+    "routineSeriesDefinitionLabel": "반복 설정",
+    "routineOccurrenceExecutionLabel": "이번 회차",
+    "seriesDefinitionCompletionControlCount": 0,
+    "occurrenceCompletionControlCount": 1,
+    "seriesDefinitionUndatedTrayVisibleCount": 0,
+    "publicMyFlowRoutineIcsUidMismatchCount": 0,
+    "publicMyFlowRoutineIcsRruleMismatchCount": 0,
+    "publicRoutineIcsEventCount": 1,
+    "myFlowRoutineIcsEventCount": 1,
+    "publicRoutineIcsUid": "saved-routine-j36h7x@flowme.local",
+    "myFlowRoutineIcsUid": "saved-routine-j36h7x@flowme.local",
+    "publicRoutineRrule": "FREQ=MONTHLY;BYMONTHDAY=20",
+    "myFlowRoutineRrule": "FREQ=MONTHLY;BYMONTHDAY=20",
+    "routineExportSeriesCount": 1,
+    "routineExportVisibleOccurrenceCount": 1,
+    "occurrenceCompletionReopenIdentityChangeCount": 0,
+    "occurrenceReloadStateMismatchCount": 0,
+    "personalRecurrenceDoneReopenedSupported": true,
+    "personalRecurrenceSkippedDistinctFromDeleted": true,
+    "personalRecurrenceHeldDistinctFromSkipped": true,
+    "exactVideoFourWeekSeriesBounded": true,
+    "sourceMutationCount": 0,
+    "recurrenceDuplicateOccurrenceCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "normalRouteInternalTermHitCount": 0
+  },
+  "routes": [
+    {
+      "route": "/f/washer-tub-clean-monthly",
+      "viewport": "390x844",
+      "state": "custom anchor 2026-07-20",
+      "result": "monthly preview and one canonical RRULE master event",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "saved washer routine",
+      "result": "series settings without completion; whole-Flow recurring export count 1",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "state": "July occurrence complete then reopened and reloaded",
+      "result": "one occurrence row, stable identity, no series definition in undated tray",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "state": "August washer occurrence",
+      "result": "one grid marker and one agenda execution row",
+      "evidenceKind": "current_browser"
+    }
+  ],
+  "verification": {
+    "targetedUnit": {
+      "passed": 21,
+      "failed": 0
+    },
+    "targetedPlaywright": {
+      "passed": 4,
+      "failed": 0
+    },
+    "build": {
+      "status": "passed",
+      "routeCount": 18
+    }
+  }
+}
+

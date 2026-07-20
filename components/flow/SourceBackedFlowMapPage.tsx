@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FLOW_ENTRY_DETAIL_CTA_LABEL, toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import {
   buildSourceBackedFlowMapPublishPackage,
   getSourceBackedFlowMapQualityDecision,
@@ -7,6 +7,7 @@ import {
   type SourceBackedFlowMapPublishPackage,
 } from '@/lib/flow/source-backed-my-flow';
 import { PlatformNav } from './PlatformNav';
+import { FlowSaveBeforeFrame } from './FlowSaveBeforeFrame';
 import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
 
 type SourceBackedFlowMapProps = {
@@ -135,9 +136,6 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   }
 
   const { map, public: publicSurface } = publishPackage;
-  const firstFlow = publicSurface.childFlows[0];
-  const firstStep = firstFlow?.steps[0];
-  const firstStepDetail = firstStep?.detailItems[0];
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
   const chooseChildBeforeSave = publicSurface.saveMode === 'choose_child';
   const choiceCopy = publicSurface.choiceCopy ?? {
@@ -152,81 +150,58 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
     flowSlug: flow.slug,
     flowTitle: flow.title,
   })));
-  const resultPromise = chooseChildBeforeSave
-    ? choiceCopy.resultPromise
-    : `전체 Flow · 할 일 ${previewSteps.length}개`;
+  const previewRows = previewSteps.map((step) => ({
+    id: `${step.flowSlug}-${step.id}`,
+    timing: step.stepTitle ? toUserFacingSourceTitle(step.stepTitle) : undefined,
+    title: step.title,
+    summary: step.detailItems[0],
+  }));
+  const decisionActions = chooseChildBeforeSave ? (
+    <div data-testid="flow-map-choose-child" className="grid gap-2">
+      <p className="text-xs font-semibold text-[#6E6B64]">사용할 Flow를 고르세요</p>
+      {publicSurface.childFlows.map((flow) => (
+        <Link
+          key={flow.slug}
+          className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-[#D9D6CF] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]"
+          href={`/f/${flow.slug}`}
+        >
+          <span className="min-w-0 break-keep">{toContentDisplayTitle(flow.title)}</span>
+          <span className="shrink-0 text-xs text-[#3654FF]">열기 →</span>
+        </Link>
+      ))}
+    </div>
+  ) : (
+    <SourceBackedFlowMapSaveButton
+      mapId={map.id}
+      mapTitle={displayTitle}
+      savedFlows={publicSurface.childFlows.map((flow) => ({
+        slug: flow.slug,
+        title: toContentDisplayTitle(flow.title),
+        artifactMode: flow.destination === 'sheet' ? 'sheet' : flow.destination === 'calendar' || flow.destination === 'hybrid' ? 'calendar' : 'checklist',
+        steps: flow.steps.map((step) => ({ id: step.id, title: step.title })),
+      }))}
+      setupInput={publicSurface.setupInput}
+    />
+  );
 
   return (
-    <main data-testid="flow-map-public" className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8 sm:pb-16`}>
+    <main data-testid="flow-map-public" className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16`}>
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
-      <section data-testid="flow-map-hero" data-visual-structure="unframed" className="border-y border-[#E7E4DD] py-5 sm:py-7">
-        <p className="text-sm font-semibold text-[#3654FF]">{FLOW_ENTRY_DETAIL_CTA_LABEL}</p>
-        <h1 className="mt-1 break-keep text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{displayTitle}</h1>
-        <p data-testid="flow-map-result-promise" className="mt-2 break-keep text-sm font-semibold leading-6 text-[#3654FF] sm:text-base">
-          {resultPromise}
-        </p>
-        <div data-testid="flow-map-result-chips" className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold text-[#6E6B64]">
-          {publicSurface.categoryLabel ? <span className="rounded-full bg-[#F1F0EC] px-2.5 py-1 text-[#1B1A17]">{publicSurface.categoryLabel}</span> : null}
-          {chooseChildBeforeSave ? publicSurface.artifacts.map((artifact) => (
-            <span key={artifact} className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-[#6E6B64]">
-              {artifact}
-            </span>
-          )) : null}
-          {publicSurface.counts ? (
-            <span className="rounded-full bg-white px-2.5 py-1 text-[#8A857B] ring-1 ring-[#E7E4DD]">
-              할 일 {publicSurface.counts.steps}개
-            </span>
-          ) : null}
-        </div>
-        <div className="mt-4 grid gap-4">
-          {chooseChildBeforeSave ? (
-            <div data-testid="flow-map-choose-child" className="border-y border-[#DDE3FF] bg-[#EEF1FF] px-3 py-3 text-sm leading-6 text-[#2945E8]">
-              <p className="font-semibold">{choiceCopy.heading}</p>
-              <p className="mt-1">{choiceCopy.body}</p>
-            </div>
-          ) : (
-            <>
-              <section data-testid="flow-map-artifact-preview" className="border-y border-[#E7E4DD] bg-white py-1">
-                <div className="flex items-center justify-between gap-3 px-1 py-2">
-                  <p className="text-xs font-semibold text-[#6E6B64]">저장될 전체 Flow</p>
-                  <span className="shrink-0 text-xs font-semibold text-[#3654FF]">{previewSteps.length}개 할 일</span>
-                </div>
-                <ol className="grid gap-0">
-                  {previewSteps.slice(0, 5).map((step, index) => (
-                    <li key={`${step.flowSlug}-${step.id}`} data-testid="flow-map-artifact-preview-row" className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-t border-[#F0EEE9] px-1 py-2.5 text-sm">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#EEF1FF] text-[11px] font-semibold text-[#3654FF]" aria-hidden="true">{index + 1}</span>
-                      <span className="min-w-0">
-                        {step.stepTitle ? <span className="block text-[11px] font-semibold text-[#6E6B64]">{toUserFacingSourceTitle(step.stepTitle)}</span> : null}
-                        <span className="block break-keep font-semibold text-slate-950">{step.title}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-                {previewSteps.length > 5 ? <p className="border-t border-[#F0EEE9] px-1 py-2 text-xs font-semibold text-[#6E6B64]">외 {previewSteps.length - 5}개 할 일</p> : null}
-              </section>
-              <SourceBackedFlowMapSaveButton
-                mapId={map.id}
-                mapTitle={displayTitle}
-                savedFlows={publicSurface.childFlows.map((flow) => ({
-                  slug: flow.slug,
-                  title: toContentDisplayTitle(flow.title),
-                  artifactMode: flow.destination === 'sheet' ? 'sheet' : flow.destination === 'calendar' || flow.destination === 'hybrid' ? 'calendar' : 'checklist',
-                  steps: flow.steps.map((step) => ({ id: step.id, title: step.title })),
-                }))}
-                setupInput={publicSurface.setupInput}
-              />
-            </>
-          )}
-          {chooseChildBeforeSave && firstStep ? (
-            <div data-testid="flow-map-first-action-preview" className="border-l-2 border-[#3654FF] bg-[#FAFAF8] px-3 py-3 md:flex md:flex-col md:justify-center">
-              <p className="text-[11px] font-semibold text-[#6E6B64]">먼저 할 일</p>
-              <h2 className="mt-1 line-clamp-2 break-keep text-sm font-semibold text-slate-950">{firstStep.title}</h2>
-              {firstStepDetail ? <p className="mt-1 line-clamp-2 break-keep text-xs font-medium leading-5 text-slate-600">{firstStepDetail}</p> : null}
-            </div>
-          ) : null}
-        </div>
-      </section>
+      <FlowSaveBeforeFrame
+        rootTestId="flow-map-hero"
+        previewTestId="flow-map-artifact-preview"
+        previewRowTestId="flow-map-artifact-preview-row"
+        title={displayTitle}
+        categoryLabel={publicSurface.categoryLabel}
+        sourceLabel={toUserFacingSourceTitle(publicSurface.sourceTitle)}
+        sourceHref={map.sourceUrl}
+        inputLabel={chooseChildBeforeSave ? 'Flow별 설정' : publicSurface.setupInput?.label ?? '입력 없음'}
+        resultLabel={chooseChildBeforeSave ? `선택지 ${publicSurface.childFlows.length}개` : publicSurface.artifacts[0] ?? '실행 준비'}
+        itemCount={previewSteps.length}
+        previewRows={previewRows}
+        actions={decisionActions}
+      />
 
       <details data-testid="flow-map-execution-outline" className="mt-5 border-y border-[#E7E4DD] py-3 sm:mt-6">
         <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-800">

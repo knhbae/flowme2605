@@ -51,6 +51,53 @@ async function expectNoHorizontalOverflow(page: Page) {
   await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
 }
 
+async function openMyFlowView(page: Page) {
+  const postSavePanel = page.getByTestId('my-flow-post-save-panel');
+  if (await postSavePanel.isVisible().catch(() => false)) {
+    await page.goto('/my');
+  }
+  await page.getByTestId('my-flow-view-flow').click();
+}
+
+function getPersonalDraftFlow(page: Page) {
+  return page
+    .locator(
+      '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]:visible',
+    )
+    .first();
+}
+
+async function openPersonalDraftFlowIfCollapsed(flow: Locator) {
+  const open = flow.getByTestId('my-flow-mobile-structure-open');
+  if (await open.isVisible().catch(() => false)) await open.click();
+}
+
+async function setPersonalDraftStructureEditMode(flow: Locator, open: boolean) {
+  const toggle = flow.getByTestId('my-flow-batch-mode-toggle').first();
+  await expect(toggle).toBeVisible();
+  const active = (await toggle.getAttribute('aria-pressed')) === 'true';
+  if (active !== open) await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', open ? 'true' : 'false');
+}
+
+async function addPersonalDraftItem(flow: Locator, title: string) {
+  await setPersonalDraftStructureEditMode(flow, true);
+  await flow.getByTestId('personal-draft-add-entry').click();
+  await flow.getByTestId('personal-draft-add-title').fill(title);
+  await flow.getByTestId('personal-draft-add-title').press('Enter');
+  await setPersonalDraftStructureEditMode(flow, false);
+  return flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+}
+
+async function removePersonalDraftItemInStructureMode(page: Page, flow: Locator, title: string) {
+  await setPersonalDraftStructureEditMode(flow, true);
+  const outline = flow.getByTestId('my-flow-whole-flow-outline');
+  const row = outline.getByTestId('my-flow-batch-selectable-row').filter({ hasText: title });
+  await row.getByTestId('my-flow-batch-item-checkbox').check();
+  page.once('dialog', (dialog) => dialog.accept());
+  await outline.getByTestId('my-flow-batch-remove-selected').click();
+}
+
 async function expandMyFlowAdvancedEditor(detail: Locator) {
   const toggle = detail.getByTestId('my-flow-editor-advanced-toggle');
   await expect(toggle).toBeVisible();
@@ -220,7 +267,7 @@ test('URL-first hit and custom-start states stay inside normal user-surface guar
   await expectCleanUrlFirstUserSurface(result);
   await expectUrlFirstExportModesAvoidTechnicalFormatLabels(result);
 
-  await result.getByRole('button', { name: '조금 고쳐 시작' }).click();
+  await result.getByRole('button', { name: '내게 맞게 조정' }).click();
   const customPanel = result.getByTestId('flow-url-custom-start-panel');
   await expect(customPanel).toBeVisible();
   await expect(result).not.toContainText('Markdown');
@@ -415,8 +462,8 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   });
   expect(storedDraftBundle?.items).toHaveLength(1);
   expect(storedDraftBundle?.items?.map((item) => item.day_offset)).toEqual([0]);
-  await page.getByTestId('my-flow-view-flow').click();
-  const mobileDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await openMyFlowView(page);
+  const mobileDraftFlow = getPersonalDraftFlow(page);
   await expect(mobileDraftFlow).toBeVisible();
   await expect(mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
 
@@ -432,7 +479,7 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   await mobileSettings.getByRole('button', { name: '저장' }).click();
 
   if ((await mobileDraftFlow.getByTestId('my-flow-mobile-structure-step-row').count()) === 0) {
-    await mobileDraftFlow.getByTestId('my-flow-mobile-structure-open').click();
+    await openPersonalDraftFlowIfCollapsed(mobileDraftFlow);
   }
   await mobileDraftFlow.getByTestId('my-flow-mobile-structure-step-row').first().click();
   const mobileDetail = mobileDraftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
@@ -467,7 +514,7 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/my');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]');
   await expect(wideDraftFlow).toBeVisible();
   await expect(wideDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
@@ -520,9 +567,12 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);
-  await page.getByTestId('my-flow-view-flow').click();
-  let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  let draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  await expect(draftFlow.getByTestId('personal-draft-add-entry')).toHaveCount(0);
+  await expect(draftFlow.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   const addEntry = draftFlow.getByTestId('personal-draft-add-entry');
   await expect(addEntry).toBeVisible();
   await addEntry.focus();
@@ -532,6 +582,7 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await addTitle.fill('관리실에 후속 전화하기');
   await expect(draftFlow.getByTestId('personal-draft-add-save')).toBeEnabled();
   await addTitle.press('Enter');
+  await setPersonalDraftStructureEditMode(draftFlow, false);
 
   let addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 후속 전화하기' });
   await expect(addedItem).toBeVisible();
@@ -549,9 +600,9 @@ test('personal draft structural items add, complete, tombstone, and undo without
   }
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   const showAll = draftFlow.getByTestId('my-flow-mobile-structure-show-all');
   if (await showAll.count()) await showAll.click();
   addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 후속 전화하기' });
@@ -563,16 +614,14 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await complete.focus();
   await expect(complete).toBeFocused();
   await page.keyboard.press('Space');
-  const reopen = addedItem.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 취소' });
+  const reopen = addedItem.getByRole('checkbox', { name: '관리실에 후속 전화하기 다시 열기' });
   await expect(reopen).toBeChecked();
   await reopen.press('Space');
   await expect(complete).not.toBeChecked();
 
-  const deleteButton = detail.getByTestId('personal-draft-delete-item');
-  await deleteButton.focus();
-  await expect(deleteButton).toBeFocused();
-  await page.keyboard.press('Enter');
-  const undoNotice = draftFlow.getByTestId('personal-draft-delete-undo');
+  await expect(detail.getByTestId('personal-draft-delete-item')).toHaveCount(0);
+  await removePersonalDraftItemInStructureMode(page, draftFlow, '관리실에 후속 전화하기');
+  const undoNotice = draftFlow.getByTestId('my-flow-batch-undo');
   await expect(undoNotice).toBeVisible();
   await expect(addedItem).toHaveCount(0);
   const deletedOverlay = await page.evaluate((itemId) => {
@@ -589,10 +638,11 @@ test('personal draft structural items add, complete, tombstone, and undo without
     await page.screenshot({ path: `${evidenceDir}/02-personal-draft-delete-undo-mobile.png`, fullPage: true });
   }
 
-  const undoButton = undoNotice.getByTestId('personal-draft-delete-undo-action');
+  const undoButton = undoNotice.getByTestId('my-flow-batch-undo-action');
   await undoButton.focus();
   await expect(undoButton).toBeFocused();
   await page.keyboard.press('Space');
+  await setPersonalDraftStructureEditMode(draftFlow, false);
   addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 후속 전화하기' });
   await expect(addedItem).toHaveAttribute('data-item-id', stableItemId ?? '');
   const restoredOrder = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
@@ -602,20 +652,19 @@ test('personal draft structural items add, complete, tombstone, and undo without
   expect(restoredOrder).toBe(initialOrder);
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
   addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 후속 전화하기' });
-  await addedItem.getByTestId('my-flow-mobile-structure-step-row').click();
-  detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await detail.getByTestId('personal-draft-delete-item').click();
+  await removePersonalDraftItemInStructureMode(page, draftFlow, '관리실에 후속 전화하기');
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   await expect(draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 후속 전화하기' })).toHaveCount(0);
   await expect(draftFlow.getByTestId('personal-draft-delete-undo')).toHaveCount(0);
 
@@ -643,9 +692,10 @@ test('personal draft structural items add, complete, tombstone, and undo without
     localStorage.setItem(key, JSON.stringify(overlay));
   });
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   await expect(draftFlow.getByTestId('personal-draft-empty-state')).toBeVisible();
   await expect(draftFlow.getByTestId('personal-draft-add-entry')).toBeVisible();
 
@@ -658,8 +708,10 @@ test('personal draft structural items add, complete, tombstone, and undo without
   });
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]');
+  await expect(wideDraftFlow.getByTestId('personal-draft-add-entry')).toHaveCount(0);
+  await setPersonalDraftStructureEditMode(wideDraftFlow, true);
   await expect(wideDraftFlow.getByTestId('personal-draft-add-entry')).toBeVisible();
   await expectNoHorizontalOverflow(page);
   if (evidenceDir) {
@@ -669,7 +721,7 @@ test('personal draft structural items add, complete, tombstone, and undo without
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   await expect(page.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
   await expect(page.getByTestId('personal-draft-delete-item')).toHaveCount(0);
 });
@@ -695,14 +747,10 @@ test('personal draft order and persistent recovery survive reload without changi
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);
-  await page.getByTestId('my-flow-view-flow').click();
-  let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
-  await draftFlow.getByTestId('personal-draft-add-entry').click();
-  await draftFlow.getByTestId('personal-draft-add-title').fill('관리실에 최종 확인 전화하기');
-  await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
-
-  let addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
+  await openMyFlowView(page);
+  let draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  let addedItem = await addPersonalDraftItem(draftFlow, '관리실에 최종 확인 전화하기');
   const userItemId = await addedItem.getAttribute('data-item-id');
   expect(userItemId).toMatch(/^personal-item-/);
   let editedSourceItem = draftFlow.locator(
@@ -727,27 +775,30 @@ test('personal draft order and persistent recovery survive reload without changi
   const orderBeforeMove = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
     (elements) => elements.map((element) => element.getAttribute('data-item-id')),
   );
-  const moveUp = addedItem.getByTestId('personal-draft-move-up');
+  await setPersonalDraftStructureEditMode(draftFlow, true);
+  let structureRows = draftFlow.getByTestId('my-flow-batch-selectable-row');
+  let structureAddedItem = structureRows.filter({ hasText: '관리실에 최종 확인 전화하기' });
+  const moveUp = structureAddedItem.getByTestId('personal-draft-move-up');
   await moveUp.focus();
   await expect(moveUp).toBeFocused();
   await page.keyboard.press('Enter');
-  const orderAfterEnterMove = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+  const orderAfterEnterMove = await structureRows.evaluateAll(
     (elements) => elements.map((element) => element.getAttribute('data-item-id')),
   );
   expect(orderAfterEnterMove.indexOf(userItemId)).toBe(orderBeforeMove.indexOf(userItemId) - 1);
-  editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
-  const moveSourceDown = editedSourceItem.getByTestId('personal-draft-move-down');
+  let structureSourceItem = structureRows.filter({ hasText: '관리실에 변경 내용 확인하기' });
+  const moveSourceDown = structureSourceItem.getByTestId('personal-draft-move-down');
   await moveSourceDown.focus();
   await expect(moveSourceDown).toBeFocused();
   await page.keyboard.press('Space');
-  const orderAfterMove = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+  const orderAfterMove = await structureRows.evaluateAll(
     (elements) => elements.map((element) => element.getAttribute('data-item-id')),
   );
   expect(orderAfterMove).not.toEqual(orderAfterEnterMove);
   await expect(draftFlow.locator('[data-testid="personal-draft-move-up"]:visible')).toHaveCount(orderAfterMove.length);
   await expect(draftFlow.locator('[data-testid="personal-draft-move-down"]:visible')).toHaveCount(orderAfterMove.length);
-  await expect(draftFlow.getByTestId('personal-draft-effective-item').first().getByTestId('personal-draft-move-up')).toBeDisabled();
-  await expect(draftFlow.getByTestId('personal-draft-effective-item').last().getByTestId('personal-draft-move-down')).toBeDisabled();
+  await expect(structureRows.first().getByTestId('personal-draft-move-up')).toBeDisabled();
+  await expect(structureRows.last().getByTestId('personal-draft-move-down')).toBeDisabled();
   await expectNoHorizontalOverflow(page);
   if (evidenceDir) {
     await hideNextDevOverlay(page);
@@ -756,26 +807,27 @@ test('personal draft order and persistent recovery survive reload without changi
   }
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
-  if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
-    await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
-  }
-  const persistedOrder = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  await setPersonalDraftStructureEditMode(draftFlow, true);
+  structureRows = draftFlow.getByTestId('my-flow-batch-selectable-row');
+  const persistedOrder = await structureRows.evaluateAll(
     (elements) => elements.map((element) => element.getAttribute('data-item-id')),
   );
   expect(persistedOrder).toEqual(orderAfterMove);
+  await setPersonalDraftStructureEditMode(draftFlow, false);
   editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
-  await detail.getByTestId('personal-draft-delete-item').click();
+  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 다시 열기' })).toBeChecked();
+  await removePersonalDraftItemInStructureMode(page, draftFlow, '관리실에 변경 내용 확인하기');
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   await expect(draftFlow.getByTestId('personal-draft-delete-undo')).toHaveCount(0);
   const recovery = draftFlow.getByTestId('personal-draft-persistent-recovery');
   await expect(recovery.getByTestId('personal-draft-persistent-recovery-entry')).toBeVisible();
@@ -794,15 +846,17 @@ test('personal draft order and persistent recovery survive reload without changi
   await restoreButton.focus();
   await expect(restoreButton).toBeFocused();
   await page.keyboard.press('Space');
-  editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
-  await expect(editedSourceItem).toHaveAttribute('data-item-id', editedSourceItemId ?? '');
-  const restoredOrder = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+  structureSourceItem = draftFlow.getByTestId('my-flow-batch-selectable-row').filter({ hasText: '관리실에 변경 내용 확인하기' });
+  await expect(structureSourceItem).toHaveAttribute('data-item-id', editedSourceItemId ?? '');
+  const restoredOrder = await draftFlow.getByTestId('my-flow-batch-selectable-row').evaluateAll(
     (elements) => elements.map((element) => element.getAttribute('data-item-id')),
   );
   expect(restoredOrder).toEqual(orderAfterMove);
+  await setPersonalDraftStructureEditMode(draftFlow, false);
+  editedSourceItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 변경 내용 확인하기' });
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 완료 취소' })).toBeChecked();
+  await expect(editedSourceItem.getByRole('checkbox', { name: '관리실에 변경 내용 확인하기 다시 열기' })).toBeChecked();
   const restoredReadSummary = detail.getByTestId('my-flow-detail-read-summary');
   await restoredReadSummary.locator('summary').click();
   await restoredReadSummary.getByTestId('my-flow-detail-edit-toggle').click();
@@ -816,43 +870,42 @@ test('personal draft order and persistent recovery survive reload without changi
   }
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
   addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
-  await addedItem.getByTestId('my-flow-mobile-structure-step-row').click();
-  detail = draftFlow.getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail');
-  await detail.getByTestId('personal-draft-delete-item').click();
+  await removePersonalDraftItemInStructureMode(page, draftFlow, '관리실에 최종 확인 전화하기');
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   const userRecovery = draftFlow.getByTestId('personal-draft-persistent-recovery');
   await userRecovery.getByTestId('personal-draft-persistent-recovery-entry').click();
   const recoverableUserItem = userRecovery.getByTestId('personal-draft-recoverable-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
   await expect(recoverableUserItem).toHaveAttribute('data-item-id', userItemId ?? '');
   await recoverableUserItem.getByTestId('personal-draft-restore-item').click();
-  addedItem = draftFlow.getByTestId('personal-draft-effective-item').filter({ hasText: '관리실에 최종 확인 전화하기' });
-  await expect(addedItem).toHaveAttribute('data-item-id', userItemId ?? '');
-  const restoredAfterUserRecovery = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
+  structureAddedItem = draftFlow.getByTestId('my-flow-batch-selectable-row').filter({ hasText: '관리실에 최종 확인 전화하기' });
+  await expect(structureAddedItem).toHaveAttribute('data-item-id', userItemId ?? '');
+  const restoredAfterUserRecovery = await draftFlow.getByTestId('my-flow-batch-selectable-row').evaluateAll(
     (elements) => elements.map((element) => element.getAttribute('data-item-id')),
   );
   expect(restoredAfterUserRecovery).toEqual(restoredOrder);
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]');
-  const wideOrderList = wideDraftFlow.getByTestId('personal-draft-order-list-wide');
-  await expect(wideOrderList).toBeVisible();
-  await expect(wideOrderList.getByTestId('personal-draft-order-item-wide')).toHaveCount(restoredAfterUserRecovery.length);
-  await expect(wideOrderList.getByTestId('personal-draft-move-up')).toHaveCount(restoredAfterUserRecovery.length);
-  await expect(wideOrderList.getByTestId('personal-draft-move-down')).toHaveCount(restoredAfterUserRecovery.length);
-  await expect(wideOrderList.getByTestId('personal-draft-order-item-wide').first().getByTestId('personal-draft-move-up')).toBeDisabled();
-  await expect(wideOrderList.getByTestId('personal-draft-order-item-wide').last().getByTestId('personal-draft-move-down')).toBeDisabled();
+  await setPersonalDraftStructureEditMode(wideDraftFlow, true);
+  const wideOrderRows = wideDraftFlow.getByTestId('my-flow-batch-selectable-row');
+  await expect(wideOrderRows).toHaveCount(restoredAfterUserRecovery.length);
+  await expect(wideOrderRows.getByTestId('personal-draft-move-up')).toHaveCount(restoredAfterUserRecovery.length);
+  await expect(wideOrderRows.getByTestId('personal-draft-move-down')).toHaveCount(restoredAfterUserRecovery.length);
+  await expect(wideOrderRows.first().getByTestId('personal-draft-move-up')).toBeDisabled();
+  await expect(wideOrderRows.last().getByTestId('personal-draft-move-down')).toBeDisabled();
   await expectNoHorizontalOverflow(page);
   if (evidenceDir) {
     await hideNextDevOverlay(page);
@@ -861,7 +914,7 @@ test('personal draft order and persistent recovery survive reload without changi
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   await expect(page.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
   await expect(page.getByTestId('personal-draft-persistent-recovery-entry')).toHaveCount(0);
 });
@@ -907,9 +960,9 @@ test('personal draft structural Calendar and ICS projections share effective ite
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);
-  await page.getByTestId('my-flow-view-flow').click();
-  let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  let draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
@@ -939,9 +992,7 @@ test('personal draft structural Calendar and ICS projections share effective ite
   await detail.getByTestId('my-flow-detail-save-changes').click();
 
   for (const title of ['교통편 앱 오프라인 저장', '날짜 없이 챙길 준비물']) {
-    await draftFlow.getByTestId('personal-draft-add-entry').click();
-    await draftFlow.getByTestId('personal-draft-add-title').fill(title);
-    await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
+    await addPersonalDraftItem(draftFlow, title);
   }
   const scheduledUserItem = draftFlow
     .getByTestId('personal-draft-effective-item')
@@ -1014,18 +1065,19 @@ test('personal draft structural Calendar and ICS projections share effective ite
   );
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   let scheduledUserAfterFixture = draftFlow
-    .getByTestId('personal-draft-effective-item')
+    .getByTestId('my-flow-batch-selectable-row')
     .filter({ hasText: '교통편 앱 오프라인 저장' });
   await scheduledUserAfterFixture.getByTestId('personal-draft-move-up').click();
   const orderAfterMove = await draftFlow
-    .getByTestId('personal-draft-effective-item')
+    .getByTestId('my-flow-batch-selectable-row')
     .evaluateAll((elements) => elements.map((element) => element.getAttribute('data-item-id')));
   expect(orderAfterMove.indexOf(scheduledUserId)).toBeLessThan(
     orderAfterMove.indexOf(scheduledSourceId),
@@ -1058,14 +1110,12 @@ test('personal draft structural Calendar and ICS projections share effective ite
   let userCalendarRow = selectedDay.locator(
     `[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${scheduledUserId}"]`,
   );
-  const complete = userCalendarRow.getByRole('checkbox', {
-    name: '교통편 앱 오프라인 저장 완료 체크',
-  });
+  const complete = userCalendarRow.getByTestId('my-flow-task-complete-control');
+  await expect(complete).toHaveAttribute('aria-label', /교통편 앱 오프라인 저장.*완료 체크$/);
   await complete.check();
   await expect(userCalendarRow).toBeVisible();
-  const reopen = userCalendarRow.getByRole('checkbox', {
-    name: '교통편 앱 오프라인 저장 완료 취소',
-  });
+  const reopen = userCalendarRow.getByTestId('my-flow-task-complete-control');
+  await expect(reopen).toHaveAttribute('aria-label', /교통편 앱 오프라인 저장.*다시 열기$/);
   await reopen.uncheck();
   await expect(userCalendarRow).toBeVisible();
 
@@ -1112,14 +1162,15 @@ test('personal draft structural Calendar and ICS projections share effective ite
   }
 
   await page.goto('/my');
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   scheduledUserAfterFixture = draftFlow
-    .getByTestId('personal-draft-effective-item')
+    .getByTestId('my-flow-batch-selectable-row')
     .filter({ hasText: '교통편 앱 오프라인 저장' });
   await scheduledUserAfterFixture.getByTestId('personal-draft-move-down').click();
 
@@ -1246,7 +1297,7 @@ test('personal draft structural Calendar and ICS projections share effective ite
   await page.goto('/calendar?demo=source-backed');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
   await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   await expect(page.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
   await expect(page.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
   expect(consoleErrors).toEqual([]);
@@ -1293,9 +1344,9 @@ test('personal draft structural list exports share effective items across checkl
   await draftEditor.getByTestId('flow-url-miss-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);
-  await page.getByTestId('my-flow-view-flow').click();
-  let draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  let draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
@@ -1344,12 +1395,7 @@ test('personal draft structural list exports share effective items across checkl
   await editedSourceItem.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 체크' }).check();
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
 
-  await draftFlow.getByTestId('personal-draft-add-entry').click();
-  await draftFlow.getByTestId('personal-draft-add-title').fill('날짜 없이 챙길 준비물');
-  await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
-  const userItem = draftFlow
-    .getByTestId('personal-draft-effective-item')
-    .filter({ hasText: '날짜 없이 챙길 준비물' });
+  const userItem = await addPersonalDraftItem(draftFlow, '날짜 없이 챙길 준비물');
   const userItemId = await userItem.getAttribute('data-item-id');
   expect(userItemId).toMatch(/^personal-item-/);
 
@@ -1381,16 +1427,18 @@ test('personal draft structural list exports share effective items across checkl
   );
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   let persistedUserItem = draftFlow
-    .getByTestId('personal-draft-effective-item')
+    .getByTestId('my-flow-batch-selectable-row')
     .filter({ hasText: '날짜 없이 챙길 준비물' });
   await persistedUserItem.getByTestId('personal-draft-move-up').click();
+  await setPersonalDraftStructureEditMode(draftFlow, false);
 
   const visibleTitles = await draftFlow.getByTestId('personal-draft-effective-item').evaluateAll(
     (elements) => elements.map((element) => {
@@ -1459,7 +1507,7 @@ test('personal draft structural list exports share effective items across checkl
   detail = draftFlow
     .getByTestId('my-flow-mobile-structure-inline-detail')
     .getByTestId('my-flow-item-detail');
-  await editedSourceItem.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 완료 취소' }).uncheck();
+  await editedSourceItem.getByRole('checkbox', { name: '여권과 예약 정보 최종 확인 다시 열기' }).uncheck();
   await editedSourceItem.getByTestId('my-flow-mobile-structure-step-row').click();
   const checklistReopened = await copyListExport(draftFlow, 'checklist');
   expect(checklistReopened).toContain('- [ ] 여권과 예약 정보 최종 확인');
@@ -1470,6 +1518,7 @@ test('personal draft structural list exports share effective items across checkl
     fs.writeFileSync(`${downloadDir}/personal-draft-checklist-reopened.txt`, checklistReopened, 'utf8');
   }
 
+  await setPersonalDraftStructureEditMode(draftFlow, true);
   const recovery = draftFlow.getByTestId('personal-draft-persistent-recovery');
   await recovery.getByTestId('personal-draft-persistent-recovery-entry').click();
   const recoverableSource = recovery
@@ -1477,6 +1526,7 @@ test('personal draft structural list exports share effective items across checkl
     .filter({ hasText: sourceTitles[tombstonedSourceId] });
   await expect(recoverableSource).toHaveAttribute('data-item-id', tombstonedSourceId);
   await recoverableSource.getByTestId('personal-draft-restore-item').click();
+  await setPersonalDraftStructureEditMode(draftFlow, false);
   const checklistRestored = await copyListExport(draftFlow, 'checklist');
   expect(checklistRestored).toContain(sourceTitles[tombstonedSourceId]);
   expect(checklistRestored.match(/^- \[/gmu)).toHaveLength(
@@ -1484,15 +1534,15 @@ test('personal draft structural list exports share effective items across checkl
   );
 
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
-  draftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
-  await draftFlow.getByTestId('my-flow-mobile-structure-open').click();
+  await openMyFlowView(page);
+  draftFlow = getPersonalDraftFlow(page);
+  await openPersonalDraftFlowIfCollapsed(draftFlow);
   const checklistAfterReload = await copyListExport(draftFlow, 'checklist');
   expect(checklistAfterReload).toBe(checklistRestored);
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const wideDraftFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]');
   const wideExport = wideDraftFlow.getByTestId('personal-draft-list-export');
   await expect(wideExport).toBeVisible();
@@ -1508,7 +1558,7 @@ test('personal draft structural list exports share effective items across checkl
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   await expect(page.getByTestId('personal-draft-list-export')).toHaveCount(0);
 });
 
@@ -1521,11 +1571,9 @@ test('personal draft user-created item date can be set, moved, and removed acros
   if (downloadDir) fs.mkdirSync(downloadDir, { recursive: true });
 
   const openDraftFlow = async () => {
-    await page.getByTestId('my-flow-view-flow').click();
-    const flow = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
-    );
-    await flow.getByTestId('my-flow-mobile-structure-open').click();
+    await openMyFlowView(page);
+    const flow = getPersonalDraftFlow(page);
+    await openPersonalDraftFlowIfCollapsed(flow);
     const showAll = flow.getByTestId('my-flow-mobile-structure-show-all');
     if (await showAll.count()) await showAll.click();
     return flow;
@@ -1572,12 +1620,7 @@ test('personal draft user-created item date can be set, moved, and removed acros
 
   await expect(page).toHaveURL(/\/my/);
   let draftFlow = await openDraftFlow();
-  await draftFlow.getByTestId('personal-draft-add-entry').click();
-  await draftFlow.getByTestId('personal-draft-add-title').fill('여행자 보험 서류 챙기기');
-  await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
-  let userItem = draftFlow
-    .getByTestId('personal-draft-effective-item')
-    .filter({ hasText: '여행자 보험 서류 챙기기' });
+  let userItem = await addPersonalDraftItem(draftFlow, '여행자 보험 서류 챙기기');
   const stableItemId = await userItem.getAttribute('data-item-id');
   expect(stableItemId).toMatch(/^personal-item-/);
 
@@ -1648,7 +1691,7 @@ test('personal draft user-created item date can be set, moved, and removed acros
   await expect(calendarRow).toContainText('여행자 보험 서류 챙기기');
   await calendarRow.getByRole('checkbox', { name: '여행자 보험 서류 챙기기 완료 체크' }).check();
   await expect(calendarRow).toBeVisible();
-  await calendarRow.getByRole('checkbox', { name: '여행자 보험 서류 챙기기 완료 취소' }).uncheck();
+  await calendarRow.getByRole('checkbox', { name: '여행자 보험 서류 챙기기 다시 열기' }).uncheck();
   await calendarRow.getByRole('button', { name: /여행자 보험 서류 챙기기 열기/ }).click();
   let calendarDetail = selectedDay.getByTestId('my-flow-item-detail');
   const portableExport = calendarDetail.getByTestId('my-flow-detail-portable-export');
@@ -1783,7 +1826,7 @@ test('personal draft user-created item date can be set, moved, and removed acros
   ).toHaveCount(0);
 
   await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   await expect(page.getByTestId('personal-draft-date-mode-control')).toHaveCount(0);
 });
 
@@ -1797,20 +1840,15 @@ test('personal draft user-created item time and all-day mode persist across Cale
   if (downloadDir) fs.mkdirSync(downloadDir, { recursive: true });
 
   const openDraftFlow = async () => {
-    await page.getByTestId('my-flow-view-flow').click();
-    const flow = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
-    );
-    await flow.getByTestId('my-flow-mobile-structure-open').click();
+    await openMyFlowView(page);
+    const flow = getPersonalDraftFlow(page);
+    await openPersonalDraftFlowIfCollapsed(flow);
     const showAll = flow.getByTestId('my-flow-mobile-structure-show-all');
     if (await showAll.count()) await showAll.click();
     return flow;
   };
   const addUserItem = async (flow: Locator, title: string) => {
-    await flow.getByTestId('personal-draft-add-entry').click();
-    await flow.getByTestId('personal-draft-add-title').fill(title);
-    await flow.getByTestId('personal-draft-add-title').press('Enter');
-    return flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+    return addPersonalDraftItem(flow, title);
   };
   const openUserItemEditor = async (flow: Locator, title: string) => {
     const item = flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
@@ -1946,7 +1984,7 @@ test('personal draft user-created item time and all-day mode persist across Cale
   await expect(timedCalendarRow.getByTestId('personal-draft-timed-meta')).toHaveText('오전 9:30 · 45분');
   await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 완료 체크' }).check();
   await expect(timedCalendarRow).toBeVisible();
-  await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 완료 취소' }).uncheck();
+  await timedCalendarRow.getByRole('checkbox', { name: '보험 서류 챙기기 다시 열기' }).uncheck();
   const firstIcs = await downloadCalendarFromRow(
     timedCalendarRow,
     'personal-draft-timed-before-edit.ics',
@@ -2061,7 +2099,7 @@ test('personal draft user-created item time and all-day mode persist across Cale
   await expectNoHorizontalOverflow(page);
 
   await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   await expect(page.getByTestId('personal-draft-time-mode-control')).toHaveCount(0);
 });
 
@@ -2073,20 +2111,15 @@ test('personal draft recurrence rules persist without changing item date or time
   if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
 
   const openDraftFlow = async () => {
-    await page.getByTestId('my-flow-view-flow').click();
-    const flow = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
-    );
-    await flow.getByTestId('my-flow-mobile-structure-open').click();
+    await openMyFlowView(page);
+    const flow = getPersonalDraftFlow(page);
+    await openPersonalDraftFlowIfCollapsed(flow);
     const showAll = flow.getByTestId('my-flow-mobile-structure-show-all');
     if (await showAll.count()) await showAll.click();
     return flow;
   };
   const addUserItem = async (flow: Locator, title: string) => {
-    await flow.getByTestId('personal-draft-add-entry').click();
-    await flow.getByTestId('personal-draft-add-title').fill(title);
-    await flow.getByTestId('personal-draft-add-title').press('Enter');
-    return flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
+    return addPersonalDraftItem(flow, title);
   };
   const openUserItemEditor = async (flow: Locator, title: string) => {
     const item = flow.getByTestId('personal-draft-effective-item').filter({ hasText: title });
@@ -2214,14 +2247,14 @@ test('personal draft recurrence rules persist without changing item date or time
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.reload();
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const wideDraftFlow = page.locator(
     '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
   );
   const wideOrderItem = wideDraftFlow
-    .getByTestId('personal-draft-order-item-wide')
+    .getByTestId('my-flow-execution-row-shell')
     .filter({ hasText: '보험 서류 다시 확인하기' });
-  await wideOrderItem.getByTestId('personal-draft-order-item-open-wide').click();
+  await wideOrderItem.getByRole('button', { name: /열기/ }).click();
   const wideDetail = wideDraftFlow
     .getByTestId('my-flow-workspace-detail-pane')
     .getByTestId('my-flow-item-detail');
@@ -2308,7 +2341,7 @@ test('personal draft recurrence rules persist without changing item date or time
   }
 
   await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   await expect(page.getByTestId('personal-draft-recurrence-control')).toHaveCount(0);
 });
 
@@ -2329,7 +2362,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   const icsDownloadDir = icsEvidenceDir ? `${icsEvidenceDir}/downloads` : '';
   const executionEvidenceDir = process.env.FLOWME_P23_03_EVIDENCE_DIR;
   const executionScreenshotDir = executionEvidenceDir ? `${executionEvidenceDir}/screenshots` : '';
-  const completionEvidenceDir = process.env.FLOWME_P25_05A_EVIDENCE_DIR;
+  const completionEvidenceDir = process.env.FLOWME_P26_12_EVIDENCE_DIR ?? process.env.FLOWME_P25_05A_EVIDENCE_DIR;
   const completionScreenshotDir = completionEvidenceDir ? `${completionEvidenceDir}/screenshots` : '';
   if (screenshotDir) fs.mkdirSync(screenshotDir, { recursive: true });
   if (icsScreenshotDir) fs.mkdirSync(icsScreenshotDir, { recursive: true });
@@ -2338,11 +2371,9 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   if (completionScreenshotDir) fs.mkdirSync(completionScreenshotDir, { recursive: true });
 
   const openDraftFlow = async () => {
-    await page.getByTestId('my-flow-view-flow').click();
-    const flow = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]',
-    );
-    await flow.getByTestId('my-flow-mobile-structure-open').click();
+    await openMyFlowView(page);
+    const flow = getPersonalDraftFlow(page);
+    await openPersonalDraftFlowIfCollapsed(flow);
     const showAll = flow.getByTestId('my-flow-mobile-structure-show-all');
     if (await showAll.count()) await showAll.click();
     return flow;
@@ -2384,12 +2415,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   await expect(page).toHaveURL(/\/my/);
   const draftFlow = await openDraftFlow();
   const recurringTitle = '매일 준비물 다시 확인하기';
-  await draftFlow.getByTestId('personal-draft-add-entry').click();
-  await draftFlow.getByTestId('personal-draft-add-title').fill(recurringTitle);
-  await draftFlow.getByTestId('personal-draft-add-title').press('Enter');
-  const recurringItem = draftFlow
-    .getByTestId('personal-draft-effective-item')
-    .filter({ hasText: recurringTitle });
+  const recurringItem = await addPersonalDraftItem(draftFlow, recurringTitle);
   const recurringItemId = await recurringItem.getAttribute('data-item-id');
   expect(recurringItemId).toMatch(/^personal-item-/);
 
@@ -2475,6 +2501,16 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .filter({ hasText: recurringTitle });
   await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'done');
   await expect(occurrenceRow.getByRole('checkbox')).toBeChecked();
+  const occurrenceUndoNotice = page.getByTestId('my-flow-completion-snackbar');
+  await expect(occurrenceUndoNotice).toHaveAttribute('data-completion-result', 'completed');
+  await expect(occurrenceUndoNotice).toContainText('7월 13일 완료');
+  await expect(occurrenceUndoNotice.getByTestId('my-flow-completion-undo')).toBeFocused();
+  await occurrenceUndoNotice.getByTestId('my-flow-completion-undo').click();
+  await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'reopened');
+  await expect(occurrenceRow.getByRole('checkbox')).not.toBeChecked();
+  await expect(occurrenceRow.getByRole('checkbox')).toBeFocused();
+  await occurrenceRow.getByRole('checkbox').check();
+  await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'done');
   const storedDone = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('flow:my-flow:occurrence-execution') || '{}'),
   );
@@ -2513,6 +2549,11 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
     .filter({ hasText: recurringTitle });
   await expect(occurrenceRow).toHaveAttribute('data-occurrence-state', 'reopened');
   await expect(occurrenceRow.getByRole('checkbox')).not.toBeChecked();
+  const occurrenceReopenNotice = page.getByTestId('my-flow-completion-snackbar');
+  await expect(occurrenceReopenNotice).toHaveAttribute('data-completion-result', 'reopened');
+  await expect(occurrenceReopenNotice).toContainText('7월 13일 다시 열림');
+  await occurrenceReopenNotice.getByTestId('my-flow-completion-open').click();
+  await expect(occurrenceRow.getByRole('checkbox')).toBeFocused();
   if (screenshotDir) {
     await hideNextDevOverlay(page);
     await hidePlatformChromeForEvidence(page);
@@ -2588,7 +2629,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   }
 
   await page.goto('/my');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const heldRecovery = page.getByTestId('my-flow-held-recovery');
   await expect(heldRecovery).toBeVisible();
   await expect(heldRecovery).toContainText('보류한 일정');
@@ -2683,16 +2724,25 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
       path: `${executionScreenshotDir}/02-personal-draft-occurrence-state-actions-wide.png`,
     });
   }
+  if (completionScreenshotDir) {
+    await hideNextDevOverlay(page);
+    await page.getByTestId('my-flow-calendar-selected-day').screenshot({
+      path: `${completionScreenshotDir}/04-recurrence-occurrence-wide.png`,
+    });
+  }
 
   await page.goto('/my');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const wideDraftFlow = page.locator(
     '[data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]',
   );
-  const wideRecurringItem = wideDraftFlow
-    .getByTestId('personal-draft-order-item-wide')
+  const wideOutline = wideDraftFlow.getByTestId('my-flow-whole-flow-outline');
+  const toggleAllGroups = wideOutline.getByTestId('my-flow-whole-flow-toggle-all-groups');
+  if (await toggleAllGroups.count()) await toggleAllGroups.click();
+  const wideRecurringItem = wideOutline
+    .getByTestId('my-flow-execution-row-shell')
     .filter({ hasText: recurringTitle });
-  await wideRecurringItem.getByTestId('personal-draft-order-item-open-wide').click();
+  await wideRecurringItem.getByRole('button', { name: new RegExp(`${recurringTitle} .*`) }).click();
   const wideSeriesDetail = wideDraftFlow
     .getByTestId('my-flow-workspace-detail-pane')
     .getByTestId('my-flow-item-detail');
@@ -2775,7 +2825,10 @@ test('URL-first draft preserves input on storage failure and reuses the canonica
 
   const duplicateFeedback = candidateCard.getByTestId('flow-url-miss-draft-feedback');
   await expect(duplicateFeedback).toContainText('이미 저장한 초안이 있어요');
-  await expect(duplicateFeedback.getByRole('link', { name: 'My Flow에서 이어서 수정' })).toHaveAttribute('href', '/my');
+  await expect(duplicateFeedback.getByRole('link', { name: 'My Flow에서 이어서 수정' })).toHaveAttribute(
+    'href',
+    `/my?savedFlow=${encodeURIComponent(firstDraftState.slug)}`,
+  );
   await expect(page).toHaveURL(/\/flows/);
   const secondDraftState = await page.evaluate(() => {
     const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{ flow?: { slug?: string } }>;
@@ -2819,8 +2872,8 @@ test('URL-first miss draft appears in Studio draft shelf and returns to My Flow 
 
   await draftCard.getByTestId('creator-profile-draft-edit-link').click();
   await expect(page).toHaveURL(/\/my/);
-  await page.getByTestId('my-flow-view-flow').click();
-  const mobileDraftFlow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]');
+  await openMyFlowView(page);
+  const mobileDraftFlow = getPersonalDraftFlow(page);
   await expect(mobileDraftFlow).toBeVisible();
   await expect(mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
 });
@@ -3045,7 +3098,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
   await observationSetup.getByTestId('p22-observation-prepare-version-review').click();
   await expect(page).toHaveURL('/my');
-  await page.getByTestId('my-flow-view-flow').click();
+  await openMyFlowView(page);
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await expect(updateReview).toBeVisible();
   await updateReview.getByTestId('my-flow-map-update-toggle').click();

@@ -1,0 +1,85 @@
+{
+  "p26Slice": "P26-19",
+  "status": "pass_as_current_command_and_browser_internal_gate",
+  "baselineCommit": "bb2f10b326d03ceb6ce512632bd3ed5df84c94c3",
+  "evidenceKinds": [
+    "current_command",
+    "current_browser",
+    "current_screenshot",
+    "heuristic",
+    "prior_design_artifact"
+  ],
+  "observedUserSessionCount": 0,
+  "observedUserReadinessClaimed": false,
+  "journeyShapeCount": 6,
+  "mobileJourneyShapeCount": 6,
+  "wideJourneyShapeCount": 6,
+  "representativeCurrentBrowserTestCount": 7,
+  "representativeCurrentBrowserPassCount": 7,
+  "representativeCurrentBrowserFailCount": 0,
+  "migratedP24RegressionTestCount": 15,
+  "migratedP24RegressionPassCount": 15,
+  "screenshotCount": 34,
+  "downloadArtifactCount": 6,
+  "horizontalOverflowCount": 0,
+  "consoleOrPageErrorCount": 0,
+  "automatedBlockingCount": 0,
+  "automatedHighCount": 0,
+  "heuristicMediumCount": 4,
+  "completionReopenFailureCount": 0,
+  "calendarIcsCountMismatchCount": 0,
+  "stableIdentityMismatchCount": 0,
+  "memoAcceptedSavedExportCountMismatch": 0,
+  "currentCommandVerification": {
+    "pretestPassCount": 13,
+    "pretestFailCount": 0,
+    "unitPassCount": 564,
+    "unitFailCount": 0,
+    "docsRequiredFileCount": 14,
+    "docsLocalLinkCount": 2683,
+    "buildStaticPageCount": 18,
+    "buildFailedPageCount": 0,
+    "securityCriticalCount": 0,
+    "securityHighCount": 0,
+    "securityModerateCount": 2
+  },
+  "seriesDefinitionCompletionControlCount": 0,
+  "occurrenceCompletionControlCountPerVisibleOccurrence": 1,
+  "publicPrimaryActionContractMaintained": true,
+  "sourceBackedStructuralRemoveControlCount": 0,
+  "representativeInternalTermHitCount": 0,
+  "priorDesignArtifact": {
+    "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-19-flow-content-usage-preview-ko.html",
+    "availableInCleanBranch": false,
+    "evidenceKind": "prior_design_artifact",
+    "patternsCompared": [
+      "source rail",
+      "minimal input",
+      "compact execution rows",
+      "destination preview"
+    ]
+  },
+  "visualResiduals": [
+    {
+      "severity": "medium",
+      "surface": "mobile batch editor",
+      "finding": "Selection, movement and date operations remain dense in one vertical mode."
+    },
+    {
+      "severity": "medium",
+      "surface": "wide undated tray",
+      "finding": "Long item titles are ellipsized in the narrow tray column."
+    },
+    {
+      "severity": "medium",
+      "surface": "mobile Calendar composition",
+      "finding": "Tray and monthly grid form a long composition even though fixed overlap is zero."
+    },
+    {
+      "severity": "medium",
+      "surface": "recurring occurrence detail",
+      "finding": "State actions, memo and export remain reachable but visually dense."
+    }
+  ],
+  "next": "P26-20 final audit, release, deployment and production smoke"
+}

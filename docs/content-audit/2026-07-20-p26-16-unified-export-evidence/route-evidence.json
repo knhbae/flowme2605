@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-16",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "65d61d4",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "prior_design_artifact"
+  ],
+  "markers": {
+    "unifiedExportScopeContract": "flow_selected_item",
+    "unifiedExportSequence": "scope_expected_result_format_receipt",
+    "publicWholeFlowExportScopeFixed": true,
+    "myFlowWholeExportScopeVisible": true,
+    "myFlowSelectedExportScopeVisible": true,
+    "myFlowCurrentItemExportScopeVisible": true,
+    "publicMovingWholeFlowIncludedCount": 24,
+    "publicMovingCalendarPreviewCount": 24,
+    "publicMovingCalendarActualEventCount": 24,
+    "publicVehicleUndatedCalendarPreviewCount": 0,
+    "publicVehicleUndatedCalendarDisabledReasonVisible": true,
+    "publicVehicleScheduledOneCalendarPreviewCount": 1,
+    "publicVehicleScheduledOneCalendarActualEventCount": 1,
+    "myFlowSelectedItemCount": 2,
+    "myFlowSelectedMemoActualRowCount": 2,
+    "myFlowCurrentItemActualRowCount": 1,
+    "publicRoutineFlowItemCount": 3,
+    "publicRoutineDatedItemCount": 1,
+    "publicRoutineUndatedItemCount": 2,
+    "publicRoutineSeriesCount": 1,
+    "publicRoutineVisibleOccurrenceCount": 4,
+    "publicRoutineIcsEventCount": 1,
+    "publicRoutineRruleCount": 1,
+    "personalDraftChecklistItemCount": 3,
+    "personalDraftSheetLineCount": 4,
+    "personalDraftMemoItemCount": 3,
+    "personalDraftIcsEventCount": 1,
+    "exportPreviewActualCountMismatch": 0,
+    "exportDuplicateRowOrEventCount": 0,
+    "completionStateChangedExportMembershipCount": 0,
+    "exportResultReceiptVisible": true,
+    "exportResultReceiptUsesActualOutput": true,
+    "exportResultFilenameVisibleForDownloads": true,
+    "exportDisabledReasonVisible": true,
+    "exportInternalTermHitCount": 0,
+    "sourceMutationCount": 0,
+    "storageSchemaChanged": false,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "browserConsoleErrorCount": 0,
+    "browserPageErrorCount": 0,
+    "legacyP24MemoDraftSelectorDebtCount": 1,
+    "observedUserValidated": false
+  },
+  "viewports": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "2026-08-30 move date",
+      "scope": "flow",
+      "calendarPreviewCount": 24,
+      "calendarActualCount": 24
+    },
+    {
+      "route": "/f/vehicle-inspection-prep -> /calendar -> /my?view=flows",
+      "viewport": "390x844",
+      "fixture": "undated save then one scheduled item",
+      "beforeCalendarCount": 0,
+      "afterCalendarCount": 1
+    },
+    {
+      "route": "/my?demo=source-backed",
+      "viewport": "390x844",
+      "fixture": "moving Flow selected two items",
+      "scope": "selected",
+      "memoActualCount": 2,
+      "currentItemActualCount": 1
+    },
+    {
+      "route": "/f/washer-tub-clean-monthly",
+      "viewport": "390x844",
+      "fixture": "2026-07-20 monthly routine",
+      "seriesCount": 1,
+      "visibleOccurrenceCount": 4,
+      "icsEventCount": 1
+    },
+    {
+      "route": "/my?demo=source-backed",
+      "viewport": "1024x768",
+      "fixture": "whole and selected export preview",
+      "formatColumnCount": 4
+    }
+  ],
+  "verification": {
+    "p26UnifiedExportE2e": { "passed": 3, "failed": 0 },
+    "publicWorkbenchCalendarRegressionE2e": { "passed": 46, "failed": 0 },
+    "postSaveMemoRegressionE2e": { "passed": 5, "failed": 0 },
+    "personalDraftListExportE2e": { "passed": 1, "failed": 0 },
+    "personalDraftCalendarIcsE2e": { "passed": 1, "failed": 0 },
+    "sourceBackedAndBatchExportLegacyE2e": { "passed": 2, "failed": 0 },
+    "supersededLegacySelectorScenario": {
+      "passed": 0,
+      "failed": 0,
+      "notCounted": 1,
+      "reason": "pre-P26 post-save and mobile-card DOM contract"
+    },
+    "fullUnit": { "passed": 564, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "docsCheck": { "passed": true },
+    "securityAudit": { "high": 0, "critical": 0, "moderate": 2 },
+    "diffCheck": { "passed": true }
+  }
+}

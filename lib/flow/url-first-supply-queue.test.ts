@@ -8,10 +8,12 @@ import {
   buildUrlFirstSupplyCandidateUserSummaryMarkdown,
   buildUrlFirstSupplyCandidate,
   getUrlFirstSupplyCandidateAvailability,
+  mergeDraftItemSuggestions,
   normalizeUrlFirstSupplyCandidates,
   recordUrlFirstSupplyCandidateLookup,
   removeUrlFirstSupplyCandidate,
   splitUserAuthoredDraftPhrases,
+  splitDraftItemSuggestion,
   updateUrlFirstSupplyCandidate,
   upsertUrlFirstSupplyCandidate,
   URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY,
@@ -53,6 +55,40 @@ test('memo draft parser splits only unambiguous Korean action lists', () => {
     splitUserAuthoredDraftPhrases('여권, 지갑, 우산 챙기기'),
     ['여권, 지갑, 우산 챙기기'],
   );
+});
+
+test('memo draft parser separates a topic from a mixed Korean action list without inventing content', () => {
+  const memo = '8월 제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인';
+  const suggestions = buildMemoDraftItemSuggestions(memo);
+  const secondPass = buildMemoDraftItemSuggestions(memo);
+
+  assert.equal(suggestions.length, 5);
+  assert.deepEqual(suggestions.map((item) => item.sourceText), [
+    '항공권 확인',
+    '숙소 예약번호 정리',
+    '렌터카 예약',
+    '준비물 체크',
+    '출발 전날 온라인 체크인',
+  ]);
+  assert.ok(suggestions.every((item) => item.sourceFragmentText.includes('항공권 확인')));
+  assert.equal(new Set(suggestions.flatMap((item) => item.sourceFragmentIds)).size, 1);
+  assert.deepEqual(suggestions.map((item) => item.id), secondPass.map((item) => item.id));
+  assert.ok(suggestions.every((item) => !item.title.includes('8월 제주 여행 준비')));
+});
+
+test('draft review split and merge preserve source fragment ownership with deterministic IDs', () => {
+  const [first, second] = buildMemoDraftItemSuggestions('항공권 확인. 숙소 예약번호 정리.');
+  const merged = mergeDraftItemSuggestions(first, second);
+  const mergedAgain = mergeDraftItemSuggestions(first, second);
+  const split = splitDraftItemSuggestion(merged, ['항공권 다시 확인', '숙소 예약번호 다시 정리']);
+  const splitAgain = splitDraftItemSuggestion(merged, ['항공권 다시 확인', '숙소 예약번호 다시 정리']);
+
+  assert.deepEqual(merged.sourceFragmentIds, [...first.sourceFragmentIds, ...second.sourceFragmentIds]);
+  assert.equal(merged.id, mergedAgain.id);
+  assert.equal(split.length, 2);
+  assert.ok(split.every((item) => item.sourceFragmentIds.length === 2));
+  assert.deepEqual(split.map((item) => item.id), splitAgain.map((item) => item.id));
+  assert.equal(new Set(split.map((item) => item.id)).size, 2);
 });
 
 test('memo draft parser excludes known application state copy from executable titles', () => {

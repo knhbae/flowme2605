@@ -1,0 +1,57 @@
+{
+  "package": "P26-00C Product Object & Journey Decision",
+  "baselineSha": "48571afeb63dc06a321e5ab49ccf50522bfa7c29",
+  "runtimeChanged": false,
+  "schemaChanged": false,
+  "observedUserSessionCount": 0,
+  "decisions": [
+    {
+      "id": "user_object",
+      "selected": "unified_flow",
+      "rejected": ["separate_flow_map_card", "separate_flow_map_save_grammar"],
+      "reason": "The user saves and executes one Flow; aggregate/source hierarchy is internal context."
+    },
+    {
+      "id": "discovery_hierarchy",
+      "selected": "job_source_artifact_input_result",
+      "rejected": ["promise_only", "source_only", "unsupported_social_proof"],
+      "reason": "A compact hierarchy shows both usefulness and trust without prose inflation."
+    },
+    {
+      "id": "save_adjust",
+      "selected": "dual_path_same_artifact",
+      "rejected": ["save_only", "full_adjustment_required"],
+      "reason": "Quick-start and personalization users need different depth over the same effective item model."
+    },
+    {
+      "id": "whole_flow_grouping",
+      "selected": "adaptive_content_shape",
+      "rejected": ["date_only", "phase_only", "flat_generic_rows"],
+      "reason": "Timeline, checklist, routine, project and record content require different scanning structures."
+    },
+    {
+      "id": "calendar_undated",
+      "selected": "on_demand_placement_tray",
+      "rejected": ["always_visible_execution_list", "separate_hidden_route"],
+      "reason": "Calendar keeps date-first execution while making scheduling discoverable without permanent density."
+    },
+    {
+      "id": "editor",
+      "selected": "quick_advanced_separate_modes",
+      "rejected": ["full_editor_inline", "quick_only"],
+      "reason": "Common edits stay short while structure, batch and recurrence remain reachable."
+    },
+    {
+      "id": "wedding_entries",
+      "selected": "two_independent_flow_entries",
+      "rejected": ["post_entry_variant_chooser"],
+      "reason": "The references have different artifacts and should be compared before opening."
+    },
+    {
+      "id": "social_proof",
+      "selected": "verified_source_only_until_metrics_exist",
+      "rejected": ["fake_verified_count", "undefined_popularity", "aggregate_stage_reviews"],
+      "reason": "Trust labels require a real aggregation and provenance contract."
+    }
+  ]
+}

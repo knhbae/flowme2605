@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "jeju-topic-plus-five-actions",
+      "input": "8월 제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인",
+      "expectedContext": "8월 제주 여행 준비",
+      "expectedActions": [
+        "항공권 확인",
+        "숙소 예약번호 정리",
+        "렌터카 예약",
+        "준비물 체크",
+        "출발 전날 온라인 체크인"
+      ],
+      "expectedActionCount": 5,
+      "expectedActionableSourceFragmentCount": 1,
+      "contentGenerated": false
+    },
+    {
+      "id": "object-list-kept-together",
+      "input": "여권, 지갑, 우산 챙기기",
+      "expectedActions": [
+        "여권, 지갑, 우산 챙기기"
+      ],
+      "expectedActionCount": 1,
+      "contentGenerated": false
+    },
+    {
+      "id": "three-clear-actions",
+      "input": "이사 견적 비교, 관리사무소 연락, 주소 변경 확인",
+      "expectedActions": [
+        "이사 견적 비교",
+        "관리사무소 연락",
+        "주소 변경 확인"
+      ],
+      "expectedActionCount": 3,
+      "contentGenerated": false
+    },
+    {
+      "id": "sparse-memo-no-filler",
+      "input": "관리사무소에 연락한다.",
+      "expectedActions": [
+        "관리사무소에 연락한다"
+      ],
+      "expectedActionCount": 1,
+      "genericFillerCount": 0,
+      "contentGenerated": false
+    },
+    {
+      "id": "application-state-copy-excluded",
+      "input": "바로 시작할 Flow를 찾지 못했어요.",
+      "expectedActions": [],
+      "expectedActionCount": 0,
+      "contentGenerated": false
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-12",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "be9a5b1",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser"
+  ],
+  "markers": {
+    "ordinaryCompletionControlCountPerRow": 1,
+    "ordinaryImmediateUndoVisible": true,
+    "ordinaryUndoActionFocused": true,
+    "ordinaryUndoRestoresSameRowFocus": true,
+    "ordinaryCompletedTabReopenLabel": "다시 열기",
+    "ordinaryReopenReceiptVisible": true,
+    "ordinaryReopenOpensSameItem": true,
+    "recurringCompletionLabelIncludesScope": true,
+    "recurringCompletionLabelIncludesDate": true,
+    "recurringUndoRestoresOccurrenceIdentity": true,
+    "recurringNextOccurrenceIdentityUnchanged": true,
+    "completionSnackbarMobileNavOverlapCount": 0,
+    "completionNoticeAutoDismissMs": 8000,
+    "completionNoticePausesOnFocus": true,
+    "completionNoticeLiveRegion": true,
+    "wideCompletionUndoRestoresSameRowFocus": true,
+    "wideCompletionUndoPreservesItemDetail": true,
+    "myFlowCalendarCompletionWordingMismatchCount": 0,
+    "completionStateChangedStructuralMembershipCount": 0,
+    "seriesDefinitionCompletionControlCount": 0,
+    "exportStatusMismatchCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "sourceMutationCount": 0,
+    "storageSchemaChanged": false,
+    "observedUserValidated": false
+  },
+  "viewports": [
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "completionNoticeLayout": "fixed-above-nav",
+      "bottomNavOverlapCount": 0
+    },
+    {
+      "route": "/my?view=flows",
+      "viewport": "1024x768",
+      "detailIdentityPreserved": true
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "recurringOccurrenceIdentityPreserved": true
+    },
+    {
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "seriesDefinitionCompletionControlCount": 0
+    }
+  ],
+  "verification": {
+    "completionPresentationUnit": { "passed": 3, "failed": 0 },
+    "playwrightOrdinaryCompletion": { "passed": 1, "failed": 0 },
+    "playwrightRecurringCompletion": { "passed": 1, "failed": 0 },
+    "playwrightAffectedCompatibility": { "passed": 9, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "docsCheck": { "passed": true, "localLinkCount": 2626 },
+    "fullUnit": { "passed": 552, "failed": 0 },
+    "diffCheck": { "passed": true }
+  }
+}

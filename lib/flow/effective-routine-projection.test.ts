@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildEffectiveRoutineProjection } from './effective-routine-projection';
 import { buildCalendarIcs } from './export';
+import { buildMyFlowStepIcs } from './my-flow-step-export';
 import { seedBundles } from './seed-flows';
 import { sourceBackedMyFlowBundles } from './source-backed-my-flow';
 
@@ -9,6 +10,14 @@ function getBundle(slug: string) {
   const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
   assert.ok(bundle, slug);
   return bundle;
+}
+
+function unfoldIcs(value: string): string {
+  return value.replaceAll('\r\n ', '');
+}
+
+function getIcsValue(ics: string, key: string): string | undefined {
+  return unfoldIcs(ics).match(new RegExp(`^${key}:(.+)$`, 'mu'))?.[1];
 }
 
 test('monthly source routine uses one canonical series across semantic projection and ICS', () => {
@@ -47,6 +56,18 @@ test('monthly source routine uses one canonical series across semantic projectio
   assert.ok(firstUid);
   assert.doesNotMatch(firstUid, /flow-washer|item/iu);
   assert.equal(firstUid, movedUid);
+
+  const savedIcs = buildMyFlowStepIcs({
+    flowTitle: bundle.flow.title,
+    stepId: `${bundle.flow.slug}::${carrier.id}`,
+    stableEventIdentitySeed: `${bundle.flow.slug}::${carrier.id}`,
+    stepTitle: carrier.title,
+    date: '2026-07-20',
+    personalRecurrence: projection.seriesByItemId[carrier.id],
+    personalRecurrenceIdentityNamespace: bundle.flow.slug,
+  });
+  assert.equal(getIcsValue(savedIcs, 'UID'), getIcsValue(ics, 'UID'));
+  assert.equal(getIcsValue(savedIcs, 'RRULE'), getIcsValue(ics, 'RRULE'));
 });
 
 test('weekly source routine keeps the accepted weekday cadence and occurrence identities', () => {
@@ -71,6 +92,49 @@ test('weekly source routine keeps the accepted weekday cadence and occurrence id
     '2026-07-20',
   ]);
   assert.equal(new Set(projection.rows.map((row) => row.structuralOccurrenceId)).size, 12);
+
+  const publicIcs = buildCalendarIcs(bundle, '2026-07-15', ['월', '수', '금']);
+  const savedIcs = buildMyFlowStepIcs({
+    flowTitle: bundle.flow.title,
+    stepId: `${bundle.flow.slug}::${carrier.id}`,
+    stableEventIdentitySeed: `${bundle.flow.slug}::${carrier.id}`,
+    stepTitle: carrier.title,
+    date: '2026-07-15',
+    personalRecurrence: projection.seriesByItemId[carrier.id],
+    personalRecurrenceIdentityNamespace: bundle.flow.slug,
+  });
+  assert.equal(getIcsValue(savedIcs, 'UID'), getIcsValue(publicIcs, 'UID'));
+  assert.equal(getIcsValue(savedIcs, 'RRULE'), getIcsValue(publicIcs, 'RRULE'));
+});
+
+test('saved routine end-date override is carried by the canonical series', () => {
+  const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
+  assert.ok(bundle);
+  const carrier = bundle.items[0];
+  assert.ok(carrier);
+
+  const projection = buildEffectiveRoutineProjection({
+    bundle,
+    rows: [{ id: carrier.id, date: '2026-07-15', title: carrier.title }],
+    startDate: '2026-07-15',
+    selectedWeekdays: ['월', '수', '금'],
+    endDate: '2026-08-01',
+    range: { start: '2026-07-15', end: '2026-08-31' },
+  });
+  const ics = buildMyFlowStepIcs({
+    flowTitle: bundle.flow.title,
+    stepId: `${bundle.flow.slug}::${carrier.id}`,
+    stepTitle: carrier.title,
+    date: '2026-07-15',
+    personalRecurrence: projection.seriesByItemId[carrier.id],
+    personalRecurrenceIdentityNamespace: bundle.flow.slug,
+  });
+
+  const rrule = getIcsValue(ics, 'RRULE');
+  assert.ok(rrule);
+  assert.match(rrule, /FREQ=WEEKLY/);
+  assert.match(rrule, /BYDAY=MO,WE,FR/);
+  assert.match(rrule, /UNTIL=20260801/);
 });
 
 test('ambiguous natural cadence does not invent fixed occurrence dates', () => {

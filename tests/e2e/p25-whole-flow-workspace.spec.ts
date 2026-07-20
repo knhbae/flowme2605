@@ -49,7 +49,7 @@ test.describe('P25 whole Flow workspace', () => {
 
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
     await expect(page.getByTestId('my-flow-view-today')).toHaveText('지금');
-    await expect(page.getByTestId('my-flow-view-flow')).toHaveText('내 Flow');
+    await expect(page.getByTestId('my-flow-view-flow')).toHaveText('Flow 목록');
     await expect(page.getByTestId('my-flow-view-completed')).toHaveText('완료');
 
     const savedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
@@ -58,28 +58,30 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(mobileOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
     await expect(savedFlow.getByTestId('my-flow-next-action')).toHaveCount(0);
     const firstExecutionRow = mobileOutline.getByTestId('my-flow-execution-row-shell').first();
-    const [completionBox, noteBox, titleBox, metaBox] = await Promise.all([
+    const [completionBox, titleBox, metaBox] = await Promise.all([
       firstExecutionRow.getByTestId('my-flow-task-complete-label').boundingBox(),
-      firstExecutionRow.getByRole('button', { name: /실행 메모/ }).boundingBox(),
       firstExecutionRow.getByTestId('my-flow-row-title').boundingBox(),
       firstExecutionRow.getByTestId('my-flow-row-date-meta').boundingBox(),
     ]);
     expect(completionBox?.width).toBeGreaterThanOrEqual(44);
     expect(completionBox?.height).toBeGreaterThanOrEqual(44);
-    expect(noteBox?.width).toBeGreaterThanOrEqual(44);
-    expect(noteBox?.height).toBeGreaterThanOrEqual(44);
     expect(titleBox?.y).toBeLessThanOrEqual(metaBox?.y ?? Number.MAX_SAFE_INTEGER);
+    await expect(firstExecutionRow.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
     await expect(firstExecutionRow.getByTestId('my-flow-row-open-label')).toHaveText('열기');
+    await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
+    await expect(firstExecutionRow.getByTestId('my-flow-detail-execution-note')).toBeVisible();
+    await firstExecutionRow.getByTestId('my-flow-item-detail').getByRole('button', { name: '닫기' }).click();
     await captureEvidence(page, '02-returning-whole-flow-mobile.png');
 
     await mobileOutline.getByTestId('my-flow-task-complete-control').first().check();
     await page.reload();
-    await page.getByTestId('my-flow-post-save-view-flow').click();
+    await expect(page).toHaveURL(/view=flows/);
+    await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await page.getByTestId('my-flow-view-completed').click();
     await expect(page.getByTestId('my-flow-completed-count')).toHaveText('1개');
-    await expect(page.getByTestId('my-flow-completed-view')).toContainText('체크를 풀면 다시 진행으로 돌아갑니다.');
+    await expect(page.getByTestId('my-flow-completed-view')).toContainText('체크를 풀면 같은 할 일을 다시 열 수 있습니다.');
     const completedControl = page.getByTestId('my-flow-completed-view').getByTestId('my-flow-task-complete-control').first();
-    await expect(completedControl).toHaveAccessibleName(/완료 취소/);
+    await expect(completedControl).toHaveAccessibleName(/다시 열기/);
     await completedControl.click();
     await expect(page.getByTestId('my-flow-completed-count')).toHaveText('0개');
     await captureEvidence(page, '03-completed-reopen-mobile.png');

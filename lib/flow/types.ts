@@ -122,6 +122,8 @@ export type FlowItem = {
 
 export type FlowItemDetail = {
   item_id: string;
+  source_fragment_ids?: string[];
+  source_fragment_text?: string;
   why?: string;
   how?: string;
   completion_criteria?: string;

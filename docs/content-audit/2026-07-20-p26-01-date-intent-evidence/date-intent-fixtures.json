@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "example-preview",
+      "input": { "mode": "example", "customAnchor": "", "exampleAnchor": "2026-08-19" },
+      "expected": { "persistedMode": "undated", "savedAnchor": null, "calendarEligible": false }
+    },
+    {
+      "id": "custom-valid",
+      "input": { "mode": "custom", "customAnchor": "2026-08-20", "exampleAnchor": "2026-08-19" },
+      "expected": { "persistedMode": "custom", "savedAnchor": "2026-08-20", "calendarEligible": true }
+    },
+    {
+      "id": "custom-blank",
+      "input": { "mode": "custom", "customAnchor": "", "exampleAnchor": "2026-08-19" },
+      "expected": { "canSave": false, "savedAnchor": null, "calendarEligible": false }
+    },
+    {
+      "id": "explicit-undated",
+      "input": { "mode": "undated", "customAnchor": "2026-08-20", "exampleAnchor": "2026-08-19" },
+      "expected": { "persistedMode": "undated", "savedAnchor": null, "calendarEligible": false }
+    },
+    {
+      "id": "legacy-undecided",
+      "input": { "mode": "undecided" },
+      "expected": { "normalizedMode": "undated" }
+    }
+  ]
+}

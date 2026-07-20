@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "phase": "P26-10",
+  "status": "complete_internal_evidence",
+  "baselineCommit": "05e0f22",
+  "observedUserSessionCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "reference_pattern"
+  ],
+  "markers": {
+    "quickEditorDefaultFieldCount": 3,
+    "quickEditorAdvancedControlVisibleByDefaultCount": 0,
+    "quickEditorAdvancedEntryVisible": true,
+    "mobileEditorLayout": "full_screen",
+    "mobileEditorExpandsFlowCard": false,
+    "mobileEditorBodyScrollLocked": true,
+    "wideEditorLayout": "detail_pane",
+    "wideEditorPaneMinWidthPx": 270,
+    "wideEditorPaneMaxWidthPx": 330,
+    "editorStickyActionsVisible": true,
+    "editorDirtyGuardVisible": true,
+    "editorEscapeGuarded": true,
+    "editorFocusTrapActive": true,
+    "editorFocusReturned": true,
+    "editorAtomicSavePersisted": true,
+    "calendarAndMyFlowUseSharedEditor": true,
+    "irrelevantIntentFieldCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "sourceMutationCount": 0,
+    "storageSchemaChanged": false,
+    "observedUserValidated": false
+  },
+  "viewports": [
+    {
+      "route": "/my?view=flows",
+      "viewport": "390x844",
+      "layout": "mobile-full-screen",
+      "quickFields": ["title", "date", "memo"],
+      "advancedFieldsCollapsed": ["time", "location", "recurrence"]
+    },
+    {
+      "route": "/my?view=flows",
+      "viewport": "1024x768",
+      "layout": "wide-detail-pane"
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewport": "390x844",
+      "layout": "mobile-full-screen"
+    }
+  ],
+  "verification": {
+    "playwrightDedicated": { "passed": 3, "failed": 0 },
+    "playwrightCompatibility": { "passed": 10, "failed": 0 },
+    "build": { "passed": true, "routeCount": 18 },
+    "docsCheck": { "passed": true, "requiredFileCount": 14, "localLinkCount": 2616 },
+    "unit": { "passed": 549, "failed": 0 },
+    "diffCheck": { "passed": true }
+  }
+}

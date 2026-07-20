@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P26 제품 객체·여정 결정 프로토타입</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18201c;
+      --muted: #66706a;
+      --line: #d9dfda;
+      --line-strong: #bbc5be;
+      --paper: #ffffff;
+      --canvas: #eef1ee;
+      --soft: #f5f7f5;
+      --green: #236a4b;
+      --green-soft: #e4f1e9;
+      --blue: #265eb2;
+      --blue-soft: #e9f0fb;
+      --coral: #aa4d45;
+      --coral-soft: #faeae8;
+      --amber: #93601e;
+      --amber-soft: #fff1d9;
+      --shadow: 0 14px 38px rgba(24, 32, 28, .13);
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    button, select, input { font: inherit; letter-spacing: 0; }
+    button, select { cursor: pointer; }
+    button:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 3px solid rgba(38, 94, 178, .28);
+      outline-offset: 2px;
+    }
+    .review-top {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 66px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.97);
+    }
+    .review-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .review-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 7px;
+      color: white;
+      background: var(--green);
+      font-weight: 850;
+    }
+    .review-brand strong, .review-brand span { display: block; }
+    .review-brand strong { font-size: 15px; }
+    .review-brand span { color: var(--muted); font-size: 12px; }
+    .status {
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #6e4314;
+      background: var(--amber-soft);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .review-grid { display: grid; grid-template-columns: 270px minmax(0, 1fr); min-height: calc(100vh - 66px); }
+    .sidebar {
+      position: sticky;
+      top: 66px;
+      align-self: start;
+      height: calc(100vh - 66px);
+      overflow: auto;
+      padding: 18px 14px 28px;
+      border-right: 1px solid var(--line);
+      background: #fafbfa;
+    }
+    .control + .control { margin-top: 16px; }
+    .control label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .select {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      color: var(--ink);
+      background: white;
+    }
+    .segments { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 4px; border-radius: 8px; background: #e7ebe8; }
+    .segments button {
+      min-height: 40px;
+      border: 0;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .segments button[aria-pressed="true"] { color: var(--ink); background: white; box-shadow: 0 1px 4px rgba(24,32,28,.12); }
+    .surface-list { display: grid; gap: 4px; }
+    .surface-list button {
+      min-height: 44px;
+      padding: 8px 10px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      text-align: left;
+      font-weight: 700;
+    }
+    .surface-list button[aria-current="true"] { border-color: #b9d5c6; color: #184f37; background: var(--green-soft); }
+    .decision-note {
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--muted);
+      background: white;
+      font-size: 12px;
+    }
+    .main { min-width: 0; padding: 26px clamp(16px, 4vw, 50px) 56px; }
+    .summary { max-width: 1040px; margin: 0 auto 18px; }
+    .eyebrow { color: var(--green); font-size: 11px; font-weight: 850; }
+    .summary h1 { margin: 5px 0 6px; font-size: 27px; line-height: 1.25; }
+    .summary p { max-width: 820px; margin: 0; color: var(--muted); }
+    .metrics { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .metric { padding: 5px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: white; font-size: 11px; font-weight: 750; }
+    .metric.good { border-color: #b8d6c5; color: #19563b; background: var(--green-soft); }
+    .stage {
+      display: grid;
+      min-height: 850px;
+      place-items: start center;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background-color: #f7f8f6;
+      background-image: linear-gradient(#e7ebe7 1px, transparent 1px), linear-gradient(90deg, #e7ebe7 1px, transparent 1px);
+      background-size: 24px 24px;
+      overflow: auto;
+    }
+    .device {
+      width: 390px;
+      min-height: 844px;
+      overflow: hidden;
+      border: 1px solid #bac2bc;
+      border-radius: 22px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+    .device.wide { width: min(1024px, 100%); min-height: 768px; border-radius: 10px; }
+    .app { position: relative; min-height: inherit; padding-bottom: 74px; background: var(--soft); }
+    .device.wide .app { padding-bottom: 0; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: white;
+    }
+    .topbar strong { font-size: 17px; }
+    .topnav { display: none; gap: 4px; }
+    .wide .topnav { display: flex; }
+    .topnav span { padding: 8px 10px; border-radius: 6px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    .topnav .active { color: white; background: var(--ink); }
+    .content { padding: 18px 14px 28px; }
+    .wide .content { padding: 24px; }
+    .bottom-nav {
+      position: absolute;
+      inset: auto 8px 8px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      min-height: 58px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.98);
+      box-shadow: 0 8px 24px rgba(24,32,28,.14);
+    }
+    .wide .bottom-nav { display: none; }
+    .bottom-nav span { display: grid; place-items: center; border-radius: 6px; color: var(--muted); font-size: 11px; font-weight: 750; }
+    .bottom-nav .active { color: white; background: var(--ink); }
+    .screen-head { margin-bottom: 15px; }
+    .screen-head h2 { margin: 4px 0 5px; font-size: 24px; line-height: 1.25; }
+    .screen-head p { margin: 0; color: var(--muted); font-size: 13px; }
+    .panel, .flow-card, .receipt, .detail-panel, .calendar, .tray, .export-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    .panel { padding: 14px; }
+    .stack { display: grid; gap: 10px; }
+    .wide-grid { display: grid; gap: 14px; }
+    .wide .wide-grid.two { grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); }
+    .wide .wide-grid.three { grid-template-columns: 180px minmax(0, .92fr) minmax(280px, 1.08fr); }
+    .entry {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid #b9c8bf;
+      border-radius: 8px;
+      background: white;
+    }
+    .entry input { min-width: 0; border: 0; outline: 0; color: var(--muted); font-size: 14px; }
+    .button {
+      min-height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      color: var(--ink);
+      background: white;
+      font-weight: 800;
+    }
+    .button.primary { border-color: var(--green); color: white; background: var(--green); }
+    .button.secondary { border-color: #9eb6d9; color: #214f91; background: var(--blue-soft); }
+    .button.danger { border-color: #dfbbb7; color: #8d3b35; background: var(--coral-soft); }
+    .button.small { min-height: 38px; padding: 0 10px; font-size: 12px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    .flow-card { padding: 14px; }
+    .flow-card + .flow-card { margin-top: 9px; }
+    .flow-card h3 { margin: 3px 0 4px; font-size: 17px; }
+    .source { color: var(--blue); font-size: 11px; font-weight: 800; }
+    .artifact-preview { display: grid; gap: 6px; margin: 11px 0; }
+    .preview-row { display: flex; align-items: center; gap: 8px; color: #3f4943; font-size: 13px; }
+    .preview-index { display: grid; width: 22px; height: 22px; place-items: center; border-radius: 6px; color: #246044; background: var(--green-soft); font-size: 10px; font-weight: 850; }
+    .meta { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip { padding: 4px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--soft); font-size: 10px; font-weight: 750; }
+    .chip.input { border-color: #e1c18d; color: #744a13; background: var(--amber-soft); }
+    .chip.result { border-color: #b9d0ef; color: #214f91; background: var(--blue-soft); }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+    .card-footer span { color: var(--muted); font-size: 11px; }
+    .legacy-copy { padding: 12px; border: 1px solid #e3c09b; border-radius: 7px; color: #68451e; background: #fff7e9; font-size: 12px; }
+    .legacy-copy + .legacy-copy { margin-top: 8px; }
+    .outline { display: grid; gap: 8px; }
+    .group-label { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; color: var(--muted); font-size: 11px; font-weight: 850; }
+    .task-row {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      min-height: 58px;
+      padding: 8px 9px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+    }
+    .task-row input { width: 20px; height: 20px; margin: 0 auto; accent-color: var(--green); }
+    .task-row strong { display: block; font-size: 13px; }
+    .task-row span { display: block; color: var(--muted); font-size: 11px; }
+    .receipt { padding: 13px; border-color: #a8cfb8; background: #f7fcf9; }
+    .receipt strong { display: block; margin-bottom: 3px; }
+    .receipt p { margin: 0; color: var(--muted); font-size: 12px; }
+    .local-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 8px; background: #e7ebe8; }
+    .local-tabs span { display: grid; min-height: 40px; place-items: center; border-radius: 6px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .local-tabs .active { color: var(--ink); background: white; }
+    .rail { padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    .rail-row { padding: 10px; border-radius: 6px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    .rail-row.active { color: #164d35; background: var(--green-soft); }
+    .detail-panel { padding: 14px; }
+    .detail-panel h3 { margin: 0 0 6px; font-size: 17px; }
+    .detail-panel p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+    .field { margin-top: 10px; }
+    .field label { display: block; margin-bottom: 5px; font-size: 11px; font-weight: 800; }
+    .field input, .field select { width: 100%; min-height: 44px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 7px; background: white; }
+    .advanced { margin-top: 12px; padding: 10px; border: 1px dashed var(--line-strong); border-radius: 7px; color: var(--muted); font-size: 12px; }
+    .calendar { padding: 12px; }
+    .calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 5px; }
+    .filter { padding: 6px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: white; font-size: 10px; font-weight: 800; }
+    .filter.active { border-color: #a9cbb8; color: #19543a; background: var(--green-soft); }
+    .month-grid { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 4px; }
+    .day { min-height: 55px; padding: 5px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: #fbfcfb; font-size: 10px; }
+    .day.selected { border-color: var(--green); background: #f4faf6; }
+    .dot { display: block; width: 6px; height: 6px; margin-top: 3px; border-radius: 50%; background: var(--green); }
+    .dot.blue { background: var(--blue); }
+    .tray { padding: 12px; }
+    .tray h3 { margin: 0 0 4px; font-size: 14px; }
+    .tray p { margin: 0 0 10px; color: var(--muted); font-size: 11px; }
+    .export-panel { padding: 14px; }
+    .scope-list { display: grid; gap: 7px; }
+    .scope { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 8px; min-height: 48px; padding: 8px; border: 1px solid var(--line); border-radius: 7px; }
+    .scope input { width: 18px; height: 18px; accent-color: var(--green); }
+    .scope strong { display: block; font-size: 12px; }
+    .scope span { color: var(--muted); font-size: 10px; }
+    .formats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; margin-top: 12px; }
+    .format { min-height: 58px; padding: 9px; border: 1px solid var(--line); border-radius: 7px; background: white; text-align: left; }
+    .format strong, .format span { display: block; }
+    .format strong { font-size: 12px; }
+    .format span { color: var(--muted); font-size: 10px; }
+    .current-badge { display: inline-flex; margin-bottom: 10px; padding: 5px 8px; border-radius: 999px; color: #7a4518; background: var(--amber-soft); font-size: 10px; font-weight: 850; }
+    .proposed-badge { display: inline-flex; margin-bottom: 10px; padding: 5px 8px; border-radius: 999px; color: #19543a; background: var(--green-soft); font-size: 10px; font-weight: 850; }
+    @media (max-width: 850px) {
+      .review-grid { display: block; }
+      .sidebar { position: static; width: auto; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .surface-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .surface-list button { text-align: center; font-size: 11px; }
+      .main { padding: 20px 10px 40px; }
+      .stage { padding: 10px 0; }
+    }
+    body.capture { background: white; }
+    body.capture .review-top,
+    body.capture .sidebar,
+    body.capture .summary { display: none; }
+    body.capture .review-grid { display: block; min-height: 0; }
+    body.capture .main { padding: 0; }
+    body.capture .stage { min-height: 0; padding: 0; border: 0; background: white; overflow: visible; }
+    body.capture .device { border: 0; border-radius: 0; box-shadow: none; }
+  </style>
+</head>
+<body>
+  <header class="review-top">
+    <div class="review-brand">
+      <div class="review-mark">FM</div>
+      <div><strong>P26 제품 객체·여정 결정</strong><span>current P25와 proposed P26 비교</span></div>
+    </div>
+    <span class="status">내부 prototype · 사용자 관찰 0</span>
+  </header>
+  <div class="review-grid">
+    <aside class="sidebar">
+      <div class="control">
+        <label for="scenario">Flow 유형</label>
+        <select id="scenario" class="select">
+          <option value="moving">이사 기준일 역산형</option>
+          <option value="vehicle">차량 날짜 없는 체크형</option>
+          <option value="routine">운동 반복 루틴형</option>
+          <option value="trip">여행 혼합 일정형</option>
+          <option value="record">생활 기록형</option>
+          <option value="draft">개인 메모 초안형</option>
+        </select>
+      </div>
+      <div class="control">
+        <label>비교안</label>
+        <div class="segments" id="modeButtons">
+          <button type="button" data-mode="current" aria-pressed="false">Current</button>
+          <button type="button" data-mode="proposed" aria-pressed="true">Proposed</button>
+        </div>
+      </div>
+      <div class="control">
+        <label>Viewport</label>
+        <div class="segments" id="deviceButtons">
+          <button type="button" data-device="mobile" aria-pressed="true">390</button>
+          <button type="button" data-device="wide" aria-pressed="false">1024</button>
+        </div>
+      </div>
+      <div class="control">
+        <label>Surface</label>
+        <div class="surface-list" id="surfaceButtons"></div>
+      </div>
+      <div class="decision-note" id="decisionNote"></div>
+    </aside>
+    <main class="main">
+      <section class="summary">
+        <span class="eyebrow">P26-00C</span>
+        <h1 id="reviewTitle"></h1>
+        <p id="reviewSummary"></p>
+        <div class="metrics" id="metrics"></div>
+      </section>
+      <section class="stage">
+        <div class="device" id="device">
+          <div class="app" id="app"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const packedState = (params.get('state') || '').split(',');
+    if (params.get('capture') === '1' || packedState[4] === 'capture') document.body.classList.add('capture');
+    const scenarios = {
+      moving: { title: '이사 준비 D-30', source: '확인된 이사 체크리스트', input: '이사일 필요', result: '5개 일정 · D-30~D-Day', preview: ['견적과 업체 확정', '주소 변경 신청', '이사 전날 점검'], groups: [['D-30', '견적과 업체 확정'], ['D-14', '주소 변경 신청'], ['D-1', '이사 전날 점검']] },
+      vehicle: { title: '차량 점검 준비', source: '차량 점검 준비 자료', input: '날짜 없이 시작 가능', result: '8개 체크 · 필요할 때 일정', preview: ['타이어 상태 확인', '등화 장치 점검', '필요 서류 챙기기'], groups: [['외관과 안전', '타이어 상태 확인'], ['작동 확인', '등화 장치 점검'], ['준비물', '필요 서류 챙기기']] },
+      routine: { title: '주 3회 홈트', source: '개인 루틴 초안', input: '시작일 필요', result: '주 3회 · 4주', preview: ['월요일 상체', '수요일 코어', '금요일 하체'], groups: [['이번 주', '월요일 상체'], ['이번 주', '수요일 코어'], ['다음 회차', '금요일 하체']] },
+      trip: { title: '오사카 3박 4일 준비', source: '여행 준비 메모', input: '출발일 필요', result: '3개 단계 · 일정 7개', preview: ['항공과 숙소 확정', '교통 패스 준비', '출발 전 짐 점검'], groups: [['예약', '항공과 숙소 확정'], ['현지 이동', '교통 패스 준비'], ['출발 전', '짐 점검']] },
+      record: { title: '냉장고 주간 정리', source: '생활 관리 체크', input: '날짜 없이 시작 가능', result: '6개 체크 · 기록 2개', preview: ['기한 지난 식재료 확인', '이번 주 사용할 재료 기록', '선반 닦기'], groups: [['먼저 확인', '기한 지난 식재료 확인'], ['기록', '이번 주 사용할 재료 기록'], ['정리', '선반 닦기']] },
+      draft: { title: '이번 주 개인 준비', source: '내 메모에서 만든 초안', input: '바로 조정 가능', result: '4개 할 일', preview: ['자료 정리', '일정 확인', '요청 메일 보내기'], groups: [['할 일', '자료 정리'], ['할 일', '일정 확인'], ['할 일', '요청 메일 보내기']] }
+    };
+    const surfaces = [
+      ['home', '홈'], ['catalog', 'Flow 찾기'], ['save', '저장 전'], ['post', '저장 후'],
+      ['my', '내 Flow'], ['calendar', '캘린더'], ['editor', '조정'], ['export', '가져가기']
+    ];
+    const state = {
+      scenario: scenarios[packedState[1] || params.get('scenario')] ? (packedState[1] || params.get('scenario')) : 'moving',
+      surface: surfaces.some(([id]) => id === (packedState[2] || params.get('surface'))) ? (packedState[2] || params.get('surface')) : 'home',
+      mode: (packedState[0] || params.get('mode')) === 'current' ? 'current' : 'proposed',
+      device: (packedState[3] || params.get('device')) === 'wide' ? 'wide' : 'mobile'
+    };
+    const notes = {
+      home: '결정: URL/memo entry와 대표 Flow를 첫 viewport에 둔다. 설명보다 artifact preview를 먼저 보여준다.',
+      catalog: '결정: Flow와 Flow Map을 같은 카드 문법으로 통일하고, 검증되지 않은 인기순·사회적 증거는 숨긴다.',
+      save: '결정: 같은 whole artifact 위에서 그대로 시작과 내게 맞게 조정을 선택한다.',
+      post: '결정: 저장 직후 Today 한 행이 아니라 저장된 전체 Flow와 item 수를 확인한다.',
+      my: '결정: 지금/내 Flow/완료를 분리하고 콘텐츠 모양에 맞게 날짜·단계·회차를 묶는다.',
+      calendar: '결정: Calendar는 날짜 우선이다. Flow filter는 상시, 날짜 없는 tray는 필요할 때 연다.',
+      editor: '결정: 제목·언제·메모만 기본으로 두고 시간·반복·구조·batch는 명시적 mode로 연다.',
+      export: '결정: 형식보다 범위와 예상 개수를 먼저 선택한다.'
+    };
+    const surfaceText = {
+      home: ['바로 쓸 Flow를 찾거나 메모로 시작', '저장할 결과가 보이는 한 개의 시작 화면'],
+      catalog: ['같은 기준으로 Flow 비교', 'job, source, artifact, input, result 순서'],
+      save: ['저장될 전체 Flow 확인', '같은 artifact에서 빠른 시작과 조정 깊이를 선택'],
+      post: ['저장 결과 전체 확인', 'receipt와 whole Flow를 같은 화면에서 확인'],
+      my: ['지금 실행하고 저장한 Flow 관리', '할 일과 전체 Flow의 역할을 분리'],
+      calendar: ['날짜별 실행과 일정 배치', 'dated projection, Flow filter, on-demand tray'],
+      editor: ['필요한 만큼만 개인 조정', 'quick, advanced, structure, batch mode 분리'],
+      export: ['보낼 범위와 결과를 먼저 확인', 'scope, count, format, receipt 순서']
+    };
+
+    function nav(active) {
+      return `<div class="topbar"><strong>FlowMe</strong><div class="topnav">${['홈','Flow 찾기','캘린더','내 Flow'].map(x => `<span class="${x===active?'active':''}">${x}</span>`).join('')}</div></div>`;
+    }
+    function bottom(active) {
+      return `<div class="bottom-nav">${['홈','Flow 찾기','캘린더','내 Flow'].map(x => `<span class="${x===active?'active':''}">${x}</span>`).join('')}</div>`;
+    }
+    function head(label, title, sub) { return `<div class="screen-head"><span class="eyebrow">${label}</span><h2>${title}</h2><p>${sub}</p></div>`; }
+    function flowCard(s, current=false) {
+      if (current) return `<article class="flow-card"><span class="source">${s.source}</span><h3>${s.title}</h3><div class="legacy-copy">${s.input.replace(' 필요','만 넣으면')} ${s.result}을 내 Flow에 저장합니다.</div><div class="meta"><span class="chip">Flow Map</span><span class="chip">${s.result}</span></div><div class="card-footer"><span>저장 전 내용을 확인하세요</span><button class="button small primary">보기</button></div></article>`;
+      return `<article class="flow-card"><span class="source">${s.source} · 최근 확인</span><h3>${s.title}</h3><div class="artifact-preview">${s.preview.map((p,i)=>`<div class="preview-row"><span class="preview-index">${i+1}</span>${p}</div>`).join('')}</div><div class="meta"><span class="chip input">${s.input}</span><span class="chip result">${s.result}</span></div><div class="card-footer"><span>원문 연결</span><button class="button small primary">Flow 열기</button></div></article>`;
+    }
+    function tasks(s, editable=false) {
+      return s.groups.map((g,i)=>`${i===0 || s.groups[i-1][0]!==g[0] ? `<div class="group-label"><span>${g[0]}</span><span>${i===0?'먼저':'다음'}</span></div>`:''}<div class="task-row"><input type="checkbox" aria-label="${g[1]} 완료로 표시"><div><strong>${g[1]}</strong><span>${state.scenario==='vehicle' && i>0 ? '날짜 없음' : g[0]}${editable?' · 개인 조정 가능':''}</span></div><button class="button small">열기</button></div>`).join('');
+    }
+    function renderCurrent(s) {
+      const badge = '<span class="current-badge">Current P25 구조 요약</span>';
+      if (state.surface==='home') return `${nav('홈')}<div class="content">${badge}${head('홈','내 일정을 바로 실행해보세요','이사일 하나로 원문 체크리스트를 날짜별 할 일로 저장합니다.')}<div class="entry"><input value="URL이나 메모로 Flow 찾기" readonly><button class="button primary">찾기</button></div><div style="height:12px"></div>${flowCard(s,true)}</div>${bottom('홈')}`;
+      if (state.surface==='catalog') return `${nav('Flow 찾기')}<div class="content">${badge}${head('탐색','Flow 찾기','추천 Flow와 Flow Map을 둘러보세요.')}<div class="actions"><button class="button small">추천순</button><button class="button small">인기순</button></div><div style="height:10px"></div>${flowCard(s,true)}${flowCard({...s,title:s.title+' 기본형'},false)}</div>${bottom('Flow 찾기')}`;
+      if (state.surface==='save') return `${nav('Flow 찾기')}<div class="content">${badge}${head('저장 전','이 Flow를 저장하면','필요한 입력을 정하면 일정과 할 일을 내 Flow에 저장합니다.')}<div class="legacy-copy">${s.input}입니다. ${s.result} 전체가 저장되고 Calendar와 checklist로 가져갈 수 있어요.</div><div class="legacy-copy">원문의 실행 단서를 사용하기 쉬운 일정과 할 일로 정리했습니다.</div><div style="height:10px"></div><div class="panel outline">${tasks(s)}</div><div class="actions" style="margin-top:10px"><button class="button primary">내 Flow에 저장</button></div></div>${bottom('Flow 찾기')}`;
+      if (state.surface==='post') return `${nav('내 Flow')}<div class="content">${badge}${head('저장됨','오늘 할 일','저장한 Flow에서 지금 할 일을 먼저 보여드려요.')}<div class="receipt"><strong>${s.title} 저장 완료</strong><p>${s.result}</p></div><div style="height:10px"></div><div class="task-row"><input type="checkbox"><div><strong>${s.preview[0]}</strong><span>${s.groups[0][0]}</span></div><button class="button small">열기</button></div><div class="legacy-copy" style="margin-top:10px">전체 Flow를 확인하거나 설정에서 다시 조정할 수 있어요.</div></div>${bottom('내 Flow')}`;
+      if (state.surface==='my') return `${nav('내 Flow')}<div class="content">${badge}${head('내 Flow','오늘','오늘 할 일과 저장한 Flow를 확인하세요.')}<div class="local-tabs"><span class="active">오늘</span><span>전체</span><span>완료</span></div><div style="height:10px"></div><div class="task-row"><input type="checkbox"><div><strong>${s.preview[0]}</strong><span>${s.title} · ${s.groups[0][0]}</span></div><button class="button small">열기</button></div><div class="flow-card"><h3>${s.title}</h3><div class="meta"><span class="chip">전체 0/3 완료</span><span class="chip">${s.result}</span></div><div class="legacy-copy" style="margin-top:10px">전체 항목을 열어 날짜와 메모를 조정할 수 있어요.</div></div></div>${bottom('내 Flow')}`;
+      if (state.surface==='calendar') return `${nav('캘린더')}<div class="content">${badge}${head('캘린더','7월','날짜별 할 일과 날짜 없는 할 일을 함께 관리하세요.')}<div class="wide-grid three"><div class="tray"><h3>날짜 없는 할 일</h3><p>필요한 일을 선택해 날짜를 정하세요.</p>${s.preview.map(p=>`<div class="preview-row"><span class="preview-index">·</span>${p}</div>`).join('')}</div>${calendarBlock(s)}<div class="panel outline">${tasks(s)}</div></div></div>${bottom('캘린더')}`;
+      if (state.surface==='editor') return `${nav('내 Flow')}<div class="content">${badge}${head('설정','항목 조정','제목, 일정, 메모와 세부 설정을 수정합니다.')}<div class="detail-panel"><div class="field"><label>제목</label><input value="${s.preview[0]}"></div><div class="field"><label>날짜</label><input type="date" value="2026-07-28"></div><div class="field"><label>메모</label><input value="내 메모"></div><div class="field"><label>시간</label><input type="time"></div><div class="field"><label>소요 시간</label><input value="30분"></div><div class="field"><label>반복</label><select><option>반복 없음</option></select></div><div class="field"><label>결정 상태</label><select><option>정하지 않음</option></select></div><button class="button primary" style="width:100%;margin-top:12px">저장</button></div></div>${bottom('내 Flow')}`;
+      return `${nav('내 Flow')}<div class="content">${badge}${head('가져가기','형식을 선택하세요','현재 열어본 항목을 원하는 형식으로 가져갑니다.')}<div class="formats"><button class="format"><strong>캘린더 파일 받기</strong><span>일정으로 저장</span></button><button class="format"><strong>체크리스트 복사</strong><span>텍스트로 복사</span></button><button class="format"><strong>시트로 받기</strong><span>표 파일</span></button><button class="format"><strong>메모로 복사</strong><span>문서로 복사</span></button></div></div>${bottom('내 Flow')}`;
+    }
+    function calendarBlock(s) {
+      const days = Array.from({length:34},(_,i)=>i<3?'':String(i-2));
+      return `<div class="calendar"><div class="calendar-head"><strong>7월</strong><span class="chip result">${s.title}</span></div><div class="month-grid">${days.map((d,i)=>`<div class="day ${d==='28'?'selected':''}">${d}${['7','14','21','28'].includes(d)?'<span class="dot"></span>':''}${d==='28'?'<span class="dot blue"></span>':''}</div>`).join('')}</div></div>`;
+    }
+    function renderProposed(s) {
+      const badge = '<span class="proposed-badge">Proposed P26 계약</span>';
+      if (state.surface==='home') return `${nav('홈')}<div class="content">${badge}${head('홈','무엇을 준비하고 있나요?','링크나 메모를 넣거나, 바로 쓸 Flow를 고르세요.')}<div class="entry"><input placeholder="URL 또는 메모 붙여넣기"><button class="button primary">Flow 찾기</button></div><div style="height:14px"></div><div class="group-label"><span>바로 시작하기</span><span>전체 보기</span></div>${flowCard(s)}</div>${bottom('홈')}`;
+      if (state.surface==='catalog') return `${nav('Flow 찾기')}<div class="content">${badge}${head('Flow 찾기','내 상황에 맞는 Flow','같은 정보 기준으로 결과와 필요한 입력을 비교하세요.')}<div class="actions"><button class="button small primary">전체</button><button class="button small">날짜 준비</button><button class="button small">체크</button><button class="button small">루틴</button></div><div style="height:10px"></div>${flowCard(s)}${flowCard({...s,title:state.scenario==='moving'?'결혼 준비 1년 타임라인':s.title+' 간단형',result:'단독 Flow entry'})}</div>${bottom('Flow 찾기')}`;
+      if (state.surface==='save') return `${nav('Flow 찾기')}<div class="content">${badge}${head(s.source,s.title,s.result)}<div class="wide-grid two"><div class="panel outline">${tasks(s)}</div><div class="detail-panel"><h3>시작할 준비</h3><p>${s.input}. 원본은 그대로 두고 내 사본에서 바꿀 수 있습니다.</p><div class="meta"><span class="chip input">${s.input}</span><span class="chip result">${s.result}</span></div><div class="actions" style="margin-top:14px"><button class="button primary">그대로 시작</button><button class="button secondary">내게 맞게 조정</button></div><div class="advanced">원문과 근거 보기</div></div></div></div>${bottom('Flow 찾기')}`;
+      if (state.surface==='post') return `${nav('내 Flow')}<div class="content">${badge}<div class="receipt"><strong>${s.title} 저장됨</strong><p>할 일 3개 · 날짜 있음 3개 · 개인 사본</p></div><div style="height:12px"></div>${head('저장된 전체 Flow',s.title,'저장한 구조를 확인하고 바로 시작하거나 조정하세요.')}<div class="wide-grid two"><div class="panel outline">${tasks(s,true)}</div><div class="detail-panel"><h3>${s.preview[0]}</h3><p>${s.groups[0][0]} · 내 Flow에서 수정 가능</p><div class="actions"><button class="button primary">첫 할 일 시작</button><button class="button">조정</button><button class="button">가져가기</button></div></div></div></div>${bottom('내 Flow')}`;
+      if (state.surface==='my') return `${nav('내 Flow')}<div class="content">${badge}${head('내 Flow','지금 할 일','완료할 일과 저장한 전체 Flow를 분리해 봅니다.')}<div class="local-tabs"><span class="active">지금</span><span>내 Flow</span><span>완료</span></div><div style="height:12px"></div><div class="wide-grid three"><div class="rail"><div class="rail-row active">${s.title}</div><div class="rail-row">차량 점검 준비</div><div class="rail-row">주 3회 홈트</div></div><div class="panel outline">${tasks(s)}</div><div class="detail-panel"><h3>${s.preview[0]}</h3><p>${s.title} · ${s.groups[0][0]}</p><div class="actions"><button class="button primary">시작</button><button class="button">조정</button></div></div></div></div>${bottom('내 Flow')}`;
+      if (state.surface==='calendar') return `${nav('캘린더')}<div class="content">${badge}${head('캘린더','7월','선택한 Flow의 날짜별 할 일을 실행합니다.')}<div class="filters"><button class="filter">전체</button><button class="filter active">${s.title}</button><button class="filter">차량 점검</button></div><div style="height:10px"></div><div class="wide-grid two">${calendarBlock(s)}<div class="panel"><div class="group-label"><span>7월 28일</span><span>2개 남음</span></div><div class="outline">${tasks(s)}</div><button class="button secondary" style="width:100%;margin-top:10px">날짜 없는 할 일 3개 · 일정에 놓기</button></div></div></div>${bottom('캘린더')}`;
+      if (state.surface==='editor') return `${nav('내 Flow')}<div class="content">${badge}${head('빠른 조정',s.preview[0],'자주 바꾸는 값만 먼저 보여줍니다.')}<div class="wide-grid two"><div class="detail-panel"><div class="field"><label>제목</label><input value="${s.preview[0]}"></div><div class="field"><label>언제</label><select><option>${state.scenario==='vehicle'?'날짜 없음':'2026년 7월 28일'}</option><option>날짜 정하기</option></select></div><div class="field"><label>내 메모</label><input placeholder="나에게 필요한 내용만 남기기"></div><div class="advanced">세부 일정 열기 · 시간, 소요 시간, 반복</div><button class="button primary" style="width:100%;margin-top:12px">변경 저장</button></div><div class="panel"><div class="group-label"><span>다른 조정</span><span>필요할 때</span></div><div class="stack"><button class="button">항목 추가·삭제·순서</button><button class="button">여러 항목 날짜 이동</button><button class="button">기준일 전체 조정</button></div></div></div></div>${bottom('내 Flow')}`;
+      return `${nav('내 Flow')}<div class="content">${badge}${head('가져가기',s.title,'먼저 보낼 범위와 실제 개수를 확인하세요.')}<div class="wide-grid two"><div class="export-panel"><div class="scope-list"><label class="scope"><input type="radio" checked name="scope"><div><strong>Flow 전체</strong><span>현재 개인 수정본 전체</span></div><strong>3개</strong></label><label class="scope"><input type="radio" name="scope"><div><strong>선택한 항목</strong><span>목록에서 고른 항목</span></div><strong>2개</strong></label><label class="scope"><input type="radio" name="scope"><div><strong>현재 항목</strong><span>${s.preview[0]}</span></div><strong>1개</strong></label></div></div><div class="export-panel"><div class="formats"><button class="format"><strong>캘린더</strong><span>날짜 있는 3개</span></button><button class="format"><strong>체크리스트</strong><span>전체 3개</span></button><button class="format"><strong>시트</strong><span>전체 3개</span></button><button class="format"><strong>메모</strong><span>전체 3개</span></button></div><button class="button primary" style="width:100%;margin-top:12px">Flow 전체 가져가기</button></div></div></div>${bottom('내 Flow')}`;
+    }
+    function render() {
+      const s = scenarios[state.scenario];
+      const copy = surfaceText[state.surface];
+      document.getElementById('reviewTitle').textContent = copy[0];
+      document.getElementById('reviewSummary').textContent = copy[1];
+      document.getElementById('decisionNote').textContent = notes[state.surface];
+      document.getElementById('metrics').innerHTML = `<span class="metric good">사용자 객체: Flow</span><span class="metric">Mode: ${state.mode}</span><span class="metric">${state.device==='mobile'?'390x844':'1024x768'}</span><span class="metric">관찰 사용자 0</span>`;
+      const device = document.getElementById('device');
+      device.className = `device ${state.device==='wide'?'wide':''}`;
+      document.getElementById('app').innerHTML = state.mode==='current' ? renderCurrent(s) : renderProposed(s);
+      document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===state.mode)));
+      document.querySelectorAll('[data-device]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.device===state.device)));
+      document.querySelectorAll('[data-surface]').forEach(b=>b.setAttribute('aria-current', String(b.dataset.surface===state.surface)));
+    }
+    const surfaceRoot = document.getElementById('surfaceButtons');
+    surfaceRoot.innerHTML = surfaces.map(([id,label])=>`<button type="button" data-surface="${id}" aria-current="${id==='home'}">${label}</button>`).join('');
+    document.getElementById('scenario').addEventListener('change', e=>{state.scenario=e.target.value;render();});
+    document.getElementById('modeButtons').addEventListener('click', e=>{if(e.target.dataset.mode){state.mode=e.target.dataset.mode;render();}});
+    document.getElementById('deviceButtons').addEventListener('click', e=>{if(e.target.dataset.device){state.device=e.target.dataset.device;render();}});
+    surfaceRoot.addEventListener('click', e=>{if(e.target.dataset.surface){state.surface=e.target.dataset.surface;render();}});
+    document.getElementById('scenario').value = state.scenario;
+    render();
+  </script>
+</body>
+</html>

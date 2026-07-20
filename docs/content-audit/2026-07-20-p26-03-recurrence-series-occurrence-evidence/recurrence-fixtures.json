@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "washer-monthly-public-my-flow",
+      "shape": "source_routine_monthly",
+      "startDate": "2026-07-20",
+      "visibleDates": [
+        "2026-07-20",
+        "2026-08-20",
+        "2026-09-20",
+        "2026-10-20"
+      ],
+      "publicUid": "saved-routine-j36h7x@flowme.local",
+      "myFlowUid": "saved-routine-j36h7x@flowme.local",
+      "rrule": "FREQ=MONTHLY;BYMONTHDAY=20",
+      "eventCount": 1,
+      "identityParity": true,
+      "rruleParity": true
+    },
+    {
+      "id": "allblanc-weekly-four-week",
+      "shape": "source_routine_weekly",
+      "startDate": "2026-07-15",
+      "weekdays": [
+        "MO",
+        "WE",
+        "FR"
+      ],
+      "occurrenceCount": 12,
+      "until": "2026-08-11",
+      "publicMyFlowUidParity": true,
+      "publicMyFlowRruleParity": true,
+      "siblingCompletionIndependent": true
+    },
+    {
+      "id": "personal-draft-daily-three",
+      "shape": "personal_draft_recurrence",
+      "startDate": "2026-07-13",
+      "rrule": "FREQ=DAILY;COUNT=3",
+      "states": [
+        "pending",
+        "done",
+        "reopened",
+        "skipped",
+        "held",
+        "reopened"
+      ],
+      "seriesCompletionControlCount": 0,
+      "occurrenceCompletionControlCount": 1,
+      "stableIdentity": true,
+      "reloadPersistence": true
+    }
+  ],
+  "goldenCoverage": {
+    "rrule": true,
+    "exdate": true,
+    "recurrenceId": true,
+    "completionReopen": true,
+    "skipHold": true,
+    "seriesDefinitionTrayExclusion": true
+  }
+}

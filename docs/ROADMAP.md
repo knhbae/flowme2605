@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-20<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P25 released, observation not started<br>
+**Current Validation Stage:** internal alpha / P26 implementation active, observation not started<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P26-00 comprehension/density decision audit
+**Next Milestone:** P26-20 PR/merge, canonical production deploy, and smoke
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,24 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P26 Structural Correction Program
+
+P26 preserves P25's source/personal/run ownership, whole-Flow artifact, reversible completion, Calendar placement, and scoped export. It corrects the product object, discovery hierarchy, save/adjust journey, content-shape reading model, Calendar density/filtering, and editing discoverability after first closing date, recurrence, receipt, memo, and projection correctness.
+
+Detailed scope: [P26 program spec](./specs/2026-07-20-p26-program/spec.md).
+Decision package: [P26-00C product-object and journey decision](./content-audit/2026-07-20-p26-00c-product-object-journey-decision/README.md).
+
+| Stage | Slices | Purpose | State |
+| --- | --- | --- | --- |
+| Decision | P26-00C | One Flow object, integrated discovery card, dual save/adjust path, adaptive whole Flow, Calendar tray/editor decision | Complete as internal implementation contract |
+| Correctness | P26-01~05 | Date intent, canonical receipt, recurrence, memo segmentation, projection identity | Complete as current command/browser evidence |
+| Discovery/save | P26-06~07 | Unified cards, save-before, wedding entries, post-save hub | Complete as current browser evidence |
+| My Flow/edit | P26-08~13 | Local IA, adaptive whole Flow, progressive/structural/batch edit, completion, reuse | Complete as current command/browser evidence |
+| Calendar/export | P26-14~16 | Undated placement, Flow filter/date move, explicit export result | Complete as current command/browser evidence |
+| Integration | P26-17~20 | Visual/copy system, responsive workspace, six-journey gate, release | P26-20 source gates complete; external release gates pending |
+
+P26 is an internal product and implementation program. It does not reopen participant recruitment until the owner explicitly chooses to do so.
 
 ## P25 Execution Workspace Correction
 
@@ -100,7 +118,17 @@ There is no active external-user gate. P25 is the deployed internal baseline. Ex
 | Completed | AI | P25-01~P25-05 correctness, whole-Flow workspace, personal adjustment, Anytime placement, completion, and export | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-08 internal six-journey gate | Preserve current mobile/wide integration evidence | Automated Blocking/High 0 and owner decision package exist; observed users remain 0 |
 | Completed | AI | P25 release closeout | Preserve PR #136/#137 and final live-smoke evidence | Production serves `b0fb899c`; observed users remain 0 |
-| Active | AI, then owner/Claude Design | P26-00 comprehension and density decision | Compare public copy, wide Calendar, and advanced-editor alternatives | One bounded P26-01 implementation slice is selected without claiming observed-user validation |
+| Completed | AI | P26-10 quick/advanced item editor | Keep title/date/memo immediately editable and disclose uncommon schedule controls only when needed | Mobile full-screen and wide detail-pane edit paths pass current browser evidence |
+| Completed | AI | P26-11 structural and batch editing | Separate add/delete/restore/reorder and multi-item changes from single-item quick adjustment | Personal draft structure is recoverable, projection-safe, and source-backed controls remain absent |
+| Completed | AI | P26-12 completion undo and reopen | Preserve one occurrence/control while making completion immediately and persistently reversible | Undo and reopen preserve run/occurrence identity without structural mutation |
+| Completed | AI | P26-13 reuse and anchor policy | Preserve separate anchor-linked and personally fixed dates without rewriting past runs | Reuse preview and saved result preserve date intent, identity, and history |
+| Completed | AI | P26-14 undated inbox and batch scheduling | Preserve one explicit undated object and atomic placement/undo | Mobile drawer, wide rail, persistence, removal undo, and ICS count parity remain green |
+| Completed | AI, then owner/Claude Design | P26-15 Calendar Flow filter and date move | Keep Flow scope, grid, agenda, count, and single/batch movement on one projection | Filter mismatch is 0 and date movement has preview plus rollback |
+| Completed | AI, then owner/Claude Design | P26-16 unified export scope and result | Keep selected scope, destination count, generated payload, and result receipt on one projection | Export count mismatch and duplicate rows are 0 |
+| Completed | AI, then owner/Claude Design | P26-17 execution component and copy system | Preserve shared execution primitives, tokens, and action labels without changing product ownership contracts | Shared summary/outline/row/receipt/editor/export primitives pass current command/browser evidence |
+| Completed | AI, then owner/Claude Design | P26-18 responsive execution workspace | Preserve mobile drill-in/sheets, wide task-focused panes, and explicit pending/error states | Overflow/overlap and keyboard blockers are 0 at 390x844 and 1024x768 |
+| Completed | AI, then owner/Claude Design | P26-19 six content-shape journey gate | Preserve six representative Flow shapes as one reproducible current command/browser harness | `7 / 7` representative and `15 / 15` migrated P24 regressions stay green; observed users remain 0 |
+| Active | AI, then owner/Claude Design | P26-20 final release gate | Publish the verified source candidate, merge/deploy, and verify canonical production | Exact E2E accounting and production smoke are green and release state is explicit |
 | Completed | AI + owner direction | P24-J0~J5 bounded implementation | Selected, implemented, merged, deployed, and production-checked the artifact-first frame | P24 remains a baseline, not the final UX |
 | Deferred | User, by explicit future decision | Observed sessions | Reopen only when the owner judges the P25 frame ready to show users | Recruitment begins; current count stays `0 / 15` until then |
 | Blocked | AI, after future human evidence | P24-00C synthesis and narrow correction | Classify keep/change/defer only after real session evidence exists | Findings are prioritized and any Blocking/High fix is re-observed |
@@ -121,7 +149,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Release the verified P25 baseline first. Then run the [P26-00 comprehension and density decision goal](./content-audit/2026-07-20-p25-final-closeout/next-goal-p26-ko.md) without changing runtime UI. It compares only the three deferred Medium hypotheses and selects one bounded P26-01 slice. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+P26-00C~19 and the P26-20 current-source release gates are complete as internal evidence. Continue with the remaining P26-20 external boundary: intentional commit/push, PR/merge, canonical Vercel production deployment, and mobile/wide production smoke. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

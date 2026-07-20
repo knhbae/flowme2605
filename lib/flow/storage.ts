@@ -15,6 +15,10 @@ import {
 } from './source-backed-my-flow';
 import { prepareFlowRunNewAnchor, type FlowRunFixedDatePolicy } from './flow-run-reuse';
 import {
+  normalizePublicDateIntentMode,
+  type PersistedPublicDateIntentMode,
+} from './public-date-intent';
+import {
   normalizeMyFlowExecutionNotes,
   upsertMyFlowExecutionNote,
   type MyFlowExecutionNote,
@@ -68,7 +72,9 @@ export type SavedFlowRecord = {
   slug: string;
   savedAt: string;
   selectedArtifactMode: SavedFlowArtifactMode;
+  dateIntent: PersistedPublicDateIntentMode;
   anchor?: string;
+  legacyExampleAnchor?: string;
   weekdays?: string[];
 };
 
@@ -318,6 +324,43 @@ export function saveStoredAnchor(slug: string, value: StoredAnchor): void {
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
 }
 
+export type LegacyPublicExampleDateIntentMigration = {
+  migrated: boolean;
+  preservedExampleAnchor?: string;
+  record?: SavedFlowRecord;
+};
+
+export function migrateLegacyPublicExampleDateIntent(slug: string): LegacyPublicExampleDateIntentMigration {
+  if (!canUseStorage()) return { migrated: false };
+  const storedAnchor = getStoredAnchor(slug);
+  if (storedAnchor.mode !== 'example') return { migrated: false, record: getSavedFlowRecord(slug) };
+
+  const record = getSavedFlowRecord(slug);
+  if (!record) {
+    localStorage.removeItem(`${ANCHOR_KEY_PREFIX}${slug}:anchorDate`);
+    return { migrated: true };
+  }
+
+  const preservedExampleAnchor = record.anchor ?? record.legacyExampleAnchor;
+  const migratedRecord: SavedFlowRecord = {
+    ...record,
+    dateIntent: 'undated',
+    ...(preservedExampleAnchor ? { legacyExampleAnchor: preservedExampleAnchor } : {}),
+  };
+  delete migratedRecord.anchor;
+  localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(migratedRecord));
+  localStorage.setItem(
+    `${ANCHOR_KEY_PREFIX}${slug}:anchorDate`,
+    JSON.stringify({ mode: 'undated', anchor: '' } satisfies StoredAnchor),
+  );
+
+  return {
+    migrated: true,
+    ...(preservedExampleAnchor ? { preservedExampleAnchor } : {}),
+    record: migratedRecord,
+  };
+}
+
 export function getItemStates(slug: string): Record<string, FlowItemState> {
   if (!canUseStorage()) return {};
   try {
@@ -353,6 +396,18 @@ export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | unde
   if (typeof record.slug !== 'string' || !record.slug.trim()) return undefined;
   if (typeof record.savedAt !== 'string' || !record.savedAt.trim()) return undefined;
   const anchor = typeof record.anchor === 'string' && record.anchor.trim() ? record.anchor : undefined;
+  const legacyExampleAnchor =
+    typeof record.legacyExampleAnchor === 'string' && record.legacyExampleAnchor.trim()
+      ? record.legacyExampleAnchor.trim()
+      : undefined;
+  const dateIntent: PersistedPublicDateIntentMode =
+    record.dateIntent === 'custom' && anchor
+      ? 'custom'
+      : record.dateIntent === 'undated'
+        ? 'undated'
+        : anchor
+          ? 'custom'
+          : 'undated';
   const weekdays = Array.isArray(record.weekdays)
     ? record.weekdays.filter((day): day is string => typeof day === 'string' && ['월', '화', '수', '목', '금', '토', '일'].includes(day))
     : undefined;
@@ -361,7 +416,9 @@ export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | unde
     slug: record.slug,
     savedAt: record.savedAt,
     selectedArtifactMode: isSavedFlowArtifactMode(record.selectedArtifactMode) ? record.selectedArtifactMode : 'calendar',
-    ...(anchor ? { anchor } : {}),
+    dateIntent,
+    ...(dateIntent === 'custom' && anchor ? { anchor } : {}),
+    ...(legacyExampleAnchor ? { legacyExampleAnchor } : {}),
     ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
   };
 }
@@ -375,15 +432,23 @@ export function getSavedFlowRecord(slug: string): SavedFlowRecord | undefined {
   }
 }
 
-export function saveFlowRecord(slug: string, value: Omit<SavedFlowRecord, 'slug' | 'savedAt'>): SavedFlowRecord | undefined {
+export function saveFlowRecord(
+  slug: string,
+  value: Omit<SavedFlowRecord, 'slug' | 'savedAt' | 'dateIntent'> & { dateIntent?: PersistedPublicDateIntentMode },
+): SavedFlowRecord | undefined {
   if (!canUseStorage()) return undefined;
   const previous = getSavedFlowRecord(slug);
   const weekdays = value.weekdays ?? previous?.weekdays;
+  const requestedAnchor = value.anchor?.trim();
+  const dateIntent: PersistedPublicDateIntentMode =
+    value.dateIntent === 'undated' ? 'undated' : requestedAnchor ? 'custom' : 'undated';
   const record: SavedFlowRecord = {
     slug,
     savedAt: new Date().toISOString(),
     selectedArtifactMode: value.selectedArtifactMode,
-    anchor: value.anchor,
+    dateIntent,
+    ...(dateIntent === 'custom' && requestedAnchor ? { anchor: requestedAnchor } : {}),
+    ...(value.legacyExampleAnchor ? { legacyExampleAnchor: value.legacyExampleAnchor } : {}),
     ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
   };
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
@@ -800,7 +865,7 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
       done > 0 ||
       skipped > 0 ||
       Boolean(storedAnchor.anchor) ||
-      storedAnchor.mode === 'example' ||
+      storedAnchor.mode === 'undated' ||
       storedAnchor.mode === 'undecided' ||
       Object.values(itemStates).some((state) => Boolean(state.note)) ||
       comparisonState.candidates.some((candidate) => candidate.name.trim()) ||
@@ -815,7 +880,7 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
         total,
         skipped,
         anchor: storedAnchor.anchor || savedRecord?.anchor,
-        anchorMode: storedAnchor.mode,
+        anchorMode: normalizePublicDateIntentMode(storedAnchor.mode),
         ...(savedRecord?.weekdays?.length ? { weekdays: savedRecord.weekdays } : {}),
         lastVisited: savedRecord?.savedAt ?? lastVisited,
       });
@@ -1426,6 +1491,7 @@ export function startFlowRunFromCompleted(
     slug: flowSlug,
     savedAt: startedAt,
     selectedArtifactMode,
+    dateIntent: anchor ? 'custom' : 'undated',
     ...(anchor ? { anchor } : {}),
   };
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${flowSlug}`, JSON.stringify(savedRecord));

@@ -64,10 +64,22 @@ export type UrlFirstSupplyCandidateAvailability = {
 export type UrlFirstDraftItemSuggestion = {
   id: string;
   sourceText: string;
+  sourceFragmentIds: string[];
+  sourceFragmentText: string;
   title: string;
   memo: string;
   dayOffset: number;
   needsReview: boolean;
+};
+
+type UrlFirstDraftSourceFragment = {
+  id: string;
+  text: string;
+};
+
+type UrlFirstDraftSegment = {
+  source: UrlFirstDraftSourceFragment;
+  text: string;
 };
 
 export const URL_FIRST_SUPPLY_CANDIDATE_PRODUCTION_CHECKLIST = [
@@ -83,7 +95,7 @@ function clean(value?: string): string {
 }
 
 function getMemoBasedCandidateTitle(value: string): string {
-  const firstThought = splitUserAuthoredDraftPhrases(value)[0] ?? clean(value);
+  const firstThought = splitDraftSourceFragments('memo', value)[0]?.text ?? clean(value);
   if (firstThought.length <= 60) return firstThought;
   return `${firstThought.slice(0, 57).trimEnd()}...`;
 }
@@ -110,35 +122,73 @@ function isDraftSystemStateCopy(value: string): boolean {
 }
 
 function isLikelyActionClause(value: string): boolean {
-  return /(?:한다|하기|해요|합니다|함|싶음|싶어요|확인|정리|비교|준비|선택|점검|기록|예약|연락|신청|구매|작성|제출|변경|이동|챙기기|남기기|보내기|보기)$/u.test(value.trim());
+  return /(?:한다|하기|해요|합니다|함|싶음|싶어요|확인|정리|비교|준비|선택|점검|체크|체크인|기록|예약|등록|연락|신청|구매|작성|제출|변경|이동|챙기기|남기기|보내기|보기)$/u.test(value.trim());
 }
 
-function expandUnambiguousActionList(value: string): string[] {
+function expandConservativeActionList(value: string): string[] {
   const parts = value
     .split(/\s*(?:,|，|그리고)\s*/u)
     .map((part) => part.trim())
     .filter(Boolean);
-  if (parts.length < 2 || !parts.every(isLikelyActionClause)) return [value];
+  if (parts.length < 2) return [value];
+  const actionCount = parts.filter(isLikelyActionClause).length;
+  const shouldSplit = parts.length === 2
+    ? actionCount === 2
+    : actionCount >= Math.max(2, Math.ceil(parts.length * 0.6));
+  if (!shouldSplit) return [value];
   return parts;
 }
 
-export function splitUserAuthoredDraftPhrases(value: string): string[] {
-  return value
-    .replace(/\r/gu, '\n')
-    .split(/\n+|[.!?;]+|\s*(?:→|->)\s*/u)
-    .map((line) => line.replace(/^\s*(?:[-*•·]|\d+[.)])\s*/u, '').replace(/\s+/gu, ' ').trim())
-    .filter((line) => line.length >= 2 && !isDraftSystemStateCopy(line))
-    .flatMap(expandUnambiguousActionList);
-}
-
-function createDraftSuggestionId(kind: 'memo' | 'url', sourceText: string): string {
+function hashDraftIdentity(value: string): string {
   let hash = 0x811c9dc5;
-  const input = `${kind}:${sourceText.normalize('NFC').toLocaleLowerCase('ko-KR')}`;
+  const input = value.normalize('NFC').toLocaleLowerCase('ko-KR');
   for (let index = 0; index < input.length; index += 1) {
     hash ^= input.charCodeAt(index);
     hash = Math.imul(hash, 0x01000193);
   }
-  return `${kind}-${(hash >>> 0).toString(36)}`;
+  return (hash >>> 0).toString(36);
+}
+
+function splitDraftSourceFragments(kind: 'memo' | 'url', value: string): UrlFirstDraftSourceFragment[] {
+  return value
+    .replace(/\r/gu, '\n')
+    .split(/\n+|[.!?;]+|\s*(?:→|->)\s*/u)
+    .map((line) => line
+      .replace(/^\s*(?:(?:[-*•·]\s*(?:\[[ xX]\])?)|(?:\d+[.)]))\s*/u, '')
+      .replace(/\s+/gu, ' ')
+      .trim())
+    .filter((line) => line.length >= 2 && !isDraftSystemStateCopy(line))
+    .map((text, index) => ({
+      id: `${kind}-fragment-${hashDraftIdentity(`${index}:${text}`)}`,
+      text,
+    }));
+}
+
+function isContextLead(fragment: string, nextSegments: string[]): boolean {
+  if (nextSegments.length < 3 || fragment.length > 60) return false;
+  return /(?:\d{1,2}월|이번|주말|여행|이사|결혼|시험|프로젝트|행사).*(?:준비|계획|일정)$/u.test(fragment);
+}
+
+function segmentUserAuthoredDraftInput(kind: 'memo' | 'url', value: string): UrlFirstDraftSegment[] {
+  const fragments = splitDraftSourceFragments(kind, value);
+  const expanded = fragments.map((fragment) => expandConservativeActionList(fragment.text));
+
+  return fragments.flatMap((fragment, index) => {
+    if (index === 0 && isContextLead(fragment.text, expanded[index + 1] ?? [])) return [];
+    return expanded[index].map((text) => ({ source: fragment, text }));
+  });
+}
+
+export function splitUserAuthoredDraftPhrases(value: string): string[] {
+  return segmentUserAuthoredDraftInput('memo', value).map((segment) => segment.text);
+}
+
+function createDraftSuggestionId(
+  kind: 'memo' | 'url' | 'review',
+  sourceFragmentIds: string[],
+  sourceText: string,
+): string {
+  return `${kind}-${hashDraftIdentity(`${sourceFragmentIds.join('|')}:${sourceText}`)}`;
 }
 
 function toUrlFirstDraftActionTitle(value: string): string {
@@ -152,30 +202,36 @@ function toUrlFirstDraftActionTitle(value: string): string {
     .replace(/한다$/u, '하기');
   if (!text) return '';
   if (/(?:기|하기|보기|두기|정하기|고르기|나누기|적기|챙기기|확인하기)$/u.test(text)) return text;
-  if (/(?:확인|정리|비교|준비|선택|점검|기록|실행|완료)$/u.test(text)) return `${text}하기`;
+  if (/(?:확인|정리|비교|준비|선택|점검|체크|체크인|기록|예약|등록|연락|신청|구매|작성|제출|변경|이동|실행|완료)$/u.test(text)) return `${text}하기`;
   return `${text} 정리하기`;
 }
 
 export function buildUrlFirstDraftItemSuggestions(candidate: UrlFirstSupplyCandidate): UrlFirstDraftItemSuggestion[] {
   const suggestions: Omit<UrlFirstDraftItemSuggestion, 'dayOffset'>[] = [];
   const seen = new Set<string>();
-  const addSuggestion = (sourceText: string) => {
-    const normalizedSourceText = clean(sourceText);
+  const addSuggestion = (segment: UrlFirstDraftSegment) => {
+    const normalizedSourceText = clean(segment.text);
     const normalizedTitle = toUrlFirstDraftActionTitle(normalizedSourceText);
     if (!normalizedTitle || seen.has(normalizedTitle) || suggestions.length >= 7) return;
     seen.add(normalizedTitle);
     suggestions.push({
-      id: createDraftSuggestionId('url', normalizedSourceText),
+      id: createDraftSuggestionId('url', [segment.source.id], normalizedSourceText),
       sourceText: normalizedSourceText,
+      sourceFragmentIds: [segment.source.id],
+      sourceFragmentText: segment.source.text,
       title: normalizedTitle,
       memo: '',
       needsReview: true,
     });
   };
 
-  const memoPhrases = splitUserAuthoredDraftPhrases(candidate.memo).slice(0, 7);
-  if (memoPhrases.length > 0) memoPhrases.forEach(addSuggestion);
-  else if (!isDraftSystemStateCopy(candidate.title)) addSuggestion(getUrlFirstDraftTopic(candidate));
+  const memoSegments = segmentUserAuthoredDraftInput('url', candidate.memo).slice(0, 7);
+  if (memoSegments.length > 0) memoSegments.forEach(addSuggestion);
+  else if (!isDraftSystemStateCopy(candidate.title)) {
+    const topic = getUrlFirstDraftTopic(candidate);
+    const fragment = splitDraftSourceFragments('url', topic)[0];
+    if (fragment) addSuggestion({ source: fragment, text: fragment.text });
+  }
 
   return suggestions.map((suggestion, dayOffset) => ({ ...suggestion, dayOffset }));
 }
@@ -183,23 +239,60 @@ export function buildUrlFirstDraftItemSuggestions(candidate: UrlFirstSupplyCandi
 export function buildMemoDraftItemSuggestions(input: string): UrlFirstDraftItemSuggestion[] {
   const suggestions: Omit<UrlFirstDraftItemSuggestion, 'dayOffset'>[] = [];
   const seen = new Set<string>();
-  const addSuggestion = (sourceText: string) => {
-    const normalizedSourceText = clean(sourceText);
+  const addSuggestion = (segment: UrlFirstDraftSegment) => {
+    const normalizedSourceText = clean(segment.text);
     const normalizedTitle = toUrlFirstDraftActionTitle(normalizedSourceText);
     if (!normalizedTitle || seen.has(normalizedTitle) || suggestions.length >= 7) return;
     seen.add(normalizedTitle);
     suggestions.push({
-      id: createDraftSuggestionId('memo', normalizedSourceText),
+      id: createDraftSuggestionId('memo', [segment.source.id], normalizedSourceText),
       sourceText: normalizedSourceText,
+      sourceFragmentIds: [segment.source.id],
+      sourceFragmentText: segment.source.text,
       title: normalizedTitle,
       memo: '',
       needsReview: false,
     });
   };
 
-  splitUserAuthoredDraftPhrases(input).slice(0, 7).forEach(addSuggestion);
+  segmentUserAuthoredDraftInput('memo', input).slice(0, 7).forEach(addSuggestion);
 
   return suggestions.map((suggestion, dayOffset) => ({ ...suggestion, dayOffset }));
+}
+
+export function splitDraftItemSuggestion(
+  item: UrlFirstDraftItemSuggestion,
+  values: string[],
+): UrlFirstDraftItemSuggestion[] {
+  const titles = values.map(clean).filter(Boolean);
+  if (titles.length < 2) return [item];
+  return titles.map((sourceText, index) => ({
+    ...item,
+    id: createDraftSuggestionId('review', item.sourceFragmentIds, `${item.id}:${index}:${sourceText}`),
+    sourceText,
+    title: toUrlFirstDraftActionTitle(sourceText),
+    dayOffset: item.dayOffset + index,
+  }));
+}
+
+export function mergeDraftItemSuggestions(
+  first: UrlFirstDraftItemSuggestion,
+  second: UrlFirstDraftItemSuggestion,
+): UrlFirstDraftItemSuggestion {
+  const sourceFragmentIds = [...new Set([...first.sourceFragmentIds, ...second.sourceFragmentIds])];
+  const sourceFragmentText = [...new Set([first.sourceFragmentText, second.sourceFragmentText].filter(Boolean))].join('\n');
+  const sourceText = `${first.sourceText} 그리고 ${second.sourceText}`;
+  return {
+    ...first,
+    id: createDraftSuggestionId('review', sourceFragmentIds, `${first.id}:${second.id}`),
+    sourceText,
+    sourceFragmentIds,
+    sourceFragmentText,
+    title: `${first.title.replace(/하기$/u, '').trim()} · ${second.title}`,
+    memo: [first.memo.trim(), second.memo.trim()].filter(Boolean).join('\n'),
+    needsReview: first.needsReview || second.needsReview,
+    dayOffset: Math.min(first.dayOffset, second.dayOffset),
+  };
 }
 
 function getCandidateStatus(result: UrlFirstLookupResult): UrlFirstSupplyCandidateStatus | undefined {

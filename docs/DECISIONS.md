@@ -35,6 +35,54 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-20 - P26 uses one canonical item identity across personal projections
+
+**Decision:** Use `flowId::itemId` as the stable personal item key across My Flow, Today, Calendar, export scope, and list destinations. Keep execution run and recurrence occurrence keys separate from item identity. Personal title, memo, and date values use one stable `draft-overlay` key. Legacy date-suffixed personal-draft keys migrate once through a versioned manifest that preserves old values, leaves malformed storage untouched, isolates unrelated Flows, and rolls back all writes on failure. Apply this migration only to eligible personal drafts, never to source-backed/published Flow records.
+
+**Reason:** Consumer-specific key assembly and date-suffixed legacy keys could let one item appear as different rows after date edits, reload, completion, Calendar placement, or export scope changes. A shared identity contract closes this correctness gate before P26 changes discovery, post-save, Calendar, and export composition.
+
+**Applies to:** personal structural projection, personal value overlay, batch selection, Calendar undated placement, My Flow/Today/Calendar rows, recurrence occurrences, Flow/selected/item export scope, localStorage migration, and P26 regression evidence.
+
+**Reopen when:** account-backed persistence introduces a server-issued immutable item ID, a source publisher changes stable source item IDs across versions, or provider synchronization requires a different event migration contract. UI restructuring alone does not reopen it.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-05 projection identity evidence](./content-audit/2026-07-20-p26-05-projection-identity-evidence/README.md)
+
+### 2026-07-20 - P26 uses one user-facing Flow object and dual start/adjust paths
+
+**Decision:** Present one user-facing `Flow` object across Home, Flow finding, save-before, post-save, My Flow, Calendar, and export. Keep `Flow Map` as an internal source-bundle or aggregate concept rather than a separate user card and save grammar. Discovery cards use the order `concrete job -> verified source -> representative artifact -> required input -> result shape`; undefined popularity, validation counts, ratings, and stage reviews stay hidden. Save-before offers `그대로 시작` and `내게 맞게 조정` over the same effective artifact. Whole-Flow bodies adapt to timeline, checklist, routine, project, record, and personal-draft shapes while preserving one shell. Calendar remains date-first with an explicit Flow filter and an on-demand undated placement tray. Personal editing uses quick, advanced, structure, and batch modes rather than one always-expanded form.
+
+**Reason:** Current production and owner feedback show that long promise copy, separate Flow/Flow Map card patterns, generic whole-Flow rows, and an always-dense Calendar/editor make existing capabilities hard to predict. The P26-00C prototype reduced the representative public save frame from `63` to `12` visible text blocks and from `16` to `8` actions while preserving the whole artifact and two intentional start depths. This is an internal design/implementation decision, not observed-user proof.
+
+**Applies to:** P26 program, Home, `/flows`, public save-before, post-save receipt, My Flow whole-Flow workspace, Calendar filtering and placement, personal adjustment, export scope, discovery metrics, wedding Flow entries, and shared component contracts.
+
+**Reopen when:** current-browser implementation cannot preserve source/personal/run/occurrence ownership, representative content shapes require a different primary object, verified observed users consistently fail the dual path or adaptive grouping, or a real popularity/review aggregation contract is introduced.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-00C decision package](./content-audit/2026-07-20-p26-00c-product-object-journey-decision/README.md)
+
+### 2026-07-20 - Repeating definitions stay in Flow settings and occurrences own execution
+
+**Decision:** A routine's base rows are a `반복 설정` definition in whole-Flow context and never a date-free task or a second completion target. Opening that definition keeps the user in series settings; it no longer substitutes the next occurrence. Today and Calendar project concrete occurrences, each with one reversible completion control and occurrence-scoped skipped/held state. Public export, My Flow whole-Flow export, and current-item export use one canonical series identity, UID, and RRULE. Export preview reports recurring series count separately from occurrences visible in the current range. The existing four-week promise for metadata-tagged `exact-video` + `schedule-user-choice` routines bounds both Calendar and ICS.
+
+**Reason:** The prior published-routine shortcut opened an occurrence from a definition row, allowed series definitions to look like undated work, and let public versus saved exports disagree about UID and recurrence. Separating settings from execution restores one control per executable occurrence and one portable series contract. This supersedes the 2026-07-19 allowance that a published definition may drill directly into its next occurrence.
+
+**Applies to:** My Flow whole-Flow routine definitions, Today, Calendar grid/agenda, Calendar undated placement, public and saved routine ICS, export preview counts, exact-video four-week routines, occurrence completion/reopen/skip/hold, and P26-03 regression tests.
+
+**Reopen when:** a verified content model needs multiple independent recurrence series in one Flow, observed users consistently expect whole-Flow configuration rows to execute the next occurrence directly, or provider synchronization requires a different stable UID migration.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-03 recurrence evidence](./content-audit/2026-07-20-p26-03-recurrence-series-occurrence-evidence/README.md)
+
+### 2026-07-20 - Memo intake preserves source fragments and lets users repair boundaries before save
+
+**Decision:** Memo and URL-miss intake may deterministically split user-authored text at bounded Korean list boundaries, but it must not generate missing actions or rewrite meaning. Each source fragment and suggested item gets a stable deterministic ID. One fragment may support multiple items; manual split, merge, exclusion, rename, and reorder happen before save and preserve fragment ownership. Ambiguous object lists stay together until the user explicitly splits them. The review UI shows each source fragment once, with its result items beside or below it.
+
+**Reason:** A single unfamiliar clause previously collapsed an entire comma list into one long task, while showing source text per item would replace the parsing error with copy density. Stable fragment-to-item ownership makes the saved result inspectable without inventing content and prepares the P26-05 projection identity gate.
+
+**Applies to:** `/flows` memo intake, URL-miss draft review, personal draft item creation, pre-save include/split/merge/reorder, saved item detail mapping, receipt counts, and list export order.
+
+**Reopen when:** observed users need semantic suggestions rather than deterministic boundaries, multilingual intake becomes a release requirement, or a real AI provider passes the separate proposal/review/privacy/cost gate.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-04 memo evidence](./content-audit/2026-07-20-p26-04-memo-segmentation-evidence/README.md)
+
 ### 2026-07-20 - Option B is the released P25 internal production baseline
 
 **Decision:** Keep the P25 Option B whole-Flow workspace contract across save-before, post-save, My Flow, whole Flow, Calendar, item adjustment, batch adjustment, completion/reopen, and export. Treat the owner's instruction to complete P25 and permit substantial changes as implementation authorization. Treat P25-08 current command/browser evidence with unresolved automated Blocking/High `0` as the internal integration gate. Foundation PR #136 and hydration hotfix PR #137 are the released production baseline at `b0fb899c`. Defer only public copy density, 1024px Calendar density, and advanced-editor path length to P26-00 comparison work.
