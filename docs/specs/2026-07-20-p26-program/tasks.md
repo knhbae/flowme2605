@@ -31,8 +31,9 @@
 - [x] P26-01 override/reuse regression
 - [x] P26-02 canonical save receipt
 - [x] P26-02 route parity and hydration
-- [ ] P26-03 series/occurrence projection
-- [ ] P26-03 completion/reopen/skip/hold
+- [x] P26-03 series/occurrence projection
+- [x] P26-03 completion/reopen/skip/hold
+- [x] P26-03 public/My Flow UID·RRULE parity and series-definition tray exclusion
 - [ ] P26-04 memo segmentation and empty guard
 - [ ] P26-05 projection identity harness
 
@@ -67,6 +68,7 @@
 ## P26-17~18 Integration
 
 - [ ] visual token audit
+- [ ] `2026-07-19-flow-content-usage-preview-ko.html`의 source rail / compact row / destination preview 패턴을 current product primitive와 비교
 - [ ] shared card/row/editor/receipt/export primitives
 - [ ] copy budget and internal-term scan
 - [ ] mobile 390 composition

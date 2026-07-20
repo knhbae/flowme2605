@@ -21,6 +21,7 @@ P26은 P25를 폐기하는 전면 재작성도, 색과 간격만 바꾸는 polis
 | P25 production/source | 현재 route, state, projection, component 계약 | `current_production_interaction`, `current_source` | 각 slice 시작 시 재검증 필요 |
 | P25/P26 구조화 audit | 날짜·반복·receipt·projection·journey 위험 | `current_package_screenshot`, `heuristic_simulation` | 실제 사용자 증거 아님 |
 | Claude Design (9) | progressive editor, undo, undated tray, export scope, occurrence control, 단계 메모 | `prior_design_artifact` | 목업 제안이며 구현 정답 아님 |
+| `2026-07-19-flow-content-usage-preview-ko.html` | source rail, compact item, destination preview, 날짜 없는 이유·결과 수 표현 | `prior_design_artifact` | original dirty worktree의 로컬 artifact이며 current app evidence 아님 |
 | 캘린더·todo·project 도구 패턴 | filter, inbox, quick edit, project receipt, batch move | `reference_pattern` | 외형 복제 금지 |
 
 ## 제품 객체 결정
@@ -172,6 +173,30 @@ My Flow의 same-date 묶음은 한 Flow 안에서만 적용한다. 서로 다른
 - preview count와 실제 output count는 일치해야 한다.
 - undated item은 list export에는 포함하고 Calendar/ICS에서는 제외한다.
 - internal term이나 raw schema label을 노출하지 않는다.
+
+## 반복 series / occurrence 계약
+
+- My Flow 전체는 반복 정의를 `반복 설정`으로 보여주고 definition completion control을 만들지 않는다.
+- Today와 Calendar는 projected occurrence만 실행하며 회차당 완료 체크박스 하나를 사용한다.
+- Flow 전체에서 반복 정의를 열면 series 설정을 열고, 다음 occurrence로 대신 이동하지 않는다.
+- series definition은 Calendar `날짜 정하기` tray에 들어가지 않는다.
+- public, My Flow 전체, 현재 항목 export는 같은 canonical series ID, UID, RRULE을 사용한다.
+- export preview는 `반복 일정 N개`와 현재 visible range의 `표시 회차 N개`를 분리한다.
+- exact-video + schedule-user-choice metadata의 4주 preview는 Calendar와 ICS의 같은 종료 경계를 사용한다.
+- done, reopened, skipped, held는 occurrence execution run에 남고 series membership과 identity를 바꾸지 않는다.
+
+관련 evidence: [P26-03 recurrence evidence](../../content-audit/2026-07-20-p26-03-recurrence-series-occurrence-evidence/README.md)
+
+## 후속 시각 참조 원칙
+
+`2026-07-19-flow-content-usage-preview-ko.html`에서 재사용할 것은 구성 원리다.
+
+- source 선택 rail 또는 compact source identity
+- timing, title, 짧은 요약을 우선한 실행 item row
+- Calendar/checklist/sheet/memo 결과를 같은 effective item으로 비교하는 destination preview
+- 날짜 없음·제외 이유와 결과 개수를 destination 수준에서 짧게 보여주는 방식
+
+긴 intro, 사용법 설명, 내부 검토 상태, source audit 문구는 production 화면에 복제하지 않는다. P26-06/07/10/16/17은 이 원칙을 current source와 current browser evidence에 맞게 재구성한다.
 
 ## P26 실행 단계
 

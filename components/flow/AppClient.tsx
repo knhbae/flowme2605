@@ -3596,13 +3596,23 @@ function getMyFlowFlowProgressLabel(flow: MySavedFlow): string {
 
 function getMyFlowRoutineExecutionLabel(row: MyFlowCalendarRow): string {
   if (!row.structuralOccurrenceId) {
-    return `반복 항목 ${row.flow.done}/${row.flow.total}`;
+    return '반복 설정';
   }
   if (row.structuralOccurrenceExecutionState === 'done') return '이번 회차 완료';
   if (row.structuralOccurrenceExecutionState === 'reopened') return '이번 회차 다시 진행';
   if (row.structuralOccurrenceExecutionState === 'skipped') return '이번 회차 건너뜀';
   if (row.structuralOccurrenceExecutionState === 'held') return '이번 회차 보류';
   return '이번 회차 대기';
+}
+
+function isMyFlowRecurringSeriesDefinitionRow(
+  flow: MySavedFlow,
+  row: MyFlowRow,
+): boolean {
+  return Boolean(
+    !row.structuralOccurrenceId &&
+    (row.structuralRepeat || flow.bundle.flow.structure_type === 'routine'),
+  );
 }
 
 function getMyFlowSourceHref(flow: MySavedFlow): string {
@@ -5398,6 +5408,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       addDays(new Date(`${occurrenceProjectionTodayDate}T00:00:00`), 7),
     ),
   };
+  const buildMyFlowCanonicalRoutineProjection = (
+    flow: MySavedFlow,
+    range = occurrenceVisibleRange,
+  ) => {
+    if (flow.bundle.flow.structure_type !== 'routine' || !flow.anchor) return undefined;
+    const anchor = flow.anchor;
+    return buildEffectiveRoutineProjection({
+      bundle: flow.bundle,
+      identityNamespace: flow.bundle.flow.slug,
+      rows: flow.rows.map((row) => ({
+        ...row,
+        date: row.date ?? anchor,
+      })),
+      startDate: anchor,
+      selectedWeekdays: getMyFlowRoutineWeekdays(flow),
+      endDate: myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate,
+      range,
+    });
+  };
   const baseCalendarRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) => {
     const baseRows = flow.projectionRows ?? flow.rows;
     const occurrenceExecutionRecords = getFlowOccurrenceExecutionRecords(
@@ -5447,7 +5476,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           }];
         }));
         return expandSavedRoutineOccurrenceRows({
-          identityNamespace: flow.progress.slug,
+          identityNamespace:
+            flow.bundle.flow.structure_type === 'routine'
+              ? flow.bundle.flow.slug
+              : flow.progress.slug,
           rows: personalDraftOccurrenceRows,
           definitions,
           range,
@@ -5528,10 +5560,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return [occurrenceVisibleRange, occurrenceExecutionRange]
       .flatMap((range) => buildEffectiveRoutineProjection({
         bundle: flow.bundle,
-        identityNamespace: flow.progress.slug,
+        identityNamespace: flow.bundle.flow.slug,
         rows: [{ ...carrierRow, date: flow.anchor }],
         startDate: flow.anchor,
         selectedWeekdays: routineWeekdays,
+        endDate: myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate,
         range,
         executionRecords,
         resolveOccurrenceDate: ({ itemId, originalDate }) => {
@@ -5605,7 +5638,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const allCalendarUnscheduledRows: MyFlowCalendarRow[] = isMyFlowScenarioDemo ? [] : visibleExecutionFlows
     .flatMap((flow) =>
       flow.rows.flatMap((row) => {
-        if (row.structuralOccurrenceId || isMyFlowRowChecked(flow, row)) return [];
+        if (
+          isMyFlowRecurringSeriesDefinitionRow(flow, row) ||
+          isMyFlowRowChecked(flow, row)
+        ) return [];
         const dateResolution = resolveSavedFlowRowDate(flow, row);
         const effectiveDate = row.structuralScheduleProjection?.calendarDate ?? dateResolution.date;
         if (effectiveDate) return [];
@@ -8198,6 +8234,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const sourceLabel = toUserFacingSourceTitle(flow.bundle.flow.source_title ?? '');
     const sourceUrl = flow.bundle.flow.source_url;
     const sourceRef = [sourceLabel, sourceUrl].filter(Boolean).join(' ');
+    const routineProjection = buildMyFlowCanonicalRoutineProjection(flow);
+    const routineOccurrenceCountBySeriesId = new Map<string, number>();
+    routineProjection?.rows.forEach((row) => {
+      if (!row.structuralOccurrenceSeriesId || !row.structuralOccurrenceId) return;
+      routineOccurrenceCountBySeriesId.set(
+        row.structuralOccurrenceSeriesId,
+        (routineOccurrenceCountBySeriesId.get(row.structuralOccurrenceSeriesId) ?? 0) + 1,
+      );
+    });
 
     return flow.rows.map((baseRow, index) => {
       const row = getMyFlowRowForFlowTab(flow, baseRow);
@@ -8207,7 +8252,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const primaryLink = detail.links?.[0];
       const stableItemId = row.structuralProjectionStableId ?? baseStateId(row.id);
       const key = `${flow.progress.slug}::${stableItemId}`;
-      const date = row.date ?? '';
+      const routineSeries =
+        routineProjection?.seriesByItemId[row.id] ??
+        routineProjection?.seriesByItemId[baseStateId(row.id)];
+      const date = row.date ?? routineSeries?.revisions[0]?.effectiveFrom ?? '';
       const time = row.structuralScheduleProjection?.startTime ?? committedDraft.time ?? '';
       const durationMinutes = time
         ? row.structuralScheduleProjection?.durationMinutes ?? committedDraft.durationMinutes
@@ -8224,7 +8272,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             : isMyFlowRowChecked(flow, row)
               ? 'done'
               : 'pending';
-      const calendarEligible = Boolean(date) && (row.structuralCalendarIcsEligible ?? true);
+      const calendarEligible = flow.bundle.flow.structure_type === 'routine'
+        ? Boolean(date && routineSeries)
+        : Boolean(date) && (row.structuralCalendarIcsEligible ?? true);
       const scheduleState: PersonalStructuralListExportRow['scheduleState'] = !date
         ? 'unscheduled'
         : time
@@ -8242,10 +8292,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ...(time && row.structuralScheduleProjection?.timeZone
           ? { timeZone: row.structuralScheduleProjection.timeZone }
           : {}),
-        ...(row.structuralRepeat
+        ...(routineSeries || row.structuralRepeat
           ? {
-              personalRecurrence: row.structuralRepeat,
-              personalRecurrenceIdentityNamespace: flow.progress.slug,
+              personalRecurrence: routineSeries ?? row.structuralRepeat,
+              personalRecurrenceIdentityNamespace:
+                routineSeries ? flow.bundle.flow.slug : flow.progress.slug,
             }
           : { repeatPreset: committedDraft.repeatPreset ?? '' }),
         ...(committedDraft.location ? { location: committedDraft.location } : {}),
@@ -8271,6 +8322,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           calendarEligible,
           status,
           meta: scheduleMeta,
+          ...(routineSeries
+            ? {
+                calendarSeriesId: routineSeries.seriesId,
+                calendarVisibleOccurrenceCount:
+                  routineOccurrenceCountBySeriesId.get(routineSeries.seriesId) ?? 0,
+              }
+            : {}),
         },
         listRow: {
           itemId: key,
@@ -8346,21 +8404,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const openMyFlowRowFromFlowTab = (flow: MySavedFlow, row: MyFlowRow) => {
-    if (flow.bundle.flow.structure_type === 'routine') {
-      const routineRow =
-        calendarRows.find((candidate) => candidate.flow.progress.slug === flow.progress.slug && candidate.id === row.id && !isMyFlowRowChecked(candidate.flow, candidate)) ??
-        calendarRows.find((candidate) => candidate.flow.progress.slug === flow.progress.slug && candidate.id === row.id);
-      if (routineRow) {
-        if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(routineRow)) {
-          resetMyFlowRowDetailState();
-          return;
-        }
-        setMyFlowExpandedStructureSlug(flow.progress.slug);
-        setSavedView('flow');
-        openMyFlowRowDetail(routineRow, 'flow');
-        return;
-      }
-    }
     const flowRow = getMyFlowRowForFlowTab(flow, row);
     if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(flowRow)) {
       resetMyFlowRowDetailState();
@@ -8836,6 +8879,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           data-row-key={routineDragKey}
           data-occurrence-id={row.structuralOccurrenceId}
           data-occurrence-state={row.structuralOccurrenceExecutionState}
+          data-execution-level={isSeriesDefinition ? 'series' : row.structuralOccurrenceId ? 'occurrence' : 'item'}
           data-structural-order-rank={row.structuralProjectionOrderRank}
           data-item-type={row.itemType?.primary ?? 'check_task'}
           data-routine-key={isRoutineExecution ? routineDragKey : undefined}
@@ -8937,6 +8981,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-row-key={routineDragKey}
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
+        data-execution-level={isSeriesDefinition ? 'series' : row.structuralOccurrenceId ? 'occurrence' : 'item'}
         data-structural-order-rank={row.structuralProjectionOrderRank}
         data-item-type={row.itemType?.primary ?? 'check_task'}
         data-routine-key={isRoutineExecution ? routineDragKey : undefined}
@@ -9602,11 +9647,20 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const portableExportStableStepId = row.structuralProjectionStableId
       ? `${row.flow.progress.slug}::${row.structuralProjectionStableId}`
       : portableExportKey;
-    const portableRecurrence = row.structuralRepeat && (
+    const canonicalRoutineProjection = isRoutineRow
+      ? buildMyFlowCanonicalRoutineProjection(row.flow)
+      : undefined;
+    const canonicalRoutineSeries =
+      canonicalRoutineProjection?.seriesByItemId[row.id] ??
+      canonicalRoutineProjection?.seriesByItemId[baseStateId(row.id)];
+    const rowRecurrence = row.structuralRepeat && (
       isPersonalDraftUserItem || row.structuralOccurrenceOrigin === 'saved_routine'
     )
       ? row.structuralRepeat
       : undefined;
+    const portableRecurrence = rowRecurrence ?? canonicalRoutineSeries;
+    const portableExportDate =
+      editorDraft.date || canonicalRoutineSeries?.revisions[0]?.effectiveFrom || '';
     const isDetailEditing = !isDrawerMode && myFlowEditingDetailKey === portableExportKey;
     const showEditableDetailFields = isDrawerMode || isDetailEditing;
     const portableExportInput: MyFlowPortableStepExportInput = {
@@ -9614,7 +9668,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       stepId: portableExportStableStepId,
       stepTitle: editorDraft.title,
       sectionTitle: visibleDetailSection,
-      date: editorDraft.date,
+      date: portableExportDate,
       time: editorDraft.time,
       ...(isPersonalDraftUserItem
         ? {
@@ -9632,7 +9686,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ...(portableRecurrence
         ? {
             personalRecurrence: portableRecurrence,
-            personalRecurrenceIdentityNamespace: row.flow.progress.slug,
+            personalRecurrenceIdentityNamespace:
+              canonicalRoutineSeries
+                ? row.flow.bundle.flow.slug
+                : row.flow.progress.slug,
           }
         : {}),
       location: editorDraft.location,
@@ -12466,7 +12523,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const structureLabel = flow.savedMap
       ? toUserFacingMapTitle(flow.savedMap.title)
       : flow.bundle.flow.structure_type === 'routine'
-        ? `반복 항목 ${flow.total}개`
+        ? `반복 설정 · ${flow.total}개 항목`
         : flow.rows.some((row) => Boolean(row.date))
           ? `날짜 항목 ${flow.total}개`
           : `체크 항목 ${flow.total}개`;
@@ -12586,7 +12643,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
         {executionReady && flowExpanded && stepRows.length > 0 ? (
           <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
-            <p className="text-xs font-semibold text-slate-500">전체 Flow · {stepRows.length}개</p>
+            <p className="text-xs font-semibold text-slate-500">
+              {flow.bundle.flow.structure_type === 'routine' ? '반복 설정' : '전체 Flow'} · {stepRows.length}개
+            </p>
             <button
               type="button"
               data-testid="my-flow-batch-mode-toggle"
@@ -12612,6 +12671,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <div
                   key={`step-${flow.progress.slug}-${stepRow.id}-${stepRow.date ?? index}`}
                   data-testid={structuralEditEligible ? 'personal-draft-effective-item' : undefined}
+                  data-execution-level={stepIsSeriesDefinition ? 'series' : 'item'}
                   data-item-id={structuralEditEligible ? stepRow.id : undefined}
                   data-structural-ownership={structuralEditEligible ? stepRow.structuralOwnership : undefined}
                   className="rounded-md bg-white ring-1 ring-blue-100"
@@ -12637,7 +12697,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     >
                       <span className="flex items-start justify-between gap-2">
                         <span className="min-w-0">
-                          <span className="block text-[11px] font-semibold text-slate-500">단계 {index + 1}</span>
+                          <span className="block text-[11px] font-semibold text-slate-500">
+                            {stepIsSeriesDefinition ? '구성' : '단계'} {index + 1}
+                          </span>
                           <span className={`mt-0.5 block text-sm font-semibold ${stepChecked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
                             {getMyFlowRowDisplayTitle(stepRow)}
                           </span>

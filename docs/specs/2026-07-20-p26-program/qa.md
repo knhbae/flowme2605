@@ -74,6 +74,18 @@
 - reload 후 handoff, receipt title, total/dated/undated count가 유지된다.
 - public/Flow Map/URL-first/memo draft의 390/1024 horizontal overflow와 console/page error count `0`.
 
+### P26-03 Recurrence Series And Occurrence
+
+- My Flow whole-Flow series definition label은 `반복 설정`이고 completion control count는 `0`이다.
+- Today/Calendar occurrence completion control count는 회차당 `1`이다.
+- series definition의 Calendar undated-tray visible count는 `0`이다.
+- 같은 source routine의 public/My Flow UID mismatch와 RRULE mismatch는 `0`이다.
+- My Flow whole-Flow Calendar export count는 canonical series 수이고 visible occurrence count와 별도로 표시한다.
+- occurrence done -> reopened -> reload 후 occurrence ID와 state mismatch count는 `0`이다.
+- skipped, held, deleted, tombstoned는 서로 다른 상태로 남는다.
+- exact-video 4주 preview의 Calendar/ICS end-boundary mismatch count는 `0`이다.
+- recurrence duplicate occurrence count와 source mutation count는 `0`이다.
+
 ## UX assertions
 
 - Flow/Flow Map user-facing card pattern count `1`.

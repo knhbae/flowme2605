@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FlowMe//Personal Calendar Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:saved-routine-j36h7x@flowme.local
+DTSTAMP:20260720T060112Z
+DTSTART;VALUE=DATE:20260720
+DTEND;VALUE=DATE:20260721
+RRULE:FREQ=MONTHLY;BYMONTHDAY=20
+SUMMARY:세탁기 통세척 월간 관리 Flow
+DESCRIPTION:월 1회 통세척\, 고무패킹\, 세제통\, 배수필터를
+  한 번에 확인하는 가벼운 세탁기 관리 루틴입니다.\n통
+ 세척 코스 돌리고 문 열어 건조하기\n세탁물 없이 내 모
+ 델 설명서의 통세척/통살균 코스를 실행한 뒤 문을 열어
+  내부 물기를 말립니다. 세제나 클리너는 설명서에서 허
+ 용한 종류와 양만 사용합니다.\n통세척 코스가 끝났고
+  세탁기 문을 열어 내부 건조 상태로 두었습니다.\n원문:
+  https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%E
+ C%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C
+URL:https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8
+ %EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9
+ C
+END:VEVENT
+END:VCALENDAR

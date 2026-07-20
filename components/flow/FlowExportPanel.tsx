@@ -18,6 +18,8 @@ import {
 
 export type FlowExportPanelItem = FlowExportScopeItem & {
   meta?: string;
+  calendarSeriesId?: string;
+  calendarVisibleOccurrenceCount?: number;
 };
 
 type FlowExportPanelProps = {
@@ -71,6 +73,29 @@ export function FlowExportPanel({
   );
   const selectedCount = selectedPlan.includedCount;
   const scopeLabel = scope === 'flow' ? 'Flow 전체' : '직접 선택';
+  const calendarItemKeys = new Set(
+    plan.itemsByDestination.calendar.map((item) => item.key),
+  );
+  const calendarSeriesItems = items.filter(
+    (item) => calendarItemKeys.has(item.key) && item.calendarSeriesId,
+  );
+  const calendarSeriesCount = new Set(
+    calendarSeriesItems.map((item) => item.calendarSeriesId),
+  ).size;
+  const calendarOccurrenceCountBySeries = new Map<string, number>();
+  calendarSeriesItems.forEach((item) => {
+    if (!item.calendarSeriesId) return;
+    calendarOccurrenceCountBySeries.set(
+      item.calendarSeriesId,
+      Math.max(
+        calendarOccurrenceCountBySeries.get(item.calendarSeriesId) ?? 0,
+        item.calendarVisibleOccurrenceCount ?? 0,
+      ),
+    );
+  });
+  const calendarVisibleOccurrenceCount = Array.from(
+    calendarOccurrenceCountBySeries.values(),
+  ).reduce((count, value) => count + value, 0);
 
   return (
     <section
@@ -164,8 +189,10 @@ export function FlowExportPanel({
             <p data-testid="my-flow-export-scope-summary" className="text-sm font-semibold text-[#1B1A17]">
               {scopeLabel} · {plan.includedCount}개
             </p>
-            <p className="text-xs font-semibold text-[#6E6B64]">
-              캘린더 {plan.countByDestination.calendar}개
+            <p data-testid="my-flow-export-calendar-summary" className="text-xs font-semibold text-[#6E6B64]">
+              {calendarSeriesCount > 0
+                ? `반복 일정 ${calendarSeriesCount}개 · 표시 회차 ${calendarVisibleOccurrenceCount}개`
+                : `캘린더 ${plan.countByDestination.calendar}개`}
             </p>
           </div>
 

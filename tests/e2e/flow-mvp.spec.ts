@@ -6965,7 +6965,10 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
 
 test('monthly maintenance routine keeps preview, Calendar, completion, and ICS on one source cadence', async ({ page }) => {
   test.setTimeout(90_000);
-  const evidenceDir = process.env.FLOWME_P25_05A_EVIDENCE_DIR ?? process.env.FLOWME_P25_CANONICAL_PROJECTION_EVIDENCE_DIR;
+  const evidenceDir =
+    process.env.FLOWME_P26_03_EVIDENCE_DIR ??
+    process.env.FLOWME_P25_05A_EVIDENCE_DIR ??
+    process.env.FLOWME_P25_CANONICAL_PROJECTION_EVIDENCE_DIR;
   const consoleErrors: string[] = [];
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
@@ -6991,6 +6994,22 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
     await preview.screenshot({ path: `${evidenceDir}/screenshots/01-washer-monthly-preview-mobile.png` });
   }
 
+  const publicExport = page.getByTestId('public-flow-export-secondary-entry');
+  await publicExport.getByTestId('public-flow-export-secondary-toggle').click();
+  const publicDownloadPromise = page.waitForEvent('download');
+  await publicExport.getByRole('button', { name: /캘린더 파일 받기/ }).click();
+  const publicDownload = await publicDownloadPromise;
+  const publicDownloadPath = await publicDownload.path();
+  expect(publicDownloadPath).toBeTruthy();
+  const publicIcs = fs.readFileSync(publicDownloadPath!, 'utf8').replaceAll('\r\n ', '');
+  const publicUid = publicIcs.match(/^UID:(.+)$/mu)?.[1];
+  const publicRrule = publicIcs.match(/^RRULE:(.+)$/mu)?.[1];
+  expect(publicUid).toBeTruthy();
+  expect(publicRrule).toBe('FREQ=MONTHLY;BYMONTHDAY=20');
+  if (evidenceDir) {
+    await publicDownload.saveAs(`${evidenceDir}/downloads/washer-public-monthly-routine.ics`);
+  }
+
   await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '이 날짜로 저장' }).click();
   await expect.poll(() => page.evaluate(() => Boolean(
     window.localStorage.getItem('flow:saved:washer-tub-clean-monthly'),
@@ -7005,16 +7024,41 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
   await savedRoutineFlow.getByTestId('my-flow-mobile-structure-open').click();
   const routineSeriesList = savedRoutineFlow.getByTestId('my-flow-mobile-structure-step-list');
   await expect(routineSeriesList.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(routineSeriesList.locator('[data-execution-level="series"]')).toHaveCount(3);
+  await expect(savedRoutineFlow).toContainText('반복 설정');
+
+  await savedRoutineFlow.getByTestId('my-flow-export-entry').click();
+  const flowExport = savedRoutineFlow.getByTestId('my-flow-export-panel');
+  await expect(flowExport.getByTestId('my-flow-export-calendar-summary')).toContainText('반복 일정 1개');
+  await expect(flowExport.getByTestId('my-flow-export-calendar-summary')).toContainText('표시 회차');
+  await expect(flowExport.getByTestId('my-flow-export-calendar')).toHaveAttribute('data-export-count', '1');
+  const savedFlowDownloadPromise = page.waitForEvent('download');
+  await flowExport.getByTestId('my-flow-export-calendar').click();
+  const savedFlowDownload = await savedFlowDownloadPromise;
+  const savedFlowDownloadPath = await savedFlowDownload.path();
+  expect(savedFlowDownloadPath).toBeTruthy();
+  const savedFlowIcs = fs.readFileSync(savedFlowDownloadPath!, 'utf8').replaceAll('\r\n ', '');
+  expect(savedFlowIcs.match(/^UID:(.+)$/mu)?.[1]).toBe(publicUid);
+  expect(savedFlowIcs.match(/^RRULE:(.+)$/mu)?.[1]).toBe(publicRrule);
+  expect((savedFlowIcs.match(/BEGIN:VEVENT/g) ?? [])).toHaveLength(1);
+  if (evidenceDir) {
+    await savedFlowDownload.saveAs(`${evidenceDir}/downloads/washer-my-flow-monthly-routine.ics`);
+    await savedRoutineFlow.screenshot({ path: `${evidenceDir}/screenshots/05-washer-series-export-mobile.png` });
+  }
+
   await routineSeriesList.getByTestId('my-flow-mobile-structure-step-row').first().click();
-  const routineOccurrenceDetail = savedRoutineFlow.getByTestId('my-flow-item-detail');
-  await expect(routineOccurrenceDetail).toHaveAttribute('data-execution-level', 'occurrence');
-  await expect(routineOccurrenceDetail.getByRole('checkbox', { name: /이번 회차 완료 체크$/ })).toHaveCount(1);
+  const routineSeriesDetail = savedRoutineFlow.getByTestId('my-flow-item-detail');
+  await expect(routineSeriesDetail).toHaveAttribute('data-execution-level', 'series');
+  await expect(routineSeriesDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   if (evidenceDir) {
     await routineSeriesList.screenshot({ path: `${evidenceDir}/screenshots/04-published-routine-series-mobile.png` });
   }
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  await expect(
+    page.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '통세척 코스' }),
+  ).toHaveCount(0);
   const julyCell = page.locator('.fc-daygrid-day[data-date="2026-07-20"]');
   await expect(julyCell.getByTestId('my-flow-routine-icon')).toHaveCount(1);
   await julyCell.getByTestId('my-flow-calendar-date-button').click();
@@ -7054,6 +7098,18 @@ test('monthly maintenance routine keeps preview, Calendar, completion, and ICS o
   if (evidenceDir) {
     await selectedDay.screenshot({ path: `${evidenceDir}/screenshots/02-washer-monthly-agenda-mobile.png` });
   }
+
+  await page.reload();
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  const reloadedJulyCell = page.locator('.fc-daygrid-day[data-date="2026-07-20"]');
+  await reloadedJulyCell.getByTestId('my-flow-calendar-date-button').click();
+  const reloadedRow = page
+    .getByTestId('my-flow-calendar-selected-day')
+    .locator('article[data-occurrence-id]')
+    .filter({ hasText: '통세척 코스 돌리고 문 열어 건조하기' });
+  await expect(reloadedRow).toHaveAttribute('data-occurrence-id', occurrenceId!);
+  await expect(reloadedRow).toHaveAttribute('data-occurrence-state', 'reopened');
+  await expect(reloadedRow.getByRole('checkbox', { name: /이번 회차 완료 체크$/ })).not.toBeChecked();
 
   await page.getByRole('button', { name: '다음 달' }).click();
   await expect(page.getByRole('heading', { name: '2026년 8월' })).toBeVisible();

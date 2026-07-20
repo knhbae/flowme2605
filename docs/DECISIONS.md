@@ -47,6 +47,18 @@ Do not use this for:
 
 **Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-00C decision package](./content-audit/2026-07-20-p26-00c-product-object-journey-decision/README.md)
 
+### 2026-07-20 - Repeating definitions stay in Flow settings and occurrences own execution
+
+**Decision:** A routine's base rows are a `반복 설정` definition in whole-Flow context and never a date-free task or a second completion target. Opening that definition keeps the user in series settings; it no longer substitutes the next occurrence. Today and Calendar project concrete occurrences, each with one reversible completion control and occurrence-scoped skipped/held state. Public export, My Flow whole-Flow export, and current-item export use one canonical series identity, UID, and RRULE. Export preview reports recurring series count separately from occurrences visible in the current range. The existing four-week promise for metadata-tagged `exact-video` + `schedule-user-choice` routines bounds both Calendar and ICS.
+
+**Reason:** The prior published-routine shortcut opened an occurrence from a definition row, allowed series definitions to look like undated work, and let public versus saved exports disagree about UID and recurrence. Separating settings from execution restores one control per executable occurrence and one portable series contract. This supersedes the 2026-07-19 allowance that a published definition may drill directly into its next occurrence.
+
+**Applies to:** My Flow whole-Flow routine definitions, Today, Calendar grid/agenda, Calendar undated placement, public and saved routine ICS, export preview counts, exact-video four-week routines, occurrence completion/reopen/skip/hold, and P26-03 regression tests.
+
+**Reopen when:** a verified content model needs multiple independent recurrence series in one Flow, observed users consistently expect whole-Flow configuration rows to execute the next occurrence directly, or provider synchronization requires a different stable UID migration.
+
+**Related docs:** [P26 program spec](./specs/2026-07-20-p26-program/spec.md), [P26-03 recurrence evidence](./content-audit/2026-07-20-p26-03-recurrence-series-occurrence-evidence/README.md)
+
 ### 2026-07-20 - Option B is the released P25 internal production baseline
 
 **Decision:** Keep the P25 Option B whole-Flow workspace contract across save-before, post-save, My Flow, whole Flow, Calendar, item adjustment, batch adjustment, completion/reopen, and export. Treat the owner's instruction to complete P25 and permit substantial changes as implementation authorization. Treat P25-08 current command/browser evidence with unresolved automated Blocking/High `0` as the internal integration gate. Foundation PR #136 and hydration hotfix PR #137 are the released production baseline at `b0fb899c`. Defer only public copy density, 1024px Calendar density, and advanced-editor path length to P26-00 comparison work.

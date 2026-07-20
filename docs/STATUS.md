@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26-02 canonical save receipt and route parity implemented; P26-03 recurrence parity next)
+**Last Updated:** 2026-07-20 (P26-03 recurrence series/occurrence and public/My Flow ICS parity implemented; P26-04 memo integrity next)
 **Status:** v0.1.0 RELEASED / P26 ACTIVE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and the target journey. P26-01 separates transient example dates from explicit custom/undated saved intent. P26-02 now gives public, Flow Map, URL-first, and personal draft saves one reload-safe whole-Flow receipt whose total is derived from the rendered effective rows. P26-03~05 recurrence, memo segmentation, and projection identity remain next. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Execute the staged [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md). P26-00C selected one user-facing `Flow` object and the target journey. P26-01 separates transient example dates from explicit custom/undated saved intent. P26-02 gives all save routes one reload-safe whole-Flow receipt. P26-03 now separates `반복 설정` from executable occurrences, removes definitions from the undated tray, and gives public/My Flow exports one canonical series UID/RRULE. P26-04 memo segmentation and P26-05 projection identity are next. P25 remains the released production at <https://flowme2605.vercel.app>. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26-03 recurrence parity, then P26-04 memo and P26-05 identity foundation |
+| Active product gate | P26-04 memo segmentation, then P26-05 identity foundation |
 | User action now | Optional review of the P26-00C current/proposed prototype; no participant recruitment |
-| AI action now | Fix recurrence series/occurrence parity, memo segmentation, and projection identity before broad visual restructuring |
+| AI action now | Complete memo segmentation and projection identity before broad visual restructuring |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
 | Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
 
 ## Recent Direction Notes
+
+- 2026-07-20 P26-03 recurrence series/occurrence: My Flow whole-Flow rows now keep recurrence definitions under `반복 설정`, while Today and Calendar own executable occurrences with one reversible completion control. Series definitions no longer enter the Calendar undated tray. Public and saved My Flow Calendar exports now share canonical UID/RRULE identity, and export summaries distinguish recurring series from occurrences visible in the current range. Current evidence includes targeted recurrence unit `21 / 21`, full unit `537 / 537`, recurrence Playwright `4 / 4`, public/workbench regression `44 / 44`, docs check with 2,569 links, production build `18 / 18`, and diff-check errors `0`. This is automated/browser evidence, not observed-user validation. See [P26-03 evidence](./content-audit/2026-07-20-p26-03-recurrence-series-occurrence-evidence/README.md).
 
 - 2026-07-20 P26-02 canonical save receipt: Public Flow and personal draft saves now hand off with `savedFlow`; source-backed Flow Map and URL-first map hits use `savedMap`. The post-save receipt counts the same effective rows rendered in its whole-Flow outline and reports dated/undated scope without a second raw snapshot. Current browser fixtures are public vehicle `10 / 0 / 10`, moving `5 / 5 / 0`, URL-first math `8 / 0 / 8`, and memo draft `3 / 1 / 2` for total/dated/undated; all survive reload with count mismatch, empty hydration, invalid date, duplicate identity, horizontal overflow, and console/page errors at `0`. This is automated/browser evidence, not observed-user validation. See [P26-02 evidence](./content-audit/2026-07-20-p26-02-save-receipt-route-parity-evidence/README.md).
 
