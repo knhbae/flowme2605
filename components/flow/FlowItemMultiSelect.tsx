@@ -60,8 +60,17 @@ export function FlowItemMultiSelect({
               onChange={() => onToggleItem(item.key)}
             />
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-semibold text-[#1B1A17]">{item.title}</span>
-              {item.meta ? <span className="mt-0.5 block truncate text-xs font-medium text-[#6E6B64]">{item.meta}</span> : null}
+              <span
+                data-testid={`${itemTestId}-title`}
+                className="block break-words text-sm font-semibold leading-5 text-[#1B1A17]"
+              >
+                {item.title}
+              </span>
+              {item.meta ? (
+                <span className="mt-0.5 block break-words text-xs font-medium leading-4 text-[#6E6B64]">
+                  {item.meta}
+                </span>
+              ) : null}
             </span>
           </label>
         ))}

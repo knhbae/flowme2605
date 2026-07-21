@@ -320,4 +320,47 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(page.getByTestId('my-flow-list-filter-all')).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
+
+  test('Calendar keeps long undated titles readable and nested event wrappers out of the tab order', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.addInitScript(() => {
+      window.localStorage.setItem('flow:saved:travel-packing-list', JSON.stringify({
+        slug: 'travel-packing-list',
+        savedAt: '2030-01-01T00:00:00.000Z',
+        selectedArtifactMode: 'checklist',
+        dateIntent: 'undated',
+      }));
+      window.localStorage.setItem('flow:travel-packing-list:anchorDate', JSON.stringify({
+        mode: 'undated',
+        anchor: '',
+      }));
+    });
+    await page.goto('/calendar');
+
+    const undatedTitle = page.getByTestId('my-flow-calendar-unscheduled-item-title').first();
+    await expect(undatedTitle).toBeVisible();
+    const titleLayout = await undatedTitle.evaluate((node) => {
+      const style = window.getComputedStyle(node);
+      return {
+        whiteSpace: style.whiteSpace,
+        textOverflow: style.textOverflow,
+      };
+    });
+    expect(titleLayout.whiteSpace).not.toBe('nowrap');
+    expect(titleLayout.textOverflow).not.toBe('ellipsis');
+
+    await page.goto('/calendar?demo=ux12');
+    await page.getByTestId('my-flow-month-picker').fill('2026-05');
+    const routineWrapper = page.locator('.my-flow-routine-rail-event').first();
+    await expect(routineWrapper).toHaveAttribute('role', 'group');
+    await expect(routineWrapper).toHaveAttribute('aria-label', /반복 일정 \d+개/);
+    await expect(routineWrapper).toHaveAttribute('tabindex', '-1');
+    await expect(routineWrapper.getByTestId('my-flow-routine-icon').first()).toHaveAccessibleName(/.+/);
+
+    const tabbableCalendarWrappers = await page.locator('.my-flow-routine-rail-event, .my-flow-schedule-overflow-event').evaluateAll((nodes) =>
+      nodes.filter((node) => node.getAttribute('tabindex') !== '-1').length,
+    );
+    expect(tabbableCalendarWrappers).toBe(0);
+    await expectNoHorizontalOverflow(page);
+  });
 });

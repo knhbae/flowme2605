@@ -10396,14 +10396,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const handleMyFlowCalendarEventMount = (info: EventMountArg) => {
     const kind = String(info.event.extendedProps.kind ?? '');
     if (kind === 'routineRail') {
+      const routineCount = ((info.event.extendedProps.routines ?? []) as MyFlowRoutineCalendarIcon[]).length;
+      const hiddenCount = Number(info.event.extendedProps.hiddenCount ?? 0);
       info.el.classList.add('my-flow-routine-rail-event');
+      info.el.setAttribute('role', 'group');
+      info.el.setAttribute('aria-label', `${info.event.startStr} 반복 일정 ${routineCount + hiddenCount}개`);
+      info.el.setAttribute('tabindex', '-1');
       info.el.style.setProperty('border-color', 'transparent', 'important');
       info.el.style.setProperty('background', 'transparent', 'important');
       info.el.style.setProperty('box-shadow', 'none', 'important');
       return;
     }
     if (kind === 'scheduleOverflow' || kind === 'scheduleFlowOverflow') {
+      const hiddenCount = Number(info.event.extendedProps.hiddenCount ?? 0);
       info.el.classList.add('my-flow-schedule-overflow-event');
+      info.el.setAttribute('role', 'group');
+      info.el.setAttribute('aria-label', `${info.event.startStr} 숨은 일정 ${hiddenCount}개`);
+      info.el.setAttribute('tabindex', '-1');
       info.el.style.setProperty('border-color', 'transparent', 'important');
       info.el.style.setProperty('background', 'transparent', 'important');
       info.el.style.setProperty('box-shadow', 'none', 'important');
@@ -15722,7 +15731,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {showMyFlowCalendarScopeFilter ? (
                   <div
                     data-testid="my-flow-calendar-scope-filter"
-                    className={`mt-2 grid-flow-col auto-cols-max overflow-x-auto sm:mt-3 sm:inline-grid ${FLOW_UI_SEGMENTED_CLASS}`}
+                    className={`mt-2 grid w-full max-w-full grid-flow-col auto-cols-max overflow-x-auto sm:mt-3 ${FLOW_UI_SEGMENTED_CLASS}`}
                     aria-label="캘린더 표시 범위"
                   >
                     {visibleMyFlowCalendarScopeOptions.map((option) => {
