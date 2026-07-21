@@ -2,6 +2,7 @@ import {
   normalizePersonalStructuralOccurrenceExecutionRecords,
   type PersonalStructuralOccurrenceExecutionRecord,
 } from './personal-structural-occurrence';
+import type { PersonalItemDetailOverlay } from './personal-item-detail-overlay';
 
 export const MY_FLOW_ITEM_DRAFTS_STORAGE_KEY = 'flow:my-flow:item-drafts';
 export const MY_FLOW_DATE_OVERRIDES_STORAGE_KEY = 'flow:my-flow:date-overrides';
@@ -30,6 +31,7 @@ export type StoredMyFlowItemDraft = {
   logValue?: string;
   decisionStatus?: 'undecided' | 'buy' | 'hold' | 'reject';
   nextReviewDate?: string;
+  detailOverlay?: PersonalItemDetailOverlay;
 };
 
 export type MyFlowPersonalExecutionState = {
@@ -361,6 +363,9 @@ export function prepareMyFlowPersonalExecutionStateForReuse(
       const reusableDraft: StoredMyFlowItemDraft = {
         ...(draft.title !== undefined ? { title: draft.title } : {}),
         ...(draft.memo !== undefined ? { memo: draft.memo } : {}),
+        ...(draft.detailOverlay !== undefined
+          ? { detailOverlay: JSON.parse(JSON.stringify(draft.detailOverlay)) as PersonalItemDetailOverlay }
+          : {}),
       };
       if (Object.keys(reusableDraft).length === 0) return drafts;
       drafts[reusableKey] = { ...drafts[reusableKey], ...reusableDraft };

@@ -139,7 +139,7 @@ export type SourceBackedFlowMapSavedSnapshot = {
 };
 
 export type SourceBackedFlowMapPersonalCopy = {
-  source: 'url_first_custom_start' | 'version_review';
+  source: 'url_first_custom_start' | 'version_review' | 'personal_edit';
   originalTitle?: string;
   includedStepIdsByFlow: Record<string, string[]>;
   excludedStepIdsByFlow: Record<string, string[]>;
@@ -1689,6 +1689,38 @@ export function buildSourceBackedFlowMapAnchorAdjustment(
   if (!persistenceRecord) return undefined;
 
   return { snapshot, persistenceRecord };
+}
+
+export function initializeSourceBackedFlowMapPersonalCopy(
+  saved: SourceBackedFlowMapSavedSnapshot,
+  baselineRecord?: SourceBackedFlowMapPersistenceRecord,
+): SourceBackedFlowMapSavedSnapshot | undefined {
+  if (saved.personalCopy) return structuredClone(saved);
+  const baseline = baselineRecord ?? buildSourceBackedFlowMapPersistenceRecord(saved.mapId, {
+    savedAt: saved.savedAt,
+    anchor: saved.anchor,
+  });
+  if (!baseline) return undefined;
+
+  const savedFlowSlugs = new Set(saved.flowSlugs);
+  const includedStepIdsByFlow = Object.fromEntries(
+    baseline.childFlows
+      .filter((flow) => savedFlowSlugs.has(flow.slug) && flow.stepIds.length > 0)
+      .map((flow) => [flow.slug, Array.from(new Set(flow.stepIds))]),
+  );
+  if (Object.keys(includedStepIdsByFlow).length === 0) return undefined;
+
+  return {
+    ...structuredClone(saved),
+    personalCopy: {
+      source: 'personal_edit',
+      originalTitle: saved.title,
+      includedStepIdsByFlow,
+      excludedStepIdsByFlow: Object.fromEntries(
+        Object.keys(includedStepIdsByFlow).map((flowSlug) => [flowSlug, []]),
+      ),
+    },
+  };
 }
 
 export function buildSourceBackedFlowMapPersonalCopyAdjustment(

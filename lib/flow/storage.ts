@@ -538,7 +538,11 @@ function normalizeSavedFlowMapPersonalCopy(value: unknown): SourceBackedFlowMapP
   if (!value || typeof value !== 'object') return undefined;
 
   const personalCopy = value as Partial<SourceBackedFlowMapPersonalCopy>;
-  if (personalCopy.source !== 'url_first_custom_start' && personalCopy.source !== 'version_review') return undefined;
+  if (
+    personalCopy.source !== 'url_first_custom_start' &&
+    personalCopy.source !== 'version_review' &&
+    personalCopy.source !== 'personal_edit'
+  ) return undefined;
 
   const includedStepIdsByFlow = normalizeStringListRecord(personalCopy.includedStepIdsByFlow);
   const excludedStepIdsByFlow = normalizeStringListRecord(personalCopy.excludedStepIdsByFlow);

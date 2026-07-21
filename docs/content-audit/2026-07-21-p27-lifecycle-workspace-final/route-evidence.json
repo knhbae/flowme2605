@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-21",
+  "implementationCommit": "118dec90de9ddcfea2150e2279cc57d6dda53e8b",
+  "baselineCommit": "63ea6416cf720d4e3015a48268a70aba8dfb4d0e",
+  "evidenceBoundary": {
+    "currentCommand": true,
+    "currentLocalProductionBrowser": true,
+    "currentCanonicalProduction": false,
+    "observedUserSessionCount": 0
+  },
+  "verification": {
+    "pretestPassed": 24,
+    "unitPassed": 571,
+    "targetedE2ePassed": 12,
+    "fullE2ePassed": 339,
+    "productionBuildRouteCount": 18,
+    "screenshotCount": 8,
+    "reviewBoardScreenshotCount": 2
+  },
+  "markers": {
+    "flowsServerDocumentMeaningfulEntryVisible": true,
+    "myFlowServerDocumentFourTabShellVisible": true,
+    "flowArchivePreservesRunHistory": true,
+    "flowArchiveUndoVisible": true,
+    "flowArchivePersistentRestoreVisible": true,
+    "sourceItemMutationCount": 0,
+    "restoredItemStableIdChangedCount": 0,
+    "recurrencePreviewMutatesSeriesEndCount": 0,
+    "recurrencePreviewHorizonLabel": "미리보기 4주",
+    "recurrenceSeriesEndLabel": "종료일 없음",
+    "resourceCompletionLikeControlCount": 0,
+    "activeEditOperationCount": 1,
+    "publicAdjustmentDefaultMode": "include",
+    "publicAdjustmentDefaultVisibleTitleInputCount": 0,
+    "publicAdjustmentDefaultVisibleDateInputCount": 0,
+    "publicAdjustmentDefaultVisibleReorderControlCount": 0,
+    "postSaveReturningOutlineMismatchCount": 0,
+    "smallSetFlowCount": 3,
+    "smallSetSearchChromeCount": 0,
+    "largeSetSearchVisible": true,
+    "searchResultOpensWholeFlowWorkspace": true,
+    "calendarFlowScopeVisible": true,
+    "tabbableRoutineWrapperCount": 0,
+    "saveDecisionSurfaceCount": 1,
+    "exportNumberedWizardCopyHitCount": 0,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "unnamedVisibleControlCount": 0,
+    "reviewBoardHorizontalOverflowCount": 0,
+    "reviewBoardConsoleErrorCount": 0
+  },
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "scenario": "whole preview to one-operation personal adjustment",
+      "screenshot": "screenshots/public-adjustment-mobile.png",
+      "evidenceKind": "current_local_production_browser"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "scenario": "preview horizon, open series, and source resource",
+      "screenshot": "screenshots/workout-preview-mobile.png",
+      "evidenceKind": "current_local_production_browser"
+    },
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "scenario": "three Flow compact library",
+      "screenshot": "screenshots/my-flow-compact-library-mobile.png",
+      "evidenceKind": "current_local_production_browser"
+    },
+    {
+      "route": "/my?demo=ux12",
+      "viewport": "1024x768",
+      "scenario": "large library search opens selected whole Flow workspace",
+      "screenshot": "screenshots/my-flow-search-workspace-wide.png",
+      "evidenceKind": "current_local_production_browser"
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewport": "1024x768",
+      "scenario": "Flow scope and named recurrence wrappers",
+      "screenshot": "screenshots/calendar-routine-wide.png",
+      "evidenceKind": "current_local_production_browser"
+    },
+    {
+      "route": "/my?savedMap=moving-d30",
+      "viewport": "1024x768",
+      "scenario": "archive with immediate undo and persistent source record",
+      "screenshot": "screenshots/archive-recovery-wide.png",
+      "evidenceKind": "current_local_production_browser"
+    },
+    {
+      "route": "/my?savedMap=moving-d30",
+      "viewport": "390x844",
+      "scenario": "compact post-save receipt and whole Flow",
+      "screenshot": "screenshots/post-save-receipt-mobile.png",
+      "evidenceKind": "current_local_production_browser"
+    },
+    {
+      "route": "/my?savedMap=moving-d30",
+      "viewport": "390x844",
+      "scenario": "compact export scope and destination preflight",
+      "screenshot": "screenshots/export-preflight-mobile.png",
+      "evidenceKind": "current_local_production_browser"
+    }
+  ]
+}

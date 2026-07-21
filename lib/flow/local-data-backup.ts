@@ -11,6 +11,7 @@ const EXACT_EXECUTION_KEYS = new Set([
   'flow:my-flow:date-overrides',
   'flow:my-flow:occurrence-execution',
   'flow:my-flow:hidden-flows',
+  'flow:my-flow:lifecycle:v1',
   'flow:url-first:supply-candidates',
 ]);
 

@@ -40,7 +40,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- No implementation spec is active. The next gate is the docs/prototype-only [P26-00 comprehension and density audit](../content-audit/2026-07-20-p25-final-closeout/next-goal-p26-ko.md); external observation remains deferred.
+- [2026-07-21 P27 Flow Lifecycle Workspace Reconciliation](./2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md) - internal implementation and regression evidence are complete; canonical merge/deploy and independent production review remain. External observation is deferred.
 
 ### Completed Or Closed
 

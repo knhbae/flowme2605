@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  getMyFlowLibraryControlVisibility,
   getMyFlowViewHref,
   parseMyFlowViewQuery,
   summarizeMyFlowLocalIa,
@@ -47,5 +48,36 @@ test('held content is excluded from ordinary My Flow navigation counts', () => {
       { id: 'held', executionHeld: true, nowItemIds: ['blocked'], completedItemIds: ['old'] },
     ]),
     { flowCount: 1, nowCount: 1, completedCount: 1 },
+  );
+});
+
+test('My Flow library keeps small collections browsable and reveals search at five Flows', () => {
+  for (const flowCount of [0, 1, 3]) {
+    assert.deepEqual(
+      getMyFlowLibraryControlVisibility({ flowCount }),
+      { search: false, filters: false, mode: 'compact' },
+    );
+  }
+
+  for (const flowCount of [5, 12]) {
+    assert.deepEqual(
+      getMyFlowLibraryControlVisibility({ flowCount }),
+      { search: true, filters: true, mode: 'searchable' },
+    );
+  }
+});
+
+test('My Flow library keeps an active query or archive recovery reachable below the threshold', () => {
+  assert.deepEqual(
+    getMyFlowLibraryControlVisibility({ flowCount: 3, query: '이사' }),
+    { search: true, filters: false, mode: 'compact' },
+  );
+  assert.deepEqual(
+    getMyFlowLibraryControlVisibility({ flowCount: 3, archivedCount: 1 }),
+    { search: false, filters: true, mode: 'compact' },
+  );
+  assert.deepEqual(
+    getMyFlowLibraryControlVisibility({ flowCount: 3, filter: 'open' }),
+    { search: false, filters: true, mode: 'compact' },
   );
 });

@@ -59,6 +59,21 @@ import {
   type CalendarFlowScope,
 } from '@/lib/flow/calendar-flow-scope';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
+import { splitExecutionDetailContent } from '@/lib/flow/execution-detail-content';
+import {
+  addPersonalDetailResource,
+  addPersonalDetailSubcheck,
+  movePersonalDetailEntry,
+  removePersonalDetailResource,
+  removePersonalDetailSubcheck,
+  resolvePersonalItemDetail,
+  restorePersonalDetailResource,
+  restorePersonalDetailSubcheck,
+  updatePersonalDetailResource,
+  updatePersonalDetailSubcheck,
+  type PersonalItemDetailResource,
+  type PersonalItemDetailSubcheck,
+} from '@/lib/flow/personal-item-detail-overlay';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import {
   buildCompletionControlPresentation,
@@ -108,6 +123,7 @@ import {
 } from '@/lib/flow/post-save-receipt';
 import { buildPostSaveDecisionSummary } from '@/lib/flow/post-save-decision-hub';
 import {
+  getMyFlowLibraryControlVisibility,
   getMyFlowViewHref,
   parseMyFlowViewQuery,
   summarizeMyFlowLocalIa,
@@ -206,6 +222,13 @@ import {
   type PersonalStructuralOccurrenceExecutionState,
 } from '@/lib/flow/personal-structural-occurrence';
 import {
+  archivePersonalFlow,
+  createEmptyPersonalFlowLifecycle,
+  loadPersonalFlowLifecycle,
+  restorePersonalFlow,
+  savePersonalFlowLifecycle,
+} from '@/lib/flow/personal-flow-lifecycle';
+import {
   loadOrMigratePersonalStructuralOverlay,
   savePersonalStructuralOverlay,
   type PersonalStructuralExecutionState,
@@ -226,6 +249,7 @@ import {
   buildSourceBackedFlowMapReviewedVersion,
   getSourceBackedFlowMapDateAnchorCopy,
   getSourceBackedFlowMapQualityDecision,
+  initializeSourceBackedFlowMapPersonalCopy,
   getPublicCatalogSourceBackedFlowMaps,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedMyFlowMapForBundle,
@@ -1352,6 +1376,13 @@ function isIsoDateString(value: string): boolean {
 function createDraftFlowId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return `flow-${crypto.randomUUID()}`;
   return `flow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createPersonalDetailId(kind: 'subcheck' | 'resource'): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `personal-${kind}-${crypto.randomUUID()}`;
+  }
+  return `personal-${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function isPersonalMemoDraftBundle(bundle: FlowBundle): boolean {
@@ -3554,27 +3585,14 @@ type MyFlowReuseNotice = {
   message: string;
   detail: string;
 };
-const MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY = 'flow:my-flow:hidden-flows';
+type MyFlowLifecycleUndo = {
+  flowSlug: string;
+  flowTitle: string;
+  action: 'archive' | 'restore';
+};
 const MY_FLOW_WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
-type FlowListFilter = 'all' | 'open' | 'routine' | 'done' | 'hidden';
-
-function getStoredMyFlowHiddenFlowSlugs(): string[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === 'string' && value.trim().length > 0) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveStoredMyFlowHiddenFlowSlugs(slugs: string[]): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY, JSON.stringify(slugs));
-}
+type FlowListFilter = 'all' | 'open' | 'routine' | 'done' | 'archived';
 
 function getMyFlowItemIntentText(bundle: FlowBundle, row: MyFlowRow, item?: FlowItem): string {
   const detail = row.detail ?? getItemDetail(bundle, row.id);
@@ -4553,13 +4571,7 @@ function addMyFlowMonths(date: string, count: number): string {
 }
 
 function getMyFlowDetailChecklistItems(detail?: FlowItemDetail): string[] {
-  if (!detail?.how) return [];
-  return detail.how
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => /^[-*]\s+/.test(line))
-    .map((line) => line.replace(/^[-*]\s+/, '').trim())
-    .filter(Boolean);
+  return splitExecutionDetailContent(detail).checklistItems;
 }
 
 function compactMyFlowInlineActionHint(text?: string): string | undefined {
@@ -4995,7 +5007,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowOccurrenceExecutionRecords, setMyFlowOccurrenceExecutionRecords] = useState<
     Record<string, PersonalStructuralOccurrenceExecutionRecord>
   >({});
-  const [myFlowHiddenFlowSlugs, setMyFlowHiddenFlowSlugs] = useState<string[]>([]);
+  const [myFlowArchivedFlowSlugs, setMyFlowArchivedFlowSlugs] = useState<string[]>([]);
   const [myFlowItemDrafts, setMyFlowItemDrafts] = useState<Record<string, MyFlowItemDraft>>({});
   const [myFlowEditingDrafts, setMyFlowEditingDrafts] = useState<Record<string, MyFlowItemDraft>>({});
   const [myFlowStepItemChecks, setMyFlowStepItemChecks] = useState<MyFlowStepItemChecks>({});
@@ -5023,6 +5035,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowExpandedStructureStepSlug, setMyFlowExpandedStructureStepSlug] = useState('');
   const [myFlowWholeFlowOpenGroups, setMyFlowWholeFlowOpenGroups] = useState<Record<string, string[]>>({});
   const [myFlowCompletionUndo, setMyFlowCompletionUndo] = useState<MyFlowCompletionUndo | null>(null);
+  const [myFlowLifecycleUndo, setMyFlowLifecycleUndo] = useState<MyFlowLifecycleUndo | null>(null);
   const [myFlowCompletionNoticePaused, setMyFlowCompletionNoticePaused] = useState(false);
   const [myFlowInventoryOpen, setMyFlowInventoryOpen] = useState(false);
   const [myFlowTodayCompletedOpen, setMyFlowTodayCompletedOpen] = useState(false);
@@ -5074,6 +5087,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowDraggingRoutineKeyRef = useRef('');
   const myFlowDraggingRoutineDateRef = useRef('');
   const myFlowCompletionNoticeActionRef = useRef<HTMLButtonElement | null>(null);
+  const myFlowLifecycleNoticeActionRef = useRef<HTMLButtonElement | null>(null);
   const showDemoData = Boolean(myFlowDemoMode);
 
   useEffect(() => {
@@ -5092,6 +5106,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     });
     return () => window.cancelAnimationFrame(animationFrame);
   }, [myFlowCompletionUndo]);
+  useEffect(() => {
+    if (!myFlowLifecycleUndo) return;
+    const timeoutId = window.setTimeout(() => setMyFlowLifecycleUndo(null), 8000);
+    const animationFrame = window.requestAnimationFrame(() => {
+      myFlowLifecycleNoticeActionRef.current?.focus({ preventScroll: true });
+    });
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.cancelAnimationFrame(animationFrame);
+    };
+  }, [myFlowLifecycleUndo]);
   useEffect(() => {
     if (!myFlowCalendarScheduleUndo) return;
     const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 8000);
@@ -5153,7 +5178,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ['open', '진행 중'],
     ['routine', '루틴'],
     ['done', '완료'],
-    ...(myFlowHiddenFlowSlugs.length > 0 ? [['hidden', '숨김'] as const] : []),
+    ...(myFlowArchivedFlowSlugs.length > 0 ? [['archived', '보관됨'] as const] : []),
   ] as const;
   const closeMyFlowTransientDetail = () => {
     setMyFlowActiveRowKey('');
@@ -5363,7 +5388,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setFlowListQuery('');
       setMyFlowDateOverrides({});
       setMyFlowOccurrenceExecutionRecords({});
-      setMyFlowHiddenFlowSlugs([]);
+      setMyFlowArchivedFlowSlugs([]);
       setMyFlowItemDrafts({});
       setMyFlowEditingDrafts({});
       setMyFlowStepItemChecks({});
@@ -5400,7 +5425,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
     if (demoMode === 'legacy') seedMyFlowDemoState(myFlowBundles);
-    setMyFlowHiddenFlowSlugs(getStoredMyFlowHiddenFlowSlugs());
+    setMyFlowArchivedFlowSlugs(
+      typeof window === 'undefined'
+        ? []
+        : loadPersonalFlowLifecycle(window.localStorage).record.archivedFlowSlugs,
+    );
     setMyFlowDismissedMapUpdates(getMyFlowDismissedMapUpdates());
     setMyFlowExpandedMapUpdateId('');
     setMyFlowReuseDraft(null);
@@ -5441,7 +5470,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         savedMap ? savedFlowMapPersistenceById[savedMap.mapId] : undefined,
         savedMap?.personalCopy,
       );
-      const sourceRows = getMyFlowRows(effectiveBundle, anchor);
+      const sourceRows = getMyFlowRows(effectiveBundle, anchor)
+        .map((row, sourceIndex) => ({ row, sourceIndex }))
+        .sort((left, right) => {
+          const leftOrder = itemStates[baseStateId(left.row.id)]?.personalOrder;
+          const rightOrder = itemStates[baseStateId(right.row.id)]?.personalOrder;
+          if (leftOrder === undefined && rightOrder === undefined) return left.sourceIndex - right.sourceIndex;
+          if (leftOrder === undefined) return 1;
+          if (rightOrder === undefined) return -1;
+          return leftOrder - rightOrder || left.sourceIndex - right.sourceIndex;
+        })
+        .map(({ row }) => row);
+      const personalCopyExcludedItemIds = new Set(
+        savedMap?.personalCopy?.excludedStepIdsByFlow[progress.slug] ?? [],
+      );
+      const isSourceBackedRowExcluded = (row: MyFlowRow) =>
+        personalCopyExcludedItemIds.has(baseStateId(row.id)) ||
+        isUrlFirstStartExcludedItemState(itemStates, row.id);
       const structuralEditEligible = isPersonalDraftStructuralEditEligible(effectiveBundle);
       const structuralOverlay = structuralEditEligible
         ? myFlowStructuralOverlaysBySlug[progress.slug] ?? createPersonalDraftStructuralOverlay(effectiveBundle)
@@ -5513,7 +5558,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ? [row]
               : [];
           })
-        : sourceRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+        : sourceRows.filter((row) => !isSourceBackedRowExcluded(row));
       const excludedRows = structuralProjection
         ? structuralProjection.excludedRows.flatMap((projectionRow) => {
             const row = mapPersonalDraftProjectionRowToMyFlowRow(
@@ -5523,10 +5568,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             );
             return row ? [row] : [];
           })
-        : structuralRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
+        : structuralRows.filter((row) => isSourceBackedRowExcluded(row));
       const rows = structuralProjection
         ? structuralRows
-        : structuralRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+        : structuralRows.filter((row) => !isSourceBackedRowExcluded(row));
       const executableIds = Array.from(new Set(rows.flatMap((row) => getMyFlowCheckIds(effectiveBundle, row.id, anchor))));
       const executableTotal = executableIds.filter((id) => !isItemStateSkipped(itemStates, id)).length;
       const total = structuralEditEligible
@@ -5571,8 +5616,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : [],
     ),
   );
+  const archivedFlowSlugSet = new Set(myFlowArchivedFlowSlugs);
   const workspaceSavedFlows = savedFlows.filter(
-    (flow) => isMyFlowReadyContent(flow) && !executionHeldFlowSlugs.has(flow.progress.slug),
+    (flow) => isMyFlowReadyContent(flow) &&
+      !executionHeldFlowSlugs.has(flow.progress.slug) &&
+      !archivedFlowSlugSet.has(flow.progress.slug),
   );
 
   useEffect(() => {
@@ -5603,21 +5651,31 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const postSaveQueryKey = postSaveMap?.mapId ?? savedFlowSlugParam;
   const hasPostSavePanel = Boolean(postSaveQueryKey && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || postSaveQueryKey));
   const showPostSavePanel = hasPostSavePanel && !myFlowPostSaveWorkspaceOpen;
-  const showMyFlowWorkspace = workspaceSavedFlows.length > 0 && !showPostSavePanel;
+  const showArchivedInventory =
+    savedView === 'flow' && flowListFilter === 'archived' && myFlowArchivedFlowSlugs.length > 0;
+  const showMyFlowWorkspace = (workspaceSavedFlows.length > 0 || showArchivedInventory) && !showPostSavePanel;
   const shouldCollapseFlowInventory =
     savedFlows.length >= 6 &&
     selectedSavedFlowSlug === 'all' &&
     flowListFilter === 'all' &&
     flowListQuery.trim().length === 0;
   const shouldGroupFlowInventory = savedFlows.length >= 20 || isMyFlowScenarioDemo;
-  const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 20 && savedView === 'flow';
+  const myFlowLibraryControls = getMyFlowLibraryControlVisibility({
+    flowCount: workspaceSavedFlows.length,
+    archivedCount: myFlowArchivedFlowSlugs.length,
+    query: flowListQuery,
+    filter: flowListFilter,
+  });
+  const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 5 && savedView === 'flow';
   const showFlowInventory = savedView === 'flow' || !shouldCollapseFlowInventory || myFlowInventoryOpen;
   const showFlowExecutionMetricsInInventory = false;
   const showMyFlowScopeControl = !isCalendarSurface && !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
-  const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
-    isUrlFirstDraftSavedFlow(flow)
-      ? myFlowDateOverrides[getPersonalDraftProjectionValueKey(flow.progress.slug, rowId)]
-      : undefined;
+  const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined => {
+    const valueKey = getPersonalDraftProjectionValueKey(flow.progress.slug, rowId);
+    const canonicalDraftDate = myFlowItemDrafts[valueKey]?.date;
+    if (canonicalDraftDate !== undefined) return canonicalDraftDate;
+    return isUrlFirstDraftSavedFlow(flow) ? myFlowDateOverrides[valueKey] : undefined;
+  };
   const resolveSavedFlowRowDate = (
     flow: MySavedFlow,
     row: MyFlowRow,
@@ -5767,7 +5825,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ...(myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate
               ? { endDate: myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate }
               : {}),
-            ...(isUserScheduledExactVideo(flow.bundle) ? { projectionWeeks: 4 } : {}),
             ...(committedDraft.time ? { time: committedDraft.time } : {}),
             ...(committedDraft.time && committedDraft.durationMinutes
               ? { durationMinutes: committedDraft.durationMinutes }
@@ -6197,7 +6254,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return rows;
   }, []).slice(0, 4);
   const myFlowPrimaryContinuationRow = myFlowContinuationRows[0] ?? null;
-  const myFlowPrimaryContinuationKey = myFlowPrimaryContinuationRow ? getMyFlowRowInstanceKey(myFlowPrimaryContinuationRow) : '';
+  const myFlowPrimaryContinuationGroupRows = myFlowPrimaryContinuationRow
+    ? [myFlowPrimaryContinuationRow, ...myFlowExecutionCandidateRows].reduce<MyFlowCalendarRow[]>((rows, row) => {
+        if (row.date !== myFlowPrimaryContinuationRow.date) return rows;
+        const key = getMyFlowRowInstanceKey(row);
+        if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === key)) return rows;
+        rows.push(row);
+        return rows;
+      }, [])
+    : [];
+  const myFlowPrimaryContinuationGroupKeySet = new Set(
+    myFlowPrimaryContinuationGroupRows.map((row) => getMyFlowRowInstanceKey(row)),
+  );
   const myFlowPrimaryContinuationIsToday = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date === myFlowTodayDate);
   const myFlowPrimaryContinuationIsOverdue = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date < myFlowTodayDate);
   const myFlowPrimaryContinuationIsFuture = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date > myFlowTodayDate);
@@ -6230,7 +6298,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const draftTitle = getMyFlowRowDraft(row).title;
     return toUserFacingSourceTitle(draftTitle ?? stripMyFlowTimingPrefixFromTitle(row.title));
   };
-  const myFlowNowVisibleCount = myFlowPrimaryContinuationRow ? 1 : 0;
+  const myFlowNowVisibleCount = myFlowPrimaryContinuationGroupRows.length;
   const myFlowNowTitle = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
       ? `${myFlowNowVisibleCount}개 남음`
@@ -6265,14 +6333,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ...myFlowFallbackFutureRows,
   ].reduce<MyFlowCalendarRow[]>((rows, row) => {
     const key = getMyFlowRowInstanceKey(row);
-    if (key === myFlowPrimaryContinuationKey) return rows;
+    if (myFlowPrimaryContinuationGroupKeySet.has(key)) return rows;
     if (row.date && row.date < myFlowTodayDate) return rows;
     if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === key)) return rows;
     rows.push(row);
     return rows;
   }, []).slice(0, 3);
-  const visibleTodayOpenScheduleRows = todayOpenScheduleRows.filter((row) => getMyFlowRowInstanceKey(row) !== myFlowPrimaryContinuationKey);
-  const visibleTodayOpenRoutineRows = todayOpenRoutineRows.filter((row) => getMyFlowRowInstanceKey(row) !== myFlowPrimaryContinuationKey);
+  const visibleTodayOpenScheduleRows = todayOpenScheduleRows.filter(
+    (row) => !myFlowPrimaryContinuationGroupKeySet.has(getMyFlowRowInstanceKey(row)),
+  );
+  const visibleTodayOpenRoutineRows = todayOpenRoutineRows.filter(
+    (row) => !myFlowPrimaryContinuationGroupKeySet.has(getMyFlowRowInstanceKey(row)),
+  );
   const visibleTodayOpenRows = [...visibleTodayOpenScheduleRows, ...visibleTodayOpenRoutineRows];
   const showTodayOpenSection = visibleTodayOpenRows.length > 0;
   const overdueSummaryByFlow = overdueRows.reduce<Array<{ title: string; count: number; firstDate?: string }>>((summaries, row) => {
@@ -6561,16 +6633,44 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return next;
     });
   };
-  const toggleMyFlowHiddenFlow = (slug: string) => {
-    setMyFlowHiddenFlowSlugs((current) => {
-      const exists = current.includes(slug);
-      const next = exists ? current.filter((item) => item !== slug) : [...current, slug];
-      if (!isMyFlowScenarioDemo) saveStoredMyFlowHiddenFlowSlugs(next);
-      if (exists && flowListFilter === 'hidden' && next.length === 0) setFlowListFilter('all');
-      return next;
+  const updateMyFlowArchiveState = (
+    flow: MySavedFlow,
+    action: MyFlowLifecycleUndo['action'],
+    recordUndo = true,
+  ) => {
+    const flowSlug = flow.progress.slug;
+    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
+    setMyFlowArchivedFlowSlugs((current) => {
+      const updatedAt = new Date().toISOString();
+      const currentRecord = {
+        ...createEmptyPersonalFlowLifecycle(updatedAt),
+        archivedFlowSlugs: current,
+      };
+      const nextRecord = action === 'archive'
+        ? archivePersonalFlow(currentRecord, flowSlug, updatedAt)
+        : restorePersonalFlow(currentRecord, flowSlug, updatedAt);
+      if (!isMyFlowScenarioDemo && typeof window !== 'undefined') {
+        savePersonalFlowLifecycle(window.localStorage, nextRecord);
+      }
+      if (action === 'restore' && flowListFilter === 'archived' && nextRecord.archivedFlowSlugs.length === 0) {
+        setFlowListFilter('all');
+      }
+      return nextRecord.archivedFlowSlugs;
     });
+    if (selectedSavedFlowSlug === flowSlug && action === 'archive') setSelectedSavedFlowSlug('all');
+    if (recordUndo) setMyFlowLifecycleUndo({ flowSlug, flowTitle, action });
   };
-  const toggleMyFlowStepItemCheck = (row: MyFlowCalendarRow, itemIndex: number) => {
+
+  const undoMyFlowLifecycleChange = (undo: MyFlowLifecycleUndo) => {
+    const flow = savedFlows.find((candidate) => candidate.progress.slug === undo.flowSlug);
+    if (!flow) {
+      setMyFlowLifecycleUndo(null);
+      return;
+    }
+    updateMyFlowArchiveState(flow, undo.action === 'archive' ? 'restore' : 'archive', false);
+    setMyFlowLifecycleUndo(null);
+  };
+  const toggleMyFlowStepItemCheck = (row: MyFlowCalendarRow, itemKey: string) => {
     const key = getMyFlowRowInstanceKey(row);
     setMyFlowStepItemChecks((current) => {
       const currentRowChecks = current[key] ?? {};
@@ -6578,7 +6678,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ...current,
         [key]: {
           ...currentRowChecks,
-          [String(itemIndex)]: !currentRowChecks[String(itemIndex)],
+          [itemKey]: !currentRowChecks[itemKey],
         },
       };
       if (!isMyFlowScenarioDemo) saveMyFlowStepItemChecks(next);
@@ -7163,12 +7263,19 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const visibleChecklistPickerRows = shouldLimitChecklistPicker && !myFlowChecklistPickerOpen ? checklistFlowRows.slice(0, 4) : checklistFlowRows;
   const hiddenChecklistPickerCount = shouldLimitChecklistPicker ? Math.max(0, checklistFlowRows.length - visibleChecklistPickerRows.length) : 0;
   const flowListNormalizedQuery = flowListQuery.trim().toLowerCase();
-  const hiddenFlowSlugSet = new Set(myFlowHiddenFlowSlugs);
-  const flowListVisibleFlows = visibleSavedFlows
+  const flowListCandidateFlows = (flowListFilter === 'archived'
+    ? savedFlows.filter((flow) => archivedFlowSlugSet.has(flow.progress.slug))
+    : visibleSavedFlows)
+    .slice()
+    .sort((left, right) =>
+      (right.progress.lastVisited ?? '').localeCompare(left.progress.lastVisited ?? '') ||
+      getMyFlowExecutionFlowTitle(left.progress.title).localeCompare(getMyFlowExecutionFlowTitle(right.progress.title)),
+    );
+  const flowListVisibleFlows = flowListCandidateFlows
     .filter((flow) => {
-      const hidden = hiddenFlowSlugSet.has(flow.progress.slug);
-      if (flowListFilter === 'hidden') return hidden;
-      if (hidden) return false;
+      const archived = archivedFlowSlugSet.has(flow.progress.slug);
+      if (flowListFilter === 'archived') return archived;
+      if (archived) return false;
       if (flowListFilter === 'open') return flow.done < flow.total;
       if (flowListFilter === 'routine') return flow.bundle.flow.structure_type === 'routine';
       if (flowListFilter === 'done') return flow.done >= flow.total;
@@ -8224,6 +8331,68 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
   };
 
+  const persistMyFlowSourceBackedIncludedSteps = (
+    flow: MySavedFlow,
+    includedStepIds: string[],
+    label: string,
+    count = 1,
+  ): boolean => {
+    if (typeof window === 'undefined' || isMyFlowScenarioDemo || !flow.savedMap) return false;
+    const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
+    const previousPersistenceRecord = savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId];
+    const editableSnapshot = initializeSourceBackedFlowMapPersonalCopy(
+      previousSavedMapSnapshot,
+      previousPersistenceRecord,
+    );
+    if (!editableSnapshot) return false;
+    const sourceStepIds = [
+      ...getMyFlowRows(flow.bundle, flow.anchor),
+      ...flow.excludedRows,
+    ].map((row) => baseStateId(row.id));
+    const sourceStepIdSet = new Set(sourceStepIds);
+    const normalizedIncludedStepIds = Array.from(new Set(includedStepIds))
+      .filter((itemId) => sourceStepIdSet.has(itemId));
+    if (normalizedIncludedStepIds.length === 0) return false;
+
+    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(editableSnapshot, {
+      title: editableSnapshot.title,
+      anchor: editableSnapshot.anchor,
+      savedAt: new Date().toISOString(),
+      includedStepIdsByFlow: {
+        ...editableSnapshot.personalCopy?.includedStepIdsByFlow,
+        [flow.progress.slug]: normalizedIncludedStepIds,
+      },
+      stepOverridesByFlow: editableSnapshot.personalCopy?.stepOverridesByFlow,
+      baselineRecord: previousPersistenceRecord,
+    });
+    if (!adjusted) return false;
+
+    try {
+      window.localStorage.setItem(
+        getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
+        JSON.stringify(adjusted.snapshot),
+      );
+      window.localStorage.setItem(
+        getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
+        JSON.stringify(adjusted.persistenceRecord),
+      );
+    } catch {
+      return false;
+    }
+
+    setMyFlowBatchAdjustmentUndo({
+      flowSlug: flow.progress.slug,
+      count,
+      label,
+      previousSavedMapSnapshot,
+      ...(previousPersistenceRecord ? { previousPersistenceRecord } : {}),
+    });
+    setMyFlowBatchAdjustment(null);
+    resetMyFlowRowDetailState();
+    refreshSavedFlowState();
+    return true;
+  };
+
   const removeMyFlowBatchItems = (flow: MySavedFlow) => {
     if (
       typeof window === 'undefined' ||
@@ -8265,45 +8434,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
 
     if (!flow.savedMap?.personalCopy) return;
-    const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
-    const previousPersistenceRecord = savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId];
-    const currentIncluded = previousSavedMapSnapshot.personalCopy?.includedStepIdsByFlow[flow.progress.slug] ?? [];
+    const currentIncluded = flow.savedMap.personalCopy.includedStepIdsByFlow[flow.progress.slug] ?? [];
     const removedIds = new Set(rows.map((row) => baseStateId(row.id)));
     const nextIncluded = currentIncluded.filter((itemId) => !removedIds.has(itemId));
     if (nextIncluded.length === 0) {
       updateMyFlowBatchAdjustment({ selectedKeys: [] });
       return;
     }
-    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(previousSavedMapSnapshot, {
-      title: previousSavedMapSnapshot.title,
-      anchor: previousSavedMapSnapshot.anchor,
-      savedAt: new Date().toISOString(),
-      includedStepIdsByFlow: {
-        ...previousSavedMapSnapshot.personalCopy?.includedStepIdsByFlow,
-        [flow.progress.slug]: nextIncluded,
-      },
-      stepOverridesByFlow: previousSavedMapSnapshot.personalCopy?.stepOverridesByFlow,
-      baselineRecord: previousPersistenceRecord,
-    });
-    if (!adjusted) return;
-    window.localStorage.setItem(
-      getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
-      JSON.stringify(adjusted.snapshot),
-    );
-    window.localStorage.setItem(
-      getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
-      JSON.stringify(adjusted.persistenceRecord),
-    );
-    setMyFlowBatchAdjustmentUndo({
-      flowSlug: flow.progress.slug,
-      count: rows.length,
-      label: `${rows.length}개를 Flow에서 뺐어요.`,
-      previousSavedMapSnapshot,
-      ...(previousPersistenceRecord ? { previousPersistenceRecord } : {}),
-    });
-    setMyFlowBatchAdjustment(null);
-    resetMyFlowRowDetailState();
-    refreshSavedFlowState();
+    persistMyFlowSourceBackedIncludedSteps(flow, nextIncluded, `${rows.length}개를 Flow에서 뺐어요.`, rows.length);
   };
 
   const undoMyFlowBatchAdjustment = () => {
@@ -8676,6 +8814,47 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     setMyFlowExpandedStructureStepSlug(flow.progress.slug);
   };
 
+  const getMyFlowSourceBackedIncludedStepIds = (flow: MySavedFlow): string[] => {
+    const stored = flow.savedMap?.personalCopy?.includedStepIdsByFlow[flow.progress.slug] ?? [];
+    if (stored.length > 0) return stored;
+    return Array.from(new Set(
+      getMyFlowRows(flow.bundle, flow.anchor).map((row) => baseStateId(row.id)),
+    ));
+  };
+
+  const removeMyFlowItemFromSavedFlow = (row: MyFlowCalendarRow) => {
+    if (isPersonalDraftStructuralEditEligible(row.flow.bundle)) {
+      deleteMyFlowPersonalDraftItem(row);
+      return;
+    }
+    if (!row.flow.savedMap) return;
+    const itemId = baseStateId(row.id);
+    const currentIncluded = getMyFlowSourceBackedIncludedStepIds(row.flow);
+    const nextIncluded = currentIncluded.filter((candidate) => candidate !== itemId);
+    if (nextIncluded.length === 0 || nextIncluded.length === currentIncluded.length) return;
+    persistMyFlowSourceBackedIncludedSteps(
+      row.flow,
+      nextIncluded,
+      `${getMyFlowRowDisplayTitle(row)}을 Flow에서 뺐어요.`,
+    );
+  };
+
+  const restoreMyFlowExcludedItem = (flow: MySavedFlow, row: MyFlowRow) => {
+    const itemId = baseStateId(row.id);
+    if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
+      restoreMyFlowPersonalDraftItem(flow, itemId);
+      return;
+    }
+    if (!flow.savedMap) return;
+    const currentIncluded = getMyFlowSourceBackedIncludedStepIds(flow);
+    if (currentIncluded.includes(itemId)) return;
+    persistMyFlowSourceBackedIncludedSteps(
+      flow,
+      [...currentIncluded, itemId],
+      `${toUserFacingSourceTitle(row.title)}을 다시 넣었어요.`,
+    );
+  };
+
   const moveMyFlowPersonalDraftItem = (
     flow: MySavedFlow,
     itemId: string,
@@ -8992,6 +9171,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           calendarEligible,
           status,
           meta: scheduleMeta,
+          subcheckCount: getMyFlowDetailChecklistItems(detail).length,
+          resourceCount: detail.links?.length ?? 0,
           ...(routineSeries
             ? {
                 recurrenceSeriesId: routineSeries.seriesId,
@@ -9092,6 +9273,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(flowRow)) {
       closeMyFlowRowDetail();
       return;
+    }
+    if (myFlowLibraryControls.mode === 'searchable') {
+      setSelectedSavedFlowSlug(flow.progress.slug);
     }
     setMyFlowExpandedStructureSlug(flow.progress.slug);
     setSavedView('flow');
@@ -10217,14 +10401,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const handleMyFlowCalendarEventMount = (info: EventMountArg) => {
     const kind = String(info.event.extendedProps.kind ?? '');
     if (kind === 'routineRail') {
+      const routineCount = ((info.event.extendedProps.routines ?? []) as MyFlowRoutineCalendarIcon[]).length;
+      const hiddenCount = Number(info.event.extendedProps.hiddenCount ?? 0);
       info.el.classList.add('my-flow-routine-rail-event');
+      info.el.setAttribute('role', 'group');
+      info.el.setAttribute('aria-label', `${info.event.startStr} 반복 일정 ${routineCount + hiddenCount}개`);
+      info.el.setAttribute('tabindex', '-1');
       info.el.style.setProperty('border-color', 'transparent', 'important');
       info.el.style.setProperty('background', 'transparent', 'important');
       info.el.style.setProperty('box-shadow', 'none', 'important');
       return;
     }
     if (kind === 'scheduleOverflow' || kind === 'scheduleFlowOverflow') {
+      const hiddenCount = Number(info.event.extendedProps.hiddenCount ?? 0);
       info.el.classList.add('my-flow-schedule-overflow-event');
+      info.el.setAttribute('role', 'group');
+      info.el.setAttribute('aria-label', `${info.event.startStr} 숨은 일정 ${hiddenCount}개`);
+      info.el.setAttribute('tabindex', '-1');
       info.el.style.setProperty('border-color', 'transparent', 'important');
       info.el.style.setProperty('background', 'transparent', 'important');
       info.el.style.setProperty('box-shadow', 'none', 'important');
@@ -10305,6 +10498,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPersonalDraftUserItem =
       isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
       row.structuralOwnership === 'user_created';
+    const canRemoveFromSavedFlow = surfaceContext === 'flow' &&
+      !row.structuralOccurrenceId &&
+      (
+        isPersonalDraftStructuralEditEligible(row.flow.bundle) ||
+        getMyFlowSourceBackedIncludedStepIds(row.flow).length > 1
+      );
     const isRecurringSeriesDefinition = Boolean(
       surfaceContext === 'flow' &&
       !row.structuralOccurrenceId &&
@@ -10345,16 +10544,30 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const routineRuleDraft = isRoutineRepeatExpanded ? getMyFlowRoutineEditorDraft(row.flow) : appliedRoutineRuleDraft;
     const routineWeekdays = routineRuleDraft.weekdays ?? [];
     const isSingleOccurrenceRoutineScope = routineRuleDraft.scope === 'this';
-    const detailChecklistItems = getMyFlowDetailChecklistItems(detail);
+    const executionDetailContent = splitExecutionDetailContent(detail);
+    const committedDetailOverlay = getMyFlowRowDraft(row).detailOverlay;
+    const pendingDetailOverlay = myFlowEditingDrafts[routineKey]?.detailOverlay;
+    const personalDetailResolution = resolvePersonalItemDetail({
+      itemId: `${row.flow.progress.slug}:${baseStateId(row.id)}`,
+      sourceSubchecks: executionDetailContent.checklistItems,
+      sourceResources: executionDetailContent.resources.map((resource) => ({
+        label: resource.label,
+        url: resource.url,
+      })),
+      overlay: pendingDetailOverlay ?? committedDetailOverlay,
+    });
+    const detailChecklistEntries = personalDetailResolution.subchecks;
+    const detailChecklistItems = detailChecklistEntries.map((entry) => entry.text);
     const hasDetailChecklistItems = detailChecklistItems.length > 0;
     const inlineActionHint = getMyFlowInlineActionHint(detail, item);
     const detailChecklistLabel = row.flow.bundle.flow.tags?.includes('progress-flow') ? '개념 항목' : '확인 항목';
     const detailChecklistState = myFlowStepItemChecks[getMyFlowRowInstanceKey(row)] ?? {};
     const attachmentLabel = item?.photo_filename_pattern;
-    const links = detail.links ?? [];
+    const links = personalDetailResolution.resources;
     const primaryLink = links[0];
     const advancedLinks = primaryLink ? links.slice(1) : links;
-    const hasAdvancedMeta = Boolean(attachmentLabel || advancedLinks.length > 0);
+    const isExactVideoResourceItem = Boolean(row.flow.bundle.flow.tags?.includes('exact-video') && links.length > 0);
+    const hasAdvancedMeta = Boolean(attachmentLabel || (!isExactVideoResourceItem && advancedLinks.length > 0));
     const shouldCollapseReadSummary = isInlineMode;
     const shouldCollapsePortableExport = isInlineMode;
     const portableExportKey = getMyFlowRowInstanceKey(row);
@@ -10459,7 +10672,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       sourceLabel: primaryLink ? toUserFacingSourceTitle(primaryLink.label) : undefined,
       sourceUrl: primaryLink?.url,
       items: detailChecklistItems,
-      checkedItems: detailChecklistState,
+      checkedItems: Object.fromEntries(
+        detailChecklistEntries.map((entry, index) => [
+          String(index),
+          Boolean(detailChecklistState[entry.id] ?? detailChecklistState[String(index)]),
+        ]),
+      ),
       completionCriteria: detail.completion_criteria,
       caution: detail.caution,
     };
@@ -10523,7 +10741,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
     const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
-    const detailChecklistProgressLabel = `${detailChecklistLabel} ${Object.values(detailChecklistState).filter(Boolean).length}/${detailChecklistItems.length}`;
+    const detailChecklistCompletedCount = detailChecklistEntries.filter((entry, index) =>
+      Boolean(detailChecklistState[entry.id] ?? detailChecklistState[String(index)]),
+    ).length;
+    const detailChecklistProgressLabel = `${detailChecklistLabel} ${detailChecklistCompletedCount}/${detailChecklistItems.length}`;
     const fieldClassName = `mt-1 w-full ${FLOW_UI_INPUT_CLASS}`;
     const textareaClassName = `${fieldClassName} h-28 min-h-28 resize-y font-normal leading-6`;
     const canEditDate = Boolean(
@@ -10667,6 +10888,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </span>
       </button>
     ) : null;
+    const updatePersonalDetailOverlay = (overlay: StoredMyFlowItemDraft['detailOverlay']) => {
+      if (!overlay) return;
+      updateMyFlowEditingDraft(row, { detailOverlay: overlay });
+    };
     const occurrenceFields = (
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {isPersonalDraftUserItem ? (
@@ -11238,6 +11463,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
         data-execution-level={isRecurringSeriesDefinition ? 'series' : row.structuralOccurrenceId ? 'occurrence' : 'item'}
+        data-surface-context={surfaceContext || undefined}
+        data-can-remove-from-flow={String(canRemoveFromSavedFlow)}
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
         data-editor-advanced-expanded={isDetailEditing ? String(isEditorAdvancedExpanded) : undefined}
         data-editor-layout={isDetailEditing ? (isMyFlowMobileViewport ? 'mobile-full-screen' : 'wide-detail-pane') : undefined}
@@ -11314,7 +11541,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {showDetailFlowChip ? <span data-testid="my-flow-detail-flow-chip" className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{detailFlowChipLabel}</span> : null}
               </p>
             ) : null}
-            {primaryLink && !shouldCollapsePortableExport ? (
+            {primaryLink && !shouldCollapsePortableExport && !isExactVideoResourceItem ? (
               <a
                 data-testid="my-flow-detail-source-link"
                 className="mt-2 inline-flex min-h-8 items-center rounded-md border border-blue-100 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300"
@@ -11364,17 +11591,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 닫기
               </button>
             ) : null}
-            {!isDetailEditing &&
-            isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
-            myFlowBatchAdjustment?.flowSlug === row.flow.progress.slug ? (
+            {(isDetailEditing || myFlowBatchAdjustment?.flowSlug === row.flow.progress.slug) && canRemoveFromSavedFlow ? (
               <button
                 type="button"
-                data-testid="personal-draft-delete-item"
-                aria-label={`${editorDraft.title} 삭제`}
+                data-testid={isPersonalDraftStructuralEditEligible(row.flow.bundle)
+                  ? 'personal-draft-delete-item'
+                  : 'my-flow-remove-item'}
+                aria-label={`${editorDraft.title} Flow에서 빼기`}
                 className={FLOW_UI_DANGER_ACTION_CLASS}
-                onClick={() => deleteMyFlowPersonalDraftItem(row)}
+                onClick={() => removeMyFlowItemFromSavedFlow(row)}
               >
-                {FLOW_EXECUTION_ACTIONS.delete.label}
+                목록에서 빼기
               </button>
             ) : null}
           </div>
@@ -11466,6 +11693,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             {typeSummary.text ? <p className="mt-2 leading-5 text-slate-600">{typeSummary.text}</p> : null}
           </section>
         ) : null}
+        {!isDetailEditing && isExactVideoResourceItem ? (
+          <section data-testid="my-flow-item-resources" className="mt-3 rounded-md border border-blue-100 bg-blue-50/60 px-3 py-3">
+            <p className="text-xs font-semibold text-slate-600">운동 자료</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {links.map((link, linkIndex) => (
+                <a
+                  key={`${link.label}-${link.url}`}
+                  data-testid="my-flow-item-resource-link"
+                  className="inline-flex min-h-9 items-center rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700"
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${toUserFacingSourceTitle(link.label || (linkIndex === 0 ? '원본 영상' : '참고 자료'))} 새 창에서 열기`}
+                >
+                  {toUserFacingSourceTitle(link.label || (linkIndex === 0 ? '원본 영상' : '참고 자료'))}
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
         {!isDetailEditing && detailChecklistItems.length > 0 ? (
           <section data-testid="my-flow-item-checklist" data-execution-level="subcheck" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex items-center justify-between gap-3">
@@ -11475,16 +11722,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </span>
             </div>
             <div className="mt-2 grid gap-1.5">
-              {detailChecklistItems.map((itemText, itemIndex) => {
-                const itemChecked = Boolean(detailChecklistState[String(itemIndex)]);
+              {detailChecklistEntries.map((entry, itemIndex) => {
+                const itemText = entry.text;
+                const itemChecked = Boolean(detailChecklistState[entry.id] ?? detailChecklistState[String(itemIndex)]);
                 return (
-                  <label key={`${itemText}-${itemIndex}`} className="flex min-h-9 items-start gap-2 rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2 text-sm text-slate-700">
+                  <label key={entry.id} className="flex min-h-9 items-start gap-2 rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2 text-sm text-slate-700">
                     <input
                       className="mt-1 h-4 w-4 shrink-0"
                       type="checkbox"
                       checked={itemChecked}
                       aria-label={`${itemText} 확인 항목 ${itemChecked ? '체크 취소' : '체크'}`}
-                      onChange={() => toggleMyFlowStepItemCheck(row, itemIndex)}
+                      onChange={() => toggleMyFlowStepItemCheck(row, entry.id)}
                     />
                     <span className={itemChecked ? 'text-slate-400 line-through' : undefined}>{itemText}</span>
                   </label>
@@ -11577,6 +11825,235 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             내 메모
             <textarea data-testid="my-flow-detail-memo" className={textareaClassName} value={editorDraft.memo} onChange={(event) => updateMyFlowEditingDraft(row, { memo: event.target.value })} />
           </label>
+        ) : null}
+        {isDetailEditing ? (
+          <div data-testid="my-flow-personal-detail-editor" className="mt-4 grid gap-3 border-t border-slate-200 pt-3">
+            <details data-testid="my-flow-subcheck-editor" className="group">
+              <summary className={FLOW_UI_DISCLOSURE_CLASS}>
+                <span>확인 항목 · {personalDetailResolution.subchecks.length}개</span>
+                <span aria-hidden="true" className="text-slate-500">⌄</span>
+              </summary>
+              <div className="mt-3 grid gap-2">
+                {personalDetailResolution.subchecks.map((entry, index) => (
+                  <div key={entry.id} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                    <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                      {entry.origin === 'source' ? '원문 확인 항목' : '내 확인 항목'}
+                      <input
+                        data-testid="my-flow-subcheck-edit-input"
+                        className={fieldClassName}
+                        defaultValue={entry.text}
+                        aria-label={`${entry.text} 확인 항목 내용 수정`}
+                        onBlur={(event) => updatePersonalDetailOverlay(updatePersonalDetailSubcheck(
+                          personalDetailResolution.overlay,
+                          { ...entry, text: event.currentTarget.value },
+                        ))}
+                      />
+                    </label>
+                    <div className="mt-5 flex shrink-0 gap-1">
+                      <button
+                        type="button"
+                        title="위로 이동"
+                        aria-label={`${entry.text} 확인 항목 위로 이동`}
+                        disabled={index === 0}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => updatePersonalDetailOverlay(movePersonalDetailEntry(
+                          personalDetailResolution.overlay,
+                          'subcheck',
+                          personalDetailResolution.subchecks.map((item) => item.id),
+                          entry.id,
+                          -1,
+                        ))}
+                      >
+                        <span aria-hidden="true">↑</span>
+                      </button>
+                      <button
+                        type="button"
+                        title="아래로 이동"
+                        aria-label={`${entry.text} 확인 항목 아래로 이동`}
+                        disabled={index === personalDetailResolution.subchecks.length - 1}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => updatePersonalDetailOverlay(movePersonalDetailEntry(
+                          personalDetailResolution.overlay,
+                          'subcheck',
+                          personalDetailResolution.subchecks.map((item) => item.id),
+                          entry.id,
+                          1,
+                        ))}
+                      >
+                        <span aria-hidden="true">↓</span>
+                      </button>
+                      <button
+                        type="button"
+                        title="목록에서 빼기"
+                        aria-label={`${entry.text} 확인 항목 목록에서 빼기`}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => updatePersonalDetailOverlay(removePersonalDetailSubcheck(
+                          personalDetailResolution.overlay,
+                          entry,
+                        ))}
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <form
+                  className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 border-t border-slate-100 pt-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const input = event.currentTarget.elements.namedItem('newSubcheck') as HTMLInputElement | null;
+                    const text = input?.value.trim() ?? '';
+                    if (!text) return;
+                    updatePersonalDetailOverlay(addPersonalDetailSubcheck(personalDetailResolution.overlay, {
+                      id: createPersonalDetailId('subcheck'),
+                      text,
+                    }));
+                    if (input) input.value = '';
+                  }}
+                >
+                  <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                    확인 항목 추가
+                    <input name="newSubcheck" className={fieldClassName} aria-label={`${editorDraft.title} 확인 항목 추가`} />
+                  </label>
+                  <button type="submit" className={FLOW_UI_COMPACT_ACTION_CLASS}>추가</button>
+                </form>
+                {personalDetailResolution.hiddenSourceSubchecks.length > 0 ? (
+                  <details data-testid="my-flow-hidden-subchecks" className="border-t border-slate-100 pt-2">
+                    <summary className="cursor-pointer text-xs font-semibold text-slate-500">
+                      뺀 항목 · {personalDetailResolution.hiddenSourceSubchecks.length}개
+                    </summary>
+                    <div className="mt-2 grid gap-1.5">
+                      {personalDetailResolution.hiddenSourceSubchecks.map((entry) => (
+                        <div key={entry.id} className="flex items-center justify-between gap-2 text-xs text-slate-600">
+                          <span className="min-w-0 truncate">{entry.text}</span>
+                          <button
+                            type="button"
+                            className={FLOW_UI_COMPACT_ACTION_CLASS}
+                            aria-label={`${entry.text} 확인 항목 복구`}
+                            onClick={() => updatePersonalDetailOverlay(restorePersonalDetailSubcheck(
+                              personalDetailResolution.overlay,
+                              entry.id,
+                            ))}
+                          >
+                            복구
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+            </details>
+
+            <details data-testid="my-flow-resource-editor" className="group">
+              <summary className={FLOW_UI_DISCLOSURE_CLASS}>
+                <span>자료 · {personalDetailResolution.resources.length}개</span>
+                <span aria-hidden="true" className="text-slate-500">⌄</span>
+              </summary>
+              <div className="mt-3 grid gap-3">
+                {personalDetailResolution.resources.map((entry) => (
+                  <div key={entry.id} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+                    <div className="grid min-w-0 gap-2 sm:grid-cols-2">
+                      <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                        자료 이름
+                        <input
+                          data-testid="my-flow-resource-label-input"
+                          className={fieldClassName}
+                          defaultValue={entry.label}
+                          aria-label={`${entry.label} 자료 이름 수정`}
+                          onBlur={(event) => updatePersonalDetailOverlay(updatePersonalDetailResource(
+                            personalDetailResolution.overlay,
+                            { ...entry, label: event.currentTarget.value },
+                          ))}
+                        />
+                      </label>
+                      <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                        주소
+                        <input
+                          data-testid="my-flow-resource-url-input"
+                          className={fieldClassName}
+                          type="url"
+                          defaultValue={entry.url}
+                          aria-label={`${entry.label} 자료 주소 수정`}
+                          onBlur={(event) => updatePersonalDetailOverlay(updatePersonalDetailResource(
+                            personalDetailResolution.overlay,
+                            { ...entry, url: event.currentTarget.value },
+                          ))}
+                        />
+                      </label>
+                    </div>
+                    <button
+                      type="button"
+                      title="목록에서 빼기"
+                      aria-label={`${entry.label} 자료 목록에서 빼기`}
+                      className={FLOW_UI_ICON_ACTION_CLASS}
+                      onClick={() => updatePersonalDetailOverlay(removePersonalDetailResource(
+                        personalDetailResolution.overlay,
+                        entry,
+                      ))}
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                ))}
+                <form
+                  className="grid gap-2 border-t border-slate-100 pt-2 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] sm:items-end"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const labelInput = event.currentTarget.elements.namedItem('newResourceLabel') as HTMLInputElement | null;
+                    const urlInput = event.currentTarget.elements.namedItem('newResourceUrl') as HTMLInputElement | null;
+                    const label = labelInput?.value.trim() ?? '';
+                    const url = urlInput?.value.trim() ?? '';
+                    if (!label || !url) return;
+                    const nextOverlay = addPersonalDetailResource(personalDetailResolution.overlay, {
+                      id: createPersonalDetailId('resource'),
+                      label,
+                      url,
+                    });
+                    if (nextOverlay === personalDetailResolution.overlay) return;
+                    updatePersonalDetailOverlay(nextOverlay);
+                    if (labelInput) labelInput.value = '';
+                    if (urlInput) urlInput.value = '';
+                  }}
+                >
+                  <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                    자료 이름
+                    <input name="newResourceLabel" className={fieldClassName} required aria-label={`${editorDraft.title} 새 자료 이름`} />
+                  </label>
+                  <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                    주소
+                    <input name="newResourceUrl" type="url" className={fieldClassName} required aria-label={`${editorDraft.title} 새 자료 주소`} />
+                  </label>
+                  <button type="submit" className={FLOW_UI_COMPACT_ACTION_CLASS}>추가</button>
+                </form>
+                {personalDetailResolution.hiddenSourceResources.length > 0 ? (
+                  <details data-testid="my-flow-hidden-resources" className="border-t border-slate-100 pt-2">
+                    <summary className="cursor-pointer text-xs font-semibold text-slate-500">
+                      뺀 자료 · {personalDetailResolution.hiddenSourceResources.length}개
+                    </summary>
+                    <div className="mt-2 grid gap-1.5">
+                      {personalDetailResolution.hiddenSourceResources.map((entry) => (
+                        <div key={entry.id} className="flex items-center justify-between gap-2 text-xs text-slate-600">
+                          <span className="min-w-0 truncate">{entry.label}</span>
+                          <button
+                            type="button"
+                            className={FLOW_UI_COMPACT_ACTION_CLASS}
+                            aria-label={`${entry.label} 자료 복구`}
+                            onClick={() => updatePersonalDetailOverlay(restorePersonalDetailResource(
+                              personalDetailResolution.overlay,
+                              entry.id,
+                            ))}
+                          >
+                            복구
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+            </details>
+          </div>
         ) : null}
         {isDetailEditing && isEditorAdvancedExpanded && (isDecisionRow || isLogRow || (showRoutineRepeatSettings && isRoutineRow)) ? (
           <div
@@ -12585,23 +13062,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const renderMyFlowExcludedSteps = (flow: MySavedFlow) => {
-    if (flow.excludedRows.length === 0) return null;
+    if (flow.excludedRows.length === 0 || isPersonalDraftStructuralEditEligible(flow.bundle)) return null;
     return (
-      <section data-testid="my-flow-excluded-steps" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs font-semibold text-slate-500">제외됨</p>
-          <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-            {flow.excludedRows.length}개
-          </span>
-        </div>
-        <ul className="mt-2 grid gap-1 text-xs font-semibold text-slate-600">
+      <details data-testid="my-flow-excluded-steps" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm">
+        <summary className="cursor-pointer text-xs font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200">
+          목록에서 뺀 할 일 · {flow.excludedRows.length}개
+        </summary>
+        <ul className="mt-2 grid gap-2 border-t border-slate-200 pt-2 text-xs font-semibold text-slate-600">
           {flow.excludedRows.map((row) => (
-            <li key={`excluded-${flow.progress.slug}-${row.id}`} data-testid="my-flow-excluded-step-row" className="truncate">
-              {toUserFacingSourceTitle(row.title)}
+            <li
+              key={`excluded-${flow.progress.slug}-${row.id}`}
+              data-testid="my-flow-excluded-step-row"
+              className="flex min-w-0 items-center justify-between gap-2"
+            >
+              <span className="min-w-0 truncate">{toUserFacingSourceTitle(row.title)}</span>
+              <button
+                type="button"
+                data-testid="my-flow-restore-excluded-item"
+                aria-label={`${toUserFacingSourceTitle(row.title)} Flow에 복구`}
+                className="min-h-8 shrink-0 rounded-md border border-blue-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700"
+                onClick={() => restoreMyFlowExcludedItem(flow, row)}
+              >
+                복구
+              </button>
             </li>
           ))}
         </ul>
-      </section>
+      </details>
     );
   };
 
@@ -13939,8 +14426,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const retiredPersonalCopy = contentReadiness.kind === 'retired';
     const sourceLinkExternal = sourceHref.startsWith('https://');
     const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
-    const hiddenInInventory = hiddenFlowSlugSet.has(flow.progress.slug);
-    const showHideToggle = savedFlows.length > 1 && !isMyFlowMobileViewport;
+    const archivedInInventory = archivedFlowSlugSet.has(flow.progress.slug);
+    const showArchiveToggle = true;
     const showWholeFlowOutline = selectedSavedFlowSlug === flow.progress.slug || visibleSavedFlows.length === 1;
     const batchActive = Boolean(myFlowBatchAdjustment?.flowSlug === flow.progress.slug);
     const activeOverviewRow =
@@ -14133,7 +14620,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {executionReady && !batchActive ? renderMyFlowCompletionFeedback(flow) : null}
         {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
         {executionReady && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
-        {!batchActive ? <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
+        {!batchActive ? <div className={`mt-4 grid gap-2 ${showArchiveToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
           <Link
             className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
             href={sourceHref}
@@ -14142,14 +14629,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           >
                 {flow.savedMap ? '원문 보기' : sourceLabel}
           </Link>
-          {showHideToggle ? (
+          {showArchiveToggle ? (
             <button
               type="button"
-              data-testid="my-flow-hide-toggle"
+              data-testid="my-flow-archive-toggle"
+              aria-label={`${flowTitle} ${archivedInInventory ? '복구하기' : '보관하기'}`}
               className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:border-blue-300 hover:text-slate-900"
-              onClick={() => toggleMyFlowHiddenFlow(flow.progress.slug)}
+              onClick={() => updateMyFlowArchiveState(flow, archivedInInventory ? 'restore' : 'archive')}
             >
-              {hiddenInInventory ? '목록에 보이기' : '목록에서 숨기기'}
+              {archivedInInventory ? '복구하기' : '보관하기'}
             </button>
           ) : null}
         </div> : null}
@@ -14476,7 +14964,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </nav>
       ) : null}
 
-      {workspaceSavedFlows.length === 0 && !showPostSavePanel ? (
+      {workspaceSavedFlows.length === 0 && !showPostSavePanel && !showArchivedInventory ? (
         <section
           id={!isCalendarSurface ? `my-flow-panel-${savedView}` : undefined}
           role={!isCalendarSurface ? 'tabpanel' : undefined}
@@ -14503,15 +14991,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ? 'Flow를 저장하면 전체 계획과 개인 수정본을 여기에서 관리합니다.'
                   : 'Flow를 저장하면 여러 Flow의 다음 행동이 여기 모입니다.'}
           </p>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-wrap gap-2">
             <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto" href="/flows">
               콘텐츠 고르러 가기
             </Link>
+            {!isCalendarSurface && myFlowArchivedFlowSlugs.length > 0 ? (
+              <button
+                type="button"
+                data-testid="my-flow-open-archived"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 sm:w-auto"
+                onClick={() => {
+                  setSavedView('flow');
+                  setFlowListFilter('archived');
+                }}
+              >
+                보관된 Flow {myFlowArchivedFlowSlugs.length}개 보기
+              </button>
+            ) : null}
           </div>
         </section>
       ) : null}
 
-      {workspaceSavedFlows.length > 0 || showPostSavePanel ? (
+      {workspaceSavedFlows.length > 0 || showPostSavePanel || showArchivedInventory ? (
         <section className="mb-6">
           {showPostSavePanel ? renderPostSavePanel() : null}
           {showMyFlowWorkspace ? (
@@ -14622,7 +15123,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       ) : null}
                     </div>
                     {myFlowPrimaryContinuationRow ? (
-                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', hideLeadLabel: true })
+                      <div
+                        data-testid="my-flow-now-date-group"
+                        data-date={myFlowPrimaryContinuationRow.date ?? 'undated'}
+                        className="grid min-w-0"
+                      >
+                        {myFlowPrimaryContinuationGroupRows.map((row, index) =>
+                          renderMobileContinuationFlowCard(row, {
+                            tone: index === 0 ? 'primary' : 'plain',
+                            hideLeadLabel: true,
+                          }))}
+                      </div>
                     ) : null}
                   </section>
                   ) : myFlowAnytimeRows.length === 0 ? (
@@ -14859,44 +15370,61 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 </details>
               ) : null}
               {selectedSavedFlowSlug === 'all' ? renderMyFlowMapUpdateNotices() : null}
-              {selectedSavedFlowSlug === 'all' && visibleSavedFlows.length > 0 ? (
+              {selectedSavedFlowSlug === 'all' && (visibleSavedFlows.length > 0 || showArchivedInventory) ? (
                 <>
                   {isMyFlowMobileViewport ? (
                     <div data-testid="my-flow-mobile-flow-hub" className="grid gap-3">
-                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-lg border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm">
-                        <p className="text-sm font-semibold text-[#3654FF]">Flow 목록</p>
+                      <section
+                        data-testid="my-flow-mobile-flow-summary"
+                        data-library-mode={myFlowLibraryControls.mode}
+                        className="rounded-lg border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm"
+                      >
+                        <p className="text-sm font-semibold text-[#3654FF]">
+                          {myFlowLibraryControls.mode === 'searchable' ? 'Flow 목록' : '최근 저장한 Flow'}
+                        </p>
                         <p className="mt-1 text-xs font-semibold text-[#6E6B64]">{flowListVisibleFlows.length}개 저장</p>
                       </section>
-                      <section ref={myFlowOverviewSummaryRef} className="grid gap-2 rounded-lg border border-slate-200 bg-white p-3">
-                        <input
-                          className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                          type="search"
-                          placeholder="Flow 검색"
-                          value={flowListQuery}
-                          data-testid="my-flow-search"
-                          onChange={(event) => {
-                            setFlowListQuery(event.target.value);
-                            setMyFlowLargeInventoryOpen(false);
-                          }}
-                        />
-                        <div className="flex flex-wrap gap-2">
-                          {flowListFilterTabs.map(([id, label]) => (
-                            <button
-                              key={id}
-                              className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-                              type="button"
-                              aria-pressed={flowListFilter === id}
-                              data-testid={`my-flow-list-filter-${id}`}
-                              onClick={() => {
-                                setFlowListFilter(id);
+                      {myFlowLibraryControls.search || myFlowLibraryControls.filters ? (
+                        <section
+                          ref={myFlowOverviewSummaryRef}
+                          data-testid="my-flow-library-controls"
+                          className="grid gap-2 rounded-lg border border-slate-200 bg-white p-3"
+                        >
+                          {myFlowLibraryControls.search ? (
+                            <input
+                              className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                              type="search"
+                              placeholder="Flow 검색"
+                              aria-label="저장한 Flow 검색"
+                              value={flowListQuery}
+                              data-testid="my-flow-search"
+                              onChange={(event) => {
+                                setFlowListQuery(event.target.value);
                                 setMyFlowLargeInventoryOpen(false);
                               }}
-                            >
-                              {label}
-                            </button>
-                          ))}
-                        </div>
-                      </section>
+                            />
+                          ) : null}
+                          {myFlowLibraryControls.filters ? (
+                            <div className="flex flex-wrap gap-2" role="group" aria-label="저장한 Flow 상태 필터">
+                              {flowListFilterTabs.map(([id, label]) => (
+                                <button
+                                  key={id}
+                                  className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                                  type="button"
+                                  aria-pressed={flowListFilter === id}
+                                  data-testid={`my-flow-list-filter-${id}`}
+                                  onClick={() => {
+                                    setFlowListFilter(id);
+                                    setMyFlowLargeInventoryOpen(false);
+                                  }}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          ) : null}
+                        </section>
+                      ) : null}
                       {flowListVisibleFlows.length > 0 ? (
                         <div className="grid gap-3">
                           {mobileInventoryVisibleFlows.map((flow) => renderCompactFlowStructureRow(flow))}
@@ -15019,36 +15547,52 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
                   {!isMyFlowMobileViewport ? (
                     <>
-                  <section ref={myFlowOverviewSummaryRef} data-testid="my-flow-overview-summary" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                  <section
+                    ref={myFlowOverviewSummaryRef}
+                    data-testid="my-flow-overview-summary"
+                    data-library-mode={myFlowLibraryControls.mode}
+                    className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                  >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold text-slate-500">전체 Flow 목록</p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-950">필요한 Flow만 열기</h3>
-              </div>
-                      <div className="flex flex-col gap-2 sm:min-w-72">
-                        <input
-                          className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                          type="search"
-                          placeholder="Flow 검색"
-                          value={flowListQuery}
-                          data-testid="my-flow-search"
-                          onChange={(event) => setFlowListQuery(event.target.value)}
-                        />
-                        <div className="flex flex-wrap gap-2">
-                          {flowListFilterTabs.map(([id, label]) => (
-                            <button
-                              key={id}
-                              className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-                              type="button"
-                              aria-pressed={flowListFilter === id}
-                              data-testid={`my-flow-list-filter-${id}`}
-                              onClick={() => setFlowListFilter(id)}
-                            >
-                              {label}
-                            </button>
-                          ))}
-                        </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-500">
+                          {myFlowLibraryControls.mode === 'searchable' ? '전체 Flow 목록' : '최근 저장한 Flow'}
+                        </p>
+                        <h3 className="mt-1 text-lg font-semibold text-slate-950">
+                          {myFlowLibraryControls.mode === 'searchable' ? '필요한 Flow 찾기' : 'Flow를 열어 전체 계획 확인'}
+                        </h3>
                       </div>
+                      {myFlowLibraryControls.search || myFlowLibraryControls.filters ? (
+                        <div data-testid="my-flow-library-controls" className="flex flex-col gap-2 sm:min-w-72">
+                          {myFlowLibraryControls.search ? (
+                            <input
+                              className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                              type="search"
+                              placeholder="Flow 검색"
+                              aria-label="저장한 Flow 검색"
+                              value={flowListQuery}
+                              data-testid="my-flow-search"
+                              onChange={(event) => setFlowListQuery(event.target.value)}
+                            />
+                          ) : null}
+                          {myFlowLibraryControls.filters ? (
+                            <div className="flex flex-wrap gap-2" role="group" aria-label="저장한 Flow 상태 필터">
+                              {flowListFilterTabs.map(([id, label]) => (
+                                <button
+                                  key={id}
+                                  className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                                  type="button"
+                                  aria-pressed={flowListFilter === id}
+                                  data-testid={`my-flow-list-filter-${id}`}
+                                  onClick={() => setFlowListFilter(id)}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
                     </div>
                     {shouldCollapseFlowInventory && savedView !== 'flow' ? (
                       <button
@@ -15192,7 +15736,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {showMyFlowCalendarScopeFilter ? (
                   <div
                     data-testid="my-flow-calendar-scope-filter"
-                    className={`mt-2 grid-flow-col auto-cols-max overflow-x-auto sm:mt-3 sm:inline-grid ${FLOW_UI_SEGMENTED_CLASS}`}
+                    className={`mt-2 grid w-full max-w-full grid-flow-col auto-cols-max overflow-x-auto sm:mt-3 ${FLOW_UI_SEGMENTED_CLASS}`}
                     aria-label="캘린더 표시 범위"
                   >
                     {visibleMyFlowCalendarScopeOptions.map((option) => {
@@ -15797,7 +16341,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </FlowBottomSheet>
       ) : null}
 
-      {myFlowCompletionUndo ? (
+      {myFlowLifecycleUndo ? (
+        <div
+          data-testid="my-flow-lifecycle-snackbar"
+          data-lifecycle-action={myFlowLifecycleUndo.action}
+          role="status"
+          aria-live="polite"
+          data-layer-priority="notice"
+          className="fixed inset-x-3 bottom-[var(--flowme-mobile-workbar-bottom)] z-[60] mx-auto flex max-w-md items-center gap-3 rounded-md bg-slate-950 px-4 py-3 text-white shadow-xl md:bottom-6"
+        >
+          <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+            {myFlowLifecycleUndo.action === 'archive'
+              ? `${myFlowLifecycleUndo.flowTitle}을 보관했습니다.`
+              : `${myFlowLifecycleUndo.flowTitle}을 복구했습니다.`}
+          </p>
+          <button
+            ref={myFlowLifecycleNoticeActionRef}
+            type="button"
+            data-testid="my-flow-lifecycle-undo"
+            className="min-h-11 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            onClick={() => undoMyFlowLifecycleChange(myFlowLifecycleUndo)}
+          >
+            되돌리기
+          </button>
+        </div>
+      ) : null}
+
+      {myFlowCompletionUndo && !myFlowLifecycleUndo ? (
         <div
           data-testid="my-flow-completion-snackbar"
           data-completion-result={myFlowCompletionUndo.result}
@@ -16937,6 +17507,15 @@ function getPublicSaveBeforePreviewRows(bundle: FlowBundle, anchor: string): Flo
   }));
 }
 
+type PublicFlowAdjustmentItem = {
+  title?: string;
+  date?: string;
+  memo?: string;
+  included: boolean;
+};
+
+type PublicFlowAdjustmentMode = 'include' | 'schedule' | 'content' | 'order';
+
 export function PublicFlow({ slug }: { slug: string }) {
   const { bundles, persist } = useBundles();
   const [bundle, setBundle] = useState<FlowBundle | null>(() => mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find((item) => item.flow.slug === slug) ?? null);
@@ -16954,6 +17533,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
+  const [publicAdjustmentOpen, setPublicAdjustmentOpen] = useState(false);
+  const [publicAdjustmentMode, setPublicAdjustmentMode] = useState<PublicFlowAdjustmentMode>('include');
+  const [publicAdjustmentItems, setPublicAdjustmentItems] = useState<Record<string, PublicFlowAdjustmentItem>>({});
+  const [publicAdjustmentOrder, setPublicAdjustmentOrder] = useState<string[]>([]);
   const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
   const [publicPreviewToday, setPublicPreviewToday] = useState('');
   const anchorPersistenceSlugRef = useRef<string | null>(null);
@@ -16981,6 +17564,10 @@ export function PublicFlow({ slug }: { slug: string }) {
     setWorkbenchState(getWorkbenchState(slug));
     setReactionLogs(getReactionLogs(slug));
     setSavedFlowAt(migration.record?.savedAt ?? getSavedFlowRecord(slug)?.savedAt);
+    setPublicAdjustmentOpen(false);
+    setPublicAdjustmentMode('include');
+    setPublicAdjustmentItems({});
+    setPublicAdjustmentOrder([]);
   }, [slug]);
 
   useEffect(() => {
@@ -17060,6 +17647,17 @@ export function PublicFlow({ slug }: { slug: string }) {
   const useP24CompactPublicFrame = !compactJeonsePage;
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
   const publicSaveBeforeRows = getPublicSaveBeforePreviewRows(bundle, displayAnchor);
+  const publicScheduleDateByItemId = new Map(
+    getScheduleEntries(bundle, displayAnchor).map((entry) => [baseStateId(entry.id), entry.startDate]),
+  );
+  const orderedPublicAdjustmentRows = [...publicSaveBeforeRows].sort((left, right) => {
+    const leftOrder = itemStates[baseStateId(left.id)]?.personalOrder;
+    const rightOrder = itemStates[baseStateId(right.id)]?.personalOrder;
+    if (leftOrder === undefined && rightOrder === undefined) return 0;
+    if (leftOrder === undefined) return 1;
+    if (rightOrder === undefined) return -1;
+    return leftOrder - rightOrder;
+  });
   const publicCalendarPreviewIcs = canExportCalendar && exportAnchor
     ? (
         hasDatedCalendarSchedule(bundle)
@@ -17134,6 +17732,89 @@ export function PublicFlow({ slug }: { slug: string }) {
         },
       };
     });
+  };
+  const openPublicAdjustment = () => {
+    const storedDrafts = getStoredMyFlowItemDrafts();
+    const storedDateOverrides = getStoredMyFlowDateOverrides();
+    const orderedRows = [...orderedPublicAdjustmentRows];
+    setPublicAdjustmentItems(Object.fromEntries(orderedRows.map((row) => {
+      const itemId = baseStateId(row.id);
+      const draft = storedDrafts[getPersonalDraftProjectionValueKey(bundle.flow.slug, itemId)] ?? {};
+      const sourceDate = publicScheduleDateByItemId.get(itemId);
+      const overrideKey = getMyFlowDateOverrideKey(bundle.flow.slug, itemId, sourceDate);
+      const explicitlyUnscheduled = storedDateOverrides[overrideKey] === MY_FLOW_DATE_REMOVED_OVERRIDE;
+      return [itemId, {
+        ...(draft.title !== undefined ? { title: draft.title } : {}),
+        ...(draft.memo !== undefined ? { memo: draft.memo } : {}),
+        ...(draft.date !== undefined
+          ? { date: draft.date }
+          : explicitlyUnscheduled
+            ? { date: '' }
+            : {}),
+        included: !isUrlFirstStartExcludedItemState(itemStates, itemId),
+      } satisfies PublicFlowAdjustmentItem];
+    })));
+    setPublicAdjustmentOrder(orderedRows.map((row) => baseStateId(row.id)));
+    setPublicAdjustmentMode('include');
+    setPublicAdjustmentOpen(true);
+    window.setTimeout(() => {
+      document.querySelector<HTMLElement>('[data-testid="public-flow-personal-adjustment"]')?.focus({ preventScroll: true });
+      document.querySelector('[data-testid="public-flow-personal-adjustment"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+  const commitPublicAdjustment = () => {
+    if (!publicAdjustmentOpen) return;
+    const nextItemStates = { ...itemStates };
+    const nextDrafts = getStoredMyFlowItemDrafts();
+    const nextDateOverrides = getStoredMyFlowDateOverrides();
+
+    publicAdjustmentOrder.forEach((itemId, index) => {
+      const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
+      const currentState = nextItemStates[itemId] ?? {};
+      if (adjustment.included) {
+        if (currentState.note === 'excluded_on_start') {
+          const { skipped: _skipped, note: _note, ...remaining } = currentState;
+          nextItemStates[itemId] = { ...remaining, personalOrder: index };
+        } else {
+          nextItemStates[itemId] = { ...currentState, personalOrder: index };
+        }
+      } else {
+        nextItemStates[itemId] = {
+          ...currentState,
+          skipped: true,
+          note: 'excluded_on_start',
+          personalOrder: index,
+        };
+      }
+
+      const draftKey = getPersonalDraftProjectionValueKey(bundle.flow.slug, itemId);
+      const currentDraft = nextDrafts[draftKey] ?? {};
+      const nextDraft: StoredMyFlowItemDraft = { ...currentDraft };
+      const sourceTitle = publicSaveBeforeRows.find((row) => baseStateId(row.id) === itemId)?.title ?? '';
+      if (adjustment.title !== undefined && adjustment.title.trim() && adjustment.title.trim() !== sourceTitle.trim()) {
+        nextDraft.title = adjustment.title.trim();
+      } else if (adjustment.title !== undefined) {
+        delete nextDraft.title;
+      }
+      if (adjustment.memo !== undefined && adjustment.memo.trim()) nextDraft.memo = adjustment.memo.trim();
+      else if (adjustment.memo !== undefined) delete nextDraft.memo;
+      if (adjustment.date !== undefined && adjustment.date) nextDraft.date = adjustment.date;
+      else if (adjustment.date !== undefined) delete nextDraft.date;
+      if (Object.keys(nextDraft).length > 0) nextDrafts[draftKey] = nextDraft;
+      else delete nextDrafts[draftKey];
+
+      if (adjustment.date !== undefined) {
+        const sourceDate = publicScheduleDateByItemId.get(itemId);
+        const overrideKey = getMyFlowDateOverrideKey(bundle.flow.slug, itemId, sourceDate);
+        if (!adjustment.date && sourceDate) nextDateOverrides[overrideKey] = MY_FLOW_DATE_REMOVED_OVERRIDE;
+        else delete nextDateOverrides[overrideKey];
+      }
+    });
+
+    saveItemStates(bundle.flow.slug, nextItemStates);
+    saveStoredMyFlowItemDrafts(nextDrafts);
+    saveStoredMyFlowDateOverrides(nextDateOverrides);
+    setItemStates(nextItemStates);
   };
   const copy = async (): Promise<boolean> => {
     const text = buildText(bundle, checks, exportAnchor, itemStates, comparisonState, workbenchState);
@@ -17235,16 +17916,14 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
   };
   const copyToEditableDraft = () => {
-    if (!bundle) return;
-    const next = cloneBundleForEditing(bundle);
-    persist([...bundles, next]);
-    window.location.href = `/flows/${next.flow.id}/edit`;
+    openPublicAdjustment();
   };
   const saveToMyFlow = () => {
     if (!dateIntent.canSave) {
       document.querySelector<HTMLInputElement>('[data-testid="public-flow-anchor-input"]')?.focus();
       return;
     }
+    commitPublicAdjustment();
     if (dateIntent.previewOnly) changeAnchorMode('undated');
     saveStoredAnchor(bundle.flow.slug, {
       mode: dateIntent.persistedMode,
@@ -17257,6 +17936,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       ...(bundle.flow.structure_type === 'routine' ? { weekdays: weekdaySelection } : {}),
     });
     setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
+    setPublicAdjustmentOpen(false);
   };
   const saveActionLabel = getPublicSaveActionLabel(bundle, dateIntent);
   const postSaveHref = buildPostSaveHref({ kind: 'flow', id: bundle.flow.slug });
@@ -17274,6 +17954,15 @@ export function PublicFlow({ slug }: { slug: string }) {
           <Link data-action-priority="primary" className={`${FLOW_UI_PRIMARY_ACTION_CLASS} col-span-2`} href={postSaveHref}>
             내 Flow에서 보기
           </Link>
+        ) : publicAdjustmentOpen ? (
+          <button
+            type="button"
+            data-testid="public-flow-adjust-close"
+            className={`${FLOW_UI_SECONDARY_ACTION_CLASS} col-span-2`}
+            onClick={() => setPublicAdjustmentOpen(false)}
+          >
+            조정 닫기
+          </button>
         ) : (
           <>
             <button
@@ -17299,7 +17988,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       </div>
     ) : null;
   const renderPublicMobileSaveCta = () =>
-    showPublicSaveAction ? (
+    showPublicSaveAction && !publicAdjustmentOpen ? (
       <div
         data-testid="public-flow-mobile-save-cta"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[#DDE4E0] bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_28px_rgba(23,32,28,0.08)] backdrop-blur sm:hidden"
@@ -17338,6 +18027,234 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       </div>
     ) : null;
+  const renderPublicAdjustment = () => {
+    if (!publicAdjustmentOpen) return null;
+    const rowById = new Map(publicSaveBeforeRows.map((row) => [baseStateId(row.id), row]));
+    const rows = publicAdjustmentOrder.flatMap((itemId) => {
+      const row = rowById.get(itemId);
+      return row ? [{ itemId, row }] : [];
+    });
+    const includedCount = rows.filter(({ itemId }) => publicAdjustmentItems[itemId]?.included !== false).length;
+    return (
+      <section
+        data-testid="public-flow-personal-adjustment"
+        data-adjustment-mode={publicAdjustmentMode}
+        tabIndex={-1}
+        aria-labelledby="public-flow-personal-adjustment-title"
+        className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold text-[var(--flowme-action)]">내 Flow로 조정</p>
+            <h2 id="public-flow-personal-adjustment-title" className="mt-1 text-xl font-bold text-[var(--flowme-text)]">
+              저장할 항목 정리
+            </h2>
+          </div>
+          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+            {includedCount}/{rows.length}개 저장
+          </span>
+        </div>
+
+        <div
+          data-testid="public-flow-adjustment-mode-picker"
+          role="group"
+          aria-label="조정할 내용"
+          className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4"
+        >
+          {([
+            ['include', '항목 고르기'],
+            ['schedule', '날짜'],
+            ['content', '제목·메모'],
+            ['order', '순서'],
+          ] as const).map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              data-testid={`public-flow-adjustment-mode-${mode}`}
+              aria-pressed={publicAdjustmentMode === mode}
+              className={publicAdjustmentMode === mode ? FLOW_UI_PRIMARY_ACTION_CLASS : FLOW_UI_SECONDARY_ACTION_CLASS}
+              onClick={() => setPublicAdjustmentMode(mode)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+          {publicAdjustmentMode === 'include'
+            ? '저장할 할 일만 고르세요.'
+            : publicAdjustmentMode === 'schedule'
+              ? '필요한 할 일의 날짜만 바꾸세요.'
+              : publicAdjustmentMode === 'content'
+                ? '제목이나 개인 메모가 필요한 할 일만 손보세요.'
+                : '화살표로 실행 순서만 바꾸세요.'}
+        </p>
+
+        <ol className="mt-4 divide-y divide-[var(--flowme-border)] border-y border-[var(--flowme-border)] bg-white">
+          {rows.map(({ itemId, row }, index) => {
+            const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
+            const included = adjustment.included !== false;
+            const sourceDate = publicScheduleDateByItemId.get(itemId) ?? '';
+            const displayedDate = adjustment.date !== undefined ? adjustment.date : sourceDate;
+            const displayTitle = adjustment.title ?? row.title;
+            const displayDateLabel = displayedDate
+              ? formatKoreanShortDate(displayedDate, { includeWeekday: false })
+              : '날짜 없음';
+            return (
+              <li
+                key={itemId}
+                data-testid="public-flow-adjustment-row"
+                data-item-id={itemId}
+                data-adjustment-mode={publicAdjustmentMode}
+                className={`min-w-0 px-3 py-3 ${included ? '' : 'opacity-55'}`}
+              >
+                {publicAdjustmentMode === 'include' ? (
+                  <label className="grid min-h-11 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={included}
+                      aria-label={`${displayTitle} 저장에 포함`}
+                      onChange={(event) => setPublicAdjustmentItems((current) => ({
+                        ...current,
+                        [itemId]: { ...adjustment, included: event.target.checked },
+                      }))}
+                    />
+                    <span className="min-w-0 text-sm font-semibold leading-5 text-[var(--flowme-text)]">{displayTitle}</span>
+                    <span className="whitespace-nowrap text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
+                      {displayDateLabel}
+                    </span>
+                  </label>
+                ) : null}
+
+                {publicAdjustmentMode === 'schedule' ? (
+                  <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-start">
+                    <div className="min-w-0 pt-1">
+                      <p className="text-sm font-semibold leading-5 text-[var(--flowme-text)]">{displayTitle}</p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{displayDateLabel}</p>
+                    </div>
+                    <label className="block text-[11px] font-semibold text-slate-500">
+                      날짜
+                      <input
+                        data-testid="public-flow-adjustment-date"
+                        className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
+                        type="date"
+                        value={displayedDate}
+                        disabled={!included}
+                        aria-label={`${displayTitle} 날짜`}
+                        onChange={(event) => setPublicAdjustmentItems((current) => ({
+                          ...current,
+                          [itemId]: { ...adjustment, date: event.target.value },
+                        }))}
+                      />
+                      {displayedDate ? (
+                        <button
+                          type="button"
+                          className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:underline"
+                          disabled={!included}
+                          onClick={() => setPublicAdjustmentItems((current) => ({
+                            ...current,
+                            [itemId]: { ...adjustment, date: '' },
+                          }))}
+                        >
+                          날짜 없애기
+                        </button>
+                      ) : null}
+                    </label>
+                  </div>
+                ) : null}
+
+                {publicAdjustmentMode === 'content' ? (
+                  <div className="min-w-0">
+                    <label className="block text-[11px] font-semibold text-slate-500">
+                      할 일
+                      <input
+                        data-testid="public-flow-adjustment-title"
+                        className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
+                        value={displayTitle}
+                        disabled={!included}
+                        onChange={(event) => setPublicAdjustmentItems((current) => ({
+                          ...current,
+                          [itemId]: { ...adjustment, title: event.target.value },
+                        }))}
+                      />
+                    </label>
+                    <details className="mt-2" data-testid="public-flow-adjustment-memo">
+                      <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">개인 메모</summary>
+                      <textarea
+                        className={`mt-2 h-20 min-h-20 w-full resize-y ${FLOW_UI_INPUT_CLASS}`}
+                        value={adjustment.memo ?? ''}
+                        disabled={!included}
+                        aria-label={`${displayTitle} 개인 메모`}
+                        onChange={(event) => setPublicAdjustmentItems((current) => ({
+                          ...current,
+                          [itemId]: { ...adjustment, memo: event.target.value },
+                        }))}
+                      />
+                    </details>
+                  </div>
+                ) : null}
+
+                {publicAdjustmentMode === 'order' ? (
+                  <div className="grid min-h-11 grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3">
+                    <span className="text-center text-xs font-bold text-[var(--flowme-text-secondary)]">{index + 1}</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold leading-5 text-[var(--flowme-text)]">{displayTitle}</p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{displayDateLabel}</p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        title="위로 이동"
+                        aria-label={`${displayTitle} 위로 이동`}
+                        disabled={index === 0 || !included}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => setPublicAdjustmentOrder((current) => {
+                          const next = [...current];
+                          [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                          return next;
+                        })}
+                      >
+                        <span aria-hidden="true">↑</span>
+                      </button>
+                      <button
+                        type="button"
+                        title="아래로 이동"
+                        aria-label={`${displayTitle} 아래로 이동`}
+                        disabled={index === rows.length - 1 || !included}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => setPublicAdjustmentOrder((current) => {
+                          const next = [...current];
+                          [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                          return next;
+                        })}
+                      >
+                        <span aria-hidden="true">↓</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
+
+        <div className="sticky bottom-0 z-30 mt-4 flex flex-wrap justify-end gap-2 border-t border-[var(--flowme-border)] bg-[#F5F7F6]/95 py-3 backdrop-blur">
+          <button type="button" className={FLOW_UI_SECONDARY_ACTION_CLASS} onClick={() => setPublicAdjustmentOpen(false)}>
+            취소
+          </button>
+          <button
+            type="button"
+            data-testid="public-flow-adjustment-save"
+            data-action-priority="primary"
+            className={FLOW_UI_PRIMARY_ACTION_CLASS}
+            disabled={!dateIntent.canSave || includedCount === 0}
+            onClick={saveToMyFlow}
+          >
+            {includedCount}개 항목으로 내 Flow에 저장
+          </button>
+        </div>
+      </section>
+    );
+  };
   const renderPublicHeroSetup = () => {
     if (!showPublicSetupInput) return null;
     return (
@@ -17414,6 +18331,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           setup={showPublicSetupInput ? renderPublicHeroSetup() : undefined}
           actions={showPublicSaveAction ? renderPublicSaveActions() : undefined}
         />
+        {renderPublicAdjustment()}
 
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">

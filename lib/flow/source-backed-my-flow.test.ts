@@ -30,6 +30,7 @@ import {
   getSourceBackedFlowMapPersistenceStorageKey,
   getSourceBackedFlowMapSnapshotStorageKey,
   getSourceBackedMyFlowMapForBundle,
+  initializeSourceBackedFlowMapPersonalCopy,
   getUrlFirstLookupableSourceBackedFlowMaps,
   isSourceBackedFlowMapDirectRouteAccessible,
   isSourceBackedFlowMapExecutable,
@@ -1981,6 +1982,33 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
       schedule: { mode: 'fixed_date', date: '2026-08-04' },
     },
   });
+});
+
+test('source-backed saved Flow promotes to a personal edit copy without mutating its source snapshot', () => {
+  const snapshot = buildSourceBackedFlowMapSavedSnapshot('moving-d30', {
+    savedAt: '2026-07-21T00:00:00.000Z',
+    anchor: '2026-08-15',
+  });
+  assert.ok(snapshot);
+  const baseline = buildSourceBackedFlowMapPersistenceRecord('moving-d30', {
+    savedAt: snapshot.savedAt,
+    anchor: snapshot.anchor,
+  });
+  assert.ok(baseline);
+
+  const promoted = initializeSourceBackedFlowMapPersonalCopy(snapshot, baseline);
+
+  assert.ok(promoted?.personalCopy);
+  assert.equal(promoted.personalCopy.source, 'personal_edit');
+  assert.equal(snapshot.personalCopy, undefined);
+  assert.deepEqual(
+    promoted.personalCopy.includedStepIdsByFlow['source-backed-moving-d30'],
+    baseline.childFlows[0]?.stepIds,
+  );
+  assert.deepEqual(
+    promoted.personalCopy.excludedStepIdsByFlow['source-backed-moving-d30'],
+    [],
+  );
 });
 
 test('source-backed Flow Map update assessment requires review for official sensitive map changes', () => {

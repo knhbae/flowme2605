@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-21 - P27 uses a reversible Flow lifecycle and one-operation adjustment workspace
+
+**Decision:** Keep one Flow outline from save-before through post-save and returning My Flow. Public adjustment starts with `항목 고르기` and exposes only one of include, date, title/memo, or order controls at a time. A saved Flow leaves active execution through reversible archive, not destructive clear; source Items leave a personal copy through exclusion, while user Items use personal tombstones. Resource links stay separate from completion subchecks. Routine preview horizon never becomes series end unless source or user intent explicitly says so. Small My Flow libraries stay directly browsable, while libraries of five or more expose search and open a matching whole Flow workspace.
+
+**Reason:** Owner feedback and current-browser review showed that deletion risk, ambiguous four-week routines, resource/checklist mixing, all-fields-at-once adjustment, and search-first My Flow made the same personal Flow feel like unrelated screens. The P27 implementation resolves those boundaries while consuming the existing P26 source, overlay, run, occurrence, and export identities.
+
+**Applies to:** public `/f` save-before, My Flow lifecycle and library, source/user Item removal, recurrence preview, confirmation/resource detail, Calendar projection, post-save receipt, export preflight, and P27 regression evidence.
+
+**Reopen when:** observed users consistently fail to find the needed adjustment mode, misunderstand archive as permanent deletion, cannot distinguish resource from subcheck, or need search below the five-Flow threshold. Account-backed permanent deletion is a separate data-management decision and does not reopen the default reversible path.
+
+**Related docs:** [P27 spec](./specs/2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md), [P27 final package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md)
+
 ### 2026-07-20 - P26 uses one canonical item identity across personal projections
 
 **Decision:** Use `flowId::itemId` as the stable personal item key across My Flow, Today, Calendar, export scope, and list destinations. Keep execution run and recurrence occurrence keys separate from item identity. Personal title, memo, and date values use one stable `draft-overlay` key. Legacy date-suffixed personal-draft keys migrate once through a versioned manifest that preserves old values, leaves malformed storage untouched, isolates unrelated Flows, and rolls back all writes on failure. Apply this migration only to eligible personal drafts, never to source-backed/published Flow records.

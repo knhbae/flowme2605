@@ -15,6 +15,7 @@ import {
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
+import { resolveRoutineHorizon } from '@/lib/flow/routine-horizon';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import type {
   FlowExportDestination,
@@ -1039,15 +1040,16 @@ function RoutineOccurrenceCalendar({
   const [showAllRoutineWeeks, setShowAllRoutineWeeks] = useState(false);
   const visibleRows = rows;
   const occurrenceSummary = `${weekCount}주 ${visibleRows.length}회차`;
+  const horizon = resolveRoutineHorizon(bundle, weekCount);
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
-  const isHomeWorkout = bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter';
+  const isHomeWorkout = Boolean(bundle.flow.category.includes('운동') && bundle.flow.tags?.includes('exact-video'));
   const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
   const eyebrow = isSleepCheck ? '수면 체크 캘린더' : isHomeWorkout ? '홈트 캘린더' : isMealCheck ? '식단 체크 캘린더' : '회차 그리드';
-  const title = isSleepCheck ? '14일 수면 체크' : isHomeWorkout ? '4주 홈트 체크' : isMealCheck ? '아침·점심·저녁 식단 체크' : `${occurrenceSummary} 루틴`;
+  const title = isSleepCheck ? '14일 수면 체크' : isHomeWorkout ? '반복 일정 미리보기' : isMealCheck ? '아침·점심·저녁 식단 체크' : `${occurrenceSummary} 루틴`;
   const description = isSleepCheck
     ? '저장 전에는 8시간 이상 잔 날을 미리 표시해 봅니다.'
     : isHomeWorkout
-      ? '운동하는 날을 저장 전 미리 표시해 봅니다.'
+      ? ''
       : isMealCheck
         ? '아침, 점심, 저녁 식단을 지켰는지만 표시합니다.'
         : '주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.';
@@ -1070,7 +1072,7 @@ function RoutineOccurrenceCalendar({
           <div>
             <p className={FLOWME_EYEBROW_CLASS}>{eyebrow}</p>
             <h3 className={FLOWME_TITLE_CLASS}>{title}</h3>
-            <p className="mt-1 text-sm text-[#6E6B64]">{description}</p>
+            {description ? <p className="mt-1 text-sm text-[#6E6B64]">{description}</p> : null}
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-sm font-semibold text-[#6E6B64]">{month}</span>
@@ -1084,16 +1086,35 @@ function RoutineOccurrenceCalendar({
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
           <span className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-1 font-semibold text-[#3654FF]">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
-          <span className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isHomeWorkout ? '미리보기 표시만' : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
+          <span data-testid="routine-preview-horizon" className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isHomeWorkout ? horizon.previewLabel : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
+          {isHomeWorkout ? <span data-testid="routine-series-end-policy" data-series-end-policy={horizon.seriesEndPolicy} className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{horizon.seriesEndLabel}</span> : null}
           {currentRow ? <span className="rounded-full border border-[#F0D8AE] bg-[#FFF7E8] px-3 py-1 font-semibold text-[#8A5A12]">현재 {currentRow.title}</span> : null}
         </div>
-        <div className="mt-3 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-[#6E6B64]">
+        <div data-testid="routine-grid-mobile" className="mt-3 grid gap-2 md:hidden">
+          {weekRows.map((week, weekIndex) => (
+            <div key={`routine-mobile-week-${weekIndex}`} className={weekIndex === 0 || showAllRoutineWeeks ? 'rounded-md border border-[#E7E4DD] bg-[#FAFAF8] p-2' : 'hidden'}>
+              <p className="text-xs font-semibold text-[#6E6B64]">{weekIndex + 1}주차</p>
+              <div className="mt-2 grid grid-cols-3 gap-1.5">
+                {week.filter((row): row is ScheduleRow => Boolean(row)).map((row) => {
+                  const isCurrent = row.id === currentRow?.id;
+                  return (
+                    <div key={row.id} className={`min-w-0 rounded-md border px-2 py-2 text-left ${isCurrent ? 'border-[#3654FF] bg-[#EEF1FF]' : 'border-[#E7E4DD] bg-white'}`}>
+                      <p className="text-[11px] font-semibold text-[#6E6B64]">{row.timing}</p>
+                      <p className="mt-0.5 truncate text-xs font-semibold text-[#1B1A17]">{row.startDate.slice(5)}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 hidden grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs font-semibold text-[#6E6B64] md:grid">
           <span />
           {routineGridWeekdayOrder.map((day) => (
             <span key={day}>{day}</span>
           ))}
         </div>
-        <div className="mt-2 grid grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1">
+        <div className="mt-2 hidden grid-cols-[64px_repeat(7,minmax(0,1fr))] gap-1 md:grid">
           {weekRows.map((week, weekIndex) => (
             <div
               key={`routine-week-${weekIndex}`}
@@ -1895,7 +1916,7 @@ function RoutineWorkbench({
 
   const startDate = anchor || formatLocalDate(nextMonday(new Date(`${effectiveStartDate}T00:00:00`)));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
-  const weekCount = getRoutineWeekCount(bundle);
+  const weekCount = resolveRoutineHorizon(bundle).previewWeeks;
   const occurrences = expandRoutineOccurrences(startDate, selectedWeekdays, weekCount);
   const month = occurrences[0]?.date.slice(0, 7) ?? startDate.slice(0, 7);
   const rows = occurrences.map((occurrence) => ({
@@ -1910,7 +1931,7 @@ function RoutineWorkbench({
   const nextLabel = next ? `${next.sessionIndex}회차` : '';
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const isCheckOnlyRoutine = checkOnlyRoutineSlugs.has(bundle.flow.slug);
-  const isHomeWorkout = bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter';
+  const isHomeWorkout = Boolean(bundle.flow.category.includes('운동') && bundle.flow.tags?.includes('exact-video'));
   const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
   const isExactVideoRoutine = Boolean(bundle.flow.tags?.includes('exact-video'));
   const sessionItems = bundle.items.slice(0, 5);
@@ -2108,11 +2129,6 @@ function inferWeekdays(repeatLabel: string): string[] {
   if (repeatLabel.includes('월') || repeatLabel.includes('수') || repeatLabel.includes('금')) return ['월', '수', '금'];
   if (repeatLabel.includes('화') || repeatLabel.includes('목')) return ['화', '목', '토'];
   return ['월', '수', '금'];
-}
-
-function getRoutineWeekCount(bundle: FlowBundle): number {
-  if (bundle.repeatRules?.some((rule) => rule.includes('14일'))) return 2;
-  return 4;
 }
 
 function nextMonday(date: Date): Date {
