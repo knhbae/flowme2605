@@ -5469,7 +5469,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         savedMap ? savedFlowMapPersistenceById[savedMap.mapId] : undefined,
         savedMap?.personalCopy,
       );
-      const sourceRows = getMyFlowRows(effectiveBundle, anchor);
+      const sourceRows = getMyFlowRows(effectiveBundle, anchor)
+        .map((row, sourceIndex) => ({ row, sourceIndex }))
+        .sort((left, right) => {
+          const leftOrder = itemStates[baseStateId(left.row.id)]?.personalOrder;
+          const rightOrder = itemStates[baseStateId(right.row.id)]?.personalOrder;
+          if (leftOrder === undefined && rightOrder === undefined) return left.sourceIndex - right.sourceIndex;
+          if (leftOrder === undefined) return 1;
+          if (rightOrder === undefined) return -1;
+          return leftOrder - rightOrder || left.sourceIndex - right.sourceIndex;
+        })
+        .map(({ row }) => row);
       const personalCopyExcludedItemIds = new Set(
         savedMap?.personalCopy?.excludedStepIdsByFlow[progress.slug] ?? [],
       );
@@ -5653,10 +5663,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const showFlowInventory = savedView === 'flow' || !shouldCollapseFlowInventory || myFlowInventoryOpen;
   const showFlowExecutionMetricsInInventory = false;
   const showMyFlowScopeControl = !isCalendarSurface && !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
-  const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined =>
-    isUrlFirstDraftSavedFlow(flow)
-      ? myFlowDateOverrides[getPersonalDraftProjectionValueKey(flow.progress.slug, rowId)]
-      : undefined;
+  const getMyFlowDraftItemDateOverride = (flow: MySavedFlow, rowId: string): string | undefined => {
+    const valueKey = getPersonalDraftProjectionValueKey(flow.progress.slug, rowId);
+    const canonicalDraftDate = myFlowItemDrafts[valueKey]?.date;
+    if (canonicalDraftDate !== undefined) return canonicalDraftDate;
+    return isUrlFirstDraftSavedFlow(flow) ? myFlowDateOverrides[valueKey] : undefined;
+  };
   const resolveSavedFlowRowDate = (
     flow: MySavedFlow,
     row: MyFlowRow,
@@ -17411,6 +17423,13 @@ function getPublicSaveBeforePreviewRows(bundle: FlowBundle, anchor: string): Flo
   }));
 }
 
+type PublicFlowAdjustmentItem = {
+  title?: string;
+  date?: string;
+  memo?: string;
+  included: boolean;
+};
+
 export function PublicFlow({ slug }: { slug: string }) {
   const { bundles, persist } = useBundles();
   const [bundle, setBundle] = useState<FlowBundle | null>(() => mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find((item) => item.flow.slug === slug) ?? null);
@@ -17428,6 +17447,9 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
+  const [publicAdjustmentOpen, setPublicAdjustmentOpen] = useState(false);
+  const [publicAdjustmentItems, setPublicAdjustmentItems] = useState<Record<string, PublicFlowAdjustmentItem>>({});
+  const [publicAdjustmentOrder, setPublicAdjustmentOrder] = useState<string[]>([]);
   const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
   const [publicPreviewToday, setPublicPreviewToday] = useState('');
   const anchorPersistenceSlugRef = useRef<string | null>(null);
@@ -17455,6 +17477,9 @@ export function PublicFlow({ slug }: { slug: string }) {
     setWorkbenchState(getWorkbenchState(slug));
     setReactionLogs(getReactionLogs(slug));
     setSavedFlowAt(migration.record?.savedAt ?? getSavedFlowRecord(slug)?.savedAt);
+    setPublicAdjustmentOpen(false);
+    setPublicAdjustmentItems({});
+    setPublicAdjustmentOrder([]);
   }, [slug]);
 
   useEffect(() => {
@@ -17534,6 +17559,17 @@ export function PublicFlow({ slug }: { slug: string }) {
   const useP24CompactPublicFrame = !compactJeonsePage;
   const publicMobileClearanceClass = showPublicSaveAction ? 'flowme-mobile-save-clearance' : 'flowme-mobile-export-clearance';
   const publicSaveBeforeRows = getPublicSaveBeforePreviewRows(bundle, displayAnchor);
+  const publicScheduleDateByItemId = new Map(
+    getScheduleEntries(bundle, displayAnchor).map((entry) => [baseStateId(entry.id), entry.startDate]),
+  );
+  const orderedPublicAdjustmentRows = [...publicSaveBeforeRows].sort((left, right) => {
+    const leftOrder = itemStates[baseStateId(left.id)]?.personalOrder;
+    const rightOrder = itemStates[baseStateId(right.id)]?.personalOrder;
+    if (leftOrder === undefined && rightOrder === undefined) return 0;
+    if (leftOrder === undefined) return 1;
+    if (rightOrder === undefined) return -1;
+    return leftOrder - rightOrder;
+  });
   const publicCalendarPreviewIcs = canExportCalendar && exportAnchor
     ? (
         hasDatedCalendarSchedule(bundle)
@@ -17608,6 +17644,88 @@ export function PublicFlow({ slug }: { slug: string }) {
         },
       };
     });
+  };
+  const openPublicAdjustment = () => {
+    const storedDrafts = getStoredMyFlowItemDrafts();
+    const storedDateOverrides = getStoredMyFlowDateOverrides();
+    const orderedRows = [...orderedPublicAdjustmentRows];
+    setPublicAdjustmentItems(Object.fromEntries(orderedRows.map((row) => {
+      const itemId = baseStateId(row.id);
+      const draft = storedDrafts[getPersonalDraftProjectionValueKey(bundle.flow.slug, itemId)] ?? {};
+      const sourceDate = publicScheduleDateByItemId.get(itemId);
+      const overrideKey = getMyFlowDateOverrideKey(bundle.flow.slug, itemId, sourceDate);
+      const explicitlyUnscheduled = storedDateOverrides[overrideKey] === MY_FLOW_DATE_REMOVED_OVERRIDE;
+      return [itemId, {
+        ...(draft.title !== undefined ? { title: draft.title } : {}),
+        ...(draft.memo !== undefined ? { memo: draft.memo } : {}),
+        ...(draft.date !== undefined
+          ? { date: draft.date }
+          : explicitlyUnscheduled
+            ? { date: '' }
+            : {}),
+        included: !isUrlFirstStartExcludedItemState(itemStates, itemId),
+      } satisfies PublicFlowAdjustmentItem];
+    })));
+    setPublicAdjustmentOrder(orderedRows.map((row) => baseStateId(row.id)));
+    setPublicAdjustmentOpen(true);
+    window.setTimeout(() => {
+      document.querySelector<HTMLElement>('[data-testid="public-flow-personal-adjustment"]')?.focus({ preventScroll: true });
+      document.querySelector('[data-testid="public-flow-personal-adjustment"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+  const commitPublicAdjustment = () => {
+    if (!publicAdjustmentOpen) return;
+    const nextItemStates = { ...itemStates };
+    const nextDrafts = getStoredMyFlowItemDrafts();
+    const nextDateOverrides = getStoredMyFlowDateOverrides();
+
+    publicAdjustmentOrder.forEach((itemId, index) => {
+      const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
+      const currentState = nextItemStates[itemId] ?? {};
+      if (adjustment.included) {
+        if (currentState.note === 'excluded_on_start') {
+          const { skipped: _skipped, note: _note, ...remaining } = currentState;
+          nextItemStates[itemId] = { ...remaining, personalOrder: index };
+        } else {
+          nextItemStates[itemId] = { ...currentState, personalOrder: index };
+        }
+      } else {
+        nextItemStates[itemId] = {
+          ...currentState,
+          skipped: true,
+          note: 'excluded_on_start',
+          personalOrder: index,
+        };
+      }
+
+      const draftKey = getPersonalDraftProjectionValueKey(bundle.flow.slug, itemId);
+      const currentDraft = nextDrafts[draftKey] ?? {};
+      const nextDraft: StoredMyFlowItemDraft = { ...currentDraft };
+      const sourceTitle = publicSaveBeforeRows.find((row) => baseStateId(row.id) === itemId)?.title ?? '';
+      if (adjustment.title !== undefined && adjustment.title.trim() && adjustment.title.trim() !== sourceTitle.trim()) {
+        nextDraft.title = adjustment.title.trim();
+      } else if (adjustment.title !== undefined) {
+        delete nextDraft.title;
+      }
+      if (adjustment.memo !== undefined && adjustment.memo.trim()) nextDraft.memo = adjustment.memo.trim();
+      else if (adjustment.memo !== undefined) delete nextDraft.memo;
+      if (adjustment.date !== undefined && adjustment.date) nextDraft.date = adjustment.date;
+      else if (adjustment.date !== undefined) delete nextDraft.date;
+      if (Object.keys(nextDraft).length > 0) nextDrafts[draftKey] = nextDraft;
+      else delete nextDrafts[draftKey];
+
+      if (adjustment.date !== undefined) {
+        const sourceDate = publicScheduleDateByItemId.get(itemId);
+        const overrideKey = getMyFlowDateOverrideKey(bundle.flow.slug, itemId, sourceDate);
+        if (!adjustment.date && sourceDate) nextDateOverrides[overrideKey] = MY_FLOW_DATE_REMOVED_OVERRIDE;
+        else delete nextDateOverrides[overrideKey];
+      }
+    });
+
+    saveItemStates(bundle.flow.slug, nextItemStates);
+    saveStoredMyFlowItemDrafts(nextDrafts);
+    saveStoredMyFlowDateOverrides(nextDateOverrides);
+    setItemStates(nextItemStates);
   };
   const copy = async (): Promise<boolean> => {
     const text = buildText(bundle, checks, exportAnchor, itemStates, comparisonState, workbenchState);
@@ -17709,16 +17827,14 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
   };
   const copyToEditableDraft = () => {
-    if (!bundle) return;
-    const next = cloneBundleForEditing(bundle);
-    persist([...bundles, next]);
-    window.location.href = `/flows/${next.flow.id}/edit`;
+    openPublicAdjustment();
   };
   const saveToMyFlow = () => {
     if (!dateIntent.canSave) {
       document.querySelector<HTMLInputElement>('[data-testid="public-flow-anchor-input"]')?.focus();
       return;
     }
+    commitPublicAdjustment();
     if (dateIntent.previewOnly) changeAnchorMode('undated');
     saveStoredAnchor(bundle.flow.slug, {
       mode: dateIntent.persistedMode,
@@ -17731,6 +17847,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       ...(bundle.flow.structure_type === 'routine' ? { weekdays: weekdaySelection } : {}),
     });
     setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
+    setPublicAdjustmentOpen(false);
   };
   const saveActionLabel = getPublicSaveActionLabel(bundle, dateIntent);
   const postSaveHref = buildPostSaveHref({ kind: 'flow', id: bundle.flow.slug });
@@ -17748,6 +17865,15 @@ export function PublicFlow({ slug }: { slug: string }) {
           <Link data-action-priority="primary" className={`${FLOW_UI_PRIMARY_ACTION_CLASS} col-span-2`} href={postSaveHref}>
             내 Flow에서 보기
           </Link>
+        ) : publicAdjustmentOpen ? (
+          <button
+            type="button"
+            data-testid="public-flow-adjust-close"
+            className={`${FLOW_UI_SECONDARY_ACTION_CLASS} col-span-2`}
+            onClick={() => setPublicAdjustmentOpen(false)}
+          >
+            조정 닫기
+          </button>
         ) : (
           <>
             <button
@@ -17773,7 +17899,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       </div>
     ) : null;
   const renderPublicMobileSaveCta = () =>
-    showPublicSaveAction ? (
+    showPublicSaveAction && !publicAdjustmentOpen ? (
       <div
         data-testid="public-flow-mobile-save-cta"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[#DDE4E0] bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_28px_rgba(23,32,28,0.08)] backdrop-blur sm:hidden"
@@ -17812,6 +17938,167 @@ export function PublicFlow({ slug }: { slug: string }) {
         </div>
       </div>
     ) : null;
+  const renderPublicAdjustment = () => {
+    if (!publicAdjustmentOpen) return null;
+    const rowById = new Map(publicSaveBeforeRows.map((row) => [baseStateId(row.id), row]));
+    const rows = publicAdjustmentOrder.flatMap((itemId) => {
+      const row = rowById.get(itemId);
+      return row ? [{ itemId, row }] : [];
+    });
+    const includedCount = rows.filter(({ itemId }) => publicAdjustmentItems[itemId]?.included !== false).length;
+    return (
+      <section
+        data-testid="public-flow-personal-adjustment"
+        tabIndex={-1}
+        aria-labelledby="public-flow-personal-adjustment-title"
+        className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold text-[var(--flowme-action)]">내 Flow로 조정</p>
+            <h2 id="public-flow-personal-adjustment-title" className="mt-1 text-xl font-bold text-[var(--flowme-text)]">
+              저장할 항목 정리
+            </h2>
+          </div>
+          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+            {includedCount}/{rows.length}개 저장
+          </span>
+        </div>
+
+        <ol className="mt-4 divide-y divide-[var(--flowme-border)] border-y border-[var(--flowme-border)] bg-white">
+          {rows.map(({ itemId, row }, index) => {
+            const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
+            const included = adjustment.included !== false;
+            const sourceDate = publicScheduleDateByItemId.get(itemId) ?? '';
+            const displayedDate = adjustment.date !== undefined ? adjustment.date : sourceDate;
+            return (
+              <li
+                key={itemId}
+                data-testid="public-flow-adjustment-row"
+                data-item-id={itemId}
+                className={`grid min-w-0 gap-3 px-1 py-3 sm:grid-cols-[auto_minmax(0,1fr)_10rem_auto] sm:items-start ${included ? '' : 'opacity-55'}`}
+              >
+                <label className="flex min-h-10 items-center gap-2 text-xs font-semibold text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={included}
+                    aria-label={`${adjustment.title ?? row.title} 저장에 포함`}
+                    onChange={(event) => setPublicAdjustmentItems((current) => ({
+                      ...current,
+                      [itemId]: { ...adjustment, included: event.target.checked },
+                    }))}
+                  />
+                  <span className="sm:sr-only">포함</span>
+                </label>
+                <div className="min-w-0">
+                  <label className="block text-[11px] font-semibold text-slate-500">
+                    할 일
+                    <input
+                      data-testid="public-flow-adjustment-title"
+                      className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
+                      value={adjustment.title ?? row.title}
+                      disabled={!included}
+                      onChange={(event) => setPublicAdjustmentItems((current) => ({
+                        ...current,
+                        [itemId]: { ...adjustment, title: event.target.value },
+                      }))}
+                    />
+                  </label>
+                  <details className="mt-2" data-testid="public-flow-adjustment-memo">
+                    <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">메모</summary>
+                    <textarea
+                      className={`mt-2 h-20 min-h-20 w-full resize-y ${FLOW_UI_INPUT_CLASS}`}
+                      value={adjustment.memo ?? ''}
+                      disabled={!included}
+                      aria-label={`${adjustment.title ?? row.title} 개인 메모`}
+                      onChange={(event) => setPublicAdjustmentItems((current) => ({
+                        ...current,
+                        [itemId]: { ...adjustment, memo: event.target.value },
+                      }))}
+                    />
+                  </details>
+                </div>
+                <label className="block text-[11px] font-semibold text-slate-500">
+                  날짜
+                  <input
+                    data-testid="public-flow-adjustment-date"
+                    className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
+                    type="date"
+                    value={displayedDate}
+                    disabled={!included}
+                    aria-label={`${adjustment.title ?? row.title} 날짜`}
+                    onChange={(event) => setPublicAdjustmentItems((current) => ({
+                      ...current,
+                      [itemId]: { ...adjustment, date: event.target.value },
+                    }))}
+                  />
+                  {displayedDate ? (
+                    <button
+                      type="button"
+                      className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:underline"
+                      disabled={!included}
+                      onClick={() => setPublicAdjustmentItems((current) => ({
+                        ...current,
+                        [itemId]: { ...adjustment, date: '' },
+                      }))}
+                    >
+                      날짜 없애기
+                    </button>
+                  ) : null}
+                </label>
+                <div className="flex gap-1 sm:pt-5">
+                  <button
+                    type="button"
+                    title="위로 이동"
+                    aria-label={`${adjustment.title ?? row.title} 위로 이동`}
+                    disabled={index === 0}
+                    className={FLOW_UI_ICON_ACTION_CLASS}
+                    onClick={() => setPublicAdjustmentOrder((current) => {
+                      const next = [...current];
+                      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                      return next;
+                    })}
+                  >
+                    <span aria-hidden="true">↑</span>
+                  </button>
+                  <button
+                    type="button"
+                    title="아래로 이동"
+                    aria-label={`${adjustment.title ?? row.title} 아래로 이동`}
+                    disabled={index === rows.length - 1}
+                    className={FLOW_UI_ICON_ACTION_CLASS}
+                    onClick={() => setPublicAdjustmentOrder((current) => {
+                      const next = [...current];
+                      [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                      return next;
+                    })}
+                  >
+                    <span aria-hidden="true">↓</span>
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+
+        <div className="sticky bottom-0 z-30 mt-4 flex flex-wrap justify-end gap-2 border-t border-[var(--flowme-border)] bg-[#F5F7F6]/95 py-3 backdrop-blur">
+          <button type="button" className={FLOW_UI_SECONDARY_ACTION_CLASS} onClick={() => setPublicAdjustmentOpen(false)}>
+            취소
+          </button>
+          <button
+            type="button"
+            data-testid="public-flow-adjustment-save"
+            data-action-priority="primary"
+            className={FLOW_UI_PRIMARY_ACTION_CLASS}
+            disabled={!dateIntent.canSave || includedCount === 0}
+            onClick={saveToMyFlow}
+          >
+            {includedCount}개 항목으로 내 Flow에 저장
+          </button>
+        </div>
+      </section>
+    );
+  };
   const renderPublicHeroSetup = () => {
     if (!showPublicSetupInput) return null;
     return (
@@ -17888,6 +18175,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           setup={showPublicSetupInput ? renderPublicHeroSetup() : undefined}
           actions={showPublicSaveAction ? renderPublicSaveActions() : undefined}
         />
+        {renderPublicAdjustment()}
 
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">

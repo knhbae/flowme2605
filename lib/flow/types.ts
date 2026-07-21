@@ -138,6 +138,7 @@ export type FlowItemDetail = {
 export type FlowItemState = {
   skipped?: boolean;
   note?: string;
+  personalOrder?: number;
 };
 
 export type FlowComparisonCandidate = {

@@ -196,4 +196,77 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(1);
     await expectNoHorizontalOverflow(page);
   });
+
+  test('public adjustment stays personal and lands as the same My Flow outline', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/f/moving-d30-basic');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+
+    const adjustment = page.getByTestId('public-flow-personal-adjustment');
+    await expect(adjustment).toBeVisible();
+    await expect(adjustment).not.toContainText('Markdown');
+    await expect(adjustment).not.toContainText('발행');
+    const rows = adjustment.getByTestId('public-flow-adjustment-row');
+    await expect(rows).toHaveCount(24);
+
+    const first = rows.first();
+    await first.getByTestId('public-flow-adjustment-title').fill('내 이사 방식 확정');
+    await first.getByTestId('public-flow-adjustment-date').fill('2030-08-01');
+    await first.getByTestId('public-flow-adjustment-memo').locator('summary').click();
+    await first.getByRole('textbox', { name: '내 이사 방식 확정 개인 메모' }).fill('가족과 최종 확인');
+    await rows.nth(1).getByRole('checkbox', { name: '이사할 집 하자 점검하기 저장에 포함' }).uncheck();
+    await first.getByRole('button', { name: '내 이사 방식 확정 아래로 이동' }).click();
+    await rows.nth(1).getByRole('button', { name: '내 이사 방식 확정 아래로 이동' }).click();
+
+    await adjustment.getByTestId('public-flow-adjustment-save').click();
+    await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' })).toBeVisible();
+    const persisted = await page.evaluate(() => ({
+      itemStates: JSON.parse(window.localStorage.getItem('flow_builder_mvp_item_state_moving-d30-basic') || '{}'),
+      drafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+      saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || '{}'),
+    }));
+    expect(persisted.itemStates['flow-moving-item-1']).toMatchObject({ skipped: true, note: 'excluded_on_start' });
+    expect(persisted.itemStates['flow-moving-item-0'].personalOrder).toBe(2);
+    expect(persisted.drafts['moving-d30-basic::flow-moving-item-0::draft-overlay']).toMatchObject({
+      title: '내 이사 방식 확정',
+      date: '2030-08-01',
+      memo: '가족과 최종 확인',
+    });
+    expect(persisted.saved.anchor).toBe('2030-08-15');
+
+    await page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' }).click();
+    await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
+    await page.getByTestId('my-flow-post-save-view-flow').click();
+    const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
+    await expect(flowCard).toBeVisible();
+    await flowCard.getByRole('button', { name: '전체 펼치기' }).click();
+    const outlineRows = flowCard.getByTestId('my-flow-whole-flow-outline').getByTestId('my-flow-execution-row-shell');
+    await expect(outlineRows).toHaveCount(23);
+    await expect(outlineRows.nth(0)).toContainText('필요 없는 물건 정리하기');
+    await expect(outlineRows.nth(1)).toContainText('내 이사 방식 확정');
+    await expect(outlineRows.nth(1)).toContainText('8월 1일');
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('public adjustment keeps the same personal hierarchy on wide screens', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/f/moving-d30-basic');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-adjust-entry').click();
+
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+    const adjustment = page.getByTestId('public-flow-personal-adjustment');
+    await expect(adjustment).toBeVisible();
+    await expect(adjustment.getByTestId('public-flow-adjustment-row')).toHaveCount(24);
+    await expect(adjustment).not.toContainText('Markdown');
+    await expect(adjustment).not.toContainText('발행');
+    await expect(adjustment.getByRole('button', { name: '이사 방식 정하기 아래로 이동' })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
 });
