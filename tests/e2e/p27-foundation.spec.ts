@@ -89,8 +89,8 @@ test.describe('P27 reversible lifecycle foundation', () => {
     const persistedArchivedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
     await persistedArchivedCard.getByTestId('my-flow-archive-toggle').click();
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
-    await page.getByTestId('my-flow-list-filter-all').click();
     await expect(flowCard).toBeVisible();
+    await expect(page.getByTestId('my-flow-list-filter-all')).toHaveCount(0);
   });
 
   test('source-backed item removal has immediate undo and persistent restore', async ({ page }) => {
@@ -267,6 +267,57 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(adjustment).not.toContainText('Markdown');
     await expect(adjustment).not.toContainText('발행');
     await expect(adjustment.getByRole('button', { name: '이사 방식 정하기 아래로 이동' })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('My Flow keeps three saved Flows directly browsable without search chrome', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      const records = [
+        { slug: 'moving-d30-basic', savedAt: '2030-01-01T00:00:00.000Z', anchor: '2030-08-15' },
+        { slug: 'vehicle-inspection-prep', savedAt: '2030-01-02T00:00:00.000Z' },
+        { slug: 'washer-tub-clean-monthly', savedAt: '2030-01-03T00:00:00.000Z', anchor: '2030-08-01' },
+      ];
+      records.forEach((record) => {
+        window.localStorage.setItem(`flow:saved:${record.slug}`, JSON.stringify({
+          ...record,
+          selectedArtifactMode: record.anchor ? 'calendar' : 'checklist',
+          dateIntent: record.anchor ? 'custom' : 'undated',
+        }));
+        window.localStorage.setItem(`flow:${record.slug}:anchorDate`, JSON.stringify({
+          mode: record.anchor ? 'custom' : 'undated',
+          anchor: record.anchor ?? '',
+        }));
+      });
+    });
+
+    await page.goto('/my');
+    await page.getByTestId('my-flow-view-flow').click();
+    await expect(page.getByTestId('my-flow-mobile-flow-summary')).toHaveAttribute('data-library-mode', 'compact');
+    await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(3);
+    await expect(page.getByTestId('my-flow-search')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-list-filter-all')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-mobile-structure-row').first()).toContainText('세탁기 통세척');
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('My Flow reveals search for a large library and groups one date into one execution frame', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/my?demo=ux12');
+
+    const dateGroup = page.getByTestId('my-flow-now-date-group');
+    await expect(dateGroup).toBeVisible();
+    const rowKeys = await dateGroup.getByTestId('my-flow-mobile-continuation-card').evaluateAll((nodes) =>
+      nodes.map((node) => node.getAttribute('data-row-key')),
+    );
+    expect(rowKeys.length).toBeGreaterThan(1);
+    expect(new Set(rowKeys).size).toBe(rowKeys.length);
+
+    await page.getByTestId('my-flow-view-flow').click();
+    await expect(page.getByTestId('my-flow-mobile-flow-summary')).toHaveAttribute('data-library-mode', 'searchable');
+    await expect(page.getByTestId('my-flow-search')).toBeVisible();
+    await expect(page.getByTestId('my-flow-list-filter-all')).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 });

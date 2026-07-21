@@ -15,6 +15,21 @@ export type MyFlowLocalSummary = {
   completedCount: number;
 };
 
+export type MyFlowLibraryControlVisibilityInput = {
+  flowCount: number;
+  archivedCount?: number;
+  query?: string;
+  filter?: string;
+};
+
+export type MyFlowLibraryControlVisibility = {
+  search: boolean;
+  filters: boolean;
+  mode: 'compact' | 'searchable';
+};
+
+export const MY_FLOW_SEARCH_THRESHOLD = 5;
+
 const QUERY_TO_WORKSPACE_VIEW: Record<MyFlowLocalView, MyFlowWorkspaceView> = {
   now: 'today',
   flows: 'flow',
@@ -62,5 +77,21 @@ export function summarizeMyFlowLocalIa(flows: MyFlowLocalSummaryInput[]): MyFlow
     flowCount: uniqueFlowIds.size,
     nowCount: uniqueNowItems.size,
     completedCount: uniqueCompletedItems.size,
+  };
+}
+
+export function getMyFlowLibraryControlVisibility(
+  input: MyFlowLibraryControlVisibilityInput,
+): MyFlowLibraryControlVisibility {
+  const flowCount = Math.max(0, Math.floor(input.flowCount));
+  const archivedCount = Math.max(0, Math.floor(input.archivedCount ?? 0));
+  const hasQuery = Boolean(input.query?.trim());
+  const hasNonDefaultFilter = Boolean(input.filter && input.filter !== 'all');
+  const searchable = flowCount >= MY_FLOW_SEARCH_THRESHOLD;
+
+  return {
+    search: searchable || hasQuery,
+    filters: searchable || archivedCount > 0 || hasNonDefaultFilter,
+    mode: searchable ? 'searchable' : 'compact',
   };
 }

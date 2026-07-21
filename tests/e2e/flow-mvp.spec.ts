@@ -5144,7 +5144,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
   await expect(page.getByTestId('my-flow-overdue-list')).toContainText('지난 할 일');
   await expect(page.getByTestId('my-flow-overdue-open-sheet')).toBeVisible();
   await page.getByTestId('my-flow-view-flow').click();
-  await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('Flow 목록');
+  await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('최근 저장한 Flow');
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).toContainText('1개 저장');
   await expect(page.getByTestId('my-flow-mobile-flow-summary')).not.toContainText(/오늘 0|다음 0|지난 할 일 0/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(1);
@@ -5152,7 +5152,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
   await expect(page.getByTestId('my-flow-mobile-structure-row').getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 0\/24 완료/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).not.toContainText('0%');
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-archive-toggle')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-archive-toggle')).toHaveCount(0);
 
   await page.goto('/my?demo=ux12');
   await expect(page.getByTestId('my-flow-view-today')).toBeVisible();
@@ -5370,7 +5370,7 @@ test('my flow mobile keeps checklist and routine work inside flow and calendar s
   await expect(page.getByTestId('my-flow-list-filter-routine')).toBeVisible();
   await page.getByTestId('my-flow-list-filter-routine').click();
   await expect(page.getByTestId('my-flow-list-filter-routine')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByTestId('my-flow-mobile-structure-row').first()).toContainText('통세척');
+  await expect(page.getByTestId('my-flow-mobile-structure-row').filter({ hasText: '통세척' })).toHaveCount(1);
   await page.goto('/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();

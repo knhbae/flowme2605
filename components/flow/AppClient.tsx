@@ -123,6 +123,7 @@ import {
 } from '@/lib/flow/post-save-receipt';
 import { buildPostSaveDecisionSummary } from '@/lib/flow/post-save-decision-hub';
 import {
+  getMyFlowLibraryControlVisibility,
   getMyFlowViewHref,
   parseMyFlowViewQuery,
   summarizeMyFlowLocalIa,
@@ -5659,7 +5660,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     flowListFilter === 'all' &&
     flowListQuery.trim().length === 0;
   const shouldGroupFlowInventory = savedFlows.length >= 20 || isMyFlowScenarioDemo;
-  const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 20 && savedView === 'flow';
+  const myFlowLibraryControls = getMyFlowLibraryControlVisibility({
+    flowCount: workspaceSavedFlows.length,
+    archivedCount: myFlowArchivedFlowSlugs.length,
+    query: flowListQuery,
+    filter: flowListFilter,
+  });
+  const showMyFlowSidebar = workspaceSavedFlows.length > 1 && workspaceSavedFlows.length < 5 && savedView === 'flow';
   const showFlowInventory = savedView === 'flow' || !shouldCollapseFlowInventory || myFlowInventoryOpen;
   const showFlowExecutionMetricsInInventory = false;
   const showMyFlowScopeControl = !isCalendarSurface && !isMyFlowMobileViewport && workspaceSavedFlows.length > 1;
@@ -6247,7 +6254,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return rows;
   }, []).slice(0, 4);
   const myFlowPrimaryContinuationRow = myFlowContinuationRows[0] ?? null;
-  const myFlowPrimaryContinuationKey = myFlowPrimaryContinuationRow ? getMyFlowRowInstanceKey(myFlowPrimaryContinuationRow) : '';
+  const myFlowPrimaryContinuationGroupRows = myFlowPrimaryContinuationRow
+    ? [myFlowPrimaryContinuationRow, ...myFlowExecutionCandidateRows].reduce<MyFlowCalendarRow[]>((rows, row) => {
+        if (row.date !== myFlowPrimaryContinuationRow.date) return rows;
+        const key = getMyFlowRowInstanceKey(row);
+        if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === key)) return rows;
+        rows.push(row);
+        return rows;
+      }, [])
+    : [];
+  const myFlowPrimaryContinuationGroupKeySet = new Set(
+    myFlowPrimaryContinuationGroupRows.map((row) => getMyFlowRowInstanceKey(row)),
+  );
   const myFlowPrimaryContinuationIsToday = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date === myFlowTodayDate);
   const myFlowPrimaryContinuationIsOverdue = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date < myFlowTodayDate);
   const myFlowPrimaryContinuationIsFuture = Boolean(myFlowPrimaryContinuationRow?.date && myFlowPrimaryContinuationRow.date > myFlowTodayDate);
@@ -6280,7 +6298,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const draftTitle = getMyFlowRowDraft(row).title;
     return toUserFacingSourceTitle(draftTitle ?? stripMyFlowTimingPrefixFromTitle(row.title));
   };
-  const myFlowNowVisibleCount = myFlowPrimaryContinuationRow ? 1 : 0;
+  const myFlowNowVisibleCount = myFlowPrimaryContinuationGroupRows.length;
   const myFlowNowTitle = myFlowPrimaryContinuationRow
     ? myFlowPrimaryContinuationIsToday
       ? `${myFlowNowVisibleCount}개 남음`
@@ -6315,14 +6333,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ...myFlowFallbackFutureRows,
   ].reduce<MyFlowCalendarRow[]>((rows, row) => {
     const key = getMyFlowRowInstanceKey(row);
-    if (key === myFlowPrimaryContinuationKey) return rows;
+    if (myFlowPrimaryContinuationGroupKeySet.has(key)) return rows;
     if (row.date && row.date < myFlowTodayDate) return rows;
     if (rows.some((existing) => getMyFlowRowInstanceKey(existing) === key)) return rows;
     rows.push(row);
     return rows;
   }, []).slice(0, 3);
-  const visibleTodayOpenScheduleRows = todayOpenScheduleRows.filter((row) => getMyFlowRowInstanceKey(row) !== myFlowPrimaryContinuationKey);
-  const visibleTodayOpenRoutineRows = todayOpenRoutineRows.filter((row) => getMyFlowRowInstanceKey(row) !== myFlowPrimaryContinuationKey);
+  const visibleTodayOpenScheduleRows = todayOpenScheduleRows.filter(
+    (row) => !myFlowPrimaryContinuationGroupKeySet.has(getMyFlowRowInstanceKey(row)),
+  );
+  const visibleTodayOpenRoutineRows = todayOpenRoutineRows.filter(
+    (row) => !myFlowPrimaryContinuationGroupKeySet.has(getMyFlowRowInstanceKey(row)),
+  );
   const visibleTodayOpenRows = [...visibleTodayOpenScheduleRows, ...visibleTodayOpenRoutineRows];
   const showTodayOpenSection = visibleTodayOpenRows.length > 0;
   const overdueSummaryByFlow = overdueRows.reduce<Array<{ title: string; count: number; firstDate?: string }>>((summaries, row) => {
@@ -7241,9 +7263,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const visibleChecklistPickerRows = shouldLimitChecklistPicker && !myFlowChecklistPickerOpen ? checklistFlowRows.slice(0, 4) : checklistFlowRows;
   const hiddenChecklistPickerCount = shouldLimitChecklistPicker ? Math.max(0, checklistFlowRows.length - visibleChecklistPickerRows.length) : 0;
   const flowListNormalizedQuery = flowListQuery.trim().toLowerCase();
-  const flowListCandidateFlows = flowListFilter === 'archived'
+  const flowListCandidateFlows = (flowListFilter === 'archived'
     ? savedFlows.filter((flow) => archivedFlowSlugSet.has(flow.progress.slug))
-    : visibleSavedFlows;
+    : visibleSavedFlows)
+    .slice()
+    .sort((left, right) =>
+      (right.progress.lastVisited ?? '').localeCompare(left.progress.lastVisited ?? '') ||
+      getMyFlowExecutionFlowTitle(left.progress.title).localeCompare(getMyFlowExecutionFlowTitle(right.progress.title)),
+    );
   const flowListVisibleFlows = flowListCandidateFlows
     .filter((flow) => {
       const archived = archivedFlowSlugSet.has(flow.progress.slug);
@@ -15082,7 +15109,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       ) : null}
                     </div>
                     {myFlowPrimaryContinuationRow ? (
-                      renderMobileContinuationFlowCard(myFlowPrimaryContinuationRow, { tone: 'primary', hideLeadLabel: true })
+                      <div
+                        data-testid="my-flow-now-date-group"
+                        data-date={myFlowPrimaryContinuationRow.date ?? 'undated'}
+                        className="grid min-w-0"
+                      >
+                        {myFlowPrimaryContinuationGroupRows.map((row, index) =>
+                          renderMobileContinuationFlowCard(row, {
+                            tone: index === 0 ? 'primary' : 'plain',
+                            hideLeadLabel: true,
+                          }))}
+                      </div>
                     ) : null}
                   </section>
                   ) : myFlowAnytimeRows.length === 0 ? (
@@ -15323,40 +15360,57 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <>
                   {isMyFlowMobileViewport ? (
                     <div data-testid="my-flow-mobile-flow-hub" className="grid gap-3">
-                      <section data-testid="my-flow-mobile-flow-summary" className="rounded-lg border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm">
-                        <p className="text-sm font-semibold text-[#3654FF]">Flow 목록</p>
+                      <section
+                        data-testid="my-flow-mobile-flow-summary"
+                        data-library-mode={myFlowLibraryControls.mode}
+                        className="rounded-lg border border-[#E7E4DD] bg-white px-3 py-2.5 shadow-sm"
+                      >
+                        <p className="text-sm font-semibold text-[#3654FF]">
+                          {myFlowLibraryControls.mode === 'searchable' ? 'Flow 목록' : '최근 저장한 Flow'}
+                        </p>
                         <p className="mt-1 text-xs font-semibold text-[#6E6B64]">{flowListVisibleFlows.length}개 저장</p>
                       </section>
-                      <section ref={myFlowOverviewSummaryRef} className="grid gap-2 rounded-lg border border-slate-200 bg-white p-3">
-                        <input
-                          className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                          type="search"
-                          placeholder="Flow 검색"
-                          value={flowListQuery}
-                          data-testid="my-flow-search"
-                          onChange={(event) => {
-                            setFlowListQuery(event.target.value);
-                            setMyFlowLargeInventoryOpen(false);
-                          }}
-                        />
-                        <div className="flex flex-wrap gap-2">
-                          {flowListFilterTabs.map(([id, label]) => (
-                            <button
-                              key={id}
-                              className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-                              type="button"
-                              aria-pressed={flowListFilter === id}
-                              data-testid={`my-flow-list-filter-${id}`}
-                              onClick={() => {
-                                setFlowListFilter(id);
+                      {myFlowLibraryControls.search || myFlowLibraryControls.filters ? (
+                        <section
+                          ref={myFlowOverviewSummaryRef}
+                          data-testid="my-flow-library-controls"
+                          className="grid gap-2 rounded-lg border border-slate-200 bg-white p-3"
+                        >
+                          {myFlowLibraryControls.search ? (
+                            <input
+                              className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                              type="search"
+                              placeholder="Flow 검색"
+                              aria-label="저장한 Flow 검색"
+                              value={flowListQuery}
+                              data-testid="my-flow-search"
+                              onChange={(event) => {
+                                setFlowListQuery(event.target.value);
                                 setMyFlowLargeInventoryOpen(false);
                               }}
-                            >
-                              {label}
-                            </button>
-                          ))}
-                        </div>
-                      </section>
+                            />
+                          ) : null}
+                          {myFlowLibraryControls.filters ? (
+                            <div className="flex flex-wrap gap-2" role="group" aria-label="저장한 Flow 상태 필터">
+                              {flowListFilterTabs.map(([id, label]) => (
+                                <button
+                                  key={id}
+                                  className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                                  type="button"
+                                  aria-pressed={flowListFilter === id}
+                                  data-testid={`my-flow-list-filter-${id}`}
+                                  onClick={() => {
+                                    setFlowListFilter(id);
+                                    setMyFlowLargeInventoryOpen(false);
+                                  }}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          ) : null}
+                        </section>
+                      ) : null}
                       {flowListVisibleFlows.length > 0 ? (
                         <div className="grid gap-3">
                           {mobileInventoryVisibleFlows.map((flow) => renderCompactFlowStructureRow(flow))}
@@ -15479,36 +15533,52 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ) : null}
                   {!isMyFlowMobileViewport ? (
                     <>
-                  <section ref={myFlowOverviewSummaryRef} data-testid="my-flow-overview-summary" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                  <section
+                    ref={myFlowOverviewSummaryRef}
+                    data-testid="my-flow-overview-summary"
+                    data-library-mode={myFlowLibraryControls.mode}
+                    className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                  >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold text-slate-500">전체 Flow 목록</p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-950">필요한 Flow만 열기</h3>
-              </div>
-                      <div className="flex flex-col gap-2 sm:min-w-72">
-                        <input
-                          className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                          type="search"
-                          placeholder="Flow 검색"
-                          value={flowListQuery}
-                          data-testid="my-flow-search"
-                          onChange={(event) => setFlowListQuery(event.target.value)}
-                        />
-                        <div className="flex flex-wrap gap-2">
-                          {flowListFilterTabs.map(([id, label]) => (
-                            <button
-                              key={id}
-                              className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-                              type="button"
-                              aria-pressed={flowListFilter === id}
-                              data-testid={`my-flow-list-filter-${id}`}
-                              onClick={() => setFlowListFilter(id)}
-                            >
-                              {label}
-                            </button>
-                          ))}
-                        </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-500">
+                          {myFlowLibraryControls.mode === 'searchable' ? '전체 Flow 목록' : '최근 저장한 Flow'}
+                        </p>
+                        <h3 className="mt-1 text-lg font-semibold text-slate-950">
+                          {myFlowLibraryControls.mode === 'searchable' ? '필요한 Flow 찾기' : 'Flow를 열어 전체 계획 확인'}
+                        </h3>
                       </div>
+                      {myFlowLibraryControls.search || myFlowLibraryControls.filters ? (
+                        <div data-testid="my-flow-library-controls" className="flex flex-col gap-2 sm:min-w-72">
+                          {myFlowLibraryControls.search ? (
+                            <input
+                              className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                              type="search"
+                              placeholder="Flow 검색"
+                              aria-label="저장한 Flow 검색"
+                              value={flowListQuery}
+                              data-testid="my-flow-search"
+                              onChange={(event) => setFlowListQuery(event.target.value)}
+                            />
+                          ) : null}
+                          {myFlowLibraryControls.filters ? (
+                            <div className="flex flex-wrap gap-2" role="group" aria-label="저장한 Flow 상태 필터">
+                              {flowListFilterTabs.map(([id, label]) => (
+                                <button
+                                  key={id}
+                                  className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                                  type="button"
+                                  aria-pressed={flowListFilter === id}
+                                  data-testid={`my-flow-list-filter-${id}`}
+                                  onClick={() => setFlowListFilter(id)}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
                     </div>
                     {shouldCollapseFlowInventory && savedView !== 'flow' ? (
                       <button
