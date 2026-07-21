@@ -9171,6 +9171,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           calendarEligible,
           status,
           meta: scheduleMeta,
+          subcheckCount: getMyFlowDetailChecklistItems(detail).length,
+          resourceCount: detail.links?.length ?? 0,
           ...(routineSeries
             ? {
                 recurrenceSeriesId: routineSeries.seriesId,

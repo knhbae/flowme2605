@@ -363,4 +363,47 @@ test.describe('P27 reversible lifecycle foundation', () => {
     expect(tabbableCalendarWrappers).toBe(0);
     await expectNoHorizontalOverflow(page);
   });
+
+  test('post-save keeps the saved outline primary and export preflight compact', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/flow-maps/moving-d30');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+    await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
+    await page.getByTestId('flow-map-save-all-mobile').click();
+
+    const postSave = page.getByTestId('my-flow-post-save-panel');
+    await expect(postSave).toBeVisible();
+    await expect(postSave.getByTestId('my-flow-post-save-metrics')).toHaveAttribute('data-layout', 'compact');
+    await expect(postSave.getByTestId('my-flow-post-save-action-hub')).toHaveAttribute('data-layout', 'compact');
+    await expect(postSave.getByTestId('my-flow-post-save-step')).toHaveCount(5);
+    await expect(postSave.getByTestId('my-flow-post-save-export-region')).toHaveCount(0);
+    const outlineBox = await postSave.getByTestId('my-flow-post-save-artifact').boundingBox();
+    expect(outlineBox?.y ?? Number.MAX_SAFE_INTEGER).toBeLessThan(844);
+
+    const exportButton = postSave.getByTestId('my-flow-post-save-open-export');
+    await exportButton.click();
+    const exportRegion = postSave.getByTestId('my-flow-post-save-export-region');
+    await expect(exportRegion).toBeFocused();
+    const exportPanel = exportRegion.getByTestId('my-flow-export-panel');
+    await expect(exportPanel).toHaveAttribute('data-export-layout', 'compact-preflight');
+    await expect(exportPanel).toHaveAttribute('data-default-expanded-secondary-count', '0');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toContainText('Flow 전체 · 5개');
+    await expect(exportPanel.getByTestId('my-flow-export-detail-loss-notice')).toBeVisible();
+    await expect(exportPanel).not.toContainText('1 범위');
+    await expect(exportPanel).not.toContainText('2 예상 결과');
+    await expect(exportPanel).not.toContainText('3 형식');
+
+    await exportPanel.getByTestId('my-flow-export-scope-selected').click();
+    await expect(exportPanel.getByTestId('my-flow-export-selectable-item')).toHaveCount(5);
+    await exportButton.click();
+    await expect(exportRegion).toHaveCount(0);
+    await expect(exportButton).toBeFocused();
+    await expectNoHorizontalOverflow(page);
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.reload();
+    await expect(page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-step')).toHaveCount(5);
+    await expectNoHorizontalOverflow(page);
+  });
 });

@@ -44,11 +44,6 @@ export function PostSaveDecisionHub({
   const exportButtonRef = useRef<HTMLButtonElement | null>(null);
   const exportRegionRef = useRef<HTMLDivElement | null>(null);
   const previousExportExpandedRef = useRef(false);
-  const metricColumnClass =
-    metrics.length <= 2 ? 'sm:grid-cols-2' :
-    metrics.length === 3 ? 'sm:grid-cols-3' :
-    metrics.length === 4 ? 'sm:grid-cols-4' :
-    'sm:grid-cols-5';
 
   useEffect(() => {
     if (exportExpanded) {
@@ -79,85 +74,89 @@ export function PostSaveDecisionHub({
         </span>
       </FlowReceipt>
 
-      {!held ? (
-        <dl data-testid="my-flow-post-save-metrics" className={`grid grid-cols-2 border-b border-[#E7E4DD] ${metricColumnClass}`}>
+      {!held && metrics.length > 0 ? (
+        <dl
+          data-testid="my-flow-post-save-metrics"
+          data-layout="compact"
+          className="flex flex-wrap gap-x-4 gap-y-1 border-b border-[#E7E4DD] px-4 py-2.5 sm:px-5"
+        >
           {metrics.map((metric) => (
             <div
               key={metric.key}
               data-metric={metric.key}
-              className={`min-w-0 border-b border-r border-[#E7E4DD] px-4 py-3 last:border-r-0 sm:col-span-1 sm:border-b-0 sm:px-5 ${metrics.length % 2 === 1 ? 'last:col-span-2' : ''}`}
+              className="inline-flex min-w-0 items-baseline gap-1.5"
             >
               <dt className="text-[11px] font-semibold text-[#8A857B]">{metric.label}</dt>
-              <dd className="mt-0.5 break-keep text-sm font-semibold text-[#1B1A17]">{metric.value}</dd>
+              <dd className="break-keep text-xs font-semibold text-[#1B1A17]">{metric.value}</dd>
             </div>
           ))}
         </dl>
       ) : null}
 
-      <div className="grid min-w-0 gap-0 lg:grid-cols-[minmax(0,1fr)_17rem]">
-        <div data-testid="my-flow-post-save-artifact" className="order-2 min-w-0 px-4 py-4 sm:px-5 lg:order-1 lg:border-r lg:border-[var(--flowme-border)]">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold text-[var(--flowme-text)]">{held ? '보관한 전체 Flow' : '저장된 전체 Flow'}</h3>
-            <span className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">전체 항목</span>
-          </div>
-          {children}
+      {held ? (
+        <div className="border-b border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-4 py-3 sm:px-5">
+          <p className="text-sm font-semibold text-[var(--flowme-text)]">원문 확인이 먼저예요</p>
+          <p data-testid="my-flow-post-save-held-note" className="mt-1 break-keep text-xs leading-5 text-[var(--flowme-text-secondary)]">
+            원문 확인이 끝난 뒤 다시 실행할 수 있어요.
+          </p>
         </div>
+      ) : (
+        <div
+          data-testid="my-flow-post-save-action-hub"
+          data-layout="compact"
+          className="border-b border-[var(--flowme-border)] px-4 py-3 sm:px-5"
+        >
+          <p className="sr-only">다음 행동</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {canStart ? (
+              <button
+                type="button"
+                data-testid="my-flow-post-save-open-first"
+                data-action-priority="primary"
+                className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full`}
+                onClick={onStart}
+              >
+                {FLOW_EXECUTION_ACTIONS.startFirstItem.label}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              data-testid="my-flow-post-save-view-flow"
+              data-action-priority="secondary"
+              className={`${FLOW_UI_SECONDARY_ACTION_CLASS} w-full`}
+              onClick={onViewFlow}
+            >
+              {FLOW_EXECUTION_ACTIONS.viewWholeFlow.label}
+            </button>
+          </div>
+          <div className="mt-2 grid grid-cols-2 gap-1 border-t border-[var(--flowme-border)] pt-2">
+            <Link
+              data-testid="my-flow-post-save-open-calendar"
+              className={`${FLOW_UI_TERTIARY_ACTION_CLASS} w-full`}
+              href="/calendar"
+            >
+              {FLOW_EXECUTION_ACTIONS.openCalendar.label}
+            </Link>
+            <button
+              ref={exportButtonRef}
+              type="button"
+              data-testid="my-flow-post-save-open-export"
+              aria-expanded={exportExpanded}
+              className={`${FLOW_UI_TERTIARY_ACTION_CLASS} w-full`}
+              onClick={onOpenExport}
+            >
+              {exportLabel}
+            </button>
+          </div>
+        </div>
+      )}
 
-        <aside className="order-1 border-b border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-4 py-4 sm:px-5 lg:order-2 lg:border-b-0">
-          {held ? (
-            <div>
-              <p className="text-sm font-semibold text-[var(--flowme-text)]">원문 확인이 먼저예요</p>
-              <p data-testid="my-flow-post-save-held-note" className="mt-1 break-keep text-xs leading-5 text-[var(--flowme-text-secondary)]">
-                원문 확인이 끝난 뒤 다시 실행할 수 있어요.
-              </p>
-            </div>
-          ) : (
-            <div data-testid="my-flow-post-save-action-hub">
-              <p className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">다음 행동</p>
-              <div className="mt-2 grid gap-2">
-                {canStart ? (
-                  <button
-                    type="button"
-                    data-testid="my-flow-post-save-open-first"
-                    data-action-priority="primary"
-                    className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full`}
-                    onClick={onStart}
-                  >
-                    {FLOW_EXECUTION_ACTIONS.startFirstItem.label}
-                  </button>
-                ) : null}
-                <button
-                  ref={exportButtonRef}
-                  type="button"
-                  data-testid="my-flow-post-save-view-flow"
-                  data-action-priority="secondary"
-                  className={`${FLOW_UI_SECONDARY_ACTION_CLASS} w-full`}
-                  onClick={onViewFlow}
-                >
-                  {FLOW_EXECUTION_ACTIONS.viewWholeFlow.label}
-                </button>
-              </div>
-              <div className="mt-2 grid grid-cols-2 gap-1 border-t border-[var(--flowme-border)] pt-2">
-                <Link
-                  data-testid="my-flow-post-save-open-calendar"
-                  className={`${FLOW_UI_TERTIARY_ACTION_CLASS} w-full`}
-                  href="/calendar"
-                >
-                  {FLOW_EXECUTION_ACTIONS.openCalendar.label}
-                </Link>
-                <button
-                  type="button"
-                  data-testid="my-flow-post-save-open-export"
-                  aria-expanded={exportExpanded}
-                  className={`${FLOW_UI_TERTIARY_ACTION_CLASS} w-full`}
-                  onClick={onOpenExport}
-                >
-                  {exportLabel}
-                </button>
-              </div>
-            </div>
-          )}
-        </aside>
+      <div data-testid="my-flow-post-save-artifact" className="min-w-0 px-4 py-4 sm:px-5">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h3 className="text-sm font-semibold text-[var(--flowme-text)]">{held ? '보관한 전체 Flow' : '저장된 전체 Flow'}</h3>
+          <span className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">전체 항목</span>
+        </div>
+        {children}
       </div>
       {exportContent ? (
         <div

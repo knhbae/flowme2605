@@ -11,7 +11,7 @@ import {
 } from '@/lib/flow/export-scope';
 import { FlowItemMultiSelect } from './FlowItemMultiSelect';
 import { FlowExportReceipt } from './FlowExportReceipt';
-import { FlowExportPlan, FlowPlanStep } from './FlowExecutionPrimitives';
+import { FlowExportPlan } from './FlowExecutionPrimitives';
 import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
 import {
   FLOW_UI_ICON_ACTION_CLASS,
@@ -23,6 +23,8 @@ import {
 
 export type FlowExportPanelItem = FlowExportScopeItem & {
   meta?: string;
+  subcheckCount?: number;
+  resourceCount?: number;
 };
 
 type FlowExportPanelProps = {
@@ -94,6 +96,17 @@ export function FlowExportPanel({
   );
   const selectedCount = selectedPlan.includedCount;
   const scopeLabel = scope === 'flow' ? 'Flow 전체' : '직접 선택';
+  const includedKeySet = new Set(plan.items.map((item) => item.key));
+  const includedPanelItems = items.filter((item) => includedKeySet.has(item.key));
+  const nestedSubcheckCount = includedPanelItems.reduce(
+    (count, item) => count + Math.max(0, item.subcheckCount ?? 0),
+    0,
+  );
+  const resourceCount = includedPanelItems.reduce(
+    (count, item) => count + Math.max(0, item.resourceCount ?? 0),
+    0,
+  );
+  const hasNestedDetail = nestedSubcheckCount + resourceCount > 0;
 
   useEffect(() => {
     setReceipt(null);
@@ -131,12 +144,14 @@ export function FlowExportPanel({
           data-testid="my-flow-export-panel"
           data-export-scope={scope}
           data-export-included-count={plan.includedCount}
+          data-export-layout="compact-preflight"
+          data-default-expanded-secondary-count="0"
           className={showEntry ? 'mt-3 border-t border-[#E7E4DD] pt-3' : ''}
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-semibold text-[var(--flowme-text-tertiary)]">{FLOW_EXECUTION_ACTIONS.exportFlow.label}</p>
-              <h4 className="text-base font-semibold text-[var(--flowme-text)]">범위와 결과 확인</h4>
+              <h4 className="text-base font-semibold text-[var(--flowme-text)]">{FLOW_EXECUTION_ACTIONS.exportFlow.label}</h4>
+              <p className="mt-0.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">범위와 형식을 고르면 바로 가져갑니다.</p>
             </div>
             {showClose ? (
               <button
@@ -151,11 +166,10 @@ export function FlowExportPanel({
             ) : null}
           </div>
 
-          <FlowPlanStep index={1} label="범위" />
           {fixedScope ? (
             <div
               data-testid="my-flow-export-scope-control"
-              className="mt-1 flex min-h-11 items-center justify-between border-y border-[var(--flowme-border)] py-2"
+              className="mt-3 flex min-h-11 items-center justify-between border-y border-[var(--flowme-border)] py-2"
               aria-label="가져갈 범위"
             >
               <span className="text-sm font-semibold text-[var(--flowme-text)]">Flow 전체</span>
@@ -164,7 +178,7 @@ export function FlowExportPanel({
           ) : (
             <div
               data-testid="my-flow-export-scope-control"
-              className={`mt-1 grid-cols-2 ${FLOW_UI_SEGMENTED_CLASS}`}
+              className={`mt-3 grid-cols-2 ${FLOW_UI_SEGMENTED_CLASS}`}
               role="group"
               aria-label="가져갈 범위"
             >
@@ -215,8 +229,10 @@ export function FlowExportPanel({
             </div>
           ) : null}
 
-          <FlowPlanStep index={2} label="예상 결과" />
-          <div className="mt-1 flex flex-wrap items-center justify-between gap-2 border-y border-[var(--flowme-border)] py-2">
+          <div
+            data-testid="my-flow-export-preflight"
+            className="mt-3 flex flex-wrap items-center justify-between gap-2 border-y border-[var(--flowme-border)] py-2"
+          >
             <p data-testid="my-flow-export-scope-summary" className="text-sm font-semibold text-[var(--flowme-text)]">
               {scopeLabel} · {plan.includedCount}개
             </p>
@@ -233,10 +249,17 @@ export function FlowExportPanel({
               <span>목록에서 제외 {plan.excludedCount + plan.tombstonedCount}개</span>
             ) : null}
           </div>
+          {hasNestedDetail ? (
+            <p
+              data-testid="my-flow-export-detail-loss-notice"
+              className="mt-2 break-keep text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]"
+            >
+              세부 확인 항목과 자료는 FlowMe에 남습니다. 캘린더 파일에는 일정 설명으로 함께 담습니다.
+            </p>
+          ) : null}
 
           <div className="mt-3">
-            <FlowPlanStep index={3} label="형식" />
-            <div className={`mt-1 grid grid-cols-2 overflow-hidden border-y border-[var(--flowme-border)] ${destinations.length > 2 ? 'sm:grid-cols-4' : ''}`}>
+            <div className={`grid grid-cols-2 overflow-hidden border-y border-[var(--flowme-border)] ${destinations.length > 2 ? 'sm:grid-cols-4' : ''}`}>
               {destinations.map((destination) => {
                 const copy = destinationCopyOverride?.[destination] ?? destinationCopy[destination];
                 const count = plan.countByDestination[destination];
@@ -303,7 +326,6 @@ export function FlowExportPanel({
 
           {receipt ? (
             <div ref={receiptContainerRef}>
-              <FlowPlanStep index={4} label="완료" />
               <FlowExportReceipt receipt={receipt} />
             </div>
           ) : null}
