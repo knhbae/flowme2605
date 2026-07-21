@@ -212,13 +212,28 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(adjustment).not.toContainText('발행');
     const rows = adjustment.getByTestId('public-flow-adjustment-row');
     await expect(rows).toHaveCount(24);
+    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
+    await expect(adjustment.getByTestId('public-flow-adjustment-title')).toHaveCount(0);
+    await expect(adjustment.getByTestId('public-flow-adjustment-date')).toHaveCount(0);
+    await expect(adjustment.getByRole('button', { name: /아래로 이동/ })).toHaveCount(0);
 
+    await adjustment.getByTestId('public-flow-adjustment-mode-content').click();
+    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'content');
     const first = rows.first();
     await first.getByTestId('public-flow-adjustment-title').fill('내 이사 방식 확정');
-    await first.getByTestId('public-flow-adjustment-date').fill('2030-08-01');
     await first.getByTestId('public-flow-adjustment-memo').locator('summary').click();
     await first.getByRole('textbox', { name: '내 이사 방식 확정 개인 메모' }).fill('가족과 최종 확인');
+
+    await adjustment.getByTestId('public-flow-adjustment-mode-schedule').click();
+    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'schedule');
+    await first.getByTestId('public-flow-adjustment-date').fill('2030-08-01');
+
+    await adjustment.getByTestId('public-flow-adjustment-mode-include').click();
+    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
     await rows.nth(1).getByRole('checkbox', { name: '이사할 집 하자 점검하기 저장에 포함' }).uncheck();
+
+    await adjustment.getByTestId('public-flow-adjustment-mode-order').click();
+    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'order');
     await first.getByRole('button', { name: '내 이사 방식 확정 아래로 이동' }).click();
     await rows.nth(1).getByRole('button', { name: '내 이사 방식 확정 아래로 이동' }).click();
 
@@ -266,6 +281,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(adjustment.getByTestId('public-flow-adjustment-row')).toHaveCount(24);
     await expect(adjustment).not.toContainText('Markdown');
     await expect(adjustment).not.toContainText('발행');
+    await adjustment.getByTestId('public-flow-adjustment-mode-order').click();
     await expect(adjustment.getByRole('button', { name: '이사 방식 정하기 아래로 이동' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });

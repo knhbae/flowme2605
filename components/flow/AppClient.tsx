@@ -17514,6 +17514,8 @@ type PublicFlowAdjustmentItem = {
   included: boolean;
 };
 
+type PublicFlowAdjustmentMode = 'include' | 'schedule' | 'content' | 'order';
+
 export function PublicFlow({ slug }: { slug: string }) {
   const { bundles, persist } = useBundles();
   const [bundle, setBundle] = useState<FlowBundle | null>(() => mergeSourceBackedMyFlowBundles(cloneSeedBundles()).find((item) => item.flow.slug === slug) ?? null);
@@ -17532,6 +17534,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
   const [publicAdjustmentOpen, setPublicAdjustmentOpen] = useState(false);
+  const [publicAdjustmentMode, setPublicAdjustmentMode] = useState<PublicFlowAdjustmentMode>('include');
   const [publicAdjustmentItems, setPublicAdjustmentItems] = useState<Record<string, PublicFlowAdjustmentItem>>({});
   const [publicAdjustmentOrder, setPublicAdjustmentOrder] = useState<string[]>([]);
   const [savedFlowAt, setSavedFlowAt] = useState<string | undefined>(undefined);
@@ -17562,6 +17565,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setReactionLogs(getReactionLogs(slug));
     setSavedFlowAt(migration.record?.savedAt ?? getSavedFlowRecord(slug)?.savedAt);
     setPublicAdjustmentOpen(false);
+    setPublicAdjustmentMode('include');
     setPublicAdjustmentItems({});
     setPublicAdjustmentOrder([]);
   }, [slug]);
@@ -17751,6 +17755,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       } satisfies PublicFlowAdjustmentItem];
     })));
     setPublicAdjustmentOrder(orderedRows.map((row) => baseStateId(row.id)));
+    setPublicAdjustmentMode('include');
     setPublicAdjustmentOpen(true);
     window.setTimeout(() => {
       document.querySelector<HTMLElement>('[data-testid="public-flow-personal-adjustment"]')?.focus({ preventScroll: true });
@@ -18033,6 +18038,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     return (
       <section
         data-testid="public-flow-personal-adjustment"
+        data-adjustment-mode={publicAdjustmentMode}
         tabIndex={-1}
         aria-labelledby="public-flow-personal-adjustment-title"
         className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
@@ -18049,117 +18055,183 @@ export function PublicFlow({ slug }: { slug: string }) {
           </span>
         </div>
 
+        <div
+          data-testid="public-flow-adjustment-mode-picker"
+          role="group"
+          aria-label="조정할 내용"
+          className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4"
+        >
+          {([
+            ['include', '항목 고르기'],
+            ['schedule', '날짜'],
+            ['content', '제목·메모'],
+            ['order', '순서'],
+          ] as const).map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              data-testid={`public-flow-adjustment-mode-${mode}`}
+              aria-pressed={publicAdjustmentMode === mode}
+              className={publicAdjustmentMode === mode ? FLOW_UI_PRIMARY_ACTION_CLASS : FLOW_UI_SECONDARY_ACTION_CLASS}
+              onClick={() => setPublicAdjustmentMode(mode)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+          {publicAdjustmentMode === 'include'
+            ? '저장할 할 일만 고르세요.'
+            : publicAdjustmentMode === 'schedule'
+              ? '필요한 할 일의 날짜만 바꾸세요.'
+              : publicAdjustmentMode === 'content'
+                ? '제목이나 개인 메모가 필요한 할 일만 손보세요.'
+                : '화살표로 실행 순서만 바꾸세요.'}
+        </p>
+
         <ol className="mt-4 divide-y divide-[var(--flowme-border)] border-y border-[var(--flowme-border)] bg-white">
           {rows.map(({ itemId, row }, index) => {
             const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
             const included = adjustment.included !== false;
             const sourceDate = publicScheduleDateByItemId.get(itemId) ?? '';
             const displayedDate = adjustment.date !== undefined ? adjustment.date : sourceDate;
+            const displayTitle = adjustment.title ?? row.title;
+            const displayDateLabel = displayedDate
+              ? formatKoreanShortDate(displayedDate, { includeWeekday: false })
+              : '날짜 없음';
             return (
               <li
                 key={itemId}
                 data-testid="public-flow-adjustment-row"
                 data-item-id={itemId}
-                className={`grid min-w-0 gap-3 px-1 py-3 sm:grid-cols-[auto_minmax(0,1fr)_10rem_auto] sm:items-start ${included ? '' : 'opacity-55'}`}
+                data-adjustment-mode={publicAdjustmentMode}
+                className={`min-w-0 px-3 py-3 ${included ? '' : 'opacity-55'}`}
               >
-                <label className="flex min-h-10 items-center gap-2 text-xs font-semibold text-slate-600">
-                  <input
-                    type="checkbox"
-                    checked={included}
-                    aria-label={`${adjustment.title ?? row.title} 저장에 포함`}
-                    onChange={(event) => setPublicAdjustmentItems((current) => ({
-                      ...current,
-                      [itemId]: { ...adjustment, included: event.target.checked },
-                    }))}
-                  />
-                  <span className="sm:sr-only">포함</span>
-                </label>
-                <div className="min-w-0">
-                  <label className="block text-[11px] font-semibold text-slate-500">
-                    할 일
+                {publicAdjustmentMode === 'include' ? (
+                  <label className="grid min-h-11 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
                     <input
-                      data-testid="public-flow-adjustment-title"
-                      className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
-                      value={adjustment.title ?? row.title}
-                      disabled={!included}
+                      type="checkbox"
+                      checked={included}
+                      aria-label={`${displayTitle} 저장에 포함`}
                       onChange={(event) => setPublicAdjustmentItems((current) => ({
                         ...current,
-                        [itemId]: { ...adjustment, title: event.target.value },
+                        [itemId]: { ...adjustment, included: event.target.checked },
                       }))}
                     />
+                    <span className="min-w-0 text-sm font-semibold leading-5 text-[var(--flowme-text)]">{displayTitle}</span>
+                    <span className="whitespace-nowrap text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
+                      {displayDateLabel}
+                    </span>
                   </label>
-                  <details className="mt-2" data-testid="public-flow-adjustment-memo">
-                    <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">메모</summary>
-                    <textarea
-                      className={`mt-2 h-20 min-h-20 w-full resize-y ${FLOW_UI_INPUT_CLASS}`}
-                      value={adjustment.memo ?? ''}
-                      disabled={!included}
-                      aria-label={`${adjustment.title ?? row.title} 개인 메모`}
-                      onChange={(event) => setPublicAdjustmentItems((current) => ({
-                        ...current,
-                        [itemId]: { ...adjustment, memo: event.target.value },
-                      }))}
-                    />
-                  </details>
-                </div>
-                <label className="block text-[11px] font-semibold text-slate-500">
-                  날짜
-                  <input
-                    data-testid="public-flow-adjustment-date"
-                    className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
-                    type="date"
-                    value={displayedDate}
-                    disabled={!included}
-                    aria-label={`${adjustment.title ?? row.title} 날짜`}
-                    onChange={(event) => setPublicAdjustmentItems((current) => ({
-                      ...current,
-                      [itemId]: { ...adjustment, date: event.target.value },
-                    }))}
-                  />
-                  {displayedDate ? (
-                    <button
-                      type="button"
-                      className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:underline"
-                      disabled={!included}
-                      onClick={() => setPublicAdjustmentItems((current) => ({
-                        ...current,
-                        [itemId]: { ...adjustment, date: '' },
-                      }))}
-                    >
-                      날짜 없애기
-                    </button>
-                  ) : null}
-                </label>
-                <div className="flex gap-1 sm:pt-5">
-                  <button
-                    type="button"
-                    title="위로 이동"
-                    aria-label={`${adjustment.title ?? row.title} 위로 이동`}
-                    disabled={index === 0}
-                    className={FLOW_UI_ICON_ACTION_CLASS}
-                    onClick={() => setPublicAdjustmentOrder((current) => {
-                      const next = [...current];
-                      [next[index - 1], next[index]] = [next[index], next[index - 1]];
-                      return next;
-                    })}
-                  >
-                    <span aria-hidden="true">↑</span>
-                  </button>
-                  <button
-                    type="button"
-                    title="아래로 이동"
-                    aria-label={`${adjustment.title ?? row.title} 아래로 이동`}
-                    disabled={index === rows.length - 1}
-                    className={FLOW_UI_ICON_ACTION_CLASS}
-                    onClick={() => setPublicAdjustmentOrder((current) => {
-                      const next = [...current];
-                      [next[index], next[index + 1]] = [next[index + 1], next[index]];
-                      return next;
-                    })}
-                  >
-                    <span aria-hidden="true">↓</span>
-                  </button>
-                </div>
+                ) : null}
+
+                {publicAdjustmentMode === 'schedule' ? (
+                  <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-start">
+                    <div className="min-w-0 pt-1">
+                      <p className="text-sm font-semibold leading-5 text-[var(--flowme-text)]">{displayTitle}</p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{displayDateLabel}</p>
+                    </div>
+                    <label className="block text-[11px] font-semibold text-slate-500">
+                      날짜
+                      <input
+                        data-testid="public-flow-adjustment-date"
+                        className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
+                        type="date"
+                        value={displayedDate}
+                        disabled={!included}
+                        aria-label={`${displayTitle} 날짜`}
+                        onChange={(event) => setPublicAdjustmentItems((current) => ({
+                          ...current,
+                          [itemId]: { ...adjustment, date: event.target.value },
+                        }))}
+                      />
+                      {displayedDate ? (
+                        <button
+                          type="button"
+                          className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:underline"
+                          disabled={!included}
+                          onClick={() => setPublicAdjustmentItems((current) => ({
+                            ...current,
+                            [itemId]: { ...adjustment, date: '' },
+                          }))}
+                        >
+                          날짜 없애기
+                        </button>
+                      ) : null}
+                    </label>
+                  </div>
+                ) : null}
+
+                {publicAdjustmentMode === 'content' ? (
+                  <div className="min-w-0">
+                    <label className="block text-[11px] font-semibold text-slate-500">
+                      할 일
+                      <input
+                        data-testid="public-flow-adjustment-title"
+                        className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
+                        value={displayTitle}
+                        disabled={!included}
+                        onChange={(event) => setPublicAdjustmentItems((current) => ({
+                          ...current,
+                          [itemId]: { ...adjustment, title: event.target.value },
+                        }))}
+                      />
+                    </label>
+                    <details className="mt-2" data-testid="public-flow-adjustment-memo">
+                      <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">개인 메모</summary>
+                      <textarea
+                        className={`mt-2 h-20 min-h-20 w-full resize-y ${FLOW_UI_INPUT_CLASS}`}
+                        value={adjustment.memo ?? ''}
+                        disabled={!included}
+                        aria-label={`${displayTitle} 개인 메모`}
+                        onChange={(event) => setPublicAdjustmentItems((current) => ({
+                          ...current,
+                          [itemId]: { ...adjustment, memo: event.target.value },
+                        }))}
+                      />
+                    </details>
+                  </div>
+                ) : null}
+
+                {publicAdjustmentMode === 'order' ? (
+                  <div className="grid min-h-11 grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3">
+                    <span className="text-center text-xs font-bold text-[var(--flowme-text-secondary)]">{index + 1}</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold leading-5 text-[var(--flowme-text)]">{displayTitle}</p>
+                      <p className="mt-0.5 text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{displayDateLabel}</p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        title="위로 이동"
+                        aria-label={`${displayTitle} 위로 이동`}
+                        disabled={index === 0 || !included}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => setPublicAdjustmentOrder((current) => {
+                          const next = [...current];
+                          [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                          return next;
+                        })}
+                      >
+                        <span aria-hidden="true">↑</span>
+                      </button>
+                      <button
+                        type="button"
+                        title="아래로 이동"
+                        aria-label={`${displayTitle} 아래로 이동`}
+                        disabled={index === rows.length - 1 || !included}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => setPublicAdjustmentOrder((current) => {
+                          const next = [...current];
+                          [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                          return next;
+                        })}
+                      >
+                        <span aria-hidden="true">↓</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </li>
             );
           })}
