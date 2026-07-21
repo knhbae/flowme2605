@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-07-22 - P28 Cross-Surface Experience Reconstruction
+
+- Released the Hybrid save-before workspace, shared item-role and artifact projection, common routine schedule grammar, responsive My Flow rail/detail, scalable Calendar Flow picker, and five actual-data result shapes.
+- Merged [PR #144](https://github.com/knhbae/flowme2605/pull/144) as `9a839d02be5b03faf917903b09b07e7c0014210e`; Vercel deployment `dpl_6wyYqhweXvJPDiFqCQLsNp18gHXQ` reached READY at <https://flowme2605.vercel.app>.
+- Verified pretest `25 / 25`, unit `584 / 584`, P28 Playwright `7 / 7`, full Playwright `346 / 346`, production build `18 / 18`, and `19` responsive screenshots with overflow and browser-error counts `0`.
+- Published the [P28 final review package](./content-audit/2026-07-22-p28-final-review-package/README.md). No semantic version tag was created, and observed-user sessions remain `0`.
+
 ## 2026-07-21 - P27 Flow Lifecycle Workspace Production Baseline
 
 - Released reversible Flow archive/restore, source-safe Item exclusion, truthful routine preview and resource hierarchy, one-operation save-before adjustment, adaptive My Flow library/search, Calendar scope/accessibility, and compact post-save/export.

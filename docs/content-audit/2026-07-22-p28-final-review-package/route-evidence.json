@@ -2,7 +2,7 @@
   "generatedAt": "2026-07-22",
   "baselineSha": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
   "branch": "codex/p28-program-plan",
-  "verdict": "internally_complete_awaiting_owner_review",
+  "verdict": "released_awaiting_owner_review",
   "evidenceKind": [
     "current_source",
     "current_command",
@@ -92,9 +92,18 @@
     "docsCheckPassed": true,
     "diffCheckPassed": true
   },
+  "release": {
+    "implementationCommit": "5809e6d7e69f857f1ab2d44ae5721d27adcc3a77",
+    "pullRequest": "https://github.com/knhbae/flowme2605/pull/144",
+    "mergeSha": "9a839d02be5b03faf917903b09b07e7c0014210e",
+    "deploymentId": "dpl_6wyYqhweXvJPDiFqCQLsNp18gHXQ",
+    "deploymentUrl": "https://flowme2605-2lir35cn1-flowme.vercel.app",
+    "canonicalUrl": "https://flowme2605.vercel.app",
+    "deploymentReady": true
+  },
   "claims": {
     "automatedRegressionGreen": true,
     "observedUserValidated": false,
-    "productionDeployed": false
+    "productionDeployed": true
   }
 }

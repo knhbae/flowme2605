@@ -1,6 +1,6 @@
 # FlowMe P28 Final Review Package
 
-**판정:** `internally_complete_awaiting_owner_review`
+**판정:** `released_awaiting_owner_review`
 **기준:** `origin/main` baseline `46e567ec09c5eba37ac703529b3d3eccc75e0dde`에서 P28-01~P28-08을 한 release branch로 구현·검증
 **검증일:** 2026-07-22
 **실제 관찰 사용자:** 0명
@@ -42,6 +42,16 @@ Flow 제목과 출처
 - Calendar large-library horizontal Flow chip: `0`
 - observed-user validation: `false`
 
+## 게시 상태
+
+- 구현 commit: `5809e6d7e69f857f1ab2d44ae5721d27adcc3a77`
+- PR: [#144](https://github.com/knhbae/flowme2605/pull/144)
+- squash merge: `9a839d02be5b03faf917903b09b07e7c0014210e`
+- Vercel deployment: `dpl_6wyYqhweXvJPDiFqCQLsNp18gHXQ`, `READY`
+- canonical production: <https://flowme2605.vercel.app>
+
+배포는 완료됐지만 production 배포 후 실제 사용자 관찰은 수행하지 않았다. 현재 판정은 구현·회귀·배포 완료이며 owner/독립 UX 판정은 다음 gate다.
+
 전체 4-worker E2E의 첫 실행은 Chrome GPU/navigation 부하와 이전 DOM selector 때문에 `339 / 346`이었다. selector를 stable execution-row shell로 갱신하고 실패 7개를 단일 worker로 재현해 `7 / 7`, 이후 전체를 2 workers로 다시 실행해 `346 / 346`을 확인했다. 첫 실행을 최종 통과처럼 사용하지 않았다.
 
 ## 바로 볼 파일
@@ -62,4 +72,4 @@ Flow 제목과 출처
 - 기존 상세 workbench는 고급 정보 보존을 위해 접힌 disclosure 아래 남아 있다.
 - 계정 동기화, 외부 Calendar/Todo OAuth, 실제 AI/crawler는 P28 범위가 아니다.
 
-현재 판정은 “내부 구현과 회귀 검증 완료”다. “상용 UX 검증 완료” 또는 “실제 사용자 검증 완료”가 아니다.
+현재 판정은 “구현·회귀·production 배포 완료”다. “상용 UX 검증 완료” 또는 “실제 사용자 검증 완료”가 아니다.

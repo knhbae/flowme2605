@@ -11,7 +11,7 @@
 | P28-05 | Complete | mobile drill-in, wide rail/detail, 27-Flow fixture |
 | P28-06 | Complete | 6+ searchable Calendar scope picker, persisted multi-select |
 | P28-07 | Complete | five actual-data representative shapes |
-| P28-08 | Internal gate complete | unit 584/584, P28 E2E 7/7, full E2E 346/346, build 18/18, observed users 0 |
+| P28-08 | Released | PR #144, merge `9a839d02`, Vercel READY; unit 584/584, P28 E2E 7/7, full E2E 346/346, build 18/18, observed users 0 |
 
 최종 근거는 [P28 final review package](../../content-audit/2026-07-22-p28-final-review-package/README.md)에 있다. 아래 체크리스트는 원래 실행 계약을 보존하며, unchecked 항목을 새 active backlog로 해석하지 않는다.
 

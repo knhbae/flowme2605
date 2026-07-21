@@ -1,7 +1,7 @@
 # Project Status
 
-**Last Updated:** 2026-07-22 (P28 internal implementation and regression gate complete)
-**Status:** v0.1.0 RELEASED / P28 INTERNAL GATE GREEN, OWNER REVIEW PENDING
+**Last Updated:** 2026-07-22 (P28 production release complete)
+**Status:** v0.1.0 RELEASED / P28 PRODUCTION READY, OWNER REVIEW PENDING
 **Current Version:** v0.1.0  
 **Primary Focus:** Review the [P28 final package](./content-audit/2026-07-22-p28-final-review-package/README.md) and current production before opening P29. P28 selected and implemented a Hybrid save-before architecture, shared routine/execution grammar, scalable My Flow and Calendar navigation, and five actual-data result projections while preserving P27 source/personal/run/occurrence/export contracts. Automated and browser gates are green; observed-user sessions remain `0` and recruitment is not active.
 
@@ -19,7 +19,7 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 ## Recent Direction Notes
 
-- 2026-07-22 P28 internal closeout: The Hybrid architecture now connects a compact whole-Flow outline, actual-data primary result, contextual title/date/memo adjustment, and save/export actions. Workout-only completion UI is removed; routine definition supports weekdays, time, duration, and explicit none/until/count end policy. My Flow uses mobile drill-in and wide rail/detail; Calendar uses a searchable multi-select picker for six or more Flows; five result shapes render actual rows rather than fixed empty tabs. Current verification is unit `584 / 584`, P28 Playwright `7 / 7`, full Playwright `346 / 346` with two workers, production build `18 / 18`, P28 screenshot matrix `19`, and representative overflow/console/page errors `0`. Observed-user sessions remain `0`. See the [P28 final package](./content-audit/2026-07-22-p28-final-review-package/README.md).
+- 2026-07-22 P28 production release: The Hybrid architecture now connects a compact whole-Flow outline, actual-data primary result, contextual title/date/memo adjustment, and save/export actions. Workout-only completion UI is removed; routine definition supports weekdays, time, duration, and explicit none/until/count end policy. My Flow uses mobile drill-in and wide rail/detail; Calendar uses a searchable multi-select picker for six or more Flows; five result shapes render actual rows rather than fixed empty tabs. Current verification is unit `584 / 584`, P28 Playwright `7 / 7`, full Playwright `346 / 346` with two workers, production build `18 / 18`, P28 screenshot matrix `19`, and representative overflow/console/page errors `0`. [PR #144](https://github.com/knhbae/flowme2605/pull/144) merged as `9a839d02`; Vercel deployment `dpl_6wyYqhweXvJPDiFqCQLsNp18gHXQ` is READY at <https://flowme2605.vercel.app>. Observed-user sessions remain `0`. See the [P28 final package](./content-audit/2026-07-22-p28-final-review-package/README.md).
 
 - 2026-07-21 P28 planning gate: Latest owner feedback rejects the current save-before adjustment, workout-specific result/resource UI, horizontally growing Calendar Flow scope, missing actual-data five-shape preview, and My Flow hierarchy as production-ready UX. The [P28 cross-surface experience reconstruction](./specs/2026-07-21-p28-experience-reconstruction/README.md) classifies these surfaces as `supported_but_not_accepted`, preserves P27 data/identity contracts, and replaces the prior implementation-first sequence with a no-app-code P28-01 comparison simulation. P28-02~08 then cover shared projection policy, save-before editing, routine normalization, My Flow, Calendar scale, five-shape/export parity, and final independent review. Observed-user sessions remain `0`.
 

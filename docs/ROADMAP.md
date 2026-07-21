@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-07-22<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P28 implementation and automated regression green, owner review pending<br>
+**Current Validation Stage:** internal alpha / P28 production released, owner review pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
 **Next Milestone:** P28 owner/independent review and evidence-backed P29 decision
 
@@ -40,11 +40,11 @@ Detailed backlog: [P28-01~P28-08](./specs/2026-07-21-p28-experience-reconstructi
 | P28-05 | Reconstruct My Flow browse/search/detail hierarchy for 1/5/20/50 Flows | Complete through 27-Flow fixture; 50+ observation remains |
 | P28-06 | Replace unbounded Calendar Flow chips with a scalable scope picker and shared occurrence row | Complete through 12-Flow fixture |
 | P28-07 | Connect five actual-data shapes, representative content, source/safety gate, and export parity | Complete for five representative production Flows |
-| P28-08 | Integrated regression, independent handoff, and owner readiness decision | Internal gate complete; owner/independent verdict pending |
+| P28-08 | Integrated regression, independent handoff, and owner readiness decision | Released through PR #144 and merge `9a839d02`; owner/independent verdict pending |
 
 The five artifact shapes are `Flow execution`, `Calendar`, `Checklist/Todo`, `Sheet`, and `Memo`. They are representative projections, not a permanent five-card gallery or fifth navigation tab. Each Flow shows one content-native primary result and only meaningful secondary results.
 
-P28 changed component composition and visual hierarchy without rewriting source, personal overlay, execution run, recurrence occurrence, or export identity. It did not add AI, crawler, account persistence, OAuth, or a heavy planner. External user observation remains deferred until an explicit owner decision after the [P28 final review](./content-audit/2026-07-22-p28-final-review-package/README.md).
+P28 changed component composition and visual hierarchy without rewriting source, personal overlay, execution run, recurrence occurrence, or export identity. [PR #144](https://github.com/knhbae/flowme2605/pull/144) merged as `9a839d02`, and Vercel deployment `dpl_6wyYqhweXvJPDiFqCQLsNp18gHXQ` is READY at <https://flowme2605.vercel.app>. It did not add AI, crawler, account persistence, OAuth, or a heavy planner. External user observation remains deferred until an explicit owner decision after the [P28 final review](./content-audit/2026-07-22-p28-final-review-package/README.md).
 
 ## P27 Flow Lifecycle Workspace Reconciliation
 
