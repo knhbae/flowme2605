@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-21
 
-**Status:** Internally complete; owner and independent review pending
+**Status:** Released through PR #144; owner and independent review pending
 
 **Owner:** FlowMe product owner + implementation agent
 

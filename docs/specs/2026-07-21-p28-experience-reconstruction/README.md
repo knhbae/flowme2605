@@ -1,6 +1,6 @@
 # P28 Cross-Surface Experience Reconstruction
 
-상태: `internally_complete_awaiting_owner_review`
+상태: `released_awaiting_owner_review`
 
 작성일: 2026-07-21
 
@@ -10,7 +10,7 @@
 
 ## 한 줄 판정
 
-P28-01에서 Hybrid 공통 문법을 선택했고 P28-02~08에서 저장 전 조정, 반복 Flow, My Flow, Calendar, 다섯 실제 결과 projection과 전체 회귀를 연결했다. 내부 구현 gate는 green이며 owner/독립 UX review를 기다린다.
+P28-01에서 Hybrid 공통 문법을 선택했고 P28-02~08에서 저장 전 조정, 반복 Flow, My Flow, Calendar, 다섯 실제 결과 projection과 전체 회귀를 연결했다. PR #144와 production 배포까지 완료했으며 owner/독립 UX review를 기다린다.
 
 ## 현재 게이트
 
