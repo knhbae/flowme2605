@@ -1,0 +1,24 @@
+{
+  "package": "2026-07-22-p29-00-visual-interaction-reset-review-handoff",
+  "baselineSha": "ec97ff5effd6229c062528f6eb4f6d3f6d7fdc41",
+  "production": "https://flowme2605.vercel.app",
+  "appCodeChanged": false,
+  "files": [
+    {"path": "README.md", "purpose": "handoff entry and current verdict"},
+    {"path": "review.html", "purpose": "primary visual review board"},
+    {"path": "strategy-context.md", "purpose": "durable product strategy and planning constraints"},
+    {"path": "current-gap-audit.md", "purpose": "current P28 visual and interaction gaps"},
+    {"path": "route-evidence.json", "purpose": "route and screenshot evidence index"},
+    {"path": "review-scenario-matrix.json", "purpose": "persona and journey simulation tasks"},
+    {"path": "p29-decision-matrix.json", "purpose": "alternative scoring and provisional implementation slices"},
+    {"path": "response-template-ko.md", "purpose": "required reviewer response structure"},
+    {"path": "prompt-ko.md", "purpose": "single copy-paste prompt for Claude Design or Codex"},
+    {"path": "review-render-check.json", "purpose": "mobile, wide, desktop render QA"},
+    {"path": "screenshots/", "purpose": "representative P28 current screenshots and review board captures", "count": 16}
+  ],
+  "evidenceRules": {
+    "observedUserCount": 0,
+    "agentSimulationIsObservedUser": false,
+    "priorArtifactIsCurrentProduction": false
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-07-22",
+  "baselineSha": "ec97ff5effd6229c062528f6eb4f6d3f6d7fdc41",
+  "production": "https://flowme2605.vercel.app",
+  "productionHttpStatusAtPreparation": 200,
+  "packagePurpose": "p28_independent_review_and_p29_visual_interaction_reset_proposal",
+  "appCodeChanged": false,
+  "observedUserCount": 0,
+  "currentP28Verification": {
+    "evidenceKind": "prior_current_package",
+    "unitPassed": 584,
+    "fullE2ePassed": 346,
+    "buildRouteCount": 18,
+    "screenshotCount": 19,
+    "horizontalOverflowCount": 0,
+    "consoleOrPageErrorCount": 0
+  },
+  "reviewRoutes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "screenshots": ["00-mobile-save-before-moving-compact.png", "01-mobile-save-before-moving-adjustment.png", "02b-desktop-save-before-moving.png"],
+      "currentContract": ["whole_outline", "actual_calendar_result", "contextual_item_edit"],
+      "openQuestion": "document_like_density_and_adjustment_hierarchy"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "screenshots": ["03-mobile-routine-shared-contract.png", "04-wide-routine-shared-contract.png"],
+      "currentContract": ["shared_routine_definition", "common_occurrence_execution", "resource_not_completion"],
+      "openQuestion": "progressive_disclosure_and_mobile_density"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "screenshots": ["05-mobile-my-flow-drill-in.png", "06b-desktop-my-flow-library-detail.png"],
+      "currentContract": ["mobile_drill_in", "wide_rail_detail", "searchable_library"],
+      "openQuestion": "action_focus_and_cross_view_continuity"
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "screenshots": ["07-mobile-calendar-flow-picker.png", "09b-desktop-calendar-selected-flows.png"],
+      "currentContract": ["bounded_scope_picker", "same_projection_grid_agenda", "persistent_selection"],
+      "openQuestion": "large_library_scope_and_unscheduled_placement"
+    }
+  ],
+  "fiveShapeScreenshots": [
+    "10-mobile-shape-flow_execution.png",
+    "10-mobile-shape-calendar.png",
+    "10-mobile-shape-checklist.png",
+    "10-mobile-shape-sheet.png",
+    "10-mobile-shape-memo.png"
+  ],
+  "currentVisualAssessment": {
+    "structuralChangeImplemented": true,
+    "perceivedVisualChangeLarge": false,
+    "incrementalPolishLikelySufficient": false,
+    "recommendedGate": "p29_00_coordinated_surface_reset_comparison",
+    "evidenceKind": ["current_package_screenshot", "current_source", "heuristic_simulation"]
+  },
+  "requiredReviewerDecision": {
+    "options": ["incremental_polish", "coordinated_surface_reset", "full_product_rewrite"],
+    "mustRecommendOne": true,
+    "mustProvideCurrentProposedWireframes": true,
+    "mustSeparateCssFromStructuralChange": true,
+    "mustDefineFirstImplementationSlice": true,
+    "mustPreserveStableDataContracts": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-07-22",
+  "target": "review.html",
+  "evidenceKind": "current_browser",
+  "viewports": [
+    {"width": 390, "height": 844, "horizontalOverflow": false, "missingImageCount": 0, "consoleOrPageErrorCount": 0},
+    {"width": 1024, "height": 768, "horizontalOverflow": false, "missingImageCount": 0, "consoleOrPageErrorCount": 0},
+    {"width": 1440, "height": 900, "horizontalOverflow": false, "missingImageCount": 0, "consoleOrPageErrorCount": 0}
+  ],
+  "screenshots": ["screenshots/review-board-mobile.png", "screenshots/review-board-wide.png"]
+}

@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-07-22",
+  "gate": "P29-00_visual_interaction_reset",
+  "purpose": "choose_a_reset_scope_before_app_implementation",
+  "scoreScale": {
+    "minimum": 1,
+    "maximum": 5,
+    "description": "1은 계약 또는 사용자 여정을 악화시키고, 5는 명확히 개선하면서 회귀 위험이 통제됨"
+  },
+  "criteria": [
+    {"id": "journey_continuity", "weight": 20, "question": "save-before, receipt, My Flow, Calendar가 같은 Flow의 연속된 상태로 보이는가"},
+    {"id": "first_viewport_clarity", "weight": 15, "question": "설명문을 읽기 전에 저장될 결과와 primary action을 예측할 수 있는가"},
+    {"id": "progressive_disclosure", "weight": 15, "question": "common path는 짧고 필요한 advanced capability는 잃지 않는가"},
+    {"id": "content_shape_adaptability", "weight": 10, "question": "timeline, checklist, routine, sheet, memo, draft에 공통 문법으로 적용되는가"},
+    {"id": "contract_preservation", "weight": 15, "question": "source, personal, run, occurrence, export identity를 보존하는가"},
+    {"id": "mobile_quality", "weight": 10, "question": "390px에서 action과 content가 겹치지 않고 scroll burden이 통제되는가"},
+    {"id": "accessibility", "weight": 10, "question": "keyboard, focus, accessible name, state feedback이 명확한가"},
+    {"id": "implementation_reversibility", "weight": 5, "question": "vertical slice와 rollback 경계가 명확한가"}
+  ],
+  "options": [
+    {
+      "id": "incremental_polish",
+      "label": "A. Incremental polish",
+      "scope": ["typography", "spacing", "color", "border", "minor_density"],
+      "preliminaryAssessment": "likely_insufficient",
+      "reviewerScore": null
+    },
+    {
+      "id": "coordinated_surface_reset",
+      "label": "B. Coordinated surface reset",
+      "scope": ["save_before_composition", "my_flow_action_hierarchy", "calendar_scope_and_day", "routine_disclosure", "result_choice_and_receipt", "shared_visual_grammar"],
+      "preliminaryAssessment": "recommended_for_comparison",
+      "reviewerScore": null
+    },
+    {
+      "id": "full_product_rewrite",
+      "label": "C. Full product rewrite",
+      "scope": ["global_ia", "data_model", "planner_workspace", "new_core_surfaces"],
+      "preliminaryAssessment": "not_recommended",
+      "reviewerScore": null
+    }
+  ],
+  "hardFails": [
+    "source_or_personal_or_run_ownership_merged",
+    "stable_item_or_occurrence_or_export_identity_rewritten_without_blocker",
+    "heavy_planner_scope_added",
+    "long_explanatory_copy_used_instead_of_hierarchy",
+    "route_specific_completion_or_routine_grammar_added",
+    "fixed_five_artifact_tabs_added",
+    "four_tab_ia_changed",
+    "observed_user_validation_claimed_from_simulation"
+  ],
+  "requiredProposalArtifacts": [
+    "current_and_proposed_390_wireframes",
+    "current_and_proposed_1024_or_1440_wireframes",
+    "cross_surface_continuity_map",
+    "shared_component_anatomy",
+    "css_vs_composition_vs_state_change_classification",
+    "first_vertical_slice",
+    "rollback_boundary",
+    "acceptance_screenshots",
+    "targeted_e2e_markers"
+  ],
+  "provisionalSlices": [
+    {"id": "P29-00", "name": "alternative comparison and approval", "dependsOn": []},
+    {"id": "P29-01", "name": "shared visual grammar and command hierarchy", "dependsOn": ["P29-00"]},
+    {"id": "P29-02", "name": "save-before preview and adjustment reset", "dependsOn": ["P29-01"]},
+    {"id": "P29-03", "name": "My Flow action-first library and detail", "dependsOn": ["P29-01", "P29-02"]},
+    {"id": "P29-04", "name": "Calendar scope selected-day and placement reset", "dependsOn": ["P29-01"]},
+    {"id": "P29-05", "name": "routine progressive disclosure", "dependsOn": ["P29-01", "P29-02"]},
+    {"id": "P29-06", "name": "result choice export receipt continuity", "dependsOn": ["P29-02", "P29-03"]},
+    {"id": "P29-07", "name": "cross-surface responsive accessibility regression", "dependsOn": ["P29-03", "P29-04", "P29-05", "P29-06"]},
+    {"id": "P29-08", "name": "independent review and production closeout", "dependsOn": ["P29-07"]}
+  ]
+}

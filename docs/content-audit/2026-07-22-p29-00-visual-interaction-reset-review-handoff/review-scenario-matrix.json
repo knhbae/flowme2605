@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-07-22",
+  "purpose": "independent_current_review_and_p29_reset_proposal",
+  "observedUserCount": 0,
+  "viewports": ["390x844", "1024x768", "1440x900"],
+  "scenarios": [
+    {
+      "id": "moving-save-before",
+      "persona": "기준일 역산형",
+      "route": "/f/moving-d30-basic",
+      "task": ["전체 Flow 범위 확인", "이사일 입력", "항목 하나 수정", "Calendar 결과 확인", "My Flow 저장"],
+      "reviewQuestions": ["첫 viewport에서 저장 결과를 예측하는가", "outline과 result가 경쟁하는가", "수정이 full planner처럼 느껴지는가", "저장 후 다음 위치가 명확한가"],
+      "proposalRequired": "current/proposed save-before composition"
+    },
+    {
+      "id": "routine-progressive-setup",
+      "persona": "반복 루틴형",
+      "route": "/f/curated-allblanc-morning-workout",
+      "task": ["주 N회 확인", "시간 변경", "종료 조건 설정", "원문 resource 확인", "저장"],
+      "reviewQuestions": ["기본 summary만으로 시작 가능한가", "세부 설정이 과밀한가", "운동만 특별한 문법이 남았는가", "series와 occurrence가 구분되는가"],
+      "proposalRequired": "collapsed summary and expanded editor alternatives"
+    },
+    {
+      "id": "my-flow-returning-user",
+      "persona": "저장 Flow 반복 사용자",
+      "route": "/my?demo=ux20&view=flows",
+      "task": ["27개 중 Flow 찾기", "다음 행동 확인", "전체 계획 확인", "완료 후 다시 열기", "조정과 export 찾기"],
+      "reviewQuestions": ["library row 정보량이 적절한가", "detail의 primary action이 하나인가", "카드와 label이 과밀한가", "모바일과 wide 문법이 같은가"],
+      "proposalRequired": "action-first mobile and wide hierarchy"
+    },
+    {
+      "id": "calendar-large-library",
+      "persona": "다중 Flow Calendar 사용자",
+      "route": "/calendar?demo=ux12",
+      "task": ["특정 Flow 검색", "여러 Flow 선택", "선택 범위 확인", "선택일 agenda 실행", "날짜 없는 일 배치 가능성 확인"],
+      "reviewQuestions": ["picker가 scope를 빠르게 바꾸게 하는가", "선택 결과가 계속 보이는가", "grid와 agenda가 경쟁하는가", "50개 이상에서도 확장 가능한가"],
+      "proposalRequired": "large-library scope and selected-day alternatives"
+    },
+    {
+      "id": "five-result-shapes",
+      "persona": "기존 도구로 가져가는 사용자",
+      "routes": ["/f/curated-allblanc-morning-workout", "/f/moving-d30-basic", "/f/used-car-buying-check", "/f/source-backed-middle-school-math-1", "/f/overseas-safety-register"],
+      "task": ["추천 결과 확인", "secondary result 비교", "actual rows 확인", "저장 또는 export", "receipt 확인"],
+      "reviewQuestions": ["추천 이유가 보이는가", "결과 변경 시 손실을 예측하는가", "다섯 형태가 내부 데모처럼 보이는가", "저장과 export의 차이가 명확한가"],
+      "proposalRequired": "result chooser and receipt continuity"
+    },
+    {
+      "id": "cross-surface-continuity",
+      "persona": "발견부터 재사용까지 이어가는 사용자",
+      "routes": ["/flows", "/f/moving-d30-basic", "/my", "/calendar"],
+      "task": ["Flow 발견", "저장 전 조정", "저장", "My Flow 실행", "Calendar 확인", "완료 취소", "export와 재사용"],
+      "reviewQuestions": ["같은 Flow를 다룬다는 시각적 연속성이 있는가", "각 화면의 다음 행동이 일관적인가", "상태가 surface마다 다르게 보이지 않는가"],
+      "proposalRequired": "journey-wide state and command vocabulary"
+    }
+  ]
+}
