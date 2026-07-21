@@ -4886,19 +4886,21 @@ test('my flow ux20 demo keeps large flow inventories grouped without a dense rai
   expect(savedKeys).toHaveLength(0);
 });
 
-test('my flow inventory can hide and restore a flow without removing today data', async ({ page }) => {
+test('my flow inventory archives and restores a flow without deleting its saved data', async ({ page }) => {
   await page.goto('/my?demo=ux20');
 
   await page.getByTestId('my-flow-view-flow').click();
   const firstCard = page.getByTestId('my-flow-overview-card').first();
   const firstTitle = await firstCard.locator('h3').innerText();
-  await firstCard.getByTestId('my-flow-hide-toggle').click();
+  await firstCard.getByTestId('my-flow-archive-toggle').click();
+  await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
   await expect(page.getByTestId('my-flow-overview-card').filter({ hasText: firstTitle })).toHaveCount(0);
 
-  await page.getByTestId('my-flow-list-filter-hidden').click();
+  await page.getByTestId('my-flow-list-filter-archived').click();
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(1);
   await expect(page.getByTestId('my-flow-overview-card')).toContainText(firstTitle);
-  await page.getByTestId('my-flow-overview-card').getByTestId('my-flow-hide-toggle').click();
+  await page.getByTestId('my-flow-overview-card').getByTestId('my-flow-archive-toggle').click();
+  await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
   await page.getByTestId('my-flow-list-filter-all').click();
   await expect(page.getByTestId('my-flow-overview-card').filter({ hasText: firstTitle })).toHaveCount(1);
 });
@@ -5150,7 +5152,7 @@ test('my flow mobile keeps single saved flow in the same today and flow shell', 
   await expect(page.getByTestId('my-flow-mobile-structure-row').getByTestId('my-flow-mobile-structure-progress')).toContainText(/전체 0\/24 완료/);
   await expect(page.getByTestId('my-flow-mobile-structure-row')).not.toContainText('0%');
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-hide-toggle')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-archive-toggle')).toHaveCount(1);
 
   await page.goto('/my?demo=ux12');
   await expect(page.getByTestId('my-flow-view-today')).toBeVisible();

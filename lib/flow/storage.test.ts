@@ -3975,6 +3975,11 @@ test('FlowMe local backup includes execution records and excludes internal brows
         history: [],
       },
     }),
+    'flow:my-flow:lifecycle:v1': JSON.stringify({
+      schemaVersion: 1,
+      archivedFlowSlugs: ['archived-flow'],
+      updatedAt: '2026-07-13T09:00:00.000Z',
+    }),
     'flow:my-flow:execution-notes:moving-d30-basic': JSON.stringify([
       {
         itemId: 'moving-boxes::2026-07-10',
@@ -4002,6 +4007,7 @@ test('FlowMe local backup includes execution records and excludes internal brows
   assert.ok(backup.entries['flow:saved:moving-d30-basic']);
   assert.ok(backup.entries[structuralKey]);
   assert.ok(backup.entries['flow:my-flow:occurrence-execution']);
+  assert.ok(backup.entries['flow:my-flow:lifecycle:v1']);
   assert.ok(backup.entries['flow:my-flow:execution-notes:moving-d30-basic']);
   assert.equal(backup.entries['flow:auth:demo-user'], undefined);
   assert.equal(backup.entries['flow:map:update:dismissed'], undefined);

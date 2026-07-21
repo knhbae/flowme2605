@@ -206,6 +206,13 @@ import {
   type PersonalStructuralOccurrenceExecutionState,
 } from '@/lib/flow/personal-structural-occurrence';
 import {
+  archivePersonalFlow,
+  createEmptyPersonalFlowLifecycle,
+  loadPersonalFlowLifecycle,
+  restorePersonalFlow,
+  savePersonalFlowLifecycle,
+} from '@/lib/flow/personal-flow-lifecycle';
+import {
   loadOrMigratePersonalStructuralOverlay,
   savePersonalStructuralOverlay,
   type PersonalStructuralExecutionState,
@@ -226,6 +233,7 @@ import {
   buildSourceBackedFlowMapReviewedVersion,
   getSourceBackedFlowMapDateAnchorCopy,
   getSourceBackedFlowMapQualityDecision,
+  initializeSourceBackedFlowMapPersonalCopy,
   getPublicCatalogSourceBackedFlowMaps,
   getSourceBackedHomepageFlowMaps,
   getSourceBackedMyFlowMapForBundle,
@@ -3554,27 +3562,14 @@ type MyFlowReuseNotice = {
   message: string;
   detail: string;
 };
-const MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY = 'flow:my-flow:hidden-flows';
+type MyFlowLifecycleUndo = {
+  flowSlug: string;
+  flowTitle: string;
+  action: 'archive' | 'restore';
+};
 const MY_FLOW_WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
-type FlowListFilter = 'all' | 'open' | 'routine' | 'done' | 'hidden';
-
-function getStoredMyFlowHiddenFlowSlugs(): string[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === 'string' && value.trim().length > 0) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveStoredMyFlowHiddenFlowSlugs(slugs: string[]): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY, JSON.stringify(slugs));
-}
+type FlowListFilter = 'all' | 'open' | 'routine' | 'done' | 'archived';
 
 function getMyFlowItemIntentText(bundle: FlowBundle, row: MyFlowRow, item?: FlowItem): string {
   const detail = row.detail ?? getItemDetail(bundle, row.id);
@@ -4995,7 +4990,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowOccurrenceExecutionRecords, setMyFlowOccurrenceExecutionRecords] = useState<
     Record<string, PersonalStructuralOccurrenceExecutionRecord>
   >({});
-  const [myFlowHiddenFlowSlugs, setMyFlowHiddenFlowSlugs] = useState<string[]>([]);
+  const [myFlowArchivedFlowSlugs, setMyFlowArchivedFlowSlugs] = useState<string[]>([]);
   const [myFlowItemDrafts, setMyFlowItemDrafts] = useState<Record<string, MyFlowItemDraft>>({});
   const [myFlowEditingDrafts, setMyFlowEditingDrafts] = useState<Record<string, MyFlowItemDraft>>({});
   const [myFlowStepItemChecks, setMyFlowStepItemChecks] = useState<MyFlowStepItemChecks>({});
@@ -5023,6 +5018,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowExpandedStructureStepSlug, setMyFlowExpandedStructureStepSlug] = useState('');
   const [myFlowWholeFlowOpenGroups, setMyFlowWholeFlowOpenGroups] = useState<Record<string, string[]>>({});
   const [myFlowCompletionUndo, setMyFlowCompletionUndo] = useState<MyFlowCompletionUndo | null>(null);
+  const [myFlowLifecycleUndo, setMyFlowLifecycleUndo] = useState<MyFlowLifecycleUndo | null>(null);
   const [myFlowCompletionNoticePaused, setMyFlowCompletionNoticePaused] = useState(false);
   const [myFlowInventoryOpen, setMyFlowInventoryOpen] = useState(false);
   const [myFlowTodayCompletedOpen, setMyFlowTodayCompletedOpen] = useState(false);
@@ -5074,6 +5070,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowDraggingRoutineKeyRef = useRef('');
   const myFlowDraggingRoutineDateRef = useRef('');
   const myFlowCompletionNoticeActionRef = useRef<HTMLButtonElement | null>(null);
+  const myFlowLifecycleNoticeActionRef = useRef<HTMLButtonElement | null>(null);
   const showDemoData = Boolean(myFlowDemoMode);
 
   useEffect(() => {
@@ -5092,6 +5089,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     });
     return () => window.cancelAnimationFrame(animationFrame);
   }, [myFlowCompletionUndo]);
+  useEffect(() => {
+    if (!myFlowLifecycleUndo) return;
+    const timeoutId = window.setTimeout(() => setMyFlowLifecycleUndo(null), 8000);
+    const animationFrame = window.requestAnimationFrame(() => {
+      myFlowLifecycleNoticeActionRef.current?.focus({ preventScroll: true });
+    });
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.cancelAnimationFrame(animationFrame);
+    };
+  }, [myFlowLifecycleUndo]);
   useEffect(() => {
     if (!myFlowCalendarScheduleUndo) return;
     const timeoutId = window.setTimeout(() => setMyFlowCalendarScheduleUndo(null), 8000);
@@ -5153,7 +5161,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ['open', '진행 중'],
     ['routine', '루틴'],
     ['done', '완료'],
-    ...(myFlowHiddenFlowSlugs.length > 0 ? [['hidden', '숨김'] as const] : []),
+    ...(myFlowArchivedFlowSlugs.length > 0 ? [['archived', '보관됨'] as const] : []),
   ] as const;
   const closeMyFlowTransientDetail = () => {
     setMyFlowActiveRowKey('');
@@ -5363,7 +5371,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setFlowListQuery('');
       setMyFlowDateOverrides({});
       setMyFlowOccurrenceExecutionRecords({});
-      setMyFlowHiddenFlowSlugs([]);
+      setMyFlowArchivedFlowSlugs([]);
       setMyFlowItemDrafts({});
       setMyFlowEditingDrafts({});
       setMyFlowStepItemChecks({});
@@ -5400,7 +5408,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return;
     }
     if (demoMode === 'legacy') seedMyFlowDemoState(myFlowBundles);
-    setMyFlowHiddenFlowSlugs(getStoredMyFlowHiddenFlowSlugs());
+    setMyFlowArchivedFlowSlugs(
+      typeof window === 'undefined'
+        ? []
+        : loadPersonalFlowLifecycle(window.localStorage).record.archivedFlowSlugs,
+    );
     setMyFlowDismissedMapUpdates(getMyFlowDismissedMapUpdates());
     setMyFlowExpandedMapUpdateId('');
     setMyFlowReuseDraft(null);
@@ -5442,6 +5454,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         savedMap?.personalCopy,
       );
       const sourceRows = getMyFlowRows(effectiveBundle, anchor);
+      const personalCopyExcludedItemIds = new Set(
+        savedMap?.personalCopy?.excludedStepIdsByFlow[progress.slug] ?? [],
+      );
+      const isSourceBackedRowExcluded = (row: MyFlowRow) =>
+        personalCopyExcludedItemIds.has(baseStateId(row.id)) ||
+        isUrlFirstStartExcludedItemState(itemStates, row.id);
       const structuralEditEligible = isPersonalDraftStructuralEditEligible(effectiveBundle);
       const structuralOverlay = structuralEditEligible
         ? myFlowStructuralOverlaysBySlug[progress.slug] ?? createPersonalDraftStructuralOverlay(effectiveBundle)
@@ -5513,7 +5531,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ? [row]
               : [];
           })
-        : sourceRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+        : sourceRows.filter((row) => !isSourceBackedRowExcluded(row));
       const excludedRows = structuralProjection
         ? structuralProjection.excludedRows.flatMap((projectionRow) => {
             const row = mapPersonalDraftProjectionRowToMyFlowRow(
@@ -5523,10 +5541,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             );
             return row ? [row] : [];
           })
-        : structuralRows.filter((row) => isUrlFirstStartExcludedItemState(itemStates, row.id));
+        : structuralRows.filter((row) => isSourceBackedRowExcluded(row));
       const rows = structuralProjection
         ? structuralRows
-        : structuralRows.filter((row) => !isUrlFirstStartExcludedItemState(itemStates, row.id));
+        : structuralRows.filter((row) => !isSourceBackedRowExcluded(row));
       const executableIds = Array.from(new Set(rows.flatMap((row) => getMyFlowCheckIds(effectiveBundle, row.id, anchor))));
       const executableTotal = executableIds.filter((id) => !isItemStateSkipped(itemStates, id)).length;
       const total = structuralEditEligible
@@ -5571,8 +5589,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : [],
     ),
   );
+  const archivedFlowSlugSet = new Set(myFlowArchivedFlowSlugs);
   const workspaceSavedFlows = savedFlows.filter(
-    (flow) => isMyFlowReadyContent(flow) && !executionHeldFlowSlugs.has(flow.progress.slug),
+    (flow) => isMyFlowReadyContent(flow) &&
+      !executionHeldFlowSlugs.has(flow.progress.slug) &&
+      !archivedFlowSlugSet.has(flow.progress.slug),
   );
 
   useEffect(() => {
@@ -5603,7 +5624,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const postSaveQueryKey = postSaveMap?.mapId ?? savedFlowSlugParam;
   const hasPostSavePanel = Boolean(postSaveQueryKey && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || postSaveQueryKey));
   const showPostSavePanel = hasPostSavePanel && !myFlowPostSaveWorkspaceOpen;
-  const showMyFlowWorkspace = workspaceSavedFlows.length > 0 && !showPostSavePanel;
+  const showArchivedInventory =
+    savedView === 'flow' && flowListFilter === 'archived' && myFlowArchivedFlowSlugs.length > 0;
+  const showMyFlowWorkspace = (workspaceSavedFlows.length > 0 || showArchivedInventory) && !showPostSavePanel;
   const shouldCollapseFlowInventory =
     savedFlows.length >= 6 &&
     selectedSavedFlowSlug === 'all' &&
@@ -6561,14 +6584,42 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       return next;
     });
   };
-  const toggleMyFlowHiddenFlow = (slug: string) => {
-    setMyFlowHiddenFlowSlugs((current) => {
-      const exists = current.includes(slug);
-      const next = exists ? current.filter((item) => item !== slug) : [...current, slug];
-      if (!isMyFlowScenarioDemo) saveStoredMyFlowHiddenFlowSlugs(next);
-      if (exists && flowListFilter === 'hidden' && next.length === 0) setFlowListFilter('all');
-      return next;
+  const updateMyFlowArchiveState = (
+    flow: MySavedFlow,
+    action: MyFlowLifecycleUndo['action'],
+    recordUndo = true,
+  ) => {
+    const flowSlug = flow.progress.slug;
+    const flowTitle = getMyFlowExecutionFlowTitle(flow.progress.title);
+    setMyFlowArchivedFlowSlugs((current) => {
+      const updatedAt = new Date().toISOString();
+      const currentRecord = {
+        ...createEmptyPersonalFlowLifecycle(updatedAt),
+        archivedFlowSlugs: current,
+      };
+      const nextRecord = action === 'archive'
+        ? archivePersonalFlow(currentRecord, flowSlug, updatedAt)
+        : restorePersonalFlow(currentRecord, flowSlug, updatedAt);
+      if (!isMyFlowScenarioDemo && typeof window !== 'undefined') {
+        savePersonalFlowLifecycle(window.localStorage, nextRecord);
+      }
+      if (action === 'restore' && flowListFilter === 'archived' && nextRecord.archivedFlowSlugs.length === 0) {
+        setFlowListFilter('all');
+      }
+      return nextRecord.archivedFlowSlugs;
     });
+    if (selectedSavedFlowSlug === flowSlug && action === 'archive') setSelectedSavedFlowSlug('all');
+    if (recordUndo) setMyFlowLifecycleUndo({ flowSlug, flowTitle, action });
+  };
+
+  const undoMyFlowLifecycleChange = (undo: MyFlowLifecycleUndo) => {
+    const flow = savedFlows.find((candidate) => candidate.progress.slug === undo.flowSlug);
+    if (!flow) {
+      setMyFlowLifecycleUndo(null);
+      return;
+    }
+    updateMyFlowArchiveState(flow, undo.action === 'archive' ? 'restore' : 'archive', false);
+    setMyFlowLifecycleUndo(null);
   };
   const toggleMyFlowStepItemCheck = (row: MyFlowCalendarRow, itemIndex: number) => {
     const key = getMyFlowRowInstanceKey(row);
@@ -7163,12 +7214,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const visibleChecklistPickerRows = shouldLimitChecklistPicker && !myFlowChecklistPickerOpen ? checklistFlowRows.slice(0, 4) : checklistFlowRows;
   const hiddenChecklistPickerCount = shouldLimitChecklistPicker ? Math.max(0, checklistFlowRows.length - visibleChecklistPickerRows.length) : 0;
   const flowListNormalizedQuery = flowListQuery.trim().toLowerCase();
-  const hiddenFlowSlugSet = new Set(myFlowHiddenFlowSlugs);
-  const flowListVisibleFlows = visibleSavedFlows
+  const flowListCandidateFlows = flowListFilter === 'archived'
+    ? savedFlows.filter((flow) => archivedFlowSlugSet.has(flow.progress.slug))
+    : visibleSavedFlows;
+  const flowListVisibleFlows = flowListCandidateFlows
     .filter((flow) => {
-      const hidden = hiddenFlowSlugSet.has(flow.progress.slug);
-      if (flowListFilter === 'hidden') return hidden;
-      if (hidden) return false;
+      const archived = archivedFlowSlugSet.has(flow.progress.slug);
+      if (flowListFilter === 'archived') return archived;
+      if (archived) return false;
       if (flowListFilter === 'open') return flow.done < flow.total;
       if (flowListFilter === 'routine') return flow.bundle.flow.structure_type === 'routine';
       if (flowListFilter === 'done') return flow.done >= flow.total;
@@ -8224,6 +8277,68 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
   };
 
+  const persistMyFlowSourceBackedIncludedSteps = (
+    flow: MySavedFlow,
+    includedStepIds: string[],
+    label: string,
+    count = 1,
+  ): boolean => {
+    if (typeof window === 'undefined' || isMyFlowScenarioDemo || !flow.savedMap) return false;
+    const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
+    const previousPersistenceRecord = savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId];
+    const editableSnapshot = initializeSourceBackedFlowMapPersonalCopy(
+      previousSavedMapSnapshot,
+      previousPersistenceRecord,
+    );
+    if (!editableSnapshot) return false;
+    const sourceStepIds = [
+      ...getMyFlowRows(flow.bundle, flow.anchor),
+      ...flow.excludedRows,
+    ].map((row) => baseStateId(row.id));
+    const sourceStepIdSet = new Set(sourceStepIds);
+    const normalizedIncludedStepIds = Array.from(new Set(includedStepIds))
+      .filter((itemId) => sourceStepIdSet.has(itemId));
+    if (normalizedIncludedStepIds.length === 0) return false;
+
+    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(editableSnapshot, {
+      title: editableSnapshot.title,
+      anchor: editableSnapshot.anchor,
+      savedAt: new Date().toISOString(),
+      includedStepIdsByFlow: {
+        ...editableSnapshot.personalCopy?.includedStepIdsByFlow,
+        [flow.progress.slug]: normalizedIncludedStepIds,
+      },
+      stepOverridesByFlow: editableSnapshot.personalCopy?.stepOverridesByFlow,
+      baselineRecord: previousPersistenceRecord,
+    });
+    if (!adjusted) return false;
+
+    try {
+      window.localStorage.setItem(
+        getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
+        JSON.stringify(adjusted.snapshot),
+      );
+      window.localStorage.setItem(
+        getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
+        JSON.stringify(adjusted.persistenceRecord),
+      );
+    } catch {
+      return false;
+    }
+
+    setMyFlowBatchAdjustmentUndo({
+      flowSlug: flow.progress.slug,
+      count,
+      label,
+      previousSavedMapSnapshot,
+      ...(previousPersistenceRecord ? { previousPersistenceRecord } : {}),
+    });
+    setMyFlowBatchAdjustment(null);
+    resetMyFlowRowDetailState();
+    refreshSavedFlowState();
+    return true;
+  };
+
   const removeMyFlowBatchItems = (flow: MySavedFlow) => {
     if (
       typeof window === 'undefined' ||
@@ -8265,45 +8380,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     }
 
     if (!flow.savedMap?.personalCopy) return;
-    const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
-    const previousPersistenceRecord = savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId];
-    const currentIncluded = previousSavedMapSnapshot.personalCopy?.includedStepIdsByFlow[flow.progress.slug] ?? [];
+    const currentIncluded = flow.savedMap.personalCopy.includedStepIdsByFlow[flow.progress.slug] ?? [];
     const removedIds = new Set(rows.map((row) => baseStateId(row.id)));
     const nextIncluded = currentIncluded.filter((itemId) => !removedIds.has(itemId));
     if (nextIncluded.length === 0) {
       updateMyFlowBatchAdjustment({ selectedKeys: [] });
       return;
     }
-    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(previousSavedMapSnapshot, {
-      title: previousSavedMapSnapshot.title,
-      anchor: previousSavedMapSnapshot.anchor,
-      savedAt: new Date().toISOString(),
-      includedStepIdsByFlow: {
-        ...previousSavedMapSnapshot.personalCopy?.includedStepIdsByFlow,
-        [flow.progress.slug]: nextIncluded,
-      },
-      stepOverridesByFlow: previousSavedMapSnapshot.personalCopy?.stepOverridesByFlow,
-      baselineRecord: previousPersistenceRecord,
-    });
-    if (!adjusted) return;
-    window.localStorage.setItem(
-      getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
-      JSON.stringify(adjusted.snapshot),
-    );
-    window.localStorage.setItem(
-      getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
-      JSON.stringify(adjusted.persistenceRecord),
-    );
-    setMyFlowBatchAdjustmentUndo({
-      flowSlug: flow.progress.slug,
-      count: rows.length,
-      label: `${rows.length}개를 Flow에서 뺐어요.`,
-      previousSavedMapSnapshot,
-      ...(previousPersistenceRecord ? { previousPersistenceRecord } : {}),
-    });
-    setMyFlowBatchAdjustment(null);
-    resetMyFlowRowDetailState();
-    refreshSavedFlowState();
+    persistMyFlowSourceBackedIncludedSteps(flow, nextIncluded, `${rows.length}개를 Flow에서 뺐어요.`, rows.length);
   };
 
   const undoMyFlowBatchAdjustment = () => {
@@ -8674,6 +8758,47 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       setMyFlowStructuralUndo(null);
     }
     setMyFlowExpandedStructureStepSlug(flow.progress.slug);
+  };
+
+  const getMyFlowSourceBackedIncludedStepIds = (flow: MySavedFlow): string[] => {
+    const stored = flow.savedMap?.personalCopy?.includedStepIdsByFlow[flow.progress.slug] ?? [];
+    if (stored.length > 0) return stored;
+    return Array.from(new Set(
+      getMyFlowRows(flow.bundle, flow.anchor).map((row) => baseStateId(row.id)),
+    ));
+  };
+
+  const removeMyFlowItemFromSavedFlow = (row: MyFlowCalendarRow) => {
+    if (isPersonalDraftStructuralEditEligible(row.flow.bundle)) {
+      deleteMyFlowPersonalDraftItem(row);
+      return;
+    }
+    if (!row.flow.savedMap) return;
+    const itemId = baseStateId(row.id);
+    const currentIncluded = getMyFlowSourceBackedIncludedStepIds(row.flow);
+    const nextIncluded = currentIncluded.filter((candidate) => candidate !== itemId);
+    if (nextIncluded.length === 0 || nextIncluded.length === currentIncluded.length) return;
+    persistMyFlowSourceBackedIncludedSteps(
+      row.flow,
+      nextIncluded,
+      `${getMyFlowRowDisplayTitle(row)}을 Flow에서 뺐어요.`,
+    );
+  };
+
+  const restoreMyFlowExcludedItem = (flow: MySavedFlow, row: MyFlowRow) => {
+    const itemId = baseStateId(row.id);
+    if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
+      restoreMyFlowPersonalDraftItem(flow, itemId);
+      return;
+    }
+    if (!flow.savedMap) return;
+    const currentIncluded = getMyFlowSourceBackedIncludedStepIds(flow);
+    if (currentIncluded.includes(itemId)) return;
+    persistMyFlowSourceBackedIncludedSteps(
+      flow,
+      [...currentIncluded, itemId],
+      `${toUserFacingSourceTitle(row.title)}을 다시 넣었어요.`,
+    );
   };
 
   const moveMyFlowPersonalDraftItem = (
@@ -10305,6 +10430,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const isPersonalDraftUserItem =
       isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
       row.structuralOwnership === 'user_created';
+    const canRemoveFromSavedFlow = surfaceContext === 'flow' &&
+      !row.structuralOccurrenceId &&
+      (
+        isPersonalDraftStructuralEditEligible(row.flow.bundle) ||
+        getMyFlowSourceBackedIncludedStepIds(row.flow).length > 1
+      );
     const isRecurringSeriesDefinition = Boolean(
       surfaceContext === 'flow' &&
       !row.structuralOccurrenceId &&
@@ -11238,6 +11369,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-occurrence-id={row.structuralOccurrenceId}
         data-occurrence-state={row.structuralOccurrenceExecutionState}
         data-execution-level={isRecurringSeriesDefinition ? 'series' : row.structuralOccurrenceId ? 'occurrence' : 'item'}
+        data-surface-context={surfaceContext || undefined}
+        data-can-remove-from-flow={String(canRemoveFromSavedFlow)}
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
         data-editor-advanced-expanded={isDetailEditing ? String(isEditorAdvancedExpanded) : undefined}
         data-editor-layout={isDetailEditing ? (isMyFlowMobileViewport ? 'mobile-full-screen' : 'wide-detail-pane') : undefined}
@@ -11364,17 +11497,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 닫기
               </button>
             ) : null}
-            {!isDetailEditing &&
-            isPersonalDraftStructuralEditEligible(row.flow.bundle) &&
-            myFlowBatchAdjustment?.flowSlug === row.flow.progress.slug ? (
+            {(isDetailEditing || myFlowBatchAdjustment?.flowSlug === row.flow.progress.slug) && canRemoveFromSavedFlow ? (
               <button
                 type="button"
-                data-testid="personal-draft-delete-item"
-                aria-label={`${editorDraft.title} 삭제`}
+                data-testid={isPersonalDraftStructuralEditEligible(row.flow.bundle)
+                  ? 'personal-draft-delete-item'
+                  : 'my-flow-remove-item'}
+                aria-label={`${editorDraft.title} Flow에서 빼기`}
                 className={FLOW_UI_DANGER_ACTION_CLASS}
-                onClick={() => deleteMyFlowPersonalDraftItem(row)}
+                onClick={() => removeMyFlowItemFromSavedFlow(row)}
               >
-                {FLOW_EXECUTION_ACTIONS.delete.label}
+                목록에서 빼기
               </button>
             ) : null}
           </div>
@@ -12585,23 +12718,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   };
 
   const renderMyFlowExcludedSteps = (flow: MySavedFlow) => {
-    if (flow.excludedRows.length === 0) return null;
+    if (flow.excludedRows.length === 0 || isPersonalDraftStructuralEditEligible(flow.bundle)) return null;
     return (
-      <section data-testid="my-flow-excluded-steps" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs font-semibold text-slate-500">제외됨</p>
-          <span className="rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-            {flow.excludedRows.length}개
-          </span>
-        </div>
-        <ul className="mt-2 grid gap-1 text-xs font-semibold text-slate-600">
+      <details data-testid="my-flow-excluded-steps" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm">
+        <summary className="cursor-pointer text-xs font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200">
+          목록에서 뺀 할 일 · {flow.excludedRows.length}개
+        </summary>
+        <ul className="mt-2 grid gap-2 border-t border-slate-200 pt-2 text-xs font-semibold text-slate-600">
           {flow.excludedRows.map((row) => (
-            <li key={`excluded-${flow.progress.slug}-${row.id}`} data-testid="my-flow-excluded-step-row" className="truncate">
-              {toUserFacingSourceTitle(row.title)}
+            <li
+              key={`excluded-${flow.progress.slug}-${row.id}`}
+              data-testid="my-flow-excluded-step-row"
+              className="flex min-w-0 items-center justify-between gap-2"
+            >
+              <span className="min-w-0 truncate">{toUserFacingSourceTitle(row.title)}</span>
+              <button
+                type="button"
+                data-testid="my-flow-restore-excluded-item"
+                aria-label={`${toUserFacingSourceTitle(row.title)} Flow에 복구`}
+                className="min-h-8 shrink-0 rounded-md border border-blue-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700"
+                onClick={() => restoreMyFlowExcludedItem(flow, row)}
+              >
+                복구
+              </button>
             </li>
           ))}
         </ul>
-      </section>
+      </details>
     );
   };
 
@@ -13939,8 +14082,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const retiredPersonalCopy = contentReadiness.kind === 'retired';
     const sourceLinkExternal = sourceHref.startsWith('https://');
     const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
-    const hiddenInInventory = hiddenFlowSlugSet.has(flow.progress.slug);
-    const showHideToggle = savedFlows.length > 1 && !isMyFlowMobileViewport;
+    const archivedInInventory = archivedFlowSlugSet.has(flow.progress.slug);
+    const showArchiveToggle = true;
     const showWholeFlowOutline = selectedSavedFlowSlug === flow.progress.slug || visibleSavedFlows.length === 1;
     const batchActive = Boolean(myFlowBatchAdjustment?.flowSlug === flow.progress.slug);
     const activeOverviewRow =
@@ -14133,7 +14276,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {executionReady && !batchActive ? renderMyFlowCompletionFeedback(flow) : null}
         {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
         {executionReady && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
-        {!batchActive ? <div className={`mt-4 grid gap-2 ${showHideToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
+        {!batchActive ? <div className={`mt-4 grid gap-2 ${showArchiveToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
           <Link
             className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
             href={sourceHref}
@@ -14142,14 +14285,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           >
                 {flow.savedMap ? '원문 보기' : sourceLabel}
           </Link>
-          {showHideToggle ? (
+          {showArchiveToggle ? (
             <button
               type="button"
-              data-testid="my-flow-hide-toggle"
+              data-testid="my-flow-archive-toggle"
+              aria-label={`${flowTitle} ${archivedInInventory ? '복구하기' : '보관하기'}`}
               className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:border-blue-300 hover:text-slate-900"
-              onClick={() => toggleMyFlowHiddenFlow(flow.progress.slug)}
+              onClick={() => updateMyFlowArchiveState(flow, archivedInInventory ? 'restore' : 'archive')}
             >
-              {hiddenInInventory ? '목록에 보이기' : '목록에서 숨기기'}
+              {archivedInInventory ? '복구하기' : '보관하기'}
             </button>
           ) : null}
         </div> : null}
@@ -14476,7 +14620,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </nav>
       ) : null}
 
-      {workspaceSavedFlows.length === 0 && !showPostSavePanel ? (
+      {workspaceSavedFlows.length === 0 && !showPostSavePanel && !showArchivedInventory ? (
         <section
           id={!isCalendarSurface ? `my-flow-panel-${savedView}` : undefined}
           role={!isCalendarSurface ? 'tabpanel' : undefined}
@@ -14503,15 +14647,28 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   ? 'Flow를 저장하면 전체 계획과 개인 수정본을 여기에서 관리합니다.'
                   : 'Flow를 저장하면 여러 Flow의 다음 행동이 여기 모입니다.'}
           </p>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-wrap gap-2">
             <Link className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto" href="/flows">
               콘텐츠 고르러 가기
             </Link>
+            {!isCalendarSurface && myFlowArchivedFlowSlugs.length > 0 ? (
+              <button
+                type="button"
+                data-testid="my-flow-open-archived"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 sm:w-auto"
+                onClick={() => {
+                  setSavedView('flow');
+                  setFlowListFilter('archived');
+                }}
+              >
+                보관된 Flow {myFlowArchivedFlowSlugs.length}개 보기
+              </button>
+            ) : null}
           </div>
         </section>
       ) : null}
 
-      {workspaceSavedFlows.length > 0 || showPostSavePanel ? (
+      {workspaceSavedFlows.length > 0 || showPostSavePanel || showArchivedInventory ? (
         <section className="mb-6">
           {showPostSavePanel ? renderPostSavePanel() : null}
           {showMyFlowWorkspace ? (
@@ -14859,7 +15016,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 </details>
               ) : null}
               {selectedSavedFlowSlug === 'all' ? renderMyFlowMapUpdateNotices() : null}
-              {selectedSavedFlowSlug === 'all' && visibleSavedFlows.length > 0 ? (
+              {selectedSavedFlowSlug === 'all' && (visibleSavedFlows.length > 0 || showArchivedInventory) ? (
                 <>
                   {isMyFlowMobileViewport ? (
                     <div data-testid="my-flow-mobile-flow-hub" className="grid gap-3">
@@ -15797,7 +15954,33 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </FlowBottomSheet>
       ) : null}
 
-      {myFlowCompletionUndo ? (
+      {myFlowLifecycleUndo ? (
+        <div
+          data-testid="my-flow-lifecycle-snackbar"
+          data-lifecycle-action={myFlowLifecycleUndo.action}
+          role="status"
+          aria-live="polite"
+          data-layer-priority="notice"
+          className="fixed inset-x-3 bottom-[var(--flowme-mobile-workbar-bottom)] z-[60] mx-auto flex max-w-md items-center gap-3 rounded-md bg-slate-950 px-4 py-3 text-white shadow-xl md:bottom-6"
+        >
+          <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+            {myFlowLifecycleUndo.action === 'archive'
+              ? `${myFlowLifecycleUndo.flowTitle}을 보관했습니다.`
+              : `${myFlowLifecycleUndo.flowTitle}을 복구했습니다.`}
+          </p>
+          <button
+            ref={myFlowLifecycleNoticeActionRef}
+            type="button"
+            data-testid="my-flow-lifecycle-undo"
+            className="min-h-11 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            onClick={() => undoMyFlowLifecycleChange(myFlowLifecycleUndo)}
+          >
+            되돌리기
+          </button>
+        </div>
+      ) : null}
+
+      {myFlowCompletionUndo && !myFlowLifecycleUndo ? (
         <div
           data-testid="my-flow-completion-snackbar"
           data-completion-result={myFlowCompletionUndo.result}
