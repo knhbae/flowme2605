@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "packageDate": "2026-07-21",
+  "artifact": {
+    "path": "prior-artifacts/flow-content-usage-preview-ko.html",
+    "originalRepoRelativePath": "docs/content-audit/2026-07-19-flow-content-usage-preview-ko.html",
+    "classification": "prior_design_artifact",
+    "byteLength": 77523,
+    "sha256": "7D608B993342AEF5F570AA7C967E3DF46A7BC1083BB3BCCA8C631473E451A6C0",
+    "selfContained": true,
+    "externalNavigationLinksOnly": true,
+    "caseCount": 5,
+    "destinationCount": 4,
+    "destinations": [
+      "calendar",
+      "checklist",
+      "sheet",
+      "memo"
+    ],
+    "observedUserCount": 0,
+    "currentProductionArtifact": false
+  }
+}
