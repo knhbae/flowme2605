@@ -2,13 +2,15 @@
 
 작성일: 2026-07-21
 
-판정: `internal_implementation_complete_publish_pending`
+판정: `released_to_canonical_production_automated_browser_green`
 
 구현 기준: `118dec90de9ddcfea2150e2279cc57d6dda53e8b`
 
 시작 기준: `origin/main` `63ea6416cf720d4e3015a48268a70aba8dfb4d0e`
 
 실제 관찰 사용자: `0`
+
+배포 기준: PR [#141](https://github.com/knhbae/flowme2605/pull/141), merge `2829b379ada96baa79f49dfe75049b81f8b6d1c5`, [production closeout](../2026-07-21-p27-production-closeout/README.md)
 
 ## 결론
 
@@ -73,4 +75,5 @@ P27은 같은 Flow가 저장 전, 저장 직후, My Flow, Calendar, export에서
 - [통합 검토 보드](./review.html)
 - [route evidence](./route-evidence.json)
 - [브라우저 캡처 원본](./capture-results.json)
+- [canonical production closeout](../2026-07-21-p27-production-closeout/README.md)
 - [독립 재검토 프롬프트](./prompt-ko.md)

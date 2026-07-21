@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-21<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P27 implementation green, publish pending<br>
+**Current Validation Stage:** internal alpha / P27 canonical production green, independent review pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P27 canonical release and independent production review
+**Next Milestone:** P27 independent production review and P28 decision
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -27,6 +27,7 @@ P27 preserves P26's canonical Flow, source/personal/run/occurrence ownership, an
 
 Detailed scope: [P27 lifecycle workspace spec](./specs/2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md).
 Internal closeout: [P27 final package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md).
+Production closeout: [P27 canonical production evidence](./content-audit/2026-07-21-p27-production-closeout/README.md).
 
 | Track | Result | State |
 | --- | --- | --- |
@@ -36,7 +37,7 @@ Internal closeout: [P27 final package](./content-audit/2026-07-21-p27-lifecycle-
 | Save-before | whole preview and one active adjustment operation | Internally complete |
 | My Flow | adaptive compact/searchable library and whole-workspace result | Internally complete |
 | Calendar/export | scope parity, compact receipt and export preflight | Internally complete |
-| Integration | pretest `24`, unit `571`, E2E `339`, screenshots `8` | Internally complete; canonical publish pending |
+| Integration | pretest `24`, unit `571`, E2E `339`, production screenshots `8` | Released through PR #141 and merge `2829b37`; production browser green |
 
 P27 does not claim observed usability. Search threshold, first adjustment mode, archive wording, and resource discovery remain human-study questions. Permanent delete, account persistence, direct integrations, and real AI/crawler remain gated.
 
