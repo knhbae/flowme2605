@@ -45,7 +45,7 @@
     <div class="eyebrow">P26 final review</div>
     <h1>FlowMe 실행 공간 구조 교정 마감</h1>
     <p class="lede">한 개의 Flow를 발견하고, 전체를 확인하고, 내 상황에 맞게 조정하고, 실행·일정·완료·내보내기·재사용까지 이어지는 계약을 현재 source와 browser evidence로 다시 묶었다.</p>
-    <div class="status">Release candidate · external gates pending</div>
+    <div class="status">Released · automated gates complete · observed users 0</div>
   </header>
   <main>
     <section>
@@ -56,7 +56,7 @@
         <div class="metric"><strong>564</strong><span>unit tests passed</span></div>
         <div class="metric"><strong>0</strong><span>observed-user sessions</span></div>
       </div>
-      <p style="margin-top:16px">내부 correctness와 integration gate는 통과했다. PR·merge·canonical production deploy·smoke가 완료되기 전까지 P26을 released로 부르지 않는다.</p>
+      <p style="margin-top:16px">내부 correctness와 integration gate, PR #139 merge, canonical production deploy, 390/1024 production smoke가 통과했다. 이는 자동 release evidence이며 실제 사용자 검증은 아니다.</p>
     </section>
     <section>
       <h2>사용자 여정 6종</h2>
@@ -101,8 +101,8 @@
     </section>
     <section>
       <h2>검증과 외부 경계</h2>
-      <p><code>unit 564/564</code> · <code>build 18/18</code> · <code>E2E 327 unique</code> · <code>security high/critical 0</code></p>
-      <p>아직 남은 외부 경계: commit/push, PR/merge, Vercel production READY, anonymous access, mobile/wide production smoke. 완료 뒤 이 보드와 <a href="./route-evidence.json">route evidence</a>를 최종 상태로 갱신한다.</p>
+      <p><code>unit 564/564</code> · <code>build 18/18</code> · <code>CI E2E 327/327</code> · <code>production smoke 12/12</code> · <code>security high/critical 0</code></p>
+      <p><a href="https://flowme2605.vercel.app">Canonical production</a>은 익명 접근 가능하며, HTTP 실패·외부 redirect·horizontal overflow·console/page error가 모두 0이다. 세부 값과 12개 캡처는 <a href="./production-smoke/results.json">production smoke evidence</a>에 있다.</p>
     </section>
   </main>
   <footer>Evidence kinds: current_command, current_browser, current_screenshot, heuristic, prior_design_artifact. Observed users: 0.</footer>

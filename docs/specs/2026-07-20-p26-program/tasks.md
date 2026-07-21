@@ -88,6 +88,6 @@
 - [x] security audit
 - [x] mobile/wide screenshots
 - [x] final review package
-- [ ] commit/push/PR/merge
-- [ ] Vercel production deploy and smoke
+- [x] commit/push/PR/merge
+- [x] Vercel production deploy and smoke
 - [x] Claude/Codex review prompt

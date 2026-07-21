@@ -1,6 +1,6 @@
 {
   "packageId": "2026-07-20-p26-final-review-package",
-  "status": "release_candidate_external_gates_pending",
+  "status": "released_automated_gates_complete_observed_users_zero",
   "baselineCommit": "f9ca294732c22f330859766159809e227e2c6555",
   "evidenceKinds": [
     "current_command",
@@ -13,7 +13,7 @@
   "markers": {
     "p26DecisionAndImplementationSliceCount": 20,
     "p26ClosedBeforeReleaseSliceCount": 20,
-    "p26FinalReleaseGateComplete": false,
+    "p26FinalReleaseGateComplete": true,
     "automatedBlockingCount": 0,
     "automatedHighCount": 0,
     "heuristicMediumCount": 4,
@@ -27,7 +27,7 @@
     "finalUnitPassCount": 564,
     "finalUnitFailureCount": 0,
     "docsRequiredFileCount": 14,
-    "docsLocalLinkCount": 2711,
+    "docsLocalLinkCount": 2713,
     "buildStaticPageCount": 18,
     "buildFailedPageCount": 0,
     "fullE2eInventoryCount": 327,
@@ -36,20 +36,29 @@
     "fullE2eFinalIsolatedPassCount": 1,
     "fullE2eUniqueScenarioCoveredCount": 327,
     "fullE2eUniqueScenarioUncoveredCount": 0,
+    "githubCiFullE2ePassCount": 327,
+    "githubCiFullE2eFailureCount": 0,
     "securityCriticalCount": 0,
     "securityHighCount": 0,
     "securityModerateCount": 2,
     "p26ReleaseCandidateAppRuntimeChangeCount": 0,
     "p26ReleaseCandidateTestFileChangeCount": 3,
-    "p26MergedToMain": false,
-    "p26ProductionDeploymentReady": false,
-    "p26ProductionSmokePass": false
+    "p26MergedToMain": true,
+    "p26ProductionDeploymentReady": true,
+    "p26ProductionSmokePass": true,
+    "productionRouteViewportCheckCount": 12,
+    "productionFailedHttpCount": 0,
+    "productionOffCanonicalRedirectCount": 0,
+    "productionPrimaryNavMismatchCount": 0,
+    "productionHorizontalOverflowCount": 0,
+    "productionConsoleErrorCount": 0,
+    "productionPageErrorCount": 0
   },
   "finalVerification": {
     "unit": "pass_564_of_564",
-    "docsCheck": "pass_14_required_files_2711_links",
+    "docsCheck": "pass_14_required_files_2713_links",
     "productionBuild": "pass_18_of_18_pages",
-    "fullE2e": "pass_exact_accounting_326_of_327_then_only_failure_1_of_1_after_test_only_migration",
+    "fullE2e": "pass_local_exact_accounting_all_327_and_github_ci_327_of_327",
     "securityAudit": "pass_high_critical_zero_moderate_two_disclosed",
     "diffCheck": "pass_with_line_ending_warnings_only"
   },
@@ -66,10 +75,14 @@
   },
   "production": {
     "canonicalUrl": "https://flowme2605.vercel.app",
-    "releaseCommit": null,
-    "mergeCommit": null,
-    "deploymentUrl": null,
-    "anonymousAccessVerified": false,
-    "smokeResultPath": null
+    "releaseCommit": "0a33dd84d955b831130aaed3cd315e9526148e1e",
+    "mergeCommit": "0a33dd84d955b831130aaed3cd315e9526148e1e",
+    "prNumber": 139,
+    "prUrl": "https://github.com/knhbae/flowme2605/pull/139",
+    "ciRunUrl": "https://github.com/knhbae/flowme2605/actions/runs/29787315388",
+    "deploymentId": "dpl_E5mNsqgVsRWNPefjAg5zXoNUEXYy",
+    "deploymentUrl": "https://flowme2605-k49p23ige-flowme.vercel.app",
+    "anonymousAccessVerified": true,
+    "smokeResultPath": "production-smoke/results.json"
   }
 }
