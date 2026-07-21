@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-07-21T11:23:51.354Z",
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "pullRequest": {
+    "number": 141,
+    "url": "https://github.com/knhbae/flowme2605/pull/141",
+    "state": "merged"
+  },
+  "mergeCommit": "2829b379ada96baa79f49dfe75049b81f8b6d1c5",
+  "vercel": {
+    "status": "success",
+    "statusUrl": "https://vercel.com/flowme/flowme2605/ExuvtnNjKfehnftbVxCMxTpF63rR"
+  },
+  "githubCi": {
+    "runId": 29825022179,
+    "docsUnitBuild": "success",
+    "playwrightE2e": "success"
+  },
+  "productionBrowser": {
+    "evidenceKind": "current_canonical_production_browser",
+    "scenarioCount": 8,
+    "horizontalOverflowCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "unnamedFocusableCount": 0
+  },
+  "observedUserSessionCount": 0
+}

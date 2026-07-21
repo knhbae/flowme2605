@@ -5,16 +5,23 @@ import { chromium } from '@playwright/test';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..', '..');
-const packageDir = path.join(
-  repoRoot,
-  'docs',
-  'content-audit',
-  '2026-07-21-p27-lifecycle-workspace-final',
-);
+const packageDir = process.env.FLOWME_CAPTURE_OUTPUT_DIR
+  ? path.resolve(repoRoot, process.env.FLOWME_CAPTURE_OUTPUT_DIR)
+  : path.join(
+      repoRoot,
+      'docs',
+      'content-audit',
+      '2026-07-21-p27-lifecycle-workspace-final',
+    );
 const screenshotsDir = path.join(packageDir, 'screenshots');
-const reviewPath = path.join(packageDir, 'review.html');
+const reviewPath = process.env.FLOWME_CAPTURE_REVIEW_PATH
+  ? path.resolve(repoRoot, process.env.FLOWME_CAPTURE_REVIEW_PATH)
+  : path.join(packageDir, 'review.html');
 const baseUrl = process.env.FLOWME_CAPTURE_BASE_URL || 'http://127.0.0.1:3114';
 const commitSha = process.env.FLOWME_CAPTURE_COMMIT_SHA || 'unknown';
+const evidenceKind = process.env.FLOWME_CAPTURE_EVIDENCE_KIND || 'current_local_production_browser';
+const captureReviewBoardEnabled =
+  process.env.FLOWME_CAPTURE_REVIEW_BOARD !== 'false' && fs.existsSync(reviewPath);
 
 const viewports = {
   mobile: { width: 390, height: 844 },
@@ -161,8 +168,10 @@ try {
     };
   });
 
-  for (const device of Object.keys(viewports)) {
-    await captureReviewBoard(device);
+  if (captureReviewBoardEnabled) {
+    for (const device of Object.keys(viewports)) {
+      await captureReviewBoard(device);
+    }
   }
 } finally {
   await browser.close();
@@ -172,7 +181,7 @@ const result = {
   generatedAt: new Date().toISOString(),
   baseUrl,
   commitSha,
-  evidenceKind: 'current_local_production_browser',
+  evidenceKind,
   observedUserSessionCount: 0,
   entries,
   reviewBoardEntries,

@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-07-21 - P27 Flow Lifecycle Workspace Production Baseline
+
+- Released reversible Flow archive/restore, source-safe Item exclusion, truthful routine preview and resource hierarchy, one-operation save-before adjustment, adaptive My Flow library/search, Calendar scope/accessibility, and compact post-save/export.
+- Merged [PR #141](https://github.com/knhbae/flowme2605/pull/141) as `2829b379ada96baa79f49dfe75049b81f8b6d1c5`; Vercel deployment and both GitHub CI jobs succeeded at <https://flowme2605.vercel.app>.
+- Verified pretest `24 / 24`, unit `571 / 571`, local and CI Playwright `339 / 339`, production build `18` routes, and canonical production capture `8 / 8` with overflow/console/page/unnamed-control counts `0`.
+- Published the [P27 final review package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md) and [production closeout](./content-audit/2026-07-21-p27-production-closeout/README.md). No semantic version tag was created, and observed-user sessions remain `0`.
+
 ## 2026-07-20 - P26 Structural Correction Production Baseline
 
 - Released one coherent Flow object across discovery, complete save-before preview, post-save receipt, My Flow execution, Calendar placement, reversible completion, explicit export scope, and run reuse.
