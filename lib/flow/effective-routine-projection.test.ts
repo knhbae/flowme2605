@@ -107,6 +107,24 @@ test('weekly source routine keeps the accepted weekday cadence and occurrence id
   assert.equal(getIcsValue(savedIcs, 'RRULE'), getIcsValue(publicIcs, 'RRULE'));
 });
 
+test('an exact-video preview horizon does not become a saved series end', () => {
+  const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
+  assert.ok(bundle);
+  const carrier = bundle.items[0];
+  assert.ok(carrier);
+
+  const projection = buildEffectiveRoutineProjection({
+    bundle,
+    rows: [{ id: carrier.id, date: '2026-07-15', title: carrier.title }],
+    startDate: '2026-07-15',
+    selectedWeekdays: ['월', '수', '금'],
+    range: { start: '2026-07-15', end: '2026-09-15' },
+  });
+
+  assert.ok(projection.semanticOccurrenceCount > 12);
+  assert.equal(projection.seriesByItemId[carrier.id]?.revisions[0]?.rule.end, undefined);
+});
+
 test('saved routine end-date override is carried by the canonical series', () => {
   const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
   assert.ok(bundle);

@@ -43,13 +43,7 @@ function addPlainDateDays(value: string, days: number): string | undefined {
 }
 
 function getRoutineEndDate(bundle: FlowBundle, startDate: string): string | undefined {
-  // User-scheduled exact-video Flows promise a four-week calendar preview.
-  const durationDays = bundle.flow.routine_duration_days ?? (
-    bundle.flow.tags?.includes('exact-video') &&
-    bundle.flow.tags?.includes('schedule-user-choice')
-      ? 28
-      : undefined
-  );
+  const durationDays = bundle.flow.routine_duration_days;
   return durationDays && durationDays > 0
     ? addPlainDateDays(startDate, durationDays - 1)
     : undefined;

@@ -59,6 +59,7 @@ import {
   type CalendarFlowScope,
 } from '@/lib/flow/calendar-flow-scope';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
+import { splitExecutionDetailContent } from '@/lib/flow/execution-detail-content';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import {
   buildCompletionControlPresentation,
@@ -4548,13 +4549,7 @@ function addMyFlowMonths(date: string, count: number): string {
 }
 
 function getMyFlowDetailChecklistItems(detail?: FlowItemDetail): string[] {
-  if (!detail?.how) return [];
-  return detail.how
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => /^[-*]\s+/.test(line))
-    .map((line) => line.replace(/^[-*]\s+/, '').trim())
-    .filter(Boolean);
+  return splitExecutionDetailContent(detail).checklistItems;
 }
 
 function compactMyFlowInlineActionHint(text?: string): string | undefined {
@@ -5790,7 +5785,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             ...(myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate
               ? { endDate: myFlowRoutineRuleDrafts[flow.progress.slug]?.endDate }
               : {}),
-            ...(isUserScheduledExactVideo(flow.bundle) ? { projectionWeeks: 4 } : {}),
             ...(committedDraft.time ? { time: committedDraft.time } : {}),
             ...(committedDraft.time && committedDraft.durationMinutes
               ? { durationMinutes: committedDraft.durationMinutes }
@@ -10476,16 +10470,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const routineRuleDraft = isRoutineRepeatExpanded ? getMyFlowRoutineEditorDraft(row.flow) : appliedRoutineRuleDraft;
     const routineWeekdays = routineRuleDraft.weekdays ?? [];
     const isSingleOccurrenceRoutineScope = routineRuleDraft.scope === 'this';
-    const detailChecklistItems = getMyFlowDetailChecklistItems(detail);
+    const executionDetailContent = splitExecutionDetailContent(detail);
+    const detailChecklistItems = executionDetailContent.checklistItems;
     const hasDetailChecklistItems = detailChecklistItems.length > 0;
     const inlineActionHint = getMyFlowInlineActionHint(detail, item);
     const detailChecklistLabel = row.flow.bundle.flow.tags?.includes('progress-flow') ? '개념 항목' : '확인 항목';
     const detailChecklistState = myFlowStepItemChecks[getMyFlowRowInstanceKey(row)] ?? {};
     const attachmentLabel = item?.photo_filename_pattern;
-    const links = detail.links ?? [];
+    const links = executionDetailContent.resources;
     const primaryLink = links[0];
     const advancedLinks = primaryLink ? links.slice(1) : links;
-    const hasAdvancedMeta = Boolean(attachmentLabel || advancedLinks.length > 0);
+    const isExactVideoResourceItem = Boolean(row.flow.bundle.flow.tags?.includes('exact-video') && links.length > 0);
+    const hasAdvancedMeta = Boolean(attachmentLabel || (!isExactVideoResourceItem && advancedLinks.length > 0));
     const shouldCollapseReadSummary = isInlineMode;
     const shouldCollapsePortableExport = isInlineMode;
     const portableExportKey = getMyFlowRowInstanceKey(row);
@@ -11447,7 +11443,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 {showDetailFlowChip ? <span data-testid="my-flow-detail-flow-chip" className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-700">{detailFlowChipLabel}</span> : null}
               </p>
             ) : null}
-            {primaryLink && !shouldCollapsePortableExport ? (
+            {primaryLink && !shouldCollapsePortableExport && !isExactVideoResourceItem ? (
               <a
                 data-testid="my-flow-detail-source-link"
                 className="mt-2 inline-flex min-h-8 items-center rounded-md border border-blue-100 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300"
@@ -11597,6 +11593,26 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               ))}
             </div>
             {typeSummary.text ? <p className="mt-2 leading-5 text-slate-600">{typeSummary.text}</p> : null}
+          </section>
+        ) : null}
+        {!isDetailEditing && isExactVideoResourceItem ? (
+          <section data-testid="my-flow-item-resources" className="mt-3 rounded-md border border-blue-100 bg-blue-50/60 px-3 py-3">
+            <p className="text-xs font-semibold text-slate-600">운동 자료</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {links.map((link, linkIndex) => (
+                <a
+                  key={`${link.label}-${link.url}`}
+                  data-testid="my-flow-item-resource-link"
+                  className="inline-flex min-h-9 items-center rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700"
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${toUserFacingSourceTitle(link.label || (linkIndex === 0 ? '원본 영상' : '참고 자료'))} 새 창에서 열기`}
+                >
+                  {toUserFacingSourceTitle(link.label || (linkIndex === 0 ? '원본 영상' : '참고 자료'))}
+                </a>
+              ))}
+            </div>
           </section>
         ) : null}
         {!isDetailEditing && detailChecklistItems.length > 0 ? (

@@ -6817,7 +6817,7 @@ test('current Allblanc source fit separates publication age, personal schedule, 
   expect(await page.locator('meta[name="robots"][content*="noindex"]').count()).toBeGreaterThan(0);
 });
 
-test('saved Allblanc routine keeps all four-week occurrences, sibling completion, and RRULE export aligned', async ({ page }) => {
+test('saved Allblanc routine keeps an open series distinct from its four-week preview', async ({ page }) => {
   test.setTimeout(90_000);
   const evidenceDir = process.env.FLOWME_P24_F3A_EVIDENCE_DIR;
   const consoleErrors: string[] = [];
@@ -6830,6 +6830,13 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
   await page.goto('/f/curated-allblanc-morning-workout');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
+  const publicWorkbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  await expect(publicWorkbench.getByRole('heading', { name: '반복 일정 미리보기' })).toBeVisible();
+  await expect(publicWorkbench.getByTestId('routine-preview-horizon')).toHaveText('미리보기 4주');
+  await expect(publicWorkbench.getByTestId('routine-series-end-policy')).toHaveAttribute('data-series-end-policy', 'open_ended');
+  await expect(publicWorkbench.getByTestId('routine-series-end-policy')).toHaveText('종료일 없음');
+  await expect(publicWorkbench.getByTestId('routine-grid-mobile')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-15');
   for (const weekday of ['월', '수', '금']) {
     const checkbox = page.getByLabel(weekday, { exact: true });
@@ -6908,6 +6915,8 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
   const detail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
   await expect(detail).toHaveAttribute('data-occurrence-id', firstOccurrenceId!);
   await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(detail.getByTestId('my-flow-item-checklist')).toHaveCount(0);
+  await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(2);
   const tools = await openMyFlowDetailTools(detail);
   const downloadPromise = page.waitForEvent('download');
   await tools.getByTestId('my-flow-detail-download-ics').click();
@@ -6917,11 +6926,12 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
   const rawIcs = fs.readFileSync(downloadPath!, 'utf8');
   const unfoldedIcs = rawIcs.replaceAll('\r\n ', '');
   expect((unfoldedIcs.match(/BEGIN:VEVENT/g) ?? [])).toHaveLength(1);
-  expect(unfoldedIcs).toContain('RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20260811');
+  expect(unfoldedIcs).toContain('RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR');
+  expect(unfoldedIcs).not.toContain('UNTIL=');
   expect(unfoldedIcs).toContain('DTSTART;VALUE=DATE:20260715');
   expect(unfoldedIcs).not.toMatch(/source-backed|sourceTrace|\bStep\b|\bItem\b/iu);
   if (evidenceDir) {
-    await download.saveAs(`${evidenceDir}/allblanc-four-week-routine.ics`);
+    await download.saveAs(`${evidenceDir}/allblanc-open-routine.ics`);
   }
   await detail.getByRole('button', { name: '닫기', exact: true }).click();
   await page.getByTestId('my-flow-calendar-selected-day').scrollIntoViewIfNeeded();
@@ -6932,8 +6942,8 @@ test('saved Allblanc routine keeps all four-week occurrences, sibling completion
 
   await page.getByRole('button', { name: '다음 달' }).click();
   await expect(page.getByRole('heading', { name: '2026년 8월' })).toBeVisible();
-  await expect(page.locator('.fc-daygrid-day[data-date^="2026-08-"] [data-testid="my-flow-routine-icon"]')).toHaveCount(4);
-  for (const date of ['2026-08-03', '2026-08-05', '2026-08-07', '2026-08-10']) {
+  await expect(page.locator('.fc-daygrid-day[data-date^="2026-08-"] [data-testid="my-flow-routine-icon"]')).toHaveCount(13);
+  for (const date of ['2026-08-03', '2026-08-10', '2026-08-17', '2026-08-31']) {
     await expect(page.locator(`.fc-daygrid-day[data-date="${date}"] [data-testid="my-flow-routine-icon"]`)).toHaveCount(1);
   }
   await page.setViewportSize({ width: 1024, height: 768 });
