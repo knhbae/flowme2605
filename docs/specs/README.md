@@ -40,9 +40,11 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- No active implementation gate. Run the P27 independent read-only production review before promoting P28 work. External observation remains deferred.
+- No implementation program is active until the owner and independent reviewers classify the P28 result as `keep`, `revise`, or `redesign`.
 
 ### Completed Or Closed
+
+- [2026-07-21 P28 Cross-Surface Experience Reconstruction](./2026-07-21-p28-experience-reconstruction/spec.md) - internally complete with Hybrid save-before, shared routine/execution grammar, scalable My Flow/Calendar, five actual-data shapes, unit `584/584`, full E2E `346/346`, and observed-user sessions `0`; owner review is pending.
 
 - [2026-07-21 P27 Flow Lifecycle Workspace Reconciliation](./2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md) - released through PR #141 and merge `2829b37`; canonical production browser evidence is green while observed-user sessions remain `0`.
 

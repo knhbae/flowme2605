@@ -22,6 +22,15 @@ export type PrimaryDestination = 'calendar' | 'sheet' | 'memo' | 'internal_check
 
 export type FlowItemLinkType = 'official' | 'reference' | 'tool' | 'creator';
 
+export type FlowItemRole =
+  | 'action'
+  | 'confirmation'
+  | 'decision'
+  | 'record'
+  | 'resource'
+  | 'reference'
+  | 'warning';
+
 export type FlowUser = {
   id: string;
   slug: string;
@@ -117,6 +126,7 @@ export type FlowItem = {
   hold_eligible?: boolean;
   photo_filename_pattern?: string;
   status?: 'ok' | 'check' | 'hold';
+  role?: FlowItemRole;
   order: number;
 };
 

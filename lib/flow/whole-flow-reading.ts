@@ -80,22 +80,25 @@ export function buildWholeFlowReadingModel<Row extends WholeFlowReadingRow>(inpu
   rows: Row[];
 }): WholeFlowReadingModel<Row> {
   const rows = input.rows.slice();
-  const grouped = new Map<string, { label: string; rows: Row[] }>();
+  const grouped: Array<{ label: string; rows: Row[] }> = [];
   const fallbackLabel = getFallbackGroupLabel(input.structureType);
 
   rows.forEach((row) => {
     const label = row.section?.trim() || fallbackLabel;
-    const group = grouped.get(label) ?? { label, rows: [] };
-    group.rows.push(row);
-    grouped.set(label, group);
+    const previous = grouped[grouped.length - 1];
+    if (previous?.label === label) {
+      previous.rows.push(row);
+      return;
+    }
+    grouped.push({ label, rows: [row] });
   });
 
   const validDates = rows.map((row) => row.date).filter(isPlainDate).sort();
   const nextRowId = rows.find((row) => !row.completed)?.id;
-  const disclosureRequired = rows.length > LONG_FLOW_DISCLOSURE_THRESHOLD && grouped.size > 1;
+  const disclosureRequired = rows.length > LONG_FLOW_DISCLOSURE_THRESHOLD && grouped.length > 1;
   let defaultGroupAssigned = false;
 
-  const groups = Array.from(grouped.values()).map((group, index) => {
+  const groups = grouped.map((group, index) => {
     const groupDates = group.rows.map((row) => row.date).filter(isPlainDate).sort();
     const containsNextRow = Boolean(nextRowId && group.rows.some((row) => row.id === nextRowId));
     const defaultOpen = !disclosureRequired || (!defaultGroupAssigned && (containsNextRow || index === 0));

@@ -1,4 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+
+test.beforeEach(async ({ page }) => {
+  await openPublicDetailWorkspaceForDeepInspection(page);
+});
 
 type FocusableEntry = {
   text: string;

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_18_EVIDENCE_DIR;
 
@@ -106,8 +107,7 @@ test('mobile drill-in keeps modal focus and fixed feedback above the navigation'
   await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe('');
 
   await page.getByTestId('my-flow-view-flow').click();
-  const flow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]');
-  await flow.getByTestId('my-flow-mobile-structure-open').click();
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
   await firstRow.getByRole('button', { name: /열기/ }).click();
   const detail = firstRow.getByTestId('my-flow-item-detail');
@@ -130,8 +130,7 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   await page.setViewportSize({ width: 1024, height: 768 });
   await seedWorkspace(page, { multiple: true });
   await page.goto('/my?view=flows');
-  await page.getByTestId('my-flow-filter-moving-d30-basic').click();
-  const flow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   const workspace = flow.getByTestId('my-flow-whole-flow-workspace');
   await expect(workspace).toHaveAttribute('data-workspace-layout', 'wide-outline-detail');
   const detailPane = workspace.getByTestId('my-flow-workspace-detail-pane');

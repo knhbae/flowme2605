@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-07-22",
+  "evidenceKind": "automated_simulation",
+  "observedUserCount": 0,
+  "journeys": [
+    {
+      "id": "moving-save-before-adjustment",
+      "route": "/f/moving-d30-basic",
+      "tasks": ["inspect_compact_whole_flow", "expand_all_items", "set_anchor", "edit_flow_title", "edit_item_title", "fix_item_date", "inspect_calendar_preview"],
+      "status": "supported",
+      "blockingFindingCount": 0
+    },
+    {
+      "id": "url-hit-shared-workspace",
+      "route": "/flows",
+      "tasks": ["paste_known_url", "open_prepared_flow", "reach_shared_adjustment_workspace"],
+      "status": "supported",
+      "blockingFindingCount": 0
+    },
+    {
+      "id": "routine-definition-and-resource",
+      "route": "/f/curated-allblanc-morning-workout",
+      "tasks": ["set_weekdays", "set_time", "set_duration", "set_occurrence_count", "reload", "inspect_resource_without_completion"],
+      "status": "supported",
+      "blockingFindingCount": 0
+    },
+    {
+      "id": "large-my-flow-library",
+      "route": "/my?demo=ux20&view=flows",
+      "tasks": ["browse_mobile_library", "open_detail", "return_to_library", "search_wide_library", "switch_selected_flow"],
+      "status": "supported",
+      "blockingFindingCount": 0
+    },
+    {
+      "id": "large-calendar-flow-scope",
+      "route": "/calendar?demo=ux12",
+      "tasks": ["open_picker", "search", "select_two_flows", "apply", "reload", "close_with_escape"],
+      "status": "supported",
+      "blockingFindingCount": 0
+    },
+    {
+      "id": "five-shape-actual-data",
+      "routes": [
+        "/f/curated-allblanc-morning-workout",
+        "/f/moving-d30-basic",
+        "/f/used-car-buying-check",
+        "/f/source-backed-middle-school-math-1",
+        "/f/overseas-safety-register"
+      ],
+      "tasks": ["inspect_primary_actual_rows", "switch_eligible_secondary", "confirm_not_applicable_controls_absent"],
+      "status": "supported",
+      "blockingFindingCount": 0
+    }
+  ],
+  "humanObservationQuestions": [
+    "Can a first-time user predict what is saved before expanding the whole outline?",
+    "Does the routine editor still feel too long on mobile?",
+    "Can a returning user find one Flow among 20 or more without relying only on search?",
+    "Does the selected artifact match the user's intended external tool?"
+  ]
+}

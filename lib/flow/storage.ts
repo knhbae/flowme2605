@@ -68,14 +68,29 @@ export type StoredAnchor = {
 
 export type SavedFlowArtifactMode = 'calendar' | 'checklist' | 'sheet';
 
+export type SavedFlowRoutineEnd =
+  | { mode: 'source' }
+  | { mode: 'none' }
+  | { mode: 'until'; date: string }
+  | { mode: 'count'; count: number };
+
+export type SavedFlowRoutineDefinition = {
+  schemaVersion: 1;
+  time?: string;
+  durationMinutes?: number;
+  end: SavedFlowRoutineEnd;
+};
+
 export type SavedFlowRecord = {
   slug: string;
   savedAt: string;
+  personalTitle?: string;
   selectedArtifactMode: SavedFlowArtifactMode;
   dateIntent: PersistedPublicDateIntentMode;
   anchor?: string;
   legacyExampleAnchor?: string;
   weekdays?: string[];
+  routineDefinition?: SavedFlowRoutineDefinition;
 };
 
 export type SavedFlowMapSnapshot = {
@@ -123,6 +138,7 @@ export type ActiveFlowProgress = {
   anchor?: string;
   anchorMode?: string;
   weekdays?: string[];
+  routineDefinition?: SavedFlowRoutineDefinition;
   lastVisited?: string;
 };
 
@@ -390,6 +406,53 @@ function isSavedFlowArtifactMode(value: unknown): value is SavedFlowArtifactMode
   return value === 'calendar' || value === 'checklist' || value === 'sheet';
 }
 
+function isSavedFlowRoutineTime(value: unknown): value is string {
+  return typeof value === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
+}
+
+function normalizeSavedFlowRoutineDefinition(value: unknown): SavedFlowRoutineDefinition | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const record = value as {
+    schemaVersion?: unknown;
+    time?: unknown;
+    durationMinutes?: unknown;
+    end?: {
+      mode?: unknown;
+      date?: unknown;
+      count?: unknown;
+    };
+  };
+  const endRecord = record.end;
+  let end: SavedFlowRoutineEnd | undefined;
+  if (endRecord?.mode === 'source' || endRecord?.mode === 'none') {
+    end = { mode: endRecord.mode };
+  } else if (
+    endRecord?.mode === 'until' &&
+    typeof endRecord.date === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(endRecord.date)
+  ) {
+    end = { mode: 'until', date: endRecord.date };
+  } else if (
+    endRecord?.mode === 'count' &&
+    Number.isInteger(endRecord.count) &&
+    Number(endRecord.count) >= 1 &&
+    Number(endRecord.count) <= 10_000
+  ) {
+    end = { mode: 'count', count: Number(endRecord.count) };
+  }
+  if (!end) return undefined;
+  const durationMinutes = Number.isInteger(record.durationMinutes) && Number(record.durationMinutes) >= 5 && Number(record.durationMinutes) <= 1440
+    ? Number(record.durationMinutes)
+    : undefined;
+  const time = isSavedFlowRoutineTime(record.time) ? record.time : undefined;
+  return {
+    schemaVersion: 1,
+    ...(time ? { time } : {}),
+    ...(time && durationMinutes ? { durationMinutes } : {}),
+    end,
+  };
+}
+
 export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | undefined {
   if (!value || typeof value !== 'object') return undefined;
   const record = value as Partial<SavedFlowRecord>;
@@ -411,15 +474,21 @@ export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | unde
   const weekdays = Array.isArray(record.weekdays)
     ? record.weekdays.filter((day): day is string => typeof day === 'string' && ['월', '화', '수', '목', '금', '토', '일'].includes(day))
     : undefined;
+  const personalTitle = typeof record.personalTitle === 'string' && record.personalTitle.trim()
+    ? record.personalTitle.trim().slice(0, 80)
+    : undefined;
+  const routineDefinition = normalizeSavedFlowRoutineDefinition(record.routineDefinition);
 
   return {
     slug: record.slug,
     savedAt: record.savedAt,
+    ...(personalTitle ? { personalTitle } : {}),
     selectedArtifactMode: isSavedFlowArtifactMode(record.selectedArtifactMode) ? record.selectedArtifactMode : 'calendar',
     dateIntent,
     ...(dateIntent === 'custom' && anchor ? { anchor } : {}),
     ...(legacyExampleAnchor ? { legacyExampleAnchor } : {}),
     ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
+    ...(routineDefinition ? { routineDefinition } : {}),
   };
 }
 
@@ -439,17 +508,21 @@ export function saveFlowRecord(
   if (!canUseStorage()) return undefined;
   const previous = getSavedFlowRecord(slug);
   const weekdays = value.weekdays ?? previous?.weekdays;
+  const personalTitle = value.personalTitle?.trim().slice(0, 80) || previous?.personalTitle;
+  const routineDefinition = normalizeSavedFlowRoutineDefinition(value.routineDefinition ?? previous?.routineDefinition);
   const requestedAnchor = value.anchor?.trim();
   const dateIntent: PersistedPublicDateIntentMode =
     value.dateIntent === 'undated' ? 'undated' : requestedAnchor ? 'custom' : 'undated';
   const record: SavedFlowRecord = {
     slug,
     savedAt: new Date().toISOString(),
+    ...(personalTitle ? { personalTitle } : {}),
     selectedArtifactMode: value.selectedArtifactMode,
     dateIntent,
     ...(dateIntent === 'custom' && requestedAnchor ? { anchor: requestedAnchor } : {}),
     ...(value.legacyExampleAnchor ? { legacyExampleAnchor: value.legacyExampleAnchor } : {}),
     ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
+    ...(routineDefinition ? { routineDefinition } : {}),
   };
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
   localStorage.setItem('flow:meta:last-visit', record.savedAt);
@@ -879,13 +952,14 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
     if (hasProgress) {
       progress.push({
         slug: bundle.flow.slug,
-        title: bundle.flow.title,
+        title: savedRecord?.personalTitle ?? bundle.flow.title,
         done,
         total,
         skipped,
         anchor: storedAnchor.anchor || savedRecord?.anchor,
         anchorMode: normalizePublicDateIntentMode(storedAnchor.mode),
         ...(savedRecord?.weekdays?.length ? { weekdays: savedRecord.weekdays } : {}),
+        ...(savedRecord?.routineDefinition ? { routineDefinition: savedRecord.routineDefinition } : {}),
         lastVisited: savedRecord?.savedAt ?? lastVisited,
       });
     }

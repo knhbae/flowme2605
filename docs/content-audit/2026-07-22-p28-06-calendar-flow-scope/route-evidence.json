@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-07-22",
+  "evidenceKind": ["current_source", "current_browser", "automated_simulation"],
+  "observedUserCount": 0,
+  "route": "/calendar?demo=ux12",
+  "viewports": ["390x844", "1024x768"],
+  "oneFlowScopeControlVisible": false,
+  "twoToFiveScopePresentation": "compact",
+  "sixPlusScopePresentation": "picker",
+  "largeLibraryHorizontalFlowChipCount": 0,
+  "searchablePickerVisible": true,
+  "multiFlowSelectionSupported": true,
+  "selectedFlowCount": 2,
+  "selectionPersistedAfterReload": true,
+  "staleSelectionItemLossCount": 0,
+  "keyboardEscapeReturnsFocus": true,
+  "calendarHorizontalOverflowCount": 0,
+  "observedUserValidated": false
+}

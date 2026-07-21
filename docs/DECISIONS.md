@@ -35,6 +35,30 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-22 - P28 uses a Hybrid whole-Flow and actual-result architecture
+
+**Decision:** Use one cross-surface sequence: Flow identity/source, compact whole outline, content-native actual-data result, contextual personal adjustment, and save/export. On mobile this is one reading order; at 1024px it uses no more than two major panes. Route prepared URL hits into the same public Flow workspace instead of maintaining a second full editor. Use the same executable row for ordinary tasks and routine occurrences. Keep resource/reference/warning roles outside completion. Present one primary artifact and at most two eligible secondary artifacts rather than a fixed five-tab gallery. My Flow uses mobile drill-in and a wide library rail; Calendar uses a searchable multi-select picker when six or more Flows are available.
+
+**Reason:** P28-01 actual-data comparison found outline-only weak on result confidence and artifact-only weak on saved-content comprehension. The Hybrid kept the full Flow inspectable while showing the portable result before commitment. It also gave routine, My Flow, and Calendar one item/execution grammar instead of adding workout-specific controls or more explanatory copy.
+
+**Applies to:** `/flows`, public `/f`, source-backed save-before, personal adjustment, My Flow library/detail, Calendar Flow scope and agenda, routine definition, resource presentation, five artifact previews, export preflight, and P28/P29 review.
+
+**Reopen when:** Owner or independent review identifies a Blocking/High hierarchy failure, a representative content shape cannot use the shared projection without losing meaning, 50+ Flow fixtures make rail/picker behavior unusable, or observed users consistently fail the compact-outline or routine setup tasks. Automated green checks alone do not prove usability.
+
+**Related docs:** [P28 architecture gate](./content-audit/2026-07-22-p28-01-cross-surface-architecture-gate/README.md), [P28 final review](./content-audit/2026-07-22-p28-final-review-package/README.md), [P28 spec](./specs/2026-07-21-p28-experience-reconstruction/spec.md)
+
+### 2026-07-21 - P28 reopens interaction composition but preserves P27 ownership contracts
+
+**Decision:** Start P28 with a cross-surface comparison simulation rather than immediately implementing the prior `save-before preview shell` backlog. Treat P27 adjustment, routine, My Flow, and Calendar capabilities as implemented but not UX-accepted where the latest owner feedback still finds them complex or inconsistent. Select one shared Flow header, outline, item row, contextual editor, occurrence completion, resource block, and Calendar scope grammar before production changes. Represent `Flow execution`, `Calendar`, `Checklist/Todo`, `Sheet`, and `Memo` as actual-data projection fixtures; do not create a permanent five-card gallery or fifth tab. Remove workout-only completion semantics by mapping completion/reopen, skip/hold, notes, resources, and safety back to shared contracts. Preserve source, personal overlay, execution run, occurrence, and export identity.
+
+**Reason:** Current production and source show that controls exist but route-specific workbenches still make the same Flow feel different. Workout uses a special result selector and source card, Calendar renders every Flow scope in a horizontal strip, My Flow mixes library and selected-workspace controls, and save-before artifact cards do not show the actual destination data promised by the prior prototype. Implementing only another shell would likely create another redesign loop.
+
+**Applies to:** P28 program, `/flows`, public `/f`, `/flow-maps`, save-before adjustment, routine definition and occurrence execution, My Flow library/detail, Calendar scope/agenda, five artifact projections, export preview, and P28 evidence.
+
+**Reopen when:** P28-01 alternatives all fail the score/hard-fail gate, a representative content shape cannot use the shared anatomy without losing source meaning, or the owner explicitly approves changing the 4-tab IA or canonical ownership contracts. Automated green checks alone do not close the interaction decision.
+
+**Related docs:** [P28 program](./specs/2026-07-21-p28-experience-reconstruction/README.md), [feedback reconciliation](./specs/2026-07-21-p28-experience-reconstruction/feedback-reconciliation.md), [P28 detailed backlog](./specs/2026-07-21-p28-experience-reconstruction/tasks.md)
+
 ### 2026-07-21 - P27 uses a reversible Flow lifecycle and one-operation adjustment workspace
 
 **Decision:** Keep one Flow outline from save-before through post-save and returning My Flow. Public adjustment starts with `항목 고르기` and exposes only one of include, date, title/memo, or order controls at a time. A saved Flow leaves active execution through reversible archive, not destructive clear; source Items leave a personal copy through exclusion, while user Items use personal tombstones. Resource links stay separate from completion subchecks. Routine preview horizon never becomes series end unless source or user intent explicitly says so. Small My Flow libraries stay directly browsable, while libraries of five or more expose search and open a matching whole Flow workspace.

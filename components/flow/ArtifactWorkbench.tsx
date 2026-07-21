@@ -16,6 +16,7 @@ import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEn
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import { resolveRoutineHorizon } from '@/lib/flow/routine-horizon';
+import type { SavedRoutineOccurrenceRow } from '@/lib/flow/saved-routine-occurrence';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import type {
   FlowExportDestination,
@@ -26,11 +27,13 @@ import { timingLabel } from '@/lib/flow/parser';
 import type { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState } from '@/lib/flow/types';
 import { stripUserFacingInternalLines } from '@/lib/flow/user-surface-guardrails';
 import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
+import type { SavedFlowRoutineDefinition } from '@/lib/flow/storage';
 
 type ArtifactWorkbenchProps = {
   bundle: FlowBundle;
   anchor: string;
   weekdays: string[];
+  routineDefinition?: SavedFlowRoutineDefinition;
   checks: Record<string, boolean>;
   itemStates: Record<string, FlowItemState>;
   comparisonState: FlowComparisonState;
@@ -155,6 +158,7 @@ export function ArtifactWorkbench({
   bundle,
   anchor,
   weekdays,
+  routineDefinition,
   checks,
   itemStates,
   comparisonState,
@@ -199,6 +203,7 @@ export function ArtifactWorkbench({
             bundle={bundle}
             anchor={anchor}
             weekdays={weekdays}
+            routineDefinition={routineDefinition}
             checks={checks}
             workbenchState={workbenchState}
             onWorkbenchChange={onWorkbenchChange}
@@ -1025,6 +1030,7 @@ function RoutineOccurrenceCalendar({
   month,
   rows,
   weekCount,
+  routineDefinition,
   workbenchState,
   onWorkbenchChange,
   exportActions,
@@ -1033,26 +1039,24 @@ function RoutineOccurrenceCalendar({
   month: string;
   rows: ScheduleRow[];
   weekCount: number;
+  routineDefinition?: SavedFlowRoutineDefinition;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   exportActions?: ArtifactExportActions;
 }) {
   const [showAllRoutineWeeks, setShowAllRoutineWeeks] = useState(false);
   const visibleRows = rows;
-  const occurrenceSummary = `${weekCount}주 ${visibleRows.length}회차`;
+  const occurrenceSummary = `${visibleRows.length}회차`;
   const horizon = resolveRoutineHorizon(bundle, weekCount);
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
-  const isHomeWorkout = Boolean(bundle.flow.category.includes('운동') && bundle.flow.tags?.includes('exact-video'));
   const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
-  const eyebrow = isSleepCheck ? '수면 체크 캘린더' : isHomeWorkout ? '홈트 캘린더' : isMealCheck ? '식단 체크 캘린더' : '회차 그리드';
-  const title = isSleepCheck ? '14일 수면 체크' : isHomeWorkout ? '반복 일정 미리보기' : isMealCheck ? '아침·점심·저녁 식단 체크' : `${occurrenceSummary} 루틴`;
+  const eyebrow = isSleepCheck ? '수면 체크 일정' : isMealCheck ? '식단 체크 일정' : '반복 일정';
+  const title = isSleepCheck ? '14일 수면 체크' : isMealCheck ? '아침·점심·저녁 식단 체크' : `${occurrenceSummary} 미리보기`;
   const description = isSleepCheck
     ? '저장 전에는 8시간 이상 잔 날을 미리 표시해 봅니다.'
-    : isHomeWorkout
-      ? ''
-      : isMealCheck
+    : isMealCheck
         ? '아침, 점심, 저녁 식단을 지켰는지만 표시합니다.'
-        : '주차와 요일별 회차를 먼저 보고, 각 회차를 캘린더와 시트로 가져갑니다.';
+        : '';
   const firstDate = visibleRows[0]?.startDate ?? formatLocalDate(new Date());
   const first = new Date(firstDate);
   const currentRow = visibleRows.find((row) => !workbenchState.occurrences[row.id]?.done) ?? visibleRows[0];
@@ -1060,7 +1064,7 @@ function RoutineOccurrenceCalendar({
     routineGridWeekdayOrder.map((weekday) =>
       visibleRows.find((row) => {
         const diff = Math.floor((new Date(row.startDate).getTime() - first.getTime()) / 86400000);
-        return Math.floor(diff / 7) === weekIndex && row.timing === weekday;
+        return Math.floor(diff / 7) === weekIndex && row.timing.split(' · ')[0] === weekday;
       }),
     ),
   );
@@ -1085,9 +1089,9 @@ function RoutineOccurrenceCalendar({
         </div>
         <ArtifactExportStatus actions={exportActions} />
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-1 font-semibold text-[#3654FF]">{isHomeWorkout ? '주 3회 홈트' : isMealCheck ? '식사별 체크' : occurrenceSummary}</span>
-          <span data-testid="routine-preview-horizon" className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isHomeWorkout ? horizon.previewLabel : isMealCheck ? '아침·점심·저녁' : '주차 × 요일 회차표'}</span>
-          {isHomeWorkout ? <span data-testid="routine-series-end-policy" data-series-end-policy={horizon.seriesEndPolicy} className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{horizon.seriesEndLabel}</span> : null}
+          <span className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-3 py-1 font-semibold text-[#3654FF]">{isMealCheck ? '식사별 체크' : `주 ${Math.max(1, new Set(visibleRows.map((row) => row.timing.split(' · ')[0])).size)}회`}</span>
+          <span data-testid="routine-preview-horizon" className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{isMealCheck ? '아침·점심·저녁' : `앞으로 ${horizon.previewWeeks}주 미리보기`}</span>
+          {!isMealCheck ? <span data-testid="routine-series-end-policy" data-series-end-policy={routineDefinition?.end.mode ?? horizon.seriesEndPolicy} className="rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 font-semibold text-[#6E6B64]">{formatRoutineSeriesEndLabel(routineDefinition, horizon.seriesEndLabel)}</span> : null}
           {currentRow ? <span className="rounded-full border border-[#F0D8AE] bg-[#FFF7E8] px-3 py-1 font-semibold text-[#8A5A12]">현재 {currentRow.title}</span> : null}
         </div>
         <div data-testid="routine-grid-mobile" className="mt-3 grid gap-2 md:hidden">
@@ -1166,6 +1170,16 @@ function RoutineOccurrenceCalendar({
       </div>
     </section>
   );
+}
+
+function formatRoutineSeriesEndLabel(
+  definition: SavedFlowRoutineDefinition | undefined,
+  sourceLabel: string,
+): string {
+  if (!definition || definition.end.mode === 'source') return sourceLabel;
+  if (definition.end.mode === 'none') return '종료일 없음';
+  if (definition.end.mode === 'until') return definition.end.date ? `${definition.end.date}까지` : '종료일 선택 필요';
+  return `${definition.end.count}회까지`;
 }
 
 function RoutineSessionLogCard({
@@ -1867,6 +1881,7 @@ function RoutineWorkbench({
   bundle,
   anchor,
   weekdays,
+  routineDefinition,
   checks,
   workbenchState,
   onWorkbenchChange,
@@ -1876,6 +1891,7 @@ function RoutineWorkbench({
   bundle: FlowBundle;
   anchor: string;
   weekdays: string[];
+  routineDefinition?: SavedFlowRoutineDefinition;
   checks: Record<string, boolean>;
   workbenchState: FlowWorkbenchState;
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
@@ -1916,28 +1932,60 @@ function RoutineWorkbench({
 
   const startDate = anchor || formatLocalDate(nextMonday(new Date(`${effectiveStartDate}T00:00:00`)));
   const selectedWeekdays = weekdays.length ? weekdays : inferWeekdays(bundle.repeatRules?.[0] ?? '');
-  const weekCount = resolveRoutineHorizon(bundle).previewWeeks;
-  const occurrences = expandRoutineOccurrences(startDate, selectedWeekdays, weekCount);
-  const month = occurrences[0]?.date.slice(0, 7) ?? startDate.slice(0, 7);
-  const rows = occurrences.map((occurrence) => ({
-    id: occurrenceKey(occurrence),
-    title: `${occurrence.sessionIndex}회차`,
-    section: '반복',
-    timing: occurrence.weekday,
-    startDate: occurrence.date,
-  }));
-  const next = occurrences[0];
-  const nextKey = next ? occurrenceKey(next) : '';
-  const nextLabel = next ? `${next.sessionIndex}회차` : '';
+  const horizon = resolveRoutineHorizon(bundle);
+  const weekCount = horizon.previewWeeks;
+  const carrierItem = bundle.items.slice().sort((left, right) => left.order - right.order)[0];
+  const previewEndDate = formatDate(addDays(new Date(`${startDate}T00:00:00`), horizon.previewDays - 1));
+  const projection = carrierItem
+    ? buildEffectiveRoutineProjection<SavedRoutineOccurrenceRow & { title: string }>({
+        bundle,
+        identityNamespace: bundle.flow.slug,
+        rows: [{ id: carrierItem.id, date: startDate, title: carrierItem.title }],
+        startDate,
+        selectedWeekdays,
+        seriesEndMode: routineDefinition?.end.mode ?? 'source',
+        endDate: routineDefinition?.end.mode === 'until' ? routineDefinition.end.date : undefined,
+        occurrenceCount: routineDefinition?.end.mode === 'count' ? routineDefinition.end.count : undefined,
+        time: routineDefinition?.time,
+        durationMinutes: routineDefinition?.durationMinutes,
+        range: { start: startDate, end: previewEndDate },
+      })
+    : undefined;
+  const projectedRows = projection?.rows.filter((row) => Boolean(row.structuralOccurrenceId)) ?? [];
+  const fallbackOccurrences = projectedRows.length === 0
+    ? expandRoutineOccurrences(startDate, selectedWeekdays, weekCount)
+    : [];
+  const rows: ScheduleRow[] = projectedRows.length > 0
+    ? projectedRows.map((row) => {
+        const date = row.date ?? startDate;
+        const weekday = weekdayOrder[new Date(`${date}T00:00:00`).getDay()];
+        const time = row.structuralScheduleProjection?.startTime;
+        return {
+          id: row.structuralOccurrenceId ?? row.id,
+          title: row.title,
+          section: '반복',
+          timing: [weekday, time].filter(Boolean).join(' · '),
+          startDate: date,
+        };
+      })
+    : fallbackOccurrences.map((occurrence) => ({
+        id: occurrenceKey(occurrence),
+        title: carrierItem?.title ?? `${occurrence.sessionIndex}회차`,
+        section: '반복',
+        timing: occurrence.weekday,
+        startDate: occurrence.date,
+      }));
+  const month = rows[0]?.startDate.slice(0, 7) ?? startDate.slice(0, 7);
+  const next = rows[0];
+  const nextLabel = next?.title ?? '';
   const isSleepCheck = bundle.flow.slug === 'diet-habit-2week';
   const isCheckOnlyRoutine = checkOnlyRoutineSlugs.has(bundle.flow.slug);
-  const isHomeWorkout = Boolean(bundle.flow.category.includes('운동') && bundle.flow.tags?.includes('exact-video'));
   const isMealCheck = bundle.flow.slug === 'real-fitvely-diet-record-routine';
   const isExactVideoRoutine = Boolean(bundle.flow.tags?.includes('exact-video'));
   const sessionItems = bundle.items.slice(0, 5);
   const routineRows = rows.map((row, index) => ({
     ...row,
-    title: isHomeWorkout ? '홈트' : isMealCheck ? bundle.items[index % Math.max(bundle.items.length, 1)]?.title ?? row.title : row.title,
+    title: isMealCheck ? bundle.items[index % Math.max(bundle.items.length, 1)]?.title ?? row.title : row.title,
   }));
 
   if (isCheckOnlyRoutine) {
@@ -1948,21 +1996,12 @@ function RoutineWorkbench({
           month={month}
           rows={routineRows}
           weekCount={weekCount}
+          routineDefinition={routineDefinition}
           workbenchState={workbenchState}
           onWorkbenchChange={onWorkbenchChange}
           exportActions={exportActions}
         />
-        {isHomeWorkout ? (
-          <>
-            <ExactVideoTodayResultCard
-              occurrenceKeyValue={nextKey}
-              occurrenceLabel={nextLabel || '오늘 홈트'}
-              workbenchState={workbenchState}
-              onWorkbenchChange={onWorkbenchChange}
-            />
-            <ExactVideoSourceBridge bundle={bundle} />
-          </>
-        ) : isExactVideoRoutine ? <ExactVideoSourceBridge bundle={bundle} /> : null}
+        {isExactVideoRoutine ? <FlowResourceBlock bundle={bundle} /> : null}
       </div>
     );
   }
@@ -1970,7 +2009,7 @@ function RoutineWorkbench({
   return (
     <div className={`grid gap-4 ${isCheckOnlyRoutine ? 'lg:grid-cols-[1.2fr_0.8fr]' : 'lg:grid-cols-[1.12fr_0.88fr]'}`}>
       <div className="order-2 grid min-w-0 gap-4 lg:order-1">
-        <RoutineOccurrenceCalendar bundle={bundle} month={month} rows={routineRows} weekCount={weekCount} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
+        <RoutineOccurrenceCalendar bundle={bundle} month={month} rows={routineRows} weekCount={weekCount} routineDefinition={routineDefinition} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} />
         {!isCheckOnlyRoutine ? <RoutineSessionLogCard bundle={bundle} rows={rows} workbenchState={workbenchState} onWorkbenchChange={onWorkbenchChange} exportActions={exportActions} /> : null}
       </div>
       <div data-testid="routine-today-session-card" className={`order-1 min-w-0 lg:order-2 ${FLOWME_SUPPORT_CARD_CLASS}`}>
@@ -1991,7 +2030,7 @@ function RoutineWorkbench({
           <div className={`mt-2 ${FLOWME_INNER_ROW_CLASS}`}>
             <div className="flex items-start gap-2 text-sm font-semibold text-[#3654FF]">
               <ArtifactItemMarker />
-              <span>{nextLabel} · {next.date} · {next.weekday}</span>
+              <span>{nextLabel} · {next.startDate} · {next.timing}</span>
             </div>
           </div>
         ) : null}
@@ -2008,52 +2047,27 @@ function RoutineWorkbench({
   );
 }
 
-function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
+function FlowResourceBlock({ bundle }: { bundle: FlowBundle }) {
   const detail = bundle.itemDetails?.[0];
   const sourceUrl = bundle.flow.source_url;
-  const sourceTitle = bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : '원본 영상';
-  const isUserScheduled = Boolean(bundle.flow.tags?.includes('schedule-user-choice'));
+  const sourceTitle = bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : '원문';
   const supportingLinks = detail?.links?.filter((link) => link.url !== sourceUrl) ?? [];
-  const cues =
-    bundle.flow.slug === 'real-thankyou-bubu-home-workout-starter'
-      ? ['점프 없음', '눕는 동작 없음', '반복 없음', '토크 없음']
-      : isUserScheduled
-        ? ['원본 영상 1개', '요일 직접 선택', '완료 또는 중단 기록']
-      : ['원본 영상 1개', '반복 일정', '운동 후 기록'];
 
   return (
-    <section data-testid="exact-video-source-bridge" className={`text-sm leading-6 text-[#1B1A17] ${FLOWME_SUPPORT_CARD_CLASS}`}>
+    <section data-testid="flow-resource-block" aria-label="자료와 안내" className={`text-sm leading-6 text-[#1B1A17] ${FLOWME_SUPPORT_CARD_CLASS}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-[#3654FF]">원문에서 옮긴 실행 기준</p>
-          <h3 className={FLOWME_TITLE_CLASS}>
-            {isUserScheduled ? '원본을 확인하고, 내가 고른 요일에 다시 엽니다' : '원본 영상을 열고, 정한 요일에 1회 실행합니다'}
-          </h3>
+          <p className="text-xs font-semibold text-[#3654FF]">자료</p>
+          <h3 className={FLOWME_TITLE_CLASS}>{sourceTitle}</h3>
         </div>
         {sourceUrl ? (
           <a className={FLOWME_LINK_BUTTON_CLASS} href={sourceUrl} target="_blank" rel="noreferrer">
-            원본 영상 열기
+            원문 열기
           </a>
         ) : null}
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {cues.map((cue) => (
-          <span key={cue} className="rounded-full border border-[#DDE3FF] bg-[#EEF1FF] px-2 py-1 text-xs font-semibold text-[#3654FF]">
-            {cue}
-          </span>
-        ))}
-      </div>
-      <p className="mt-3 text-sm text-[#6E6B64]">
-        {isUserScheduled
-          ? 'Flow는 영상의 동작 순서나 운동 효과를 새로 만들지 않습니다. 체크한 요일은 원문 처방이 아니라 내 캘린더에 저장할 일정입니다.'
-          : 'Flow는 영상의 동작 순서를 새로 만들지 않습니다. 캘린더에는 운동일만 넣고, 실행할 때는 원본 영상의 자세와 박자를 그대로 확인합니다.'}
-      </p>
-      <p className="mt-2 text-xs text-[#6E6B64]">
-        저장 후 남길 기록: {detail?.completion_criteria ?? '완료 여부, 체감 난이도, 통증이나 어지러움, 다음 회차 강도 조정 메모'}
-      </p>
-      <p className="mt-1 text-xs text-[#3654FF]">출처: {sourceTitle}</p>
       {supportingLinks.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2" aria-label="관련 자료">
           {supportingLinks.map((link) => (
             <a key={link.url} className={FLOWME_LINK_BUTTON_CLASS} href={link.url} target="_blank" rel="noreferrer">
               {toUserFacingSourceTitle(link.label)}
@@ -2061,64 +2075,7 @@ function ExactVideoSourceBridge({ bundle }: { bundle: FlowBundle }) {
           ))}
         </div>
       ) : null}
-    </section>
-  );
-}
-
-function ExactVideoTodayResultCard({
-  occurrenceKeyValue,
-  occurrenceLabel,
-  workbenchState,
-  onWorkbenchChange,
-}: {
-  occurrenceKeyValue: string;
-  occurrenceLabel: string;
-  workbenchState: FlowWorkbenchState;
-  onWorkbenchChange: (state: FlowWorkbenchState) => void;
-}) {
-  const selectedResult = workbenchState.memoCards.exactVideoResult ?? '';
-  const note = occurrenceKeyValue ? workbenchState.occurrences[occurrenceKeyValue]?.note ?? '' : '';
-  const resultOptions = ['완료', '강도 낮춤', '휴식으로 변경'];
-
-  return (
-    <section data-testid="exact-video-result-card" className={`text-sm leading-6 text-[#1B1A17] ${FLOWME_SUCCESS_CARD_CLASS}`}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold text-[#1F8A5B]">오늘 결과</p>
-          <h3 className={FLOWME_TITLE_CLASS}>{occurrenceLabel} 실행 후 남길 것</h3>
-          <p className="mt-1 text-sm text-[#406B55]">원본 영상을 열어 1회 따라 한 뒤 완료 여부와 몸 상태만 가볍게 남깁니다.</p>
-        </div>
-        <span className="rounded-full border border-[#D8ECE1] bg-white px-2 py-1 text-xs font-semibold text-[#1F8A5B]">운동 후 기록</span>
-      </div>
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
-        {resultOptions.map((result) => (
-          <button
-            key={result}
-            type="button"
-            aria-pressed={selectedResult === result}
-            className={`min-h-10 rounded-xl border px-3 text-sm font-semibold ${
-              selectedResult === result ? 'border-[#1F8A5B] bg-[#1F8A5B] text-white' : 'border-[#D8ECE1] bg-white text-[#1F8A5B]'
-            }`}
-            onClick={() => {
-              const next = updateMemoCard(workbenchState, 'exactVideoResult', result);
-              onWorkbenchChange(occurrenceKeyValue && result === '완료' ? updateOccurrenceDone(next, occurrenceKeyValue, true) : next);
-            }}
-          >
-            {result}
-          </button>
-        ))}
-      </div>
-      <label className="mt-3 block text-sm font-semibold text-[#1B1A17]">
-        몸 상태 메모
-        <textarea
-          aria-label="운동 후 몸 상태 메모"
-          className={`mt-2 min-h-24 w-full resize-y font-normal ${FLOWME_INPUT_CLASS}`}
-          placeholder="예: 완료 / RPE 6 / 무릎 통증 없음 / 다음 회차도 같은 강도"
-          value={note}
-          onChange={(event) => occurrenceKeyValue ? onWorkbenchChange(updateOccurrenceNote(workbenchState, occurrenceKeyValue, event.currentTarget.value)) : undefined}
-        />
-      </label>
-      <p className="mt-2 text-xs text-[#406B55]">통증, 어지러움, 호흡 곤란이 있으면 완료보다 중단 기록을 우선합니다.</p>
+      {detail?.caution ? <p className="mt-3 border-t border-[#DDE4E0] pt-3 text-xs text-[#6E6B64]">{detail.caution}</p> : null}
     </section>
   );
 }

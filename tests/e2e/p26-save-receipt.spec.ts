@@ -97,6 +97,7 @@ test('source-backed Flow Map and URL-first hit share the savedMap receipt contra
   await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=p26-receipt');
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   const result = page.getByTestId('flow-url-lookup-result');
+  await result.getByTestId('flow-url-quick-start').locator('summary').click();
   await result.getByLabel('학습 시작일').fill('2030-09-01');
   await result.getByRole('button', { name: '시작하기' }).click();
 

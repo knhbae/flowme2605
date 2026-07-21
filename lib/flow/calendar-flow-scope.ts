@@ -5,6 +5,30 @@ export type CalendarFlowScopeRow = {
   isRoutine: boolean;
 };
 
+export type CalendarFlowScopePresentation = 'hidden' | 'compact' | 'picker';
+
+export function getCalendarFlowScopePresentation(flowCount: number): CalendarFlowScopePresentation {
+  const count = Math.max(0, Math.floor(flowCount));
+  if (count <= 1) return 'hidden';
+  if (count <= 5) return 'compact';
+  return 'picker';
+}
+
+export function normalizeCalendarFlowSelection(
+  selectedFlowSlugs: string[],
+  knownFlowSlugs: string[],
+): string[] {
+  const known = new Set(knownFlowSlugs.filter(Boolean));
+  return Array.from(new Set(selectedFlowSlugs.map((slug) => slug.trim()).filter((slug) => known.has(slug))));
+}
+
+export function isCalendarFlowRowInSelection(
+  row: CalendarFlowScopeRow,
+  selectedFlowSlugs: string[],
+): boolean {
+  return selectedFlowSlugs.length === 0 || selectedFlowSlugs.includes(row.flowSlug);
+}
+
 export function getCalendarFlowScopeForFlow(flowSlug: string): CalendarFlowScope {
   return `flow:${flowSlug.trim()}`;
 }

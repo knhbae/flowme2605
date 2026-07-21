@@ -1,0 +1,100 @@
+{
+  "generatedAt": "2026-07-22",
+  "baselineSha": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
+  "branch": "codex/p28-program-plan",
+  "verdict": "internally_complete_awaiting_owner_review",
+  "evidenceKind": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "current_package_screenshot",
+    "automated_simulation"
+  ],
+  "observedUserCount": 0,
+  "architecture": {
+    "selected": "hybrid",
+    "mobileReadingOrder": ["header", "whole_outline", "actual_data_result", "contextual_adjustment", "save_or_export"],
+    "wideMaximumMajorPaneCount": 2,
+    "sourceMutationCount": 0
+  },
+  "ownerFeedbackMarkers": {
+    "saveBeforeNaturalAdjustmentConnected": true,
+    "routineFrequencyAndEndEditable": true,
+    "workoutOnlyCompletionControlCount": 0,
+    "routineCrossSurfaceGrammarShared": true,
+    "calendarLargeLibraryHorizontalFlowChipCount": 0,
+    "fiveActualDataShapeCount": 5,
+    "myFlowProductionLibraryHierarchyConnected": true
+  },
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "wholeOutlineItemCount": 24,
+      "initialVisibleItemCount": 5,
+      "remainderCount": 19,
+      "actualDataPrimary": "calendar",
+      "eligibleSecondary": ["checklist"],
+      "contextualEditDepth": 1,
+      "horizontalOverflowCount": 0,
+      "consoleOrPageErrorCount": 0
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewports": ["390x844", "1024x768"],
+      "previewHorizonStoredAsSeriesEnd": false,
+      "routineEndModes": ["none", "until", "count"],
+      "workoutOnlyCompletionControlCount": 0,
+      "resourceCompletionControlCount": 0,
+      "horizontalOverflowCount": 0,
+      "consoleOrPageErrorCount": 0
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "mobileLayout": "library_drill_in",
+      "wideLayout": "rail_detail",
+      "fixtureFlowCount": 27,
+      "duplicateFlowSelectorCount": 0,
+      "personalOrderPreservedAcrossReadingGroups": true,
+      "horizontalOverflowCount": 0,
+      "consoleOrPageErrorCount": 0
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "fixtureFlowCount": 12,
+      "scopePresentation": "searchable_multi_select_picker",
+      "largeLibraryHorizontalFlowChipCount": 0,
+      "selectionPersistedAfterReload": true,
+      "keyboardEscapeReturnsFocus": true,
+      "horizontalOverflowCount": 0,
+      "consoleOrPageErrorCount": 0
+    }
+  ],
+  "fiveShapes": [
+    {"shape": "flow_execution", "route": "/f/curated-allblanc-morning-workout", "actualRows": true},
+    {"shape": "calendar", "route": "/f/moving-d30-basic", "actualRows": true},
+    {"shape": "checklist", "route": "/f/used-car-buying-check", "actualRows": true},
+    {"shape": "sheet", "route": "/f/source-backed-middle-school-math-1", "actualRows": true},
+    {"shape": "memo", "route": "/f/overseas-safety-register", "actualRows": true}
+  ],
+  "verification": {
+    "unitPassed": 584,
+    "unitFailed": 0,
+    "p28E2ePassed": 7,
+    "p28E2eFailed": 0,
+    "fullE2ePassed": 346,
+    "fullE2eFailed": 0,
+    "buildRouteCount": 18,
+    "buildPassed": true,
+    "screenshotCount": 19,
+    "docsCheckPassed": true,
+    "diffCheckPassed": true
+  },
+  "claims": {
+    "automatedRegressionGreen": true,
+    "observedUserValidated": false,
+    "productionDeployed": false
+  }
+}

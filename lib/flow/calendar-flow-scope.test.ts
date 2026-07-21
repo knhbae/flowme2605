@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  getCalendarFlowScopePresentation,
   getCalendarFlowScopeForFlow,
   getCalendarFlowSlugFromScope,
+  isCalendarFlowRowInSelection,
   isCalendarFlowRowInScope,
+  normalizeCalendarFlowSelection,
   normalizeCalendarFlowScope,
 } from './calendar-flow-scope';
 
@@ -38,4 +41,24 @@ test('Calendar Flow scope keeps stable slugs and rejects empty or stale selectio
     'all',
   );
   assert.equal(normalizeCalendarFlowScope('routine', ['moving-d30-basic'], false), 'all');
+});
+
+test('Calendar Flow scope presentation stays bounded as the library grows', () => {
+  assert.equal(getCalendarFlowScopePresentation(1), 'hidden');
+  assert.equal(getCalendarFlowScopePresentation(2), 'compact');
+  assert.equal(getCalendarFlowScopePresentation(5), 'compact');
+  assert.equal(getCalendarFlowScopePresentation(6), 'picker');
+  assert.equal(getCalendarFlowScopePresentation(25), 'picker');
+});
+
+test('Calendar multi-Flow selection normalizes stale values and filters every consumer consistently', () => {
+  const selected = normalizeCalendarFlowSelection(
+    [' moving-d30-basic ', 'allblanc-home-training-4week', 'removed', 'moving-d30-basic'],
+    ['moving-d30-basic', 'allblanc-home-training-4week'],
+  );
+  assert.deepEqual(selected, ['moving-d30-basic', 'allblanc-home-training-4week']);
+  assert.equal(isCalendarFlowRowInSelection(moving, selected), true);
+  assert.equal(isCalendarFlowRowInSelection(workout, selected), true);
+  assert.equal(isCalendarFlowRowInSelection({ flowSlug: 'other', isRoutine: false }, selected), false);
+  assert.equal(isCalendarFlowRowInSelection(moving, []), true);
 });

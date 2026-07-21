@@ -2,6 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+
+test.beforeEach(async ({ page }) => {
+  await openPublicDetailWorkspaceForDeepInspection(page);
+});
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
 const browserErrors = new WeakMap<Page, string[]>();

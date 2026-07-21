@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-07-22",
+  "evidenceKind": [
+    "current_source",
+    "current_browser",
+    "automated_simulation"
+  ],
+  "observedUserCount": 0,
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewports": [
+        "390x844",
+        "1024x768"
+      ],
+      "saveBeforeArchitecture": "hybrid",
+      "wholeOutlineItemCount": 24,
+      "wholeOutlineInitialVisibleCount": 5,
+      "wholeOutlineRemainderCount": 19,
+      "wholeOutlineExpansionActionCount": 1,
+      "actualDataProjectionConnected": true,
+      "primaryShape": "calendar",
+      "secondaryShapes": [
+        "checklist"
+      ],
+      "eligibleShapeControlCount": 2,
+      "contextualItemEditReachable": true,
+      "contextualItemEditDepth": 1,
+      "flowPersonalTitlePersisted": true,
+      "sourceTitleMutationCount": 0,
+      "wideMajorPaneCount": 2,
+      "duplicateExpandedWorkbenchCount": 0,
+      "horizontalOverflowCount": 0
+    },
+    {
+      "route": "/flows",
+      "state": "url_hit",
+      "preparedSingleFlowRoutesToSharedWorkspace": true,
+      "quickStartIsSecondaryDisclosure": true,
+      "internalTermHitCount": 0
+    }
+  ],
+  "verification": {
+    "unitPassed": 578,
+    "p28TargetedE2ePassed": 3,
+    "p27RegressionE2ePassed": 12,
+    "buildPassed": true
+  }
+}

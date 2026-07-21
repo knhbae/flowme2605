@@ -113,7 +113,7 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(page.getByTestId('my-flow-view-completed')).toBeVisible();
     const selectedFlowBox = await selectedFlow.boundingBox();
     expect(selectedFlowBox).not.toBeNull();
-    expect(selectedFlowBox!.width).toBeGreaterThan(700);
+    expect(selectedFlowBox!.width).toBeGreaterThan(620);
 
     const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
     await expect(detailPane).toBeVisible();
@@ -140,24 +140,30 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
     await page.getByTestId('my-flow-post-save-view-flow').click();
 
-    const rail = page.getByTestId('my-flow-list');
-    const selectedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
+    const library = page.getByTestId('my-flow-library-workspace');
+    const rail = library.getByTestId('my-flow-library-rail');
+    const libraryDetail = library.getByTestId('my-flow-library-detail');
+    const selectedFlow = libraryDetail.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
     const outlinePane = selectedFlow.getByTestId('my-flow-workspace-outline-pane');
     const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
+    await expect(library).toHaveAttribute('data-library-layout', 'rail-detail');
     await expect(rail).toBeVisible();
     await expect(outlinePane).toBeVisible();
     await expect(detailPane).toBeVisible();
     await expect(page.getByTestId('my-flow-scope-select')).toBeHidden();
 
-    const [railBox, outlineBox, detailBox] = await Promise.all([
+    const [railBox, libraryDetailBox, outlineBox, detailBox] = await Promise.all([
       rail.boundingBox(),
+      libraryDetail.boundingBox(),
       outlinePane.boundingBox(),
       detailPane.boundingBox(),
     ]);
     expect(railBox).not.toBeNull();
+    expect(libraryDetailBox).not.toBeNull();
     expect(outlineBox).not.toBeNull();
     expect(detailBox).not.toBeNull();
-    expect(railBox!.x).toBeLessThan(outlineBox!.x);
+    expect(railBox!.x).toBeLessThan(libraryDetailBox!.x);
+    expect(outlineBox!.x).toBeGreaterThanOrEqual(libraryDetailBox!.x);
     expect(outlineBox!.x).toBeLessThan(detailBox!.x);
     await captureEvidence(page, '05-multi-flow-three-pane-wide.png');
 

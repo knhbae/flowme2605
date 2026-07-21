@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "evidenceKind": "heuristic_simulation",
+  "observedUserCount": 0,
+  "selectedAlternative": "hybrid",
+  "tasks": [
+    {
+      "id": "moving_adjust",
+      "goal": "이사일을 바꾸고 한 항목 날짜만 고정",
+      "expectedMaximumActionDepth": 3,
+      "selectedResult": "pass",
+      "reason": "whole outline 안에서 Flow 기준일과 item date 범위를 분리"
+    },
+    {
+      "id": "workout_define",
+      "goal": "주 2회, 화/토, 8월 31일까지 설정",
+      "expectedMaximumActionDepth": 3,
+      "selectedResult": "pass",
+      "reason": "routine definition editor가 frequency/weekdays/end만 우선 노출"
+    },
+    {
+      "id": "workout_execute",
+      "goal": "한 회차 완료, 다시 열기, 휴식, 메모",
+      "expectedMaximumActionDepth": 2,
+      "selectedResult": "pass",
+      "reason": "공통 checkbox와 overflow actions, note를 분리"
+    },
+    {
+      "id": "my_flow_find",
+      "goal": "20개 중 이사 Flow를 찾아 전체 구조 열기",
+      "expectedMaximumActionDepth": 2,
+      "selectedResult": "pass",
+      "reason": "browse rail과 search utility가 같은 library를 사용"
+    },
+    {
+      "id": "calendar_scope",
+      "goal": "25개 중 두 Flow만 선택",
+      "expectedMaximumActionDepth": 3,
+      "selectedResult": "pass",
+      "reason": "summary trigger와 searchable multi-select picker 사용"
+    },
+    {
+      "id": "artifact_switch",
+      "goal": "Calendar 결과에서 Checklist 결과를 확인하고 저장",
+      "expectedMaximumActionDepth": 2,
+      "selectedResult": "pass",
+      "reason": "primary preview와 최대 두 secondary switch만 제공"
+    }
+  ],
+  "hardFailMarkers": {
+    "workoutOnlyCompletionSystem": false,
+    "fixedThreePaneAt1024": false,
+    "unboundedHorizontalFlowSelector": false,
+    "explanationOnlyArtifactPreview": false,
+    "competingPrimaryActionCount": 0,
+    "duplicateCompletionControlCount": 0
+  }
+}

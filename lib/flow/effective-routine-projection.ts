@@ -60,6 +60,9 @@ function getFirstResolvableGlobalRule(options: {
   startDate: string;
   selectedWeekdays?: string[];
   endDate?: string;
+  occurrenceCount?: number;
+  time?: string;
+  durationMinutes?: number;
 }): { rule: string; series: PersonalStructuralRecurrenceSeries; warnings: string[] } | undefined {
   for (const rule of options.bundle.repeatRules ?? []) {
     const resolution = resolveSavedRoutineRecurrence({
@@ -68,6 +71,9 @@ function getFirstResolvableGlobalRule(options: {
       sourceRepeatRule: rule,
       selectedWeekdays: options.selectedWeekdays,
       endDate: options.endDate,
+      occurrenceCount: options.occurrenceCount,
+      time: options.time,
+      durationMinutes: options.durationMinutes,
     }, options.identityNamespace);
     if (resolution.series) return { rule, series: resolution.series, warnings: resolution.warnings };
   }
@@ -81,6 +87,10 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
   startDate: string;
   selectedWeekdays?: string[];
   endDate?: string;
+  occurrenceCount?: number;
+  seriesEndMode?: 'source' | 'none' | 'until' | 'count';
+  time?: string;
+  durationMinutes?: number;
   range: { start: string; end: string };
   executionRecords?: PersonalStructuralOccurrenceExecutionRecord[];
   resolveOccurrenceDate?: (input: {
@@ -108,9 +118,14 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
     return unchanged();
   }
 
-  const endDate = isPlainDate(options.endDate)
+  const seriesEndMode = options.seriesEndMode
+    ?? (options.endDate ? 'until' : options.occurrenceCount ? 'count' : 'source');
+  const endDate = seriesEndMode === 'until' && isPlainDate(options.endDate)
     ? options.endDate
-    : getRoutineEndDate(options.bundle, options.startDate);
+    : seriesEndMode === 'source'
+      ? getRoutineEndDate(options.bundle, options.startDate)
+      : undefined;
+  const occurrenceCount = seriesEndMode === 'count' ? options.occurrenceCount : undefined;
   const definitions: Record<string, SavedRoutineRecurrenceDefinition | undefined> = {};
   const repeatRuleByItemId: Record<string, string> = {};
   const seriesByItemId: Record<string, PersonalStructuralRecurrenceSeries> = {};
@@ -125,6 +140,9 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
       sourceRepeatRule,
       selectedWeekdays: options.selectedWeekdays,
       endDate,
+      occurrenceCount,
+      time: options.time,
+      durationMinutes: options.durationMinutes,
     };
     const resolution = resolveSavedRoutineRecurrence(definition, identityNamespace);
     warnings.push(...resolution.warnings.map((warning) => `${row.id}:${warning}`));
@@ -143,6 +161,9 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
       startDate: carrier.date && isPlainDate(carrier.date) ? carrier.date : options.startDate,
       selectedWeekdays: options.selectedWeekdays,
       endDate,
+      occurrenceCount,
+      time: options.time,
+      durationMinutes: options.durationMinutes,
     });
     if (!global) {
       const attemptedWarnings = (options.bundle.repeatRules ?? []).flatMap((rule) =>
@@ -152,6 +173,9 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
           sourceRepeatRule: rule,
           selectedWeekdays: options.selectedWeekdays,
           endDate,
+          occurrenceCount,
+          time: options.time,
+          durationMinutes: options.durationMinutes,
         }, identityNamespace).warnings,
       );
       return unchanged(Array.from(new Set(attemptedWarnings)));
@@ -162,6 +186,9 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
       sourceRepeatRule: global.rule,
       selectedWeekdays: options.selectedWeekdays,
       endDate,
+      occurrenceCount,
+      time: options.time,
+      durationMinutes: options.durationMinutes,
     };
     repeatRuleByItemId[carrier.id] = global.rule;
     seriesByItemId[carrier.id] = global.series;

@@ -1,4 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+
+test.beforeEach(async ({ page }) => {
+  await openPublicDetailWorkspaceForDeepInspection(page);
+});
 
 async function openAllWorkbenchDetails(page: import('@playwright/test').Page) {
   const workbench = page.getByLabel('Flow artifact workbench');

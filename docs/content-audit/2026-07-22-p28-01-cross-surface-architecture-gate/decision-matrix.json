@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "baselineSha": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
+  "observedUserCount": 0,
+  "scale": "1_to_5",
+  "pass": {
+    "averageAtLeast": 4,
+    "requiredDimensionsAtLeast": 4,
+    "hardFailCount": 0
+  },
+  "dimensions": [
+    "wholeFlowComprehension",
+    "adjustmentDiscoverability",
+    "artifactClarity",
+    "routineConsistency",
+    "myFlowBrowseClarity",
+    "calendarScale",
+    "mobileDensity",
+    "accessibility",
+    "componentReuse",
+    "regressionRisk"
+  ],
+  "alternatives": [
+    {
+      "id": "outline_first",
+      "selected": false,
+      "scores": [5, 4, 3, 4, 4, 3, 4, 4, 4, 4],
+      "average": 3.9,
+      "hardFails": [],
+      "reason": "전체 내용은 강하지만 실제 목적지 결과와 저장 행동이 늦다."
+    },
+    {
+      "id": "artifact_first",
+      "selected": false,
+      "scores": [3, 3, 5, 3, 3, 4, 4, 4, 3, 3],
+      "average": 3.5,
+      "hardFails": ["whole_flow_context_missing"],
+      "reason": "결과는 빠르지만 source item과 수정 범위를 잃는다."
+    },
+    {
+      "id": "hybrid",
+      "selected": true,
+      "scores": [5, 5, 5, 4, 4, 5, 4, 4, 4, 5],
+      "average": 4.5,
+      "hardFails": [],
+      "reason": "전체 구조, 실제 결과, 한 번의 contextual adjustment를 같은 흐름으로 연결한다."
+    }
+  ],
+  "selectedAlternative": "hybrid",
+  "evidenceKind": "heuristic_simulation"
+}
