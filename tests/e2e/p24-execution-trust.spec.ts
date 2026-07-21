@@ -828,7 +828,10 @@ test.describe('P24 execution trust regressions', () => {
       await page.goto('/my');
       const nowSection = page.getByTestId('my-flow-now-section');
       const upcoming = page.getByTestId('my-flow-upcoming-list');
-      await expect(nowSection.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+      const currentDateGroup = nowSection.getByTestId('my-flow-now-date-group');
+      await expect(currentDateGroup).toHaveCount(1);
+      await expect(currentDateGroup.getByTestId('my-flow-mobile-continuation-card')).toHaveCount(2);
+      await expect(currentDateGroup.getByTestId('my-flow-task-complete-control')).toHaveCount(2);
       await expect(upcoming).toContainText('다음 예정');
       await expect(upcoming.getByTestId('my-flow-upcoming-preview').first()).toBeVisible();
       await expect(upcoming.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
@@ -1267,8 +1270,11 @@ test.describe('P24 execution trust regressions', () => {
 
     await page.goto('/my?demo=ux12');
     await page.getByTestId('my-flow-view-flow').click();
-    await page.getByTestId('my-flow-filter-washer-tub-clean-monthly').click();
-    const routineOutline = page.getByTestId('my-flow-whole-flow-outline');
+    await page.getByTestId('my-flow-search').fill('세탁기 통세척');
+    const routineFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="washer-tub-clean-monthly"]');
+    await expect(routineFlow).toBeVisible();
+    await routineFlow.getByTestId('my-flow-next-action-open').click();
+    const routineOutline = routineFlow.getByTestId('my-flow-whole-flow-outline');
     await routineOutline.getByTestId('my-flow-batch-mode-toggle').click();
     await routineOutline.getByTestId('my-flow-batch-item-checkbox').first().check();
     await routineOutline.getByTestId('my-flow-batch-open-date-tool').click();

@@ -321,6 +321,22 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('My Flow search result opens the selected whole Flow workspace on wide screens', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux12');
+    await page.getByTestId('my-flow-view-flow').click();
+    await page.getByTestId('my-flow-search').fill('중고차');
+
+    const flow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="used-car-buying-check"]');
+    await expect(flow).toBeVisible();
+    await flow.getByTestId('my-flow-next-action-open').click();
+
+    await expect(page.getByTestId('my-flow-scope-select')).toHaveValue('used-car-buying-check');
+    await expect(flow.getByTestId('my-flow-whole-flow-workspace')).toBeVisible();
+    expect(await flow.getByTestId('my-flow-execution-row-shell').count()).toBeGreaterThan(0);
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('Calendar keeps long undated titles readable and nested event wrappers out of the tab order', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.addInitScript(() => {

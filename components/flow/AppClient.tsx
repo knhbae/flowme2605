@@ -9274,6 +9274,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       closeMyFlowRowDetail();
       return;
     }
+    if (myFlowLibraryControls.mode === 'searchable') {
+      setSelectedSavedFlowSlug(flow.progress.slug);
+    }
     setMyFlowExpandedStructureSlug(flow.progress.slug);
     setSavedView('flow');
     openMyFlowRowDetail(flowRow, 'flow');
