@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-07-22",
+  "evidenceKind": ["current_source", "current_browser", "automated_simulation"],
+  "observedUserCount": 0,
+  "actualDataShapeCount": 5,
+  "fixedFiveTabRouteCount": 0,
+  "primaryShapeCountPerFlow": 1,
+  "maximumSecondaryShapeCount": 2,
+  "notApplicableFocusableControlCount": 0,
+  "representativeShapeWithActualRowsCount": 5,
+  "shapeSourceIdentityMismatchCount": 0,
+  "sourceMutationCount": 0,
+  "routes": [
+    { "route": "/f/curated-allblanc-morning-workout", "primaryShape": "flow_execution", "actualRows": true },
+    { "route": "/f/moving-d30-basic", "primaryShape": "calendar", "actualRows": true },
+    { "route": "/f/used-car-buying-check", "primaryShape": "checklist", "actualRows": true },
+    { "route": "/f/source-backed-middle-school-math-1", "primaryShape": "sheet", "actualRows": true },
+    { "route": "/f/overseas-safety-register", "primaryShape": "memo", "actualRows": true }
+  ],
+  "viewports": ["390x844", "1024x768"],
+  "mobileHorizontalOverflowCount": 0,
+  "observedUserValidated": false
+}

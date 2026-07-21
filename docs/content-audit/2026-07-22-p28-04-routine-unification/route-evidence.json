@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-07-22",
+  "evidenceKind": ["current_source", "current_browser", "automated_simulation"],
+  "observedUserCount": 0,
+  "route": "/f/curated-allblanc-morning-workout",
+  "viewports": ["390x844", "1024x768"],
+  "sharedRoutineEditorConnected": true,
+  "previewHorizonStoredAsSeriesEnd": false,
+  "openEndedRoutineSupported": true,
+  "untilRoutineSupported": true,
+  "countRoutineSupported": true,
+  "routineTimeAndDurationPersisted": true,
+  "workoutOnlyCompletionControlCount": 0,
+  "resourceCompletionControlCount": 0,
+  "stableRoutineUidAfterDefinitionEdit": true,
+  "sourceMutationCount": 0,
+  "horizontalOverflowCount": 0,
+  "observedUserValidated": false
+}

@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-07-22",
+  "evidenceKind": ["current_source", "current_browser", "automated_simulation"],
+  "observedUserCount": 0,
+  "routes": [
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "mobileLibraryDrillIn": true,
+      "mobileVisibleDetailCount": 1,
+      "mobileBackEntryVisible": true,
+      "horizontalOverflowCount": 0
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1024x768",
+      "wideLibraryLayout": "rail_detail",
+      "wideVisibleDetailCount": 1,
+      "duplicateFlowSelectorCount": 0,
+      "twentyFlowSearchVisible": true,
+      "twentyFlowVisibleLibraryRows": 27,
+      "legacyGroupedDashboardVisible": false,
+      "horizontalOverflowCount": 0
+    }
+  ],
+  "observedUserValidated": false
+}

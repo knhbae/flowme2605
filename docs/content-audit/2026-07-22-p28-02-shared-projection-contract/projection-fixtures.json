@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "markers": {
+    "sharedProjectionReady": true,
+    "sourceMutationCount": 0,
+    "malformedDateItemLossCount": 0,
+    "completionStateChangedMembershipCount": 0,
+    "saveBeforeConsumerConnected": false,
+    "myFlowConsumerConnected": false,
+    "calendarConsumerConnected": false,
+    "exportConsumerConnected": false
+  },
+  "fixtures": [
+    { "slug": "moving-d30-basic", "primary": "calendar", "secondary": ["checklist"], "outlineCount": 24, "calendarCount": 24 },
+    { "slug": "vehicle-inspection-prep", "primary": "calendar", "secondary": ["checklist"], "outlineCount": 10, "calendarCount": 10 },
+    { "slug": "curated-allblanc-morning-workout", "primary": "flow_execution", "secondary": ["calendar", "memo"], "outlineCount": 1, "calendarDefinitionCount": 1 },
+    { "slug": "source-backed-middle-school-math-1", "primary": "sheet", "secondary": ["checklist"], "outlineCount": 8, "calendarCount": 0 },
+    { "slug": "overseas-safety-register", "primary": "memo", "secondary": ["checklist"], "outlineCount": 4, "calendarCount": 0 },
+    { "slug": "jeonse-contract-precheck-docs", "primary": "checklist", "secondary": [], "outlineCount": 7, "calendarEligibleCount": 7 },
+    { "slug": "travel-packing-list", "primary": "memo", "secondary": ["checklist"], "outlineCount": 6, "calendarCount": 0 }
+  ]
+}

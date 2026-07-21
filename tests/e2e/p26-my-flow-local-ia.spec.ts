@@ -112,7 +112,7 @@ test.describe('P26-08 My Flow local IA', () => {
     expect(browserErrors).toEqual([]);
   });
 
-  test('wide three-Flow state exposes a selected all-overview rail and focused workspace', async ({ page }) => {
+  test('wide three-Flow state exposes one library rail and one focused workspace', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await seedSavedFlows(page, [
@@ -123,29 +123,35 @@ test.describe('P26-08 My Flow local IA', () => {
     await page.goto('/my?view=flows');
 
     await expect(page.getByTestId('my-flow-saved-count')).toHaveText('3개');
-    const rail = page.getByTestId('my-flow-list');
-    await expect(rail).toBeVisible();
-    await expect(rail.getByTestId('my-flow-filter-all')).toHaveAttribute('aria-pressed', 'true');
-    await expect(rail.locator('[data-testid^="my-flow-filter-"]:not([data-testid="my-flow-filter-all"])')).toHaveCount(3);
-
-    await rail.getByTestId('my-flow-filter-computer-skills-d30-study').click();
-    await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'computer-skills-d30-study');
-    await rail.getByTestId('my-flow-filter-all').click();
-    await expect(rail.getByTestId('my-flow-filter-all')).toHaveAttribute('aria-pressed', 'true');
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    await expect(workspace).toHaveAttribute('data-library-layout', 'rail-detail');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    await expect(rail.getByTestId('my-flow-library-row')).toHaveCount(3);
+    const target = rail.locator('[data-testid="my-flow-library-row"][data-flow-slug="computer-skills-d30-study"]');
+    await target.click();
+    await expect(workspace.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card')).toHaveAttribute(
+      'data-flow-slug',
+      'computer-skills-d30-study',
+    );
+    await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);
     await capture(page, '03-wide-three-flow-rail.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
     expect(browserErrors).toEqual([]);
   });
 
-  test('wide twenty-plus state avoids a dense rail and keeps grouped inventory reachable', async ({ page }) => {
+  test('wide twenty-plus state keeps a searchable bounded library rail and one detail', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/my?demo=ux20&view=flows');
 
     const countText = await page.getByTestId('my-flow-saved-count').innerText();
     expect(Number.parseInt(countText, 10)).toBeGreaterThanOrEqual(20);
-    await expect(page.getByTestId('my-flow-list')).toHaveCount(0);
-    await expect(page.getByTestId('my-flow-demo-group').first()).toBeVisible();
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    await expect(workspace).toBeVisible();
+    expect(await workspace.getByTestId('my-flow-library-row').count()).toBeGreaterThanOrEqual(20);
+    await expect(workspace.getByTestId('my-flow-library-rail-search')).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card')).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-demo-group')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 2, name: '저장한 Flow' })).toBeVisible();
     await capture(page, '04-wide-twenty-plus-grouped.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);

@@ -2994,6 +2994,42 @@ test('saved flow record normalization keeps explicit save metadata', () => {
   );
 });
 
+test('saved flow record normalization preserves a valid routine definition and drops malformed fields safely', () => {
+  const valid = normalizeSavedFlowRecord({
+    slug: 'curated-allblanc-morning-workout',
+    savedAt: '2026-07-22T00:00:00.000Z',
+    selectedArtifactMode: 'calendar',
+    dateIntent: 'custom',
+    anchor: '2026-07-27',
+    weekdays: ['월', '목', '금'],
+    routineDefinition: {
+      schemaVersion: 1,
+      time: '07:30',
+      durationMinutes: 45,
+      end: { mode: 'count', count: 12 },
+    },
+  });
+  assert.deepEqual(valid?.routineDefinition, {
+    schemaVersion: 1,
+    time: '07:30',
+    durationMinutes: 45,
+    end: { mode: 'count', count: 12 },
+  });
+
+  const malformed = normalizeSavedFlowRecord({
+    slug: 'curated-allblanc-morning-workout',
+    savedAt: '2026-07-22T00:00:00.000Z',
+    selectedArtifactMode: 'calendar',
+    routineDefinition: {
+      time: '24:00',
+      durationMinutes: -5,
+      end: { mode: 'count', count: 0 },
+    },
+  });
+  assert.equal(malformed?.routineDefinition, undefined);
+  assert.equal(malformed?.slug, 'curated-allblanc-morning-workout');
+});
+
 test('saved flow records persist only custom or undated date intent', () => {
   const localStorage = memoryStorage();
   const previousWindow = globalThis.window;
@@ -3006,9 +3042,30 @@ test('saved flow records persist only custom or undated date intent', () => {
       selectedArtifactMode: 'calendar',
       dateIntent: 'custom',
       anchor: '2026-08-20',
+      personalTitle: '내 차량 점검',
     });
     assert.equal(custom?.dateIntent, 'custom');
     assert.equal(custom?.anchor, '2026-08-20');
+    assert.equal(custom?.personalTitle, '내 차량 점검');
+
+    const routine = saveFlowRecord('curated-allblanc-morning-workout', {
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+      anchor: '2026-08-20',
+      weekdays: ['월', '목'],
+      routineDefinition: {
+        schemaVersion: 1,
+        time: '19:30',
+        durationMinutes: 60,
+        end: { mode: 'until', date: '2026-10-31' },
+      },
+    });
+    assert.deepEqual(routine?.routineDefinition, {
+      schemaVersion: 1,
+      time: '19:30',
+      durationMinutes: 60,
+      end: { mode: 'until', date: '2026-10-31' },
+    });
 
     const undated = saveFlowRecord('vehicle-inspection-prep', {
       selectedArtifactMode: 'checklist',
@@ -3017,6 +3074,7 @@ test('saved flow records persist only custom or undated date intent', () => {
     });
     assert.equal(undated?.dateIntent, 'undated');
     assert.equal(undated?.anchor, undefined);
+    assert.equal(undated?.personalTitle, '내 차량 점검');
   } finally {
     Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow });
     Object.defineProperty(globalThis, 'localStorage', {

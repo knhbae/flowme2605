@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-21 (P27 canonical production released; independent review pending)
-**Status:** v0.1.0 RELEASED / P27 PRODUCTION GATE COMPLETE, OBSERVATION NOT STARTED
+**Last Updated:** 2026-07-22 (P28 internal implementation and regression gate complete)
+**Status:** v0.1.0 RELEASED / P28 INTERNAL GATE GREEN, OWNER REVIEW PENDING
 **Current Version:** v0.1.0  
-**Primary Focus:** Independently review the deployed [P27 Flow lifecycle workspace reconciliation](./specs/2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md) before defining P28. PR [#141](https://github.com/knhbae/flowme2605/pull/141) merged as `2829b37`; Vercel and both CI jobs passed. Canonical production replay captured `8` representative states with overflow/browser/unnamed-control counts `0`. The [P27 final package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md) and [production closeout](./content-audit/2026-07-21-p27-production-closeout/README.md) are automated/browser evidence only; observed-user sessions remain `0`.
+**Primary Focus:** Review the [P28 final package](./content-audit/2026-07-22-p28-final-review-package/README.md) and current production before opening P29. P28 selected and implemented a Hybrid save-before architecture, shared routine/execution grammar, scalable My Flow and Calendar navigation, and five actual-data result projections while preserving P27 source/personal/run/occurrence/export contracts. Automated and browser gates are green; observed-user sessions remain `0` and recruitment is not active.
 
 ## Current Control Panel
 
@@ -11,13 +11,17 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P27 implementation and canonical production are green; independent read-only review remains |
-| User action now | Review current production and the P27 package; no participant recruitment |
-| AI action now | Run the independent-review prompt against canonical production and propose only convergent P28 findings |
-| Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
-| Completed planning | P27 lifecycle workspace reconciliation spec and feedback synthesis |
+| Active product gate | Owner and independent design review of the implemented P28 package; do not infer observed usability |
+| User action now | Inspect save-before, routine, My Flow, Calendar, and five-shape screenshots/production; choose keep, revise, or redesign |
+| AI action now | Run independent P28 hierarchy/correctness review using the final package; record only evidence-backed P29 findings |
+| Blocked by evidence | Observed usability, account persistence choice, creator/update pilot, real AI backend, and external integrations |
+| Completed implementation | P28-01~P28-08 internal gate: unit `584/584`, P28 E2E `7/7`, full E2E `346/346`, build `18/18` |
 
 ## Recent Direction Notes
+
+- 2026-07-22 P28 internal closeout: The Hybrid architecture now connects a compact whole-Flow outline, actual-data primary result, contextual title/date/memo adjustment, and save/export actions. Workout-only completion UI is removed; routine definition supports weekdays, time, duration, and explicit none/until/count end policy. My Flow uses mobile drill-in and wide rail/detail; Calendar uses a searchable multi-select picker for six or more Flows; five result shapes render actual rows rather than fixed empty tabs. Current verification is unit `584 / 584`, P28 Playwright `7 / 7`, full Playwright `346 / 346` with two workers, production build `18 / 18`, P28 screenshot matrix `19`, and representative overflow/console/page errors `0`. Observed-user sessions remain `0`. See the [P28 final package](./content-audit/2026-07-22-p28-final-review-package/README.md).
+
+- 2026-07-21 P28 planning gate: Latest owner feedback rejects the current save-before adjustment, workout-specific result/resource UI, horizontally growing Calendar Flow scope, missing actual-data five-shape preview, and My Flow hierarchy as production-ready UX. The [P28 cross-surface experience reconstruction](./specs/2026-07-21-p28-experience-reconstruction/README.md) classifies these surfaces as `supported_but_not_accepted`, preserves P27 data/identity contracts, and replaces the prior implementation-first sequence with a no-app-code P28-01 comparison simulation. P28-02~08 then cover shared projection policy, save-before editing, routine normalization, My Flow, Calendar scale, five-shape/export parity, and final independent review. Observed-user sessions remain `0`.
 
 - 2026-07-21 P27 production release: Flow archive/undo/persistent restore, source Item exclusion, truthful routine preview horizon, resource/subcheck ownership, one-operation save-before adjustment, adaptive My Flow library/search, Calendar scope/accessibility, and compact post-save/export are released without rewriting P26 identities. PR #141 merged as `2829b37`; Vercel, Docs/Unit/Build, and Playwright E2E passed. Canonical production replay captured `8` representative states with overflow/console/page/unnamed-control counts `0`. Observed-user sessions remain `0`. See the [P27 final package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md) and [production closeout](./content-audit/2026-07-21-p27-production-closeout/README.md).
 

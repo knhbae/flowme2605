@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+
+import './flow-experience-projection.test';
 import { getArtifactPlan } from './artifact-plan';
 import { seedBundles } from './seed-flows';
 

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { getPersonalDraftEffectiveItems } from './helpers/my-flow-library';
 
 async function openFlowView(page: Page) {
   const postSave = page.getByTestId('my-flow-post-save-panel');
@@ -155,7 +156,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   const checklist = await page.evaluate(() => navigator.clipboard.readText());
   const addedIndex = checklist.indexOf('충전기 위치 확인');
   expect(addedIndex).toBeGreaterThanOrEqual(0);
-  const effectiveItems = flow.getByTestId('personal-draft-effective-item');
+  const effectiveItems = getPersonalDraftEffectiveItems(flow);
   const itemOrder = await effectiveItems.evaluateAll(
     (nodes) => nodes.map((node) => node.getAttribute('data-item-id')),
   );

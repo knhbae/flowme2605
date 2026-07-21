@@ -2,6 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test } from '@playwright/test';
+import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+
+test.beforeEach(async ({ page }) => {
+  await openPublicDetailWorkspaceForDeepInspection(page);
+});
 
 const evidenceRoot = process.env.FLOWME_P24_JOURNEY_FRAME_EVIDENCE_DIR;
 
@@ -187,11 +192,13 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
 
-    const flowRail = page.getByTestId('my-flow-list');
+    const library = page.getByTestId('my-flow-library-workspace');
+    const flowRail = library.getByTestId('my-flow-library-rail');
     await expect(flowRail).toBeVisible();
-    await expect(flowRail).toContainText('Flow 목록');
-    await expect(flowRail.locator('button')).toHaveCount(3);
-    await expect(flowRail.getByTestId('my-flow-filter-all')).toHaveAttribute('aria-pressed', 'true');
+    await expect(flowRail).toContainText('라이브러리');
+    await expect(flowRail).toContainText('저장한 Flow');
+    await expect(flowRail.getByTestId('my-flow-library-row')).toHaveCount(2);
+    await expect(flowRail.getByTestId('my-flow-library-rail-filter')).toHaveCount(0);
     await expect(page.getByLabel('저장한 Flow')).toBeHidden();
     await expect(page.locator('body')).not.toContainText('보기 범위');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

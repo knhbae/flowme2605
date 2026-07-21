@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 async function expectNoHorizontalOverflow(page: import('@playwright/test').Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2)).toBe(false);
@@ -76,7 +77,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.reload();
     await expect(page.getByTestId('my-flow-open-archived')).toBeVisible();
     await page.getByTestId('my-flow-open-archived').click();
-    await expect(page.getByTestId('my-flow-list-filter-archived')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('my-flow-library-rail-filter')).toHaveValue('archived');
     const archivedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
     await expect(archivedCard).toBeVisible();
 
@@ -90,7 +91,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await persistedArchivedCard.getByTestId('my-flow-archive-toggle').click();
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
     await expect(flowCard).toBeVisible();
-    await expect(page.getByTestId('my-flow-list-filter-all')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-library-rail-filter')).toHaveCount(0);
   });
 
   test('source-backed item removal has immediate undo and persistent restore', async ({ page }) => {
@@ -147,13 +148,10 @@ test.describe('P27 reversible lifecycle foundation', () => {
 
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
-    let flowCard = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-allblanc-morning-workout"]',
-    );
-    await flowCard.getByTestId('my-flow-mobile-structure-open').click();
+    let flowCard = await openMyFlowLibraryFlow(page, 'curated-allblanc-morning-workout');
     let outline = flowCard.getByTestId('my-flow-whole-flow-outline');
     await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
-    let detail = flowCard.getByTestId('my-flow-item-detail');
+    let detail = flowCard.getByTestId('my-flow-inline-detail').getByTestId('my-flow-item-detail');
     await enterMyFlowDetailEditMode(detail);
 
     const subcheckEditor = detail.getByTestId('my-flow-subcheck-editor');
@@ -173,7 +171,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(detail).toHaveCount(0);
 
     await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
-    detail = flowCard.getByTestId('my-flow-item-detail');
+    detail = flowCard.getByTestId('my-flow-inline-detail').getByTestId('my-flow-item-detail');
     await expect(detail.getByTestId('my-flow-item-checklist')).toContainText('운동 전 통증 확인');
     await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(1);
     await expect(detail.getByTestId('my-flow-item-resource-link')).toContainText('오늘 운동 영상');
@@ -185,13 +183,10 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await detail.getByRole('button', { name: '닫기', exact: true }).click();
 
     await page.reload();
-    flowCard = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-allblanc-morning-workout"]',
-    );
-    await flowCard.getByTestId('my-flow-mobile-structure-open').click();
+    flowCard = await openMyFlowLibraryFlow(page, 'curated-allblanc-morning-workout');
     outline = flowCard.getByTestId('my-flow-whole-flow-outline');
     await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
-    detail = flowCard.getByTestId('my-flow-item-detail');
+    detail = flowCard.getByTestId('my-flow-inline-detail').getByTestId('my-flow-item-detail');
     await expect(detail.getByTestId('my-flow-item-checklist')).toContainText('운동 전 통증 확인');
     await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(1);
     await expectNoHorizontalOverflow(page);
@@ -341,13 +336,10 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/my?demo=ux12');
     await page.getByTestId('my-flow-view-flow').click();
-    await page.getByTestId('my-flow-search').fill('중고차');
-
-    const flow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="used-car-buying-check"]');
-    await expect(flow).toBeVisible();
-    await flow.getByTestId('my-flow-next-action-open').click();
-
-    await expect(page.getByTestId('my-flow-scope-select')).toHaveValue('used-car-buying-check');
+    const library = page.getByTestId('my-flow-library-workspace');
+    await library.getByTestId('my-flow-library-rail-search').fill('중고차');
+    const flow = await openMyFlowLibraryFlow(page, 'used-car-buying-check');
+    await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);
     await expect(flow.getByTestId('my-flow-whole-flow-workspace')).toBeVisible();
     expect(await flow.getByTestId('my-flow-execution-row-shell').count()).toBeGreaterThan(0);
     await expectNoHorizontalOverflow(page);

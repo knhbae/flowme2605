@@ -185,7 +185,13 @@ test('Calendar distinguishes routine occurrences from ordinary tasks in filters 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
-  await page.getByTestId('my-flow-calendar-scope-routine').click();
+  await page.getByTestId('calendar-flow-scope-picker-trigger').click();
+  const scopePicker = page.getByTestId('calendar-flow-scope-picker');
+  await scopePicker
+    .locator('[data-testid="calendar-flow-scope-picker-option"][data-flow-slug="curated-allblanc-morning-workout"]')
+    .getByRole('checkbox')
+    .check();
+  await scopePicker.getByTestId('calendar-flow-scope-picker-apply').click();
 
   const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
   await expect(selectedDay.locator('[data-calendar-item-kind="task"]')).toHaveCount(0);

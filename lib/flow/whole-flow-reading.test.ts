@@ -48,6 +48,24 @@ test('same-date rows share one date cluster without changing row order', () => {
   assert.deepEqual(input.map((row) => row.id), ['a', 'b', 'c']);
 });
 
+test('non-contiguous sections do not override a personal row order', () => {
+  const model = buildWholeFlowReadingModel({
+    structureType: 'checklist',
+    rows: [
+      { id: 'source-a', section: 'Source' },
+      { id: 'personal', section: 'Personal' },
+      { id: 'source-b', section: 'Source' },
+    ],
+  });
+
+  assert.deepEqual(model.groups.map((group) => group.rows.map((row) => row.id)), [
+    ['source-a'],
+    ['personal'],
+    ['source-b'],
+  ]);
+  assert.deepEqual(model.rows.map((row) => row.id), ['source-a', 'personal', 'source-b']);
+});
+
 test('invalid dates do not remove rows or enter the date range', () => {
   const model = buildWholeFlowReadingModel({
     structureType: 'checklist',

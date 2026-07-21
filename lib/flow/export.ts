@@ -5,6 +5,7 @@ import { buildEffectiveRoutineProjection } from './effective-routine-projection'
 import { foldIcsContentLine } from './ics';
 import { buildPersonalStructuralRecurrenceIcs } from './personal-structural-recurrence-ics';
 import { timingLabel } from './parser';
+import type { SavedFlowRoutineDefinition } from './storage';
 import { FlowBundle, FlowComparisonState, FlowItem, FlowItemState, FlowWorkbenchState, MealSlot, ReactionLog } from './types';
 
 const anchorLabelByType = {
@@ -791,7 +792,12 @@ export function buildIcsCalendar(
   return lines.map(foldIcsContentLine).join('\r\n');
 }
 
-export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: string[] = []): string {
+export function buildCalendarIcs(
+  bundle: FlowBundle,
+  anchor: string,
+  weekdays: string[] = [],
+  routineDefinition?: SavedFlowRoutineDefinition,
+): string {
   const startDate = anchor || formatLocalDate(new Date());
   const carrierItem = bundle.items.slice().sort((left, right) => left.order - right.order)[0];
   if (carrierItem && bundle.flow.structure_type === 'routine') {
@@ -801,6 +807,11 @@ export function buildCalendarIcs(bundle: FlowBundle, anchor: string, weekdays: s
       rows: [{ id: carrierItem.id, date: startDate }],
       startDate,
       selectedWeekdays: weekdays,
+      seriesEndMode: routineDefinition?.end.mode ?? 'source',
+      endDate: routineDefinition?.end.mode === 'until' ? routineDefinition.end.date : undefined,
+      occurrenceCount: routineDefinition?.end.mode === 'count' ? routineDefinition.end.count : undefined,
+      time: routineDefinition?.time,
+      durationMinutes: routineDefinition?.durationMinutes,
       range: {
         start: startDate,
         end: formatDate(addDays(new Date(`${startDate}T00:00:00`), 370)),

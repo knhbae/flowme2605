@@ -150,7 +150,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
     .click();
   const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
   const calendarItem = selectedDay
-    .locator(`[data-testid="my-flow-execution-row-shell"] > article[data-item-id="${legacy.itemId}"]`)
+    .locator(`[data-testid="my-flow-execution-row-shell"][data-item-id="${legacy.itemId}"]`)
     .filter({ hasText: '여권 유효기간 다시 확인하기' });
   await expect(calendarItem).toBeVisible();
   await capture(page, page.locator('main'), '02-migrated-calendar-wide.png');

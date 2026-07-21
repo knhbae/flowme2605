@@ -45,6 +45,7 @@ export type SavedRoutineRecurrenceDefinition = {
   repeatPreset?: string;
   selectedWeekdays?: string[];
   endDate?: string;
+  occurrenceCount?: number;
   projectionWeeks?: number;
   time?: string;
   durationMinutes?: number;
@@ -216,12 +217,19 @@ function addPlainDateDays(value: string, days: number): string | undefined {
 function resolveEnd(
   fields: Record<string, string>,
   endDate: string | undefined,
+  occurrenceCount: number | undefined,
   startDate: string,
   projectionWeeks: number | undefined,
   warnings: string[],
 ): PersonalStructuralRecurrenceEnd | undefined {
   if (isPlainDate(endDate)) return { mode: 'until', date: endDate };
   if (endDate) warnings.push('invalid_saved_routine_end_date_ignored');
+  if (occurrenceCount !== undefined) {
+    if (Number.isInteger(occurrenceCount) && occurrenceCount >= 1 && occurrenceCount <= 10_000) {
+      return { mode: 'count', count: occurrenceCount };
+    }
+    warnings.push('invalid_saved_routine_occurrence_count_ignored');
+  }
   const until = parseUntil(fields.UNTIL);
   if (fields.UNTIL && !until) warnings.push('invalid_saved_routine_until_ignored');
   if (until) return { mode: 'until', date: until };
@@ -265,6 +273,7 @@ export function resolveSavedRoutineRecurrence(
   const end = resolveEnd(
     fields,
     definition.endDate,
+    definition.occurrenceCount,
     definition.startDate,
     definition.projectionWeeks,
     warnings,

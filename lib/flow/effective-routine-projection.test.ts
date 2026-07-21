@@ -155,6 +155,62 @@ test('saved routine end-date override is carried by the canonical series', () =>
   assert.match(rrule, /UNTIL=20260801/);
 });
 
+test('personal routine definition separates preview horizon from open, until, and count series ends', () => {
+  const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
+  assert.ok(bundle);
+  const carrier = bundle.items[0];
+  assert.ok(carrier);
+  const base = {
+    bundle,
+    rows: [{ id: carrier.id, date: '2026-07-15', title: carrier.title }],
+    startDate: '2026-07-15',
+    selectedWeekdays: ['월', '수', '금'],
+    range: { start: '2026-07-15', end: '2026-10-31' },
+  } as const;
+
+  const open = buildEffectiveRoutineProjection({ ...base, seriesEndMode: 'none' });
+  const until = buildEffectiveRoutineProjection({
+    ...base,
+    seriesEndMode: 'until',
+    endDate: '2026-08-01',
+  });
+  const count = buildEffectiveRoutineProjection({
+    ...base,
+    seriesEndMode: 'count',
+    occurrenceCount: 5,
+  });
+
+  assert.ok(open.semanticOccurrenceCount > 12);
+  assert.deepEqual(open.seriesByItemId[carrier.id]?.revisions[0]?.rule.end, undefined);
+  assert.deepEqual(until.seriesByItemId[carrier.id]?.revisions[0]?.rule.end, {
+    mode: 'until',
+    date: '2026-08-01',
+  });
+  assert.deepEqual(count.seriesByItemId[carrier.id]?.revisions[0]?.rule.end, {
+    mode: 'count',
+    count: 5,
+  });
+  assert.equal(count.semanticOccurrenceCount, 5);
+});
+
+test('personal routine time and end definition reaches ICS without changing the stable UID', () => {
+  const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
+  assert.ok(bundle);
+  const definition = {
+    schemaVersion: 1 as const,
+    time: '07:30',
+    durationMinutes: 45,
+    end: { mode: 'count' as const, count: 6 },
+  };
+  const ics = unfoldIcs(buildCalendarIcs(bundle, '2026-07-15', ['월', '수', '금'], definition));
+  const moved = unfoldIcs(buildCalendarIcs(bundle, '2026-07-20', ['월', '수', '금'], definition));
+
+  assert.match(ics, /DTSTART:20260715T073000/);
+  assert.match(ics, /DTEND:20260715T081500/);
+  assert.match(ics, /RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR;COUNT=6/);
+  assert.equal(getIcsValue(ics, 'UID'), getIcsValue(moved, 'UID'));
+});
+
 test('ambiguous natural cadence does not invent fixed occurrence dates', () => {
   const bundle = getBundle('monstera-care-routine');
   const carrier = bundle.items.slice().sort((left, right) => left.order - right.order)[0];

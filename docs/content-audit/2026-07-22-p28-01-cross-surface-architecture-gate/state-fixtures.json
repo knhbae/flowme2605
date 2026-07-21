@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "contentFixtures": [
+    {
+      "id": "moving_timeline",
+      "route": "/f/moving-d30-basic",
+      "primaryShape": "calendar",
+      "secondaryShapes": ["checklist", "memo"],
+      "requiredAdjustments": ["anchor", "item_date", "title", "memo", "include", "order"]
+    },
+    {
+      "id": "vehicle_checklist",
+      "route": "/f/vehicle-inspection-prep",
+      "primaryShape": "checklist",
+      "secondaryShapes": ["calendar", "memo"],
+      "requiredAdjustments": ["item_date", "include", "memo"]
+    },
+    {
+      "id": "workout_routine",
+      "route": "/f/curated-allblanc-morning-workout",
+      "primaryShape": "flow_execution",
+      "secondaryShapes": ["calendar", "memo"],
+      "requiredAdjustments": ["start_date", "weekdays", "end", "time", "occurrence_note"]
+    },
+    {
+      "id": "course_sheet",
+      "route": "/my?savedMap=middle-school-math-1",
+      "primaryShape": "sheet",
+      "secondaryShapes": ["checklist"],
+      "requiredAdjustments": ["order", "memo", "include"]
+    },
+    {
+      "id": "contract_or_trip_mixed",
+      "route": "/f/jeonse-contract-precheck-docs",
+      "primaryShape": "calendar",
+      "secondaryShapes": ["checklist", "memo"],
+      "requiredAdjustments": ["anchor", "item_date", "include", "memo"]
+    }
+  ],
+  "libraryCardinality": [1, 5, 20, 50],
+  "calendarScopeCardinality": [2, 8, 25],
+  "viewports": [
+    { "width": 390, "height": 844 },
+    { "width": 1024, "height": 768 },
+    { "width": 1440, "height": 900 }
+  ]
+}

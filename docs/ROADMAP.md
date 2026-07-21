@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-07-21<br>
+**Last Updated:** 2026-07-22<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P27 canonical production green, independent review pending<br>
+**Current Validation Stage:** internal alpha / P28 implementation and automated regression green, owner review pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P27 independent production review and P28 decision
+**Next Milestone:** P28 owner/independent review and evidence-backed P29 decision
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,31 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P28 Cross-Surface Experience Reconstruction
+
+P28 responds to current owner feedback after the P27 production closeout. The product already has most lifecycle capabilities, but save-before adjustment, workout routines, My Flow, and Calendar use inconsistent or over-dense interaction patterns. P28 therefore starts with a comparison simulation rather than another immediate UI patch.
+
+Detailed scope: [P28 experience reconstruction spec](./specs/2026-07-21-p28-experience-reconstruction/spec.md).
+
+Feedback reconciliation: [owner/Codex/Claude synthesis](./specs/2026-07-21-p28-experience-reconstruction/feedback-reconciliation.md).
+
+Detailed backlog: [P28-01~P28-08](./specs/2026-07-21-p28-experience-reconstruction/tasks.md).
+
+| Slice | Purpose | State |
+| --- | --- | --- |
+| P28-01 | Compare whole-Flow, artifact-first, and Hybrid composition across save-before, routine, My Flow, and Calendar | Complete; Hybrid selected |
+| P28-02 | One projection contract for outline, item role, completion eligibility, and five artifact shapes | Complete |
+| P28-03 | Whole-Flow save-before workspace with natural title/date/memo adjustment | Complete as current source/browser evidence |
+| P28-04 | Remove workout-only execution grammar and unify routine definition, occurrence, resource, and note | Complete as current source/browser evidence |
+| P28-05 | Reconstruct My Flow browse/search/detail hierarchy for 1/5/20/50 Flows | Complete through 27-Flow fixture; 50+ observation remains |
+| P28-06 | Replace unbounded Calendar Flow chips with a scalable scope picker and shared occurrence row | Complete through 12-Flow fixture |
+| P28-07 | Connect five actual-data shapes, representative content, source/safety gate, and export parity | Complete for five representative production Flows |
+| P28-08 | Integrated regression, independent handoff, and owner readiness decision | Internal gate complete; owner/independent verdict pending |
+
+The five artifact shapes are `Flow execution`, `Calendar`, `Checklist/Todo`, `Sheet`, and `Memo`. They are representative projections, not a permanent five-card gallery or fifth navigation tab. Each Flow shows one content-native primary result and only meaningful secondary results.
+
+P28 changed component composition and visual hierarchy without rewriting source, personal overlay, execution run, recurrence occurrence, or export identity. It did not add AI, crawler, account persistence, OAuth, or a heavy planner. External user observation remains deferred until an explicit owner decision after the [P28 final review](./content-audit/2026-07-22-p28-final-review-package/README.md).
 
 ## P27 Flow Lifecycle Workspace Reconciliation
 
@@ -130,10 +155,13 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P26 remains canonical production until the P27 branch is merged and deployed. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P27 remains canonical production while P28 begins with a docs/prototype-only architecture gate. External user observation stays outside the queue until the owner explicitly reopens it after P28-08.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
+| Active | AI + owner decision | P28-01 cross-surface comparison simulation | Compare current and three proposed compositions with real fixtures at 390/1024/1440 | Selected anatomy scores at least 4.0 with hard fail 0; otherwise replan |
+| Planned | AI | P28-02~07 staged implementation | Begin only after P28-01 decision | Each slice closes its contract, browser, and regression gate before the next |
+| Planned | AI + Claude Design + owner | P28-08 final independent review | Reconcile correctness and design findings | Automated/browser Blocking/High 0 and owner readiness decision recorded |
 | Completed | AI | P25-06/P25-07 public artifact and visual integration | Preserve one public artifact and shared responsive action vocabulary | Current browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-01~P25-05 correctness, whole-Flow workspace, personal adjustment, Anytime placement, completion, and export | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-08 internal six-journey gate | Preserve current mobile/wide integration evidence | Automated Blocking/High 0 and owner decision package exist; observed users remain 0 |
@@ -169,7 +197,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Merge and deploy the internally green P27 branch, then run the package's independent read-only review against the canonical URL and merged source. Do not start another broad UX program or recruit participants until production parity is confirmed and any new Blocking/High finding is reconciled. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, permanent delete, and observed-user recruitment remain gated.
+Complete P28-01 before production implementation. Choose or revise one cross-surface composition that lets users see the whole Flow, preview actual destination data, adjust only the current need, and encounter the same item/occurrence/resource grammar in My Flow and Calendar. Reject any alternative that retains workout-only completion states, a 1024px fixed three-pane layout, or an unbounded horizontal Flow selector. Do not recruit participants yet. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, permanent delete, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

@@ -2,6 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+
+test.beforeEach(async ({ page }) => {
+  await openPublicDetailWorkspaceForDeepInspection(page);
+});
 
 const evidenceDir = process.env.FLOWME_P26_16_EVIDENCE_DIR;
 
@@ -141,8 +147,8 @@ test('whole, selected, and current item exports share scope language and actual 
   expect((copiedMemo.match(/^\d+\. /gmu) ?? []).length).toBe(2);
   await capture(page, panel, '02-selected-items-mobile.png');
 
-  await flow.getByTestId('my-flow-mobile-structure-open').click();
-  const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
+  const selectedFlow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30');
+  const firstRow = selectedFlow.getByTestId('my-flow-execution-row-shell').first();
   await firstRow.getByRole('button', { name: /열기/ }).click();
   const detail = firstRow.getByTestId('my-flow-item-detail');
   const currentExport = detail.getByTestId('my-flow-detail-portable-export');
