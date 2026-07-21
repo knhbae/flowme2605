@@ -1,0 +1,1382 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>FlowMe | 원문이 실행 Flow가 되는 모습</title>
+  <style>
+    :root {
+      --canvas: #fafaf8;
+      --surface: #ffffff;
+      --surface-soft: #f5f6f2;
+      --ink: #1b1a17;
+      --muted: #6f6b63;
+      --faint: #969189;
+      --line: #e7e4dd;
+      --line-strong: #d7d2c8;
+      --blue: #3654ff;
+      --blue-soft: #eef1ff;
+      --green: #167a54;
+      --green-soft: #eaf6ef;
+      --amber: #9a6400;
+      --amber-soft: #fff5dc;
+      --red: #a54235;
+      --red-soft: #fff0ed;
+      --shadow: 0 18px 46px rgba(36, 35, 31, 0.08);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      letter-spacing: -0.012em;
+    }
+
+    button, input, textarea { font: inherit; color: inherit; }
+    button, a, input { -webkit-tap-highlight-color: transparent; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    h1, h2, h3, p { margin-top: 0; }
+    :focus-visible { outline: 3px solid rgba(54, 84, 255, 0.28); outline-offset: 2px; }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: -80px;
+      z-index: 100;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: white;
+      text-decoration: none;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 62px;
+      padding: 0 28px;
+      border-bottom: 1px solid rgba(231, 228, 221, 0.92);
+      background: rgba(250, 250, 248, 0.94);
+      backdrop-filter: blur(14px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--ink);
+      color: white;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+    .brand-name { font-size: 16px; font-weight: 850; }
+    .brand-context { color: var(--muted); font-size: 13px; }
+    .prototype-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .prototype-label::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
+      align-items: end;
+      width: min(1540px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 42px 0 26px;
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .intro h1 {
+      max-width: 860px;
+      margin-bottom: 12px;
+      font-size: clamp(30px, 3.2vw, 48px);
+      line-height: 1.13;
+      letter-spacing: -0.045em;
+    }
+    .intro-copy { max-width: 780px; margin: 0; color: var(--muted); font-size: 16px; }
+    .intro-example {
+      min-width: 310px;
+      padding: 16px 18px;
+      border: 1px solid #cfd5ff;
+      border-radius: var(--radius);
+      background: var(--blue-soft);
+    }
+    .intro-example span { display: block; color: var(--blue); font-size: 12px; font-weight: 850; }
+    .intro-example strong { display: block; margin-top: 4px; font-size: 16px; }
+
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      width: min(1540px, calc(100% - 48px));
+      margin: 0 auto 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .journey-step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: center;
+      min-height: 66px;
+      padding: 12px 16px;
+      border-right: 1px solid var(--line);
+    }
+    .journey-step:last-child { border-right: 0; }
+    .journey-step b {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface-soft);
+      color: var(--blue);
+      font-size: 12px;
+    }
+    .journey-step strong { display: block; font-size: 13px; }
+    .journey-step span { display: block; margin-top: 1px; color: var(--muted); font-size: 12px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 270px minmax(520px, 1fr) 410px;
+      gap: 18px;
+      width: min(1540px, calc(100% - 48px));
+      margin: 0 auto;
+      align-items: start;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .source-rail, .output-panel { position: sticky; top: 82px; }
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-head h2, .panel-head h3 { margin: 0; font-size: 15px; }
+    .panel-head span { color: var(--muted); font-size: 12px; }
+
+    .source-list { display: grid; gap: 7px; padding: 10px; }
+    .source-button {
+      position: relative;
+      width: 100%;
+      min-height: 86px;
+      padding: 12px 12px 12px 14px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      background: transparent;
+      text-align: left;
+    }
+    .source-button:hover { background: var(--surface-soft); }
+    .source-button[aria-selected="true"] {
+      border-color: #cdd4ff;
+      background: var(--blue-soft);
+    }
+    .source-button[aria-selected="true"]::before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 14px;
+      bottom: 14px;
+      width: 3px;
+      border-radius: 3px;
+      background: var(--blue);
+    }
+    .source-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .source-type { color: var(--muted); font-size: 11px; font-weight: 750; }
+    .lock-mini { color: var(--amber); font-size: 10px; font-weight: 850; }
+    .source-button strong { display: block; margin: 5px 0 3px; font-size: 14px; line-height: 1.35; }
+    .source-button small { display: block; color: var(--muted); font-size: 11px; }
+    .rail-note {
+      margin: 0 10px 10px;
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .flow-stage { min-width: 0; overflow: hidden; }
+    .flow-hero { padding: 24px 24px 20px; border-bottom: 1px solid var(--line); }
+    .meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 13px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .chip.ready { background: var(--green-soft); color: var(--green); }
+    .chip.review { background: var(--amber-soft); color: var(--amber); }
+    .flow-title { margin: 0; font-size: clamp(26px, 2.4vw, 36px); line-height: 1.18; letter-spacing: -0.04em; }
+    .flow-promise { margin: 12px 0 0; color: var(--muted); font-size: 16px; }
+
+    .outcome-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 19px;
+      padding: 14px 16px;
+      border: 1px solid #d8dcfb;
+      border-radius: 11px;
+      background: #f8f9ff;
+    }
+    .outcome-strip span { color: var(--blue); font-size: 11px; font-weight: 850; }
+    .outcome-strip strong { display: block; margin-top: 2px; font-size: 14px; }
+    .ghost-button {
+      flex: 0 0 auto;
+      min-height: 40px;
+      padding: 8px 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .ghost-button:hover { border-color: #adb7ff; color: var(--blue); }
+
+    .setup-box { padding: 18px 24px; border-bottom: 1px solid var(--line); background: #fdfdfb; }
+    .setup-grid { display: grid; grid-template-columns: minmax(210px, 0.7fr) 1fr; gap: 18px; align-items: end; }
+    .setup-title { margin: 0 0 8px; font-size: 13px; }
+    .field-label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .input-wrap { display: flex; align-items: center; gap: 8px; }
+    .input-wrap input[type="date"], .input-wrap input[type="number"] {
+      width: 100%;
+      min-height: 46px;
+      padding: 9px 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      background: white;
+    }
+    .input-wrap input[type="range"] { width: 100%; min-height: 34px; accent-color: var(--blue); }
+    .setup-note { margin: 5px 0 0; color: var(--faint); font-size: 11px; }
+    .usage-note {
+      padding: 12px 14px;
+      border-left: 3px solid var(--blue);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .usage-note strong { color: var(--ink); }
+
+    .progress-box { padding: 18px 24px 0; }
+    .progress-copy { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .progress-copy strong { font-size: 13px; }
+    .progress-copy span { color: var(--muted); font-size: 12px; }
+    .progress-track { height: 7px; overflow: hidden; border-radius: 999px; background: #eceae5; }
+    .progress-value { height: 100%; width: 0; border-radius: inherit; background: var(--blue); transition: width 180ms ease; }
+
+    .items-section { padding: 20px 24px 24px; }
+    .section-title-row { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    .section-title-row h2 { margin: 0; font-size: 17px; }
+    .section-title-row p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .item-list { display: grid; gap: 9px; }
+    .flow-item {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: white;
+      transition: border-color 150ms ease, background 150ms ease;
+    }
+    .flow-item:hover { border-color: var(--line-strong); }
+    .flow-item.done { background: #fbfcfa; }
+    .check-button {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      margin-top: 1px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      background: white;
+      color: transparent;
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .check-button[aria-pressed="true"] { border-color: var(--green); background: var(--green); color: white; }
+    .item-marker {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      min-height: 32px;
+      margin-top: 1px;
+      padding: 4px;
+      border: 1px solid #cfd8e5;
+      border-radius: 9px;
+      background: #f4f7fb;
+      color: #40566f;
+      font-size: 9px;
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+    }
+    .item-marker.warning { border-color: #e9ca83; background: #fff8e7; color: #8a5a00; }
+    .item-marker.safety { border-color: #efb2ae; background: #fff0ee; color: #a3322b; }
+    .flow-item.reference-card { background: #f9fbfd; }
+    .flow-item.warning-card { border-color: #ead6a3; background: #fffdf6; }
+    .flow-item.safety-card { border-color: #efc2be; background: #fff8f7; }
+    .item-main { min-width: 0; }
+    .item-timing { display: block; margin-bottom: 3px; color: var(--blue); font-size: 11px; font-weight: 850; }
+    .item-title { margin: 0; font-size: 14px; line-height: 1.4; }
+    .flow-item.done .item-title { color: var(--muted); text-decoration: line-through; text-decoration-color: #aaa69f; }
+    .item-summary { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .item-extra { grid-column: 2 / 4; padding: 11px 12px; border-radius: 9px; background: var(--surface-soft); }
+    .detail-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .detail-list li { padding: 4px 7px; border: 1px solid var(--line); border-radius: 7px; background: white; font-size: 11px; }
+    .criterion { margin: 9px 0 0; color: var(--muted); font-size: 11px; }
+    .criterion strong { color: var(--ink); }
+    .source-ref { margin-top: 5px; color: var(--faint); font-size: 10px; }
+    .detail-toggle {
+      min-width: 68px;
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .detail-toggle:hover { color: var(--ink); }
+    .course-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 11px; }
+    .course-table { width: 100%; min-width: 650px; border-collapse: collapse; background: white; }
+    .course-table th, .course-table td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+    .course-table th { background: var(--surface-soft); color: var(--muted); font-size: 10px; letter-spacing: .04em; }
+    .course-table td { font-size: 12px; }
+    .course-table tr:last-child td { border-bottom: 0; }
+    .course-table tr.done td { background: #fbfcfa; color: var(--muted); }
+    .course-table tr.done .course-topic { text-decoration: line-through; text-decoration-color: #aaa69f; }
+    .course-table .check-button { width: 28px; height: 28px; }
+    .course-topic { color: var(--ink); font-weight: 800; }
+    .activity-chip { display: inline-flex; padding: 3px 7px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 10px; font-weight: 800; }
+    .activity-chip.none { background: var(--surface-soft); color: var(--muted); }
+    .time-field { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
+    .time-field label { color: var(--muted); font-size: 11px; }
+    .time-field input {
+      min-height: 36px;
+      padding: 5px 8px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: white;
+      font-size: 12px;
+    }
+
+    .source-risk {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--line);
+      background: #fdfdfb;
+    }
+    .source-card, .risk-card { padding: 20px 24px; }
+    .source-card { border-right: 1px solid var(--line); }
+    .mini-heading { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; font-size: 12px; font-weight: 850; }
+    .mini-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    .mini-dot.warning { background: var(--amber); }
+    .source-card p, .risk-card p { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
+    .source-link { color: var(--blue); font-size: 12px; font-weight: 800; text-decoration: none; }
+    .source-link:hover { text-decoration: underline; }
+    .source-links { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+    .not-added { margin-top: 10px !important; padding-top: 10px; border-top: 1px solid var(--line); }
+
+    .output-panel { overflow: hidden; box-shadow: var(--shadow); }
+    .output-head { padding: 17px 18px 12px; }
+    .output-head-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .output-head h2 { margin: 0; font-size: 16px; }
+    .output-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .close-output {
+      display: none;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      font-size: 20px;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      padding: 0 12px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .tab {
+      min-height: 40px;
+      padding: 7px 4px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .tab:hover { background: var(--surface-soft); }
+    .tab[aria-selected="true"] { border-color: #ccd3ff; background: var(--blue-soft); color: var(--blue); }
+    .output-body { max-height: min(590px, calc(100vh - 285px)); overflow: auto; padding: 16px; }
+    .destination-summary { margin-bottom: 13px; }
+    .destination-summary span { display: block; color: var(--blue); font-size: 11px; font-weight: 850; }
+    .destination-summary strong { display: block; margin-top: 3px; font-size: 14px; }
+    .preview-list { display: grid; gap: 7px; }
+    .preview-row {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+    }
+    .preview-row time, .preview-row .row-label { color: var(--blue); font-size: 10px; font-weight: 850; }
+    .preview-row strong { display: block; font-size: 12px; line-height: 1.4; }
+    .preview-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .preview-row.done strong { color: var(--muted); text-decoration: line-through; }
+    .unscheduled {
+      margin-top: 10px;
+      padding: 11px;
+      border: 1px dashed var(--line-strong);
+      border-radius: 9px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .empty-preview { padding: 20px; border-radius: 10px; background: var(--surface-soft); text-align: center; }
+    .empty-preview strong { display: block; font-size: 13px; }
+    .empty-preview p { margin: 6px 0 0; color: var(--muted); font-size: 11px; }
+    .switch-link { margin-top: 10px; border: 0; background: transparent; color: var(--blue); font-size: 11px; font-weight: 850; }
+    .preview-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; }
+    .preview-table { width: 100%; min-width: 360px; border-collapse: collapse; font-size: 10px; }
+    .preview-table th, .preview-table td { padding: 8px 9px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .preview-table th { background: var(--surface-soft); color: var(--muted); font-weight: 850; }
+    .preview-table tr:last-child td { border-bottom: 0; }
+    .status-cell { color: var(--green); font-weight: 850; }
+    .memo-preview {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fffefb;
+      white-space: pre-wrap;
+      color: #45423c;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 10px;
+      line-height: 1.62;
+    }
+    .output-warning { margin-top: 12px; padding: 11px; border-radius: 9px; background: var(--amber-soft); color: #6d4a08; font-size: 10px; }
+    .output-actions { padding: 14px 16px 16px; border-top: 1px solid var(--line); }
+    .primary-button {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--blue);
+      color: white;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .primary-button:hover { background: #2944df; }
+    .primary-button:disabled { cursor: not-allowed; background: #d9d6cf; color: #77736c; }
+    .action-note { margin: 7px 0 0; color: var(--faint); font-size: 10px; text-align: center; }
+
+    .mobile-actionbar { display: none; }
+    .scrim { display: none; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      z-index: 100;
+      max-width: min(420px, calc(100% - 32px));
+      padding: 12px 15px;
+      border-radius: 10px;
+      background: var(--ink);
+      color: white;
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      font-weight: 750;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .scope-note {
+      width: min(1540px, calc(100% - 48px));
+      margin: 18px auto 50px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 1240px) {
+      .workspace { grid-template-columns: 240px minmax(480px, 1fr) 360px; }
+      .intro { grid-template-columns: 1fr; }
+      .intro-example { min-width: 0; max-width: 620px; }
+    }
+
+    @media (max-width: 1020px) {
+      body { padding-bottom: 78px; }
+      .topbar { padding: 0 18px; }
+      .brand-context { display: none; }
+      .intro, .journey, .workspace, .scope-note { width: min(760px, calc(100% - 28px)); }
+      .intro { padding-top: 30px; }
+      .workspace { display: block; }
+      .source-rail { position: static; margin-bottom: 12px; overflow: hidden; }
+      .source-rail .panel-head { padding: 12px 14px; }
+      .source-list { display: flex; gap: 7px; overflow-x: auto; padding: 9px; scroll-snap-type: x mandatory; }
+      .source-button { min-width: 176px; min-height: 78px; scroll-snap-align: start; }
+      .rail-note { display: none; }
+      .output-panel {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        z-index: 80;
+        max-height: min(82vh, 760px);
+        border-radius: 20px 20px 0 0;
+        transform: translateY(105%);
+        transition: transform 220ms ease;
+      }
+      .output-panel.mobile-open { transform: translateY(0); }
+      .output-panel .close-output { display: grid; place-items: center; }
+      .output-body { max-height: calc(82vh - 208px); }
+      .scrim {
+        position: fixed;
+        inset: 0;
+        z-index: 70;
+        background: rgba(27, 26, 23, 0.42);
+      }
+      .scrim.show { display: block; }
+      .mobile-actionbar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 60;
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr;
+        gap: 9px;
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--line);
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(12px);
+      }
+      .mobile-actionbar button { min-height: 48px; border-radius: 10px; font-weight: 850; }
+      .mobile-secondary { border: 1px solid var(--line-strong); background: white; color: var(--ink); }
+      .mobile-primary { border: 0; background: var(--blue); color: white; }
+    }
+
+    @media (max-width: 680px) {
+      .topbar { min-height: 56px; padding: 0 14px; }
+      .brand-mark { width: 31px; height: 31px; border-radius: 9px; }
+      .prototype-label { min-height: 30px; padding: 4px 8px; font-size: 10px; }
+      .intro, .journey, .workspace, .scope-note { width: calc(100% - 20px); }
+      .intro { gap: 18px; padding: 24px 0 18px; }
+      .intro h1 { font-size: 31px; }
+      .intro-copy { font-size: 14px; }
+      .intro-example { padding: 13px 14px; }
+      .journey { grid-template-columns: repeat(3, 1fr); margin-bottom: 12px; }
+      .journey-step { grid-template-columns: 24px 1fr; gap: 6px; min-height: 58px; padding: 9px 7px; border-right: 1px solid var(--line); border-bottom: 0; }
+      .journey-step:last-child { border-right: 0; }
+      .journey-step b { width: 24px; height: 24px; }
+      .journey-step strong { font-size: 10px; line-height: 1.25; }
+      .journey-step span { display: none; }
+      .flow-hero { padding: 20px 17px 17px; }
+      .flow-title { font-size: 27px; }
+      .flow-promise { font-size: 14px; }
+      .outcome-strip { align-items: flex-start; }
+      .outcome-strip .ghost-button { display: none; }
+      .setup-box, .items-section { padding-left: 17px; padding-right: 17px; }
+      .setup-grid { grid-template-columns: 1fr; gap: 11px; }
+      .progress-box { padding-left: 17px; padding-right: 17px; }
+      .flow-item { grid-template-columns: 36px minmax(0, 1fr); gap: 10px; padding: 12px; }
+      .detail-toggle { grid-column: 2; justify-self: start; min-height: 32px; }
+      .item-extra { grid-column: 1 / 3; }
+      .source-risk { grid-template-columns: 1fr; }
+      .source-card { border-right: 0; border-bottom: 1px solid var(--line); }
+      .source-card, .risk-card { padding: 17px; }
+      .output-panel { max-height: 88vh; }
+      .output-body { max-height: calc(88vh - 208px); }
+      .scope-note { margin-bottom: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#flowStage">Flow 내용으로 건너뛰기</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">FM</div>
+      <span class="brand-name">FLOWME</span>
+      <span class="brand-context">원문 → 실행 Flow</span>
+    </div>
+    <span class="prototype-label">판단용 인터랙티브 시제품</span>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="pageTitle">
+      <div>
+        <p class="eyebrow">SOURCE-TO-FLOW PREVIEW</p>
+        <h1 id="pageTitle">원문을 읽는 데서 끝내지 않고,<br>내 도구에서 실행하는 모습</h1>
+        <p class="intro-copy">실제 원문 5개를 Flow 형태로 바꿨습니다. 왼쪽에서 원문을 고르고, 필요한 값만 조정한 뒤 같은 내용이 캘린더·체크리스트·시트·메모에서 어떻게 달라지는지 확인해 보세요.</p>
+      </div>
+      <div class="intro-example" aria-live="polite">
+        <span>지금 보이는 간단한 예</span>
+        <strong id="introExample">이사일 2026.08.15 → 날짜 일정 5개 + 이사 후 체크 1개</strong>
+      </div>
+    </section>
+
+    <section class="journey" aria-label="사용 흐름">
+      <div class="journey-step"><b>1</b><div><strong>원문 선택</strong><span>공식·크리에이터 콘텐츠를 고릅니다.</span></div></div>
+      <div class="journey-step"><b>2</b><div><strong>내 조건만 입력</strong><span>이사일·작업일·진도처럼 필요한 값만 넣습니다.</span></div></div>
+      <div class="journey-step"><b>3</b><div><strong>실행하고 보내기</strong><span>체크하거나 내 도구에 맞는 형태로 가져갑니다.</span></div></div>
+    </section>
+
+    <section class="workspace" aria-label="Flow 콘텐츠 사용 미리보기">
+      <nav class="source-rail panel" aria-label="원문 Flow 선택">
+        <div class="panel-head"><h2>원문으로 만든 Flow</h2><span>5개</span></div>
+        <div class="source-list" id="sourceList" role="tablist" aria-orientation="vertical"></div>
+        <p class="rail-note">각 사례는 원문에서 확인된 범위만 사용했습니다. ‘검토 잠금’은 형태만 볼 수 있고 외부 내보내기는 막혀 있습니다.</p>
+      </nav>
+
+      <article class="flow-stage panel" id="flowStage" aria-live="polite"></article>
+
+      <aside class="output-panel panel" id="outputPanel" aria-label="목적지별 실행 미리보기">
+        <div class="output-head">
+          <div class="output-head-top">
+            <div><h2>실행 미리보기</h2><p>같은 Flow를 내 도구에 맞춰 봅니다.</p></div>
+            <button class="close-output" id="closeOutput" type="button" aria-label="실행 미리보기 닫기">×</button>
+          </div>
+        </div>
+        <div class="tabs" id="destinationTabs" role="tablist" aria-label="내보낼 도구"></div>
+        <div class="output-body" id="outputBody"></div>
+        <div class="output-actions" id="outputActions"></div>
+      </aside>
+    </section>
+
+    <p class="scope-note">이 HTML은 콘텐츠의 쓸모와 사용 방식을 판단하기 위한 로컬 시뮬레이션입니다. 입력·체크 상태는 이 페이지 안에서만 움직이며 백엔드 저장, 계정 연동, 실제 공개 배포는 하지 않습니다.</p>
+  </main>
+
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+  <div class="mobile-actionbar" aria-label="모바일 실행 메뉴">
+    <button class="mobile-secondary" id="mobileOutputButton" type="button">결과 보기</button>
+    <button class="mobile-primary" id="mobilePrimaryButton" type="button">이 형태로 써보기</button>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const DESTINATIONS = {
+      calendar: { label: '캘린더', action: '캘린더 형태 복사' },
+      checklist: { label: '체크리스트', action: '체크리스트 복사' },
+      sheet: { label: '시트', action: '시트 형태 복사' },
+      memo: { label: '메모', action: '메모로 복사' }
+    };
+
+    const FLOWS = [
+      {
+        id: 'moving', caseId: 'DS05', type: '이사 · 날짜 준비', shortTitle: '이사일 기준 준비', publisher: '찾기쉬운 생활법령정보',
+        status: 'ready', statusLabel: '내부 사용 미리보기', primary: 'calendar', sourceRows: 6,
+        title: '이사일 기준 준비 체크리스트',
+        promise: '이사일만 넣으면 원문의 6개 준비 구간이 날짜 일정과 체크리스트로 정리됩니다.',
+        userJob: '이사 전·당일·이사 후 준비와 신고를 기준일에 맞춰 빠뜨리지 않습니다.',
+        sourceTitle: '이사 준비 체크리스트', checkedAt: '2026-07-19', rights: '공식 출처 · 링크 기반 내부 미리보기',
+        sourceUrl: 'https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov',
+        warning: '실행 시 최신 공식 내용을 다시 확인해야 합니다.',
+        notAdded: 'D-30 항목, 임의 신고 기한, 이사 후 날짜는 만들지 않았습니다.',
+        control: { kind: 'date', key: 'anchor', label: '이사일', value: '2026-08-15', note: '사용자 입력 예시 · 바꾸면 날짜가 즉시 다시 계산됩니다.' },
+        items: [
+          { id: 'm1', timing: '2주 전', title: '이사 2주 전 준비', details: ['허가 이사업체 선택·예약', '이사 방법과 표준계약서', '창고 정리', '불필요 물품 처분'], criterion: '원문 2주 전 항목을 확인함', source: '이사 2주 전', offset: -14 },
+          { id: 'm2', timing: '1주 전', title: '이사 1주 전 준비', details: ['엘리베이터·곤돌라 예약', '주소·우편·전화 이전', '공과금·관리비', '배달 중지'], criterion: '원문 1주 전 항목을 확인함', source: '이사 1주 전', offset: -7 },
+          { id: 'm3', timing: '2~4일 전', title: '이사 2~4일 전 준비', details: ['콘센트·방·창문 점검', '가구 배치', '구조물 철거', '수족관 처리', '전입신고 유의사항'], criterion: '원문 2~4일 전 항목을 확인함', source: '이사 2~4일 전', range: [-4, -2] },
+          { id: 'm4', timing: '전날', title: '이사 전날 마무리', details: ['포장 마무리', '세탁기·냉장고·에어컨 배관 정리', '귀중품 보관', '가스 정리'], criterion: '원문 전날 항목을 확인함', source: '이사 전날', offset: -1 },
+          { id: 'm5', timing: '당일', title: '이사 당일 확인', details: ['짐·청소·개인물품 확인', '이사비 정산', '공과금 확인'], criterion: '원문 당일 항목을 확인함', source: '이사 당일', offset: 0 },
+          { id: 'm6', timing: '이사 후', title: '이사 후 처리', details: ['짐 정리', '공과금·가전 연결', '자녀 전학', '확정일자'], criterion: '원문 이사 후 항목을 확인함', source: '이사 후' }
+        ]
+      },
+      {
+        id: 'course', caseId: 'DS04', type: '학습 · 진도 관리', shortTitle: 'K-MOOC 과정 끝내기', publisher: 'K-MOOC',
+        status: 'locked', statusLabel: '14주 확인 · 내보내기 잠금', primary: 'sheet', sourceRows: 14, sourceRowsLabel: '주차별 학습 행 14개',
+        title: 'K-MOOC 데이터 분석 14주 진도표',
+        promise: '공식 강의계획서의 1~14주차 주제와 활동을 펼쳐 놓고, 끝낸 주차만 체크합니다.',
+        userJob: '14개 주차의 강의·퀴즈·과제·토론 진도를 한눈에 보고 다음 학습 행을 고릅니다.',
+        sourceTitle: 'Introduction to Data Analysis · 강의계획서', checkedAt: '2026-07-20', rights: '공식 강의계획서 행 재확보 · canonical 원장 갱신과 권리 검토 전 내보내기 잠금',
+        sourceUrl: 'https://www.kmooc.kr/view/course/detail/20097',
+        sourcePlanUrl: 'https://lms.kmooc.kr/pluginfile.php/4171654/course/summary/%EA%B7%B8%EB%A6%BC1.jpg',
+        warning: '주차별 주제와 활동 유형은 공식 강의계획서 이미지에서 확인했습니다. 세부 차시·개별 마감일·평가 배점은 공개 행에서 확인되지 않았습니다.',
+        notAdded: '세부 차시 이름, 주차별 마감일, 점수와 학습 시간을 임의로 만들지 않았습니다.',
+        control: { kind: 'progress_table' },
+        initialCompleted: ['c1', 'c2', 'c3'],
+        itemsTitle: '14주 강의 진도',
+        countLabel: '14개 주차 진도 행',
+        calendarWindows: [
+          { date: '2026-07-01~08-31', title: '수강 신청·운영 기간', note: '원문에서 확인된 기간' },
+          { date: '2026-08-31', title: '과정 운영 종료', note: '확인된 종료일' },
+          { date: '2026-09-01~09-04', title: '성적 입력 기간', note: '기간 뒤 공식 페이지에서 상태 확인' }
+        ],
+        items: [
+          { id: 'c1', timing: '1주차', title: '데이터 리터러시', activity: '퀴즈', details: ['활동: 퀴즈'], criterion: '1주차 콘텐츠와 퀴즈를 완료함', source: '공식 강의계획서 · 1주차' },
+          { id: 'c2', timing: '2주차', title: '생성형 AI 활용 데이터 분석', activity: '과제', details: ['활동: 과제'], criterion: '2주차 콘텐츠와 과제를 완료함', source: '공식 강의계획서 · 2주차' },
+          { id: 'c3', timing: '3주차', title: '데이터 분석', activity: '토론', details: ['활동: 토론'], criterion: '3주차 콘텐츠와 토론을 완료함', source: '공식 강의계획서 · 3주차' },
+          { id: 'c4', timing: '4주차', title: '데이터 수집', activity: '퀴즈', details: ['활동: 퀴즈'], criterion: '4주차 콘텐츠와 퀴즈를 완료함', source: '공식 강의계획서 · 4주차' },
+          { id: 'c5', timing: '5주차', title: '파일 다루기', activity: '퀴즈', details: ['활동: 퀴즈'], criterion: '5주차 콘텐츠와 퀴즈를 완료함', source: '공식 강의계획서 · 5주차' },
+          { id: 'c6', timing: '6주차', title: '탐색적 데이터 분석', activity: '토론', details: ['활동: 토론'], criterion: '6주차 콘텐츠와 토론을 완료함', source: '공식 강의계획서 · 6주차' },
+          { id: 'c7', timing: '7주차', title: '수치 데이터 분석을 위한 NumPy', activity: '과제', details: ['활동: 과제'], criterion: '7주차 콘텐츠와 과제를 완료함', source: '공식 강의계획서 · 7주차' },
+          { id: 'c8', timing: '8주차', title: 'Pandas 활용 데이터 분석', activity: '퀴즈', details: ['활동: 퀴즈'], criterion: '8주차 콘텐츠와 퀴즈를 완료함', source: '공식 강의계획서 · 8주차' },
+          { id: 'c9', timing: '9주차', title: '데이터 시각화', activity: '토론', details: ['활동: 토론'], criterion: '9주차 콘텐츠와 토론을 완료함', source: '공식 강의계획서 · 9주차' },
+          { id: 'c10', timing: '10주차', title: '통계분석', activity: '토론', details: ['활동: 토론'], criterion: '10주차 콘텐츠와 토론을 완료함', source: '공식 강의계획서 · 10주차' },
+          { id: 'c11', timing: '11주차', title: '데이터 기반 문제 해결 전략', activity: '토론', details: ['활동: 토론'], criterion: '11주차 콘텐츠와 토론을 완료함', source: '공식 강의계획서 · 11주차' },
+          { id: 'c12', timing: '12주차', title: '텍스트 데이터 분석', activity: '토론', details: ['활동: 토론'], criterion: '12주차 콘텐츠와 토론을 완료함', source: '공식 강의계획서 · 12주차' },
+          { id: 'c13', timing: '13주차', title: '감성 분석', activity: '토론', details: ['활동: 토론'], criterion: '13주차 콘텐츠와 토론을 완료함', source: '공식 강의계획서 · 13주차' },
+          { id: 'c14', timing: '14주차', title: '데이터 분석 보고서 작성법', activity: '표시 없음(—)', details: ['강의계획서 활동란: -'], criterion: '14주차 콘텐츠를 완료함', source: '공식 강의계획서 · 14주차' }
+        ]
+      },
+      {
+        id: 'heat', caseId: 'DS01', type: '현장 안전 · 조건부 브리핑', shortTitle: '폭염 농작업 안전', publisher: '농촌진흥청 농사로',
+        status: 'ready', statusLabel: '내부 안전 미리보기', primary: 'checklist', sourceRows: 10,
+        title: '폭염 농작업일 안전 브리핑',
+        promise: '농작업 있는 날마다 새 브리핑을 열되, 모든 문장을 매번 체크하지 않고 작업 전·후 실행과 작업 중·중단·응급 기준을 분리해 봅니다.',
+        userJob: '폭염기 농작업일에 작업 전 계획을 공유하고, 작업 중에는 휴식·중단·응급 기준을 바로 찾습니다.',
+        sourceTitle: '2026년 농업인 온열질환 예방가이드 및 체크리스트', checkedAt: '2026-07-20', rights: '공식 출처 · 링크 기반 내부 미리보기',
+        sourceUrl: 'https://www.nongsaro.go.kr/portal/ps/psz/psza/contentSub.ps?bbsId=10&cntntsNo=51&menuId=PS02485&nttSeCode=&pageIndex=1&pageSize=10&searchText=&searchType=title',
+        warning: 'FlowMe가 작업 허용 여부나 의학적 판단을 대신하지 않습니다. 의식이 없으면 즉시 119에 신고하고, 수분은 의식이 있을 때만 제공합니다.',
+        notAdded: '미래 작업일의 자동 일정, 실시간 날씨 판정, 증상 진단과 치료 조언을 만들지 않았습니다.',
+        control: { kind: 'date', key: 'anchor', label: '작업일 · 선택', value: '2026-07-22', note: '사용자 입력 예시 · 농작업 있는 날마다 새 회차로 엽니다. 날짜를 넣어도 미래 일일 반복 일정은 자동 생성하지 않습니다.' },
+        itemsTitle: '오늘 적용할 실행과 고정 안전 기준',
+        countLabel: '2개 실행 + 4개 안전 기준',
+        items: [
+          { id: 'h1', timing: '작업 시작 전', title: '체감온도·작업시간·물·그늘을 확인하고 계획 공유', details: ['당일 체감온도와 폭염특보 확인', '낮 12시~17시 작업 최소화·일정 조정', '시원한 물·그늘·통풍되는 옷 준비'], criterion: '오늘 작업 계획과 중지 기준을 팀에 공유함', source: '자율점검 체크리스트 · 작업 전' },
+          { id: 'h2', timing: '작업 중 기준', title: '20분마다 물을 마시고 단계에 맞춰 휴식', checkable: false, visual: 'reference', marker: '20분', details: ['목이 마르지 않아도 20분마다 물 섭취', '폭염주의보 때 2시간 이내 20분 이상 휴식', '동료의 이상 증상을 주기적으로 확인'], criterion: '현장에서 계속 보는 기준이며 완료 체크 대상이 아님', source: '자율점검 체크리스트 · 작업 중' },
+          { id: 'h3', timing: '작업 조정·중단 기준', title: '특보가 발표되면 작업을 줄이거나 중지', checkable: false, visual: 'warning', marker: '중지', details: ['폭염주의보 발표(체감온도 33°C 이상이 2일 이상 예상되는 등): 작업 단축·시간대 조정', '폭염경보 발표(체감온도 35°C 이상이 2일 이상 예상되는 등): 불가피한 경우 외 야외·고온 실내 농작업 자제, 단축·중단 즉시 검토', '폭염중대경보 발표(체감온도 38°C 이상 또는 기온 39°C 이상 예상되는 등): 농작업 중지', '열대야주의보 발표(밤 최저기온 25°C 이상 등): 다음 날 작업 일정·강도 조정'], criterion: '공식 특보별 조치 기준이며 사용자가 완료 처리하는 할 일이 아님', source: '2026년 폭염특보 체계' },
+          { id: 'h4', timing: '이상 증상·응급', title: '의식이 없으면 즉시 119 신고', checkable: false, visual: 'safety', marker: '119', details: ['시원한 곳으로 이동', '옷을 헐렁하게 하고 몸을 시원하게 함', '수분은 의식이 있을 때만 제공'], criterion: '응급 행동 카드이며 완료를 미리 체크하지 않음', source: '온열질환자 응급조치' },
+          { id: 'h5', timing: '작업 종료 후', title: '수분·샤워·서늘한 곳에서 회복', details: ['작업 후 수분 섭취', '샤워로 체온 낮추기', '서늘한 환경에서 휴식'], criterion: '작업 종료 후 회복 행동을 마침', source: '자율점검 체크리스트 · 작업 후' },
+          { id: 'h6', timing: '여럿이 일할 때', title: '안전관리책임자가 일일 점검', checkable: false, visual: 'reference', marker: '책임', details: ['작업시간 조정', '적절한 휴식시간 부여', '냉방·통풍 장치 설치'], criterion: '책임자 역할 기준이며 일반 작업자의 완료 체크와 분리함', source: '경영주·안전관리책임자 안내' }
+        ]
+      },
+      {
+        id: 'contract', caseId: 'DS02', type: '계약 · 확인표', shortTitle: '리모델링 계약 확인', publisher: '오늘의집 노하우',
+        status: 'locked', statusLabel: '검토 잠금', primary: 'sheet', sourceRows: 10,
+        title: '리모델링 계약 전 10항목 확인',
+        promise: '계약서와 별지에서 찾을 10개 원문 항목을 7개 확인 묶음과 질문 칸이 있는 시트로 만듭니다.',
+        userJob: '리모델링 계약 전에 계약서와 별지에서 확인할 항목을 빠뜨리지 않습니다.',
+        sourceTitle: '리모델링 계약서 체크리스트 10', checkedAt: '2026-07-19', rights: '공개 변환 허가 필요 · 내부 형태 검토만 가능',
+        sourceUrl: 'https://ohou.se/advices/1972',
+        warning: '법률 자문이나 계약 적정성 판단이 아니라 확인용 초안입니다. 허가·최신 공식 계약 출처 검토 전 내보내지 않습니다.',
+        notAdded: '위약금률·금액·A/S 기간 예시나 계약의 적정성 판정을 만들지 않았습니다.',
+        items: [
+          { id: 'r1', timing: '계약 상대', title: '계약 상대방 정보 확인', details: ['업체 정보'], criterion: '계약서의 업체 정보를 확인함', source: '체크리스트 1' },
+          { id: 'r2', timing: '기간', title: '공사 기간과 지연 조건 확인', details: ['공사 시작일과 종료일', '지연배상'], criterion: '시작·종료일과 지연배상 조건을 확인함', source: '체크리스트 2~3' },
+          { id: 'r3', timing: '대금·증빙', title: '지급·추가 비용·세금계산서 확인', details: ['대금 지급 방법과 날짜', '최종 금액과 추가 비용', '세금계산서 발행 기한'], criterion: '금액·지급·증빙 조건을 확인함', source: '체크리스트 4~6' },
+          { id: 'r4', timing: '별지', title: '자재내역서 첨부 확인', details: ['자재 명칭·규격 등을 담는 별지'], criterion: '자재내역서 유무를 확인함', source: '체크리스트 7' },
+          { id: 'r5', timing: '변경', title: '변경 승인 방식 확인', details: ['공사 내용 변경의 승인 주체와 방식'], criterion: '누가 어떤 방식으로 변경을 승인하는지 확인함', source: '체크리스트 8' },
+          { id: 'r6', timing: 'A/S', title: 'A/S 기간 확인', details: ['하자 보수 또는 A/S 기간'], criterion: 'A/S 기간을 계약서에서 확인함', source: '체크리스트 9' },
+          { id: 'r7', timing: '종료', title: '해지·위약금 조건 확인', details: ['해지 조건과 위약금'], criterion: '해지와 위약금 조건을 확인함', source: '체크리스트 10' }
+        ]
+      },
+      {
+        id: 'route', caseId: 'DS08', type: '여행 · 순서형 경로', shortTitle: '공주 부모님 동행 코스', publisher: '대한민국 구석구석',
+        status: 'locked', statusLabel: '검토 잠금', primary: 'checklist', sourceRows: 4,
+        title: '공주 부모님 동행 당일 코스',
+        promise: '원문의 4개 장소 순서는 그대로 두고, 여행일과 방문 시각은 사용자가 직접 넣습니다.',
+        userJob: '공주 당일 코스를 동행자와 공유하고 순서대로 실행합니다.',
+        sourceTitle: '공주 부모님과 당일치기 힐링 여행코스', checkedAt: '2026-07-19', rights: '공공누리 제4유형 변경금지 · 공개 파생물 허가 필요',
+        sourceUrl: 'https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c',
+        warning: '허가 전 공개하지 않으며, 실행 전 운영정보를 다시 확인해야 합니다.',
+        notAdded: '방문 시각·체류시간·이동시간·요금·주차 장소를 임의로 만들지 않았습니다.',
+        control: { kind: 'date', key: 'anchor', label: '여행일', value: '2026-08-22', note: '사용자 입력 예시 · 장소별 시각도 직접 넣어야 캘린더 일정이 생깁니다.' },
+        items: [
+          { id: 't1', timing: '코스 1', title: '공주한옥마을', details: ['원문 코스의 첫 번째 장소'], criterion: '첫 장소로 코스에 보존함', source: '코스 1', timeInput: true },
+          { id: 't2', timing: '코스 2', title: '무령왕릉과 왕릉원', details: ['원문 코스의 두 번째 장소'], criterion: '두 번째 장소로 코스에 보존함', source: '코스 2', timeInput: true },
+          { id: 't3', timing: '코스 3', title: '루치아의 뜰', details: ['원문 코스의 세 번째 장소'], criterion: '세 번째 장소로 코스에 보존함', source: '코스 3', timeInput: true },
+          { id: 't4', timing: '코스 4', title: '공산성', details: ['원문 코스의 네 번째 장소'], criterion: '네 번째 장소로 코스에 보존함', source: '코스 4', timeInput: true }
+        ]
+      }
+    ];
+
+    const state = Object.fromEntries(FLOWS.map(flow => [flow.id, {
+      completed: new Set(flow.initialCompleted || []),
+      openItem: null,
+      anchor: flow.control?.kind === 'date' ? flow.control.value : '',
+      times: {}
+    }]));
+
+    let activeFlowId = 'moving';
+    let activeDestination = FLOWS[0].primary;
+    let toastTimer;
+
+    const $ = selector => document.querySelector(selector);
+    const getFlow = () => FLOWS.find(flow => flow.id === activeFlowId);
+    const getState = () => state[activeFlowId];
+    const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+
+    function parseDate(value) {
+      if (!value) return null;
+      const [year, month, day] = value.split('-').map(Number);
+      return new Date(year, month - 1, day, 12, 0, 0);
+    }
+
+    function addDays(value, amount) {
+      const date = parseDate(value);
+      if (!date) return null;
+      date.setDate(date.getDate() + amount);
+      return date;
+    }
+
+    function formatDate(date, includeYear = false) {
+      if (!date) return '날짜 미정';
+      return new Intl.DateTimeFormat('ko-KR', {
+        ...(includeYear ? { year: 'numeric' } : {}), month: 'short', day: 'numeric', weekday: 'short'
+      }).format(date);
+    }
+
+    function formatInputDate(value) {
+      const date = parseDate(value);
+      if (!date) return '날짜 미정';
+      return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function itemSchedule(flow, item) {
+      const current = state[flow.id];
+      if (flow.id === 'moving') {
+        if (!current.anchor) return item.timing;
+        if (Number.isFinite(item.offset)) return formatDate(addDays(current.anchor, item.offset));
+        if (item.range) return `${formatDate(addDays(current.anchor, item.range[0]))} ~ ${formatDate(addDays(current.anchor, item.range[1]))}`;
+        return '이사 후 · 날짜 직접 정하기';
+      }
+      if (flow.id === 'heat') return current.anchor ? `${formatDate(parseDate(current.anchor))} · ${item.timing}` : item.timing;
+      if (flow.id === 'route') {
+        const time = current.times[item.id];
+        return time ? `${item.timing} · ${time}` : `${item.timing} · 시각 미정`;
+      }
+      return item.timing;
+    }
+
+    function outcomeText(flow) {
+      const current = state[flow.id];
+      if (flow.id === 'moving') return current.anchor
+        ? `${formatInputDate(current.anchor)} 이사일 → 날짜 일정 5개 + 이사 후 체크 1개`
+        : '이사일 미입력 → 상대 시점 체크리스트 6개';
+      if (flow.id === 'course') {
+        const next = flow.items.find(item => !current.completed.has(item.id));
+        return `주차 진도 ${current.completed.size}/14${next ? ` · 다음 ${next.timing} ${next.title}` : ' · 14주 완료'}`;
+      }
+      if (flow.id === 'heat') return current.anchor
+        ? `${formatInputDate(current.anchor)} 작업일 → 실행 2개 + 현장 기준 4개`
+        : '작업일 미입력 → 조건부 안전 브리핑 · 자동 반복 없음';
+      if (flow.id === 'contract') return '원문 확인 항목 10개 → 계약 검토 시트 7행 · 내보내기 잠금';
+      const timed = Object.values(current.times).filter(Boolean).length;
+      return `${formatInputDate(current.anchor)} 여행일 → 경로 4곳 · 시각 입력 ${timed}/4 · 내보내기 잠금`;
+    }
+
+    function renderSources() {
+      $('#sourceList').innerHTML = FLOWS.map(flow => `
+        <button class="source-button" type="button" role="tab" aria-selected="${flow.id === activeFlowId}" data-flow-id="${flow.id}">
+          <span class="source-topline"><span class="source-type">${escapeHtml(flow.type)}</span>${flow.status === 'locked' ? '<span class="lock-mini">검토 잠금</span>' : ''}</span>
+          <strong>${escapeHtml(flow.shortTitle)}</strong>
+          <small>${escapeHtml(flow.publisher)} · ${escapeHtml(flow.countLabel || `${flow.items.length}개 실행 묶음`)}</small>
+        </button>
+      `).join('');
+
+      document.querySelectorAll('[data-flow-id]').forEach(button => {
+        button.addEventListener('click', () => {
+          activeFlowId = button.dataset.flowId;
+          activeDestination = getFlow().primary;
+          renderAll();
+        });
+      });
+    }
+
+    function renderControl(flow) {
+      if (!flow.control) {
+        return `<div class="setup-box"><div class="usage-note"><strong>추가 입력 없이 시작</strong><br>계약서를 옆에 두고 각 항목의 위치·확인 결과·질문을 시트에 기록하는 형태입니다.</div></div>`;
+      }
+      const current = state[flow.id];
+      if (flow.control.kind === 'progress_table') {
+        const next = flow.items.find(item => !current.completed.has(item.id));
+        return `
+          <div class="setup-box">
+            <div class="setup-grid">
+              <div>
+                <h2 class="setup-title">완료한 주차만 체크</h2>
+                <div class="usage-note"><strong>사용자 상태 예시 · ${current.completed.size}/14주 완료</strong><br>${next ? `다음 행 · ${escapeHtml(next.timing)} ${escapeHtml(next.title)}` : '모든 주차를 완료했습니다.'}</div>
+              </div>
+              <div class="usage-note"><strong>원문 행과 내 상태의 경계</strong><br>주차·주제·활동, 8월 31일 종료, 80% 참여 조건은 원문 값입니다. 완료 상태만 사용자가 체크하며 세부 마감일은 만들지 않습니다.</div>
+            </div>
+          </div>`;
+      }
+      if (flow.id === 'heat') {
+        return `
+          <div class="setup-box">
+            <div class="setup-grid">
+              <div>
+                <h2 class="setup-title">필요한 작업일에 한 번 열기</h2>
+                <label class="field-label" for="anchorInput">${flow.control.label}</label>
+                <div class="input-wrap"><input id="anchorInput" type="date" value="${escapeHtml(current.anchor)}"></div>
+                <p class="setup-note">${flow.control.note}</p>
+              </div>
+              <div class="usage-note"><strong>농작업 있는 날마다 새 회차</strong><br>작업 전·후 두 행동만 그날 완료로 남기고, 작업 중·중단·응급·책임자 기준은 매 회차 계속 보는 카드로 둡니다.</div>
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="setup-box">
+          <div class="setup-grid">
+            <div>
+              <h2 class="setup-title">내 조건 하나만 조정</h2>
+              <label class="field-label" for="anchorInput">${flow.control.label}</label>
+              <div class="input-wrap"><input id="anchorInput" type="date" value="${escapeHtml(current.anchor)}"></div>
+              <p class="setup-note">${flow.control.note}</p>
+            </div>
+            <div class="usage-note"><strong>원문과 내 값의 경계</strong><br>항목·순서·조건은 원문에서, 날짜와 시각은 사용자가 넣은 값에서 옵니다.</div>
+          </div>
+        </div>`;
+    }
+
+    function renderItem(flow, item, index) {
+      const current = state[flow.id];
+      const checkable = item.checkable !== false;
+      const done = checkable && current.completed.has(item.id);
+      const open = current.openItem === item.id;
+      const visual = item.visual || 'reference';
+      return `
+        <div class="flow-item ${done ? 'done' : ''} ${checkable ? '' : `${visual}-card`}">
+          ${checkable
+            ? `<button class="check-button" type="button" aria-pressed="${done}" aria-label="${escapeHtml(item.title)} ${done ? '완료 취소' : '완료'}" data-check-id="${item.id}">✓</button>`
+            : `<span class="item-marker ${visual}" aria-label="완료 체크 대상이 아닌 ${escapeHtml(item.timing)} 기준">${escapeHtml(item.marker || '기준')}</span>`}
+          <div class="item-main">
+            <span class="item-timing" data-item-schedule="${item.id}">${escapeHtml(itemSchedule(flow, item))}</span>
+            <h3 class="item-title">${index + 1}. ${escapeHtml(item.title)}</h3>
+            <p class="item-summary">${escapeHtml(item.details.slice(0, 2).join(' · '))}${item.details.length > 2 ? ` 외 ${item.details.length - 2}개` : ''}</p>
+            ${item.timeInput ? `<div class="time-field"><label for="time-${item.id}">방문 시각</label><input id="time-${item.id}" data-time-id="${item.id}" type="time" value="${escapeHtml(current.times[item.id] || '')}" aria-label="${escapeHtml(item.title)} 방문 시각"></div>` : ''}
+          </div>
+          <button class="detail-toggle" type="button" aria-expanded="${open}" data-detail-id="${item.id}">${open ? '근거 닫기' : '원문 근거'}</button>
+          ${open ? `
+            <div class="item-extra">
+              <ul class="detail-list">${item.details.map(detail => `<li>${escapeHtml(detail)}</li>`).join('')}</ul>
+              <p class="criterion"><strong>완료 기준</strong> · ${escapeHtml(item.criterion)}</p>
+              <div class="source-ref">원문 위치 · ${escapeHtml(item.source)}</div>
+            </div>` : ''}
+        </div>`;
+    }
+
+    function renderCourseProgress(flow) {
+      const current = state[flow.id];
+      return `
+        <div class="course-table-wrap">
+          <table class="course-table">
+            <thead><tr><th>완료</th><th>주차</th><th>학습 주제</th><th>활동</th><th>상태</th></tr></thead>
+            <tbody>${flow.items.map(item => {
+              const done = current.completed.has(item.id);
+              const noActivity = item.activity === '표시 없음(—)';
+              return `<tr class="${done ? 'done' : ''}">
+                <td><button class="check-button" type="button" aria-pressed="${done}" aria-label="${escapeHtml(item.timing)} ${escapeHtml(item.title)} ${done ? '완료 취소' : '완료'}" data-check-id="${item.id}">✓</button></td>
+                <td>${escapeHtml(item.timing)}</td>
+                <td><span class="course-topic">${escapeHtml(item.title)}</span></td>
+                <td><span class="activity-chip ${noActivity ? 'none' : ''}">${escapeHtml(item.activity)}</span></td>
+                <td>${done ? '완료' : '진행 전'}</td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>`;
+    }
+
+    function renderStage() {
+      const flow = getFlow();
+      const current = getState();
+      const checkableItems = flow.items.filter(item => item.checkable !== false);
+      const completed = checkableItems.filter(item => current.completed.has(item.id)).length;
+      const percent = checkableItems.length ? Math.round((completed / checkableItems.length) * 100) : 0;
+      $('#flowStage').innerHTML = `
+        <div class="flow-hero">
+          <div class="meta-row">
+            <span class="chip">${escapeHtml(flow.type)}</span>
+            <span class="chip ${flow.status === 'locked' ? 'review' : 'ready'}">${escapeHtml(flow.statusLabel)}</span>
+            <span class="chip">${flow.caseId}</span>
+          </div>
+          <h2 class="flow-title">${escapeHtml(flow.title)}</h2>
+          <p class="flow-promise">${escapeHtml(flow.promise)}</p>
+          <div class="outcome-strip">
+            <div><span>이 Flow를 쓰면</span><strong id="flowOutcome">${escapeHtml(outcomeText(flow))}</strong></div>
+            <button class="ghost-button" id="openPreferred" type="button">${DESTINATIONS[flow.primary].label} 결과 보기</button>
+          </div>
+        </div>
+        ${renderControl(flow)}
+        <div class="progress-box">
+          <div class="progress-copy"><strong>${flow.id === 'heat' ? '오늘 실행 기록' : '실행 진행'}</strong><span>${completed} / ${checkableItems.length} 완료</span></div>
+          <div class="progress-track" aria-label="${percent}% 완료"><div class="progress-value" style="width:${percent}%"></div></div>
+        </div>
+        <section class="items-section" aria-labelledby="itemListTitle">
+          <div class="section-title-row"><div><h2 id="itemListTitle">${escapeHtml(flow.itemsTitle || '먼저 할 일')}</h2><p>${escapeHtml(flow.userJob)}</p></div></div>
+          ${flow.id === 'course' ? renderCourseProgress(flow) : `<div class="item-list">${flow.items.map((item, index) => renderItem(flow, item, index)).join('')}</div>`}
+        </section>
+        <div class="source-risk">
+          <section class="source-card">
+            <div class="mini-heading"><span class="mini-dot"></span>원문과 근거</div>
+            <p><strong>${escapeHtml(flow.publisher)}</strong><br>${escapeHtml(flow.sourceTitle)}</p>
+            <p>${escapeHtml(flow.sourceRowsLabel || `원문 행 ${flow.sourceRows}개`)} → ${escapeHtml(flow.countLabel || `실행 묶음 ${flow.items.length}개`)} · 확인 ${flow.checkedAt}</p>
+            <div class="source-links">
+              <a class="source-link" href="${escapeHtml(flow.sourceUrl)}" target="_blank" rel="noopener noreferrer">원문 새 창에서 보기 ↗</a>
+              ${flow.sourcePlanUrl ? `<a class="source-link" href="${escapeHtml(flow.sourcePlanUrl)}" target="_blank" rel="noopener noreferrer">강의계획서 이미지 보기 ↗</a>` : ''}
+            </div>
+          </section>
+          <section class="risk-card">
+            <div class="mini-heading"><span class="mini-dot warning"></span>주의할 점</div>
+            <p>${escapeHtml(flow.warning)}</p>
+            <p>${escapeHtml(flow.rights)}</p>
+            <p class="not-added"><strong>덧붙이지 않은 것</strong><br>${escapeHtml(flow.notAdded)}</p>
+          </section>
+        </div>`;
+
+      bindStageEvents();
+    }
+
+    function bindStageEvents() {
+      const flow = getFlow();
+      document.querySelectorAll('[data-check-id]').forEach(button => {
+        button.addEventListener('click', () => {
+          const current = getState();
+          const id = button.dataset.checkId;
+          current.completed.has(id) ? current.completed.delete(id) : current.completed.add(id);
+          renderStage();
+          renderOutput();
+          $('#introExample').textContent = outcomeText(flow);
+        });
+      });
+      document.querySelectorAll('[data-detail-id]').forEach(button => {
+        button.addEventListener('click', () => {
+          const current = getState();
+          current.openItem = current.openItem === button.dataset.detailId ? null : button.dataset.detailId;
+          renderStage();
+        });
+      });
+      document.querySelectorAll('[data-time-id]').forEach(input => {
+        input.addEventListener('input', () => {
+          getState().times[input.dataset.timeId] = input.value;
+          updateDynamicViews();
+        });
+      });
+      const anchorInput = $('#anchorInput');
+      if (anchorInput) anchorInput.addEventListener('input', () => {
+        getState().anchor = anchorInput.value;
+        updateDynamicViews(true);
+      });
+      $('#openPreferred')?.addEventListener('click', () => {
+        activeDestination = flow.primary;
+        renderOutput();
+        openMobileOutput();
+      });
+    }
+
+    function updateDynamicViews(rerenderStage = false) {
+      if (rerenderStage) renderStage();
+      const flow = getFlow();
+      const flowOutcome = $('#flowOutcome');
+      if (flowOutcome) flowOutcome.textContent = outcomeText(flow);
+      flow.items.forEach(item => {
+        const schedule = document.querySelector(`[data-item-schedule="${item.id}"]`);
+        if (schedule) schedule.textContent = itemSchedule(flow, item);
+      });
+      renderOutput();
+      const text = outcomeText(flow);
+      $('#introExample').textContent = text;
+      $('#mobilePrimaryButton').textContent = getFlow().status === 'locked' ? '검토 잠금 확인' : `${DESTINATIONS[activeDestination].label}로 써보기`;
+    }
+
+    function calendarPreview(flow) {
+      const current = state[flow.id];
+      if (flow.id === 'moving') {
+        if (!current.anchor) return emptyPreview('이사일을 넣으면 날짜가 생깁니다.', '체크리스트는 날짜 없이도 바로 쓸 수 있습니다.', 'checklist');
+        const scheduled = flow.items.filter(item => Number.isFinite(item.offset) || item.range);
+        return `
+          <div class="destination-summary"><span>CALENDAR</span><strong>날짜 일정 ${scheduled.length}개 · 미정 1개</strong></div>
+          <div class="preview-list">${scheduled.map(item => previewRow(itemSchedule(flow, item), item.title, item.details.join(' · '), current.completed.has(item.id))).join('')}</div>
+          <div class="unscheduled"><strong>날짜 없는 항목 1개</strong><br>‘이사 후 처리’는 임의 날짜를 만들지 않고 체크리스트에 남습니다.</div>`;
+      }
+      if (flow.id === 'course') {
+        return `<div class="destination-summary"><span>CALENDAR</span><strong>원문에서 확인된 기간만 3개</strong></div><div class="preview-list">${flow.calendarWindows.map(row => previewRow(row.date, row.title, row.note, false)).join('')}</div><div class="unscheduled">14주 강의의 개별 날짜는 원문에서 확인되지 않아 만들지 않습니다.</div>`;
+      }
+      if (flow.id === 'heat') {
+        if (!current.anchor) return emptyPreview('작업일을 선택하면 하루 일정이 생깁니다.', '개별 행동은 현장 체크리스트 안에 유지됩니다.', 'checklist');
+        const actions = flow.items.filter(item => item.checkable !== false);
+        const references = flow.items.filter(item => item.checkable === false);
+        return `<div class="destination-summary"><span>CALENDAR</span><strong>선택한 작업일 브리핑 1개 · 자동 반복 없음</strong></div>
+          <div class="preview-list">${previewRow(formatDate(parseDate(current.anchor), true), flow.title, '작업 전·후 실행 2개와 현장 안전 기준 4개 확인', actions.every(item => current.completed.has(item.id)))}</div>
+          <div class="unscheduled"><strong>일정 설명에 함께 보존되는 현장 기준</strong><br>${references.map(item => `<strong>${escapeHtml(item.timing)} · ${escapeHtml(item.title)}</strong><br>${escapeHtml(item.details.join(' · '))}`).join('<br><br>')}</div>
+          <div class="output-warning">${escapeHtml(flow.warning)}</div>`;
+      }
+      if (flow.id === 'contract') return emptyPreview('이 Flow는 날짜를 만들지 않습니다.', '계약 확인표를 시트로 쓰는 편이 자연스럽습니다.', 'sheet');
+      const timedItems = flow.items.filter(item => current.times[item.id]);
+      if (!current.anchor || timedItems.length === 0) return emptyPreview('여행일과 장소별 시각이 모두 사용자 값이어야 합니다.', '지금은 순서형 체크리스트만 준비되어 있습니다.', 'checklist');
+      return `<div class="destination-summary"><span>CALENDAR</span><strong>사용자가 시각을 넣은 장소 ${timedItems.length}개</strong></div><div class="preview-list">${timedItems.map(item => previewRow(`${formatDate(parseDate(current.anchor))} ${current.times[item.id]}`, item.title, '체류시간·이동시간 미설정', current.completed.has(item.id))).join('')}</div><div class="output-warning">검토 잠금 상태라 실제 외부 내보내기는 하지 않습니다.</div>`;
+    }
+
+    function checklistPreview(flow) {
+      const current = state[flow.id];
+      if (flow.id === 'heat') {
+        const actions = flow.items.filter(item => item.checkable !== false);
+        const references = flow.items.filter(item => item.checkable === false);
+        const completed = actions.filter(item => current.completed.has(item.id)).length;
+        return `<div class="destination-summary"><span>CHECKLIST</span><strong>실행 ${completed}/${actions.length} · 고정 안전 기준 ${references.length}개</strong></div>
+          <div class="preview-list">${actions.map(item => previewRow(item.timing, item.title, item.criterion, current.completed.has(item.id))).join('')}</div>
+          <div class="unscheduled"><strong>체크하지 않는 현장 기준</strong><br>${references.map(item => `<strong>${escapeHtml(item.timing)} · ${escapeHtml(item.title)}</strong><br>${escapeHtml(item.details.join(' · '))}`).join('<br><br>')}</div>
+          <div class="output-warning">${escapeHtml(flow.warning)}</div>`;
+      }
+      return `<div class="destination-summary"><span>CHECKLIST</span><strong>${current.completed.size}/${flow.items.length} 완료 · 원문 실행 묶음 ${flow.items.length}개</strong></div><div class="preview-list">${flow.items.map(item => previewRow(itemSchedule(flow, item), item.title, item.criterion, current.completed.has(item.id))).join('')}</div>`;
+    }
+
+    function sheetPreview(flow) {
+      const current = state[flow.id];
+      let headers = ['구간', '실행 항목', '상태', '원문'];
+      let statusIndex = 2;
+      let rows = flow.items.map(item => [itemSchedule(flow, item), item.title, item.checkable === false ? '고정 기준' : (current.completed.has(item.id) ? '완료' : '미완료'), item.source]);
+      if (flow.id === 'heat') {
+        headers = ['구분', '실행·안전 기준', '상태', '세부 원문 기준'];
+        rows = flow.items.map(item => [
+          item.timing,
+          item.title,
+          item.checkable === false ? '고정 기준' : (current.completed.has(item.id) ? '완료' : '미완료'),
+          item.details.join(' · ')
+        ]);
+      }
+      if (flow.id === 'contract') {
+        headers = ['확인 항목', '계약서 위치', '확인 결과', '질문'];
+        rows = flow.items.map(item => [item.title, '직접 입력', current.completed.has(item.id) ? '확인' : '확인 전', '직접 입력']);
+      }
+      if (flow.id === 'course') {
+        headers = ['주차', '학습 주제', '활동', '내 상태', '메모'];
+        rows = flow.items.map(item => [item.timing, item.title, item.activity, current.completed.has(item.id) ? '완료' : '진행 전', '직접 입력']);
+        statusIndex = 3;
+      }
+      return `<div class="destination-summary"><span>SHEET</span><strong>${rows.length}행 · 필요한 값만 직접 기록</strong></div><div class="preview-table-wrap"><table class="preview-table"><thead><tr>${headers.map(head => `<th>${escapeHtml(head)}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${row.map((cell, index) => `<td class="${index === statusIndex ? 'status-cell' : ''}">${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    }
+
+    function memoText(flow) {
+      const current = state[flow.id];
+      const itemLines = flow.items.flatMap((item, index) => {
+        const marker = item.checkable === false ? '•' : (current.completed.has(item.id) ? '[x]' : '[ ]');
+        const lines = [`${marker} ${index + 1}. ${item.title} — ${itemSchedule(flow, item)}`];
+        if (flow.id === 'heat') lines.push(...item.details.map(detail => `   - ${detail}`));
+        return lines;
+      });
+      const lines = [
+        `# ${flow.title}`,
+        '',
+        `목적: ${flow.userJob}`,
+        '',
+        ...itemLines,
+        '',
+        `주의: ${flow.warning}`,
+        `출처: ${flow.publisher} · ${flow.sourceUrl}`
+      ];
+      return lines.join('\n');
+    }
+
+    function memoPreview(flow) {
+      return `<div class="destination-summary"><span>MEMO</span><strong>출처·주의가 붙은 실행 메모</strong></div><div class="memo-preview">${escapeHtml(memoText(flow))}</div>`;
+    }
+
+    function previewRow(label, title, note, done) {
+      return `<div class="preview-row ${done ? 'done' : ''}"><span class="row-label">${escapeHtml(label)}</span><div><strong>${done ? '✓ ' : ''}${escapeHtml(title)}</strong><small>${escapeHtml(note)}</small></div></div>`;
+    }
+
+    function emptyPreview(title, copy, switchTo) {
+      return `<div class="empty-preview"><strong>${escapeHtml(title)}</strong><p>${escapeHtml(copy)}</p><button class="switch-link" type="button" data-switch-destination="${switchTo}">${DESTINATIONS[switchTo].label} 결과 보기 →</button></div>`;
+    }
+
+    function outputText(flow, destination) {
+      if (destination === 'memo') return memoText(flow);
+      const current = state[flow.id];
+      if (flow.id === 'course' && destination === 'sheet') {
+        return [
+          `${flow.title} / 시트`,
+          '주차\t학습 주제\t활동\t내 상태\t메모',
+          ...flow.items.map(item => `${item.timing}\t${item.title}\t${item.activity}\t${current.completed.has(item.id) ? '완료' : '진행 전'}\t`),
+          `출처: ${flow.publisher} ${flow.sourceUrl}`,
+          `주의: ${flow.warning}`
+        ].join('\n');
+      }
+      if (flow.id === 'heat') {
+        if (destination === 'sheet') {
+          return [
+            `${flow.title} / 시트`,
+            '구분\t실행·안전 기준\t상태\t세부 원문 기준',
+            ...flow.items.map(item => `${item.timing}\t${item.title}\t${item.checkable === false ? '고정 기준' : (current.completed.has(item.id) ? '완료' : '미완료')}\t${item.details.join(' · ')}`),
+            `출처: ${flow.publisher} ${flow.sourceUrl}`,
+            `주의: ${flow.warning}`
+          ].join('\n');
+        }
+        const itemLines = flow.items.flatMap(item => [
+          `${item.checkable === false ? '[기준]' : (current.completed.has(item.id) ? '[완료]' : '[ ]')} ${itemSchedule(flow, item)} | ${item.title}`,
+          ...item.details.map(detail => `  - ${detail}`)
+        ]);
+        return [
+          `${flow.title} / ${DESTINATIONS[destination].label}`,
+          outcomeText(flow),
+          ...itemLines,
+          `출처: ${flow.publisher} ${flow.sourceUrl}`,
+          `주의: ${flow.warning}`
+        ].join('\n');
+      }
+      return [
+        `${flow.title} / ${DESTINATIONS[destination].label}`,
+        outcomeText(flow),
+        ...flow.items.map(item => `${item.checkable === false ? '[기준]' : (current.completed.has(item.id) ? '[완료]' : '[ ]')} ${itemSchedule(flow, item)} | ${item.title}`),
+        `출처: ${flow.publisher} ${flow.sourceUrl}`,
+        `주의: ${flow.warning}`
+      ].join('\n');
+    }
+
+    async function copyOutput() {
+      const flow = getFlow();
+      if (flow.status === 'locked') {
+        showToast('검토 잠금 상태입니다. 형태만 확인할 수 있습니다.');
+        return;
+      }
+      const text = outputText(flow, activeDestination);
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (_) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+      }
+      showToast(`${DESTINATIONS[activeDestination].label} 형태를 복사했습니다. 실제 연동은 하지 않는 시제품입니다.`);
+    }
+
+    function renderOutput() {
+      const flow = getFlow();
+      $('#destinationTabs').innerHTML = Object.entries(DESTINATIONS).map(([id, destination]) => `
+        <button class="tab" type="button" role="tab" aria-selected="${id === activeDestination}" data-destination="${id}">${destination.label}</button>
+      `).join('');
+      const renderers = { calendar: calendarPreview, checklist: checklistPreview, sheet: sheetPreview, memo: memoPreview };
+      $('#outputBody').innerHTML = renderers[activeDestination](flow);
+      const locked = flow.status === 'locked';
+      $('#outputActions').innerHTML = `
+        <button class="primary-button" id="copyOutput" type="button" ${locked ? 'disabled' : ''}>${locked ? '공개·내보내기 검토 잠금' : DESTINATIONS[activeDestination].action}</button>
+        <p class="action-note">${locked ? '권리·전문 검토가 끝나기 전에는 형태만 봅니다.' : '복사 결과에는 출처와 주의 문구가 함께 포함됩니다.'}</p>`;
+
+      document.querySelectorAll('[data-destination]').forEach(button => button.addEventListener('click', () => {
+        activeDestination = button.dataset.destination;
+        renderOutput();
+        $('#mobilePrimaryButton').textContent = flow.status === 'locked' ? '검토 잠금 확인' : `${DESTINATIONS[activeDestination].label}로 써보기`;
+      }));
+      document.querySelectorAll('[data-switch-destination]').forEach(button => button.addEventListener('click', () => {
+        activeDestination = button.dataset.switchDestination;
+        renderOutput();
+      }));
+      $('#copyOutput')?.addEventListener('click', copyOutput);
+    }
+
+    function showToast(message) {
+      const toast = $('#toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    function openMobileOutput() {
+      if (!window.matchMedia('(max-width: 1020px)').matches) {
+        $('#outputPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+      $('#outputPanel').classList.add('mobile-open');
+      $('#scrim').classList.add('show');
+      document.body.style.overflow = 'hidden';
+      $('#closeOutput').focus();
+    }
+
+    function closeMobileOutput() {
+      $('#outputPanel').classList.remove('mobile-open');
+      $('#scrim').classList.remove('show');
+      document.body.style.overflow = '';
+      $('#mobileOutputButton').focus();
+    }
+
+    function renderAll() {
+      renderSources();
+      renderStage();
+      renderOutput();
+      $('#introExample').textContent = outcomeText(getFlow());
+      $('#mobilePrimaryButton').textContent = getFlow().status === 'locked' ? '검토 잠금 확인' : `${DESTINATIONS[activeDestination].label}로 써보기`;
+    }
+
+    $('#mobileOutputButton').addEventListener('click', openMobileOutput);
+    $('#mobilePrimaryButton').addEventListener('click', () => {
+      openMobileOutput();
+      if (getFlow().status === 'locked') showToast('이 사례는 권리·전문 검토가 필요해 내보내기가 잠겨 있습니다.');
+    });
+    $('#closeOutput').addEventListener('click', closeMobileOutput);
+    $('#scrim').addEventListener('click', closeMobileOutput);
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && $('#outputPanel').classList.contains('mobile-open')) closeMobileOutput();
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
