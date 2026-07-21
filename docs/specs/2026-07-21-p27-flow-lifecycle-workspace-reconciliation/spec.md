@@ -1,10 +1,12 @@
 # P27 Flow Lifecycle Workspace Reconciliation Spec
 
-상태: `planning_ready`
+상태: `implementation_complete_internal_evidence`
 
 작성일: 2026-07-21
 
-현재 source 기준: `origin/main` `63ea641`
+시작 source 기준: `origin/main` `63ea641`
+
+구현 기준: `118dec9` + [P27 final package](../../content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md)
 
 관련 종합 근거: [P27 사용자 피드백 종합 판단](../../content-audit/2026-07-21-p27-user-feedback-synthesis/README.md)
 

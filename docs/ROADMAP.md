@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-07-20<br>
+**Last Updated:** 2026-07-21<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P26 released, observation not started<br>
+**Current Validation Stage:** internal alpha / P27 implementation green, publish pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P27 bounded UX comparisons over the released P26 contracts
+**Next Milestone:** P27 canonical release and independent production review
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,25 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P27 Flow Lifecycle Workspace Reconciliation
+
+P27 preserves P26's canonical Flow, source/personal/run/occurrence ownership, and projection identity. It reconciles the journey from save-before adjustment through My Flow execution, Calendar, export, archive, and restore.
+
+Detailed scope: [P27 lifecycle workspace spec](./specs/2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md).
+Internal closeout: [P27 final package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md).
+
+| Track | Result | State |
+| --- | --- | --- |
+| Foundation | meaningful `/flows` and `/my` server document, Calendar named wrappers | Internally complete |
+| Reversible lifecycle | Flow archive/undo/restore and source-safe Item exclusion | Internally complete |
+| Routine/resource | preview horizon vs series end, resource vs subcheck | Internally complete |
+| Save-before | whole preview and one active adjustment operation | Internally complete |
+| My Flow | adaptive compact/searchable library and whole-workspace result | Internally complete |
+| Calendar/export | scope parity, compact receipt and export preflight | Internally complete |
+| Integration | pretest `24`, unit `571`, E2E `339`, screenshots `8` | Internally complete; canonical publish pending |
+
+P27 does not claim observed usability. Search threshold, first adjustment mode, archive wording, and resource discovery remain human-study questions. Permanent delete, account persistence, direct integrations, and real AI/crawler remain gated.
 
 ## P26 Structural Correction Program
 
@@ -110,7 +129,7 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P25 is the deployed internal baseline. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P26 remains canonical production until the P27 branch is merged and deployed. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
@@ -149,7 +168,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-P26-00C~20 is merged, deployed, and production-smoked. Use the four remaining Medium hypotheses as bounded P27 comparison candidates: mobile batch-editor density, wide undated-rail title inspection, mobile Calendar composition, and recurring-occurrence detail hierarchy. Do not reopen stable identity/projection contracts without current regression evidence. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, and observed-user recruitment remain gated.
+Merge and deploy the internally green P27 branch, then run the package's independent read-only review against the canonical URL and merged source. Do not start another broad UX program or recruit participants until production parity is confirmed and any new Blocking/High finding is reconciled. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, permanent delete, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

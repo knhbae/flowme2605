@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-20 (P26 released; automated gates complete, observation not started)
-**Status:** v0.1.0 RELEASED / P26 COMPLETE, OBSERVATION NOT STARTED
+**Last Updated:** 2026-07-21 (P27 internal implementation complete; publish verification pending)
+**Status:** v0.1.0 RELEASED / P27 INTERNAL GATE COMPLETE, OBSERVATION NOT STARTED
 **Current Version:** v0.1.0  
-**Primary Focus:** Preserve the released [P26 structural-correction program](./specs/2026-07-20-p26-program/spec.md) and use its [final review package](./content-audit/2026-07-20-p26-final-review-package/README.md) to choose bounded P27 comparisons. PR #139 merged as `0a33dd84`; canonical production is READY at <https://flowme2605.vercel.app>; production smoke is `12 / 12`. Actual user validation remains `0 / 15`; automated QA, prototype metrics, and simulated personas are not user validation.
+**Primary Focus:** Publish and independently review the [P27 Flow lifecycle workspace reconciliation](./specs/2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md). Internal evidence at implementation commit `118dec9` is pretest `24/24`, unit `571/571`, build `18 routes`, Playwright `339/339`, screenshots `8`, and overflow/browser/unnamed-control counts `0`. The [P27 final package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md) is automated/browser evidence only; observed-user sessions remain `0`.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P26 released; select a bounded P27 comparison without reopening stable ownership contracts |
-| User action now | Optional review of current production and P26 final package; no participant recruitment |
-| AI action now | Compare the four Medium visual hypotheses and propose a narrow P27 backlog |
+| Active product gate | P27 implementation is internally green; merge, canonical production deploy, and independent read-only review remain |
+| User action now | Review the P27 final package after canonical production is updated; no participant recruitment |
+| AI action now | Publish the scoped P27 branch, verify production SHA/routes, then run the independent-review prompt |
 | Blocked by evidence | Account persistence choice, creator/update pilot, real AI backend, and observed usability claims |
-| Completed planning | P26 canonical program spec and P26-00C product-object/journey decision |
+| Completed planning | P27 lifecycle workspace reconciliation spec and feedback synthesis |
 
 ## Recent Direction Notes
+
+- 2026-07-21 P27 internal implementation gate: Flow archive/undo/persistent restore, source Item exclusion, truthful routine preview horizon, resource/subcheck ownership, one-operation save-before adjustment, adaptive My Flow library/search, Calendar scope/accessibility, and compact post-save/export are connected without rewriting P26 identities. Current command/browser evidence is pretest `24/24`, unit `571/571`, build `18 routes`, targeted P27 `12/12`, full Playwright `339/339`, screenshots `8`, and overflow/console/page/unnamed-control counts `0`. Canonical merge/deploy verification is still pending; observed-user sessions remain `0`. See [P27 final package](./content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md).
 
 - 2026-07-20 P26-20 released: source gates pass with pretest `13 / 13`, unit `564 / 564`, build `18 / 18`, and high/critical security findings `0` with two moderate Next/PostCSS findings disclosed. Local exact E2E accounting covers all `327` scenarios and final GitHub CI passes `327 / 327`. PR #139 merged as `0a33dd84`; Vercel deployment `dpl_E5mNsqgVsRWNPefjAg5zXoNUEXYy` is READY at the canonical URL. Production smoke passes `12 / 12` with HTTP/redirect/overflow/console/page error counts all `0`. P26-20 changes no app/runtime source. Observed-user sessions remain `0`. See [P26 final review package](./content-audit/2026-07-20-p26-final-review-package/README.md).
 

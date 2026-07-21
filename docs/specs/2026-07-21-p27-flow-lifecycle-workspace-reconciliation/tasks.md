@@ -2,6 +2,30 @@
 
 상태 표기: `[ ]` 미착수, `[-]` 진행 중, `[x]` 완료, `[!]` blocked.
 
+## 2026-07-21 implementation closeout
+
+이 문서 아래의 세부 checkbox는 최초 planning decomposition을 보존한다. 현재 실행 상태의 정본은 다음 표와 [P27 final package](../../content-audit/2026-07-21-p27-lifecycle-workspace-final/README.md)다.
+
+| Track | 상태 | 근거 |
+| --- | --- | --- |
+| R00A comparison gate | `[x]` owner implementation authorization + iterative current-browser comparison | feedback synthesis, final captures |
+| R00F SSR/accessibility foundation | `[x]` | server-document E2E, named-control capture |
+| R01 lifecycle contract/UI | `[x]` | archive/undo/persistent restore, source exclusion tests |
+| R02 recurrence/resource | `[x]` | truthful horizon, series/occurrence, resource/subcheck tests |
+| R03 save-before workspace | `[x]` | whole preview + one active adjustment mode + same-outline save |
+| R04 My Flow | `[x]` | 3/12 fixtures, adaptive search, whole-workspace search result |
+| R05 confirmation/resource edit | `[x]` | personal nested overlay and reload tests |
+| R06 Calendar | `[x]` | Flow scope, undated placement, named recurrence wrapper |
+| R07 export/post-save | `[x]` | compact receipt and scope/count preflight |
+| R08 regression/final | `[x]` internal command/browser gate | pretest 24, unit 571, E2E 339, screenshots 8 |
+
+Deferred product boundaries, not incomplete P27 implementation:
+
+- permanent delete data manager
+- save-before personal resource editing beyond source preview
+- account-backed persistence and cross-device continuity
+- observed-user validation; current count `0`
+
 ## P27-R00A 비교 prototype gate
 
 - [ ] clean `origin/main` SHA와 production release 차이 기록
