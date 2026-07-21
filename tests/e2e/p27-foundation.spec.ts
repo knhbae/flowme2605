@@ -1,5 +1,16 @@
 import { expect, test } from '@playwright/test';
 
+async function expectNoHorizontalOverflow(page: import('@playwright/test').Page) {
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2)).toBe(false);
+}
+
+async function enterMyFlowDetailEditMode(detail: import('@playwright/test').Locator) {
+  const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+  if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
+  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  await expect(detail).toHaveAttribute('data-detail-mode', 'edit');
+}
+
 async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
@@ -121,5 +132,68 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(excluded.getByTestId('my-flow-excluded-step-row')).toHaveCount(1);
     await excluded.getByTestId('my-flow-restore-excluded-item').click();
     await expect(reloadedCard.getByTestId('my-flow-whole-flow-outline').getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
+  });
+
+  test('workout confirmation items and resources use a persistent personal overlay', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/f/curated-allblanc-morning-workout');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '이 날짜로 시작' }).click();
+    await expect.poll(() => page.evaluate(() => Boolean(
+      window.localStorage.getItem('flow:saved:curated-allblanc-morning-workout'),
+    ))).toBe(true);
+
+    await page.goto('/my');
+    await page.getByTestId('my-flow-view-flow').click();
+    let flowCard = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-allblanc-morning-workout"]',
+    );
+    await flowCard.getByTestId('my-flow-mobile-structure-open').click();
+    let outline = flowCard.getByTestId('my-flow-whole-flow-outline');
+    await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+    let detail = flowCard.getByTestId('my-flow-item-detail');
+    await enterMyFlowDetailEditMode(detail);
+
+    const subcheckEditor = detail.getByTestId('my-flow-subcheck-editor');
+    await subcheckEditor.locator('summary').click();
+    await subcheckEditor.getByLabel(/확인 항목 추가/).fill('운동 전 통증 확인');
+    await subcheckEditor.getByRole('button', { name: '추가', exact: true }).click();
+    await expect(subcheckEditor.getByTestId('my-flow-subcheck-edit-input')).toHaveCount(1);
+
+    const resourceEditor = detail.getByTestId('my-flow-resource-editor');
+    await resourceEditor.locator('summary').click();
+    await expect(resourceEditor.getByTestId('my-flow-resource-label-input')).toHaveCount(2);
+    await resourceEditor.getByTestId('my-flow-resource-label-input').first().fill('오늘 운동 영상');
+    await resourceEditor.getByRole('button', { name: /자료 목록에서 빼기/ }).nth(1).click();
+    await expect(resourceEditor.getByTestId('my-flow-resource-label-input')).toHaveCount(1);
+
+    await detail.getByTestId('my-flow-detail-save-changes').click();
+    await expect(detail).toHaveCount(0);
+
+    await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+    detail = flowCard.getByTestId('my-flow-item-detail');
+    await expect(detail.getByTestId('my-flow-item-checklist')).toContainText('운동 전 통증 확인');
+    await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(1);
+    await expect(detail.getByTestId('my-flow-item-resource-link')).toContainText('오늘 운동 영상');
+    const subcheck = detail.getByTestId('my-flow-item-checklist').getByRole('checkbox');
+    await subcheck.check();
+    await expect(subcheck).toBeChecked();
+    await subcheck.uncheck();
+    await expect(subcheck).not.toBeChecked();
+    await detail.getByRole('button', { name: '닫기', exact: true }).click();
+
+    await page.reload();
+    flowCard = page.locator(
+      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-allblanc-morning-workout"]',
+    );
+    await flowCard.getByTestId('my-flow-mobile-structure-open').click();
+    outline = flowCard.getByTestId('my-flow-whole-flow-outline');
+    await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+    detail = flowCard.getByTestId('my-flow-item-detail');
+    await expect(detail.getByTestId('my-flow-item-checklist')).toContainText('운동 전 통증 확인');
+    await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(1);
+    await expectNoHorizontalOverflow(page);
   });
 });

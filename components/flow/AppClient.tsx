@@ -60,6 +60,20 @@ import {
 } from '@/lib/flow/calendar-flow-scope';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import { splitExecutionDetailContent } from '@/lib/flow/execution-detail-content';
+import {
+  addPersonalDetailResource,
+  addPersonalDetailSubcheck,
+  movePersonalDetailEntry,
+  removePersonalDetailResource,
+  removePersonalDetailSubcheck,
+  resolvePersonalItemDetail,
+  restorePersonalDetailResource,
+  restorePersonalDetailSubcheck,
+  updatePersonalDetailResource,
+  updatePersonalDetailSubcheck,
+  type PersonalItemDetailResource,
+  type PersonalItemDetailSubcheck,
+} from '@/lib/flow/personal-item-detail-overlay';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import {
   buildCompletionControlPresentation,
@@ -1361,6 +1375,13 @@ function isIsoDateString(value: string): boolean {
 function createDraftFlowId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return `flow-${crypto.randomUUID()}`;
   return `flow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createPersonalDetailId(kind: 'subcheck' | 'resource'): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `personal-${kind}-${crypto.randomUUID()}`;
+  }
+  return `personal-${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function isPersonalMemoDraftBundle(bundle: FlowBundle): boolean {
@@ -6615,7 +6636,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     updateMyFlowArchiveState(flow, undo.action === 'archive' ? 'restore' : 'archive', false);
     setMyFlowLifecycleUndo(null);
   };
-  const toggleMyFlowStepItemCheck = (row: MyFlowCalendarRow, itemIndex: number) => {
+  const toggleMyFlowStepItemCheck = (row: MyFlowCalendarRow, itemKey: string) => {
     const key = getMyFlowRowInstanceKey(row);
     setMyFlowStepItemChecks((current) => {
       const currentRowChecks = current[key] ?? {};
@@ -6623,7 +6644,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         ...current,
         [key]: {
           ...currentRowChecks,
-          [String(itemIndex)]: !currentRowChecks[String(itemIndex)],
+          [itemKey]: !currentRowChecks[itemKey],
         },
       };
       if (!isMyFlowScenarioDemo) saveMyFlowStepItemChecks(next);
@@ -10471,13 +10492,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const routineWeekdays = routineRuleDraft.weekdays ?? [];
     const isSingleOccurrenceRoutineScope = routineRuleDraft.scope === 'this';
     const executionDetailContent = splitExecutionDetailContent(detail);
-    const detailChecklistItems = executionDetailContent.checklistItems;
+    const committedDetailOverlay = getMyFlowRowDraft(row).detailOverlay;
+    const pendingDetailOverlay = myFlowEditingDrafts[routineKey]?.detailOverlay;
+    const personalDetailResolution = resolvePersonalItemDetail({
+      itemId: `${row.flow.progress.slug}:${baseStateId(row.id)}`,
+      sourceSubchecks: executionDetailContent.checklistItems,
+      sourceResources: executionDetailContent.resources.map((resource) => ({
+        label: resource.label,
+        url: resource.url,
+      })),
+      overlay: pendingDetailOverlay ?? committedDetailOverlay,
+    });
+    const detailChecklistEntries = personalDetailResolution.subchecks;
+    const detailChecklistItems = detailChecklistEntries.map((entry) => entry.text);
     const hasDetailChecklistItems = detailChecklistItems.length > 0;
     const inlineActionHint = getMyFlowInlineActionHint(detail, item);
     const detailChecklistLabel = row.flow.bundle.flow.tags?.includes('progress-flow') ? '개념 항목' : '확인 항목';
     const detailChecklistState = myFlowStepItemChecks[getMyFlowRowInstanceKey(row)] ?? {};
     const attachmentLabel = item?.photo_filename_pattern;
-    const links = executionDetailContent.resources;
+    const links = personalDetailResolution.resources;
     const primaryLink = links[0];
     const advancedLinks = primaryLink ? links.slice(1) : links;
     const isExactVideoResourceItem = Boolean(row.flow.bundle.flow.tags?.includes('exact-video') && links.length > 0);
@@ -10586,7 +10619,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       sourceLabel: primaryLink ? toUserFacingSourceTitle(primaryLink.label) : undefined,
       sourceUrl: primaryLink?.url,
       items: detailChecklistItems,
-      checkedItems: detailChecklistState,
+      checkedItems: Object.fromEntries(
+        detailChecklistEntries.map((entry, index) => [
+          String(index),
+          Boolean(detailChecklistState[entry.id] ?? detailChecklistState[String(index)]),
+        ]),
+      ),
       completionCriteria: detail.completion_criteria,
       caution: detail.caution,
     };
@@ -10650,7 +10688,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const showPersonalCopyPortableExportNote = Boolean(row.flow.savedMap?.personalCopy);
     const inlineDetailHeaderLabel = hasDetailChecklistItems ? '확인할 항목' : '실행할 일';
     const routineProgressLabel = getMyFlowRoutineExecutionLabel(row);
-    const detailChecklistProgressLabel = `${detailChecklistLabel} ${Object.values(detailChecklistState).filter(Boolean).length}/${detailChecklistItems.length}`;
+    const detailChecklistCompletedCount = detailChecklistEntries.filter((entry, index) =>
+      Boolean(detailChecklistState[entry.id] ?? detailChecklistState[String(index)]),
+    ).length;
+    const detailChecklistProgressLabel = `${detailChecklistLabel} ${detailChecklistCompletedCount}/${detailChecklistItems.length}`;
     const fieldClassName = `mt-1 w-full ${FLOW_UI_INPUT_CLASS}`;
     const textareaClassName = `${fieldClassName} h-28 min-h-28 resize-y font-normal leading-6`;
     const canEditDate = Boolean(
@@ -10794,6 +10835,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </span>
       </button>
     ) : null;
+    const updatePersonalDetailOverlay = (overlay: StoredMyFlowItemDraft['detailOverlay']) => {
+      if (!overlay) return;
+      updateMyFlowEditingDraft(row, { detailOverlay: overlay });
+    };
     const occurrenceFields = (
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {isPersonalDraftUserItem ? (
@@ -11624,16 +11669,17 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               </span>
             </div>
             <div className="mt-2 grid gap-1.5">
-              {detailChecklistItems.map((itemText, itemIndex) => {
-                const itemChecked = Boolean(detailChecklistState[String(itemIndex)]);
+              {detailChecklistEntries.map((entry, itemIndex) => {
+                const itemText = entry.text;
+                const itemChecked = Boolean(detailChecklistState[entry.id] ?? detailChecklistState[String(itemIndex)]);
                 return (
-                  <label key={`${itemText}-${itemIndex}`} className="flex min-h-9 items-start gap-2 rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2 text-sm text-slate-700">
+                  <label key={entry.id} className="flex min-h-9 items-start gap-2 rounded-md border border-slate-100 bg-slate-50 px-2.5 py-2 text-sm text-slate-700">
                     <input
                       className="mt-1 h-4 w-4 shrink-0"
                       type="checkbox"
                       checked={itemChecked}
                       aria-label={`${itemText} 확인 항목 ${itemChecked ? '체크 취소' : '체크'}`}
-                      onChange={() => toggleMyFlowStepItemCheck(row, itemIndex)}
+                      onChange={() => toggleMyFlowStepItemCheck(row, entry.id)}
                     />
                     <span className={itemChecked ? 'text-slate-400 line-through' : undefined}>{itemText}</span>
                   </label>
@@ -11726,6 +11772,235 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             내 메모
             <textarea data-testid="my-flow-detail-memo" className={textareaClassName} value={editorDraft.memo} onChange={(event) => updateMyFlowEditingDraft(row, { memo: event.target.value })} />
           </label>
+        ) : null}
+        {isDetailEditing ? (
+          <div data-testid="my-flow-personal-detail-editor" className="mt-4 grid gap-3 border-t border-slate-200 pt-3">
+            <details data-testid="my-flow-subcheck-editor" className="group">
+              <summary className={FLOW_UI_DISCLOSURE_CLASS}>
+                <span>확인 항목 · {personalDetailResolution.subchecks.length}개</span>
+                <span aria-hidden="true" className="text-slate-500">⌄</span>
+              </summary>
+              <div className="mt-3 grid gap-2">
+                {personalDetailResolution.subchecks.map((entry, index) => (
+                  <div key={entry.id} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                    <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                      {entry.origin === 'source' ? '원문 확인 항목' : '내 확인 항목'}
+                      <input
+                        data-testid="my-flow-subcheck-edit-input"
+                        className={fieldClassName}
+                        defaultValue={entry.text}
+                        aria-label={`${entry.text} 확인 항목 내용 수정`}
+                        onBlur={(event) => updatePersonalDetailOverlay(updatePersonalDetailSubcheck(
+                          personalDetailResolution.overlay,
+                          { ...entry, text: event.currentTarget.value },
+                        ))}
+                      />
+                    </label>
+                    <div className="mt-5 flex shrink-0 gap-1">
+                      <button
+                        type="button"
+                        title="위로 이동"
+                        aria-label={`${entry.text} 확인 항목 위로 이동`}
+                        disabled={index === 0}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => updatePersonalDetailOverlay(movePersonalDetailEntry(
+                          personalDetailResolution.overlay,
+                          'subcheck',
+                          personalDetailResolution.subchecks.map((item) => item.id),
+                          entry.id,
+                          -1,
+                        ))}
+                      >
+                        <span aria-hidden="true">↑</span>
+                      </button>
+                      <button
+                        type="button"
+                        title="아래로 이동"
+                        aria-label={`${entry.text} 확인 항목 아래로 이동`}
+                        disabled={index === personalDetailResolution.subchecks.length - 1}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => updatePersonalDetailOverlay(movePersonalDetailEntry(
+                          personalDetailResolution.overlay,
+                          'subcheck',
+                          personalDetailResolution.subchecks.map((item) => item.id),
+                          entry.id,
+                          1,
+                        ))}
+                      >
+                        <span aria-hidden="true">↓</span>
+                      </button>
+                      <button
+                        type="button"
+                        title="목록에서 빼기"
+                        aria-label={`${entry.text} 확인 항목 목록에서 빼기`}
+                        className={FLOW_UI_ICON_ACTION_CLASS}
+                        onClick={() => updatePersonalDetailOverlay(removePersonalDetailSubcheck(
+                          personalDetailResolution.overlay,
+                          entry,
+                        ))}
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <form
+                  className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 border-t border-slate-100 pt-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const input = event.currentTarget.elements.namedItem('newSubcheck') as HTMLInputElement | null;
+                    const text = input?.value.trim() ?? '';
+                    if (!text) return;
+                    updatePersonalDetailOverlay(addPersonalDetailSubcheck(personalDetailResolution.overlay, {
+                      id: createPersonalDetailId('subcheck'),
+                      text,
+                    }));
+                    if (input) input.value = '';
+                  }}
+                >
+                  <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                    확인 항목 추가
+                    <input name="newSubcheck" className={fieldClassName} aria-label={`${editorDraft.title} 확인 항목 추가`} />
+                  </label>
+                  <button type="submit" className={FLOW_UI_COMPACT_ACTION_CLASS}>추가</button>
+                </form>
+                {personalDetailResolution.hiddenSourceSubchecks.length > 0 ? (
+                  <details data-testid="my-flow-hidden-subchecks" className="border-t border-slate-100 pt-2">
+                    <summary className="cursor-pointer text-xs font-semibold text-slate-500">
+                      뺀 항목 · {personalDetailResolution.hiddenSourceSubchecks.length}개
+                    </summary>
+                    <div className="mt-2 grid gap-1.5">
+                      {personalDetailResolution.hiddenSourceSubchecks.map((entry) => (
+                        <div key={entry.id} className="flex items-center justify-between gap-2 text-xs text-slate-600">
+                          <span className="min-w-0 truncate">{entry.text}</span>
+                          <button
+                            type="button"
+                            className={FLOW_UI_COMPACT_ACTION_CLASS}
+                            aria-label={`${entry.text} 확인 항목 복구`}
+                            onClick={() => updatePersonalDetailOverlay(restorePersonalDetailSubcheck(
+                              personalDetailResolution.overlay,
+                              entry.id,
+                            ))}
+                          >
+                            복구
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+            </details>
+
+            <details data-testid="my-flow-resource-editor" className="group">
+              <summary className={FLOW_UI_DISCLOSURE_CLASS}>
+                <span>자료 · {personalDetailResolution.resources.length}개</span>
+                <span aria-hidden="true" className="text-slate-500">⌄</span>
+              </summary>
+              <div className="mt-3 grid gap-3">
+                {personalDetailResolution.resources.map((entry) => (
+                  <div key={entry.id} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+                    <div className="grid min-w-0 gap-2 sm:grid-cols-2">
+                      <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                        자료 이름
+                        <input
+                          data-testid="my-flow-resource-label-input"
+                          className={fieldClassName}
+                          defaultValue={entry.label}
+                          aria-label={`${entry.label} 자료 이름 수정`}
+                          onBlur={(event) => updatePersonalDetailOverlay(updatePersonalDetailResource(
+                            personalDetailResolution.overlay,
+                            { ...entry, label: event.currentTarget.value },
+                          ))}
+                        />
+                      </label>
+                      <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                        주소
+                        <input
+                          data-testid="my-flow-resource-url-input"
+                          className={fieldClassName}
+                          type="url"
+                          defaultValue={entry.url}
+                          aria-label={`${entry.label} 자료 주소 수정`}
+                          onBlur={(event) => updatePersonalDetailOverlay(updatePersonalDetailResource(
+                            personalDetailResolution.overlay,
+                            { ...entry, url: event.currentTarget.value },
+                          ))}
+                        />
+                      </label>
+                    </div>
+                    <button
+                      type="button"
+                      title="목록에서 빼기"
+                      aria-label={`${entry.label} 자료 목록에서 빼기`}
+                      className={FLOW_UI_ICON_ACTION_CLASS}
+                      onClick={() => updatePersonalDetailOverlay(removePersonalDetailResource(
+                        personalDetailResolution.overlay,
+                        entry,
+                      ))}
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                ))}
+                <form
+                  className="grid gap-2 border-t border-slate-100 pt-2 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] sm:items-end"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const labelInput = event.currentTarget.elements.namedItem('newResourceLabel') as HTMLInputElement | null;
+                    const urlInput = event.currentTarget.elements.namedItem('newResourceUrl') as HTMLInputElement | null;
+                    const label = labelInput?.value.trim() ?? '';
+                    const url = urlInput?.value.trim() ?? '';
+                    if (!label || !url) return;
+                    const nextOverlay = addPersonalDetailResource(personalDetailResolution.overlay, {
+                      id: createPersonalDetailId('resource'),
+                      label,
+                      url,
+                    });
+                    if (nextOverlay === personalDetailResolution.overlay) return;
+                    updatePersonalDetailOverlay(nextOverlay);
+                    if (labelInput) labelInput.value = '';
+                    if (urlInput) urlInput.value = '';
+                  }}
+                >
+                  <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                    자료 이름
+                    <input name="newResourceLabel" className={fieldClassName} required aria-label={`${editorDraft.title} 새 자료 이름`} />
+                  </label>
+                  <label className="min-w-0 text-[11px] font-semibold text-slate-500">
+                    주소
+                    <input name="newResourceUrl" type="url" className={fieldClassName} required aria-label={`${editorDraft.title} 새 자료 주소`} />
+                  </label>
+                  <button type="submit" className={FLOW_UI_COMPACT_ACTION_CLASS}>추가</button>
+                </form>
+                {personalDetailResolution.hiddenSourceResources.length > 0 ? (
+                  <details data-testid="my-flow-hidden-resources" className="border-t border-slate-100 pt-2">
+                    <summary className="cursor-pointer text-xs font-semibold text-slate-500">
+                      뺀 자료 · {personalDetailResolution.hiddenSourceResources.length}개
+                    </summary>
+                    <div className="mt-2 grid gap-1.5">
+                      {personalDetailResolution.hiddenSourceResources.map((entry) => (
+                        <div key={entry.id} className="flex items-center justify-between gap-2 text-xs text-slate-600">
+                          <span className="min-w-0 truncate">{entry.label}</span>
+                          <button
+                            type="button"
+                            className={FLOW_UI_COMPACT_ACTION_CLASS}
+                            aria-label={`${entry.label} 자료 복구`}
+                            onClick={() => updatePersonalDetailOverlay(restorePersonalDetailResource(
+                              personalDetailResolution.overlay,
+                              entry.id,
+                            ))}
+                          >
+                            복구
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+            </details>
+          </div>
         ) : null}
         {isDetailEditing && isEditorAdvancedExpanded && (isDecisionRow || isLogRow || (showRoutineRepeatSettings && isRoutineRow)) ? (
           <div
