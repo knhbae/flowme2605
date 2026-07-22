@@ -31,6 +31,14 @@
   --flowme-danger-border: #fecdd3;
   --flowme-danger-focus: rgba(220, 38, 38, 0.2);
   --flowme-disabled: #d8d5cd;
+  --flowme-radius-compact: 4px;
+  --flowme-radius-control: 6px;
+  --flowme-radius-surface: 8px;
+  --flowme-control-height: 2.75rem;
+  --flowme-row-height: 3.5rem;
+  --flowme-motion-fast: 140ms;
+  --flowme-motion-standard: 200ms;
+  --flowme-focus-outline: 2px solid var(--flowme-action);
   --flowme-mobile-tabs-offset: calc(0.75rem + env(safe-area-inset-bottom));
   --flowme-mobile-tabs-height: 3.625rem;
   --flowme-mobile-layer-gap: 0.5rem;
@@ -45,6 +53,39 @@ body {
   background: var(--flowme-bg);
   color: var(--flowme-text);
   letter-spacing: 0;
+}
+
+:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: var(--flowme-focus-outline);
+  outline-offset: 2px;
+}
+
+[data-flow-anatomy] {
+  min-width: 0;
+}
+
+[data-flow-identity-slot='title'],
+[data-flow-identity-slot='next-action'],
+[data-flow-identity-slot='context'] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+    outline-color: Highlight;
+  }
 }
 
 @media (max-width: 767px) {

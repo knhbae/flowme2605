@@ -43,25 +43,27 @@ test.describe('P28 shared save-before experience', () => {
     await clearLocalState(page);
 
     const hero = page.getByTestId('public-flow-hero');
-    await expect(hero).toHaveAttribute('data-experience-architecture', 'hybrid');
-    await expect(hero.getByTestId('public-flow-artifact-preview-row')).toHaveCount(5);
-    await expect(hero.getByTestId('public-flow-artifact-preview-row-remainder')).toHaveCount(19);
-    await expect(hero.getByTestId('public-flow-artifact-preview-expand')).toHaveAccessibleName('외 19개 전체 보기');
+    await expect(hero).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(hero.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
+    await expect(hero.getByTestId('public-flow-artifact-preview')).not.toHaveAttribute('open', '');
+    await expect(hero.getByTestId('public-flow-artifact-preview-expand')).toHaveAccessibleName('전체 Flow 구조 24개 보기');
     await capture(page, '00-mobile-save-before-moving-compact.png');
     await hero.getByTestId('public-flow-artifact-preview-expand').click();
-    await expect(hero.getByTestId('public-flow-artifact-preview-row-remainder').last()).toBeVisible();
+    await expect(hero.getByTestId('public-flow-artifact-preview-row').last()).toBeVisible();
 
     const artifactPreview = hero.getByTestId('flow-artifact-data-preview');
     await expect(artifactPreview).toHaveAttribute('data-primary-shape', 'calendar');
-    await expect(artifactPreview.getByRole('button', { name: '캘린더 24' })).toBeVisible();
-    await expect(artifactPreview.getByRole('button', { name: '체크리스트 24' })).toBeVisible();
+    await expect(artifactPreview.getByRole('button', { name: /캘린더.*24/ })).toBeVisible();
+    await expect(artifactPreview.getByRole('button', { name: /체크리스트.*24/ })).toBeVisible();
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await expect(artifactPreview.getByRole('button', { name: '캘린더 24' })).toBeVisible();
+    await expect(artifactPreview.getByRole('button', { name: /캘린더.*24/ })).toBeVisible();
 
-    await hero.getByRole('button', { name: '이사 방식 정하기 제목·날짜·메모 수정' }).click();
+    await expect(hero.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'content');
+    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
+    await adjustment.getByTestId('public-flow-adjustment-mode-content').click();
     await expect(adjustment.getByTestId('public-flow-adjustment-row')).toHaveCount(1);
     await adjustment.getByTestId('public-flow-adjustment-flow-title').fill('우리 집 이사 준비');
     await adjustment.getByTestId('public-flow-adjustment-title').fill('우리 집 이사 방식 확정');
@@ -72,6 +74,8 @@ test.describe('P28 shared save-before experience', () => {
     const saved = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'));
     expect(saved.personalTitle).toBe('우리 집 이사 준비');
     expect(saved.anchor).toBe('2030-08-15');
+    await expect(page.getByTestId('public-flow-saved-receipt')).toBeVisible();
+    await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
     await capture(page, '01-mobile-save-before-moving-adjustment.png');
     await expectNoHorizontalOverflow(page);
   });
@@ -91,7 +95,7 @@ test.describe('P28 shared save-before experience', () => {
     await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
     await sharedWorkspaceLink.click();
     await expect(page).toHaveURL('/f/curated-ajd-moving-d30');
-    await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'hybrid');
+    await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -101,7 +105,7 @@ test.describe('P28 shared save-before experience', () => {
     await clearLocalState(page);
 
     const decision = page.getByTestId('flow-save-before-decision');
-    await expect(decision.getByTestId('flow-artifact-data-preview')).toBeVisible();
+    await expect(page.getByTestId('flow-save-before-primary-result').getByTestId('flow-artifact-data-preview')).toBeVisible();
     await expect(page.getByTestId('public-flow-detail-workspace')).not.toHaveAttribute('open', '');
     await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
     await capture(page, '02-wide-save-before-moving.png');
@@ -118,6 +122,10 @@ test.describe('P28 shared save-before experience', () => {
     await clearLocalState(page);
 
     await page.getByTestId('public-flow-anchor-input').fill('2026-07-27');
+    const summary = page.getByTestId('public-routine-schedule-summary');
+    await expect(summary.getByTestId('public-routine-schedule-editor')).toHaveCount(0);
+    await expect(summary.getByTestId('public-routine-schedule-summary-next-occurrences').getByRole('listitem')).toHaveCount(3);
+    await summary.getByTestId('public-routine-schedule-summary-toggle').click();
     const editor = page.getByTestId('public-routine-schedule-editor');
     await expect(editor).toBeVisible();
     await expect(editor.getByTestId('public-routine-schedule-editor-frequency-summary')).toHaveText(/주 \d회/);
@@ -138,10 +146,7 @@ test.describe('P28 shared save-before experience', () => {
       end: { mode: 'count', count: 8 },
     });
 
-    await page.reload();
-    const restoredEditor = page.getByTestId('public-routine-schedule-editor');
-    await expect(restoredEditor.getByTestId('public-routine-schedule-editor-time')).toHaveValue('07:30');
-    await expect(restoredEditor.getByTestId('public-routine-schedule-editor-occurrence-count')).toHaveValue('8');
+    await expect(page.getByTestId('public-flow-saved-receipt')).toBeVisible();
     await page.getByTestId('public-flow-detail-workspace').locator(':scope > summary').click();
     const resources = page.getByTestId('flow-resource-block');
     await expect(resources).toBeVisible();
@@ -177,7 +182,7 @@ test.describe('P28 shared save-before experience', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.reload();
     const library = page.getByTestId('my-flow-library-workspace');
-    await expect(library).toHaveAttribute('data-library-layout', 'rail-detail');
+    await expect(library).toHaveAttribute('data-library-layout', 'rail-canvas-inspector');
     await expect(library).toBeVisible();
     expect(await library.getByTestId('my-flow-library-row').count()).toBeGreaterThanOrEqual(20);
     await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);

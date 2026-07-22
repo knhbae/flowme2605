@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
+  buildArtifactExportRecommendationVM,
+  type ArtifactExportRecommendation,
+} from '@/lib/flow/artifact-recommendation';
+import {
   buildFlowExportScopePlan,
   type FlowExportDestination,
   type FlowExportResultReceipt,
@@ -39,6 +43,8 @@ type FlowExportPanelProps = {
   fixedScope?: boolean;
   showClose?: boolean;
   destinations?: FlowExportDestination[];
+  preferredDestination?: FlowExportDestination;
+  sourceLabel?: string;
   destinationCopyOverride?: Partial<Record<FlowExportDestination, { label: string; result: string }>>;
   destinationTestId?: (destination: FlowExportDestination) => string;
   onOpenChange: (open: boolean) => void;
@@ -69,6 +75,8 @@ export function FlowExportPanel({
   fixedScope = false,
   showClose = true,
   destinations = ['calendar', 'checklist', 'sheet', 'memo'],
+  preferredDestination,
+  sourceLabel,
   destinationCopyOverride,
   destinationTestId,
   onOpenChange,
@@ -107,6 +115,15 @@ export function FlowExportPanel({
     0,
   );
   const hasNestedDetail = nestedSubcheckCount + resourceCount > 0;
+  const exportRecommendation = buildArtifactExportRecommendationVM({
+    plan,
+    destinations,
+    preferredDestination,
+  });
+  const recommendationByDestination = new Map(
+    [...exportRecommendation.visible, ...exportRecommendation.additional]
+      .map((candidate) => [candidate.destination, candidate] as const),
+  );
 
   useEffect(() => {
     setReceipt(null);
@@ -120,6 +137,84 @@ export function FlowExportPanel({
     });
     return () => window.cancelAnimationFrame(frame);
   }, [receipt]);
+
+  const renderDestinationButton = (
+    destination: FlowExportDestination,
+    candidate?: ArtifactExportRecommendation,
+    hidden = false,
+  ) => {
+    const copy = destinationCopyOverride?.[destination] ?? destinationCopy[destination];
+    const count = plan.countByDestination[destination];
+    const disabled = count === 0;
+    const pending = pendingDestination === destination;
+    const anotherDestinationPending = pendingDestination !== null && !pending;
+    const omitted = plan.metrics.omittedCountByDestination[destination];
+    const disabledReason = destination === 'calendar' && plan.includedCount > 0
+      ? '날짜 있는 항목이 없어요'
+      : '항목을 먼저 선택하세요';
+    const outputUnit = destination === 'sheet' ? '행' : '개';
+    const scopedActionLabel = `${exportRecommendation.scopeLabel} · ${copy.label} ${count}${outputUnit}`;
+    const role = candidate?.role ?? 'additional';
+
+    return (
+      <button
+        key={destination}
+        type="button"
+        hidden={hidden}
+        data-testid={destinationTestId?.(destination) ?? (
+          legacyPersonalDraft && destination !== 'calendar'
+            ? `personal-draft-copy-${destination}`
+            : `my-flow-export-${destination}`
+        )}
+        disabled={disabled || anotherDestinationPending}
+        aria-busy={pending || undefined}
+        aria-label={pending
+          ? `${scopedActionLabel} 준비 중`
+          : disabled
+            ? `${scopedActionLabel} 사용 불가, ${disabledReason}`
+            : scopedActionLabel}
+        title={disabled ? disabledReason : undefined}
+        data-export-count={count}
+        data-export-state={pending ? 'pending' : disabled ? 'disabled' : 'ready'}
+        data-recommendation-role={role}
+        data-recommendation-visible={!hidden}
+        data-action-priority={role === 'primary' ? 'primary' : 'secondary'}
+        className={`min-h-16 border-b border-r border-[var(--flowme-border)] px-3 py-2 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0 ${
+          role === 'primary'
+            ? 'bg-[var(--flowme-action-soft)] hover:bg-blue-100'
+            : 'bg-[var(--flowme-surface)] hover:bg-[var(--flowme-surface-subtle)]'
+        }`}
+        onClick={async () => {
+          if (pendingDestination) return;
+          setPendingDestination(destination);
+          setReceipt(null);
+          try {
+            const nextReceipt = await onExport(destination, plan);
+            if (nextReceipt) setReceipt(nextReceipt);
+          } catch {
+            setReceipt({
+              scope: plan.scope,
+              destination,
+              resultKind: destination === 'calendar' ? 'download' : 'copy',
+              status: 'error',
+              outputCount: 0,
+              omittedCount: plan.includedCount,
+              message: '가져오지 못했습니다',
+            });
+          } finally {
+            setPendingDestination(null);
+          }
+        }}
+      >
+        <span className="block text-sm font-bold">{pending ? '준비 중...' : scopedActionLabel}</span>
+        <span className="mt-0.5 block text-[11px] font-semibold leading-4 text-[var(--flowme-text-secondary)]">
+          {disabled
+            ? disabledReason
+            : `${candidate?.reason ?? copy.result}${candidate?.lossSummary ? ` · ${candidate.lossSummary}` : omitted > 0 ? ` · ${omitted}개 제외` : ''}`}
+        </span>
+      </button>
+    );
+  };
 
   return (
     <FlowExportPlan
@@ -146,7 +241,8 @@ export function FlowExportPanel({
           data-export-included-count={plan.includedCount}
           data-export-layout="compact-preflight"
           data-default-expanded-secondary-count="0"
-          className={showEntry ? 'mt-3 border-t border-[#E7E4DD] pt-3' : ''}
+          data-flow-anatomy="export-preflight"
+          className={showEntry ? 'mt-3 border-t border-[var(--flowme-border)] pt-3' : ''}
         >
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -258,75 +354,47 @@ export function FlowExportPanel({
             </p>
           ) : null}
 
-          <div className="mt-3">
-            <div className={`grid grid-cols-2 overflow-hidden border-y border-[var(--flowme-border)] ${destinations.length > 2 ? 'sm:grid-cols-4' : ''}`}>
-              {destinations.map((destination) => {
-                const copy = destinationCopyOverride?.[destination] ?? destinationCopy[destination];
-                const count = plan.countByDestination[destination];
-                const disabled = count === 0;
-                const pending = pendingDestination === destination;
-                const anotherDestinationPending = pendingDestination !== null && !pending;
-                const omitted = plan.metrics.omittedCountByDestination[destination];
-                const disabledReason = destination === 'calendar' && plan.includedCount > 0
-                  ? '날짜 있는 항목이 없어요'
-                  : '항목을 먼저 선택하세요';
-                return (
-                  <button
-                    key={destination}
-                    type="button"
-                    data-testid={destinationTestId?.(destination) ?? (
-                      legacyPersonalDraft && destination !== 'calendar'
-                        ? `personal-draft-copy-${destination}`
-                        : `my-flow-export-${destination}`
-                    )}
-                    disabled={disabled || anotherDestinationPending}
-                    aria-busy={pending || undefined}
-                    aria-label={pending
-                      ? `${copy.label} 준비 중`
-                      : disabled
-                        ? `${copy.label} 사용 불가, ${disabledReason}`
-                        : `${copy.label} ${count}개`}
-                    title={disabled ? disabledReason : undefined}
-                    data-export-count={count}
-                    data-export-state={pending ? 'pending' : disabled ? 'disabled' : 'ready'}
-                    className="min-h-14 border-b border-r border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-3 py-2 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0"
-                    onClick={async () => {
-                      if (pendingDestination) return;
-                      setPendingDestination(destination);
-                      setReceipt(null);
-                      try {
-                        const nextReceipt = await onExport(destination, plan);
-                        if (nextReceipt) setReceipt(nextReceipt);
-                      } catch {
-                        setReceipt({
-                          scope: plan.scope,
-                          destination,
-                          resultKind: destination === 'calendar' ? 'download' : 'copy',
-                          status: 'error',
-                          outputCount: 0,
-                          omittedCount: plan.includedCount,
-                          message: '가져오지 못했습니다',
-                        });
-                      } finally {
-                        setPendingDestination(null);
-                      }
-                    }}
-                  >
-                    <span className="block text-sm font-bold">{pending ? '준비 중...' : copy.label}</span>
-                    <span className="mt-0.5 block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
-                      {disabled
-                        ? disabledReason
-                        : `${copy.result} · ${count}개${omitted > 0 ? ` · ${omitted}개 제외` : ''}`}
-                    </span>
-                  </button>
-                );
-              })}
+          <div
+            data-testid="my-flow-export-recommendations"
+            data-p29-marker="P29-ARTIFACT-EXPORT-PREFLIGHT"
+            className="mt-3"
+          >
+            {exportRecommendation.visible.length > 0 ? (
+              <div className={`grid grid-cols-1 overflow-hidden border-y border-[var(--flowme-border)] ${exportRecommendation.visible.length > 1 ? 'sm:grid-cols-3' : ''}`}>
+                {exportRecommendation.visible.map((candidate) => (
+                  renderDestinationButton(candidate.destination, candidate)
+                ))}
+              </div>
+            ) : (
+              <p className="border-y border-[var(--flowme-border)] px-3 py-4 text-sm text-[var(--flowme-text-secondary)]">
+                선택한 범위에서 가져갈 항목이 없습니다.
+              </p>
+            )}
+
+            {exportRecommendation.additional.length > 0 ? (
+              <details data-testid="my-flow-export-more-formats" className="border-b border-[var(--flowme-border)]">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+                  <span>다른 형식 {exportRecommendation.additional.length}개</span>
+                  <span aria-hidden="true">⌄</span>
+                </summary>
+                <div className="grid sm:grid-cols-2">
+                  {exportRecommendation.additional.map((candidate) => (
+                    renderDestinationButton(candidate.destination, candidate)
+                  ))}
+                </div>
+              </details>
+            ) : null}
+
+            <div hidden aria-hidden="true">
+              {exportRecommendation.unavailable.map((destination) => (
+                renderDestinationButton(destination, undefined, true)
+              ))}
             </div>
           </div>
 
           {receipt ? (
             <div ref={receiptContainerRef}>
-              <FlowExportReceipt receipt={receipt} />
+              <FlowExportReceipt receipt={receipt} flowTitle={flowTitle} sourceLabel={sourceLabel} />
             </div>
           ) : null}
 

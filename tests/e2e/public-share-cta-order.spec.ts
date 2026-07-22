@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 test.beforeEach(async ({ page }) => {
   await openPublicDetailWorkspaceForDeepInspection(page);
@@ -95,10 +96,8 @@ async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
     return Array.from(
       document.querySelectorAll<HTMLElement>(
         [
-          '[data-testid="public-flow-mobile-save-cta"] a',
-          '[data-testid="public-flow-mobile-save-cta"] button',
-          '[data-testid="mobile-export-bar"] a',
-          '[data-testid="mobile-export-bar"] button',
+          '[data-testid="public-flow-mobile-save-cta"] [data-action-priority="primary"]',
+          '[data-testid="mobile-export-bar"] [data-action-priority="primary"]',
         ].join(','),
       ),
     )
@@ -165,8 +164,6 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
       .filter(isVisible);
     const heroArtifactPreviewRows = Array.from(document.querySelectorAll('[data-testid="public-flow-artifact-preview-row"]'))
       .filter(isVisible);
-    const artifactWorkbenches = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"]'))
-      .filter(isVisible);
     const completionLikeCheckboxLabelPattern =
       /(완료|완료 체크|완료 취소|실행판 체크|회차 완료|이유식 완료|관리일 완료|관리 체크|전체 보기 체크|선택 일정 체크|단계 체크)/u;
     const previewCheckboxLabelPattern = /(미리보기|저장 전|선택|포함 표시|확인 표시)/u;
@@ -190,7 +187,7 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
       preSavePreviewRowCount: heroArtifactPreviewRows.length,
       includedItemMarkerCount: includedItemMarkers.length,
       heroArtifactPreviewCount: heroArtifactPreviews.length,
-      artifactRepresentationCount: heroArtifactPreviews.length + artifactWorkbenches.length,
+      artifactRepresentationCount: heroArtifactPreviews.length,
       exportSecondaryEntryLabels: secondaryEntries.map(visibleText),
       itemLevelExportLikeLabels,
       preSaveCheckboxLabels: publicPreSaveCheckboxLabels,
@@ -261,8 +258,8 @@ test.describe('public share shell secondary browse order', () => {
       expect(stickyPrimaryEntries.length).toBeGreaterThan(0);
 
       const [primaryEntry] = stickyPrimaryEntries;
-      expect(primaryEntry.accessibleName).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작|내 Flow에서 보기/);
-      expect(primaryEntry.text).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작|내 Flow에서 보기/);
+      expect(primaryEntry.accessibleName).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작/);
+      expect(primaryEntry.text).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작/);
       expect(primaryEntry.text).not.toMatch(/도구|파일|받기|복사|시트|캘린더|xlsx|ics/i);
     });
   }
@@ -291,7 +288,7 @@ test.describe('public share shell secondary browse order', () => {
       expect(hierarchy.preSaveCheckboxCount).toBe(0);
       expect(hierarchy.preSaveCheckboxPreviewLabelCount).toBe(0);
       expect(hierarchy.heroArtifactPreviewCount).toBe(1);
-      expect(hierarchy.artifactRepresentationCount).toBe(2);
+      expect(hierarchy.artifactRepresentationCount).toBe(1);
       expect(hierarchy.includedItemMarkerCount + hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
     });
   }
@@ -319,21 +316,15 @@ test.describe('public share shell secondary browse order', () => {
     await page.reload();
 
     await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
-    await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
+    await expect(page.getByTestId('flow-artifact-data-preview')).toBeVisible();
 
     const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
     const saveButton = mobileSave.getByRole('button', { name: '그대로 시작' });
     await expect(saveButton).toBeVisible();
     await saveButton.focus();
     await expect(saveButton).toBeFocused();
-    await saveButton.click();
-
-    const myFlowLink = mobileSave.getByRole('link', { name: '내 Flow에서 보기' });
-    await expect(myFlowLink).toBeVisible();
-    await Promise.all([
-      page.waitForURL(/\/my/, { timeout: 15_000 }),
-      myFlowLink.click(),
-    ]);
+    const receipt = await savePublicFlow(page, saveButton);
+    await openSavedPublicFlow(page, receipt);
     await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
     await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
     await page.getByTestId('my-flow-post-save-open-first').click();

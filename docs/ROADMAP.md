@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-22<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P29 coordinated surface reset implementation gate<br>
+**Current Validation Stage:** internal alpha / P29 local verification complete, production closeout pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P29-01A safe frame extraction and P29-01B moving vertical proof
+**Next Milestone:** P29-08 merge, canonical deployment, and production smoke
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -29,17 +29,17 @@ Detailed execution plan: [P29 coordinated surface reset](./specs/2026-07-22-p29-
 
 | Slice | Purpose | State |
 | --- | --- | --- |
-| P29-01A | Extract shared save-before anatomy from the large AppClient composition without visual or contract change | Next |
-| P29-01B | Prove artifact-first save-before and a distinct receipt on moving only | Gated by 01A |
-| P29-02 | Roll the approved composition across public/source-backed five-shape routes | Gated by 01B evidence |
-| P29-03 | Make routine setup summary-first with progressive disclosure and occurrence continuity | Planned |
-| P29-04 | Rebuild My Flow as an action-first library/detail workspace | Planned |
-| P29-05 | Unify Calendar scope, selected-day agenda, and undated placement | Planned |
-| P29-06 | Connect artifact recommendation, export scope, loss preview, and receipt vocabulary | Planned |
-| P29-07 | Close shared visual, responsive, keyboard, and accessibility gates | Planned |
-| P29-08 | Run independent production integration and closeout | Planned |
+| P29-01A | Extract shared save-before anatomy from the large AppClient composition without visual or contract change | Complete |
+| P29-01B | Prove artifact-first save-before and a distinct receipt on moving only | Complete |
+| P29-02 | Roll the approved composition across public/source-backed five-shape routes | Complete |
+| P29-03 | Make routine setup summary-first with progressive disclosure and occurrence continuity | Complete |
+| P29-04 | Rebuild My Flow as an action-first library/detail workspace | Complete |
+| P29-05 | Unify Calendar scope, selected-day agenda, and undated placement | Complete |
+| P29-06 | Connect artifact recommendation, export scope, loss preview, and receipt vocabulary | Complete |
+| P29-07 | Close shared visual, responsive, keyboard, and accessibility gates | Complete by current command/browser evidence |
+| P29-08 | Run independent production integration and closeout | Local verification complete; merge/deploy/smoke pending |
 
-P29-02 must not start until the moving vertical proof shows one item list, one decision surface, a distinct post-save receipt, correct mobile focus order, and unchanged P28 projections. External user observation remains deferred.
+The moving vertical proof passed before the shared rollout. Current branch evidence is P29 Playwright `13 / 13`, full Playwright `292 / 292`, unit `584 / 584`, production build `18 / 18`, and `23` responsive screenshots. P29 preserves P28 projection and stable identity contracts; the remaining gate is publish-state verification on canonical production. External user observation remains deferred and is not implied by these automated results.
 
 ## P28 Cross-Surface Experience Reconstruction
 

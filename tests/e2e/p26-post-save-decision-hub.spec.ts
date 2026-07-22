@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
 const browserErrors = new WeakMap<Page, string[]>();
@@ -41,8 +42,11 @@ test('mobile public save exposes whole-Flow receipt, four next paths, and direct
   await page.goto('/f/vehicle-inspection-prep');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
-  await page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' }).click();
+  const savedReceipt = await savePublicFlow(
+    page,
+    page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }),
+  );
+  await openSavedPublicFlow(page, savedReceipt);
 
   const hub = page.getByTestId('my-flow-post-save-panel');
   await expect(hub.getByTestId('my-flow-post-save-action-hub')).toBeVisible();

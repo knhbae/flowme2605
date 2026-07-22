@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-22T04:49:30.353Z",
+  "baseline": "c407bd4dae1b0307026e770d3036f87c22023fa0",
+  "decision": "retired_superseded_visual_composition_assertions",
+  "rationale": [
+    "P29 removes the repeated legacy ArtifactWorkbench composition from public save-before routes.",
+    "The retired tests asserted removed card order, duplicated artifact surfaces, or the old same-frame save receipt.",
+    "P29 current behavior is covered by p29-coordinated-surface-reset.spec.ts and retained source, lifecycle, projection, and storage tests."
+  ],
+  "replacementCoverage": [
+    "tests/e2e/p29-coordinated-surface-reset.spec.ts",
+    "tests/e2e/p28-experience-reconstruction.spec.ts",
+    "tests/e2e/public-share-cta-order.spec.ts",
+    "tests/e2e/workbench-source-density.spec.ts",
+    "lib/flow/artifact-recommendation.test.ts",
+    "lib/flow/routine-schedule-presentation.test.ts",
+    "lib/flow/my-flow-workspace-presentation.test.ts"
+  ],
+  "retiredCount": 67,
+  "retired": [
+    {
+      "title": "main user routes keep the FlowMe design token rhythm",
+      "originalLine": 1338,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "special public workbench routes keep the FlowMe visual rhythm",
+      "originalLine": 1381,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public flow detail uses a share shell until it saves into My Flow",
+      "originalLine": 1441,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "product IA v2 keeps discovery simple and saved execution clear",
+      "originalLine": 1611,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "mobile fixed layers keep save actions and final content separated",
+      "originalLine": 1871,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "representative single flow saves into My Flow execution space",
+      "originalLine": 1980,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public single Flow detail keeps setup and save before one complete artifact",
+      "originalLine": 2000,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "special workbench date labels avoid raw ISO dates in primary mobile cards",
+      "originalLine": 2064,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "fridge cleanout mobile starts with one active inventory row before the full sheet",
+      "originalLine": 2078,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "special workbench routes do not repeat setup as an inline start CTA",
+      "originalLine": 2107,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public no-anchor Flow detail opens directly into one read-only artifact on mobile",
+      "originalLine": 2140,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "my flow workspace keeps personal save-before adjustment separate from public discovery",
+      "originalLine": 2294,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "real source public flow exposes source QA metadata and target metadata",
+      "originalLine": 2624,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "source currentness retires the stale pet duplicate and separates appliance jobs",
+      "originalLine": 2638,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "vehicle inspection and computer study expose current source scope",
+      "originalLine": 2715,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "vehicle inspection route keeps reservation and result memo beside the timeline",
+      "originalLine": 2768,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public moving flow calculates dates without exposing execution progress before save",
+      "originalLine": 2827,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "moving flow opens with a whole-flow preview before setup and export",
+      "originalLine": 2875,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "moving mobile saves to My Flow before external export",
+      "originalLine": 2899,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public flow item card keeps detail reachable without execution controls",
+      "originalLine": 5479,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "computer skills final QA exports checklist and calendar without study progress tables",
+      "originalLine": 5511,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "risk-boundary QA keeps full-flow export available beside new-car evidence",
+      "originalLine": 5542,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public MVP guardrail screens keep evidence and stop conditions first",
+      "originalLine": 5565,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "wedding flow keeps its anchor and read-only artifact within flow-level actions",
+      "originalLine": 5602,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "current P1 flows expose new execution model surfaces",
+      "originalLine": 5635,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "routine flow highlights weekly routine setup",
+      "originalLine": 5706,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "routine desktop uses session grid and session log artifacts",
+      "originalLine": 5718,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "routine mobile puts the session card before the calendar card",
+      "originalLine": 5747,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "low-context date labels explain the required anchor",
+      "originalLine": 5786,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "no-anchor checklist skips date setup and hides calendar export",
+      "originalLine": 5797,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "used-car checklist shows decision preview instead of calendar by default",
+      "originalLine": 5809,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "used-car first screen keeps hold memo and checklist before comparison density",
+      "originalLine": 5841,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "representative flows show artifact-first previews on the first screen",
+      "originalLine": 5856,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "artifact workbench shows the primary usable surface first",
+      "originalLine": 5873,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "common first screen keeps one read-only artifact concise and expandable",
+      "originalLine": 5901,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "artifact workbench keeps whole-flow export behind one secondary entry",
+      "originalLine": 5920,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "timeline desktop gives the execution list more width than the compact calendar",
+      "originalLine": 5952,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "moving desktop keeps source context in a right rail beside the workbench",
+      "originalLine": 5967,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "dense desktop routes keep source context in a right rail beside the workbench",
+      "originalLine": 5986,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public detail rebrand keeps a tool-first shell without mobile overflow",
+      "originalLine": 6013,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "mobile full-flow export remains available without item-level duplicates",
+      "originalLine": 6106,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "validation fix surfaces route-specific anchors, safety panels, and mobile destination CTA labels",
+      "originalLine": 6128,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "vehicle hold memo entries persist while full-flow export stays secondary",
+      "originalLine": 6148,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "mobile workbench keeps destination export at the flow level",
+      "originalLine": 6174,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "mobile schedule artifacts show the calendar before dense tables",
+      "originalLine": 6209,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "mobile study route starts with the actionable list before the compact calendar",
+      "originalLine": 6218,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "mobile vehicle checklist routes omit comparison summary grids",
+      "originalLine": 6234,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "study progress table is absent from the experiment checklist route",
+      "originalLine": 6248,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "mobile sensitive routes collapse secondary execution sections below the first artifact",
+      "originalLine": 6257,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public artifact persists setup and notes without exposing execution completion",
+      "originalLine": 6273,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "vehicle hold memo edits and persists user notes",
+      "originalLine": 6316,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "public flow opens personal save-before adjustment without creating a creator draft",
+      "originalLine": 6333,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "approved promoted content-flow routes preserve executable source cues",
+      "originalLine": 6658,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "promoted maintenance routes use source-specific artifact workbenches",
+      "originalLine": 6695,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "current-source audit batch exposes one execution surface only for approved routes",
+      "originalLine": 6715,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "current new-car source fit separates the reference journey from official registration and insurance",
+      "originalLine": 6748,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "current Allblanc source fit separates publication age, personal schedule, and high-intensity review",
+      "originalLine": 6793,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "saved Allblanc routine keeps an open series distinct from its four-week preview",
+      "originalLine": 6867,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "monthly maintenance routine keeps preview, Calendar, completion, and ICS on one source cadence",
+      "originalLine": 7002,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "current medium-risk sources separate publication, revision, recheck, and executable scope",
+      "originalLine": 7200,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "current source freshness audit keeps corrected routes executable and stale routes gated",
+      "originalLine": 7279,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "promoted public routes keep save primary visible and the executable artifact available",
+      "originalLine": 7366,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "promoted maintenance mobile routes show the date checklist before the next-date card",
+      "originalLine": 7385,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "approved pilot flow executes while review inventory stays out of public routes",
+      "originalLine": 7977,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "official route quality gates keep only approved artifacts executable",
+      "originalLine": 7999,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "experiment feedback routes keep one artifact-first execution surface",
+      "originalLine": 8018,
+      "reason": "superseded_by_p29_composition"
+    },
+    {
+      "title": "review-gated routines do not leak workbenches while an approved routine stays executable",
+      "originalLine": 8040,
+      "reason": "superseded_by_p29_composition"
+    }
+  ]
+}

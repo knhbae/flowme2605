@@ -181,9 +181,7 @@ test('export reports disabled and pending states without changing scope', async 
     });
   });
   await page.goto('/my?view=flows');
-  const flow = page.locator(
-    '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]',
-  );
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');

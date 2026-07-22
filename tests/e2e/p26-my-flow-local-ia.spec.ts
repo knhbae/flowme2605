@@ -124,7 +124,7 @@ test.describe('P26-08 My Flow local IA', () => {
 
     await expect(page.getByTestId('my-flow-saved-count')).toHaveText('3개');
     const workspace = page.getByTestId('my-flow-library-workspace');
-    await expect(workspace).toHaveAttribute('data-library-layout', 'rail-detail');
+    await expect(workspace).toHaveAttribute('data-library-layout', 'rail-canvas-inspector');
     const rail = workspace.getByTestId('my-flow-library-rail');
     await expect(rail.getByTestId('my-flow-library-row')).toHaveCount(3);
     const target = rail.locator('[data-testid="my-flow-library-row"][data-flow-slug="computer-skills-d30-study"]');

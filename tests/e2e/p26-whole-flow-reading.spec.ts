@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_09_EVIDENCE_DIR;
 
@@ -53,7 +54,8 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await seedSavedFlow(page, 'washer-tub-clean-monthly', '2026-08-01');
     await page.goto('/my?view=flows');
 
-    const outline = page.getByTestId('my-flow-mobile-adaptive-outline');
+    const flow = await openMyFlowLibraryFlow(page, 'washer-tub-clean-monthly');
+    const outline = flow.getByTestId('my-flow-whole-flow-outline');
     await expect(outline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('3');
     await expect(outline.getByTestId('my-flow-whole-flow-toggle-all-groups')).toHaveCount(0);
     await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
@@ -69,7 +71,8 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await seedSavedFlow(page, 'vehicle-inspection-prep');
     await page.goto('/my?view=flows');
 
-    const outline = page.getByTestId('my-flow-mobile-adaptive-outline');
+    const flow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
+    const outline = flow.getByTestId('my-flow-whole-flow-outline');
     await expect(outline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('10');
     await expect(outline.getByTestId('my-flow-whole-flow-toggle-all-groups')).toHaveCount(0);
     await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(10);
@@ -85,7 +88,8 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await seedSavedFlow(page, 'moving-d30-basic', '2026-08-15');
     await page.goto('/my?view=flows');
 
-    const outline = page.getByTestId('my-flow-mobile-adaptive-outline');
+    const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
+    const outline = flow.getByTestId('my-flow-whole-flow-outline');
     const summary = outline.getByTestId('my-flow-whole-flow-reading-summary');
     await expect(summary).toContainText('6단계');
     await expect(summary).toContainText('0/24 완료');

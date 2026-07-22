@@ -16,7 +16,15 @@ const destinationLabels = {
   memo: '메모',
 } as const;
 
-export function FlowExportReceipt({ receipt }: { receipt: FlowExportResultReceipt }) {
+export function FlowExportReceipt({
+  receipt,
+  flowTitle,
+  sourceLabel,
+}: {
+  receipt: FlowExportResultReceipt;
+  flowTitle?: string;
+  sourceLabel?: string;
+}) {
   const successful = receipt.status === 'success';
 
   return (
@@ -26,6 +34,8 @@ export function FlowExportReceipt({ receipt }: { receipt: FlowExportResultReceip
       data-export-destination={receipt.destination}
       data-export-output-count={receipt.outputCount}
       data-export-omitted-count={receipt.omittedCount}
+      data-p29-marker="P29-EXPORT-RECEIPT-IDENTITY"
+      data-flow-anatomy="export-receipt"
       role="status"
       aria-live="polite"
       compact
@@ -34,6 +44,11 @@ export function FlowExportReceipt({ receipt }: { receipt: FlowExportResultReceip
       title={receipt.message}
       className="mt-3"
     >
+      {flowTitle ? (
+        <p data-testid="flow-export-result-identity" className="mt-1 text-xs font-semibold">
+          {flowTitle}{sourceLabel ? ` · 출처 ${sourceLabel}` : ''}
+        </p>
+      ) : null}
       {receipt.omittedCount > 0 ? (
         <p className="mt-1 text-xs font-medium">{receipt.omittedCount}개 제외</p>
       ) : null}
