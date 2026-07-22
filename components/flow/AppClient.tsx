@@ -14690,6 +14690,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-testid="my-flow-overview-card"
         data-flow-slug={flow.progress.slug}
         data-p29-marker="P29-MY-FLOW-ACTION-FIRST"
+        data-p30-marker="P30-MY-FLOW-COMMAND-HIERARCHY"
         data-flow-anatomy="flow-detail"
         className={options.workspace
           ? 'min-w-0 bg-transparent'
@@ -14739,6 +14740,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 type="button"
                 data-testid="my-flow-personal-copy-settings-open"
+                data-action-priority="secondary"
                 aria-label={`${flowTitle} ${personalCopySettingsLabel}`}
                 className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowPersonalCopySettings(flow)}
@@ -14750,6 +14752,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 type="button"
                 data-testid="my-flow-direct-anchor-settings-open"
+                data-action-priority="secondary"
                 aria-label={`${flowTitle} ${directAnchorCopy.editLabel}`}
                 className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowDirectAnchorSettings(flow)}
@@ -14761,7 +14764,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </div>
         {renderMyFlowPersonalCopySettings(flow)}
         {renderMyFlowDirectAnchorSettings(flow)}
-        {executionReady && !showWholeFlowOutline ? <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
+        {executionReady && (!showWholeFlowOutline || isMyFlowMobileViewport) ? <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
           <p className={`text-xs font-semibold ${showContentReadinessBadge ? 'text-slate-600' : 'text-blue-700'}`}>{nextRow ? getMyFlowRowStatusLabel(nextRow) : '다음에 볼 항목'}</p>
           {nextRow ? (
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -14773,6 +14776,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <button
                   type="button"
                   data-testid="my-flow-next-action-open"
+                  data-action-priority="primary"
                   className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
                   aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
                   onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
@@ -14825,6 +14829,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <button
                       type="button"
                       data-testid="my-flow-workspace-next-open"
+                      data-action-priority="primary"
                       className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       aria-label={getMyFlowOpenActionAriaLabel(getMyFlowRowDisplayTitle(nextExecutionRow), '열기')}
                       onClick={() => openMyFlowRowFromFlowTab(flow, nextExecutionRow)}
@@ -14869,27 +14874,59 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {executionReady && !batchActive ? renderMyFlowCompletionFeedback(flow) : null}
         {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
         {executionReady && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
-        {!batchActive ? <div className={`mt-4 grid gap-2 ${showArchiveToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
-          <Link
-            className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
-            href={sourceHref}
-            target={sourceLinkExternal ? '_blank' : undefined}
-            rel={sourceLinkExternal ? 'noreferrer' : undefined}
+        {!batchActive ? (
+          <details
+            data-testid="my-flow-management-menu"
+            className="relative mt-4 w-fit"
+            onKeyDown={(event) => {
+              if (event.key !== 'Escape' || !event.currentTarget.open) return;
+              event.preventDefault();
+              event.stopPropagation();
+              event.currentTarget.open = false;
+              event.currentTarget.querySelector<HTMLElement>('summary')?.focus();
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) event.currentTarget.open = false;
+            }}
           >
-                {flow.savedMap ? '원문 보기' : sourceLabel}
-          </Link>
-          {showArchiveToggle ? (
-            <button
-              type="button"
-              data-testid="my-flow-archive-toggle"
-              aria-label={`${flowTitle} ${archivedInInventory ? '복구하기' : '보관하기'}`}
-              className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:border-blue-300 hover:text-slate-900"
-              onClick={() => updateMyFlowArchiveState(flow, archivedInInventory ? 'restore' : 'archive')}
+            <summary
+              data-testid="my-flow-management-menu-trigger"
+              data-action-role="overflow"
+              aria-haspopup="menu"
+              aria-label={`${flowTitle} 관리 메뉴`}
+              className="inline-flex min-h-10 cursor-pointer list-none items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:border-blue-300 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden"
             >
-              {archivedInInventory ? '복구하기' : '보관하기'}
-            </button>
-          ) : null}
-        </div> : null}
+              더보기
+            </summary>
+            <div
+              role="menu"
+              className="absolute bottom-full left-0 z-30 mb-2 grid min-w-48 gap-1 rounded-md border border-slate-200 bg-white p-1.5 shadow-[0_14px_36px_rgba(15,23,42,0.14)]"
+            >
+              <Link
+                role="menuitem"
+                data-testid="my-flow-management-source"
+                className="inline-flex min-h-10 w-full items-center rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                href={sourceHref}
+                target={sourceLinkExternal ? '_blank' : undefined}
+                rel={sourceLinkExternal ? 'noreferrer' : undefined}
+              >
+                {flow.savedMap ? '원문 보기' : sourceLabel}
+              </Link>
+              {showArchiveToggle ? (
+                <button
+                  type="button"
+                  role="menuitem"
+                  data-testid="my-flow-archive-toggle"
+                  aria-label={`${flowTitle} ${archivedInInventory ? '복구하기' : '보관하기'}`}
+                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                  onClick={() => updateMyFlowArchiveState(flow, archivedInInventory ? 'restore' : 'archive')}
+                >
+                  {archivedInInventory ? '복구하기' : '보관하기'}
+                </button>
+              ) : null}
+            </div>
+          </details>
+        ) : null}
       </section>
     );
   };

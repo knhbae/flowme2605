@@ -236,3 +236,44 @@ test.describe('P30-03 save-before decision and contextual adjustment', () => {
     });
   });
 });
+
+test.describe('P30-04 My Flow command hierarchy', () => {
+  test('detail keeps one next action and moves source/archive into a focus-returning menu', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/my?demo=ux20&view=flows');
+
+    const row = page.getByTestId('my-flow-mobile-structure-row').nth(2);
+    const flowSlug = await row.getAttribute('data-flow-slug');
+    expect(flowSlug).toBeTruthy();
+    await row.getByTestId('my-flow-mobile-structure-open').click();
+
+    const card = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`);
+    await expect(card).toHaveAttribute('data-p30-marker', 'P30-MY-FLOW-COMMAND-HIERARCHY');
+    await expect(card.locator('[data-action-priority="primary"]:visible')).toHaveCount(1);
+    expect(await card.locator('[data-action-priority="secondary"]:visible').count()).toBeLessThanOrEqual(2);
+
+    const menu = card.getByTestId('my-flow-management-menu');
+    const trigger = menu.getByTestId('my-flow-management-menu-trigger');
+    await expect(menu.getByTestId('my-flow-management-source')).toBeHidden();
+    await expect(card.getByTestId('my-flow-archive-toggle')).toBeHidden();
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(menu).toHaveAttribute('open', '');
+    await expect(menu.getByTestId('my-flow-management-source')).toBeVisible();
+    await expect(card.getByTestId('my-flow-archive-toggle')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(menu).not.toHaveAttribute('open', '');
+    await expect(trigger).toBeFocused();
+
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    await capture(page, 'p30-04-my-flow-command-hierarchy-390.png', {
+      route: '/my?demo=ux20&view=flows',
+      viewport: { width: 390, height: 844 },
+      visiblePrimaryCount: 1,
+      visibleSecondaryCount: await card.locator('[data-action-priority="secondary"]:visible').count(),
+      overflowMenuFocusReturned: true,
+      horizontalOverflow: overflow,
+    });
+  });
+});

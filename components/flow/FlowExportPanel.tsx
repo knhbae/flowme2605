@@ -245,6 +245,7 @@ export function FlowExportPanel({
           ref={entryButtonRef}
           type="button"
           data-testid={legacyPersonalDraft ? 'personal-draft-list-export-toggle' : 'my-flow-export-entry'}
+          data-action-priority="secondary"
           aria-expanded={open}
           aria-label={`${flowTitle} 가져가기`}
           className={FLOW_UI_SECONDARY_ACTION_CLASS}
