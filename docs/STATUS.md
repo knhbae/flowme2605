@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-22 (P30 independent feedback reconciled)
-**Status:** v0.1.0 RELEASED / P30 PLANNING APPROVED
+**Last Updated:** 2026-07-22 (P30 released)
+**Status:** v0.1.0 RELEASED / P30 PRODUCTION GREEN
 **Current Version:** v0.1.0  
-**Primary Focus:** Execute [P30 Evidence Gap Closure](./specs/2026-07-22-p30-evidence-gap-closure/README.md) one slice at a time. P30-01 mobile export fixed-layer correctness is next; P30-02 focus order and P30-03~08 are dependency-gated. P29 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated and production smoke evidence is not a usability claim.
+**Primary Focus:** Review the released [P30 final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md) and decide whether the next gate is owner/independent design review or a bounded P31 slice. P29 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated and production smoke evidence is not a usability claim.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P30 evidence-gap closure; P30-01 is the only immediate implementation slice |
-| User action now | Review the reconciled P30 sequence; defer observed-user testing until nested-state correctness is closed |
-| AI action now | Fix public/My Flow mobile export overlap first, then follow the dependency-gated P30 sequence without reopening P29 contracts |
+| Active product gate | P30 production closeout complete; owner/independent review determines the next bounded product slice |
+| User action now | Review the P30 final package and production, then classify remaining UX as keep, revise, or defer |
+| AI action now | Preserve P30 production and prepare P31 only from current evidence; do not infer observed usability |
 | Blocked by evidence | Observed usability, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P29-01~08: PR #146, merge `10e6e515`, CI green, production smoke `9/9`, screenshots `23 + 9` |
+| Completed implementation | P30-00~08: PR #148, merge `b3c8500`, CI green, production smoke `13/13`, screenshots `17 + 13` |
 
 ## Recent Direction Notes
+
+- 2026-07-22 P30 production release: mobile export fixed-layer intersections are `0`; `/my` and `/calendar` focus order is header -> workspace -> persistent tabs; long-Flow adjustment is contextual; My Flow keeps one visible primary; Calendar has deterministic undated, 50+ scope, and compact identity evidence; routine settings are summary-first. Dead public composition code was removed while the live `/flow-maps` legacy consumer remains explicit. Local verification is unit `584 / 584`, P30 Playwright `12 / 12`, affected P28/P29 `20 / 20`, full Playwright `304 / 304`, build `18 / 18`. [PR #148](https://github.com/knhbae/flowme2605/pull/148) merged as `b3c8500`; deployment `5557201045` is live at <https://flowme2605.vercel.app>; canonical smoke is `13 / 13` with HTTP/navigation/assertion/overflow/unnamed-focusable/console-page-error failures `0`. Observed-user sessions remain `0`. See the [P30 final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md).
 
 - 2026-07-22 P30 feedback reconciliation: Codex current-production interaction evidence and Claude Design's standalone source/screenshot review agree that P29 architecture should stay. Codex reproduced two High mobile correctness gaps: fixed save/navigation layers overlap export primary actions, and `/my`/`/calendar` bottom tabs precede main controls in keyboard order. Claude Design identified bounded Medium composition gaps in save-before decisions, My Flow secondary commands, Calendar 0-count scope groups, undated evidence, and month-cell identity. P30 therefore runs `P30-01 -> P30-02 -> (P30-03 || P30-04 || P30-05) -> P30-06 -> P30-07 -> P30-08`; routine refinement is conditional and legacy removal is evidence-gated. This planning change modifies no app code or schema. See [P30 Evidence Gap Closure](./specs/2026-07-22-p30-evidence-gap-closure/README.md).
 

@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-22<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P30 evidence-gap closure planned<br>
+**Current Validation Stage:** internal alpha / P30 production released<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P30-01 mobile export layer correctness, followed by the dependency-gated P30 sequence
+**Next Milestone:** owner/independent review of P30 production, then one evidence-bounded P31 slice
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -29,17 +29,19 @@ Detailed scope: [P30 Evidence Gap Closure](./specs/2026-07-22-p30-evidence-gap-c
 
 | Slice | Purpose | State |
 | --- | --- | --- |
-| P30-00 | Reconcile Claude/Codex findings, freeze P29 contracts, and define evidence weighting | Complete as planning evidence |
-| P30-01 | Remove public/My Flow mobile export and fixed-layer collisions | Next; implementation not started |
-| P30-02 | Correct mobile header/main/bottom-nav keyboard focus order | Gated by P30-01 production evidence |
-| P30-03 | Simplify save-before decision surface and long-Flow adjustment | Gated by P30-02 |
-| P30-04 | Make My Flow detail next-action-first and move low-frequency commands to overflow | Gated by P30-02 |
-| P30-05 | Close Calendar undated evidence, 50+ scope, and compact month identity | Gated by P30-02 |
-| P30-06 | Refine routine advanced density only if current interaction evidence supports it | Conditional after P30-03~05 |
-| P30-07 | Remove dead legacy composition only after consumer/no-diff proof | Gated cleanup |
-| P30-08 | Run independent 390/1024/1440 nested-state production closeout | Final gate |
+| P30-00 | Reconcile Claude/Codex findings, freeze P29 contracts, and define evidence weighting | Complete |
+| P30-01 | Remove public/My Flow mobile export and fixed-layer collisions | Complete |
+| P30-02 | Correct mobile header/main/bottom-nav keyboard focus order | Complete |
+| P30-03 | Simplify save-before decision surface and long-Flow adjustment | Complete |
+| P30-04 | Make My Flow detail next-action-first and move low-frequency commands to overflow | Complete |
+| P30-05 | Close Calendar undated evidence, 50+ scope, and compact month identity | Complete |
+| P30-06 | Refine routine advanced density only if current interaction evidence supports it | Complete |
+| P30-07 | Remove dead legacy composition only after consumer/no-diff proof | Complete with live legacy consumer explicitly deferred |
+| P30-08 | Run independent 390/1024/1440 nested-state production closeout | Complete and released through PR #148 / merge `b3c8500` |
 
 P30 does not add planner features, persistence migrations, new export formats, a fifth tab, account/cloud sync, AI/crawler, or OAuth. Observed-user sessions remain `0` and automated evidence will not be presented as usability validation.
+
+P30 local evidence is unit `584 / 584`, P30 Playwright `12 / 12`, affected P28/P29 `20 / 20`, full Playwright `304 / 304`, build `18 / 18`, and `17` screenshots. [PR #148](https://github.com/knhbae/flowme2605/pull/148) merged as `b3c8500`; post-merge CI passed and canonical production smoke is `13 / 13` with HTTP/navigation/assertion/overflow/unnamed-focusable/console-page-error failures `0` across `13` production screenshots.
 
 ## P29 Coordinated Surface Reset
 
@@ -59,7 +61,7 @@ Detailed execution plan: [P29 coordinated surface reset](./specs/2026-07-22-p29-
 | P29-07 | Close shared visual, responsive, keyboard, and accessibility gates | Complete by current command/browser evidence |
 | P29-08 | Run independent production integration and closeout | Complete and released through PR #146 and merge `10e6e515` |
 
-The moving vertical proof passed before the shared rollout. P29 evidence is P29 Playwright `13 / 13`, full Playwright `292 / 292`, unit `584 / 584`, production build `18 / 18`, `23` implementation screenshots, and `9` canonical production screenshots. P29 preserves P28 projection and stable identity contracts. [PR #146](https://github.com/knhbae/flowme2605/pull/146) merged as `10e6e515`; post-merge CI passed and canonical production smoke is `9 / 9` with overflow/unnamed-focusable/console-page-error counts `0`. External user observation remains deferred and is not implied by these results. P30 is not defined until independent review and owner judgment identify a concrete evidence gap.
+The moving vertical proof passed before the shared rollout. P29 evidence is P29 Playwright `13 / 13`, full Playwright `292 / 292`, unit `584 / 584`, production build `18 / 18`, `23` implementation screenshots, and `9` canonical production screenshots. P29 preserves P28 projection and stable identity contracts. [PR #146](https://github.com/knhbae/flowme2605/pull/146) merged as `10e6e515`; post-merge CI passed and canonical production smoke is `9 / 9` with overflow/unnamed-focusable/console-page-error counts `0`. External user observation remains deferred and is not implied by these results. P30 subsequently closed the bounded nested-state evidence gaps without reopening these contracts.
 
 ## P28 Cross-Surface Experience Reconstruction
 
@@ -195,13 +197,13 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P27 remains canonical production while P28 begins with a docs/prototype-only architecture gate. External user observation stays outside the queue until the owner explicitly reopens it after P28-08.
+There is no active external-user gate. P30 is canonical production and the next work is an owner/independent review decision, not an automatically inferred P31 feature program. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | AI + owner decision | P28-01 cross-surface comparison simulation | Compare current and three proposed compositions with real fixtures at 390/1024/1440 | Selected anatomy scores at least 4.0 with hard fail 0; otherwise replan |
-| Planned | AI | P28-02~07 staged implementation | Begin only after P28-01 decision | Each slice closes its contract, browser, and regression gate before the next |
-| Planned | AI + Claude Design + owner | P28-08 final independent review | Reconcile correctness and design findings | Automated/browser Blocking/High 0 and owner readiness decision recorded |
+| Active | Owner + independent reviewers | P30 production review | Compare current production, final package, and remaining risks | Classify the next decision as keep, revise, defer, or one bounded P31 slice |
+| Planned | AI | P31 planning only after a concrete evidence gap | Reconcile owner, Claude Design, and current production evidence | One scoped goal with explicit non-goals and rollback exists |
+| Completed | AI | P30 evidence-gap closure and release | Preserve PR #148, merge `b3c8500`, and production evidence | CI green, canonical smoke `13 / 13`, observed users explicitly `0` |
 | Completed | AI | P25-06/P25-07 public artifact and visual integration | Preserve one public artifact and shared responsive action vocabulary | Current browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-01~P25-05 correctness, whole-Flow workspace, personal adjustment, Anytime placement, completion, and export | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-08 internal six-journey gate | Preserve current mobile/wide integration evidence | Automated Blocking/High 0 and owner decision package exist; observed users remain 0 |
@@ -237,7 +239,7 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Complete P28-01 before production implementation. Choose or revise one cross-surface composition that lets users see the whole Flow, preview actual destination data, adjust only the current need, and encounter the same item/occurrence/resource grammar in My Flow and Calendar. Reject any alternative that retains workout-only completion states, a 1024px fixed three-pane layout, or an unbounded horizontal Flow selector. Do not recruit participants yet. Account persistence, creator/update pilot, production URL/AI backend, direct integrations, permanent delete, and observed-user recruitment remain gated.
+Review the released P30 production and [final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md). Do not open a broad P31 program merely because automated gates are green. First identify one current-production gap with route, viewport, expected/actual behavior, and user impact; otherwise keep P30 and defer further implementation. Do not recruit participants yet. Account persistence, creator/update pilot, real AI/crawler, direct integrations, permanent delete, and observed-user recruitment remain gated.
 
 ## Gated Backlog
 

@@ -1,7 +1,7 @@
 # P30 Evidence Gap Closure
 
 **Date:** 2026-07-22
-**Status:** Planning approved, implementation not started
+**Status:** Complete and released through PR #148 / merge `b3c8500`
 **Baseline:** `3c7b59e` (`afe834a` 이후 앱 코드는 동일하며 Claude Design standalone HTML만 추가됨)
 **Observed-user sessions:** `0`
 
@@ -55,6 +55,6 @@ P30-03~05는 P30-02가 production에서 확인된 뒤 병렬로 진행할 수 �
 - [qa.md](./qa.md): nested-state QA와 screenshot matrix
 - [goal-prompts.md](./goal-prompts.md): 단계별 복붙용 `/goal`
 
-## 지금 할 일
+## 완료 결과
 
-다음 구현은 **P30-01만** 시작한다. P30-01의 production evidence가 없으면 P30-02로 넘어가지 않는다. 이 문서 작성 단계에서는 앱 코드, persistence, export builder, 4탭 IA를 변경하지 않는다.
+P30-01~08은 순서대로 구현·검증·배포됐다. local evidence는 unit `584 / 584`, P30 Playwright `12 / 12`, affected P28/P29 `20 / 20`, full Playwright `304 / 304`, build `18 / 18`이다. [PR #148](https://github.com/knhbae/flowme2605/pull/148)은 merge SHA `b3c8500be3b6aa673e2078d02a986f7cae6fe8bf`으로 반영됐고 canonical production smoke는 `13 / 13`이다. 실제 관찰 사용자는 `0`명이며 다음 구현은 owner/independent review가 구체적인 evidence gap을 확인한 뒤 별도로 정의한다.

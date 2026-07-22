@@ -1,0 +1,817 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "checkedAt": "2026-07-22T14:46:32.165Z",
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "sourceCommit": "b3c8500be3b6aa673e2078d02a986f7cae6fe8bf",
+  "deploymentId": 5557201045,
+  "deploymentUrl": "https://flowme2605-orip94xcu-flowme.vercel.app",
+  "routes": [
+    "/f/moving-d30-basic",
+    "/my?demo=ux20&view=flows",
+    "/calendar?demo=ux20",
+    "/calendar?demo=ux50",
+    "/f/curated-allblanc-morning-workout",
+    "/flow-maps/moving-d30"
+  ],
+  "viewports": [
+    "390x844",
+    "1024x768",
+    "1440x900"
+  ],
+  "results": [
+    {
+      "name": "mobile_public_export_layer",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/moving-d30-basic",
+      "assertionsPassed": true,
+      "marker": "P30-MOBILE-EXPORT-NO-FIXED-OVERLAP",
+      "fixedSaveCtaCount": 0,
+      "primaryRect": {
+        "left": 29,
+        "top": 748.5,
+        "right": 361,
+        "bottom": 819.5,
+        "width": 332,
+        "height": 71
+      },
+      "assertions": {
+        "marker": true,
+        "fixedSaveCtaSuppressed": true,
+        "primaryInViewport": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-public-export-390.png"
+    },
+    {
+      "name": "mobile_my_flow_export_layer",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "marker": "P30-MOBILE-EXPORT-NO-FIXED-OVERLAP",
+      "primaryRect": {
+        "left": 33,
+        "top": 701.5,
+        "right": 357,
+        "bottom": 765.5,
+        "width": 324,
+        "height": 64
+      },
+      "tabsRect": {
+        "left": 12,
+        "top": 774,
+        "right": 378,
+        "bottom": 832,
+        "width": 366,
+        "height": 58
+      },
+      "fixedLayerIntersectionArea": 0,
+      "assertions": {
+        "marker": true,
+        "noFixedLayerIntersection": true,
+        "primaryBeforeTabs": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-my-export-390.png"
+    },
+    {
+      "name": "mobile_my_flow_focus_order",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "focusOrder": {
+        "trace": [
+          {
+            "testId": "platform-nav",
+            "tagName": "a",
+            "accessibleName": "FLOW"
+          },
+          {
+            "testId": "platform-nav",
+            "tagName": "summary",
+            "accessibleName": "보조 메뉴 열기"
+          },
+          {
+            "testId": "my-flow-studio-link",
+            "tagName": "a",
+            "accessibleName": "스튜디오"
+          },
+          {
+            "testId": "my-flow-data-manager-open",
+            "tagName": "button",
+            "accessibleName": "데이터 관리"
+          },
+          {
+            "testId": "my-flow-view-flow",
+            "tagName": "button",
+            "accessibleName": "Flow 목록"
+          },
+          {
+            "testId": "my-flow-search",
+            "tagName": "input",
+            "accessibleName": "저장한 Flow 검색"
+          },
+          {
+            "testId": "my-flow-list-filter-all",
+            "tagName": "button",
+            "accessibleName": "전체"
+          },
+          {
+            "testId": "my-flow-list-filter-open",
+            "tagName": "button",
+            "accessibleName": "진행 중"
+          },
+          {
+            "testId": "my-flow-list-filter-routine",
+            "tagName": "button",
+            "accessibleName": "루틴"
+          },
+          {
+            "testId": "my-flow-list-filter-done",
+            "tagName": "button",
+            "accessibleName": "완료"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "강아지 건강검진 상담 준비 열기"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "개발 프로젝트 포트폴리오 4주 열기"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "결혼 준비 타임라인 열기"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "국세 미수령 환급금 확인 열기"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "매일 15분 읽기 열기"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "복지멤버십 신청·확인 열기"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "블로그 글을 영상으로 옮기기 열기"
+          },
+          {
+            "testId": "my-flow-mobile-structure-open",
+            "tagName": "button",
+            "accessibleName": "삼성 비스포크 AI 콤보 배수필터 청소 열기"
+          },
+          {
+            "testId": "my-flow-mobile-inventory-open",
+            "tagName": "button",
+            "accessibleName": "19개 더 보기"
+          },
+          {
+            "testId": "platform-mobile-tabs",
+            "tagName": "a",
+            "accessibleName": "홈"
+          }
+        ],
+        "headerIndex": 0,
+        "workspaceIndex": 4,
+        "tabsIndex": 19,
+        "ordered": true
+      },
+      "tabsMarker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+      "assertions": {
+        "ordered": true,
+        "marker": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-mobile-my-flow-focus-order-390.png"
+    },
+    {
+      "name": "mobile_calendar_focus_order",
+      "route": "/calendar?demo=ux20",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux20",
+      "assertionsPassed": true,
+      "focusOrder": {
+        "trace": [
+          {
+            "testId": "platform-nav",
+            "tagName": "a",
+            "accessibleName": "FLOW"
+          },
+          {
+            "testId": "platform-nav",
+            "tagName": "summary",
+            "accessibleName": "보조 메뉴 열기"
+          },
+          {
+            "testId": "my-flow-studio-link",
+            "tagName": "a",
+            "accessibleName": "스튜디오"
+          },
+          {
+            "testId": "calendar-flow-scope-picker-trigger",
+            "tagName": "button",
+            "accessibleName": "전체 Flow선택"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "button",
+            "accessibleName": "이전 달"
+          },
+          {
+            "testId": "my-flow-month-picker",
+            "tagName": "input",
+            "accessibleName": "월 선택"
+          },
+          {
+            "testId": "my-flow-month-picker",
+            "tagName": "input",
+            "accessibleName": "월 선택"
+          },
+          {
+            "testId": "my-flow-month-picker",
+            "tagName": "input",
+            "accessibleName": "월 선택"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "button",
+            "accessibleName": "다음 달"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "26일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "27일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "28일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "29일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "30일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "1일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "2일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "3일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "4일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "5일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "6일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "7일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "8일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "9일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "10일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "11일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "12일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "13일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "14일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "15일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "16일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "17일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "18일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "19일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "20일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "21일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "22일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "23일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "24일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "25일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "26일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "27일"
+          },
+          {
+            "testId": "my-flow-schedule-overflow",
+            "tagName": "span",
+            "accessibleName": "2026-05-27 일정 2개 더 보기"
+          },
+          {
+            "testId": "my-flow-routine-icon",
+            "tagName": "button",
+            "accessibleName": "세탁기 통세척 월간 관리: 통세척 코스 돌리고 문 열어 건조하기"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "이사 방식 정하기 상세 열기"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "+1 개"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "28일"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "매일 공부 가능한 시간 블록 정하기 상세 열기"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "필기와 실기 시험 범위 나누기 상세 열기"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "29일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "30일"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "기출 회독 목표 정하기 상세 열기"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "31일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "1일"
+          },
+          {
+            "testId": "my-flow-routine-icon",
+            "tagName": "button",
+            "accessibleName": "평일 5일 저녁 식단: 원문 식단표에서 이번 주에 만들 메뉴 확인하기"
+          },
+          {
+            "testId": "my-flow-routine-overflow",
+            "tagName": "button",
+            "accessibleName": "2026-06-01 루틴 1개 더 보기"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "2일"
+          },
+          {
+            "testId": "my-flow-routine-icon",
+            "tagName": "button",
+            "accessibleName": "직장인 영어공부 30일 루틴: 짧은 영상 또는 오디오 10분 듣기"
+          },
+          {
+            "testId": "my-flow-routine-overflow",
+            "tagName": "button",
+            "accessibleName": "2026-06-02 루틴 1개 더 보기"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "3일"
+          },
+          {
+            "testId": "my-flow-schedule-overflow",
+            "tagName": "span",
+            "accessibleName": "2026-06-03 일정 1개 더 보기"
+          },
+          {
+            "testId": "my-flow-routine-icon",
+            "tagName": "button",
+            "accessibleName": "Allblanc 영상별 홈트 루틴: 아침 5분 전신 운동 영상 열기"
+          },
+          {
+            "testId": "my-flow-routine-overflow",
+            "tagName": "button",
+            "accessibleName": "2026-06-03 루틴 4개 더 보기"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "만들 프로젝트 아이템과 기술 스택 정하기 상세 열기"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "+1 개"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "4일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "5일"
+          },
+          {
+            "testId": "my-flow-calendar-date-button",
+            "tagName": "button",
+            "accessibleName": "6일"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "핵심 기능과 3~5개 화면 범위 정하기 상세 열기"
+          },
+          {
+            "testId": "my-flow-calendar-card",
+            "tagName": "a",
+            "accessibleName": "핵심 이론 1회독 시작하기 상세 열기"
+          },
+          {
+            "testId": "my-flow-calendar-date-move-entry",
+            "tagName": "button",
+            "accessibleName": "5월 28일 할 일 날짜 옮기기"
+          },
+          {
+            "testId": "my-flow-task-complete-control",
+            "tagName": "input",
+            "accessibleName": "필기와 실기 시험 범위 나누기 다시 열기"
+          },
+          {
+            "testId": "my-flow-execution-row-shell",
+            "tagName": "button",
+            "accessibleName": "필기와 실기 시험 범위 나누기 열기 · 컴퓨터활용능력 1급 학습 · 5월 28일"
+          },
+          {
+            "testId": "my-flow-inline-note-open",
+            "tagName": "button",
+            "accessibleName": "필기와 실기 시험 범위 나누기 실행 메모 남기기"
+          },
+          {
+            "testId": "my-flow-task-complete-control",
+            "tagName": "input",
+            "accessibleName": "매일 공부 가능한 시간 블록 정하기 다시 열기"
+          },
+          {
+            "testId": "my-flow-execution-row-shell",
+            "tagName": "button",
+            "accessibleName": "매일 공부 가능한 시간 블록 정하기 열기 · 컴퓨터활용능력 1급 학습 · 5월 28일"
+          },
+          {
+            "testId": "my-flow-inline-note-open",
+            "tagName": "button",
+            "accessibleName": "매일 공부 가능한 시간 블록 정하기 실행 메모 남기기"
+          },
+          {
+            "testId": "platform-mobile-tabs",
+            "tagName": "a",
+            "accessibleName": "홈"
+          }
+        ],
+        "headerIndex": 0,
+        "workspaceIndex": 3,
+        "tabsIndex": 76,
+        "ordered": true
+      },
+      "tabsMarker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+      "assertions": {
+        "ordered": true,
+        "marker": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-mobile-calendar-focus-order-390.png"
+    },
+    {
+      "name": "mobile_long_flow_adjustment",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/moving-d30-basic",
+      "assertionsPassed": true,
+      "marker": "P30-LONG-FLOW-CONTEXTUAL-ADJUST",
+      "initialRowEditCount": 0,
+      "initialVisibleRows": 0,
+      "expandedRows": 24,
+      "assertions": {
+        "marker": true,
+        "noInitialRowCommands": true,
+        "fullListExplicit": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-long-flow-adjustment-390.png"
+    },
+    {
+      "name": "mobile_my_flow_command_hierarchy",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "marker": "P30-MY-FLOW-COMMAND-HIERARCHY",
+      "visiblePrimaryCount": 1,
+      "visibleSecondaryCount": 1,
+      "managementMenuFocusReturned": true,
+      "assertions": {
+        "marker": true,
+        "onePrimary": true,
+        "boundedSecondary": true,
+        "focusReturned": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-my-command-hierarchy-390.png"
+    },
+    {
+      "name": "mobile_calendar_scope_scale",
+      "route": "/calendar?demo=ux50",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux50",
+      "assertionsPassed": true,
+      "marker": "P30-CALENDAR-SCOPE-SCALE",
+      "optionCount": 62,
+      "inactiveGroupCollapsedInitially": true,
+      "assertions": {
+        "marker": true,
+        "scaleFixture": true,
+        "inactiveCollapsed": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-calendar-scope-50-390.png"
+    },
+    {
+      "name": "mobile_routine_summary",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/curated-allblanc-morning-workout",
+      "assertionsPassed": true,
+      "marker": "P30-ROUTINE-ADVANCED-DENSITY",
+      "initialAdvancedFieldCount": 0,
+      "nextOccurrenceCount": 3,
+      "assertions": {
+        "marker": true,
+        "advancedCollapsed": true,
+        "nextOccurrences": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-routine-summary-390.png"
+    },
+    {
+      "name": "wide_calendar_compact_identity",
+      "route": "/calendar?demo=ux50",
+      "viewport": "1024x768",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux50",
+      "assertionsPassed": true,
+      "marker": "P30-CALENDAR-COMPACT-IDENTITY",
+      "sameDateFlowCount": 5,
+      "fullIdentityCount": 5,
+      "assertions": {
+        "marker": true,
+        "allFlowsReachable": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-calendar-compact-identity-1024.png"
+    },
+    {
+      "name": "wide_live_legacy_consumer",
+      "route": "/flow-maps/moving-d30",
+      "viewport": "1024x768",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/flow-maps/moving-d30",
+      "assertionsPassed": true,
+      "marker": "P30-LEGACY-COMPOSITION-ACTIVE",
+      "architecture": "hybrid",
+      "assertions": {
+        "marker": true,
+        "explicitLegacy": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-flow-map-legacy-1024.png"
+    },
+    {
+      "name": "desktop_public_save_before",
+      "route": "/f/moving-d30-basic",
+      "viewport": "1440x900",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/moving-d30-basic",
+      "assertionsPassed": true,
+      "marker": "P30-SAVE-BEFORE-SINGLE-DECISION",
+      "assertions": {
+        "surfaceVisible": true,
+        "marker": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-desktop-public-save-before-1440.png"
+    },
+    {
+      "name": "desktop_my_flow_workspace",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1440x900",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "marker": null,
+      "assertions": {
+        "surfaceVisible": true,
+        "marker": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-desktop-my-flow-workspace-1440.png"
+    },
+    {
+      "name": "desktop_calendar_workspace",
+      "route": "/calendar?demo=ux50",
+      "viewport": "1440x900",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux50",
+      "assertionsPassed": true,
+      "marker": "P30-CALENDAR-SCOPE-SCALE",
+      "assertions": {
+        "surfaceVisible": true,
+        "marker": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p30-production-desktop-calendar-workspace-1440.png"
+    }
+  ],
+  "summary": {
+    "routeViewportChecks": 13,
+    "httpOrNavigationFailureCount": 0,
+    "redirectedOffProductionCount": 0,
+    "assertionFailureCount": 0,
+    "horizontalOverflowCount": 0,
+    "unnamedFocusableCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "evidenceKind": "current_production_interaction",
+  "observedUserCount": 0
+}

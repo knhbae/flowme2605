@@ -5,7 +5,17 @@
   "baselineSha": "3c7b59ed22c5c503f58ef4b538ede217e4eef8fd",
   "branch": "codex/p30-evidence-gap-closure",
   "evidenceKind": "current_browser_automation",
+  "productionEvidenceKind": "current_production_interaction",
   "observedUserCount": 0,
+  "publication": {
+    "pullRequest": 148,
+    "mergeSha": "b3c8500be3b6aa673e2078d02a986f7cae6fe8bf",
+    "canonicalUrl": "https://flowme2605.vercel.app",
+    "deploymentId": 5557201045,
+    "deploymentUrl": "https://flowme2605-orip94xcu-flowme.vercel.app",
+    "postMergeCi": "pass",
+    "productionSmoke": "pass"
+  },
   "summary": {
     "unitPassed": 584,
     "unitFailed": 0,
@@ -17,7 +27,9 @@
     "fixedLayerIntersectionArea": 0,
     "horizontalOverflowCount": 0,
     "unnamedFocusableCount": 0,
-    "consolePageErrorCount": 0
+    "consolePageErrorCount": 0,
+    "productionSmokePassed": 13,
+    "productionSmokeFailed": 0
   },
   "routes": [
     {

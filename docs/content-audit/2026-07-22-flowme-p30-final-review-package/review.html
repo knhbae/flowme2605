@@ -35,14 +35,14 @@
   <header><div>
     <p>P30 evidence gap closure · 2026-07-22</p>
     <h1>중첩 상태를 닫고, 실행 문법을 유지했다</h1>
-    <p class="lead">P29의 데이터 계약과 4탭 IA는 유지한 채 모바일 export, focus order, 긴 조정, My Flow command, Calendar scale, 반복 설정의 실제 공백을 current browser evidence로 닫았다.</p>
+    <p class="lead">P29의 데이터 계약과 4탭 IA는 유지한 채 모바일 export, focus order, 긴 조정, My Flow command, Calendar scale, 반복 설정의 실제 공백을 닫고 production에 배포했다.</p>
   </div></header>
   <main>
     <section>
       <h2>현재 판정</h2>
       <div class="verdict">
         <div class="metric">P30 E2E<strong>12 / 12</strong></div>
-        <div class="metric">Screenshots<strong>17</strong></div>
+        <div class="metric">Production smoke<strong>13 / 13</strong></div>
         <div class="metric">Fixed overlap<strong>0</strong></div>
         <div class="metric">Observed users<strong>0</strong></div>
       </div>
@@ -72,6 +72,20 @@
       <div class="grid">
         <figure><img src="screenshots/p30-05-calendar-compact-identity-1024.png" alt="1024 Calendar compact Flow identity" /><figcaption>1024 · month compact, selected day full identity</figcaption></figure>
         <figure><img src="screenshots/p30-08-my-flow-1440.png" alt="1440 My Flow workspace" /><figcaption>1440 · overflow 0, unnamed focusable 0</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>게시 결과</h2>
+      <div class="grid">
+        <article><h3>PR과 merge</h3><p>PR <a href="https://github.com/knhbae/flowme2605/pull/148">#148</a>이 merge SHA <code>b3c8500</code>으로 반영됐고 merge 후 CI가 모두 통과했다.</p></article>
+        <article><h3>Canonical production</h3><p><a href="https://flowme2605.vercel.app">flowme2605.vercel.app</a>의 13개 상태에서 HTTP, marker, overflow, unnamed focusable, console/page error 실패가 모두 0이다.</p></article>
+      </div>
+    </section>
+    <section>
+      <h2>Production evidence</h2>
+      <div class="grid">
+        <figure><img src="production-smoke/screenshots/p30-production-public-export-390.png" alt="production 공개 Flow 모바일 export" /><figcaption>390 production · fixed save CTA 0, primary viewport 안</figcaption></figure>
+        <figure><img src="production-smoke/screenshots/p30-production-desktop-calendar-workspace-1440.png" alt="production Calendar 데스크톱 workspace" /><figcaption>1440 production · overflow와 이름 없는 focusable 0</figcaption></figure>
       </div>
     </section>
     <section>

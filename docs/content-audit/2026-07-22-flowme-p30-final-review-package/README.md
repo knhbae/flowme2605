@@ -1,8 +1,10 @@
 # FlowMe P30 Final Review Package
 
-**판정:** `local_release_gate_passed_publish_pending`
+**판정:** `production_released_owner_observation_pending`
 **기준 baseline:** `origin/main` `3c7b59ed22c5c503f58ef4b538ede217e4eef8fd`
 **구현 branch:** `codex/p30-evidence-gap-closure`
+**PR / merge:** [#148](https://github.com/knhbae/flowme2605/pull/148) / `b3c8500be3b6aa673e2078d02a986f7cae6fe8bf`
+**production:** <https://flowme2605.vercel.app> / deployment `5557201045`
 **검증일:** 2026-07-22
 **실제 관찰 사용자:** 0명
 
@@ -40,7 +42,8 @@ P30은 P29의 source, personal overlay, execution run, occurrence, export identi
 - P30 전용 Playwright: `12 / 12` pass
 - affected P28/P29 Playwright: `20 / 20` pass
 - 전체 Playwright: `304 / 304` pass, `--workers=2`
-- screenshot: `17`장
+- local screenshot: `17`장
+- canonical production smoke: `13 / 13` pass, production screenshot `13`장
 - public export fixed CTA count: `0`
 - public/My Flow export primary intersection area: `0`
 - My Flow visible primary: `1`, secondary: `1`
@@ -54,7 +57,12 @@ P30은 P29의 source, personal overlay, execution run, occurrence, export identi
 - reviewed console/page error: `0`
 - observed-user validation: `false`
 
-Merge, deployment, canonical production smoke 결과는 publish closeout에서 이 문서에 추가한다. 현재 수치는 이 branch의 current command/current browser 결과이며 production 결과로 표현하지 않는다.
+## 게시 결과
+
+- 구현 PR [#148](https://github.com/knhbae/flowme2605/pull/148)은 모든 GitHub check와 Vercel preview가 성공한 뒤 merge됐다.
+- merge SHA `b3c8500be3b6aa673e2078d02a986f7cae6fe8bf`의 `Docs, Unit, Build`, `Playwright E2E`, Vercel production status가 모두 `success`다.
+- GitHub deployment `5557201045`가 [Vercel deployment](https://flowme2605-orip94xcu-flowme.vercel.app)와 canonical URL에 배포됐다.
+- canonical production smoke는 6개 route, 390/1024/1440의 13개 중첩 상태를 직접 조작했다. HTTP/navigation, alias 이탈, assertion, overflow, unnamed focusable, console/page error 실패는 모두 `0`이다.
 
 ## 바로 볼 파일
 
@@ -63,7 +71,9 @@ Merge, deployment, canonical production smoke 결과는 publish closeout에서 �
 3. [route-evidence.json](./route-evidence.json): route·viewport·marker·수치
 4. [journey-results.json](./journey-results.json): 대표 중첩 상태 여정
 5. [screenshot-manifest.json](./screenshot-manifest.json): 17개 캡처 목록
-6. [screenshots](./screenshots/): 390/1024/1440 current browser 캡처
+6. [screenshots](./screenshots/): 390/1024/1440 local current browser 캡처
+7. [production smoke](./production-smoke/results.json): canonical production 13개 상태 결과
+8. [production screenshots](./production-smoke/screenshots/): canonical production 13개 캡처
 
 ## 남은 위험
 
