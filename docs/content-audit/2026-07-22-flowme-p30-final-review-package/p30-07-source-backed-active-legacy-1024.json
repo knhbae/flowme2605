@@ -1,0 +1,11 @@
+{
+  "route": "/flow-maps/moving-d30",
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "composition": "legacy",
+  "activeProductionConsumerCount": 1,
+  "removalDecision": "deferred_active_consumer",
+  "consoleErrorCount": 0
+}

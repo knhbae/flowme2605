@@ -1,0 +1,12 @@
+{
+  "route": "/f/curated-allblanc-morning-workout",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "scheduleGroupVisible": true,
+  "endGroupVisible": true,
+  "selectedModeFieldsOnly": true,
+  "summary": "월·수·금 · 07:30 · 45분 · 8회",
+  "horizontalOverflow": 0
+}

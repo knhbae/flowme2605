@@ -1,0 +1,24 @@
+{
+  "route": "/my?demo=ux20&view=flows",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "primaryRect": {
+    "top": 694.5,
+    "right": 357,
+    "bottom": 765.5,
+    "left": 33,
+    "width": 324,
+    "height": 71
+  },
+  "tabsRect": {
+    "top": 774,
+    "right": 378,
+    "bottom": 832,
+    "left": 12,
+    "width": 366,
+    "height": 58
+  },
+  "intersectionArea": 0
+}

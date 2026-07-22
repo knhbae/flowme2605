@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-22",
+  "evidenceKind": "current_browser_automation",
+  "count": 17,
+  "screenshots": [
+    { "file": "screenshots/p30-01-public-export-open-390.png", "slice": "P30-01", "viewport": "390x844" },
+    { "file": "screenshots/p30-01-my-flow-export-open-390.png", "slice": "P30-01", "viewport": "390x844" },
+    { "file": "screenshots/p30-02-my-flow-focus-order-390.png", "slice": "P30-02", "viewport": "390x844" },
+    { "file": "screenshots/p30-02-calendar-focus-order-390.png", "slice": "P30-02", "viewport": "390x844" },
+    { "file": "screenshots/p30-03-moving-item-selection-390.png", "slice": "P30-03", "viewport": "390x844" },
+    { "file": "screenshots/p30-04-my-flow-command-hierarchy-390.png", "slice": "P30-04", "viewport": "390x844" },
+    { "file": "screenshots/p30-05-calendar-undated-undo-390.png", "slice": "P30-05", "viewport": "390x844" },
+    { "file": "screenshots/p30-05-calendar-scope-50-390.png", "slice": "P30-05", "viewport": "390x844" },
+    { "file": "screenshots/p30-05-calendar-compact-identity-1024.png", "slice": "P30-05", "viewport": "1024x768" },
+    { "file": "screenshots/p30-06-routine-summary-390.png", "slice": "P30-06", "viewport": "390x844" },
+    { "file": "screenshots/p30-06-routine-advanced-390.png", "slice": "P30-06", "viewport": "390x844" },
+    { "file": "screenshots/p30-06-routine-advanced-1024.png", "slice": "P30-06", "viewport": "1024x768" },
+    { "file": "screenshots/p30-07-public-artifact-first-390.png", "slice": "P30-07", "viewport": "390x844" },
+    { "file": "screenshots/p30-07-source-backed-active-legacy-1024.png", "slice": "P30-07", "viewport": "1024x768" },
+    { "file": "screenshots/p30-08-public-save-before-1440.png", "slice": "P30-08", "viewport": "1440x900" },
+    { "file": "screenshots/p30-08-my-flow-1440.png", "slice": "P30-08", "viewport": "1440x900" },
+    { "file": "screenshots/p30-08-calendar-1440.png", "slice": "P30-08", "viewport": "1440x900" }
+  ]
+}
+

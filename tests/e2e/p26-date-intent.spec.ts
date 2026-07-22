@@ -46,6 +46,7 @@ test('example date stays preview-only and saves an undated public Flow on mobile
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
   const calendarOption = exportEntry.getByRole('button', { name: /캘린더 파일 받기/ });
   await expect(calendarOption).toHaveCount(0);
+  await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
 
   const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
   await expect(mobileSave.getByRole('button', { name: '날짜 없이 시작' })).toBeVisible();

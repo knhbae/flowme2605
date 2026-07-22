@@ -1,0 +1,9 @@
+{
+  "route": "/calendar?demo=ux50",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "horizontalOverflow": 0,
+  "unnamedFocusableCount": 0
+}

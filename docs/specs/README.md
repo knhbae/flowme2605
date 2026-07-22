@@ -40,9 +40,11 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-22 P29 Coordinated Surface Reset](./2026-07-22-p29-coordinated-surface-reset/plan.md) - owner, Codex, and Claude Design feedback selected a staged composition reset while preserving the P28 data and identity contracts. P29-01A safe frame extraction and P29-01B moving vertical proof are next; P29-02 rollout remains gated by their evidence.
+- [2026-07-22 P30 Evidence Gap Closure](./2026-07-22-p30-evidence-gap-closure/README.md) - independent Codex production interaction and Claude Design screenshot/source review were reconciled into a correctness-first program. P30-01 mobile export layer collision is the only immediate implementation slice; P30-02 focus order and P30-03~08 remain dependency-gated. P29 source/personal/run/occurrence/export contracts stay frozen.
 
 ### Completed Or Closed
+
+- [2026-07-22 P29 Coordinated Surface Reset](./2026-07-22-p29-coordinated-surface-reset/plan.md) - released through PR #146 and merge `10e6e515`; independent review promoted two mobile correctness findings and bounded composition/evidence gaps into P30 without reopening P29 data contracts.
 
 - [2026-07-21 P28 Cross-Surface Experience Reconstruction](./2026-07-21-p28-experience-reconstruction/spec.md) - released through PR #144 and merge `9a839d02` with Hybrid save-before, shared routine/execution grammar, scalable My Flow/Calendar, five actual-data shapes, unit `584/584`, full E2E `346/346`, and observed-user sessions `0`; owner and independent review promoted the remaining composition work into P29.
 

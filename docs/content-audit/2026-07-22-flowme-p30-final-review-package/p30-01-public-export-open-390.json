@@ -1,0 +1,17 @@
+{
+  "route": "/f/moving-d30-basic",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "primaryRect": {
+    "top": 748.5,
+    "right": 361,
+    "bottom": 819.5,
+    "left": 29,
+    "width": 332,
+    "height": 71
+  },
+  "fixedSaveCtaCount": 0,
+  "intersectionArea": 0
+}

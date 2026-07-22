@@ -162,6 +162,7 @@ export function CalendarUnscheduledTray({
       data-testid="my-flow-calendar-unscheduled-tray"
       data-layout={variant}
       data-p29-marker={variant === 'drawer' ? 'P29-CALENDAR-UNDATED-SHEET' : undefined}
+      data-p30-marker="P30-CALENDAR-UNDATED-EVIDENCE"
       className={variant === 'sidebar'
         ? `min-w-0 self-start p-3 lg:sticky lg:top-4 ${FLOW_UI_SURFACE_CLASS}`
         : 'border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)] py-2'}

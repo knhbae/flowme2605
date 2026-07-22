@@ -1,0 +1,471 @@
+{
+  "route": "/calendar?demo=ux20",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "focusTrace": [
+    {
+      "testId": "platform-nav",
+      "tagName": "a",
+      "href": "/",
+      "accessibleName": "FLOW"
+    },
+    {
+      "testId": "platform-nav",
+      "tagName": "summary",
+      "href": null,
+      "accessibleName": "보조 메뉴 열기"
+    },
+    {
+      "testId": "my-flow-studio-link",
+      "tagName": "a",
+      "href": "/u/my-flow-studio",
+      "accessibleName": "스튜디오"
+    },
+    {
+      "testId": "calendar-flow-scope-picker-trigger",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "전체 Flow선택"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "이전 달"
+    },
+    {
+      "testId": "my-flow-month-picker",
+      "tagName": "input",
+      "href": null,
+      "accessibleName": "월 선택"
+    },
+    {
+      "testId": "my-flow-month-picker",
+      "tagName": "input",
+      "href": null,
+      "accessibleName": "월 선택"
+    },
+    {
+      "testId": "my-flow-month-picker",
+      "tagName": "input",
+      "href": null,
+      "accessibleName": "월 선택"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "다음 달"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "26일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "27일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "28일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "29일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "30일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "1일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "2일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "3일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "4일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "5일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "6일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "7일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "8일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "9일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "10일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "11일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "12일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "13일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "14일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "15일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "16일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "17일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "18일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "19일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "20일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "21일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "22일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "23일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "24일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "25일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "26일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "27일"
+    },
+    {
+      "testId": "my-flow-schedule-overflow",
+      "tagName": "span",
+      "href": null,
+      "accessibleName": "2026-05-27 일정 2개 더 보기"
+    },
+    {
+      "testId": "my-flow-routine-icon",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "세탁기 통세척 월간 관리: 통세척 코스 돌리고 문 열어 건조하기"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "이사 방식 정하기 상세 열기"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "+1 개"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "28일"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "매일 공부 가능한 시간 블록 정하기 상세 열기"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "필기와 실기 시험 범위 나누기 상세 열기"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "29일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "30일"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "기출 회독 목표 정하기 상세 열기"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "31일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "1일"
+    },
+    {
+      "testId": "my-flow-routine-icon",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "평일 5일 저녁 식단: 원문 식단표에서 이번 주에 만들 메뉴 확인하기"
+    },
+    {
+      "testId": "my-flow-routine-overflow",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "2026-06-01 루틴 1개 더 보기"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "2일"
+    },
+    {
+      "testId": "my-flow-routine-icon",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "직장인 영어공부 30일 루틴: 짧은 영상 또는 오디오 10분 듣기"
+    },
+    {
+      "testId": "my-flow-routine-overflow",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "2026-06-02 루틴 1개 더 보기"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "3일"
+    },
+    {
+      "testId": "my-flow-schedule-overflow",
+      "tagName": "span",
+      "href": null,
+      "accessibleName": "2026-06-03 일정 1개 더 보기"
+    },
+    {
+      "testId": "my-flow-routine-icon",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "Allblanc 영상별 홈트 루틴: 아침 5분 전신 운동 영상 열기"
+    },
+    {
+      "testId": "my-flow-routine-overflow",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "2026-06-03 루틴 4개 더 보기"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "만들 프로젝트 아이템과 기술 스택 정하기 상세 열기"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "+1 개"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "4일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "5일"
+    },
+    {
+      "testId": "my-flow-calendar-date-button",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "6일"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "핵심 기능과 3~5개 화면 범위 정하기 상세 열기"
+    },
+    {
+      "testId": "my-flow-calendar-card",
+      "tagName": "a",
+      "href": null,
+      "accessibleName": "핵심 이론 1회독 시작하기 상세 열기"
+    },
+    {
+      "testId": "my-flow-calendar-date-move-entry",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "5월 28일 할 일 날짜 옮기기"
+    },
+    {
+      "testId": "my-flow-task-complete-control",
+      "tagName": "input",
+      "href": null,
+      "accessibleName": "필기와 실기 시험 범위 나누기 다시 열기"
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "필기와 실기 시험 범위 나누기 열기 · 컴퓨터활용능력 1급 학습 · 5월 28일"
+    },
+    {
+      "testId": "my-flow-inline-note-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "필기와 실기 시험 범위 나누기 실행 메모 남기기"
+    },
+    {
+      "testId": "my-flow-task-complete-control",
+      "tagName": "input",
+      "href": null,
+      "accessibleName": "매일 공부 가능한 시간 블록 정하기 다시 열기"
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "매일 공부 가능한 시간 블록 정하기 열기 · 컴퓨터활용능력 1급 학습 · 5월 28일"
+    },
+    {
+      "testId": "my-flow-inline-note-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "매일 공부 가능한 시간 블록 정하기 실행 메모 남기기"
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "tagName": "a",
+      "href": "/",
+      "accessibleName": "홈"
+    }
+  ]
+}

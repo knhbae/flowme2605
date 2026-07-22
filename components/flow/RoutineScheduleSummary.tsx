@@ -24,6 +24,7 @@ export function RoutineScheduleSummary({
     <section
       data-testid={testId}
       data-p29-marker="P29-ROUTINE-SUMMARY-FIRST"
+      data-p30-marker="P30-ROUTINE-ADVANCED-DENSITY"
       className="border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)] py-3"
     >
       <div className="flex flex-wrap items-start justify-between gap-3 px-1">

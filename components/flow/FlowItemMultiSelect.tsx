@@ -45,11 +45,12 @@ export function FlowItemMultiSelect({
           {allSelected ? '선택 해제' : '모두 선택'}
         </button>
       </div>
-      <div className={`overflow-y-auto ${maxHeightClassName}`}>
+      <div data-testid={`${itemTestId}-scroll`} className={`overflow-y-auto ${maxHeightClassName}`}>
         {items.map((item) => (
           <label
             key={item.key}
             data-testid={itemTestId}
+            data-item-key={item.key}
             className={FLOW_UI_SELECTION_ROW_CLASS}
           >
             <input

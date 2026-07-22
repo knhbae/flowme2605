@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P30 Final Review</title>
+  <style>
+    :root { color-scheme: light; --ink:#18201c; --muted:#647069; --line:#dce4df; --paper:#fff; --wash:#f4f7f5; --accent:#176b4d; --warm:#9a5d19; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); font-family:Arial,"Noto Sans KR",sans-serif; line-height:1.55; }
+    header { padding:48px 24px 30px; border-bottom:1px solid var(--line); background:#17231d; color:#fff; }
+    header div, main { width:min(1180px,calc(100% - 32px)); margin:0 auto; }
+    h1 { margin:0; font-size:clamp(30px,4vw,52px); letter-spacing:0; }
+    h2 { margin:0 0 16px; font-size:24px; letter-spacing:0; }
+    p { margin:0; }
+    .lead { margin-top:12px; max-width:780px; color:#d9e4de; }
+    main { padding:28px 0 56px; }
+    section { padding:28px 0; border-bottom:1px solid var(--line); }
+    .verdict { display:grid; gap:12px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .metric { min-height:112px; padding:18px; border:1px solid var(--line); border-radius:6px; background:var(--paper); }
+    .metric strong { display:block; margin-top:8px; font-size:28px; color:var(--accent); }
+    .grid { display:grid; gap:16px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    article { padding:18px; border-left:3px solid var(--accent); background:var(--paper); }
+    article h3 { margin:0 0 8px; font-size:17px; letter-spacing:0; }
+    article p { color:var(--muted); }
+    figure { margin:0; background:var(--paper); border:1px solid var(--line); }
+    figure img { display:block; width:100%; height:auto; }
+    figcaption { padding:10px 12px; color:var(--muted); font-size:13px; }
+    .risk { border-left-color:var(--warm); }
+    code { font-family:Consolas,monospace; font-size:.92em; }
+    @media (max-width:760px) { .verdict,.grid { grid-template-columns:1fr; } header { padding-top:34px; } }
+  </style>
+</head>
+<body>
+  <header><div>
+    <p>P30 evidence gap closure · 2026-07-22</p>
+    <h1>중첩 상태를 닫고, 실행 문법을 유지했다</h1>
+    <p class="lead">P29의 데이터 계약과 4탭 IA는 유지한 채 모바일 export, focus order, 긴 조정, My Flow command, Calendar scale, 반복 설정의 실제 공백을 current browser evidence로 닫았다.</p>
+  </div></header>
+  <main>
+    <section>
+      <h2>현재 판정</h2>
+      <div class="verdict">
+        <div class="metric">P30 E2E<strong>12 / 12</strong></div>
+        <div class="metric">Screenshots<strong>17</strong></div>
+        <div class="metric">Fixed overlap<strong>0</strong></div>
+        <div class="metric">Observed users<strong>0</strong></div>
+      </div>
+    </section>
+    <section>
+      <h2>해결한 문제</h2>
+      <div class="grid">
+        <article><h3>Export layer</h3><p>public save CTA를 export 중 숨기고 My Flow primary를 bottom tabs 위로 올렸다. 교차 면적 0, close focus 복귀.</p></article>
+        <article><h3>Keyboard order</h3><p>모바일 header 다음에 본문 controls를 탐색하고 persistent tabs는 마지막에 도달한다.</p></article>
+        <article><h3>Long Flow adjustment</h3><p>24개 항목을 기본 노출하지 않고 내용·날짜·항목·순서 중 현재 목적만 펼친다.</p></article>
+        <article><h3>My Flow commands</h3><p>다음 행동 1개를 우선하고 source/archive는 더보기로 낮췄다.</p></article>
+        <article><h3>Calendar scale</h3><p>날짜 없는 일 10→8→10, option 62개 중 2개 선택 5회, 같은 날짜 5개 full identity를 검증했다.</p></article>
+        <article><h3>Routine settings</h3><p>닫힌 상태 advanced input 0, 다음 3회, 열린 상태는 언제/언제 끝 그룹과 mode별 필드만 보인다.</p></article>
+      </div>
+    </section>
+    <section>
+      <h2>모바일 evidence</h2>
+      <div class="grid">
+        <figure><img src="screenshots/p30-01-public-export-open-390.png" alt="공개 Flow 모바일 export preflight" /><figcaption>Public export · fixed save CTA 0</figcaption></figure>
+        <figure><img src="screenshots/p30-04-my-flow-command-hierarchy-390.png" alt="My Flow 모바일 command hierarchy" /><figcaption>My Flow · primary 1, secondary 1</figcaption></figure>
+        <figure><img src="screenshots/p30-05-calendar-scope-50-390.png" alt="Calendar 50개 이상 Flow 범위 선택" /><figcaption>Calendar scope · 62 options</figcaption></figure>
+        <figure><img src="screenshots/p30-06-routine-advanced-390.png" alt="반복 Flow 모바일 고급 일정 설정" /><figcaption>Routine · 필요한 mode field만 표시</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>Wide evidence</h2>
+      <div class="grid">
+        <figure><img src="screenshots/p30-05-calendar-compact-identity-1024.png" alt="1024 Calendar compact Flow identity" /><figcaption>1024 · month compact, selected day full identity</figcaption></figure>
+        <figure><img src="screenshots/p30-08-my-flow-1440.png" alt="1440 My Flow workspace" /><figcaption>1440 · overflow 0, unnamed focusable 0</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>유지한 경계</h2>
+      <div class="grid">
+        <article><h3>데이터</h3><p>source, personal overlay, execution run, occurrence, export identity와 persistence schema를 변경하지 않았다.</p></article>
+        <article><h3>제품</h3><p>4탭 IA와 public <code>/f</code> shell, Flow 단위 저장/export 범위를 유지했다.</p></article>
+        <article><h3>Legacy</h3><p>dead public conditional만 제거했다. live <code>/flow-maps</code> consumer 1개는 명시적 legacy로 보존했다.</p></article>
+        <article class="risk"><h3>검증 한계</h3><p>자동 브라우저와 heuristic review 결과다. 실제 사용자가 설명 없이 이해하는지는 아직 검증하지 않았다.</p></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

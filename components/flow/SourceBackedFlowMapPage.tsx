@@ -201,6 +201,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
         itemCount={previewSteps.length}
         previewRows={previewRows}
         actions={decisionActions}
+        composition="legacy"
       />
 
       <details data-testid="flow-map-execution-outline" className="mt-5 border-y border-[#E7E4DD] py-3 sm:mt-6">

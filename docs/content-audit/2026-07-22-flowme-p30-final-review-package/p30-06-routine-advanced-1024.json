@@ -1,0 +1,10 @@
+{
+  "route": "/f/curated-allblanc-morning-workout",
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "selectedModeFieldsOnly": true,
+  "horizontalOverflow": 0,
+  "consoleErrorCount": 0
+}

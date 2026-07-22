@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-22 (P29 production closeout complete)
-**Status:** v0.1.0 RELEASED / P29 PRODUCTION RELEASED
+**Last Updated:** 2026-07-22 (P30 independent feedback reconciled)
+**Status:** v0.1.0 RELEASED / P30 PLANNING APPROVED
 **Current Version:** v0.1.0  
-**Primary Focus:** Independently review the released [P29 final package](./content-audit/2026-07-22-p29-final-review-package/README.md) and make an owner decision before defining P30. P29-01~08 are merged and deployed without changing P28 source/personal/run/occurrence/export contracts. Observed-user sessions remain `0`; automated and production smoke evidence is not a usability claim.
+**Primary Focus:** Execute [P30 Evidence Gap Closure](./specs/2026-07-22-p30-evidence-gap-closure/README.md) one slice at a time. P30-01 mobile export fixed-layer correctness is next; P30-02 focus order and P30-03~08 are dependency-gated. P29 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated and production smoke evidence is not a usability claim.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | Independent P29 design/code review and owner decision; P30 is not yet authorized |
-| User action now | Review the P29 final package and canonical production; do not infer observed usability from automation |
-| AI action now | Reproduce the documented journeys, classify remaining evidence gaps, and avoid adding P30 features before owner review |
+| Active product gate | P30 evidence-gap closure; P30-01 is the only immediate implementation slice |
+| User action now | Review the reconciled P30 sequence; defer observed-user testing until nested-state correctness is closed |
+| AI action now | Fix public/My Flow mobile export overlap first, then follow the dependency-gated P30 sequence without reopening P29 contracts |
 | Blocked by evidence | Observed usability, account persistence choice, creator/update pilot, real AI backend, and external integrations |
 | Completed implementation | P29-01~08: PR #146, merge `10e6e515`, CI green, production smoke `9/9`, screenshots `23 + 9` |
 
 ## Recent Direction Notes
+
+- 2026-07-22 P30 feedback reconciliation: Codex current-production interaction evidence and Claude Design's standalone source/screenshot review agree that P29 architecture should stay. Codex reproduced two High mobile correctness gaps: fixed save/navigation layers overlap export primary actions, and `/my`/`/calendar` bottom tabs precede main controls in keyboard order. Claude Design identified bounded Medium composition gaps in save-before decisions, My Flow secondary commands, Calendar 0-count scope groups, undated evidence, and month-cell identity. P30 therefore runs `P30-01 -> P30-02 -> (P30-03 || P30-04 || P30-05) -> P30-06 -> P30-07 -> P30-08`; routine refinement is conditional and legacy removal is evidence-gated. This planning change modifies no app code or schema. See [P30 Evidence Gap Closure](./specs/2026-07-22-p30-evidence-gap-closure/README.md).
 
 - 2026-07-22 P29 production release: Public/source-backed save-before now leads with the actual artifact, exposes row adjustment only on demand, and transitions to a distinct saved receipt. Routine configuration is summary-first; My Flow uses a compact mobile library and wide rail/canvas/inspector; Calendar combines compact Flow scope, selected-day detail, and a mobile undated placement sheet; export recommends one primary and at most two secondary artifacts with explicit scope and predicted counts. P28 persistence and identity contracts remain unchanged. P29 Playwright is `13 / 13`, full Playwright `292 / 292` with two workers, `flow-mvp.spec.ts` `129 / 129`, unit `584 / 584`, build `18 / 18`, implementation screenshots `23`, and production screenshots `9`. A newly published `sharp` high advisory found by the first CI run is addressed with a patched `0.35.3` override; current audit is critical/high `0`, moderate `2`. The reduction from P28's `346` E2E scenarios is documented as retirement of `67` obsolete legacy composition assertions plus `13` P29 replacements, not skipped coverage. [PR #146](https://github.com/knhbae/flowme2605/pull/146) merged as `10e6e515`; GitHub deployment `5550925534` is live at <https://flowme2605.vercel.app>, post-merge CI is green, and canonical smoke is `9 / 9` with overflow/unnamed-focusable/console-page-error counts `0`. Observed-user sessions remain `0`. See the [P29 final review package](./content-audit/2026-07-22-p29-final-review-package/README.md).
 

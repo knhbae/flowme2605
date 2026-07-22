@@ -1,0 +1,129 @@
+{
+  "route": "/my?demo=ux20&view=flows",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "focusTrace": [
+    {
+      "testId": "platform-nav",
+      "tagName": "a",
+      "href": "/",
+      "accessibleName": "FLOW"
+    },
+    {
+      "testId": "platform-nav",
+      "tagName": "summary",
+      "href": null,
+      "accessibleName": "보조 메뉴 열기"
+    },
+    {
+      "testId": "my-flow-studio-link",
+      "tagName": "a",
+      "href": "/u/my-flow-studio",
+      "accessibleName": "스튜디오"
+    },
+    {
+      "testId": "my-flow-data-manager-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "데이터 관리"
+    },
+    {
+      "testId": "my-flow-view-flow",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "Flow 목록"
+    },
+    {
+      "testId": "my-flow-search",
+      "tagName": "input",
+      "href": null,
+      "accessibleName": "저장한 Flow 검색"
+    },
+    {
+      "testId": "my-flow-list-filter-all",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "전체"
+    },
+    {
+      "testId": "my-flow-list-filter-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "진행 중"
+    },
+    {
+      "testId": "my-flow-list-filter-routine",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "루틴"
+    },
+    {
+      "testId": "my-flow-list-filter-done",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "완료"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "Allblanc 노점프 유산소 열기"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "Allblanc 아침 5분 홈트 열기"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "강아지 건강검진 상담 준비 열기"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "개발 프로젝트 포트폴리오 4주 열기"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "결혼 준비 타임라인 열기"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "국세 미수령 환급금 확인 열기"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "매일 15분 읽기 열기"
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "복지멤버십 신청·확인 열기"
+    },
+    {
+      "testId": "my-flow-mobile-inventory-open",
+      "tagName": "button",
+      "href": null,
+      "accessibleName": "19개 더 보기"
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "tagName": "a",
+      "href": "/",
+      "accessibleName": "홈"
+    }
+  ]
+}

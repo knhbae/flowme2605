@@ -1,0 +1,9 @@
+{
+  "route": "/f/moving-d30-basic",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "composition": "artifact-first",
+  "deadConditionalConsumerCount": 0
+}

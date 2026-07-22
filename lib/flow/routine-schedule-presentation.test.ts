@@ -24,5 +24,14 @@ test('routine summary distinguishes preview horizon from source series end', () 
     sourceDurationDays: 28,
   });
 
-  assert.equal(presentation.summary, '월·수·금 · 시간 없음 · 4주');
+  assert.equal(presentation.summary, '월·수·금 · 시간 미정 · 4주');
+});
+
+test('routine summary describes an open-ended series without a technical null label', () => {
+  const presentation = buildRoutineSchedulePresentation({
+    weekdays: ['월', '수', '금'],
+    definition: { schemaVersion: 1, end: { mode: 'none' } },
+  });
+
+  assert.equal(presentation.summary, '월·수·금 · 시간 미정 · 계속 반복');
 });

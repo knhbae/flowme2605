@@ -268,6 +268,8 @@ test.describe('public share shell secondary browse order', () => {
     test(`${route} keeps export as a flow-level secondary action`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
+      await page.getByTestId('public-flow-export-secondary-toggle').click();
+      await expect(page.getByTestId('public-flow-export-format-option').first()).toBeVisible();
 
       const hierarchy = await collectPublicFlowUnitHierarchy(page);
       expect(hierarchy.exportSecondaryEntryCount).toBe(1);

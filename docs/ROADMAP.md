@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-22<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P29 production closeout complete, independent review pending<br>
+**Current Validation Stage:** internal alpha / P30 evidence-gap closure planned<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Independent P29 design/code review and owner decision before any P30 definition
+**Next Milestone:** P30-01 mobile export layer correctness, followed by the dependency-gated P30 sequence
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,26 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P30 Interaction Correctness And Evidence Closure
+
+Independent Codex production interaction and Claude Design source/screenshot review agree that P29's architecture and data contracts should remain. P30 first closes two reproducible mobile correctness gaps, then applies bounded composition refinements and a nested-state production gate.
+
+Detailed scope: [P30 Evidence Gap Closure](./specs/2026-07-22-p30-evidence-gap-closure/README.md).
+
+| Slice | Purpose | State |
+| --- | --- | --- |
+| P30-00 | Reconcile Claude/Codex findings, freeze P29 contracts, and define evidence weighting | Complete as planning evidence |
+| P30-01 | Remove public/My Flow mobile export and fixed-layer collisions | Next; implementation not started |
+| P30-02 | Correct mobile header/main/bottom-nav keyboard focus order | Gated by P30-01 production evidence |
+| P30-03 | Simplify save-before decision surface and long-Flow adjustment | Gated by P30-02 |
+| P30-04 | Make My Flow detail next-action-first and move low-frequency commands to overflow | Gated by P30-02 |
+| P30-05 | Close Calendar undated evidence, 50+ scope, and compact month identity | Gated by P30-02 |
+| P30-06 | Refine routine advanced density only if current interaction evidence supports it | Conditional after P30-03~05 |
+| P30-07 | Remove dead legacy composition only after consumer/no-diff proof | Gated cleanup |
+| P30-08 | Run independent 390/1024/1440 nested-state production closeout | Final gate |
+
+P30 does not add planner features, persistence migrations, new export formats, a fifth tab, account/cloud sync, AI/crawler, or OAuth. Observed-user sessions remain `0` and automated evidence will not be presented as usability validation.
 
 ## P29 Coordinated Surface Reset
 

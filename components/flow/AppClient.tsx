@@ -45,7 +45,7 @@ import {
 } from './flow-ui';
 import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
 import { MyFlowDataManager } from './MyFlowDataManager';
-import { PlatformNav } from './PlatformNav';
+import { PlatformMobileTabs, PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
 import { planDateMovement, type DateMovementPlan } from '@/lib/flow/date-movement';
 import {
@@ -3465,7 +3465,7 @@ type MyFlowFlowMarker = {
 
 type ChecklistFilter = 'all' | 'open' | 'done';
 type MyFlowStatusSheet = 'overdue' | 'next';
-type MyFlowDemoMode = 'legacy' | 'ux12' | 'ux20' | 'source-backed';
+type MyFlowDemoMode = 'legacy' | 'ux12' | 'ux20' | 'ux50' | 'source-backed';
 type MyFlowDemoFixture = {
   slug: string;
   anchor?: string;
@@ -4297,6 +4297,75 @@ const MY_FLOW_UX20_DEMO_FIXTURES: MyFlowDemoFixture[] = [
   { slug: 'reading-habit-30day', anchor: '2026-06-01', completedCount: 1, group: '식단/독서', note: '읽기 습관' },
 ];
 
+const MY_FLOW_UX50_DEMO_PREFIX = 'p30-calendar-scale-';
+const MY_FLOW_UX50_DEMO_COUNT = 50;
+
+function getMyFlowUx50DemoBundles(bundles: FlowBundle[]): FlowBundle[] {
+  const source = bundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic')
+    ?? bundles.find((bundle) => bundle.flow.status === 'published' && bundle.items.length > 0);
+  if (!source) return bundles;
+
+  const syntheticBundles: FlowBundle[] = Array.from({ length: MY_FLOW_UX50_DEMO_COUNT }, (_, index): FlowBundle => {
+    const suffix = String(index + 1).padStart(2, '0');
+    const flowId = `${source.flow.id}-${MY_FLOW_UX50_DEMO_PREFIX}${suffix}`;
+    const slug = `${MY_FLOW_UX50_DEMO_PREFIX}${suffix}`;
+    const sectionIdBySourceId = new Map(
+      source.sections.map((section) => [section.id, `${section.id}-${slug}`]),
+    );
+    const itemIdBySourceId = new Map(
+      source.items.map((item) => [item.id, `${item.id}-${slug}`]),
+    );
+
+    return {
+      ...source,
+      flow: {
+        ...source.flow,
+        id: flowId,
+        slug,
+        title: `${source.flow.title} ${suffix}`,
+        status: 'draft',
+        source_status: 'real',
+        source_precision: 'exact',
+      },
+      sections: source.sections.map((section) => ({
+        ...section,
+        id: sectionIdBySourceId.get(section.id) ?? section.id,
+        flow_id: flowId,
+      })),
+      items: source.items.map((item) => ({
+        ...item,
+        id: itemIdBySourceId.get(item.id) ?? item.id,
+        flow_id: flowId,
+        ...(item.section_id
+          ? { section_id: sectionIdBySourceId.get(item.section_id) ?? item.section_id }
+          : {}),
+      })),
+      itemDetails: source.itemDetails?.map((detail) => ({
+        ...detail,
+        item_id: itemIdBySourceId.get(detail.item_id) ?? detail.item_id,
+      })),
+    };
+  });
+
+  return [...bundles, ...syntheticBundles];
+}
+
+function getMyFlowUx50DemoFixtures(bundles: FlowBundle[]): MyFlowDemoFixture[] {
+  const baseFixtures = [...MY_FLOW_UX20_DEMO_FIXTURES];
+  const extraFixtures = bundles
+    .filter((bundle) => bundle.flow.slug.startsWith(MY_FLOW_UX50_DEMO_PREFIX))
+    .map((bundle, index) => ({
+      slug: bundle.flow.slug,
+      ...(bundle.flow.anchor_type !== 'none'
+        ? { anchor: index < 5 ? '2026-06-26' : `2026-06-${String((index % 24) + 1).padStart(2, '0')}` }
+        : {}),
+      completedCount: 0,
+      group: bundle.flow.category || '기타',
+      note: 'Calendar 범위 검증',
+    }));
+  return [...baseFixtures, ...extraFixtures];
+}
+
 const MY_FLOW_SOURCE_BACKED_DEMO_FIXTURES: MyFlowDemoFixture[] = [
   { slug: 'source-backed-moving-d30', anchor: '2026-07-22', completedCount: 0, group: '이사 D-30 일정', note: 'D-day 일정' },
   { slug: 'source-backed-middle-school-math-1', completedCount: 0, group: '중1 수학 진도', note: '진도표' },
@@ -4308,6 +4377,7 @@ function getMyFlowDemoMode(): MyFlowDemoMode | null {
   if (typeof window === 'undefined') return null;
   const demo = new URLSearchParams(window.location.search).get('demo');
   if (demo === 'source-backed' || demo === 'source') return 'source-backed';
+  if (demo === 'ux50' || demo === '50') return 'ux50';
   if (demo === 'ux20' || demo === '20') return 'ux20';
   if (demo === 'ux12' || demo === '12') return 'ux12';
   if (demo === '1' || demo === 'true') return 'legacy';
@@ -4332,8 +4402,9 @@ function getRequestedSourceBackedDemoFixtures(): MyFlowDemoFixture[] {
   }));
 }
 
-function getMyFlowDemoFixtures(mode: MyFlowDemoMode | null): MyFlowDemoFixture[] {
+function getMyFlowDemoFixtures(mode: MyFlowDemoMode | null, bundles: FlowBundle[] = []): MyFlowDemoFixture[] {
   if (mode === 'source-backed') return getRequestedSourceBackedDemoFixtures();
+  if (mode === 'ux50') return getMyFlowUx50DemoFixtures(bundles);
   if (mode === 'ux20') return MY_FLOW_UX20_DEMO_FIXTURES;
   if (mode === 'ux12') return MY_FLOW_UX12_DEMO_FIXTURES;
   return MY_FLOW_LEGACY_DEMO_FIXTURES;
@@ -5027,7 +5098,7 @@ type MyFlowsProps = {
 
 export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps = {}) {
   const { bundles, persist } = useBundles();
-  const myFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
+  const baseMyFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
   const currentUser = getCurrentUser();
   const isCalendarSurface = surface === 'calendar';
   const [savedMapIdParam, setSavedMapIdParam] = useState('');
@@ -5117,8 +5188,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowBatchAdjustmentUndo, setMyFlowBatchAdjustmentUndo] = useState<MyFlowBatchAdjustmentUndo | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
+  const myFlowBundles = useMemo(
+    () => myFlowDemoMode === 'ux50' ? getMyFlowUx50DemoBundles(baseMyFlowBundles) : baseMyFlowBundles,
+    [baseMyFlowBundles, myFlowDemoMode],
+  );
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
-  const isMyFlowScenarioDemo = myFlowDemoMode === 'ux12' || myFlowDemoMode === 'ux20' || myFlowDemoMode === 'source-backed';
+  const isMyFlowScenarioDemo = myFlowDemoMode === 'ux12' || myFlowDemoMode === 'ux20' || myFlowDemoMode === 'ux50' || myFlowDemoMode === 'source-backed';
   const myFlowCalendarCardRef = useRef<HTMLElement | null>(null);
   const myFlowCalendarInitialFocusAppliedRef = useRef(false);
   const myFlowSelectedDayRef = useRef<HTMLElement | null>(null);
@@ -5416,8 +5491,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? parseMyFlowViewQuery(window.location.search)
       : null;
     setMyFlowDemoMode(demoMode);
-    if (demoMode === 'ux12' || demoMode === 'ux20' || demoMode === 'source-backed') {
-      const demoState = buildMyFlowDemoState(myFlowBundles, getMyFlowDemoFixtures(demoMode));
+    if (demoMode === 'ux12' || demoMode === 'ux20' || demoMode === 'ux50' || demoMode === 'source-backed') {
+      const demoState = buildMyFlowDemoState(myFlowBundles, getMyFlowDemoFixtures(demoMode, myFlowBundles));
       setActiveProgress(demoState.progress);
       setChecksBySlug(demoState.checksBySlug);
       setSavedFlowMapBySlug(demoState.savedFlowMapBySlug);
@@ -5500,7 +5575,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return () => window.removeEventListener('popstate', syncViewFromUrl);
   }, [initialView, isCalendarSurface]);
 
-  const demoFixtureBySlug = new Map(getMyFlowDemoFixtures(myFlowDemoMode).map((fixture) => [fixture.slug, fixture]));
+  const demoFixtureBySlug = new Map(getMyFlowDemoFixtures(myFlowDemoMode, myFlowBundles).map((fixture) => [fixture.slug, fixture]));
 
   const savedFlows: MySavedFlow[] = activeProgress.reduce<MySavedFlow[]>((items, progress) => {
       const progressBundle = myFlowBundles.find((entry) => entry.flow.slug === progress.slug);
@@ -10452,6 +10527,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return (
       <span
         data-testid="my-flow-calendar-schedule-content"
+        data-p30-marker="P30-CALENDAR-COMPACT-IDENTITY"
         data-flow-marker-key={String(info.event.extendedProps.flowMarkerKey ?? '')}
         className="flex min-w-0 items-center gap-1"
         aria-label={flowMarkerTitle || scheduleLabel}
@@ -14690,6 +14766,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-testid="my-flow-overview-card"
         data-flow-slug={flow.progress.slug}
         data-p29-marker="P29-MY-FLOW-ACTION-FIRST"
+        data-p30-marker="P30-MY-FLOW-COMMAND-HIERARCHY"
         data-flow-anatomy="flow-detail"
         className={options.workspace
           ? 'min-w-0 bg-transparent'
@@ -14739,6 +14816,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 type="button"
                 data-testid="my-flow-personal-copy-settings-open"
+                data-action-priority="secondary"
                 aria-label={`${flowTitle} ${personalCopySettingsLabel}`}
                 className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowPersonalCopySettings(flow)}
@@ -14750,6 +14828,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 type="button"
                 data-testid="my-flow-direct-anchor-settings-open"
+                data-action-priority="secondary"
                 aria-label={`${flowTitle} ${directAnchorCopy.editLabel}`}
                 className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowDirectAnchorSettings(flow)}
@@ -14761,7 +14840,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </div>
         {renderMyFlowPersonalCopySettings(flow)}
         {renderMyFlowDirectAnchorSettings(flow)}
-        {executionReady && !showWholeFlowOutline ? <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
+        {executionReady && (!showWholeFlowOutline || isMyFlowMobileViewport) ? <div data-testid="my-flow-next-action" className={`mt-4 rounded-md border px-3 py-3 ${nextActionToneClass}`}>
           <p className={`text-xs font-semibold ${showContentReadinessBadge ? 'text-slate-600' : 'text-blue-700'}`}>{nextRow ? getMyFlowRowStatusLabel(nextRow) : '다음에 볼 항목'}</p>
           {nextRow ? (
             <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -14773,6 +14852,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 <button
                   type="button"
                   data-testid="my-flow-next-action-open"
+                  data-action-priority="primary"
                   className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
                   aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
                   onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
@@ -14825,6 +14905,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     <button
                       type="button"
                       data-testid="my-flow-workspace-next-open"
+                      data-action-priority="primary"
                       className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       aria-label={getMyFlowOpenActionAriaLabel(getMyFlowRowDisplayTitle(nextExecutionRow), '열기')}
                       onClick={() => openMyFlowRowFromFlowTab(flow, nextExecutionRow)}
@@ -14869,27 +14950,59 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {executionReady && !batchActive ? renderMyFlowCompletionFeedback(flow) : null}
         {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
         {executionReady && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
-        {!batchActive ? <div className={`mt-4 grid gap-2 ${showArchiveToggle ? 'sm:grid-cols-[minmax(0,1fr)_auto]' : ''}`}>
-          <Link
-            className="inline-flex min-h-10 w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-blue-300"
-            href={sourceHref}
-            target={sourceLinkExternal ? '_blank' : undefined}
-            rel={sourceLinkExternal ? 'noreferrer' : undefined}
+        {!batchActive ? (
+          <details
+            data-testid="my-flow-management-menu"
+            className="relative mt-4 w-fit"
+            onKeyDown={(event) => {
+              if (event.key !== 'Escape' || !event.currentTarget.open) return;
+              event.preventDefault();
+              event.stopPropagation();
+              event.currentTarget.open = false;
+              event.currentTarget.querySelector<HTMLElement>('summary')?.focus();
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) event.currentTarget.open = false;
+            }}
           >
-                {flow.savedMap ? '원문 보기' : sourceLabel}
-          </Link>
-          {showArchiveToggle ? (
-            <button
-              type="button"
-              data-testid="my-flow-archive-toggle"
-              aria-label={`${flowTitle} ${archivedInInventory ? '복구하기' : '보관하기'}`}
-              className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:border-blue-300 hover:text-slate-900"
-              onClick={() => updateMyFlowArchiveState(flow, archivedInInventory ? 'restore' : 'archive')}
+            <summary
+              data-testid="my-flow-management-menu-trigger"
+              data-action-role="overflow"
+              aria-haspopup="menu"
+              aria-label={`${flowTitle} 관리 메뉴`}
+              className="inline-flex min-h-10 cursor-pointer list-none items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:border-blue-300 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden"
             >
-              {archivedInInventory ? '복구하기' : '보관하기'}
-            </button>
-          ) : null}
-        </div> : null}
+              더보기
+            </summary>
+            <div
+              role="menu"
+              className="absolute bottom-full left-0 z-30 mb-2 grid min-w-48 gap-1 rounded-md border border-slate-200 bg-white p-1.5 shadow-[0_14px_36px_rgba(15,23,42,0.14)]"
+            >
+              <Link
+                role="menuitem"
+                data-testid="my-flow-management-source"
+                className="inline-flex min-h-10 w-full items-center rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                href={sourceHref}
+                target={sourceLinkExternal ? '_blank' : undefined}
+                rel={sourceLinkExternal ? 'noreferrer' : undefined}
+              >
+                {flow.savedMap ? '원문 보기' : sourceLabel}
+              </Link>
+              {showArchiveToggle ? (
+                <button
+                  type="button"
+                  role="menuitem"
+                  data-testid="my-flow-archive-toggle"
+                  aria-label={`${flowTitle} ${archivedInInventory ? '복구하기' : '보관하기'}`}
+                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                  onClick={() => updateMyFlowArchiveState(flow, archivedInInventory ? 'restore' : 'archive')}
+                >
+                  {archivedInInventory ? '복구하기' : '보관하기'}
+                </button>
+              ) : null}
+            </div>
+          </details>
+        ) : null}
       </section>
     );
   };
@@ -15151,7 +15264,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   return (
     <main className={`mx-auto max-w-[1240px] px-4 pb-[var(--flowme-mobile-tab-clearance)] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
-      <PlatformNav />
+      <PlatformNav includeMobileTabs={false} />
       <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
         <div>
           <p className={isCalendarSurface ? 'text-xs font-semibold text-blue-700' : 'text-sm font-medium text-gray-500'}>{isCalendarSurface ? '날짜별 실행' : '내 실행 공간'}</p>
@@ -15159,7 +15272,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold`}>{isCalendarSurface ? '캘린더' : 'My Flow'}</h1>
             {!isCalendarSurface && showDemoData ? (
               <span data-testid="my-flow-demo-badge" className="mt-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
-                {myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
+                {myFlowDemoMode === 'ux50' ? 'UX50 데모' : myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
               </span>
             ) : null}
           </div>
@@ -15999,6 +16112,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <div
                 data-testid="my-flow-calendar-workspace"
                 data-p29-marker="P29-CALENDAR-IDENTITY-COMPLETION"
+                data-p30-calendar-marker="P30-CALENDAR-COMPACT-IDENTITY"
                 data-flow-anatomy="calendar-workspace"
                 className={`grid gap-4 pb-0 ${showCalendarPlacementQueue
                 ? 'lg:grid-cols-[280px_minmax(0,1fr)_320px]'
@@ -16761,6 +16875,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </div>
       ) : null}
 
+      <PlatformMobileTabs />
     </main>
   );
 }
@@ -17877,8 +17992,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
+  const [publicExportOpen, setPublicExportOpen] = useState(false);
   const [publicAdjustmentOpen, setPublicAdjustmentOpen] = useState(false);
   const [publicAdjustmentMode, setPublicAdjustmentMode] = useState<PublicFlowAdjustmentMode>('include');
+  const [publicAdjustmentListOpen, setPublicAdjustmentListOpen] = useState(false);
   const [publicAdjustmentItems, setPublicAdjustmentItems] = useState<Record<string, PublicFlowAdjustmentItem>>({});
   const [publicAdjustmentOrder, setPublicAdjustmentOrder] = useState<string[]>([]);
   const [publicAdjustmentSelectedItemId, setPublicAdjustmentSelectedItemId] = useState<string | null>(null);
@@ -17993,17 +18110,18 @@ export function PublicFlow({ slug }: { slug: string }) {
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
   const showPublicSaveAction = true;
-  const useP29ArtifactFirstFrame = true;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
   const showPublicHeroSetup = true;
   const showPublicSetupInput = showPublicHeroSetup && (bundle.flow.anchor_type !== 'none' || isUserScheduledExactVideo(bundle));
   const useP24CompactPublicFrame = !compactJeonsePage;
-  const publicMobileClearanceClass = useP29ArtifactFirstFrame && savedFlowAt
-    ? ''
-    : showPublicSaveAction
-      ? 'flowme-mobile-save-clearance'
-      : 'flowme-mobile-export-clearance';
+  const publicMobileClearanceClass = publicExportOpen
+    ? 'flowme-mobile-export-clearance'
+    : savedFlowAt
+      ? ''
+      : showPublicSaveAction
+        ? 'flowme-mobile-save-clearance'
+        : 'flowme-mobile-export-clearance';
   const publicSaveBeforeRows = getPublicSaveBeforePreviewRows(bundle, displayAnchor);
   const publicScheduleDateByItemId = new Map(
     getScheduleEntries(bundle, displayAnchor).map((entry) => [baseStateId(entry.id), entry.startDate]),
@@ -18147,6 +18265,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setPublicAdjustmentOrder(orderedRows.map((row) => baseStateId(row.id)));
     setPublicAdjustmentSelectedItemId(selectedItemId ?? null);
     setPublicAdjustmentMode(selectedItemId ? 'content' : 'include');
+    setPublicAdjustmentListOpen(false);
     setPublicAdjustmentOpen(true);
     window.setTimeout(() => {
       document.querySelector<HTMLElement>('[data-testid="public-flow-personal-adjustment"]')?.focus({ preventScroll: true });
@@ -18314,6 +18433,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   };
   const closePublicAdjustment = () => {
     setPublicAdjustmentOpen(false);
+    setPublicAdjustmentListOpen(false);
     setPublicAdjustmentSelectedItemId(null);
     setPublicFlowTitleDraft(getSavedFlowRecord(bundle.flow.slug)?.personalTitle ?? publicDisplayTitle);
   };
@@ -18338,6 +18458,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
     setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
     setPublicAdjustmentOpen(false);
+    setPublicAdjustmentListOpen(false);
     setPublicAdjustmentSelectedItemId(null);
   };
   const saveActionLabel = getPublicSaveActionLabel(bundle, dateIntent);
@@ -18349,46 +18470,6 @@ export function PublicFlow({ slug }: { slug: string }) {
     }
     document.querySelector('[aria-label="Flow artifact workbench"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  const renderPublicSaveActions = () =>
-    showPublicSaveAction ? (
-      <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid sm:max-w-md sm:grid-cols-2">
-        {savedFlowAt ? (
-          <Link data-action-priority="primary" className={`${FLOW_UI_PRIMARY_ACTION_CLASS} col-span-2`} href={postSaveHref}>
-            내 Flow에서 보기
-          </Link>
-        ) : publicAdjustmentOpen ? (
-          <button
-            type="button"
-            data-testid="public-flow-adjust-close"
-            className={`${FLOW_UI_SECONDARY_ACTION_CLASS} col-span-2`}
-            onClick={closePublicAdjustment}
-          >
-            조정 닫기
-          </button>
-        ) : (
-          <>
-            <button
-              type="button"
-              data-action-priority="primary"
-              className={FLOW_UI_PRIMARY_ACTION_CLASS}
-              disabled={!dateIntent.canSave}
-              onClick={saveToMyFlow}
-            >
-              {saveActionLabel}
-            </button>
-            <button
-              type="button"
-              data-testid="public-flow-adjust-entry"
-              data-action-priority="secondary"
-              className={FLOW_UI_SECONDARY_ACTION_CLASS}
-              onClick={copyToEditableDraft}
-            >
-              내게 맞게 조정
-            </button>
-          </>
-        )}
-      </div>
-    ) : null;
   const renderP29PublicSaveActions = () =>
     showPublicSaveAction && !savedFlowAt ? (
       <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid">
@@ -18413,48 +18494,8 @@ export function PublicFlow({ slug }: { slug: string }) {
         </button>
       </div>
     ) : null;
-  const renderPublicMobileSaveCta = () =>
-    showPublicSaveAction && !publicAdjustmentOpen ? (
-      <div
-        data-testid="public-flow-mobile-save-cta"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-[#DDE4E0] bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_28px_rgba(23,32,28,0.08)] backdrop-blur sm:hidden"
-      >
-        <div className="mx-auto flex max-w-xl items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold text-[#8A857B]">{savedFlowAt ? '저장됨' : '공유 콘텐츠'}</p>
-            <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicEffectiveDisplayTitle}</p>
-          </div>
-          {savedFlowAt ? (
-            <Link data-action-priority="primary" className={`${FLOW_UI_PRIMARY_ACTION_CLASS} shrink-0`} href={postSaveHref}>
-              내 Flow에서 보기
-            </Link>
-          ) : (
-            <div className="flex shrink-0 gap-1.5">
-              <button
-                data-action-priority="primary"
-                className={FLOW_UI_PRIMARY_ACTION_CLASS}
-                type="button"
-                disabled={!dateIntent.canSave}
-                onClick={saveToMyFlow}
-              >
-                {saveActionLabel}
-              </button>
-              <button
-                data-action-priority="secondary"
-                className={FLOW_UI_SECONDARY_ACTION_CLASS}
-                data-testid="public-flow-adjust-entry-mobile"
-                type="button"
-                onClick={copyToEditableDraft}
-              >
-                조정
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    ) : null;
   const renderP29PublicMobileSaveCta = () =>
-    showPublicSaveAction && !savedFlowAt && !publicAdjustmentOpen ? (
+    showPublicSaveAction && !savedFlowAt && !publicAdjustmentOpen && !publicExportOpen ? (
       <div
         data-testid="public-flow-mobile-save-cta"
         data-p29-marker="P29-MOBILE-FOCUS-ORDER"
@@ -18495,10 +18536,23 @@ export function PublicFlow({ slug }: { slug: string }) {
       ? rows.filter(({ itemId }) => itemId === activeAdjustmentItemId)
       : rows;
     const includedCount = rows.filter(({ itemId }) => publicAdjustmentItems[itemId]?.included !== false).length;
+    const datedCount = rows.filter(({ itemId }) => {
+      const adjustment = publicAdjustmentItems[itemId];
+      return adjustment?.date !== undefined
+        ? Boolean(adjustment.date)
+        : publicScheduleDateByItemId.has(itemId);
+    }).length;
+    const adjustmentModes = [
+      { mode: 'include', label: '항목 고르기', summary: `${includedCount}/${rows.length}개 저장` },
+      { mode: 'schedule', label: '날짜', summary: `${datedCount}개 날짜 있음` },
+      { mode: 'content', label: '제목·메모', summary: 'Flow 이름과 할 일' },
+      { mode: 'order', label: '순서', summary: `${rows.length}개 실행 순서` },
+    ] as const;
     return (
       <section
         data-testid="public-flow-personal-adjustment"
         data-adjustment-mode={publicAdjustmentMode}
+        data-p30-marker="P30-LONG-FLOW-CONTEXTUAL-ADJUST"
         tabIndex={-1}
         aria-labelledby="public-flow-personal-adjustment-title"
         className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
@@ -18532,33 +18586,24 @@ export function PublicFlow({ slug }: { slug: string }) {
           aria-label="조정할 내용"
           className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4"
         >
-          {([
-            ['include', '항목 고르기'],
-            ['schedule', '날짜'],
-            ['content', '제목·메모'],
-            ['order', '순서'],
-          ] as const).map(([mode, label]) => (
+          {adjustmentModes.map(({ mode, label, summary }) => (
             <button
               key={mode}
               type="button"
               data-testid={`public-flow-adjustment-mode-${mode}`}
               aria-pressed={publicAdjustmentMode === mode}
-              className={publicAdjustmentMode === mode ? FLOW_UI_PRIMARY_ACTION_CLASS : FLOW_UI_SECONDARY_ACTION_CLASS}
+              className={`min-h-14 rounded-md border px-3 py-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                publicAdjustmentMode === mode
+                  ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
+                  : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text)] hover:border-[var(--flowme-border-strong)]'
+              }`}
               onClick={() => setPublicAdjustmentMode(mode)}
             >
-              {label}
+              <span className="block text-xs font-bold">{label}</span>
+              <span className="mt-0.5 block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{summary}</span>
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs leading-5 text-[var(--flowme-text-secondary)]">
-          {publicAdjustmentMode === 'include'
-            ? '저장할 할 일만 고르세요.'
-            : publicAdjustmentMode === 'schedule'
-              ? '필요한 할 일의 날짜만 바꾸세요.'
-              : publicAdjustmentMode === 'content'
-                ? '제목이나 개인 메모가 필요한 할 일만 손보세요.'
-                : '화살표로 실행 순서만 바꾸세요.'}
-        </p>
 
         {publicAdjustmentMode === 'content' || publicAdjustmentMode === 'schedule' ? (
           <label className="mt-4 block max-w-xl text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
@@ -18576,7 +18621,23 @@ export function PublicFlow({ slug }: { slug: string }) {
           </label>
         ) : null}
 
-        <ol className="mt-4 divide-y divide-[var(--flowme-border)] border-y border-[var(--flowme-border)] bg-white">
+        <details
+          data-testid="public-flow-adjustment-item-disclosure"
+          open={publicAdjustmentMode !== 'include' || publicAdjustmentListOpen}
+          className="mt-4"
+          onToggle={(event) => {
+            if (publicAdjustmentMode === 'include') setPublicAdjustmentListOpen(event.currentTarget.open);
+          }}
+        >
+          <summary
+            className={publicAdjustmentMode === 'include'
+              ? 'flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-y border-[var(--flowme-border)] bg-white px-3 text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]'
+              : 'hidden'}
+          >
+            <span>전체 항목 고르기</span>
+            <span className="text-xs text-[var(--flowme-text-secondary)]">{includedCount}/{rows.length}개 포함</span>
+          </summary>
+          <ol className="divide-y divide-[var(--flowme-border)] border-b border-[var(--flowme-border)] bg-white">
           {visibleAdjustmentRows.map(({ itemId, row }) => {
             const index = rows.findIndex((candidate) => candidate.itemId === itemId);
             const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
@@ -18723,7 +18784,8 @@ export function PublicFlow({ slug }: { slug: string }) {
               </li>
             );
           })}
-        </ol>
+          </ol>
+        </details>
 
         <div className="sticky bottom-0 z-30 mt-4 flex flex-wrap justify-end gap-2 border-t border-[var(--flowme-border)] bg-[#F5F7F6]/95 py-3 backdrop-blur">
           <button type="button" className={FLOW_UI_SECONDARY_ACTION_CLASS} onClick={closePublicAdjustment}>
@@ -18777,7 +18839,8 @@ export function PublicFlow({ slug }: { slug: string }) {
         onCopyToEditableDraft: copyToEditableDraft,
         onExportFlow: exportPublicFlowScope,
       }}
-      presentationMode={useP29ArtifactFirstFrame ? 'export-only' : 'full'}
+      presentationMode="export-only"
+      onExportOpenChange={setPublicExportOpen}
     />
   );
   const renderArtifactWorkbenchDisclosure = () => (
@@ -18786,7 +18849,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       className="mt-5 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
     >
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-2 text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
-        <span>{useP29ArtifactFirstFrame ? 'Flow 가져가기' : '세부 결과와 가져가기'}</span>
+        <span>Flow 가져가기</span>
         <span className="text-xs font-medium text-[var(--flowme-text-secondary)]">필요할 때 열기</span>
       </summary>
       <div className="border-t border-[var(--flowme-border)] pt-4">{renderArtifactWorkbench()}</div>
@@ -18814,15 +18877,14 @@ export function PublicFlow({ slug }: { slug: string }) {
 
   return (
     <main className={`min-h-screen bg-[#F5F7F6] px-4 text-slate-950 md:px-8 ${publicMobileClearanceClass}`}>
-      {!useP29ArtifactFirstFrame ? renderPublicMobileSaveCta() : null}
       <div className="mx-auto max-w-[1240px]">
         <PublicFlowShareShell
           savedFlowAt={savedFlowAt}
           flowSlug={bundle.flow.slug}
-          showSavedLink={!useP29ArtifactFirstFrame}
+          showSavedLink={false}
         />
 
-        {useP29ArtifactFirstFrame && savedFlowAt ? (
+        {savedFlowAt ? (
           <SavedFlowReceiptFrame
             title={publicEffectiveDisplayTitle}
             categoryLabel={bundle.flow.category}
@@ -18847,15 +18909,14 @@ export function PublicFlow({ slug }: { slug: string }) {
             itemCount={Math.max(bundle.items.length, publicSaveBeforeRows.length)}
             previewRows={publicSaveBeforeRows}
             artifactPreview={<FlowArtifactDataPreview projection={publicExperienceProjection} />}
-            onAdjustRow={useP29ArtifactFirstFrame ? undefined : (rowId) => openPublicAdjustment(baseStateId(rowId))}
             setup={showPublicSetupInput ? renderPublicHeroSetup() : undefined}
-            actions={useP29ArtifactFirstFrame ? renderP29PublicSaveActions() : renderPublicSaveActions()}
-            composition={useP29ArtifactFirstFrame ? 'artifact-first' : 'legacy'}
+            actions={renderP29PublicSaveActions()}
+            composition="artifact-first"
           />
         )}
         {renderPublicAdjustment()}
 
-        {useP29ArtifactFirstFrame ? renderP29PublicMobileSaveCta() : null}
+        {renderP29PublicMobileSaveCta()}
 
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">

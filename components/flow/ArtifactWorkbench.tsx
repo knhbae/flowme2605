@@ -44,6 +44,7 @@ type ArtifactWorkbenchProps = {
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
   presentationMode?: 'full' | 'export-only';
+  onExportOpenChange?: (open: boolean) => void;
 };
 
 type ArtifactExportActions = {
@@ -170,6 +171,7 @@ export function ArtifactWorkbench({
   onToggleItem,
   exportActions,
   presentationMode = 'full',
+  onExportOpenChange,
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
   const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
@@ -183,7 +185,7 @@ export function ArtifactWorkbench({
         data-presentation-mode="export-only"
       >
         {checkOnlyRoutineSlugs.has(bundle.flow.slug) ? <FlowResourceBlock bundle={bundle} /> : null}
-        <FlowLevelExportPanel actions={exportActions} bundle={bundle} />
+        <FlowLevelExportPanel actions={exportActions} bundle={bundle} onOpenChange={onExportOpenChange} />
       </section>
     );
   }
@@ -262,12 +264,21 @@ export function ArtifactWorkbench({
           />
         )}
       </div>
-      <FlowLevelExportPanel actions={exportActions} bundle={bundle} />
+      <FlowLevelExportPanel actions={exportActions} bundle={bundle} onOpenChange={onExportOpenChange} />
     </section>
   );
 }
 
-function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportActions; bundle: FlowBundle }) {
+function FlowLevelExportPanel({
+  actions,
+  bundle,
+  onOpenChange,
+}: {
+  actions?: ArtifactExportActions;
+  bundle: FlowBundle;
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const [open, setOpen] = useState(false);
   if (!actions) return null;
 
   const displayTitle = toContentDisplayTitle(bundle.flow.title);
@@ -275,7 +286,13 @@ function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportAct
   return (
     <details
       data-testid="public-flow-export-secondary-entry"
+      open={open}
       className="group mt-6 border-t border-[#DDE4E0] pt-4"
+      onToggle={(event) => {
+        const nextOpen = event.currentTarget.open;
+        setOpen(nextOpen);
+        onOpenChange?.(nextOpen);
+      }}
     >
       <summary
         data-testid="public-flow-export-secondary-toggle"
@@ -292,7 +309,7 @@ function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportAct
         <FlowExportPanel
           flowTitle={displayTitle}
           items={actions.flowItems}
-          open
+          open={open}
           scope="flow"
           selectedKeys={[]}
           fixedScope
