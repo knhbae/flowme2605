@@ -56,7 +56,8 @@ test.describe('P25 whole Flow workspace', () => {
     const mobileOutline = savedFlow.getByTestId('my-flow-whole-flow-outline');
     await expect(mobileOutline).toHaveAttribute('data-outline-mode', 'workspace');
     await expect(mobileOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
-    await expect(savedFlow.getByTestId('my-flow-next-action')).toHaveCount(0);
+    await expect(savedFlow.getByTestId('my-flow-next-action')).toHaveCount(1);
+    await expect(savedFlow).toHaveAttribute('data-p30-marker', 'P30-MY-FLOW-COMMAND-HIERARCHY');
     const firstExecutionRow = mobileOutline.getByTestId('my-flow-execution-row-shell').first();
     const [completionBox, titleBox, metaBox] = await Promise.all([
       firstExecutionRow.getByTestId('my-flow-task-complete-label').boundingBox(),

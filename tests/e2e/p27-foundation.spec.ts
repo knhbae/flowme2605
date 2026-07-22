@@ -58,6 +58,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
 
     const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
     await expect(flowCard).toBeVisible();
+    await flowCard.getByTestId('my-flow-management-menu-trigger').click();
     await flowCard.getByTestId('my-flow-archive-toggle').click();
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
     await expect(page.getByTestId('my-flow-empty-state')).toBeVisible();
@@ -73,6 +74,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
 
     await page.getByTestId('my-flow-lifecycle-undo').click();
     await expect(flowCard).toBeVisible();
+    await flowCard.getByTestId('my-flow-management-menu-trigger').click();
     await flowCard.getByTestId('my-flow-archive-toggle').click();
 
     await page.reload();
@@ -89,6 +91,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.goto('/my?view=flows');
     await page.getByTestId('my-flow-open-archived').click();
     const persistedArchivedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    await persistedArchivedCard.getByTestId('my-flow-management-menu-trigger').click();
     await persistedArchivedCard.getByTestId('my-flow-archive-toggle').click();
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
     await expect(flowCard).toBeVisible();
@@ -226,6 +229,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
 
     await adjustment.getByTestId('public-flow-adjustment-mode-include').click();
     await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
+    await adjustment.getByTestId('public-flow-adjustment-item-disclosure').locator('summary').click();
     await rows.nth(1).getByRole('checkbox', { name: '이사할 집 하자 점검하기 저장에 포함' }).uncheck();
 
     await adjustment.getByTestId('public-flow-adjustment-mode-order').click();

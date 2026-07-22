@@ -1,0 +1,114 @@
+{
+  "route": "/calendar?demo=ux50",
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "identities": [
+    {
+      "accessibleName": "이사 준비 Flow 10",
+      "title": "이사 준비 Flow 10",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 25",
+      "title": "이사 준비 Flow 25",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 11",
+      "title": "이사 준비 Flow 11",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 25",
+      "title": "이사 준비 Flow 25",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 12",
+      "title": "이사 준비 Flow 12",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 25",
+      "title": "이사 준비 Flow 25",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "개발 프로젝트 포트폴리오 4주",
+      "title": "개발 프로젝트 포트폴리오 4주",
+      "visibleLabel": "개발 프로젝트...",
+      "markerInitial": "개",
+      "clientWidth": 60,
+      "scrollWidth": 71
+    },
+    {
+      "accessibleName": "자동차검사 준비",
+      "title": "자동차검사 준비",
+      "visibleLabel": "자동차검사 준비",
+      "markerInitial": "자",
+      "clientWidth": 60,
+      "scrollWidth": 74
+    },
+    {
+      "accessibleName": "이사 준비 Flow 07",
+      "title": "이사 준비 Flow 07",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 14",
+      "title": "이사 준비 Flow 14",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 08",
+      "title": "이사 준비 Flow 08",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    },
+    {
+      "accessibleName": "이사 준비 Flow 06",
+      "title": "이사 준비 Flow 06",
+      "visibleLabel": "이사 준비 F...",
+      "markerInitial": "이",
+      "clientWidth": 59,
+      "scrollWidth": 59
+    }
+  ],
+  "sameDateFlowCount": 5,
+  "selectedDayFullTitles": [
+    "이사 준비 Flow 10",
+    "이사 준비 Flow 25",
+    "이사 준비 Flow 27",
+    "이사 준비 Flow 34",
+    "이사 준비 Flow 49"
+  ],
+  "horizontalOverflow": 0
+}

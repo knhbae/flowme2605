@@ -1,8 +1,8 @@
 # P30 Evidence Gap Closure
 
-**Date:** 2026-07-22  
-**Status:** Planning approved, implementation not started  
-**Baseline:** `3c7b59e` (`afe834a` 이후 앱 코드는 동일하며 Claude Design standalone HTML만 추가됨)  
+**Date:** 2026-07-22
+**Status:** Planning approved, implementation not started
+**Baseline:** `3c7b59e` (`afe834a` 이후 앱 코드는 동일하며 Claude Design standalone HTML만 추가됨)
 **Observed-user sessions:** `0`
 
 ## 한 줄 판정
@@ -58,4 +58,3 @@ P30-03~05는 P30-02가 production에서 확인된 뒤 병렬로 진행할 수 �
 ## 지금 할 일
 
 다음 구현은 **P30-01만** 시작한다. P30-01의 production evidence가 없으면 P30-02로 넘어가지 않는다. 이 문서 작성 단계에서는 앱 코드, persistence, export builder, 4탭 IA를 변경하지 않는다.
-

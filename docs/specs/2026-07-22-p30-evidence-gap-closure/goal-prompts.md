@@ -391,4 +391,3 @@ ready_for_owner_observation_decision / revise / rollback 중 하나를 evidence�
 marker:
 P30-NESTED-STATE-GATE
 ```
-

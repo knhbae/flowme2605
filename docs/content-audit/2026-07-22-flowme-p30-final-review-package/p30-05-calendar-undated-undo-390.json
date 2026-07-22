@@ -1,0 +1,21 @@
+{
+  "route": "/calendar",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "beforeCount": 10,
+  "placedCount": 2,
+  "afterCount": 8,
+  "undoCount": 10,
+  "selectedKeys": [
+    "vehicle-inspection-prep::flow-vehicle-inspection-prep-item-0",
+    "vehicle-inspection-prep::flow-vehicle-inspection-prep-item-1"
+  ],
+  "stableIdsRestored": true,
+  "pageScrollChanged": false,
+  "internalScroll": {
+    "clientHeight": 354,
+    "scrollHeight": 589
+  }
+}

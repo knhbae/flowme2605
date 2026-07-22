@@ -1,0 +1,11 @@
+{
+  "route": "/my?demo=ux20&view=flows",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "visiblePrimaryCount": 1,
+  "visibleSecondaryCount": 1,
+  "overflowMenuFocusReturned": true,
+  "horizontalOverflow": 0
+}

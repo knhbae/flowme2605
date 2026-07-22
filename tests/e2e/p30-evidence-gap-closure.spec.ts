@@ -570,3 +570,67 @@ test.describe('P30-07 legacy composition consumer gate', () => {
     expect(consoleErrors).toEqual([]);
   });
 });
+
+test.describe('P30-08 desktop production matrix', () => {
+  test('public, My Flow, and Calendar stay readable and operable at 1440px', async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const routes = [
+      { route: '/f/moving-d30-basic', filename: 'p30-08-public-save-before-1440.png' },
+      { route: '/my?demo=ux20&view=flows', filename: 'p30-08-my-flow-1440.png' },
+      { route: '/calendar?demo=ux50', filename: 'p30-08-calendar-1440.png' },
+    ];
+
+    for (const surface of routes) {
+      await page.goto(surface.route);
+      const health = await page.evaluate(() => {
+        const focusables = Array.from(document.querySelectorAll<HTMLElement>(
+          'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])',
+        )).filter((element) => {
+          const style = window.getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+        });
+        const unnamedFocusableCount = focusables.filter((element) => {
+          const labelledBy = element.getAttribute('aria-labelledby');
+          const labelledByText = labelledBy
+            ?.split(/\s+/u)
+            .map((id) => document.getElementById(id)?.textContent?.trim() ?? '')
+            .join(' ')
+            .trim();
+          const formLabel = element instanceof HTMLInputElement
+            || element instanceof HTMLSelectElement
+            || element instanceof HTMLTextAreaElement
+            ? Array.from(element.labels ?? []).map((label) => label.textContent?.trim() ?? '').join(' ').trim()
+            : '';
+          const name = element.getAttribute('aria-label')
+            || labelledByText
+            || formLabel
+            || element.getAttribute('title')
+            || element.textContent?.trim();
+          return !name;
+        }).length;
+
+        return {
+          horizontalOverflow: document.documentElement.scrollWidth - window.innerWidth,
+          unnamedFocusableCount,
+        };
+      });
+
+      expect(health.horizontalOverflow).toBeLessThanOrEqual(0);
+      expect(health.unnamedFocusableCount).toBe(0);
+      await capture(page, surface.filename, {
+        route: surface.route,
+        viewport: { width: 1440, height: 900 },
+        ...health,
+      });
+    }
+
+    expect(consoleErrors).toEqual([]);
+  });
+});

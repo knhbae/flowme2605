@@ -3035,7 +3035,10 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(mathCard.getByTestId('my-flow-map-context')).toContainText('중1 수학 목차 진도표');
   await expect(mathCard).not.toContainText('Mathbang');
   await expect(mathCard.getByTestId('my-flow-workspace-progress-summary')).toContainText('전체 0/8 완료');
-  await expect(mathCard.getByRole('link', { name: '원문 보기' })).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
+  await mathCard.getByTestId('my-flow-management-menu-trigger').click();
+  const sourceLink = mathCard.getByTestId('my-flow-management-source');
+  await expect(sourceLink).toHaveText('원문 보기');
+  await expect(sourceLink).toHaveAttribute('href', '/flow-maps/middle-school-math-1');
 
   await mathCard.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
   await expect(page.getByTestId('my-flow-view-flow')).toHaveAttribute('aria-selected', 'true');
@@ -4132,6 +4135,7 @@ test('my flow inventory archives and restores a flow without deleting its saved 
   const library = page.getByTestId('my-flow-library-workspace');
   const firstCard = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card');
   const firstTitle = await firstCard.locator('h3').innerText();
+  await firstCard.getByTestId('my-flow-management-menu-trigger').click();
   await firstCard.getByTestId('my-flow-archive-toggle').click();
   await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
   await expect(library.getByTestId('my-flow-library-row').filter({ hasText: firstTitle })).toHaveCount(0);
@@ -4140,7 +4144,9 @@ test('my flow inventory archives and restores a flow without deleting its saved 
   await expect(library.getByTestId('my-flow-library-row')).toHaveCount(1);
   await expect(library.getByTestId('my-flow-library-row')).toContainText(firstTitle);
   await library.getByTestId('my-flow-library-row').click();
-  await library.getByTestId('my-flow-library-detail').getByTestId('my-flow-archive-toggle').click();
+  const archivedCard = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card');
+  await archivedCard.getByTestId('my-flow-management-menu-trigger').click();
+  await archivedCard.getByTestId('my-flow-archive-toggle').click();
   await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
   await library.getByTestId('my-flow-library-rail-filter').selectOption('all');
   await expect(library.getByTestId('my-flow-library-row').filter({ hasText: firstTitle })).toHaveCount(1);

@@ -1,0 +1,12 @@
+{
+  "route": "/calendar?demo=ux50",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "optionCount": 62,
+  "meaningfulInteractionCount": 5,
+  "selectedCount": 2,
+  "inactiveGroupCollapsedInitially": true,
+  "focusReturned": true
+}

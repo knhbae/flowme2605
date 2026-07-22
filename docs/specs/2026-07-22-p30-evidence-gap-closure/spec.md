@@ -1,8 +1,8 @@
 # P30 Interaction Correctness And Evidence Closure Spec
 
-**Date:** 2026-07-22  
-**Status:** Approved for staged implementation  
-**Owner:** FlowMe owner + Codex implementation, Claude Design comparison review  
+**Date:** 2026-07-22
+**Status:** Approved for staged implementation
+**Owner:** FlowMe owner + Codex implementation, Claude Design comparison review
 **Related roadmap:** [P30 Evidence Gap Closure](../../ROADMAP.md#p30-interaction-correctness-and-evidence-closure)
 
 ## Goal
@@ -99,4 +99,3 @@ FlowMe는 source를 개인 실행물로 바꿔 My Flow, Calendar, export로 이�
 - `P30-CALENDAR-COMPACT-IDENTITY`
 - `P30-ROUTINE-ADVANCED-DENSITY`
 - `P30-NESTED-STATE-GATE`
-

@@ -155,4 +155,3 @@ The implementing agent must verify this inventory before editing.
 - Any request for schema, migration, new artifact format, direct integration, or new tab stops the slice and requires a new product decision.
 - Production screenshots are captured after deployment, not substituted by local screenshots.
 - Previous evidence is labeled `prior_artifact`; current commands and browser runs get new timestamps and SHAs.
-

@@ -85,6 +85,7 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await expect(
     undatedEntry.locator('[data-recommendation-visible="true"][data-export-state="disabled"]'),
   ).toHaveCount(0);
+  await undatedEntry.getByTestId('public-flow-export-secondary-toggle').click();
 
   await page.getByTestId('public-flow-date-intent-undated').click();
   await page

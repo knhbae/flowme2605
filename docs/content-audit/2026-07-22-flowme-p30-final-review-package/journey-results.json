@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-22",
+  "observedUserCount": 0,
+  "evidenceKind": "current_browser_automation",
+  "journeys": [
+    {
+      "id": "mobile_public_export",
+      "persona": "공개 Flow를 확인하고 가져가는 사용자",
+      "route": "/f/moving-d30-basic",
+      "steps": ["실제 결과 확인", "가져가기 열기", "export preflight 확인", "primary 실행"],
+      "status": "supported",
+      "evidence": { "fixedSaveCtaCount": 0, "intersectionArea": 0 }
+    },
+    {
+      "id": "mobile_my_flow_export",
+      "persona": "저장한 Flow를 외부 도구로 가져가는 사용자",
+      "route": "/my?demo=ux20&view=flows",
+      "steps": ["Flow 검색", "상세 열기", "가져가기", "닫고 작업 복귀"],
+      "status": "supported",
+      "evidence": { "intersectionArea": 0, "focusReturned": true }
+    },
+    {
+      "id": "long_flow_adjustment",
+      "persona": "24개 이사 준비 항목 중 필요한 부분만 조정하는 사용자",
+      "route": "/f/moving-d30-basic",
+      "steps": ["전체 결과 확인", "조정 목적 선택", "항목 선택 열기", "전체 목록 펼치기"],
+      "status": "supported",
+      "evidence": { "initialRowEditControlCount": 0, "expandedItemCount": 24 }
+    },
+    {
+      "id": "my_flow_next_action",
+      "persona": "저장한 Flow에서 다음 행동을 바로 실행하는 사용자",
+      "route": "/my?demo=ux20&view=flows",
+      "steps": ["Flow 선택", "다음 행동 확인", "설정 또는 가져가기", "더보기에서 원문·보관"],
+      "status": "supported",
+      "evidence": { "visiblePrimaryCount": 1, "visibleSecondaryCount": 1, "menuFocusReturned": true }
+    },
+    {
+      "id": "calendar_undated_placement",
+      "persona": "날짜 없는 할 일을 Calendar에 배치하는 사용자",
+      "route": "/calendar",
+      "steps": ["날짜 없는 일 열기", "2개 선택", "날짜 배치", "undo"],
+      "status": "supported_by_fixture",
+      "evidence": { "counts": [10, 8, 10], "stableIdsRestored": true, "pageScrollChanged": false }
+    },
+    {
+      "id": "calendar_50_flow_scope",
+      "persona": "많은 Flow 중 필요한 2개만 Calendar에서 보는 사용자",
+      "route": "/calendar?demo=ux50",
+      "steps": ["범위 열기", "검색", "2개 선택", "적용"],
+      "status": "supported_by_fixture",
+      "evidence": { "optionCount": 62, "meaningfulInteractionCount": 5, "focusReturned": true }
+    },
+    {
+      "id": "routine_schedule_adjustment",
+      "persona": "운동 반복 계획의 시간과 종료 조건을 조정하는 사용자",
+      "route": "/f/curated-allblanc-morning-workout",
+      "steps": ["한 줄 요약 확인", "다음 3회 확인", "고급 설정 열기", "시간·종료 방식 수정"],
+      "status": "supported",
+      "evidence": { "initialAdvancedFieldCount": 0, "nextOccurrenceCount": 3, "selectedModeFieldsOnly": true }
+    }
+  ]
+}
+

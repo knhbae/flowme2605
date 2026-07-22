@@ -37,8 +37,8 @@ Claude Design과 Codex의 P29 독립 검토를 evidence strength로 조정하고
 
 ## P30-01 - Mobile Export Fixed-Layer Correctness
 
-**Priority:** High  
-**Dependency:** P30-00  
+**Priority:** High
+**Dependency:** P30-00
 **Primary marker:** `P30-MOBILE-EXPORT-NO-FIXED-OVERLAP`
 
 ### User problem
@@ -86,8 +86,8 @@ Claude Design과 Codex의 P29 독립 검토를 evidence strength로 조정하고
 
 ## P30-02 - Mobile Workspace Focus Order
 
-**Priority:** High  
-**Dependency:** P30-01 production green  
+**Priority:** High
+**Dependency:** P30-01 production green
 **Primary marker:** `P30-MOBILE-WORKSPACE-FOCUS-ORDER`
 
 ### User problem
@@ -126,8 +126,8 @@ Claude Design과 Codex의 P29 독립 검토를 evidence strength로 조정하고
 
 ## P30-03 - Save-Before Decision And Long-Flow Adjustment
 
-**Priority:** Medium  
-**Dependency:** P30-02  
+**Priority:** Medium
+**Dependency:** P30-02
 **Markers:** `P30-SAVE-BEFORE-SINGLE-DECISION`, `P30-LONG-FLOW-CONTEXTUAL-ADJUST`
 
 ### User problem
@@ -178,8 +178,8 @@ artifact-first preview는 좋아졌지만 moving save-before의 결정 영역에
 
 ## P30-04 - My Flow Next-Action Command Hierarchy
 
-**Priority:** Medium  
-**Dependency:** P30-02  
+**Priority:** Medium
+**Dependency:** P30-02
 **Primary marker:** `P30-MY-FLOW-COMMAND-HIERARCHY`
 
 ### User problem
@@ -219,8 +219,8 @@ My Flow detail에서 다음 실행 행동 아래 `여러 할 일 조정`, `원�
 
 ## P30-05 - Calendar Scale, Undated Evidence, And Compact Identity
 
-**Priority:** Medium  
-**Dependency:** P30-02  
+**Priority:** Medium
+**Dependency:** P30-02
 **Markers:** `P30-CALENDAR-UNDATED-EVIDENCE`, `P30-CALENDAR-SCOPE-SCALE`, `P30-CALENDAR-COMPACT-IDENTITY`
 
 ### P30-05A deterministic undated evidence
@@ -282,8 +282,8 @@ Acceptance:
 
 ## P30-06 - Routine Advanced Setting Density
 
-**Priority:** Low/Medium, conditional  
-**Dependency:** P30-03~05 evidence  
+**Priority:** Low/Medium, conditional
+**Dependency:** P30-03~05 evidence
 **Primary marker:** `P30-ROUTINE-ADVANCED-DENSITY`
 
 ### Gate before implementation
@@ -313,7 +313,7 @@ Acceptance:
 
 ## P30-07 - Legacy Composition Removal Gate
 
-**Priority:** Low maintenance  
+**Priority:** Low maintenance
 **Dependency:** P30-03~06 merged and green
 
 ### Tasks
@@ -339,7 +339,7 @@ Acceptance:
 
 ## P30-08 - Independent Nested-State Production Closeout
 
-**Priority:** Release gate  
+**Priority:** Release gate
 **Dependency:** all implemented slices
 
 ### Capture scope
@@ -389,4 +389,3 @@ docs/content-audit/2026-07-XX-flowme-p30-final-review-package/
   screenshot-manifest.json
   screenshots/
 ```
-

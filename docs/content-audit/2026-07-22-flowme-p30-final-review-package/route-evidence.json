@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "program": "P30 evidence gap closure",
+  "capturedAt": "2026-07-22",
+  "baselineSha": "3c7b59ed22c5c503f58ef4b538ede217e4eef8fd",
+  "branch": "codex/p30-evidence-gap-closure",
+  "evidenceKind": "current_browser_automation",
+  "observedUserCount": 0,
+  "summary": {
+    "unitPassed": 584,
+    "unitFailed": 0,
+    "fullE2ePassed": 304,
+    "fullE2eFailed": 0,
+    "p30E2ePassed": 12,
+    "p30E2eFailed": 0,
+    "screenshotCount": 17,
+    "fixedLayerIntersectionArea": 0,
+    "horizontalOverflowCount": 0,
+    "unnamedFocusableCount": 0,
+    "consolePageErrorCount": 0
+  },
+  "routes": [
+    {
+      "slice": "P30-01",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "marker": "P30-MOBILE-EXPORT-NO-FIXED-OVERLAP",
+      "fixedSaveCtaCount": 0,
+      "primaryIntersectionArea": 0,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-01",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "marker": "P30-MOBILE-EXPORT-NO-FIXED-OVERLAP",
+      "primaryIntersectionArea": 0,
+      "focusReturned": true,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-02",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+      "focusOrder": ["header", "workspace", "persistent_tabs"],
+      "status": "pass"
+    },
+    {
+      "slice": "P30-02",
+      "route": "/calendar?demo=ux20",
+      "viewport": "390x844",
+      "marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+      "focusOrder": ["header", "workspace", "persistent_tabs"],
+      "status": "pass"
+    },
+    {
+      "slice": "P30-03",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "markers": ["P30-SAVE-BEFORE-SINGLE-DECISION", "P30-LONG-FLOW-CONTEXTUAL-ADJUST"],
+      "initialRowEditControlCount": 0,
+      "expandedItemCount": 24,
+      "horizontalOverflow": 0,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-04",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "marker": "P30-MY-FLOW-COMMAND-HIERARCHY",
+      "visiblePrimaryCount": 1,
+      "visibleSecondaryCount": 1,
+      "overflowMenuFocusReturned": true,
+      "horizontalOverflow": 0,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-05",
+      "route": "/calendar",
+      "viewport": "390x844",
+      "marker": "P30-CALENDAR-UNDATED-EVIDENCE",
+      "beforeCount": 10,
+      "placedCount": 2,
+      "afterCount": 8,
+      "undoCount": 10,
+      "stableIdsRestored": true,
+      "pageScrollChanged": false,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-05",
+      "route": "/calendar?demo=ux50",
+      "viewport": "390x844",
+      "marker": "P30-CALENDAR-SCOPE-SCALE",
+      "optionCount": 62,
+      "selectedCount": 2,
+      "meaningfulInteractionCount": 5,
+      "inactiveGroupCollapsedInitially": true,
+      "focusReturned": true,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-05",
+      "route": "/calendar?demo=ux50",
+      "viewport": "1024x768",
+      "marker": "P30-CALENDAR-COMPACT-IDENTITY",
+      "sameDateFlowCount": 5,
+      "selectedDayFullIdentityCount": 5,
+      "horizontalOverflow": 0,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-06",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewports": ["390x844", "1024x768"],
+      "marker": "P30-ROUTINE-ADVANCED-DENSITY",
+      "initialAdvancedFieldCount": 0,
+      "nextOccurrenceCount": 3,
+      "selectedModeFieldsOnly": true,
+      "horizontalOverflow": 0,
+      "consolePageErrorCount": 0,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-07",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "composition": "artifact-first",
+      "deadConditionalConsumerCount": 0,
+      "status": "pass"
+    },
+    {
+      "slice": "P30-07",
+      "route": "/flow-maps/moving-d30",
+      "viewport": "1024x768",
+      "marker": "P30-LEGACY-COMPOSITION-ACTIVE",
+      "composition": "legacy",
+      "activeProductionConsumerCount": 1,
+      "removalDecision": "deferred_active_consumer",
+      "consolePageErrorCount": 0,
+      "status": "pass_with_explicit_defer"
+    },
+    {
+      "slice": "P30-08",
+      "routes": ["/f/moving-d30-basic", "/my?demo=ux20&view=flows", "/calendar?demo=ux50"],
+      "viewport": "1440x900",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consolePageErrorCount": 0,
+      "status": "pass"
+    }
+  ]
+}

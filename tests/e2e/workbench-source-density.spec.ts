@@ -75,6 +75,8 @@ test.describe('field checklist workbench source density', () => {
     await expect(exportEntry).toContainText('Flow');
     await expect(exportEntry).toContainText('형식');
     await expect(page.getByTestId('mobile-artifact-export-excel')).toHaveCount(0);
+    await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
+    await expect(exportEntry.getByTestId('public-flow-export-format-option').first()).toBeVisible();
     expect(await exportEntry.getByTestId('public-flow-export-format-option').count()).toBeGreaterThanOrEqual(2);
   });
 
