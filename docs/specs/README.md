@@ -40,11 +40,11 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- No implementation program is active until the owner and independent reviewers classify the P28 result as `keep`, `revise`, or `redesign`.
+- [2026-07-22 P29 Coordinated Surface Reset](./2026-07-22-p29-coordinated-surface-reset/plan.md) - owner, Codex, and Claude Design feedback selected a staged composition reset while preserving the P28 data and identity contracts. P29-01A safe frame extraction and P29-01B moving vertical proof are next; P29-02 rollout remains gated by their evidence.
 
 ### Completed Or Closed
 
-- [2026-07-21 P28 Cross-Surface Experience Reconstruction](./2026-07-21-p28-experience-reconstruction/spec.md) - released through PR #144 and merge `9a839d02` with Hybrid save-before, shared routine/execution grammar, scalable My Flow/Calendar, five actual-data shapes, unit `584/584`, full E2E `346/346`, and observed-user sessions `0`; owner review is pending.
+- [2026-07-21 P28 Cross-Surface Experience Reconstruction](./2026-07-21-p28-experience-reconstruction/spec.md) - released through PR #144 and merge `9a839d02` with Hybrid save-before, shared routine/execution grammar, scalable My Flow/Calendar, five actual-data shapes, unit `584/584`, full E2E `346/346`, and observed-user sessions `0`; owner and independent review promoted the remaining composition work into P29.
 
 - [2026-07-21 P27 Flow Lifecycle Workspace Reconciliation](./2026-07-21-p27-flow-lifecycle-workspace-reconciliation/spec.md) - released through PR #141 and merge `2829b37`; canonical production browser evidence is green while observed-user sessions remain `0`.
 

@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-22<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P28 production released, owner review pending<br>
+**Current Validation Stage:** internal alpha / P29 coordinated surface reset implementation gate<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P28 owner/independent review and evidence-backed P29 decision
+**Next Milestone:** P29-01A safe frame extraction and P29-01B moving vertical proof
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,26 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P29 Coordinated Surface Reset
+
+Owner, Codex, and Claude Design review agreed that P28's data and identity contracts should stay, but save-before, saved receipt, routine setup, My Flow, Calendar, and result/export composition need a coordinated reset rather than token polish or a planner rewrite.
+
+Detailed execution plan: [P29 coordinated surface reset](./specs/2026-07-22-p29-coordinated-surface-reset/plan.md).
+
+| Slice | Purpose | State |
+| --- | --- | --- |
+| P29-01A | Extract shared save-before anatomy from the large AppClient composition without visual or contract change | Next |
+| P29-01B | Prove artifact-first save-before and a distinct receipt on moving only | Gated by 01A |
+| P29-02 | Roll the approved composition across public/source-backed five-shape routes | Gated by 01B evidence |
+| P29-03 | Make routine setup summary-first with progressive disclosure and occurrence continuity | Planned |
+| P29-04 | Rebuild My Flow as an action-first library/detail workspace | Planned |
+| P29-05 | Unify Calendar scope, selected-day agenda, and undated placement | Planned |
+| P29-06 | Connect artifact recommendation, export scope, loss preview, and receipt vocabulary | Planned |
+| P29-07 | Close shared visual, responsive, keyboard, and accessibility gates | Planned |
+| P29-08 | Run independent production integration and closeout | Planned |
+
+P29-02 must not start until the moving vertical proof shows one item list, one decision surface, a distinct post-save receipt, correct mobile focus order, and unchanged P28 projections. External user observation remains deferred.
 
 ## P28 Cross-Surface Experience Reconstruction
 

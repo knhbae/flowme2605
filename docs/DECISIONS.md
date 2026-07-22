@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-22 - P29 uses a coordinated surface reset with a gated moving vertical proof
+
+**Decision:** Preserve the P28 source, personal overlay, execution run, recurrence occurrence, projection/export identity, public `/f` shell, and 4-tab IA. Recompose save-before, saved receipt, routine setup, My Flow, Calendar, and result/export around one shared Flow anatomy and one primary action per frame. Start with P29-01A, which extracts the save-before frame from the large `AppClient.tsx` composition without a visual change. Then apply P29-01B only to `/f/moving-d30-basic` to prove one actual artifact result, one outline disclosure, contextual adjustment, a distinct saved receipt, and correct mobile focus order. Do not begin the public/source-backed rollout until this vertical proof and rollback evidence pass.
+
+**Reason:** Owner feedback and both independent proposals agree that P28's contracts are valuable but its card, label, repeated list, command, and progressive-disclosure hierarchy do not create enough visible or interaction-level improvement. Token polish alone would leave the hierarchy failures, while a planner rewrite would reopen settled ownership and identity contracts. Combining Claude Design's safe component-extraction warning with Codex's route-level vertical proof yields a reversible next step with a user-visible result.
+
+**Applies to:** P29-01~08, `/f/moving-d30-basic`, public/source-backed save-before, saved receipt, routine setup, My Flow library/detail, Calendar scope/placement, five actual artifact shapes, export preflight/receipt, shared visual tokens, responsive behavior, and accessibility evidence.
+
+**Reopen when:** The moving vertical proof cannot preserve the P28 projection and count contracts, two or more representative content shapes lose source meaning under the shared frame, route-level exceptions begin to replace the common anatomy, or observed users later reject the selected hierarchy. Automated green checks alone do not prove usability.
+
+**Related docs:** [P29 integrated plan](./specs/2026-07-22-p29-coordinated-surface-reset/plan.md), [P29 review handoff](./content-audit/2026-07-22-p29-00-visual-interaction-reset-review-handoff/README.md), [P29 strategy context](./content-audit/2026-07-22-p29-00-visual-interaction-reset-review-handoff/strategy-context.md)
+
 ### 2026-07-22 - P28 uses a Hybrid whole-Flow and actual-result architecture
 
 **Decision:** Use one cross-surface sequence: Flow identity/source, compact whole outline, content-native actual-data result, contextual personal adjustment, and save/export. On mobile this is one reading order; at 1024px it uses no more than two major panes. Route prepared URL hits into the same public Flow workspace instead of maintaining a second full editor. Use the same executable row for ordinary tasks and routine occurrences. Keep resource/reference/warning roles outside completion. Present one primary artifact and at most two eligible secondary artifacts rather than a fixed five-tab gallery. My Flow uses mobile drill-in and a wide library rail; Calendar uses a searchable multi-select picker when six or more Flows are available.
