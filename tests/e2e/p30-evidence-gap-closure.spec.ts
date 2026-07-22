@@ -53,6 +53,29 @@ async function clearLocalState(page: Page) {
   await page.reload();
 }
 
+async function seedP30CalendarFlows(page: Page) {
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem('flowme:p30-calendar-seeded') === 'true') return;
+    localStorage.clear();
+    const savedAt = '2026-07-22T00:00:00.000Z';
+    [
+      { slug: 'moving-d30-basic', anchor: '2026-08-28' },
+      { slug: 'vehicle-inspection-prep', anchor: undefined },
+    ].forEach(({ slug, anchor }) => {
+      localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+        slug,
+        savedAt,
+        selectedArtifactMode: 'calendar',
+        ...(anchor ? { anchor } : {}),
+      }));
+      if (anchor) {
+        localStorage.setItem(`flow:${slug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor }));
+      }
+    });
+    sessionStorage.setItem('flowme:p30-calendar-seeded', 'true');
+  });
+}
+
 type FocusStep = {
   testId: string | null;
   tagName: string;
@@ -273,6 +296,159 @@ test.describe('P30-04 My Flow command hierarchy', () => {
       visiblePrimaryCount: 1,
       visibleSecondaryCount: await card.locator('[data-action-priority="secondary"]:visible').count(),
       overflowMenuFocusReturned: true,
+      horizontalOverflow: overflow,
+    });
+  });
+});
+
+test.describe('P30-05 Calendar evidence, scale, and compact identity', () => {
+  test('deterministic undated placement moves two stable items and restores them on undo', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await seedP30CalendarFlows(page);
+    await page.goto('/calendar');
+
+    const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
+    await expect(tray).toHaveAttribute('data-p30-marker', 'P30-CALENDAR-UNDATED-EVIDENCE');
+    await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('10');
+    const trigger = tray.getByTestId('my-flow-calendar-unscheduled-toggle');
+    const pageScrollBefore = await page.evaluate(() => window.scrollY);
+    await trigger.click();
+    const sheet = tray.getByTestId('my-flow-calendar-unscheduled-sheet');
+    await expect(sheet).toBeVisible();
+    expect(await page.evaluate(() => window.scrollY)).toBe(pageScrollBefore);
+    await page.keyboard.press('Escape');
+    await expect(sheet).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    expect(await page.evaluate(() => window.scrollY)).toBe(pageScrollBefore);
+    await trigger.click();
+    await expect(sheet).toBeVisible();
+
+    const items = tray.getByTestId('my-flow-calendar-unscheduled-item');
+    const originalKeys = await items.evaluateAll((elements) => elements.map((element) => element.getAttribute('data-item-key')));
+    const selectedKeys = originalKeys.slice(0, 2);
+    const selectedTitles = await items.locator('[data-testid="my-flow-calendar-unscheduled-item-title"]').evaluateAll(
+      (elements) => elements.slice(0, 2).map((element) => element.textContent?.trim() ?? ''),
+    );
+    const internalScroll = await tray.getByTestId('my-flow-calendar-unscheduled-item-scroll').evaluate((element) => ({
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+    }));
+    expect(internalScroll.scrollHeight).toBeGreaterThan(internalScroll.clientHeight);
+
+    await items.nth(0).getByRole('checkbox').check();
+    await items.nth(1).getByRole('checkbox').check();
+    await tray.getByTestId('my-flow-calendar-unscheduled-date').fill('2026-07-29');
+    await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
+    await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('8');
+    const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+    for (const title of selectedTitles) await expect(selectedDay.getByText(title, { exact: true })).toHaveCount(1);
+
+    await tray.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
+    await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('10');
+    await trigger.click();
+    const restoredKeys = await tray.getByTestId('my-flow-calendar-unscheduled-item').evaluateAll(
+      (elements) => elements.map((element) => element.getAttribute('data-item-key')),
+    );
+    expect(restoredKeys).toEqual(originalKeys);
+    await capture(page, 'p30-05-calendar-undated-undo-390.png', {
+      route: '/calendar',
+      viewport: { width: 390, height: 844 },
+      beforeCount: 10,
+      placedCount: 2,
+      afterCount: 8,
+      undoCount: 10,
+      selectedKeys,
+      stableIdsRestored: true,
+      pageScrollChanged: false,
+      internalScroll,
+    });
+  });
+
+  test('50+ Flow scope collapses inactive options and exposes search matches within five actions', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/calendar?demo=ux50');
+
+    const trigger = page.getByTestId('calendar-flow-scope-picker-trigger');
+    await expect(trigger).toHaveAttribute('data-p30-marker', 'P30-CALENDAR-SCOPE-SCALE');
+    await trigger.click();
+    const picker = page.getByTestId('calendar-flow-scope-picker');
+    const options = picker.getByTestId('calendar-flow-scope-picker-option');
+    const optionCount = await options.count();
+    expect(optionCount).toBeGreaterThanOrEqual(50);
+
+    const other = picker.getByTestId('calendar-flow-scope-picker-other-disclosure');
+    await expect(other).toBeVisible();
+    await expect(other).not.toHaveAttribute('open', '');
+    const activeOption = picker.locator('[data-scope-group="active"] [data-testid="calendar-flow-scope-picker-option"]').first();
+    const activeSlug = await activeOption.getAttribute('data-flow-slug');
+    expect(activeSlug).toBeTruthy();
+    const otherOption = other.locator('[data-testid="calendar-flow-scope-picker-option"]').first();
+    const otherSlug = await otherOption.getAttribute('data-flow-slug');
+    expect(otherSlug).toBeTruthy();
+    const otherTitle = await other.locator('[data-testid="calendar-flow-scope-picker-option"] span.block.truncate').first().textContent();
+    expect(otherTitle?.trim()).toBeTruthy();
+    await picker.locator(`[data-flow-slug="${activeSlug}"] input[type="checkbox"]`).check();
+    await picker.getByTestId('calendar-flow-scope-picker-search').fill(otherTitle!.trim());
+    await picker.locator(`[data-flow-slug="${otherSlug}"] input[type="checkbox"]`).check();
+    await picker.getByTestId('calendar-flow-scope-picker-apply').click();
+    await expect(trigger).toContainText('2개 Flow');
+    await expect(trigger).toBeFocused();
+    await capture(page, 'p30-05-calendar-scope-50-390.png', {
+      route: '/calendar?demo=ux50',
+      viewport: { width: 390, height: 844 },
+      optionCount,
+      meaningfulInteractionCount: 5,
+      selectedCount: 2,
+      inactiveGroupCollapsedInitially: true,
+      focusReturned: true,
+    });
+  });
+
+  test('wide month cells keep compact labels while preserving full accessible identity', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/calendar?demo=ux50');
+    await page.getByTestId('my-flow-month-picker').fill('2026-06');
+
+    const content = page.getByTestId('my-flow-calendar-schedule-content');
+    await expect(content.first()).toHaveAttribute('data-p30-marker', 'P30-CALENDAR-COMPACT-IDENTITY');
+    expect(await content.count()).toBeGreaterThan(0);
+    const identities = await content.evaluateAll((elements) => elements.slice(0, 12).map((element) => {
+      const label = element.querySelector<HTMLElement>('[data-testid="my-flow-calendar-flow-label"]');
+      const marker = element.querySelector<HTMLElement>('[data-testid="my-flow-calendar-schedule-rail"]');
+      return {
+        accessibleName: element.getAttribute('aria-label'),
+        title: label?.getAttribute('title'),
+        visibleLabel: label?.textContent?.trim(),
+        markerInitial: marker?.dataset.flowMarkerInitial,
+        clientWidth: label?.clientWidth ?? 0,
+        scrollWidth: label?.scrollWidth ?? 0,
+      };
+    }));
+    expect(identities.every((identity) => Boolean(
+      identity.accessibleName && identity.title && identity.visibleLabel && identity.markerInitial,
+    ))).toBe(true);
+    expect(identities.every((identity) => identity.clientWidth <= identity.scrollWidth)).toBe(true);
+    const overflowSummary = page.getByTestId('my-flow-calendar-grid-overflow-summary').first();
+    await expect(overflowSummary).toBeVisible();
+    await expect(overflowSummary).toContainText(/외 [1-9]\d*개/u);
+    const overflowAccessibleName = await overflowSummary.getAttribute('aria-label');
+    expect(overflowAccessibleName).toMatch(/Flow [3-9]\d*개 중/u);
+    await overflowSummary.press('Enter');
+    const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+    const selectedDayGroups = selectedDay.getByTestId('my-flow-selected-date-group');
+    expect(await selectedDayGroups.count()).toBeGreaterThanOrEqual(5);
+    const selectedDayFullTitles = await selectedDay.getByTestId('my-flow-selected-date-flow-marker').evaluateAll(
+      (elements) => elements.map((element) => element.getAttribute('aria-label')).filter(Boolean),
+    );
+    expect(selectedDayFullTitles.length).toBeGreaterThanOrEqual(5);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    await capture(page, 'p30-05-calendar-compact-identity-1024.png', {
+      route: '/calendar?demo=ux50',
+      viewport: { width: 1024, height: 768 },
+      identities,
+      sameDateFlowCount: selectedDayFullTitles.length,
+      selectedDayFullTitles,
       horizontalOverflow: overflow,
     });
   });

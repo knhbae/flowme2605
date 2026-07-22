@@ -3465,7 +3465,7 @@ type MyFlowFlowMarker = {
 
 type ChecklistFilter = 'all' | 'open' | 'done';
 type MyFlowStatusSheet = 'overdue' | 'next';
-type MyFlowDemoMode = 'legacy' | 'ux12' | 'ux20' | 'source-backed';
+type MyFlowDemoMode = 'legacy' | 'ux12' | 'ux20' | 'ux50' | 'source-backed';
 type MyFlowDemoFixture = {
   slug: string;
   anchor?: string;
@@ -4297,6 +4297,75 @@ const MY_FLOW_UX20_DEMO_FIXTURES: MyFlowDemoFixture[] = [
   { slug: 'reading-habit-30day', anchor: '2026-06-01', completedCount: 1, group: '식단/독서', note: '읽기 습관' },
 ];
 
+const MY_FLOW_UX50_DEMO_PREFIX = 'p30-calendar-scale-';
+const MY_FLOW_UX50_DEMO_COUNT = 50;
+
+function getMyFlowUx50DemoBundles(bundles: FlowBundle[]): FlowBundle[] {
+  const source = bundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic')
+    ?? bundles.find((bundle) => bundle.flow.status === 'published' && bundle.items.length > 0);
+  if (!source) return bundles;
+
+  const syntheticBundles: FlowBundle[] = Array.from({ length: MY_FLOW_UX50_DEMO_COUNT }, (_, index): FlowBundle => {
+    const suffix = String(index + 1).padStart(2, '0');
+    const flowId = `${source.flow.id}-${MY_FLOW_UX50_DEMO_PREFIX}${suffix}`;
+    const slug = `${MY_FLOW_UX50_DEMO_PREFIX}${suffix}`;
+    const sectionIdBySourceId = new Map(
+      source.sections.map((section) => [section.id, `${section.id}-${slug}`]),
+    );
+    const itemIdBySourceId = new Map(
+      source.items.map((item) => [item.id, `${item.id}-${slug}`]),
+    );
+
+    return {
+      ...source,
+      flow: {
+        ...source.flow,
+        id: flowId,
+        slug,
+        title: `${source.flow.title} ${suffix}`,
+        status: 'draft',
+        source_status: 'real',
+        source_precision: 'exact',
+      },
+      sections: source.sections.map((section) => ({
+        ...section,
+        id: sectionIdBySourceId.get(section.id) ?? section.id,
+        flow_id: flowId,
+      })),
+      items: source.items.map((item) => ({
+        ...item,
+        id: itemIdBySourceId.get(item.id) ?? item.id,
+        flow_id: flowId,
+        ...(item.section_id
+          ? { section_id: sectionIdBySourceId.get(item.section_id) ?? item.section_id }
+          : {}),
+      })),
+      itemDetails: source.itemDetails?.map((detail) => ({
+        ...detail,
+        item_id: itemIdBySourceId.get(detail.item_id) ?? detail.item_id,
+      })),
+    };
+  });
+
+  return [...bundles, ...syntheticBundles];
+}
+
+function getMyFlowUx50DemoFixtures(bundles: FlowBundle[]): MyFlowDemoFixture[] {
+  const baseFixtures = [...MY_FLOW_UX20_DEMO_FIXTURES];
+  const extraFixtures = bundles
+    .filter((bundle) => bundle.flow.slug.startsWith(MY_FLOW_UX50_DEMO_PREFIX))
+    .map((bundle, index) => ({
+      slug: bundle.flow.slug,
+      ...(bundle.flow.anchor_type !== 'none'
+        ? { anchor: index < 5 ? '2026-06-26' : `2026-06-${String((index % 24) + 1).padStart(2, '0')}` }
+        : {}),
+      completedCount: 0,
+      group: bundle.flow.category || '기타',
+      note: 'Calendar 범위 검증',
+    }));
+  return [...baseFixtures, ...extraFixtures];
+}
+
 const MY_FLOW_SOURCE_BACKED_DEMO_FIXTURES: MyFlowDemoFixture[] = [
   { slug: 'source-backed-moving-d30', anchor: '2026-07-22', completedCount: 0, group: '이사 D-30 일정', note: 'D-day 일정' },
   { slug: 'source-backed-middle-school-math-1', completedCount: 0, group: '중1 수학 진도', note: '진도표' },
@@ -4308,6 +4377,7 @@ function getMyFlowDemoMode(): MyFlowDemoMode | null {
   if (typeof window === 'undefined') return null;
   const demo = new URLSearchParams(window.location.search).get('demo');
   if (demo === 'source-backed' || demo === 'source') return 'source-backed';
+  if (demo === 'ux50' || demo === '50') return 'ux50';
   if (demo === 'ux20' || demo === '20') return 'ux20';
   if (demo === 'ux12' || demo === '12') return 'ux12';
   if (demo === '1' || demo === 'true') return 'legacy';
@@ -4332,8 +4402,9 @@ function getRequestedSourceBackedDemoFixtures(): MyFlowDemoFixture[] {
   }));
 }
 
-function getMyFlowDemoFixtures(mode: MyFlowDemoMode | null): MyFlowDemoFixture[] {
+function getMyFlowDemoFixtures(mode: MyFlowDemoMode | null, bundles: FlowBundle[] = []): MyFlowDemoFixture[] {
   if (mode === 'source-backed') return getRequestedSourceBackedDemoFixtures();
+  if (mode === 'ux50') return getMyFlowUx50DemoFixtures(bundles);
   if (mode === 'ux20') return MY_FLOW_UX20_DEMO_FIXTURES;
   if (mode === 'ux12') return MY_FLOW_UX12_DEMO_FIXTURES;
   return MY_FLOW_LEGACY_DEMO_FIXTURES;
@@ -5027,7 +5098,7 @@ type MyFlowsProps = {
 
 export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps = {}) {
   const { bundles, persist } = useBundles();
-  const myFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
+  const baseMyFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
   const currentUser = getCurrentUser();
   const isCalendarSurface = surface === 'calendar';
   const [savedMapIdParam, setSavedMapIdParam] = useState('');
@@ -5117,8 +5188,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const [myFlowBatchAdjustmentUndo, setMyFlowBatchAdjustmentUndo] = useState<MyFlowBatchAdjustmentUndo | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
+  const myFlowBundles = useMemo(
+    () => myFlowDemoMode === 'ux50' ? getMyFlowUx50DemoBundles(baseMyFlowBundles) : baseMyFlowBundles,
+    [baseMyFlowBundles, myFlowDemoMode],
+  );
   const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
-  const isMyFlowScenarioDemo = myFlowDemoMode === 'ux12' || myFlowDemoMode === 'ux20' || myFlowDemoMode === 'source-backed';
+  const isMyFlowScenarioDemo = myFlowDemoMode === 'ux12' || myFlowDemoMode === 'ux20' || myFlowDemoMode === 'ux50' || myFlowDemoMode === 'source-backed';
   const myFlowCalendarCardRef = useRef<HTMLElement | null>(null);
   const myFlowCalendarInitialFocusAppliedRef = useRef(false);
   const myFlowSelectedDayRef = useRef<HTMLElement | null>(null);
@@ -5416,8 +5491,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       ? parseMyFlowViewQuery(window.location.search)
       : null;
     setMyFlowDemoMode(demoMode);
-    if (demoMode === 'ux12' || demoMode === 'ux20' || demoMode === 'source-backed') {
-      const demoState = buildMyFlowDemoState(myFlowBundles, getMyFlowDemoFixtures(demoMode));
+    if (demoMode === 'ux12' || demoMode === 'ux20' || demoMode === 'ux50' || demoMode === 'source-backed') {
+      const demoState = buildMyFlowDemoState(myFlowBundles, getMyFlowDemoFixtures(demoMode, myFlowBundles));
       setActiveProgress(demoState.progress);
       setChecksBySlug(demoState.checksBySlug);
       setSavedFlowMapBySlug(demoState.savedFlowMapBySlug);
@@ -5500,7 +5575,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return () => window.removeEventListener('popstate', syncViewFromUrl);
   }, [initialView, isCalendarSurface]);
 
-  const demoFixtureBySlug = new Map(getMyFlowDemoFixtures(myFlowDemoMode).map((fixture) => [fixture.slug, fixture]));
+  const demoFixtureBySlug = new Map(getMyFlowDemoFixtures(myFlowDemoMode, myFlowBundles).map((fixture) => [fixture.slug, fixture]));
 
   const savedFlows: MySavedFlow[] = activeProgress.reduce<MySavedFlow[]>((items, progress) => {
       const progressBundle = myFlowBundles.find((entry) => entry.flow.slug === progress.slug);
@@ -10452,6 +10527,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return (
       <span
         data-testid="my-flow-calendar-schedule-content"
+        data-p30-marker="P30-CALENDAR-COMPACT-IDENTITY"
         data-flow-marker-key={String(info.event.extendedProps.flowMarkerKey ?? '')}
         className="flex min-w-0 items-center gap-1"
         aria-label={flowMarkerTitle || scheduleLabel}
@@ -15196,7 +15272,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold`}>{isCalendarSurface ? '캘린더' : 'My Flow'}</h1>
             {!isCalendarSurface && showDemoData ? (
               <span data-testid="my-flow-demo-badge" className="mt-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
-                {myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
+                {myFlowDemoMode === 'ux50' ? 'UX50 데모' : myFlowDemoMode === 'ux20' ? 'UX20 데모' : myFlowDemoMode === 'ux12' ? 'UX12 데모' : myFlowDemoMode === 'source-backed' ? '원문 기반 데모' : '데모 데이터'}
               </span>
             ) : null}
           </div>
@@ -16036,6 +16112,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <div
                 data-testid="my-flow-calendar-workspace"
                 data-p29-marker="P29-CALENDAR-IDENTITY-COMPLETION"
+                data-p30-calendar-marker="P30-CALENDAR-COMPACT-IDENTITY"
                 data-flow-anatomy="calendar-workspace"
                 className={`grid gap-4 pb-0 ${showCalendarPlacementQueue
                 ? 'lg:grid-cols-[280px_minmax(0,1fr)_320px]'
