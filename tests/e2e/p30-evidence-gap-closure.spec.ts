@@ -199,3 +199,40 @@ test.describe('P30-02 mobile workspace focus order', () => {
     });
   });
 });
+
+test.describe('P30-03 save-before decision and contextual adjustment', () => {
+  test('long Flow keeps the full selection list behind an explicit disclosure', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/f/moving-d30-basic');
+    await clearLocalState(page);
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+
+    const saveBefore = page.getByTestId('public-flow-hero');
+    await expect(saveBefore).toHaveAttribute('data-p30-marker', 'P30-SAVE-BEFORE-SINGLE-DECISION');
+    await expect(saveBefore.locator('[data-flow-outline-row="true"] button')).toHaveCount(0);
+    await expect(page.locator('[data-action-priority="primary"]:visible')).toHaveCount(1);
+
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
+    const adjustment = page.getByTestId('public-flow-personal-adjustment');
+    await expect(adjustment).toHaveAttribute('data-p30-marker', 'P30-LONG-FLOW-CONTEXTUAL-ADJUST');
+    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-disclosure')).not.toHaveAttribute('open', '');
+    await expect(adjustment.locator('[data-testid="public-flow-adjustment-row"]:visible')).toHaveCount(0);
+
+    await adjustment.getByTestId('public-flow-adjustment-mode-content').click();
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-picker')).toBeVisible();
+    await expect(adjustment.locator('[data-testid="public-flow-adjustment-row"]:visible')).toHaveCount(1);
+
+    await adjustment.getByTestId('public-flow-adjustment-mode-include').click();
+    await adjustment.getByTestId('public-flow-adjustment-item-disclosure').locator('summary').click();
+    await expect(adjustment.locator('[data-testid="public-flow-adjustment-row"]:visible')).toHaveCount(24);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    await capture(page, 'p30-03-moving-item-selection-390.png', {
+      route: '/f/moving-d30-basic',
+      viewport: { width: 390, height: 844 },
+      visibleItemRows: 24,
+      horizontalOverflow: overflow,
+    });
+  });
+});

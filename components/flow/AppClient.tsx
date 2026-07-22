@@ -17881,6 +17881,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [publicExportOpen, setPublicExportOpen] = useState(false);
   const [publicAdjustmentOpen, setPublicAdjustmentOpen] = useState(false);
   const [publicAdjustmentMode, setPublicAdjustmentMode] = useState<PublicFlowAdjustmentMode>('include');
+  const [publicAdjustmentListOpen, setPublicAdjustmentListOpen] = useState(false);
   const [publicAdjustmentItems, setPublicAdjustmentItems] = useState<Record<string, PublicFlowAdjustmentItem>>({});
   const [publicAdjustmentOrder, setPublicAdjustmentOrder] = useState<string[]>([]);
   const [publicAdjustmentSelectedItemId, setPublicAdjustmentSelectedItemId] = useState<string | null>(null);
@@ -18151,6 +18152,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setPublicAdjustmentOrder(orderedRows.map((row) => baseStateId(row.id)));
     setPublicAdjustmentSelectedItemId(selectedItemId ?? null);
     setPublicAdjustmentMode(selectedItemId ? 'content' : 'include');
+    setPublicAdjustmentListOpen(false);
     setPublicAdjustmentOpen(true);
     window.setTimeout(() => {
       document.querySelector<HTMLElement>('[data-testid="public-flow-personal-adjustment"]')?.focus({ preventScroll: true });
@@ -18318,6 +18320,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   };
   const closePublicAdjustment = () => {
     setPublicAdjustmentOpen(false);
+    setPublicAdjustmentListOpen(false);
     setPublicAdjustmentSelectedItemId(null);
     setPublicFlowTitleDraft(getSavedFlowRecord(bundle.flow.slug)?.personalTitle ?? publicDisplayTitle);
   };
@@ -18342,6 +18345,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
     setSavedFlowAt(record?.savedAt ?? new Date().toISOString());
     setPublicAdjustmentOpen(false);
+    setPublicAdjustmentListOpen(false);
     setPublicAdjustmentSelectedItemId(null);
   };
   const saveActionLabel = getPublicSaveActionLabel(bundle, dateIntent);
@@ -18499,10 +18503,23 @@ export function PublicFlow({ slug }: { slug: string }) {
       ? rows.filter(({ itemId }) => itemId === activeAdjustmentItemId)
       : rows;
     const includedCount = rows.filter(({ itemId }) => publicAdjustmentItems[itemId]?.included !== false).length;
+    const datedCount = rows.filter(({ itemId }) => {
+      const adjustment = publicAdjustmentItems[itemId];
+      return adjustment?.date !== undefined
+        ? Boolean(adjustment.date)
+        : publicScheduleDateByItemId.has(itemId);
+    }).length;
+    const adjustmentModes = [
+      { mode: 'include', label: '항목 고르기', summary: `${includedCount}/${rows.length}개 저장` },
+      { mode: 'schedule', label: '날짜', summary: `${datedCount}개 날짜 있음` },
+      { mode: 'content', label: '제목·메모', summary: 'Flow 이름과 할 일' },
+      { mode: 'order', label: '순서', summary: `${rows.length}개 실행 순서` },
+    ] as const;
     return (
       <section
         data-testid="public-flow-personal-adjustment"
         data-adjustment-mode={publicAdjustmentMode}
+        data-p30-marker="P30-LONG-FLOW-CONTEXTUAL-ADJUST"
         tabIndex={-1}
         aria-labelledby="public-flow-personal-adjustment-title"
         className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
@@ -18536,33 +18553,24 @@ export function PublicFlow({ slug }: { slug: string }) {
           aria-label="조정할 내용"
           className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4"
         >
-          {([
-            ['include', '항목 고르기'],
-            ['schedule', '날짜'],
-            ['content', '제목·메모'],
-            ['order', '순서'],
-          ] as const).map(([mode, label]) => (
+          {adjustmentModes.map(({ mode, label, summary }) => (
             <button
               key={mode}
               type="button"
               data-testid={`public-flow-adjustment-mode-${mode}`}
               aria-pressed={publicAdjustmentMode === mode}
-              className={publicAdjustmentMode === mode ? FLOW_UI_PRIMARY_ACTION_CLASS : FLOW_UI_SECONDARY_ACTION_CLASS}
+              className={`min-h-14 rounded-md border px-3 py-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                publicAdjustmentMode === mode
+                  ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
+                  : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text)] hover:border-[var(--flowme-border-strong)]'
+              }`}
               onClick={() => setPublicAdjustmentMode(mode)}
             >
-              {label}
+              <span className="block text-xs font-bold">{label}</span>
+              <span className="mt-0.5 block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{summary}</span>
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs leading-5 text-[var(--flowme-text-secondary)]">
-          {publicAdjustmentMode === 'include'
-            ? '저장할 할 일만 고르세요.'
-            : publicAdjustmentMode === 'schedule'
-              ? '필요한 할 일의 날짜만 바꾸세요.'
-              : publicAdjustmentMode === 'content'
-                ? '제목이나 개인 메모가 필요한 할 일만 손보세요.'
-                : '화살표로 실행 순서만 바꾸세요.'}
-        </p>
 
         {publicAdjustmentMode === 'content' || publicAdjustmentMode === 'schedule' ? (
           <label className="mt-4 block max-w-xl text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
@@ -18580,7 +18588,23 @@ export function PublicFlow({ slug }: { slug: string }) {
           </label>
         ) : null}
 
-        <ol className="mt-4 divide-y divide-[var(--flowme-border)] border-y border-[var(--flowme-border)] bg-white">
+        <details
+          data-testid="public-flow-adjustment-item-disclosure"
+          open={publicAdjustmentMode !== 'include' || publicAdjustmentListOpen}
+          className="mt-4"
+          onToggle={(event) => {
+            if (publicAdjustmentMode === 'include') setPublicAdjustmentListOpen(event.currentTarget.open);
+          }}
+        >
+          <summary
+            className={publicAdjustmentMode === 'include'
+              ? 'flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-y border-[var(--flowme-border)] bg-white px-3 text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]'
+              : 'hidden'}
+          >
+            <span>전체 항목 고르기</span>
+            <span className="text-xs text-[var(--flowme-text-secondary)]">{includedCount}/{rows.length}개 포함</span>
+          </summary>
+          <ol className="divide-y divide-[var(--flowme-border)] border-b border-[var(--flowme-border)] bg-white">
           {visibleAdjustmentRows.map(({ itemId, row }) => {
             const index = rows.findIndex((candidate) => candidate.itemId === itemId);
             const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
@@ -18727,7 +18751,8 @@ export function PublicFlow({ slug }: { slug: string }) {
               </li>
             );
           })}
-        </ol>
+          </ol>
+        </details>
 
         <div className="sticky bottom-0 z-30 mt-4 flex flex-wrap justify-end gap-2 border-t border-[var(--flowme-border)] bg-[#F5F7F6]/95 py-3 backdrop-blur">
           <button type="button" className={FLOW_UI_SECONDARY_ACTION_CLASS} onClick={closePublicAdjustment}>

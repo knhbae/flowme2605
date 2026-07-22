@@ -122,6 +122,7 @@ export function FlowSaveBeforeFrame({
       data-visual-structure="artifact-first"
       data-experience-architecture="p29-artifact-first"
       data-p29-marker="P29-SAVE-BEFORE-PRIMARY-RESULT"
+      data-p30-marker="P30-SAVE-BEFORE-SINGLE-DECISION"
       data-flow-anatomy="save-before"
         className="border-y border-[var(--flowme-border-strong)] py-5 sm:py-7"
       >
