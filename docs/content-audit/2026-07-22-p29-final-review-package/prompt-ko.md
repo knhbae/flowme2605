@@ -29,10 +29,12 @@ https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-22-p29
 5. docs/content-audit/2026-07-22-p29-final-review-package/journey-results.json
 6. docs/content-audit/2026-07-22-p29-final-review-package/marker-reconciliation.json
 7. docs/content-audit/2026-07-22-p29-final-review-package/legacy-e2e-migration.json
-8. docs/content-audit/2026-07-22-p29-final-review-package/screenshots/
-9. docs/specs/2026-07-22-p29-coordinated-surface-reset/plan.md
-10. docs/STATUS.md
-11. docs/ROADMAP.md
+8. docs/content-audit/2026-07-22-p29-final-review-package/production-smoke/results.json
+9. docs/content-audit/2026-07-22-p29-final-review-package/screenshots/
+10. docs/content-audit/2026-07-22-p29-final-review-package/production-smoke/screenshots/
+11. docs/specs/2026-07-22-p29-coordinated-surface-reset/plan.md
+12. docs/STATUS.md
+13. docs/ROADMAP.md
 
 전략적 기준:
 - FlowMe는 원문·URL·메모를 실행 가능한 Flow로 바꾸는 portable execution layer다.

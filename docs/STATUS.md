@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-22 (P29 implementation verified; merge/deploy pending)
-**Status:** v0.1.0 RELEASED / P29 LOCAL CLOSEOUT GREEN
+**Last Updated:** 2026-07-22 (P29 production closeout complete)
+**Status:** v0.1.0 RELEASED / P29 PRODUCTION RELEASED
 **Current Version:** v0.1.0  
-**Primary Focus:** Complete P29-08 publish closeout for the [P29 coordinated surface reset](./specs/2026-07-22-p29-coordinated-surface-reset/plan.md): merge the verified implementation, wait for the canonical Vercel deployment, and replay production smoke on public save-before/receipt, My Flow, and Calendar at 390/1024/1440. P29-01~07 are implemented in the current branch without changing P28 source/personal/run/occurrence/export contracts. Observed-user sessions remain `0`; automated evidence is not a usability claim.
+**Primary Focus:** Independently review the released [P29 final package](./content-audit/2026-07-22-p29-final-review-package/README.md) and make an owner decision before defining P30. P29-01~08 are merged and deployed without changing P28 source/personal/run/occurrence/export contracts. Observed-user sessions remain `0`; automated and production smoke evidence is not a usability claim.
 
 ## Current Control Panel
 
@@ -11,15 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P29-08 merge, canonical Vercel deployment, and production smoke |
-| User action now | Review the P29 final package after production publish; do not infer observed usability from automation |
-| AI action now | Publish the verified P29 branch and reconcile deployment SHA, smoke evidence, rollback, and known risks |
+| Active product gate | Independent P29 design/code review and owner decision; P30 is not yet authorized |
+| User action now | Review the P29 final package and canonical production; do not infer observed usability from automation |
+| AI action now | Reproduce the documented journeys, classify remaining evidence gaps, and avoid adding P30 features before owner review |
 | Blocked by evidence | Observed usability, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P29-01~07: P29 E2E `13/13`, full E2E `292/292`, unit `584/584`, build `18/18`, screenshots `23` |
+| Completed implementation | P29-01~08: PR #146, merge `10e6e515`, CI green, production smoke `9/9`, screenshots `23 + 9` |
 
 ## Recent Direction Notes
 
-- 2026-07-22 P29 implementation verification: Public/source-backed save-before now leads with the actual artifact, exposes row adjustment only on demand, and transitions to a distinct saved receipt. Routine configuration is summary-first; My Flow uses a compact mobile library and wide rail/canvas/inspector; Calendar combines compact Flow scope, selected-day detail, and a mobile undated placement sheet; export recommends one primary and at most two secondary artifacts with explicit scope and predicted counts. P28 persistence and identity contracts remain unchanged. Current branch evidence is P29 Playwright `13 / 13`, full Playwright `292 / 292` with two workers, `flow-mvp.spec.ts` `129 / 129`, unit `584 / 584`, build `18 / 18`, screenshots `23`, and reviewed overflow/unnamed-focusable/fixed-overlap/console-page-error counts `0`. A newly published `sharp` high advisory found by the first CI run is addressed with a patched `0.35.3` override; current audit is critical/high `0`, moderate `2`. The reduction from P28's `346` E2E scenarios is documented as retirement of `67` obsolete legacy composition assertions plus `13` P29 replacements, not skipped coverage. Merge, deployment, and canonical production smoke remain pending. See the [P29 final review package](./content-audit/2026-07-22-p29-final-review-package/README.md).
+- 2026-07-22 P29 production release: Public/source-backed save-before now leads with the actual artifact, exposes row adjustment only on demand, and transitions to a distinct saved receipt. Routine configuration is summary-first; My Flow uses a compact mobile library and wide rail/canvas/inspector; Calendar combines compact Flow scope, selected-day detail, and a mobile undated placement sheet; export recommends one primary and at most two secondary artifacts with explicit scope and predicted counts. P28 persistence and identity contracts remain unchanged. P29 Playwright is `13 / 13`, full Playwright `292 / 292` with two workers, `flow-mvp.spec.ts` `129 / 129`, unit `584 / 584`, build `18 / 18`, implementation screenshots `23`, and production screenshots `9`. A newly published `sharp` high advisory found by the first CI run is addressed with a patched `0.35.3` override; current audit is critical/high `0`, moderate `2`. The reduction from P28's `346` E2E scenarios is documented as retirement of `67` obsolete legacy composition assertions plus `13` P29 replacements, not skipped coverage. [PR #146](https://github.com/knhbae/flowme2605/pull/146) merged as `10e6e515`; GitHub deployment `5550925534` is live at <https://flowme2605.vercel.app>, post-merge CI is green, and canonical smoke is `9 / 9` with overflow/unnamed-focusable/console-page-error counts `0`. Observed-user sessions remain `0`. See the [P29 final review package](./content-audit/2026-07-22-p29-final-review-package/README.md).
 
 - 2026-07-22 P29 integrated planning: Owner feedback, the P29 review handoff, Claude Design's `coordinated surface reset` verdict, and Codex's vertical-slice proposal were reconciled into one staged plan. P29-01 now contains `01A` safe component extraction and `01B` a route-level moving proof; only after that evidence may P29-02 roll the frame across the five actual content shapes. Routine, My Flow, Calendar, result/export, visual/accessibility, and final closeout follow as P29-03~08. The plan changes no app code, schema, migration, 4-tab IA, or observed-user status. See the [P29 coordinated surface reset plan](./specs/2026-07-22-p29-coordinated-surface-reset/plan.md).
 

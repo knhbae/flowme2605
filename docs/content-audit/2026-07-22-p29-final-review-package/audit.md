@@ -2,7 +2,7 @@
 
 ## 1. 전체 판정
 
-`implementation_verified_pending_merge_deploy`
+`production_released_independent_review_pending`
 
 P29은 P28의 데이터 계약을 보존하면서 public save-before, saved receipt, routine, My Flow, Calendar, export를 공통 Flow anatomy로 다시 조립했다. 현재 command/browser evidence에서 Blocking과 High 기능 회귀는 발견되지 않았다. 실제 사용성 판정은 하지 않는다.
 
@@ -134,7 +134,7 @@ Claude Design의 coordinated surface reset 제안과 Codex의 vertical-slice 제
 | flow-mvp Playwright | `129/129` |
 | full Playwright, 2 workers | `292/292` |
 | unit | `584/584` |
-| docs check | pass, `2,880` local links |
+| docs check | pass, `2,883` local links |
 | production build | pass, `18/18` routes |
 | dependency audit | critical `0`, high `0`, moderate `2`; `sharp 0.35.3` controlled override |
 | screenshots | `23` |
@@ -154,12 +154,20 @@ Claude Design의 coordinated surface reset 제안과 Codex의 vertical-slice 제
 5. Calendar의 compact Flow scope와 날짜 없는 sheet를 같은 일정 작업으로 이해하는가?
 6. primary/secondary artifact와 whole/selected/current scope를 혼동하지 않는가?
 
-## 8. Publish gate
+## 8. Publish result
 
-현재 app source와 자동 검증은 green이다. merge 후 canonical production에서 다음을 다시 확인해야 closeout할 수 있다.
+P29 app source는 [PR #146](https://github.com/knhbae/flowme2605/pull/146)으로 merge됐고 canonical production에 배포됐다.
 
-- `/f/moving-d30-basic` save-before -> receipt
-- `/my?demo=ux20&view=flows` mobile/wide workspace
-- `/calendar?demo=ux20` scope/agenda/undated entry
-- 390/1024/1440 overflow와 console/page error
-- deployed SHA와 Vercel READY 상태
+| 항목 | 결과 |
+| --- | --- |
+| implementation commit | `5304807a3f3beaea33cd9701b72ea18af88da978` |
+| merge SHA | `10e6e5154372ce14d69302ed7bff0b748e3ae868` |
+| GitHub production deployment | `5550925534` |
+| Vercel deployment | <https://flowme2605-5r6k8i423-flowme.vercel.app> |
+| canonical production | <https://flowme2605.vercel.app> |
+| post-merge CI | Docs/Unit/Build, Playwright E2E, Vercel 모두 pass |
+| production smoke | `9 / 9` route-viewport checks pass |
+
+canonical production에서 `/f/moving-d30-basic`, `/my?demo=ux20&view=flows`, `/calendar?demo=ux20`을 390/1024/1440으로 확인했다. HTTP/navigation failure, marker failure, horizontal overflow, unnamed focusable, console error, page error는 모두 `0`이다. 상세 결과는 [production-smoke/results.json](./production-smoke/results.json)에 있다. production demo에 날짜 없는 fixture가 없어 undated sheet는 `not_seeded`로 구분했으며, 해당 상호작용은 seeded P29 E2E 근거를 사용한다.
+
+따라서 production closeout은 완료됐다. 다음 gate는 독립 디자인/코드 검토와 owner 판단이며, observed-user count는 계속 `0`이다.

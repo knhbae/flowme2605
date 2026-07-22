@@ -2,13 +2,14 @@
   "schemaVersion": 1,
   "generatedAt": "2026-07-22",
   "baselineSha": "c407bd4dae1b0307026e770d3036f87c22023fa0",
-  "implementationSha": null,
-  "productionSha": null,
+  "implementationSha": "5304807a3f3beaea33cd9701b72ea18af88da978",
+  "productionSha": "10e6e5154372ce14d69302ed7bff0b748e3ae868",
   "evidenceKind": [
     "current_source",
     "current_command",
     "current_package_screenshot",
-    "heuristic_simulation"
+    "heuristic_simulation",
+    "current_production_interaction"
   ],
   "observedUserCount": 0,
   "verification": {
@@ -18,7 +19,7 @@
     "unit": { "passed": 584, "failed": 0 },
     "buildRoutes": { "passed": 18, "failed": 0 },
     "docsRequiredFiles": 14,
-    "docsLocalLinks": 2880,
+    "docsLocalLinks": 2883,
     "securityAudit": {
       "critical": 0,
       "high": 0,
@@ -28,6 +29,19 @@
       "untrustedImageConsumerFound": false,
       "gate": "high_pass_moderate_watchpoint"
     }
+  },
+  "production": {
+    "canonicalUrl": "https://flowme2605.vercel.app",
+    "deploymentUrl": "https://flowme2605-5r6k8i423-flowme.vercel.app",
+    "githubDeploymentId": 5550925534,
+    "postMergeCiPassed": true,
+    "routeViewportChecks": 9,
+    "httpOrNavigationFailureCount": 0,
+    "markerFailureCount": 0,
+    "horizontalOverflowCount": 0,
+    "unnamedFocusableCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
   },
   "globalMarkers": {
     "horizontalOverflowCount": 0,
