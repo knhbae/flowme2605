@@ -530,3 +530,43 @@ test.describe('P30-06 routine advanced setting density', () => {
     expect(consoleErrors).toEqual([]);
   });
 });
+
+test.describe('P30-07 legacy composition consumer gate', () => {
+  test('public Flow stays artifact-first while the live source-backed map keeps an explicit legacy frame', async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/f/moving-d30-basic');
+    await clearLocalState(page);
+    const publicFrame = page.getByTestId('public-flow-hero');
+    await expect(publicFrame).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(publicFrame).toHaveAttribute('data-p30-marker', 'P30-SAVE-BEFORE-SINGLE-DECISION');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    await capture(page, 'p30-07-public-artifact-first-390.png', {
+      route: '/f/moving-d30-basic',
+      viewport: { width: 390, height: 844 },
+      composition: 'artifact-first',
+      deadConditionalConsumerCount: 0,
+    });
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/flow-maps/moving-d30');
+    const sourceBackedFrame = page.getByTestId('flow-map-hero');
+    await expect(sourceBackedFrame).toHaveAttribute('data-experience-architecture', 'hybrid');
+    await expect(sourceBackedFrame).toHaveAttribute('data-p30-marker', 'P30-LEGACY-COMPOSITION-ACTIVE');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    await capture(page, 'p30-07-source-backed-active-legacy-1024.png', {
+      route: '/flow-maps/moving-d30',
+      viewport: { width: 1024, height: 768 },
+      composition: 'legacy',
+      activeProductionConsumerCount: 1,
+      removalDecision: 'deferred_active_consumer',
+      consoleErrorCount: consoleErrors.length,
+    });
+    expect(consoleErrors).toEqual([]);
+  });
+});

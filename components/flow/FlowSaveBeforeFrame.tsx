@@ -29,7 +29,7 @@ type FlowSaveBeforeFrameProps = {
   onAdjustRow?: (rowId: string) => void;
   setup?: ReactNode;
   actions?: ReactNode;
-  composition?: 'legacy' | 'artifact-first';
+  composition: 'legacy' | 'artifact-first';
 };
 
 function FlowOutlineDisclosure({
@@ -108,7 +108,7 @@ export function FlowSaveBeforeFrame({
   onAdjustRow,
   setup,
   actions,
-  composition = 'legacy',
+  composition,
 }: FlowSaveBeforeFrameProps) {
   const rows = previewRows.slice(0, 5);
   const remainingRows = previewRows.slice(5);
@@ -170,6 +170,7 @@ export function FlowSaveBeforeFrame({
       data-testid={rootTestId}
       data-visual-structure="artifact-first"
       data-experience-architecture="hybrid"
+      data-p30-marker="P30-LEGACY-COMPOSITION-ACTIVE"
       className="border-y border-[var(--flowme-border-strong)] py-5 sm:py-7"
     >
       <FlowArtifactSummary

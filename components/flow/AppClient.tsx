@@ -18110,7 +18110,6 @@ export function PublicFlow({ slug }: { slug: string }) {
   const hideSharedPublicFooter = shouldHideSharedPublicFooter(bundle);
   const compactJeonsePage = isJeonsePrecheckFlow(bundle);
   const showPublicSaveAction = true;
-  const useP29ArtifactFirstFrame = true;
   const showMobileExportActions = showMobileActions && !compactJeonsePage && !showPublicSaveAction;
   const primaryDestination = inferPrimaryDestination(bundle);
   const showPublicHeroSetup = true;
@@ -18118,7 +18117,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const useP24CompactPublicFrame = !compactJeonsePage;
   const publicMobileClearanceClass = publicExportOpen
     ? 'flowme-mobile-export-clearance'
-    : useP29ArtifactFirstFrame && savedFlowAt
+    : savedFlowAt
       ? ''
       : showPublicSaveAction
         ? 'flowme-mobile-save-clearance'
@@ -18471,46 +18470,6 @@ export function PublicFlow({ slug }: { slug: string }) {
     }
     document.querySelector('[aria-label="Flow artifact workbench"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  const renderPublicSaveActions = () =>
-    showPublicSaveAction ? (
-      <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid sm:max-w-md sm:grid-cols-2">
-        {savedFlowAt ? (
-          <Link data-action-priority="primary" className={`${FLOW_UI_PRIMARY_ACTION_CLASS} col-span-2`} href={postSaveHref}>
-            내 Flow에서 보기
-          </Link>
-        ) : publicAdjustmentOpen ? (
-          <button
-            type="button"
-            data-testid="public-flow-adjust-close"
-            className={`${FLOW_UI_SECONDARY_ACTION_CLASS} col-span-2`}
-            onClick={closePublicAdjustment}
-          >
-            조정 닫기
-          </button>
-        ) : (
-          <>
-            <button
-              type="button"
-              data-action-priority="primary"
-              className={FLOW_UI_PRIMARY_ACTION_CLASS}
-              disabled={!dateIntent.canSave}
-              onClick={saveToMyFlow}
-            >
-              {saveActionLabel}
-            </button>
-            <button
-              type="button"
-              data-testid="public-flow-adjust-entry"
-              data-action-priority="secondary"
-              className={FLOW_UI_SECONDARY_ACTION_CLASS}
-              onClick={copyToEditableDraft}
-            >
-              내게 맞게 조정
-            </button>
-          </>
-        )}
-      </div>
-    ) : null;
   const renderP29PublicSaveActions = () =>
     showPublicSaveAction && !savedFlowAt ? (
       <div data-testid="public-flow-save-actions" className="hidden gap-2 sm:grid">
@@ -18533,46 +18492,6 @@ export function PublicFlow({ slug }: { slug: string }) {
         >
           {saveActionLabel}
         </button>
-      </div>
-    ) : null;
-  const renderPublicMobileSaveCta = () =>
-    showPublicSaveAction && !publicAdjustmentOpen ? (
-      <div
-        data-testid="public-flow-mobile-save-cta"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-[#DDE4E0] bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-10px_28px_rgba(23,32,28,0.08)] backdrop-blur sm:hidden"
-      >
-        <div className="mx-auto flex max-w-xl items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold text-[#8A857B]">{savedFlowAt ? '저장됨' : '공유 콘텐츠'}</p>
-            <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-[#1B1A17]">{publicEffectiveDisplayTitle}</p>
-          </div>
-          {savedFlowAt ? (
-            <Link data-action-priority="primary" className={`${FLOW_UI_PRIMARY_ACTION_CLASS} shrink-0`} href={postSaveHref}>
-              내 Flow에서 보기
-            </Link>
-          ) : (
-            <div className="flex shrink-0 gap-1.5">
-              <button
-                data-action-priority="primary"
-                className={FLOW_UI_PRIMARY_ACTION_CLASS}
-                type="button"
-                disabled={!dateIntent.canSave}
-                onClick={saveToMyFlow}
-              >
-                {saveActionLabel}
-              </button>
-              <button
-                data-action-priority="secondary"
-                className={FLOW_UI_SECONDARY_ACTION_CLASS}
-                data-testid="public-flow-adjust-entry-mobile"
-                type="button"
-                onClick={copyToEditableDraft}
-              >
-                조정
-              </button>
-            </div>
-          )}
-        </div>
       </div>
     ) : null;
   const renderP29PublicMobileSaveCta = () =>
@@ -18920,7 +18839,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         onCopyToEditableDraft: copyToEditableDraft,
         onExportFlow: exportPublicFlowScope,
       }}
-      presentationMode={useP29ArtifactFirstFrame ? 'export-only' : 'full'}
+      presentationMode="export-only"
       onExportOpenChange={setPublicExportOpen}
     />
   );
@@ -18930,7 +18849,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       className="mt-5 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
     >
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-2 text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
-        <span>{useP29ArtifactFirstFrame ? 'Flow 가져가기' : '세부 결과와 가져가기'}</span>
+        <span>Flow 가져가기</span>
         <span className="text-xs font-medium text-[var(--flowme-text-secondary)]">필요할 때 열기</span>
       </summary>
       <div className="border-t border-[var(--flowme-border)] pt-4">{renderArtifactWorkbench()}</div>
@@ -18958,15 +18877,14 @@ export function PublicFlow({ slug }: { slug: string }) {
 
   return (
     <main className={`min-h-screen bg-[#F5F7F6] px-4 text-slate-950 md:px-8 ${publicMobileClearanceClass}`}>
-      {!useP29ArtifactFirstFrame ? renderPublicMobileSaveCta() : null}
       <div className="mx-auto max-w-[1240px]">
         <PublicFlowShareShell
           savedFlowAt={savedFlowAt}
           flowSlug={bundle.flow.slug}
-          showSavedLink={!useP29ArtifactFirstFrame}
+          showSavedLink={false}
         />
 
-        {useP29ArtifactFirstFrame && savedFlowAt ? (
+        {savedFlowAt ? (
           <SavedFlowReceiptFrame
             title={publicEffectiveDisplayTitle}
             categoryLabel={bundle.flow.category}
@@ -18991,15 +18909,14 @@ export function PublicFlow({ slug }: { slug: string }) {
             itemCount={Math.max(bundle.items.length, publicSaveBeforeRows.length)}
             previewRows={publicSaveBeforeRows}
             artifactPreview={<FlowArtifactDataPreview projection={publicExperienceProjection} />}
-            onAdjustRow={useP29ArtifactFirstFrame ? undefined : (rowId) => openPublicAdjustment(baseStateId(rowId))}
             setup={showPublicSetupInput ? renderPublicHeroSetup() : undefined}
-            actions={useP29ArtifactFirstFrame ? renderP29PublicSaveActions() : renderPublicSaveActions()}
-            composition={useP29ArtifactFirstFrame ? 'artifact-first' : 'legacy'}
+            actions={renderP29PublicSaveActions()}
+            composition="artifact-first"
           />
         )}
         {renderPublicAdjustment()}
 
-        {useP29ArtifactFirstFrame ? renderP29PublicMobileSaveCta() : null}
+        {renderP29PublicMobileSaveCta()}
 
       {showDesktopReferenceRail ? (
         <div data-testid="flow-desktop-workbench-layout" className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
