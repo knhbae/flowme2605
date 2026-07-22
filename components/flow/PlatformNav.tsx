@@ -45,7 +45,35 @@ function mobileTabClass(active: boolean) {
   }`;
 }
 
-export function PlatformNav() {
+export function PlatformMobileTabs() {
+  const pathname = usePathname();
+
+  return (
+    <nav
+      className="fixed inset-x-3 bottom-[var(--flowme-mobile-tabs-offset)] z-40 grid grid-cols-4 gap-1 rounded-lg border border-[#E7E4DD] bg-white/95 p-1 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
+      aria-label="주요 화면"
+      data-testid="platform-mobile-tabs"
+      data-layer-priority="navigation"
+      data-p30-marker="P30-MOBILE-WORKSPACE-FOCUS-ORDER"
+    >
+      {primaryNavItems.map((item) => {
+        const active = item.match(pathname);
+        return (
+          <Link
+            key={item.href}
+            className={mobileTabClass(active)}
+            href={item.href}
+            aria-current={active ? 'page' : undefined}
+          >
+            {item.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+export function PlatformNav({ includeMobileTabs = true }: { includeMobileTabs?: boolean } = {}) {
   const pathname = usePathname();
 
   return (
@@ -105,26 +133,7 @@ export function PlatformNav() {
         </div>
       </nav>
 
-      <nav
-        className="fixed inset-x-3 bottom-[var(--flowme-mobile-tabs-offset)] z-40 grid grid-cols-4 gap-1 rounded-lg border border-[#E7E4DD] bg-white/95 p-1 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
-        aria-label="주요 화면"
-        data-testid="platform-mobile-tabs"
-        data-layer-priority="navigation"
-      >
-        {primaryNavItems.map((item) => {
-          const active = item.match(pathname);
-          return (
-            <Link
-              key={item.href}
-              className={mobileTabClass(active)}
-              href={item.href}
-              aria-current={active ? 'page' : undefined}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+      {includeMobileTabs ? <PlatformMobileTabs /> : null}
     </>
   );
 }

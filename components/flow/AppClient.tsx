@@ -45,7 +45,7 @@ import {
 } from './flow-ui';
 import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
 import { MyFlowDataManager } from './MyFlowDataManager';
-import { PlatformNav } from './PlatformNav';
+import { PlatformMobileTabs, PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
 import { planDateMovement, type DateMovementPlan } from '@/lib/flow/date-movement';
 import {
@@ -15151,7 +15151,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
 
   return (
     <main className={`mx-auto max-w-[1240px] px-4 pb-[var(--flowme-mobile-tab-clearance)] sm:px-5 md:pb-8 ${isCalendarSurface ? 'py-3 sm:py-6' : 'py-4 sm:py-8'}`}>
-      <PlatformNav />
+      <PlatformNav includeMobileTabs={false} />
       <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
         <div>
           <p className={isCalendarSurface ? 'text-xs font-semibold text-blue-700' : 'text-sm font-medium text-gray-500'}>{isCalendarSurface ? '날짜별 실행' : '내 실행 공간'}</p>
@@ -16761,6 +16761,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         </div>
       ) : null}
 
+      <PlatformMobileTabs />
     </main>
   );
 }

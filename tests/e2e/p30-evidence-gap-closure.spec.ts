@@ -53,6 +53,48 @@ async function clearLocalState(page: Page) {
   await page.reload();
 }
 
+type FocusStep = {
+  testId: string | null;
+  tagName: string;
+  href: string | null;
+  accessibleName: string | null;
+};
+
+async function traceMobileFocusOrder(page: Page, maxSteps = 300): Promise<FocusStep[]> {
+  await page.evaluate(() => {
+    document.body.tabIndex = -1;
+    document.body.focus();
+  });
+
+  const trace: FocusStep[] = [];
+  for (let index = 0; index < maxSteps; index += 1) {
+    await page.keyboard.press('Tab');
+    const step = await page.evaluate<FocusStep>(() => {
+      const active = document.activeElement as HTMLElement | null;
+      const owner = active?.closest<HTMLElement>('[data-testid]');
+      return {
+        testId: owner?.dataset.testid ?? null,
+        tagName: active?.tagName.toLowerCase() ?? '',
+        href: active instanceof HTMLAnchorElement ? active.getAttribute('href') : null,
+        accessibleName: active?.getAttribute('aria-label') ?? active?.textContent?.trim() ?? null,
+      };
+    });
+    trace.push(step);
+    if (step.testId === 'platform-mobile-tabs') break;
+  }
+  return trace;
+}
+
+function expectWorkspaceBeforePersistentTabs(trace: FocusStep[], workspaceTestId: string) {
+  const headerIndex = trace.findIndex((step) => step.testId === 'platform-nav');
+  const workspaceIndex = trace.findIndex((step) => step.testId === workspaceTestId);
+  const persistentTabsIndex = trace.findIndex((step) => step.testId === 'platform-mobile-tabs');
+
+  expect(headerIndex).toBeGreaterThanOrEqual(0);
+  expect(workspaceIndex).toBeGreaterThan(headerIndex);
+  expect(persistentTabsIndex).toBeGreaterThan(workspaceIndex);
+}
+
 test.describe('P30-01 mobile export fixed-layer correctness', () => {
   test('public export suppresses the fixed save command and keeps the primary result visible', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -121,5 +163,39 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
 
     await panel.getByRole('button', { name: /가져가기 닫기/ }).click();
     await expect(exportEntry).toBeFocused();
+  });
+});
+
+test.describe('P30-02 mobile workspace focus order', () => {
+  test('My Flow reaches workspace controls before persistent navigation', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/my?demo=ux20&view=flows');
+    await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
+
+    const trace = await traceMobileFocusOrder(page);
+    expectWorkspaceBeforePersistentTabs(trace, 'my-flow-view-flow');
+    await expect(page.getByTestId('platform-mobile-tabs')).toHaveAttribute(
+      'data-p30-marker',
+      'P30-MOBILE-WORKSPACE-FOCUS-ORDER',
+    );
+    await capture(page, 'p30-02-my-flow-focus-order-390.png', {
+      route: '/my?demo=ux20&view=flows',
+      viewport: { width: 390, height: 844 },
+      focusTrace: trace,
+    });
+  });
+
+  test('Calendar reaches scope controls before persistent navigation', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/calendar?demo=ux20');
+    await expect(page.getByTestId('calendar-flow-scope-picker-trigger')).toBeVisible();
+
+    const trace = await traceMobileFocusOrder(page);
+    expectWorkspaceBeforePersistentTabs(trace, 'calendar-flow-scope-picker-trigger');
+    await capture(page, 'p30-02-calendar-focus-order-390.png', {
+      route: '/calendar?demo=ux20',
+      viewport: { width: 390, height: 844 },
+      focusTrace: trace,
+    });
   });
 });
