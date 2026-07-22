@@ -4,7 +4,7 @@
 
 P29 독립 검토의 실제 current production/browser 증거와 Claude Design의 heuristic 제안을 대조해, 재설계가 아니라 확인 가능한 중첩 상태 문제만 수정했다. P29의 데이터 계약과 4탭 IA는 유지했다.
 
-현재 local release gate 판정은 `pass`다. production 판정은 merge/deploy 후 별도로 기록한다.
+local release gate와 canonical production gate가 모두 `pass`다. 최종 판정은 `production_released_owner_observation_pending`이며 실제 관찰 사용자는 `0`명이다.
 
 ## P30-01 - Mobile export layer
 
@@ -105,9 +105,12 @@ P29 독립 검토의 실제 current production/browser 증거와 Claude Design�
 - full E2E: 304 / 304 pass with 2 workers
 - final review HTML: 390x844 and 1440x900 render inspection pass
 
-## Publish 전 남은 gate
+## Publish 결과
 
-1. diff check와 scoped commit
-2. merge 후 CI와 Vercel deployment
-3. canonical production 390/1024/1440 smoke
-4. merge SHA/deployment ID/known gap 기록
+1. 구현 PR [#148](https://github.com/knhbae/flowme2605/pull/148)이 clean 상태로 merge됐다.
+2. merge SHA는 `b3c8500be3b6aa673e2078d02a986f7cae6fe8bf`다.
+3. merge 후 `Docs, Unit, Build`, `Playwright E2E`, Vercel production status가 모두 `success`다.
+4. GitHub deployment `5557201045`가 <https://flowme2605.vercel.app>에 반영됐다.
+5. canonical production 390/1024/1440 smoke는 `13 / 13`이며 HTTP/navigation, alias 이탈, assertion, overflow, unnamed focusable, console/page error 실패는 모두 `0`이다.
+6. production 결과는 [results.json](./production-smoke/results.json)과 [screenshots](./production-smoke/screenshots/)에 있다.
+7. 실제 사용자 관찰은 수행하지 않았으며 자동화 결과를 사용성 승인으로 표현하지 않는다.

@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-07-22 - P30 Evidence Gap Closure
+
+- Released collision-free mobile export states, main-before-tabs keyboard order, contextual long-Flow adjustment, next-action-first My Flow commands, Calendar 50+ scope and compact identity evidence, and summary-first routine settings.
+- Merged [PR #148](https://github.com/knhbae/flowme2605/pull/148) as `b3c8500be3b6aa673e2078d02a986f7cae6fe8bf`; GitHub production deployment `5557201045` reached <https://flowme2605.vercel.app>.
+- Verified unit `584 / 584`, P30 Playwright `12 / 12`, affected P28/P29 `20 / 20`, full Playwright `304 / 304`, production build `18 / 18`, post-merge CI green, and canonical production smoke `13 / 13` with all recorded failure counters `0`.
+- Published the [P30 final review package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md) with `17` local and `13` production screenshots. No semantic version tag was created, and observed-user sessions remain `0`.
+
 ## 2026-07-22 - P29 Coordinated Surface Reset
 
 - Released artifact-first public save-before, a distinct saved receipt, summary-first routine setup, an action-first My Flow library/detail workspace, unified Calendar scope and undated placement, and predictable scoped export recommendations.

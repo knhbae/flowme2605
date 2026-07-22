@@ -3,6 +3,11 @@
   "capturedAt": "2026-07-22",
   "evidenceKind": "current_browser_automation",
   "count": 17,
+  "productionSmoke": {
+    "count": 13,
+    "results": "production-smoke/results.json",
+    "directory": "production-smoke/screenshots"
+  },
   "screenshots": [
     { "file": "screenshots/p30-01-public-export-open-390.png", "slice": "P30-01", "viewport": "390x844" },
     { "file": "screenshots/p30-01-my-flow-export-open-390.png", "slice": "P30-01", "viewport": "390x844" },
@@ -23,4 +28,3 @@
     { "file": "screenshots/p30-08-calendar-1440.png", "slice": "P30-08", "viewport": "1440x900" }
   ]
 }
-
