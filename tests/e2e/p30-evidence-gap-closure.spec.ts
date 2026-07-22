@@ -453,3 +453,80 @@ test.describe('P30-05 Calendar evidence, scale, and compact identity', () => {
     });
   });
 });
+
+test.describe('P30-06 routine advanced setting density', () => {
+  test('summary stays compact while advanced fields group by schedule and ending rule', async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/f/curated-allblanc-morning-workout');
+    await clearLocalState(page);
+    await page.getByTestId('public-flow-anchor-input').fill('2026-07-27');
+
+    const summary = page.getByTestId('public-routine-schedule-summary');
+    await expect(summary).toHaveAttribute('data-p30-marker', 'P30-ROUTINE-ADVANCED-DENSITY');
+    await expect(summary.getByTestId('public-routine-schedule-editor')).toHaveCount(0);
+    await expect(summary.getByTestId('public-routine-schedule-summary-next-occurrences').getByRole('listitem')).toHaveCount(3);
+    await expect(summary.getByTestId('public-routine-schedule-summary-value')).toContainText('시간 미정');
+    await capture(page, 'p30-06-routine-summary-390.png', {
+      route: '/f/curated-allblanc-morning-workout',
+      viewport: { width: 390, height: 844 },
+      initialAdvancedFieldCount: 0,
+      nextOccurrenceCount: 3,
+    });
+
+    await summary.getByTestId('public-routine-schedule-summary-toggle').click();
+    const editor = summary.getByTestId('public-routine-schedule-editor');
+    await expect(editor).toHaveAttribute('data-p30-marker', 'P30-ROUTINE-ADVANCED-DENSITY');
+    await expect(editor.getByTestId('public-routine-schedule-editor-when-group')).toBeVisible();
+    await expect(editor.getByTestId('public-routine-schedule-editor-end-group')).toBeVisible();
+    await expect(editor.getByTestId('public-routine-schedule-editor-time')).toHaveCount(0);
+    await expect(editor.getByTestId('public-routine-schedule-editor-duration')).toHaveCount(0);
+    await expect(editor.getByTestId('public-routine-schedule-editor-end-date')).toHaveCount(0);
+    await expect(editor.getByTestId('public-routine-schedule-editor-occurrence-count')).toHaveCount(0);
+
+    await editor.getByTestId('public-routine-schedule-editor-time-mode').selectOption('timed');
+    await editor.getByTestId('public-routine-schedule-editor-time').fill('07:30');
+    await editor.getByTestId('public-routine-schedule-editor-duration').selectOption('45');
+    await editor.getByTestId('public-routine-schedule-editor-end-mode').selectOption('count');
+    await editor.getByTestId('public-routine-schedule-editor-occurrence-count').fill('8');
+    await expect(summary.getByTestId('public-routine-schedule-summary-value')).toHaveText('월·수·금 · 07:30 · 45분 · 8회');
+    await expect(editor.getByTestId('public-routine-schedule-editor-end-date')).toHaveCount(0);
+
+    const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(mobileOverflow).toBeLessThanOrEqual(0);
+    await capture(page, 'p30-06-routine-advanced-390.png', {
+      route: '/f/curated-allblanc-morning-workout',
+      viewport: { width: 390, height: 844 },
+      scheduleGroupVisible: true,
+      endGroupVisible: true,
+      selectedModeFieldsOnly: true,
+      summary: '월·수·금 · 07:30 · 45분 · 8회',
+      horizontalOverflow: mobileOverflow,
+    });
+
+    await editor.getByTestId('public-routine-schedule-editor-end-mode').selectOption('until');
+    await expect(editor.getByTestId('public-routine-schedule-editor-end-date')).toHaveCount(1);
+    await expect(editor.getByTestId('public-routine-schedule-editor-occurrence-count')).toHaveCount(0);
+    await editor.getByTestId('public-routine-schedule-editor-end-mode').selectOption('none');
+    await expect(editor.getByTestId('public-routine-schedule-editor-end-date')).toHaveCount(0);
+    await expect(editor.getByTestId('public-routine-schedule-editor-occurrence-count')).toHaveCount(0);
+    await expect(summary.getByTestId('public-routine-schedule-summary-value')).toContainText('계속 반복');
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const wideOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(wideOverflow).toBeLessThanOrEqual(0);
+    await capture(page, 'p30-06-routine-advanced-1024.png', {
+      route: '/f/curated-allblanc-morning-workout',
+      viewport: { width: 1024, height: 768 },
+      selectedModeFieldsOnly: true,
+      horizontalOverflow: wideOverflow,
+      consoleErrorCount: consoleErrors.length,
+    });
+    expect(consoleErrors).toEqual([]);
+  });
+});
