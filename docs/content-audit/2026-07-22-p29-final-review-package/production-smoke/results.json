@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "status": "pending_merge_deploy",
+  "checkedAt": null,
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "implementationCommit": null,
+  "mergeSha": null,
+  "vercelDeployment": null,
+  "routes": [
+    "/f/moving-d30-basic",
+    "/my?demo=ux20&view=flows",
+    "/calendar?demo=ux20"
+  ],
+  "viewports": [
+    "390x844",
+    "1024x768",
+    "1440x900"
+  ],
+  "results": [],
+  "summary": {
+    "routeViewportChecks": 0,
+    "httpOrNavigationFailureCount": null,
+    "horizontalOverflowCount": null,
+    "consoleErrorCount": null,
+    "pageErrorCount": null
+  },
+  "evidenceKind": "publish_state_placeholder",
+  "note": "P29 implementation is locally verified. Replace this placeholder with current_production_interaction evidence after merge and canonical Vercel deployment."
+}

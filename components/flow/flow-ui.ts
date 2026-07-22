@@ -1,26 +1,26 @@
 export const FLOW_UI_SURFACE_CLASS =
-  'rounded-lg border border-[var(--flowme-border)] bg-[var(--flowme-surface)] shadow-[0_1px_0_rgba(27,26,23,0.03)]';
+  'rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] shadow-[0_1px_0_rgba(27,26,23,0.03)]';
 
 export const FLOW_UI_INSET_CLASS =
-  'rounded-md border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)]';
+  'rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)]';
 
 export const FLOW_UI_TOOLBAR_CLASS =
   'flex min-h-12 items-center justify-between gap-3 border-y border-[var(--flowme-border)] py-2';
 
 export const FLOW_UI_PRIMARY_ACTION_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--flowme-text)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#33312C] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-disabled)] disabled:text-[var(--flowme-text-tertiary)]';
+  'inline-flex min-h-[var(--flowme-control-height)] items-center justify-center rounded-[var(--flowme-radius-control)] bg-[var(--flowme-text)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#33312C] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-disabled)] disabled:text-[var(--flowme-text-tertiary)]';
 
 export const FLOW_UI_SECONDARY_ACTION_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text)] transition hover:border-[var(--flowme-text-tertiary)] hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-[var(--flowme-border)] disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)]';
+  'inline-flex min-h-[var(--flowme-control-height)] items-center justify-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text)] transition hover:border-[var(--flowme-text-tertiary)] hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-[var(--flowme-border)] disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)]';
 
 export const FLOW_UI_TERTIARY_ACTION_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
+  'inline-flex min-h-[var(--flowme-control-height)] items-center justify-center rounded-[var(--flowme-radius-control)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
 
 export const FLOW_UI_COMPACT_ACTION_CLASS =
-  'inline-flex min-h-11 items-center justify-center rounded-md px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
+  'inline-flex min-h-[var(--flowme-control-height)] items-center justify-center rounded-[var(--flowme-radius-control)] px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
 
 export const FLOW_UI_ICON_ACTION_CLASS =
-  'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-sm font-semibold text-[var(--flowme-text-secondary)] transition hover:border-[var(--flowme-text-tertiary)] hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
+  'inline-flex h-[var(--flowme-control-height)] w-[var(--flowme-control-height)] shrink-0 items-center justify-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-sm font-semibold text-[var(--flowme-text-secondary)] transition hover:border-[var(--flowme-text-tertiary)] hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)]';
 
 export const FLOW_UI_SEGMENTED_CLASS =
   'grid gap-1 rounded-lg bg-[var(--flowme-soft)] p-1';

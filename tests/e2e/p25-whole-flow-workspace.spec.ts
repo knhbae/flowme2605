@@ -146,7 +146,7 @@ test.describe('P25 whole Flow workspace', () => {
     const selectedFlow = libraryDetail.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
     const outlinePane = selectedFlow.getByTestId('my-flow-workspace-outline-pane');
     const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
-    await expect(library).toHaveAttribute('data-library-layout', 'rail-detail');
+    await expect(library).toHaveAttribute('data-library-layout', 'rail-canvas-inspector');
     await expect(rail).toBeVisible();
     await expect(outlinePane).toBeVisible();
     await expect(detailPane).toBeVisible();

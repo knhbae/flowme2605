@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { expect, test } from '@playwright/test';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 test.beforeEach(async ({ page }) => {
   await openPublicDetailWorkspaceForDeepInspection(page);
@@ -91,19 +92,24 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(5);
-    await expect(page.getByLabel('Flow artifact workbench')).toBeVisible();
-    await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(10);
+    await expect(page.getByTestId('flow-artifact-data-preview')).toBeVisible();
+    await expect(page.getByTestId('flow-artifact-data-preview').getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-description')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
     await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' })).toHaveText('날짜 없이 시작');
     await expect(page.getByTestId('public-flow-reference-details')).not.toHaveAttribute('open', '');
     await captureEvidence(page, '05-vehicle-public-compact-mobile.png');
 
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
-    const savedLink = page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' });
-    await expect(savedLink).toHaveAttribute('href', '/my?savedFlow=vehicle-inspection-prep');
-    await savedLink.click();
+    const receipt = await savePublicFlow(
+      page,
+      page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }),
+    );
+    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAttribute(
+      'href',
+      '/my?savedFlow=vehicle-inspection-prep',
+    );
+    await openSavedPublicFlow(page, receipt);
 
     await expect(page).toHaveURL('/my?savedFlow=vehicle-inspection-prep');
     await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('자동차검사 D-14 준비');

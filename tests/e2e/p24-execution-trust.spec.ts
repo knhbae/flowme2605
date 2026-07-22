@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { seedBundles } from '../../lib/flow/seed-flows';
 import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import { openSavedPublicFlow } from './helpers/public-flow-save';
 
 async function enterMyFlowDetailEditMode(detail: Locator) {
   const readSummary = detail.getByTestId('my-flow-detail-read-summary');
@@ -167,10 +168,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
 
-    let flow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="travel-packing-list"]');
-    if ((await flow.getByTestId('my-flow-execution-row-shell').count()) === 0) {
-      await flow.getByTestId('my-flow-mobile-structure-open').click();
-    }
+    let flow = await openMyFlowLibraryFlow(page, 'travel-packing-list');
     const firstStep = flow.getByTestId('my-flow-execution-row-shell').first();
     await firstStep.getByRole('button', { name: /열기/ }).click();
     let detail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
@@ -192,10 +190,7 @@ test.describe('P24 execution trust regressions', () => {
     }
 
     await page.getByTestId('my-flow-view-flow').click();
-    flow = page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="travel-packing-list"]');
-    if ((await flow.getByTestId('my-flow-execution-row-shell').count()) === 0) {
-      await flow.getByTestId('my-flow-mobile-structure-open').click();
-    }
+    flow = await openMyFlowLibraryFlow(page, 'travel-packing-list');
     const movedStep = flow.getByTestId('my-flow-execution-row-shell').first();
     await expect(movedStep).toContainText('7월 24일');
     await movedStep.getByRole('button', { name: /열기/ }).click();
@@ -286,9 +281,7 @@ test.describe('P24 execution trust regressions', () => {
 
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
-    const flow = page.locator(
-      `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`,
-    );
+    let flow = await openMyFlowLibraryFlow(page, flowSlug);
     const feedback = flow.getByTestId('my-flow-completion-feedback');
     await expect(feedback).toBeVisible();
     await expect(feedback.getByTestId('my-flow-reuse-open')).toHaveText('새 이사일로 다시 쓰기');
@@ -310,6 +303,7 @@ test.describe('P24 execution trust regressions', () => {
     await reusePanel.getByTestId('my-flow-reuse-start').click();
 
     await page.getByTestId('my-flow-view-flow').click();
+    flow = await openMyFlowLibraryFlow(page, flowSlug);
     await expect(flow.getByTestId('my-flow-reuse-status')).toContainText(
       '새 이사일 10월 20일로 시작했어요',
     );
@@ -397,14 +391,13 @@ test.describe('P24 execution trust regressions', () => {
     await expect(page).toHaveURL(/\/my/);
     await openPostSaveWorkspaceIfPresent(page);
     await page.getByTestId('my-flow-view-flow').click();
-    let draftFlow = page.locator(
+    const draftLibraryEntry = page.locator(
       '[data-flow-slug^="url-draft-"]:is([data-testid="my-flow-mobile-structure-row"], [data-testid="my-flow-overview-card"])',
     ).first();
+    const draftSlug = await draftLibraryEntry.getAttribute('data-flow-slug');
+    if (!draftSlug) throw new Error('Memo draft Flow slug is missing');
+    let draftFlow = await openMyFlowLibraryFlow(page, draftSlug);
     let draftItemRows = draftFlow.getByTestId('my-flow-execution-row-shell');
-    if ((await draftItemRows.count()) === 0) {
-      const openFlow = draftFlow.getByTestId('my-flow-mobile-structure-open');
-      if (await openFlow.isVisible().catch(() => false)) await openFlow.click();
-    }
     const effectiveItems = draftItemRows;
     await expect(effectiveItems).toHaveCount(2);
     await expect(draftFlow).toContainText('이사 업체 견적 비교하기');
@@ -443,7 +436,7 @@ test.describe('P24 execution trust regressions', () => {
     await exportPanel.getByRole('checkbox', { name: '이사 업체 견적 비교하기 가져갈 항목으로 선택' }).check();
     await exportPanel.getByRole('checkbox', { name: '주소 변경 대상을 확인하기 가져갈 항목으로 선택' }).check();
     await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('직접 선택 · 2개');
-    await expect(exportPanel.getByTestId('my-flow-export-calendar')).toHaveAccessibleName('캘린더 파일 1개');
+    await expect(exportPanel.getByTestId('my-flow-export-calendar')).toHaveAccessibleName(/캘린더 파일 1개$/);
     const calendarDownloadPromise = page.waitForEvent('download');
     await exportPanel.getByTestId('my-flow-export-calendar').click();
     const calendarDownload = await calendarDownloadPromise;
@@ -477,16 +470,8 @@ test.describe('P24 execution trust regressions', () => {
     }
     await page.reload();
     await page.getByTestId('my-flow-view-flow').click();
-    draftFlow = page.locator(
-      '[data-flow-slug^="url-draft-"]:is([data-testid="my-flow-mobile-structure-row"], [data-testid="my-flow-overview-card"])',
-    ).first();
-    draftItemRows = draftFlow.locator(
-      '[data-testid="my-flow-execution-row-shell"], [data-testid="my-flow-mobile-structure-step-row"]',
-    );
-    if ((await draftItemRows.count()) === 0) {
-      const openFlow = draftFlow.getByTestId('my-flow-mobile-structure-open');
-      if (await openFlow.isVisible().catch(() => false)) await openFlow.click();
-    }
+    draftFlow = await openMyFlowLibraryFlow(page, draftSlug);
+    draftItemRows = draftFlow.getByTestId('my-flow-execution-row-shell');
     await expect(draftItemRows).toHaveCount(2);
     const reloadedItemIds = await page.evaluate(() => {
       const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{
@@ -551,9 +536,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.goto('/my?demo=source-backed');
     await page.getByTestId('my-flow-view-flow').click();
 
-    const flow = page.locator(
-      '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]',
-    );
+    const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30');
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     await expect(exportSurface.getByTestId('my-flow-export-entry')).toHaveText('가져가기');
     await exportSurface.getByTestId('my-flow-export-entry').click();
@@ -919,12 +902,9 @@ test.describe('P24 execution trust regressions', () => {
       await expect.poll(() => page.evaluate(() =>
         Boolean(localStorage.getItem('flow:saved:new-car-delivery-check')),
       )).toBe(true);
-      const myFlowLink = saveArea.getByRole('link', { name: '내 Flow에서 보기' });
-      await expect(myFlowLink).toBeVisible();
-      await Promise.all([
-        page.waitForURL(/\/my/, { timeout: 15_000 }),
-        myFlowLink.click(),
-      ]);
+      const receipt = page.getByTestId('public-flow-saved-receipt');
+      await expect(receipt).toBeVisible();
+      await openSavedPublicFlow(page, receipt);
       const postSavePanel = page.getByTestId('my-flow-post-save-panel');
       await expect(postSavePanel).toBeVisible({ timeout: 10_000 });
       await postSavePanel.getByTestId('my-flow-post-save-view-flow').click();
@@ -1349,24 +1329,25 @@ test.describe('P24 execution trust regressions', () => {
     const itemCheckbox = trayItem.getByRole('checkbox', { name: '충전기 챙기기 일정에 놓을 항목으로 선택' });
     await itemCheckbox.focus();
     await itemCheckbox.press('Space');
-    await tray.getByTestId('my-flow-calendar-unscheduled-toggle').click();
-    await expect(tray.getByTestId('my-flow-calendar-unscheduled-panel')).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(tray.getByTestId('my-flow-calendar-unscheduled-sheet')).toHaveCount(0);
     const reopenedTray = await expandCalendarUnscheduledTray(page);
     const reopenedTrayItem = reopenedTray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
     await reopenedTrayItem.getByRole('checkbox', { name: '충전기 챙기기 일정에 놓을 항목으로 선택' }).check();
     await reopenedTray.getByTestId('my-flow-calendar-unscheduled-today').click();
     await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('충전기 챙기기');
     await reopenedTray.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
-    const customDateTrayItem = reopenedTray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
+    const customDateTray = await expandCalendarUnscheduledTray(page);
+    const customDateTrayItem = customDateTray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
     await customDateTrayItem.getByRole('checkbox', { name: '충전기 챙기기 일정에 놓을 항목으로 선택' }).check();
-    await tray.getByTestId('my-flow-calendar-unscheduled-date').fill('2026-07-21');
-    await expect(tray.getByTestId('my-flow-calendar-unscheduled-preview')).toContainText(
+    await customDateTray.getByTestId('my-flow-calendar-unscheduled-date').fill('2026-07-21');
+    await expect(customDateTray.getByTestId('my-flow-calendar-unscheduled-preview')).toContainText(
       '1개 선택 · Flow 1개 → 7월 21일',
     );
-    await expect(tray.getByTestId('my-flow-calendar-unscheduled-apply')).toBeEnabled();
+    await expect(customDateTray.getByTestId('my-flow-calendar-unscheduled-apply')).toBeEnabled();
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
-      await tray.screenshot({
+      await customDateTray.screenshot({
         path: `${evidenceDir}/screenshots/01-calendar-placement-selection-mobile.png`,
       });
       await page.screenshot({
@@ -1374,7 +1355,7 @@ test.describe('P24 execution trust regressions', () => {
         fullPage: true,
       });
     }
-    await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
+    await customDateTray.getByTestId('my-flow-calendar-unscheduled-apply').click();
 
     await expect(tray.getByTestId('my-flow-calendar-unscheduled-undo')).toBeVisible();
     await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('충전기 챙기기');
@@ -1386,19 +1367,24 @@ test.describe('P24 execution trust regressions', () => {
     }
 
     await tray.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
+    const restoredTray = await expandCalendarUnscheduledTray(page);
     await expect(
-      tray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' }),
+      restoredTray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' }),
     ).toBeVisible();
     await expect(page.getByTestId('my-flow-calendar-selected-day')).not.toContainText('충전기 챙기기');
 
-    const restoredTrayItem = tray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
+    const restoredTrayItem = restoredTray.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' });
     await restoredTrayItem.getByRole('checkbox', { name: '충전기 챙기기 일정에 놓을 항목으로 선택' }).check();
-    await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
+    await restoredTray.getByTestId('my-flow-calendar-unscheduled-apply').click();
     await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('충전기 챙기기');
     await page.reload();
     await expect(
       page.getByTestId('my-flow-calendar-unscheduled-item').filter({ hasText: '충전기 챙기기' }),
     ).toHaveCount(0);
+    const restoredPlacementSheet = page.getByTestId('my-flow-calendar-unscheduled-sheet');
+    if (await restoredPlacementSheet.isVisible().catch(() => false)) {
+      await restoredPlacementSheet.getByRole('button', { name: '닫기' }).click();
+    }
 
     const scheduledRow = page
       .getByTestId('my-flow-calendar-selected-day')
@@ -1425,6 +1411,10 @@ test.describe('P24 execution trust regressions', () => {
     );
     await returnedTray.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
     await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('충전기 챙기기');
+    const returnedPlacementSheet = page.getByTestId('my-flow-calendar-unscheduled-sheet');
+    if (await returnedPlacementSheet.isVisible().catch(() => false)) {
+      await returnedPlacementSheet.getByRole('button', { name: '닫기' }).click();
+    }
 
     const restoredScheduledRow = page
       .getByTestId('my-flow-calendar-selected-day')
@@ -1570,9 +1560,7 @@ test.describe('P24 execution trust regressions', () => {
 
     await page.reload();
     await page.getByTestId('my-flow-view-flow').click();
-    const reloadedMobileFlow = page.locator(
-      `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`,
-    );
+    const reloadedMobileFlow = await openMyFlowLibraryFlow(page, flowSlug);
     await expect(reloadedMobileFlow.getByTestId('my-flow-completion-private-notes')).toContainText(
       '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
     );

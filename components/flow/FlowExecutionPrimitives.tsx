@@ -29,16 +29,20 @@ export function FlowArtifactSummary({
   sourceHref?: string;
 }) {
   return (
-    <header data-flow-ui="artifact-summary">
+    <header
+      data-flow-ui="artifact-summary"
+      data-flow-anatomy="flow-identity"
+      data-p29-marker="P29-CONSISTENT-FLOW-IDENTITY"
+    >
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
         <span className="text-[var(--flowme-action)]">{eyebrow}</span>
         {categoryLabel ? <span>{categoryLabel}</span> : null}
       </p>
-      <h1 className="mt-2 max-w-4xl break-keep text-2xl font-semibold text-[var(--flowme-text)] sm:text-3xl">
+      <h1 data-flow-identity-slot="title" className="mt-2 max-w-4xl break-keep text-2xl font-semibold text-[var(--flowme-text)] sm:text-3xl">
         {title}
       </h1>
       {sourceLabel ? (
-        <p className="mt-2 max-w-3xl text-xs font-medium text-[var(--flowme-text-secondary)]">
+        <p data-flow-identity-slot="source" className="mt-2 max-w-3xl text-xs font-medium text-[var(--flowme-text-secondary)]">
           <span className="text-[var(--flowme-text-tertiary)]">원문</span>
           <span aria-hidden="true"> · </span>
           {sourceHref ? (
@@ -75,6 +79,7 @@ export function FlowScheduleIntent({
   return (
     <dl
       data-flow-ui="schedule-intent"
+      data-flow-anatomy="flow-context"
       className={`mt-4 grid border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)] ${entries.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}
     >
       {entries.map((entry, index) => (
@@ -219,6 +224,7 @@ export function FlowReceipt({
     <div
       {...divProps}
       data-flow-ui="receipt"
+      data-flow-anatomy="result-receipt"
       className={`border-l-2 ${compact ? 'px-3 py-2' : 'px-4 py-3 sm:px-5 sm:py-4'} ${receiptToneClass[tone]} ${className}`}
     >
       <p className="text-xs font-semibold">{label}</p>

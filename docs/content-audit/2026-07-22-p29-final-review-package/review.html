@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P29 Final Review</title>
+  <style>
+    :root {
+      --ink: #171717;
+      --muted: #626262;
+      --line: #d8d8d2;
+      --paper: #ffffff;
+      --wash: #f4f5f2;
+      --blue: #315efb;
+      --blue-soft: #eaf0ff;
+      --green: #12805c;
+      --green-soft: #e7f7ef;
+      --amber: #9a5a00;
+      --amber-soft: #fff1d2;
+      --red: #b42318;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--wash);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      letter-spacing: 0;
+      line-height: 1.55;
+    }
+    a { color: var(--blue); }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    header {
+      padding: 54px 0 36px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+    .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: 13px; font-weight: 800; }
+    h1 { margin: 0; max-width: 850px; font-size: clamp(34px, 5vw, 64px); line-height: 1.04; }
+    .lead { max-width: 760px; margin: 20px 0 0; color: var(--muted); font-size: 18px; }
+    .verdict {
+      display: inline-flex;
+      margin-top: 24px;
+      padding: 9px 12px;
+      border: 1px solid #96d4bd;
+      border-radius: 6px;
+      background: var(--green-soft);
+      color: #075d43;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+    nav a {
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink);
+      background: var(--paper);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    main { padding: 34px 0 70px; }
+    section { padding: 30px 0; border-bottom: 1px solid var(--line); }
+    h2 { margin: 0 0 10px; font-size: 27px; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 0 0 12px; }
+    .muted { color: var(--muted); }
+    .stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+    .stat {
+      min-height: 104px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+    }
+    .stat strong { display: block; font-size: 27px; line-height: 1.2; }
+    .stat span { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; }
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 1px;
+      border: 1px solid var(--line);
+      background: var(--line);
+    }
+    .journey div { min-height: 112px; padding: 15px; background: var(--paper); }
+    .journey b { display: block; margin-bottom: 10px; color: var(--blue); font-size: 12px; }
+    .journey span { font-size: 14px; font-weight: 750; }
+    .slice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .slice {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+    }
+    .slice header { padding: 0; border: 0; background: transparent; }
+    .slice .tag { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .slice ul { margin: 10px 0 0; padding-left: 20px; color: var(--muted); }
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    figure {
+      margin: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+    }
+    figure img { display: block; width: 100%; height: auto; border: 1px solid #ededeb; }
+    figcaption { padding: 10px 2px 2px; }
+    figcaption strong { display: block; }
+    figcaption span { color: var(--muted); font-size: 13px; }
+    .mobile-pair { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mobile-pair figure img { max-height: 780px; object-fit: contain; object-position: top; background: #f7f7f5; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); }
+    th, td { padding: 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f0f1ee; font-size: 13px; }
+    td { font-size: 14px; }
+    .pass { color: var(--green); font-weight: 800; }
+    .risk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .risk { padding: 17px; border-left: 4px solid var(--amber); background: var(--amber-soft); }
+    .risk b { display: block; margin-bottom: 7px; }
+    .note { padding: 18px; border: 1px solid #a9bee9; background: var(--blue-soft); }
+    footer { padding: 26px 0 50px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .journey { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .mobile-pair { grid-template-columns: 1fr; }
+      .mobile-pair figure img { max-height: none; }
+      .risk-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 20px, 1180px); }
+      header { padding: 36px 0 28px; }
+      .lead { font-size: 16px; }
+      .stats, .journey, .slice-grid, .gallery { grid-template-columns: 1fr; }
+      .stat { min-height: 86px; }
+      section { padding: 24px 0; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell">
+      <p class="eyebrow">FLOWME · P29 FINAL REVIEW · 2026-07-22</p>
+      <h1>기능을 더하지 않고,<br>실행 화면의 순서를 다시 세웠다.</h1>
+      <p class="lead">P28 데이터·identity 계약을 유지한 채 save-before, receipt, routine, My Flow, Calendar, export를 artifact-first와 action-first 문법으로 재구성했다.</p>
+      <span class="verdict">IMPLEMENTATION VERIFIED · MERGE/DEPLOY PENDING</span>
+      <nav aria-label="리뷰 섹션">
+        <a href="#numbers">검증 수치</a>
+        <a href="#journey">사용자 흐름</a>
+        <a href="#changes">P29 변화</a>
+        <a href="#screens">화면</a>
+        <a href="#contracts">계약</a>
+        <a href="#risks">남은 위험</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="numbers">
+      <h2>검증 수치</h2>
+      <p class="muted">현재 branch에서 직접 실행한 command/browser evidence다. 실제 사용자 관찰은 포함하지 않는다.</p>
+      <div class="stats">
+        <div class="stat"><strong>13/13</strong><span>P29 targeted E2E</span></div>
+        <div class="stat"><strong>292/292</strong><span>full E2E · 2 workers</span></div>
+        <div class="stat"><strong>584/584</strong><span>unit tests</span></div>
+        <div class="stat"><strong>18/18</strong><span>production routes</span></div>
+        <div class="stat"><strong>23</strong><span>current screenshots</span></div>
+        <div class="stat"><strong>0</strong><span>overflow · unnamed · errors</span></div>
+      </div>
+    </section>
+
+    <section id="journey">
+      <h2>하나의 실행 흐름</h2>
+      <p class="muted">각 화면이 모든 기능을 펼치는 대신 지금 필요한 판단 하나를 앞에 둔다.</p>
+      <div class="journey">
+        <div><b>01</b><span>실제 결과 확인</span></div>
+        <div><b>02</b><span>필요할 때 조정</span></div>
+        <div><b>03</b><span>저장 완료 확인</span></div>
+        <div><b>04</b><span>다음 행동 실행</span></div>
+        <div><b>05</b><span>날짜에 배치</span></div>
+        <div><b>06</b><span>범위를 정해 가져가기</span></div>
+      </div>
+    </section>
+
+    <section id="changes">
+      <h2>P29에서 달라진 것</h2>
+      <div class="slice-grid">
+        <article class="slice"><header><span class="tag">P29-01 · 02</span><h3>Artifact-first save-before</h3></header><ul><li>실제 Calendar/Checklist/Sheet/Memo 결과가 먼저</li><li>전체 outline은 한 disclosure</li><li>조정 전 row edit 0</li><li>저장 후 별도 receipt</li></ul></article>
+        <article class="slice"><header><span class="tag">P29-03</span><h3>Routine summary-first</h3></header><ul><li>요일·시간·duration·종료 한 줄 요약</li><li>다음 occurrence 3개</li><li>고급 입력은 조정 뒤</li><li>resource와 실행 item 분리</li></ul></article>
+        <article class="slice"><header><span class="tag">P29-04</span><h3>My Flow action-first</h3></header><ul><li>모바일 compact row와 open command 1개</li><li>next action을 metadata보다 먼저</li><li>wide 280 / flexible / 320 workspace</li><li>완료와 reopen 위치 통일</li></ul></article>
+        <article class="slice"><header><span class="tag">P29-05</span><h3>Calendar workspace</h3></header><ul><li>compact Flow scope</li><li>selected-day inspector</li><li>날짜 없는 bottom sheet</li><li>batch placement와 undo</li></ul></article>
+        <article class="slice"><header><span class="tag">P29-06</span><h3>결과와 export 예측</h3></header><ul><li>primary 1 + secondary 최대 2</li><li>whole / selected / current scope</li><li>예상 count와 실제 receipt parity</li><li>unsupported 결과 숨김</li></ul></article>
+        <article class="slice"><header><span class="tag">P29-07</span><h3>공통 visual·a11y contract</h3></header><ul><li>한 Flow identity anatomy</li><li>44px target와 visible focus</li><li>content-before-nav DOM order</li><li>390 / 1024 / 1440 gate</li></ul></article>
+      </div>
+    </section>
+
+    <section id="screens">
+      <h2>Save-before에서 receipt까지</h2>
+      <div class="gallery mobile-pair">
+        <figure><img src="screenshots/p29-01-moving-save-before-390.png" alt="이사 Flow 저장 전 모바일 화면"><figcaption><strong>결과 먼저</strong><span>Calendar 24개가 조정·저장보다 먼저 보인다.</span></figcaption></figure>
+        <figure><img src="screenshots/p29-01-moving-adjust-390.png" alt="이사 Flow 조정 모바일 화면"><figcaption><strong>맥락 안 조정</strong><span>기본 frame을 유지한 채 포함 범위를 조정한다.</span></figcaption></figure>
+        <figure><img src="screenshots/p29-01-moving-receipt-390.png" alt="이사 Flow 저장 완료 receipt 모바일 화면"><figcaption><strong>별도 receipt</strong><span>저장 전 input이 사라지고 다음 행동만 남는다.</span></figcaption></figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>My Flow와 Calendar</h2>
+      <div class="gallery">
+        <figure><img src="screenshots/p29-04-my-flow-workspace-1024.png" alt="My Flow wide rail canvas inspector 화면"><figcaption><strong>My Flow · 1024</strong><span>library, plan, inspector의 역할을 분리했다.</span></figcaption></figure>
+        <figure><img src="screenshots/p29-05-calendar-workspace-1024.png" alt="Calendar wide rail grid selected day 화면"><figcaption><strong>Calendar · 1024</strong><span>scope, month grid, selected day를 한 workspace로 연결했다.</span></figcaption></figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>모바일 실행 세부</h2>
+      <div class="gallery mobile-pair">
+        <figure><img src="screenshots/p29-03-routine-summary-390.png" alt="반복 Flow 요약 모바일 화면"><figcaption><strong>Routine summary</strong><span>설정 form 대신 effective cadence와 다음 3회를 먼저 본다.</span></figcaption></figure>
+        <figure><img src="screenshots/p29-04-my-flow-library-390.png" alt="My Flow 27개 compact library 모바일 화면"><figcaption><strong>27-Flow library</strong><span>검색과 compact row, 한 개의 open action을 사용한다.</span></figcaption></figure>
+        <figure><img src="screenshots/p29-05-calendar-undated-sheet-390.png" alt="날짜 없는 할 일 배치 bottom sheet"><figcaption><strong>Undated placement</strong><span>Calendar 안에서 여러 항목을 날짜에 놓고 되돌린다.</span></figcaption></figure>
+      </div>
+    </section>
+
+    <section id="contracts">
+      <h2>P28 계약과 P29 composition</h2>
+      <table>
+        <thead><tr><th>계약</th><th>P29 결과</th><th>판정</th></tr></thead>
+        <tbody>
+          <tr><td>source / personal overlay</td><td>원본을 수정하지 않고 기존 personal value와 order를 소비</td><td class="pass">유지</td></tr>
+          <tr><td>execution run / occurrence</td><td>완료·reopen이 series와 structural membership을 바꾸지 않음</td><td class="pass">유지</td></tr>
+          <tr><td>Calendar / export identity</td><td>기존 stable key와 export plan을 재사용</td><td class="pass">유지</td></tr>
+          <tr><td>save payload / localStorage</td><td>schema와 migration 변경 없음</td><td class="pass">유지</td></tr>
+          <tr><td>4탭 IA / public shell</td><td>탭과 `/f` 역할 유지, composition만 변경</td><td class="pass">유지</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="risks">
+      <h2>남은 위험</h2>
+      <div class="risk-grid">
+        <div class="risk"><b>Calendar 축약</b><span>1024 월간 cell은 긴 Flow 이름을 축약한다. accessible name은 보존하지만 시각적 구분은 관찰이 필요하다.</span></div>
+        <div class="risk"><b>모바일 routine 밀도</b><span>advanced form은 접혔지만 sticky command와 summary가 같은 화면에서 조밀하게 느껴질 수 있다.</span></div>
+        <div class="risk"><b>실제 사용자 0명</b><span>자동화는 기능과 접근성을 증명하지만 이해·신뢰·반복 사용을 증명하지 않는다.</span></div>
+        <div class="risk"><b>Dependency audit</b><span>기존 Next transitive chain에서 high 2건이 새로 보고됐다. 현재 untrusted image consumer는 없지만 scanner는 green이 아니며 별도 controlled update가 필요하다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="note"><strong>현재 closeout 경계</strong><br>구현과 local 회귀는 green이다. merge와 canonical production smoke 후 publish state를 갱신해야 P29 production closeout이 된다.</div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    FlowMe P29 Final Review Package · automated/browser evidence · observed-user count 0
+  </footer>
+</body>
+</html>

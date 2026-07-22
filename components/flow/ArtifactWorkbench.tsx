@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getArtifactPlan } from '@/lib/flow/artifact-plan';
+import { getPreferredArtifactExportDestination } from '@/lib/flow/artifact-recommendation';
 import {
   getComparisonConfig,
   getComparisonRows,
@@ -42,6 +43,7 @@ type ArtifactWorkbenchProps = {
   onWorkbenchChange: (state: FlowWorkbenchState) => void;
   onToggleItem: (id: string) => void;
   exportActions?: ArtifactExportActions;
+  presentationMode?: 'full' | 'export-only';
 };
 
 type ArtifactExportActions = {
@@ -167,10 +169,24 @@ export function ArtifactWorkbench({
   onWorkbenchChange,
   onToggleItem,
   exportActions,
+  presentationMode = 'full',
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
   const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
   const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
+
+  if (presentationMode === 'export-only') {
+    return (
+      <section
+        aria-label="Flow 가져가기"
+        data-artifact-surface={plan.primarySurface}
+        data-presentation-mode="export-only"
+      >
+        {checkOnlyRoutineSlugs.has(bundle.flow.slug) ? <FlowResourceBlock bundle={bundle} /> : null}
+        <FlowLevelExportPanel actions={exportActions} bundle={bundle} />
+      </section>
+    );
+  }
 
   return (
     <section
@@ -283,6 +299,8 @@ function FlowLevelExportPanel({ actions, bundle }: { actions?: ArtifactExportAct
           showEntry={false}
           showClose={false}
           destinations={['calendar', 'sheet', 'memo']}
+          preferredDestination={getPreferredArtifactExportDestination(bundle)}
+          sourceLabel={bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : undefined}
           destinationCopyOverride={{
             calendar: { label: FLOW_EXPORT_LABELS.calendarFile, result: '날짜 있는 항목' },
             sheet: { label: FLOW_EXPORT_LABELS.sheetFile, result: 'Flow 전체' },

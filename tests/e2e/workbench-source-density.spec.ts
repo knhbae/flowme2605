@@ -5,22 +5,17 @@ test.beforeEach(async ({ page }) => {
   await openPublicDetailWorkspaceForDeepInspection(page);
 });
 
-async function openAllWorkbenchDetails(page: import('@playwright/test').Page) {
-  const workbench = page.getByLabel('Flow artifact workbench');
-  const listCard = workbench.getByTestId('artifact-list-card');
-  await expect(listCard).toBeVisible();
+async function openArtifactFirstOutline(page: import('@playwright/test').Page) {
+  const hero = page.getByTestId('public-flow-hero');
+  await expect(hero).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+  await expect(hero.getByTestId('flow-artifact-data-preview')).toBeVisible();
 
-  const summaries = listCard.locator('details summary');
-  const count = await summaries.count();
-  expect(count).toBeGreaterThan(0);
+  const outline = hero.getByTestId('public-flow-artifact-preview');
+  await expect(outline).toBeVisible();
+  if ((await outline.getAttribute('open')) === null) await outline.locator('summary').click();
+  await expect(outline.locator('[data-flow-outline-row]').first()).toBeVisible();
 
-  for (let index = 0; index < count; index += 1) {
-    const summary = summaries.nth(index);
-    await summary.scrollIntoViewIfNeeded();
-    await summary.click();
-  }
-
-  return listCard;
+  return { hero, outline };
 }
 
 async function openPublicReferenceDetailsIfPresent(page: import('@playwright/test').Page) {
@@ -49,10 +44,11 @@ test.describe('field checklist workbench source density', () => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
 
-      const listCard = await openAllWorkbenchDetails(page);
+      const { hero, outline } = await openArtifactFirstOutline(page);
       await openPublicReferenceDetailsIfPresent(page);
 
-      await expect(listCard.locator('details a[href]')).toHaveCount(0);
+      await expect(hero.getByTestId('flow-artifact-data-preview').locator('a[href]')).toHaveCount(0);
+      await expect(outline.locator('[data-flow-outline-row] a[href]')).toHaveCount(0);
       const sourceCard = getVisiblePublicSourceCard(page);
       await expect(sourceCard).toHaveCount(1);
       await expect(sourceCard.locator('a[href]').first()).toHaveCount(1);
@@ -63,9 +59,11 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/new-car-delivery-check');
 
-    const listCard = await openAllWorkbenchDetails(page);
-    await expect(listCard.getByTestId('workbench-common-detail-caution')).toHaveCount(1);
-    await expect(listCard.locator('details[open]')).not.toHaveCount(0);
+    const { outline } = await openArtifactFirstOutline(page);
+    await openPublicReferenceDetailsIfPresent(page);
+    await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(1);
+    await expect(page.getByTestId('public-flow-reference-details').locator(':scope > summary')).toHaveText('출처와 주의');
+    await expect(outline.locator('[data-flow-outline-row]').filter({ hasText: '공통 주의' })).toHaveCount(0);
   });
 
   test('/f/fridge-cleanout-weekly-plan keeps export at the flow level on mobile', async ({ page }) => {
@@ -84,8 +82,8 @@ test.describe('field checklist workbench source density', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/curated-new-car-basic');
 
-    const listCard = await openAllWorkbenchDetails(page);
-    await expect(listCard.locator('details[open]')).not.toHaveCount(0);
+    await openArtifactFirstOutline(page);
+    await openPublicReferenceDetailsIfPresent(page);
     await expect(page.locator('body')).not.toContainText('sourceTrace');
     await expect(page.locator('body')).not.toContainText(/원문 근거\s*[:：]/u);
     await expect(page.locator('body')).not.toContainText(/옵션\s*200~500만원|등록비\s*7~8%|보험료\s*연\s*100~200만원/u);

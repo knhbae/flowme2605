@@ -41,6 +41,21 @@ export function CalendarFlowScopePicker({
     return options.filter((option) => option.title.toLowerCase().includes(normalizedQuery));
   }, [options, query]);
 
+  const groupedVisibleOptions = useMemo(() => {
+    const selected = visibleOptions.filter((option) => draftSelection.includes(option.slug));
+    const active = visibleOptions.filter((option) => (
+      !draftSelection.includes(option.slug) && option.monthCount > 0
+    ));
+    const other = visibleOptions.filter((option) => (
+      !draftSelection.includes(option.slug) && option.monthCount === 0
+    ));
+    return [
+      { id: 'selected', label: '선택됨', options: selected },
+      { id: 'active', label: '이번 달', options: active },
+      { id: 'other', label: '다른 Flow', options: other },
+    ].filter((group) => group.options.length > 0);
+  }, [draftSelection, visibleOptions]);
+
   const close = () => {
     setOpen(false);
     window.setTimeout(() => triggerRef.current?.focus({ preventScroll: true }), 0);
@@ -101,6 +116,7 @@ export function CalendarFlowScopePicker({
         ref={triggerRef}
         type="button"
         data-testid="calendar-flow-scope-picker-trigger"
+        data-p29-marker="P29-CALENDAR-COMPACT-SCOPE"
         aria-haspopup="dialog"
         aria-expanded={open}
         className={`${FLOW_UI_SECONDARY_ACTION_CLASS} max-w-full justify-between gap-3`}
@@ -150,40 +166,47 @@ export function CalendarFlowScopePicker({
               </label>
 
               <div className="mt-3 border-y border-[var(--flowme-border)]">
-                {visibleOptions.map((option) => {
-                  const selected = draftSelection.includes(option.slug);
-                  return (
-                    <label
-                      key={option.slug}
-                      data-testid="calendar-flow-scope-picker-option"
-                      data-flow-slug={option.slug}
-                      className="relative flex min-h-14 cursor-pointer items-center gap-3 border-b border-[var(--flowme-border)] px-1 py-2.5 last:border-b-0 hover:bg-[var(--flowme-surface-subtle)]"
-                    >
-                      <input
-                        type="checkbox"
-                        className="h-5 w-5 shrink-0 accent-[var(--flowme-action)]"
-                        checked={selected}
-                        aria-label={`${option.title} 일정 ${selected ? '선택 해제' : '선택'}`}
-                        onChange={() => setDraftSelection((current) => (
-                          current.includes(option.slug)
-                            ? current.filter((slug) => slug !== option.slug)
-                            : [...current, option.slug]
-                        ))}
-                      />
-                      <span
-                        aria-hidden="true"
-                        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] text-[10px] font-black text-white"
-                        style={{ backgroundColor: option.color }}
-                      >
-                        {option.initial}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-semibold text-[var(--flowme-text)]">{option.title}</span>
-                        <span className="mt-0.5 block text-xs text-[var(--flowme-text-secondary)]">이번 달 {option.monthCount}개</span>
-                      </span>
-                    </label>
-                  );
-                })}
+                {groupedVisibleOptions.map((group) => (
+                  <section key={group.id} data-testid="calendar-flow-scope-picker-group" data-scope-group={group.id}>
+                    <h3 className="border-b border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-2 py-2 text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
+                      {group.label}
+                    </h3>
+                    {group.options.map((option) => {
+                      const selected = draftSelection.includes(option.slug);
+                      return (
+                        <label
+                          key={option.slug}
+                          data-testid="calendar-flow-scope-picker-option"
+                          data-flow-slug={option.slug}
+                          className="relative flex min-h-14 cursor-pointer items-center gap-3 border-b border-[var(--flowme-border)] px-1 py-2.5 last:border-b-0 hover:bg-[var(--flowme-surface-subtle)]"
+                        >
+                          <input
+                            type="checkbox"
+                            className="h-5 w-5 shrink-0 accent-[var(--flowme-action)]"
+                            checked={selected}
+                            aria-label={`${option.title} 일정 ${selected ? '선택 해제' : '선택'}`}
+                            onChange={() => setDraftSelection((current) => (
+                              current.includes(option.slug)
+                                ? current.filter((slug) => slug !== option.slug)
+                                : [...current, option.slug]
+                            ))}
+                          />
+                          <span
+                            aria-hidden="true"
+                            className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[4px] text-[10px] font-black text-white"
+                            style={{ backgroundColor: option.color }}
+                          >
+                            {option.initial}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-[var(--flowme-text)]">{option.title}</span>
+                            <span className="mt-0.5 block text-xs text-[var(--flowme-text-secondary)]">이번 달 {option.monthCount}개</span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </section>
+                ))}
                 {visibleOptions.length === 0 ? (
                   <p className="px-3 py-8 text-center text-sm text-[var(--flowme-text-secondary)]">검색 결과가 없습니다.</p>
                 ) : null}

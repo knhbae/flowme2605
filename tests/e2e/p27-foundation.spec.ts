@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import { openSavedPublicFlow } from './helpers/public-flow-save';
 
 async function expectNoHorizontalOverflow(page: import('@playwright/test').Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2)).toBe(false);
@@ -233,7 +234,8 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await rows.nth(1).getByRole('button', { name: '내 이사 방식 확정 아래로 이동' }).click();
 
     await adjustment.getByTestId('public-flow-adjustment-save').click();
-    await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' })).toBeVisible();
+    const receipt = page.getByTestId('public-flow-saved-receipt');
+    await expect(receipt).toBeVisible();
     const persisted = await page.evaluate(() => ({
       itemStates: JSON.parse(window.localStorage.getItem('flow_builder_mvp_item_state_moving-d30-basic') || '{}'),
       drafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
@@ -248,7 +250,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     });
     expect(persisted.saved.anchor).toBe('2030-08-15');
 
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' }).click();
+    await openSavedPublicFlow(page, receipt);
     await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
     await page.getByTestId('my-flow-post-save-view-flow').click();
     const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 test.beforeEach(async ({ page }) => {
   await openPublicDetailWorkspaceForDeepInspection(page);
@@ -44,14 +45,12 @@ test('example date stays preview-only and saves an undated public Flow on mobile
   const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
   const calendarOption = exportEntry.getByRole('button', { name: /캘린더 파일 받기/ });
-  await expect(calendarOption).toBeDisabled();
-  await expect(calendarOption).toHaveAttribute('data-export-count', '0');
-  await expect(calendarOption).toHaveAttribute('data-export-state', 'disabled');
+  await expect(calendarOption).toHaveCount(0);
 
   const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
   await expect(mobileSave.getByRole('button', { name: '날짜 없이 시작' })).toBeVisible();
   await capture(page, '01-example-preview-mobile.png');
-  await mobileSave.getByRole('button', { name: '날짜 없이 시작' }).click();
+  const receipt = await savePublicFlow(page, mobileSave.getByRole('button', { name: '날짜 없이 시작' }));
 
   const state = await page.evaluate(() => ({
     saved: JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null'),
@@ -60,9 +59,7 @@ test('example date stays preview-only and saves an undated public Flow on mobile
   expect(state.saved.dateIntent).toBe('undated');
   expect(state.saved.anchor).toBeUndefined();
   expect(state.anchor).toEqual({ mode: 'undated', anchor: '' });
-  const savedLink = mobileSave.getByRole('link', { name: '내 Flow에서 보기' });
-  await expect(savedLink).toBeVisible();
-  await savedLink.click();
+  await openSavedPublicFlow(page, receipt);
   await expect(page.getByTestId('my-flow-post-save-artifact')).toBeVisible();
   await page.goto('/calendar');
   await expect(page.getByRole('button', { name: /자동차검사 기간과 예약 가능일 확인하기 상세 열기/ })).toHaveCount(0);
@@ -127,7 +124,7 @@ test('legacy example save migrates to undated and preserves the old preview anch
     );
   });
   await page.goto('/f/vehicle-inspection-prep');
-  await expect(page.getByTestId('public-flow-date-intent-undated')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('public-flow-saved-receipt')).toBeVisible();
   await expect.poll(() => page.evaluate(() =>
     JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null')?.dateIntent,
   )).toBe('undated');

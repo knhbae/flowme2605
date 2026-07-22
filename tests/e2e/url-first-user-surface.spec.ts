@@ -6,7 +6,7 @@ import {
   scanUserFacingOutputGuardrails,
   scanUserSurfaceGuardrails,
 } from '../../lib/flow/user-surface-guardrails';
-import { getPersonalDraftEffectiveItems } from './helpers/my-flow-library';
+import { getPersonalDraftEffectiveItems, openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const urlFirstSourceSlugSignals = ['AJD', 'DeskLab', 'Mathbang'];
 const creatorProfileSourceSlugSignals = [
@@ -53,11 +53,15 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 async function openMyFlowView(page: Page) {
-  const postSavePanel = page.getByTestId('my-flow-post-save-panel');
-  if (await postSavePanel.isVisible().catch(() => false)) {
-    await page.goto('/my');
+  const viewControl = page.getByTestId('my-flow-view-flow');
+  if (await viewControl.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    await viewControl.click();
+    return;
   }
-  await page.getByTestId('my-flow-view-flow').click();
+
+  // A saved draft can render its receipt between URL settlement and hydration.
+  // Use the stable local-view URL instead of waiting on the replaced receipt frame.
+  await page.goto('/my?view=flows');
 }
 
 function getPersonalDraftFlow(page: Page) {
@@ -71,6 +75,14 @@ function getPersonalDraftFlow(page: Page) {
 async function openPersonalDraftFlowIfCollapsed(flow: Locator) {
   const open = flow.getByTestId('my-flow-mobile-structure-open');
   if (await open.isVisible().catch(() => false)) await open.click();
+}
+
+async function getOpenedPersonalDraftFlow(page: Page) {
+  const flow = getPersonalDraftFlow(page);
+  await expect(flow).toBeVisible();
+  const slug = await flow.getAttribute('data-flow-slug');
+  if (!slug) throw new Error('Personal draft Flow slug is missing');
+  return openMyFlowLibraryFlow(page, slug);
 }
 
 async function setPersonalDraftStructureEditMode(flow: Locator, open: boolean) {
@@ -471,8 +483,7 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
   expect(storedDraftBundle?.items).toHaveLength(1);
   expect(storedDraftBundle?.items?.map((item) => item.day_offset)).toEqual([0]);
   await openMyFlowView(page);
-  const mobileDraftFlow = getPersonalDraftFlow(page);
-  await expect(mobileDraftFlow).toBeVisible();
+  const mobileDraftFlow = await getOpenedPersonalDraftFlow(page);
   await expect(mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
 
   await mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open').click();
@@ -576,8 +587,7 @@ test('personal draft structural items add, complete, tombstone, and undo without
 
   await expect(page).toHaveURL(/\/my/);
   await openMyFlowView(page);
-  let draftFlow = getPersonalDraftFlow(page);
-  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  let draftFlow = await getOpenedPersonalDraftFlow(page);
   await expect(draftFlow.getByTestId('personal-draft-add-entry')).toHaveCount(0);
   await expect(draftFlow.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
   await setPersonalDraftStructureEditMode(draftFlow, true);
@@ -609,8 +619,7 @@ test('personal draft structural items add, complete, tombstone, and undo without
 
   await page.reload();
   await openMyFlowView(page);
-  draftFlow = getPersonalDraftFlow(page);
-  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  draftFlow = await getOpenedPersonalDraftFlow(page);
   const showAll = draftFlow.getByTestId('my-flow-mobile-structure-show-all');
   if (await showAll.count()) await showAll.click();
   addedItem = getPersonalDraftEffectiveItems(draftFlow).filter({ hasText: '관리실에 후속 전화하기' });
@@ -1324,11 +1333,16 @@ test('personal draft structural list exports share effective items across checkl
     destination: 'memo' | 'checklist' | 'sheet',
   ) => {
     const panel = flow.getByTestId('personal-draft-list-export');
-    if (!(await panel.getByTestId('my-flow-export-panel').count())) {
+    if (!(await panel.getByTestId('my-flow-export-panel').isVisible().catch(() => false))) {
       await panel.getByTestId('personal-draft-list-export-toggle').click();
     }
     await page.evaluate(() => navigator.clipboard.writeText(''));
-    await panel.getByTestId(`personal-draft-copy-${destination}`).click();
+    const action = panel.getByTestId(`personal-draft-copy-${destination}`);
+    if (!(await action.isVisible().catch(() => false))) {
+      const moreFormats = panel.getByTestId('my-flow-export-more-formats');
+      if ((await moreFormats.getAttribute('open')) === null) await moreFormats.locator('summary').click();
+    }
+    await action.click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).not.toBe('');
     return page.evaluate(() => navigator.clipboard.readText());
   };
@@ -1353,8 +1367,7 @@ test('personal draft structural list exports share effective items across checkl
 
   await expect(page).toHaveURL(/\/my/);
   await openMyFlowView(page);
-  let draftFlow = getPersonalDraftFlow(page);
-  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  let draftFlow = await getOpenedPersonalDraftFlow(page);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
@@ -1436,8 +1449,7 @@ test('personal draft structural list exports share effective items across checkl
 
   await page.reload();
   await openMyFlowView(page);
-  draftFlow = getPersonalDraftFlow(page);
-  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  draftFlow = await getOpenedPersonalDraftFlow(page);
   if (await draftFlow.getByTestId('my-flow-mobile-structure-show-all').count()) {
     await draftFlow.getByTestId('my-flow-mobile-structure-show-all').click();
   }
@@ -1543,8 +1555,7 @@ test('personal draft structural list exports share effective items across checkl
 
   await page.reload();
   await openMyFlowView(page);
-  draftFlow = getPersonalDraftFlow(page);
-  await openPersonalDraftFlowIfCollapsed(draftFlow);
+  draftFlow = await getOpenedPersonalDraftFlow(page);
   const checklistAfterReload = await copyListExport(draftFlow, 'checklist');
   expect(checklistAfterReload).toBe(checklistRestored);
 
@@ -1556,8 +1567,11 @@ test('personal draft structural list exports share effective items across checkl
   await expect(wideExport).toBeVisible();
   await wideExport.getByTestId('personal-draft-list-export-toggle').click();
   await expect(wideExport.getByTestId('personal-draft-copy-checklist')).toBeVisible();
-  await expect(wideExport.getByTestId('personal-draft-copy-sheet')).toBeVisible();
   await expect(wideExport.getByTestId('personal-draft-copy-memo')).toBeVisible();
+  const moreFormats = wideExport.getByTestId('my-flow-export-more-formats');
+  await expect(moreFormats).toBeVisible();
+  await moreFormats.locator('summary').click();
+  await expect(wideExport.getByTestId('personal-draft-copy-sheet')).toBeVisible();
   await expectNoHorizontalOverflow(page);
   if (screenshotDir) {
     await hideNextDevOverlay(page);
@@ -2881,8 +2895,7 @@ test('URL-first miss draft appears in Studio draft shelf and returns to My Flow 
   await draftCard.getByTestId('creator-profile-draft-edit-link').click();
   await expect(page).toHaveURL(/\/my/);
   await openMyFlowView(page);
-  const mobileDraftFlow = getPersonalDraftFlow(page);
-  await expect(mobileDraftFlow).toBeVisible();
+  const mobileDraftFlow = await getOpenedPersonalDraftFlow(page);
   await expect(mobileDraftFlow.getByTestId('my-flow-personal-copy-settings-open')).toBeVisible();
 });
 

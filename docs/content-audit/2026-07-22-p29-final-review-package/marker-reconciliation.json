@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "baseline": "P28",
+  "current": "P29",
+  "p28StableContracts": {
+    "oneUserFacingFlowObject": "preserved",
+    "completeSaveBeforeArtifact": "preserved",
+    "truthfulPostSaveReceipt": "preserved_and_separated",
+    "sourcePersonalRunOwnership": "preserved",
+    "seriesOccurrenceOwnership": "preserved",
+    "reversibleCompletionReopen": "preserved",
+    "explicitUndatedQueue": "preserved_and_recomposed",
+    "wholeSelectedCurrentExportScope": "preserved_and_clarified",
+    "stableProjectionIdentity": "preserved",
+    "fourTabIa": "preserved"
+  },
+  "p29Markers": {
+    "P29-SAVE-BEFORE-PRIMARY-RESULT": "pass",
+    "P29-SAVED-RECEIPT-DISTINCT": "pass",
+    "P29-MOBILE-FOCUS-ORDER": "pass",
+    "P29-ROUTINE-SUMMARY-FIRST": "pass",
+    "P29-MY-FLOW-COMPACT-LIBRARY": "pass",
+    "P29-MY-FLOW-ACTION-FIRST": "pass",
+    "P29-MY-FLOW-THREE-PANE": "pass",
+    "P29-CALENDAR-COMPACT-SCOPE": "pass",
+    "P29-CALENDAR-UNDATED-SHEET": "pass",
+    "P29-CALENDAR-BATCH-UNDO": "pass",
+    "P29-CALENDAR-IDENTITY-COMPLETION": "pass",
+    "P29-ARTIFACT-RECOMMENDATION": "pass",
+    "P29-ARTIFACT-EXPORT-PREFLIGHT": "pass",
+    "P29-EXPORT-RECEIPT-IDENTITY": "pass",
+    "P29-CONSISTENT-FLOW-IDENTITY": "pass"
+  },
+  "regressionCount": 0,
+  "schemaMigrationCount": 0,
+  "sourceMutationCount": 0,
+  "observedUserValidation": false
+}

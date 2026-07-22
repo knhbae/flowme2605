@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "count": 23,
+  "root": "screenshots/",
+  "screenshots": [
+    { "file": "p29-01-moving-save-before-390.png", "route": "/f/moving-d30-basic", "viewport": "390x844", "state": "save_before" },
+    { "file": "p29-01-moving-adjust-390.png", "route": "/f/moving-d30-basic", "viewport": "390x844", "state": "adjust" },
+    { "file": "p29-01-moving-receipt-390.png", "route": "/f/moving-d30-basic", "viewport": "390x844", "state": "saved_receipt" },
+    { "file": "p29-01-moving-save-before-1024.png", "route": "/f/moving-d30-basic", "viewport": "1024x768", "state": "save_before" },
+    { "file": "p29-01-moving-receipt-1024.png", "route": "/f/moving-d30-basic", "viewport": "1024x768", "state": "saved_receipt" },
+    { "file": "p29-01-moving-save-before-1440.png", "route": "/f/moving-d30-basic", "viewport": "1440x900", "state": "save_before" },
+    { "file": "p29-01-moving-receipt-1440.png", "route": "/f/moving-d30-basic", "viewport": "1440x900", "state": "saved_receipt" },
+    { "file": "p29-03-routine-summary-390.png", "route": "/f/curated-allblanc-morning-workout", "viewport": "390x844", "state": "routine_summary" },
+    { "file": "p29-03-routine-adjust-390.png", "route": "/f/curated-allblanc-morning-workout", "viewport": "390x844", "state": "routine_adjust" },
+    { "file": "p29-03-routine-summary-1024.png", "route": "/f/curated-allblanc-morning-workout", "viewport": "1024x768", "state": "routine_summary" },
+    { "file": "p29-04-my-flow-library-390.png", "route": "/my?demo=ux20&view=flows", "viewport": "390x844", "state": "library" },
+    { "file": "p29-04-my-flow-detail-390.png", "route": "/my?demo=ux20&view=flows", "viewport": "390x844", "state": "detail" },
+    { "file": "p29-04-my-flow-workspace-1024.png", "route": "/my?demo=ux20&view=flows", "viewport": "1024x768", "state": "workspace" },
+    { "file": "p29-04-my-flow-workspace-1440.png", "route": "/my?demo=ux20&view=flows", "viewport": "1440x900", "state": "workspace" },
+    { "file": "p29-05-calendar-compact-scope-390.png", "route": "/calendar?demo=ux20", "viewport": "390x844", "state": "compact_scope" },
+    { "file": "p29-05-calendar-scope-picker-390.png", "route": "/calendar?demo=ux20", "viewport": "390x844", "state": "scope_picker" },
+    { "file": "p29-05-calendar-undated-sheet-390.png", "route": "/calendar?demo=ux20", "viewport": "390x844", "state": "undated_sheet" },
+    { "file": "p29-05-calendar-batch-undo-390.png", "route": "/calendar?demo=ux20", "viewport": "390x844", "state": "batch_undo" },
+    { "file": "p29-05-calendar-placement-workspace-1024.png", "route": "/calendar?demo=ux20", "viewport": "1024x768", "state": "placement_workspace" },
+    { "file": "p29-05-calendar-workspace-1024.png", "route": "/calendar?demo=ux20", "viewport": "1024x768", "state": "workspace" },
+    { "file": "p29-05-calendar-workspace-1440.png", "route": "/calendar?demo=ux20", "viewport": "1440x900", "state": "workspace" },
+    { "file": "p29-06-export-preflight-390.png", "route": "/f/moving-d30-basic", "viewport": "390x844", "state": "export_preflight" },
+    { "file": "p29-06-export-receipt-390.png", "route": "/f/moving-d30-basic", "viewport": "390x844", "state": "export_receipt" }
+  ]
+}

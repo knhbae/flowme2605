@@ -88,15 +88,15 @@ test('public save-before shows the whole Flow before one start decision', async 
   const setup = hero.getByTestId('public-flow-primary-setup');
   await expect(hero).toHaveAttribute('data-visual-structure', 'artifact-first');
   await expect(hero.getByText('원문', { exact: true })).toBeVisible();
-  await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(5);
-  await expect(preview).toContainText('외 5개');
+  await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(10);
+  await expect(preview).not.toHaveAttribute('open', '');
   await expect(setup).toBeVisible();
 
-  const previewBox = await preview.boundingBox();
-  const setupBox = await setup.boundingBox();
-  expect(previewBox).not.toBeNull();
-  expect(setupBox).not.toBeNull();
-  expect(setupBox!.y).toBeGreaterThan(previewBox!.y);
+  const primaryResult = page.getByTestId('flow-save-before-primary-result');
+  await expect(primaryResult).toBeVisible();
+  expect(await primaryResult.evaluate((result, decision) => (
+    Boolean(result.compareDocumentPosition(decision as Node) & Node.DOCUMENT_POSITION_FOLLOWING)
+  ), await setup.elementHandle())).toBe(true);
 
   const mobileAction = page.getByTestId('public-flow-mobile-save-cta');
   await expect(mobileAction.getByRole('button', { name: '날짜 없이 시작' })).toBeVisible();
@@ -129,16 +129,17 @@ test('wide save-before keeps artifact and setup parallel, then reveals detail be
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/f/vehicle-inspection-prep');
 
-  const preview = page.getByTestId('public-flow-artifact-preview');
+  const preview = page.getByTestId('flow-save-before-primary-result');
   const decision = page.getByTestId('flow-save-before-decision');
-  const workbench = page.getByRole('region', { name: 'Flow artifact workbench' });
+  const outline = page.getByTestId('public-flow-artifact-preview');
   const previewBox = await preview.boundingBox();
   const decisionBox = await decision.boundingBox();
-  const workbenchBox = await workbench.boundingBox();
+  const outlineBox = await outline.boundingBox();
   expect(previewBox).not.toBeNull();
   expect(decisionBox).not.toBeNull();
-  expect(workbenchBox).not.toBeNull();
+  expect(outlineBox).not.toBeNull();
   expect(Math.abs(previewBox!.y - decisionBox!.y)).toBeLessThan(48);
-  expect(workbenchBox!.y).toBeGreaterThan(previewBox!.y + previewBox!.height);
+  expect(outlineBox!.y).toBeGreaterThan(previewBox!.y + previewBox!.height);
+  await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
   await capture(page, '06-public-save-before-wide.png');
 });

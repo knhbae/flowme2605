@@ -50,6 +50,7 @@ export function CalendarDateMovePanel({
       {undo ? (
         <div
           data-testid="my-flow-calendar-date-move-undo"
+          data-p29-marker="P29-CALENDAR-BATCH-UNDO"
           className={`flex min-h-11 items-center justify-between gap-3 ${FLOW_UI_STATUS_INFO_CLASS}`}
           role="status"
         >

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_14_EVIDENCE_DIR;
 
@@ -50,9 +51,7 @@ test('undated public Flow supports atomic one and many scheduling with removal u
     .click();
 
   await page.goto('/my?view=flows');
-  const savedFlow = page.locator(
-    '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="vehicle-inspection-prep"]',
-  );
+  const savedFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
   const prescheduleExport = savedFlow.getByTestId('my-flow-export-surface');
   await prescheduleExport.getByTestId('my-flow-export-entry').click();
   await expect(prescheduleExport.getByTestId('my-flow-export-calendar')).toHaveAttribute(
@@ -90,6 +89,7 @@ test('undated public Flow supports atomic one and many scheduling with removal u
   await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('10');
   await expect(page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-execution-row-shell')).toHaveCount(0);
 
+  await openMobileTray(page);
   const applyBeforeSelectAll = await tray.getByTestId('my-flow-calendar-unscheduled-apply').boundingBox();
   await tray.getByRole('button', { name: '모두 선택' }).click();
   await expect(tray.getByTestId('my-flow-calendar-unscheduled-preview')).toContainText('10개 선택 · Flow 1개');
@@ -135,6 +135,9 @@ test('undated public Flow supports atomic one and many scheduling with removal u
     '1개가 날짜 없는 할 일로 돌아왔습니다.',
   );
   await capture(page, '05-date-removal-undo-mobile.png');
+  if (await page.getByTestId('my-flow-calendar-unscheduled-sheet').isVisible().catch(() => false)) {
+    await page.keyboard.press('Escape');
+  }
   await page.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
   await expect(page.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('7');
   await expect(selectedDay.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);

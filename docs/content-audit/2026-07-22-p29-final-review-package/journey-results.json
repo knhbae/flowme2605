@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "runDate": "2026-07-22",
+  "evidenceKind": "automated_browser_simulation",
+  "observedUserCount": 0,
+  "verdict": "implementation_verified_pending_merge_deploy",
+  "journeys": [
+    {
+      "id": "J1",
+      "name": "moving_save_before_to_receipt",
+      "route": "/f/moving-d30-basic",
+      "steps": ["result preview", "optional adjust", "save", "distinct receipt", "open My Flow"],
+      "status": "pass",
+      "viewport": ["390x844", "1024x768", "1440x900"]
+    },
+    {
+      "id": "J2",
+      "name": "source_backed_public_rollout",
+      "route": "/f/vehicle-inspection-prep",
+      "steps": ["artifact-first preview", "single save path", "export-only detail surface"],
+      "status": "pass",
+      "viewport": ["390x844"]
+    },
+    {
+      "id": "J3",
+      "name": "routine_summary_to_adjust",
+      "route": "/f/curated-allblanc-morning-workout",
+      "steps": ["read cadence summary", "inspect three occurrences", "open schedule adjust"],
+      "status": "pass",
+      "viewport": ["390x844", "1024x768"]
+    },
+    {
+      "id": "J4",
+      "name": "large_my_flow_library",
+      "route": "/my?demo=ux20&view=flows",
+      "steps": ["scan compact rows", "search", "open Flow", "read next action", "open whole plan"],
+      "status": "pass",
+      "viewport": ["390x844", "1024x768", "1440x900"]
+    },
+    {
+      "id": "J5",
+      "name": "calendar_scope_and_selected_day",
+      "route": "/calendar?demo=ux20",
+      "steps": ["read compact scope", "open picker", "select Flow", "inspect selected day"],
+      "status": "pass",
+      "viewport": ["390x844", "1024x768", "1440x900"]
+    },
+    {
+      "id": "J6",
+      "name": "calendar_undated_batch_placement",
+      "route": "/calendar?demo=ux20",
+      "steps": ["open undated sheet", "select items", "place on date", "undo", "return focus"],
+      "status": "pass",
+      "viewport": ["390x844", "1024x768"]
+    },
+    {
+      "id": "J7",
+      "name": "artifact_recommendation_and_export",
+      "route": "/f/moving-d30-basic",
+      "steps": ["read primary recommendation", "choose whole Flow", "confirm count", "receive export receipt"],
+      "status": "pass",
+      "viewport": ["390x844"]
+    },
+    {
+      "id": "J8",
+      "name": "selected_and_current_export_scope",
+      "route": "/my?demo=ux20&view=flows",
+      "steps": ["open Flow", "select items", "export selected", "open item", "export current"],
+      "status": "pass",
+      "viewport": ["390x844"]
+    }
+  ],
+  "humanObservationRequired": [
+    "Whether artifact-first save-before is understood without explanation",
+    "Whether routine summary feels simpler than the prior setup",
+    "Whether users can find one Flow among 20 or more",
+    "Whether undated placement belongs naturally in Calendar",
+    "Whether export scope and primary/secondary artifacts are distinguishable"
+  ]
+}

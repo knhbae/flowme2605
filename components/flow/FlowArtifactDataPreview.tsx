@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { formatKoreanShortDate } from '@/lib/flow/date';
+import { buildArtifactRecommendationVM } from '@/lib/flow/artifact-recommendation';
 import type {
   FlowExperienceProjection,
   FlowExperienceProjectionRow,
@@ -189,7 +190,7 @@ function ShapeRows({ shape, rows }: { shape: FlowExperienceShape; rows: FlowExpe
       {renderShapeRows(shape, visibleRows)}
       {remainingRows.length > 0 ? (
         <details className="border-t border-[var(--flowme-border)]">
-          <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+          <summary className="flex min-h-[var(--flowme-control-height)] cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
             <span>나머지 {remainingRows.length}개 보기</span>
             <span aria-hidden="true">⌄</span>
           </summary>
@@ -201,22 +202,29 @@ function ShapeRows({ shape, rows }: { shape: FlowExperienceShape; rows: FlowExpe
 }
 
 export function FlowArtifactDataPreview({ projection }: { projection: FlowExperienceProjection }) {
-  const availableShapes = [projection.primaryShape, ...projection.secondaryShapes]
-    .filter((shape, index, values) => values.indexOf(shape) === index)
-    .slice(0, 3);
-  const [selectedShape, setSelectedShape] = useState<FlowExperienceShape>(projection.primaryShape);
+  const recommendation = buildArtifactRecommendationVM(projection);
+  const availableShapes = recommendation.visible.map((candidate) => candidate.shape);
+  const initialShape = recommendation.primary?.shape ?? projection.primaryShape;
+  const [selectedShape, setSelectedShape] = useState<FlowExperienceShape>(initialShape);
 
   useEffect(() => {
-    if (!availableShapes.includes(selectedShape)) setSelectedShape(projection.primaryShape);
-  }, [availableShapes, projection.primaryShape, selectedShape]);
+    setSelectedShape(initialShape);
+  }, [initialShape, projection.flowId]);
+
+  useEffect(() => {
+    if (!availableShapes.includes(selectedShape)) setSelectedShape(initialShape);
+  }, [availableShapes, initialShape, selectedShape]);
 
   const selected = projection.shapes[selectedShape];
+  const selectedRecommendation = recommendation.visible.find((candidate) => candidate.shape === selectedShape);
 
   return (
     <section
       data-testid="flow-artifact-data-preview"
       data-primary-shape={projection.primaryShape}
       data-selected-shape={selectedShape}
+      data-p29-marker="P29-ARTIFACT-RECOMMENDATION"
+      data-flow-anatomy="artifact-result"
       className="min-w-0 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
       aria-labelledby="flow-artifact-data-preview-title"
     >
@@ -226,25 +234,33 @@ export function FlowArtifactDataPreview({ projection }: { projection: FlowExperi
           <h2 id="flow-artifact-data-preview-title" className="mt-0.5 text-sm font-semibold text-[var(--flowme-text)]">
             {selected.label} · {selected.count}개
           </h2>
+          {selectedRecommendation ? (
+            <p data-testid="flow-artifact-recommendation-reason" className="mt-1 text-[11px] font-medium text-[var(--flowme-text-secondary)]">
+              {selectedRecommendation.reason} · {selectedRecommendation.lossSummary}
+            </p>
+          ) : null}
         </div>
         {availableShapes.length > 1 ? (
           <div role="group" aria-label="결과 형태" className="flex max-w-full flex-wrap gap-1">
             {availableShapes.map((shape) => {
               const candidate = projection.shapes[shape];
+              const candidateRecommendation = recommendation.visible.find((item) => item.shape === shape);
               const selectedCandidate = shape === selectedShape;
               return (
                 <button
                   key={shape}
                   type="button"
                   aria-pressed={selectedCandidate}
-                  className={`min-h-8 rounded-md border px-2.5 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                  data-recommendation-role={candidateRecommendation?.role}
+                  data-recommendation-count={candidateRecommendation?.count}
+                  className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2.5 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                     selectedCandidate
                       ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action-strong)]'
                       : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)]'
                   }`}
                   onClick={() => setSelectedShape(shape)}
                 >
-                  {candidate.label} {candidate.count}
+                  {candidate.label} {candidateRecommendation?.countLabel ?? candidate.count}
                 </button>
               );
             })}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-22",
+  "baselineSha": "c407bd4dae1b0307026e770d3036f87c22023fa0",
+  "implementationSha": null,
+  "productionSha": null,
+  "evidenceKind": [
+    "current_source",
+    "current_command",
+    "current_package_screenshot",
+    "heuristic_simulation"
+  ],
+  "observedUserCount": 0,
+  "verification": {
+    "p29Targeted": { "passed": 13, "failed": 0 },
+    "flowMvp": { "passed": 129, "failed": 0 },
+    "fullE2e": { "passed": 292, "failed": 0, "workers": 2 },
+    "unit": { "passed": 584, "failed": 0 },
+    "buildRoutes": { "passed": 18, "failed": 0 },
+    "docsRequiredFiles": 14,
+    "docsLocalLinks": 2880,
+    "securityAudit": {
+      "critical": 0,
+      "high": 2,
+      "moderate": 1,
+      "dependencyChangedByP29": false,
+      "untrustedImageConsumerFound": false,
+      "gate": "tracked_controlled_dependency_follow_up"
+    }
+  },
+  "globalMarkers": {
+    "horizontalOverflowCount": 0,
+    "unnamedFocusableCount": 0,
+    "fixedPrimaryOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "sourceMutationCount": 0,
+    "persistenceMigrationCount": 0,
+    "observedUserValidation": false
+  },
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "states": ["save_before", "adjust", "saved_receipt", "export_preflight", "export_receipt"],
+      "markers": {
+        "P29-SAVE-BEFORE-PRIMARY-RESULT": true,
+        "P29-SAVED-RECEIPT-DISTINCT": true,
+        "P29-MOBILE-FOCUS-ORDER": true,
+        "saveBeforeRowEditControlCountBeforeAdjust": 0,
+        "savedReceiptPrimaryActionCount": 1,
+        "artifactRecommendationPrimaryCount": 1,
+        "artifactRecommendationSecondaryMax": 2,
+        "unsupportedVisibleRecommendationCount": 0
+      }
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "states": ["routine_summary", "routine_adjust"],
+      "markers": {
+        "P29-ROUTINE-SUMMARY-FIRST": true,
+        "initialAdvancedInputCount": 0,
+        "nextOccurrencePreviewCount": 3,
+        "seriesMutatedByOccurrenceCompletion": false
+      }
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "states": ["compact_library", "flow_detail", "wide_workspace"],
+      "markers": {
+        "P29-MY-FLOW-COMPACT-LIBRARY": true,
+        "P29-MY-FLOW-ACTION-FIRST": true,
+        "P29-MY-FLOW-THREE-PANE": true,
+        "mobileInitialVisibleRowCount": 8,
+        "mobileVisibleCommandPerRowMax": 1,
+        "wideLibraryRailPx": 280,
+        "wideInspectorPx": 320
+      }
+    },
+    {
+      "route": "/calendar?demo=ux20",
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "states": ["compact_scope", "scope_picker", "undated_sheet", "batch_undo", "wide_workspace"],
+      "markers": {
+        "P29-CALENDAR-COMPACT-SCOPE": true,
+        "P29-CALENDAR-UNDATED-SHEET": true,
+        "P29-CALENDAR-BATCH-UNDO": true,
+        "P29-CALENDAR-IDENTITY-COMPLETION": true,
+        "scopeFixtureFlowCountMin": 12,
+        "pageScrollChangedWhenSheetOpened": false,
+        "focusReturnedAfterSheetClose": true,
+        "wideLibraryRailPx": 280,
+        "wideInspectorPx": 320
+      }
+    }
+  ]
+}

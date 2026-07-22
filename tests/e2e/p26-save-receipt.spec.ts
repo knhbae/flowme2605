@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
 const browserErrors = new WeakMap<Page, string[]>();
@@ -68,8 +69,11 @@ test('public save lands on a reload-safe whole-Flow receipt on mobile', async ({
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
-  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
-  await page.getByTestId('public-flow-mobile-save-cta').getByRole('link', { name: '내 Flow에서 보기' }).click();
+  const savedReceipt = await savePublicFlow(
+    page,
+    page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }),
+  );
+  await openSavedPublicFlow(page, savedReceipt);
 
   const handoff = /\/my\?savedFlow=vehicle-inspection-prep$/;
   const receipt = await assertCanonicalReceipt(page, handoff);
