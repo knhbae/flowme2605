@@ -87,6 +87,8 @@ export function FlowExportPanel({
   const [receipt, setReceipt] = useState<FlowExportResultReceipt | null>(null);
   const [pendingDestination, setPendingDestination] = useState<FlowExportDestination | null>(null);
   const receiptContainerRef = useRef<HTMLDivElement>(null);
+  const recommendationContainerRef = useRef<HTMLDivElement>(null);
+  const entryButtonRef = useRef<HTMLButtonElement>(null);
   const flowPlan = buildFlowExportScopePlan({
     scope: 'flow',
     items,
@@ -138,6 +140,22 @@ export function FlowExportPanel({
     return () => window.cancelAnimationFrame(frame);
   }, [receipt]);
 
+  useEffect(() => {
+    if (!open || window.innerWidth >= 768) return;
+    const frame = window.requestAnimationFrame(() => {
+      const primary = recommendationContainerRef.current
+        ?.querySelector<HTMLElement>('[data-action-priority="primary"]');
+      if (!primary) return;
+      const navigationTop = document
+        .querySelector<HTMLElement>('[data-testid="platform-mobile-tabs"]')
+        ?.getBoundingClientRect().top;
+      const safeBottom = navigationTop ?? window.innerHeight - 16;
+      const overflow = primary.getBoundingClientRect().bottom - safeBottom;
+      if (overflow > 0) window.scrollBy({ top: overflow + 8, behavior: 'auto' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open, scope, selectedKeys.join('|')]);
+
   const renderDestinationButton = (
     destination: FlowExportDestination,
     candidate?: ArtifactExportRecommendation,
@@ -179,7 +197,7 @@ export function FlowExportPanel({
         data-recommendation-role={role}
         data-recommendation-visible={!hidden}
         data-action-priority={role === 'primary' ? 'primary' : 'secondary'}
-        className={`min-h-16 border-b border-r border-[var(--flowme-border)] px-3 py-2 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0 ${
+        className={`min-h-16 scroll-mb-[var(--flowme-mobile-tab-clearance)] border-b border-r border-[var(--flowme-border)] px-3 py-2 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-[var(--flowme-surface-subtle)] disabled:text-[var(--flowme-text-tertiary)] sm:border-b-0 last:border-r-0 ${
           role === 'primary'
             ? 'bg-[var(--flowme-action-soft)] hover:bg-blue-100'
             : 'bg-[var(--flowme-surface)] hover:bg-[var(--flowme-surface-subtle)]'
@@ -219,10 +237,12 @@ export function FlowExportPanel({
   return (
     <FlowExportPlan
       data-testid={legacyPersonalDraft ? 'personal-draft-list-export' : 'my-flow-export-surface'}
-      className="mt-3"
+      data-p30-marker={open ? 'P30-MOBILE-EXPORT-NO-FIXED-OVERLAP' : undefined}
+      className={`mt-3 ${open ? 'flowme-mobile-export-clearance' : ''}`}
     >
       {showEntry ? (
         <button
+          ref={entryButtonRef}
           type="button"
           data-testid={legacyPersonalDraft ? 'personal-draft-list-export-toggle' : 'my-flow-export-entry'}
           aria-expanded={open}
@@ -255,7 +275,10 @@ export function FlowExportPanel({
                 aria-label={`${flowTitle} 가져가기 닫기`}
                 title="닫기"
                 className={FLOW_UI_ICON_ACTION_CLASS}
-                onClick={() => onOpenChange(false)}
+                onClick={() => {
+                  onOpenChange(false);
+                  window.requestAnimationFrame(() => entryButtonRef.current?.focus({ preventScroll: true }));
+                }}
               >
                 <span aria-hidden="true">×</span>
               </button>
@@ -355,6 +378,7 @@ export function FlowExportPanel({
           ) : null}
 
           <div
+            ref={recommendationContainerRef}
             data-testid="my-flow-export-recommendations"
             data-p29-marker="P29-ARTIFACT-EXPORT-PREFLIGHT"
             className="mt-3"

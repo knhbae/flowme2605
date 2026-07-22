@@ -17877,6 +17877,7 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [view, setView] = useState<PublicView>('list');
   const [showMobileActions, setShowMobileActions] = useState(false);
   const [showMobileExportSheet, setShowMobileExportSheet] = useState(false);
+  const [publicExportOpen, setPublicExportOpen] = useState(false);
   const [publicAdjustmentOpen, setPublicAdjustmentOpen] = useState(false);
   const [publicAdjustmentMode, setPublicAdjustmentMode] = useState<PublicFlowAdjustmentMode>('include');
   const [publicAdjustmentItems, setPublicAdjustmentItems] = useState<Record<string, PublicFlowAdjustmentItem>>({});
@@ -17999,11 +18000,13 @@ export function PublicFlow({ slug }: { slug: string }) {
   const showPublicHeroSetup = true;
   const showPublicSetupInput = showPublicHeroSetup && (bundle.flow.anchor_type !== 'none' || isUserScheduledExactVideo(bundle));
   const useP24CompactPublicFrame = !compactJeonsePage;
-  const publicMobileClearanceClass = useP29ArtifactFirstFrame && savedFlowAt
-    ? ''
-    : showPublicSaveAction
-      ? 'flowme-mobile-save-clearance'
-      : 'flowme-mobile-export-clearance';
+  const publicMobileClearanceClass = publicExportOpen
+    ? 'flowme-mobile-export-clearance'
+    : useP29ArtifactFirstFrame && savedFlowAt
+      ? ''
+      : showPublicSaveAction
+        ? 'flowme-mobile-save-clearance'
+        : 'flowme-mobile-export-clearance';
   const publicSaveBeforeRows = getPublicSaveBeforePreviewRows(bundle, displayAnchor);
   const publicScheduleDateByItemId = new Map(
     getScheduleEntries(bundle, displayAnchor).map((entry) => [baseStateId(entry.id), entry.startDate]),
@@ -18454,7 +18457,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       </div>
     ) : null;
   const renderP29PublicMobileSaveCta = () =>
-    showPublicSaveAction && !savedFlowAt && !publicAdjustmentOpen ? (
+    showPublicSaveAction && !savedFlowAt && !publicAdjustmentOpen && !publicExportOpen ? (
       <div
         data-testid="public-flow-mobile-save-cta"
         data-p29-marker="P29-MOBILE-FOCUS-ORDER"
@@ -18778,6 +18781,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         onExportFlow: exportPublicFlowScope,
       }}
       presentationMode={useP29ArtifactFirstFrame ? 'export-only' : 'full'}
+      onExportOpenChange={setPublicExportOpen}
     />
   );
   const renderArtifactWorkbenchDisclosure = () => (
