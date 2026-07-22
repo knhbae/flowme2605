@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-07-22 - P29 Coordinated Surface Reset
+
+- Released artifact-first public save-before, a distinct saved receipt, summary-first routine setup, an action-first My Flow library/detail workspace, unified Calendar scope and undated placement, and predictable scoped export recommendations.
+- Merged [PR #146](https://github.com/knhbae/flowme2605/pull/146) as `10e6e5154372ce14d69302ed7bff0b748e3ae868`; GitHub production deployment `5550925534` reached <https://flowme2605.vercel.app>.
+- Verified P29 Playwright `13 / 13`, full Playwright `292 / 292`, unit `584 / 584`, production build `18 / 18`, post-merge CI green, and canonical production smoke `9 / 9` with overflow/unnamed-focusable/console-page-error counts `0`.
+- Published the [P29 final review package](./content-audit/2026-07-22-p29-final-review-package/README.md) with `23` implementation and `9` production screenshots. Dependency audit is critical/high `0`, moderate `2`; no semantic version tag was created, and observed-user sessions remain `0`.
+
 ## 2026-07-22 - P28 Cross-Surface Experience Reconstruction
 
 - Released the Hybrid save-before workspace, shared item-role and artifact projection, common routine schedule grammar, responsive My Flow rail/detail, scalable Calendar Flow picker, and five actual-data result shapes.

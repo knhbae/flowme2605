@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-22<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P29 local verification complete, production closeout pending<br>
+**Current Validation Stage:** internal alpha / P29 production closeout complete, independent review pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P29-08 merge, canonical deployment, and production smoke
+**Next Milestone:** Independent P29 design/code review and owner decision before any P30 definition
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -37,9 +37,9 @@ Detailed execution plan: [P29 coordinated surface reset](./specs/2026-07-22-p29-
 | P29-05 | Unify Calendar scope, selected-day agenda, and undated placement | Complete |
 | P29-06 | Connect artifact recommendation, export scope, loss preview, and receipt vocabulary | Complete |
 | P29-07 | Close shared visual, responsive, keyboard, and accessibility gates | Complete by current command/browser evidence |
-| P29-08 | Run independent production integration and closeout | Local verification complete; merge/deploy/smoke pending |
+| P29-08 | Run independent production integration and closeout | Complete and released through PR #146 and merge `10e6e515` |
 
-The moving vertical proof passed before the shared rollout. Current branch evidence is P29 Playwright `13 / 13`, full Playwright `292 / 292`, unit `584 / 584`, production build `18 / 18`, and `23` responsive screenshots. P29 preserves P28 projection and stable identity contracts; the remaining gate is publish-state verification on canonical production. External user observation remains deferred and is not implied by these automated results.
+The moving vertical proof passed before the shared rollout. P29 evidence is P29 Playwright `13 / 13`, full Playwright `292 / 292`, unit `584 / 584`, production build `18 / 18`, `23` implementation screenshots, and `9` canonical production screenshots. P29 preserves P28 projection and stable identity contracts. [PR #146](https://github.com/knhbae/flowme2605/pull/146) merged as `10e6e515`; post-merge CI passed and canonical production smoke is `9 / 9` with overflow/unnamed-focusable/console-page-error counts `0`. External user observation remains deferred and is not implied by these results. P30 is not defined until independent review and owner judgment identify a concrete evidence gap.
 
 ## P28 Cross-Surface Experience Reconstruction
 

@@ -1,11 +1,12 @@
 {
   "schemaVersion": 1,
-  "status": "pending_merge_deploy",
-  "checkedAt": null,
+  "status": "pass",
+  "checkedAt": "2026-07-22T06:38:00Z",
   "canonicalUrl": "https://flowme2605.vercel.app",
-  "implementationCommit": null,
-  "mergeSha": null,
-  "vercelDeployment": null,
+  "implementationCommit": "5304807a3f3beaea33cd9701b72ea18af88da978",
+  "mergeSha": "10e6e5154372ce14d69302ed7bff0b748e3ae868",
+  "githubDeploymentId": 5550925534,
+  "vercelDeploymentUrl": "https://flowme2605-5r6k8i423-flowme.vercel.app",
   "routes": [
     "/f/moving-d30-basic",
     "/my?demo=ux20&view=flows",
@@ -16,14 +17,116 @@
     "1024x768",
     "1440x900"
   ],
-  "results": [],
+  "results": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "markers": { "saveBefore": true, "receipt": true, "receiptPrimaryCount": 1 },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-moving-390.png"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "markers": { "compactLibraryRowCount": 8, "threePaneCount": 0 },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-my-390.png"
+    },
+    {
+      "route": "/calendar?demo=ux20",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "markers": { "compactScope": true, "workspaceCount": 1, "undatedSheetState": "not_seeded" },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-calendar-390.png"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "1024x768",
+      "httpStatus": 200,
+      "markers": { "saveBefore": true, "receipt": true, "receiptPrimaryCount": 1 },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-moving-1024.png"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1024x768",
+      "httpStatus": 200,
+      "markers": { "compactLibraryRowCount": 0, "threePaneCount": 1 },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-my-1024.png"
+    },
+    {
+      "route": "/calendar?demo=ux20",
+      "viewport": "1024x768",
+      "httpStatus": 200,
+      "markers": { "compactScope": true, "workspaceCount": 1, "undatedSheetState": "not_seeded" },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-calendar-1024.png"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "1440x900",
+      "httpStatus": 200,
+      "markers": { "saveBefore": true, "receipt": true, "receiptPrimaryCount": 1 },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-moving-1440.png"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1440x900",
+      "httpStatus": 200,
+      "markers": { "compactLibraryRowCount": 0, "threePaneCount": 1 },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-my-1440.png"
+    },
+    {
+      "route": "/calendar?demo=ux20",
+      "viewport": "1440x900",
+      "httpStatus": 200,
+      "markers": { "compactScope": true, "workspaceCount": 1, "undatedSheetState": "not_seeded" },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p29-production-calendar-1440.png"
+    }
+  ],
   "summary": {
-    "routeViewportChecks": 0,
-    "httpOrNavigationFailureCount": null,
-    "horizontalOverflowCount": null,
-    "consoleErrorCount": null,
-    "pageErrorCount": null
+    "routeViewportChecks": 9,
+    "httpOrNavigationFailureCount": 0,
+    "markerFailureCount": 0,
+    "horizontalOverflowCount": 0,
+    "unnamedFocusableCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
   },
-  "evidenceKind": "publish_state_placeholder",
-  "note": "P29 implementation is locally verified. Replace this placeholder with current_production_interaction evidence after merge and canonical Vercel deployment."
+  "evidenceKind": "current_production_interaction",
+  "note": "The canonical production demo has no undated items, so the mobile undated sheet is recorded as not_seeded here. Its seeded interaction, batch placement, undo, and focus return are covered by the current P29 E2E package."
 }
