@@ -21,11 +21,12 @@
     "docsLocalLinks": 2880,
     "securityAudit": {
       "critical": 0,
-      "high": 2,
-      "moderate": 1,
-      "dependencyChangedByP29": false,
+      "high": 0,
+      "moderate": 2,
+      "dependencyChangedByP29": true,
+      "sharpOverrideVersion": "0.35.3",
       "untrustedImageConsumerFound": false,
-      "gate": "tracked_controlled_dependency_follow_up"
+      "gate": "high_pass_moderate_watchpoint"
     }
   },
   "globalMarkers": {

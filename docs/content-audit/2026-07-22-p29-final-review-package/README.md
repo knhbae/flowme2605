@@ -37,7 +37,7 @@ P29는 P28에서 확정한 source, personal overlay, execution run, occurrence, 
 - 단위 테스트: `584 / 584` pass
 - production build: `18 / 18` routes pass
 - docs check: `14` required files, `2,880` local links pass
-- dependency audit: critical `0`, high `2`, moderate `1` (기존 Next `sharp`/`postcss` transitive chain; P29 lockfile 변경 없음)
+- dependency audit: critical `0`, high `0`, moderate `2` (`sharp 0.35.3` controlled override; Next 내부 `postcss`만 잔존)
 - P29 screenshot: `23`장
 - 390/1024/1440 reviewed route horizontal overflow: `0`
 - reviewed route unnamed focusable: `0`
@@ -83,7 +83,7 @@ P28 전체 E2E `346`개에서 legacy `67`개를 제거하고 P29 전용 `13`개�
 - 모바일 routine은 고급 입력을 접었지만 고정 command와 설정 summary가 같은 viewport에서 여전히 조밀하게 느껴질 수 있다.
 - My Flow 27개 fixture는 검색·drill-in이 가능하지만 50개 이상 virtualization은 없다.
 - `AppClient.tsx`에서 일부 경계를 component로 분리했지만 전체 파일의 구조적 크기는 여전히 후속 유지보수 위험이다.
-- 2026-07-21 공개된 `sharp <0.35.0` advisory 때문에 현재 `npm audit --audit-level=high`는 high `2`로 종료한다. 현재 앱에는 `next/image` 또는 사용자 이미지 업로드 consumer가 없고 advisory의 영향 조건인 untrusted image processing 경로가 확인되지 않았지만, scanner가 green인 것은 아니다. `npm audit fix --force`가 제안하는 Next downgrade는 적용하지 않았으며 Next가 지원하는 patched `sharp` 경로가 생기면 별도 controlled dependency gate로 처리해야 한다.
+- 2026-07-21 공개된 `sharp <0.35.0` advisory가 첫 CI를 막았다. `npm audit fix --force`가 제안한 Next downgrade는 거부하고 transitive `sharp`만 patched `0.35.3`으로 고정했다. unit/build/P29 E2E와 CI로 호환성을 검증하며, Next 내부 `postcss 8.4.31` moderate `2`는 지원되는 비파괴 패치가 없어 잔여 dependency watchpoint로 남긴다.
 - account sync, 실제 AI/crawler, OAuth/direct sync, permanent-delete 정책은 P29 범위가 아니다.
 
 현재 판정은 “구현과 자동 회귀 검증 완료, merge/deploy 전”이다. “실제 사용자 검증 완료” 또는 “상용 UX 최종 승인”이 아니다.

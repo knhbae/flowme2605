@@ -136,14 +136,14 @@ Claude Design의 coordinated surface reset 제안과 Codex의 vertical-slice 제
 | unit | `584/584` |
 | docs check | pass, `2,880` local links |
 | production build | pass, `18/18` routes |
-| dependency audit | critical `0`, high `2`, moderate `1`; existing transitive Next chain |
+| dependency audit | critical `0`, high `0`, moderate `2`; `sharp 0.35.3` controlled override |
 | screenshots | `23` |
 | horizontal overflow | `0` |
 | unnamed focusable | `0` |
 | fixed primary overlap | `0` |
 | console/page error | `0` |
 
-`npm audit --audit-level=high`의 high 2건은 2026-07-21 공개된 [`sharp <0.35.0` advisory](https://github.com/advisories/GHSA-f88m-g3jw-g9cj)에서 왔다. 현재 Next `15.5.20`이 optional `sharp ^0.34.3`을 설치하며 P29은 package-lock이나 runtime dependency를 변경하지 않았다. 저장소 검색에서 `next/image`, 직접 `sharp`, 사용자 이미지 업로드 consumer는 발견되지 않아 advisory가 설명하는 untrusted image processing 노출 경로는 현재 확인되지 않았다. 다만 scanner 결과는 green으로 표현하지 않는다. `npm audit fix --force`는 Next downgrade를 제안하므로 적용하지 않았고, Next가 `sharp >=0.35.0`을 지원하는 경로를 제공할 때 controlled dependency update로 분리한다.
+첫 CI는 2026-07-21 공개된 [`sharp <0.35.0` advisory](https://github.com/advisories/GHSA-f88m-g3jw-g9cj) high 2건으로 중단됐다. `npm audit fix --force`는 Next `9.3.3` downgrade를 제안하므로 적용하지 않았다. 대신 Next `15.5.20`의 optional dependency를 patched `sharp 0.35.3`으로 고정하고 lockfile을 갱신했다. 설치 트리와 `npm audit --audit-level=high`은 critical/high `0`이며 unit, build, P29 E2E와 CI를 다시 검증한다. Next 내부 `postcss 8.4.31` 때문에 moderate `2`는 남아 있고, 이는 지원되는 비파괴 Next 업데이트가 생길 때 별도 controlled dependency update로 처리한다.
 
 ## 7. 실제 사용자에게 남은 질문
 
