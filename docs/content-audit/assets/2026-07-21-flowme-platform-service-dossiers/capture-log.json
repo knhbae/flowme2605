@@ -1,0 +1,439 @@
+{
+  "generatedAt": "2026-07-23T12:11:43.649Z",
+  "viewport": "1440x900",
+  "entries": [
+    {
+      "name": "GitHub",
+      "slug": "github",
+      "requestedUrls": [
+        "https://github.com/explore"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:07.683Z",
+      "sourceUrl": "https://github.com/explore",
+      "finalUrl": "https://github.com/explore",
+      "title": "Explore GitHub · GitHub",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/github.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 6803,
+        "substantialImages": 8,
+        "links": 355,
+        "buttons": 22
+      }
+    },
+    {
+      "name": "n8n Templates",
+      "slug": "n8n-templates",
+      "requestedUrls": [
+        "https://n8n.io/workflows/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:12.961Z",
+      "sourceUrl": "https://n8n.io/workflows/",
+      "finalUrl": "https://n8n.io/workflows/",
+      "title": "Discover 10908 Automation Workflows from the n8n's Community",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/n8n-templates.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 6192,
+        "substantialImages": 72,
+        "links": 148,
+        "buttons": 16
+      }
+    },
+    {
+      "name": "Product Hunt",
+      "slug": "product-hunt",
+      "requestedUrls": [
+        "https://www.producthunt.com/"
+      ],
+      "status": "fallback",
+      "capturedAt": "2026-07-23T11:42:17.332Z",
+      "sourceUrl": "https://www.producthunt.com/",
+      "finalUrl": "https://www.producthunt.com/",
+      "title": "Product Hunt 기존 공식 근거 화면",
+      "imagePath": "./assets/2026-07-20-flowme-contributor-platform-growth-strategy/product-hunt-founder-first-2000.png",
+      "limitation": "공개 화면의 내용이 충분하지 않음: HTTP 403; 기존 공식 근거 화면 사용"
+    },
+    {
+      "name": "Notion Marketplace",
+      "slug": "notion-marketplace",
+      "requestedUrls": [
+        "https://www.notion.com/templates"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:21.005Z",
+      "sourceUrl": "https://www.notion.com/templates",
+      "finalUrl": "https://www.notion.com/templates",
+      "title": "Choose from 30,000+ Notion templates | Notion Marketplace",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/notion-marketplace.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 5360,
+        "substantialImages": 19,
+        "links": 186,
+        "buttons": 43
+      }
+    },
+    {
+      "name": "note",
+      "slug": "note",
+      "requestedUrls": [
+        "https://note.com/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:25.104Z",
+      "sourceUrl": "https://note.com/",
+      "finalUrl": "https://note.com/",
+      "title": "note ――つくる、つながる、とどける。",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/note.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 7167,
+        "substantialImages": 225,
+        "links": 351,
+        "buttons": 368
+      }
+    },
+    {
+      "name": "Substack",
+      "slug": "substack",
+      "requestedUrls": [
+        "https://substack.com/home",
+        "https://substack.com/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:29.279Z",
+      "sourceUrl": "https://substack.com/home",
+      "finalUrl": "https://substack.com/",
+      "title": "Substack",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/substack.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 2772,
+        "substantialImages": 4,
+        "links": 31,
+        "buttons": 48
+      }
+    },
+    {
+      "name": "wikiHow",
+      "slug": "wikihow",
+      "requestedUrls": [
+        "https://www.wikihow.com/Main-Page"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:34.252Z",
+      "sourceUrl": "https://www.wikihow.com/Main-Page",
+      "finalUrl": "https://www.wikihow.com/Main-Page",
+      "title": "wikiHow: How-to instructions you can trust.",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/wikihow.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 8484,
+        "substantialImages": 63,
+        "links": 305,
+        "buttons": 13
+      }
+    },
+    {
+      "name": "Figma Community",
+      "slug": "figma-community",
+      "requestedUrls": [
+        "https://www.figma.com/community"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:38.318Z",
+      "sourceUrl": "https://www.figma.com/community",
+      "finalUrl": "https://www.figma.com/ko-kr/community",
+      "title": "Figma 커뮤니티 | 무료 디자인 파일, 플러그인 등 살펴보기 – Figma",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/figma-community.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 7632,
+        "substantialImages": 41,
+        "links": 329,
+        "buttons": 31
+      }
+    },
+    {
+      "name": "Canva Creators",
+      "slug": "canva-creators",
+      "requestedUrls": [
+        "https://www.canva.com/creators/templates/",
+        "https://www.canva.com/creators/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:43.136Z",
+      "sourceUrl": "https://www.canva.com/creators/",
+      "finalUrl": "https://www.canva.com/creators/",
+      "title": "Canva Creators: Share your designs with the world",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/canva-creators.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 4761,
+        "substantialImages": 18,
+        "links": 177,
+        "buttons": 23
+      }
+    },
+    {
+      "name": "Wikipedia",
+      "slug": "wikipedia",
+      "requestedUrls": [
+        "https://ko.wikipedia.org/wiki/위키백과:대문"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:52.278Z",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/위키백과:대문",
+      "finalUrl": "https://ko.wikipedia.org/wiki/%EC%9C%84%ED%82%A4%EB%B0%B1%EA%B3%BC:%EB%8C%80%EB%AC%B8",
+      "title": "위키백과, 우리 모두의 백과사전",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/wikipedia.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 3032,
+        "substantialImages": 7,
+        "links": 303,
+        "buttons": 10
+      }
+    },
+    {
+      "name": "OpenStreetMap",
+      "slug": "openstreetmap",
+      "requestedUrls": [
+        "https://www.openstreetmap.org/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:42:56.343Z",
+      "sourceUrl": "https://www.openstreetmap.org/",
+      "finalUrl": "https://www.openstreetmap.org/#map=7/35.948/127.736",
+      "title": "오픈스트리트맵",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/openstreetmap.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 116,
+        "substantialImages": 29,
+        "links": 42,
+        "buttons": 21
+      }
+    },
+    {
+      "name": "Hugging Face Hub",
+      "slug": "hugging-face-hub",
+      "requestedUrls": [
+        "https://huggingface.co/models"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:01.296Z",
+      "sourceUrl": "https://huggingface.co/models",
+      "finalUrl": "https://huggingface.co/models",
+      "title": "Models – Hugging Face",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/hugging-face-hub.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 3956,
+        "substantialImages": 29,
+        "links": 113,
+        "buttons": 34
+      }
+    },
+    {
+      "name": "NAVER 지식iN",
+      "slug": "naver-knowledge-in",
+      "requestedUrls": [
+        "https://kin.naver.com/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:05.768Z",
+      "sourceUrl": "https://kin.naver.com/",
+      "finalUrl": "https://kin.naver.com/",
+      "title": "네이버 지식iN",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/naver-knowledge-in.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 3913,
+        "substantialImages": 13,
+        "links": 318,
+        "buttons": 36
+      }
+    },
+    {
+      "name": "Stack Overflow",
+      "slug": "stack-overflow",
+      "requestedUrls": [
+        "https://stackoverflow.com/questions/list",
+        "https://stackoverflow.com/help/how-to-ask"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:44:19.861Z",
+      "sourceUrl": "https://stackoverflow.com/help/how-to-ask",
+      "finalUrl": "https://stackoverflow.com/help/how-to-ask",
+      "title": "How do I ask a good question? - Help Center - Stack Overflow",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/stack-overflow.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 9882,
+        "substantialImages": 0,
+        "links": 137,
+        "buttons": 837
+      }
+    },
+    {
+      "name": "오늘의집",
+      "slug": "today-house",
+      "requestedUrls": [
+        "https://play.google.com/store/apps/details?id=net.bucketplace&hl=ko",
+        "https://ohou.se/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:57:30.441Z",
+      "sourceUrl": "https://play.google.com/store/apps/details?id=net.bucketplace&hl=ko",
+      "finalUrl": "https://play.google.com/store/apps/details?id=net.bucketplace&hl=ko",
+      "title": "오늘의집 - 라이프스타일 슈퍼앱 - Google Play 앱",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/today-house.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 3841,
+        "substantialImages": 11,
+        "links": 43,
+        "buttons": 23
+      }
+    },
+    {
+      "name": "Google Maps Local Guides",
+      "slug": "google-local-guides",
+      "requestedUrls": [
+        "https://www.google.com/local/guides/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:17.554Z",
+      "sourceUrl": "https://www.google.com/local/guides/",
+      "finalUrl": "https://maps.google.com/intl/en_us/localguides/",
+      "title": "Local Guides - Google Maps Local Guides",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/google-local-guides.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 2529,
+        "substantialImages": 9,
+        "links": 27,
+        "buttons": 6
+      }
+    },
+    {
+      "name": "YouTube",
+      "slug": "youtube",
+      "requestedUrls": [
+        "https://www.youtube.com/results?search_query=%EC%95%84%EC%9D%B4%EC%99%80+%EC%BA%A0%ED%95%91+%EC%A4%80%EB%B9%84",
+        "https://www.youtube.com/feed/trending"
+      ],
+      "status": "fallback",
+      "capturedAt": "2026-07-23T12:11:43.716Z",
+      "sourceUrl": "https://www.youtube.com/creators/",
+      "finalUrl": "https://www.youtube.com/creators/",
+      "title": "YouTube 기존 원자료 화면",
+      "imagePath": "./assets/2026-07-13-flowme-ecosystem-platform-vertical-strategy/youtube-creators.png",
+      "limitation": "공개 홈의 내용이 비어 있는 환경이라 지정된 원자료 화면 사용"
+    },
+    {
+      "name": "Instructables",
+      "slug": "instructables",
+      "requestedUrls": [
+        "https://www.instructables.com/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:26.156Z",
+      "sourceUrl": "https://www.instructables.com/",
+      "finalUrl": "https://www.instructables.com/",
+      "title": "Yours for the making",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/instructables.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 2768,
+        "substantialImages": 37,
+        "links": 176,
+        "buttons": 14
+      }
+    },
+    {
+      "name": "Cookpad",
+      "slug": "cookpad",
+      "requestedUrls": [
+        "https://cookpad.com/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:31.186Z",
+      "sourceUrl": "https://cookpad.com/",
+      "finalUrl": "https://cookpad.com/uk",
+      "title": "Save, Publish & Share Recipes with Home Cooks Worldwide - Cookpad",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/cookpad.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 1760,
+        "substantialImages": 17,
+        "links": 81,
+        "buttons": 12
+      }
+    },
+    {
+      "name": "Reddit",
+      "slug": "reddit",
+      "requestedUrls": [
+        "https://www.reddit.com/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:35.605Z",
+      "sourceUrl": "https://www.reddit.com/",
+      "finalUrl": "https://www.reddit.com/?solution=8e60c047c35952fe8e60c047c35952fe&js_challenge=1&token=7afd7253fec22262ff1c52b1703fe9ec152bc7980cdd94d85eba0d3cf13ad72e&jsc_orig_r=",
+      "title": "Reddit - 인터넷의 맥박",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/reddit.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 975,
+        "substantialImages": 12,
+        "links": 92,
+        "buttons": 9
+      }
+    },
+    {
+      "name": "Disquiet",
+      "slug": "disquiet",
+      "requestedUrls": [
+        "https://disquiet.io/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:39.307Z",
+      "sourceUrl": "https://disquiet.io/",
+      "finalUrl": "https://disquiet.io/",
+      "title": "Home | Disquiet*",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/disquiet.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 20993,
+        "substantialImages": 0,
+        "links": 86,
+        "buttons": 22
+      }
+    },
+    {
+      "name": "NAVER Cafe",
+      "slug": "naver-cafe",
+      "requestedUrls": [
+        "https://section.cafe.naver.com/ca-fe/"
+      ],
+      "status": "captured",
+      "capturedAt": "2026-07-23T11:43:44.593Z",
+      "sourceUrl": "https://section.cafe.naver.com/ca-fe/",
+      "finalUrl": "https://section.cafe.naver.com/ca-fe/home",
+      "title": "네이버 카페",
+      "imagePath": "./assets/2026-07-21-flowme-platform-service-dossiers/naver-cafe.jpg",
+      "limitation": null,
+      "pageSignals": {
+        "textLength": 3856,
+        "substantialImages": 25,
+        "links": 123,
+        "buttons": 48
+      }
+    }
+  ]
+}

@@ -1,0 +1,5127 @@
+{
+  "schemaVersion": "flowme-vertical-content-mapping-v1",
+  "generatedAt": "2026-07-23T01:24:46.290Z",
+  "definition": "원본 전체가 아니라 체크 가능한 행동 제목과 상세 설명, 필요한 선택 실행 데이터만 기준본으로 변환한다.",
+  "fields": {
+    "goalOutcome": "목표·기대 결과",
+    "actionTitle": "행동 제목",
+    "detail": "상세 설명",
+    "prerequisite": "선행조건",
+    "materials": "준비물",
+    "duration": "예상 시간",
+    "dateWindow": "날짜·기간·마감",
+    "locationRoute": "장소·경로",
+    "cost": "비용",
+    "participants": "참여자·담당자",
+    "sequence": "단계·순서",
+    "parallelWork": "병렬 작업",
+    "branch": "선택 분기",
+    "repeat": "반복 주기",
+    "stopCondition": "실패·중단 조건",
+    "completion": "완료 기준",
+    "nextAction": "다음 행동",
+    "creatorSource": "제작자·출처",
+    "versionModified": "버전·수정일",
+    "riskCaution": "위험·주의",
+    "reviewHistory": "후기·실행 이력",
+    "commerceExternal": "상품·예약·외부 링크"
+  },
+  "mappings": [
+    {
+      "serviceId": "babybilly",
+      "serviceName": "베이비빌리",
+      "categoryId": "family_parenting",
+      "relationship": "원본 공급처 후보 · 제작자 유통 채널",
+      "sourceSamples": [
+        {
+          "id": "babybilly-newborn-play-10",
+          "title": "신생아 시기 발달을 돕는 10가지 놀이!",
+          "url": "https://babybilly.co/ko/post/3981",
+          "provider": "베이비빌리 · 출처 표기: 이민주육아상담소",
+          "dataFields": {
+            "goalOutcome": "present_in_prose_or_media",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "present_in_prose_or_media",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "creator_judgment",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "flowme_inference_required",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "babybilly-birth-prep-pdf",
+          "title": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요!",
+          "url": "https://babybilly.co/ko/post/1927",
+          "provider": "베이비빌리",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "absent",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "flowme_inference_required",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "babybilly-newborn-play-10",
+        "userNeed": "신생아 보호자가 원문의 놀이 후보 중 오늘 할 한 가지를 잊지 않고 실행한다.",
+        "sourceShape": "10개 제목과 설명이 있는 놀이 아이디어 글",
+        "sourceRowUnit": "놀이 제목 1개",
+        "naturalFlowType": "저장형",
+        "primaryDestination": "bucket_then_optional_checklist",
+        "baseline": {
+          "title": "신생아 놀이 하나 골라두기",
+          "detail": "10가지 놀이 중 하나를 고르고, 자세와 주의사항은 베이비빌리 원문에서 확인한다.",
+          "items": [
+            {
+              "title": "해볼 놀이 하나 고르기",
+              "detail": "원문에 나온 놀이 제목 중 하나만 선택한다.",
+              "sourceRefs": [
+                "babybilly-newborn-play-10"
+              ]
+            },
+            {
+              "title": "원문을 열어 놀이 실행하기",
+              "detail": "사진·거리·안전 설명은 원문을 그대로 본다.",
+              "sourceRefs": [
+                "babybilly-newborn-play-10"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "고른 놀이",
+          "날짜는 선택"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "chosenActivity": "초점책 보여주기",
+              "date": "나중에 정하기"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "초점책 보여주기",
+          "items": [
+            {
+              "title": "초점책 보여주기",
+              "date": null,
+              "detail": "원문에서 20~35cm 거리와 보호자 상호작용 설명을 확인한 뒤 실행한다.",
+              "sourceUrl": "https://babybilly.co/ko/post/3981"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트 1항목",
+          "원문 링크가 있는 메모",
+          "날짜를 정한 뒤 추가할 선택적 캘린더 항목"
+        ],
+        "afterRun": "완료 여부와 비공개 한 줄 메모만 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "놀이 제목과 원문 설명",
+            "원문에 명시된 안전 주의"
+          ],
+          "creatorExperience": [
+            "발달 효과에 대한 설명"
+          ],
+          "flowmeInference": [
+            "사용자가 고른 놀이",
+            "실행일"
+          ],
+          "caution": [
+            "발달 진단이나 치료 효과로 표현하지 않는다.",
+            "물놀이 등 안전 위험이 있는 후보는 원문 주의를 함께 표시한다."
+          ]
+        },
+        "doNotBuild": "10개 놀이를 모두 의무 일정으로 만들거나 원문 사진·설명을 재호스팅하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "행동 제목",
+          "상세 설명",
+          "원문·제작자 표시",
+          "체크 상태",
+          "날짜를 정한 경우 ICS"
+        ],
+        "needsBuild": [
+          "날짜 미정 버킷 저장",
+          "놀이 후보 중 하나를 고르는 가벼운 선택 UX",
+          "자녀 연령 조건 표시"
+        ],
+        "external": [
+          "전문가 상담",
+          "원문 PDF·이미지",
+          "쇼핑·자료 내려받기"
+        ],
+        "doNotCover": [
+          "발달 진단",
+          "의료적 권장 판단",
+          "원문 전체 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "전문가 상담",
+          "원문 PDF·이미지",
+          "쇼핑·자료 내려받기"
+        ],
+        "neverOwns": [
+          "발달 진단",
+          "의료적 권장 판단",
+          "원문 전체 복제"
+        ]
+      },
+      "decision": {
+        "p0": "start_with_guardrails",
+        "representativeFlow": "놀이 한 가지 저장 + 출산 준비물 PDF 실행본",
+        "why": "한국어 원문과 행동 후보가 분명하지만, 모든 글을 다단계 계획으로 만들 필요는 없다.",
+        "biggestGap": "날짜 미정 저장과 안전 문구",
+        "biggestRisk": "편집형 조언을 공식 발달 기준처럼 보이게 하는 것"
+      }
+    },
+    {
+      "serviceId": "netmums",
+      "serviceName": "Netmums",
+      "categoryId": "family_parenting",
+      "relationship": "콘텐츠 구조 벤치마크 · 한국 적용은 보류",
+      "sourceSamples": [
+        {
+          "id": "netmums-6-month",
+          "title": "Your 6-month-old baby: what to expect",
+          "url": "https://www.netmums.com/baby/6-month-old-baby",
+          "provider": "Netmums · Polly Logan-Banks",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "present_in_prose_or_media",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "present_in_prose_or_media",
+            "duration": "absent",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "present_in_prose_or_media",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "creator_judgment",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "netmums-12-month",
+          "title": "Your 12-month-old baby: what to expect",
+          "url": "https://www.netmums.com/baby/12-month-old-baby",
+          "provider": "Netmums",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "present_in_prose_or_media",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "present_in_prose_or_media",
+            "duration": "absent",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "present_in_prose_or_media",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "flowme_inference_required",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "netmums-6-month",
+        "userNeed": "6개월 가이드를 참고하되, 아이를 평가하지 않고 보호자가 확인할 질문만 남긴다.",
+        "sourceShape": "월령별 장문 참고 가이드",
+        "sourceRowUnit": "주제 구간 1개",
+        "naturalFlowType": "참고형",
+        "primaryDestination": "memo",
+        "baseline": {
+          "title": "6개월 가이드 참고 메모",
+          "detail": "영국 서비스의 참고 글이다. 우리 아이의 발달 판정이나 한국 이유식 기준으로 사용하지 않는다.",
+          "items": [
+            {
+              "title": "원문에서 궁금한 점 한 가지 표시하기",
+              "detail": "발달·이유식·수면 중 전문가 또는 한국 공식 자료에 확인할 질문만 남긴다.",
+              "sourceRefs": [
+                "netmums-6-month"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [],
+        "exampleInputs": [
+          {
+            "label": "전략 예시",
+            "values": {
+              "question": "이유식 관련 한국 공식 기준을 다시 확인하기"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "6개월 가이드에서 확인할 질문",
+          "items": [
+            {
+              "title": "한국 공식 이유식 기준 확인하기",
+              "date": null,
+              "detail": "Netmums 글은 참고만 하고 국내 공식 출처 또는 의료 전문가에게 확인한다.",
+              "sourceUrl": "https://www.netmums.com/baby/6-month-old-baby"
+            }
+          ]
+        },
+        "outputs": [
+          "원문 링크가 있는 메모 1개"
+        ],
+        "afterRun": "확인한 출처와 개인 메모를 비공개로 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "월령별로 묶인 글의 주제와 작성·수정 메타데이터"
+          ],
+          "creatorExperience": [
+            "발달·식사·수면 권고"
+          ],
+          "flowmeInference": [
+            "사용자가 실제로 확인할 질문"
+          ],
+          "caution": [
+            "한국 적용성 미확인",
+            "발달 체크리스트나 진단 도구로 전환하지 않음"
+          ]
+        },
+        "doNotBuild": "발달 항목을 완료·미완료로 채점하거나 알림을 자동 생성하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "원문 링크·메모·출처·주의 표시"
+        ],
+        "needsBuild": [
+          "국가 적용성 잠금",
+          "참고형 콘텐츠의 간결한 메모 UX"
+        ],
+        "external": [
+          "국내 공식 건강 정보",
+          "전문가 상담"
+        ],
+        "doNotCover": [
+          "아동 발달 판정",
+          "의료 조언 현지화 없는 자동 변환"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "국내 공식 건강 정보",
+          "전문가 상담"
+        ],
+        "neverOwns": [
+          "아동 발달 판정",
+          "의료 조언 현지화 없는 자동 변환"
+        ]
+      },
+      "decision": {
+        "p0": "hold_for_locale",
+        "representativeFlow": "월령 가이드는 참고 메모로만 시연",
+        "why": "구조는 참고할 만하지만 한국 육아 P0 원본으로 쓰기에는 지역·의료 맥락이 다르다.",
+        "biggestGap": "한국 공식 출처 대체",
+        "biggestRisk": "영국 기준을 한국 사용자 행동으로 승격하는 것"
+      }
+    },
+    {
+      "serviceId": "raising-children-network",
+      "serviceName": "Raising Children Network",
+      "categoryId": "family_parenting",
+      "relationship": "공공 지원 육아 원본 · 놀이 구조 참고",
+      "sourceSamples": [
+        {
+          "id": "raising-children-preschool-play",
+          "title": "Preschool games & preschooler play ideas",
+          "url": "https://raisingchildren.net.au/preschoolers/play-learning/getting-play-started/preschoolers-at-play",
+          "provider": "Raising Children Network",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "explicit_structured_or_labeled",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "flowme_inference_required",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        },
+        {
+          "id": "raising-children-outdoor-play",
+          "title": "Outdoor play",
+          "url": "https://raisingchildren.net.au/preschoolers/play-learning/outdoor-play",
+          "provider": "Raising Children Network",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "present_in_prose_or_media",
+            "cost": "absent",
+            "participants": "present_in_prose_or_media",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "flowme_inference_required",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "raising-children-preschool-play",
+        "userNeed": "놀이 아이디어 하나를 저장하고 아이가 원할 때 실행한다.",
+        "sourceShape": "다양한 3~5세 놀이 아이디어 가이드",
+        "sourceRowUnit": "선택한 놀이 아이디어 1개",
+        "naturalFlowType": "저장형",
+        "primaryDestination": "bucket_then_optional_checklist",
+        "baseline": {
+          "title": "아이와 상자로 놀이 공간 만들기",
+          "detail": "상자·천처럼 집에 있는 재료를 활용한다. 자세한 아이디어와 안전 맥락은 원문에서 본다.",
+          "items": [
+            {
+              "title": "상자로 놀이 공간 만들기",
+              "detail": "아이가 배·자동차·집 중 무엇을 만들지 고르게 한다.",
+              "sourceRefs": [
+                "raising-children-preschool-play"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "자녀 연령대",
+          "실행일(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "age": "5세",
+              "timing": "날짜 미정"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "5세 아이와 상자 놀이",
+          "items": [
+            {
+              "title": "상자로 놀이 공간 만들기",
+              "date": null,
+              "detail": "날짜 미정. 상자·천을 준비하고 아이 선택을 따른다.",
+              "sourceUrl": "https://raisingchildren.net.au/preschoolers/play-learning/getting-play-started/preschoolers-at-play"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트 한 항목",
+          "원문 링크 메모",
+          "날짜 설정 시 체크·ICS"
+        ],
+        "afterRun": "완료와 아이 반응은 비공개 메모로 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "상자를 배·자동차·집으로 활용하는 놀이 아이디어",
+            "작은 물건 안전 문구"
+          ],
+          "creatorExperience": [
+            "놀이의 발달 의미"
+          ],
+          "flowmeInference": [
+            "5세·날짜 미정 선택"
+          ],
+          "caution": [
+            "한국 보호자에게 의료·발달 기준으로 제시하지 않음"
+          ]
+        },
+        "doNotBuild": "발달 판정과 원문 영상·전체 가이드를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "행동 한 항목·상세·원문·제작자"
+        ],
+        "needsBuild": [
+          "날짜 미정 저장 후 일정 추가",
+          "연령·안전 조건 표시"
+        ],
+        "external": [
+          "관련 영상·전문 가이드"
+        ],
+        "doNotCover": [
+          "발달 진단",
+          "원문 영상·본문 재호스팅"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "관련 영상·전문 가이드"
+        ],
+        "neverOwns": [
+          "발달 진단",
+          "원문 영상·본문 재호스팅"
+        ]
+      },
+      "decision": {
+        "p0": "reference_after_locale_review",
+        "representativeFlow": "놀이 하나 날짜 미정 저장",
+        "why": "공개 근거는 명확하지만 한국 초기 원본은 국내 제작자가 우선이다.",
+        "biggestGap": "날짜 미정 저장과 지역 검토",
+        "biggestRisk": "호주 발달 가이드를 한국 기준처럼 제시"
+      }
+    },
+    {
+      "serviceId": "wanderlog",
+      "serviceName": "Wanderlog",
+      "categoryId": "travel_outings",
+      "relationship": "여행 계획 도구 경쟁자 · 일정 구조 벤치마크",
+      "sourceSamples": [
+        {
+          "id": "wanderlog-seoul-5-day",
+          "title": "5-Day Seoul Itinerary",
+          "url": "https://wanderlog.com/list/itinerary/30/5-day-seoul-itinerary",
+          "provider": "Wanderlog staff",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "present_in_prose_or_media",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "explicit_structured_or_labeled",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "present_in_prose_or_media",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "present_in_prose_or_media",
+            "branch": "explicit_structured_or_labeled",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "flowme_inference_required",
+            "nextAction": "explicit_structured_or_labeled",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "wanderlog-south-korea-guide",
+          "title": "South Korea Guide",
+          "url": "https://wanderlog.com/view/fcpvgxesrg/south-korea-guide",
+          "provider": "Wanderlog 사용자 공개 가이드",
+          "dataFields": {
+            "goalOutcome": "flowme_inference_required",
+            "actionTitle": "flowme_inference_required",
+            "detail": "flowme_inference_required",
+            "prerequisite": "absent",
+            "materials": "absent",
+            "duration": "absent",
+            "dateWindow": "absent",
+            "locationRoute": "external_live_data",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "flowme_inference_required",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "flowme_inference_required",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "external_live_data",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "wanderlog-seoul-5-day",
+        "userNeed": "서울 5일 추천 일정의 구조를 유지하면서 내 여행 날짜에 붙이고 장소를 선택한다.",
+        "sourceShape": "5개 일자와 일자별 장소 순서가 있는 일정",
+        "sourceRowUnit": "일자 안의 장소 카드 1개",
+        "naturalFlowType": "일정형",
+        "primaryDestination": "calendar_plus_checklist",
+        "baseline": {
+          "title": "서울 5일 추천 일정 가져오기",
+          "detail": "Wanderlog 편집 일정을 기준본으로 보존하고, 실제 운영시간·예약·동선은 원문과 공식 장소에서 다시 확인한다.",
+          "items": [
+            {
+              "title": "1일차 인기 명소 동선 검토하기",
+              "detail": "N서울타워·남대문시장·명동·광장시장 등 원문 순서를 보고 유지·제외할 장소를 고른다.",
+              "sourceRefs": [
+                "wanderlog-seoul-5-day"
+              ]
+            },
+            {
+              "title": "2~5일차 중 사용할 날짜 선택하기",
+              "detail": "서쪽 지역·인접 장소·간단한 날·노량진시장 방문이라는 원문 일자 주제를 확인한다.",
+              "sourceRefs": [
+                "wanderlog-seoul-5-day"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "여행 시작일",
+          "사용할 일자",
+          "제외할 장소"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "startDate": "2026-10-09",
+              "useDays": 5,
+              "excludedPlaces": [
+                "N서울타워"
+              ]
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "서울 5일 여행 · 2026년 10월 9일 시작",
+          "items": [
+            {
+              "title": "1일차 · 남대문시장 → 명동 → 광장시장",
+              "date": "2026-10-09",
+              "detail": "장소별 영업시간과 이동은 출발 전 원문·공식 페이지에서 재확인한다.",
+              "sourceUrl": "https://wanderlog.com/list/itinerary/30/5-day-seoul-itinerary"
+            },
+            {
+              "title": "2일차 · 원문 서쪽 지역 코스 검토",
+              "date": "2026-10-10",
+              "detail": "원문 장소 카드에서 사용할 목적지만 확정한다.",
+              "sourceUrl": "https://wanderlog.com/list/itinerary/30/5-day-seoul-itinerary"
+            }
+          ]
+        },
+        "outputs": [
+          "일자별 캘린더 묶음",
+          "장소 체크리스트",
+          "원문 일정 링크 메모"
+        ],
+        "afterRun": "방문 완료·건너뜀과 개인 메모만 남기고, 장소 리뷰·지도 데이터는 원 서비스에 둔다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "5일 구조",
+            "장소 제목·순서·이동 거리",
+            "업데이트 날짜"
+          ],
+          "creatorExperience": [
+            "추천 동선과 음식점 선택"
+          ],
+          "flowmeInference": [
+            "개인 여행 날짜와 제외 장소"
+          ],
+          "caution": [
+            "실시간 운영·교통·예약은 출발 전 다시 확인"
+          ]
+        },
+        "doNotBuild": "Wanderlog의 지도·예약·협업 여행 플래너를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "날짜·장소·순서가 있는 일정",
+          "ICS·체크리스트·메모",
+          "원문 링크"
+        ],
+        "needsBuild": [
+          "여러 일자 일괄 적용",
+          "날짜 미정 상태",
+          "장소 제외 후 일정 재배치"
+        ],
+        "external": [
+          "지도 경로",
+          "실시간 교통·영업시간·예약·가격",
+          "동행자 양방향 협업"
+        ],
+        "doNotCover": [
+          "완전한 여행 플래너",
+          "장소 리뷰·지도 데이터 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "지도 경로",
+          "실시간 교통·영업시간·예약·가격",
+          "동행자 양방향 협업"
+        ],
+        "neverOwns": [
+          "완전한 여행 플래너",
+          "장소 리뷰·지도 데이터 복제"
+        ]
+      },
+      "decision": {
+        "p0": "use_public_itinerary_as_schedule_source",
+        "representativeFlow": "서울 5일 일정 중 선택 일자 가져오기",
+        "why": "일정 구조는 강하지만 FlowMe의 차별점은 전체 여행 관리가 아니라 원문을 외부 도구로 옮기는 데 있다.",
+        "biggestGap": "다일 일정 적용과 최신성 재확인",
+        "biggestRisk": "지도·예약 제품과 직접 경쟁 범위를 넓히는 것"
+      }
+    },
+    {
+      "serviceId": "visitkorea",
+      "serviceName": "대한민국 구석구석",
+      "categoryId": "travel_outings",
+      "relationship": "공식 원본 공급처 · 국내 여행 P0 우선 후보",
+      "sourceSamples": [
+        {
+          "id": "visitkorea-gongju-daytrip",
+          "title": "공주 가볼만한곳, 부모님과 당일치기 힐링 여행코스 추천",
+          "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+          "provider": "한국관광공사",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "present_in_prose_or_media",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "explicit_structured_or_labeled",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "present_in_prose_or_media",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "flowme_inference_required",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "explicit_structured_or_labeled",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "visitkorea-suwon-family-daytrip",
+          "title": "아이와 함께 역사와 문화를 경험하는, 수원 당일치기 여행",
+          "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=15a67423-63d8-4a02-8289-5b73abd0edec",
+          "provider": "한국관광공사",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "absent",
+            "duration": "present_in_prose_or_media",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "explicit_structured_or_labeled",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "present_in_prose_or_media",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "flowme_inference_required",
+            "branch": "explicit_structured_or_labeled",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "explicit_structured_or_labeled",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "visitkorea-gongju-daytrip",
+        "userNeed": "공주 4개 목적지를 우선 저장하고, 날짜가 정해지면 순서와 운영 여부를 확인해 당일 일정으로 만든다.",
+        "sourceShape": "이동 순서가 명시된 4개 목적지 여행기사",
+        "sourceRowUnit": "목적지 1개",
+        "naturalFlowType": "저장형에서 일정형으로 확장",
+        "primaryDestination": "bucket_then_calendar",
+        "baseline": {
+          "title": "공주 부모님 당일 코스 저장",
+          "detail": "공주한옥마을·무령왕릉과 왕릉원·루치아의 뜰·공산성을 원문 순서로 저장한다. 시간은 사용자가 정한 날짜와 최신 운영정보를 확인한 뒤 붙인다.",
+          "items": [
+            {
+              "title": "공주한옥마을",
+              "detail": "공주역에서 자차 약 20분·20km라는 원문 이동 정보를 참고한다.",
+              "sourceRefs": [
+                "visitkorea-gongju-daytrip"
+              ]
+            },
+            {
+              "title": "무령왕릉과 왕릉원",
+              "detail": "앞 장소에서 자차 약 2분·815m. 이용요금은 방문 전 공식 재확인.",
+              "sourceRefs": [
+                "visitkorea-gongju-daytrip"
+              ]
+            },
+            {
+              "title": "루치아의 뜰",
+              "detail": "앞 장소에서 자차 약 6분·2.4km.",
+              "sourceRefs": [
+                "visitkorea-gongju-daytrip"
+              ]
+            },
+            {
+              "title": "공산성",
+              "detail": "앞 장소에서 자차 약 5분·1.1km. 산책 조건을 확인한다.",
+              "sourceRefs": [
+                "visitkorea-gongju-daytrip"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "날짜는 선택",
+          "출발지",
+          "이동수단"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "date": "2026-10-24",
+              "start": "공주역",
+              "transport": "자가용"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "공주 부모님 당일 코스 · 2026년 10월 24일",
+          "items": [
+            {
+              "title": "공주한옥마을 도착",
+              "date": "2026-10-24T10:00:00+09:00",
+              "detail": "전략 예시 시간. 실제 운영·주차는 원문과 공식 페이지에서 확인.",
+              "sourceUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c"
+            },
+            {
+              "title": "무령왕릉과 왕릉원 이동",
+              "date": "2026-10-24T11:30:00+09:00",
+              "detail": "전략 예시 시간. 통합권·휴무를 재확인.",
+              "sourceUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c"
+            },
+            {
+              "title": "루치아의 뜰 방문",
+              "date": "2026-10-24T14:00:00+09:00",
+              "detail": "전략 예시 시간. 영업 여부를 재확인.",
+              "sourceUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c"
+            },
+            {
+              "title": "공산성 산책",
+              "date": "2026-10-24T16:00:00+09:00",
+              "detail": "전략 예시 시간. 날씨와 보행 조건을 확인.",
+              "sourceUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트 4항목",
+          "예시 시간이 적용된 ICS 4건",
+          "요금·이동·최신성 확인 메모"
+        ],
+        "afterRun": "방문·건너뜀과 개인 메모를 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "4개 목적지 순서",
+            "원문 이동 거리·시간",
+            "원문 요금 정보"
+          ],
+          "creatorExperience": [
+            "부모님과 천천히 둘러보기 좋다는 추천"
+          ],
+          "flowmeInference": [
+            "전략 예시 실행 시간",
+            "개인 출발지·이동수단"
+          ],
+          "caution": [
+            "예시 시간임을 명확히 표시",
+            "운영·요금·예약은 방문 전 재확인"
+          ]
+        },
+        "doNotBuild": "실시간 지도·예약·가격을 보유하거나 기사 내 오래된 정보를 자동으로 최신 사실처럼 쓰지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "장소·순서·설명·출처·예시 날짜·ICS·체크리스트"
+        ],
+        "needsBuild": [
+          "날짜 미정 저장 후 일정으로 승격",
+          "원문 최신성 경고와 장소별 잠금"
+        ],
+        "external": [
+          "실시간 지도·운영·요금·예약·날씨"
+        ],
+        "doNotCover": [
+          "예약·결제 운영",
+          "사용자 후기 커뮤니티 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "실시간 지도·운영·요금·예약·날씨"
+        ],
+        "neverOwns": [
+          "예약·결제 운영",
+          "사용자 후기 커뮤니티 복제"
+        ]
+      },
+      "decision": {
+        "p0": "priority_official_source",
+        "representativeFlow": "공주 4개 목적지 저장 → 선택 날짜 일정",
+        "why": "한국 사용자에게 바로 이해되고 목적지·순서가 명확하다. 단, 예시 시간과 최신성 경계를 보여줘야 한다.",
+        "biggestGap": "날짜 미정 상태와 최신성 잠금",
+        "biggestRisk": "과거 운영 정보를 현재 정보로 재사용하는 것"
+      }
+    },
+    {
+      "serviceId": "nps-trails",
+      "serviceName": "U.S. National Park Service Trails",
+      "categoryId": "travel_outings",
+      "relationship": "공식 경로 원본 · 현장 정보 연결 대상",
+      "sourceSamples": [
+        {
+          "id": "nps-lower-yosemite-fall",
+          "title": "Lower Yosemite Fall Trail",
+          "url": "https://www.nps.gov/yose/planyourvisit/lowerfalltrail.htm",
+          "provider": "U.S. National Park Service · Yosemite",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "present_in_prose_or_media",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "external_live_data",
+            "locationRoute": "explicit_structured_or_labeled",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "nps-grotto-trail",
+          "title": "Grotto Trail",
+          "url": "https://www.nps.gov/thingstodo/hike-grotto-trail.htm",
+          "provider": "U.S. National Park Service · Zion",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "present_in_prose_or_media",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "external_live_data",
+            "locationRoute": "explicit_structured_or_labeled",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "flowme_inference_required",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "flowme_inference_required",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "nps-lower-yosemite-fall",
+        "userNeed": "요세미티 쉬운 산책 후보를 저장하고 방문일이 정해지면 출발 일정만 만든다.",
+        "sourceShape": "공식 트레일 거리·시간·난이도·접근·안전 안내",
+        "sourceRowUnit": "공식 트레일 1개",
+        "naturalFlowType": "저장형",
+        "primaryDestination": "bucket_then_calendar",
+        "baseline": {
+          "title": "Lower Yosemite Fall Trail 걷기",
+          "detail": "쉬움 · 1마일 순환 · 약 30분. 계절·셔틀·공원 알림은 NPS 원문에서 실행 직전에 확인한다.",
+          "items": [
+            {
+              "title": "Lower Yosemite Fall Trail 걷기",
+              "detail": "날짜는 나중에 정할 수 있다.",
+              "sourceRefs": [
+                "nps-lower-yosemite-fall"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "방문일(선택)",
+          "동행자(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "date": "날짜 미정",
+              "companions": "가족"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "요세미티 폭포 산책",
+          "items": [
+            {
+              "title": "Lower Yosemite Fall Trail 걷기",
+              "date": null,
+              "detail": "쉬움 · 1마일 · 약 30분. 방문 전 공원 알림·셔틀·날씨 재확인.",
+              "sourceUrl": "https://www.nps.gov/yose/planyourvisit/lowerfalltrail.htm"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트 1항목",
+          "공식 링크 메모",
+          "날짜 추가 시 ICS"
+        ],
+        "afterRun": "개인 완료·메모만 남기고 경로·현장 상태는 NPS에 둔다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "1마일·약 30분·쉬움·출발점·접근 안내"
+          ],
+          "creatorExperience": [
+            "공식 난이도·예상 시간"
+          ],
+          "flowmeInference": [
+            "사용자 방문일·동행자"
+          ],
+          "caution": [
+            "날씨·셔틀·공원 통제·계절 상태 재확인"
+          ]
+        },
+        "doNotBuild": "실시간 지도·공원 알림·내비게이션을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "한 항목·상세·장소·공식 링크·선택 날짜·ICS"
+        ],
+        "needsBuild": [
+          "날짜 미정 저장 후 일정 추가",
+          "최종 확인일 잠금"
+        ],
+        "external": [
+          "지도·셔틀·날씨·현장 통제"
+        ],
+        "doNotCover": [
+          "실시간 공원 운영·내비게이션"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "지도·셔틀·날씨·현장 통제"
+        ],
+        "neverOwns": [
+          "실시간 공원 운영·내비게이션"
+        ]
+      },
+      "decision": {
+        "p0": "official_save_and_link",
+        "representativeFlow": "공식 트레일 한 곳 저장",
+        "why": "구조화된 공식 사실과 외부 현장 정보의 경계가 명확하다.",
+        "biggestGap": "날짜 미정 저장",
+        "biggestRisk": "정적 페이지를 실시간 안전 정보처럼 표시"
+      }
+    },
+    {
+      "serviceId": "cookpad",
+      "serviceName": "Cookpad",
+      "categoryId": "meals_cooking",
+      "relationship": "제작자 원본 공급처 · 레시피 커뮤니티 벤치마크",
+      "sourceSamples": [
+        {
+          "id": "cookpad-korean-bibimbap",
+          "title": "Korean Bibimbap",
+          "url": "https://cookpad.com/eng/recipes/13101282",
+          "provider": "Eli Yeung (@oops_itseli)",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "flowme_inference_required",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "cookpad-kimchi-fried-rice",
+          "title": "Kimchi Fried Rice (Korean Style)",
+          "url": "https://cookpad.com/eng/recipes/17281806",
+          "provider": "Ling Griffith",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "present_in_prose_or_media",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "cookpad-korean-bibimbap",
+        "userNeed": "비빔밥 레시피를 보유 재료에 맞게 저장하고 조리 중 필요한 순서만 확인한다.",
+        "sourceShape": "재료 28개 항목과 13개 조리 단계가 있는 제작자 레시피",
+        "sourceRowUnit": "조리 단계 1개",
+        "naturalFlowType": "참고형",
+        "primaryDestination": "memo_plus_optional_checklist",
+        "baseline": {
+          "title": "Eli Yeung의 비빔밥 만들기",
+          "detail": "전체 재료·사진·제작자 설명은 Cookpad 원문에서 본다. FlowMe에는 조리 중 넘길 네 구간만 묶는다.",
+          "items": [
+            {
+              "title": "고기 재우고 밥 준비하기",
+              "detail": "원문 1~2단계 묶음.",
+              "sourceRefs": [
+                "cookpad-korean-bibimbap"
+              ]
+            },
+            {
+              "title": "소스 섞고 채소 손질하기",
+              "detail": "원문 3~5단계 묶음.",
+              "sourceRefs": [
+                "cookpad-korean-bibimbap"
+              ]
+            },
+            {
+              "title": "채소와 고기 볶기",
+              "detail": "원문 6~9단계 묶음.",
+              "sourceRefs": [
+                "cookpad-korean-bibimbap"
+              ]
+            },
+            {
+              "title": "밥·고명·달걀·소스 담기",
+              "detail": "원문 10~13단계 묶음.",
+              "sourceRefs": [
+                "cookpad-korean-bibimbap"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "인분",
+          "고기 또는 두부 선택은 필요할 때만"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "servings": 2,
+              "protein": "두부"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "두 명이 먹을 비빔밥",
+          "items": [
+            {
+              "title": "두부 양념하고 밥 준비",
+              "date": null,
+              "detail": "2인분 수량 환산은 전략 예시이며 실제 재료량은 원문 4~5인분 기준을 확인한다.",
+              "sourceUrl": "https://cookpad.com/eng/recipes/13101282"
+            },
+            {
+              "title": "소스·채소 준비",
+              "date": null,
+              "detail": "원문 단계와 사진을 보며 진행한다.",
+              "sourceUrl": "https://cookpad.com/eng/recipes/13101282"
+            },
+            {
+              "title": "볶고 담기",
+              "date": null,
+              "detail": "완성 사진과 제작자 방법은 원문에서 확인한다.",
+              "sourceUrl": "https://cookpad.com/eng/recipes/13101282"
+            }
+          ]
+        },
+        "outputs": [
+          "레시피 메모",
+          "조리 체크리스트",
+          "선택적 장보기 목록"
+        ],
+        "afterRun": "완료와 개인 수정 메모만 남기고, 제작자에게 돌려줄 Cooksnap·댓글은 Cookpad에서 한다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "시간·인분·재료·13단계·제작자"
+          ],
+          "creatorExperience": [
+            "양념과 조리 팁"
+          ],
+          "flowmeInference": [
+            "사용자 인분과 단백질 선택",
+            "단계 묶음"
+          ],
+          "caution": [
+            "알레르기·식이 제한은 사용자 확인",
+            "재료 수량 자동 환산은 검증 전 가설"
+          ]
+        },
+        "doNotBuild": "원문 사진·본문·커뮤니티를 복제하거나 제작자 이름을 FlowMe 편집본으로 대체하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "제목·설명·체크리스트·메모·원문·제작자 표시"
+        ],
+        "needsBuild": [
+          "레시피 메모 전용 가독성",
+          "인분별 수량 환산",
+          "제작자 기준본과 개인 수정본 분리"
+        ],
+        "external": [
+          "Cooksnap·댓글·커뮤니티",
+          "레시피 사진·전체 본문"
+        ],
+        "doNotCover": [
+          "원문 자산 재호스팅",
+          "알레르기·영양 전문 판단"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "Cooksnap·댓글·커뮤니티",
+          "레시피 사진·전체 본문"
+        ],
+        "neverOwns": [
+          "원문 자산 재호스팅",
+          "알레르기·영양 전문 판단"
+        ]
+      },
+      "decision": {
+        "p0": "creator_source_priority",
+        "representativeFlow": "제작자 비빔밥 레시피 메모 + 조리 구간 체크",
+        "why": "FlowMe가 제작자 출처를 보존하며 실제 행동을 돕는 가치를 가장 선명하게 보여준다.",
+        "biggestGap": "레시피 메모와 개인 수정본 UX",
+        "biggestRisk": "제작자 레시피를 FlowMe 소유 콘텐츠처럼 보이게 하는 것"
+      }
+    },
+    {
+      "serviceId": "samsung-food",
+      "serviceName": "Samsung Food",
+      "categoryId": "meals_cooking",
+      "relationship": "생산성·레시피 버티컬 경쟁자 · 출처 연결 벤치마크",
+      "sourceSamples": [
+        {
+          "id": "samsung-food-sheet-pan-fajitas",
+          "title": "Sheet Pan Chicken Fajitas",
+          "url": "https://app.samsungfood.com/recipes/101ce5b19d57218393b3e151cc02fa57dd8b51e7a41",
+          "provider": "Allrecipes via Samsung Food",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "flowme_inference_required",
+            "sequence": "present_in_prose_or_media",
+            "parallelWork": "absent",
+            "branch": "flowme_inference_required",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "samsung-food-pancakes",
+          "title": "Good Old Fashioned Pancakes",
+          "url": "https://app.samsungfood.com/recipes/101b7ddab4341a6f57dedf52a233aa454f05c1a9010",
+          "provider": "Allrecipes via Samsung Food",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "samsung-food-sheet-pan-fajitas",
+        "userNeed": "평일 저녁용 팬 하나 요리를 저장하고 필요한 재료와 조리 시간을 바로 본다.",
+        "sourceShape": "외부 레시피에서 가져온 구조화 요약",
+        "sourceRowUnit": "재료 묶음과 조리 단계 링크",
+        "naturalFlowType": "참고형",
+        "primaryDestination": "memo_plus_checklist",
+        "baseline": {
+          "title": "팬 하나 치킨 파히타",
+          "detail": "준비 20분·조리 15분·원문 8인분. 전체 지시는 Allrecipes 원문을 열어 본다.",
+          "items": [
+            {
+              "title": "재료 준비하기",
+              "detail": "닭고기·피망·양파·향신료·라임 등 원문 재료를 확인한다.",
+              "sourceRefs": [
+                "samsung-food-sheet-pan-fajitas"
+              ]
+            },
+            {
+              "title": "Allrecipes 원문을 열어 조리하기",
+              "detail": "Samsung Food 공개 화면은 원 제작자 링크로 전체 지시를 연결한다.",
+              "sourceRefs": [
+                "samsung-food-sheet-pan-fajitas"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "먹을 인원",
+          "조리 날짜는 선택"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "servings": 4,
+              "date": "2026-07-23 18:30"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "4인 치킨 파히타 저녁",
+          "items": [
+            {
+              "title": "치킨 파히타 재료 확인",
+              "date": "2026-07-23T17:50:00+09:00",
+              "detail": "전략 예시 시간. 수량 환산은 검증 전이므로 원문 8인분 기준과 비교한다.",
+              "sourceUrl": "https://app.samsungfood.com/recipes/101ce5b19d57218393b3e151cc02fa57dd8b51e7a41"
+            },
+            {
+              "title": "원문 열고 팬 하나 치킨 파히타 조리",
+              "date": "2026-07-23T18:30:00+09:00",
+              "detail": "준비 20분·조리 15분. 전체 방법은 Allrecipes 원문에서 확인.",
+              "sourceUrl": "https://app.samsungfood.com/recipes/101ce5b19d57218393b3e151cc02fa57dd8b51e7a41"
+            }
+          ]
+        },
+        "outputs": [
+          "레시피 메모",
+          "재료 체크리스트",
+          "선택적 저녁 일정 ICS"
+        ],
+        "afterRun": "개인 메모만 FlowMe에 남기고 제작자 반응·공개 노트는 원 서비스에서 한다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "준비·조리 시간",
+            "8인분·재료·영양",
+            "Allrecipes 원문 링크"
+          ],
+          "creatorExperience": [
+            "사용자 난이도·맛 노트"
+          ],
+          "flowmeInference": [
+            "4인분·실행 시간"
+          ],
+          "caution": [
+            "인분 환산은 검증 전",
+            "영양·알레르기 판단은 하지 않음"
+          ]
+        },
+        "doNotBuild": "Samsung Food의 식단·장보기·커뮤니티 전체를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "메모·체크리스트·날짜·ICS·출처"
+        ],
+        "needsBuild": [
+          "인분 환산",
+          "재료표·장보기 도착 형식",
+          "원 제작자와 가져온 서비스의 이중 출처 표시"
+        ],
+        "external": [
+          "원 조리법·사진·커뮤니티·플래너 동기화"
+        ],
+        "doNotCover": [
+          "영양 진단",
+          "전체 레시피 플랫폼 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "원 조리법·사진·커뮤니티·플래너 동기화"
+        ],
+        "neverOwns": [
+          "영양 진단",
+          "전체 레시피 플랫폼 복제"
+        ]
+      },
+      "decision": {
+        "p0": "reference_model_and_export_target",
+        "representativeFlow": "원 제작자 링크를 유지한 레시피 메모",
+        "why": "FlowMe의 출처 보존 원칙을 검증하기에 가장 좋은 비교 대상이다.",
+        "biggestGap": "이중 출처와 인분 환산",
+        "biggestRisk": "가져온 레시피를 FlowMe 원본처럼 표시하는 것"
+      }
+    },
+    {
+      "serviceId": "10000recipe",
+      "serviceName": "만개의레시피",
+      "categoryId": "meals_cooking",
+      "relationship": "한국 제작자 원본 공급처 후보",
+      "sourceSamples": [
+        {
+          "id": "10000recipe-fridge-fried-rice",
+          "title": "냉장고 파먹기 요리! 간단하게 만들기 좋은 햄야채볶음밥 만들기",
+          "url": "https://www.10000recipe.com/recipe/7037603",
+          "provider": "만개의레시피 제작자",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "10000recipe-kids-tuna-stirfry",
+          "title": "남은 참치캔 발견! 간단한 아이 반찬 만들어 보자! <야채 참치 볶음>",
+          "url": "https://www.10000recipe.com/recipe/6865737",
+          "provider": "만개의레시피 제작자",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "10000recipe-kids-tuna-stirfry",
+        "userNeed": "15분 아이 반찬 레시피를 저장하고 재료가 있을 때 바로 원문을 열어 조리한다.",
+        "sourceShape": "4인분·15분의 제작자 레시피",
+        "sourceRowUnit": "조리 단계 1개",
+        "naturalFlowType": "참고형",
+        "primaryDestination": "memo_plus_checklist",
+        "baseline": {
+          "title": "야채 참치 볶음 반찬",
+          "detail": "전체 사진과 자세한 간은 제작자 원문을 본다. 자녀 알레르기·염도 적합성은 FlowMe가 판단하지 않는다.",
+          "items": [
+            {
+              "title": "재료와 도구 확인하기",
+              "detail": "원문 4인분 기준 재료를 확인한다.",
+              "sourceRefs": [
+                "10000recipe-kids-tuna-stirfry"
+              ]
+            },
+            {
+              "title": "원문 사진 단계대로 15분 조리하기",
+              "detail": "조리 순서·간 조절은 제작자 설명을 따른다.",
+              "sourceRefs": [
+                "10000recipe-kids-tuna-stirfry"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "먹을 인원",
+          "실행 날짜는 선택"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "servings": 2,
+              "date": "오늘 바로 하기"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "오늘 야채 참치 볶음 만들기",
+          "items": [
+            {
+              "title": "야채·참치 재료 확인",
+              "date": null,
+              "detail": "2인분 환산은 전략 예시. 원문 4인분 기준을 확인한다.",
+              "sourceUrl": "https://www.10000recipe.com/recipe/6865737"
+            },
+            {
+              "title": "사진 단계대로 볶기",
+              "date": null,
+              "detail": "예상 15분. 아이에게 적용할 간·알레르기는 보호자가 확인한다.",
+              "sourceUrl": "https://www.10000recipe.com/recipe/6865737"
+            }
+          ]
+        },
+        "outputs": [
+          "레시피 메모",
+          "즉시 실행 체크리스트",
+          "선택적 장보기 목록"
+        ],
+        "afterRun": "개인 변형 메모를 비공개로 남기고, 공개 후기는 원 서비스에서 작성한다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "4인분·15분·재료·조리 단계·제작자"
+          ],
+          "creatorExperience": [
+            "아이 반찬 추천과 간 조절"
+          ],
+          "flowmeInference": [
+            "2인분·즉시 실행"
+          ],
+          "caution": [
+            "알레르기·식이 제한은 보호자 확인",
+            "수량 환산은 검증 전"
+          ]
+        },
+        "doNotBuild": "‘냉장고 파먹기’를 재고 관리 시나리오로 과장하거나 원문 사진을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "체크리스트·메모·출처·제작자·즉시 실행"
+        ],
+        "needsBuild": [
+          "레시피 메모 전용 UI",
+          "인분 환산·장보기 표",
+          "개인 변형본"
+        ],
+        "external": [
+          "사진 단계·댓글·후기·상품"
+        ],
+        "doNotCover": [
+          "알레르기·영양 판단",
+          "레시피 커뮤니티 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "사진 단계·댓글·후기·상품"
+        ],
+        "neverOwns": [
+          "알레르기·영양 판단",
+          "레시피 커뮤니티 복제"
+        ]
+      },
+      "decision": {
+        "p0": "korean_creator_priority",
+        "representativeFlow": "아이 반찬 레시피 메모 + 즉시 실행",
+        "why": "한국 사용자·제작자 가치와 원문 링크 전환을 동시에 시험할 수 있다.",
+        "biggestGap": "인분 환산과 메모 가독성",
+        "biggestRisk": "아이에게 적합하다는 제작자 표현을 안전 보장처럼 보이게 하는 것"
+      }
+    },
+    {
+      "serviceId": "nike-training-club",
+      "serviceName": "Nike Training Club",
+      "categoryId": "fitness_wellness",
+      "relationship": "운동 원본 공급처 · 전문 실행 앱",
+      "sourceSamples": [
+        {
+          "id": "nike-at-home-workouts",
+          "title": "No Gym, No Problem: The 10 Best At-Home Workouts to Try Now",
+          "url": "https://www.nike.com/a/ntc-at-home-workouts",
+          "provider": "Nike",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "present_in_prose_or_media",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "present_in_prose_or_media",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "flowme_inference_required",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "nike-treadmill-walking",
+          "title": "3 Trainer-approved Walking Workouts",
+          "url": "https://www.nike.com/a/treadmill-walking-workout",
+          "provider": "Nike",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "flowme_inference_required",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "nike-treadmill-walking",
+        "userNeed": "오늘 20분 걷기 운동을 저장하고, 정한 시간에 Nike 원문을 보며 실행한다.",
+        "sourceShape": "트레이너 설명이 있는 걷기 운동 3개",
+        "sourceRowUnit": "선택한 운동 1개",
+        "naturalFlowType": "즉시 실행형",
+        "primaryDestination": "single_check_item_with_optional_calendar",
+        "baseline": {
+          "title": "20분 걷기 운동",
+          "detail": "Nike 트레이너 원문의 체감 강도와 구간을 확인하며 걷는다. 통증이나 이상 신호가 있으면 중단한다.",
+          "items": [
+            {
+              "title": "20분 걷기 운동하기",
+              "detail": "원문의 준비·구간·강도 설명을 열고 실행한다.",
+              "sourceRefs": [
+                "nike-treadmill-walking"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "실행 시각(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "date": "2026-07-25 07:00"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "토요일 아침 20분 걷기",
+          "items": [
+            {
+              "title": "20분 걷기 운동",
+              "date": "2026-07-25T07:00:00+09:00",
+              "detail": "Nike 원문을 열어 강도 구간을 확인한다. 몸 상태에 따라 강도를 낮추거나 중단한다.",
+              "sourceUrl": "https://www.nike.com/a/treadmill-walking-workout"
+            }
+          ]
+        },
+        "outputs": [
+          "체크 항목",
+          "선택 시 캘린더 ICS",
+          "원문 메모"
+        ],
+        "afterRun": "개인 완료 상태와 메모만 남기고 운동 자세·건강 평가는 Nike·전문가 영역에 둔다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "운동 시간·구간·트레이너 설명"
+          ],
+          "creatorExperience": [
+            "체감 강도와 속도 조절 방법"
+          ],
+          "flowmeInference": [
+            "2026-07-25 07:00 실행 시각"
+          ],
+          "caution": [
+            "의료 조언이 아님",
+            "통증·이상 신호 시 중단"
+          ]
+        },
+        "doNotBuild": "NTC 영상·타이머·전문 운동 엔진을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "단일 체크 항목",
+          "상세 설명",
+          "원문·제작자",
+          "선택 날짜·ICS"
+        ],
+        "needsBuild": [
+          "운동 중단 사유를 가볍게 기록하는 UX",
+          "날짜 미정 저장 후 일정 추가"
+        ],
+        "external": [
+          "NTC 영상·타이머·운동 기록"
+        ],
+        "doNotCover": [
+          "자세 판정",
+          "부상·건강 진단",
+          "Nike 운동 라이브러리 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "NTC 영상·타이머·운동 기록"
+        ],
+        "neverOwns": [
+          "자세 판정",
+          "부상·건강 진단",
+          "Nike 운동 라이브러리 복제"
+        ]
+      },
+      "decision": {
+        "p0": "single_workout_only",
+        "representativeFlow": "20분 걷기 운동",
+        "why": "한 항목과 상세 설명만으로 즉시 가치가 생긴다.",
+        "biggestGap": "날짜 미정 저장",
+        "biggestRisk": "운동 처방처럼 보이는 표현"
+      }
+    },
+    {
+      "serviceId": "runna",
+      "serviceName": "Runna",
+      "categoryId": "fitness_wellness",
+      "relationship": "전문 훈련 엔진 · P1 외부 연결 대상",
+      "sourceSamples": [
+        {
+          "id": "runna-5k-guide",
+          "title": "The Ultimate 5K Training Guide",
+          "url": "https://support.runna.com/en/articles/6636429-the-ultimate-5k-training-guide",
+          "provider": "Runna",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "explicit_structured_or_labeled",
+            "stopCondition": "explicit_structured_or_labeled",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "runna-create-plan",
+          "title": "How to Create a Training Plan in Runna",
+          "url": "https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna",
+          "provider": "Runna",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "absent",
+            "detail": "absent",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "flowme_inference_required",
+            "sequence": "present_in_prose_or_media",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "explicit_structured_or_labeled",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "runna-5k-guide",
+        "userNeed": "5km 훈련의 구조를 이해하고 Runna에서 내 계획을 만들지 결정한다.",
+        "sourceShape": "공개 코칭 가이드와 앱 계획 생성 안내",
+        "sourceRowUnit": "훈련 시작 결정 1건",
+        "naturalFlowType": "참고형",
+        "primaryDestination": "preview_memo_with_external_start",
+        "baseline": {
+          "title": "5km 훈련 계획 검토",
+          "detail": "Runna 공개 가이드에서 8주 구조·훈련 유형·부하 원칙을 확인하고, 실제 개인 계획은 Runna에서 만든다.",
+          "items": [
+            {
+              "title": "8주 훈련 구조 확인",
+              "detail": "이지런·인터벌·템포·롱런의 역할과 회복 원칙을 읽는다.",
+              "sourceRefs": [
+                "runna-5k-guide"
+              ]
+            },
+            {
+              "title": "Runna에서 개인 계획 만들기",
+              "detail": "현재 능력·주간 거리·가능 횟수·목표일을 입력한다.",
+              "sourceRefs": [
+                "runna-create-plan"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "목표 거리",
+          "목표 대회일(있는 경우)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "goal": "5km 완주",
+              "raceDate": "2026-10-18"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "10월 18일 5km 계획 검토",
+          "items": [
+            {
+              "title": "Runna 5km 가이드 읽기",
+              "date": null,
+              "detail": "8주 이상 확보 가능한지 확인한다.",
+              "sourceUrl": "https://support.runna.com/en/articles/6636429-the-ultimate-5k-training-guide"
+            },
+            {
+              "title": "Runna에서 개인 계획 생성",
+              "date": "2026-08-16T09:00:00+09:00",
+              "detail": "실제 훈련량과 회복 조정은 Runna에서 수행한다.",
+              "sourceUrl": "https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna"
+            }
+          ]
+        },
+        "outputs": [
+          "검토 메모",
+          "외부 시작 링크",
+          "선택한 시작일 ICS"
+        ],
+        "afterRun": "FlowMe에는 선택·시작 기록만, 세션 진도는 Runna에 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "8주 최소 기간",
+            "훈련 유형",
+            "계획 생성 입력"
+          ],
+          "creatorExperience": [
+            "주간 증가·회복 원칙"
+          ],
+          "flowmeInference": [
+            "2026-08-16 시작일"
+          ],
+          "caution": [
+            "통증·부상·건강 상태는 전문가 확인",
+            "일반 가이드를 개인 처방으로 표시하지 않음"
+          ]
+        },
+        "doNotBuild": "개인 훈련 처방·부하 조정·웨어러블 동기화를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "가이드 메모",
+          "외부 링크",
+          "시작일 ICS"
+        ],
+        "needsBuild": [
+          "장기 반복 진도",
+          "중단·난이도 조정",
+          "외부 업데이트 상태"
+        ],
+        "external": [
+          "개인 계획 생성",
+          "웨어러블·운동 진도"
+        ],
+        "doNotCover": [
+          "코칭 엔진",
+          "부상 판단",
+          "Runna 유료 콘텐츠 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "개인 계획 생성",
+          "웨어러블·운동 진도"
+        ],
+        "neverOwns": [
+          "코칭 엔진",
+          "부상 판단",
+          "Runna 유료 콘텐츠 복제"
+        ]
+      },
+      "decision": {
+        "p0": "preview_and_external_start",
+        "representativeFlow": "5km 훈련 계획 검토",
+        "why": "장기 훈련은 전문 앱이 소유해야 한다.",
+        "biggestGap": "반복 진도 UX",
+        "biggestRisk": "일반 가이드를 개인 처방으로 오해"
+      }
+    },
+    {
+      "serviceId": "fitness-blender",
+      "serviceName": "Fitness Blender",
+      "categoryId": "fitness_wellness",
+      "relationship": "제작자 운동 영상 원본 공급처",
+      "sourceSamples": [
+        {
+          "id": "fitness-blender-nine-minute",
+          "title": "Low Impact Cardio and Toning Workout for Beginners",
+          "url": "https://www.fitnessblender.com/videos/low-impact-cardio-and-toning-workout-for-beginners",
+          "provider": "Fitness Blender",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        },
+        {
+          "id": "fitness-blender-beginner-ten",
+          "title": "10 Beginner Workouts That You Can Do at Home for Free",
+          "url": "https://www.fitnessblender.com/articles/10-beginner-workouts-that-you-can-do-at-home-for-free",
+          "provider": "Fitness Blender",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "absent",
+            "completion": "flowme_inference_required",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "fitness-blender-nine-minute",
+        "userNeed": "9분 저강도 운동을 저장해 바로 또는 나중에 실행한다.",
+        "sourceShape": "영상과 9개 동작 구간",
+        "sourceRowUnit": "영상 운동 1개",
+        "naturalFlowType": "즉시 실행형",
+        "primaryDestination": "single_action_with_video_link",
+        "baseline": {
+          "title": "9분 저강도 전신 운동",
+          "detail": "무장비 초급 운동. 정확한 동작은 Fitness Blender 원본 영상을 보며 따라 한다.",
+          "items": [
+            {
+              "title": "9분 저강도 운동하기",
+              "detail": "공간을 확보하고 원본 영상을 재생한다. 불편감이 있으면 중단한다.",
+              "sourceRefs": [
+                "fitness-blender-nine-minute"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "실행 시각(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "timing": "지금 실행"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "지금 9분 홈트",
+          "items": [
+            {
+              "title": "Fitness Blender 9분 운동",
+              "date": null,
+              "detail": "영상을 열어 9개 동작을 따른다.",
+              "sourceUrl": "https://www.fitnessblender.com/videos/low-impact-cardio-and-toning-workout-for-beginners"
+            }
+          ]
+        },
+        "outputs": [
+          "즉시 실행 체크 항목",
+          "원본 영상 링크"
+        ],
+        "afterRun": "완료 여부와 개인 메모만 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "9분",
+            "무장비",
+            "9개 50초 구간"
+          ],
+          "creatorExperience": [
+            "초급·저강도 분류"
+          ],
+          "flowmeInference": [
+            "즉시 실행"
+          ],
+          "caution": [
+            "통증·어지럼증 시 중단"
+          ]
+        },
+        "doNotBuild": "영상과 운동 프로그램을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "한 항목 저장",
+          "상세·원문 링크",
+          "즉시 실행"
+        ],
+        "needsBuild": [
+          "날짜 미정 저장 후 일정 추가"
+        ],
+        "external": [
+          "영상 재생",
+          "유료 프로그램 진도"
+        ],
+        "doNotCover": [
+          "영상 재호스팅",
+          "건강 상태 판정"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "영상 재생",
+          "유료 프로그램 진도"
+        ],
+        "neverOwns": [
+          "영상 재호스팅",
+          "건강 상태 판정"
+        ]
+      },
+      "decision": {
+        "p0": "creator_single_action",
+        "representativeFlow": "9분 저강도 홈트",
+        "why": "제작자 원문으로 돌아가는 가장 단순한 실행 모델이다.",
+        "biggestGap": "저장 후 일정 승격",
+        "biggestRisk": "영상 없이 동작 설명만 복제"
+      }
+    },
+    {
+      "serviceId": "coursera",
+      "serviceName": "Coursera",
+      "categoryId": "learning_career",
+      "relationship": "전문 강의 플랫폼 · 외부 실행 대상",
+      "sourceSamples": [
+        {
+          "id": "coursera-learning-how-to-learn",
+          "title": "Learning How to Learn: Powerful mental tools to help you master tough subjects",
+          "url": "https://www.coursera.org/learn/learning-how-to-learn",
+          "provider": "Deep Teaching Solutions via Coursera",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "present_in_prose_or_media",
+            "stopCondition": "flowme_inference_required",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "coursera-ai-for-everyone",
+          "title": "AI For Everyone",
+          "url": "https://www.coursera.org/learn/ai-for-everyone",
+          "provider": "DeepLearning.AI via Coursera",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "coursera-learning-how-to-learn",
+        "userNeed": "4개 공개 모듈을 내 학습 요일에 배치하고 강의는 Coursera에서 듣는다.",
+        "sourceShape": "강좌 소개와 4개 모듈",
+        "sourceRowUnit": "공개 모듈 1개",
+        "naturalFlowType": "반복형",
+        "primaryDestination": "progress_table_plus_calendar",
+        "baseline": {
+          "title": "Learning How to Learn 4개 모듈",
+          "detail": "모듈 이름과 개인 일정만 FlowMe에 두고 영상·퀴즈·인증은 Coursera에서 진행한다.",
+          "items": [
+            {
+              "title": "모듈 1 학습",
+              "detail": "Coursera 공개 커리큘럼에서 범위를 확인하고 강의를 연다.",
+              "sourceRefs": [
+                "coursera-learning-how-to-learn"
+              ]
+            },
+            {
+              "title": "모듈 2 학습",
+              "detail": "완료 판단은 Coursera 진도 기준으로 한다.",
+              "sourceRefs": [
+                "coursera-learning-how-to-learn"
+              ]
+            },
+            {
+              "title": "모듈 3 학습",
+              "detail": "개인 메모만 FlowMe에 남긴다.",
+              "sourceRefs": [
+                "coursera-learning-how-to-learn"
+              ]
+            },
+            {
+              "title": "모듈 4 학습",
+              "detail": "최종 과제·인증은 Coursera에서 확인한다.",
+              "sourceRefs": [
+                "coursera-learning-how-to-learn"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "시작일",
+          "학습 요일"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "startDate": "2026-08-03",
+              "days": "월·목"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "8월 Learning How to Learn",
+          "items": [
+            {
+              "title": "모듈 1 시작",
+              "date": "2026-08-03T20:00:00+09:00",
+              "detail": "Coursera에서 학습하고 완료 여부를 확인한다.",
+              "sourceUrl": "https://www.coursera.org/learn/learning-how-to-learn"
+            },
+            {
+              "title": "모듈 2 시작",
+              "date": "2026-08-10T20:00:00+09:00",
+              "detail": "전략 예시 일정이며 실제 분량에 맞춰 조정한다.",
+              "sourceUrl": "https://www.coursera.org/learn/learning-how-to-learn"
+            }
+          ]
+        },
+        "outputs": [
+          "진도표",
+          "학습 일정 ICS",
+          "강좌 원문 링크"
+        ],
+        "afterRun": "개인 일정·메모는 FlowMe, 강의 진도·평가·인증은 Coursera에 남는다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "4개 모듈",
+            "공개 목표·강사·예상 시간"
+          ],
+          "creatorExperience": [
+            "모듈 순서·과제 설계"
+          ],
+          "flowmeInference": [
+            "주 1개 모듈 전략 예시"
+          ],
+          "caution": [
+            "유료·로그인 콘텐츠를 복제하지 않음"
+          ]
+        },
+        "doNotBuild": "강의 재생·퀴즈·평가·인증 엔진을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "모듈 체크 항목",
+          "원문 링크",
+          "날짜·ICS",
+          "기본 진도 결과물"
+        ],
+        "needsBuild": [
+          "장기 진도 UX",
+          "외부 완료 상태 표시"
+        ],
+        "external": [
+          "영상·퀴즈·평가·인증"
+        ],
+        "doNotCover": [
+          "유료 강의 재호스팅",
+          "기관 인증 대체"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "영상·퀴즈·평가·인증"
+        ],
+        "neverOwns": [
+          "유료 강의 재호스팅",
+          "기관 인증 대체"
+        ]
+      },
+      "decision": {
+        "p0": "public_curriculum_only",
+        "representativeFlow": "4개 모듈 개인 진도표",
+        "why": "공개 구조만으로 일정 전환 가치를 시험할 수 있다.",
+        "biggestGap": "외부 진도와 개인 진도의 분리",
+        "biggestRisk": "유료 차시를 복제"
+      }
+    },
+    {
+      "serviceId": "udemy",
+      "serviceName": "Udemy",
+      "categoryId": "learning_career",
+      "relationship": "제작자 강의 마켓 · 외부 실행 대상",
+      "sourceSamples": [
+        {
+          "id": "udemy-project-management-beginner",
+          "title": "The Project Management Course: Beginner to PROject Manager",
+          "url": "https://www.udemy.com/course/the-project-management-course-beginner-to-project-manager/",
+          "provider": "365 Careers via Udemy",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "udemy-excel-beginner-advanced",
+          "title": "Microsoft Excel - Excel from Beginner to Advanced",
+          "url": "https://www.udemy.com/course/microsoft-excel-2013-from-beginner-to-advanced-and-beyond/",
+          "provider": "Kyle Pew via Udemy",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "udemy-project-management-beginner",
+        "userNeed": "21개 공개 섹션을 내 학습 주기에 나눠 듣고 강의는 Udemy에서 이어본다.",
+        "sourceShape": "21개 섹션·110개 강의 공개 커리큘럼",
+        "sourceRowUnit": "공개 섹션 묶음",
+        "naturalFlowType": "반복형",
+        "primaryDestination": "section_progress_table",
+        "baseline": {
+          "title": "프로젝트 관리 21개 섹션",
+          "detail": "공개 섹션과 개인 일정만 사용한다. 강의·자료·완료는 Udemy에서 확인한다.",
+          "items": [
+            {
+              "title": "섹션 1~7 학습",
+              "detail": "Udemy에서 해당 섹션을 연다.",
+              "sourceRefs": [
+                "udemy-project-management-beginner"
+              ]
+            },
+            {
+              "title": "섹션 8~14 학습",
+              "detail": "개인 메모만 남긴다.",
+              "sourceRefs": [
+                "udemy-project-management-beginner"
+              ]
+            },
+            {
+              "title": "섹션 15~21 학습",
+              "detail": "Udemy 완료 상태를 확인한다.",
+              "sourceRefs": [
+                "udemy-project-management-beginner"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "시작일",
+          "주당 학습 횟수"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "startDate": "2026-08-04",
+              "sessionsPerWeek": 2
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "프로젝트 관리 공개 섹션 진도표",
+          "items": [
+            {
+              "title": "섹션 1~7 시작",
+              "date": "2026-08-04T20:00:00+09:00",
+              "detail": "전략 예시 일정. 실제 차시는 Udemy에서 확인.",
+              "sourceUrl": "https://www.udemy.com/course/the-project-management-course-beginner-to-project-manager/"
+            },
+            {
+              "title": "섹션 8~14 시작",
+              "date": "2026-08-18T20:00:00+09:00",
+              "detail": "개인 진도에 맞춰 조정.",
+              "sourceUrl": "https://www.udemy.com/course/the-project-management-course-beginner-to-project-manager/"
+            }
+          ]
+        },
+        "outputs": [
+          "섹션 진도표",
+          "학습 일정 ICS",
+          "강사·강좌 링크"
+        ],
+        "afterRun": "FlowMe 완료는 개인 표시이며 Udemy 수료를 대체하지 않는다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "21개 섹션·110개 강의·7시간 47분"
+          ],
+          "creatorExperience": [
+            "섹션·차시 설계"
+          ],
+          "flowmeInference": [
+            "섹션 7개씩 묶은 전략 예시"
+          ],
+          "caution": [
+            "유료 차시 제목·내용의 과도한 복제 금지"
+          ]
+        },
+        "doNotBuild": "강의 재생·판매·수료증을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "섹션 체크·일정·링크"
+        ],
+        "needsBuild": [
+          "긴 진도표 UX",
+          "강사 기준본 업데이트"
+        ],
+        "external": [
+          "구매·강의·완료·리뷰"
+        ],
+        "doNotCover": [
+          "유료 강의·자료 복제",
+          "Udemy 마켓 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "구매·강의·완료·리뷰"
+        ],
+        "neverOwns": [
+          "유료 강의·자료 복제",
+          "Udemy 마켓 복제"
+        ]
+      },
+      "decision": {
+        "p0": "creator_public_outline_pilot",
+        "representativeFlow": "공개 섹션 진도표",
+        "why": "제작자 링크·유입 가치를 검증하기 좋다.",
+        "biggestGap": "기준본 업데이트와 진도 UX",
+        "biggestRisk": "유료 콘텐츠 권리 침해"
+      }
+    },
+    {
+      "serviceId": "k-mooc",
+      "serviceName": "K-MOOC",
+      "categoryId": "learning_career",
+      "relationship": "공식 공개 강좌 공급처 · 외부 실행 대상",
+      "sourceSamples": [
+        {
+          "id": "kmooc-esg",
+          "title": "ESG와 지속가능경영",
+          "url": "https://www.kmooc.kr/view/course/detail/18964",
+          "provider": "K-MOOC 참여기관",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "explicit_structured_or_labeled",
+            "stopCondition": "flowme_inference_required",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        },
+        {
+          "id": "kmooc-stat-ml",
+          "title": "통계학과 머신러닝",
+          "url": "https://www.kmooc.kr/view/course/detail/19325",
+          "provider": "K-MOOC 참여기관",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "explicit_structured_or_labeled",
+            "stopCondition": "flowme_inference_required",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "kmooc-esg",
+        "userNeed": "6주 공식 강좌의 마감과 주차를 놓치지 않고 수강한다.",
+        "sourceShape": "공식 운영 기간·6주 커리큘럼·평가 기준",
+        "sourceRowUnit": "주차 1개",
+        "naturalFlowType": "일정형",
+        "primaryDestination": "dated_progress_table",
+        "baseline": {
+          "title": "K-MOOC ESG 6주 수강",
+          "detail": "공식 운영 기간과 주차 제목을 기준으로 개인 알림을 만든다. 강의·평가·이수는 K-MOOC에서 한다.",
+          "items": [
+            {
+              "title": "수강 신청 기간 확인",
+              "detail": "공식 상세 페이지에서 현재 기간을 다시 확인한다.",
+              "sourceRefs": [
+                "kmooc-esg"
+              ]
+            },
+            {
+              "title": "1~6주 학습",
+              "detail": "주차별 실제 일정과 과제는 K-MOOC에서 확인한다.",
+              "sourceRefs": [
+                "kmooc-esg"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "현재 운영 회차 확인",
+          "개인 학습 시각"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "studyTime": "매주 화 20:00",
+              "run": "페이지에서 확인한 운영 회차"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "화요일 K-MOOC ESG 학습",
+          "items": [
+            {
+              "title": "현재 수강 신청·운영 기간 재확인",
+              "date": "2026-07-28T20:00:00+09:00",
+              "detail": "예시 날짜. 공식 페이지의 현재 회차를 확인해야 활성화한다.",
+              "sourceUrl": "https://www.kmooc.kr/view/course/detail/18964"
+            },
+            {
+              "title": "1주차 학습",
+              "date": null,
+              "detail": "공식 회차 확인 전에는 일정 잠금.",
+              "sourceUrl": "https://www.kmooc.kr/view/course/detail/18964"
+            }
+          ]
+        },
+        "outputs": [
+          "회차 확인 체크",
+          "운영 중이면 6주 진도표·ICS"
+        ],
+        "afterRun": "공식 회차가 끝났다면 저장만 하고 일정 export는 잠근다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "6주 구성",
+            "공식 운영·신청 기간",
+            "평가·이수 기준"
+          ],
+          "creatorExperience": [
+            "주차별 교수 설계"
+          ],
+          "flowmeInference": [
+            "개인 화요일 학습 시각"
+          ],
+          "caution": [
+            "운영 기간 최신성 확인 전 일정 잠금"
+          ]
+        },
+        "doNotBuild": "강의·평가·이수증을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "공식 링크·주차 체크·날짜·ICS"
+        ],
+        "needsBuild": [
+          "운영 회차 잠금",
+          "긴 진도 UX",
+          "업데이트 구독"
+        ],
+        "external": [
+          "수강 신청·강의·평가·이수"
+        ],
+        "doNotCover": [
+          "공식 인증 대체",
+          "강의 재호스팅"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "수강 신청·강의·평가·이수"
+        ],
+        "neverOwns": [
+          "공식 인증 대체",
+          "강의 재호스팅"
+        ]
+      },
+      "decision": {
+        "p0": "current_run_only",
+        "representativeFlow": "운영 중인 6주 공식 강좌",
+        "why": "출처·기간·완료 기준이 명확하다.",
+        "biggestGap": "운영 회차 최신성 잠금",
+        "biggestRisk": "종료된 날짜를 현재 일정처럼 제공"
+      }
+    },
+    {
+      "serviceId": "houzz",
+      "serviceName": "Houzz",
+      "categoryId": "home_living",
+      "relationship": "전문가 콘텐츠 공급처 · 영감 원본",
+      "sourceSamples": [
+        {
+          "id": "houzz-clothes-closet",
+          "title": "Professional Tips for Organizing Your Clothes Closet",
+          "url": "https://www.houzz.com/magazine/professional-tips-for-organizing-your-clothes-closet-stsetivw-vs~52484441",
+          "provider": "Houzz editorial contributor",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "present_in_prose_or_media",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        },
+        {
+          "id": "houzz-kitchen-cabinets",
+          "title": "How to Organize Kitchen Cabinets and Drawers for Good",
+          "url": "https://www.houzz.com/magazine/how-to-organize-kitchen-cabinets-and-drawers-for-good-stsetivw-vs~111664028",
+          "provider": "Houzz editorial contributor",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "houzz-clothes-closet",
+        "userNeed": "옷장 정리 아이디어를 저장하고 여유가 생기면 실행한다.",
+        "sourceShape": "전문가 팁과 사진",
+        "sourceRowUnit": "옷장 정리 1건",
+        "naturalFlowType": "저장형",
+        "primaryDestination": "single_bucket_item",
+        "baseline": {
+          "title": "옷장 정리하기",
+          "detail": "Houzz 전문가 글을 열어 분류·수납 팁을 확인한다.",
+          "items": [
+            {
+              "title": "옷장 정리하기",
+              "detail": "날짜와 세부 단계는 실행할 때 정한다.",
+              "sourceRefs": [
+                "houzz-clothes-closet"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "없음; 날짜는 나중에"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "timing": "날짜 미정"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "옷장 정리하기",
+          "items": [
+            {
+              "title": "옷장 정리하기",
+              "date": null,
+              "detail": "원문 전문가 팁 보기.",
+              "sourceUrl": "https://www.houzz.com/magazine/professional-tips-for-organizing-your-clothes-closet-stsetivw-vs~52484441"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트 1항목",
+          "원문 메모"
+        ],
+        "afterRun": "개인 완료와 메모만 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "전문가 팁과 사진"
+          ],
+          "creatorExperience": [
+            "분류·수납 원칙"
+          ],
+          "flowmeInference": [
+            "날짜 미정 저장"
+          ],
+          "caution": [
+            "전문가 글 전체·사진을 복제하지 않음"
+          ]
+        },
+        "doNotBuild": "사진·아이디어북·전문가 마켓을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "단일 항목·상세·원문"
+        ],
+        "needsBuild": [
+          "날짜 미정 저장 UX"
+        ],
+        "external": [
+          "사진·전문가·상품"
+        ],
+        "doNotCover": [
+          "사진·전문가 콘텐츠 재호스팅"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "사진·전문가·상품"
+        ],
+        "neverOwns": [
+          "사진·전문가 콘텐츠 재호스팅"
+        ]
+      },
+      "decision": {
+        "p0": "bucket_reference",
+        "representativeFlow": "옷장 정리 한 항목",
+        "why": "사용자 피드백대로 세부 항목을 억지로 만들 필요가 없다.",
+        "biggestGap": "날짜 미정 상태",
+        "biggestRisk": "사진·전문가 판단 복제"
+      }
+    },
+    {
+      "serviceId": "flylady",
+      "serviceName": "FlyLady",
+      "categoryId": "home_living",
+      "relationship": "반복 생활 루틴 참고 서비스",
+      "sourceSamples": [
+        {
+          "id": "flylady-weekly-home-blessing",
+          "title": "What is the Deal with Weekly Home Blessing?",
+          "url": "https://www.flylady.net/ask-flylady/what-is-the-deal-with-weekly-home-blessing",
+          "provider": "FlyLady",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "present_in_prose_or_media",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "explicit_structured_or_labeled",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        },
+        {
+          "id": "flylady-zone3-mission2",
+          "title": "Zone 3 Mission #2: Your Main Bathroom",
+          "url": "https://www.flylady.net/daily-mission/20260414-zone-3-mission-2-zone-3-your-main-bathroom",
+          "provider": "FlyLady",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "absent",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "absent",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "flowme_inference_required",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "flylady-zone3-mission2",
+        "userNeed": "욕실을 10분만 정리하고 과도하게 확장하지 않는다.",
+        "sourceShape": "게시 날짜가 있는 짧은 구역 미션",
+        "sourceRowUnit": "욕실 미션 1개",
+        "naturalFlowType": "즉시 실행형",
+        "primaryDestination": "timed_check_item",
+        "baseline": {
+          "title": "욕실 10분 정리",
+          "detail": "타이머를 10분으로 맞추고 FlyLady 원문의 구역 미션만 수행한다.",
+          "items": [
+            {
+              "title": "욕실 10분 정리",
+              "detail": "시간이 끝나면 멈춘다.",
+              "sourceRefs": [
+                "flylady-zone3-mission2"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "실행 시각(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "timing": "지금 실행"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "지금 욕실 10분 정리",
+          "items": [
+            {
+              "title": "욕실 10분 정리",
+              "date": null,
+              "detail": "10분이 끝나면 완료. 게시일이 아닌 개인 실행일 기준.",
+              "sourceUrl": "https://www.flylady.net/daily-mission/20260414-zone-3-mission-2-zone-3-your-main-bathroom"
+            }
+          ]
+        },
+        "outputs": [
+          "타이머형 체크 항목",
+          "선택 시 반복 일정"
+        ],
+        "afterRun": "완료와 중단 상태를 개인 기록으로 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "5~10분 욕실 미션"
+          ],
+          "creatorExperience": [
+            "구역 순환·시간 제한"
+          ],
+          "flowmeInference": [
+            "10분 선택·즉시 실행"
+          ],
+          "caution": [
+            "과거 게시일을 현재 공식 일정으로 표시하지 않음"
+          ]
+        },
+        "doNotBuild": "FlyLady 31일 프로그램과 커뮤니티를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "짧은 항목·시간·원문",
+          "선택 일정"
+        ],
+        "needsBuild": [
+          "반복 진도·중단 상태",
+          "원본 게시일과 개인 실행일 분리"
+        ],
+        "external": [
+          "FlyLady 프로그램·이메일"
+        ],
+        "doNotCover": [
+          "전체 루틴·커뮤니티 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "FlyLady 프로그램·이메일"
+        ],
+        "neverOwns": [
+          "전체 루틴·커뮤니티 복제"
+        ]
+      },
+      "decision": {
+        "p0": "single_timed_mission",
+        "representativeFlow": "욕실 10분 미션",
+        "why": "작고 완료 기준이 명확하다.",
+        "biggestGap": "반복·중단 UX",
+        "biggestRisk": "과거 날짜를 현재 미션으로 오해"
+      }
+    },
+    {
+      "serviceId": "konmari",
+      "serviceName": "KonMari",
+      "categoryId": "home_living",
+      "relationship": "전문가 방법론 원본 · 상품 연결 사례",
+      "sourceSamples": [
+        {
+          "id": "konmari-method",
+          "title": "About the KonMari Method",
+          "url": "https://konmari.com/about-the-konmari-method/",
+          "provider": "KonMari",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "present_in_prose_or_media",
+            "materials": "present_in_prose_or_media",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "explicit_structured_or_labeled",
+            "repeat": "absent",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "konmari-fold-clothes",
+          "title": "How to Fold Clothes with the KonMari Method",
+          "url": "https://konmari.com/how-to-fold-clothes/",
+          "provider": "KonMari",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "present_in_prose_or_media",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "konmari-fold-clothes",
+        "userNeed": "옷 정리 방법을 저장하고 시간이 생기면 공식 가이드를 보며 실행한다.",
+        "sourceShape": "공식 방법론과 사진·영상 접기 가이드",
+        "sourceRowUnit": "옷 정리 프로젝트 1건",
+        "naturalFlowType": "저장형",
+        "primaryDestination": "single_bucket_item",
+        "baseline": {
+          "title": "옷 정리하기",
+          "detail": "KonMari 공식 방법과 접기 사진은 원문에서 본다. 날짜와 정리 범위는 나중에 정할 수 있다.",
+          "items": [
+            {
+              "title": "옷 정리하기",
+              "detail": "실행할 때 공식 접기 가이드와 6개 원칙을 다시 확인한다.",
+              "sourceRefs": [
+                "konmari-fold-clothes",
+                "konmari-method"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "정리 범위(선택)",
+          "실행일(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "scope": "상의 서랍",
+              "timing": "날짜 미정"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "상의 서랍 정리",
+          "items": [
+            {
+              "title": "상의 서랍 정리하기",
+              "date": null,
+              "detail": "날짜 미정 버킷. 접기 방법은 KonMari 공식 원문에서 본다.",
+              "sourceUrl": "https://konmari.com/how-to-fold-clothes/"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트 한 항목",
+          "공식 원문 메모",
+          "날짜 설정 시 체크·ICS"
+        ],
+        "afterRun": "개인 완료·전후 메모만 비공개로 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "공식 6개 원칙·접기 방법·시각 자료"
+          ],
+          "creatorExperience": [
+            "설렘 판단·카테고리 순서·접기 방식"
+          ],
+          "flowmeInference": [
+            "상의 서랍·날짜 미정"
+          ],
+          "caution": [
+            "방법론을 보편적 정답처럼 표시하지 않음"
+          ]
+        },
+        "doNotBuild": "공식 사진·영상·컨설팅·상품 카탈로그를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "한 항목·상세·원문·제작자"
+        ],
+        "needsBuild": [
+          "날짜 미정 저장 후 일정 추가",
+          "시각 원본 출처 카드"
+        ],
+        "external": [
+          "사진·영상·컨설팅·상품"
+        ],
+        "doNotCover": [
+          "공식 방법론 콘텐츠 재호스팅",
+          "상품·컨설턴트 마켓 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "사진·영상·컨설팅·상품"
+        ],
+        "neverOwns": [
+          "공식 방법론 콘텐츠 재호스팅",
+          "상품·컨설턴트 마켓 복제"
+        ]
+      },
+      "decision": {
+        "p0": "single_bucket_reference",
+        "representativeFlow": "옷 정리 한 항목",
+        "why": "사용자 피드백대로 세부 항목을 억지로 만들지 않고 원문으로 복귀시킨다.",
+        "biggestGap": "날짜 미정 저장",
+        "biggestRisk": "방법론·시각 자산을 FlowMe 원본처럼 복제"
+      }
+    },
+    {
+      "serviceId": "government24",
+      "serviceName": "정부24",
+      "categoryId": "admin_official",
+      "relationship": "공식 사실 원본 · 외부 신청 대상",
+      "sourceSamples": [
+        {
+          "id": "gov24-move-in-report",
+          "title": "전입신고",
+          "url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016&HighCtgCD=A01010++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&tp_seq=01",
+          "provider": "정부24·소관기관",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "flowme_inference_required",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "explicit_structured_or_labeled",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "gov24-resident-notification",
+          "title": "주민등록 통보서비스 신청",
+          "url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13110000039&HighCtgCD=A03003&tp_seq=01",
+          "provider": "정부24·소관기관",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "absent",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "flowme_inference_required",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "gov24-move-in-report",
+        "userNeed": "이사 후 전입신고 14일 기한을 놓치지 않고 공식 사이트에서 신청한다.",
+        "sourceShape": "공식 기한·방법·서류·처리 정보",
+        "sourceRowUnit": "전입신고 절차 1건",
+        "naturalFlowType": "일정형",
+        "primaryDestination": "deadline_calendar_plus_checklist",
+        "baseline": {
+          "title": "전입신고",
+          "detail": "전입일로부터 14일 이내. 대상·서류·현재 안내는 정부24 원문에서 다시 확인하고 신청한다.",
+          "items": [
+            {
+              "title": "전입신고 대상·서류 확인",
+              "detail": "정부24 공식 안내를 연다.",
+              "sourceRefs": [
+                "gov24-move-in-report"
+              ]
+            },
+            {
+              "title": "정부24 또는 방문으로 전입신고",
+              "detail": "실제 신청은 공식 채널에서 완료한다.",
+              "sourceRefs": [
+                "gov24-move-in-report"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "실제 전입일"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "moveInDate": "2026-08-01",
+              "deadline": "2026-08-15 자동 계산 예시"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "8월 15일까지 전입신고",
+          "items": [
+            {
+              "title": "전입신고 준비 확인",
+              "date": "2026-08-08T09:00:00+09:00",
+              "detail": "전략 예시 알림. 공식 안내와 세대 조건을 재확인한다.",
+              "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016&HighCtgCD=A01010++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&tp_seq=01"
+            },
+            {
+              "title": "전입신고 마감",
+              "date": "2026-08-15T09:00:00+09:00",
+              "detail": "전입일 2026-08-01 입력 기준 계산 예시. 신청은 정부24에서 완료.",
+              "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016&HighCtgCD=A01010++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&tp_seq=01"
+            }
+          ]
+        },
+        "outputs": [
+          "마감 ICS",
+          "필수 확인 체크리스트",
+          "공식 신청 링크"
+        ],
+        "afterRun": "개인 완료 여부만 남기며 민원 처리 결과는 정부24에서 확인한다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "전입 후 14일",
+            "인터넷·방문",
+            "처리 3시간·수수료 없음"
+          ],
+          "creatorExperience": [],
+          "flowmeInference": [
+            "입력 전입일에서 계산한 예시 마감·중간 알림"
+          ],
+          "caution": [
+            "자격·세대 구성 해석 금지",
+            "공식 안내 변경 여부 재확인"
+          ]
+        },
+        "doNotBuild": "정부24 신청·인증·처리 상태를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "공식 체크 항목",
+          "상세·출처",
+          "기준일 입력형 날짜·ICS"
+        ],
+        "needsBuild": [
+          "기준일→마감 계산 표시",
+          "공식 확인일·버전 잠금"
+        ],
+        "external": [
+          "본인 인증·신청·민원 상태"
+        ],
+        "doNotCover": [
+          "자격·법령 해석",
+          "공식 민원 시스템 대체"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "본인 인증·신청·민원 상태"
+        ],
+        "neverOwns": [
+          "자격·법령 해석",
+          "공식 민원 시스템 대체"
+        ]
+      },
+      "decision": {
+        "p0": "official_low_risk_deadline",
+        "representativeFlow": "전입신고 14일 마감",
+        "why": "사용자 입력 하나로 명확한 실행 가치가 생긴다.",
+        "biggestGap": "계산값과 공식 사실의 시각적 분리",
+        "biggestRisk": "개인 조건을 법적 판단처럼 처리"
+      }
+    },
+    {
+      "serviceId": "passport-korea",
+      "serviceName": "외교부 여권안내",
+      "categoryId": "admin_official",
+      "relationship": "공식 사실 원본 · 외부 신청 대상",
+      "sourceSamples": [
+        {
+          "id": "passport-expiry-reissue",
+          "title": "유효기간 만료에 따른 재발급",
+          "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+          "provider": "외교부 여권안내",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "flowme_inference_required",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "explicit_structured_or_labeled",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "explicit_structured_or_labeled",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "passport-lost-damaged",
+          "title": "훼손·분실 등에 따른 재발급",
+          "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=9",
+          "provider": "외교부 여권안내",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "explicit_structured_or_labeled",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "passport-expiry-reissue",
+        "userNeed": "만료 여권 재발급 준비물을 확인하고 공식 채널에서 신청한다.",
+        "sourceShape": "공식 신청 조건·서류·비용·접수처",
+        "sourceRowUnit": "재발급 사유 1건",
+        "naturalFlowType": "외부 실행형",
+        "primaryDestination": "checklist_with_official_link",
+        "baseline": {
+          "title": "여권 만료 재발급 준비",
+          "detail": "본인 상황에 맞는 서류와 온라인 가능 여부를 외교부 원문에서 다시 확인한다.",
+          "items": [
+            {
+              "title": "만료 재발급 대상·신청 방법 확인",
+              "detail": "온라인 가능 여부와 접수처를 확인한다.",
+              "sourceRefs": [
+                "passport-expiry-reissue"
+              ]
+            },
+            {
+              "title": "필요 서류 준비",
+              "detail": "사진·신분증·기존 여권 등 공식 목록을 재확인한다.",
+              "sourceRefs": [
+                "passport-expiry-reissue"
+              ]
+            },
+            {
+              "title": "공식 채널에서 신청",
+              "detail": "신청·결제·교부는 공식 서비스에서 완료한다.",
+              "sourceRefs": [
+                "passport-expiry-reissue"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "재발급 사유",
+          "희망 신청일(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "reason": "유효기간 만료",
+              "appointment": "2026-08-07 10:00"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "8월 7일 여권 재발급 준비",
+          "items": [
+            {
+              "title": "여권 재발급 서류 최종 확인",
+              "date": "2026-08-06T20:00:00+09:00",
+              "detail": "외교부 원문 기준. 사진 규격·온라인 가능 여부 재확인.",
+              "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7"
+            },
+            {
+              "title": "여권 재발급 신청",
+              "date": "2026-08-07T10:00:00+09:00",
+              "detail": "전략 예시 일정. 실제 접수는 공식 채널.",
+              "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7"
+            }
+          ]
+        },
+        "outputs": [
+          "준비 체크리스트",
+          "신청 일정 ICS",
+          "공식 링크"
+        ],
+        "afterRun": "접수·교부 상태는 공식 채널에서 확인한다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "사유별 신청 방법·서류·수수료"
+          ],
+          "creatorExperience": [],
+          "flowmeInference": [
+            "예시 신청일·전날 확인"
+          ],
+          "caution": [
+            "사진 적합성·온라인 가능 조건은 공식 원문 재확인"
+          ]
+        },
+        "doNotBuild": "여권 신청·결제·상태 조회를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "체크리스트·날짜·ICS·공식 링크"
+        ],
+        "needsBuild": [
+          "사유별 분기",
+          "만료일 기반 알림",
+          "공식 확인일 잠금"
+        ],
+        "external": [
+          "신청·결제·교부 조회"
+        ],
+        "doNotCover": [
+          "자격·긴급 상황 판단",
+          "공식 접수 대체"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "신청·결제·교부 조회"
+        ],
+        "neverOwns": [
+          "자격·긴급 상황 판단",
+          "공식 접수 대체"
+        ]
+      },
+      "decision": {
+        "p0": "selected_reason_checklist",
+        "representativeFlow": "만료 재발급 준비",
+        "why": "사용자가 사유를 선택하면 단순 체크리스트로 충분하다.",
+        "biggestGap": "사유별 분기",
+        "biggestRisk": "분실·미성년 조건을 단순화"
+      }
+    },
+    {
+      "serviceId": "kotsa",
+      "serviceName": "한국교통안전공단 자동차검사",
+      "categoryId": "admin_official",
+      "relationship": "공식 사실 원본 · 외부 예약 대상",
+      "sourceSamples": [
+        {
+          "id": "kotsa-inspection-period",
+          "title": "자동차검사 목적 및 검사기간",
+          "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010103",
+          "provider": "한국교통안전공단",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "explicit_structured_or_labeled",
+            "materials": "absent",
+            "duration": "flowme_inference_required",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "flowme_inference_required",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "absent",
+            "parallelWork": "absent",
+            "branch": "flowme_inference_required",
+            "repeat": "explicit_structured_or_labeled",
+            "stopCondition": "absent",
+            "completion": "absent",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "kotsa-inspection-procedure",
+          "title": "자동차검사 절차",
+          "url": "https://main.kotsa.or.kr/portal/contents.do%3FmenuCode%3D01010104",
+          "provider": "한국교통안전공단",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "flowme_inference_required",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "present_in_prose_or_media",
+            "cost": "present_in_prose_or_media",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "explicit_structured_or_labeled",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "kotsa-inspection-period",
+        "userNeed": "내 차의 검사 종류와 가능 기간을 확인하고 마감 전에 예약한다.",
+        "sourceShape": "공식 검사 기준과 외부 차량 조회·예약",
+        "sourceRowUnit": "차량 검사 1회",
+        "naturalFlowType": "일정형",
+        "primaryDestination": "date_range_with_booking_link",
+        "baseline": {
+          "title": "자동차검사 예약",
+          "detail": "검사 종류와 가능 기간은 공단 차량 조회 결과를 사용한다. 예약·결제는 사이버검사소에서 한다.",
+          "items": [
+            {
+              "title": "검사 종류·가능 기간 확인",
+              "detail": "공단 또는 사이버검사소 차량 조회 결과를 입력한다.",
+              "sourceRefs": [
+                "kotsa-inspection-period"
+              ]
+            },
+            {
+              "title": "마감 전에 검사 예약",
+              "detail": "예약 가능 시간은 사이버검사소에서 선택한다.",
+              "sourceRefs": [
+                "kotsa-inspection-procedure"
+              ]
+            },
+            {
+              "title": "필수 준비 확인 후 검사소 방문",
+              "detail": "현재 공식 안내를 재확인한다.",
+              "sourceRefs": [
+                "kotsa-inspection-procedure"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "검사 종류",
+          "검사 가능 시작일",
+          "검사 마감일"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "inspectionType": "정기검사",
+              "window": "2026-08-01~2026-09-30",
+              "booking": "2026-09-15 10:00"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "정기검사 9월 30일까지",
+          "items": [
+            {
+              "title": "정기검사 예약 마감 알림",
+              "date": "2026-09-16T09:00:00+09:00",
+              "detail": "전략 예시: 마감 14일 전. 실제 차량 조회값이 있어야 생성.",
+              "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010103"
+            },
+            {
+              "title": "자동차검사 예약",
+              "date": "2026-09-15T10:00:00+09:00",
+              "detail": "예시 일정. 사이버검사소에서 예약 확정 후 사용.",
+              "sourceUrl": "https://www.cyberts.kr"
+            }
+          ]
+        },
+        "outputs": [
+          "검사 가능 기간 카드",
+          "마감·예약 ICS",
+          "필수 준비 체크",
+          "공식 예약 링크"
+        ],
+        "afterRun": "검사 결과와 다음 기간은 공단에서 확인한다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "검사 종류·유효기간 기준·공식 절차"
+          ],
+          "creatorExperience": [],
+          "flowmeInference": [
+            "예시 차량의 날짜 범위·예약일·14일 전 알림"
+          ],
+          "caution": [
+            "차량 조회 전에는 날짜를 사실로 표시하지 않음"
+          ]
+        },
+        "doNotBuild": "차량 조회·예약·결제·검사 판정을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "제목·상세·공식 링크",
+          "단일 날짜·ICS"
+        ],
+        "needsBuild": [
+          "검사 종류 표시",
+          "날짜 범위",
+          "마감 상대 알림",
+          "차량 조회값 잠금"
+        ],
+        "external": [
+          "차량 조회·실시간 예약·결제·결과"
+        ],
+        "doNotCover": [
+          "차량 적합 판정",
+          "공식 예약 시스템 대체"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "차량 조회·실시간 예약·결제·결과"
+        ],
+        "neverOwns": [
+          "차량 적합 판정",
+          "공식 예약 시스템 대체"
+        ]
+      },
+      "decision": {
+        "p0": "after_verified_vehicle_dates",
+        "representativeFlow": "검사 종류·가능 기간·예약 마감",
+        "why": "실행 가치는 높지만 실제 차량 기간 없이는 발행하면 안 된다.",
+        "biggestGap": "날짜 범위·조회값 잠금",
+        "biggestRisk": "임의 회차·날짜를 공식 일정처럼 제시"
+      }
+    },
+    {
+      "serviceId": "the-knot",
+      "serviceName": "The Knot",
+      "categoryId": "events_moving",
+      "relationship": "전문 결혼 플랫폼 · 장기 계획 참고",
+      "sourceSamples": [
+        {
+          "id": "the-knot-12-month-checklist",
+          "title": "The 12-Month Wedding Planning Checklist",
+          "url": "https://www.theknot.com/content/12-month-wedding-planning-countdown",
+          "provider": "The Knot Editorial",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "flowme_inference_required",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "present_in_prose_or_media",
+            "participants": "present_in_prose_or_media",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "explicit_structured_or_labeled",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "explicit_structured_or_labeled",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "the-knot-wedding-packing",
+          "title": "The Ultimate Wedding Packing List",
+          "url": "https://www.theknot.com/content/wedding-packing-tips",
+          "provider": "The Knot Editorial",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "absent",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "explicit_structured_or_labeled",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "the-knot-12-month-checklist",
+        "userNeed": "결혼일까지 큰 준비 구간만 보고 원문 체크리스트로 돌아간다.",
+        "sourceShape": "12개월 이상 D-day 편집 체크리스트",
+        "sourceRowUnit": "큰 마일스톤 1개",
+        "naturalFlowType": "일정형",
+        "primaryDestination": "milestone_preview",
+        "baseline": {
+          "title": "결혼 준비 큰 일정",
+          "detail": "The Knot 원문의 지역·상황별 세부 항목을 확인한다. FlowMe는 기준일에서 큰 마일스톤만 예시로 배치한다.",
+          "items": [
+            {
+              "title": "예산·규모 결정",
+              "detail": "원문 준비 항목을 상황에 맞게 선택한다.",
+              "sourceRefs": [
+                "the-knot-12-month-checklist"
+              ]
+            },
+            {
+              "title": "핵심 업체·장소 확인",
+              "detail": "실시간 예약은 외부에서 한다.",
+              "sourceRefs": [
+                "the-knot-12-month-checklist"
+              ]
+            },
+            {
+              "title": "당일 준비물 확인",
+              "detail": "8개 범주 원문을 연다.",
+              "sourceRefs": [
+                "the-knot-wedding-packing"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "결혼식 날짜",
+          "행사 규모"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "eventDate": "2027-05-15",
+              "size": "소규모"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "2027년 5월 결혼 준비 미리보기",
+          "items": [
+            {
+              "title": "예산·규모 초안",
+              "date": "2026-08-15T10:00:00+09:00",
+              "detail": "전략 예시. 지역·상황에 맞게 원문에서 검토.",
+              "sourceUrl": "https://www.theknot.com/content/12-month-wedding-planning-countdown"
+            },
+            {
+              "title": "당일 준비물 최종 확인",
+              "date": "2027-05-08T10:00:00+09:00",
+              "detail": "예시 D-7. 업체·가족 담당은 별도 확인.",
+              "sourceUrl": "https://www.theknot.com/content/wedding-packing-tips"
+            }
+          ]
+        },
+        "outputs": [
+          "큰 일정 미리보기",
+          "원문 링크",
+          "선택 시 ICS"
+        ],
+        "afterRun": "업체 계약·결제·게스트·공동 완료는 The Knot 또는 별도 도구에 남긴다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "D-day 구간·8개 준비 범주"
+          ],
+          "creatorExperience": [
+            "일반적인 웨딩 순서"
+          ],
+          "flowmeInference": [
+            "예시 결혼일에서 역산한 큰 일정"
+          ],
+          "caution": [
+            "한국 관행·계약·비용에 그대로 적용하지 않음"
+          ]
+        },
+        "doNotBuild": "업체 마켓·계약·레지스트리·게스트 관리 복제 금지",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "개인 마일스톤·날짜·ICS·링크"
+        ],
+        "needsBuild": [
+          "담당자·공동 완료",
+          "긴 타임라인 축약",
+          "지역별 기준본"
+        ],
+        "external": [
+          "업체 검색·예약·계약·레지스트리"
+        ],
+        "doNotCover": [
+          "The Knot 웨딩 운영 플랫폼 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "업체 검색·예약·계약·레지스트리"
+        ],
+        "neverOwns": [
+          "The Knot 웨딩 운영 플랫폼 복제"
+        ]
+      },
+      "decision": {
+        "p0": "preview_only",
+        "representativeFlow": "결혼 준비 큰 일정 5~7개",
+        "why": "전체 웨딩 운영은 초기 범위를 넘는다.",
+        "biggestGap": "협업·역할·지역화",
+        "biggestRisk": "미국 편집 기준을 한국 표준처럼 제시"
+      }
+    },
+    {
+      "serviceId": "zola",
+      "serviceName": "Zola",
+      "categoryId": "events_moving",
+      "relationship": "전문 결혼 플랫폼 · 콘텐츠/상거래 비교 대상",
+      "sourceSamples": [
+        {
+          "id": "zola-wedding-checklist",
+          "title": "Your Ultimate Wedding Planning Checklist",
+          "url": "https://www.zola.com/expert-advice/your-ultimate-wedding-planning-checklist",
+          "provider": "Zola Expert Advice",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "absent",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "present_in_prose_or_media",
+            "participants": "present_in_prose_or_media",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "explicit_structured_or_labeled",
+            "branch": "flowme_inference_required",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "zola-rehearsal-dinner-home",
+          "title": "How to Create a Stunning Rehearsal Dinner at Home",
+          "url": "https://www.zola.com/expert-advice/how-to-create-a-stunning-rehearsal-dinner-at-home",
+          "provider": "Zola Expert Advice",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "present_in_prose_or_media",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "present_in_prose_or_media",
+            "participants": "explicit_structured_or_labeled",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "present_in_prose_or_media",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "zola-rehearsal-dinner-home",
+        "userNeed": "집에서 손님을 초대할 때 날짜·인원·역할만 정리한다.",
+        "sourceShape": "사진·상품·행사 팁 가이드",
+        "sourceRowUnit": "손님 초대 준비 1건",
+        "naturalFlowType": "협업형",
+        "primaryDestination": "event_checklist_and_role_table",
+        "baseline": {
+          "title": "집에서 손님 초대 준비",
+          "detail": "Zola 원문의 행사 아이디어를 참고하되 메뉴·공간·알레르기는 우리 상황에 맞게 정한다.",
+          "items": [
+            {
+              "title": "인원·예산·공간 확정",
+              "detail": "우리 상황 값.",
+              "sourceRefs": [
+                "zola-rehearsal-dinner-home"
+              ]
+            },
+            {
+              "title": "메뉴·준비물 확인",
+              "detail": "원문 아이디어를 참고하되 식이 조건을 별도 확인.",
+              "sourceRefs": [
+                "zola-rehearsal-dinner-home"
+              ]
+            },
+            {
+              "title": "당일 역할 나누기",
+              "detail": "담당자 UX는 보강 필요.",
+              "sourceRefs": [
+                "zola-rehearsal-dinner-home"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "행사일",
+          "인원",
+          "담당자"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "date": "2026-09-12 17:00",
+              "guests": 8,
+              "roles": "A=요리, B=세팅"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "9월 12일 8명 손님 초대",
+          "items": [
+            {
+              "title": "메뉴·장보기 확정",
+              "date": "2026-09-10T20:00:00+09:00",
+              "detail": "8명·식이 조건 확인. 전략 예시.",
+              "sourceUrl": "https://www.zola.com/expert-advice/how-to-create-a-stunning-rehearsal-dinner-at-home"
+            },
+            {
+              "title": "손님 초대 준비",
+              "date": "2026-09-12T15:00:00+09:00",
+              "detail": "A 요리, B 세팅 예시. 실제 역할 기능은 보강 필요.",
+              "sourceUrl": "https://www.zola.com/expert-advice/how-to-create-a-stunning-rehearsal-dinner-at-home"
+            }
+          ]
+        },
+        "outputs": [
+          "행사 ICS",
+          "준비 체크리스트",
+          "역할표 전략 예시"
+        ],
+        "afterRun": "개인 메모만 남기고 상품·업체·게스트 관계는 외부에 둔다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "집 행사 준비 주제"
+          ],
+          "creatorExperience": [
+            "장식·운영 팁"
+          ],
+          "flowmeInference": [
+            "8명·일정·역할"
+          ],
+          "caution": [
+            "식이·안전 조건은 사용자 확인"
+          ]
+        },
+        "doNotBuild": "레지스트리·업체·게스트 관리 복제 금지",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "개인 일정·체크·원문"
+        ],
+        "needsBuild": [
+          "담당자·공동 완료·인원별 준비"
+        ],
+        "external": [
+          "상품·업체·초대·게스트"
+        ],
+        "doNotCover": [
+          "Zola 상거래·게스트 플랫폼 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "상품·업체·초대·게스트"
+        ],
+        "neverOwns": [
+          "Zola 상거래·게스트 플랫폼 복제"
+        ]
+      },
+      "decision": {
+        "p0": "small_event_reference",
+        "representativeFlow": "집에서 손님 초대",
+        "why": "결혼 전체보다 작은 행사 단위가 P0에 맞다.",
+        "biggestGap": "역할 분담",
+        "biggestRisk": "미국 웨딩 맥락·상거래를 그대로 가져옴"
+      }
+    },
+    {
+      "serviceId": "moveadvisor",
+      "serviceName": "MoveAdvisor",
+      "categoryId": "events_moving",
+      "relationship": "이사 실행 콘텐츠 원본 · 전문 비교 대상",
+      "sourceSamples": [
+        {
+          "id": "moveadvisor-checklist",
+          "title": "The Ultimate Moving Checklist",
+          "url": "https://moveadvisor.com/move/moving-checklist/",
+          "provider": "MoveAdvisor",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "absent",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "present_in_prose_or_media",
+            "participants": "present_in_prose_or_media",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "explicit_structured_or_labeled",
+            "branch": "flowme_inference_required",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "moveadvisor-timeline",
+          "title": "The Moving Timeline: What to Do Before and After You Move",
+          "url": "https://moveadvisor.com/move/moving-timeline/",
+          "provider": "MoveAdvisor",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "present_in_prose_or_media",
+            "duration": "absent",
+            "dateWindow": "explicit_structured_or_labeled",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "present_in_prose_or_media",
+            "branch": "flowme_inference_required",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "absent",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "moveadvisor-timeline",
+        "userNeed": "이사일을 입력해 큰 준비 일정을 놓치지 않는다.",
+        "sourceShape": "8주 전~이사 후 2일 타임라인",
+        "sourceRowUnit": "시점별 큰 행동",
+        "naturalFlowType": "일정형",
+        "primaryDestination": "countdown_calendar_and_checklist",
+        "baseline": {
+          "title": "이사 D-56 준비",
+          "detail": "MoveAdvisor의 일반 타임라인을 참고하되 한국 행정·계약은 정부24 등 공식 출처로 교체한다.",
+          "items": [
+            {
+              "title": "D-56 이사 범위·예산 정리",
+              "detail": "큰 준비를 시작한다.",
+              "sourceRefs": [
+                "moveadvisor-timeline"
+              ]
+            },
+            {
+              "title": "D-28 포장·주소 변경 준비",
+              "detail": "지역 공식 절차를 별도 확인한다.",
+              "sourceRefs": [
+                "moveadvisor-checklist"
+              ]
+            },
+            {
+              "title": "D-7 최종 확인",
+              "detail": "업체·가족 역할·필수품 확인.",
+              "sourceRefs": [
+                "moveadvisor-checklist"
+              ]
+            },
+            {
+              "title": "이사 당일",
+              "detail": "계량기·열쇠·필수품 확인.",
+              "sourceRefs": [
+                "moveadvisor-timeline"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "이사일",
+          "지역"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "moveDate": "2026-10-03",
+              "region": "서울"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "10월 3일 이사 준비",
+          "items": [
+            {
+              "title": "이사 범위·예산 정리",
+              "date": "2026-08-08T10:00:00+09:00",
+              "detail": "D-56 전략 예시.",
+              "sourceUrl": "https://moveadvisor.com/move/moving-timeline/"
+            },
+            {
+              "title": "포장·주소 변경 준비",
+              "date": "2026-09-05T10:00:00+09:00",
+              "detail": "한국 공식 절차 링크를 별도 사용.",
+              "sourceUrl": "https://moveadvisor.com/move/moving-checklist/"
+            },
+            {
+              "title": "이사 최종 확인",
+              "date": "2026-09-26T10:00:00+09:00",
+              "detail": "D-7 전략 예시.",
+              "sourceUrl": "https://moveadvisor.com/move/moving-checklist/"
+            }
+          ]
+        },
+        "outputs": [
+          "D-day 캘린더 ICS",
+          "준비 체크리스트"
+        ],
+        "afterRun": "개인 체크·메모만 남기고 업체 계약·결제는 외부에 둔다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "8주 전~이사 후 2일 구조"
+          ],
+          "creatorExperience": [
+            "일반 이사 준비 순서"
+          ],
+          "flowmeInference": [
+            "2026-10-03에서 역산한 예시 날짜"
+          ],
+          "caution": [
+            "한국 행정·계약 항목은 공식 출처로 교체"
+          ]
+        },
+        "doNotBuild": "이사업체 견적·계약·실시간 상태를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "D-day 날짜·체크·ICS"
+        ],
+        "needsBuild": [
+          "가족 담당자",
+          "지역별 공식 소스 결합",
+          "긴 일정 축약"
+        ],
+        "external": [
+          "업체 견적·계약·결제"
+        ],
+        "doNotCover": [
+          "이사업체 마켓·계약 운영"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "업체 견적·계약·결제"
+        ],
+        "neverOwns": [
+          "이사업체 마켓·계약 운영"
+        ]
+      },
+      "decision": {
+        "p0": "localized_countdown",
+        "representativeFlow": "이사 D-56",
+        "why": "기준일 하나로 가치가 분명하며 현재 모델과 가깝다.",
+        "biggestGap": "지역 공식 절차와 역할 분담",
+        "biggestRisk": "글로벌 일반 항목을 한국 공식 절차처럼 사용"
+      }
+    },
+    {
+      "serviceId": "instructables",
+      "serviceName": "Instructables",
+      "categoryId": "hobby_making",
+      "relationship": "제작자 원본 공급처 · 커뮤니티 참고",
+      "sourceSamples": [
+        {
+          "id": "instructables-cardboard-automata",
+          "title": "Car Cardboard Automata by Vannson",
+          "url": "https://www.instructables.com/Car-Cardboard-Automata-by-Vannson/",
+          "provider": "Vannson via Instructables",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "present_in_prose_or_media",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "absent"
+          }
+        },
+        {
+          "id": "instructables-dinosaur-footprints",
+          "title": "Dinosaur Footprints",
+          "url": "https://www.instructables.com/Dinosaur-Footprints/",
+          "provider": "Instructables creator",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "present_in_prose_or_media",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "flowme_inference_required",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "absent",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "instructables-dinosaur-footprints",
+        "userNeed": "공룡 발자국 만들기를 저장하고 아이와 할 날이 생기면 원문을 보며 실행한다.",
+        "sourceShape": "결과 이미지·재료·12개 단계",
+        "sourceRowUnit": "프로젝트 1건",
+        "naturalFlowType": "저장형",
+        "primaryDestination": "bucket_then_checklist",
+        "baseline": {
+          "title": "아이와 공룡 발자국 만들기",
+          "detail": "Instructables 제작자 원문에서 재료·도구·12개 사진 단계를 확인한다.",
+          "items": [
+            {
+              "title": "공룡 발자국 만들기 저장",
+              "detail": "날짜는 나중에 정한다.",
+              "sourceRefs": [
+                "instructables-dinosaur-footprints"
+              ]
+            },
+            {
+              "title": "재료·도구·보호자 도움 확인",
+              "detail": "실행할 때 원문에서 최종 확인한다.",
+              "sourceRefs": [
+                "instructables-dinosaur-footprints"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "아이 연령대",
+          "실행일(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "age": "6세",
+              "timing": "날짜 미정"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "6세 아이와 공룡 발자국 만들기",
+          "items": [
+            {
+              "title": "공룡 발자국 만들기",
+              "date": null,
+              "detail": "날짜 미정 버킷. 실행 전에 도구 안전·보호자 도움 확인.",
+              "sourceUrl": "https://www.instructables.com/Dinosaur-Footprints/"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트",
+          "준비 체크",
+          "원문 링크"
+        ],
+        "afterRun": "완료·개인 사진은 비공개 기본. 공개 기여는 별도 동의가 필요하다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "재료·도구·12개 단계"
+          ],
+          "creatorExperience": [
+            "제작 순서·방법"
+          ],
+          "flowmeInference": [
+            "6세·날짜 미정"
+          ],
+          "caution": [
+            "도구 안전·보호자 확인",
+            "원문 사진 복제 금지"
+          ]
+        },
+        "doNotBuild": "단계 사진·도안·댓글 커뮤니티를 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "저장 항목·상세·원문·제작자"
+        ],
+        "needsBuild": [
+          "날짜 미정→일정 승격",
+          "준비물 표·안전 확인"
+        ],
+        "external": [
+          "단계 이미지·댓글·I Made It"
+        ],
+        "doNotCover": [
+          "제작자 이미지·도안·커뮤니티 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "단계 이미지·댓글·I Made It"
+        ],
+        "neverOwns": [
+          "제작자 이미지·도안·커뮤니티 복제"
+        ]
+      },
+      "decision": {
+        "p0": "creator_bucket_project",
+        "representativeFlow": "공룡 발자국 만들기 저장",
+        "why": "제작자 원문 유입과 저장→실행 전환을 동시에 검증한다.",
+        "biggestGap": "날짜 미정 승격",
+        "biggestRisk": "이미지·도안 권리와 아동 도구 안전"
+      }
+    },
+    {
+      "serviceId": "ifixit",
+      "serviceName": "iFixit",
+      "categoryId": "hobby_making",
+      "relationship": "참여형 절차 지식 모델 · 전문 수리 원본",
+      "sourceSamples": [
+        {
+          "id": "ifixit-backpack-zipper",
+          "title": "How to Replace the Zipper in a Backpack",
+          "url": "https://www.ifixit.com/Guide/How%2Bto%2BReplace%2Bthe%2BZipper%2Bin%2Ba%2BBackpack/209598",
+          "provider": "iFixit community guide",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "explicit_structured_or_labeled",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "ifixit-jacket-zipper",
+          "title": "Replace a jacket zipper (without unraveling)",
+          "url": "https://www.ifixit.com/Guide/Replace%2Ba%2Bjacket%2Bzipper%2B%28without%2Bunraveling%29/152549",
+          "provider": "iFixit community guide",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "present_in_prose_or_media",
+            "repeat": "absent",
+            "stopCondition": "present_in_prose_or_media",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "explicit_structured_or_labeled",
+            "reviewHistory": "explicit_structured_or_labeled",
+            "commerceExternal": "absent"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "ifixit-backpack-zipper",
+        "userNeed": "가방 지퍼 수리를 할지 판단하고 필요한 도구를 준비한다.",
+        "sourceShape": "30분·보통·7단계 사진 수리 가이드",
+        "sourceRowUnit": "수리 프로젝트 1건",
+        "naturalFlowType": "참고형",
+        "primaryDestination": "repair_decision_memo",
+        "baseline": {
+          "title": "가방 지퍼 수리 검토",
+          "detail": "30분·보통 난이도. iFixit 원문에서 가방 구조·도구·7단계를 확인한 뒤 직접 할지 결정한다.",
+          "items": [
+            {
+              "title": "가방 구조와 지퍼 규격 확인",
+              "detail": "원문 사진과 내 가방이 맞는지 비교한다.",
+              "sourceRefs": [
+                "ifixit-backpack-zipper"
+              ]
+            },
+            {
+              "title": "도구·부품 준비 가능 여부 확인",
+              "detail": "준비되지 않으면 수리점 선택.",
+              "sourceRefs": [
+                "ifixit-backpack-zipper"
+              ]
+            },
+            {
+              "title": "iFixit 원문으로 수리 또는 전문가에게 맡기기",
+              "detail": "FlowMe가 수리 적합성을 보장하지 않는다.",
+              "sourceRefs": [
+                "ifixit-backpack-zipper"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "가방 유형",
+          "도구 보유 여부"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "item": "백팩",
+              "tools": "재봉틀 없음"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "백팩 지퍼 수리 방법 결정",
+          "items": [
+            {
+              "title": "iFixit 가이드와 내 백팩 비교",
+              "date": null,
+              "detail": "재봉틀 없음. 직접 수리 대신 수리점 옵션도 검토.",
+              "sourceUrl": "https://www.ifixit.com/Guide/How%2Bto%2BReplace%2Bthe%2BZipper%2Bin%2Ba%2BBackpack/209598"
+            }
+          ]
+        },
+        "outputs": [
+          "검토 메모",
+          "도구 체크",
+          "원문 링크"
+        ],
+        "afterRun": "수리 결과와 개인 메모만 남기고 가이드 수정은 iFixit에서 한다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "30분·보통·7단계·도구"
+          ],
+          "creatorExperience": [
+            "수리 순서·난이도"
+          ],
+          "flowmeInference": [
+            "도구 없음에 따른 수리점 검토"
+          ],
+          "caution": [
+            "전기·배터리·고위험 수리는 P0 제외"
+          ]
+        },
+        "doNotBuild": "iFixit 사진·수리 DB·부품 마켓·편집 시스템을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "검토 체크·상세·원문·제작자"
+        ],
+        "needsBuild": [
+          "도구 보유·분기",
+          "버전·기여 이력 표시"
+        ],
+        "external": [
+          "사진 단계·부품 구매·가이드 편집"
+        ],
+        "doNotCover": [
+          "전문 수리 판정",
+          "수리 DB·사진 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "사진 단계·부품 구매·가이드 편집"
+        ],
+        "neverOwns": [
+          "전문 수리 판정",
+          "수리 DB·사진 복제"
+        ]
+      },
+      "decision": {
+        "p0": "low_risk_decision_memo",
+        "representativeFlow": "가방 지퍼 수리 검토",
+        "why": "구조·기여 모델은 훌륭하지만 실행 위험에 따라 범위를 좁혀야 한다.",
+        "biggestGap": "적합성 분기",
+        "biggestRisk": "고위험 수리를 단순 체크로 유도"
+      }
+    },
+    {
+      "serviceId": "cricut",
+      "serviceName": "Cricut",
+      "categoryId": "hobby_making",
+      "relationship": "도구 기반 제작자 콘텐츠 · 외부 실행 대상",
+      "sourceSamples": [
+        {
+          "id": "cricut-3d-flowers",
+          "title": "How to make 3D flowers",
+          "url": "https://cricut.com/blog/how-to-make-3d-flowers/",
+          "provider": "Cricut",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "explicit_structured_or_labeled",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "flowme_inference_required",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "explicit_structured_or_labeled",
+            "riskCaution": "present_in_prose_or_media",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        },
+        {
+          "id": "cricut-easy-paper-flowers",
+          "title": "Easy paper flowers to show thanks",
+          "url": "https://cricut.com/blog/easy-paper-flowers-to-show-thanks/",
+          "provider": "Cricut",
+          "dataFields": {
+            "goalOutcome": "explicit_structured_or_labeled",
+            "actionTitle": "explicit_structured_or_labeled",
+            "detail": "explicit_structured_or_labeled",
+            "prerequisite": "absent",
+            "materials": "explicit_structured_or_labeled",
+            "duration": "present_in_prose_or_media",
+            "dateWindow": "flowme_inference_required",
+            "locationRoute": "absent",
+            "cost": "flowme_inference_required",
+            "participants": "absent",
+            "sequence": "explicit_structured_or_labeled",
+            "parallelWork": "absent",
+            "branch": "absent",
+            "repeat": "absent",
+            "stopCondition": "absent",
+            "completion": "present_in_prose_or_media",
+            "nextAction": "absent",
+            "creatorSource": "explicit_structured_or_labeled",
+            "versionModified": "absent",
+            "riskCaution": "flowme_inference_required",
+            "reviewHistory": "absent",
+            "commerceExternal": "explicit_structured_or_labeled"
+          }
+        }
+      ],
+      "conversion": {
+        "sourceContentId": "cricut-3d-flowers",
+        "userNeed": "3D 종이꽃 프로젝트를 저장하고 기기·재료가 준비되면 실행한다.",
+        "sourceShape": "공식 이미지 튜토리얼과 Design Space 프로젝트",
+        "sourceRowUnit": "만들기 프로젝트 1건",
+        "naturalFlowType": "저장형",
+        "primaryDestination": "bucket_with_requirements",
+        "baseline": {
+          "title": "Cricut 3D 종이꽃 만들기",
+          "detail": "Cricut 기기·Design Space·호환 재료가 필요하다. 전체 단계와 도안은 공식 원문에서 본다.",
+          "items": [
+            {
+              "title": "3D 종이꽃 프로젝트 저장",
+              "detail": "날짜는 나중에 정한다.",
+              "sourceRefs": [
+                "cricut-3d-flowers"
+              ]
+            },
+            {
+              "title": "기기·재료·프로젝트 접근 확인",
+              "detail": "실행할 때 공식 원문에서 확인한다.",
+              "sourceRefs": [
+                "cricut-3d-flowers"
+              ]
+            }
+          ]
+        },
+        "minimalInputs": [
+          "Cricut 기기 보유 여부",
+          "실행일(선택)"
+        ],
+        "exampleInputs": [
+          {
+            "label": "전략 예시 입력",
+            "values": {
+              "device": "Explore 3 보유",
+              "timing": "날짜 미정"
+            }
+          }
+        ],
+        "appliedInstance": {
+          "title": "Cricut 3D 종이꽃 만들기",
+          "items": [
+            {
+              "title": "3D 종이꽃 프로젝트",
+              "date": null,
+              "detail": "날짜 미정. Explore 3 호환 재료·프로젝트 접근을 공식 원문에서 확인.",
+              "sourceUrl": "https://cricut.com/blog/how-to-make-3d-flowers/"
+            }
+          ]
+        },
+        "outputs": [
+          "버킷리스트",
+          "준비 조건 메모",
+          "공식 프로젝트 링크"
+        ],
+        "afterRun": "개인 완료·변형 메모만 남기고 파일·기기 기록은 Cricut에 둔다.",
+        "evidenceSeparation": {
+          "sourceFacts": [
+            "재료·기기·Design Space 단계·약 30분"
+          ],
+          "creatorExperience": [
+            "디자인·조립 방식"
+          ],
+          "flowmeInference": [
+            "Explore 3 보유·날짜 미정"
+          ],
+          "caution": [
+            "기기·칼날 안전·구독 조건 재확인"
+          ]
+        },
+        "doNotBuild": "도안·Design Space·기기 제어·구독을 복제하지 않는다.",
+        "status": "strategy_example_not_published_content"
+      },
+      "coverage": {
+        "current": [
+          "저장·상세·원문·제작자"
+        ],
+        "needsBuild": [
+          "날짜 미정 승격",
+          "도구·호환 조건 필드"
+        ],
+        "external": [
+          "Design Space·도안·기기 제어·구독"
+        ],
+        "doNotCover": [
+          "도안·프로젝트 파일 재배포",
+          "기기 생태계 복제"
+        ]
+      },
+      "ownership": {
+        "flowmeOwns": [
+          "사용자가 선택한 행동",
+          "개인 일정·기한·담당자",
+          "개인 체크·메모",
+          "원본 출처·제작자",
+          "기준본과 개인본 관계"
+        ],
+        "remainsExternal": [
+          "Design Space·도안·기기 제어·구독"
+        ],
+        "neverOwns": [
+          "도안·프로젝트 파일 재배포",
+          "기기 생태계 복제"
+        ]
+      },
+      "decision": {
+        "p0": "tool_gated_bucket",
+        "representativeFlow": "3D 종이꽃 프로젝트 저장",
+        "why": "도구 조건이 분명한 외부 실행형 만들기다.",
+        "biggestGap": "도구·호환 조건",
+        "biggestRisk": "유료 도안·프로젝트 접근권 복제"
+      }
+    }
+  ]
+}

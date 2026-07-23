@@ -1,0 +1,101 @@
+{
+  "generatedAt": "2026-07-22T15:16:54.052Z",
+  "results": [
+    {
+      "id": "new-ohouse-storage",
+      "sourceUrl": "https://ohou.se/advices/9345",
+      "openedAt": "2026-07-22T15:16:25.683Z",
+      "captureMethod": "public_html_snapshot_render",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "new-ohouse-storage-snapshot-top.png"
+        },
+        {
+          "kind": "metrics",
+          "matchedText": "53,119",
+          "file": "new-ohouse-storage-snapshot-metrics.png"
+        },
+        {
+          "kind": "rows",
+          "matchedText": "쓰레기 봉투",
+          "file": "new-ohouse-storage-snapshot-rows.png"
+        }
+      ],
+      "title": "스크랩 1000 이상! 삶의질을 높여줄 신박 수납팁 5, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+      "textLength": 3185
+    },
+    {
+      "id": "new-ohouse-lunchbox",
+      "sourceUrl": "https://ohou.se/advices/9098",
+      "openedAt": "2026-07-22T15:16:33.125Z",
+      "captureMethod": "public_html_snapshot_render",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "new-ohouse-lunchbox-snapshot-top.png"
+        },
+        {
+          "kind": "metrics",
+          "matchedText": "10,943",
+          "file": "new-ohouse-lunchbox-snapshot-metrics.png"
+        },
+        {
+          "kind": "rows",
+          "matchedText": "도시락 일주일 식단표",
+          "file": "new-ohouse-lunchbox-snapshot-rows.png"
+        }
+      ],
+      "title": "예쁘고 간단하게 준비하는 🍱 도시락 일주일 식단표, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+      "textLength": 5567
+    },
+    {
+      "id": "new-ohouse-remodel",
+      "sourceUrl": "https://ohou.se/advices/1972",
+      "openedAt": "2026-07-22T15:16:39.997Z",
+      "captureMethod": "public_html_snapshot_render",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "new-ohouse-remodel-snapshot-top.png"
+        },
+        {
+          "kind": "metrics",
+          "matchedText": "253,495",
+          "file": "new-ohouse-remodel-snapshot-metrics.png"
+        },
+        {
+          "kind": "rows",
+          "matchedText": "체크리스트 10",
+          "file": "new-ohouse-remodel-snapshot-rows.png"
+        }
+      ],
+      "title": "리모델링 계약서 체크리스트 10, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+      "textLength": 4843
+    },
+    {
+      "id": "support-ohouse-moving",
+      "sourceUrl": "https://ohou.se/advices/8442",
+      "openedAt": "2026-07-22T15:16:47.790Z",
+      "captureMethod": "public_html_snapshot_render",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "support-ohouse-moving-snapshot-top.png"
+        },
+        {
+          "kind": "metrics",
+          "matchedText": "26",
+          "file": "support-ohouse-moving-snapshot-metrics.png"
+        },
+        {
+          "kind": "rows",
+          "matchedText": "이사 준비 체크리스트",
+          "file": "support-ohouse-moving-snapshot-rows.png"
+        }
+      ],
+      "title": "미리 저장 필수🚨 이사 준비 체크리스트 완벽 정리, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+      "textLength": 5662
+    }
+  ]
+}
