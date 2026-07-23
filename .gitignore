@@ -15,6 +15,10 @@ outputs/
 # Generated QA exports
 prod-smoke-*.xlsx
 
+# Local browser and research scratch
+.playwright-cli/
+/tmp/
+
 # Local environment
 .env
 .env.*
