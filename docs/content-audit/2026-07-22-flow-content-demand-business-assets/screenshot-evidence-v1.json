@@ -1,0 +1,415 @@
+{
+  "generatedAt": "2026-07-22T15:06:04.482Z",
+  "targetCount": 17,
+  "results": [
+    {
+      "id": "gold-funmom",
+      "sourceUrl": "https://funmom.tistory.com/",
+      "openedAt": "2026-07-22T15:04:42.064Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-funmom-top.png"
+        },
+        {
+          "kind": "structure",
+          "matchedText": "전체 글보기",
+          "file": "gold-funmom-structure.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://funmom.tistory.com/",
+      "title": "펀맘"
+    },
+    {
+      "id": "gold-opic",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "openedAt": "2026-07-22T15:04:48.647Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-opic-top.png"
+        },
+        {
+          "kind": "plan",
+          "matchedText": "오픽 모의고사 공부 계획표",
+          "file": "gold-opic-plan.png"
+        },
+        {
+          "kind": "download",
+          "matchedText": "엑셀 버전 다운로드",
+          "file": "gold-opic-download.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "title": "오픽 모의고사 공부 방법 7가지 공유, 계획표 다운로드"
+    },
+    {
+      "id": "gold-baby-food",
+      "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=01695258757&logNo=222768860919&redirect=Dlog&widgetTypeCall=true&directAccess=false",
+      "openedAt": "2026-07-22T15:04:53.306Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-baby-food-top.png"
+        },
+        {
+          "kind": "files",
+          "matchedText": "초기식단표",
+          "file": "gold-baby-food-files.png"
+        },
+        {
+          "kind": "comments",
+          "matchedText": "댓글 9,999+",
+          "file": "gold-baby-food-comments.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://blog.naver.com/PostView.naver?blogId=01695258757&logNo=222768860919&redirect=Dlog&widgetTypeCall=true&directAccess=false",
+      "title": "초기이유식 식단표 (5개월/6개월 시작시기별 식단표, 이유식재료 스케줄 완벽정리) : 네이버 블로그"
+    },
+    {
+      "id": "gold-reading",
+      "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=naristyle87&logNo=222978131890&redirect=Dlog&widgetTypeCall=true&directAccess=false",
+      "openedAt": "2026-07-22T15:04:58.733Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-reading-top.png"
+        },
+        {
+          "kind": "routine",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "아침 1시간",
+            "read and write",
+            "한달에 5권"
+          ]
+        },
+        {
+          "kind": "comments",
+          "matchedText": "댓글 37",
+          "file": "gold-reading-comments.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://blog.naver.com/PostView.naver?blogId=naristyle87&logNo=222978131890&redirect=Dlog&widgetTypeCall=true&directAccess=false",
+      "title": "2023 나만의 독서 시스템 만들기 & 독서 계획과 목표 : 네이버 블로그"
+    },
+    {
+      "id": "gold-new-car",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "openedAt": "2026-07-22T15:05:02.441Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-new-car-top.png"
+        },
+        {
+          "kind": "steps",
+          "matchedText": "1단계: 예산 설정 및 차량 선택",
+          "file": "gold-new-car-steps.png"
+        },
+        {
+          "kind": "business",
+          "matchedText": "3분 만에 새 차 견적받기",
+          "file": "gold-new-car-business.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "title": "초보자를 위한 신차 구매 전체 절차 완벽 정리 | 처음부터 끝까지"
+    },
+    {
+      "id": "gold-vaccination",
+      "sourceUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+      "openedAt": "2026-07-22T15:05:06.699Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-vaccination-top.png"
+        },
+        {
+          "kind": "schedule",
+          "matchedText": "예방접종 일정표",
+          "file": "gold-vaccination-schedule.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://khms.or.kr/healthy_life/prevention/vaccination_child",
+      "title": "대한건강의료지원단 건강한생활 감염예방 어린이 예방접종"
+    },
+    {
+      "id": "gold-moving",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "openedAt": "2026-07-22T15:05:10.321Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-moving-top.png"
+        },
+        {
+          "kind": "table",
+          "matchedText": "D-30",
+          "file": "gold-moving-table.png"
+        },
+        {
+          "kind": "metrics",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "조회 98,401",
+            "스크랩 20"
+          ]
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "title": "이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부)"
+    },
+    {
+      "id": "gold-wedding-naver",
+      "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=wilklove&logNo=223518896995&redirect=Dlog&widgetTypeCall=true&directAccess=false",
+      "openedAt": "2026-07-22T15:05:13.975Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-wedding-naver-top.png"
+        },
+        {
+          "kind": "timeline",
+          "matchedText": "12개월 전",
+          "file": "gold-wedding-naver-timeline.png"
+        },
+        {
+          "kind": "comments",
+          "matchedText": "댓글 1,102",
+          "file": "gold-wedding-naver-comments.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://blog.naver.com/PostView.naver?blogId=wilklove&logNo=223518896995&redirect=Dlog&widgetTypeCall=true&directAccess=false",
+      "title": "결혼준비 시작, 타임라인 1년 정리(노션 공유) : 네이버 블로그"
+    },
+    {
+      "id": "gold-wedding-guide",
+      "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+      "openedAt": "2026-07-22T15:05:18.524Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-wedding-guide-top.png"
+        },
+        {
+          "kind": "body",
+          "matchedText": "결혼 준비",
+          "file": "gold-wedding-guide-body.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+      "title": "결혼준비 체크리스트 A to Z 총정리 : 결혼준비 가이드 (2026) | 결혼비용, 스드메, 웨딩홀, 체크리스트, 노션 | 공여사들"
+    },
+    {
+      "id": "gold-allblanc",
+      "sourceUrl": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+      "openedAt": "2026-07-22T15:05:23.091Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-allblanc-top.png"
+        },
+        {
+          "kind": "videos",
+          "matchedText": "7 Days Abs Challenge",
+          "file": "gold-allblanc-videos.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+      "title": "7 Days Abs Challenge (2022) - YouTube"
+    },
+    {
+      "id": "gold-allblanc-video",
+      "sourceUrl": "https://www.youtube.com/watch?v=XwUKn-52ykk",
+      "openedAt": "2026-07-22T15:05:32.518Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "gold-allblanc-video-top.png"
+        },
+        {
+          "kind": "comments",
+          "matchedText": "댓글 154",
+          "file": "gold-allblanc-video-comments.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://www.youtube.com/watch?v=XwUKn-52ykk",
+      "title": "코어 + 복근 한방에!🔥 7일 복근 챌린지 l ABS+CORE Workout At Home l 7 days Abs Challenge - YouTube"
+    },
+    {
+      "id": "new-ohouse-storage",
+      "sourceUrl": "https://ohou.se/advices/9345",
+      "openedAt": "2026-07-22T15:05:40.445Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "new-ohouse-storage-top.png"
+        },
+        {
+          "kind": "rows",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "쓰레기 봉투 수납 신박팁",
+            "틈새 공중부양 수납 팁"
+          ]
+        },
+        {
+          "kind": "metrics",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "조회",
+            "684,233",
+            "댓글 398"
+          ]
+        }
+      ],
+      "httpStatus": 403,
+      "finalUrl": "https://ohou.se/advices/9345",
+      "title": "Access Denied"
+    },
+    {
+      "id": "new-ohouse-lunchbox",
+      "sourceUrl": "https://ohou.se/advices/9098",
+      "openedAt": "2026-07-22T15:05:42.606Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "new-ohouse-lunchbox-top.png"
+        },
+        {
+          "kind": "rows",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "도시락 일주일 식단표",
+            "스팸볶음밥"
+          ]
+        },
+        {
+          "kind": "metrics",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "10,942",
+            "댓글 27",
+            "스크랩 451"
+          ]
+        }
+      ],
+      "httpStatus": 403,
+      "finalUrl": "https://ohou.se/advices/9098",
+      "title": "Access Denied"
+    },
+    {
+      "id": "new-ohouse-remodel",
+      "sourceUrl": "https://ohou.se/advices/1972",
+      "openedAt": "2026-07-22T15:05:44.738Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "new-ohouse-remodel-top.png"
+        },
+        {
+          "kind": "rows",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "시공업체 정보를 확인해요",
+            "착공일과 공사 완료일"
+          ]
+        },
+        {
+          "kind": "metrics",
+          "file": null,
+          "limitation": "anchor_not_found",
+          "tried": [
+            "253,495",
+            "댓글 124",
+            "스크랩 8,029"
+          ]
+        }
+      ],
+      "httpStatus": 403,
+      "finalUrl": "https://ohou.se/advices/1972",
+      "title": "Access Denied"
+    },
+    {
+      "id": "new-ossu",
+      "sourceUrl": "https://github.com/ossu/computer-science",
+      "openedAt": "2026-07-22T15:05:46.872Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "new-ossu-top.png"
+        },
+        {
+          "kind": "community",
+          "matchedText": "Fork 25.7k",
+          "file": "new-ossu-community.png"
+        },
+        {
+          "kind": "curriculum",
+          "matchedText": "Intro CS",
+          "file": "new-ossu-curriculum.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://github.com/ossu/computer-science",
+      "title": "GitHub - ossu/computer-science: 🎓 Path to a free self-taught education in Computer Science! · GitHub"
+    },
+    {
+      "id": "support-kocw",
+      "sourceUrl": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "openedAt": "2026-07-22T15:05:52.404Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "support-kocw-top.png"
+        },
+        {
+          "kind": "lessons",
+          "matchedText": "강의 목록",
+          "file": "support-kocw-lessons.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "http://kocw.net/home/search/kemView.do?kemId=1422415",
+      "title": "코드 없이 따라하는 빅데이터 분석 - 서울사이버대학교 | KOCW 공개 강의"
+    },
+    {
+      "id": "support-recipe",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "openedAt": "2026-07-22T15:05:59.617Z",
+      "screenshots": [
+        {
+          "kind": "top",
+          "file": "support-recipe-top.png"
+        },
+        {
+          "kind": "steps",
+          "matchedText": "조리순서",
+          "file": "support-recipe-steps.png"
+        }
+      ],
+      "httpStatus": 200,
+      "finalUrl": "https://www.10000recipe.com/recipe/6865737",
+      "title": "남은 참치캔 발견! 간단한 아이 반찬 만들어 보자! < 야채 참치 볶음 >"
+    }
+  ]
+}
