@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-23<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P31 implementation release gate<br>
+**Current Validation Stage:** internal alpha / P31 production green<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** publish P31 after full verification, then run a bounded production review without claiming observed usability
+**Next Milestone:** independently review the released P31 baseline, then choose a bounded P32 slice or a small observed-user study
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -36,9 +36,9 @@ Detailed scope: [P31 Mobile Journey Reconstruction](./specs/2026-07-23-p31-mobil
 | P31-02 | Separate Home/Find roles and simplify card/public save-before across moving, wedding, and workout | Implemented |
 | P31-03 | Build a dedicated mobile My Flow workspace with one operation grammar and archive/restore parity | Implemented |
 | P31-04 | Move Calendar Item detail to a sheet and separate placement mode | Implemented |
-| P31-05 | Fix permanent-delete contract, accessibility, and the 24-cell complexity gate | Implemented; final publish verification active |
+| P31-05 | Fix permanent-delete contract, accessibility, and the 24-cell complexity gate | Released and production-smoked |
 
-P31 changes composition and consumer precedence without a persistence migration. It does not add fake social proof, account/cloud sync, AI/crawler, OAuth, a new export format, or a heavy planner. The current 24-cell automated/heuristic gate is explanation-free `21/24`; observed-user sessions remain `0`.
+P31 changes composition and consumer precedence without a persistence migration. It does not add fake social proof, account/cloud sync, AI/crawler, OAuth, a new export format, or a heavy planner. The 24-cell automated/heuristic gate is explanation-free `21/24`; observed-user sessions remain `0`. [PR #150](https://github.com/knhbae/flowme2605/pull/150) merged as `0227cd2fa7a93ea9ff7d9776b76b0cc33401279b`, GitHub CI passed, and canonical production smoke is `12 / 12`.
 
 ## P30 Interaction Correctness And Evidence Closure
 

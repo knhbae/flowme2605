@@ -14,7 +14,7 @@ P31-01~P31-05 구현은 완료되었다. 현재 브라우저 자동 검증에서
 
 P31은 데이터 모델을 다시 만들지 않았다. 기존 source, personal overlay, execution run, recurrence occurrence, export identity를 유지하면서 화면 composition과 consumer precedence를 정리했다.
 
-Local release gate는 green이다. production publish와 canonical smoke는 commit/merge 뒤 별도로 기록한다. 자동화, screenshot, heuristic simulation은 실제 사용자 검증이 아니다.
+Local release gate와 canonical production smoke가 모두 green이다. 자동화, screenshot, heuristic simulation은 실제 사용자 검증이 아니다.
 
 ## 구현 결과
 
@@ -55,6 +55,8 @@ Local release gate는 green이다. production publish와 canonical smoke는 comm
 - [keep/change/defer 결정](./decision-matrix.json)
 - [screenshot manifest](./screenshot-manifest.json)
 - [모바일·wide screenshots](./screenshots/)
+- [canonical production smoke](./production-smoke/results.json)
+- [production screenshots](./production-smoke/screenshots/)
 
 Screenshot은 `390x844`와 `1024x768`에서 현재 production build를 로컬로 실행해 캡처했다. full-page screenshot에서는 fixed bottom navigation이나 fixed command가 문서 중간에 보일 수 있으므로, fixed-layer 겹침 판정은 viewport screenshot과 DOM bounding-box 검증을 우선한다.
 
@@ -69,17 +71,25 @@ Screenshot은 `390x844`와 `1024x768`에서 현재 production build를 로컬로
 
 ## Publish 상태
 
-현재 상태:
+최종 상태:
 
 - `npm.cmd ci`: 통과
 - unit: `586 / 586`
 - P31 targeted Playwright: `5 / 5`
 - full Playwright: `310 / 310`, workers `2`
-- docs: `14` required files, `2938` local links
+- docs: `14` required files, `2943` local links
 - production build: `18 / 18`
 - security: critical `0`, high `0`, moderate `2`
-- `git diff --check`: publish 직전 확인
+- implementation commit: `06841a274151edef39da3838f39388f42dc7126f`
+- [PR #150](https://github.com/knhbae/flowme2605/pull/150): merged
+- merge commit: `0227cd2fa7a93ea9ff7d9776b76b0cc33401279b`
+- GitHub CI run `30006649714`: 통과
+- production: <https://flowme2605.vercel.app>
+- canonical production smoke: `12 / 12`
+- production horizontal overflow / console-page error: `0 / 0`
+- production screenshots: `12`
+- `git diff --check`: 통과
 
 Next는 high advisory를 제거하기 위해 `15.5.20 -> 15.5.21`로 patch했다. 남은 moderate `2`는 Next가 포함한 PostCSS `<8.5.10` advisory와 그 parent package로, `npm audit fix --force`가 제안하는 Next `9.3.3` downgrade는 제품과 호환되지 않아 적용하지 않는다.
 
-이 문서는 P31 구현 작업 트리의 evidence다. commit, push, PR, merge, deploy, canonical production smoke 상태는 publish 뒤 `docs/STATUS.md`와 최종 보고에 확정한다.
+Production smoke는 current production interaction과 DOM marker를 검증한 자동 QA다. 실제 사용자의 이해, 신뢰, 반복 사용을 증명하지 않으며 observed-user count는 `0`이다.

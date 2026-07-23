@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-23 (P31 implementation gate)
-**Status:** v0.1.0 RELEASED / P30 PRODUCTION GREEN / P31 IMPLEMENTATION COMPLETE, RELEASE VERIFICATION ACTIVE
+**Last Updated:** 2026-07-23 (P31 production release)
+**Status:** v0.1.0 RELEASED / P31 PRODUCTION GREEN
 **Current Version:** v0.1.0  
-**Primary Focus:** Finish the release verification and publish path for the implemented [P31 mobile journey reconstruction](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md). P31 closes effective-date precedence, separates Home and Flow finding, adds content-shaped save-before flows, creates a dedicated mobile My Flow workspace, moves Calendar detail to a sheet, and makes archive/restore/permanent-delete behavior consistent. P30 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated, simulation, screenshot, and production smoke evidence are not usability claims.
+**Primary Focus:** Treat the released [P31 mobile journey reconstruction](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md) as the current production baseline and independently review the three remaining discovery hypotheses before opening another broad UI program. P31 closes effective-date precedence, separates Home and Flow finding, adds content-shaped save-before flows, creates a dedicated mobile My Flow workspace, moves Calendar detail to a sheet, and makes archive/restore/permanent-delete behavior consistent. P30 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated, simulation, screenshot, and production smoke evidence are not usability claims.
 
 ## Current Control Panel
 
@@ -11,15 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P31 implementation is complete; full verification, publish, and canonical production smoke remain |
-| User action now | No external recruitment yet; review the P31 evidence package after production publish |
-| AI action now | Run docs/unit/build/full E2E/security checks, publish the bounded P31 changes, and record canonical smoke |
+| Active product gate | P31 is released and production-green; the next gate is bounded independent review of the three remaining discovery hypotheses |
+| User action now | Review the live P31 baseline and decide whether to run a small observed-user study or authorize another bounded slice |
+| AI action now | Reproduce a concrete production gap before proposing P32; preserve the P31 data and interaction contracts |
 | Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P31-01~05 app work and local 390/1024 evidence; P30-00~08 remains the current production baseline until P31 publish |
+| Completed implementation | P31-01~05, 24-cell simulation, full regression gate, PR merge, production deployment, and `12 / 12` canonical smoke |
 
 ## Recent Direction Notes
 
-- 2026-07-23 P31 implementation: the owner explicitly approved completing P31 after the comparison/replan gate. Effective-date precedence now favors execution override over draft/personal/source values; Home and Find have separate roles; discovery cards expose real source and representative work without fake social proof; wedding and workout save-before flows use result-first content-shaped controls; mobile My Flow uses a compact library and dedicated workspace; Calendar Item detail uses a bottom sheet; and `보관 / 복구 / 이 기기에서 영구 삭제` now has mobile/wide parity and a tested delete boundary. The current 24-cell automated/heuristic rerun is supported `21`, partial `3`, blocked `0`, explanation-free `21/24`, average depth `4.79`, with screenshots `18`; observed users remain `0`. Final docs/unit/build/full E2E/security/publish smoke is the active gate. See [P31 implementation evidence](./content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md).
+- 2026-07-23 P31 production release: effective-date precedence now favors execution override over draft/personal/source values; Home and Find have separate roles; discovery cards expose real source and representative work without fake social proof; wedding and workout save-before flows use result-first content-shaped controls; mobile My Flow uses a compact library and dedicated workspace; Calendar Item detail uses a bottom sheet; and `보관 / 복구 / 이 기기에서 영구 삭제` has mobile/wide parity and a tested delete boundary. The 24-cell automated/heuristic rerun is supported `21`, partial `3`, blocked `0`, explanation-free `21/24`, average depth `4.79`; local screenshots are `18`. Unit is `586 / 586`, P31 Playwright `5 / 5`, full Playwright `310 / 310`, build `18 / 18`, and critical/high security advisories are `0`. [PR #150](https://github.com/knhbae/flowme2605/pull/150) merged as `0227cd2`; GitHub CI passed and the canonical production smoke is `12 / 12` with overflow and browser-error counts `0` at <https://flowme2605.vercel.app>. Observed users remain `0`. See [P31 implementation evidence](./content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md).
 
 - 2026-07-22 P30 production release: mobile export fixed-layer intersections are `0`; `/my` and `/calendar` focus order is header -> workspace -> persistent tabs; long-Flow adjustment is contextual; My Flow keeps one visible primary; Calendar has deterministic undated, 50+ scope, and compact identity evidence; routine settings are summary-first. Dead public composition code was removed while the live `/flow-maps` legacy consumer remains explicit. Local verification is unit `584 / 584`, P30 Playwright `12 / 12`, affected P28/P29 `20 / 20`, full Playwright `304 / 304`, build `18 / 18`. [PR #148](https://github.com/knhbae/flowme2605/pull/148) merged as `b3c8500`; deployment `5557201045` is live at <https://flowme2605.vercel.app>; canonical smoke is `13 / 13` with HTTP/navigation/assertion/overflow/unnamed-focusable/console-page-error failures `0`. Observed-user sessions remain `0`. See the [P30 final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md).
 

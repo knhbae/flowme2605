@@ -98,8 +98,8 @@
 - [x] complexity metric comparison
 - [x] security audit: critical/high `0`, moderate `2` 승인 예외
 - [x] full E2E: `310 / 310`, workers `2`
-- [ ] production smoke
-- [ ] publish SHA와 deployment 기록
+- [x] production smoke: `12 / 12`
+- [x] publish SHA와 deployment 기록: PR `#150`, merge `0227cd2`, production green
 
 ## 보류
 
