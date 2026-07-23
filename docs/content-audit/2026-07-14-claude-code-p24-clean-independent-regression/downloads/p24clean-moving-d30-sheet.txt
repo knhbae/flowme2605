@@ -1,0 +1,6 @@
+순서	상태	할 일	날짜	시간	예상 시간	메모	원문
+1	미완료	이사 방식과 견적 후보 정하기	2026-07-14	종일			이사 준비 체크리스트 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+2	미완료	입주청소와 대형폐기물 일정 확인	2026-07-30	종일			이사 준비 체크리스트 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+3	미완료	관리사무소 공유와 주소 변경 대상 확인	2026-08-06	종일			이사 준비 체크리스트 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+4	미완료	계량기와 집 상태 사진 남기기	2026-08-12	종일			이사 준비 체크리스트 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+5	미완료	정산과 전입신고 확인	2026-08-13	종일			이사 준비 체크리스트 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363

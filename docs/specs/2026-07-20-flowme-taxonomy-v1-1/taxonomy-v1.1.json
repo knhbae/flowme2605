@@ -1,0 +1,974 @@
+{
+  "documentType": "flowme_taxonomy_catalog",
+  "schemaVersion": "flowme-taxonomy-v1.1",
+  "date": "2026-07-20",
+  "status": "approved_contract",
+  "scope": "URL-to-Flow canonical classification, source-access, rights, review and projection contract",
+  "claimBoundary": "This catalog and its automated agreement tests are contract QA, not observed-user validation or legal advice.",
+  "preservedCanonicalDecisions": [
+    "SourceRow is the minimum provenance unit.",
+    "Item is the minimum independently stateful execution and projection unit.",
+    "Step groups Items and does not own completion state.",
+    "Flow has one user job and one primary source.",
+    "Calendar, checklist, todo, sheet and memo are projections, not canonical storage units.",
+    "Source evidence, published content, user overlay, run state and internal review remain separately owned."
+  ],
+  "classificationOrder": [
+    "Verify that actual source rows are available.",
+    "Write the immediate user job without category words.",
+    "Choose primaryLifeArea by the immediate real-world outcome.",
+    "Choose sourceShape from the anatomy of the available source rows.",
+    "Choose primaryExecutionPattern from the state transition the user repeats or completes.",
+    "Choose primaryArtifact as the one artifact the user must retain to finish the job.",
+    "Record audience and applicability separately from user-need and friction signals.",
+    "Record discovery, row access and acquisition independently.",
+    "Record rights basis, allowed use and territory independently.",
+    "Evaluate source, freshness, locale, safety, privacy, rights and promotion in parallel."
+  ],
+  "hierarchy": {
+    "order": ["sourceRow", "item", "step", "flow", "bundle"],
+    "sourceRow": "Smallest locatable fact, row, date, instruction, criterion or resource in a source snapshot.",
+    "item": "Smallest source-backed unit that can independently be completed, decided, recorded, consumed or held.",
+    "step": "Ordered semantic group of Items; never the authoritative owner of completion or schedule.",
+    "flow": "One user job with one primary source, one primary execution pattern and one primary artifact.",
+    "bundle": "A Flow Map or collection of related Flows; grouping only."
+  },
+  "enums": {
+    "lifeAreas": [
+      "home_living",
+      "family_parenting",
+      "study_reading",
+      "money_admin_purchase",
+      "health_fitness",
+      "travel_outings",
+      "meals_grocery",
+      "work_career",
+      "hobby_pet"
+    ],
+    "sourceShapes": [
+      "single_action",
+      "checklist_rows",
+      "date_offsets",
+      "date_window",
+      "recurrence_rule",
+      "procedure_rows",
+      "table_rows",
+      "lesson_rows",
+      "resource_collection",
+      "decision_criteria",
+      "narrative_guidance",
+      "template_fields"
+    ],
+    "executionPatterns": [
+      "date_preparation",
+      "ordered_procedure",
+      "repeating_routine",
+      "progress_tracking",
+      "resource_queue",
+      "compare_decide",
+      "phase_lifecycle"
+    ],
+    "artifacts": ["calendar", "checklist", "todo", "sheet", "memo"],
+    "providerTypes": [
+      "government_public",
+      "public_institution",
+      "brand_official",
+      "creator",
+      "editorial_media",
+      "community_platform",
+      "marketplace",
+      "education_provider",
+      "open_knowledge",
+      "aggregator",
+      "user_owned"
+    ],
+    "platformRoles": [
+      "discover",
+      "host",
+      "distribute",
+      "execute",
+      "export_destination",
+      "entitlement",
+      "community_signal"
+    ],
+    "discoveryAccess": ["public", "account_required", "paywalled", "robots_limited", "unavailable", "unknown"],
+    "rowAccess": ["full", "partial", "metadata_only", "unavailable", "unknown"],
+    "acquisitionMethods": [
+      "html_fetch",
+      "pdf_fetch",
+      "rss_fetch",
+      "public_api",
+      "oauth_api",
+      "file_upload",
+      "manual_copy",
+      "transcript_import",
+      "table_import",
+      "creator_delivery"
+    ],
+    "sourceFormatCategories": [
+      "article",
+      "checklist",
+      "table",
+      "document",
+      "video",
+      "audio",
+      "course",
+      "collection",
+      "template",
+      "api_feed",
+      "interactive_page"
+    ],
+    "audienceRoles": [
+      "individual",
+      "parent_guardian",
+      "learner",
+      "professional",
+      "creator_operator",
+      "caregiver",
+      "team_member",
+      "buyer",
+      "traveler"
+    ],
+    "ageBands": ["child", "teen", "adult", "older_adult", "all_ages", "not_specified"],
+    "skillLevels": ["beginner", "intermediate", "advanced", "mixed", "not_applicable"],
+    "applicability": ["local_direct", "local_adaptation_required", "global_general", "unknown"],
+    "accountOrEntitlement": [
+      "none",
+      "free_account",
+      "paid_subscription",
+      "owned_product",
+      "official_eligibility",
+      "source_file_required",
+      "unknown"
+    ],
+    "collaborationContext": ["solo", "shared_household", "caregiver_dependent", "team_roles", "provider_client", "unknown"],
+    "userNeedSignals": [
+      "remember_when",
+      "avoid_omission",
+      "follow_sequence",
+      "repeat_consistently",
+      "track_progress",
+      "choose_between_options",
+      "queue_resources",
+      "handoff_or_share",
+      "preserve_source_context"
+    ],
+    "frictionSignals": [
+      "tab_switching",
+      "copy_reformatting",
+      "missed_deadline",
+      "lost_progress",
+      "unclear_next_action",
+      "collaboration_gap",
+      "source_revisit_cost"
+    ],
+    "rightsBasis": [
+      "public_domain",
+      "open_license",
+      "official_reuse_policy",
+      "provider_terms",
+      "creator_permission",
+      "user_owned",
+      "link_only_assumption",
+      "unknown",
+      "blocked"
+    ],
+    "allowedUse": ["link_metadata", "personal_transform", "internal_review", "public_derived", "public_republish"],
+    "territoryScope": ["global", "named", "unknown"],
+    "rightsReviewStatus": ["not_required", "pending", "approved", "restricted", "blocked"],
+    "sourceRowStatus": ["complete", "partial", "metadata_only", "missing"],
+    "conversionReadiness": ["ready_for_internal_canary", "ready_second_wave", "source_import_required", "hold"],
+    "freshnessReview": ["not_required", "pending", "current", "stale", "unknown"],
+    "localeReview": ["not_required", "pending", "applicable", "adaptation_required", "not_applicable"],
+    "safetyReview": ["not_required", "pending", "passed_with_boundary", "restricted", "blocked"],
+    "privacyReview": ["not_required", "pending", "passed", "sensitive_private_only", "blocked"],
+    "promotionState": ["research_only", "internal_review", "internal_canary", "public_candidate", "published", "retired"],
+    "blockers": [
+      "source_unavailable",
+      "source_incomplete",
+      "source_import_required",
+      "rights_unknown",
+      "rights_permission_required",
+      "rights_blocked",
+      "freshness_pending",
+      "stale_source",
+      "locale_review_required",
+      "safety_review_required",
+      "privacy_review_required",
+      "account_or_entitlement_required",
+      "user_input_required",
+      "source_conflict",
+      "unsupported_shape",
+      "editorial_review_required"
+    ],
+    "portfolioRole": [
+      "representative_start",
+      "repeat_reuse",
+      "creator_variant",
+      "official_trust_anchor",
+      "breadth_candidate",
+      "backup",
+      "reference_keep",
+      "provider_lead"
+    ],
+    "editorialAction": [
+      "keep",
+      "revise",
+      "import_source",
+      "request_permission",
+      "localize",
+      "safety_review",
+      "rights_review",
+      "replace_source",
+      "park",
+      "reject"
+    ],
+    "itemIntents": ["act", "inspect", "decide", "record", "use_resource"],
+    "scheduleModes": ["absolute", "date_window", "anchor_offset"],
+    "completionModes": ["check", "decision", "record"]
+  },
+  "fieldSemantics": {
+    "primaryLifeArea": "Exactly one shelf chosen by the immediate user outcome, not by publisher, source format or every topic mentioned.",
+    "secondaryLifeAreas": "Zero to two materially relevant contexts that change discovery or applicability but do not own the immediate outcome.",
+    "topicTags": "Search and retrieval vocabulary. Tags never substitute for a life area or gate.",
+    "sourceShape": "The dominant anatomy of the rows actually acquired from the source snapshot.",
+    "secondarySourceShapes": "Additional row anatomy only when the same source genuinely contains both; never used to avoid choosing a dominant shape.",
+    "primaryExecutionPattern": "The state transition the user must complete or repeat to achieve the Flow job.",
+    "secondaryExecutionPatterns": "A supporting interaction that is useful but not sufficient to complete the user job.",
+    "primaryArtifact": "The one retained artifact without which the user cannot finish or resume the job.",
+    "secondaryArtifacts": "Loss-aware projections that add convenience; must not repeat primaryArtifact.",
+    "userNeedSignals": "What job support the user needs.",
+    "frictionSignals": "What currently makes that job inconvenient. Former targetConditions are mapped to one of these two lists, never copied as free text.",
+    "sourceFormatDetail": "Descriptive metadata such as MIME, page count or transcript availability. It is not an enum extension point.",
+    "backendStorable": "Whether the metadata, snapshot references and currently supported rows can be stored without asserting public rights.",
+    "personalTransformAllowed": "Product policy for a reviewed private copy; independent of public release and not a legal conclusion.",
+    "publicReleaseAllowed": "Derived publication gate; never inferred only from public access."
+  },
+  "valueRules": {
+    "lifeAreas": {
+      "home_living": {
+        "definition": "Maintaining, moving into, organizing or operating a home or owned household object.",
+        "chooseWhen": "The immediate outcome is a usable home, room, appliance or household system.",
+        "excludeWhen": "The immediate outcome is travel, a purchase decision, family caregiving or meal preparation.",
+        "confusedWith": ["money_admin_purchase", "family_parenting"],
+        "tieBreaker": "Choose the object whose state changes; a contract choice is money_admin_purchase, later move execution is home_living.",
+        "secondaryRule": "Use as secondary for a purchase or family Flow only when home constraints change applicability.",
+        "goodExample": "이사 D-30 — the home transition is the outcome.",
+        "badExample": "전세계약 후보 비교 — the decision, not household operation, is the outcome."
+      },
+      "family_parenting": {
+        "definition": "Care, coordination, development or shared execution centered on a child, dependent or family role.",
+        "chooseWhen": "The job would materially change without the caregiver/dependent relationship.",
+        "excludeWhen": "Family members are merely companions in a trip, meal or event whose primary outcome belongs elsewhere.",
+        "confusedWith": ["travel_outings", "study_reading", "health_fitness"],
+        "tieBreaker": "Ask whether success is better caregiving/development or completion of the trip, study or health appointment.",
+        "secondaryRule": "Family travel is travel_outings primary and family_parenting secondary unless caregiving itself is the job.",
+        "goodExample": "그림책 질문 루틴 — parent-child interaction is the outcome.",
+        "badExample": "가족여행 D-7 — the trip preparation is the outcome."
+      },
+      "study_reading": {
+        "definition": "Learning, reading, practice or curriculum completion whose immediate output is competence or progress.",
+        "chooseWhen": "The user is consuming lessons, chapters or practice rows to learn.",
+        "excludeWhen": "The learning is only a means to ship a professional deliverable or change employment state.",
+        "confusedWith": ["work_career", "family_parenting"],
+        "tieBreaker": "A developer course is study_reading when lesson progress is the job; work_career when a portfolio, interview or work deliverable is the terminal output.",
+        "secondaryRule": "Add work_career for role-specific upskilling with a clear professional application.",
+        "goodExample": "K-MOOC 데이터 분석 강좌 진도표.",
+        "badExample": "개발 포트폴리오 4주 — shipping the portfolio is the outcome."
+      },
+      "money_admin_purchase": {
+        "definition": "Eligibility, documents, public administration, money, contracts, purchase comparison or formal decision.",
+        "chooseWhen": "The terminal state is submitted, eligible, contracted, selected, paid or officially confirmed.",
+        "excludeWhen": "The administrative act only anchors a larger travel, home or health execution and is not the Flow job.",
+        "confusedWith": ["home_living", "travel_outings", "work_career"],
+        "tieBreaker": "Choose this when the durable output is a decision, document or official status.",
+        "secondaryRule": "Use as secondary when a travel or life event includes meaningful official paperwork.",
+        "goodExample": "전세계약 전 공식 서류 확인.",
+        "badExample": "이사 당일 체크 — the home transition owns the job."
+      },
+      "health_fitness": {
+        "definition": "Exercise, health service logistics, prevention or personal physical routine.",
+        "chooseWhen": "The immediate outcome is a session, health appointment or safe physical practice.",
+        "excludeWhen": "The source is occupational safety for a team or food storage guidance whose primary job is elsewhere.",
+        "confusedWith": ["work_career", "family_parenting", "meals_grocery"],
+        "tieBreaker": "Choose the context where action happens: occupational heat safety is work_career primary, health_fitness secondary.",
+        "secondaryRule": "Use for safety/health consequences that materially alter another job.",
+        "goodExample": "5km 달리기 4주.",
+        "badExample": "농작업 온열질환 팀 점검 — workplace execution is primary."
+      },
+      "travel_outings": {
+        "definition": "Planning, preparing, selecting or executing a trip, outing or visit experience.",
+        "chooseWhen": "The destination, departure or outing is the immediate outcome.",
+        "excludeWhen": "The activity is primarily a child-development routine or formal document issuance.",
+        "confusedWith": ["family_parenting", "money_admin_purchase"],
+        "tieBreaker": "Family composition is audience context; choose travel when the artifact still makes sense as a trip plan.",
+        "secondaryRule": "Add family_parenting when child/caregiver constraints affect the rows.",
+        "goodExample": "가족여행 D-7.",
+        "badExample": "여권 재발급 서류 — official administration is the job."
+      },
+      "meals_grocery": {
+        "definition": "Choosing, preparing, cooking, storing or rotating food and groceries.",
+        "chooseWhen": "The terminal output is a meal, menu, grocery state or food-storage action.",
+        "excludeWhen": "The core job is clinical nutrition treatment or family-development tracking.",
+        "confusedWith": ["health_fitness", "family_parenting"],
+        "tieBreaker": "Choose meals_grocery for food execution; add health/family only as a secondary applicability context.",
+        "secondaryRule": "Sensitive dietary context belongs in safety/applicability, not a forced primary category change.",
+        "goodExample": "레몬 위켄드 레시피 실행.",
+        "badExample": "체중 감량 치료 계획 — health_fitness owns the outcome."
+      },
+      "work_career": {
+        "definition": "Professional delivery, employment transition, workplace operation or creator/operator production.",
+        "chooseWhen": "The terminal result is shipped work, a role change, a workplace process or a professional portfolio.",
+        "excludeWhen": "The user is only studying a course without a named professional deliverable.",
+        "confusedWith": ["study_reading", "money_admin_purchase"],
+        "tieBreaker": "Deliverable/status beats subject matter: course progress is study; portfolio shipment is work.",
+        "secondaryRule": "Add study_reading when structured learning rows are a substantial subjob.",
+        "goodExample": "개발 포트폴리오 4주.",
+        "badExample": "MDN 학습 모듈 진도 — learning progress is the job."
+      },
+      "hobby_pet": {
+        "definition": "Leisure making, creative practice, personal collections, plants or pet care outside a dominant family/work/health job.",
+        "chooseWhen": "The activity or owned living object is primarily recreational or pet/plant care.",
+        "excludeWhen": "The same activity is a professional deliverable, family-development job or home maintenance job.",
+        "confusedWith": ["family_parenting", "work_career", "home_living"],
+        "tieBreaker": "Choose by who/what owns the outcome: child play is family; professional craft is work; personal craft is hobby.",
+        "secondaryRule": "Use as secondary for a family activity with a genuine craft or pet-care subjob.",
+        "goodExample": "NASA 크레인 만들기 개인 활동.",
+        "badExample": "아이와 공룡 미술 놀이 — family interaction is primary."
+      }
+    },
+    "sourceShapes": {
+      "single_action": {
+        "definition": "One source-backed action or one follow-along resource with no independently stateful subrows.",
+        "chooseWhen": "Splitting the source would invent checks or duplicate the resource.",
+        "excludeWhen": "The source names several independently checkable rows.",
+        "confusedWith": ["narrative_guidance", "procedure_rows"],
+        "tieBreaker": "If one action can be completed without preserving an internal order, use single_action.",
+        "primarySecondaryRule": "Primary when one action carries the job; narrative detail stays Memo.",
+        "goodExample": "오늘 원본 운동 영상 한 번 따라하기.",
+        "badExample": "A five-step application guide collapsed to one action."
+      },
+      "checklist_rows": {
+        "definition": "Named rows that can be independently checked in any or grouped order.",
+        "chooseWhen": "Row-level omission matters more than strict sequence.",
+        "excludeWhen": "Changing order breaks the task or rows are table records rather than checks.",
+        "confusedWith": ["procedure_rows", "table_rows"],
+        "tieBreaker": "If order can change without changing meaning, prefer checklist_rows.",
+        "primarySecondaryRule": "Use secondary procedure_rows only when one subset has a required order.",
+        "goodExample": "여행 짐 준비표의 준비물 행.",
+        "badExample": "eSIM 활성화 순서를 unordered checks로 분류."
+      },
+      "date_offsets": {
+        "definition": "Rows anchored to D-day, start date, birth date or another source-defined offset.",
+        "chooseWhen": "The source supplies offsets that determine when rows occur.",
+        "excludeWhen": "It supplies only one due window or the user invents the dates.",
+        "confusedWith": ["date_window", "table_rows"],
+        "tieBreaker": "Two or more meaningful offsets beat generic table anatomy.",
+        "primarySecondaryRule": "Table may be secondary if offsets are represented as rows and columns.",
+        "goodExample": "이사 D-30/D-7/D-1/당일.",
+        "badExample": "One official renewal period labeled date_offsets."
+      },
+      "date_window": {
+        "definition": "One or more official start/end or due-by windows without a source-defined preparation sequence.",
+        "chooseWhen": "The source fact is eligibility or action inside a time window.",
+        "excludeWhen": "The source defines multiple anchor-relative preparation rows.",
+        "confusedWith": ["date_offsets", "single_action"],
+        "tieBreaker": "Use date_window when preserving both boundaries is more important than ordering actions.",
+        "primarySecondaryRule": "May pair with checklist_rows for required documents.",
+        "goodExample": "자동차검사 가능 기간.",
+        "badExample": "Moving D-30 timeline."
+      },
+      "recurrence_rule": {
+        "definition": "A source-defined cadence, interval or repeat condition that is itself the executable evidence.",
+        "chooseWhen": "The source supplies when to repeat but no independently stateful row set.",
+        "excludeWhen": "The cadence is invented by the user/adapter or distinct resources define each occurrence.",
+        "confusedWith": ["single_action", "table_rows"],
+        "tieBreaker": "If removing the cadence destroys the source-specific value, use recurrence_rule; otherwise keep it as metadata on another shape.",
+        "primarySecondaryRule": "single_action is commonly secondary because one action is repeated.",
+        "goodExample": "제조사가 명시한 월 1회 통세척 주기.",
+        "badExample": "A user arbitrarily schedules an article every Monday."
+      },
+      "procedure_rows": {
+        "definition": "Source steps whose order or dependency is required to complete the task.",
+        "chooseWhen": "Skipping or reordering a row can cause failure.",
+        "excludeWhen": "Rows are independent checks, alternatives or comparison criteria.",
+        "confusedWith": ["checklist_rows", "template_fields"],
+        "tieBreaker": "Required dependency, not numbered typography, determines procedure_rows.",
+        "primarySecondaryRule": "Checklist rows may be secondary for prerequisites or final verification.",
+        "goodExample": "eSIM 설치 후 활성화 절차.",
+        "badExample": "Ten contract criteria numbered for readability."
+      },
+      "table_rows": {
+        "definition": "Repeated records with stable columns whose values must be compared, filtered or updated.",
+        "chooseWhen": "Column semantics are essential to the job.",
+        "excludeWhen": "The source merely lays out prose in a visual table.",
+        "confusedWith": ["checklist_rows", "lesson_rows"],
+        "tieBreaker": "If removing columns destroys meaning, choose table_rows.",
+        "primarySecondaryRule": "Lesson rows override when rows are explicitly instructional units and progress is the job.",
+        "goodExample": "식품 보관 기간 표.",
+        "badExample": "A two-column how/why article layout."
+      },
+      "lesson_rows": {
+        "definition": "Named lessons, chapters, modules, assignments or tests supplied by a curriculum.",
+        "chooseWhen": "Rows identify learning units rather than generic resources.",
+        "excludeWhen": "The source is an unstructured channel or reading list.",
+        "confusedWith": ["resource_collection", "table_rows"],
+        "tieBreaker": "A source-defined learning dependency or completion unit beats collection format.",
+        "primarySecondaryRule": "Table rows may be secondary when the curriculum includes stable status columns.",
+        "goodExample": "K-MOOC module/lesson/test rows.",
+        "badExample": "A creator video channel without imported lesson order."
+      },
+      "resource_collection": {
+        "definition": "Distinct articles, videos, books, files or places that can be queued or selected.",
+        "chooseWhen": "Each row is primarily a resource identity and link.",
+        "excludeWhen": "Rows are curriculum units with source-defined completion dependencies.",
+        "confusedWith": ["lesson_rows", "narrative_guidance"],
+        "tieBreaker": "If user choice/order can vary and the link is the durable value, use resource_collection.",
+        "primarySecondaryRule": "Lesson rows may be secondary only if the collection contains a documented sequence.",
+        "goodExample": "Imported creator regional-experience articles.",
+        "badExample": "A course syllabus with required module order."
+      },
+      "decision_criteria": {
+        "definition": "Source-backed criteria or option rows whose values lead to select, hold, reject or escalate.",
+        "chooseWhen": "Rows must preserve decision meaning rather than binary completion alone.",
+        "excludeWhen": "The rows are mandatory checks before one inevitable action.",
+        "confusedWith": ["checklist_rows", "table_rows"],
+        "tieBreaker": "Multiple valid terminal states or option comparison makes decision_criteria primary.",
+        "primarySecondaryRule": "table_rows can be secondary when options and criterion values form a matrix.",
+        "goodExample": "리모델링 계약 조건별 진행/보류 판단 기준.",
+        "badExample": "Required passport documents with no choice."
+      },
+      "narrative_guidance": {
+        "definition": "Explanatory prose containing principles, criteria or advice rather than stable executable rows.",
+        "chooseWhen": "The source can support one application/decision Item plus Memo but not many source rows.",
+        "excludeWhen": "No concrete action, decision or template can be grounded; then conversion is hold.",
+        "confusedWith": ["single_action", "checklist_rows"],
+        "tieBreaker": "Narrative describes why/how; single_action describes what to do.",
+        "primarySecondaryRule": "Often secondary to a single action; never split prose into fake Items.",
+        "goodExample": "한 끼에 적용할 식사 기준 설명.",
+        "badExample": "Turning every paragraph into a checklist Item."
+      },
+      "template_fields": {
+        "definition": "A source-defined reusable form, prompt set or structured blank whose fields are the source rows.",
+        "chooseWhen": "The user fills stable fields to create a decision, record or deliverable.",
+        "excludeWhen": "Fields are invented by FlowMe or access to the template is unavailable.",
+        "confusedWith": ["table_rows", "procedure_rows"],
+        "tieBreaker": "If rows describe what to enter rather than what to execute, use template_fields.",
+        "primarySecondaryRule": "Use table_rows secondary when repeated instances become rows.",
+        "goodExample": "Source-provided science fair project planner fields.",
+        "badExample": "Inferring template fields from a sales page."
+      }
+    },
+    "executionPatterns": {
+      "date_preparation": {
+        "definition": "Anchor-relative or fixed-date actions whose timing is the main coordination mechanism.",
+        "chooseWhen": "The user asks what to do when before/after an event.",
+        "excludeWhen": "Dates are optional milestones on a state-gated project.",
+        "confusedWith": ["phase_lifecycle"],
+        "tieBreaker": "Calendar time advances the Flow even if outputs are incomplete; choose date_preparation.",
+        "primarySecondaryRule": "phase_lifecycle may be secondary only when named deliverables also gate progress.",
+        "goodExample": "이사 D-30.",
+        "badExample": "4주 포트폴리오 whose artifacts gate the next phase."
+      },
+      "ordered_procedure": {
+        "definition": "Complete source-backed actions in a dependency-preserving order.",
+        "chooseWhen": "The user succeeds by following the sequence.",
+        "excludeWhen": "The user succeeds by comparing options and choosing one.",
+        "confusedWith": ["compare_decide"],
+        "tieBreaker": "If the terminal state is a selected/held option, compare_decide wins; if it is a completed process, ordered_procedure wins.",
+        "primarySecondaryRule": "compare_decide may be secondary for one fork inside a larger procedure.",
+        "goodExample": "NASA crane build procedure.",
+        "badExample": "계약 전 후보/조건 비교."
+      },
+      "repeating_routine": {
+        "definition": "Repeat the same action or small stable set on a cadence, with occurrence state.",
+        "chooseWhen": "Cadence and next occurrence are the durable state.",
+        "excludeWhen": "Each occurrence consumes a distinct resource or advances a finite curriculum.",
+        "confusedWith": ["resource_queue", "progress_tracking"],
+        "tieBreaker": "Same action repeats = routine; distinct resources advance = queue; stable completion rows = progress.",
+        "primarySecondaryRule": "resource_queue can be secondary when rotating books/videos inside a reading routine.",
+        "goodExample": "매주 그림책 질문 한 가지.",
+        "badExample": "Twelve distinct course videos labeled routine only because they are weekly."
+      },
+      "progress_tracking": {
+        "definition": "Advance through stable rows while retaining current position, status or values.",
+        "chooseWhen": "The core question is where am I and what is next.",
+        "excludeWhen": "Rows are only links to consume in flexible order or phases produce different deliverables.",
+        "confusedWith": ["resource_queue", "phase_lifecycle"],
+        "tieBreaker": "Stable homogeneous rows and status columns = progress; heterogeneous deliverables = lifecycle.",
+        "primarySecondaryRule": "resource_queue may be secondary when each progress row links to a resource.",
+        "goodExample": "K-MOOC lesson completion table.",
+        "badExample": "Idea-to-project phases with different outputs."
+      },
+      "resource_queue": {
+        "definition": "Select and consume distinct resources while keeping the next resource visible.",
+        "chooseWhen": "Resource identity and ordering/selection are the durable state.",
+        "excludeWhen": "The source defines homogeneous instructional progress or one repeated action.",
+        "confusedWith": ["progress_tracking", "repeating_routine"],
+        "tieBreaker": "Flexible distinct resources = queue; fixed lesson status = progress; same action = routine.",
+        "primarySecondaryRule": "progress may be secondary when consumed/not-started status is useful.",
+        "goodExample": "LibriVox chapter/audio queue selected by the user.",
+        "badExample": "One picture book reread every weekend."
+      },
+      "compare_decide": {
+        "definition": "Evaluate options or criteria and end with select, hold, reject or escalate.",
+        "chooseWhen": "The decision state is the terminal output.",
+        "excludeWhen": "Criteria are merely prechecks before one inevitable procedure.",
+        "confusedWith": ["ordered_procedure"],
+        "tieBreaker": "If multiple valid outcomes remain after checks, compare_decide; otherwise procedure.",
+        "primarySecondaryRule": "ordered_procedure may follow as a secondary pattern after selection.",
+        "goodExample": "리모델링 계약 조건 비교 후 보류/진행 결정.",
+        "badExample": "Online application steps with no option choice."
+      },
+      "phase_lifecycle": {
+        "definition": "Advance through heterogeneous phases where each phase produces a prerequisite result for the next.",
+        "chooseWhen": "Named outputs and state gates, not dates alone, define progress.",
+        "excludeWhen": "Rows are homogeneous lessons or simple anchor offsets.",
+        "confusedWith": ["progress_tracking", "date_preparation"],
+        "tieBreaker": "Different phase outputs/dependencies = lifecycle; same row schema = progress; time-only = date preparation.",
+        "primarySecondaryRule": "date_preparation may be secondary when deadlines schedule the lifecycle.",
+        "goodExample": "개발 포트폴리오 기획→제작→검토→공개.",
+        "badExample": "A weekly video playlist with identical completion rows."
+      }
+    },
+    "artifacts": {
+      "calendar": {
+        "definition": "Dated or recurring events whose timing must travel outside FlowMe.",
+        "chooseWhen": "Missing the date/cadence breaks the job.",
+        "excludeWhen": "Dates are optional reminders added to an otherwise row- or decision-first job.",
+        "confusedWith": ["checklist", "sheet"],
+        "tieBreaker": "Ask what the user must open on the day of action; if the calendar event is sufficient, calendar is primary.",
+        "primarySecondaryRule": "Checklist can be secondary inside event notes; do not call the pair hybrid.",
+        "goodExample": "이사 D-30 dated items.",
+        "badExample": "A comparison table with optional review date."
+      },
+      "checklist": {
+        "definition": "A bounded set of independent checks whose omission state matters during one job.",
+        "chooseWhen": "The user needs to see what remains unchecked.",
+        "excludeWhen": "The rows need stable comparison/progress columns or are a future resource queue.",
+        "confusedWith": ["todo", "sheet"],
+        "tieBreaker": "Bounded verification set = checklist; open next-action queue = todo; columns/status history = sheet.",
+        "primarySecondaryRule": "Calendar may be secondary if the checklist has one optional due date.",
+        "goodExample": "여행 짐 준비표.",
+        "badExample": "Course lesson progress requiring status and notes."
+      },
+      "todo": {
+        "definition": "An open queue of next actions or resources that may be reordered or deferred.",
+        "chooseWhen": "The durable value is the next actionable queue, not verifying a fixed set.",
+        "excludeWhen": "The set is bounded and omission-sensitive or needs columns.",
+        "confusedWith": ["checklist", "sheet"],
+        "tieBreaker": "If new rows can be appended naturally and order may change, prefer todo.",
+        "primarySecondaryRule": "Sheet may be secondary for optional metadata on a large queue.",
+        "goodExample": "지역 체험 자료 큐.",
+        "badExample": "Official document checklist."
+      },
+      "sheet": {
+        "definition": "Stable rows and columns used to compare, track, filter or record values.",
+        "chooseWhen": "Removing columns loses the primary user state.",
+        "excludeWhen": "A binary bounded checklist or pure memo is sufficient.",
+        "confusedWith": ["checklist", "memo"],
+        "tieBreaker": "If the user returns to change status/value per row, sheet wins.",
+        "primarySecondaryRule": "Calendar is secondary for milestones; checklist is secondary for a field visit view.",
+        "goodExample": "강좌 진도·상태·메모 표.",
+        "badExample": "A six-item packing list with no meaningful columns."
+      },
+      "memo": {
+        "definition": "Context, criteria, selected rationale, source boundary or a reusable note is the durable output.",
+        "chooseWhen": "There is one real application/decision and retaining context matters more than row state.",
+        "excludeWhen": "Independent checks, dates or rows are required to execute.",
+        "confusedWith": ["checklist", "sheet"],
+        "tieBreaker": "If a static note still completes the job, memo; otherwise choose the stateful artifact.",
+        "primarySecondaryRule": "Memo is commonly secondary but primary only when context itself is the retained result.",
+        "goodExample": "선택 이유와 다음 행동을 남기는 결정 메모.",
+        "badExample": "Twelve dated preparation actions flattened to prose."
+      }
+    }
+  },
+  "operationalEnumRules": {
+    "providerTypes": {
+      "definition": "The controlled top-level identity of the party responsible for the source, not its host or format.",
+      "chooseWhen": "Choose from verified publisher ownership or provider identity.",
+      "excludeWhen": "Do not encode a brand name, domain, content format or access mode here.",
+      "confusedWith": ["platformRoles", "sourceFormatCategories"],
+      "tieBreaker": "Prefer the party accountable for the content; keep the specific organization in source metadata.",
+      "primarySecondaryRule": "Exactly one provider type; platform roles may be multiple.",
+      "goodExample": "A ministry guide hosted on its portal is government_public.",
+      "badExample": "Creating providerType=korea_ministry_pdf.",
+      "valueDefinitions": {
+        "government_public": "A national or local government body publishing official public information.",
+        "public_institution": "A public agency or institution with official operational authority.",
+        "brand_official": "A commercial brand publishing its own product, service or workflow material.",
+        "creator": "An identifiable individual or creator team publishing original material.",
+        "editorial_media": "A publisher whose primary role is edited news, magazine or reference content.",
+        "community_platform": "A platform whose source value comes mainly from member contributions.",
+        "marketplace": "A platform centered on listing or selling products, services or digital goods.",
+        "education_provider": "A school, academy or course provider responsible for instruction.",
+        "open_knowledge": "An open knowledge or open-source project maintaining reusable public material.",
+        "aggregator": "A service that discovers or indexes material mainly owned elsewhere.",
+        "user_owned": "A private file or record the user owns or is authorized to provide."
+      }
+    },
+    "platformRoles": {
+      "definition": "The roles a platform plays in the source-to-execution journey.",
+      "chooseWhen": "Record every evidenced role independently.",
+      "excludeWhen": "Do not infer entitlement, execution or distribution from hosting alone.",
+      "confusedWith": ["providerTypes", "discoveryAccess"],
+      "tieBreaker": "Use multiple roles when they are simultaneously evidenced; there is no forced primary role.",
+      "primarySecondaryRule": "Multi-select; at least one role is required.",
+      "goodExample": "Todoist can discover, host, execute and enforce entitlement.",
+      "badExample": "Calling every public page execute-capable.",
+      "valueDefinitions": {
+        "discover": "Users can find or preview the content there.",
+        "host": "The platform serves the authoritative or provider-controlled source.",
+        "distribute": "The platform syndicates or delivers content to audiences.",
+        "execute": "Users can carry out or track the Flow on the platform.",
+        "export_destination": "The platform can receive a Flow projection.",
+        "entitlement": "The platform controls account, purchase or eligibility access.",
+        "community_signal": "The platform exposes reactions, saves, ratings or other audience signals."
+      }
+    },
+    "discoveryAccess": {
+      "definition": "Whether a person can reach the discovery or landing surface.",
+      "chooseWhen": "Classify the public-facing discovery surface separately from execution rows.",
+      "excludeWhen": "Do not downgrade a public landing page merely because full rows require login.",
+      "confusedWith": ["rowAccess"],
+      "tieBreaker": "Judge the landing surface only; record row restrictions in rowAccess.",
+      "primarySecondaryRule": "Exactly one current state.",
+      "goodExample": "Public template page plus OAuth rows = public discovery, partial row access.",
+      "badExample": "account_required solely because copying the template requires login.",
+      "valueDefinitions": {
+        "public": "The discovery surface is reachable without an account.",
+        "account_required": "An account is required even to reach the discovery surface.",
+        "paywalled": "Payment is required to reach the meaningful discovery surface.",
+        "robots_limited": "Human access may exist but automated acquisition is explicitly limited.",
+        "unavailable": "The discovery surface cannot currently be reached.",
+        "unknown": "The access state has not been verified."
+      }
+    },
+    "rowAccess": {
+      "definition": "How much of the source rows needed for the intended Flow is actually obtainable.",
+      "chooseWhen": "Compare acquired rows with the intended user job.",
+      "excludeWhen": "Do not treat title, summary or count as full rows.",
+      "confusedWith": ["discoveryAccess", "sourceRowStatus"],
+      "tieBreaker": "Access describes obtainability; sourceRowStatus describes the current captured packet.",
+      "primarySecondaryRule": "Exactly one current access state.",
+      "goodExample": "Four public phase names but hidden tasks = partial.",
+      "badExample": "full because the landing page is public.",
+      "valueDefinitions": {
+        "full": "All rows needed for the bounded Flow are obtainable.",
+        "partial": "Some needed rows are obtainable and some are not.",
+        "metadata_only": "Only descriptive metadata, counts or labels are obtainable.",
+        "unavailable": "Required rows cannot currently be obtained.",
+        "unknown": "Row access has not been verified."
+      }
+    },
+    "acquisitionMethods": {
+      "definition": "Approved technical or user-mediated methods that can acquire source evidence.",
+      "chooseWhen": "Record only methods supported by the source and permission boundary.",
+      "excludeWhen": "Do not list a method merely because it is technically possible.",
+      "confusedWith": ["discoveryAccess", "sourceFormatCategories"],
+      "tieBreaker": "Prefer the most authoritative structured method; keep multiple methods when complementary.",
+      "primarySecondaryRule": "Multi-select; empty is valid when acquisition is unknown or unavailable.",
+      "goodExample": "Public API plus creator delivery recorded together.",
+      "badExample": "oauth_api without provider authorization support.",
+      "valueDefinitions": {
+        "html_fetch": "Acquire rows from permitted HTML.", "pdf_fetch": "Acquire rows from a PDF document.",
+        "rss_fetch": "Acquire entries from an RSS or Atom feed.", "public_api": "Acquire from a public documented API.",
+        "oauth_api": "Acquire private/user-authorized data through OAuth.", "file_upload": "Acquire from a user-provided file.",
+        "manual_copy": "Acquire a bounded excerpt through explicit manual copy.", "transcript_import": "Acquire a transcript supplied or permitted for import.",
+        "table_import": "Acquire structured rows from CSV, XLSX or another table.", "creator_delivery": "Acquire a source package directly from the provider."
+      }
+    },
+    "sourceFormatCategories": {
+      "definition": "A controlled coarse format family; MIME type and provider-specific details stay in metadata.",
+      "chooseWhen": "Choose the dominant acquired source container.",
+      "excludeWhen": "Do not create provider- or title-specific format enum values.",
+      "confusedWith": ["sourceShapes"],
+      "tieBreaker": "Format describes the container; sourceShape describes row anatomy after extraction.",
+      "primarySecondaryRule": "Exactly one coarse format; details are free metadata.",
+      "goodExample": "video with lesson_rows after transcript extraction.",
+      "badExample": "sourceFormat=official_youtube_course_playlist_2026.",
+      "valueDefinitions": {
+        "article": "Web or newsletter prose.", "checklist": "A source presented as checks or tick rows.", "table": "A source presented as stable rows and columns.",
+        "document": "PDF, DOCX or similar document container.", "video": "Moving-image source.", "audio": "Audio or podcast source.",
+        "course": "Instructional course or curriculum container.", "collection": "A collection or index of resources.", "template": "A reusable provider template.",
+        "api_feed": "A structured API or feed response.", "interactive_page": "A page whose meaningful result depends on interaction."
+      }
+    },
+    "audienceRoles": {
+      "definition": "Evidenced user roles affected by applicability or execution.",
+      "chooseWhen": "Record roles named or materially implied by the bounded user job.",
+      "excludeWhen": "Do not infer demographic identity from topic alone.",
+      "confusedWith": ["collaborationContext"],
+      "tieBreaker": "Roles describe people; collaboration describes how they coordinate.",
+      "primarySecondaryRule": "Multi-select with no semantic primary; at least one role.",
+      "goodExample": "A family trip may include traveler and caregiver.",
+      "badExample": "parent_guardian for every museum guide.",
+      "valueDefinitions": {
+        "individual": "A general person acting for themselves.", "parent_guardian": "A parent or legal guardian.", "learner": "A person completing learning material.",
+        "professional": "A person acting in a work role.", "creator_operator": "A creator or operator running a content/service workflow.",
+        "caregiver": "A person supporting a dependent.", "team_member": "A participant in shared team execution.", "buyer": "A person comparing, contracting or purchasing.", "traveler": "A person planning or taking an outing or trip."
+      }
+    },
+    "ageBands": {
+      "definition": "Age applicability explicitly supported by source or policy.",
+      "chooseWhen": "Use the narrowest evidenced band.",
+      "excludeWhen": "Do not infer age from tone or imagery.",
+      "confusedWith": ["audienceRoles"],
+      "tieBreaker": "Use not_specified when the source does not define an age boundary.",
+      "primarySecondaryRule": "Multi-select; all_ages must not be combined with narrower bands.",
+      "goodExample": "teen for a source explicitly written for secondary students.",
+      "badExample": "adult because the page has complex prose.",
+      "valueDefinitions": { "child": "Child audience.", "teen": "Teen audience.", "adult": "Adult audience.", "older_adult": "Older-adult audience.", "all_ages": "Explicitly applicable across ages.", "not_specified": "No age boundary was evidenced." }
+    },
+    "skillLevels": {
+      "definition": "Required prior skill for successful execution.",
+      "chooseWhen": "Use source prerequisites or explicit teaching level.",
+      "excludeWhen": "Do not infer from content length alone.",
+      "confusedWith": ["prerequisites"],
+      "tieBreaker": "Use mixed for a real range and not_applicable when skill is irrelevant.",
+      "primarySecondaryRule": "Exactly one level.",
+      "goodExample": "beginner for a no-prerequisite introductory course.",
+      "badExample": "advanced because it has many lessons.",
+      "valueDefinitions": { "beginner": "Introductory skill expected.", "intermediate": "Foundational skill expected.", "advanced": "Substantial prior skill expected.", "mixed": "Multiple levels are intentionally supported.", "not_applicable": "Skill level does not govern use." }
+    },
+    "applicability": {
+      "definition": "How directly the content applies in the target locale.",
+      "chooseWhen": "Compare rules, language, services and cultural assumptions with target locale.",
+      "excludeWhen": "Do not equate translation with legal or service applicability.",
+      "confusedWith": ["localeReview"],
+      "tieBreaker": "Applicability is the content property; localeReview is the review state.",
+      "primarySecondaryRule": "Exactly one applicability class.",
+      "goodExample": "US public-domain audiobook marked local_adaptation_required for Korean rights review.",
+      "badExample": "global_general merely because the page is in English.",
+      "valueDefinitions": { "local_direct": "Directly usable in the target locale.", "local_adaptation_required": "Needs localization or jurisdiction adaptation.", "global_general": "General guidance not tied to one locale.", "unknown": "Applicability has not been established." }
+    },
+    "accountOrEntitlement": {
+      "definition": "The minimum account, ownership, payment or eligibility condition for required rows or execution.",
+      "chooseWhen": "Record the strongest evidenced prerequisite.",
+      "excludeWhen": "Do not infer entitlement from public discovery.",
+      "confusedWith": ["discoveryAccess", "rowAccess"],
+      "tieBreaker": "Choose the condition blocking required rows or use, not optional conveniences.",
+      "primarySecondaryRule": "Exactly one dominant requirement; details stay in prerequisites.",
+      "goodExample": "free_account for a template copy requiring login.",
+      "badExample": "none because the landing page is public.",
+      "valueDefinitions": { "none": "No account or entitlement is required.", "free_account": "A no-cost account is required.", "paid_subscription": "An active paid subscription is required.", "owned_product": "Ownership of a product or service is required.", "official_eligibility": "Formal eligibility is required.", "source_file_required": "The user must supply the source file.", "unknown": "The requirement is not verified." }
+    },
+    "collaborationContext": {
+      "definition": "The coordination model needed to execute the Flow.",
+      "chooseWhen": "Choose from ownership, handoff and approval structure.",
+      "excludeWhen": "Do not infer team work just because content can be shared.",
+      "confusedWith": ["audienceRoles"],
+      "tieBreaker": "Use the smallest coordination model that preserves required handoffs.",
+      "primarySecondaryRule": "Exactly one dominant context.",
+      "goodExample": "team_roles for owner-assigned production stages.",
+      "badExample": "team_roles for a solo reading queue.",
+      "valueDefinitions": { "solo": "One person owns execution.", "shared_household": "Household members share tasks.", "caregiver_dependent": "A caregiver coordinates for a dependent.", "team_roles": "Named team roles share execution.", "provider_client": "A provider and client exchange evidence or approval.", "unknown": "Coordination is not established." }
+    },
+    "userNeedSignals": {
+      "definition": "Positive support the user needs from the Flow.",
+      "chooseWhen": "Select only needs demonstrated by the user job.",
+      "excludeWhen": "Do not encode product pain or access state here.",
+      "confusedWith": ["frictionSignals"],
+      "tieBreaker": "Need describes desired help; friction describes current cost or failure.",
+      "primarySecondaryRule": "Multi-select; no forced primary.",
+      "goodExample": "remember_when for an official date window.",
+      "badExample": "tab_switching as a user need.",
+      "valueDefinitions": { "remember_when": "Remember a date or window.", "avoid_omission": "Avoid missing required checks.", "follow_sequence": "Follow dependencies in order.", "repeat_consistently": "Repeat a routine reliably.", "track_progress": "Retain current progress.", "choose_between_options": "Compare and decide.", "queue_resources": "Retain an ordered or flexible resource queue.", "handoff_or_share": "Transfer ownership or status.", "preserve_source_context": "Keep source rationale and boundaries." }
+    },
+    "frictionSignals": {
+      "definition": "Observed or hypothesized execution cost in the current experience.",
+      "chooseWhen": "Record a concrete failure or repeat cost separately from user need.",
+      "excludeWhen": "Do not use as a content category or access state.",
+      "confusedWith": ["userNeedSignals"],
+      "tieBreaker": "If phrased as what improves, use need; if phrased as current loss/cost, use friction.",
+      "primarySecondaryRule": "Multi-select; no forced primary.",
+      "goodExample": "lost_progress for repeatedly reopening a course page.",
+      "badExample": "track_progress as friction.",
+      "valueDefinitions": { "tab_switching": "Repeated switching between tools or pages.", "copy_reformatting": "Repeated manual reformatting.", "missed_deadline": "A date or window is missed.", "lost_progress": "Progress state is lost.", "unclear_next_action": "The next action is unclear.", "collaboration_gap": "Ownership or handoff is lost.", "source_revisit_cost": "The source must be repeatedly reopened and reinterpreted." }
+    },
+    "rightsBasis": {
+      "definition": "The evidence basis supporting or limiting use.",
+      "chooseWhen": "Choose the strongest verified basis, not the most permissive hoped-for basis.",
+      "excludeWhen": "Public access alone is never an open license or permission.",
+      "confusedWith": ["allowedUse", "rightsReviewStatus"],
+      "tieBreaker": "Specific verified license/permission beats general terms; uncertainty fails closed.",
+      "primarySecondaryRule": "Exactly one basis; allowed uses remain a separate array.",
+      "goodExample": "public_domain with named US territory and pending Korean review.",
+      "badExample": "open_license because a PDF is downloadable.",
+      "valueDefinitions": { "public_domain": "Public-domain evidence exists in a stated territory.", "open_license": "A specific open license applies.", "official_reuse_policy": "An official reuse policy governs use.", "provider_terms": "Provider terms govern use.", "creator_permission": "Explicit creator permission governs use.", "user_owned": "The user owns or is authorized to process the source.", "link_only_assumption": "Only link/metadata use is conservatively assumed.", "unknown": "No adequate rights basis is verified.", "blocked": "Known rights conditions prohibit the intended use." }
+    },
+    "allowedUse": {
+      "definition": "Specific uses supported by the rights basis and review.",
+      "chooseWhen": "Record each allowed use independently.",
+      "excludeWhen": "Do not inherit broader use from a narrower permission.",
+      "confusedWith": ["rightsBasis", "promotionState"],
+      "tieBreaker": "Choose the narrowest evidenced set; public uses require explicit support.",
+      "primarySecondaryRule": "Multi-select; no use implies no permission beyond blocking metadata.",
+      "goodExample": "link_metadata plus internal_review for link-only evidence.",
+      "badExample": "public_derived because personal_transform is allowed.",
+      "valueDefinitions": { "link_metadata": "Store/display a link and bounded metadata.", "personal_transform": "Create a private user copy.", "internal_review": "Use within controlled editorial review.", "public_derived": "Publish a transformed derivative.", "public_republish": "Republish the source material itself." }
+    },
+    "territoryScope": {
+      "definition": "Geographic scope of the rights conclusion.",
+      "chooseWhen": "Use the territory explicitly covered by evidence.",
+      "excludeWhen": "Do not treat one-country public domain as global.",
+      "confusedWith": ["applicability"],
+      "tieBreaker": "Rights geography wins over audience geography; unknown stays empty.",
+      "primarySecondaryRule": "Exactly one scope with matching territory list rules.",
+      "goodExample": "named + US for LibriVox evidence.",
+      "badExample": "global because the website is globally reachable.",
+      "valueDefinitions": { "global": "Rights evidence applies globally.", "named": "Rights evidence applies only to named territories.", "unknown": "Territorial scope is not verified." }
+    },
+    "rightsReviewStatus": {
+      "definition": "Current editorial/legal confidence in the intended use.",
+      "chooseWhen": "Evaluate basis, allowed use, territory and intended publication separately.",
+      "excludeWhen": "Do not mark approved from access alone.",
+      "confusedWith": ["rightsBasis", "promotionState"],
+      "tieBreaker": "Use the most restrictive unresolved state; blocked beats restricted, restricted beats pending.",
+      "primarySecondaryRule": "Exactly one current state.",
+      "goodExample": "restricted for link-only transformation limits.",
+      "badExample": "approved because a government page is public.",
+      "valueDefinitions": { "not_required": "No rights review is needed for this bounded operation.", "pending": "Evidence or permission is still being gathered.", "approved": "The intended use is affirmatively supported.", "restricted": "Only a narrower use is supported.", "blocked": "The intended use is prohibited." }
+    },
+    "sourceRowStatus": {
+      "definition": "Completeness of the rows currently captured for the bounded Flow.",
+      "chooseWhen": "Compare the evidence packet against the intended user job.",
+      "excludeWhen": "Do not infer complete from a row count or landing-page summary.",
+      "confusedWith": ["rowAccess", "conversionReadiness"],
+      "tieBreaker": "Status describes captured evidence; readiness applies downstream gates.",
+      "primarySecondaryRule": "Exactly one state.",
+      "goodExample": "metadata_only when only course title, period and lesson count are captured.",
+      "badExample": "complete because ten lessons are advertised.",
+      "valueDefinitions": { "complete": "All rows needed for the bounded Flow are captured.", "partial": "Some required rows are captured.", "metadata_only": "Only descriptive metadata is captured.", "missing": "No usable SourceRows are captured." }
+    },
+    "conversionReadiness": {
+      "definition": "Whether a source package may enter a conversion stage, independent of public release.",
+      "chooseWhen": "Combine source completeness with risk and required reviews.",
+      "excludeWhen": "Do not treat internal readiness as rights clearance or user validation.",
+      "confusedWith": ["promotionState", "rightsReviewStatus"],
+      "tieBreaker": "Missing rows force source_import_required; hard risk/rights stop forces hold.",
+      "primarySecondaryRule": "Exactly one workflow state.",
+      "goodExample": "ready_second_wave with complete rows but safety review pending.",
+      "badExample": "ready_for_internal_canary with metadata-only rows.",
+      "valueDefinitions": { "ready_for_internal_canary": "Eligible for a bounded internal conversion test.", "ready_second_wave": "Source-complete enough but follow-up review remains.", "source_import_required": "Required rows must be acquired before Item generation.", "hold": "Conversion is paused by a hard or unresolved boundary." }
+    },
+    "freshnessReview": {
+      "definition": "Review state for source currency.", "chooseWhen": "Judge whether time-sensitive facts remain current.", "excludeWhen": "Do not use current to mean recently fetched only.", "confusedWith": ["sourceRowStatus"], "tieBreaker": "Unknown or date-sensitive unverified content remains pending/unknown.", "primarySecondaryRule": "Exactly one state.", "goodExample": "stale for an expired official date window.", "badExample": "current solely because it was fetched today.",
+      "valueDefinitions": { "not_required": "Freshness does not affect the bounded use.", "pending": "Freshness review is queued.", "current": "Relevant facts were checked and remain current.", "stale": "Relevant facts are out of date.", "unknown": "Currency cannot be established." }
+    },
+    "localeReview": {
+      "definition": "Review state for language, jurisdiction and local service applicability.", "chooseWhen": "Check target locale requirements.", "excludeWhen": "Do not equate translation with applicability.", "confusedWith": ["applicability"], "tieBreaker": "Use adaptation_required when usable only after localization.", "primarySecondaryRule": "Exactly one state.", "goodExample": "adaptation_required for US-only rights/service details in Korea.", "badExample": "applicable because an English page is readable.",
+      "valueDefinitions": { "not_required": "Locale does not affect the bounded use.", "pending": "Locale review is queued.", "applicable": "The content applies in target locale.", "adaptation_required": "Localization or jurisdiction adaptation is required.", "not_applicable": "The content does not apply in target locale." }
+    },
+    "safetyReview": {
+      "definition": "Review state for physical, medical or other safety boundaries.", "chooseWhen": "Assess source-backed hazards and escalation conditions.", "excludeWhen": "Do not infer safety from official branding.", "confusedWith": ["conversionReadiness"], "tieBreaker": "A missing stop/escalation boundary moves to restricted or blocked.", "primarySecondaryRule": "Exactly one state.", "goodExample": "passed_with_boundary when official stop-work and 119 criteria are preserved.", "badExample": "not_required for a heat-illness procedure.",
+      "valueDefinitions": { "not_required": "No material safety review is needed.", "pending": "Safety review is queued.", "passed_with_boundary": "Usable with preserved warnings and escalation boundaries.", "restricted": "Only a narrower safe use is permitted.", "blocked": "Conversion cannot be safely used." }
+    },
+    "privacyReview": {
+      "definition": "Review state for personal or sensitive data handling.", "chooseWhen": "Assess source acquisition, storage and projection exposure.", "excludeWhen": "Do not infer privacy clearance from user login.", "confusedWith": ["accountOrEntitlement"], "tieBreaker": "Sensitive data without explicit private handling becomes sensitive_private_only or blocked.", "primarySecondaryRule": "Exactly one state.", "goodExample": "pending for OAuth-imported private task rows.", "badExample": "passed because OAuth is supported.",
+      "valueDefinitions": { "not_required": "No material personal data is involved.", "pending": "Privacy review is queued.", "passed": "The intended handling is approved.", "sensitive_private_only": "Use is limited to a private user context.", "blocked": "The intended data handling is prohibited." }
+    },
+    "promotionState": {
+      "definition": "Editorial distribution state, independent of conversion and rights facts.", "chooseWhen": "Advance only after the relevant gates are cleared.", "excludeWhen": "Do not publish from internal canary success alone.", "confusedWith": ["conversionReadiness", "rightsReviewStatus"], "tieBreaker": "Use the least advanced state supported by all gates.", "primarySecondaryRule": "Exactly one lifecycle state.", "goodExample": "research_only for a fully stored but uncleared record.", "badExample": "published because the DTO validates.",
+      "valueDefinitions": { "research_only": "Stored for research and classification only.", "internal_review": "Under internal editorial review.", "internal_canary": "Available in a bounded internal test.", "public_candidate": "Cleared as a candidate for public release.", "published": "Released to users.", "retired": "Withdrawn from active distribution." }
+    },
+    "blockers": {
+      "definition": "Cumulative machine-readable reasons that prevent or constrain the next state.", "chooseWhen": "Record every applicable blocker; never overwrite one with another.", "excludeWhen": "Do not use a generic note when a controlled blocker exists.", "confusedWith": ["editorialAction"], "tieBreaker": "Blockers state why; editorialAction states what to do next.", "primarySecondaryRule": "Multi-select and cumulative.", "goodExample": "source_import_required + rights_unknown + privacy_review_required together.", "badExample": "Keeping only rights_unknown and dropping source incompleteness.",
+      "valueDefinitions": { "source_unavailable": "The source cannot be reached.", "source_incomplete": "Required rows are incomplete.", "source_import_required": "An import step is required.", "rights_unknown": "Rights evidence is insufficient.", "rights_permission_required": "Explicit permission is required.", "rights_blocked": "Known rights prohibit use.", "freshness_pending": "Freshness review remains.", "stale_source": "The source is stale.", "locale_review_required": "Locale review remains.", "safety_review_required": "Safety review remains.", "privacy_review_required": "Privacy review remains.", "account_or_entitlement_required": "Access entitlement is required.", "user_input_required": "A user value or authorization is required.", "source_conflict": "Source evidence conflicts.", "unsupported_shape": "The acquired shape is unsupported.", "editorial_review_required": "Editorial adjudication remains." }
+    },
+    "portfolioRole": {
+      "definition": "Why the record exists in the content portfolio.", "chooseWhen": "Choose the dominant portfolio purpose.", "excludeWhen": "Do not use as promotion state or quality score.", "confusedWith": ["promotionState"], "tieBreaker": "Choose the role that explains why this record should be retained now.", "primarySecondaryRule": "Exactly one role.", "goodExample": "official_trust_anchor for a high-authority official procedure.", "badExample": "representative_start merely because it is popular.",
+      "valueDefinitions": { "representative_start": "Primary representative example.", "repeat_reuse": "Tests recurring reuse value.", "creator_variant": "Tests a creator/provider variant.", "official_trust_anchor": "Anchors official authority and accuracy.", "breadth_candidate": "Expands category or format breadth.", "backup": "Fallback candidate.", "reference_keep": "Retained as a reference or boundary case.", "provider_lead": "Potential provider partnership lead." }
+    },
+    "editorialAction": {
+      "definition": "The next editorial operation for the record.", "chooseWhen": "Choose the next smallest action that can change state.", "excludeWhen": "Do not encode the reason here; keep blockers.", "confusedWith": ["blockers", "promotionState"], "tieBreaker": "Select the action addressing the highest-priority unresolved gate.", "primarySecondaryRule": "Exactly one next action.", "goodExample": "import_source when rows are missing even if rights also remain pending.", "badExample": "keep while source_import_required is unresolved.",
+      "valueDefinitions": { "keep": "Keep without material change.", "revise": "Revise classification or content.", "import_source": "Acquire missing source rows.", "request_permission": "Request explicit rights permission.", "localize": "Adapt for target locale.", "safety_review": "Perform safety review.", "rights_review": "Perform rights review.", "replace_source": "Use a better source.", "park": "Defer with a revisit trigger.", "reject": "Remove from the candidate portfolio." }
+    },
+    "itemIntents": {
+      "definition": "The user-level intention of one canonical Item.", "chooseWhen": "Choose the action the user must perform, independent of projection.", "excludeWhen": "Do not derive directly from legacy calendar/todo type.", "confusedWith": ["completionModes"], "tieBreaker": "Intent says why the Item exists; completion says how done is recorded.", "primarySecondaryRule": "Exactly one intent per Item.", "goodExample": "decide with decision completion for a contract criterion.", "badExample": "act solely because the legacy type is todo.",
+      "valueDefinitions": { "act": "Perform an action.", "inspect": "Inspect or verify a condition.", "decide": "Choose among source-backed options.", "record": "Capture a value or observation.", "use_resource": "Consume or use a linked resource." }
+    },
+    "scheduleModes": {
+      "definition": "Canonical v1 schedule ownership mode; absence means unscheduled.", "chooseWhen": "Use only source-backed or user-owned date evidence.", "excludeWhen": "Do not create dates from item order or taxonomy alone.", "confusedWith": ["date_preparation", "recurrence_rule"], "tieBreaker": "Pattern describes execution semantics; ScheduleSpec owns actual dates.", "primarySecondaryRule": "At most one ScheduleSpec per Item.", "goodExample": "anchor_offset with a user-provided move date.", "badExample": "absolute date invented from a checklist position.",
+      "valueDefinitions": { "absolute": "A concrete date/time owned by source or user.", "date_window": "An absolute or anchor-relative allowed window.", "anchor_offset": "A date derived from a named user/source anchor and day offset." }
+    },
+    "completionModes": {
+      "definition": "Canonical v1 method for proving an Item complete.", "chooseWhen": "Use the smallest evidence that represents done.", "excludeWhen": "Do not add progress/consume as new modes; express them through check or record fields.", "confusedWith": ["itemIntents"], "tieBreaker": "Use decision for explicit options, record for required fields, otherwise check.", "primarySecondaryRule": "Exactly one completion mode per Item.", "goodExample": "record with stable progress fields for a course row.", "badExample": "completion=consume as an unversioned free enum.",
+      "valueDefinitions": { "check": "A done/not-done condition with doneWhen.", "decision": "A source-backed choice among defined options.", "record": "Required values are captured in referenced fields." }
+    }
+  },
+  "ambiguousCaseRules": [
+    {
+      "case": "가족여행",
+      "decision": "primaryLifeArea=travel_outings, secondaryLifeAreas=[family_parenting]",
+      "tieBreaker": "Trip execution is the immediate outcome; family constraints are applicability context."
+    },
+    {
+      "case": "개발 강의",
+      "decision": "study_reading when lesson progress is terminal; work_career when a professional deliverable or job transition is terminal",
+      "tieBreaker": "Terminal retained result beats subject matter and provider identity."
+    },
+    {
+      "case": "영상 강좌",
+      "decision": "progress_tracking for fixed lesson rows; resource_queue for flexible distinct resources; phase_lifecycle for heterogeneous output-gated phases",
+      "tieBreaker": "Compare row homogeneity, order flexibility and phase deliverables in that order."
+    },
+    {
+      "case": "계약 전 확인",
+      "decision": "compare_decide if proceed/hold/reject is the output; ordered_procedure if one required sequence leads to completion",
+      "tieBreaker": "Multiple valid terminal states mean compare_decide."
+    },
+    {
+      "case": "반복 그림책",
+      "decision": "repeating_routine for the same book/action; resource_queue when distinct imported books rotate",
+      "tieBreaker": "Same action versus distinct resource identities."
+    },
+    {
+      "case": "일정과 체크가 함께 있음",
+      "decision": "calendar primary if the user must act on dates; checklist primary if one bounded set is the retained control surface",
+      "tieBreaker": "Choose the artifact whose loss would make the job fail; record the other in secondaryArtifacts."
+    },
+    {
+      "case": "원문 확보와 권리 허가가 모두 필요",
+      "decision": "sourceRowStatus=missing, rightsReview=pending, blockers include both source_import_required and rights_permission_required",
+      "tieBreaker": "Never collapse independent blockers into one conversion state."
+    },
+    {
+      "case": "공개 페이지와 로그인 후 원문이 다름",
+      "decision": "discoveryAccess=public, rowAccess=partial or unavailable, acquisitionMethods includes oauth_api/manual_copy/file_upload as applicable",
+      "tieBreaker": "Classify the rows used for conversion, not the marketing or discovery page."
+    }
+  ],
+  "adjudicationRules": {
+    "sourceEvidenceBoundary": "Classify sourceShape only from rows present in the examined dataset or a named linked snapshot. P0 portfolio rows contain proposals, not SourceRows; their sourceShape is null and sourceRowStatus is missing until import.",
+    "metadataOnlyBoundary": "metadata_only cannot confirm lesson_rows, template_fields or any absent execution-row shape. Keep sourceShape null unless the acquired metadata itself is the intended date_window or decision_criteria Flow.",
+    "discoveryVersusRowAccess": "A public template landing page remains discoveryAccess=public even when full rows require login/OAuth; rowAccess and accountOrEntitlement carry that restriction.",
+    "procedureVersusLifecycle": "Homogeneous required service_step rows are ordered_procedure. phase_lifecycle requires heterogeneous phase outputs that gate the next phase.",
+    "courseVersusQueue": "A fixed curriculum with stable lesson/course rows, prerequisites and status is progress_tracking. A flexible collection selected or reordered by the user is resource_queue.",
+    "routeVersusQueue": "A source-defined fixed route is ordered_procedure. Independent places with flexible ordering are resource_queue.",
+    "resourceArtifact": "A fixed long queue with stable duration/status columns uses sheet primary and todo secondary; an open appendable next-action queue uses todo primary.",
+    "rightsStatus": "link-only and no-derivatives evidence map to restricted; explicit permission required maps to pending; an exact verified open license maps to approved while publicReleaseAllowed remains separately false until publication gates pass.",
+    "internalReadiness": "ready_for_internal_canary means source-complete internal use with recorded boundaries, not public clearance. Use ready_second_wave for safety, territory, localization or other follow-up that should trail the first canary; use source_import_required whenever required execution rows are missing."
+  },
+  "crossFieldRules": [
+    "primary and secondary arrays must not contain the same value.",
+    "A new canonical primaryArtifact must be one of calendar, checklist, todo, sheet or memo; hybrid is rejected.",
+    "public discovery never implies full row access or any allowed use.",
+    "publicReleaseAllowed=true requires rightsReview=approved, allowedUse containing public_derived or public_republish, and no blocking locale/safety/privacy/freshness/source gate.",
+    "personalTransformAllowed and publicReleaseAllowed are evaluated independently.",
+    "sourceRowStatus=missing or metadata_only cannot be ready_for_internal_canary.",
+    "source_import_required must include source_import_required or source_incomplete blocker.",
+    "Every Item in a convertible DTO references at least one existing SourceRow, except an explicitly private user_request Item which is outside this v1.1 source-content portfolio.",
+    "locale, safety and privacy reviews are present even when their value is not_required.",
+    "Blockers are cumulative; recording one must never erase another.",
+    "Internal review fields never enter user projections.",
+    "Free text belongs in topicTags, rationale or sourceFormatDetail, never as a new enum value."
+  ],
+  "legacyOnlyValues": {
+    "primaryArtifact": ["hybrid"],
+    "primaryDestination": ["internal_check", "hybrid"],
+    "planningPattern": ["source_table_rows"],
+    "note": "These values are accepted only by legacy-mapping-v1.json and are rejected in new canonical records."
+  }
+}

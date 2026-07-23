@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-07-15T01:00:00+09:00",
+  "originMainSha": "1f0361209fac3cdd85c67cf64496ff5d5dd9fb9d",
+  "productionAlias": "https://flowme2605.vercel.app",
+  "localBuildUnderTest": "http://127.0.0.1:3104 (npm run start from clean origin/main build)",
+  "productionRoutes": [
+    {"route": "/", "viewports": ["390x844", "1024x768"], "httpStatus": 200, "horizontalOverflowPx": 0, "consoleErrors": 0, "screenshots": ["screenshots/p24clean_home_mobile-390x844.png", "screenshots/p24clean_home_wide-1024x768.png"]},
+    {"route": "/flows", "viewports": ["390x844", "1024x768"], "httpStatus": 200, "horizontalOverflowPx": 0, "consoleErrors": 0, "screenshots": ["screenshots/p24clean_flows_mobile-390x844.png", "screenshots/p24clean_flows_wide-1024x768.png"]},
+    {"route": "/flow-maps/moving-d30", "viewports": ["390x844", "1024x768"], "httpStatus": 200, "horizontalOverflowPx": 0, "consoleErrors": 0, "screenshots": ["screenshots/p24clean_flowmap-moving-d30_mobile-390x844.png", "screenshots/p24clean_flowmap-moving-d30_wide-1024x768.png"]},
+    {"route": "/f/source-backed-moving-d30", "viewports": ["390x844", "1024x768"], "httpStatus": 200, "horizontalOverflowPx": 0, "consoleErrors": 0, "screenshots": ["screenshots/p24clean_public-f-moving_mobile-390x844.png", "screenshots/p24clean_public-f-moving_wide-1024x768.png"]},
+    {"route": "/my", "viewports": ["390x844", "1024x768"], "httpStatus": 200, "horizontalOverflowPx": 0, "consoleErrors": 0, "screenshots": ["screenshots/p24clean_my_mobile-390x844.png", "screenshots/p24clean_my_wide-1024x768.png"]},
+    {"route": "/calendar", "viewports": ["390x844", "1024x768"], "httpStatus": 200, "horizontalOverflowPx": 0, "consoleErrors": 0, "screenshots": ["screenshots/p24clean_calendar_mobile-390x844.png", "screenshots/p24clean_calendar_wide-1024x768.png"]}
+  ],
+  "productionSaveAndExport": {
+    "flow": "source-backed-moving-d30",
+    "anchorSet": "2026-08-13",
+    "saveLandedOn": "/my?savedMap=moving-d30 (flow visible without reload)",
+    "exportSheet": {
+      "scopeBeforeFormat": true,
+      "scopes": ["전체 Flow · 5개", "선택한 항목 · 0개"],
+      "formats": [
+        "캘린더 파일 · 날짜 있는 항목 · 5개",
+        "체크리스트 복사 · 선택 범위 · 5개",
+        "시트로 복사 · 선택 범위 · 5개",
+        "메모로 복사 · 선택 범위 · 5개"
+      ]
+    },
+    "downloads": {
+      "ics": {"file": "downloads/p24clean-moving-d30-whole.ics", "suggestedName": "원룸-이사-준비-all-calendar.ics", "veventCount": 5, "stableUids": true, "dtstart": ["20260714", "20260730", "20260806", "20260812", "20260813"]},
+      "checklist": {"file": "downloads/p24clean-moving-d30-checklist.txt", "chars": 366},
+      "sheet": {"file": "downloads/p24clean-moving-d30-sheet.txt", "chars": 770, "header": "순서\\t상태\\t할 일\\t날짜\\t시간\\t예상 시간\\t메모\\t원문"},
+      "memo": {"file": "downloads/p24clean-moving-d30-memo.txt", "chars": 426}
+    }
+  },
+  "commandEvidence": {
+    "docs:check": {"status": "pass", "detail": "14 required files, 2214 local links"},
+    "unit_test": {"status": "pass", "detail": "514/514", "durationMs": 15386},
+    "build": {"status": "pass", "detail": "Compiled successfully in 43s; Generating static pages (18/18)"},
+    "e2e_targeted": {"spec": "p24-execution-trust.spec.ts", "status": "pass", "detail": "14/14 passed (58.7s), single worker"},
+    "e2e_full": {"status": "2 failed / 272 passed", "distinctTests": 274, "durationMs": 714000, "worker": "single", "failures": ["flow-mvp.spec.ts:1539", "flow-mvp.spec.ts:3893"], "failureClass": "environment_specific date-fragile fixtures (ENV-DATE-01)"},
+    "git_diff_check": {"status": "clean", "detail": "no whitespace errors; app/components/lib/package.json/playwright.config.ts unmodified"}
+  }
+}

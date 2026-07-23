@@ -1,0 +1,18 @@
+{
+  "corrections": [
+    {
+      "correctionId": "PRE-SCORED-HOLDOUT-C01",
+      "discoveredAt": "2026-07-22T18:20:00+09:00",
+      "affectedCaseId": "VQ-11",
+      "affectedSourceRow": "VQ11-R04",
+      "issue": "2026-09-16 18:00 source deadline이 gold item R03에 잘못 연결됨",
+      "sourceEvidence": "blind packet의 VQ11-R04 detail은 처음부터 '2026-09-16 18:00까지'로 정확했음",
+      "scope": "gold schedule binding only",
+      "rulesChanged": false,
+      "sourceRowsChanged": false,
+      "candidateSetChanged": false,
+      "splitChanged": false,
+      "action": "attempt-1을 unscored archive로 보존하고 fresh independent agents로 attempt-2 재실행"
+    }
+  ]
+}

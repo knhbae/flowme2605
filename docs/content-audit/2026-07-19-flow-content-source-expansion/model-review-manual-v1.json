@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "flow-content-model-manual-review-v1",
+  "reviewedAt": "2026-07-19",
+  "blindBoundary": "모델에는 deep-set-v1의 canonicalPackage와 review를 제공하지 않았다. 채점 단계에서 기준 답안과 비교했다.",
+  "expectedDecision": {
+    "DS01": "ready_internal",
+    "DS02": "review_locked",
+    "DS03": "source_import_required",
+    "DS05": "ready_internal",
+    "DS10": "ready_internal",
+    "DS11": "ready_internal"
+  },
+  "decisionScoring": {
+    "exact": 20,
+    "safe_overlock": 12,
+    "unsafe_open_or_wrong_hold": 0
+  },
+  "tiers": {
+    "terra": {
+      "modelTier": "lower_cost_proxy_gpt_5_6_terra",
+      "cases": {
+        "DS01": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 12, "executionScore": 9, "warningScore": 5, "repairFields": 1, "note": "안전 경고와 119 기준은 보존했으나 내부 사용 가능 초안을 review_locked로 한 단계 더 잠갔다."},
+        "DS02": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 20, "executionScore": 9, "warningScore": 5, "repairFields": 0, "note": "권리·법률 잠금과 10개 계약 행을 정확히 보존했다."},
+        "DS03": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 20, "executionScore": 10, "warningScore": 5, "repairFields": 0, "note": "잠긴 구간을 채우지 않고 source_import_required로 올바르게 멈췄다."},
+        "DS05": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 12, "executionScore": 10, "warningScore": 5, "repairFields": 1, "note": "상대 기간은 잘 보존했으나 공식 link-only 내부 초안을 review_locked로 과도하게 잠갔다."},
+        "DS10": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 12, "executionScore": 6, "warningScore": 3, "repairFields": 8, "note": "6개 행은 모두 반영했지만 완료 기준이 과정 완료가 아니라 메타데이터 확인에 머물고 MIT 출처표시 경고가 빠졌다."},
+        "DS11": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 12, "executionScore": 9, "warningScore": 3, "repairFields": 2, "note": "실행 체크는 자연스럽지만 CC BY-SA 출처·동일조건 경고가 빠지고 내부 초안을 과도하게 잠갔다."}
+      }
+    },
+    "sol": {
+      "modelTier": "premium_proxy_gpt_5_6_sol",
+      "cases": {
+        "DS01": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 12, "executionScore": 10, "warningScore": 5, "repairFields": 1, "note": "안전 기준을 가장 구체적으로 보존했으나 내부 사용 가능 초안을 review_locked로 한 단계 더 잠갔다."},
+        "DS02": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 20, "executionScore": 10, "warningScore": 5, "repairFields": 0, "note": "권리·법률 잠금, 계약 행, 확인 시트를 정확히 보존했다."},
+        "DS03": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 20, "executionScore": 10, "warningScore": 5, "repairFields": 0, "note": "잠긴 구간별 미매핑 이유까지 분리하고 올바르게 보류했다."},
+        "DS05": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 20, "executionScore": 10, "warningScore": 5, "repairFields": 0, "note": "사용자 이사일 anchor와 공식 재확인 경계를 함께 보존했다."},
+        "DS10": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 12, "executionScore": 10, "warningScore": 5, "repairFields": 1, "note": "과정 완료 기준과 MIT 경고는 좋지만 공개가 아닌 내부 초안을 review_locked로 과도하게 잠갔다."},
+        "DS11": {"inventedFacts": 0, "inventedDates": 0, "gateScore": 12, "executionScore": 10, "warningScore": 5, "repairFields": 1, "note": "CC BY-SA와 목적지 재확인을 보존했으나 내부 초안을 review_locked로 과도하게 잠갔다."}
+      }
+    }
+  },
+  "repairMinuteRule": "단순 필드 수정 1개당 1.5분. 소스 재조사나 사용자 검증 시간은 포함하지 않음.",
+  "reviewBoundary": "점수는 계약·기준 답안 대비 사전 품질 검토이며 실제 사용성이나 공개 정확성을 증명하지 않는다."
+}

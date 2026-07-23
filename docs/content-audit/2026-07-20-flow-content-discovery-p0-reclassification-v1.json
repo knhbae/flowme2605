@@ -1,0 +1,1802 @@
+{
+  "documentType": "flow_content_discovery_p0_reclassification",
+  "schemaVersion": "1.0.0-proposal",
+  "observedAt": "2026-07-20T23:30:00+09:00",
+  "status": "review_required",
+  "sourceArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+  "classificationBoundary": "현재 4-mode UI 분류가 아니라 발굴·편입 구조를 판정한다. 공개 권리와 구조 tier는 별도 gate다.",
+  "counts": {
+    "total": 24,
+    "byAdmissionTier": {
+      "link_bucket": 4,
+      "quick_flow": 10,
+      "full_flow": 7,
+      "hold_reject": 3
+    },
+    "byPortfolioSelection": {
+      "first_canary": 6,
+      "boundary_control": 4,
+      "not_selected": 13,
+      "second_wave": 1
+    }
+  },
+  "records": [
+    {
+      "flowId": "C01",
+      "title": "영유아 건강검진 일정",
+      "currentDisplayMode": "timing",
+      "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+      "sourceState": "2026 공식 기준 재확인",
+      "sourceWarning": "검진 회차와 기간을 확인하는 일정 도구이며 의료 판단을 하지 않습니다. 실제 대상 여부·개인별 검진 가능 기간·예약 시간은 국민건강보험공단과 검진기관에서 다시 확인해야 합니다.",
+      "currentItemCount": 8,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "1차 · 신생아 일반 건강검진",
+          "detail": "14~35일 · 문진·진찰, 신체계측, 건강교육"
+        },
+        {
+          "order": 2,
+          "title": "2차 · 영아 일반 건강검진",
+          "detail": "4~6개월 · 문진·진찰, 신체계측, 건강교육"
+        },
+        {
+          "order": 3,
+          "title": "3차 · 영아 일반 건강검진",
+          "detail": "9~12개월 · 발달선별검사·상담 포함"
+        },
+        {
+          "order": 4,
+          "title": "4차 일반 + 1차 구강검진",
+          "detail": "일반 18~24개월 · 구강 18~29개월"
+        },
+        {
+          "order": 5,
+          "title": "5차 일반 + 2차 구강검진",
+          "detail": "일반 30~36개월 · 구강 30~41개월"
+        },
+        {
+          "order": 6,
+          "title": "6차 일반 + 3차 구강검진",
+          "detail": "일반 42~48개월 · 구강 42~53개월 · 귓속말검사 포함"
+        },
+        {
+          "order": 7,
+          "title": "7차 일반 + 4차 구강검진",
+          "detail": "일반 54~60개월 · 구강 54~65개월"
+        },
+        {
+          "order": 8,
+          "title": "8차 · 유아 일반 건강검진",
+          "detail": "66~71개월 · 발달선별검사·상담, 예방접종 확인 포함"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "ready_for_internal_canary",
+      "sourceRowStatus": "complete_official",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "아이 생년월일 또는 다음 검진 기준일 1개"
+        ]
+      },
+      "projections": {
+        "primary": "todo",
+        "secondary": [
+          "calendar",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "first_canary",
+      "decisionReason": "사용자의 일은 전체 8회 표를 관리하는 것이 아니라 다음 검진 1건과 공식 가능 기간을 놓치지 않는 것이다.",
+      "overbuildAudit": "현재 8개 회차 Item은 공식 참고표로 내리고, 활성 Item은 다음 일반·구강검진 1건만 둔다. 예약일은 사용자가 정한 뒤 Calendar로 보낸다.",
+      "uxFrameworkFit": {
+        "score": 88,
+        "comment": "공개 카드에서 “다음 검진 1건”이 바로 보이면 5초 이해가 가능하다. 현재 8행 노출은 모바일 첫 행동을 흐린다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do"
+      }
+    },
+    {
+      "flowId": "C02",
+      "title": "리모델링 계약 전 10항목 확인",
+      "currentDisplayMode": "decision",
+      "sourceUrl": "https://ohou.se/advices/1972",
+      "sourceState": "원문 행 확보",
+      "sourceWarning": "법률 자문이나 계약 적정성 판단이 아닌 확인용 초안입니다. 변환 허가와 최신 공식 계약 출처 검토 전에는 공개·내보내지 않습니다.",
+      "currentItemCount": 7,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "계약 상대방 정보 확인",
+          "detail": "계약서의 업체 정보를 확인함"
+        },
+        {
+          "order": 2,
+          "title": "공사 기간과 지연 조건 확인",
+          "detail": "시작·종료일과 지연배상 조건을 확인함"
+        },
+        {
+          "order": 3,
+          "title": "지급·추가 비용·세금계산서 확인",
+          "detail": "금액·지급·증빙 조건을 확인함"
+        },
+        {
+          "order": 4,
+          "title": "자재내역서 첨부 확인",
+          "detail": "자재내역서 유무를 확인함"
+        },
+        {
+          "order": 5,
+          "title": "변경 승인 방식 확인",
+          "detail": "누가 어떤 방식으로 변경을 승인하는지 확인함"
+        },
+        {
+          "order": 6,
+          "title": "A/S 기간 확인",
+          "detail": "A/S 기간을 계약서에서 확인함"
+        },
+        {
+          "order": 7,
+          "title": "해지·위약금 조건 확인",
+          "detail": "해지와 위약금 조건을 확인함"
+        }
+      ],
+      "admissionTier": "hold_reject",
+      "admissionLabel": "Hold/Reject",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "rights_and_legal_review_required",
+      "sourceRowStatus": "complete_creator",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "비교할 업체명"
+        ]
+      },
+      "projections": {
+        "primary": "sheet",
+        "secondary": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "boundary_control",
+      "decisionReason": "행은 있으나 계약 판단에 가까운 민감 영역이고 제작자 원문의 변환 허가와 공식 계약 근거가 없다.",
+      "overbuildAudit": "7개 확인행은 유지할 수 있지만 “적정/안전” 판정은 만들지 않는다. 업체별 진행·보류·거절 상태와 질문만 별도 실행 상태로 둔다.",
+      "uxFrameworkFit": {
+        "score": 57,
+        "comment": "Sheet 비교에는 맞지만 현재 앱에서 법률적 확정처럼 읽힐 위험이 크다. 공개보다 내부 대조군이 적절하다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://ohou.se/advices/1972"
+      }
+    },
+    {
+      "flowId": "C03",
+      "title": "공룡 발자국 미술 놀이",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://info.childcare.go.kr/info/pnis/search/PnisFileDownload.jsp?STCODE_POP=41480000016&filetype=YUPLOADU&flag=DNGB&schoolyear=2026&wkyear=202604",
+      "sourceState": "넓은 원문 · 보강 필요",
+      "sourceWarning": "실행 순서는 존재하지만 원문의 직접 범위가 넓습니다. 교육 효과나 발달 평가로 확장하지 않고 제작자 원본 또는 더 정확한 활동 자료로 보강해야 합니다.",
+      "currentItemCount": 4,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "공룡 놀이 준비물 꺼내기",
+          "detail": "준비물을 한곳에 모음"
+        },
+        {
+          "order": 2,
+          "title": "공룡 발자국 찍기",
+          "detail": "발자국 활동을 실행함"
+        },
+        {
+          "order": 3,
+          "title": "아이 말 메모하며 이야기 만들기",
+          "detail": "아이 반응을 선택적으로 기록함"
+        },
+        {
+          "order": 4,
+          "title": "작품 말리고 다음 놀이 고르기",
+          "detail": "정리와 다음 선택을 마침"
+        }
+      ],
+      "admissionTier": "link_bucket",
+      "admissionLabel": "Link/Bucket",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "source_import_required",
+      "sourceRowStatus": "broad_source",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "놀이 날짜 선택"
+        ]
+      },
+      "projections": {
+        "primary": "memo",
+        "secondary": [
+          "checklist"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "현재 PDF 범위가 넓어 네 행동이 해당 활동의 직접 원문 행인지 설명하기 어렵다.",
+      "overbuildAudit": "제목·원문 링크·준비물·대상 연령만 Link/Bucket으로 보존한다. 정확한 활동 행을 확보한 뒤 한 번의 만들기 Quick Flow로 승격한다.",
+      "uxFrameworkFit": {
+        "score": 45,
+        "comment": "링크 보관은 자연스럽지만 현재 네 Item을 실행 화면에 보이면 출처 신뢰가 깨진다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://info.childcare.go.kr/info/pnis/search/PnisFileDownload.jsp?STCODE_POP=41480000016&filetype=YUPLOADU&flag=DNGB&schoolyear=2026&wkyear=202604"
+      }
+    },
+    {
+      "flowId": "C04",
+      "title": "그림책 질문 한 가지",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf",
+      "sourceState": "넓은 원문 · 질문 범위 보강",
+      "sourceWarning": "질문 카드 UX는 쓸 수 있지만 독해 평가나 교육 효과를 주장하지 않습니다. 질문 원문과 사용 범위를 더 정확히 연결해야 합니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "오늘 읽을 그림책과 질문 카드 고르기",
+          "detail": "책과 질문 하나를 선택함"
+        },
+        {
+          "order": 2,
+          "title": "표지 보고 이야기 나누기",
+          "detail": "표지를 함께 살펴봄"
+        },
+        {
+          "order": 3,
+          "title": "그림책 함께 읽기",
+          "detail": "읽기를 마침"
+        },
+        {
+          "order": 4,
+          "title": "아이가 고른 장면 짚어보기",
+          "detail": "고른 장면을 확인함"
+        },
+        {
+          "order": 5,
+          "title": "기억나는 장면이나 단어 묻기",
+          "detail": "질문 하나를 나눔"
+        },
+        {
+          "order": 6,
+          "title": "다음에 읽을 책 후보 남기기",
+          "detail": "다음 후보를 저장함"
+        }
+      ],
+      "admissionTier": "link_bucket",
+      "admissionLabel": "Link/Bucket",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "source_import_required",
+      "sourceRowStatus": "broad_question_source",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "읽을 책 제목"
+        ]
+      },
+      "projections": {
+        "primary": "memo",
+        "secondary": [
+          "checklist"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "원문 질문 템플릿보다 FlowMe가 만든 독서 절차가 더 많아 source fidelity가 낮다.",
+      "overbuildAudit": "원문 질문 1개와 책 링크만 보관한다. 책 읽기 자체를 여러 Item으로 늘리지 않는다.",
+      "uxFrameworkFit": {
+        "score": 42,
+        "comment": "사용자는 질문 한 가지를 원하지만 현재 6행은 독서법 강의처럼 보인다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf"
+      }
+    },
+    {
+      "flowId": "C05",
+      "title": "어린이집 보육료 지원 신청",
+      "currentDisplayMode": "timing",
+      "sourceUrl": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "sourceState": "정확한 공식 원문",
+      "sourceWarning": "지원 가능 여부를 Flow가 확정하지 않습니다. 연도별 안내와 신청 결과는 실행 직전 복지로 또는 주민센터에서 다시 확인해야 합니다.",
+      "currentItemCount": 4,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "입소일과 현재 보육서비스 확인하기",
+          "detail": "전환 조건 확인"
+        },
+        {
+          "order": 2,
+          "title": "신청 방법 확인하고 신청하기",
+          "detail": "복지로 온라인 또는 주민센터"
+        },
+        {
+          "order": 3,
+          "title": "신청 결과와 지원 시작월 확인하기",
+          "detail": "처리 결과 기록"
+        },
+        {
+          "order": 4,
+          "title": "이용 형태가 바뀌면 변경일 다시 확인하기",
+          "detail": "서비스 변경 후속 확인"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "ready_second_wave",
+      "sourceRowStatus": "complete_official",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "입소일 또는 서비스 변경일"
+        ]
+      },
+      "projections": {
+        "primary": "todo",
+        "secondary": [
+          "calendar",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "신청 경로 확인·신청·결과 확인이라는 짧은 행정 작업이며 다단계 계획은 필요 없다.",
+      "overbuildAudit": "변경 시 재확인은 조건부 후속 안내로 내리고 핵심 행동 3개만 체크한다.",
+      "uxFrameworkFit": {
+        "score": 83,
+        "comment": "공식 링크와 다음 행동이 명확해 현재 카드·My Flow·내보내기 틀에 잘 맞는다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01"
+      }
+    },
+    {
+      "flowId": "C06",
+      "title": "평일 5일 저녁 식단",
+      "currentDisplayMode": "timing",
+      "sourceUrl": "https://ohou.se/advices/8220",
+      "sourceState": "정확한 제작자 원문",
+      "sourceWarning": "작성 당시 가격이나 영양 적합성을 보장하지 않습니다. 사용자는 알레르기·가족 상황에 맞지 않는 메뉴를 제외하고 재료 수량은 원문에서 확인해야 합니다.",
+      "currentItemCount": 7,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "이번 주에 만들 메뉴 확인하기",
+          "detail": "원문 식단표 범위 확인"
+        },
+        {
+          "order": 2,
+          "title": "필요한 재료와 집에 있는 재료 나누기",
+          "detail": "장보기 전 재고 확인"
+        },
+        {
+          "order": 3,
+          "title": "월요일 양배추참치덮밥·단무지무침",
+          "detail": "월요일 메뉴"
+        },
+        {
+          "order": 4,
+          "title": "화요일 버섯샐러드",
+          "detail": "화요일 메뉴"
+        },
+        {
+          "order": 5,
+          "title": "수요일 토마토 야채수프",
+          "detail": "수요일 메뉴"
+        },
+        {
+          "order": 6,
+          "title": "목요일 굴무솥밥·무된장국",
+          "detail": "목요일 메뉴"
+        },
+        {
+          "order": 7,
+          "title": "금요일 연어 포케",
+          "detail": "금요일 메뉴"
+        }
+      ],
+      "admissionTier": "full_flow",
+      "admissionLabel": "Full Flow",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "rights_review_required",
+      "sourceRowStatus": "complete_creator",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "시작 주",
+          "제외할 메뉴"
+        ]
+      },
+      "projections": {
+        "primary": "calendar",
+        "secondary": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "second_wave",
+      "decisionReason": "월~금 메뉴 행과 장보기 준비가 연결되어 주간 일정 구조가 실행 성공에 중요하다.",
+      "overbuildAudit": "재고 확인은 별도 Item이 아니라 장보기 Step의 detail로 묶고, 5개 요일 메뉴를 핵심 Item으로 유지한다.",
+      "uxFrameworkFit": {
+        "score": 84,
+        "comment": "주간 Calendar와 체크리스트로 자연스럽게 투영된다. 공개 전 제작자 권리 협의가 필요하다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://ohou.se/advices/8220"
+      }
+    },
+    {
+      "flowId": "C07",
+      "title": "아이 도안 스퀴시 만들기",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491",
+      "sourceState": "정확한 개별 원문",
+      "sourceWarning": "FlowMe는 도안 파일을 복제·저장하지 않고 제작자 원문 링크와 사용 조건을 유지합니다. 자르기 등 도구 사용은 보호자 역할로 분리합니다.",
+      "currentItemCount": 7,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "원문 도안 링크와 사용 조건 저장하기",
+          "detail": "제작자 원문에서 확인"
+        },
+        {
+          "order": 2,
+          "title": "도안 출력과 코팅 재료 준비하기",
+          "detail": "준비물 확인"
+        },
+        {
+          "order": 3,
+          "title": "보호자가 미리 자를 부분 정하기",
+          "detail": "보호자 역할 분리"
+        },
+        {
+          "order": 4,
+          "title": "아이와 스퀴시 만들기",
+          "detail": "원문 순서 실행"
+        },
+        {
+          "order": 5,
+          "title": "완성 사진은 선택 메모로만 남기기",
+          "detail": "비공개 기록"
+        },
+        {
+          "order": 6,
+          "title": "남은 도안과 재료 정리하기",
+          "detail": "정리 완료"
+        },
+        {
+          "order": 7,
+          "title": "다음 놀이 후보 메모하기",
+          "detail": "재사용 후보 저장"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "rights_review_required",
+      "sourceRowStatus": "complete_creator",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "만들기 날짜"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "memo"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "한 번의 만들기 세션이며 날짜·장기 진도보다 정확한 원문 도안과 순서가 중요하다.",
+      "overbuildAudit": "완성 사진·다음 놀이·남은 재료 정리는 개인 메모로 내리고 준비·만들기·정리 3묶음만 체크한다.",
+      "uxFrameworkFit": {
+        "score": 76,
+        "comment": "Quick Flow로는 맞지만 원문 도안 파일을 복제하지 않는 링크 중심 UI가 필수다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491"
+      }
+    },
+    {
+      "flowId": "C08",
+      "title": "K-MOOC 데이터 분석 14주 진도표",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://www.kmooc.kr/view/course/detail/20097",
+      "sourceState": "공식 계획서 확인",
+      "sourceWarning": "주차별 주제·활동은 공식 강의계획서에서 확인했습니다. 세부 차시·개별 마감·평가 배점은 만들지 않았으며 원장 갱신과 권리 검토 전 내보내기는 잠깁니다.",
+      "currentItemCount": 14,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "1주차 · 데이터 리터러시",
+          "detail": "콘텐츠와 퀴즈 완료"
+        },
+        {
+          "order": 2,
+          "title": "2주차 · 생성형 AI 활용 데이터 분석",
+          "detail": "콘텐츠와 과제 완료"
+        },
+        {
+          "order": 3,
+          "title": "3주차 · 데이터 분석",
+          "detail": "콘텐츠와 토론 완료"
+        },
+        {
+          "order": 4,
+          "title": "4주차 · 데이터 수집",
+          "detail": "콘텐츠와 퀴즈 완료"
+        },
+        {
+          "order": 5,
+          "title": "5주차 · 파일 다루기",
+          "detail": "콘텐츠와 퀴즈 완료"
+        },
+        {
+          "order": 6,
+          "title": "6주차 · 탐색적 데이터 분석",
+          "detail": "콘텐츠와 토론 완료"
+        },
+        {
+          "order": 7,
+          "title": "7주차 · NumPy",
+          "detail": "콘텐츠와 과제 완료"
+        },
+        {
+          "order": 8,
+          "title": "8주차 · Pandas",
+          "detail": "콘텐츠와 퀴즈 완료"
+        },
+        {
+          "order": 9,
+          "title": "9주차 · 데이터 시각화",
+          "detail": "콘텐츠와 토론 완료"
+        },
+        {
+          "order": 10,
+          "title": "10주차 · 통계분석",
+          "detail": "콘텐츠와 토론 완료"
+        },
+        {
+          "order": 11,
+          "title": "11주차 · 문제 해결 전략",
+          "detail": "콘텐츠와 토론 완료"
+        },
+        {
+          "order": 12,
+          "title": "12주차 · 텍스트 데이터 분석",
+          "detail": "콘텐츠와 토론 완료"
+        },
+        {
+          "order": 13,
+          "title": "13주차 · 감성 분석",
+          "detail": "콘텐츠와 토론 완료"
+        },
+        {
+          "order": 14,
+          "title": "14주차 · 보고서 작성법",
+          "detail": "14주차 콘텐츠 완료"
+        }
+      ],
+      "admissionTier": "full_flow",
+      "admissionLabel": "Full Flow",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "ready_for_internal_canary",
+      "sourceRowStatus": "complete_official_plan",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "학습 시작일",
+          "학습 요일"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "calendar",
+          "sheet"
+        ]
+      },
+      "portfolioSelection": "first_canary",
+      "decisionReason": "14주차 순서와 진도 상태가 핵심이며 완료·보류·재개가 장기간 유지되어야 한다.",
+      "overbuildAudit": "주차별 주제와 원문 활동만 유지하고 세부 차시·임의 마감은 만들지 않는다.",
+      "uxFrameworkFit": {
+        "score": 91,
+        "comment": "현재 progress surface와 가장 잘 맞는 대표 Full Flow다. 모바일에서는 현재 주차와 다음 주차를 우선 노출해야 한다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.kmooc.kr/view/course/detail/20097"
+      }
+    },
+    {
+      "flowId": "C09",
+      "title": "일본 eSIM 출국 전 등록",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=travelnote_jp&logNo=223529001204",
+      "sourceState": "원문 범위가 넓어 세부 보강 필요",
+      "sourceWarning": "원문에 없는 장애 해결 절차를 추가하지 않습니다. 기기 지원 여부와 통신사별 설치 방식은 구매처 안내를 최종 기준으로 확인해야 합니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "eSIM 구매 링크와 사용 가능 기기 확인하기",
+          "detail": "구매·호환 조건 확인"
+        },
+        {
+          "order": 2,
+          "title": "QR 코드와 설치 안내 메일 저장하기",
+          "detail": "설치 정보 보관"
+        },
+        {
+          "order": 3,
+          "title": "eSIM 프로필 미리 설치하기",
+          "detail": "출국 전 설치"
+        },
+        {
+          "order": 4,
+          "title": "데이터 로밍을 끄고 활성화 순서 메모하기",
+          "detail": "현지 전환 준비"
+        },
+        {
+          "order": 5,
+          "title": "공항 도착 후 현지 회선 켜기",
+          "detail": "도착 후 활성화"
+        },
+        {
+          "order": 6,
+          "title": "지도와 메신저 연결 확인하기",
+          "detail": "연결 완료 기준"
+        }
+      ],
+      "admissionTier": "link_bucket",
+      "admissionLabel": "Link/Bucket",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "source_import_required",
+      "sourceRowStatus": "broad_creator_source",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "출국일"
+        ]
+      },
+      "projections": {
+        "primary": "memo",
+        "secondary": [
+          "checklist"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "통신사·기기별 절차가 다른데 현재 원문 범위가 넓어 6개 행동을 직접 뒷받침하지 못한다.",
+      "overbuildAudit": "구매처 링크·지원 기기·QR 보관 정보만 남긴다. 설치 행은 정확한 상품별 원문 확보 후 승격한다.",
+      "uxFrameworkFit": {
+        "score": 49,
+        "comment": "출국 전 링크 보관 가치는 있으나 잘못된 설치 순서를 체크리스트로 고정하면 실패 비용이 크다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://blog.naver.com/PostView.naver?blogId=travelnote_jp&logNo=223529001204"
+      }
+    },
+    {
+      "flowId": "C10",
+      "title": "가족여행 짐 준비표",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+      "sourceState": "정확한 준비물 원문",
+      "sourceWarning": "준비물 행은 있으나 가족별 담당자·가방 위치·준비 상태 열은 아직 없습니다. 표 구조를 보강해야 P0 의도와 완전히 맞습니다.",
+      "currentItemCount": 7,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "계절·동반자·숙박형태·활동 적기",
+          "detail": "가족 여행 조건 기록"
+        },
+        {
+          "order": 2,
+          "title": "기본 소지품 챙기기",
+          "detail": "신분증·지갑·휴대폰·충전기"
+        },
+        {
+          "order": 3,
+          "title": "개인 위생용품·평소 쓰는 약 챙기기",
+          "detail": "개인별 준비"
+        },
+        {
+          "order": 4,
+          "title": "날씨에 맞는 옷·보호용품 고르기",
+          "detail": "환경별 준비"
+        },
+        {
+          "order": 5,
+          "title": "동반자·활동 물건 더하기",
+          "detail": "가족 조건 반영"
+        },
+        {
+          "order": 6,
+          "title": "불필요한 물건 빼기",
+          "detail": "최종 짐 목록 확정"
+        },
+        {
+          "order": 7,
+          "title": "여행 후 목록 개선 메모",
+          "detail": "다음 재사용 신호"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "ready_second_wave",
+      "sourceRowStatus": "complete_commercial_article",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "여행일",
+          "동반자"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "memo",
+          "sheet"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "짐 싸기는 한 세션에서 끝나는 작업이며 장기 단계보다 준비물 그룹과 담당 상태가 중요하다.",
+      "overbuildAudit": "여행 조건 입력과 사후 개선은 Item이 아니라 setup/memo로 이동한다. 준비물 5묶음만 체크한다.",
+      "uxFrameworkFit": {
+        "score": 79,
+        "comment": "체크리스트와 Sheet export에는 잘 맞지만 비슷한 R04와 중복되어 대표 슬롯 하나만 유지해야 한다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html"
+      }
+    },
+    {
+      "flowId": "C11",
+      "title": "공주 부모님 동행 당일 코스",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "sourceState": "원문 순서 확보",
+      "sourceWarning": "목적지 4개와 순서는 날짜 없이 바로 볼 수 있습니다. 공공누리 제4유형 변경금지 조건 때문에 공개 파생물·외부 배포만 잠기며, 운영정보는 방문 전에 다시 확인해야 합니다.",
+      "currentItemCount": 4,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "공주한옥마을",
+          "detail": "첫 장소로 코스에 보존"
+        },
+        {
+          "order": 2,
+          "title": "무령왕릉과 왕릉원",
+          "detail": "두 번째 장소로 코스에 보존"
+        },
+        {
+          "order": 3,
+          "title": "루치아의 뜰",
+          "detail": "세 번째 장소로 코스에 보존"
+        },
+        {
+          "order": 4,
+          "title": "공산성",
+          "detail": "네 번째 장소로 코스에 보존"
+        }
+      ],
+      "admissionTier": "link_bucket",
+      "admissionLabel": "Link/Bucket",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "rights_restricted_no_derivatives",
+      "sourceRowStatus": "complete_official_route",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "방문일"
+        ]
+      },
+      "projections": {
+        "primary": "memo",
+        "secondary": [
+          "calendar"
+        ]
+      },
+      "portfolioSelection": "boundary_control",
+      "decisionReason": "목적지 순서는 명확하지만 공공누리 변경금지 조건 때문에 파생 실행본 공개가 잠긴다.",
+      "overbuildAudit": "원문 제목·네 목적지·원문 링크를 한 카드에 보존하고, 사용자가 직접 방문일만 붙이게 한다.",
+      "uxFrameworkFit": {
+        "score": 68,
+        "comment": "Link/Bucket의 경계 사례로 유용하다. “Flow 실행”보다 “원문 코스 저장”이 정확하다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c"
+      }
+    },
+    {
+      "flowId": "C12",
+      "title": "OSSU Intro CS + Core Programming 시작 구간",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://github.com/ossu/computer-science",
+      "sourceState": "공개 라이선스 원문",
+      "sourceWarning": "전체 OSSU를 하나의 Flow로 주장하지 않습니다. Intro CS와 Core Programming 시작 구간만 다루고 MIT 출처 표시와 최신 과정표를 유지합니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "Introduction to Computer Science and Programming using Python",
+          "detail": "과정 완료 상태 기록"
+        },
+        {
+          "order": 2,
+          "title": "Systematic Program Design",
+          "detail": "과정 완료 상태 기록"
+        },
+        {
+          "order": 3,
+          "title": "Class-based Program Design",
+          "detail": "선수조건과 완료 상태 기록"
+        },
+        {
+          "order": 4,
+          "title": "Programming Languages",
+          "detail": "선수조건과 완료 상태 기록"
+        },
+        {
+          "order": 5,
+          "title": "Object-Oriented Design",
+          "detail": "선수조건과 완료 상태 기록"
+        },
+        {
+          "order": 6,
+          "title": "Software Architecture",
+          "detail": "선수조건과 완료 상태 기록"
+        }
+      ],
+      "admissionTier": "full_flow",
+      "admissionLabel": "Full Flow",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "ready_second_wave",
+      "sourceRowStatus": "complete_open_source",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "시작 과정",
+          "학습 요일"
+        ]
+      },
+      "projections": {
+        "primary": "sheet",
+        "secondary": [
+          "checklist",
+          "calendar"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "선수조건과 과정 순서, 장기 진도 상태가 필수인 학습 경로다.",
+      "overbuildAudit": "전체 OSSU를 한 번에 노출하지 않고 시작 구간만 활성화하며 이후 구간은 잠금/참고로 둔다.",
+      "uxFrameworkFit": {
+        "score": 87,
+        "comment": "Full Flow 구조에는 잘 맞지만 전체 로드맵을 모바일에 평면 나열하면 과밀해진다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://github.com/ossu/computer-science"
+      }
+    },
+    {
+      "flowId": "C13",
+      "title": "제작자 레시피 한 끼",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://www.recipio.kr/recipes/WwyL63J3",
+      "sourceState": "정확한 개별 레시피",
+      "sourceWarning": "개별 레시피 대조군은 있습니다. 범용 ‘제작자 레시피’ 슬롯으로 확장하려면 제작자 허가, 완전한 재료·수량, 조리 안전 경계를 다시 확인해야 합니다.",
+      "currentItemCount": 4,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "바나나·땅콩버터와 내열 용기 확인하기",
+          "detail": "재료와 도구 확인"
+        },
+        {
+          "order": 2,
+          "title": "용기에 재료 넣고 섞기",
+          "detail": "혼합 단계 실행"
+        },
+        {
+          "order": 3,
+          "title": "원본 영상 기준으로 에어프라이어에 굽기",
+          "detail": "원본 기준 조리"
+        },
+        {
+          "order": 4,
+          "title": "식힘 후 맛과 변형 메모 남기기",
+          "detail": "결과와 다음 수정 기록"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "rights_review_required",
+      "sourceRowStatus": "complete_creator_recipe",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "조리 날짜"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "memo"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "한 끼 조리는 한 세션의 순서형 실행이며 재료·수량·주의는 detail에 속한다.",
+      "overbuildAudit": "결과 평가를 별도 Item으로 두지 않고 개인 메모로 남긴다. 원문 조리 행 3개만 체크한다.",
+      "uxFrameworkFit": {
+        "score": 82,
+        "comment": "짧은 실행과 원문 복귀가 명확해 Quick Flow 대표형이다. 제작자 허가 전 공개는 잠근다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.recipio.kr/recipes/WwyL63J3"
+      }
+    },
+    {
+      "flowId": "C14",
+      "title": "옷장 정리 1일",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://ohou.se/advices/7406",
+      "sourceState": "정확한 제작자 원문",
+      "sourceWarning": "원문의 한 가지 비움 기준을 모든 사용자에게 강제하지 않습니다. 사용자가 남김·유예·처분 기준과 유예기간을 직접 정하도록 유지합니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "비움 기준과 유예기간 정하기",
+          "detail": "사용자 기준 결정"
+        },
+        {
+          "order": 2,
+          "title": "분류용 박스나 봉투 미리 나누기",
+          "detail": "실행 준비"
+        },
+        {
+          "order": 3,
+          "title": "옷을 꺼내 남김·유예·처분으로 분류하기",
+          "detail": "분류 실행"
+        },
+        {
+          "order": 4,
+          "title": "남길 옷을 사람·계절·종류별로 묶기",
+          "detail": "보관 구조 결정"
+        },
+        {
+          "order": 5,
+          "title": "정한 위치로 옷 되돌려 넣기",
+          "detail": "정리 마감"
+        },
+        {
+          "order": 6,
+          "title": "비울 옷의 처리 방법과 날짜 정하기",
+          "detail": "후속 행동 기록"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "rights_review_required",
+      "sourceRowStatus": "complete_creator_article",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "정리할 날짜"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "memo"
+        ]
+      },
+      "portfolioSelection": "first_canary",
+      "decisionReason": "하루 안에 끝나는 한 번의 정리 작업이며 날짜 없이 저장해도 바로 가치가 있다.",
+      "overbuildAudit": "기준 결정은 setup/memo로 두고 꺼내기·분류·되돌리기·처분 예약 네 묶음만 체크한다.",
+      "uxFrameworkFit": {
+        "score": 90,
+        "comment": "날짜 없는 저장, 나중 일정화, 짧은 체크리스트를 한 번에 검증하는 좋은 Quick Flow다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://ohou.se/advices/7406"
+      }
+    },
+    {
+      "flowId": "C15",
+      "title": "5km 달리기 4주",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://www.runday.co.kr/",
+      "sourceState": "홈페이지 범위가 넓어 직접 근거 약함",
+      "sourceWarning": "4주 UX와 실행 항목은 있으나 현재 출처가 홈페이지 수준이라 회차별 직접 근거가 약합니다. 운동 처방처럼 보이지 않게 정확한 프로그램 원문과 중단 기준을 보강해야 합니다.",
+      "currentItemCount": 12,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "5분 걷기로 워밍업하기",
+          "detail": "1주차 준비"
+        },
+        {
+          "order": 2,
+          "title": "1분 조깅·2분 걷기 5세트",
+          "detail": "1주차 본운동"
+        },
+        {
+          "order": 3,
+          "title": "5분 천천히 걸으며 마무리",
+          "detail": "1주차 정리"
+        },
+        {
+          "order": 4,
+          "title": "2분 조깅·2분 걷기 5세트",
+          "detail": "2주차 본운동"
+        },
+        {
+          "order": 5,
+          "title": "무릎·발목·호흡 상태 기록",
+          "detail": "2주차 상태 확인"
+        },
+        {
+          "order": 6,
+          "title": "10분 이상 천천히 이어 달리기",
+          "detail": "3주차 지속주"
+        },
+        {
+          "order": 7,
+          "title": "500m 빠르게·500m 천천히 반복",
+          "detail": "3주차 변속"
+        },
+        {
+          "order": 8,
+          "title": "하루는 반드시 휴식하기",
+          "detail": "회복 기준"
+        },
+        {
+          "order": 9,
+          "title": "초반 1km를 천천히 달리기",
+          "detail": "4주차 속도 조절"
+        },
+        {
+          "order": 10,
+          "title": "걷더라도 전체 5km 완주하기",
+          "detail": "거리 완료"
+        },
+        {
+          "order": 11,
+          "title": "완주 후 통증 기록",
+          "detail": "중단·회복 판단 자료"
+        },
+        {
+          "order": 12,
+          "title": "다음 목표 기록하기",
+          "detail": "재사용 메모"
+        }
+      ],
+      "admissionTier": "hold_reject",
+      "admissionLabel": "Hold/Reject",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "source_and_health_review_required",
+      "sourceRowStatus": "homepage_only",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "시작일",
+          "운동 요일"
+        ]
+      },
+      "projections": {
+        "primary": "calendar",
+        "secondary": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "boundary_control",
+      "decisionReason": "4주·세트·거리·휴식이 현재 홈페이지에서 직접 확인되지 않아 운동 처방을 만들어낸 상태다.",
+      "overbuildAudit": "모든 회차를 숨기고 정확한 공식 프로그램 원문과 중단 기준이 확보될 때까지 Hold한다.",
+      "uxFrameworkFit": {
+        "score": 31,
+        "comment": "일정 UI에는 맞아 보여도 출처 없는 운동량을 실행하게 하므로 현재 틀에 넣으면 안 된다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.runday.co.kr/"
+      }
+    },
+    {
+      "flowId": "C16",
+      "title": "블로그 글을 영상으로 옮기기",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://brunch.co.kr/@skychang44/346",
+      "sourceState": "정확한 개별 원문",
+      "sourceWarning": "기존 블로그 글 한 편이 있는 사용자를 위한 Flow입니다. 신규 채널 시작이나 4주 영상 시리즈 계획으로 범위를 넓히지 않습니다.",
+      "currentItemCount": 4,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "영상으로 옮길 블로그 글 한 편 고르기",
+          "detail": "원본 선택"
+        },
+        {
+          "order": 2,
+          "title": "핵심 문장과 사례만 영상 대본으로 추리기",
+          "detail": "대본 산출물"
+        },
+        {
+          "order": 3,
+          "title": "영상 촬영·편집 후 발행하기",
+          "detail": "제작과 발행"
+        },
+        {
+          "order": 4,
+          "title": "글과 영상에 상호 링크 넣기",
+          "detail": "재유통 연결"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "rights_review_required",
+      "sourceRowStatus": "complete_creator_article",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "대상 글 URL",
+          "완료 목표일"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "memo"
+        ]
+      },
+      "portfolioSelection": "first_canary",
+      "decisionReason": "기존 글 한 편을 영상으로 전환하는 하나의 명확한 제작 작업이다.",
+      "overbuildAudit": "4개 산출물 중심 행동을 유지하고 채널 성장·4주 계획으로 범위를 넓히지 않는다.",
+      "uxFrameworkFit": {
+        "score": 89,
+        "comment": "제작자가 자신의 원문 링크를 유지하면서 수정·공유할 이유가 분명한 creator canary다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://brunch.co.kr/@skychang44/346"
+      }
+    },
+    {
+      "flowId": "O01",
+      "title": "여권 재발급 준비",
+      "currentDisplayMode": "steps",
+      "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+      "sourceState": "정확한 공식 원문",
+      "sourceWarning": "신청 대상·사진·수수료·수령 방식은 실행 시 최신 공식 안내를 다시 확인합니다. 신청 증빙과 수령 메모를 별도 결과물로 보강할 여지는 남아 있습니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "여권 유효기간과 여행 일정 확인하기",
+          "detail": "재발급 필요 조건 확인"
+        },
+        {
+          "order": 2,
+          "title": "온라인 신청 가능 대상인지 확인하기",
+          "detail": "신청 경로 분기"
+        },
+        {
+          "order": 3,
+          "title": "최근 6개월 이내 여권 사진 준비하기",
+          "detail": "사진 준비"
+        },
+        {
+          "order": 4,
+          "title": "정부24 또는 여권 안내에서 신청 경로 확인하기",
+          "detail": "접수 경로 선택"
+        },
+        {
+          "order": 5,
+          "title": "수수료와 수령 방법 확인하기",
+          "detail": "비용·수령 확인"
+        },
+        {
+          "order": 6,
+          "title": "신청 후 접수 상태 확인하기",
+          "detail": "후속 상태 기록"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "ready_second_wave",
+      "sourceRowStatus": "complete_official",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "여행 예정일"
+        ]
+      },
+      "projections": {
+        "primary": "todo",
+        "secondary": [
+          "calendar",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "재발급 필요 확인·신청·수령이라는 짧은 행정 작업이다.",
+      "overbuildAudit": "사진·수수료·수령 방식은 detail로 묶고 핵심 행동 3개만 체크한다.",
+      "uxFrameworkFit": {
+        "score": 85,
+        "comment": "공식 링크와 마감 연결이 좋아 Quick Flow에 맞는다. 실행 시 최신 공지를 재확인해야 한다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7"
+      }
+    },
+    {
+      "flowId": "O02",
+      "title": "자동차검사 D-14",
+      "currentDisplayMode": "timing",
+      "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "sourceState": "정확한 공식 원문",
+      "sourceWarning": "자동차 상태를 보증하지 않습니다. 검사 가능 기간과 예약 정보는 공식 조회에서 확인하고, 검사 결과·재검사 항목은 사용자 기록으로 분리합니다.",
+      "currentItemCount": 10,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "자동차검사 기간과 예약 가능일 확인하기",
+          "detail": "공식 기간 조회"
+        },
+        {
+          "order": 2,
+          "title": "차량번호와 예약 정보 확인하기",
+          "detail": "예약 조건 확인"
+        },
+        {
+          "order": 3,
+          "title": "가까운 검사소와 수수료 확인하기",
+          "detail": "방문 정보 확인"
+        },
+        {
+          "order": 4,
+          "title": "번호판과 차대번호 식별 상태 확인하기",
+          "detail": "식별 상태 점검"
+        },
+        {
+          "order": 5,
+          "title": "등화장치와 경음기 작동 확인하기",
+          "detail": "기본 기능 점검"
+        },
+        {
+          "order": 6,
+          "title": "타이어 마모와 공기압 확인하기",
+          "detail": "타이어 상태 기록"
+        },
+        {
+          "order": 7,
+          "title": "오일 누유와 경고등 여부 기록하기",
+          "detail": "이상 여부 기록"
+        },
+        {
+          "order": 8,
+          "title": "예약 시간보다 여유 있게 검사소 도착하기",
+          "detail": "방문 실행"
+        },
+        {
+          "order": 9,
+          "title": "접수와 수수료 결제 진행하기",
+          "detail": "접수 완료"
+        },
+        {
+          "order": 10,
+          "title": "검사 결과와 재검사 필요 항목 기록하기",
+          "detail": "후속 조치 기록"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "ready_for_internal_canary",
+      "sourceRowStatus": "complete_official",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "방문일"
+        ]
+      },
+      "projections": {
+        "primary": "todo",
+        "secondary": [
+          "calendar",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "first_canary",
+      "decisionReason": "사용자의 핵심 일은 검사 가능 기간 확인과 방문일 결정이며 차량 점검표 전체가 아니다.",
+      "overbuildAudit": "현재 10개 Item을 “검사 가능 기간 확인”, “검사소·방문일 정하기” 2개로 줄인다. 검사 결과는 메모에 남긴다.",
+      "uxFrameworkFit": {
+        "score": 93,
+        "comment": "0입력 저장 후 날짜를 나중에 붙이는 최소 입력 모델의 가장 선명한 Quick Flow다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200"
+      }
+    },
+    {
+      "flowId": "O03",
+      "title": "초등학교 입학 공식 준비",
+      "currentDisplayMode": "timing",
+      "sourceUrl": "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W",
+      "sourceState": "정확한 전국 공통 원문 · 학교별 안내 별도",
+      "sourceWarning": "전국 공통 취학 안내와 가정 준비 항목은 존재합니다. 학교별 제출물·일정은 지역 공지로 분리하고 건강·지원금 판단으로 확장하지 않아야 합니다.",
+      "currentItemCount": 5,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "취학통지와 예비소집 안내 확인하기",
+          "detail": "공식 통지 확인"
+        },
+        {
+          "order": 2,
+          "title": "먼저 살 물건만 정하기",
+          "detail": "공통 준비만 구매"
+        },
+        {
+          "order": 3,
+          "title": "학교 안내 전 보류할 물건 표시하기",
+          "detail": "지역·학교 항목 보류"
+        },
+        {
+          "order": 4,
+          "title": "네임스티커와 이름 표시하기",
+          "detail": "소지품 준비"
+        },
+        {
+          "order": 5,
+          "title": "등교 동선과 입학식 가방 점검하기",
+          "detail": "첫날 실행 확인"
+        }
+      ],
+      "admissionTier": "full_flow",
+      "admissionLabel": "Full Flow",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "local_source_import_required",
+      "sourceRowStatus": "national_common_plus_local_gap",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "입학 예정 학교 또는 지역",
+          "기준일"
+        ]
+      },
+      "projections": {
+        "primary": "calendar",
+        "secondary": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "공통 준비와 학교별 일정·제출물이 분리되어야 하며 여러 시점의 준비가 연결된다.",
+      "overbuildAudit": "전국 공통 행만 기본으로 두고 학교별 제출물은 사용자가 원문을 추가하기 전 만들지 않는다.",
+      "uxFrameworkFit": {
+        "score": 72,
+        "comment": "Full Flow 구조에는 맞지만 지역 원문이 없으면 사용자가 그대로 따를 수 없다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W"
+      }
+    },
+    {
+      "flowId": "O04",
+      "title": "전세계약 전 공식 서류 확인",
+      "currentDisplayMode": "decision",
+      "sourceUrl": "https://contents.kakaopay.com/contents/2056",
+      "sourceState": "정확한 콘텐츠 원문 · 공식 주 출처 보강 필요",
+      "sourceWarning": "계약 안전을 보장하지 않는 확인·질문 도구입니다. 공식 주 출처와 전문가 검토를 보강하고, 확인 결과가 모호하면 계약 판단 대신 보류·문의로 남겨야 합니다.",
+      "currentItemCount": 7,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "시세와 등기부등본 권리관계 확인하기",
+          "detail": "확인 결과 기록"
+        },
+        {
+          "order": 2,
+          "title": "전세보증보험 가능 여부 확인하기",
+          "detail": "공식 조회·문의"
+        },
+        {
+          "order": 3,
+          "title": "중개사와 표준계약서 확인하기",
+          "detail": "계약 양식 확인"
+        },
+        {
+          "order": 4,
+          "title": "계약서 정보 일치 여부 확인하기",
+          "detail": "정보 대조"
+        },
+        {
+          "order": 5,
+          "title": "확정일자와 임대차신고 일정 저장하기",
+          "detail": "후속 일정 기록"
+        },
+        {
+          "order": 6,
+          "title": "전세보증보험 가입 확인하기",
+          "detail": "처리 상태 기록"
+        },
+        {
+          "order": 7,
+          "title": "보류 사유와 문의 대상 메모하기",
+          "detail": "판단 대신 질문 남김"
+        }
+      ],
+      "admissionTier": "hold_reject",
+      "admissionLabel": "Hold/Reject",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "official_source_and_legal_review_required",
+      "sourceRowStatus": "creator_article_only",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "비교할 주택"
+        ]
+      },
+      "projections": {
+        "primary": "sheet",
+        "secondary": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "boundary_control",
+      "decisionReason": "법률·재무 영향이 큰데 공식 주 출처와 전문가 검토가 부족하다.",
+      "overbuildAudit": "안전 판정·가입 가능 판정을 만들지 않는다. 공식 조회 링크와 질문 목록이 확보될 때까지 Hold한다.",
+      "uxFrameworkFit": {
+        "score": 38,
+        "comment": "비교 Sheet는 필요하지만 현재 데이터로 실행시키면 잘못된 확신을 줄 수 있다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://contents.kakaopay.com/contents/2056"
+      }
+    },
+    {
+      "flowId": "R01",
+      "title": "이사일 기준 공식 준비 체크리스트",
+      "currentDisplayMode": "timing",
+      "sourceUrl": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "sourceState": "공식 원문 행 확보",
+      "sourceWarning": "사용자가 이사일을 넣기 전에는 실제 날짜를 만들지 않습니다. 주소 이전·전학·확정일자 등은 사용자 상황에 맞는 기관과 최신 절차를 실행 시점에 다시 확인합니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "2주 전 · 업체·방법·정리",
+          "detail": "허가 이사업체 선택·예약 · 이사 방법과 표준계약서 · 창고 정리 · 불필요 물품 처분"
+        },
+        {
+          "order": 2,
+          "title": "1주 전 · 예약·주소·공과금",
+          "detail": "엘리베이터·곤돌라 예약 · 주소·우편·전화 이전 · 공과금·관리비 · 배달 중지"
+        },
+        {
+          "order": 3,
+          "title": "2~4일 전 · 집·배치·철거 점검",
+          "detail": "콘센트·방·창문 점검 · 가구 배치 · 구조물 철거 · 수족관 처리 · 전입신고 유의사항"
+        },
+        {
+          "order": 4,
+          "title": "전날 · 포장·가전·귀중품·가스",
+          "detail": "포장 마무리 · 세탁기·냉장고·에어컨 배관 정리 · 귀중품 보관 · 가스 정리"
+        },
+        {
+          "order": 5,
+          "title": "당일 · 짐·정산·공과금",
+          "detail": "짐·청소·개인물품 확인 · 이사비 정산 · 공과금 확인"
+        },
+        {
+          "order": 6,
+          "title": "이사 후 · 정리·연결·신고",
+          "detail": "짐 정리 · 공과금·가전 연결 · 자녀 전학 · 확정일자"
+        }
+      ],
+      "admissionTier": "full_flow",
+      "admissionLabel": "Full Flow",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "ready_for_internal_canary",
+      "sourceRowStatus": "complete_official",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "이사일"
+        ]
+      },
+      "projections": {
+        "primary": "calendar",
+        "secondary": [
+          "checklist",
+          "sheet",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "first_canary",
+      "decisionReason": "D-14부터 이사 후까지 상대 날짜와 단계 순서가 실행 성공에 직접 영향을 준다.",
+      "overbuildAudit": "6개 기간 Step은 유지하되 24개 세부 행동을 모바일에서 단계별로 접고, 예시 날짜는 저장하지 않는다.",
+      "uxFrameworkFit": {
+        "score": 94,
+        "comment": "기준일 1개로 Calendar·checklist·sheet를 모두 설명할 수 있는 대표 Full Flow다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov"
+      }
+    },
+    {
+      "flowId": "R02",
+      "title": "냉장고 파먹기 7일",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8",
+      "sourceState": "정확한 제작자 원문",
+      "sourceWarning": "영양·절약 효과를 보장하지 않고 재고 소진과 메뉴 후보 메모로만 사용합니다. 개인 재고 데이터는 원문 데이터와 분리합니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "우선 소진 재료 3개 고르기",
+          "detail": "개인 재고에서 선택"
+        },
+        {
+          "order": 2,
+          "title": "메인 재료와 메뉴 후보 묶기",
+          "detail": "후보 조합"
+        },
+        {
+          "order": 3,
+          "title": "1~2일차 신선 재료 먼저 쓰기",
+          "detail": "초기 소진"
+        },
+        {
+          "order": 4,
+          "title": "3~4일차 남은 요리와 재료 변형하기",
+          "detail": "중간 조정"
+        },
+        {
+          "order": 5,
+          "title": "5~6일차 냉동실과 기본 재료로 이어가기",
+          "detail": "후반 소진"
+        },
+        {
+          "order": 6,
+          "title": "7일차 남은 재료 처리와 장보기 보류 결정하기",
+          "detail": "마감 판단"
+        }
+      ],
+      "admissionTier": "full_flow",
+      "admissionLabel": "Full Flow",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "rights_review_required",
+      "sourceRowStatus": "complete_creator_article",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "시작일"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "calendar",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "7일간 재료 소진 순서와 중간 조정이 핵심인 짧은 진도형 계획이다.",
+      "overbuildAudit": "개인 재고 선택은 setup/memo로 두고 원문 7일 구간만 실행 상태로 유지한다.",
+      "uxFrameworkFit": {
+        "score": 81,
+        "comment": "진도형 Full Flow로 쓸 수 있으나 개인 재고 입력을 별도 데이터 모델로 확장하면 안 된다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8"
+      }
+    },
+    {
+      "flowId": "R03",
+      "title": "개발 포트폴리오 4주",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+      "sourceState": "정확한 제작자 원문",
+      "sourceWarning": "원문은 개발 프로젝트 제작 순서를 뒷받침합니다. 원문에 없는 STAR 서술이나 취업 성과 보장을 추가하지 않습니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "프로젝트 아이템과 기술 스택 정하기",
+          "detail": "범위 결정"
+        },
+        {
+          "order": 2,
+          "title": "핵심 기능과 3~5개 화면 정하기",
+          "detail": "MVP 정의"
+        },
+        {
+          "order": 3,
+          "title": "페이지·DB·API 설계 문서 만들기",
+          "detail": "설계 산출물"
+        },
+        {
+          "order": 4,
+          "title": "일정을 나누고 핵심 기능 구현하기",
+          "detail": "구현 진행"
+        },
+        {
+          "order": 5,
+          "title": "서비스 배포하고 실행 방법 정리하기",
+          "detail": "배포 증거"
+        },
+        {
+          "order": 6,
+          "title": "설명·역할·성과·데모를 한 페이지로 정리하기",
+          "detail": "최종 산출물"
+        }
+      ],
+      "admissionTier": "full_flow",
+      "admissionLabel": "Full Flow",
+      "targetTierAfterFix": "full_flow",
+      "targetLabel": "Full Flow",
+      "promotionReadiness": "rights_review_required",
+      "sourceRowStatus": "complete_creator_article",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "시작일",
+          "대상 프로젝트"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "calendar",
+          "sheet",
+          "memo"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "범위 결정부터 배포·설명까지 선행 관계와 여러 산출물이 이어지는 프로젝트다.",
+      "overbuildAudit": "원문에 없는 4주 마감은 강제하지 않고 사용자가 목표일을 정할 때만 일정화한다.",
+      "uxFrameworkFit": {
+        "score": 78,
+        "comment": "Full Flow에는 맞지만 현재 제목의 4주가 원문 근거인지 재확인해야 한다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8"
+      }
+    },
+    {
+      "flowId": "R04",
+      "title": "여행 짐 준비표",
+      "currentDisplayMode": "progress",
+      "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "sourceState": "정확한 준비물 원문",
+      "sourceWarning": "목적지별 비자·여권·반입 규정은 이 목록으로 확정하지 않습니다. 해당 공식 출처는 여행 조건에 따라 별도로 확인해야 합니다.",
+      "currentItemCount": 6,
+      "currentItems": [
+        {
+          "order": 1,
+          "title": "신분증·여권 확인하기",
+          "detail": "국내·해외 조건 분리"
+        },
+        {
+          "order": 2,
+          "title": "예약 바우처·숙소 주소 저장하기",
+          "detail": "오프라인 보관"
+        },
+        {
+          "order": 3,
+          "title": "카드·현금 확인하기",
+          "detail": "결제 준비"
+        },
+        {
+          "order": 4,
+          "title": "여행 일수에 맞게 의류 목록 작성하기",
+          "detail": "기간 반영"
+        },
+        {
+          "order": 5,
+          "title": "세면도구·충전기·상비약 넣기",
+          "detail": "개인 준비"
+        },
+        {
+          "order": 6,
+          "title": "캐리어 짐 배치 확인하기",
+          "detail": "포장 마감"
+        }
+      ],
+      "admissionTier": "quick_flow",
+      "admissionLabel": "Quick Flow",
+      "targetTierAfterFix": "quick_flow",
+      "targetLabel": "Quick Flow",
+      "promotionReadiness": "ready_second_wave",
+      "sourceRowStatus": "complete_commercial_article",
+      "setup": {
+        "initialRequiredInputCount": 0,
+        "laterOptionalInputs": [
+          "출발일",
+          "여행 유형"
+        ]
+      },
+      "projections": {
+        "primary": "checklist",
+        "secondary": [
+          "memo",
+          "sheet"
+        ]
+      },
+      "portfolioSelection": "not_selected",
+      "decisionReason": "한 번의 짐 싸기 작업이며 날짜·장기 단계보다 준비물 묶음이 중요하다.",
+      "overbuildAudit": "6개 준비물 그룹은 유지하고 목적지별 비자·반입 규정은 공식 링크 참고로 분리한다.",
+      "uxFrameworkFit": {
+        "score": 80,
+        "comment": "Quick Flow로 자연스럽지만 C10과 역할이 겹쳐 한 버전만 대표로 운영해야 한다."
+      },
+      "sourceTrace": {
+        "reviewArtifact": "docs/content-audit/2026-07-20-flowme-four-modes-p0-24-gallery-ko.html",
+        "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist"
+      }
+    }
+  ]
+}

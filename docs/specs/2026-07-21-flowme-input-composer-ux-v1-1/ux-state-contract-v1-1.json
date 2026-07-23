@@ -1,0 +1,252 @@
+{
+  "documentType": "flowme_ux_state_contract",
+  "version": "1.1.0",
+  "generatedAt": "2026-07-21T10:00:00+09:00",
+  "claimBoundary": "Deterministic UX planning and prototype contract; not production provider behavior or observed-user validation.",
+  "invariants": [
+    "one_primary_action_per_state",
+    "creator_and_user_write_paths_are_separate",
+    "blocked_states_cannot_export_executable_artifacts",
+    "source_updates_do_not_overwrite_user_overlay_or_run_state",
+    "internal_enums_are_not_user_visible"
+  ],
+  "states": [
+    {
+      "key": "empty",
+      "userTitle": "무엇을 실행 가능한 Flow로 바꿀까요?",
+      "description": "URL, 메모 또는 할 일을 한곳에 붙여넣을 수 있습니다.",
+      "primaryAction": { "id": "focus_composer", "label": "내용 붙여넣기" },
+      "secondaryActions": [{ "id": "open_table_import", "label": "표·강의계획 가져오기" }],
+      "editableValues": ["raw_input"],
+      "nextStates": ["typing"],
+      "backOrCancel": "입력하지 않으면 아무 데이터도 저장하지 않는다.",
+      "persistedData": [],
+      "hiddenInternal": ["provider_configuration", "taxonomy_candidates"]
+    },
+    {
+      "key": "typing",
+      "userTitle": "입력 내용을 확인하고 있어요",
+      "description": "입력은 아직 Flow나 원문으로 저장되지 않았습니다.",
+      "primaryAction": { "id": "confirm_input", "label": "형식 확인" },
+      "secondaryActions": [{ "id": "clear_input", "label": "입력 지우기" }],
+      "editableValues": ["raw_input"],
+      "nextStates": ["detecting", "empty"],
+      "backOrCancel": "입력 지우기로 empty로 돌아간다.",
+      "persistedData": ["safe_local_input_draft"],
+      "hiddenInternal": ["raw_detection_features"]
+    },
+    {
+      "key": "detecting",
+      "userTitle": "입력 형식과 원문 범위를 찾는 중",
+      "description": "URL인지, 한 문장인지, 여러 항목인지 확인합니다.",
+      "primaryAction": { "id": "cancel_detection", "label": "입력으로 돌아가기" },
+      "secondaryActions": [],
+      "editableValues": [],
+      "nextStates": ["source_found", "existing_flow_found", "proposal_ready", "partial_source", "source_import_required", "unsupported", "provider_error", "retryable_error", "typing"],
+      "backOrCancel": "요청을 취소해도 raw input을 보존한다.",
+      "persistedData": ["raw_input", "detection_request_id"],
+      "hiddenInternal": ["provider_latency", "confidence_vector", "trace_id"]
+    },
+    {
+      "key": "source_found",
+      "userTitle": "원문과 확인한 범위를 찾았어요",
+      "description": "확인한 구간과 빠진 구간을 먼저 검토합니다.",
+      "primaryAction": { "id": "review_source_scope", "label": "확보한 범위 확인" },
+      "secondaryActions": [{ "id": "correct_input_kind", "label": "다르게 해석" }],
+      "editableValues": ["detected_input_kind", "included_source_scope"],
+      "nextStates": ["needs_confirmation", "partial_source", "rights_review_required", "safety_review_required"],
+      "backOrCancel": "raw input을 유지한 채 typing으로 돌아간다.",
+      "persistedData": ["source_candidate", "scope_candidate"],
+      "hiddenInternal": ["source_fingerprint", "source_row_ids", "crawler_response"]
+    },
+    {
+      "key": "existing_flow_found",
+      "userTitle": "이 원문으로 만든 Flow가 있어요",
+      "description": "새로 만들기 전에 실제 결과와 출처 버전을 확인할 수 있습니다.",
+      "primaryAction": { "id": "use_existing_flow", "label": "이 Flow로 시작" },
+      "secondaryActions": [
+        { "id": "review_source", "label": "원본 출처 보기" },
+        { "id": "propose_new_version", "label": "새 버전 제안" }
+      ],
+      "editableValues": [],
+      "nextStates": ["personalized", "exported", "saved_to_my_flow", "needs_confirmation"],
+      "backOrCancel": "검색 결과를 닫고 입력을 유지한다.",
+      "persistedData": ["recent_flow_reference"],
+      "hiddenInternal": ["lookup_score", "canonicalization_trace"]
+    },
+    {
+      "key": "proposal_ready",
+      "userTitle": "첫 Flow 초안을 만들었어요",
+      "description": "원문에서 만든 Item과 추천 결과를 검토할 수 있습니다.",
+      "primaryAction": { "id": "review_proposal", "label": "항목 검토" },
+      "secondaryActions": [{ "id": "change_source_scope", "label": "원문 범위 다시 보기" }],
+      "editableValues": ["creator_item_title", "creator_item_detail", "creator_completion", "projection_eligibility"],
+      "nextStates": ["needs_confirmation", "rights_review_required", "safety_review_required"],
+      "backOrCancel": "creator draft를 보존하고 source scope로 돌아간다.",
+      "persistedData": ["creator_draft_candidate"],
+      "hiddenInternal": ["proposal_model_trace", "taxonomy_enum"]
+    },
+    {
+      "key": "needs_confirmation",
+      "userTitle": "이 범위와 결과가 맞는지 확인해 주세요",
+      "description": "감지한 입력 형식, 확보 범위, Item 수를 확인합니다.",
+      "primaryAction": { "id": "confirm_scope_and_result", "label": "이 범위로 계속" },
+      "secondaryActions": [
+        { "id": "edit_scope", "label": "범위 수정" },
+        { "id": "correct_input_kind", "label": "다르게 해석" }
+      ],
+      "editableValues": ["detected_input_kind", "included_source_scope", "proposal_inclusions"],
+      "nextStates": ["proposal_ready", "personalized", "rights_review_required", "safety_review_required"],
+      "backOrCancel": "확정 전 candidate만 폐기하거나 raw input으로 돌아간다.",
+      "persistedData": ["scope_confirmation", "draft_selection"],
+      "hiddenInternal": ["confidence_threshold", "internal_gate_reasons"]
+    },
+    {
+      "key": "partial_source",
+      "userTitle": "일부만 확인했어요",
+      "description": "확인한 내용과 아직 확보하지 못한 범위를 분리했습니다.",
+      "primaryAction": { "id": "review_confirmed_scope", "label": "확인한 범위로 검토" },
+      "secondaryActions": [
+        { "id": "import_more_source", "label": "원문 더 가져오기" },
+        { "id": "save_candidate", "label": "후보로 보관" }
+      ],
+      "editableValues": ["included_source_scope"],
+      "nextStates": ["needs_confirmation", "source_import_required", "proposal_ready"],
+      "backOrCancel": "partial source와 missing list를 보존하고 입력으로 돌아간다.",
+      "persistedData": ["partial_source_snapshot", "missing_scope"],
+      "hiddenInternal": ["parser_error_rows", "access_diagnostics"]
+    },
+    {
+      "key": "source_import_required",
+      "userTitle": "실제 항목을 더 가져와야 해요",
+      "description": "공개 화면에서는 실제 task를 확인하지 못해 Flow를 만들지 않았습니다.",
+      "primaryAction": { "id": "import_authorized_source", "label": "권한 있는 원문 가져오기" },
+      "secondaryActions": [
+        { "id": "save_candidate", "label": "후보로 보관" },
+        { "id": "open_public_source", "label": "공개 원문 보기" }
+      ],
+      "editableValues": ["authorized_source_file"],
+      "nextStates": ["detecting", "source_found", "provider_error", "retryable_error"],
+      "backOrCancel": "URL과 후보 메모를 유지하고 import를 취소한다.",
+      "persistedData": ["source_request_metadata", "file_metadata_after_consent"],
+      "hiddenInternal": ["account_token", "protected_source_content_until_consent"]
+    },
+    {
+      "key": "rights_review_required",
+      "userTitle": "공개 전 권리 확인이 필요해요",
+      "description": "개인 검토용 범위와 공개 가능한 범위가 다를 수 있습니다.",
+      "primaryAction": { "id": "review_rights_boundary", "label": "검토 내용 확인" },
+      "secondaryActions": [{ "id": "save_private_draft", "label": "개인 초안으로 보관" }],
+      "editableValues": ["creator_rights_note"],
+      "nextStates": ["proposal_ready", "needs_confirmation"],
+      "backOrCancel": "공개 동작 없이 creator draft를 보존한다.",
+      "persistedData": ["rights_review_record", "private_creator_draft"],
+      "hiddenInternal": ["legal_policy_code", "reviewer_identity_unless_authorized"]
+    },
+    {
+      "key": "safety_review_required",
+      "userTitle": "실행 전에 안전 검토가 필요해요",
+      "description": "준비 행동과 중단·신고 조건을 분리했지만 아직 실행 결과로 내보낼 수 없습니다.",
+      "primaryAction": { "id": "review_safety_boundary", "label": "검토가 필요한 범위 확인" },
+      "secondaryActions": [{ "id": "open_official_source", "label": "공식 원문 보기" }],
+      "editableValues": ["creator_safety_note"],
+      "nextStates": ["proposal_ready", "needs_confirmation"],
+      "backOrCancel": "실행 가능한 저장/내보내기 없이 source scope로 돌아간다.",
+      "persistedData": ["safety_review_record", "source_scope"],
+      "hiddenInternal": ["risk_classifier_score", "internal_policy_code"]
+    },
+    {
+      "key": "unsupported",
+      "userTitle": "이 입력은 아직 Flow로 바꿀 수 없어요",
+      "description": "원문은 유지하고 메모로 보관하거나 입력을 고칠 수 있습니다.",
+      "primaryAction": { "id": "save_as_memo", "label": "메모로 보관" },
+      "secondaryActions": [{ "id": "edit_input", "label": "입력 고치기" }],
+      "editableValues": ["raw_input", "memo_title"],
+      "nextStates": ["empty", "typing", "saved_to_my_flow"],
+      "backOrCancel": "저장하지 않고 입력으로 돌아간다.",
+      "persistedData": ["raw_memo_if_confirmed"],
+      "hiddenInternal": ["unsupported_reason_code"]
+    },
+    {
+      "key": "provider_error",
+      "userTitle": "원문 제공 서비스에 연결하지 못했어요",
+      "description": "입력은 보존했습니다. 연결이 가능할 때 같은 요청을 다시 시도할 수 있습니다.",
+      "primaryAction": { "id": "retry_provider_later", "label": "나중에 다시 시도" },
+      "secondaryActions": [{ "id": "edit_input", "label": "입력 고치기" }],
+      "editableValues": [],
+      "nextStates": ["detecting", "typing"],
+      "backOrCancel": "safe draft를 유지한 채 닫는다.",
+      "persistedData": ["safe_input_draft", "retry_metadata"],
+      "hiddenInternal": ["provider_name", "http_status", "stack_trace"]
+    },
+    {
+      "key": "retryable_error",
+      "userTitle": "처리를 마치지 못했어요",
+      "description": "입력과 선택 범위는 그대로 남아 있습니다.",
+      "primaryAction": { "id": "retry_same_action", "label": "다시 시도" },
+      "secondaryActions": [{ "id": "use_safe_fallback", "label": "다른 방식으로 계속" }],
+      "editableValues": [],
+      "nextStates": ["detecting", "personalized", "exported", "saved_to_my_flow"],
+      "backOrCancel": "실패한 요청만 취소하고 이전 안전 상태로 돌아간다.",
+      "persistedData": ["prior_safe_state", "attempt_metadata"],
+      "hiddenInternal": ["error_code", "stack_trace", "retry_policy"]
+    },
+    {
+      "key": "personalized",
+      "userTitle": "내 값이 반영됐어요",
+      "description": "원문은 그대로 두고 날짜, 장소, 선택 또는 현재 위치만 더했습니다.",
+      "primaryAction": { "id": "use_personalized_result", "label": "내 결과 확인" },
+      "secondaryActions": [
+        { "id": "edit_personal_values", "label": "내 값 수정" },
+        { "id": "change_artifact", "label": "다른 형태로 쓰기" }
+      ],
+      "editableValues": ["user_overlay_fields", "included_items", "personal_title", "personal_notes"],
+      "nextStates": ["exported", "saved_to_my_flow", "needs_confirmation"],
+      "backOrCancel": "published Flow를 변경하지 않고 overlay draft만 취소한다.",
+      "persistedData": ["user_overlay_draft"],
+      "hiddenInternal": ["overlay_patch_format", "mapping_confidence"]
+    },
+    {
+      "key": "exported",
+      "userTitle": "내 도구로 옮길 준비가 끝났어요",
+      "description": "형식, 범위, 항목 수를 확인하고 복사하거나 파일을 열 수 있습니다.",
+      "primaryAction": { "id": "open_export_result", "label": "내보낸 결과 열기" },
+      "secondaryActions": [
+        { "id": "save_to_my_flow", "label": "My Flow에도 저장" },
+        { "id": "export_again", "label": "범위 바꿔 다시 만들기" }
+      ],
+      "editableValues": ["export_scope", "export_format"],
+      "nextStates": ["saved_to_my_flow", "personalized", "retryable_error"],
+      "backOrCancel": "receipt를 유지하고 personalized 상태로 돌아간다.",
+      "persistedData": ["export_receipt"],
+      "hiddenInternal": ["generated_blob_path", "adapter_diagnostics"]
+    },
+    {
+      "key": "saved_to_my_flow",
+      "userTitle": "My Flow에 저장했어요",
+      "description": "개인 사본과 실행 상태가 원본과 분리되어 저장되었습니다.",
+      "primaryAction": { "id": "open_my_flow", "label": "내 Flow 열기" },
+      "secondaryActions": [{ "id": "export_saved_flow", "label": "내 도구로도 옮기기" }],
+      "editableValues": [],
+      "nextStates": ["personalized", "exported", "source_updated"],
+      "backOrCancel": "receipt를 닫아도 저장된 overlay/run은 유지한다.",
+      "persistedData": ["user_overlay", "execution_run", "save_receipt"],
+      "hiddenInternal": ["storage_adapter", "synchronization_metadata"]
+    },
+    {
+      "key": "source_updated",
+      "userTitle": "원문 또는 Flow가 업데이트됐어요",
+      "description": "내 날짜와 완료 상태는 유지한 채 추가·변경·삭제 항목을 비교합니다.",
+      "primaryAction": { "id": "compare_source_update", "label": "변경 내용 비교" },
+      "secondaryActions": [
+        { "id": "keep_current_version", "label": "현재 버전 계속 사용" },
+        { "id": "remind_later", "label": "나중에 확인" }
+      ],
+      "editableValues": ["item_mapping_decisions"],
+      "nextStates": ["personalized", "saved_to_my_flow", "retryable_error"],
+      "backOrCancel": "현재 버전과 개인 overlay/run을 그대로 유지한다.",
+      "persistedData": ["old_flow_version", "new_flow_version", "user_overlay", "execution_run", "mapping_decisions"],
+      "hiddenInternal": ["mapping_confidence", "diff_algorithm_trace"]
+    }
+  ]
+}

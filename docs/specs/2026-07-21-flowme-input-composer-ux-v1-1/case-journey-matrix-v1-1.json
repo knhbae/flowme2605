@@ -1,0 +1,379 @@
+{
+  "documentType": "flowme_case_journey_matrix",
+  "version": "1.1.0",
+  "generatedAt": "2026-07-21T10:00:00+09:00",
+  "claimBoundary": "Source-backed frozen examples and deterministic UX simulation; not live crawler/LLM output or observed-user validation.",
+  "cases": [
+    {
+      "caseId": "IC-C01-MOVING",
+      "label": "이사 D-day",
+      "source": {
+        "title": "이사 준비 체크리스트",
+        "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+        "scope": "6개 상대 구간, 24개 실행 항목",
+        "status": "complete"
+      },
+      "input": {
+        "example": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+        "detectedAs": "URL",
+        "existingFlowFound": true,
+        "creatorInput": "source URL only when creating/updating",
+        "userValues": [
+          {
+            "key": "moving_date",
+            "label": "이사일",
+            "why": "상대 구간을 실제 날짜로 계산",
+            "appears": "relative preview 뒤 Calendar 사용 전",
+            "requiredBeforeUsefulPreview": false,
+            "requiredBeforePrimaryAction": true,
+            "example": "2026-08-28"
+          }
+        ]
+      },
+      "items": {
+        "count": 24,
+        "intentMix": ["action"],
+        "samples": [
+          { "offset": "2주 전", "title": "허가 이사업체 선택·예약", "completion": "업체를 선택하고 예약 내용을 확인했다." },
+          { "offset": "1주 전", "title": "엘리베이터·곤돌라 예약", "completion": "필요한 시설 예약 여부와 시간을 확인했다." },
+          { "offset": "2~4일 전", "title": "콘센트·방·창문 점검", "completion": "이상 여부와 조치할 내용을 기록했다." },
+          { "offset": "하루 전", "title": "포장 마무리", "completion": "당일 사용할 물품을 제외하고 포장을 마쳤다." },
+          { "offset": "이사일", "title": "짐·청소·개인물품 확인", "completion": "빠진 짐과 청소 상태, 개인물품을 확인했다." },
+          { "offset": "이사 후", "title": "확정일자", "completion": "해당하는 경우 확정일자 절차를 확인했다." }
+        ]
+      },
+      "artifact": {
+        "primary": "calendar",
+        "primarySummary": "이사일 기준 24개 일정",
+        "secondary": ["checklist", "memo"],
+        "prohibited": ["undated_todo", "sheet"],
+        "informationLoss": {
+          "checklist": "실제 날짜가 텍스트 라벨로 약화될 수 있음",
+          "memo": "Item별 완료 상태와 stable identity가 사라짐"
+        }
+      },
+      "primaryAction": "캘린더 일정 24개 확인",
+      "exportPath": "personalized -> ICS/calendar rows preflight -> exported receipt (24 events)",
+      "savePath": "personalized -> saved_to_my_flow -> full Flow open",
+      "returnLocation": "My Flow의 이사 Flow 전체 보기",
+      "statePath": ["typing", "detecting", "existing_flow_found", "personalized", "exported", "saved_to_my_flow"],
+      "currentUx": { "firstResultActions": 3, "visibleArtifactButtons": 5, "externalAction": "missing" },
+      "proposedUx": { "firstResultActions": 2, "visibleRecommendedArtifacts": 1, "requiredPersonalValuesBeforeRelativePreview": 0 }
+    },
+    {
+      "caseId": "IC-C02-KMOOC",
+      "label": "K-MOOC 14주 과정",
+      "source": {
+        "title": "Introduction to Data Analysis",
+        "url": "https://www.kmooc.kr/view/course/detail/20097",
+        "scope": "14개 주차와 활동 열",
+        "status": "complete"
+      },
+      "input": {
+        "example": "14주 강의계획 표",
+        "detectedAs": "표 14행",
+        "existingFlowFound": true,
+        "creatorInput": "table/curriculum import",
+        "userValues": [
+          { "key": "current_week", "label": "현재 완료 주차", "why": "이어 할 위치를 고정", "appears": "이미 수강 중 선택 뒤", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": 4 },
+          { "key": "week_note", "label": "주차 메모", "why": "개인 학습 기록", "appears": "주차 행 편집", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": "5주차 과제 다시 확인" }
+        ]
+      },
+      "items": {
+        "count": 14,
+        "intentMix": ["record", "progress"],
+        "samples": [
+          { "order": 1, "title": "1주차 · 데이터 리터러시", "activity": "퀴즈" },
+          { "order": 2, "title": "2주차 · 생성형 AI 활용 데이터 분석", "activity": "과제" },
+          { "order": 3, "title": "3주차 · 데이터 분석", "activity": "토론" },
+          { "order": 4, "title": "4주차 · 데이터 수집", "activity": "퀴즈" },
+          { "order": 5, "title": "5주차 · 파일 다루기", "activity": "퀴즈" },
+          { "order": 6, "title": "6주차 · 탐색적 데이터 분석", "activity": "토론" },
+          { "order": 7, "title": "7주차 · 수치 데이터 분석을 위한 NumPy", "activity": "과제" },
+          { "order": 8, "title": "8주차 · Pandas 활용 데이터 분석", "activity": "퀴즈" },
+          { "order": 9, "title": "9주차 · 데이터 시각화", "activity": "토론" },
+          { "order": 10, "title": "10주차 · 통계분석", "activity": "토론" },
+          { "order": 11, "title": "11주차 · 데이터 기반 문제 해결 전략", "activity": "토론" },
+          { "order": 12, "title": "12주차 · 텍스트 데이터 분석", "activity": "토론" },
+          { "order": 13, "title": "13주차 · 감정 분석", "activity": "토론" },
+          { "order": 14, "title": "14주차 · 데이터 분석 보고서 작성법", "activity": "없음" }
+        ]
+      },
+      "artifact": {
+        "primary": "sheet",
+        "primarySummary": "14주 순서·주제·활동·상태 진도표",
+        "secondary": ["todo", "calendar_when_dates_exist"],
+        "prohibited": ["single_checklist", "ics_without_dates"],
+        "informationLoss": { "todo": "활동 열, 주차 메모, 전체 진도 구조가 평탄화됨" }
+      },
+      "primaryAction": "14주 진도표로 시작",
+      "exportPath": "Sheet/TSV preflight -> 14 rows -> exported receipt",
+      "savePath": "My Flow save -> current week pinned -> progress run",
+      "returnLocation": "My Flow의 14주 전체 진도표",
+      "statePath": ["typing", "detecting", "existing_flow_found", "personalized", "exported", "saved_to_my_flow"],
+      "currentUx": { "firstResultActions": 2, "longListControl": "expand only", "externalAction": "missing" },
+      "proposedUx": { "firstResultActions": 2, "longListControls": ["progress", "search", "current row", "filter"], "requiredPersonalValuesBeforePreview": 0 }
+    },
+    {
+      "caseId": "IC-C03-LIBRIVOX",
+      "label": "LibriVox 오디오북 38장",
+      "source": {
+        "title": "Anne of Green Gables, Version 5",
+        "url": "https://librivox.org/anne-of-green-gables-version-5-by-lucy-maud-montgomery/",
+        "scope": "38개 장의 순서, 제목, 재생시간",
+        "status": "complete"
+      },
+      "input": {
+        "example": "38장 chapter table",
+        "detectedAs": "표 38행",
+        "existingFlowFound": true,
+        "creatorInput": "chapter table import",
+        "userValues": [
+          { "key": "current_chapter", "label": "현재 장", "why": "이어 들을 행을 고정", "appears": "이어 듣기 선택 뒤", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": 7 },
+          { "key": "last_position", "label": "마지막 재생 위치", "why": "장 안의 재생 위치 복구", "appears": "현재 장 선택 뒤", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": "00:08:12" }
+        ]
+      },
+      "items": {
+        "count": 38,
+        "intentMix": ["resource", "progress"],
+        "samples": [
+          { "order": 1, "title": "Mrs. Rachel Lynde Is Surprised", "duration": "00:14:35" },
+          { "order": 2, "title": "Matthew Cuthbert Is Surprised", "duration": "00:26:09" },
+          { "order": 3, "title": "Marilla Cuthbert Is Surprised", "duration": "00:12:47" },
+          { "order": 4, "title": "Morning at Green Gables", "duration": "00:12:03" },
+          { "order": 5, "title": "Anne's History", "duration": "00:11:23" },
+          { "order": 6, "title": "Marilla Makes Up Her Mind", "duration": "00:10:18" },
+          { "order": 7, "title": "Anne Says Her Prayers", "duration": "00:06:54" },
+          { "order": 8, "title": "Anne's Bringing-Up Is Begun", "duration": "00:23:23" }
+        ]
+      },
+      "artifact": {
+        "primary": "resource_queue_sheet",
+        "primarySummary": "38장 순서·시간·현재 위치",
+        "secondary": ["todo", "memo"],
+        "prohibited": ["calendar", "recurring_routine", "ics"],
+        "informationLoss": { "todo": "재생시간과 현재 위치가 별도 필드로 유지되지 않을 수 있음" }
+      },
+      "primaryAction": "38장 듣기표로 시작",
+      "exportPath": "Sheet/TSV preflight -> 38 rows -> exported receipt",
+      "savePath": "My Flow save -> current chapter and position pinned",
+      "returnLocation": "My Flow의 현재 장과 38장 queue",
+      "statePath": ["typing", "detecting", "existing_flow_found", "personalized", "exported", "saved_to_my_flow"],
+      "currentUx": { "currentChapterControl": "incorrect status options", "externalAction": "missing" },
+      "proposedUx": { "currentChapterControl": "chapter 1..38 picker plus position", "requiredPersonalValuesBeforePreview": 0 }
+    },
+    {
+      "caseId": "IC-C04-PASSPORT",
+      "label": "성인 여권 재발급",
+      "source": {
+        "title": "유효기간 만료에 따른 재발급",
+        "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+        "scope": "성인 본인 만료 재발급 7개 원문 행",
+        "status": "complete"
+      },
+      "input": {
+        "example": "여권발급신청서 준비\n6개월 이내 여권 사진 1매 준비\n유효한 신분증 준비",
+        "detectedAs": "여러 항목",
+        "existingFlowFound": true,
+        "creatorInput": "official URL or source rows",
+        "userValues": [
+          { "key": "application_route", "label": "신청 경로", "why": "방문/온라인 실행 설명 선택", "appears": "Todo preview 뒤", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": "방문" },
+          { "key": "visit_location", "label": "방문 장소", "why": "방문 선택의 실행 위치", "appears": "신청 경로=방문", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": "구청 여권민원실" }
+        ]
+      },
+      "items": {
+        "count": 6,
+        "intentMix": ["decision", "action"],
+        "samples": [
+          { "title": "신청 경로 정하기", "completion": "방문 또는 온라인 신청 경로를 선택했다." },
+          { "title": "여권발급신청서 준비", "completion": "신청서를 작성하거나 온라인 신청에서 입력을 마쳤다." },
+          { "title": "6개월 이내 여권 사진 1매 준비", "completion": "규격에 맞는 6개월 이내 사진을 준비했다." },
+          { "title": "유효한 신분증 준비", "completion": "유효기간 안의 국가기관 발행 신분증을 준비했다." },
+          { "title": "유효기간이 남은 기존 여권 준비", "completion": "해당하는 경우 기존 여권을 준비했다." },
+          { "title": "선택한 접수처에서 신청", "completion": "선택한 공식 접수처에서 신청을 제출했다." }
+        ]
+      },
+      "artifact": {
+        "primary": "todo",
+        "primarySummary": "준비와 신청 Todo 6개",
+        "secondary": ["checklist", "memo"],
+        "prohibited": ["calendar_without_appointment", "ics_without_appointment", "sheet"],
+        "informationLoss": { "checklist": "경로·장소 필드와 reopen identity가 텍스트로 평탄화됨" }
+      },
+      "primaryAction": "Todo로 6개 항목 가져가기",
+      "exportPath": "Todo/checklist text preflight -> 6 Items -> exported receipt",
+      "savePath": "My Flow save -> route/location overlay retained",
+      "returnLocation": "My Flow의 여권 재발급 Todo 전체",
+      "statePath": ["typing", "detecting", "existing_flow_found", "personalized", "exported", "saved_to_my_flow"],
+      "currentUx": { "conditionalLocation": "supported", "externalAction": "missing" },
+      "proposedUx": { "conditionalLocation": "retained", "requiredPersonalValuesBeforePreview": 0 }
+    },
+    {
+      "caseId": "IC-C05-WASHER",
+      "label": "세탁조 알림 관리",
+      "source": {
+        "title": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+        "url": "https://www.samsung.com/uk/support/home-appliances/washing-machine-maintenance-tips-to-keep-your-machine-running-smoothly/",
+        "scope": "40회/기기 알림 조건, 4개 실행 항목, 주의 2개",
+        "status": "complete_with_locale_warning"
+      },
+      "input": {
+        "example": "세탁기 알림이 오면 통세척하기",
+        "detectedAs": "한 문장 요청",
+        "existingFlowFound": true,
+        "creatorInput": "none for reuse; existing source-backed Flow",
+        "userValues": [
+          { "key": "trigger_received", "label": "알림이 왔어요", "why": "이번 세척 run 시작", "appears": "condition preview 뒤", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": true }
+        ]
+      },
+      "items": {
+        "count": 4,
+        "intentMix": ["conditional_action"],
+        "condition": "40회 세탁마다 또는 기기 알림 시",
+        "samples": [
+          { "title": "드럼이 비었는지 확인", "completion": "드럼 안에 세탁물이 없음을 확인했다." },
+          { "title": "세탁기 전원 켜기", "completion": "세탁기 전원이 켜진 것을 확인했다." },
+          { "title": "Eco Drum Clean 선택", "completion": "해당 세척 코스를 선택했다." },
+          { "title": "Start/Pause로 세척 시작", "completion": "세척 코스가 시작된 것을 확인했다." }
+        ],
+        "warning": "세제나 표백제를 사용하지 않으며 모델별 설명서를 확인"
+      },
+      "artifact": {
+        "primary": "conditional_todo",
+        "primarySummary": "조건이 충족될 때 한 번 실행하는 Todo 4개",
+        "secondary": ["checklist", "memo"],
+        "prohibited": ["monthly_calendar", "recurring_ics", "sheet"],
+        "informationLoss": { "checklist": "trigger/run identity가 외부 텍스트에서 약해짐" }
+      },
+      "primaryAction": "조건형 Todo 4개 가져가기",
+      "exportPath": "Todo/checklist text preflight -> condition retained -> exported receipt",
+      "savePath": "My Flow save -> trigger starts one execution run",
+      "returnLocation": "My Flow의 이번 세탁조 세척 run",
+      "statePath": ["typing", "detecting", "existing_flow_found", "personalized", "exported", "saved_to_my_flow"],
+      "currentUx": { "conditionMeaning": "retained", "externalAction": "missing" },
+      "proposedUx": { "conditionMeaning": "retained and calendar omitted", "requiredPersonalValuesBeforePreview": 0 }
+    },
+    {
+      "caseId": "IC-C06-AC",
+      "label": "에어컨 세척 방식 선택",
+      "source": {
+        "title": "시스템 에어컨 세척 서비스 안내",
+        "url": "https://www.samsungsvc.co.kr/video/28612",
+        "scope": "전문/일반 세척 범위, 시간·비용 차이, 문의 경로",
+        "status": "complete"
+      },
+      "input": {
+        "example": "전문세척은 분해·전문 장비 사용\n일반세척은 외관·필터 중심\n비용은 신청 시 확인",
+        "detectedAs": "여러 항목",
+        "existingFlowFound": true,
+        "creatorInput": "official comparison source rows",
+        "userValues": [
+          { "key": "cleaning_choice", "label": "내 선택", "why": "비교 뒤 결정 기록", "appears": "Memo preview 뒤", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": "전문세척" },
+          { "key": "confirmed_quote", "label": "확인한 견적", "why": "실제 비용 기록", "appears": "선택 뒤", "requiredBeforeUsefulPreview": false, "requiredBeforePrimaryAction": false, "example": "견적 확인 예정" }
+        ]
+      },
+      "items": {
+        "count": 1,
+        "intentMix": ["decision"],
+        "samples": [
+          { "title": "시스템 에어컨 세척 방식 결정", "detail": "전문세척과 일반세척의 범위·시간·비용·문의 경로를 비교한다.", "completion": "방식을 선택하거나 추가 견적이 필요함을 기록했다." }
+        ]
+      },
+      "artifact": {
+        "primary": "memo",
+        "primarySummary": "두 방식 비교와 결정 메모 1건",
+        "secondary": ["todo_after_decision", "comparison_sheet"],
+        "prohibited": ["calendar", "checklist_before_decision", "ics"],
+        "informationLoss": { "todo_after_decision": "선택 근거와 비교 맥락이 축약됨" }
+      },
+      "primaryAction": "메모에 비교 결과 복사",
+      "exportPath": "Memo copy preflight -> source link + decision fields -> exported receipt",
+      "savePath": "My Flow save -> choice/quote overlay",
+      "returnLocation": "My Flow의 에어컨 세척 결정 메모",
+      "statePath": ["typing", "detecting", "existing_flow_found", "personalized", "exported", "saved_to_my_flow"],
+      "currentUx": { "comparisonMeaning": "retained", "externalAction": "missing" },
+      "proposedUx": { "comparisonMeaning": "retained with decision after preview", "requiredPersonalValuesBeforePreview": 0 }
+    },
+    {
+      "caseId": "IC-B01-HEAT",
+      "label": "농작업 폭염 대응",
+      "source": {
+        "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+        "url": "https://www.nongsaro.go.kr/portal/ps/psz/psza/contentSub.ps?bbsId=10&cntntsNo=51&menuId=PS02485",
+        "scope": "10개 source rows, 2개 action, 3개 condition response",
+        "status": "rights_and_safety_hold"
+      },
+      "input": {
+        "example": "official source URL",
+        "detectedAs": "URL",
+        "existingFlowFound": false,
+        "creatorInput": "source URL and review decisions",
+        "userValues": []
+      },
+      "items": {
+        "count": 2,
+        "intentMix": ["action", "condition_response"],
+        "samples": [
+          { "title": "작업 전 온도·시간·물·그늘·보호구 계획 공유", "completion": "작업 전 계획을 함께 확인했다." },
+          { "title": "작업 후 수분·샤워·서늘한 곳 회복", "completion": "작업 뒤 회복 행동을 마쳤다." }
+        ],
+        "conditionCards": [
+          { "trigger": "작업 중", "response": "20분 간격으로 물을 마신다." },
+          { "trigger": "위험 단계 또는 이상 증상", "response": "작업을 중지하고 그늘에서 쉬며 동료 상태를 확인한다." },
+          { "trigger": "의식이 없음", "response": "즉시 119에 신고한다." }
+        ]
+      },
+      "artifact": {
+        "primary": null,
+        "primarySummary": "검토용 source scope와 condition cards",
+        "secondary": [],
+        "prohibited": ["calendar", "checklist", "todo", "sheet", "memo_export", "ics"],
+        "blockedReason": "rights_review_required + safety_review_required"
+      },
+      "primaryAction": "검토가 필요한 범위 확인",
+      "exportPath": "blocked until rights and safety review; no executable receipt",
+      "savePath": "creator private review record only; no final-user My Flow run",
+      "returnLocation": "creator review queue",
+      "statePath": ["typing", "detecting", "source_found", "needs_confirmation", "rights_review_required", "safety_review_required"],
+      "currentUx": { "fakeArtifactCount": 0, "blockedArtifactButtonsEnabled": 5 },
+      "proposedUx": { "fakeArtifactCount": 0, "blockedArtifactButtonsVisible": 0 }
+    },
+    {
+      "caseId": "IC-B02-TODOIST",
+      "label": "로그인 후 원문 확보가 필요한 Todoist 콘텐츠",
+      "source": {
+        "title": "Podcast Workflow template",
+        "url": "https://www.todoist.com/templates/podcast-workflow",
+        "scope": "공개 phase 이름만 확인, 실제 task·담당자·마감 누락",
+        "status": "metadata_only"
+      },
+      "input": {
+        "example": "https://www.todoist.com/templates/podcast-workflow",
+        "detectedAs": "URL",
+        "existingFlowFound": false,
+        "creatorInput": "authorized CSV/TSV/JSON/XLSX import required",
+        "userValues": []
+      },
+      "items": {
+        "count": 0,
+        "intentMix": [],
+        "samples": [],
+        "missing": ["각 phase의 실제 task", "담당자", "마감"]
+      },
+      "artifact": {
+        "primary": null,
+        "primarySummary": "실제 할 일 0개 확보",
+        "secondary": [],
+        "prohibited": ["calendar", "checklist", "todo", "sheet", "memo", "ics"],
+        "blockedReason": "source_import_required"
+      },
+      "primaryAction": "권한 있는 원문 가져오기",
+      "exportPath": "blocked; no artifact until actual task source is confirmed",
+      "savePath": "candidate/source request metadata only",
+      "returnLocation": "source import request/candidate list",
+      "statePath": ["typing", "detecting", "partial_source", "source_import_required", "detecting", "source_found"],
+      "currentUx": { "inventedItemCount": 0, "recoveryAction": "inside collapsed details" },
+      "proposedUx": { "inventedItemCount": 0, "recoveryAction": "primary" }
+    }
+  ]
+}

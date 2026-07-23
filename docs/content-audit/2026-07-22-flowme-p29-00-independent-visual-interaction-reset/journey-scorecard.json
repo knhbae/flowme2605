@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "flowme-p29-00-journey-scorecard-v1",
+  "generatedAt": "2026-07-22T09:00:00+09:00",
+  "production": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "allowedRatings": ["clear", "friction", "blocked", "not_tested"],
+  "journeys": [
+    {
+      "id": "moving-first-use",
+      "persona": "이사 Flow 첫 사용자",
+      "route": "/f/moving-d30-basic",
+      "ratings": {
+        "discovery": "clear",
+        "saveBefore": "friction",
+        "adjustment": "friction",
+        "save": "friction",
+        "executeReopen": "clear",
+        "calendar": "clear",
+        "takeResult": "friction"
+      },
+      "overall": "friction",
+      "evidence": ["mobile-journey-moving-01-save-before.png", "mobile-journey-moving-05-saved-receipt.png", "mobile-journey-moving-07-calendar.png"]
+    },
+    {
+      "id": "routine-first-use",
+      "persona": "홈트 반복 Flow 사용자",
+      "route": "/f/curated-allblanc-morning-workout",
+      "ratings": {
+        "discovery": "clear",
+        "saveBefore": "friction",
+        "adjustment": "friction",
+        "save": "friction",
+        "executeReopen": "clear",
+        "calendar": "clear",
+        "takeResult": "friction"
+      },
+      "overall": "friction",
+      "evidence": ["mobile-journey-routine-02-configured.png", "mobile-journey-routine-06-completed.png", "mobile-journey-routine-08-calendar-occurrence.png"]
+    },
+    {
+      "id": "returning-my-flow",
+      "persona": "27개 Flow 재방문 사용자",
+      "route": "/my?demo=ux20&view=flows",
+      "ratings": {
+        "discovery": "friction",
+        "saveBefore": "not_tested",
+        "adjustment": "friction",
+        "save": "not_tested",
+        "executeReopen": "clear",
+        "calendar": "clear",
+        "takeResult": "friction"
+      },
+      "overall": "friction",
+      "evidence": ["mobile-journey-my-flow-mobile-01-library.png", "wide-journey-my-flow-wide-02-selected.png", "wide-journey-my-flow-wide-05-reopened.png"]
+    },
+    {
+      "id": "calendar-large-library",
+      "persona": "12개 Flow 일정 조정 사용자",
+      "route": "/calendar?demo=ux12",
+      "ratings": {
+        "discovery": "not_tested",
+        "saveBefore": "not_tested",
+        "adjustment": "clear",
+        "save": "not_tested",
+        "executeReopen": "clear",
+        "calendar": "friction",
+        "takeResult": "not_tested"
+      },
+      "overall": "friction",
+      "evidence": ["mobile-journey-calendar-mobile-02-picker.png", "wide-journey-calendar-wide-03-selected.png", "mobile-journey-undated-03-placement-preview.png"]
+    },
+    {
+      "id": "artifact-choice",
+      "persona": "결과 형태를 고르는 기존 도구 사용자",
+      "route": "/f/used-car-buying-check and shape routes",
+      "ratings": {
+        "discovery": "clear",
+        "saveBefore": "friction",
+        "adjustment": "friction",
+        "save": "friction",
+        "executeReopen": "not_tested",
+        "calendar": "not_tested",
+        "takeResult": "friction"
+      },
+      "overall": "friction",
+      "evidence": ["mobile-shape-used-car-buying-check-primary.png", "mobile-shape-source-backed-middle-school-math-1-primary.png", "mobile-shape-overseas-safety-register-primary.png"]
+    },
+    {
+      "id": "cross-surface-continuity",
+      "persona": "Flow를 저장하고 다시 실행하는 사용자",
+      "route": "/flows -> /f -> /my -> /calendar",
+      "ratings": {
+        "discovery": "clear",
+        "saveBefore": "friction",
+        "adjustment": "friction",
+        "save": "friction",
+        "executeReopen": "clear",
+        "calendar": "clear",
+        "takeResult": "friction"
+      },
+      "overall": "friction",
+      "evidence": ["mobile-journey-moving-05-saved-receipt.png", "mobile-journey-moving-06-my-flow.png", "mobile-journey-moving-07-calendar.png"]
+    }
+  ],
+  "blockingJourneyCount": 0,
+  "clearJourneyCount": 0,
+  "frictionJourneyCount": 6
+}

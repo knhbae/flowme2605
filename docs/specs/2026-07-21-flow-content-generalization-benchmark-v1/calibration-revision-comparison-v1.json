@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "flow-content-calibration-revision-comparison-v1",
+  "generatedAt": "2026-07-21T02:34:09.871Z",
+  "evidenceBoundary": "Internal agent and rules QA; not observed-user validation. Invention claims are diagnostic until final adjudication.",
+  "baselineRulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+  "revisedRulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+  "revisionClass": "Retained-state and user-anchor decision order; no URL, provider, topic, or case-specific exceptions.",
+  "comparisons": [
+    {
+      "role": "rules",
+      "beforeFile": "calibration-baseline/rules-v1.json",
+      "afterFile": "runs/rules/calibration-v1.json",
+      "before": {
+        "caseCount": 12,
+        "positiveCount": 8,
+        "boundaryCount": 4,
+        "flowPossibilityAccuracy": 1,
+        "boundaryRecall": 1,
+        "positivePrimaryArtifactAccuracy": 0.625,
+        "stateAccuracy": 0.833333,
+        "requiredInputBudgetPass": 1,
+        "inventedActionClaims": 0,
+        "unscheduledIcsViolations": 0,
+        "sourceValueReentryCount": 0,
+        "itemCount": 37
+      },
+      "after": {
+        "caseCount": 12,
+        "positiveCount": 8,
+        "boundaryCount": 4,
+        "flowPossibilityAccuracy": 1,
+        "boundaryRecall": 1,
+        "positivePrimaryArtifactAccuracy": 1,
+        "stateAccuracy": 0.75,
+        "requiredInputBudgetPass": 1,
+        "inventedActionClaims": 0,
+        "unscheduledIcsViolations": 0,
+        "sourceValueReentryCount": 0,
+        "itemCount": 37
+      },
+      "primaryArtifactAccuracyDelta": 0.375
+    },
+    {
+      "role": "low_cost",
+      "beforeFile": "calibration-baseline/low-cost-v1.json",
+      "afterFile": "runs/low-cost/calibration-v1.json",
+      "before": {
+        "caseCount": 12,
+        "positiveCount": 8,
+        "boundaryCount": 4,
+        "flowPossibilityAccuracy": 1,
+        "boundaryRecall": 1,
+        "positivePrimaryArtifactAccuracy": 0.625,
+        "stateAccuracy": 0.5,
+        "requiredInputBudgetPass": 1,
+        "inventedActionClaims": 0,
+        "unscheduledIcsViolations": 0,
+        "sourceValueReentryCount": 0,
+        "itemCount": 49
+      },
+      "after": {
+        "caseCount": 12,
+        "positiveCount": 8,
+        "boundaryCount": 4,
+        "flowPossibilityAccuracy": 1,
+        "boundaryRecall": 1,
+        "positivePrimaryArtifactAccuracy": 1,
+        "stateAccuracy": 0.75,
+        "requiredInputBudgetPass": 1,
+        "inventedActionClaims": 0,
+        "unscheduledIcsViolations": 0,
+        "sourceValueReentryCount": 0,
+        "itemCount": 18
+      },
+      "primaryArtifactAccuracyDelta": 0.375
+    },
+    {
+      "role": "high_capability",
+      "beforeFile": "calibration-baseline/high-capability-v1.json",
+      "afterFile": "runs/high-capability/calibration-v1.json",
+      "before": {
+        "caseCount": 12,
+        "positiveCount": 8,
+        "boundaryCount": 4,
+        "flowPossibilityAccuracy": 1,
+        "boundaryRecall": 1,
+        "positivePrimaryArtifactAccuracy": 0.5,
+        "stateAccuracy": 0.75,
+        "requiredInputBudgetPass": 1,
+        "inventedActionClaims": 0,
+        "unscheduledIcsViolations": 0,
+        "sourceValueReentryCount": 0,
+        "itemCount": 36
+      },
+      "after": {
+        "caseCount": 12,
+        "positiveCount": 8,
+        "boundaryCount": 4,
+        "flowPossibilityAccuracy": 1,
+        "boundaryRecall": 1,
+        "positivePrimaryArtifactAccuracy": 1,
+        "stateAccuracy": 0.75,
+        "requiredInputBudgetPass": 1,
+        "inventedActionClaims": 0,
+        "unscheduledIcsViolations": 0,
+        "sourceValueReentryCount": 0,
+        "itemCount": 35
+      },
+      "primaryArtifactAccuracyDelta": 0.5
+    }
+  ],
+  "goDecision": true
+}

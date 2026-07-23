@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  CONTEXT_ROUTES,
+  CORE_DOCUMENTS,
   classifyChangedPath,
   filterChangesByScopes,
   groupChanges,
@@ -9,6 +11,13 @@ import {
   recommendVerification,
   summarizeStatuses,
 } from './repo-workflow.mjs';
+
+test('keeps session start core context small and routes optional documents by task', () => {
+  assert.deepEqual(CORE_DOCUMENTS, ['AGENTS.md', 'agent.md']);
+  assert.equal(CONTEXT_ROUTES.some((route) => route.files.includes('docs/IDEAS.md')), true);
+  assert.equal(CONTEXT_ROUTES.some((route) => route.files.includes('docs/SERVICE_STRUCTURE.md')), true);
+  assert.equal(CONTEXT_ROUTES.every((route) => route.files.length <= 2), true);
+});
 
 test('classifies canonical workflow paths into stable lanes', () => {
   assert.equal(classifyChangedPath('.agents/skills/flow-session-start/SKILL.md'), 'skills');

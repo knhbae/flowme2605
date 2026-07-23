@@ -1,0 +1,20 @@
+{
+  "documentType": "flowme_input_composer_metrics",
+  "labVersion": "1.0.0",
+  "generatedAt": "2026-07-20T18:00:00.000+09:00",
+  "claimBoundary": "Frozen source-backed fixture and deterministic adapter QA; not production runtime output, observed-user validation, LLM/crawler evidence, or public release approval.",
+  "caseCount": 8,
+  "generalCaseCount": 6,
+  "boundaryCaseCount": 2,
+  "routeCoverage": 4,
+  "generalRequiredPayloadMax": 2,
+  "unnecessaryInputCount": 0,
+  "sourceValueReentryCount": 0,
+  "meaningRetentionRate": 1,
+  "unscheduledIcsViolationCount": 0,
+  "inventedActionCount": 0,
+  "creatorUserPathCollisionCount": 0,
+  "blockedFakeArtifactCount": 0,
+  "internalVisibleTokenLeakCount": 0,
+  "observedUserValidationCompleted": false
+}

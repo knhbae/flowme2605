@@ -1,0 +1,25 @@
+{
+  "normalizationId": "OUTPUT-SCHEMA-N01",
+  "detectedAt": "2026-07-22T19:00:00+09:00",
+  "role": "low-cost",
+  "attempt": 2,
+  "issue": "50개 source-backed Item의 필수 completion 필드가 null",
+  "allowedRepair": "같은 독립 agent가 각 SourceRow 의미 범위의 완료·상태 기록 문구만 채움",
+  "semanticFieldsFrozen": [
+    "flowPossible",
+    "items.length",
+    "title",
+    "detail",
+    "schedule",
+    "sourceRefs",
+    "primaryProjection",
+    "secondaryProjections",
+    "status",
+    "gates"
+  ],
+  "rulesChanged": false,
+  "goldChanged": false,
+  "sourceRowsChanged": false,
+  "scoredMeaningChanged": false,
+  "rawArchivePath": "runs/attempt-2-raw/low-cost-final-holdout-v1.json"
+}

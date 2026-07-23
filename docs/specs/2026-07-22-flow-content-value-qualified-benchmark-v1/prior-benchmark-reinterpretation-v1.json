@@ -1,0 +1,137 @@
+{
+  "generatedAt": "2026-07-22T15:00:00+09:00",
+  "originalEvidencePolicy": "read_only",
+  "counts": {
+    "valueQualifiedPositiveProvisional": 6,
+    "conversionOnlyStress": 6,
+    "boundaryStop": 6
+  },
+  "cases": [
+    {
+      "caseId": "GB-01",
+      "title": "출생신고",
+      "reclassification": "value_qualified_positive_provisional",
+      "reason": "법정 1개월 기한과 제출 완료까지 유지 상태",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-02",
+      "title": "Google 2단계 인증",
+      "reclassification": "conversion_only_stress",
+      "reason": "원문 UI가 이미 실행 경로이며 재방문 상태가 약함",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-03",
+      "title": "LG 가습기 관리",
+      "reclassification": "value_qualified_positive_provisional",
+      "reason": "부품별 주기와 다음 관리 시점",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-04",
+      "title": "LG 단일 청소 영상",
+      "reclassification": "conversion_only_stress",
+      "reason": "챕터 추출은 가능하나 반복·재사용 근거 없음",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-05",
+      "title": "단일 레시피",
+      "reclassification": "conversion_only_stress",
+      "reason": "한 세션 변환은 가능하나 링크 대비 이득 약함",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-06",
+      "title": "BookTrust 10권",
+      "reclassification": "conversion_only_stress",
+      "reason": "한국 적용·가족 목표·반응 근거 부족",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-07",
+      "title": "Apple 백업 비교",
+      "reclassification": "conversion_only_stress",
+      "reason": "비교 후 유지할 결정 상태가 약함",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-08",
+      "title": "MMCA 단체관람",
+      "reclassification": "value_qualified_positive_provisional",
+      "reason": "예약창→승인→사전교육→입장 상태 전이",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-09",
+      "title": "Notion 템플릿",
+      "reclassification": "boundary_stop",
+      "reason": "로그인 뒤 actual rows 미확보",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-10",
+      "title": "CLASS101",
+      "reclassification": "boundary_stop",
+      "reason": "홍보문만 있고 실제 차시·과제 없음",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-11",
+      "title": "오늘의집 조언문",
+      "reclassification": "boundary_stop",
+      "reason": "한 user job과 완료 단위 없음",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-12",
+      "title": "서울 키즈카페 모음",
+      "reclassification": "boundary_stop",
+      "reason": "개별 장소 최신 행 없음",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-13",
+      "title": "주민등록증 재발급",
+      "reclassification": "value_qualified_positive_provisional",
+      "reason": "고의도 신청·준비·처리 상태",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-14",
+      "title": "영유아 건강검진",
+      "reclassification": "value_qualified_positive_provisional",
+      "reason": "생년월일 anchor와 회복 불가능 날짜창",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-15",
+      "title": "공무원 교육 PDF",
+      "reclassification": "conversion_only_stress",
+      "reason": "날짜 없는 과정 개요에 가까움",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-16",
+      "title": "Hopper CSV",
+      "reclassification": "value_qualified_positive_provisional",
+      "reason": "상태·기준일·cross-tool export를 더할 때만 가치",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-17",
+      "title": "영국 예방접종",
+      "reclassification": "boundary_stop",
+      "reason": "한국 locale·임상 분기 불가",
+      "originalResultsChanged": false
+    },
+    {
+      "caseId": "GB-18",
+      "title": "Buffer 템플릿 모음",
+      "reclassification": "boundary_stop",
+      "reason": "계속 변하는 컬렉션",
+      "originalResultsChanged": false
+    }
+  ]
+}

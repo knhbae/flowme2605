@@ -1,0 +1,1106 @@
+{
+  "generatedAt": "2026-07-22T15:00:00+09:00",
+  "count": 6,
+  "cases": [
+    {
+      "caseId": "BQ-01",
+      "candidateId": "INT-MAILY-GATED",
+      "split": "calibration",
+      "class": "boundary",
+      "title": "구독 뒤 실제 행이 있는 뉴스레터",
+      "sourceShape": "subscriber_gate",
+      "userJob": null,
+      "sourceRows": [],
+      "minimumInputs": [],
+      "optionalInputs": [],
+      "primaryArtifact": null,
+      "secondaryArtifacts": [],
+      "status": "source_import_required",
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "forbidden": [
+        "제목·미리보기만으로 자동화 단계 생성"
+      ],
+      "gates": {
+        "source": "fail_rows_not_acquired",
+        "rights": "review_required",
+        "locale": "unknown",
+        "safety": "unknown",
+        "privacy": "pass"
+      },
+      "candidate": {
+        "candidateId": "INT-MAILY-GATED",
+        "title": "자동화 시스템 뉴스레터",
+        "canonicalUrl": "https://maily.so/notioninside/posts/92zew6vnzep",
+        "provider": "Maily",
+        "providerType": "creator_newsletter",
+        "locale": "ko-KR",
+        "sourceFormat": "subscriber_gated_article",
+        "evidenceLane": "creator_community",
+        "priorUse": "deep_set_DS03",
+        "userMoment": "candidate_specific",
+        "contentRole": "candidate",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "partial_subscriber_gate",
+        "evidence": [
+          {
+            "id": "INT-MAILY-GATED-E1",
+            "type": "demand",
+            "claim": "페이지에 2.25K views가 기록됐다.",
+            "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-GATED-E2",
+            "type": "interaction",
+            "claim": "구독 유도는 보이지만 실제 행 반응은 구독 구간 뒤다.",
+            "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-GATED-E3",
+            "type": "source_rows",
+            "claim": "실행행 전체가 subscriber gate 뒤라 source row가 불완전하다.",
+            "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-GATED-E4",
+            "type": "creator_business",
+            "claim": "newsletter 구독 경로는 있다.",
+            "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-GATED-E5",
+            "type": "value_delta",
+            "claim": "실제 행 없이는 상태를 만들 수 없다.",
+            "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-MAILY-GATED-E6",
+            "type": "portfolio",
+            "claim": "로그인·구독 경계 통제다.",
+            "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 12,
+            "max": 20,
+            "comment": "페이지에 2.25K views가 기록됐다.",
+            "evidenceRefs": [
+              "INT-MAILY-GATED-E1"
+            ]
+          },
+          "interaction": {
+            "points": 8,
+            "max": 20,
+            "comment": "구독 유도는 보이지만 실제 행 반응은 구독 구간 뒤다.",
+            "evidenceRefs": [
+              "INT-MAILY-GATED-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 0,
+            "max": 15,
+            "comment": "실행행 전체가 subscriber gate 뒤라 source row가 불완전하다.",
+            "evidenceRefs": [
+              "INT-MAILY-GATED-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 14,
+            "max": 20,
+            "comment": "newsletter 구독 경로는 있다.",
+            "evidenceRefs": [
+              "INT-MAILY-GATED-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 0,
+            "max": 20,
+            "comment": "실제 행 없이는 상태를 만들 수 없다.",
+            "evidenceRefs": [
+              "INT-MAILY-GATED-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 2,
+            "max": 5,
+            "comment": "로그인·구독 경계 통제다.",
+            "evidenceRefs": [
+              "INT-MAILY-GATED-E6"
+            ]
+          }
+        },
+        "computedTotal": 36,
+        "hardGates": {
+          "source": "fail_source_import_required",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "pass",
+          "naturalArtifact": "fail_no_rows"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-MAILY-GATED-E3"
+          ],
+          "rights": [
+            "INT-MAILY-GATED-E3"
+          ],
+          "locale": [
+            "INT-MAILY-GATED-E1"
+          ],
+          "safety": [
+            "INT-MAILY-GATED-E3"
+          ],
+          "oneJob": [
+            "INT-MAILY-GATED-E3",
+            "INT-MAILY-GATED-E5"
+          ],
+          "naturalArtifact": [
+            "INT-MAILY-GATED-E5"
+          ]
+        },
+        "interactionEvidenceType": "direct_visible_interaction_or_reuse_signal",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "링크 저장만 가능하다.",
+          "persistentState": "none",
+          "returnMoment": "none",
+          "naturalArtifact": null
+        },
+        "qualified": false,
+        "selection": "rejected",
+        "rejectionReason": "source_import_required",
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled."
+      }
+    },
+    {
+      "caseId": "BQ-02",
+      "candidateId": "INT-MAILY-CLEAN",
+      "split": "calibration",
+      "class": "boundary",
+      "title": "실행행 없는 청소 조언문",
+      "sourceShape": "unbounded_advice",
+      "userJob": null,
+      "sourceRows": [],
+      "minimumInputs": [],
+      "optionalInputs": [],
+      "primaryArtifact": null,
+      "secondaryArtifacts": [],
+      "status": "hold",
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "forbidden": [
+        "조언을 반복 체크리스트로 발명"
+      ],
+      "gates": {
+        "source": "fail_unbounded",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "unknown",
+        "privacy": "pass"
+      },
+      "candidate": {
+        "candidateId": "INT-MAILY-CLEAN",
+        "title": "여러분의 청소 생활, 안녕한가요?",
+        "canonicalUrl": "https://maily.so/honjokking/posts/p1do13plzx6",
+        "provider": "Maily",
+        "providerType": "creator_newsletter",
+        "locale": "ko-KR",
+        "sourceFormat": "long_form_advice",
+        "evidenceLane": "creator_community",
+        "priorUse": "source_seed",
+        "userMoment": "candidate_specific",
+        "contentRole": "candidate",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "opened_complete",
+        "evidence": [
+          {
+            "id": "INT-MAILY-CLEAN-E1",
+            "type": "demand",
+            "claim": "3.7K views가 기록됐다.",
+            "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-CLEAN-E2",
+            "type": "interaction",
+            "claim": "개별 실행행 반응과 반복 수요가 확인되지 않았다.",
+            "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-CLEAN-E3",
+            "type": "source_rows",
+            "claim": "조언과 경험이 섞여 한 bounded job을 만들기 어렵다.",
+            "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-CLEAN-E4",
+            "type": "creator_business",
+            "claim": "newsletter 구독 경로는 있다.",
+            "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-MAILY-CLEAN-E5",
+            "type": "value_delta",
+            "claim": "요약 메모 이상 가치가 불명확하다.",
+            "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-MAILY-CLEAN-E6",
+            "type": "portfolio",
+            "claim": "장문 조언 stop control이다.",
+            "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 12,
+            "max": 20,
+            "comment": "3.7K views가 기록됐다.",
+            "evidenceRefs": [
+              "INT-MAILY-CLEAN-E1"
+            ]
+          },
+          "interaction": {
+            "points": 6,
+            "max": 20,
+            "comment": "개별 실행행 반응과 반복 수요가 확인되지 않았다.",
+            "evidenceRefs": [
+              "INT-MAILY-CLEAN-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 4,
+            "max": 15,
+            "comment": "조언과 경험이 섞여 한 bounded job을 만들기 어렵다.",
+            "evidenceRefs": [
+              "INT-MAILY-CLEAN-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 12,
+            "max": 20,
+            "comment": "newsletter 구독 경로는 있다.",
+            "evidenceRefs": [
+              "INT-MAILY-CLEAN-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 5,
+            "max": 20,
+            "comment": "요약 메모 이상 가치가 불명확하다.",
+            "evidenceRefs": [
+              "INT-MAILY-CLEAN-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 2,
+            "max": 5,
+            "comment": "장문 조언 stop control이다.",
+            "evidenceRefs": [
+              "INT-MAILY-CLEAN-E6"
+            ]
+          }
+        },
+        "computedTotal": 41,
+        "hardGates": {
+          "source": "fail_unbounded_advice",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "fail_no_single_job",
+          "naturalArtifact": "fail"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-MAILY-CLEAN-E3"
+          ],
+          "rights": [
+            "INT-MAILY-CLEAN-E3"
+          ],
+          "locale": [
+            "INT-MAILY-CLEAN-E1"
+          ],
+          "safety": [
+            "INT-MAILY-CLEAN-E3"
+          ],
+          "oneJob": [
+            "INT-MAILY-CLEAN-E3",
+            "INT-MAILY-CLEAN-E5"
+          ],
+          "naturalArtifact": [
+            "INT-MAILY-CLEAN-E5"
+          ]
+        },
+        "interactionEvidenceType": "direct_visible_interaction_or_reuse_signal",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "링크 보관이 더 정직하다.",
+          "persistentState": "none",
+          "returnMoment": "none",
+          "naturalArtifact": null
+        },
+        "qualified": false,
+        "selection": "rejected",
+        "rejectionReason": "실행행 없는 장문 조언",
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled."
+      }
+    },
+    {
+      "caseId": "BQ-03",
+      "candidateId": "INT-TOSS-SERIES",
+      "split": "calibration",
+      "class": "boundary",
+      "title": "여러 원문이 섞인 생활재무 시리즈",
+      "sourceShape": "changing_collection",
+      "userJob": null,
+      "sourceRows": [],
+      "minimumInputs": [],
+      "optionalInputs": [],
+      "primaryArtifact": null,
+      "secondaryArtifacts": [],
+      "status": "source_import_required",
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "forbidden": [
+        "여러 글을 섞어 하나의 재무 Flow 생성"
+      ],
+      "gates": {
+        "source": "fail_specific_source_missing",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "fail_financial_scope",
+        "privacy": "pass"
+      },
+      "candidate": {
+        "candidateId": "INT-TOSS-SERIES",
+        "title": "토스피드 생활재무 시리즈",
+        "canonicalUrl": "https://toss.im/tossfeed/series",
+        "provider": "토스피드",
+        "providerType": "provider_collection",
+        "locale": "ko-KR",
+        "sourceFormat": "changing_series_collection",
+        "evidenceLane": "creator_community",
+        "priorUse": "source_seed",
+        "userMoment": "candidate_specific",
+        "contentRole": "candidate",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "collection_only",
+        "evidence": [
+          {
+            "id": "INT-TOSS-SERIES-E1",
+            "type": "demand",
+            "claim": "플랫폼 누적 5천만 조회 신호만 있고 개별 후보 수요는 없다.",
+            "url": "https://toss.im/tossfeed/series",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-TOSS-SERIES-E2",
+            "type": "interaction",
+            "claim": "개별 글의 반응을 컬렉션에 전가할 수 없다.",
+            "url": "https://toss.im/tossfeed/series",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-TOSS-SERIES-E3",
+            "type": "source_rows",
+            "claim": "candidate-specific source row가 없다.",
+            "url": "https://toss.im/tossfeed/series",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-TOSS-SERIES-E4",
+            "type": "creator_business",
+            "claim": "provider partnership 가설은 있으나 특정 원문이 필요하다.",
+            "url": "https://toss.im/tossfeed/series",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-TOSS-SERIES-E5",
+            "type": "value_delta",
+            "claim": "하나의 job과 artifact를 만들 수 없다.",
+            "url": "https://toss.im/tossfeed/series",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-TOSS-SERIES-E6",
+            "type": "portfolio",
+            "claim": "provider와 content unit 경계를 시험한다.",
+            "url": "https://toss.im/tossfeed/series",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 8,
+            "max": 20,
+            "comment": "플랫폼 누적 5천만 조회 신호만 있고 개별 후보 수요는 없다.",
+            "evidenceRefs": [
+              "INT-TOSS-SERIES-E1"
+            ]
+          },
+          "interaction": {
+            "points": 4,
+            "max": 20,
+            "comment": "개별 글의 반응을 컬렉션에 전가할 수 없다.",
+            "evidenceRefs": [
+              "INT-TOSS-SERIES-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 0,
+            "max": 15,
+            "comment": "candidate-specific source row가 없다.",
+            "evidenceRefs": [
+              "INT-TOSS-SERIES-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 15,
+            "max": 20,
+            "comment": "provider partnership 가설은 있으나 특정 원문이 필요하다.",
+            "evidenceRefs": [
+              "INT-TOSS-SERIES-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 0,
+            "max": 20,
+            "comment": "하나의 job과 artifact를 만들 수 없다.",
+            "evidenceRefs": [
+              "INT-TOSS-SERIES-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 2,
+            "max": 5,
+            "comment": "provider와 content unit 경계를 시험한다.",
+            "evidenceRefs": [
+              "INT-TOSS-SERIES-E6"
+            ]
+          }
+        },
+        "computedTotal": 29,
+        "hardGates": {
+          "source": "fail_collection",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "fail",
+          "naturalArtifact": "fail"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-TOSS-SERIES-E3"
+          ],
+          "rights": [
+            "INT-TOSS-SERIES-E3"
+          ],
+          "locale": [
+            "INT-TOSS-SERIES-E1"
+          ],
+          "safety": [
+            "INT-TOSS-SERIES-E3"
+          ],
+          "oneJob": [
+            "INT-TOSS-SERIES-E3",
+            "INT-TOSS-SERIES-E5"
+          ],
+          "naturalArtifact": [
+            "INT-TOSS-SERIES-E5"
+          ]
+        },
+        "interactionEvidenceType": "direct_visible_interaction_or_reuse_signal",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "컬렉션 링크 저장만 가능하다.",
+          "persistentState": "none",
+          "returnMoment": "none",
+          "naturalArtifact": null
+        },
+        "qualified": false,
+        "selection": "rejected",
+        "rejectionReason": "개별 원문 없는 컬렉션",
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled."
+      }
+    },
+    {
+      "caseId": "BQ-04",
+      "candidateId": "INT-SOOMGO",
+      "split": "calibration",
+      "class": "boundary",
+      "title": "전문가 공급망 홍보 페이지",
+      "sourceShape": "provider_promo",
+      "userJob": null,
+      "sourceRows": [],
+      "minimumInputs": [],
+      "optionalInputs": [],
+      "primaryArtifact": null,
+      "secondaryArtifacts": [],
+      "status": "hold",
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "forbidden": [
+        "실제 전문가 콘텐츠 없이 절차 생성"
+      ],
+      "gates": {
+        "source": "fail_provider_only",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "unknown",
+        "privacy": "pass"
+      },
+      "candidate": {
+        "candidateId": "INT-SOOMGO",
+        "title": "숨고 전문가 공급망",
+        "canonicalUrl": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+        "provider": "숨고",
+        "providerType": "provider_network",
+        "locale": "ko-KR",
+        "sourceFormat": "provider_promo",
+        "evidenceLane": "operator_template",
+        "priorUse": "source_seed",
+        "userMoment": "candidate_specific",
+        "contentRole": "candidate",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "provider_only",
+        "evidence": [
+          {
+            "id": "INT-SOOMGO-E1",
+            "type": "demand",
+            "claim": "1,000 services·2M experts·14M customers라는 provider 규모 신호가 있다.",
+            "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-SOOMGO-E2",
+            "type": "interaction",
+            "claim": "특정 전문가 콘텐츠의 반응이 아니다.",
+            "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-SOOMGO-E3",
+            "type": "source_rows",
+            "claim": "실제 전문가 source row가 없다.",
+            "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-SOOMGO-E4",
+            "type": "creator_business",
+            "claim": "향후 provider partnership 가치는 있다.",
+            "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-SOOMGO-E5",
+            "type": "value_delta",
+            "claim": "현재 URL은 Flow가 아니라 공급망 소개다.",
+            "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-SOOMGO-E6",
+            "type": "portfolio",
+            "claim": "provider-only stop control이다.",
+            "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 12,
+            "max": 20,
+            "comment": "1,000 services·2M experts·14M customers라는 provider 규모 신호가 있다.",
+            "evidenceRefs": [
+              "INT-SOOMGO-E1"
+            ]
+          },
+          "interaction": {
+            "points": 5,
+            "max": 20,
+            "comment": "특정 전문가 콘텐츠의 반응이 아니다.",
+            "evidenceRefs": [
+              "INT-SOOMGO-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 0,
+            "max": 15,
+            "comment": "실제 전문가 source row가 없다.",
+            "evidenceRefs": [
+              "INT-SOOMGO-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 18,
+            "max": 20,
+            "comment": "향후 provider partnership 가치는 있다.",
+            "evidenceRefs": [
+              "INT-SOOMGO-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 0,
+            "max": 20,
+            "comment": "현재 URL은 Flow가 아니라 공급망 소개다.",
+            "evidenceRefs": [
+              "INT-SOOMGO-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 2,
+            "max": 5,
+            "comment": "provider-only stop control이다.",
+            "evidenceRefs": [
+              "INT-SOOMGO-E6"
+            ]
+          }
+        },
+        "computedTotal": 37,
+        "hardGates": {
+          "source": "fail_provider_only",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "fail",
+          "naturalArtifact": "fail"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-SOOMGO-E3"
+          ],
+          "rights": [
+            "INT-SOOMGO-E3"
+          ],
+          "locale": [
+            "INT-SOOMGO-E1"
+          ],
+          "safety": [
+            "INT-SOOMGO-E3"
+          ],
+          "oneJob": [
+            "INT-SOOMGO-E3",
+            "INT-SOOMGO-E5"
+          ],
+          "naturalArtifact": [
+            "INT-SOOMGO-E5"
+          ]
+        },
+        "interactionEvidenceType": "direct_visible_interaction_or_reuse_signal",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "provider 메모만 가능하다.",
+          "persistentState": "none",
+          "returnMoment": "none",
+          "naturalArtifact": null
+        },
+        "qualified": false,
+        "selection": "rejected",
+        "rejectionReason": "홍보·공급망 URL, 실제 행 없음",
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled."
+      }
+    },
+    {
+      "caseId": "BQ-05",
+      "candidateId": "INT-GUMROAD",
+      "split": "final_holdout",
+      "class": "boundary",
+      "title": "유료 Content Planner listing",
+      "sourceShape": "paid_template_listing",
+      "userJob": null,
+      "sourceRows": [],
+      "minimumInputs": [],
+      "optionalInputs": [],
+      "primaryArtifact": null,
+      "secondaryArtifacts": [],
+      "status": "source_import_required",
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "forbidden": [
+        "구매 전 실제 template 행 추정",
+        "권한 우회"
+      ],
+      "gates": {
+        "source": "fail_paid_rows_missing",
+        "rights": "fail_entitlement_required",
+        "locale": "pass_non_sensitive",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "candidate": {
+        "candidateId": "INT-GUMROAD",
+        "title": "Gumroad Content Planner Template",
+        "canonicalUrl": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+        "provider": "Gumroad creator",
+        "providerType": "paid_creator_template",
+        "locale": "en",
+        "sourceFormat": "paid_template_listing",
+        "evidenceLane": "operator_template",
+        "priorUse": "source_seed",
+        "userMoment": "candidate_specific",
+        "contentRole": "candidate",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "paid_gate",
+        "evidence": [
+          {
+            "id": "INT-GUMROAD-E1",
+            "type": "demand",
+            "claim": "821 sales가 공개 listing에 보인다.",
+            "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-GUMROAD-E2",
+            "type": "interaction",
+            "claim": "판매는 수요 신호지만 파일 행은 구매 뒤에 있다.",
+            "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-GUMROAD-E3",
+            "type": "source_rows",
+            "claim": "licensed file 또는 creator supply 없이는 actual rows가 없다.",
+            "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-GUMROAD-E4",
+            "type": "creator_business",
+            "claim": "직접 판매·creator 공급·source-link 가치가 강하다.",
+            "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-GUMROAD-E5",
+            "type": "value_delta",
+            "claim": "행을 확보하면 Sheet export가 유용하지만 현재는 만들 수 없다.",
+            "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-GUMROAD-E6",
+            "type": "portfolio",
+            "claim": "paid source boundary다.",
+            "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 18,
+            "max": 20,
+            "comment": "821 sales가 공개 listing에 보인다.",
+            "evidenceRefs": [
+              "INT-GUMROAD-E1"
+            ]
+          },
+          "interaction": {
+            "points": 16,
+            "max": 20,
+            "comment": "판매는 수요 신호지만 파일 행은 구매 뒤에 있다.",
+            "evidenceRefs": [
+              "INT-GUMROAD-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 0,
+            "max": 15,
+            "comment": "licensed file 또는 creator supply 없이는 actual rows가 없다.",
+            "evidenceRefs": [
+              "INT-GUMROAD-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 20,
+            "max": 20,
+            "comment": "직접 판매·creator 공급·source-link 가치가 강하다.",
+            "evidenceRefs": [
+              "INT-GUMROAD-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 12,
+            "max": 20,
+            "comment": "행을 확보하면 Sheet export가 유용하지만 현재는 만들 수 없다.",
+            "evidenceRefs": [
+              "INT-GUMROAD-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 4,
+            "max": 5,
+            "comment": "paid source boundary다.",
+            "evidenceRefs": [
+              "INT-GUMROAD-E6"
+            ]
+          }
+        },
+        "computedTotal": 70,
+        "hardGates": {
+          "source": "fail_paid_file_required",
+          "rights": "fail_entitlement_required",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "pass",
+          "naturalArtifact": "pass"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-GUMROAD-E3"
+          ],
+          "rights": [
+            "INT-GUMROAD-E3"
+          ],
+          "locale": [
+            "INT-GUMROAD-E1"
+          ],
+          "safety": [
+            "INT-GUMROAD-E3"
+          ],
+          "oneJob": [
+            "INT-GUMROAD-E3",
+            "INT-GUMROAD-E5"
+          ],
+          "naturalArtifact": [
+            "INT-GUMROAD-E5"
+          ]
+        },
+        "interactionEvidenceType": "direct_visible_interaction_or_reuse_signal",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "구매 listing만 저장 가능하다.",
+          "persistentState": "unknown",
+          "returnMoment": "unknown",
+          "naturalArtifact": "sheet"
+        },
+        "qualified": false,
+        "selection": "rejected",
+        "rejectionReason": "유료 파일 권한·행 미확보",
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled."
+      }
+    },
+    {
+      "caseId": "BQ-06",
+      "candidateId": "INT-NETMUMS",
+      "split": "final_holdout",
+      "class": "boundary",
+      "title": "영국 6개월 아기 건강·발달 가이드",
+      "sourceShape": "locale_sensitive_health_advice",
+      "userJob": null,
+      "sourceRows": [],
+      "minimumInputs": [],
+      "optionalInputs": [],
+      "primaryArtifact": null,
+      "secondaryArtifacts": [],
+      "status": "blocked",
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "forbidden": [
+        "영국 기준을 한국 발달 체크리스트로 전환",
+        "아동 발달 완료 여부 판정"
+      ],
+      "gates": {
+        "source": "pass_reference_only",
+        "rights": "review_required",
+        "locale": "fail_ko_applicability",
+        "safety": "fail_health_review",
+        "privacy": "pass"
+      },
+      "candidate": {
+        "candidateId": "INT-NETMUMS",
+        "title": "Netmums 6-month-old guide",
+        "canonicalUrl": "https://www.netmums.com/baby/6-month-old-baby",
+        "provider": "Netmums",
+        "providerType": "editorial",
+        "locale": "en-GB",
+        "sourceFormat": "health_parenting_advice",
+        "evidenceLane": "creator_community",
+        "priorUse": "atlas",
+        "userMoment": "candidate_specific",
+        "contentRole": "candidate",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "open_locale_blocked",
+        "evidence": [
+          {
+            "id": "INT-NETMUMS-E1",
+            "type": "demand",
+            "claim": "월령별 안내 수요가 있으나 개별 수치는 not_visible이다.",
+            "url": "https://www.netmums.com/baby/6-month-old-baby",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-NETMUMS-E2",
+            "type": "interaction",
+            "claim": "영국 편집 가이드의 반응을 한국 적용성 증거로 쓸 수 없다.",
+            "url": "https://www.netmums.com/baby/6-month-old-baby",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-NETMUMS-E3",
+            "type": "source_rows",
+            "claim": "발달·식사·수면 조언 구간은 있으나 한국 실행행으로 승격할 수 없다.",
+            "url": "https://www.netmums.com/baby/6-month-old-baby",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-NETMUMS-E4",
+            "type": "creator_business",
+            "claim": "원문·커머스 경로가 있다.",
+            "url": "https://www.netmums.com/baby/6-month-old-baby",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-NETMUMS-E5",
+            "type": "value_delta",
+            "claim": "질문 메모 외에는 민감한 실행화가 부적절하다.",
+            "url": "https://www.netmums.com/baby/6-month-old-baby",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-NETMUMS-E6",
+            "type": "portfolio",
+            "claim": "locale-sensitive health stop control이다.",
+            "url": "https://www.netmums.com/baby/6-month-old-baby",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 10,
+            "max": 20,
+            "comment": "월령별 안내 수요가 있으나 개별 수치는 not_visible이다.",
+            "evidenceRefs": [
+              "INT-NETMUMS-E1"
+            ]
+          },
+          "interaction": {
+            "points": 6,
+            "max": 20,
+            "comment": "영국 편집 가이드의 반응을 한국 적용성 증거로 쓸 수 없다.",
+            "evidenceRefs": [
+              "INT-NETMUMS-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 8,
+            "max": 15,
+            "comment": "발달·식사·수면 조언 구간은 있으나 한국 실행행으로 승격할 수 없다.",
+            "evidenceRefs": [
+              "INT-NETMUMS-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 12,
+            "max": 20,
+            "comment": "원문·커머스 경로가 있다.",
+            "evidenceRefs": [
+              "INT-NETMUMS-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 4,
+            "max": 20,
+            "comment": "질문 메모 외에는 민감한 실행화가 부적절하다.",
+            "evidenceRefs": [
+              "INT-NETMUMS-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 4,
+            "max": 5,
+            "comment": "locale-sensitive health stop control이다.",
+            "evidenceRefs": [
+              "INT-NETMUMS-E6"
+            ]
+          }
+        },
+        "computedTotal": 44,
+        "hardGates": {
+          "source": "pass",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "fail_ko_applicability",
+          "safety": "fail_health_review",
+          "oneJob": "pass",
+          "naturalArtifact": "fail"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-NETMUMS-E3"
+          ],
+          "rights": [
+            "INT-NETMUMS-E3"
+          ],
+          "locale": [
+            "INT-NETMUMS-E1"
+          ],
+          "safety": [
+            "INT-NETMUMS-E3"
+          ],
+          "oneJob": [
+            "INT-NETMUMS-E3",
+            "INT-NETMUMS-E5"
+          ],
+          "naturalArtifact": [
+            "INT-NETMUMS-E5"
+          ]
+        },
+        "interactionEvidenceType": "direct_visible_interaction_or_reuse_signal",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "참고 링크만 허용한다.",
+          "persistentState": "none",
+          "returnMoment": "none",
+          "naturalArtifact": null
+        },
+        "qualified": false,
+        "selection": "rejected",
+        "rejectionReason": "한국 지역성·건강 검토 실패",
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled."
+      }
+    }
+  ]
+}

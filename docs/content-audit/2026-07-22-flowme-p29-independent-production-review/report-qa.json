@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "flowme-p29-independent-report-qa-v1",
+  "generatedAt": "2026-07-22T07:58:00.598Z",
+  "report": "file:///D:/flowme2605/flow-mvp/docs/content-audit/2026-07-22-flowme-p29-independent-production-review/review.html",
+  "observedUserCount": 0,
+  "viewports": [
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screenshot": "report-qa/review-390.png",
+      "viewportScreenshot": "report-qa/review-390-viewport.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "metrics": {
+        "horizontalOverflowPx": 0,
+        "documentHeight": 20246,
+        "headingCount": 31,
+        "controlCount": 11,
+        "unnamedControlCount": 0,
+        "imageCount": 14,
+        "brokenImageCount": 0
+      }
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screenshot": "report-qa/review-1024.png",
+      "viewportScreenshot": "report-qa/review-1024-viewport.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "metrics": {
+        "horizontalOverflowPx": 0,
+        "documentHeight": 9934,
+        "headingCount": 31,
+        "controlCount": 11,
+        "unnamedControlCount": 0,
+        "imageCount": 14,
+        "brokenImageCount": 0
+      }
+    },
+    {
+      "viewport": {
+        "id": "1440",
+        "width": 1440,
+        "height": 900
+      },
+      "screenshot": "report-qa/review-1440.png",
+      "viewportScreenshot": "report-qa/review-1440-viewport.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "metrics": {
+        "horizontalOverflowPx": 0,
+        "documentHeight": 9808,
+        "headingCount": 31,
+        "controlCount": 11,
+        "unnamedControlCount": 0,
+        "imageCount": 14,
+        "brokenImageCount": 0
+      }
+    }
+  ],
+  "totals": {
+    "viewportCount": 3,
+    "horizontalOverflowViewportCount": 0,
+    "unnamedControlCount": 0,
+    "brokenImageCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  }
+}

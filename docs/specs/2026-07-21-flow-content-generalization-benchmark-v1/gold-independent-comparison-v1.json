@@ -1,0 +1,1582 @@
+{
+  "schemaVersion": "flow-content-gold-independent-comparison-v1",
+  "documentType": "flow_content_gold_independent_comparison",
+  "comparedAt": "2026-07-21T02:46:18.718Z",
+  "comparisonMethod": "Exact raw-value comparison of the current gold source contract against a source-only blind independent review. No alias normalization or semantic remapping was applied.",
+  "comparisonInputs": {
+    "gold": {
+      "file": "gold-source-contract-v1.json",
+      "sha256BeforeComparison": "cf1637cff0fc54eda74f12fe24724f64d455f33546ca8912f2363c0530c6ebf7",
+      "sha256AfterComparison": "cf1637cff0fc54eda74f12fe24724f64d455f33546ca8912f2363c0530c6ebf7"
+    },
+    "independentReview": {
+      "file": "gold-independent-review-v1.json",
+      "sha256": "55718ae7722ce00e4ec35097bd5f92d6101a952136f9534c92ef1f76d04a07de",
+      "reviewerIdentity": "gpt-5.6-sol high",
+      "method": "source_only_blind_independent_review",
+      "reviewedAt": "2026-07-21T11:40:51.7108699+09:00",
+      "inputsActuallyRead": [
+        "baseline-rules-v1.md",
+        "revised-rules-v1.md",
+        "blind-source-packets-v1.json",
+        "../2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json"
+      ],
+      "forbiddenInputsNotRead": true,
+      "modelOutputsSeen": false,
+      "webUsed": false
+    }
+  },
+  "caseCount": 18,
+  "caseSetIntegrity": {
+    "goldUniqueCaseCount": 18,
+    "independentUniqueCaseCount": 18,
+    "exactCaseSetMatch": true
+  },
+  "agreement": {
+    "flowPossible": {
+      "matches": 16,
+      "total": 18,
+      "rate": 0.888889
+    },
+    "state": {
+      "matches": 13,
+      "total": 18,
+      "rate": 0.722222
+    },
+    "naturalArtifact": {
+      "matches": 15,
+      "total": 18,
+      "rate": 0.833333
+    },
+    "secondaryArtifacts": {
+      "matches": 12,
+      "total": 18,
+      "rate": 0.666667
+    },
+    "artifactBundle": {
+      "matches": 12,
+      "total": 18,
+      "rate": 0.666667
+    },
+    "requiredUserInputs": {
+      "matches": 8,
+      "total": 18,
+      "rate": 0.444444
+    },
+    "gates": {
+      "exactAllEightPerCase": {
+        "matches": 0,
+        "total": 18,
+        "rate": 0
+      },
+      "exactFieldCells": {
+        "matches": 67,
+        "total": 144,
+        "rate": 0.465278
+      },
+      "byField": {
+        "access": {
+          "matches": 1,
+          "total": 18,
+          "rate": 0.055556
+        },
+        "rights": {
+          "matches": 1,
+          "total": 18,
+          "rate": 0.055556
+        },
+        "freshness": {
+          "matches": 0,
+          "total": 18,
+          "rate": 0
+        },
+        "locale": {
+          "matches": 13,
+          "total": 18,
+          "rate": 0.722222
+        },
+        "safety": {
+          "matches": 12,
+          "total": 18,
+          "rate": 0.666667
+        },
+        "privacy": {
+          "matches": 6,
+          "total": 18,
+          "rate": 0.333333
+        },
+        "publicExportAllowed": {
+          "matches": 18,
+          "total": 18,
+          "rate": 1
+        },
+        "personalPreviewAllowed": {
+          "matches": 16,
+          "total": 18,
+          "rate": 0.888889
+        }
+      }
+    }
+  },
+  "independentReviewContractWarning": {
+    "passedRequestedGateEnums": false,
+    "invalidGateValueCount": 74,
+    "affectedCaseCount": 18,
+    "invalidCountsByGate": {
+      "access": 16,
+      "rights": 17,
+      "freshness": 18,
+      "locale": 5,
+      "safety": 6,
+      "privacy": 12,
+      "publicExportAllowed": 0,
+      "personalPreviewAllowed": 0
+    },
+    "invalidValues": [
+      {
+        "caseId": "GB-01",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-01",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-01",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-01",
+        "gate": "privacy",
+        "value": "sensitive_private_only"
+      },
+      {
+        "caseId": "GB-02",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-02",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-02",
+        "gate": "freshness",
+        "value": "current"
+      },
+      {
+        "caseId": "GB-02",
+        "gate": "privacy",
+        "value": "sensitive_private_only"
+      },
+      {
+        "caseId": "GB-03",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-03",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-03",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-03",
+        "gate": "safety",
+        "value": "restricted"
+      },
+      {
+        "caseId": "GB-04",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-04",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-04",
+        "gate": "freshness",
+        "value": "current"
+      },
+      {
+        "caseId": "GB-04",
+        "gate": "safety",
+        "value": "restricted"
+      },
+      {
+        "caseId": "GB-05",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-05",
+        "gate": "freshness",
+        "value": "current"
+      },
+      {
+        "caseId": "GB-05",
+        "gate": "safety",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-06",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-06",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-06",
+        "gate": "freshness",
+        "value": "not_required"
+      },
+      {
+        "caseId": "GB-06",
+        "gate": "locale",
+        "value": "adaptation_required"
+      },
+      {
+        "caseId": "GB-07",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-07",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-07",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-07",
+        "gate": "privacy",
+        "value": "sensitive_private_only"
+      },
+      {
+        "caseId": "GB-08",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-08",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-08",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-08",
+        "gate": "privacy",
+        "value": "sensitive_private_only"
+      },
+      {
+        "caseId": "GB-09",
+        "gate": "access",
+        "value": "metadata_only"
+      },
+      {
+        "caseId": "GB-09",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-09",
+        "gate": "freshness",
+        "value": "current"
+      },
+      {
+        "caseId": "GB-09",
+        "gate": "locale",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-09",
+        "gate": "privacy",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-10",
+        "gate": "access",
+        "value": "metadata_only"
+      },
+      {
+        "caseId": "GB-10",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-10",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-10",
+        "gate": "privacy",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-11",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-11",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-11",
+        "gate": "freshness",
+        "value": "not_required"
+      },
+      {
+        "caseId": "GB-11",
+        "gate": "safety",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-12",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-12",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-12",
+        "gate": "privacy",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-13",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-13",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-13",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-13",
+        "gate": "privacy",
+        "value": "sensitive_private_only"
+      },
+      {
+        "caseId": "GB-14",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-14",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-14",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-14",
+        "gate": "safety",
+        "value": "passed_with_boundary"
+      },
+      {
+        "caseId": "GB-14",
+        "gate": "privacy",
+        "value": "sensitive_private_only"
+      },
+      {
+        "caseId": "GB-15",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-15",
+        "gate": "freshness",
+        "value": "current"
+      },
+      {
+        "caseId": "GB-16",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-16",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-16",
+        "gate": "freshness",
+        "value": "current"
+      },
+      {
+        "caseId": "GB-16",
+        "gate": "locale",
+        "value": "adaptation_required"
+      },
+      {
+        "caseId": "GB-16",
+        "gate": "privacy",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-17",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-17",
+        "gate": "rights",
+        "value": "approved"
+      },
+      {
+        "caseId": "GB-17",
+        "gate": "freshness",
+        "value": "current"
+      },
+      {
+        "caseId": "GB-17",
+        "gate": "locale",
+        "value": "adaptation_required"
+      },
+      {
+        "caseId": "GB-17",
+        "gate": "safety",
+        "value": "restricted"
+      },
+      {
+        "caseId": "GB-17",
+        "gate": "privacy",
+        "value": "sensitive_private_only"
+      },
+      {
+        "caseId": "GB-18",
+        "gate": "access",
+        "value": "full"
+      },
+      {
+        "caseId": "GB-18",
+        "gate": "rights",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-18",
+        "gate": "freshness",
+        "value": "pending"
+      },
+      {
+        "caseId": "GB-18",
+        "gate": "locale",
+        "value": "adaptation_required"
+      },
+      {
+        "caseId": "GB-18",
+        "gate": "privacy",
+        "value": "pending"
+      }
+    ],
+    "interpretation": "The independent reviewer used taxonomy-style status words for many gates instead of the requested run-envelope enums. Exact gate agreement is therefore reported honestly on raw values and is not treated as a calibrated reliability estimate."
+  },
+  "disagreementSummary": {
+    "disagreementCaseCount": 18,
+    "disagreementAxisCellCount": 109,
+    "byAxis": {
+      "requiredUserInputs": 10,
+      "gates.access": 17,
+      "gates.rights": 17,
+      "gates.freshness": 18,
+      "gates.privacy": 12,
+      "secondaryArtifacts": 6,
+      "artifactBundle": 6,
+      "gates.safety": 6,
+      "state": 5,
+      "gates.locale": 5,
+      "naturalArtifact": 3,
+      "flowPossible": 2,
+      "gates.personalPreviewAllowed": 2
+    },
+    "highlightedCaseIds": [
+      "GB-15",
+      "GB-17"
+    ]
+  },
+  "highlightedDisagreements": [
+    {
+      "caseId": "GB-15",
+      "independentReason": "The three-day course span and topic durations are known, but topic dates, start times, and rooms needed for an executable schedule are missing.",
+      "axes": {
+        "flowPossible": {
+          "gold": true,
+          "independent": false
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "independent": "source_import_required"
+        },
+        "naturalArtifact": {
+          "gold": "sheet",
+          "independent": null
+        },
+        "secondaryArtifacts": {
+          "gold": [
+            "calendar",
+            "memo"
+          ],
+          "independent": []
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": "sheet",
+            "secondary": [
+              "calendar",
+              "memo"
+            ]
+          },
+          "independent": {
+            "primary": null,
+            "secondary": []
+          }
+        },
+        "requiredUserInputs": {
+          "gold": [
+            "participation_confirmed"
+          ],
+          "independent": []
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "partial"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "current"
+        },
+        "personalPreviewAllowed": {
+          "gold": true,
+          "independent": false
+        }
+      }
+    },
+    {
+      "caseId": "GB-17",
+      "independentReason": "Routine age rows support an anchor-derived calendar under the verified open license, but UK jurisdiction must apply and clinical-risk or optional branches remain outside the safe routine preview.",
+      "axes": {
+        "flowPossible": {
+          "gold": false,
+          "independent": true
+        },
+        "state": {
+          "gold": "hold",
+          "independent": "needs_confirmation"
+        },
+        "naturalArtifact": {
+          "gold": null,
+          "independent": "calendar"
+        },
+        "secondaryArtifacts": {
+          "gold": [],
+          "independent": [
+            "checklist"
+          ]
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": null,
+            "secondary": []
+          },
+          "independent": {
+            "primary": "calendar",
+            "secondary": [
+              "checklist"
+            ]
+          }
+        },
+        "requiredUserInputs": {
+          "gold": [],
+          "independent": [
+            "birth_date",
+            "jurisdiction"
+          ]
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "open",
+          "independent": "approved"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "current"
+        },
+        "locale": {
+          "gold": "not_applicable",
+          "independent": "adaptation_required"
+        },
+        "safety": {
+          "gold": "review_required",
+          "independent": "restricted"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "sensitive_private_only"
+        },
+        "personalPreviewAllowed": {
+          "gold": false,
+          "independent": true
+        }
+      }
+    }
+  ],
+  "disagreementsByCase": [
+    {
+      "caseId": "GB-01",
+      "independentReason": "The filing duty, deadline, permitted offices, form fields, and documents are complete; the calendar deadline needs the child's birth date and the reporter role affects applicability.",
+      "axes": {
+        "requiredUserInputs": {
+          "gold": [
+            "birth_date",
+            "reporter_context"
+          ],
+          "independent": [
+            "birth_date",
+            "reporter_relationship"
+          ]
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "privacy": {
+          "gold": "review_required",
+          "independent": "sensitive_private_only"
+        }
+      }
+    },
+    {
+      "caseId": "GB-02",
+      "independentReason": "Four complete, ordered account-security steps form one bounded setup checklist without requiring an authentication value in the preview.",
+      "axes": {
+        "secondaryArtifacts": {
+          "gold": [
+            "todo"
+          ],
+          "independent": []
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": "checklist",
+            "secondary": [
+              "todo"
+            ]
+          },
+          "independent": {
+            "primary": "checklist",
+            "secondary": []
+          }
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "link_only",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "current"
+        },
+        "privacy": {
+          "gold": "review_required",
+          "independent": "sensitive_private_only"
+        }
+      }
+    },
+    {
+      "caseId": "GB-03",
+      "independentReason": "The source defines several fixed cleaning and replacement cycles, so a calendar is primary after confirming the applicable model and a user-owned maintenance anchor.",
+      "axes": {
+        "requiredUserInputs": {
+          "gold": [
+            "maintenance_start_date",
+            "product_model_match"
+          ],
+          "independent": [
+            "maintenance_anchor_date",
+            "product_model"
+          ]
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "link_only",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "safety": {
+          "gold": "not_required",
+          "independent": "restricted"
+        }
+      }
+    },
+    {
+      "caseId": "GB-04",
+      "independentReason": "The three timestamped segments provide a complete single-session cleaning sequence, but use should be limited to the confirmed A9S model and the captured safety boundary.",
+      "axes": {
+        "requiredUserInputs": {
+          "gold": [
+            "product_model_match"
+          ],
+          "independent": [
+            "product_model"
+          ]
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "link_only",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "current"
+        },
+        "safety": {
+          "gold": "not_required",
+          "independent": "restricted"
+        }
+      }
+    },
+    {
+      "caseId": "GB-05",
+      "independentReason": "Six ordered cooking rows form a complete bounded session; private execution is possible while copying rights and uncaptured allergy and hazard details prevent public export.",
+      "axes": {
+        "secondaryArtifacts": {
+          "gold": [
+            "memo"
+          ],
+          "independent": []
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": "checklist",
+            "secondary": [
+              "memo"
+            ]
+          },
+          "independent": {
+            "primary": "checklist",
+            "secondary": []
+          }
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "current"
+        },
+        "safety": {
+          "gold": "not_required",
+          "independent": "pending"
+        }
+      }
+    },
+    {
+      "caseId": "GB-06",
+      "independentReason": "Ten stable book rows need selection or reading-position state across sessions, making a sheet the retained artifact rather than a one-time checklist.",
+      "axes": {
+        "state": {
+          "gold": "needs_confirmation",
+          "independent": "ready"
+        },
+        "requiredUserInputs": {
+          "gold": [
+            "reading_language_access"
+          ],
+          "independent": []
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "link_only",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "not_required"
+        },
+        "locale": {
+          "gold": "applicable",
+          "independent": "adaptation_required"
+        }
+      }
+    },
+    {
+      "caseId": "GB-07",
+      "independentReason": "The source supplies complete comparison criteria; the durable result is one backup-method decision with its reason, supported by a comparison sheet.",
+      "axes": {
+        "state": {
+          "gold": "needs_confirmation",
+          "independent": "ready"
+        },
+        "requiredUserInputs": {
+          "gold": [
+            "backup_priority"
+          ],
+          "independent": []
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "link_only",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "sensitive_private_only"
+        }
+      }
+    },
+    {
+      "caseId": "GB-08",
+      "independentReason": "The booking window, three sessions, approval flow, preparation, arrival steps, and blackout months are complete; the user must select a valid date and session.",
+      "axes": {
+        "secondaryArtifacts": {
+          "gold": [
+            "checklist",
+            "memo"
+          ],
+          "independent": [
+            "checklist"
+          ]
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": "calendar",
+            "secondary": [
+              "checklist",
+              "memo"
+            ]
+          },
+          "independent": {
+            "primary": "calendar",
+            "secondary": [
+              "checklist"
+            ]
+          }
+        },
+        "requiredUserInputs": {
+          "gold": [
+            "visit_date",
+            "visit_time_slot"
+          ],
+          "independent": [
+            "visit_date",
+            "visit_session"
+          ]
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "privacy": {
+          "gold": "review_required",
+          "independent": "sensitive_private_only"
+        }
+      }
+    },
+    {
+      "caseId": "GB-09",
+      "independentReason": "Only landing-page title, creator metadata, and marketing description are captured; the actual template database and rows require import after account access.",
+      "axes": {},
+      "gates": {
+        "access": {
+          "gold": "account_required",
+          "independent": "metadata_only"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "unknown",
+          "independent": "current"
+        },
+        "locale": {
+          "gold": "applicable",
+          "independent": "pending"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "pending"
+        }
+      }
+    },
+    {
+      "caseId": "GB-10",
+      "independentReason": "The course title and promotional claim are metadata, while lesson and assignment rows needed for an executable learning Flow are unavailable.",
+      "axes": {},
+      "gates": {
+        "access": {
+          "gold": "account_required",
+          "independent": "metadata_only"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "pending"
+        }
+      }
+    },
+    {
+      "caseId": "GB-11",
+      "independentReason": "The captured narrative describes broad recommendations and examples but does not establish one bounded user job with observable completion.",
+      "axes": {},
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "link_only",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "not_required"
+        },
+        "safety": {
+          "gold": "not_required",
+          "independent": "pending"
+        }
+      }
+    },
+    {
+      "caseId": "GB-12",
+      "independentReason": "The collection identifies 18 venues but omits the chosen venue's current detailed schedule and use conditions, so executable rows must be imported first.",
+      "axes": {},
+      "gates": {
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "pending"
+        }
+      }
+    },
+    {
+      "caseId": "GB-13",
+      "independentReason": "Application paths, processing time, eligibility rules, office, documents, and channel-dependent fees are complete; the chosen channel determines the executable path.",
+      "axes": {
+        "naturalArtifact": {
+          "gold": "todo",
+          "independent": "checklist"
+        },
+        "secondaryArtifacts": {
+          "gold": [
+            "checklist",
+            "memo"
+          ],
+          "independent": [
+            "memo"
+          ]
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": "todo",
+            "secondary": [
+              "checklist",
+              "memo"
+            ]
+          },
+          "independent": {
+            "primary": "checklist",
+            "secondary": [
+              "memo"
+            ]
+          }
+        },
+        "requiredUserInputs": {
+          "gold": [
+            "application_route",
+            "ic_card_choice"
+          ],
+          "independent": [
+            "application_channel"
+          ]
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "privacy": {
+          "gold": "review_required",
+          "independent": "sensitive_private_only"
+        }
+      }
+    },
+    {
+      "caseId": "GB-14",
+      "independentReason": "Twelve official age windows can be calculated from one birth-date anchor, with the missed-window warning preserved as a constraint rather than a check.",
+      "axes": {},
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "safety": {
+          "gold": "review_required",
+          "independent": "passed_with_boundary"
+        },
+        "privacy": {
+          "gold": "review_required",
+          "independent": "sensitive_private_only"
+        }
+      }
+    },
+    {
+      "caseId": "GB-15",
+      "independentReason": "The three-day course span and topic durations are known, but topic dates, start times, and rooms needed for an executable schedule are missing.",
+      "axes": {
+        "flowPossible": {
+          "gold": true,
+          "independent": false
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "independent": "source_import_required"
+        },
+        "naturalArtifact": {
+          "gold": "sheet",
+          "independent": null
+        },
+        "secondaryArtifacts": {
+          "gold": [
+            "calendar",
+            "memo"
+          ],
+          "independent": []
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": "sheet",
+            "secondary": [
+              "calendar",
+              "memo"
+            ]
+          },
+          "independent": {
+            "primary": null,
+            "secondary": []
+          }
+        },
+        "requiredUserInputs": {
+          "gold": [
+            "participation_confirmed"
+          ],
+          "independent": []
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "partial"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "current"
+        },
+        "personalPreviewAllowed": {
+          "gold": true,
+          "independent": false
+        }
+      }
+    },
+    {
+      "caseId": "GB-16",
+      "independentReason": "The CSV provides eight stable planning rows and status-bearing columns, so it is immediately useful as a sheet even though calendar dates need a later start-date anchor.",
+      "axes": {
+        "state": {
+          "gold": "needs_confirmation",
+          "independent": "ready"
+        },
+        "requiredUserInputs": {
+          "gold": [
+            "brand_context",
+            "plan_start_date"
+          ],
+          "independent": []
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "unknown",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "current"
+        },
+        "locale": {
+          "gold": "applicable",
+          "independent": "adaptation_required"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "pending"
+        }
+      }
+    },
+    {
+      "caseId": "GB-17",
+      "independentReason": "Routine age rows support an anchor-derived calendar under the verified open license, but UK jurisdiction must apply and clinical-risk or optional branches remain outside the safe routine preview.",
+      "axes": {
+        "flowPossible": {
+          "gold": false,
+          "independent": true
+        },
+        "state": {
+          "gold": "hold",
+          "independent": "needs_confirmation"
+        },
+        "naturalArtifact": {
+          "gold": null,
+          "independent": "calendar"
+        },
+        "secondaryArtifacts": {
+          "gold": [],
+          "independent": [
+            "checklist"
+          ]
+        },
+        "artifactBundle": {
+          "gold": {
+            "primary": null,
+            "secondary": []
+          },
+          "independent": {
+            "primary": "calendar",
+            "secondary": [
+              "checklist"
+            ]
+          }
+        },
+        "requiredUserInputs": {
+          "gold": [],
+          "independent": [
+            "birth_date",
+            "jurisdiction"
+          ]
+        }
+      },
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "open",
+          "independent": "approved"
+        },
+        "freshness": {
+          "gold": "passed",
+          "independent": "current"
+        },
+        "locale": {
+          "gold": "not_applicable",
+          "independent": "adaptation_required"
+        },
+        "safety": {
+          "gold": "review_required",
+          "independent": "restricted"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "sensitive_private_only"
+        },
+        "personalPreviewAllowed": {
+          "gold": false,
+          "independent": true
+        }
+      }
+    },
+    {
+      "caseId": "GB-18",
+      "independentReason": "Five idea templates are visible, but the continuously changing collection does not define one bounded user job or a stable complete row set.",
+      "axes": {},
+      "gates": {
+        "access": {
+          "gold": "open",
+          "independent": "full"
+        },
+        "rights": {
+          "gold": "link_only",
+          "independent": "pending"
+        },
+        "freshness": {
+          "gold": "review_required",
+          "independent": "pending"
+        },
+        "locale": {
+          "gold": "applicable",
+          "independent": "adaptation_required"
+        },
+        "privacy": {
+          "gold": "not_required",
+          "independent": "pending"
+        }
+      }
+    }
+  ],
+  "caseSummaries": [
+    {
+      "caseId": "GB-01",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-02",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": false,
+        "artifactBundle": false,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-03",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-04",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-05",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": false,
+        "artifactBundle": false,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-06",
+      "matches": {
+        "flowPossible": true,
+        "state": false,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-07",
+      "matches": {
+        "flowPossible": true,
+        "state": false,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-08",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": false,
+        "artifactBundle": false,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-09",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-10",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-11",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-12",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-13",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": false,
+        "secondaryArtifacts": false,
+        "artifactBundle": false,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-14",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-15",
+      "matches": {
+        "flowPossible": false,
+        "state": false,
+        "naturalArtifact": false,
+        "secondaryArtifacts": false,
+        "artifactBundle": false,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-16",
+      "matches": {
+        "flowPossible": true,
+        "state": false,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-17",
+      "matches": {
+        "flowPossible": false,
+        "state": false,
+        "naturalArtifact": false,
+        "secondaryArtifacts": false,
+        "artifactBundle": false,
+        "requiredUserInputs": false,
+        "allGates": false
+      }
+    },
+    {
+      "caseId": "GB-18",
+      "matches": {
+        "flowPossible": true,
+        "state": true,
+        "naturalArtifact": true,
+        "secondaryArtifacts": true,
+        "artifactBundle": true,
+        "requiredUserInputs": true,
+        "allGates": false
+      }
+    }
+  ],
+  "goldMutationBoundary": {
+    "goldChangedAfterComparison": false,
+    "hashBeforeEqualsHashAfter": true,
+    "statement": "gold-source-contract-v1.json was not changed after this comparison. Disagreement records are audit evidence, not post-hoc permission to revise gold before final holdout."
+  },
+  "interpretationBoundary": "This is an internal source-only model audit, not observed-user validation. A disagreement does not by itself prove that either gold or the independent judgment is correct."
+}

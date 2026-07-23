@@ -6,17 +6,18 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..');
 
-const REQUIRED_DOCUMENTS = [
+export const CORE_DOCUMENTS = [
   'AGENTS.md',
   'agent.md',
-  'docs/STATUS.md',
-  'docs/ROADMAP.md',
-  'docs/DECISIONS.md',
-  'docs/IDEAS.md',
-  'docs/SERVICE_STRUCTURE.md',
-  'docs/TOOLING.md',
-  'docs/specs/README.md',
-  'docs/harness/README.md',
+];
+
+export const CONTEXT_ROUTES = [
+  { trigger: '현재 상태/우선순위', files: ['docs/STATUS.md', 'docs/ROADMAP.md'] },
+  { trigger: '제품/UX/콘텐츠 정책', files: ['docs/PRODUCT_PRINCIPLES.md', 'docs/DECISIONS.md'] },
+  { trigger: '보류 아이디어 검토', files: ['docs/IDEAS.md'] },
+  { trigger: 'route/component/data 구조', files: ['docs/SERVICE_STRUCTURE.md'] },
+  { trigger: 'tooling/harness/release', files: ['docs/TOOLING.md', 'docs/harness/README.md'] },
+  { trigger: '승인된 다단계 작업', files: ['docs/specs/README.md'] },
 ];
 
 function git(args, options = {}) {
@@ -163,7 +164,11 @@ function collectRepoState() {
     statusSummary: summarizeStatuses(parsed.changes),
     changes: parsed.changes,
     groupedChanges: groupChanges(parsed.changes),
-    requiredDocuments: REQUIRED_DOCUMENTS.map((file) => ({ file, exists: fs.existsSync(path.join(REPO_ROOT, file)) })),
+    requiredDocuments: CORE_DOCUMENTS.map((file) => ({ file, exists: fs.existsSync(path.join(REPO_ROOT, file)) })),
+    contextRoutes: CONTEXT_ROUTES.map((route) => ({
+      ...route,
+      files: route.files.map((file) => ({ file, exists: fs.existsSync(path.join(REPO_ROOT, file)) })),
+    })),
     latestAuditEntries: latestAuditEntries(),
   };
 }
@@ -188,7 +193,11 @@ function renderChangeGroups(groups, limit = 12) {
 
 function renderSessionStart(state) {
   const sync = state.upstream ? `ahead ${state.ahead}, behind ${state.behind}` : 'upstream 없음';
-  return `# FLOW Session Start\n\n- 생성: ${state.generatedAt}\n- repo: \`${state.repoRoot}\`\n- branch: \`${state.branch}\`\n- HEAD: \`${state.head}\`\n- upstream: \`${state.upstream ?? '없음'}\` (${sync})\n- worktree: ${formatStatusSummary(state.statusSummary)}\n\n## 변경 그룹\n\n${renderChangeGroups(state.groupedChanges)}\n\n## 최근 review/evidence\n\n${state.latestAuditEntries.map((entry) => `- \`docs/content-audit/${entry.name}\` (${entry.modifiedAt})`).join('\n') || '- 없음'}\n\n## 읽는 순서\n\n${state.requiredDocuments.map((entry, index) => `${index + 1}. \`${entry.file}\`${entry.exists ? '' : ' **MISSING**'}`).join('\n')}\n\n## 시작 규칙\n\n- 기존 dirty path는 현재 작업 소유로 추정하지 않는다.\n- 제품 Stage, 구현 상태, 자동 QA, 배포, 실제 사용자 증거를 분리한다.\n- 사용자 요청과 관련된 diff를 읽은 뒤 범위와 검증 lane을 정한다.\n`;
+  const routes = state.contextRoutes.map((route) => {
+    const files = route.files.map((entry) => `\`${entry.file}\`${entry.exists ? '' : ' **MISSING**'}`).join(', ');
+    return `- **${route.trigger}**: ${files}`;
+  }).join('\n');
+  return `# FLOW Session Start\n\n- 생성: ${state.generatedAt}\n- repo: \`${state.repoRoot}\`\n- branch: \`${state.branch}\`\n- HEAD: \`${state.head}\`\n- upstream: \`${state.upstream ?? '없음'}\` (${sync})\n- worktree: ${formatStatusSummary(state.statusSummary)}\n\n## 변경 그룹\n\n${renderChangeGroups(state.groupedChanges)}\n\n## 최근 review/evidence\n\n${state.latestAuditEntries.map((entry) => `- \`docs/content-audit/${entry.name}\` (${entry.modifiedAt})`).join('\n') || '- 없음'}\n\n## 기본 진입\n\n${state.requiredDocuments.map((entry, index) => `${index + 1}. \`${entry.file}\`${entry.exists ? '' : ' **MISSING**'}`).join('\n')}\n\n## 요청별 추가 컨텍스트\n\n${routes}\n\n> 위 문서를 모두 읽는 목록이 아니다. 사용자 요청과 직접 맞는 경로만 선택한다.\n\n## 시작 규칙\n\n- 기존 dirty path는 현재 작업 소유로 추정하지 않는다.\n- 제품 Stage, 구현 상태, 자동 QA, 배포, 실제 사용자 증거를 분리한다.\n- 사용자 요청과 관련된 diff를 읽은 뒤 범위와 검증 lane을 정한다.\n`;
 }
 
 function renderCloseout(state, scopes = []) {

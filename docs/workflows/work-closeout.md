@@ -2,7 +2,9 @@
 
 ## Trigger
 
-Use before ending a substantial task, handing work to another session or agent, committing, pushing, opening or merging a PR, deploying, or answering "is it done?".
+Use before ending a substantial task, handing work to another session or agent, committing, pushing, opening or merging a PR, deploying, reporting overall status, answering "is it done?", or separating scope in a mixed worktree.
+
+Skip the reporter for a clear answer or tiny local change when the scoped diff and targeted verification are already explicit. Never skip actual diff inspection or required verification.
 
 ## Inputs
 

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/generalization-adjudication-v1.schema.json",
+  "title": "Flow Content Generalization Benchmark adjudication ledger v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "benchmarkId",
+    "adjudicatedAt",
+    "adjudicator",
+    "entries"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "flow-content-generalization-adjudication-v1" },
+    "benchmarkId": { "$ref": "#/$defs/nonEmptyString" },
+    "adjudicatedAt": {
+      "oneOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ]
+    },
+    "adjudicator": { "$ref": "#/$defs/adjudicator" },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "nullableNonEmptyString": {
+      "oneOf": [
+        { "$ref": "#/$defs/nonEmptyString" },
+        { "type": "null" }
+      ]
+    },
+    "stringArray": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "adjudicator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "reviewBasis", "humanReviewerConfirmed", "independenceNote"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "reviewBasis": {
+          "enum": ["human_internal", "agent_assisted_internal", "mixed_internal"]
+        },
+        "humanReviewerConfirmed": { "type": "boolean" },
+        "independenceNote": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "caseId",
+        "role",
+        "reviewStatus",
+        "reviewedAt",
+        "rowJudgments",
+        "itemJudgments",
+        "inputJudgments",
+        "runInventions",
+        "usability",
+        "actualCost",
+        "notes"
+      ],
+      "properties": {
+        "caseId": { "$ref": "#/$defs/nonEmptyString" },
+        "role": { "enum": ["rules", "low_cost", "high_capability"] },
+        "reviewStatus": { "enum": ["pending", "reviewed"] },
+        "reviewedAt": {
+          "oneOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        },
+        "rowJudgments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/rowJudgment" }
+        },
+        "itemJudgments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/itemJudgment" }
+        },
+        "inputJudgments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/inputJudgment" }
+        },
+        "runInventions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/runInvention" }
+        },
+        "usability": {
+          "oneOf": [
+            {
+              "enum": [
+                "directly_usable",
+                "usable_after_minor_edit",
+                "requires_major_edit",
+                "not_usable",
+                "correct_stop"
+              ]
+            },
+            { "type": "null" }
+          ]
+        },
+        "actualCost": {
+          "oneOf": [
+            { "$ref": "#/$defs/actualCost" },
+            { "type": "null" }
+          ]
+        },
+        "notes": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "rowJudgment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowId", "meaningPreservation", "note"],
+      "properties": {
+        "sourceRowId": { "$ref": "#/$defs/nonEmptyString" },
+        "meaningPreservation": {
+          "oneOf": [
+            {
+              "enum": ["preserved", "partially_preserved", "lost", "not_applicable"]
+            },
+            { "type": "null" }
+          ]
+        },
+        "note": { "$ref": "#/$defs/nullableNonEmptyString" }
+      }
+    },
+    "itemJudgment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["itemId", "disposition", "semanticSupport", "inventionTypes", "note"],
+      "properties": {
+        "itemId": { "$ref": "#/$defs/nonEmptyString" },
+        "disposition": {
+          "oneOf": [
+            { "enum": ["keep", "delete", "major_edit"] },
+            { "type": "null" }
+          ]
+        },
+        "semanticSupport": {
+          "oneOf": [
+            { "enum": ["supported", "partially_supported", "unsupported"] },
+            { "type": "null" }
+          ]
+        },
+        "inventionTypes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/inventionType" }
+        },
+        "note": { "$ref": "#/$defs/nullableNonEmptyString" }
+      }
+    },
+    "inputJudgment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputId", "disposition", "sourceValueReentry", "note"],
+      "properties": {
+        "inputId": { "$ref": "#/$defs/nonEmptyString" },
+        "disposition": {
+          "oneOf": [
+            { "enum": ["keep", "delete", "major_edit"] },
+            { "type": "null" }
+          ]
+        },
+        "sourceValueReentry": { "type": ["boolean", "null"] },
+        "note": { "$ref": "#/$defs/nullableNonEmptyString" }
+      }
+    },
+    "runInvention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventionType", "affectedPath", "note"],
+      "properties": {
+        "inventionType": { "$ref": "#/$defs/inventionType" },
+        "affectedPath": { "$ref": "#/$defs/nonEmptyString" },
+        "note": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "inventionType": {
+      "enum": ["action", "date", "repeat", "completion", "condition", "location", "field", "other"]
+    },
+    "actualCost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency", "basis", "evidence"],
+      "properties": {
+        "amount": { "type": "number", "minimum": 0 },
+        "currency": { "enum": ["KRW", "USD"] },
+        "basis": { "enum": ["provider_billing", "verified_price_times_measured_tokens"] },
+        "evidence": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    }
+  }
+}

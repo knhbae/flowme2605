@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "flow-content-value-admission-v1",
+  "scoreWeights": {
+    "visibleDemand": 20,
+    "interaction": 20,
+    "sourceRowFeasibility": 15,
+    "creatorBusinessValue": 20,
+    "flowValueDelta": 20,
+    "portfolioExpansion": 5
+  },
+  "threshold": 80,
+  "hardGateOrder": [
+    "source",
+    "rights",
+    "locale",
+    "safety",
+    "oneJob",
+    "naturalArtifact"
+  ],
+  "rules": [
+    "hard gate를 점수보다 먼저 적용한다.",
+    "모든 점수에는 evidenceRefs와 source-grounded comment가 필요하다.",
+    "공식 고의도 대체 신호는 댓글처럼 표현하지 않는다.",
+    "구성 quota는 80점 또는 hard gate를 무시할 수 없다.",
+    "원문 링크와 거의 같은 결과는 positive가 아니다.",
+    "개인용 변환과 공개 배포 권리를 독립 판정한다."
+  ],
+  "officialHighIntentSignals": [
+    "statutory_deadline",
+    "legal_duty",
+    "loss_if_missed",
+    "official_service_window",
+    "repeat_renewal"
+  ],
+  "antiGaming": {
+    "quotaOverridesAllowed": false,
+    "invisibleMetricsMayBeInvented": false,
+    "businessHypothesisMustBeLabeled": true,
+    "selectedRateIsNotAnIndependentKpi": true,
+    "finalPositiveHoldoutLabel": "4-source pilot holdout"
+  }
+}

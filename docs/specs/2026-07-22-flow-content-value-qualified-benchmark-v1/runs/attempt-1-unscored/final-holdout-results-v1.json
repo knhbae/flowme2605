@@ -1,0 +1,4629 @@
+{
+  "generatedAt": "2026-07-22T15:00:00+09:00",
+  "postHoldoutRuleMutationCount": 0,
+  "caveat": "positive 4 + boundary 2 source의 pilot holdout이며 broad generalization claim이 아니다.",
+  "cases": [
+    {
+      "caseId": "VQ-09",
+      "role": "rules",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "topic_curriculum",
+      "userJob": "생활코딩 WEB1의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ09-R01",
+        "VQ09-R02",
+        "VQ09-R03",
+        "VQ09-R04",
+        "VQ09-R05",
+        "VQ09-R06",
+        "VQ09-R07",
+        "VQ09-R08",
+        "VQ09-R09",
+        "VQ09-R10",
+        "VQ09-R11",
+        "VQ09-R12",
+        "VQ09-R13",
+        "VQ09-R14",
+        "VQ09-R15",
+        "VQ09-R16",
+        "VQ09-R17",
+        "VQ09-R18",
+        "VQ09-R19",
+        "VQ09-R20",
+        "VQ09-R21",
+        "VQ09-R22",
+        "VQ09-R23",
+        "VQ09-R24",
+        "VQ09-R25",
+        "VQ09-R26"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-09-I01",
+          "type": "consume",
+          "title": "프로젝트의 동기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I02",
+          "type": "consume",
+          "title": "기획",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I03",
+          "type": "consume",
+          "title": "코딩과 HTML",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I04",
+          "type": "consume",
+          "title": "HTML 코딩 실습 환경 준비",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I05",
+          "type": "consume",
+          "title": "기본 문법 - 태그",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I06",
+          "type": "consume",
+          "title": "혁명적인 변화",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R06"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I07",
+          "type": "consume",
+          "title": "통계에 기반한 학습",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R07"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I08",
+          "type": "consume",
+          "title": "줄바꿈",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R08"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I09",
+          "type": "consume",
+          "title": "HTML이 중요한 이유",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R09"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I10",
+          "type": "consume",
+          "title": "최후의 문법 속성과 img",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R10"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I11",
+          "type": "consume",
+          "title": "부모 자식과 목록",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R11"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I12",
+          "type": "consume",
+          "title": "문서의 구조와 슈퍼스타들",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R12"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I13",
+          "type": "consume",
+          "title": "HTML 태그의 제왕",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R13"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I14",
+          "type": "consume",
+          "title": "웹사이트 완성",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R14"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I15",
+          "type": "consume",
+          "title": "원시웹",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R15"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I16",
+          "type": "consume",
+          "title": "인터넷을 여는 열쇠: 서버와 클라이언트",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R16"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I17",
+          "type": "consume",
+          "title": "웹호스팅 GitHub Pages",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R17"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I18",
+          "type": "consume",
+          "title": "웹서버 운영하기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R18"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I19",
+          "type": "consume",
+          "title": "수업을 마치며 1",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R19"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I20",
+          "type": "consume",
+          "title": "수업을 마치며 2",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R20"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I21",
+          "type": "consume",
+          "title": "수업을 마치며 3",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R21"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I22",
+          "type": "consume",
+          "title": "부록: 코드의 힘",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R22"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I23",
+          "type": "consume",
+          "title": "부록: 동영상 삽입",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R23"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I24",
+          "type": "consume",
+          "title": "부록: 댓글 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R24"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I25",
+          "type": "consume",
+          "title": "부록: 채팅 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R25"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I26",
+          "type": "consume",
+          "title": "부록: 방문자 분석기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R26"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_explicit_public_domain_statement",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-09-I01",
+              "title": "프로젝트의 동기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I02",
+              "title": "기획",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I03",
+              "title": "코딩과 HTML",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I04",
+              "title": "HTML 코딩 실습 환경 준비",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I05",
+              "title": "기본 문법 - 태그",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I06",
+              "title": "혁명적인 변화",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R06"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I07",
+              "title": "통계에 기반한 학습",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R07"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I08",
+              "title": "줄바꿈",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R08"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I09",
+              "title": "HTML이 중요한 이유",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R09"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I10",
+              "title": "최후의 문법 속성과 img",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R10"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I11",
+              "title": "부모 자식과 목록",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R11"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I12",
+              "title": "문서의 구조와 슈퍼스타들",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R12"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I13",
+              "title": "HTML 태그의 제왕",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R13"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I14",
+              "title": "웹사이트 완성",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R14"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I15",
+              "title": "원시웹",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R15"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I16",
+              "title": "인터넷을 여는 열쇠: 서버와 클라이언트",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R16"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I17",
+              "title": "웹호스팅 GitHub Pages",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R17"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I18",
+              "title": "웹서버 운영하기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R18"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I19",
+              "title": "수업을 마치며 1",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R19"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I20",
+              "title": "수업을 마치며 2",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R20"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I21",
+              "title": "수업을 마치며 3",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R21"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I22",
+              "title": "부록: 코드의 힘",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R22"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I23",
+              "title": "부록: 동영상 삽입",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R23"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I24",
+              "title": "부록: 댓글 기능 추가",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R24"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I25",
+              "title": "부록: 채팅 기능 추가",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R25"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-09-I26",
+              "title": "부록: 방문자 분석기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R26"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "ready",
+          "columns": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "rows": [
+            {
+              "itemId": "VQ-09-I01",
+              "title": "프로젝트의 동기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R01"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I02",
+              "title": "기획",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R02"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I03",
+              "title": "코딩과 HTML",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R03"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I04",
+              "title": "HTML 코딩 실습 환경 준비",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R04"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I05",
+              "title": "기본 문법 - 태그",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R05"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I06",
+              "title": "혁명적인 변화",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R06"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I07",
+              "title": "통계에 기반한 학습",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R07"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I08",
+              "title": "줄바꿈",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R08"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I09",
+              "title": "HTML이 중요한 이유",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R09"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I10",
+              "title": "최후의 문법 속성과 img",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R10"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I11",
+              "title": "부모 자식과 목록",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R11"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I12",
+              "title": "문서의 구조와 슈퍼스타들",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R12"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I13",
+              "title": "HTML 태그의 제왕",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R13"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I14",
+              "title": "웹사이트 완성",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R14"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I15",
+              "title": "원시웹",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R15"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I16",
+              "title": "인터넷을 여는 열쇠: 서버와 클라이언트",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R16"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I17",
+              "title": "웹호스팅 GitHub Pages",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R17"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I18",
+              "title": "웹서버 운영하기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R18"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I19",
+              "title": "수업을 마치며 1",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R19"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I20",
+              "title": "수업을 마치며 2",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R20"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I21",
+              "title": "수업을 마치며 3",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R21"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I22",
+              "title": "부록: 코드의 힘",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R22"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I23",
+              "title": "부록: 동영상 삽입",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R23"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I24",
+              "title": "부록: 댓글 기능 추가",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R24"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I25",
+              "title": "부록: 채팅 기능 추가",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R25"
+              ]
+            },
+            {
+              "itemId": "VQ-09-I26",
+              "title": "부록: 방문자 분석기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ09-R26"
+              ]
+            }
+          ]
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "별도 메모가 없어도 실행 상태가 충분하다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 3516,
+        "outputCharacters": 13164
+      }
+    },
+    {
+      "caseId": "VQ-10",
+      "role": "rules",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "inspection_rows_with_evidence_state",
+      "userJob": "리모델링 공정별 하자 점검의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ10-R01",
+        "VQ10-R02",
+        "VQ10-R03",
+        "VQ10-R04",
+        "VQ10-R05",
+        "VQ10-R06",
+        "VQ10-R07",
+        "VQ10-R08",
+        "VQ10-R09",
+        "VQ10-R10",
+        "VQ10-R11",
+        "VQ10-R12",
+        "VQ10-R13"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-10-I01",
+          "type": "record",
+          "title": "설비",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I02",
+          "type": "record",
+          "title": "새시",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I03",
+          "type": "record",
+          "title": "목공",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I04",
+          "type": "record",
+          "title": "중문",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I05",
+          "type": "record",
+          "title": "타일",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I06",
+          "type": "record",
+          "title": "욕실",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R06"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I07",
+          "type": "record",
+          "title": "필름",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R07"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I08",
+          "type": "record",
+          "title": "페인트",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R08"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I09",
+          "type": "record",
+          "title": "장판·마루",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R09"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I10",
+          "type": "record",
+          "title": "도배",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R10"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I11",
+          "type": "record",
+          "title": "주방",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R11"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I12",
+          "type": "record",
+          "title": "조명 설치",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "completion": "점검 결과와 필요한 후속 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R12"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I13",
+          "type": "action",
+          "title": "발견 사진·보수 요청·같은 지점 재촬영",
+          "detail": "하자 발견 시 사진을 찍고 보수를 요구한 뒤 같은 지점을 다시 촬영해 비교한다.",
+          "completion": "“발견 사진·보수 요청·같은 지점 재촬영” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R13"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass_inspection_not_legal_judgment",
+        "privacy": "pass_private_photos"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-10-I01",
+              "title": "설비",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I02",
+              "title": "새시",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I03",
+              "title": "목공",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I04",
+              "title": "중문",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I05",
+              "title": "타일",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I06",
+              "title": "욕실",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R06"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I07",
+              "title": "필름",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R07"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I08",
+              "title": "페인트",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R08"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I09",
+              "title": "장판·마루",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R09"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I10",
+              "title": "도배",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R10"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I11",
+              "title": "주방",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R11"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I12",
+              "title": "조명 설치",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R12"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-10-I13",
+              "title": "발견 사진·보수 요청·같은 지점 재촬영",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R13"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "ready",
+          "columns": [
+            "issueFound",
+            "photoRef",
+            "repairRequested",
+            "recheckStatus"
+          ],
+          "rows": [
+            {
+              "itemId": "VQ-10-I01",
+              "title": "설비",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R01"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I02",
+              "title": "새시",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R02"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I03",
+              "title": "목공",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R03"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I04",
+              "title": "중문",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R04"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I05",
+              "title": "타일",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R05"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I06",
+              "title": "욕실",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R06"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I07",
+              "title": "필름",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R07"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I08",
+              "title": "페인트",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R08"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I09",
+              "title": "장판·마루",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R09"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I10",
+              "title": "도배",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R10"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I11",
+              "title": "주방",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R11"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I12",
+              "title": "조명 설치",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R12"
+              ]
+            },
+            {
+              "itemId": "VQ-10-I13",
+              "title": "발견 사진·보수 요청·같은 지점 재촬영",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ10-R13"
+              ]
+            }
+          ]
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "별도 메모가 없어도 실행 상태가 충분하다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 2100,
+        "outputCharacters": 7485
+      }
+    },
+    {
+      "caseId": "VQ-11",
+      "role": "rules",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "date_windows_with_conditional_followup",
+      "userJob": "2026년 2학기 국가근로장학금 신청의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ11-R01",
+        "VQ11-R02",
+        "VQ11-R03",
+        "VQ11-R04",
+        "VQ11-R05"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-11-I01",
+          "type": "decide",
+          "title": "소속 대학 2차 운영 확인",
+          "detail": "2차 학생 신청기간 운영 여부는 대학마다 다르다.",
+          "completion": "공식 조건을 확인하고 적용 여부를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [
+            {
+              "statement": "2차 학생 신청기간 운영 여부는 대학마다 다르다.",
+              "provenance": "source"
+            }
+          ],
+          "sourceRefs": [
+            "VQ11-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I02",
+          "type": "action",
+          "title": "2차 신청",
+          "detail": "2026-08-12 09:00부터 2026-09-09 18:00까지.",
+          "completion": "“2차 신청” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": {
+            "kind": "date_window",
+            "startsAt": "2026-08-12",
+            "endsAt": "2026-09-09",
+            "timezone": "Asia/Seoul",
+            "provenance": "source"
+          },
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I03",
+          "type": "action",
+          "title": "제출대상 여부 확인",
+          "detail": "신청 후 1~3일(휴일 제외) 뒤 서류제출현황에서 확인.",
+          "completion": "“제출대상 여부 확인” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": {
+            "kind": "deadline",
+            "dueAt": "2026-09-16",
+            "timezone": "Asia/Seoul",
+            "provenance": "source"
+          },
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I04",
+          "type": "action",
+          "title": "해당자만 서류 제출·가구원 동의",
+          "detail": "2026-09-16 18:00까지.",
+          "completion": "“해당자만 서류 제출·가구원 동의” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I05",
+          "type": "record",
+          "title": "신청완료 상태 확인",
+          "detail": "공식 사이트에서 완료 상태를 확인한다.",
+          "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R05"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "calendar",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_official_metadata",
+        "locale": "pass",
+        "safety": "pass_eligibility_not_decided",
+        "privacy": "pass_no_documents_or_family_data"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "ready",
+          "events": [
+            {
+              "title": "2차 신청",
+              "schedule": {
+                "kind": "date_window",
+                "startsAt": "2026-08-12",
+                "endsAt": "2026-09-09",
+                "timezone": "Asia/Seoul",
+                "provenance": "source"
+              },
+              "sourceRefs": [
+                "VQ11-R02"
+              ]
+            },
+            {
+              "title": "제출대상 여부 확인",
+              "schedule": {
+                "kind": "deadline",
+                "dueAt": "2026-09-16",
+                "timezone": "Asia/Seoul",
+                "provenance": "source"
+              },
+              "sourceRefs": [
+                "VQ11-R03"
+              ]
+            }
+          ]
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-11-I01",
+              "title": "소속 대학 2차 운영 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ11-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-11-I02",
+              "title": "2차 신청",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ11-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-11-I03",
+              "title": "제출대상 여부 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ11-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-11-I04",
+              "title": "해당자만 서류 제출·가구원 동의",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ11-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-11-I05",
+              "title": "신청완료 상태 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ11-R05"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "별도 메모가 없어도 실행 상태가 충분하다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1355,
+        "outputCharacters": 3764
+      }
+    },
+    {
+      "caseId": "VQ-12",
+      "role": "rules",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "preparedness_rows",
+      "userJob": "반려동물 가족 재난 대응 준비의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ12-R01",
+        "VQ12-R02",
+        "VQ12-R03",
+        "VQ12-R04",
+        "VQ12-R05",
+        "VQ12-R06"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-12-I01",
+          "type": "action",
+          "title": "반려동물 동반 대피 계획 세우기",
+          "detail": "대피 가능한 장소와 이동 경로를 계획한다.",
+          "completion": "“반려동물 동반 대피 계획 세우기” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "owned",
+            "replenishBy",
+            "storageLocation",
+            "owner"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I02",
+          "type": "action",
+          "title": "이동장·목줄·하네스 준비",
+          "detail": "안전한 이동에 필요한 장비를 준비한다.",
+          "completion": "“이동장·목줄·하네스 준비” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "owned",
+            "replenishBy",
+            "storageLocation",
+            "owner"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I03",
+          "type": "action",
+          "title": "배변·응급처치·담요·사료·물 준비",
+          "detail": "가이드에 명시된 재난키트 범주를 준비한다.",
+          "completion": "“배변·응급처치·담요·사료·물 준비” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "owned",
+            "replenishBy",
+            "storageLocation",
+            "owner"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I04",
+          "type": "action",
+          "title": "처방약은 수의사와 확인",
+          "detail": "필요한 처방약과 복용 정보를 전문가와 확인한다.",
+          "completion": "“처방약은 수의사와 확인” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "owned",
+            "replenishBy",
+            "storageLocation",
+            "owner"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I05",
+          "type": "action",
+          "title": "시설·동물병원·돌봄 연락처 계획",
+          "detail": "대피 중 연락할 곳을 정한다.",
+          "completion": "“시설·동물병원·돌봄 연락처 계획” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "owned",
+            "replenishBy",
+            "storageLocation",
+            "owner"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I06",
+          "type": "action",
+          "title": "반려동물과 실제 대피 훈련",
+          "detail": "준비한 이동장과 경로로 한 번 연습한다.",
+          "completion": "“반려동물과 실제 대피 훈련” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "owned",
+            "replenishBy",
+            "storageLocation",
+            "owner"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R06"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "checklist",
+      "secondaryProjections": [
+        "memo"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_kogl_attribution",
+        "locale": "pass",
+        "safety": "pass_with_emergency_caution",
+        "privacy": "pass_private_contacts"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-12-I01",
+              "title": "반려동물 동반 대피 계획 세우기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ12-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-12-I02",
+              "title": "이동장·목줄·하네스 준비",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ12-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-12-I03",
+              "title": "배변·응급처치·담요·사료·물 준비",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ12-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-12-I04",
+              "title": "처방약은 수의사와 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ12-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-12-I05",
+              "title": "시설·동물병원·돌봄 연락처 계획",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ12-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-12-I06",
+              "title": "반려동물과 실제 대피 훈련",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ12-R06"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+        },
+        "memo": {
+          "availability": "ready",
+          "body": "반려동물 가족 재난 대응 준비 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1434,
+        "outputCharacters": 3823
+      }
+    },
+    {
+      "caseId": "BQ-05",
+      "role": "rules",
+      "phase": "final_holdout",
+      "flowPossible": false,
+      "reason": "source·rights·locale·safety gate를 먼저 적용해 실행본 생성을 중단했다.",
+      "sourceShape": "paid_template_listing",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": [],
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "모든 실행 projection"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "fail_paid_rows_missing",
+        "rights": "fail_entitlement_required",
+        "locale": "pass_non_sensitive",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "source_import_required",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "원문 확보 또는 검토가 우선"
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 660,
+        "outputCharacters": 1289
+      }
+    },
+    {
+      "caseId": "BQ-06",
+      "role": "rules",
+      "phase": "final_holdout",
+      "flowPossible": false,
+      "reason": "source·rights·locale·safety gate를 먼저 적용해 실행본 생성을 중단했다.",
+      "sourceShape": "locale_sensitive_health_advice",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": [],
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "모든 실행 projection"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass_reference_only",
+        "rights": "review_required",
+        "locale": "fail_ko_applicability",
+        "safety": "fail_health_review",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "blocked",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "원문 확보 또는 검토가 우선"
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 639,
+        "outputCharacters": 1287
+      }
+    },
+    {
+      "caseId": "VQ-09",
+      "role": "low-cost",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "The supplied public curriculum is a bounded topic sequence; its retained state is a curriculum record rather than a dated plan.",
+      "sourceShape": "topic_curriculum",
+      "userJob": "Keep the supplied WEB1 topic curriculum as a study reference.",
+      "sourceRowsUsed": [
+        "VQ09-R01",
+        "VQ09-R02",
+        "VQ09-R03",
+        "VQ09-R04",
+        "VQ09-R05",
+        "VQ09-R06",
+        "VQ09-R07",
+        "VQ09-R08",
+        "VQ09-R09",
+        "VQ09-R10",
+        "VQ09-R11",
+        "VQ09-R12",
+        "VQ09-R13",
+        "VQ09-R14",
+        "VQ09-R15",
+        "VQ09-R16",
+        "VQ09-R17",
+        "VQ09-R18",
+        "VQ09-R19",
+        "VQ09-R20",
+        "VQ09-R21",
+        "VQ09-R22",
+        "VQ09-R23",
+        "VQ09-R24",
+        "VQ09-R25",
+        "VQ09-R26"
+      ],
+      "items": [
+        {
+          "itemId": "VQ09-I01",
+          "type": "curriculum",
+          "title": "WEB1 published topic curriculum",
+          "detail": "The 26 supplied WEB1 lesson topics, retained in their source order.",
+          "completion": "No source completion criterion supplied.",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "topicCount": 26
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R01",
+            "VQ09-R02",
+            "VQ09-R03",
+            "VQ09-R04",
+            "VQ09-R05",
+            "VQ09-R06",
+            "VQ09-R07",
+            "VQ09-R08",
+            "VQ09-R09",
+            "VQ09-R10",
+            "VQ09-R11",
+            "VQ09-R12",
+            "VQ09-R13",
+            "VQ09-R14",
+            "VQ09-R15",
+            "VQ09-R16",
+            "VQ09-R17",
+            "VQ09-R18",
+            "VQ09-R19",
+            "VQ09-R20",
+            "VQ09-R21",
+            "VQ09-R22",
+            "VQ09-R23",
+            "VQ09-R24",
+            "VQ09-R25",
+            "VQ09-R26"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [
+        "How the learner will mark a topic complete."
+      ],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "memo"
+      ],
+      "forbiddenProjections": [
+        "calendar"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "The packet provides topic order but no dates, recurrence, prerequisites, or completion criteria."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_explicit_public_domain_statement",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "needs_confirmation",
+      "projections": {
+        "sheet": [
+          "VQ09-I01"
+        ],
+        "memo": [
+          "VQ09-I01"
+        ]
+      },
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": null,
+        "latencyMs": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "VQ-10",
+      "role": "low-cost",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "The source provides bounded inspection locations plus a stated evidence-and-repair follow-up workflow; its retained state is inspection evidence.",
+      "sourceShape": "inspection_rows_with_evidence_state",
+      "userJob": "Record a room-by-room construction-defect inspection and follow the supplied evidence workflow.",
+      "sourceRowsUsed": [
+        "VQ10-R01",
+        "VQ10-R02",
+        "VQ10-R03",
+        "VQ10-R04",
+        "VQ10-R05",
+        "VQ10-R06",
+        "VQ10-R07",
+        "VQ10-R08",
+        "VQ10-R09",
+        "VQ10-R10",
+        "VQ10-R11",
+        "VQ10-R12",
+        "VQ10-R13"
+      ],
+      "items": [
+        {
+          "itemId": "VQ10-I01",
+          "type": "inspection_record",
+          "title": "Inspection locations",
+          "detail": "The 12 supplied construction-process inspection locations, retained as inspection records.",
+          "completion": "No source completion criterion supplied.",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "inspectionLocationCount": 12,
+            "evidence": "private photo reference when a defect is found",
+            "repairRequest": "record when applicable",
+            "sameLocationRecheck": "record when applicable"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R01",
+            "VQ10-R02",
+            "VQ10-R03",
+            "VQ10-R04",
+            "VQ10-R05",
+            "VQ10-R06",
+            "VQ10-R07",
+            "VQ10-R08",
+            "VQ10-R09",
+            "VQ10-R10",
+            "VQ10-R11",
+            "VQ10-R12"
+          ]
+        },
+        {
+          "itemId": "VQ10-I02",
+          "type": "workflow",
+          "title": "Defect evidence and follow-up",
+          "detail": "When a defect is found, retain a photo reference, request repair, and re-photograph the same location for comparison.",
+          "completion": "No source completion criterion supplied.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [
+            "Applies when a defect is found."
+          ],
+          "sourceRefs": [
+            "VQ10-R13"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [
+        "Whether an observed issue is a defect requiring the stated workflow."
+      ],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "calendar"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "The Flow records inspection evidence; it does not make a legal or technical defect judgment. Private photos must remain private."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass_inspection_not_legal_judgment",
+        "privacy": "pass_private_photos"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": true,
+      "status": "needs_confirmation",
+      "projections": {
+        "sheet": [
+          "VQ10-I01",
+          "VQ10-I02"
+        ],
+        "checklist": [
+          "VQ10-I02"
+        ]
+      },
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": null,
+        "latencyMs": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "VQ-11",
+      "role": "low-cost",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "The official source supplies two explicit date windows, a conditional document check, and an application-status check.",
+      "sourceShape": "date_windows_with_conditional_followup",
+      "userJob": "Track the official second-round work-scholarship application windows and follow-up status.",
+      "sourceRowsUsed": [
+        "VQ11-R01",
+        "VQ11-R02",
+        "VQ11-R03",
+        "VQ11-R04",
+        "VQ11-R05"
+      ],
+      "items": [
+        {
+          "itemId": "VQ11-I01",
+          "type": "condition",
+          "title": "Check second-round application eligibility guidance",
+          "detail": "The source states that second-round student application-period guidance may differ by affiliation.",
+          "completion": "Guidance checked.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R01"
+          ]
+        },
+        {
+          "itemId": "VQ11-I02",
+          "type": "date_window",
+          "title": "Second-round application",
+          "detail": "Official application window.",
+          "completion": "No source completion criterion supplied.",
+          "schedule": {
+            "start": "2026-08-12T09:00",
+            "end": "2026-09-09T18:00"
+          },
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R02"
+          ]
+        },
+        {
+          "itemId": "VQ11-I03",
+          "type": "conditional",
+          "title": "Check document-submission status",
+          "detail": "Check document-submission status after applying, excluding 1–3 days stated by the source.",
+          "completion": "Document-submission status checked when applicable.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [
+            "Applies when the official status requires document submission."
+          ],
+          "sourceRefs": [
+            "VQ11-R03"
+          ]
+        },
+        {
+          "itemId": "VQ11-I04",
+          "type": "date_window",
+          "title": "Document submission and family-member consent for applicable applicants",
+          "detail": "Official deadline for applicable applicants.",
+          "completion": "No source completion criterion supplied.",
+          "schedule": {
+            "end": "2026-09-16T18:00"
+          },
+          "location": null,
+          "fields": {},
+          "conditions": [
+            "Applies only to applicable applicants."
+          ],
+          "sourceRefs": [
+            "VQ11-R04"
+          ]
+        },
+        {
+          "itemId": "VQ11-I05",
+          "type": "state",
+          "title": "Check application completion status",
+          "detail": "Check completion status on the official site.",
+          "completion": "Completion status checked.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R05"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [
+        "Whether the applicant is eligible and whether document submission is required."
+      ],
+      "primaryProjection": "calendar",
+      "secondaryProjections": [
+        "todo"
+      ],
+      "forbiddenProjections": [],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "The Flow does not decide eligibility and does not store documents or family data."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_official_metadata",
+        "locale": "pass",
+        "safety": "pass_eligibility_not_decided",
+        "privacy": "pass_no_documents_or_family_data"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "needs_confirmation",
+      "projections": {
+        "calendar": [
+          "VQ11-I02",
+          "VQ11-I04"
+        ],
+        "todo": [
+          "VQ11-I01",
+          "VQ11-I03",
+          "VQ11-I05"
+        ]
+      },
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": null,
+        "latencyMs": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "VQ-12",
+      "role": "low-cost",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "The official preparedness rows provide a bounded pet-inclusive family-disaster checklist and a stated practice action.",
+      "sourceShape": "preparedness_rows",
+      "userJob": "Prepare a pet-inclusive family disaster plan and kit.",
+      "sourceRowsUsed": [
+        "VQ12-R01",
+        "VQ12-R02",
+        "VQ12-R03",
+        "VQ12-R04",
+        "VQ12-R05",
+        "VQ12-R06"
+      ],
+      "items": [
+        {
+          "itemId": "VQ12-I01",
+          "type": "plan",
+          "title": "Make a pet-inclusive evacuation plan",
+          "detail": "Plan available shelter locations and travel routes.",
+          "completion": "Plan recorded.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R01"
+          ]
+        },
+        {
+          "itemId": "VQ12-I02",
+          "type": "kit",
+          "title": "Prepare transport and containment equipment",
+          "detail": "Prepare equipment needed to move safely.",
+          "completion": "Kit category prepared.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R02"
+          ]
+        },
+        {
+          "itemId": "VQ12-I03",
+          "type": "kit",
+          "title": "Prepare food, first aid, essential medicine, and water",
+          "detail": "Prepare the guide's stated disaster-kit categories.",
+          "completion": "Kit category prepared.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R03"
+          ]
+        },
+        {
+          "itemId": "VQ12-I04",
+          "type": "caution",
+          "title": "Confirm necessary vaccination and medication information with a professional",
+          "detail": "Confirm vaccination and medication information when needed.",
+          "completion": "Information confirmed when needed.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [
+            "Applies when confirmation is needed."
+          ],
+          "sourceRefs": [
+            "VQ12-R04"
+          ]
+        },
+        {
+          "itemId": "VQ12-I05",
+          "type": "plan",
+          "title": "Plan shelter, animal-hospital, and support contacts",
+          "detail": "Choose contact points for use during an emergency.",
+          "completion": "Contact plan recorded.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R05"
+          ]
+        },
+        {
+          "itemId": "VQ12-I06",
+          "type": "action",
+          "title": "Practice evacuation with the pet",
+          "detail": "Practice using the prepared transport equipment and route.",
+          "completion": "Practice completed.",
+          "schedule": null,
+          "location": null,
+          "fields": {},
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R06"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [
+        "Local shelter, animal-hospital, and support-contact details."
+      ],
+      "primaryProjection": "checklist",
+      "secondaryProjections": [
+        "memo"
+      ],
+      "forbiddenProjections": [
+        "calendar"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "This is preparedness guidance, not emergency instruction; private contact details are user-owned."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_kogl_attribution",
+        "locale": "pass",
+        "safety": "pass_with_emergency_caution",
+        "privacy": "pass_private_contacts"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "needs_confirmation",
+      "projections": {
+        "checklist": [
+          "VQ12-I01",
+          "VQ12-I02",
+          "VQ12-I03",
+          "VQ12-I04",
+          "VQ12-I05",
+          "VQ12-I06"
+        ],
+        "memo": [
+          "VQ12-I01",
+          "VQ12-I05"
+        ]
+      },
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": null,
+        "latencyMs": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "BQ-05",
+      "role": "low-cost",
+      "phase": "final_holdout",
+      "flowPossible": false,
+      "reason": "The paid template's rows were not acquired and rights require entitlement.",
+      "sourceShape": "paid_template_listing",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [
+        "Import entitled source rows."
+      ],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "The paid template content was not available in the packet."
+      ],
+      "gates": {
+        "source": "fail_paid_rows_missing",
+        "rights": "fail_entitlement_required",
+        "locale": "pass_non_sensitive",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "source_import_required",
+      "projections": {},
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": null,
+        "latencyMs": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "BQ-06",
+      "role": "low-cost",
+      "phase": "final_holdout",
+      "flowPossible": false,
+      "reason": "The locale applicability and health-review gates fail; no conversion is permitted from the reference-only source.",
+      "sourceShape": "locale_sensitive_health_advice",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [
+        "A Korea-applicable, health-reviewed source with bounded rows."
+      ],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "The source has no acquired rows and must not be used for health guidance in this locale."
+      ],
+      "gates": {
+        "source": "pass_reference_only",
+        "rights": "review_required",
+        "locale": "fail_ko_applicability",
+        "safety": "fail_health_review",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "blocked",
+      "projections": {},
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": null,
+        "latencyMs": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "VQ-09",
+      "role": "high-capability",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "26개의 공개 토픽 행이 순서를 가진 완결된 curriculum을 이루며, 사용자가 토픽별 진도를 남길 수 있다.",
+      "sourceShape": "topic_curriculum",
+      "userJob": "생활코딩 WEB1 토픽을 공개된 순서대로 학습하고 토픽별 진행 상태를 기록한다.",
+      "sourceRowsUsed": [
+        "VQ09-R01",
+        "VQ09-R02",
+        "VQ09-R03",
+        "VQ09-R04",
+        "VQ09-R05",
+        "VQ09-R06",
+        "VQ09-R07",
+        "VQ09-R08",
+        "VQ09-R09",
+        "VQ09-R10",
+        "VQ09-R11",
+        "VQ09-R12",
+        "VQ09-R13",
+        "VQ09-R14",
+        "VQ09-R15",
+        "VQ09-R16",
+        "VQ09-R17",
+        "VQ09-R18",
+        "VQ09-R19",
+        "VQ09-R20",
+        "VQ09-R21",
+        "VQ09-R22",
+        "VQ09-R23",
+        "VQ09-R24",
+        "VQ09-R25",
+        "VQ09-R26"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-09-I01",
+          "type": "lesson",
+          "title": "프로젝트의 동기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 1,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I02",
+          "type": "lesson",
+          "title": "기획",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 2,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I03",
+          "type": "lesson",
+          "title": "코딩과 HTML",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 3,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I04",
+          "type": "lesson",
+          "title": "HTML 코딩 실습 환경 준비",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 4,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I05",
+          "type": "lesson",
+          "title": "기본 문법 - 태그",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 5,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I06",
+          "type": "lesson",
+          "title": "혁명적인 변화",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 6,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R06"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I07",
+          "type": "lesson",
+          "title": "통계에 기반한 학습",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 7,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R07"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I08",
+          "type": "lesson",
+          "title": "줄바꿈",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 8,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R08"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I09",
+          "type": "lesson",
+          "title": "HTML이 중요한 이유",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 9,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R09"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I10",
+          "type": "lesson",
+          "title": "최후의 문법 속성과 img",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 10,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R10"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I11",
+          "type": "lesson",
+          "title": "부모 자식과 목록",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 11,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R11"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I12",
+          "type": "lesson",
+          "title": "문서의 구조와 슈퍼스타들",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 12,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R12"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I13",
+          "type": "lesson",
+          "title": "HTML 태그의 제왕",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 13,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R13"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I14",
+          "type": "lesson",
+          "title": "웹사이트 완성",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 14,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R14"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I15",
+          "type": "lesson",
+          "title": "원시웹",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 15,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R15"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I16",
+          "type": "lesson",
+          "title": "인터넷을 여는 열쇠: 서버와 클라이언트",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 16,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R16"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I17",
+          "type": "lesson",
+          "title": "웹호스팅 GitHub Pages",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 17,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R17"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I18",
+          "type": "lesson",
+          "title": "웹서버 운영하기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 18,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R18"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I19",
+          "type": "lesson",
+          "title": "수업을 마치며 1",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 19,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R19"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I20",
+          "type": "lesson",
+          "title": "수업을 마치며 2",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 20,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R20"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I21",
+          "type": "lesson",
+          "title": "수업을 마치며 3",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 21,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R21"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I22",
+          "type": "lesson",
+          "title": "부록: 코드의 힘",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 22,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R22"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I23",
+          "type": "lesson",
+          "title": "부록: 동영상 삽입",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 23,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R23"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I24",
+          "type": "lesson",
+          "title": "부록: 댓글 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 24,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R24"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I25",
+          "type": "lesson",
+          "title": "부록: 채팅 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 25,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R25"
+          ]
+        },
+        {
+          "itemId": "VQ-09-I26",
+          "type": "lesson",
+          "title": "부록: 방문자 분석기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "completion": "해당 공개 토픽의 학습 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 26,
+            "sourceKind": "lesson"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ09-R26"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": {
+        "topicOrder": [
+          "VQ-09-I01",
+          "VQ-09-I02",
+          "VQ-09-I03",
+          "VQ-09-I04",
+          "VQ-09-I05",
+          "VQ-09-I06",
+          "VQ-09-I07",
+          "VQ-09-I08",
+          "VQ-09-I09",
+          "VQ-09-I10",
+          "VQ-09-I11",
+          "VQ-09-I12",
+          "VQ-09-I13",
+          "VQ-09-I14",
+          "VQ-09-I15",
+          "VQ-09-I16",
+          "VQ-09-I17",
+          "VQ-09-I18",
+          "VQ-09-I19",
+          "VQ-09-I20",
+          "VQ-09-I21",
+          "VQ-09-I22",
+          "VQ-09-I23",
+          "VQ-09-I24",
+          "VQ-09-I25",
+          "VQ-09-I26"
+        ]
+      },
+      "valuesToConfirm": [
+        "사용자의 토픽별 실제 학습 상태"
+      ],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "calendar"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "토픽별 소요시간, 시작일, 완료일은 제공된 SourceRow에 없다."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_explicit_public_domain_statement",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": [
+        "sheet",
+        "checklist"
+      ],
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "promptTokens": null,
+        "completionTokens": null,
+        "totalTokens": null,
+        "costUsd": null,
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "VQ-10",
+      "role": "high-capability",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "12개 공정별 점검 행과 하자 발견 후 사진·보수 요청·재촬영 상태 행이 있어 현장 점검 결과를 Sheet에 유지할 수 있다.",
+      "sourceShape": "inspection_rows_with_evidence_state",
+      "userJob": "리모델링 공정별 점검 상태와 하자 발견 시 사진·보수 요청·재촬영 증거를 한곳에 기록한다.",
+      "sourceRowsUsed": [
+        "VQ10-R01",
+        "VQ10-R02",
+        "VQ10-R03",
+        "VQ10-R04",
+        "VQ10-R05",
+        "VQ10-R06",
+        "VQ10-R07",
+        "VQ10-R08",
+        "VQ10-R09",
+        "VQ10-R10",
+        "VQ10-R11",
+        "VQ10-R12",
+        "VQ10-R13"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-10-I01",
+          "type": "inspection",
+          "title": "설비 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "설비 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 1,
+            "process": "설비",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I02",
+          "type": "inspection",
+          "title": "새시 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "새시 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 2,
+            "process": "새시",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I03",
+          "type": "inspection",
+          "title": "목공 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "목공 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 3,
+            "process": "목공",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I04",
+          "type": "inspection",
+          "title": "중문 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "중문 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 4,
+            "process": "중문",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I05",
+          "type": "inspection",
+          "title": "타일 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "타일 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 5,
+            "process": "타일",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I06",
+          "type": "inspection",
+          "title": "욕실 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "욕실 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 6,
+            "process": "욕실",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R06"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I07",
+          "type": "inspection",
+          "title": "필름 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "필름 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 7,
+            "process": "필름",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R07"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I08",
+          "type": "inspection",
+          "title": "페인트 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "페인트 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 8,
+            "process": "페인트",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R08"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I09",
+          "type": "inspection",
+          "title": "장판·마루 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "장판·마루 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 9,
+            "process": "장판·마루",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R09"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I10",
+          "type": "inspection",
+          "title": "도배 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "도배 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 10,
+            "process": "도배",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R10"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I11",
+          "type": "inspection",
+          "title": "주방 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "주방 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 11,
+            "process": "주방",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R11"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I12",
+          "type": "inspection",
+          "title": "조명 설치 점검",
+          "detail": "원문 공정별 하자 점검 구간을 확인한다.",
+          "completion": "조명 설치 점검 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "order": 12,
+            "process": "조명 설치",
+            "status": null,
+            "sourceKind": "inspection"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ10-R12"
+          ]
+        },
+        {
+          "itemId": "VQ-10-I13",
+          "type": "conditional_workflow",
+          "title": "하자 발견 사진·보수 요청·같은 지점 재촬영",
+          "detail": "하자 발견 시 사진을 찍고 보수를 요구한 뒤 같은 지점을 다시 촬영해 비교한다.",
+          "completion": "발견 사진, 보수 요청 상태, 같은 지점 재촬영 여부를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "evidence": [
+              "발견 사진",
+              "보수 요청 상태",
+              "같은 지점 재촬영"
+            ],
+            "sourceKind": "workflow"
+          },
+          "conditions": [
+            "하자를 발견한 경우"
+          ],
+          "sourceRefs": [
+            "VQ10-R13"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": {
+        "inspectionProcesses": [
+          "설비",
+          "새시",
+          "목공",
+          "중문",
+          "타일",
+          "욕실",
+          "필름",
+          "페인트",
+          "장판·마루",
+          "도배",
+          "주방",
+          "조명 설치"
+        ],
+        "defectEvidenceFields": [
+          "발견 사진",
+          "보수 요청 상태",
+          "같은 지점 재촬영"
+        ]
+      },
+      "valuesToConfirm": [
+        "공정별 실제 점검 상태",
+        "하자 발견 시 개인 사진과 보수 요청 상태"
+      ],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "calendar"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "SourceRow는 공정별 세부 하자 기준을 열거하지 않는다.",
+        "이 기록은 법적 하자 판정을 대신하지 않는다."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass_inspection_not_legal_judgment",
+        "privacy": "pass_private_photos"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": [
+        "sheet"
+      ],
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "promptTokens": null,
+        "completionTokens": null,
+        "totalTokens": null,
+        "costUsd": null,
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "VQ-11",
+      "role": "high-capability",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "공식 신청·서류 제출 날짜창과 조건부 후속 확인 행이 있어 Calendar에 공식 기간을 보존하고 Todo로 상태 전이를 확인할 수 있다.",
+      "sourceShape": "date_windows_with_conditional_followup",
+      "userJob": "소속 대학의 2차 운영 여부를 확인하고 2026년 2학기 국가근로장학금 신청 기간과 조건부 서류 후속 조치를 놓치지 않는다.",
+      "sourceRowsUsed": [
+        "VQ11-R01",
+        "VQ11-R02",
+        "VQ11-R03",
+        "VQ11-R04",
+        "VQ11-R05"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-11-I01",
+          "type": "condition_check",
+          "title": "소속 대학 2차 운영 확인",
+          "detail": "2차 학생 신청기간 운영 여부는 대학마다 다르다.",
+          "completion": "소속 대학의 2차 운영 여부를 공식 안내에서 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "sourceKind": "condition"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ11-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I02",
+          "type": "date_window_action",
+          "title": "2차 신청",
+          "detail": "2026-08-12 09:00부터 2026-09-09 18:00까지.",
+          "completion": "공식 기간 안에 신청을 제출하고 신청 상태를 기록하면 완료",
+          "schedule": {
+            "kind": "window",
+            "start": "2026-08-12 09:00",
+            "end": "2026-09-09 18:00",
+            "timezone": null
+          },
+          "location": null,
+          "fields": {
+            "sourceKind": "date_window"
+          },
+          "conditions": [
+            "소속 대학이 2차 신청을 운영하는 경우"
+          ],
+          "sourceRefs": [
+            "VQ11-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I03",
+          "type": "conditional_check",
+          "title": "제출대상 여부 확인",
+          "detail": "신청 후 1~3일(휴일 제외) 뒤 서류제출현황에서 확인한다.",
+          "completion": "서류제출현황에서 제출대상 여부를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "relativeWindow": "신청 후 1~3일(휴일 제외)",
+            "sourceKind": "conditional"
+          },
+          "conditions": [
+            "신청 후",
+            "실제 확인일은 신청 완료일 기준으로 계산"
+          ],
+          "sourceRefs": [
+            "VQ11-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I04",
+          "type": "date_window_action",
+          "title": "해당자만 서류 제출·가구원 동의",
+          "detail": "2026-09-16 18:00까지.",
+          "completion": "해당자라면 공식 마감 전 서류 제출·가구원 동의 상태를 확인해 기록하면 완료",
+          "schedule": {
+            "kind": "deadline",
+            "due": "2026-09-16 18:00",
+            "timezone": null
+          },
+          "location": null,
+          "fields": {
+            "sourceKind": "date_window"
+          },
+          "conditions": [
+            "서류 제출 또는 가구원 동의 대상인 경우"
+          ],
+          "sourceRefs": [
+            "VQ11-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-11-I05",
+          "type": "state_check",
+          "title": "신청완료 상태 확인",
+          "detail": "공식 사이트에서 완료 상태를 확인한다.",
+          "completion": "공식 사이트의 신청완료 상태를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "sourceKind": "state"
+          },
+          "conditions": [
+            "신청 제출 후"
+          ],
+          "sourceRefs": [
+            "VQ11-R05"
+          ]
+        }
+      ],
+      "minimumInputs": [
+        "소속 대학",
+        "실제 신청 완료일"
+      ],
+      "autoFilledValues": {
+        "secondApplicationWindow": {
+          "start": "2026-08-12 09:00",
+          "end": "2026-09-09 18:00",
+          "timezone": null
+        },
+        "documentAndConsentDeadline": {
+          "due": "2026-09-16 18:00",
+          "timezone": null
+        }
+      },
+      "valuesToConfirm": [
+        "소속 대학의 2차 운영 여부",
+        "서류 제출·가구원 동의 대상 여부와 신청완료 상태"
+      ],
+      "primaryProjection": "calendar",
+      "secondaryProjections": [
+        "todo"
+      ],
+      "forbiddenProjections": [],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "대학별 2차 운영 여부와 개인의 제출대상 여부는 원문만으로 확정할 수 없다.",
+        "신청 후 1~3일 확인은 실제 신청 완료일과 휴일을 알아야 하므로 고정 날짜로 만들지 않았다.",
+        "시간대는 SourceRow에 명시되지 않아 null이다."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_official_metadata",
+        "locale": "pass",
+        "safety": "pass_eligibility_not_decided",
+        "privacy": "pass_no_documents_or_family_data"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "needs_confirmation",
+      "projections": [
+        "calendar",
+        "todo"
+      ],
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "promptTokens": null,
+        "completionTokens": null,
+        "totalTokens": null,
+        "costUsd": null,
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "VQ-12",
+      "role": "high-capability",
+      "phase": "final_holdout",
+      "flowPossible": true,
+      "reason": "대피 계획, 재난키트, 전문가 확인, 연락 계획, 실제 훈련의 준비 행이 한 사용자 일을 충분히 지원한다.",
+      "sourceShape": "preparedness_rows",
+      "userJob": "재난 전에 반려동물 동반 대피 계획과 장비·물품·연락처를 준비하고 실제 경로로 한 번 훈련한다.",
+      "sourceRowsUsed": [
+        "VQ12-R01",
+        "VQ12-R02",
+        "VQ12-R03",
+        "VQ12-R04",
+        "VQ12-R05",
+        "VQ12-R06"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-12-I01",
+          "type": "plan",
+          "title": "반려동물 동반 대피 계획 세우기",
+          "detail": "대피 가능한 장소와 이동 경로를 계획한다.",
+          "completion": "대피 가능한 장소와 이동 경로를 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "sourceKind": "plan"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I02",
+          "type": "kit",
+          "title": "이동장·목줄·하네스 준비",
+          "detail": "안전한 이동에 필요한 장비를 준비한다.",
+          "completion": "필요한 이동장·목줄·하네스의 준비 상태를 확인하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "items": [
+              "이동장",
+              "목줄",
+              "하네스"
+            ],
+            "sourceKind": "kit"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I03",
+          "type": "kit",
+          "title": "배변·응급처치·담요·사료·물 준비",
+          "detail": "가이드에 명시된 재난키트 범주를 준비한다.",
+          "completion": "명시된 재난키트 범주의 준비 상태를 확인하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "categories": [
+              "배변",
+              "응급처치",
+              "담요",
+              "사료",
+              "물"
+            ],
+            "sourceKind": "kit"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I04",
+          "type": "caution_check",
+          "title": "처방약은 수의사와 확인",
+          "detail": "필요한 처방약과 복용 정보를 전문가와 확인한다.",
+          "completion": "필요한 처방약과 복용 정보를 수의사와 확인해 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "sourceKind": "caution"
+          },
+          "conditions": [
+            "처방약이 필요한 경우"
+          ],
+          "sourceRefs": [
+            "VQ12-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I05",
+          "type": "plan",
+          "title": "시설·동물병원·돌봄 연락처 계획",
+          "detail": "대피 중 연락할 곳을 정한다.",
+          "completion": "대피 중 연락할 시설·동물병원·돌봄 연락처를 정해 비공개로 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "contactCategories": [
+              "시설",
+              "동물병원",
+              "돌봄"
+            ],
+            "sourceKind": "plan"
+          },
+          "conditions": [],
+          "sourceRefs": [
+            "VQ12-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-12-I06",
+          "type": "action",
+          "title": "반려동물과 실제 대피 훈련",
+          "detail": "준비한 이동장과 경로로 한 번 연습한다.",
+          "completion": "준비한 이동장과 경로를 사용해 한 번 연습하고 상태를 기록하면 완료",
+          "schedule": null,
+          "location": null,
+          "fields": {
+            "sourceKind": "action"
+          },
+          "conditions": [
+            "대피 장소·경로와 이동장 준비 후"
+          ],
+          "sourceRefs": [
+            "VQ12-R06"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": {
+        "mobilityEquipment": [
+          "이동장",
+          "목줄",
+          "하네스"
+        ],
+        "kitCategories": [
+          "배변",
+          "응급처치",
+          "담요",
+          "사료",
+          "물"
+        ],
+        "contactCategories": [
+          "시설",
+          "동물병원",
+          "돌봄"
+        ]
+      },
+      "valuesToConfirm": [
+        "개인 대피 가능 장소와 이동 경로",
+        "처방약이 필요한 경우 수의사가 확인한 복용 정보"
+      ],
+      "primaryProjection": "checklist",
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "calendar"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "실제 재난 상황의 공식 안내와 현장 조건은 별도로 확인해야 한다.",
+        "훈련 날짜와 반복 주기는 제공된 SourceRow에 없다.",
+        "개인 연락처는 공개 projection에 포함하지 않는다."
+      ],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_kogl_attribution",
+        "locale": "pass",
+        "safety": "pass_with_emergency_caution",
+        "privacy": "pass_private_contacts"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": [
+        "checklist"
+      ],
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "promptTokens": null,
+        "completionTokens": null,
+        "totalTokens": null,
+        "costUsd": null,
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "BQ-05",
+      "role": "high-capability",
+      "phase": "final_holdout",
+      "flowPossible": false,
+      "reason": "유료 listing만 있고 template 행을 확보하지 못했으며 entitlement가 필요한 권리 gate도 실패했다.",
+      "sourceShape": "paid_template_listing",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "유료 template의 실제 행과 사용 권한을 확인할 수 없다."
+      ],
+      "gates": {
+        "source": "fail_paid_rows_missing",
+        "rights": "fail_entitlement_required",
+        "locale": "pass_non_sensitive",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "blocked",
+      "projections": [],
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "promptTokens": null,
+        "completionTokens": null,
+        "totalTokens": null,
+        "costUsd": null,
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    },
+    {
+      "caseId": "BQ-06",
+      "role": "high-capability",
+      "phase": "final_holdout",
+      "flowPossible": false,
+      "reason": "한국 적용성이 확인되지 않은 영국의 영유아 건강·양육 조언이며 locale과 health safety gate가 모두 실패했다.",
+      "sourceShape": "locale_sensitive_health_advice",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": {},
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [],
+      "omittedSourceRows": [],
+      "uncertainty": [
+        "한국 의료·양육 환경에의 적용성과 건강 조언의 안전성을 확인할 수 없다."
+      ],
+      "gates": {
+        "source": "pass_reference_only",
+        "rights": "review_required",
+        "locale": "fail_ko_applicability",
+        "safety": "fail_health_review",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "blocked",
+      "projections": [],
+      "runTelemetry": {
+        "provider": null,
+        "model": null,
+        "promptTokens": null,
+        "completionTokens": null,
+        "totalTokens": null,
+        "costUsd": null,
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "actualProviderCost": null,
+        "retries": 0,
+        "humanInterventions": 0,
+        "processingMs": null
+      }
+    }
+  ],
+  "evaluations": [
+    {
+      "caseId": "VQ-09",
+      "role": "rules",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "VQ-10",
+      "role": "rules",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "VQ-11",
+      "role": "rules",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "VQ-12",
+      "role": "rules",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "BQ-05",
+      "role": "rules",
+      "split": "final_holdout",
+      "goldClass": "boundary",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "BQ-06",
+      "role": "rules",
+      "split": "final_holdout",
+      "goldClass": "boundary",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "VQ-09",
+      "role": "low-cost",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 1,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0.9615384615384616,
+      "directlyUsable": false
+    },
+    {
+      "caseId": "VQ-10",
+      "role": "low-cost",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0.8461538461538461,
+      "directlyUsable": false
+    },
+    {
+      "caseId": "VQ-11",
+      "role": "low-cost",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 1,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 1,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": false
+    },
+    {
+      "caseId": "VQ-12",
+      "role": "low-cost",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "BQ-05",
+      "role": "low-cost",
+      "split": "final_holdout",
+      "goldClass": "boundary",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "BQ-06",
+      "role": "low-cost",
+      "split": "final_holdout",
+      "goldClass": "boundary",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "VQ-09",
+      "role": "high-capability",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "VQ-10",
+      "role": "high-capability",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "VQ-11",
+      "role": "high-capability",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 1,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 1,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": false
+    },
+    {
+      "caseId": "VQ-12",
+      "role": "high-capability",
+      "split": "final_holdout",
+      "goldClass": "positive",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "BQ-05",
+      "role": "high-capability",
+      "split": "final_holdout",
+      "goldClass": "boundary",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    },
+    {
+      "caseId": "BQ-06",
+      "role": "high-capability",
+      "split": "final_holdout",
+      "goldClass": "boundary",
+      "flowEligibilityMatch": true,
+      "boundaryStopped": true,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactMatch": true,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsable": true
+    }
+  ]
+}

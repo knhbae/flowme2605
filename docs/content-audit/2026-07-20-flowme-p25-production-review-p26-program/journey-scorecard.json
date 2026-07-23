@@ -1,0 +1,263 @@
+{
+  "title": "FlowMe P25 production independent journey scorecard",
+  "reviewedAt": "2026-07-20",
+  "productionUrl": "https://flowme2605.vercel.app",
+  "originMainCommit": "192a60a19909c3c9990ddb0955c7b339ac4b7ae7",
+  "method": "independent automated simulation and heuristic review",
+  "observedUserCount": 0,
+  "statusVocabulary": [
+    "supported",
+    "hidden",
+    "partial",
+    "missing",
+    "blocked"
+  ],
+  "statusDefinitions": {
+    "supported": "The simulated user can predict and complete the step on current production.",
+    "hidden": "The capability exists, but the entry or meaning is not discoverable on the primary path.",
+    "partial": "The journey works only with an inconsistent contract, extra recovery, or unclear result.",
+    "missing": "No current production entry or result was found.",
+    "blocked": "The simulated journey cannot reach a trustworthy result on the reviewed path."
+  },
+  "journeys": [
+    {
+      "id": "A",
+      "persona": "이사 준비를 처음 저장하는 사용자",
+      "route": "/f/moving-d30-basic",
+      "overall": "partial",
+      "dimensions": {
+        "save_result_prediction": "supported",
+        "post_save_receipt": "hidden",
+        "whole_flow_confirmation": "supported",
+        "anchor_change_after_save": "missing",
+        "single_item_date_override": "supported",
+        "complete_and_reopen": "partial",
+        "whole_and_selected_export": "supported",
+        "reuse_with_new_anchor": "missing"
+      },
+      "measured": {
+        "itemCount": 24,
+        "mobileDocumentHeightBeforeSave": 3109,
+        "mobileTapDepthToWholeFlow": 4,
+        "wideTapDepthToWholeFlow": 4,
+        "horizontalOverflowPx": 0
+      },
+      "viewportNotes": {
+        "390x844": "저장 후 특수 CTA가 /my로 이동해 저장 확인 패널을 건너뛴다. 전체 24개는 내 Flow 탭에서 긴 목록으로 확인한다.",
+        "1024x768": "전체 Flow는 읽을 수 있으나 24개 행이 하나의 긴 카드에 쌓인다. 기준일 재설정 진입은 없다."
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "current_source"
+      ],
+      "screenshots": [
+        "screenshots/A-moving-mobile-01-public-initial.png",
+        "screenshots/A-moving-mobile-04-my-landing.png",
+        "screenshots/A-moving-mobile-05-whole-flow.png",
+        "screenshots/A-moving-wide-05-whole-flow.png"
+      ]
+    },
+    {
+      "id": "B",
+      "persona": "검사일을 아직 모르는 차량 점검 사용자",
+      "route": "/f/vehicle-inspection-prep",
+      "overall": "partial",
+      "dimensions": {
+        "undated_intent_on_primary_path": "hidden",
+        "blank_date_save_semantics": "blocked",
+        "explicit_undated_save": "supported",
+        "post_save_receipt": "supported",
+        "my_flow_execution": "supported",
+        "calendar_batch_schedule": "supported",
+        "remove_date_back_to_tray": "supported",
+        "checklist_export": "supported",
+        "ics_export": "partial"
+      },
+      "measured": {
+        "itemCount": 10,
+        "blankInputStoredAnchor": "2026-07-20",
+        "explicitUndatedCalendarCount": 0,
+        "afterSchedulingOneCalendarCount": 1,
+        "afterRemovingDateUndatedCount": 10,
+        "scheduledIcsEventCount": 1,
+        "horizontalOverflowPx": 0
+      },
+      "viewportNotes": {
+        "390x844": "날짜 미정은 '다른 방법' 안에 있다. 기본 '그대로 저장'은 예시 날짜를 실제 일정으로 저장한다.",
+        "1024x768": "날짜 없는 tray와 월·일 agenda의 3열 구조는 작동한다. tray는 열려 있어 별도 펼치기 버튼이 없는 것이 정상이다."
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "screenshots": [
+        "screenshots/B-undated-vehicle-mobile-01-public-undated.png",
+        "screenshots/B-undated-vehicle-mobile-03-post-save.png",
+        "screenshots/target-explicit-undated-mobile-02-undated-mode.png",
+        "screenshots/target-explicit-undated-wide-07-scheduled-one.png"
+      ]
+    },
+    {
+      "id": "C",
+      "persona": "월간 반복 청소 루틴 사용자",
+      "route": "/f/washer-tub-clean-monthly",
+      "overall": "partial",
+      "dimensions": {
+        "recurrence_prediction_before_save": "supported",
+        "post_save_receipt": "supported",
+        "series_definition_readability": "partial",
+        "occurrence_completion": "supported",
+        "occurrence_reopen": "supported",
+        "public_ics": "supported",
+        "my_flow_ics": "blocked",
+        "calendar_series_occurrence_separation": "partial"
+      },
+      "measured": {
+        "seriesDefinitionItemCount": 3,
+        "publicIcsEventCount": 1,
+        "publicIcsRrule": "FREQ=MONTHLY;BYMONTHDAY=1",
+        "myFlowCalendarExportCount": 0,
+        "calendarVisibleOccurrenceCountOnStartDate": 1,
+        "calendarUndatedDefinitionCount": 3,
+        "horizontalOverflowPx": 0
+      },
+      "viewportNotes": {
+        "390x844": "My Flow export는 Flow 3개라고 표시하지만 Calendar는 0개라 public에서 받던 반복 ICS가 사라진다.",
+        "1024x768": "왼쪽 tray에는 날짜 없는 정의 3개, 가운데에는 반복 회차 1개가 동시에 나타나 같은 루틴이 중복처럼 읽힌다."
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "current_source"
+      ],
+      "screenshots": [
+        "screenshots/target-routine-export-mobile-01-public-export.png",
+        "screenshots/target-routine-export-mobile-02-my-flow-export.png",
+        "screenshots/target-routine-export-wide-03-calendar-series-occurrence.png"
+      ]
+    },
+    {
+      "id": "D",
+      "persona": "메모장에서 여행 준비를 붙여넣는 사용자",
+      "route": "/flows",
+      "overall": "partial",
+      "dimensions": {
+        "memo_intake": "supported",
+        "deterministic_split": "partial",
+        "draft_review": "supported",
+        "add_delete_restore_reorder": "supported",
+        "quick_item_edit": "supported",
+        "advanced_schedule_edit": "hidden",
+        "calendar_projection": "supported",
+        "checklist_sheet_memo_export": "supported",
+        "recurring_ics": "supported"
+      },
+      "measured": {
+        "expectedActionClauses": 5,
+        "generatedDraftItemCount": 2,
+        "generatedCombinedClauseCount": 5,
+        "itemCountAfterUserAdd": 3,
+        "sheetRowCountIncludingHeader": 4,
+        "recurringIcsEventCount": 1,
+        "recurringIcsRrule": "FREQ=DAILY;COUNT=3",
+        "horizontalOverflowPx": 0
+      },
+      "viewportNotes": {
+        "390x844": "기본 편집과 고급 일정이 긴 Flow 카드 안에 중첩되어 저장 버튼까지 이동량이 크다.",
+        "1024x768": "목록과 우측 detail pane 분리는 더 안정적이지만 전체 요약 카드와 목록 카드가 세로로 길게 쌓인다."
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "current_source"
+      ],
+      "screenshots": [
+        "screenshots/D-personal-memo-mobile-02-draft-split.png",
+        "screenshots/target-personal-advanced-mobile-02-advanced-editor.png",
+        "screenshots/target-personal-advanced-wide-02-advanced-editor.png",
+        "screenshots/target-personal-advanced-mobile-04-export.png"
+      ]
+    },
+    {
+      "id": "E",
+      "persona": "여러 Flow를 반복해서 쓰는 재방문 사용자",
+      "route": "/my, /calendar",
+      "overall": "partial",
+      "dimensions": {
+        "multi_flow_inventory": "supported",
+        "now_flow_completed_navigation": "supported",
+        "whole_flow_open": "supported",
+        "same_day_flow_differentiation": "partial",
+        "complete_and_reopen": "partial",
+        "selected_export": "supported",
+        "my_flow_calendar_role_separation": "partial",
+        "held_content_separation": "supported"
+      },
+      "measured": {
+        "savedFlowCount": 3,
+        "sameDateFlowCount": 2,
+        "wideCalendarColumns": 3,
+        "horizontalOverflowPx": 0
+      },
+      "viewportNotes": {
+        "390x844": "Flow 카드별 다음 행동은 선명하지만 '내 Flow' 페이지와 '내 Flow' 탭이 같은 이름이라 정보 구조가 겹친다.",
+        "1024x768": "좌측 Flow rail과 3열 Calendar가 있어 늘어난 모바일 화면은 아니다. 다만 My Flow 본문은 큰 요약과 카드 스택이 길다."
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "screenshots": [
+        "screenshots/E-returning-multi-flow-mobile-02-my-flow-multiple.png",
+        "screenshots/E-returning-multi-flow-wide-02-my-flow-multiple.png",
+        "screenshots/E-returning-multi-flow-wide-05-calendar-multiple.png"
+      ]
+    },
+    {
+      "id": "F",
+      "persona": "설명을 자세히 읽지 않는 public 첫 방문자",
+      "route": "/f/new-car-delivery-check",
+      "overall": "partial",
+      "dimensions": {
+        "artifact_visibility": "supported",
+        "save_unit_prediction": "supported",
+        "export_unit_prediction": "partial",
+        "primary_action_clarity": "supported",
+        "safety_copy_hierarchy": "partial",
+        "post_save_receipt": "supported",
+        "saved_result_match": "supported"
+      },
+      "measured": {
+        "itemCount": 12,
+        "visibleInitialChecklistItems": 8,
+        "postSaveConfirmedItemCount": 12,
+        "horizontalOverflowPx": 0
+      },
+      "viewportNotes": {
+        "390x844": "artifact는 보이지만 '인수 보류 기준'이 첫 checklist보다 먼저 큰 면적을 차지한다.",
+        "1024x768": "저장 CTA와 12개 구조는 예측 가능하나 안전 설명이 핵심 실행 목록과 같은 위계로 경쟁한다."
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "screenshots": [
+        "screenshots/F-public-first-visit-mobile-01-public-skim.png",
+        "screenshots/F-public-first-visit-mobile-03-post-save-actual.png",
+        "screenshots/F-public-first-visit-wide-01-public-skim.png"
+      ]
+    }
+  ],
+  "crossJourneyTechnicalChecks": {
+    "horizontalOverflow": "0px on all inventoried 390x844 and 1024x768 routes",
+    "consoleErrors": "none in successful production runs",
+    "pageErrors": "none in successful production runs",
+    "keyboardAndAccessibleNames": "sampled on primary native controls; not a complete WCAG audit",
+    "automationCaveat": "full-page captures can composite fixed headers or bottom navigation more than once; this is a capture artifact and was not counted as a product overlap defect"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "creator-flow-portfolio-verification-v1",
+  "generatedAt": "2026-07-23T14:17:32.442Z",
+  "passed": true,
+  "failures": [],
+  "browserResults": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 900
+      },
+      "layout": {
+        "viewportWidth": 1280,
+        "documentWidth": 1280,
+        "bodyWidth": 1280,
+        "creatorCount": 27,
+        "visibleCreatorCount": 27,
+        "brokenImages": [],
+        "clippedTextElements": []
+      },
+      "goVisibleCount": 12,
+      "categoryVisibleCount": 3,
+      "screenshotPath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\qa-report-desktop.png"
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "layout": {
+        "viewportWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "creatorCount": 27,
+        "visibleCreatorCount": 27,
+        "brokenImages": [],
+        "clippedTextElements": []
+      },
+      "goVisibleCount": 12,
+      "categoryVisibleCount": 3,
+      "screenshotPath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\qa-report-mobile.png"
+    }
+  ]
+}

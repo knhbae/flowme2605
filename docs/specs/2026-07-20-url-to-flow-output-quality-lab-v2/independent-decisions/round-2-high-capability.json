@@ -1,0 +1,2738 @@
+{
+  "documentType": "flowme-independent-decision-set",
+  "decisionSetVersion": "flowme-independent-decision-set-v1",
+  "roundId": "round-2",
+  "profile": "high_capability_agent",
+  "caseSetVersion": "output-quality-v2-cases-2026-07-20.1",
+  "blind": true,
+  "modelEvidence": {
+    "modelFamily": "gpt-5.6-sol",
+    "actualApiCostMeasured": false
+  },
+  "decisions": [
+    {
+      "caseId": "OQ-C01-MOVING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required"
+        ],
+        "reason": "상대일 6구간은 완전하지만 link-only 권리 경계가 export와 promotion을 막는다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "이사",
+          "상대일",
+          "준비"
+        ],
+        "sourceShape": "date_offsets",
+        "secondarySourceShapes": [
+          "checklist_rows"
+        ],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "이사일 anchor를 받는 Flow 1개, 상대일 구간 Step 6개, 구간별 source-backed Item 6개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "상대일이 실행의 필수 상태이므로 Calendar가 본래 primary이고 Checklist는 누락 방지용 secondary다. 현재는 restricted rights 때문에 projection을 열지 않는다.",
+      "confidence": 0.96,
+      "roles": [
+        {
+          "sourceRowId": "DS05-R01",
+          "role": "item",
+          "targetIds": [
+            "item:DS05-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS05-R02",
+          "role": "item",
+          "targetIds": [
+            "item:DS05-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS05-R03",
+          "role": "item",
+          "targetIds": [
+            "item:DS05-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS05-R04",
+          "role": "item",
+          "targetIds": [
+            "item:DS05-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS05-R05",
+          "role": "item",
+          "targetIds": [
+            "item:DS05-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS05-R06",
+          "role": "item",
+          "targetIds": [
+            "item:DS05-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-C02-KMOOC-FULL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required"
+        ],
+        "reason": "14주 실행행은 완전하지만 link-only 권리 범위가 변환 projection을 막는다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "데이터분석",
+          "온라인강좌",
+          "14주"
+        ],
+        "sourceShape": "lesson_rows",
+        "secondarySourceShapes": [
+          "date_window"
+        ],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo"
+        ],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 14,
+        "fieldCount": 2,
+        "memoCount": 0,
+        "referenceCount": 3,
+        "conditionalResponseCount": 0,
+        "summary": "주차별 상태를 갖는 14 Items, 운영·성적 기간 Fields 2개, 수료 참고 3개를 가진 학습 진도 Flow."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "고정된 주차·활동·상태 행은 progress_tracking이며, 과정 기간만으로 lifecycle을 만들지 않는다. 행 상태를 보존하는 Sheet가 본래 primary다.",
+      "confidence": 0.98,
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "field",
+          "targetIds": [
+            "field:KMOOC-M01"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "reference",
+          "targetIds": [
+            "reference:KMOOC-M02"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "reference",
+          "targetIds": [
+            "reference:KMOOC-M03"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "reference",
+          "targetIds": [
+            "reference:KMOOC-M04"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "field",
+          "targetIds": [
+            "field:KMOOC-M05"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W01",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W02",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W03",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W04",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W05",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W06",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W07",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W08",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W08"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W09",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W09"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W10",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W10"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W11",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W11"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W12",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W12"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W13",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W13"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-W14",
+          "role": "item",
+          "targetIds": [
+            "item:KMOOC-W14"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-C03-LIBRIVOX",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required",
+          "editorial_review_required"
+        ],
+        "reason": "38개 chapter가 완전하고 개인 변환 권리는 있으나 미국 public-domain territory와 한국 대상 locale/promotion 검토가 남는다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "오디오북",
+          "영어",
+          "장별진도"
+        ],
+        "sourceShape": "resource_collection",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "resource_queue",
+        "secondaryExecutionPatterns": [
+          "progress_tracking"
+        ],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "checklist"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "audio"
+        },
+        "rights": {
+          "basis": "public_domain",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "not_required",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "research_only",
+          "blockers": [
+            "locale_review_required",
+            "editorial_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 38,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "고정 chapter queue Flow 1개와 재생 위치·완료를 기록하는 resource Items 38개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": true,
+        "todo": true,
+        "sheet": true,
+        "memo": true
+      },
+      "rationale": "고정 media chapters는 resource_queue가 우선이며 긴 고정 queue의 duration/status를 잃지 않는 Sheet가 primary다.",
+      "confidence": 0.98,
+      "roles": [
+        {
+          "sourceRowId": "LIBRIVOX-C01",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C02",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C03",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C04",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C05",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C06",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C07",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C08",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C08"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C09",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C09"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C10",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C10"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C11",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C11"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C12",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C12"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C13",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C13"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C14",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C14"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C15",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C15"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C16",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C16"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C17",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C17"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C18",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C18"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C19",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C19"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C20",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C20"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C21",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C21"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C22",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C22"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C23",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C23"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C24",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C24"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C25",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C25"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C26",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C26"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C27",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C27"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C28",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C28"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C29",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C29"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C30",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C30"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C31",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C31"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C32",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C32"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C33",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C33"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C34",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C34"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C35",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C35"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C36",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C36"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C37",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C37"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C38",
+          "role": "item",
+          "targetIds": [
+            "item:LIBRIVOX-C38"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-C04-PASSPORT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "privacy_review_required"
+        ],
+        "reason": "성인 재발급 범위는 완전하지만 link-only 권리와 신분 문서의 private-only 경계가 export를 막는다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [
+          "travel_outings"
+        ],
+        "topicTags": [
+          "여권",
+          "재발급",
+          "구비서류"
+        ],
+        "sourceShape": "checklist_rows",
+        "secondarySourceShapes": [
+          "procedure_rows",
+          "decision_criteria"
+        ],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [
+          "compare_decide"
+        ],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "sensitive_private_only",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "privacy_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 5,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 2,
+        "conditionalResponseCount": 1,
+        "summary": "경로 선택과 서류 준비를 잇는 2 Steps, ordinary Items 4개와 조건부 기존 여권 Item 1개, 참고 2개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "한 번의 신청에서 경로 선택·준비·신청이 독립 행동이므로 Todo가 본래 primary이고, 서류는 secondary checklist다.",
+      "confidence": 0.93,
+      "roles": [
+        {
+          "sourceRowId": "PASSPORT-R01",
+          "role": "item",
+          "targetIds": [
+            "item:PASSPORT-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PASSPORT-R02",
+          "role": "item",
+          "targetIds": [
+            "item:PASSPORT-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PASSPORT-R03",
+          "role": "item",
+          "targetIds": [
+            "item:PASSPORT-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PASSPORT-R04",
+          "role": "item",
+          "targetIds": [
+            "item:PASSPORT-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PASSPORT-R05",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:PASSPORT-R05"
+          ],
+          "reason": "??? trigger? ??? ?? ????? ????."
+        },
+        {
+          "sourceRowId": "PASSPORT-R06",
+          "role": "reference",
+          "targetIds": [
+            "reference:PASSPORT-R06"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "PASSPORT-R07",
+          "role": "reference",
+          "targetIds": [
+            "reference:PASSPORT-R07"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-C05-WASHER",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "locale_review_required"
+        ],
+        "reason": "기기 trigger와 안전 절차는 완전하지만 link-only 권리와 영국 모델의 한국 적용 검토가 남는다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "세탁기",
+          "세탁조청소",
+          "기기알림"
+        ],
+        "sourceShape": "recurrence_rule",
+        "secondarySourceShapes": [
+          "procedure_rows",
+          "narrative_guidance"
+        ],
+        "primaryExecutionPattern": "repeating_routine",
+        "secondaryExecutionPatterns": [
+          "ordered_procedure"
+        ],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "not_required",
+          "localeReview": "adaptation_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "locale_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 5,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 2,
+        "conditionalResponseCount": 1,
+        "summary": "비날짜 trigger가 다음 청소 Todo를 만들고, 안전 확인과 3단계 실행을 수행하는 반복 Flow."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "40회 사용 또는 device alert는 실제 날짜가 아니므로 Calendar가 아니라 Todo가 본래 primary다. 금지사항과 모델 경계는 reference로 보존한다.",
+      "confidence": 0.97,
+      "roles": [
+        {
+          "sourceRowId": "WASHER-R01",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:WASHER-R01"
+          ],
+          "reason": "??? trigger? ??? ?? ????? ????."
+        },
+        {
+          "sourceRowId": "WASHER-R02",
+          "role": "item",
+          "targetIds": [
+            "item:WASHER-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "WASHER-R03",
+          "role": "reference",
+          "targetIds": [
+            "reference:WASHER-R03"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "WASHER-R04",
+          "role": "item",
+          "targetIds": [
+            "item:WASHER-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "WASHER-R05",
+          "role": "item",
+          "targetIds": [
+            "item:WASHER-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "WASHER-R06",
+          "role": "item",
+          "targetIds": [
+            "item:WASHER-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "WASHER-R07",
+          "role": "reference",
+          "targetIds": [
+            "reference:WASHER-R07"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-C06-NASA",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "locale_review_required"
+        ],
+        "reason": "재료·안전·제작·시험 행은 완전하지만 link-only 권리와 수업 locale 적응이 필요하다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [
+          "hobby_pet"
+        ],
+        "topicTags": [
+          "STEM",
+          "크레인",
+          "팀활동"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [
+          "checklist_rows",
+          "narrative_guidance"
+        ],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "not_required",
+          "localeReview": "adaptation_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "locale_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 1,
+        "conditionalResponseCount": 0,
+        "summary": "준비, 제작·시험, 성찰의 3 Steps와 7 Items; 가위 안전은 항상 함께 보이는 Reference."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "순서가 중요한 일회성 팀 활동이므로 ordered_procedure와 Checklist가 본래 중심이며 가위 안전은 완료 항목이 아니라 reference다.",
+      "confidence": 0.94,
+      "roles": [
+        {
+          "sourceRowId": "DS12-R01",
+          "role": "item",
+          "targetIds": [
+            "item:DS12-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS12-R02",
+          "role": "reference",
+          "targetIds": [
+            "reference:DS12-R02"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "DS12-R03",
+          "role": "item",
+          "targetIds": [
+            "item:DS12-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS12-R04",
+          "role": "item",
+          "targetIds": [
+            "item:DS12-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS12-R05",
+          "role": "item",
+          "targetIds": [
+            "item:DS12-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS12-R06",
+          "role": "item",
+          "targetIds": [
+            "item:DS12-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS12-R07",
+          "role": "item",
+          "targetIds": [
+            "item:DS12-R07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS12-R08",
+          "role": "item",
+          "targetIds": [
+            "item:DS12-R08"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-C07-FIT100",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "privacy_review_required"
+        ],
+        "reason": "9단계 서비스 여정은 완전하지만 link-only 권리와 건강 결과의 private-only 취급이 필요하다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "체력측정",
+          "인증",
+          "운동처방"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [
+          "ordered_procedure"
+        ],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "sheet",
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "sensitive_private_only",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "privacy_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 9,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "서로 다른 산출물을 내는 서비스 lifecycle 9 Steps와 각 단계 Item 9개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "가입·방문·측정·결과·처방이 각각 다른 상태와 출력을 만들어 다음 단계를 여는 서비스 journey이므로 phase_lifecycle이다.",
+      "confidence": 0.96,
+      "roles": [
+        {
+          "sourceRowId": "DS07-R01",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R02",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R03",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R04",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R05",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R06",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R07",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R08",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R08"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS07-R09",
+          "role": "item",
+          "targetIds": [
+            "item:DS07-R09"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-C08-AC-DECISION",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "freshness_pending"
+        ],
+        "reason": "비교 기준은 완전하지만 link-only 권리와 변동 비용의 freshness 확인이 남는다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [
+          "home_living"
+        ],
+        "topicTags": [
+          "에어컨",
+          "세척서비스",
+          "비교선택"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [
+          "table_rows"
+        ],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": [
+          "sheet",
+          "todo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "video"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "pending",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "freshness_pending"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 4,
+        "memoCount": 1,
+        "referenceCount": 1,
+        "conditionalResponseCount": 0,
+        "summary": "두 옵션과 4개 비교 Fields를 검토하고 선택·근거를 남기는 decision Item 1개와 contact Reference."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "선택은 하나이며 실제 비용은 문의로 확인해야 하고 연락 맥락과 이유를 함께 보존해야 하므로 Memo가 본래 primary다.",
+      "confidence": 0.95,
+      "roles": [
+        {
+          "sourceRowId": "AC-R01",
+          "role": "field",
+          "targetIds": [
+            "field:AC-R01"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "AC-R02",
+          "role": "field",
+          "targetIds": [
+            "field:AC-R02"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "AC-R03",
+          "role": "field",
+          "targetIds": [
+            "field:AC-R03"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "AC-R04",
+          "role": "field",
+          "targetIds": [
+            "field:AC-R04"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "AC-R05",
+          "role": "reference",
+          "targetIds": [
+            "reference:AC-R05"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-B01-HEAT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required"
+        ],
+        "reason": "중지·119 경계까지 완전하지만 link-only 권리 때문에 export/promotion은 hold다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [
+          "work_career"
+        ],
+        "topicTags": [
+          "폭염",
+          "농작업",
+          "응급대응"
+        ],
+        "sourceShape": "narrative_guidance",
+        "secondarySourceShapes": [
+          "procedure_rows",
+          "recurrence_rule"
+        ],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": [
+          "checklist"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 8,
+        "fieldCount": 0,
+        "memoCount": 1,
+        "referenceCount": 2,
+        "conditionalResponseCount": 2,
+        "summary": "전·중·후 3 Steps, ordinary Items 6개, trigger 때만 활성화되는 중지·119 Items 2개, threshold/의무 References 2개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "20분 수분 섭취가 있어도 전체는 before/during/after 안전 문맥이다. threshold·중지·119를 함께 보존해야 하므로 Memo가 본래 primary이고 ordinary actions만 Checklist secondary다.",
+      "confidence": 0.98,
+      "roles": [
+        {
+          "sourceRowId": "DS01-R01",
+          "role": "reference",
+          "targetIds": [
+            "reference:DS01-R01"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "DS01-R02",
+          "role": "item",
+          "targetIds": [
+            "item:DS01-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS01-R03",
+          "role": "item",
+          "targetIds": [
+            "item:DS01-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS01-R04",
+          "role": "item",
+          "targetIds": [
+            "item:DS01-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS01-R05",
+          "role": "item",
+          "targetIds": [
+            "item:DS01-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS01-R06",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:DS01-R06"
+          ],
+          "reason": "??? trigger? ??? ?? ????? ????."
+        },
+        {
+          "sourceRowId": "DS01-R07",
+          "role": "item",
+          "targetIds": [
+            "item:DS01-R07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS01-R08",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:DS01-R08"
+          ],
+          "reason": "??? trigger? ??? ?? ????? ????."
+        },
+        {
+          "sourceRowId": "DS01-R09",
+          "role": "item",
+          "targetIds": [
+            "item:DS01-R09"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS01-R10",
+          "role": "reference",
+          "targetIds": [
+            "reference:DS01-R10"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-B02-KMOOC-META",
+      "feasibility": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_INCOMPLETE",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "source_import_required",
+          "rights_permission_required"
+        ],
+        "reason": "메타데이터와 기간만 있고 14개 실행 주차 행이 없으므로 진도 Flow를 만들 수 없다."
+      },
+      "classification": {
+        "classificationStatus": "not_classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "데이터분석",
+          "온라인강좌"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "partial",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "partial",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "source_import_required",
+            "rights_permission_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "실행 주차 행을 import하기 전에는 canonical Flow를 생성하지 않는다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "과정 기간과 14주라는 count는 lesson_rows가 아니다. metadata-only boundary에 따라 sourceShape·pattern·artifact를 확정하지 않는다.",
+      "confidence": 0.99,
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "field",
+          "targetIds": [
+            "field:KMOOC-M01"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "reference",
+          "targetIds": [
+            "reference:KMOOC-M02"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "reference",
+          "targetIds": [
+            "reference:KMOOC-M03"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "reference",
+          "targetIds": [
+            "reference:KMOOC-M04"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "field",
+          "targetIds": [
+            "field:KMOOC-M05"
+          ],
+          "reason": "?? ???? ??? ??? ?? ? ?? ??? ?? ???."
+        },
+        {
+          "sourceRowId": "KMOOC-A-MISSING",
+          "role": "omission",
+          "targetIds": [],
+          "reason": "??? ?? ?? ???? ???? ???? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-B03-REMODEL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_unknown"
+        ],
+        "reason": "10개 계약 기준은 완전하지만 변환 권리 근거가 unknown이라 hold한다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [
+          "home_living"
+        ],
+        "topicTags": [
+          "리모델링",
+          "계약",
+          "비교검토"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [
+          "table_rows"
+        ],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "editorial_media",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "pending",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_unknown",
+            "freshness_pending"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 10,
+        "fieldCount": 0,
+        "memoCount": 1,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "계약 기준 10행을 각각 inspect·record하는 Items와 최종 proceed/hold 및 보완 근거 Memo."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "10개 비교 가능 기준마다 확인 상태와 보완 내용을 보존해야 하므로 Sheet가 본래 primary다. 법률 결론을 새로 만들지 않는다.",
+      "confidence": 0.96,
+      "roles": [
+        {
+          "sourceRowId": "DS02-R01",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R02",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R03",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R04",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R05",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R06",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R07",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R08",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R08"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R09",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R09"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS02-R10",
+          "role": "item",
+          "targetIds": [
+            "item:DS02-R10"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-B04-TODOIST",
+      "feasibility": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_METADATA_ONLY",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "source_import_required",
+          "account_or_entitlement_required",
+          "rights_permission_required"
+        ],
+        "reason": "공개된 것은 phase 이름뿐이고 실제 task 행은 entitlement 뒤에 있어 proposal을 만들 수 없다."
+      },
+      "classification": {
+        "classificationStatus": "not_classified",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "팟캐스트",
+          "제작워크플로"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "template"
+        },
+        "rights": {
+          "basis": "provider_terms",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "unknown",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "pending",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "source_import_required",
+            "account_or_entitlement_required",
+            "rights_permission_required",
+            "privacy_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "권한 있는 실제 task rows를 import하기 전에는 phase labels로 Flow를 만들지 않는다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "공개 phase 이름은 procedure_rows나 template_fields가 아니다. discoveryAccess는 public으로 유지하되 rowAccess와 entitlement를 별도로 막는다.",
+      "confidence": 0.99,
+      "roles": [
+        {
+          "sourceRowId": "TODOIST-R01",
+          "role": "reference",
+          "targetIds": [
+            "reference:TODOIST-R01"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "TODOIST-R02",
+          "role": "reference",
+          "targetIds": [
+            "reference:TODOIST-R02"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "TODOIST-R03",
+          "role": "reference",
+          "targetIds": [
+            "reference:TODOIST-R03"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "TODOIST-R04",
+          "role": "reference",
+          "targetIds": [
+            "reference:TODOIST-R04"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        },
+        {
+          "sourceRowId": "TODOIST-R05",
+          "role": "omission",
+          "targetIds": [],
+          "reason": "??? ?? ?? ???? ???? ???? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-P01-OSSU",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "editorial_review_required"
+        ],
+        "reason": "범위가 6개 시작 과정으로 완전하고 open-license 개인 변환이 가능하지만 promotion은 아직 research-only다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [
+          "work_career"
+        ],
+        "topicTags": [
+          "컴퓨터과학",
+          "커리큘럼",
+          "선수조건"
+        ],
+        "sourceShape": "table_rows",
+        "secondarySourceShapes": [
+          "resource_collection"
+        ],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "checklist"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "table"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "not_required",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "research_only",
+          "blockers": [
+            "editorial_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Intro CS와 Core Programming의 2 semantic Steps 안에 선수조건·기간·상태를 보존하는 course Items 6개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": true,
+        "todo": true,
+        "sheet": true,
+        "memo": true
+      },
+      "rationale": "고정 과정 행과 선수조건·status가 핵심이므로 progress_tracking과 Sheet가 우선한다. 기간 길이만으로 lifecycle을 만들지 않는다.",
+      "confidence": 0.98,
+      "roles": [
+        {
+          "sourceRowId": "DS10-R01",
+          "role": "item",
+          "targetIds": [
+            "item:DS10-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS10-R02",
+          "role": "item",
+          "targetIds": [
+            "item:DS10-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS10-R03",
+          "role": "item",
+          "targetIds": [
+            "item:DS10-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS10-R04",
+          "role": "item",
+          "targetIds": [
+            "item:DS10-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS10-R05",
+          "role": "item",
+          "targetIds": [
+            "item:DS10-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS10-R06",
+          "role": "item",
+          "targetIds": [
+            "item:DS10-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-P02-PACKING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required",
+          "editorial_review_required"
+        ],
+        "reason": "7개 체크 행과 open-license 권리는 완전하지만 목적지별 입국 서류·의약품 범위를 canary에서 locale 적응해야 한다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "travel_outings",
+        "secondaryLifeAreas": [
+          "health_fitness"
+        ],
+        "topicTags": [
+          "휴대수하물",
+          "여행서류",
+          "패킹"
+        ],
+        "sourceShape": "checklist_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "todo",
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "pending",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "sensitive_private_only",
+          "rightsReview": "approved",
+          "promotionState": "research_only",
+          "blockers": [
+            "freshness_pending",
+            "locale_review_required",
+            "privacy_review_required",
+            "editorial_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "휴대 필수품과 서류의 2 Steps, source-backed checks 7개. 목적지 요구는 사용자 overlay에서만 확정."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": true,
+        "todo": true,
+        "sheet": false,
+        "memo": true
+      },
+      "rationale": "7개 행은 순서보다 누락 방지가 중요해 checklist_rows이며 Checklist가 primary다. 목적지별 요구는 원문 밖 지식으로 채우지 않는다.",
+      "confidence": 0.97,
+      "roles": [
+        {
+          "sourceRowId": "DS11-R01",
+          "role": "item",
+          "targetIds": [
+            "item:DS11-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS11-R02",
+          "role": "item",
+          "targetIds": [
+            "item:DS11-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS11-R03",
+          "role": "item",
+          "targetIds": [
+            "item:DS11-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS11-R04",
+          "role": "item",
+          "targetIds": [
+            "item:DS11-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS11-R05",
+          "role": "item",
+          "targetIds": [
+            "item:DS11-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS11-R06",
+          "role": "item",
+          "targetIds": [
+            "item:DS11-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "DS11-R07",
+          "role": "item",
+          "targetIds": [
+            "item:DS11-R07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-P03-VEHICLE",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "user_input_required",
+          "privacy_review_required"
+        ],
+        "reason": "날짜창 template은 완전하지만 실제 차량 조회 값이 필요하고 link-only 및 private-only gate가 export를 막는다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "자동차검사",
+          "유효기간",
+          "방문일"
+        ],
+        "sourceShape": "date_window",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "todo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "interactive_page"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "sensitive_private_only",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "user_input_required",
+            "privacy_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 2,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "공식 조회로 시작일·종료일 Fields를 기록하고 그 date window 안 방문일을 정하는 Item 1개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "source는 개인 날짜를 추정하지 않고 공식 조회 값을 요구한다. 날짜창이 없으면 job이 실패하므로 Calendar가 본래 primary지만 날짜를 발명하지 않는다.",
+      "confidence": 0.95,
+      "roles": [
+        {
+          "sourceRowId": "VEHICLE-R01",
+          "role": "item",
+          "targetIds": [
+            "item:VEHICLE-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-P04-PORTFOLIO",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_unknown"
+        ],
+        "reason": "7개 프로젝트 단계는 완전하지만 creator source의 변환 권리가 unknown이라 hold한다."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "study_reading"
+        ],
+        "topicTags": [
+          "개발포트폴리오",
+          "팀프로젝트",
+          "배포"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [
+          "ordered_procedure"
+        ],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "sheet",
+          "memo"
+        ],
+        "access": {
+          "providerType": "creator",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "unknown",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_unknown"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "다음 단계를 여는 서로 다른 project outputs를 가진 7 Steps와 Items 7개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "각 단계가 기획서·DB/API 문서·협업 규칙·배포물처럼 이질적 출력을 내 다음 단계를 여므로 phase_lifecycle이다.",
+      "confidence": 0.94,
+      "roles": [
+        {
+          "sourceRowId": "PORTFOLIO-R01",
+          "role": "item",
+          "targetIds": [
+            "item:PORTFOLIO-R01"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R02",
+          "role": "item",
+          "targetIds": [
+            "item:PORTFOLIO-R02"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R03",
+          "role": "item",
+          "targetIds": [
+            "item:PORTFOLIO-R03"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R04",
+          "role": "item",
+          "targetIds": [
+            "item:PORTFOLIO-R04"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R05",
+          "role": "item",
+          "targetIds": [
+            "item:PORTFOLIO-R05"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R06",
+          "role": "item",
+          "targetIds": [
+            "item:PORTFOLIO-R06"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R07",
+          "role": "item",
+          "targetIds": [
+            "item:PORTFOLIO-R07"
+          ],
+          "reason": "???? ??, ??, ??, ?? ?? ??? ? ?? ?? ?? ???."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-N01-FOODCRAFT",
+      "feasibility": {
+        "generationState": "failed",
+        "outcome": "rejected",
+        "conversionReadiness": "hold",
+        "errorCode": "NON_EXECUTABLE_LANDING",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "unsupported_shape",
+          "rights_permission_required"
+        ],
+        "reason": "획득 행은 경쟁 제품 기능 설명일 뿐 실행 가능한 식단·재료·날짜 행이 없는 랜딩이다."
+      },
+      "classification": {
+        "classificationStatus": "not_classified",
+        "primaryLifeArea": "meals_grocery",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "장보기목록",
+          "제품기능"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "hold",
+          "freshnessReview": "unknown",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "unsupported_shape",
+            "rights_permission_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "실행 user job이 없는 제품 기능 landing이므로 canonical entities를 생성하지 않는다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "제품이 자동 목록을 만든다는 설명은 사용자가 실행할 source row가 아니다. 전역 landing 규칙에 따라 hold + rejected로 종료한다.",
+      "confidence": 0.99,
+      "roles": [
+        {
+          "sourceRowId": "FOODCRAFT-R01",
+          "role": "reference",
+          "targetIds": [
+            "reference:FOODCRAFT-R01"
+          ],
+          "reason": "???? ?? ?? ? ???? ?? ??, ?? ?? ????."
+        }
+      ]
+    },
+    {
+      "caseId": "OQ-N02-LOGIN-WALL",
+      "feasibility": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_UNAVAILABLE",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_unavailable",
+          "source_import_required",
+          "rights_unknown",
+          "account_or_entitlement_required"
+        ],
+        "reason": "로그인 벽 뒤 본문은 획득되지 않았고 usable SourceRow가 0개다."
+      },
+      "classification": {
+        "classificationStatus": "not_classified",
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "aggregator",
+          "discoveryAccess": "paywalled",
+          "rowAccess": "unavailable",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "missing",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "unknown",
+          "localeReview": "pending",
+          "safetyReview": "not_required",
+          "privacyReview": "pending",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_unavailable",
+            "source_import_required",
+            "rights_unknown",
+            "account_or_entitlement_required",
+            "locale_review_required",
+            "privacy_review_required"
+          ]
+        }
+      },
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "usable SourceRow를 획득하기 전에는 어떤 canonical entity도 생성하지 않는다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "제목과 user job으로 이사 checklist를 채우지 않는다. rowAccess unavailable과 missing source status를 독립 기록하고 import를 요구한다.",
+      "confidence": 1,
+      "roles": []
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "flow-content-generalization-source-manifest-v1",
+  "cases": [
+    {
+      "caseId": "GB-01",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov"
+    },
+    {
+      "caseId": "GB-02",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://support.google.com/accounts/answer/185839?hl=ko"
+    },
+    {
+      "caseId": "GB-03",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.lge.co.kr/support/solutions-20154871046245"
+    },
+    {
+      "caseId": "GB-04",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.youtube.com/watch?v=iNtOWyduGtg",
+      "mirrorUrl": "https://www.lge.co.kr/support/solutions-20152986781936"
+    },
+    {
+      "caseId": "GB-05",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.10000recipe.com/recipe/7071314"
+    },
+    {
+      "caseId": "GB-06",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/"
+    },
+    {
+      "caseId": "GB-07",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://support.apple.com/ko-kr/108771"
+    },
+    {
+      "caseId": "GB-08",
+      "split": "calibration",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do"
+    },
+    {
+      "caseId": "GB-09",
+      "split": "calibration",
+      "sourceClass": "boundary",
+      "sourceUrl": "https://www.notion.com/templates/second-brain-2"
+    },
+    {
+      "caseId": "GB-10",
+      "split": "calibration",
+      "sourceClass": "boundary",
+      "sourceUrl": "https://www.class101.net/ko/products/643e532cd785db533cded012"
+    },
+    {
+      "caseId": "GB-11",
+      "split": "calibration",
+      "sourceClass": "boundary",
+      "sourceUrl": "https://ohou.se/advices/9760"
+    },
+    {
+      "caseId": "GB-12",
+      "split": "calibration",
+      "sourceClass": "boundary",
+      "sourceUrl": "https://news.seoul.go.kr/welfare/archives/579652"
+    },
+    {
+      "caseId": "GB-13",
+      "split": "final_holdout",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01"
+    },
+    {
+      "caseId": "GB-14",
+      "split": "final_holdout",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.nhis.or.kr/lm/lmxsrv/main/moviePopup.do?seqMovie=74"
+    },
+    {
+      "caseId": "GB-15",
+      "split": "final_holdout",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf"
+    },
+    {
+      "caseId": "GB-16",
+      "split": "final_holdout",
+      "sourceClass": "normal",
+      "sourceUrl": "https://www.hopperhq.com/tools/content-planner/",
+      "sourceFileUrl": "https://www.hopperhq.com/tools/social-media-content-planner-template.csv"
+    },
+    {
+      "caseId": "GB-17",
+      "split": "final_holdout",
+      "sourceClass": "boundary",
+      "sourceUrl": "https://www.gov.uk/government/publications/the-complete-routine-immunisation-schedule/complete-routine-immunisation-schedule-from-1-january-2026"
+    },
+    {
+      "caseId": "GB-18",
+      "split": "final_holdout",
+      "sourceClass": "boundary",
+      "sourceUrl": "https://buffer.com/templates"
+    }
+  ],
+  "noveltyAudit": {
+    "basis": "Exact URL comparison against output-quality v2, source-expansion seed/deep-set, and discovery candidate ledger before generation.",
+    "newExactUrlCount": 16,
+    "priorExactUrlCount": 2,
+    "priorExactCaseIds": [
+      "GB-11",
+      "GB-12"
+    ],
+    "meetsMinimumTenNewUrls": true
+  },
+  "sealMetadata": {
+    "algorithm": "sha256",
+    "sealedAt": "2026-07-21T02:02:12.437Z",
+    "splitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc",
+    "baselineRulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+    "revisedRulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+    "finalHoldoutRulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+    "finalHoldoutRulesSealedAt": "2026-07-21T11:21:49.3772849+09:00",
+    "calibrationRevision": "Revision 1: retained-state and user-anchor decision order; no case/provider/topic exceptions."
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "documentType": "flowme_legacy_mapping",
+  "schemaVersion": "flowme-taxonomy-v1.1",
+  "date": "2026-07-20",
+  "runtimeScope": "read-only audit of current FlowBundle seed; no app adapter implemented",
+  "inventory": {
+    "bundleCount": 153,
+    "itemCount": 847,
+    "categoryLabelCount": 90,
+    "structureTypes": {
+      "checklist": 62,
+      "routine": 52,
+      "timeline": 37,
+      "phase": 2
+    },
+    "primaryDestinations": {
+      "calendar": 37,
+      "hybrid": 25,
+      "internal_check": 10,
+      "memo": 38,
+      "sheet": 19,
+      "missing": 24
+    },
+    "rawItemTypes": {
+      "todo": 734,
+      "calendar": 113
+    },
+    "evidence": "Current implementation, aggregated from lib/flow/seed-flows.ts and FlowBundle types on 2026-07-20."
+  },
+  "mappings": {
+    "category": {
+      "canonicalTargets": ["primaryLifeArea", "topicTags"],
+      "rule": "Use an exact alias table only to propose primaryLifeArea and preserve the legacy label as topicTags. Persistence requires immediate-user-outcome evidence; a label match alone is never automatic canonical truth.",
+      "exactAliases": {
+        "home_living": ["가전 관리", "가전관리", "이사", "이사 준비", "이사/주거", "정리/수납", "주거/입주", "통신/디지털 준비"],
+        "family_parenting": ["가족/출생", "결혼 준비", "결혼/준비", "육아/검진", "육아/놀이", "육아/독서", "육아/돌봄", "육아/아이 놀이", "육아/이유식", "육아/지원", "육아/출산", "육아/행정", "이유식 식단", "학부모/입학준비"],
+        "study_reading": ["공부/시험", "공부/영어", "교육 자료 루틴", "독서 루틴", "시험 공부 계획", "자격증 시험", "자격증/시험", "자기계발/독서"],
+        "money_admin_purchase": ["건강/증명서", "건강보험/행정", "구매 준비", "병역/행정", "복지/지원", "생활행정", "서류/증명", "세금/납부", "세금/연말정산", "세금/환급", "연금/노후", "자동차 관리", "자동차/검사", "자동차/관리", "자동차/구매", "자동차/등록", "자동차/지원", "재테크/재무", "주거/금융", "주거/청약", "주거/행정"],
+        "health_fitness": ["건강/검진", "건강/예방접종", "공식 건강 일정", "다이어트/기록", "디지털 웰빙", "뷰티/스킨케어", "생활/수면", "생활습관", "영상 운동 루틴", "운동/루틴", "운동/챌린지", "운동/홈트"],
+        "travel_outings": ["여행", "여행 준비", "여행/관세", "여행/안전", "여행/여권", "여행/장기체류", "여행/해외"],
+        "meals_grocery": ["요리/레시피", "요리/식단", "집밥/식재료"],
+        "work_career": ["고용/취업지원", "커리어/이직", "커리어/취업"],
+        "hobby_pet": ["반려동물", "생활/반려동물", "식물 관리", "취미/자기계발"]
+      },
+      "manualReviewLabels": [
+        { "legacy": "가족/상속", "candidate": "money_admin_purchase", "alternative": "family_parenting", "reason": "Family event and formal application are mixed." },
+        { "legacy": "고용/실업급여", "candidate": "money_admin_purchase", "alternative": "work_career", "reason": "Benefit application and career transition are mixed." },
+        { "legacy": "교육/장학", "candidate": "money_admin_purchase", "alternative": "study_reading", "reason": "Funding application and study context are mixed." },
+        { "legacy": "노무/산재", "candidate": "money_admin_purchase", "alternative": "work_career", "reason": "Insurance claim and workplace event are mixed." },
+        { "legacy": "사업/세무", "candidate": "money_admin_purchase", "alternative": "work_career", "reason": "Formal registration and business operation are mixed." },
+        { "legacy": "사업/지원", "candidate": "money_admin_purchase", "alternative": "work_career", "reason": "Funding application and business operation are mixed." },
+        { "legacy": "디지털/원격지원", "candidate": "home_living", "alternative": "work_career", "reason": "Usage context and privacy risk cannot be inferred from the label." },
+        { "legacy": "주거/계약전점검", "candidate": "money_admin_purchase", "alternative": "home_living", "reason": "Contract decision is usually the terminal output." },
+        { "legacy": "콘텐츠 창작", "candidate": "work_career", "alternative": "hobby_pet", "reason": "Professional and hobby purpose are mixed." },
+        { "legacy": "홈카페/취미", "candidate": "hobby_pet", "alternative": "meals_grocery", "reason": "Leisure identity and recipe execution are mixed." }
+      ],
+      "topicTagRule": "Preserve the legacy label as a topicTag after lifeArea mapping; never expose it as a new canonical enum."
+    },
+    "structure_type": {
+      "canonicalTargets": ["sourceShape", "primaryExecutionPattern", "secondaryExecutionPatterns"],
+      "rules": {
+        "timeline": {
+          "proposal": "date_preparation",
+          "automaticOnlyWhen": ["source or user anchor provenance exists", "at least one canonical ScheduleSpec exists", "day offset was not synthesized from item order"],
+          "currentCount": 37,
+          "currentDecision": "proposal_only because runtime day_offset provenance is not trustworthy enough"
+        },
+        "routine": {
+          "proposal": "repeating_routine",
+          "automaticOnlyWhen": ["explicit recurrence exists", "cadence is source-derived or user-selected"],
+          "automaticCandidates": 51,
+          "manualCandidates": 1,
+          "manualExample": "picture-book-reading-routine can be routine or resource queue depending on whether books rotate"
+        },
+        "checklist": {
+          "proposal": null,
+          "currentCount": 62,
+          "decision": "human_or_rules_review",
+          "priority": [
+            "decision criteria and terminal choice -> compare_decide",
+            "source dependency -> ordered_procedure",
+            "stable row status/columns -> progress_tracking",
+            "independent resources -> resource_queue",
+            "phase outputs -> phase_lifecycle"
+          ],
+          "reason": "checklist is a view/artifact and does not identify execution semantics"
+        },
+        "phase": {
+          "proposal": "phase_lifecycle",
+          "automaticOnlyWhen": ["source explicitly defines heterogeneous stage outputs and dependencies"],
+          "currentCount": 2,
+          "decision": "human_review"
+        }
+      },
+      "sourceShapeRule": "No structure_type value can directly determine sourceShape; source rows or a source snapshot are required."
+    },
+    "primary_destination": {
+      "canonicalTargets": ["primaryArtifact", "secondaryArtifacts", "projectionProfiles", "compatibility.deliverySurface"],
+      "rules": {
+        "calendar": {
+          "candidatePrimaryArtifact": "calendar",
+          "automaticOnlyWhen": "a source/user-provenanced canonical schedule exists",
+          "currentAutoCandidates": 35,
+          "currentNeedsReview": 2
+        },
+        "internal_check": {
+          "candidatePrimaryArtifact": "checklist",
+          "compatibility": { "deliverySurface": "internal_check" },
+          "decision": "proposal_only",
+          "currentCount": 10,
+          "reason": "A delivery surface does not prove that checklist is the dominant retained artifact. Confirm against the user job and source state."
+        },
+        "sheet": {
+          "candidatePrimaryArtifact": "sheet",
+          "automaticOnlyWhen": "stable source row schema and FieldDefinitions exist",
+          "currentCount": 19,
+          "decision": "proposal_only"
+        },
+        "memo": {
+          "candidatePrimaryArtifact": "memo",
+          "automaticOnlyWhen": "a static retained note completes the user job and stateful Items remain modeled",
+          "currentCount": 38,
+          "decision": "proposal_only"
+        },
+        "hybrid": {
+          "canonicalPrimaryArtifact": null,
+          "decision": "human_review",
+          "currentCount": 25,
+          "adapterRule": "Inspect demonstrated projection profiles, choose the artifact whose loss breaks the job, and put the others in secondaryArtifacts. Never persist hybrid."
+        },
+        "missing": {
+          "canonicalPrimaryArtifact": null,
+          "decision": "human_review",
+          "currentCount": 24,
+          "forbiddenFallback": "Do not infer and persist from structure_type alone."
+        }
+      }
+    },
+    "item.type": {
+      "canonicalTargets": ["intent", "schedule", "completion", "fields", "memos", "facets"],
+      "rules": {
+        "calendar": "Treat as an old schedule/projection hint only; it does not determine intent.",
+        "todo": "Treat as a generic old execution hint only; it does not determine completion or intent."
+      },
+      "facetDerivation": [
+        { "when": "structured schedule exists", "facet": "scheduled_task" },
+        { "when": "schedule recurrence exists", "facet": "routine_session" },
+        { "when": "completion.mode=check", "facet": "check_task" },
+        { "when": "intent=record and record fields exist", "facet": "log_entry" },
+        { "when": "intent=decide and source-backed options exist", "facet": "decision_hold" },
+        { "when": "caution Memo or SourceRef exists", "facet": "reference_caution" }
+      ],
+      "directAutomaticCount": 0,
+      "reason": "One raw type cannot represent simultaneous schedule, recurrence, record, decision and caution facets."
+    }
+  },
+  "decisionStates": {
+    "automatic": "Structured source-backed signal exists and no contradictory field exists.",
+    "proposal_only": "Legacy value suggests a mapping but source provenance or required canonical fields are incomplete.",
+    "human_review": "Two or more canonical values are plausible or hybrid/missing information hides the primary result.",
+    "blocked": "Source rows are missing or a sensitive conclusion would exceed evidence."
+  },
+  "metrics": {
+    "category": {
+      "automaticBundleCandidates": 0,
+      "proposalOnlyBundles": 143,
+      "humanReviewBundles": 10,
+      "automaticPercent": 0
+    },
+    "executionPattern": {
+      "automaticBundleCandidates": 51,
+      "proposalOnlyBundles": 37,
+      "humanReviewBundles": 65,
+      "automaticPercent": 33.3
+    },
+    "primaryArtifact": {
+      "automaticBundleCandidates": 35,
+      "proposalOnlyBundles": 67,
+      "humanReviewBundles": 51,
+      "automaticPercent": 22.9
+    },
+    "allThreeLegacyAxes": {
+      "automaticBundleCandidates": 0,
+      "proposalIntersectionCandidates": 17,
+      "humanReviewBundles": 153,
+      "automaticPercent": 0,
+      "note": "Seventeen bundles have strong three-axis proposals, but category labels do not prove the immediate user outcome; all 153 still need canonical confirmation."
+    },
+    "fullTaxonomyV11BackendReady": {
+      "automaticBundleCandidates": 0,
+      "automaticPercent": 0,
+      "reason": "Current runtime has no first-class SourceRow/sourceShape, access, rights and parallel review contract."
+    }
+  },
+  "implementationBoundary": "This file defines a future compatibility adapter. No runtime type, seed, route, projection or persistence code was changed."
+}

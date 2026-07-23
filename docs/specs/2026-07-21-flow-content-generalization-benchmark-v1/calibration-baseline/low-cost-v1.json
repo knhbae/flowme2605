@@ -1,0 +1,2555 @@
+{
+  "schemaVersion": "flow-content-generalization-runs-v1",
+  "phase": "calibration",
+  "measurementNote": "Blind calibration by the gpt-5.6-terra session agent at reasoning low. No provider API was used; token counts and elapsed time were not exposed and are therefore null. No retries or human case interventions occurred. The model identity is execution provenance, not provider billing evidence.",
+  "runs": [
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-01",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "BIR-01",
+          "BIR-02",
+          "BIR-03",
+          "BIR-04",
+          "BIR-05",
+          "BIR-06",
+          "BIR-07"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Complete the birth-registration steps supported by the source.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "birth registration",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "birth registration"
+        ],
+        "sourceShape": "html",
+        "primaryExecutionPattern": "complete_steps",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "BIR-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BIR-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BIR-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BIR-04",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BIR-05",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BIR-06",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BIR-07",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Complete the birth-registration steps supported by the source.",
+        "items": [
+          {
+            "itemId": "GB-01-I1",
+            "intent": "action",
+            "title": "혼인 중 출생자의 출생신고 의무자는 아버지 또는 어머니다.",
+            "detail": "혼인 중 출생자의 출생신고 의무자는 아버지 또는 어머니다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-01"
+            ]
+          },
+          {
+            "itemId": "GB-01-I2",
+            "intent": "action",
+            "title": "부모가 신고할 수 없으면 동거 친족, 이어서 분만에 관여한 의사가 대리 순위가 된다.",
+            "detail": "부모가 신고할 수 없으면 동거 친족, 이어서 분만에 관여한 의사가 대리 순위가 된다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-02"
+            ]
+          },
+          {
+            "itemId": "GB-01-I3",
+            "intent": "action",
+            "title": "출생신고는 출생한 날부터 1개월 이내에 해야 한다.",
+            "detail": "출생신고는 출생한 날부터 1개월 이내에 해야 한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-03"
+            ]
+          },
+          {
+            "itemId": "GB-01-I4",
+            "intent": "action",
+            "title": "정당한 사유 없이 기간 내 신고하지 않으면 5만원 이하 과태료가 부과될 수 있다.",
+            "detail": "정당한 사유 없이 기간 내 신고하지 않으면 5만원 이하 과태료가 부과될 수 있다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-04"
+            ]
+          },
+          {
+            "itemId": "GB-01-I5",
+            "intent": "action",
+            "title": "출생지, 등록기준지, 신고인 주소지 또는 현재지의 허용된 신고기관에 제출할 수 있다.",
+            "detail": "출생지, 등록기준지, 신고인 주소지 또는 현재지의 허용된 신고기관에 제출할 수 있다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-05"
+            ]
+          },
+          {
+            "itemId": "GB-01-I6",
+            "intent": "action",
+            "title": "신고서에는 자녀의 성명·본·성별·출생 시각·출생 장소와 부모 정보를 적는다.",
+            "detail": "신고서에는 자녀의 성명·본·성별·출생 시각·출생 장소와 부모 정보를 적는다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-06"
+            ]
+          },
+          {
+            "itemId": "GB-01-I7",
+            "intent": "action",
+            "title": "출생증명서와 신고인 신분증이 필요하며 국적·혼인 상황에 따라 추가 서류가 필요할 수 있다.",
+            "detail": "출생증명서와 신고인 신분증이 필요하며 국적·혼인 상황에 따라 추가 서류가 필요할 수 있다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-07"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "checklist",
+            "sourceRowIds": [
+              "BIR-01",
+              "BIR-02",
+              "BIR-03",
+              "BIR-04",
+              "BIR-05",
+              "BIR-06",
+              "BIR-07"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-02",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "G2F-01",
+          "G2F-02",
+          "G2F-03",
+          "G2F-04"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Follow the provided Google two-step-verification setup path.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "account security",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "account security"
+        ],
+        "sourceShape": "html",
+        "primaryExecutionPattern": "complete_steps",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "G2F-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "G2F-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "G2F-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "G2F-04",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Follow the provided Google two-step-verification setup path.",
+        "items": [
+          {
+            "itemId": "GB-02-I1",
+            "intent": "action",
+            "title": "Google 계정을 연다.",
+            "detail": "Google 계정을 연다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-01"
+            ]
+          },
+          {
+            "itemId": "GB-02-I2",
+            "intent": "action",
+            "title": "보안 및 로그인을 연다.",
+            "detail": "보안 및 로그인을 연다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-02"
+            ]
+          },
+          {
+            "itemId": "GB-02-I3",
+            "intent": "action",
+            "title": "Google에 로그인하는 방법에서 2단계 인증을 선택한다.",
+            "detail": "Google에 로그인하는 방법에서 2단계 인증을 선택한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-03"
+            ]
+          },
+          {
+            "itemId": "GB-02-I4",
+            "intent": "action",
+            "title": "화면에 표시되는 설정 절차를 따른다.",
+            "detail": "화면에 표시되는 설정 절차를 따른다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-04"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "checklist",
+            "sourceRowIds": [
+              "G2F-01",
+              "G2F-02",
+              "G2F-03",
+              "G2F-04"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-03",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "HUM-01",
+          "HUM-02",
+          "HUM-03",
+          "HUM-04",
+          "HUM-05"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Use the supplied humidifier maintenance instructions.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "home maintenance",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "home maintenance"
+        ],
+        "sourceShape": "html",
+        "primaryExecutionPattern": "complete_steps",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "HUM-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "HUM-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "HUM-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "HUM-04",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "HUM-05",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Use the supplied humidifier maintenance instructions.",
+        "items": [
+          {
+            "itemId": "GB-03-I1",
+            "intent": "action",
+            "title": "워터 필터는 매주 청소하고 3~5개월마다 교체하며 교체 알림은 자동 초기화된다.",
+            "detail": "워터 필터는 매주 청소하고 3~5개월마다 교체하며 교체 알림은 자동 초기화된다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-01"
+            ]
+          },
+          {
+            "itemId": "GB-03-I2",
+            "intent": "action",
+            "title": "이물질 필터는 매주 청소하고 워터 필터와 함께 교체한다.",
+            "detail": "이물질 필터는 매주 청소하고 워터 필터와 함께 교체한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-02"
+            ]
+          },
+          {
+            "itemId": "GB-03-I3",
+            "intent": "action",
+            "title": "가습 필터는 물세척하지 않고 매년 교체한다. 녹색 표시등 점멸 시 물 버튼을 3초 눌러 초기화한다.",
+            "detail": "가습 필터는 물세척하지 않고 매년 교체한다. 녹색 표시등 점멸 시 물 버튼을 3초 눌러 초기화한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-03"
+            ]
+          },
+          {
+            "itemId": "GB-03-I4",
+            "intent": "action",
+            "title": "극세 필터는 2개월마다 청소한다.",
+            "detail": "극세 필터는 2개월마다 청소한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-04"
+            ]
+          },
+          {
+            "itemId": "GB-03-I5",
+            "intent": "action",
+            "title": "본체, 물통, 가습기 부분은 매주 청소한다.",
+            "detail": "본체, 물통, 가습기 부분은 매주 청소한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-05"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "checklist",
+            "sourceRowIds": [
+              "HUM-01",
+              "HUM-02",
+              "HUM-03",
+              "HUM-04",
+              "HUM-05"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-04",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "LGV-01",
+          "LGV-02",
+          "LGV-03"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Clean the vacuum dust bin and filter as shown.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "home maintenance",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "home maintenance"
+        ],
+        "sourceShape": "video_with_same_provider_html_mirror",
+        "primaryExecutionPattern": "complete_steps",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "LGV-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "LGV-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "LGV-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Clean the vacuum dust bin and filter as shown.",
+        "items": [
+          {
+            "itemId": "GB-04-I1",
+            "intent": "action",
+            "title": "00:05 청소를 준비하고 먼지통을 비운다.",
+            "detail": "00:05 청소를 준비하고 먼지통을 비운다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "LGV-01"
+            ]
+          },
+          {
+            "itemId": "GB-04-I2",
+            "intent": "action",
+            "title": "01:09 먼지통 부품을 분리해 세척한다.",
+            "detail": "01:09 먼지통 부품을 분리해 세척한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "LGV-02"
+            ]
+          },
+          {
+            "itemId": "GB-04-I3",
+            "intent": "action",
+            "title": "02:17 필터를 관리하고 부품을 다시 조립한다.",
+            "detail": "02:17 필터를 관리하고 부품을 다시 조립한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "LGV-03"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "checklist",
+            "sourceRowIds": [
+              "LGV-01",
+              "LGV-02",
+              "LGV-03"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-05",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "REC-01",
+          "REC-02",
+          "REC-03",
+          "REC-04",
+          "REC-05",
+          "REC-06"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Prepare the recipe using the supplied cooking steps.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "cooking",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "cooking"
+        ],
+        "sourceShape": "html_recipe",
+        "primaryExecutionPattern": "complete_steps",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "REC-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "REC-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "REC-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "REC-04",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "REC-05",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "REC-06",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Prepare the recipe using the supplied cooking steps.",
+        "items": [
+          {
+            "itemId": "GB-05-I1",
+            "intent": "action",
+            "title": "당근과 대파를 잘게 썬다.",
+            "detail": "당근과 대파를 잘게 썬다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-01"
+            ]
+          },
+          {
+            "itemId": "GB-05-I2",
+            "intent": "action",
+            "title": "달걀 6개를 푼다.",
+            "detail": "달걀 6개를 푼다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-02"
+            ]
+          },
+          {
+            "itemId": "GB-05-I3",
+            "intent": "action",
+            "title": "기름을 두른 팬에서 달걀말이를 만든다.",
+            "detail": "기름을 두른 팬에서 달걀말이를 만든다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-03"
+            ]
+          },
+          {
+            "itemId": "GB-05-I4",
+            "intent": "action",
+            "title": "따뜻한 달걀말이를 김발로 모양 잡는다.",
+            "detail": "따뜻한 달걀말이를 김발로 모양 잡는다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-04"
+            ]
+          },
+          {
+            "itemId": "GB-05-I5",
+            "intent": "action",
+            "title": "김에 밥 한 숟갈을 펴고 달걀말이를 올려 만다.",
+            "detail": "김에 밥 한 숟갈을 펴고 달걀말이를 올려 만다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-05"
+            ]
+          },
+          {
+            "itemId": "GB-05-I6",
+            "intent": "action",
+            "title": "완성된 김밥을 썬다.",
+            "detail": "완성된 김밥을 썬다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-06"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "checklist",
+            "sourceRowIds": [
+              "REC-01",
+              "REC-02",
+              "REC-03",
+              "REC-04",
+              "REC-05",
+              "REC-06"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "restricted",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-06",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "READ-01",
+          "READ-02",
+          "READ-03",
+          "READ-04",
+          "READ-05",
+          "READ-06",
+          "READ-07",
+          "READ-08",
+          "READ-09",
+          "READ-10"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Use the supplied reading list to select a family reading option.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "family reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "family reading"
+        ],
+        "sourceShape": "html_booklist",
+        "primaryExecutionPattern": "select",
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "READ-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-04",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-05",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-06",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-07",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-08",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-09",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "READ-10",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Use the supplied reading list to select a family reading option.",
+        "items": [
+          {
+            "itemId": "GB-06-I1",
+            "intent": "consume",
+            "title": "Review Stormy — Guojing",
+            "detail": "Stormy — Guojing",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-01"
+            ]
+          },
+          {
+            "itemId": "GB-06-I2",
+            "intent": "consume",
+            "title": "Review You’re Snug With Me — Chitra Soundar, Poonam Mistry",
+            "detail": "You’re Snug With Me — Chitra Soundar, Poonam Mistry",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-02"
+            ]
+          },
+          {
+            "itemId": "GB-06-I3",
+            "intent": "consume",
+            "title": "Review The Lost Spells — Robert Macfarlane, Jackie Morris",
+            "detail": "The Lost Spells — Robert Macfarlane, Jackie Morris",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-03"
+            ]
+          },
+          {
+            "itemId": "GB-06-I4",
+            "intent": "consume",
+            "title": "Review The Boy Who Lost His Spark — Maggie O’Farrell, Daniela Jaglenka Terrazzini",
+            "detail": "The Boy Who Lost His Spark — Maggie O’Farrell, Daniela Jaglenka Terrazzini",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-04"
+            ]
+          },
+          {
+            "itemId": "GB-06-I5",
+            "intent": "consume",
+            "title": "Review Winter Tales — Dawn Casey, Zanna Goldhawk",
+            "detail": "Winter Tales — Dawn Casey, Zanna Goldhawk",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-05"
+            ]
+          },
+          {
+            "itemId": "GB-06-I6",
+            "intent": "consume",
+            "title": "Review Everyone Sang — William Sieghart, Emily Sutton",
+            "detail": "Everyone Sang — William Sieghart, Emily Sutton",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-06"
+            ]
+          },
+          {
+            "itemId": "GB-06-I7",
+            "intent": "consume",
+            "title": "Review Every Leaf a Hallelujah — Ben Okri, Diana Ejaita",
+            "detail": "Every Leaf a Hallelujah — Ben Okri, Diana Ejaita",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-07"
+            ]
+          },
+          {
+            "itemId": "GB-06-I8",
+            "intent": "consume",
+            "title": "Review Where the Mountain Meets the Moon — Grace Lin",
+            "detail": "Where the Mountain Meets the Moon — Grace Lin",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-08"
+            ]
+          },
+          {
+            "itemId": "GB-06-I9",
+            "intent": "consume",
+            "title": "Review Cress Watercress — Gregory Maguire, David Litchfield",
+            "detail": "Cress Watercress — Gregory Maguire, David Litchfield",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-09"
+            ]
+          },
+          {
+            "itemId": "GB-06-I10",
+            "intent": "consume",
+            "title": "Review A Children’s Literary Treasury — Anna James 편집",
+            "detail": "A Children’s Literary Treasury — Anna James 편집",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "The named source unit has been reviewed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-10"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "sheet",
+            "sourceRowIds": [
+              "READ-01",
+              "READ-02",
+              "READ-03",
+              "READ-04",
+              "READ-05",
+              "READ-06",
+              "READ-07",
+              "READ-08",
+              "READ-09",
+              "READ-10"
+            ]
+          },
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-07",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "BAK-01",
+          "BAK-02",
+          "BAK-03",
+          "BAK-04",
+          "BAK-05",
+          "BAK-06"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Compare the supplied backup-method facts before deciding.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "device backup",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "device backup"
+        ],
+        "sourceShape": "html_comparison",
+        "primaryExecutionPattern": "compare",
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "BAK-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BAK-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BAK-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BAK-04",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BAK-05",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "BAK-06",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Compare the supplied backup-method facts before deciding.",
+        "items": [
+          {
+            "itemId": "GB-07-I1",
+            "intent": "decision",
+            "title": "Consider iCloud 백업은 백업 데이터를 iCloud에 저장한다.",
+            "detail": "iCloud 백업은 백업 데이터를 iCloud에 저장한다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "The comparison fact has been considered for the backup decision."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BAK-01"
+            ]
+          },
+          {
+            "itemId": "GB-07-I2",
+            "intent": "decision",
+            "title": "Consider iCloud 저장 용량은 최대 12TB이며 Apple One Premier와 결합하면 최대 14TB다.",
+            "detail": "iCloud 저장 용량은 최대 12TB이며 Apple One Premier와 결합하면 최대 14TB다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "The comparison fact has been considered for the backup decision."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BAK-02"
+            ]
+          },
+          {
+            "itemId": "GB-07-I3",
+            "intent": "decision",
+            "title": "Consider iCloud 백업은 항상 암호화된다.",
+            "detail": "iCloud 백업은 항상 암호화된다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "The comparison fact has been considered for the backup decision."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BAK-03"
+            ]
+          },
+          {
+            "itemId": "GB-07-I4",
+            "intent": "decision",
+            "title": "Consider Wi-Fi가 있으면 어디서나 iCloud 백업을 만들고 사용할 수 있다.",
+            "detail": "Wi-Fi가 있으면 어디서나 iCloud 백업을 만들고 사용할 수 있다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "The comparison fact has been considered for the backup decision."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BAK-04"
+            ]
+          },
+          {
+            "itemId": "GB-07-I5",
+            "intent": "decision",
+            "title": "Consider 컴퓨터 백업은 Mac 또는 PC에 저장하며 사용 가능한 디스크 공간만큼 보관한다.",
+            "detail": "컴퓨터 백업은 Mac 또는 PC에 저장하며 사용 가능한 디스크 공간만큼 보관한다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "The comparison fact has been considered for the backup decision."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BAK-05"
+            ]
+          },
+          {
+            "itemId": "GB-07-I6",
+            "intent": "decision",
+            "title": "Consider 컴퓨터 백업 암호화는 선택 사항이고 기본적으로 꺼져 있으며 Mac 또는 PC가 필요하다.",
+            "detail": "컴퓨터 백업 암호화는 선택 사항이고 기본적으로 꺼져 있으며 Mac 또는 PC가 필요하다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "The comparison fact has been considered for the backup decision."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BAK-06"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "memo",
+            "sourceRowIds": [
+              "BAK-01",
+              "BAK-02",
+              "BAK-03",
+              "BAK-04",
+              "BAK-05",
+              "BAK-06"
+            ]
+          },
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-08",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "MMC-01",
+          "MMC-02",
+          "MMC-03",
+          "MMC-04",
+          "MMC-05",
+          "MMC-06",
+          "MMC-07",
+          "MMC-08"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "Complete the group-visit booking and attendance steps supported by the source.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "group visit booking",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "group visit booking"
+        ],
+        "sourceShape": "html_booking_guide",
+        "primaryExecutionPattern": "complete_steps",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "MMC-01",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "MMC-02",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "MMC-03",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "MMC-04",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "MMC-05",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "MMC-06",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "MMC-07",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        },
+        {
+          "sourceRowId": "MMC-08",
+          "role": "item",
+          "reason": "Supports a bounded source-backed execution or decision unit."
+        }
+      ],
+      "canonical": {
+        "title": "Complete the group-visit booking and attendance steps supported by the source.",
+        "items": [
+          {
+            "itemId": "GB-08-I1",
+            "intent": "action",
+            "title": "오늘 기준 7일 이후부터 90일 이내 날짜로 예약한다.",
+            "detail": "오늘 기준 7일 이후부터 90일 이내 날짜로 예약한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-01"
+            ]
+          },
+          {
+            "itemId": "GB-08-I2",
+            "intent": "action",
+            "title": "신청 후 승인을 기다리고 이메일로 승인 결과를 받는다.",
+            "detail": "신청 후 승인을 기다리고 이메일로 승인 결과를 받는다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-02"
+            ]
+          },
+          {
+            "itemId": "GB-08-I3",
+            "intent": "action",
+            "title": "오전 회차 하나는 10:00~11:10이다.",
+            "detail": "오전 회차 하나는 10:00~11:10이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-03"
+            ]
+          },
+          {
+            "itemId": "GB-08-I4",
+            "intent": "action",
+            "title": "오전 회차 하나는 11:20~12:30이다.",
+            "detail": "오전 회차 하나는 11:20~12:30이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-04"
+            ]
+          },
+          {
+            "itemId": "GB-08-I5",
+            "intent": "action",
+            "title": "오후 회차는 13:30~14:40이다.",
+            "detail": "오후 회차는 13:30~14:40이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-05"
+            ]
+          },
+          {
+            "itemId": "GB-08-I6",
+            "intent": "action",
+            "title": "승인 후 마이페이지를 확인하고 관람 예절 서약과 사전 교육을 한다.",
+            "detail": "승인 후 마이페이지를 확인하고 관람 예절 서약과 사전 교육을 한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-06"
+            ]
+          },
+          {
+            "itemId": "GB-08-I7",
+            "intent": "action",
+            "title": "도착하면 안내 데스크 확인, 서약서 제출, 관람권 수령을 거쳐 인솔자와 입장한다.",
+            "detail": "도착하면 안내 데스크 확인, 서약서 제출, 관람권 수령을 거쳐 인솔자와 입장한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-07"
+            ]
+          },
+          {
+            "itemId": "GB-08-I8",
+            "intent": "action",
+            "title": "7~8월과 12~1월에는 단체 관람을 운영하지 않는다.",
+            "detail": "7~8월과 12~1월에는 단체 관람을 운영하지 않는다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-08"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "artifact": "checklist",
+            "sourceRowIds": [
+              "MMC-01",
+              "MMC-02",
+              "MMC-03",
+              "MMC-04",
+              "MMC-05",
+              "MMC-06",
+              "MMC-07",
+              "MMC-08"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-09",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "NOT-01",
+          "NOT-02"
+        ],
+        "missingBoundary": [
+          "실제 데이터베이스와 템플릿 행은 템플릿 받기 또는 로그인 뒤에 있어 확보하지 못했다."
+        ],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "source_import_required",
+        "reason": "The acquired content is not sufficient for an executable Flow.",
+        "blockers": [
+          "실제 데이터베이스와 템플릿 행은 템플릿 받기 또는 로그인 뒤에 있어 확보하지 못했다."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": "html_template_landing",
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "NOT-01",
+          "role": "reference",
+          "reason": "Retained only as non-executable source context."
+        },
+        {
+          "sourceRowId": "NOT-02",
+          "role": "reference",
+          "reason": "Retained only as non-executable source context."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "partial",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "실제 데이터베이스와 템플릿 행은 템플릿 받기 또는 로그인 뒤에 있어 확보하지 못했다."
+        ],
+        "omissions": [
+          "실제 데이터베이스와 템플릿 행은 템플릿 받기 또는 로그인 뒤에 있어 확보하지 못했다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-10",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "CLS-01",
+          "CLS-02"
+        ],
+        "missingBoundary": [
+          "실제 강의 차시와 과제는 확보하지 못했다."
+        ],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "source_import_required",
+        "reason": "The acquired content is not sufficient for an executable Flow.",
+        "blockers": [
+          "실제 강의 차시와 과제는 확보하지 못했다."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": "html_product_landing",
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "CLS-01",
+          "role": "reference",
+          "reason": "Retained only as non-executable source context."
+        },
+        {
+          "sourceRowId": "CLS-02",
+          "role": "reference",
+          "reason": "Retained only as non-executable source context."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "partial",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "실제 강의 차시와 과제는 확보하지 못했다."
+        ],
+        "omissions": [
+          "실제 강의 차시와 과제는 확보하지 못했다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-11",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "OHO-01",
+          "OHO-02",
+          "OHO-03"
+        ],
+        "missingBoundary": [
+          "한 가지 사용자 일과 완료 가능한 행동 집합으로 한정할 근거가 없다."
+        ],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "hold",
+        "reason": "The acquired content is not sufficient for an executable Flow.",
+        "blockers": [
+          "한 가지 사용자 일과 완료 가능한 행동 집합으로 한정할 근거가 없다."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": "html_narrative_advice",
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "OHO-01",
+          "role": "memo",
+          "reason": "Retained only as non-executable source context."
+        },
+        {
+          "sourceRowId": "OHO-02",
+          "role": "memo",
+          "reason": "Retained only as non-executable source context."
+        },
+        {
+          "sourceRowId": "OHO-03",
+          "role": "memo",
+          "reason": "Retained only as non-executable source context."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "한 가지 사용자 일과 완료 가능한 행동 집합으로 한정할 근거가 없다."
+        ],
+        "omissions": [
+          "한 가지 사용자 일과 완료 가능한 행동 집합으로 한정할 근거가 없다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-12",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "a17c13f858ff7e3c635235f5e681578b7e72e4604923dda21b5eb794e180c56d",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "SEO-01",
+          "SEO-02",
+          "SEO-03"
+        ],
+        "missingBoundary": [
+          "방문할 한 곳의 최신 상세 일정과 이용 조건을 이 페이지에서 확보하지 못했다."
+        ],
+        "sourceValueSemanticKeys": []
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "source_import_required",
+        "reason": "The acquired content is not sufficient for an executable Flow.",
+        "blockers": [
+          "방문할 한 곳의 최신 상세 일정과 이용 조건을 이 페이지에서 확보하지 못했다."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": "html_collection",
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "SEO-01",
+          "role": "reference",
+          "reason": "Retained only as non-executable source context."
+        },
+        {
+          "sourceRowId": "SEO-02",
+          "role": "reference",
+          "reason": "Retained only as non-executable source context."
+        },
+        {
+          "sourceRowId": "SEO-03",
+          "role": "reference",
+          "reason": "Retained only as non-executable source context."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "partial",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "방문할 한 곳의 최신 상세 일정과 이용 조건을 이 페이지에서 확보하지 못했다."
+        ],
+        "omissions": [
+          "방문할 한 곳의 최신 상세 일정과 이용 조건을 이 페이지에서 확보하지 못했다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    }
+  ]
+}

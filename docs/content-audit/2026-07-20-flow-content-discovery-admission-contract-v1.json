@@ -1,0 +1,191 @@
+{
+  "documentType": "flow_content_discovery_admission_contract",
+  "schemaVersion": "1.0.0-proposal",
+  "observedAt": "2026-07-20T23:30:00+09:00",
+  "status": "proposal_for_ceo_product_content_review",
+  "scope": "원문 후보 발굴·편입·승격 판정. 런타임 타입이나 앱 구현을 새로 정의하지 않는다.",
+  "oneSentenceDefinition": "Flow는 한 사용자가 한 목표를 실제로 끝내도록 원문 근거가 있는 최소 행동과 필요한 설명·일정만 묶은 재사용 실행 객체다.",
+  "discoveryThesis": "one original source -> one user job -> one natural artifact -> minimum execution UI",
+  "sourceDocuments": [
+    "docs/content-audit/2026-07-18-flowme-flow-content-contract-v1.json",
+    "docs/specs/2026-07-20-flowme-taxonomy-v1-1/spec.md",
+    "docs/specs/2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json",
+    "docs/specs/2026-07-20-url-to-flow-output-quality-lab-v2/spec.md",
+    "docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/decision-matrix.json",
+    "docs/flow-rules/source-to-flow-conversion-gate.md",
+    "docs/flow-rules/content-conversion-playbooks.md",
+    "docs/flow-rules/quality-gate.md",
+    "docs/PRODUCT_PRINCIPLES.md"
+  ],
+  "compatibility": {
+    "canonicalHierarchy": "SourceRow -> Item -> Step -> Flow -> Bundle/Flow Map",
+    "destinationBeforeLayout": true,
+    "projectionNotType": [
+      "calendar",
+      "checklist",
+      "todo",
+      "sheet",
+      "memo"
+    ],
+    "p26DateIntent": [
+      "schedule_now",
+      "keep_undated",
+      "preview_only"
+    ],
+    "noExampleDatePersistence": true,
+    "conflict": "없음. 이 계약은 기존 canonical data contract 위에 admission/discovery 판정만 추가한다."
+  },
+  "minimumData": {
+    "flowRequired": [
+      "stableFlowId",
+      "goal",
+      "expectedOutcome",
+      "sourceRefs",
+      "defaultArtifact"
+    ],
+    "itemRequired": [
+      "stableItemId",
+      "actionFirstTitle",
+      "detailOrMethod",
+      "completionOrRecordCriterion",
+      "sourceRowIds",
+      "order"
+    ],
+    "itemOptional": [
+      "schedule",
+      "recurrence",
+      "location",
+      "assignee",
+      "dependencies",
+      "decisionState",
+      "costOrQuantity",
+      "personalMemo"
+    ],
+    "nonExecution": [
+      "원문 설명",
+      "공식 참고 정보",
+      "위험·주의",
+      "제작자 경험·팁",
+      "행동을 요구하지 않는 링크",
+      "조건부 후속 안내"
+    ],
+    "itemRule": "독립적으로 완료·보류·재개 상태가 필요하고 사용자가 지금 체크할 가치가 있을 때만 Item이다.",
+    "detailRule": "수량·비용·링크·조건·특이사항·먹은 양·통증·이상반응·견적 세부는 기본적으로 detail/memo다."
+  },
+  "admissionModel": {
+    "note": "항목 수만으로 분류하지 않는다. 실행 성공에 날짜·순서·분기·역할·진도가 중요한지를 본다.",
+    "tiers": {
+      "link_bucket": {
+        "definition": "원문을 다시 보거나 후보를 고르는 저장 단위",
+        "requiredEvidence": [
+          "정확한 URL",
+          "제목",
+          "출처",
+          "왜 저장하는지"
+        ],
+        "forbidden": [
+          "임의 Item",
+          "임의 일정"
+        ]
+      },
+      "quick_flow": {
+        "definition": "한 세션 또는 한 결정에서 끝나는 1~7개 안팎의 원문 기반 핵심 행동",
+        "triggers": [
+          "짧은 신청",
+          "한 번의 만들기·조리·정리",
+          "한 번의 확인·선택"
+        ],
+        "note": "7개는 경계 예시이지 하드 리밋이 아니다."
+      },
+      "full_flow": {
+        "definition": "날짜·순서·분기·역할·진도 중 하나 이상이 실행 성공에 필수인 콘텐츠",
+        "triggers": [
+          "D-day",
+          "주차 진도",
+          "선행관계",
+          "업체 비교 상태",
+          "역할 인계"
+        ]
+      },
+      "hold_reject": {
+        "definition": "원문 행·최신성·권리·안전 근거가 부족해 실행시키면 안 되는 콘텐츠",
+        "outcomes": [
+          "source_import_required",
+          "rights_review_required",
+          "safety_review_required",
+          "reject"
+        ]
+      }
+    },
+    "orthogonalGates": [
+      "source row completeness",
+      "freshness",
+      "rights/publication",
+      "safety/sensitivity",
+      "locale/applicability"
+    ],
+    "currentAndTarget": "현재 안전한 tier와 보강 후 목표 tier를 함께 기록해 잠재력과 현재 공개 가능성을 혼동하지 않는다."
+  },
+  "minimumInputPolicy": {
+    "initialRequiredDefault": 0,
+    "initialRequiredTypicalMax": 1,
+    "exceptionalMax": 3,
+    "rule": "원문에서 아는 값은 다시 묻지 않고, 결과를 바꾸는 기준일·선택·역할만 요청한다.",
+    "flow": [
+      "열람",
+      "날짜 없이 저장",
+      "생성 항목 수·영향 미리보기",
+      "필요 시 기준일 1개",
+      "결과 확인 후 일부 항목 일정화"
+    ],
+    "displayOrigins": [
+      "source_fact",
+      "user_input",
+      "calculated_value",
+      "preview_example"
+    ]
+  },
+  "projectionRules": {
+    "calendar": "사용자가 확정한 날짜/시각/기간/반복만 이벤트로 내보낸다. 날짜 없는 Item과 예시 날짜는 제외한다.",
+    "checklist": "actionFirstTitle과 완료 상태를 내보내고 detail/source link는 접힌 참고로 둔다.",
+    "todo": "독립적인 다음 행동과 선택한 날짜만 보낸다.",
+    "sheet": "행=Item, 열=상태·날짜·담당·메모·source URL. 비교 콘텐츠는 옵션별 진행·보류·거절 상태를 유지한다.",
+    "memo": "Flow 목표·원문 설명·주의·source link·개인 메모를 보존하되 실행 상태를 대체하지 않는다."
+  },
+  "discoveryRecordRequired": [
+    "candidateId",
+    "sourceUrl",
+    "openedAt",
+    "sourceShape",
+    "rowEvidence",
+    "visibleDemand",
+    "rights",
+    "risk",
+    "admissionTier",
+    "targetTier",
+    "readiness",
+    "scores",
+    "nextAction"
+  ],
+  "discoveryScoreShape": {
+    "requiredKeys": [
+      "demand",
+      "conversion",
+      "creator",
+      "ux"
+    ],
+    "valueShape": "[score 0~100, source-grounded comment]"
+  },
+  "uxFitGate": [
+    "/flows 카드에서 저장 후 생길 결과를 5초 안에 설명할 수 있다.",
+    "첫 행동 또는 첫 일정이 한 화면에서 보인다.",
+    "/my에서 날짜 없음과 일정 있음이 섞이지 않는다.",
+    "Calendar/checklist/sheet/memo projection이 같은 Item을 읽는다.",
+    "390px에서 전체 Item을 평면 나열하지 않고 Step·detail을 접는다."
+  ],
+  "ceoDecisionProposal": [
+    "Flow를 실행 항목 중심 객체로 유지하되 발굴 단계에서는 Link/Bucket을 정식 편입 상태로 둔다.",
+    "Quick/Full 구조 판정과 source·rights·safety 공개 gate를 분리한다.",
+    "날짜 없는 0입력 저장과 결과 확인 후 일정화를 기본으로 채택한다."
+  ]
+}

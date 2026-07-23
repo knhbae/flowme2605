@@ -1,0 +1,13 @@
+{
+  "correctionId": "EVALUATOR-E01",
+  "detectedAt": "2026-07-22T19:10:00+09:00",
+  "issue": "schedule provenance 판정이 gold.allowedItems.schedule만 인정해 SourceRow에 명시된 조건형 date offset을 오탐함",
+  "generalRule": "Item sourceRefs가 가리키는 SourceRow에 명시적 날짜·시각·date offset이 있으면 schedule authority로 인정하되, 확정 anchor 전에는 ICS event로 세지 않는다.",
+  "appliesToAllCases": true,
+  "caseSpecificExceptionAdded": false,
+  "sourceRowsChanged": false,
+  "goldChanged": false,
+  "generationRulesChanged": false,
+  "roleOutputsChanged": false,
+  "archivePath": "runs/evaluator-before-E01"
+}

@@ -1,0 +1,3118 @@
+{
+  "schemaVersion": "flow-content-generalization-runs-v1",
+  "phase": "calibration_revised",
+  "revisionRound": 1,
+  "measurementNote": "Revised frozen decision-table interpretation by the rules session agent. No provider API was used; token counts and elapsed time were not exposed and are null. No retries or human case interventions occurred. The agent identity is execution provenance, not provider billing evidence.",
+  "runs": [
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-01",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "BIR-01",
+          "BIR-02",
+          "BIR-03",
+          "BIR-04",
+          "BIR-05",
+          "BIR-06",
+          "BIR-07"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "declarant_rule",
+          "declarant_fallback",
+          "deadline_offset",
+          "late_fee_warning",
+          "submission_locations",
+          "birth_report_fields",
+          "required_documents"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "출생일 한 개로 신고 기한을 계산할 수 있는 time-bound job이므로 Calendar를 유지하고 사용자 anchor를 기다린다.",
+        "blockers": [
+          "user_anchor_required",
+          "freshness_review_required",
+          "privacy_review_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "family_parenting",
+        "secondaryLifeAreas": [
+          "money_admin_purchase"
+        ],
+        "topicTags": [
+          "출생신고",
+          "행정기한"
+        ],
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "date_preparation",
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "BIR-01",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        },
+        {
+          "sourceRowId": "BIR-02",
+          "role": "conditional_response",
+          "reason": "원문 조건이 충족될 때만 활성화되는 대응이다."
+        },
+        {
+          "sourceRowId": "BIR-03",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "BIR-04",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        },
+        {
+          "sourceRowId": "BIR-05",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "BIR-06",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "BIR-07",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "출생신고 기한과 준비",
+        "items": [
+          {
+            "itemId": "gb01-form",
+            "intent": "action",
+            "title": "출생신고서 필수 항목 작성하기",
+            "detail": "원문에 명시된 자녀와 부모 정보를 신고서에 작성한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "원문에 명시된 신고서 항목을 모두 작성했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-06"
+            ]
+          },
+          {
+            "itemId": "gb01-documents",
+            "intent": "action",
+            "title": "출생신고 기본 서류 준비하기",
+            "detail": "출생증명서와 신고인 신분증을 준비하고 상황별 추가 서류 여부를 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "출생증명서와 신고인 신분증을 준비했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-07"
+            ]
+          },
+          {
+            "itemId": "gb01-submit",
+            "intent": "action",
+            "title": "허용 기관에 출생신고 제출하기",
+            "detail": "출생일부터 1개월 이내에 허용된 신고기관에 제출한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "허용된 신고기관에 출생신고를 제출했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "anchorInputId": "child-birth-date",
+              "offset": "P1M",
+              "sourceRefs": [
+                "BIR-03"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "BIR-03",
+              "BIR-05"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "source-bir-03",
+            "value": "출생신고는 출생한 날부터 1개월 이내에 해야 한다.",
+            "sourceRefs": [
+              "BIR-03"
+            ]
+          },
+          {
+            "fieldId": "source-bir-05",
+            "value": "출생지, 등록기준지, 신고인 주소지 또는 현재지의 허용된 신고기관에 제출할 수 있다.",
+            "sourceRefs": [
+              "BIR-05"
+            ]
+          },
+          {
+            "fieldId": "child-birth-date",
+            "purpose": "user_schedule_anchor",
+            "sourceRefs": [
+              "BIR-03"
+            ]
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "gb01-boundary",
+            "text": "신고 의무자, 지연 과태료, 상황별 추가 서류 경계를 함께 보존한다.",
+            "sourceRefs": [
+              "BIR-01",
+              "BIR-04",
+              "BIR-07"
+            ]
+          }
+        ],
+        "references": [
+          {
+            "referenceId": "source-bir-01",
+            "text": "혼인 중 출생자의 출생신고 의무자는 아버지 또는 어머니다.",
+            "sourceRefs": [
+              "BIR-01"
+            ]
+          },
+          {
+            "referenceId": "source-bir-04",
+            "text": "정당한 사유 없이 기간 내 신고하지 않으면 5만원 이하 과태료가 부과될 수 있다.",
+            "sourceRefs": [
+              "BIR-04"
+            ]
+          }
+        ],
+        "conditionalResponses": [
+          {
+            "conditionalResponseId": "source-bir-02",
+            "text": "부모가 신고할 수 없으면 동거 친족, 이어서 분만에 관여한 의사가 대리 순위가 된다.",
+            "sourceRefs": [
+              "BIR-02"
+            ]
+          }
+        ]
+      },
+      "minimumInputs": [
+        {
+          "inputId": "child-birth-date",
+          "owner": "user",
+          "semanticKey": "child_birth_date",
+          "requiredBeforeFirstPreview": true,
+          "reason": "원문 기한을 실제 날짜로 계산하는 사용자 소유 anchor다.",
+          "consumerRefs": [
+            "canonical:gb01-submit:schedule",
+            "projection:calendar"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "primary",
+          "payload": {
+            "status": "awaiting_user_anchor",
+            "anchorInputId": "child-birth-date",
+            "eventTemplateItemIds": [
+              "gb01-submit"
+            ]
+          },
+          "losses": []
+        },
+        "checklist": {
+          "availability": "secondary",
+          "payload": {
+            "itemIds": [
+              "gb01-form",
+              "gb01-documents",
+              "gb01-submit"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "secondary",
+          "payload": {
+            "referenceRowIds": [
+              "BIR-01",
+              "BIR-04"
+            ],
+            "conditionalRowIds": [
+              "BIR-02"
+            ]
+          },
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "link_only",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "anchor 확정 전 ICS를 만들지 않으며 법령 최신성과 개인정보 처리는 별도 검토가 필요하다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-02",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "G2F-01",
+          "G2F-02",
+          "G2F-03",
+          "G2F-04"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "google_account",
+          "security_navigation",
+          "two_step_verification",
+          "on_screen_setup_steps"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "한 번의 bounded setup session에서 네 행을 순서대로 빠뜨리지 않는 Checklist가 바로 유용하다.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "계정보안",
+          "2단계인증"
+        ],
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "G2F-01",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "G2F-02",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "G2F-03",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "G2F-04",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "Google 2단계 인증 설정",
+        "items": [
+          {
+            "itemId": "gb02-account",
+            "intent": "action",
+            "title": "Google 계정 열기",
+            "detail": "설정할 Google 계정을 연다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "Google 계정을 열었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-01"
+            ]
+          },
+          {
+            "itemId": "gb02-security",
+            "intent": "action",
+            "title": "보안 및 로그인 열기",
+            "detail": "계정의 보안 및 로그인 화면을 연다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "보안 및 로그인 화면을 열었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-02"
+            ]
+          },
+          {
+            "itemId": "gb02-two-step",
+            "intent": "action",
+            "title": "2단계 인증 선택하기",
+            "detail": "Google에 로그인하는 방법에서 2단계 인증을 선택한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "2단계 인증 설정 화면을 열었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-03"
+            ]
+          },
+          {
+            "itemId": "gb02-complete",
+            "intent": "action",
+            "title": "화면 설정 절차 완료하기",
+            "detail": "화면에 표시되는 설정 절차만 따른다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "화면 안내에 따른 설정을 완료했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "G2F-04"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "itemIds": [
+              "gb02-account",
+              "gb02-security",
+              "gb02-two-step",
+              "gb02-complete"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "link_only",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "인증 수단의 실제 값은 수집하거나 저장하지 않는다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-03",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "HUM-01",
+          "HUM-02",
+          "HUM-03",
+          "HUM-04",
+          "HUM-05"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "weekly_cleaning",
+          "replacement_interval_range",
+          "annual_replacement",
+          "two_month_cleaning",
+          "reset_trigger"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "고정 주기들은 시작일과 3~5개월 범위의 사용자 선택으로 계산되므로 Calendar를 유지하고 두 값을 기다린다.",
+        "blockers": [
+          "user_anchor_required",
+          "replacement_interval_selection_required",
+          "model_applicability_review"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "가습기관리",
+          "필터주기"
+        ],
+        "sourceShape": "recurrence_rule",
+        "primaryExecutionPattern": "repeating_routine",
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "HUM-01",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "HUM-02",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "HUM-03",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "HUM-04",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "HUM-05",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "LG 가습기 필터와 본체 관리 일정",
+        "items": [
+          {
+            "itemId": "gb03-water-clean",
+            "intent": "action",
+            "title": "워터 필터 청소하기",
+            "detail": "매주 청소한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "워터 필터 주간 청소를 마쳤다."
+            },
+            "schedule": {
+              "kind": "recurrence",
+              "rule": "weekly",
+              "anchorInputId": "maintenance-start-date",
+              "sourceRefs": [
+                "HUM-01"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-01"
+            ]
+          },
+          {
+            "itemId": "gb03-water-replace",
+            "intent": "action",
+            "title": "워터 필터 교체하기",
+            "detail": "원문 3~5개월 범위에서 사용자가 선택한 간격으로 교체한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "워터 필터를 교체했다."
+            },
+            "schedule": {
+              "kind": "recurrence",
+              "intervalInputId": "replacement-interval-months",
+              "allowedMonths": [
+                3,
+                4,
+                5
+              ],
+              "anchorInputId": "maintenance-start-date",
+              "sourceRefs": [
+                "HUM-01"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-01"
+            ]
+          },
+          {
+            "itemId": "gb03-debris-clean",
+            "intent": "action",
+            "title": "이물질 필터 청소하기",
+            "detail": "매주 청소한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "이물질 필터 주간 청소를 마쳤다."
+            },
+            "schedule": {
+              "kind": "recurrence",
+              "rule": "weekly",
+              "anchorInputId": "maintenance-start-date",
+              "sourceRefs": [
+                "HUM-02"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-02"
+            ]
+          },
+          {
+            "itemId": "gb03-debris-replace",
+            "intent": "action",
+            "title": "이물질 필터 함께 교체하기",
+            "detail": "워터 필터와 함께 교체한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "이물질 필터를 워터 필터와 함께 교체했다."
+            },
+            "schedule": {
+              "kind": "linked_recurrence",
+              "linkedItemId": "gb03-water-replace",
+              "sourceRefs": [
+                "HUM-02"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-02"
+            ]
+          },
+          {
+            "itemId": "gb03-humidifying",
+            "intent": "action",
+            "title": "가습 필터 교체하기",
+            "detail": "물세척하지 않고 매년 교체한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "가습 필터를 교체했다."
+            },
+            "schedule": {
+              "kind": "recurrence",
+              "rule": "yearly",
+              "anchorInputId": "maintenance-start-date",
+              "sourceRefs": [
+                "HUM-03"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [
+              {
+                "trigger": "녹색 표시등 점멸",
+                "response": "물 버튼을 3초 눌러 초기화한다."
+              }
+            ],
+            "sourceRefs": [
+              "HUM-03"
+            ]
+          },
+          {
+            "itemId": "gb03-ultrafine",
+            "intent": "action",
+            "title": "극세 필터 청소하기",
+            "detail": "2개월마다 청소한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "극세 필터 청소를 마쳤다."
+            },
+            "schedule": {
+              "kind": "recurrence",
+              "rule": "P2M",
+              "anchorInputId": "maintenance-start-date",
+              "sourceRefs": [
+                "HUM-04"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-04"
+            ]
+          },
+          {
+            "itemId": "gb03-body",
+            "intent": "action",
+            "title": "본체·물통·가습기 부분 청소하기",
+            "detail": "세 부위를 매주 청소한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "본체·물통·가습기 부분의 주간 청소를 마쳤다."
+            },
+            "schedule": {
+              "kind": "recurrence",
+              "rule": "weekly",
+              "anchorInputId": "maintenance-start-date",
+              "sourceRefs": [
+                "HUM-05"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "HUM-05"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "maintenance-start-date",
+            "purpose": "user_schedule_anchor",
+            "sourceRefs": [
+              "HUM-01",
+              "HUM-03",
+              "HUM-04",
+              "HUM-05"
+            ]
+          },
+          {
+            "fieldId": "replacement-interval-months",
+            "purpose": "user_choice_within_source_range",
+            "sourceRefs": [
+              "HUM-01"
+            ]
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "gb03-no-wash",
+            "text": "가습 필터는 물세척하지 않는다.",
+            "sourceRefs": [
+              "HUM-03"
+            ]
+          }
+        ],
+        "references": [],
+        "conditionalResponses": [
+          {
+            "conditionalResponseId": "gb03-reset",
+            "trigger": "녹색 표시등 점멸",
+            "response": "물 버튼을 3초 눌러 초기화한다.",
+            "sourceRefs": [
+              "HUM-03"
+            ]
+          }
+        ]
+      },
+      "minimumInputs": [
+        {
+          "inputId": "maintenance-start-date",
+          "owner": "user",
+          "semanticKey": "maintenance_start_date",
+          "requiredBeforeFirstPreview": true,
+          "reason": "source 주기를 실제 일정으로 계산하는 사용자 anchor다.",
+          "consumerRefs": [
+            "canonical:schedules",
+            "projection:calendar"
+          ]
+        },
+        {
+          "inputId": "replacement-interval-months",
+          "owner": "user",
+          "semanticKey": "selected_replacement_interval_months",
+          "requiredBeforeFirstPreview": true,
+          "reason": "원문 3~5개월 범위 안의 실제 사용자 선택이다.",
+          "consumerRefs": [
+            "canonical:gb03-water-replace:schedule",
+            "canonical:gb03-debris-replace:schedule"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "primary",
+          "payload": {
+            "status": "awaiting_user_anchors",
+            "anchorInputIds": [
+              "maintenance-start-date",
+              "replacement-interval-months"
+            ],
+            "eventTemplateItemIds": [
+              "gb03-water-clean",
+              "gb03-water-replace",
+              "gb03-debris-clean",
+              "gb03-debris-replace",
+              "gb03-humidifying",
+              "gb03-ultrafine",
+              "gb03-body"
+            ]
+          },
+          "losses": []
+        },
+        "checklist": {
+          "availability": "secondary",
+          "payload": {
+            "itemIds": [
+              "gb03-water-clean",
+              "gb03-water-replace",
+              "gb03-debris-clean",
+              "gb03-debris-replace",
+              "gb03-humidifying",
+              "gb03-ultrafine",
+              "gb03-body"
+            ],
+            "conditionalResponseIds": [
+              "gb03-reset"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "link_only",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "anchor와 적용 모델 확정 전 ICS를 만들지 않는다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-04",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "LGV-01",
+          "LGV-02",
+          "LGV-03"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "video_segment_0005",
+          "video_segment_0109",
+          "video_segment_0217"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "단일 청소 session의 세 순서 행이 확보되어 Checklist로 바로 실행할 수 있다.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "청소기관리",
+          "영상절차"
+        ],
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "LGV-01",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "LGV-02",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "LGV-03",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "LG 코드제로 A9S 먼지통·필터 청소",
+        "items": [
+          {
+            "itemId": "gb04-empty",
+            "intent": "action",
+            "title": "청소 준비하고 먼지통 비우기",
+            "detail": "00:05 구간을 따른다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "청소 준비와 먼지통 비우기를 마쳤다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "LGV-01"
+            ]
+          },
+          {
+            "itemId": "gb04-wash",
+            "intent": "action",
+            "title": "먼지통 부품 분리해 세척하기",
+            "detail": "01:09 구간을 따른다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "먼지통 부품 분리와 세척을 마쳤다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "LGV-02"
+            ]
+          },
+          {
+            "itemId": "gb04-reassemble",
+            "intent": "action",
+            "title": "필터 관리하고 다시 조립하기",
+            "detail": "02:17 구간을 따른다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "필터 관리와 재조립을 마쳤다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "LGV-03"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [
+          {
+            "memoId": "gb04-scope",
+            "text": "세척제와 건조 조건은 획득 범위 밖이다.",
+            "sourceRefs": [
+              "LGV-01",
+              "LGV-02",
+              "LGV-03"
+            ]
+          }
+        ],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "itemIds": [
+              "gb04-empty",
+              "gb04-wash",
+              "gb04-reassemble"
+            ],
+            "timestamps": [
+              "00:05",
+              "01:09",
+              "02:17"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "secondary",
+          "payload": {
+            "memoIds": [
+              "gb04-scope"
+            ]
+          },
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "link_only",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "영상 밖 세척제와 건조 조건은 추가하지 않았다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-05",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "REC-01",
+          "REC-02",
+          "REC-03",
+          "REC-04",
+          "REC-05",
+          "REC-06"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "servings",
+          "estimated_minutes",
+          "ingredient_list",
+          "recipe_steps"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "한 번의 조리 session에서 6개 원문 행을 순서대로 빠뜨리지 않는 Checklist가 자연스럽다.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "meals_grocery",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "달걀말이김밥",
+          "조리절차"
+        ],
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "REC-01",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "REC-02",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "REC-03",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "REC-04",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "REC-05",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "REC-06",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "달걀말이 김밥 조리",
+        "items": [
+          {
+            "itemId": "gb05-1",
+            "intent": "action",
+            "title": "당근과 대파 잘게 썰기",
+            "detail": "당근과 대파를 잘게 썬다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "당근과 대파를 잘게 썰었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-01"
+            ]
+          },
+          {
+            "itemId": "gb05-2",
+            "intent": "action",
+            "title": "달걀 6개 풀기",
+            "detail": "달걀 6개를 푼다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "달걀 6개를 풀었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-02"
+            ]
+          },
+          {
+            "itemId": "gb05-3",
+            "intent": "action",
+            "title": "팬에서 달걀말이 만들기",
+            "detail": "기름을 두른 팬에서 달걀말이를 만든다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "팬에서 달걀말이를 만들었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-03"
+            ]
+          },
+          {
+            "itemId": "gb05-4",
+            "intent": "action",
+            "title": "김발로 모양 잡기",
+            "detail": "따뜻한 달걀말이를 김발로 모양 잡는다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "달걀말이 모양을 잡았다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-04"
+            ]
+          },
+          {
+            "itemId": "gb05-5",
+            "intent": "action",
+            "title": "김에 밥과 달걀말이 말기",
+            "detail": "김에 밥 한 숟갈을 펴고 달걀말이를 올려 만다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "김에 밥과 달걀말이를 말았다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-05"
+            ]
+          },
+          {
+            "itemId": "gb05-6",
+            "intent": "action",
+            "title": "완성된 김밥 썰기",
+            "detail": "완성된 김밥을 썬다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "완성된 김밥을 썰었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "REC-06"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [
+          {
+            "memoId": "gb05-rights",
+            "text": "원문 이미지와 글의 무단 복제 금지 경계를 유지한다.",
+            "sourceRefs": [
+              "REC-01",
+              "REC-02",
+              "REC-03",
+              "REC-04",
+              "REC-05",
+              "REC-06"
+            ]
+          }
+        ],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "itemIds": [
+              "gb05-1",
+              "gb05-2",
+              "gb05-3",
+              "gb05-4",
+              "gb05-5",
+              "gb05-6"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "secondary",
+          "payload": {
+            "memoIds": [
+              "gb05-rights"
+            ],
+            "servings": 2,
+            "estimatedMinutes": 20
+          },
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "restricted",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "알레르기 정보는 획득 범위 밖이다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-06",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "READ-01",
+          "READ-02",
+          "READ-03",
+          "READ-04",
+          "READ-05",
+          "READ-06",
+          "READ-07",
+          "READ-08",
+          "READ-09",
+          "READ-10"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "book_title_author_rows"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "10개 stable resource row의 읽음 상태와 진행 위치를 다음 session까지 보존해야 하므로 Sheet가 primary다.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "family_parenting",
+        "secondaryLifeAreas": [
+          "study_reading"
+        ],
+        "topicTags": [
+          "가족독서",
+          "도서큐"
+        ],
+        "sourceShape": "resource_collection",
+        "primaryExecutionPattern": "resource_queue",
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "READ-01",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-02",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-03",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-04",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-05",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-06",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-07",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-08",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-09",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "READ-10",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "가족 함께 읽기 10권 진행표",
+        "items": [
+          {
+            "itemId": "gb06-1",
+            "intent": "consume",
+            "title": "Stormy — Guojing 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-01"
+            ]
+          },
+          {
+            "itemId": "gb06-2",
+            "intent": "consume",
+            "title": "You’re Snug With Me — Chitra Soundar, Poonam Mistry 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-02"
+            ]
+          },
+          {
+            "itemId": "gb06-3",
+            "intent": "consume",
+            "title": "The Lost Spells — Robert Macfarlane, Jackie Morris 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-03"
+            ]
+          },
+          {
+            "itemId": "gb06-4",
+            "intent": "consume",
+            "title": "The Boy Who Lost His Spark — Maggie O’Farrell, Daniela Jaglenka Terrazzini 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-04"
+            ]
+          },
+          {
+            "itemId": "gb06-5",
+            "intent": "consume",
+            "title": "Winter Tales — Dawn Casey, Zanna Goldhawk 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-05"
+            ]
+          },
+          {
+            "itemId": "gb06-6",
+            "intent": "consume",
+            "title": "Everyone Sang — William Sieghart, Emily Sutton 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-06"
+            ]
+          },
+          {
+            "itemId": "gb06-7",
+            "intent": "consume",
+            "title": "Every Leaf a Hallelujah — Ben Okri, Diana Ejaita 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-07"
+            ]
+          },
+          {
+            "itemId": "gb06-8",
+            "intent": "consume",
+            "title": "Where the Mountain Meets the Moon — Grace Lin 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-08"
+            ]
+          },
+          {
+            "itemId": "gb06-9",
+            "intent": "consume",
+            "title": "Cress Watercress — Gregory Maguire, David Litchfield 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-09"
+            ]
+          },
+          {
+            "itemId": "gb06-10",
+            "intent": "consume",
+            "title": "A Children’s Literary Treasury — Anna James 편집 함께 읽기",
+            "detail": "원문 목록의 해당 책을 가족과 함께 읽는다.",
+            "completion": {
+              "mode": "consume",
+              "doneWhen": "가족과 해당 책을 함께 읽었다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "READ-10"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "reading-status",
+            "purpose": "retained_progress_state",
+            "sourceRefs": [
+              "READ-01",
+              "READ-02",
+              "READ-03",
+              "READ-04",
+              "READ-05",
+              "READ-06",
+              "READ-07",
+              "READ-08",
+              "READ-09",
+              "READ-10"
+            ]
+          }
+        ],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "secondary",
+          "payload": {
+            "itemIds": [
+              "gb06-1",
+              "gb06-2",
+              "gb06-3",
+              "gb06-4",
+              "gb06-5",
+              "gb06-6",
+              "gb06-7",
+              "gb06-8",
+              "gb06-9",
+              "gb06-10"
+            ]
+          },
+          "losses": []
+        },
+        "sheet": {
+          "availability": "primary",
+          "payload": {
+            "rows": [
+              {
+                "itemId": "gb06-1",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-2",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-3",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-4",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-5",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-6",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-7",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-8",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-9",
+                "status": "not_started"
+              },
+              {
+                "itemId": "gb06-10",
+                "status": "not_started"
+              }
+            ],
+            "retainedState": [
+              "status",
+              "last_position"
+            ]
+          },
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "link_only",
+        "freshness": "passed",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "영문 도서의 한국어 사용자 적용과 입수 가능성은 별도 확인 대상이다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-07",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "BAK-01",
+          "BAK-02",
+          "BAK-03",
+          "BAK-04",
+          "BAK-05",
+          "BAK-06"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "icloud_storage_location",
+          "icloud_capacity",
+          "icloud_encryption",
+          "icloud_access",
+          "computer_storage_location",
+          "computer_encryption_access"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "비교의 최종 retained value는 한 가지 백업 선택과 그 이유이므로 Memo가 primary이고 표는 secondary다.",
+        "blockers": []
+      },
+      "classification": {
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "Apple백업",
+          "백업선택"
+        ],
+        "sourceShape": "decision_criteria",
+        "primaryExecutionPattern": "compare_decide",
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": [
+          "sheet"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "BAK-01",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "BAK-02",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "BAK-03",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "BAK-04",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "BAK-05",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "BAK-06",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        }
+      ],
+      "canonical": {
+        "title": "iCloud와 컴퓨터 백업 선택 기록",
+        "items": [
+          {
+            "itemId": "gb07-decision",
+            "intent": "decision",
+            "title": "백업 방법과 선택 이유 기록하기",
+            "detail": "저장 위치·용량·암호화·접근 조건을 비교하고 선택 또는 보류와 이유를 남긴다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "백업 방법 하나 또는 보류를 선택하고 이유를 기록했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "backup-method-choice",
+              "backup-decision-reason"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "BAK-01",
+              "BAK-02",
+              "BAK-03",
+              "BAK-04",
+              "BAK-05",
+              "BAK-06"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "source-bak-01",
+            "value": "iCloud 백업은 백업 데이터를 iCloud에 저장한다.",
+            "sourceRefs": [
+              "BAK-01"
+            ]
+          },
+          {
+            "fieldId": "source-bak-02",
+            "value": "iCloud 저장 용량은 최대 12TB이며 Apple One Premier와 결합하면 최대 14TB다.",
+            "sourceRefs": [
+              "BAK-02"
+            ]
+          },
+          {
+            "fieldId": "source-bak-03",
+            "value": "iCloud 백업은 항상 암호화된다.",
+            "sourceRefs": [
+              "BAK-03"
+            ]
+          },
+          {
+            "fieldId": "source-bak-04",
+            "value": "Wi-Fi가 있으면 어디서나 iCloud 백업을 만들고 사용할 수 있다.",
+            "sourceRefs": [
+              "BAK-04"
+            ]
+          },
+          {
+            "fieldId": "source-bak-05",
+            "value": "컴퓨터 백업은 Mac 또는 PC에 저장하며 사용 가능한 디스크 공간만큼 보관한다.",
+            "sourceRefs": [
+              "BAK-05"
+            ]
+          },
+          {
+            "fieldId": "source-bak-06",
+            "value": "컴퓨터 백업 암호화는 선택 사항이고 기본적으로 꺼져 있으며 Mac 또는 PC가 필요하다.",
+            "sourceRefs": [
+              "BAK-06"
+            ]
+          },
+          {
+            "fieldId": "backup-method-choice",
+            "purpose": "user_decision",
+            "sourceRefs": [
+              "BAK-01",
+              "BAK-05"
+            ]
+          },
+          {
+            "fieldId": "backup-decision-reason",
+            "purpose": "user_decision_reason",
+            "sourceRefs": [
+              "BAK-01",
+              "BAK-02",
+              "BAK-03",
+              "BAK-04",
+              "BAK-05",
+              "BAK-06"
+            ]
+          }
+        ],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "backup-method-choice",
+          "owner": "user",
+          "semanticKey": "selected_backup_method",
+          "requiredBeforeFirstPreview": false,
+          "reason": "비교 preview 뒤 실제 선택을 overlay에 저장한다.",
+          "consumerRefs": [
+            "canonical:gb07-decision",
+            "projection:memo"
+          ]
+        },
+        {
+          "inputId": "backup-decision-reason",
+          "owner": "user",
+          "semanticKey": "backup_decision_reason",
+          "requiredBeforeFirstPreview": false,
+          "reason": "선택의 retained value인 개인 이유를 memo에 저장한다.",
+          "consumerRefs": [
+            "canonical:gb07-decision",
+            "projection:memo"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "secondary",
+          "payload": {
+            "columns": [
+              "방법",
+              "저장 위치",
+              "용량",
+              "암호화",
+              "접근 조건"
+            ],
+            "sourceRowIds": [
+              "BAK-01",
+              "BAK-02",
+              "BAK-03",
+              "BAK-04",
+              "BAK-05",
+              "BAK-06"
+            ]
+          },
+          "losses": []
+        },
+        "memo": {
+          "availability": "primary",
+          "payload": {
+            "decisionItemId": "gb07-decision",
+            "choiceInputId": "backup-method-choice",
+            "reasonInputId": "backup-decision-reason"
+          },
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "link_only",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "저장 용량 수치는 변경될 수 있어 재확인이 필요하다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-08",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "MMC-01",
+          "MMC-02",
+          "MMC-03",
+          "MMC-04",
+          "MMC-05",
+          "MMC-06",
+          "MMC-07",
+          "MMC-08"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "booking_window",
+          "approval_flow",
+          "session_options",
+          "post_approval_prep",
+          "entry_process",
+          "blackout_months"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "예약 날짜창과 회차가 source-defined이며 방문일과 회차 두 선택으로 계산되므로 Calendar를 유지하고 두 값을 기다린다.",
+        "blockers": [
+          "visit_date_required",
+          "visit_session_required",
+          "freshness_review_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "family_parenting",
+        "secondaryLifeAreas": [
+          "travel_outings"
+        ],
+        "topicTags": [
+          "미술관단체관람",
+          "예약회차"
+        ],
+        "sourceShape": "date_window",
+        "primaryExecutionPattern": "date_preparation",
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "MMC-01",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "MMC-02",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "MMC-03",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "MMC-04",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "MMC-05",
+          "role": "field",
+          "reason": "일정 계산, source option, 비교 또는 retained state에 필요한 값이다."
+        },
+        {
+          "sourceRowId": "MMC-06",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "MMC-07",
+          "role": "item",
+          "reason": "독립 실행·결정·기록·소비 상태를 가질 수 있는 source-backed 행이다."
+        },
+        {
+          "sourceRowId": "MMC-08",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        }
+      ],
+      "canonical": {
+        "title": "국립현대미술관 어린이 단체 관람 일정",
+        "items": [
+          {
+            "itemId": "gb08-apply",
+            "intent": "action",
+            "title": "단체 관람 예약 신청하고 승인 확인하기",
+            "detail": "허용 날짜 범위에서 신청하고 이메일 승인 결과를 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "예약 신청을 제출하고 승인 결과를 확인했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-01",
+              "MMC-02"
+            ]
+          },
+          {
+            "itemId": "gb08-prepare",
+            "intent": "action",
+            "title": "승인 후 사전 준비 완료하기",
+            "detail": "마이페이지 확인, 관람 예절 서약, 사전 교육을 한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "마이페이지 확인·서약·사전 교육을 마쳤다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-06"
+            ]
+          },
+          {
+            "itemId": "gb08-enter",
+            "intent": "action",
+            "title": "안내 데스크 절차를 거쳐 입장하기",
+            "detail": "안내 데스크 확인, 서약서 제출, 관람권 수령 후 인솔자와 입장한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "안내 데스크 절차를 마치고 인솔자와 입장했다."
+            },
+            "schedule": {
+              "kind": "user_selected_session",
+              "dateInputId": "visit-date",
+              "sessionInputId": "visit-session",
+              "sourceRefs": [
+                "MMC-01",
+                "MMC-03",
+                "MMC-04",
+                "MMC-05",
+                "MMC-08"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "MMC-03",
+              "MMC-04",
+              "MMC-05",
+              "MMC-07",
+              "MMC-08"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "source-mmc-01",
+            "value": "오늘 기준 7일 이후부터 90일 이내 날짜로 예약한다.",
+            "sourceRefs": [
+              "MMC-01"
+            ]
+          },
+          {
+            "fieldId": "source-mmc-03",
+            "value": "오전 회차 하나는 10:00~11:10이다.",
+            "sourceRefs": [
+              "MMC-03"
+            ]
+          },
+          {
+            "fieldId": "source-mmc-04",
+            "value": "오전 회차 하나는 11:20~12:30이다.",
+            "sourceRefs": [
+              "MMC-04"
+            ]
+          },
+          {
+            "fieldId": "source-mmc-05",
+            "value": "오후 회차는 13:30~14:40이다.",
+            "sourceRefs": [
+              "MMC-05"
+            ]
+          },
+          {
+            "fieldId": "visit-date",
+            "purpose": "user_schedule_date",
+            "sourceRefs": [
+              "MMC-01",
+              "MMC-08"
+            ]
+          },
+          {
+            "fieldId": "visit-session",
+            "purpose": "user_choice_from_source_slots",
+            "sourceRefs": [
+              "MMC-03",
+              "MMC-04",
+              "MMC-05"
+            ]
+          }
+        ],
+        "memos": [],
+        "references": [
+          {
+            "referenceId": "source-mmc-08",
+            "text": "7~8월과 12~1월에는 단체 관람을 운영하지 않는다.",
+            "sourceRefs": [
+              "MMC-08"
+            ]
+          }
+        ],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "visit-date",
+          "owner": "user",
+          "semanticKey": "selected_visit_date",
+          "requiredBeforeFirstPreview": true,
+          "reason": "원문 날짜창과 blackout 범위 안의 실제 방문일을 선택한다.",
+          "consumerRefs": [
+            "canonical:gb08-enter:schedule",
+            "projection:calendar"
+          ]
+        },
+        {
+          "inputId": "visit-session",
+          "owner": "user",
+          "semanticKey": "selected_visit_session",
+          "requiredBeforeFirstPreview": true,
+          "reason": "source에서 이미 제시한 회차 중 실제 회차만 선택한다.",
+          "consumerRefs": [
+            "canonical:gb08-enter:schedule",
+            "projection:calendar"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "primary",
+          "payload": {
+            "status": "awaiting_user_anchors",
+            "dateInputId": "visit-date",
+            "sessionInputId": "visit-session",
+            "eventTemplateItemIds": [
+              "gb08-enter"
+            ]
+          },
+          "losses": []
+        },
+        "checklist": {
+          "availability": "secondary",
+          "payload": {
+            "itemIds": [
+              "gb08-apply",
+              "gb08-prepare",
+              "gb08-enter"
+            ],
+            "referenceRowIds": [
+              "MMC-08"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "link_only",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "두 선택이 확정되기 전 ICS를 만들지 않으며 최신 운영 여부를 재확인해야 한다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-09",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "metadata_only",
+        "acquiredRowIds": [
+          "NOT-01",
+          "NOT-02"
+        ],
+        "missingBoundary": [
+          "실제 데이터베이스와 템플릿 행은 템플릿 받기 또는 로그인 뒤에 있어 확보하지 못했다."
+        ],
+        "sourceValueSemanticKeys": [
+          "template_title",
+          "template_creator",
+          "marketing_description"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "source_import_required",
+        "reason": "실제 템플릿 database rows가 없어 마케팅 metadata만으로 실행 Flow를 만들 수 없다.",
+        "blockers": [
+          "source_rows_unavailable",
+          "account_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "SecondBrain",
+          "Notion템플릿"
+        ],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "NOT-01",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        },
+        {
+          "sourceRowId": "NOT-02",
+          "role": "omission",
+          "reason": "마케팅·문서 설명·누락 표지라서 실행 Item으로 만들지 않는다."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "template-row-import",
+          "owner": "creator",
+          "semanticKey": "source_import_file",
+          "requiredBeforeFirstPreview": true,
+          "reason": "실제 template rows를 확보하는 creator acquisition 입력이다.",
+          "consumerRefs": [
+            "sourceAssessment",
+            "canonical"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "checklist": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "todo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "memo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "account_required",
+        "rights": "unknown",
+        "freshness": "unknown",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "로그인 뒤 실제 template rows와 개인정보 필드 구성을 확인하지 못했다."
+        ],
+        "omissions": [
+          "실제 데이터베이스와 템플릿 행은 템플릿 받기 또는 로그인 뒤에 있어 확보하지 못했다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-10",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "metadata_only",
+        "acquiredRowIds": [
+          "CLS-01",
+          "CLS-02"
+        ],
+        "missingBoundary": [
+          "실제 강의 차시와 과제는 확보하지 못했다."
+        ],
+        "sourceValueSemanticKeys": [
+          "course_title",
+          "promotion_copy"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "source_import_required",
+        "reason": "강의 제목과 프로모션 문구만 있고 실제 차시·과제가 없어 진도 Flow를 만들 수 없다.",
+        "blockers": [
+          "lesson_rows_unavailable",
+          "source_import_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "스피치강의"
+        ],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "CLS-01",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        },
+        {
+          "sourceRowId": "CLS-02",
+          "role": "omission",
+          "reason": "마케팅·문서 설명·누락 표지라서 실행 Item으로 만들지 않는다."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "course-outline-import",
+          "owner": "creator",
+          "semanticKey": "source_import_file",
+          "requiredBeforeFirstPreview": true,
+          "reason": "실제 차시와 과제를 확보하는 creator acquisition 입력이다.",
+          "consumerRefs": [
+            "sourceAssessment",
+            "canonical"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "checklist": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "todo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "memo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "unavailable",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "실제 강의 차시, 과제, 완료 조건을 확인하지 못했다."
+        ],
+        "omissions": [
+          "실제 강의 차시와 과제는 확보하지 못했다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-11",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "metadata_only",
+        "acquiredRowIds": [
+          "OHO-01",
+          "OHO-02",
+          "OHO-03"
+        ],
+        "missingBoundary": [
+          "한 가지 사용자 일과 완료 가능한 행동 집합으로 한정할 근거가 없다."
+        ],
+        "sourceValueSemanticKeys": [
+          "advice_topic_metadata",
+          "narrative_description",
+          "example_description"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "hold",
+        "reason": "서술형 조언의 존재만 설명하며 한 가지 사용자 일과 완료 가능한 행동 집합이 없다.",
+        "blockers": [
+          "no_bounded_user_job",
+          "unstructured_narrative"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "서술형조언"
+        ],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "OHO-01",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        },
+        {
+          "sourceRowId": "OHO-02",
+          "role": "omission",
+          "reason": "마케팅·문서 설명·누락 표지라서 실행 Item으로 만들지 않는다."
+        },
+        {
+          "sourceRowId": "OHO-03",
+          "role": "omission",
+          "reason": "마케팅·문서 설명·누락 표지라서 실행 Item으로 만들지 않는다."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "checklist": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "todo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "memo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "실제 주제, 적용 조건, 행동 행을 획득하지 못했다."
+        ],
+        "omissions": [
+          "한 가지 사용자 일과 완료 가능한 행동 집합으로 한정할 근거가 없다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-12",
+      "benchmarkTrace": {
+        "split": "calibration",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "SEO-01",
+          "SEO-02",
+          "SEO-03"
+        ],
+        "missingBoundary": [
+          "방문할 한 곳의 최신 상세 일정과 이용 조건을 이 페이지에서 확보하지 못했다."
+        ],
+        "sourceValueSemanticKeys": [
+          "venue_collection_count",
+          "collection_time_range",
+          "external_detail_location"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "source_import_required",
+        "reason": "18곳 컬렉션의 개괄만 있고 한 곳의 최신 일정과 이용 조건이 없어 방문 Flow를 만들 수 없다.",
+        "blockers": [
+          "venue_details_missing",
+          "source_import_required",
+          "freshness_review_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "family_parenting",
+        "secondaryLifeAreas": [
+          "travel_outings"
+        ],
+        "topicTags": [
+          "서울형키즈카페"
+        ],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "SEO-01",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        },
+        {
+          "sourceRowId": "SEO-02",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        },
+        {
+          "sourceRowId": "SEO-03",
+          "role": "reference",
+          "reason": "규칙, 범위, 경고 또는 제약으로 보존하며 일반 Item이 아니다."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "venue-detail-source",
+          "owner": "creator",
+          "semanticKey": "source_import_url",
+          "requiredBeforeFirstPreview": true,
+          "reason": "방문할 한 곳의 상세 페이지를 확보하는 creator acquisition 입력이다.",
+          "consumerRefs": [
+            "sourceAssessment",
+            "canonical"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "checklist": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "todo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "memo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "partial",
+        "rights": "link_only",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "개별 장소의 최신 일정, 이용 조건, 예약 개인정보 범위를 확인하지 못했다."
+        ],
+        "omissions": [
+          "방문할 한 곳의 최신 상세 일정과 이용 조건을 이 페이지에서 확보하지 못했다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,580 @@
+{
+  "packetRole": "sealed_blind_generation_input",
+  "hiddenFields": [
+    "class",
+    "split",
+    "admissionScore",
+    "goldArtifact",
+    "goldUserJob",
+    "minimumInputs",
+    "otherRoleOutputs"
+  ],
+  "cases": [
+    {
+      "caseId": "VQ-09",
+      "candidateId": "NEW-WEB1",
+      "source": {
+        "canonicalUrl": "https://opentutorials.org/course/3084",
+        "title": "생활코딩 WEB1",
+        "provider": "생활코딩 · egoing",
+        "providerType": "open_creator_community",
+        "locale": "ko-KR",
+        "sourceFormat": "topic_curriculum_with_comments",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "topic_curriculum",
+      "sourceRows": [
+        {
+          "id": "VQ09-R01",
+          "order": 1,
+          "title": "프로젝트의 동기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R02",
+          "order": 2,
+          "title": "기획",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R03",
+          "order": 3,
+          "title": "코딩과 HTML",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R04",
+          "order": 4,
+          "title": "HTML 코딩 실습 환경 준비",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R05",
+          "order": 5,
+          "title": "기본 문법 - 태그",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R06",
+          "order": 6,
+          "title": "혁명적인 변화",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R07",
+          "order": 7,
+          "title": "통계에 기반한 학습",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R08",
+          "order": 8,
+          "title": "줄바꿈",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R09",
+          "order": 9,
+          "title": "HTML이 중요한 이유",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R10",
+          "order": 10,
+          "title": "최후의 문법 속성과 img",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R11",
+          "order": 11,
+          "title": "부모 자식과 목록",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R12",
+          "order": 12,
+          "title": "문서의 구조와 슈퍼스타들",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R13",
+          "order": 13,
+          "title": "HTML 태그의 제왕",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R14",
+          "order": 14,
+          "title": "웹사이트 완성",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R15",
+          "order": 15,
+          "title": "원시웹",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R16",
+          "order": 16,
+          "title": "인터넷을 여는 열쇠: 서버와 클라이언트",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R17",
+          "order": 17,
+          "title": "웹호스팅 GitHub Pages",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R18",
+          "order": 18,
+          "title": "웹서버 운영하기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R19",
+          "order": 19,
+          "title": "수업을 마치며 1",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R20",
+          "order": 20,
+          "title": "수업을 마치며 2",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R21",
+          "order": 21,
+          "title": "수업을 마치며 3",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R22",
+          "order": 22,
+          "title": "부록: 코드의 힘",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R23",
+          "order": 23,
+          "title": "부록: 동영상 삽입",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R24",
+          "order": 24,
+          "title": "부록: 댓글 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R25",
+          "order": 25,
+          "title": "부록: 채팅 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R26",
+          "order": 26,
+          "title": "부록: 방문자 분석기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed",
+        "publicCatalog": "allowed_per_explicit_public_domain_statement"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_explicit_public_domain_statement",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "VQ-10",
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "source": {
+        "canonicalUrl": "https://ohou.se/advices/2327",
+        "title": "리모델링 공정별 하자 점검",
+        "provider": "오늘의집 · 오늘의리모델링",
+        "providerType": "creator_editorial",
+        "locale": "ko-KR",
+        "sourceFormat": "inspection_rows_plus_downloadable_template",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "inspection_rows_with_evidence_state",
+      "sourceRows": [
+        {
+          "id": "VQ10-R01",
+          "order": 1,
+          "title": "설비",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 1"
+        },
+        {
+          "id": "VQ10-R02",
+          "order": 2,
+          "title": "새시",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 2"
+        },
+        {
+          "id": "VQ10-R03",
+          "order": 3,
+          "title": "목공",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 3"
+        },
+        {
+          "id": "VQ10-R04",
+          "order": 4,
+          "title": "중문",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 4"
+        },
+        {
+          "id": "VQ10-R05",
+          "order": 5,
+          "title": "타일",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 5"
+        },
+        {
+          "id": "VQ10-R06",
+          "order": 6,
+          "title": "욕실",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 6"
+        },
+        {
+          "id": "VQ10-R07",
+          "order": 7,
+          "title": "필름",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 7"
+        },
+        {
+          "id": "VQ10-R08",
+          "order": 8,
+          "title": "페인트",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 8"
+        },
+        {
+          "id": "VQ10-R09",
+          "order": 9,
+          "title": "장판·마루",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 9"
+        },
+        {
+          "id": "VQ10-R10",
+          "order": 10,
+          "title": "도배",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 10"
+        },
+        {
+          "id": "VQ10-R11",
+          "order": 11,
+          "title": "주방",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 11"
+        },
+        {
+          "id": "VQ10-R12",
+          "order": 12,
+          "title": "조명 설치",
+          "detail": "원문 공정별 하자 점검 구간.",
+          "kind": "inspection",
+          "locator": "공정 12"
+        },
+        {
+          "id": "VQ10-R13",
+          "order": 13,
+          "title": "발견 사진·보수 요청·같은 지점 재촬영",
+          "detail": "하자 발견 시 사진을 찍고 보수를 요구한 뒤 같은 지점을 다시 촬영해 비교한다.",
+          "kind": "workflow",
+          "locator": "하자보수 기본 자세"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass_inspection_not_legal_judgment",
+        "privacy": "pass_private_photos"
+      }
+    },
+    {
+      "caseId": "VQ-11",
+      "candidateId": "NEW-KOSAF-WORK",
+      "source": {
+        "canonicalUrl": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+        "title": "2026년 2학기 국가근로장학금 신청",
+        "provider": "한국장학재단",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_date_windows_and_conditional_rows",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "date_windows_with_conditional_followup",
+      "sourceRows": [
+        {
+          "id": "VQ11-R01",
+          "order": 1,
+          "title": "소속 대학 2차 운영 확인",
+          "detail": "2차 학생 신청기간 운영 여부는 대학마다 다르다.",
+          "kind": "condition",
+          "locator": "2학기 2차 주의"
+        },
+        {
+          "id": "VQ11-R02",
+          "order": 2,
+          "title": "2차 신청",
+          "detail": "2026-08-12 09:00부터 2026-09-09 18:00까지.",
+          "kind": "date_window",
+          "locator": "2학기 2차 신청기간"
+        },
+        {
+          "id": "VQ11-R03",
+          "order": 3,
+          "title": "제출대상 여부 확인",
+          "detail": "신청 후 1~3일(휴일 제외) 뒤 서류제출현황에서 확인.",
+          "kind": "conditional",
+          "locator": "제출서류"
+        },
+        {
+          "id": "VQ11-R04",
+          "order": 4,
+          "title": "해당자만 서류 제출·가구원 동의",
+          "detail": "2026-09-16 18:00까지.",
+          "kind": "date_window",
+          "locator": "서류 제출 및 가구원 동의"
+        },
+        {
+          "id": "VQ11-R05",
+          "order": 5,
+          "title": "신청완료 상태 확인",
+          "detail": "공식 사이트에서 완료 상태를 확인한다.",
+          "kind": "state",
+          "locator": "공식 신청 상태"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "official_metadata_only"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_official_metadata",
+        "locale": "pass",
+        "safety": "pass_eligibility_not_decided",
+        "privacy": "pass_no_documents_or_family_data"
+      }
+    },
+    {
+      "caseId": "VQ-12",
+      "candidateId": "NEW-INCHEON-PET",
+      "source": {
+        "canonicalUrl": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+        "title": "반려동물 가족 재난 대응 준비",
+        "provider": "인천광역시",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_pdf_preparedness_guide",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "preparedness_rows",
+      "sourceRows": [
+        {
+          "id": "VQ12-R01",
+          "order": 1,
+          "title": "반려동물 동반 대피 계획 세우기",
+          "detail": "대피 가능한 장소와 이동 경로를 계획한다.",
+          "kind": "plan",
+          "locator": "가이드 1단계"
+        },
+        {
+          "id": "VQ12-R02",
+          "order": 2,
+          "title": "이동장·목줄·하네스 준비",
+          "detail": "안전한 이동에 필요한 장비를 준비한다.",
+          "kind": "kit",
+          "locator": "재난 대비 물품"
+        },
+        {
+          "id": "VQ12-R03",
+          "order": 3,
+          "title": "배변·응급처치·담요·사료·물 준비",
+          "detail": "가이드에 명시된 재난키트 범주를 준비한다.",
+          "kind": "kit",
+          "locator": "재난 대비 물품"
+        },
+        {
+          "id": "VQ12-R04",
+          "order": 4,
+          "title": "처방약은 수의사와 확인",
+          "detail": "필요한 처방약과 복용 정보를 전문가와 확인한다.",
+          "kind": "caution",
+          "locator": "재난 대비 물품"
+        },
+        {
+          "id": "VQ12-R05",
+          "order": 5,
+          "title": "시설·동물병원·돌봄 연락처 계획",
+          "detail": "대피 중 연락할 곳을 정한다.",
+          "kind": "plan",
+          "locator": "연락 계획"
+        },
+        {
+          "id": "VQ12-R06",
+          "order": 6,
+          "title": "반려동물과 실제 대피 훈련",
+          "detail": "준비한 이동장과 경로로 한 번 연습한다.",
+          "kind": "action",
+          "locator": "대피 훈련"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed",
+        "publicCatalog": "allowed_with_kogl_attribution"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_kogl_attribution",
+        "locale": "pass",
+        "safety": "pass_with_emergency_caution",
+        "privacy": "pass_private_contacts"
+      }
+    },
+    {
+      "caseId": "BQ-05",
+      "candidateId": "INT-GUMROAD",
+      "source": {
+        "canonicalUrl": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+        "title": "Gumroad Content Planner Template",
+        "provider": "Gumroad creator",
+        "providerType": "paid_creator_template",
+        "locale": "en",
+        "sourceFormat": "paid_template_listing",
+        "accessStatus": "paid_gate",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "paid_template_listing",
+      "sourceRows": [],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "fail_paid_rows_missing",
+        "rights": "fail_entitlement_required",
+        "locale": "pass_non_sensitive",
+        "safety": "pass",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "BQ-06",
+      "candidateId": "INT-NETMUMS",
+      "source": {
+        "canonicalUrl": "https://www.netmums.com/baby/6-month-old-baby",
+        "title": "Netmums 6-month-old guide",
+        "provider": "Netmums",
+        "providerType": "editorial",
+        "locale": "en-GB",
+        "sourceFormat": "health_parenting_advice",
+        "accessStatus": "open_locale_blocked",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "locale_sensitive_health_advice",
+      "sourceRows": [],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "pass_reference_only",
+        "rights": "review_required",
+        "locale": "fail_ko_applicability",
+        "safety": "fail_health_review",
+        "privacy": "pass"
+      }
+    }
+  ]
+}

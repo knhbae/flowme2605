@@ -1,0 +1,477 @@
+{
+  "schemaVersion": "creator-flow-portfolio-screenshot-evidence-v1",
+  "generatedAt": "2026-07-23T12:46:06.989Z",
+  "observedAt": "2026-07-23",
+  "expectedDeepCreatorProfiles": 27,
+  "expectedTopCreatorTriplets": 12,
+  "screenshots": [
+    {
+      "creatorId": "home-ajd",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-home-ajd-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-home-ajd-profile.png",
+      "url": "https://www.ajd.co.kr/contents",
+      "pageTitle": "아정당 - 인터넷 가입 사은품 많이 주는 곳 비교사이트 현금 지원 티비 설치 당일 지급 SKT SK KT LG 유플러스"
+    },
+    {
+      "creatorId": "home-ajd",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-home-ajd-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-home-ajd-source.png",
+      "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "pageTitle": "이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부)"
+    },
+    {
+      "creatorId": "home-ajd",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-home-ajd-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-home-ajd-communication.png",
+      "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "pageTitle": "이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부)"
+    },
+    {
+      "creatorId": "home-ohouse",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-home-ohouse-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-home-ohouse-profile.png",
+      "url": "https://ohou.se/advices",
+      "pageTitle": "Access Denied"
+    },
+    {
+      "creatorId": "home-jungriking",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-home-jungriking-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-home-jungriking-profile.png",
+      "url": "https://www.youtube.com/@jungriking",
+      "pageTitle": "정리왕 - YouTube"
+    },
+    {
+      "creatorId": "family-funmom",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-family-funmom-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-family-funmom-profile.png",
+      "url": "https://funmom.tistory.com/",
+      "pageTitle": "펀맘"
+    },
+    {
+      "creatorId": "family-babyfood016",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-family-babyfood016-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-family-babyfood016-profile.png",
+      "url": "https://blog.naver.com/01695258757",
+      "pageTitle": "희야라이프 : 네이버 블로그"
+    },
+    {
+      "creatorId": "family-babyfood016",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-family-babyfood016-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-family-babyfood016-source.png",
+      "url": "https://blog.naver.com/01695258757/222768860919",
+      "pageTitle": "초기이유식 식단표 (5개월/6개월 시작시기별 .. : 네이버블로그"
+    },
+    {
+      "creatorId": "family-babyfood016",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-family-babyfood016-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-family-babyfood016-communication.png",
+      "url": "https://blog.naver.com/01695258757/222768860919",
+      "pageTitle": "초기이유식 식단표 (5개월/6개월 시작시기별 .. : 네이버블로그"
+    },
+    {
+      "creatorId": "family-babybilly",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-family-babybilly-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-family-babybilly-profile.png",
+      "url": "https://babybilly.co/ko",
+      "pageTitle": "베이비빌리 | 200만 엄빠의 임신·출산·육아 앱"
+    },
+    {
+      "creatorId": "family-babybilly",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-family-babybilly-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-family-babybilly-source.png",
+      "url": "https://babybilly.co/post/1927",
+      "pageTitle": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요!"
+    },
+    {
+      "creatorId": "family-babybilly",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-family-babybilly-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-family-babybilly-communication.png",
+      "url": "https://babybilly.co/post/1927",
+      "pageTitle": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요!"
+    },
+    {
+      "creatorId": "study-mansour",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-study-mansour-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-study-mansour-profile.png",
+      "url": "https://mansour.tistory.com/",
+      "pageTitle": "오픽만수르"
+    },
+    {
+      "creatorId": "study-mansour",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-study-mansour-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-study-mansour-source.png",
+      "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "pageTitle": "오픽 모의고사 공부 방법 7가지 공유, 계획표 다운로드"
+    },
+    {
+      "creatorId": "study-mansour",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-study-mansour-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-study-mansour-communication.png",
+      "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "pageTitle": "오픽 모의고사 공부 방법 7가지 공유, 계획표 다운로드"
+    },
+    {
+      "creatorId": "study-opentutorials",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-study-opentutorials-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-study-opentutorials-profile.png",
+      "url": "https://opentutorials.org/course/1",
+      "pageTitle": "생활코딩"
+    },
+    {
+      "creatorId": "study-opentutorials",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-study-opentutorials-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-study-opentutorials-source.png",
+      "url": "https://opentutorials.org/course/3084",
+      "pageTitle": "WEB1 - HTML & Internet - 생활코딩"
+    },
+    {
+      "creatorId": "study-opentutorials",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-study-opentutorials-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-study-opentutorials-communication.png",
+      "url": "https://opentutorials.org/course/3084",
+      "pageTitle": "WEB1 - HTML & Internet - 생활코딩"
+    },
+    {
+      "creatorId": "study-nomadcoders",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-study-nomadcoders-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-study-nomadcoders-profile.png",
+      "url": "https://nomadcoders.co/",
+      "pageTitle": "노마드코더 Nomad Coders – Clone Startups. Learn Coding"
+    },
+    {
+      "creatorId": "money-getcha",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-money-getcha-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-money-getcha-profile.png",
+      "url": "https://web.getcha.kr/blog/",
+      "pageTitle": "겟차피디아 | 자동차 리스, 장기렌트, 신차 정보"
+    },
+    {
+      "creatorId": "money-zzanboo",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-money-zzanboo-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-money-zzanboo-profile.png",
+      "url": "https://www.youtube.com/channel/UCiHCmazdsMM9j3Jbqx3p7Ig",
+      "pageTitle": "김짠부 - YouTube"
+    },
+    {
+      "creatorId": "money-zzanboo",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-money-zzanboo-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-money-zzanboo-source.png",
+      "url": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+      "pageTitle": "\"2026년이 부자되는 기회라고?\" 1억을 가장 빠르게 모으는 10가지 방법 (+재무목표 로드맵 엑셀표 무료 공유) - YouTube"
+    },
+    {
+      "creatorId": "money-zzanboo",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-money-zzanboo-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-money-zzanboo-communication.png",
+      "url": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+      "pageTitle": "\"2026년이 부자되는 기회라고?\" 1억을 가장 빠르게 모으는 10가지 방법 (+재무목표 로드맵 엑셀표 무료 공유) - YouTube"
+    },
+    {
+      "creatorId": "money-gomhee",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-money-gomhee-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-money-gomhee-profile.png",
+      "url": "https://www.youtube.com/channel/UCr7XsrSrvAn_WcU4kF99bbQ",
+      "pageTitle": "박곰희TV - YouTube"
+    },
+    {
+      "creatorId": "health-allblanc",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-health-allblanc-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-health-allblanc-profile.png",
+      "url": "https://www.youtube.com/channel/UCq7bR6RxqqOx8cptc1-0AVQ",
+      "pageTitle": "Allblanc TV - YouTube"
+    },
+    {
+      "creatorId": "health-allblanc",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-health-allblanc-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-health-allblanc-source.png",
+      "url": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+      "pageTitle": "7 Days Abs Challenge (2022) - YouTube"
+    },
+    {
+      "creatorId": "health-allblanc",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-health-allblanc-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-health-allblanc-communication.png",
+      "url": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+      "pageTitle": "7 Days Abs Challenge (2022) - YouTube"
+    },
+    {
+      "creatorId": "health-bigsis",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-health-bigsis-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-health-bigsis-profile.png",
+      "url": "https://www.youtube.com/channel/UCfDkQiPchwM0F2SkHWl5JYQ",
+      "pageTitle": "빅씨스 Bigsis - YouTube"
+    },
+    {
+      "creatorId": "health-bigsis",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-health-bigsis-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-health-bigsis-source.png",
+      "url": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+      "pageTitle": "운동 전 빼먹지 마세요👍 웜업 스트레칭 - 부상방지 동적 스트레칭 홈트 8분 - YouTube"
+    },
+    {
+      "creatorId": "health-bigsis",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-health-bigsis-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-health-bigsis-communication.png",
+      "url": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+      "pageTitle": "운동 전 빼먹지 마세요👍 웜업 스트레칭 - 부상방지 동적 스트레칭 홈트 8분 - YouTube"
+    },
+    {
+      "creatorId": "health-thankyoububu",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-health-thankyoububu-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-health-thankyoububu-profile.png",
+      "url": "https://www.youtube.com/channel/UCpg89Ys3E4BaLGgEEWVmI9g",
+      "pageTitle": "Thankyou BUBU - YouTube"
+    },
+    {
+      "creatorId": "travel-kkday",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-travel-kkday-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-travel-kkday-profile.png",
+      "url": "https://www.kkday.com/ko/blog/",
+      "pageTitle": "Detected robot - KKday"
+    },
+    {
+      "creatorId": "travel-triple",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-travel-triple-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-travel-triple-profile.png",
+      "url": "https://triple.guide/",
+      "pageTitle": "나를 아는 여행 앱, 트리플"
+    },
+    {
+      "creatorId": "travel-triple",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-travel-triple-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-travel-triple-source.png",
+      "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+      "pageTitle": "출국 전 체크사항"
+    },
+    {
+      "creatorId": "travel-triple",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-travel-triple-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-travel-triple-communication.png",
+      "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+      "pageTitle": "출국 전 체크사항"
+    },
+    {
+      "creatorId": "travel-yeomi",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-travel-yeomi-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-travel-yeomi-profile.png",
+      "url": "https://www.youtube.com/channel/UCHS-3P-lLr-3kF79mxPFWVg",
+      "pageTitle": "여행에미치다 - YouTube"
+    },
+    {
+      "creatorId": "meals-wtable",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-meals-wtable-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-meals-wtable-profile.png",
+      "url": "https://wtable.co.kr/",
+      "pageTitle": "우리의식탁 | 요리를 스타일하다"
+    },
+    {
+      "creatorId": "meals-wtable",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-meals-wtable-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-meals-wtable-source.png",
+      "url": "https://wtable.co.kr/curations/562",
+      "pageTitle": "이번주 일주일 반찬 이렇게 종결(여름 반찬ver.) - 우리의식탁 | 큐레이션"
+    },
+    {
+      "creatorId": "meals-wtable",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-meals-wtable-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-meals-wtable-communication.png",
+      "url": "https://wtable.co.kr/curations/562",
+      "pageTitle": "이번주 일주일 반찬 이렇게 종결(여름 반찬ver.) - 우리의식탁 | 큐레이션"
+    },
+    {
+      "creatorId": "meals-10000recipe",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-meals-10000recipe-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-meals-10000recipe-profile.png",
+      "url": "https://www.10000recipe.com/",
+      "pageTitle": "요리를 즐겁게~ 만개의레시피"
+    },
+    {
+      "creatorId": "meals-deliciousday",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-meals-deliciousday-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-meals-deliciousday-profile.png",
+      "url": "https://www.youtube.com/channel/UCFiYPUhUzLKoi-cZ0AwpjLA",
+      "pageTitle": "매일맛나 delicious day - YouTube"
+    },
+    {
+      "creatorId": "work-leebro",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-work-leebro-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-work-leebro-profile.png",
+      "url": "https://www.youtube.com/channel/UCp-C7mtkuOw6q8E1Uc2NVpQ",
+      "pageTitle": "면접왕 이형 - YouTube"
+    },
+    {
+      "creatorId": "work-andstudio",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-work-andstudio-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-work-andstudio-profile.png",
+      "url": "https://www.youtube.com/channel/UCq4lfIcWF7NAP5TcMsyRXXQ",
+      "pageTitle": "앤드 스튜디오 - AND STUDIO - YouTube"
+    },
+    {
+      "creatorId": "work-andstudio",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-work-andstudio-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-work-andstudio-source.png",
+      "url": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "pageTitle": "자소서 지원동기 6단계만 따라 쓰면 합격합니다 [마스터 자소서 I EP 04. 지원동기] - YouTube"
+    },
+    {
+      "creatorId": "work-andstudio",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-work-andstudio-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-work-andstudio-communication.png",
+      "url": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "pageTitle": "자소서 지원동기 6단계만 따라 쓰면 합격합니다 [마스터 자소서 I EP 04. 지원동기] - YouTube"
+    },
+    {
+      "creatorId": "work-baeminsquare",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-work-baeminsquare-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-work-baeminsquare-profile.png",
+      "url": "https://www.youtube.com/channel/UCixQ1UCmPoS2IEyJ4GeHjRA",
+      "pageTitle": "배민외식업광장 - YouTube"
+    },
+    {
+      "creatorId": "hobby-fitpet",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-hobby-fitpet-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-hobby-fitpet-profile.png",
+      "url": "https://www.fitpetmall.com/blog/",
+      "pageTitle": "핏펫 블로그"
+    },
+    {
+      "creatorId": "hobby-bodeum",
+      "evidenceRole": "creator_profile_and_demand",
+      "observedAt": "2026-07-23",
+      "filename": "creator-hobby-bodeum-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-hobby-bodeum-profile.png",
+      "url": "https://www.youtube.com/channel/UCee1MvXr6E8qC_d2WEYTU5g",
+      "pageTitle": "강형욱의 보듬TV - YouTube"
+    },
+    {
+      "creatorId": "hobby-bodeum",
+      "evidenceRole": "flow_conversion_source_rows",
+      "observedAt": "2026-07-23",
+      "filename": "creator-hobby-bodeum-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-hobby-bodeum-source.png",
+      "url": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+      "pageTitle": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육] - YouTube"
+    },
+    {
+      "creatorId": "hobby-bodeum",
+      "evidenceRole": "user_communication",
+      "observedAt": "2026-07-23",
+      "filename": "creator-hobby-bodeum-communication.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-hobby-bodeum-communication.png",
+      "url": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+      "pageTitle": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육] - YouTube"
+    },
+    {
+      "creatorId": "hobby-catdoctor",
+      "evidenceRole": "creator_profile",
+      "observedAt": "2026-07-23",
+      "filename": "creator-hobby-catdoctor-profile.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-23-creator-flow-portfolio-assets\\creator-hobby-catdoctor-profile.png",
+      "url": "https://www.youtube.com/channel/UC69l_rtlCQ7M4Mz2RCS80BA",
+      "pageTitle": "미야옹철의 냥냥펀치 - YouTube"
+    }
+  ],
+  "failures": [],
+  "summary": {
+    "screenshotCount": 51,
+    "creatorProfileCount": 27,
+    "topDemandCount": 12,
+    "topCommunicationCount": 12,
+    "topSourceRowCount": 12,
+    "failureCount": 0
+  }
+}

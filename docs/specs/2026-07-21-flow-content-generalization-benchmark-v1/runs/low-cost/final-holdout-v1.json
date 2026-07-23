@@ -1,0 +1,1450 @@
+{
+  "schemaVersion": "flow-content-generalization-run-set-v1",
+  "phase": "final_holdout",
+  "revisionRound": 1,
+  "runs": [
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-13",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind final-holdout agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "RID-01",
+          "RID-02",
+          "RID-03",
+          "RID-04",
+          "RID-05",
+          "RID-06"
+        ],
+        "missingBoundary": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "The application route and applicant eligibility require consumer confirmation before a personal checklist is shown.",
+        "blockers": [
+          "Applicant eligibility and chosen application route are not established by the packet."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "public-service",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "resident-registration-id",
+          "reissue"
+        ],
+        "sourceShape": "service-guide",
+        "primaryExecutionPattern": "bounded-session",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "RID-01",
+          "role": "item",
+          "reason": "Application-route action source."
+        },
+        {
+          "sourceRowId": "RID-02",
+          "role": "field",
+          "reason": "Source-supported application constraint or value."
+        },
+        {
+          "sourceRowId": "RID-03",
+          "role": "conditional_response",
+          "reason": "Source-supported application constraint or value."
+        },
+        {
+          "sourceRowId": "RID-04",
+          "role": "field",
+          "reason": "Source-supported application constraint or value."
+        },
+        {
+          "sourceRowId": "RID-05",
+          "role": "field",
+          "reason": "Source-supported application constraint or value."
+        },
+        {
+          "sourceRowId": "RID-06",
+          "role": "field",
+          "reason": "Source-supported application constraint or value."
+        }
+      ],
+      "canonical": {
+        "title": "Resident registration ID reissue",
+        "items": [
+          {
+            "itemId": "rid-apply",
+            "intent": "action",
+            "title": "Apply for resident registration ID reissue",
+            "detail": "The source states that application may be made online or by visit.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "RID-01"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "sourceRowId": "RID-02",
+            "value": "14 days"
+          },
+          {
+            "sourceRowId": "RID-04",
+            "value": "eup/myeon/dong office"
+          },
+          {
+            "sourceRowId": "RID-05",
+            "value": "photo and existing ID requirements"
+          },
+          {
+            "sourceRowId": "RID-06",
+            "value": "fee depends on method"
+          }
+        ],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": [
+          {
+            "sourceRowId": "RID-03",
+            "condition": "applicant qualification or proxy application"
+          }
+        ]
+      },
+      "minimumInputs": [
+        {
+          "inputId": "application-route",
+          "owner": "user",
+          "semanticKey": "chosenApplicationRoute",
+          "requiredBeforeFirstPreview": true,
+          "reason": "The source provides online and visit routes but does not identify the user choice.",
+          "consumerRefs": [
+            "rid-apply"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "secondary",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "Applicant eligibility and chosen application route are not established by the packet."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-14",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind final-holdout agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "INF-01",
+          "INF-02",
+          "INF-03",
+          "INF-04",
+          "INF-05",
+          "INF-06",
+          "INF-07",
+          "INF-08",
+          "INF-09",
+          "INF-10",
+          "INF-11",
+          "INF-12",
+          "INF-13"
+        ],
+        "missingBoundary": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "A child birth-date anchor is needed to calculate the source age windows; no ICS event is created before that anchor is supplied.",
+        "blockers": [
+          "Child birth date is not in the packet."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "family-health",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "infant-screening",
+          "oral-screening"
+        ],
+        "sourceShape": "age-window-schedule",
+        "primaryExecutionPattern": "scheduled-milestones",
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "sheet"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "INF-01",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-02",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-03",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-04",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-05",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-06",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-07",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-08",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-09",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-10",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-11",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-12",
+          "role": "item",
+          "reason": "Age-window milestone source."
+        },
+        {
+          "sourceRowId": "INF-13",
+          "role": "memo",
+          "reason": "Missed-window warning retained as a memo."
+        }
+      ],
+      "canonical": {
+        "title": "Infant health and oral screening windows",
+        "items": [
+          {
+            "itemId": "screen-inf-01",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "영유아 건강검진 1차 기간은 생후 14~35일이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-01"
+            ]
+          },
+          {
+            "itemId": "screen-inf-02",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "건강검진 기간은 생후 4~6개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-02"
+            ]
+          },
+          {
+            "itemId": "screen-inf-03",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "건강검진 기간은 생후 9~12개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-03"
+            ]
+          },
+          {
+            "itemId": "screen-inf-04",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "건강검진 기간은 생후 18~24개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-04"
+            ]
+          },
+          {
+            "itemId": "screen-inf-05",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "구강검진 기간은 생후 18~29개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-05"
+            ]
+          },
+          {
+            "itemId": "screen-inf-06",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "건강검진 기간은 생후 30~36개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-06"
+            ]
+          },
+          {
+            "itemId": "screen-inf-07",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "구강검진 기간은 생후 30~41개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-07"
+            ]
+          },
+          {
+            "itemId": "screen-inf-08",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "건강검진 기간은 생후 42~48개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-08"
+            ]
+          },
+          {
+            "itemId": "screen-inf-09",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "구강검진 기간은 생후 42~53개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-09"
+            ]
+          },
+          {
+            "itemId": "screen-inf-10",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "건강검진 기간은 생후 54~60개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-10"
+            ]
+          },
+          {
+            "itemId": "screen-inf-11",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "구강검진 기간은 생후 54~65개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-11"
+            ]
+          },
+          {
+            "itemId": "screen-inf-12",
+            "intent": "action",
+            "title": "Screening window",
+            "detail": "건강검진 기간은 생후 66~71개월이다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-12"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [
+          {
+            "sourceRowId": "INF-13",
+            "text": "검진 기간을 놓치면 지난 차수 검진을 나중에 받을 수 없다."
+          }
+        ],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "child-birth-date",
+          "owner": "user",
+          "semanticKey": "childBirthDate",
+          "requiredBeforeFirstPreview": true,
+          "reason": "A consumer-owned date anchor is required to calculate the stated age windows.",
+          "consumerRefs": [
+            "screen-inf-01",
+            "screen-inf-02",
+            "screen-inf-03",
+            "screen-inf-04",
+            "screen-inf-05",
+            "screen-inf-06",
+            "screen-inf-07",
+            "screen-inf-08",
+            "screen-inf-09",
+            "screen-inf-10",
+            "screen-inf-11",
+            "screen-inf-12"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "primary",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "secondary",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "Child birth date is not in the packet."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-15",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind final-holdout agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "NHI-01",
+          "NHI-02",
+          "NHI-03",
+          "NHI-04",
+          "NHI-05",
+          "NHI-06",
+          "NHI-07",
+          "NHI-08",
+          "NHI-09",
+          "NHI-10",
+          "NHI-11",
+          "NHI-12",
+          "NHI-13"
+        ],
+        "missingBoundary": [
+          "주제별 날짜, 시작 시각, 강의실은 문서에 없다."
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "hold",
+        "reason": "The packet declares that per-topic dates, start times, and rooms are absent, so no usable course schedule can be generated.",
+        "blockers": [
+          "주제별 날짜, 시작 시각, 강의실은 문서에 없다."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "NHI-01",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-02",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-03",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-04",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-05",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-06",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-07",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-08",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-09",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-10",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-11",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-12",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "NHI-13",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "주제별 날짜, 시작 시각, 강의실은 문서에 없다."
+        ],
+        "omissions": [
+          "NHI-01",
+          "NHI-02",
+          "NHI-03",
+          "NHI-04",
+          "NHI-05",
+          "NHI-06",
+          "NHI-07",
+          "NHI-08",
+          "NHI-09",
+          "NHI-10",
+          "NHI-11",
+          "NHI-12",
+          "NHI-13"
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-16",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind final-holdout agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "TPL-01",
+          "TPL-02",
+          "TPL-03",
+          "TPL-04",
+          "TPL-05",
+          "TPL-06",
+          "TPL-07",
+          "TPL-08"
+        ],
+        "missingBoundary": []
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "The relative Week and Day template needs a consumer-owned calendar anchor before its dated publishing plan can be calculated.",
+        "blockers": [
+          "A start-date anchor is not in the packet."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "work",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "social-media",
+          "content-plan"
+        ],
+        "sourceShape": "relative-calendar-template",
+        "primaryExecutionPattern": "scheduled-milestones",
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "sheet"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "TPL-01",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        },
+        {
+          "sourceRowId": "TPL-02",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        },
+        {
+          "sourceRowId": "TPL-03",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        },
+        {
+          "sourceRowId": "TPL-04",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        },
+        {
+          "sourceRowId": "TPL-05",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        },
+        {
+          "sourceRowId": "TPL-06",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        },
+        {
+          "sourceRowId": "TPL-07",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        },
+        {
+          "sourceRowId": "TPL-08",
+          "role": "item",
+          "reason": "Source-provided relative-week publishing row."
+        }
+      ],
+      "canonical": {
+        "title": "Social media content template",
+        "items": [
+          {
+            "itemId": "post-tpl-01",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "1주 월요일: Instagram 이미지로 작업 공간과 주간 시작을 공유한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-01"
+            ]
+          },
+          {
+            "itemId": "post-tpl-02",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "1주 수요일: Instagram/TikTok 교육형 FAQ 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-02"
+            ]
+          },
+          {
+            "itemId": "post-tpl-03",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "1주 금요일: LinkedIn 업계 인사이트 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-03"
+            ]
+          },
+          {
+            "itemId": "post-tpl-04",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "1주 토요일: Instagram Stories 커뮤니티 질문 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-04"
+            ]
+          },
+          {
+            "itemId": "post-tpl-05",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "2주 화요일: Instagram Reel 고객 사례 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-05"
+            ]
+          },
+          {
+            "itemId": "post-tpl-06",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "2주 수요일: LinkedIn/X 교육형 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-06"
+            ]
+          },
+          {
+            "itemId": "post-tpl-07",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "2주 목요일: YouTube Shorts 비하인드 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-07"
+            ]
+          },
+          {
+            "itemId": "post-tpl-08",
+            "intent": "action",
+            "title": "Publish template content",
+            "detail": "2주 금요일: 모든 플랫폼에 제품 또는 서비스 콘텐츠를 게시한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "The source-supported step has been completed."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-08"
+            ]
+          }
+        ],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "template-start-date",
+          "owner": "user",
+          "semanticKey": "templateStartDate",
+          "requiredBeforeFirstPreview": true,
+          "reason": "The packet states that Week and Day are relative template values, not actual posting dates.",
+          "consumerRefs": [
+            "post-tpl-01",
+            "post-tpl-02",
+            "post-tpl-03",
+            "post-tpl-04",
+            "post-tpl-05",
+            "post-tpl-06",
+            "post-tpl-07",
+            "post-tpl-08"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "primary",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "secondary",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "A start-date anchor is not in the packet."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-17",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind final-holdout agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "UKV-01",
+          "UKV-02",
+          "UKV-03",
+          "UKV-04",
+          "UKV-05",
+          "UKV-06",
+          "UKV-07",
+          "UKV-08",
+          "UKV-09"
+        ],
+        "missingBoundary": [
+          "임상 위험군과 선택 접종의 세부 적용은 이 행 집합만으로 확정할 수 없다."
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "hold",
+        "reason": "The packet explicitly excludes the detail needed to determine clinical-risk and elective-vaccination applicability.",
+        "blockers": [
+          "임상 위험군과 선택 접종의 세부 적용은 이 행 집합만으로 확정할 수 없다."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "UKV-01",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-02",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-03",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-04",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-05",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-06",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-07",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-08",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "UKV-09",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "open",
+        "freshness": "passed",
+        "locale": "review_required",
+        "safety": "review_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "임상 위험군과 선택 접종의 세부 적용은 이 행 집합만으로 확정할 수 없다."
+        ],
+        "omissions": [
+          "UKV-01",
+          "UKV-02",
+          "UKV-03",
+          "UKV-04",
+          "UKV-05",
+          "UKV-06",
+          "UKV-07",
+          "UKV-08",
+          "UKV-09"
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-18",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "low_cost",
+        "modelOrAgent": "gpt-5.6-terra (reasoning low) blind final-holdout agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "BUF-01",
+          "BUF-02",
+          "BUF-03",
+          "BUF-04",
+          "BUF-05"
+        ],
+        "missingBoundary": [
+          "계속 갱신되는 컬렉션으로 한 가지 사용자 일과 고정된 완전 행 집합이 정해져 있지 않다."
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "hold",
+        "reason": "The packet declares a live, changing collection without a fixed complete row set for one user day.",
+        "blockers": [
+          "계속 갱신되는 컬렉션으로 한 가지 사용자 일과 고정된 완전 행 집합이 정해져 있지 않다."
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": null,
+        "secondaryLifeAreas": [],
+        "topicTags": [],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "BUF-01",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "BUF-02",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "BUF-03",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "BUF-04",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        },
+        {
+          "sourceRowId": "BUF-05",
+          "role": "reference",
+          "reason": "Retained as source reference; the declared missing boundary prevents an executable conversion."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "계속 갱신되는 컬렉션으로 한 가지 사용자 일과 고정된 완전 행 집합이 정해져 있지 않다."
+        ],
+        "omissions": [
+          "BUF-01",
+          "BUF-02",
+          "BUF-03",
+          "BUF-04",
+          "BUF-05"
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    }
+  ]
+}
