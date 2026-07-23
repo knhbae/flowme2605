@@ -2,12 +2,14 @@
 
 ## Trigger
 
-Use when a conversation settles or materially changes a product rule, UX direction, data contract, source/risk boundary, workflow policy, deferred idea, active blocker, or approved multi-step initiative. Include relevant direction mentioned during implementation, not only requests explicitly labeled as planning.
+Use when a conversation confirms or materially changes a durable product rule, UX direction, data contract, source/risk boundary, workflow policy, actionable deferred idea with a revisit trigger, active blocker, release fact, or approved multi-step initiative. Include durable direction mentioned during implementation, not only requests explicitly labeled as planning.
+
+Skip passing thoughts, repeated statements already captured, implementation details evident from the diff, and ideas with no durable value or revisit condition.
 
 ## Inputs
 
 - The user's exact statement and surrounding task context
-- Current `docs/DECISIONS.md`, `docs/IDEAS.md`, `docs/STATUS.md`, and `docs/specs/README.md`
+- Relevant entries found by searching `docs/DECISIONS.md`, `docs/IDEAS.md`, `docs/STATUS.md`, and `docs/specs/README.md`; do not read every layer end to end by default
 - Relevant product principles, service structure, audit evidence, and implementation state
 - Evidence that distinguishes a settled decision from a preference, hypothesis, or discomfort
 

@@ -1,96 +1,100 @@
-# AI-Agnostic Harness
+# Adaptive AI-Agnostic Harness
 
-This harness adapts the ideas from `junu0723/claude-harness` for this project without requiring Claude Code or `.claude` runtime features.
+FlowMe keeps a thin repository harness for knowledge and safeguards that a general model cannot infer reliably. It does not try to reproduce every planning, role, or multi-agent behavior already provided by Codex, Claude Code, or another capable runtime.
 
-## What Was Adopted
+## Design Position
 
-- A small document graph for persistent project memory.
-- A repeatable SDLC loop: status, issue, plan, implement, QA, PR, review, release, deploy.
-- Role separation between orchestration, implementation, review, architecture, and browser testing.
-- Verification gates before claims of completion.
-- A FlowMe-specific spec layer for committed multi-step work.
+Keep:
 
-## What Was Changed
+- FlowMe product, content, source/risk, and validation boundaries.
+- Dirty-worktree ownership checks.
+- Deterministic Git hooks, CI, tests, build, and browser evidence.
+- Durable routing for decisions, ideas, specs, status, architecture, and release facts.
+- Short task-specific skills that point to canonical repo rules.
 
-- `agent.md` remains the root guide instead of introducing a Claude-only `CLAUDE.md`.
-- Role and command docs live under `docs/harness/` so Codex, Claude, Gemini, Copilot, Cursor, or a human can follow them.
-- Tool names are descriptive, not slash-command dependent.
-- Claude-specific hooks are represented as safety rules and optional local automation, not required runtime behavior.
-- Durable product and harness specs live under `docs/specs/`; tool-generated specs and plans may remain under `docs/superpowers/`.
+Avoid by default:
 
-## FLOW Harness Shape
+- Reading the entire document graph for a small task.
+- Starting a role swarm when separate implementation, review, and QA passes are enough.
+- Running session-start or closeout reporters when they add no new evidence.
+- Duplicating Notion, verification, or memory-routing rules in every layer.
+- Treating a larger custom prompt as automatically safer or more capable.
 
-FlowMe uses seven durable memory layers:
+## Three Task Lanes
 
-1. `AGENTS.md` and `agent.md` define how agents enter the repo and which product constraints are non-negotiable.
-2. `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/IDEAS.md` keep current health, committed direction, and deferred context separate.
-3. `docs/PRODUCT_PRINCIPLES.md` keeps durable product vision, UX direction, and feature filters that should survive across chats.
-4. `docs/SERVICE_STRUCTURE.md` keeps the current app screen feature tree, route/component ownership, and architecture map versioned with implementation.
-5. `docs/TOOLING.md` keeps P0 skill/plugin/tool routing, adoption triggers, and verification lanes explicit.
-6. `docs/specs/` holds committed multi-step specs before implementation, with stage fit, natural artifact, source/risk, and verification gates.
-7. `docs/pr-history/` records what actually changed, how it was verified, and what remains after PR-sized work.
+| Lane | Use when | Context and process |
+| --- | --- | --- |
+| Minimal | Clear, low-risk, local fix or answer | `AGENTS.md`, `agent.md`, request-relevant files, current Git state before edits, targeted verification |
+| Standard | Multi-file work, FlowMe product/content work, or user-facing behavior | Minimal lane plus relevant canonical document and skill, short plan, independent review pass, risk-based QA |
+| Full | Broad or ambiguous scope, mixed ownership, architecture/security/release/deployment work, or a committed high-risk initiative | Session Start, relevant spec, only needed specialist lenses, broader QA/browser evidence, and Work Closeout |
 
-The goal is not more paperwork. The goal is to keep Stage 0 focused on measurable execution behavior: open, anchor input, copy/export, check, and feedback.
+Choose the lightest lane that still protects the claim. Escalate when evidence reveals wider scope or risk; do not select Full merely because a tool supports subagents.
 
-For backlog or planning material that humans are expected to act on, provide an HTML workboard view as the primary review surface. Markdown specs, task files, status notes, and audit documents can remain the source/evidence layer, but the actionable view should show priority, status, next action, done-when, verification, and source links in one scannable page.
+## Context And Memory
 
-Notion may provide a live human-facing operations projection, but it does not add another canonical memory layer. Keep the repo document graph authoritative and send only active human gates, high-level AI work packages, blockers, checkpoints, completion conditions, and repo/evidence links to Notion. Detailed execution stays in specs, plans, PR history, tests, and audit artifacts. Agents without Notion access must still be able to complete the full repo workflow.
+`AGENTS.md` is the automatic router. `agent.md` contains stable FlowMe guardrails. The remaining documents are loaded by task type:
 
-The active projection is [00 FlowMe 운영 홈](https://app.notion.com/p/39ac0d8f693f81339a34fdb75552bc27), using data source `collection://4946eb61-01b1-49e8-929e-82b118740310`. Read the repo baseline first and update only work items touched by the current task.
+- `STATUS` and `ROADMAP`: current focus and committed sequence.
+- `PRODUCT_PRINCIPLES` and relevant `DECISIONS`: durable product judgment.
+- `IDEAS`: deferred-direction review only.
+- `SERVICE_STRUCTURE`: route, component, data, and ownership changes.
+- `TOOLING`, this harness, and `QA`: process, dependency, CI, and release changes.
+- `specs`: approved multi-step work.
+- `content-audit` and `pr-history`: evidence and implementation history.
 
-Repeated collaboration procedures live under [docs/workflows](../workflows/README.md). Session Start, Request Interview, Direction Capture, and Work Closeout are canonical tool-independent workflows; repo skills provide discovery and `scripts/workflows/` provides only deterministic read-only inspection.
+The repo remains canonical. Notion is a selective human-facing projection for active decisions, reviews, external actions, blockers, and checkpoints; see [TOOLING.md](../TOOLING.md). It is never a prerequisite for completing repo work.
+
+## Conditional Workflows
+
+[Session Start](../workflows/session-start.md), [Request Interview](../workflows/request-interview.md), [Direction Capture](../workflows/capture-direction.md), and [Work Closeout](../workflows/work-closeout.md) remain available as independent procedures. Their discoverable skills are routers, not mandatory phases:
+
+- Session Start: broad/resumed work, context loss, overall review, or mixed ownership.
+- Request Interview: unresolved ambiguity that materially changes outcome or risk.
+- Direction Capture: a confirmed durable rule, actionable deferred idea, approved spec, active blocker, or release fact.
+- Work Closeout: substantial completion, handoff, publish action, status report, or scoped ownership review.
+
+Workflow scripts collect read-only Git and filesystem evidence. They do not decide product direction, edit external systems, run verification, or authorize commit, push, merge, deploy, or cleanup.
+
+## Roles
+
+Use the four core passes in [ROLES.md](./ROLES.md) for substantial work: orchestrate/product-frame, implement, review, and evidence/QA. Small tasks may combine them in one agent while still performing a distinct review before reporting completion. Add specialist lenses only when the task contains that risk.
 
 ## Compatibility Position
 
-Checked against current public agent-instruction docs on 2026-06-11.
+- `AGENTS.md` is the canonical automatic entry point for tools that support the convention.
+- Claude Code does not read `AGENTS.md` directly, so `CLAUDE.md` contains exactly `@AGENTS.md`. This adapter avoids a second Claude-specific guide.
+- Repo skills live canonically under `.agents/skills/`. `.claude/skills/` and optional Codex user-scope copies are generated and must not be edited directly.
+- After changing a canonical skill, run `npm run skills:sync`. Use `npm run skills:install:codex` when user-scope copies should be refreshed; `npm run docs:check` and `npm run skills:check:codex` detect drift.
+- Do not add more tool-specific instruction files by default. Add a short adapter only when a supported tool cannot consume the existing entry point.
+- Add nested `AGENTS.md` files only when a subtree has genuinely different setup, commands, or safety rules.
 
-- `AGENTS.md` is the canonical entry point for tools that support the AGENTS.md convention. Keep it short and point to the document graph.
-- Claude Code does not read `AGENTS.md` directly, so this repository keeps a one-line `CLAUDE.md` adapter containing `@AGENTS.md`. This is the official compatibility policy for Claude Code until it supports AGENTS.md natively.
-- `agent.md` is the expanded project guide. It is intentionally linked from `AGENTS.md` because some tools only auto-load standard agent files.
-- Repo skills live canonically under `.agents/skills/` for Codex discovery. `.claude/skills/` is a generated copy for Claude Code discovery and must not be edited directly.
-- To change a skill, edit `.agents/skills/<skill-name>/SKILL.md`, then run `npm run skills:sync`. `npm run docs:check` includes `node scripts/sync-skills.mjs --check` so drift between `.agents/skills/` and `.claude/skills/` fails CI/local docs checks.
-- Tasks opened from the workspace parent may not discover nested repo skills at startup. Run `npm run skills:install:codex` to refresh generated copies under `$CODEX_HOME/skills`; use `npm run skills:check:codex` to detect drift. These user-scope copies are also generated and must not become the source of truth.
-- Do not add `GEMINI.md`, `.cursor/rules`, or `.github/copilot-instructions.md` by default. If the team adopts another tool-specific workflow, add a short adapter that points back to `AGENTS.md` and this harness instead of duplicating rules.
-- Add nested `AGENTS.md` files only when a subdirectory has different setup, commands, or safety rules.
+References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [AGENTS.md open format](https://agents.md/), [Claude Code memory](https://code.claude.com/docs/en/memory), [Gemini CLI context files](https://google-gemini.github.io/gemini-cli/docs/cli/gemini-md.html), and [Cursor rules](https://docs.cursor.com/context/rules-for-ai).
 
-References: [OpenAI Codex AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [AGENTS.md open format](https://agents.md/), [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions), [Claude Code memory](https://code.claude.com/docs/en/memory), [Gemini CLI context files](https://google-gemini.github.io/gemini-cli/docs/cli/gemini-md.html), [Cursor rules](https://docs.cursor.com/context/rules-for-ai).
+## Verification
 
-## Core Documents
+Use [QA.md](./QA.md) for risk-based checks. Repository-level automation remains authoritative:
 
-| Document | Purpose |
-|----------|---------|
-| [../../agent.md](../../agent.md) | Root operating guide and product constraints |
-| [../STATUS.md](../STATUS.md) | Current version, health, and active constraints |
-| [../ROADMAP.md](../ROADMAP.md) | Upcoming versions and backlog index |
-| [../PRODUCT_PRINCIPLES.md](../PRODUCT_PRINCIPLES.md) | Durable product vision, UX direction, and feature filters |
-| [../SERVICE_STRUCTURE.md](../SERVICE_STRUCTURE.md) | Current app screen feature tree, route/component ownership, and architecture map |
-| [../TOOLING.md](../TOOLING.md) | P0 tool, skill, plugin routing policy and verification lanes |
-| [../IDEAS.md](../IDEAS.md) | Deferred ideas and conversation context worth preserving |
-| [../specs/README.md](../specs/README.md) | Durable feature, content, security, and harness specs |
-| [../REFERENCE.md](../REFERENCE.md) | External UX/UI and productivity-method references |
-| [../pr-history/README.md](../pr-history/README.md) | PR-level changes, decisions, verification, risks, and follow-ups |
-| [../HISTORY.md](../HISTORY.md) | Released changes |
-| [../workflows/README.md](../workflows/README.md) | Repeated session-start, direction-capture, and closeout procedures |
-| [ROLES.md](./ROLES.md) | AI/human role definitions |
-| [SDLC.md](./SDLC.md) | Repeatable development cycle |
-| [QA.md](./QA.md) | Verification checklist |
-| [UX_CONTENT_EVALUATION.md](./UX_CONTENT_EVALUATION.md) | Reusable persona-based UX/content evaluation process |
+- Pre-commit: `npm run docs:check`
+- Pre-push: `npm run verify`
+- CI core: security audit and core verification
+- CI/explicit user-flow QA: Playwright E2E and retained artifacts
 
-## Default Commands
+These deterministic gates are not behavioral prompt overhead and should remain unless measured noise exceeds their protection value.
 
-```powershell
-npm run workflow:session-start
-npm run hooks:install
-npm run docs:check
-npm test
-npm run build
-npm run verify
-npm run test:e2e
-npm run workflow:closeout
-```
+## Evaluation
 
-Use `npm run dev` for local manual testing at `http://localhost:3000`.
+Reduced instruction size is not proof of better work. Periodically compare Minimal, Standard, and Full lanes across small fixes, FlowMe domain tasks, and repo-wide/release tasks. Record first-pass correctness, unintended files, verification retries, user corrections, elapsed time, and token use when available. The current protocol and baseline live in the [adaptive harness spec](../specs/2026-07-19-adaptive-lean-agent-harness/spec.md).
 
-Local hooks are intentionally light: pre-commit runs `npm run docs:check`; pre-push runs `npm run verify`. Full Playwright E2E remains a CI and explicit QA gate, not a mandatory local hook.
+## Documents
 
-The supported runtime baseline is Node.js 24. CI and Vercel derive this from `package.json`; `.node-version` provides the local version-manager hint. CI also blocks high-severity dependency audit findings and retains Playwright failure artifacts.
+| Document | Use |
+| --- | --- |
+| [../../AGENTS.md](../../AGENTS.md) | Automatic entry and context routing |
+| [../../agent.md](../../agent.md) | Stable FlowMe guardrails |
+| [SDLC.md](./SDLC.md) | Three task lanes and common execution cycle |
+| [ROLES.md](./ROLES.md) | Core passes and optional specialist lenses |
+| [QA.md](./QA.md) | Verification matrix |
+| [UX_CONTENT_EVALUATION.md](./UX_CONTENT_EVALUATION.md) | Task-specific persona/content evaluation, not default context |
+| [../workflows/README.md](../workflows/README.md) | Conditional collaboration workflows |
+
+Use `npm run dev` for local testing at `http://localhost:3000`. The supported runtime baseline is defined in `package.json` and [TOOLING.md](../TOOLING.md).
