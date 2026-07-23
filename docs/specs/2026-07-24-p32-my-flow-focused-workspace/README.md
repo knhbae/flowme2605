@@ -2,7 +2,7 @@
 
 작성일: 2026-07-24
 
-상태: `implemented_local_verification_green_publish_pending`
+상태: `released_production_smoke_green`
 
 앱 코드 변경: 있음
 
@@ -32,6 +32,8 @@ P31의 목록·검색·저장·완료·보관 계약은 유지하면서, 선택�
 - production build: pass
 - security audit: vulnerabilities `0`
 - 390/1024/1440 overflow, fixed overlap, unnamed focusable, console/page error: `0`
+- PR [#154](https://github.com/knhbae/flowme2605/pull/154), merge `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`
+- canonical production smoke: `7 / 7`
 - observed-user count: `0`
 
 최종 package: [P32 final review package](../../content-audit/2026-07-24-p32-final-review-package/README.md)

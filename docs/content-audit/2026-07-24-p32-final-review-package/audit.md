@@ -2,7 +2,7 @@
 
 ## 1. 판정
 
-`local_verification_green_publish_pending`
+`released_production_smoke_green`
 
 P31의 library, completion, export, lifecycle, projection 계약은 유지하고, 한 Flow 안에서 명령이 분산되는 문제만 bounded structural reopen으로 해결했다.
 
@@ -124,8 +124,19 @@ shape별 body와 projection은 유지하며 route별 identity fork를 만들지 
 - full Playwright: `314 / 314`
 - production build: pass
 - security audit: vulnerabilities `0`
-- screenshots: `10`
+- local screenshots: `10`
+- production smoke: `7 / 7`
+- production screenshots: `7`
 - browser errors: `0`
+- main CI: Docs/Unit/Build와 Playwright E2E `success`
+- Vercel production: `success`
+
+release:
+
+- PR: [#154](https://github.com/knhbae/flowme2605/pull/154)
+- merge SHA: `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`
+- canonical production: <https://flowme2605.vercel.app>
+- production smoke의 overflow, fixed overlap, unnamed focusable, console/page error: 모두 `0`
 
 이전 artifact:
 

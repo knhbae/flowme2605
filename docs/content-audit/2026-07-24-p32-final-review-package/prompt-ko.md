@@ -6,6 +6,11 @@ D:\flowme2605\flow-mvp의 최신 origin/main과 production을 기준으로 FlowM
 Production:
 https://flowme2605.vercel.app
 
+현재 P32 release:
+- PR #154
+- merge SHA 30281a7a8ea9bea1194b4104b5a49b6211c07e3b
+- canonical production smoke 7/7
+
 먼저 읽을 자료:
 1. AGENTS.md
 2. agent.md
@@ -17,6 +22,7 @@ https://flowme2605.vercel.app
 8. docs/content-audit/2026-07-24-p32-final-review-package/audit.md
 9. docs/content-audit/2026-07-24-p32-final-review-package/review.html
 10. route-evidence.json, journey-results.json, screenshot-manifest.json
+11. production-smoke/results.json과 production-smoke/screenshots/
 
 검토 목적:
 - P32가 My Flow를 실제로 더 단순하고 예측 가능하게 만들었는지 평가한다.

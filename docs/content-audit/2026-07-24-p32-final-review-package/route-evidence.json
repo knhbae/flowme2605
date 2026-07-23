@@ -2,7 +2,8 @@
   "schemaVersion": 1,
   "capturedAt": "2026-07-24",
   "baselineSha": "a2e1d72dadda0104f97682ae662dfbc113a85318",
-  "verdict": "local_verification_green_publish_pending",
+  "releaseSha": "30281a7a8ea9bea1194b4104b5a49b6211c07e3b",
+  "verdict": "released_production_smoke_green",
   "observedUserCount": 0,
   "markers": {
     "p32Architecture": "library_to_focused_workspace_with_cross_flow_queue",
@@ -25,6 +26,8 @@
     "fixedStickyOverlapCount": 0,
     "unnamedFocusableCount": 0,
     "consolePageErrorCount": 0,
+    "productionSmokeScenarioCount": 7,
+    "productionSmokeFailureCount": 0,
     "dataMigrationRequired": false,
     "publicShellChanged": false,
     "stableIdentityContractChanged": false
@@ -109,11 +112,31 @@
     "gitDiffCheck": "passed"
   },
   "publish": {
-    "commit": "pending",
-    "push": "pending",
-    "pullRequest": "pending",
-    "merge": "pending",
-    "deployment": "pending",
-    "productionSmoke": "pending"
+    "implementationCommits": [
+      "6c4db3aa4f7a2fabc49f6ce3c63d5f0567aecbdd",
+      "56730ae363a3a9792c240fb2fbed70b72100e4a3"
+    ],
+    "push": "codex/p32-program",
+    "pullRequest": {
+      "number": 154,
+      "url": "https://github.com/knhbae/flowme2605/pull/154",
+      "checks": "success"
+    },
+    "merge": {
+      "method": "squash",
+      "sha": "30281a7a8ea9bea1194b4104b5a49b6211c07e3b"
+    },
+    "deployment": {
+      "provider": "Vercel",
+      "status": "success",
+      "canonicalUrl": "https://flowme2605.vercel.app",
+      "statusUrl": "https://vercel.com/flowme/flowme2605/C6GLdoFZhNYH3AdHR8tBWqRRoVTK"
+    },
+    "productionSmoke": {
+      "status": "passed",
+      "scenarioCount": 7,
+      "failedScenarioCount": 0,
+      "results": "./production-smoke/results.json"
+    }
   }
 }

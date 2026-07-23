@@ -47,7 +47,7 @@
     <div>
       <h1>FlowMe P32 Final Review</h1>
       <p class="lede">여러 Flow를 보는 library와 한 Flow를 실행하는 object workspace를 분리했다. 데이터 계약은 유지하고, 명령의 위치와 읽기 순서를 정리한 bounded structural reopen이다.</p>
-      <span class="status">local verification green · publish pending · observed users 0</span>
+      <span class="status">production green · PR #154 · observed users 0</span>
     </div>
   </header>
   <main>
@@ -56,7 +56,17 @@
       <div class="grid">
         <div class="panel"><div class="metric">B1</div><div class="label">cross-Flow queue를 유지하는 focused workspace</div></div>
         <div class="panel"><div class="metric">314 / 314</div><div class="label">full Playwright</div></div>
+        <div class="panel"><div class="metric">7 / 7</div><div class="label">canonical production smoke</div></div>
         <div class="panel"><div class="metric">0</div><div class="label">overflow · overlap · unnamed focusable · browser error</div></div>
+      </div>
+    </section>
+    <section>
+      <h2>Production 확인</h2>
+      <p><a href="https://flowme2605.vercel.app">flowme2605.vercel.app</a> · release <code>30281a7</code> · PR <a href="https://github.com/knhbae/flowme2605/pull/154">#154</a></p>
+      <div class="shots">
+        <figure><img src="production-smoke/screenshots/p32-production-my-flow-library-390.png" alt="production 모바일 My Flow library"><figcaption>Production 390 · My Flow library</figcaption></figure>
+        <figure><img src="production-smoke/screenshots/p32-production-my-flow-focused-390.png" alt="production 모바일 focused Flow"><figcaption>Production 390 · focused workspace</figcaption></figure>
+        <figure><img src="production-smoke/screenshots/p32-production-wide-my-flow-focused-1024.png" alt="production wide focused Flow"><figcaption>Production 1024 · rail / plan / inspector</figcaption></figure>
       </div>
     </section>
     <section>
