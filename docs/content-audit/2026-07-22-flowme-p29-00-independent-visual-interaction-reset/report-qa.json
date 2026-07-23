@@ -1,0 +1,599 @@
+{
+  "generatedAt": "2026-07-21T23:55:50.255Z",
+  "report": "review.html",
+  "observedUserCount": 0,
+  "results": [
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 18988,
+      "horizontalOverflowPx": 0,
+      "overflowOffenders": [
+        {
+          "tag": "a",
+          "className": "",
+          "left": 372,
+          "right": 445,
+          "width": 73,
+          "scrollWidth": 73,
+          "clientWidth": 73
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "left": 367,
+          "right": 456,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "left": 456,
+          "right": 545,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "left": 545,
+          "right": 635,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "left": 635,
+          "right": 724,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "left": 724,
+          "right": 793,
+          "width": 69,
+          "scrollWidth": 69,
+          "clientWidth": 69
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 367,
+          "right": 456,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating clear",
+          "left": 456,
+          "right": 545,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating clear",
+          "left": 545,
+          "right": 635,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 635,
+          "right": 724,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 724,
+          "right": 793,
+          "width": 69,
+          "scrollWidth": 69,
+          "clientWidth": 69
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 367,
+          "right": 456,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating clear",
+          "left": 456,
+          "right": 545,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating clear",
+          "left": 545,
+          "right": 635,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 635,
+          "right": 724,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 724,
+          "right": 793,
+          "width": 69,
+          "scrollWidth": 69,
+          "clientWidth": 69
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "td",
+          "className": "rating not-tested",
+          "left": 367,
+          "right": 456,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating clear",
+          "left": 456,
+          "right": 545,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating clear",
+          "left": 545,
+          "right": 635,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 635,
+          "right": 724,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        },
+        {
+          "tag": "td",
+          "className": "rating friction",
+          "left": 724,
+          "right": 793,
+          "width": 69,
+          "scrollWidth": 69,
+          "clientWidth": 69
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "left": 13,
+          "right": 793,
+          "width": 780,
+          "scrollWidth": 780,
+          "clientWidth": 780
+        },
+        {
+          "tag": "td",
+          "className": "rating not-tested",
+          "left": 367,
+          "right": 456,
+          "width": 89,
+          "scrollWidth": 89,
+          "clientWidth": 89
+        }
+      ],
+      "focusableCount": 35,
+      "unnamedFocusables": [],
+      "imageCount": 13,
+      "brokenImages": [],
+      "h1Count": 1,
+      "hiddenFindingCount": 0,
+      "highFilterVisibleCount": 7,
+      "saveWireMode": "wide",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "focusOrder": [
+        {
+          "tag": "a",
+          "name": "본문으로 이동",
+          "href": "#main"
+        },
+        {
+          "tag": "a",
+          "name": "판정",
+          "href": "#verdict"
+        },
+        {
+          "tag": "a",
+          "name": "Findings",
+          "href": "#findings"
+        },
+        {
+          "tag": "a",
+          "name": "화면",
+          "href": "#surfaces"
+        },
+        {
+          "tag": "a",
+          "name": "연속성",
+          "href": "#continuity"
+        },
+        {
+          "tag": "a",
+          "name": "백로그",
+          "href": "#backlog"
+        },
+        {
+          "tag": "a",
+          "name": "Evidence",
+          "href": "#evidence"
+        },
+        {
+          "tag": "button",
+          "name": "전체 12",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "High 7",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "Medium 4",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "Low 1",
+          "href": null
+        },
+        {
+          "tag": "div",
+          "name": "Persona발견저장 전조정저장실행·재개Calendar가져가기전체 이사 첫 사용자clearfrictionfrictionfrictionclearc",
+          "href": null
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "clientWidth": 1024,
+      "scrollWidth": 1024,
+      "scrollHeight": 9645,
+      "horizontalOverflowPx": 0,
+      "overflowOffenders": [],
+      "focusableCount": 35,
+      "unnamedFocusables": [],
+      "imageCount": 13,
+      "brokenImages": [],
+      "h1Count": 1,
+      "hiddenFindingCount": 0,
+      "highFilterVisibleCount": 7,
+      "saveWireMode": "wide",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "focusOrder": [
+        {
+          "tag": "a",
+          "name": "본문으로 이동",
+          "href": "#main"
+        },
+        {
+          "tag": "a",
+          "name": "판정",
+          "href": "#verdict"
+        },
+        {
+          "tag": "a",
+          "name": "Findings",
+          "href": "#findings"
+        },
+        {
+          "tag": "a",
+          "name": "화면",
+          "href": "#surfaces"
+        },
+        {
+          "tag": "a",
+          "name": "연속성",
+          "href": "#continuity"
+        },
+        {
+          "tag": "a",
+          "name": "백로그",
+          "href": "#backlog"
+        },
+        {
+          "tag": "a",
+          "name": "Evidence",
+          "href": "#evidence"
+        },
+        {
+          "tag": "button",
+          "name": "전체 12",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "High 7",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "Medium 4",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "Low 1",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "390",
+          "href": null
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "id": "1440",
+        "width": 1440,
+        "height": 900
+      },
+      "clientWidth": 1440,
+      "scrollWidth": 1440,
+      "scrollHeight": 9624,
+      "horizontalOverflowPx": 0,
+      "overflowOffenders": [],
+      "focusableCount": 35,
+      "unnamedFocusables": [],
+      "imageCount": 13,
+      "brokenImages": [],
+      "h1Count": 1,
+      "hiddenFindingCount": 0,
+      "highFilterVisibleCount": 7,
+      "saveWireMode": "wide",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "focusOrder": [
+        {
+          "tag": "a",
+          "name": "본문으로 이동",
+          "href": "#main"
+        },
+        {
+          "tag": "a",
+          "name": "판정",
+          "href": "#verdict"
+        },
+        {
+          "tag": "a",
+          "name": "Findings",
+          "href": "#findings"
+        },
+        {
+          "tag": "a",
+          "name": "화면",
+          "href": "#surfaces"
+        },
+        {
+          "tag": "a",
+          "name": "연속성",
+          "href": "#continuity"
+        },
+        {
+          "tag": "a",
+          "name": "백로그",
+          "href": "#backlog"
+        },
+        {
+          "tag": "a",
+          "name": "Evidence",
+          "href": "#evidence"
+        },
+        {
+          "tag": "button",
+          "name": "전체 12",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "High 7",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "Medium 4",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "Low 1",
+          "href": null
+        },
+        {
+          "tag": "button",
+          "name": "390",
+          "href": null
+        }
+      ]
+    }
+  ],
+  "localLinks": [
+    {
+      "href": "screenshots/mobile-journey-moving-05-saved-receipt.png",
+      "exists": true
+    },
+    {
+      "href": "screenshots/mobile-journey-routine-02-configured.png",
+      "exists": true
+    },
+    {
+      "href": "screenshots/wide-journey-my-flow-wide-02-selected.png",
+      "exists": true
+    },
+    {
+      "href": "screenshots/mobile-journey-undated-02-expanded.png",
+      "exists": true
+    },
+    {
+      "href": "screenshots/mobile-shape-used-car-buying-check-primary.png",
+      "exists": true
+    },
+    {
+      "href": "screenshots/mobile-shape-overseas-safety-register-primary.png",
+      "exists": true
+    },
+    {
+      "href": "screenshots/wide-journey-calendar-wide-03-selected.png",
+      "exists": true
+    },
+    {
+      "href": "screenshots/mobile-journey-my-flow-mobile-05-reopened.png",
+      "exists": true
+    },
+    {
+      "href": "audit.md",
+      "exists": true
+    },
+    {
+      "href": "p29-backlog.md",
+      "exists": true
+    },
+    {
+      "href": "p29-goal-prompts.md",
+      "exists": true
+    },
+    {
+      "href": "technical-impact.md",
+      "exists": true
+    },
+    {
+      "href": "production-review-results.json",
+      "exists": true
+    },
+    {
+      "href": "decision-matrix.json",
+      "exists": true
+    }
+  ],
+  "totals": {
+    "viewportCount": 3,
+    "horizontalOverflowCount": 0,
+    "brokenImageCount": 0,
+    "unnamedFocusableCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "brokenLocalLinkCount": 0,
+    "highFilterPassed": true,
+    "wireTogglePassed": true
+  }
+}

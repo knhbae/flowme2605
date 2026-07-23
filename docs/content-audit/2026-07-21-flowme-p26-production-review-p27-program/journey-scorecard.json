@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "flowme-p27-journey-scorecard-v1",
+  "reviewMode": "independent_automated_simulation_and_heuristic_review",
+  "observedUserCount": 0,
+  "allowedRatings": ["supported", "hidden", "partial", "missing", "blocked"],
+  "journeys": [
+    {
+      "id": "J1-moving",
+      "label": "이사 D-day",
+      "overall": "supported",
+      "ratings": {
+        "discover": "supported",
+        "understandWholeFlow": "supported",
+        "startOrAdjust": "supported",
+        "postSaveConfirmation": "supported",
+        "wholeFlowReading": "supported",
+        "quickEdit": "supported",
+        "completionAndReopen": "supported",
+        "calendar": "supported",
+        "exportScope": "partial",
+        "reuse": "supported"
+      },
+      "friction": "선택 export가 범위와 실제 결과는 맞지만 전체 Flow와 형식 설명을 다시 펼쳐 390px에서 2,239px, 1024px에서 2,074px가 된다.",
+      "evidence": ["current_production_interaction", "current_package_screenshot", "current_source"]
+    },
+    {
+      "id": "J2-vehicle",
+      "label": "날짜 없는 차량 점검",
+      "overall": "partial",
+      "ratings": {
+        "saveUndated": "supported",
+        "findUndatedInbox": "partial",
+        "batchSchedule": "supported",
+        "removeDate": "supported",
+        "completionAndReopen": "supported",
+        "calendar": "partial",
+        "selectedExport": "supported"
+      },
+      "friction": "기능은 연결되지만 wide tray의 긴 제목이 잘리고, mobile tray와 grid가 한 페이지에서 길어져 날짜 배치 작업의 초점이 약하다.",
+      "evidence": ["current_production_interaction", "current_package_screenshot", "current_source"]
+    },
+    {
+      "id": "J3-routine",
+      "label": "반복 운동·청소",
+      "overall": "partial",
+      "ratings": {
+        "seriesPreview": "supported",
+        "seriesVsOccurrence": "supported",
+        "occurrenceCompletion": "supported",
+        "occurrenceReopen": "supported",
+        "calendar": "partial",
+        "icsParity": "supported"
+      },
+      "friction": "series와 occurrence 데이터 계약은 정확하지만 Calendar event wrapper에 이름 없는 anchor가 남고 회차 상세·메모·export가 한 화면에 밀집한다.",
+      "evidence": ["current_production_interaction", "current_package_screenshot", "current_source"]
+    },
+    {
+      "id": "J4-project",
+      "label": "여행·프로젝트",
+      "overall": "partial",
+      "ratings": {
+        "memoSegmentation": "supported",
+        "addDeleteRestore": "supported",
+        "reorder": "supported",
+        "batchDate": "supported",
+        "selectedExport": "partial"
+      },
+      "friction": "구조 mode가 선택, 순서 이동, 추가, 날짜, export, 삭제를 동시에 노출해 할 일보다 도구가 먼저 읽힌다.",
+      "evidence": ["current_production_interaction", "current_package_screenshot", "current_source"]
+    },
+    {
+      "id": "J5-record",
+      "label": "생활 기록과 회고",
+      "overall": "partial",
+      "ratings": {
+        "memoDraft": "supported",
+        "executionNote": "supported",
+        "completion": "supported",
+        "reflection": "supported",
+        "reuse": "supported",
+        "progressiveDisclosure": "partial"
+      },
+      "friction": "완료 후 전체 Flow, export, 회고, 원문 보정, 다시 쓰기가 동시에 펼쳐져 다음 한 행동이 약하다.",
+      "evidence": ["current_production_interaction", "current_package_screenshot", "current_source"]
+    },
+    {
+      "id": "J6-personal-draft",
+      "label": "URL miss·개인 초안",
+      "overall": "partial",
+      "ratings": {
+        "truthfulMiss": "supported",
+        "memoFallback": "supported",
+        "firstUsefulPreview": "partial",
+        "structuralEdit": "supported",
+        "schedule": "supported",
+        "export": "supported"
+      },
+      "friction": "가짜 Flow를 만들지는 않지만 miss 뒤 Flow 이름과 원하는 결과를 먼저 작성하게 해, 사용자의 원문보다 설정 폼이 첫 결과를 지연한다.",
+      "evidence": ["current_production_interaction", "current_package_screenshot", "current_source"]
+    }
+  ],
+  "supplemental": {
+    "id": "S1-cross-flow-same-date",
+    "label": "두 Flow의 같은 날짜 실행",
+    "overall": "partial",
+    "ratings": {
+      "calendarGrouping": "supported",
+      "calendarFlowIdentity": "supported",
+      "myFlowTodayCount": "supported",
+      "myFlowSingleScanSequence": "partial"
+    },
+    "friction": "My Flow는 오늘 2개를 primary continuation 1개와 별도 Today list 1개로 나누지만 Calendar는 두 Flow group을 나란히 유지한다.",
+    "evidence": ["current_production_interaction", "current_source"]
+  }
+}

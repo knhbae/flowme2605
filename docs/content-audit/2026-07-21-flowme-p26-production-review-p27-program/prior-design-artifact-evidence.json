@@ -1,0 +1,15 @@
+{
+  "evidenceKind": "prior_design_artifact",
+  "source": "file:///D:/flowme2605/flow-mvp/docs/content-audit/2026-07-19-flow-content-usage-preview-ko.html",
+  "metrics": {
+    "overflow": 116,
+    "scrollHeight": 2250,
+    "visibleButtons": 25,
+    "textLength": 2424
+  },
+  "screenshots": [
+    "screenshots/prior-design-artifact-moving-wide.png",
+    "screenshots/prior-design-artifact-moving-mobile.png",
+    "screenshots/prior-design-artifact-course-sheet-wide.png"
+  ]
+}

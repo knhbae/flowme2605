@@ -1,0 +1,95 @@
+{
+  "reviewId": "P28-00",
+  "canonicalPrompt": "docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prompt-ko.md",
+  "reviewedMainCommit": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
+  "priorArtifactSha256": "7D608B993342AEF5F570AA7C967E3DF46A7BC1083BB3BCCA8C631473E451A6C0",
+  "observedUserSessions": 0,
+  "supportLegend": ["supported", "hidden", "partial", "missing", "blocked"],
+  "cases": [
+    {
+      "id": "moving",
+      "name": "이사 준비",
+      "evidenceKind": ["current_production_interaction", "current_source"],
+      "steps": [
+        {"stage":"원문·URL·메모 입력 또는 Flow 발견","visible":"public moving 24개 또는 source-backed moving 5개 제목, 출처, 항목 수","decision":"준비된 Flow를 사용할지","primaryAction":"날짜 설정 영역으로 이동","redundantCopy":"public 화면의 설명과 workbench 설명이 일부 반복","depth":0,"currentSupport":"supported","block":"없음","change":"source 상태와 전체 개수를 같은 header에 유지"},
+        {"stage":"최소 입력","visible":"이사일과 상대일 계산 설명","decision":"이사일 지정 또는 날짜 없는 preview","primaryAction":"이사일 적용","redundantCopy":"날짜를 쓰는 이유가 여러 블록에 반복","depth":1,"currentSupport":"supported","block":"없음","change":"이사일 한 필드와 계산 결과를 붙여 표시"},
+        {"stage":"저장될 전체 Flow 확인","visible":"public은 5개+외19개, workbench는 8개+나머지16개; source-backed는 5개 전체","decision":"빠진 항목 없이 저장해도 되는지","primaryAction":"24개 전체 보기 또는 조정","redundantCopy":"두 개의 서로 다른 partial preview","depth":1,"currentSupport":"partial","block":"24개 전체를 한 projection에서 보지 못함","change":"canonical complete outline, 단계 collapse와 전체 펼치기"},
+        {"stage":"primary 결과 형태","visible":"Calendar workbench와 상대 날짜","decision":"계산된 일정이 목적에 맞는지","primaryAction":"24개 일정 확인","redundantCopy":"outline과 Calendar row 일부 중복","depth":1,"currentSupport":"supported","block":"저장 shell과 workbench가 분리","change":"Calendar를 save-before primary panel로 결합"},
+        {"stage":"secondary 결과 형태","visible":"Checklist, Memo, export format","decision":"외부 도구로 먼저 옮길지","primaryAction":"Checklist 또는 Memo 미리보기","redundantCopy":"모든 format 설명","depth":2,"currentSupport":"supported","block":"primary와 secondary 위계가 약함","change":"Checklist/Memo만 secondary로 제한"},
+        {"stage":"제목·항목·날짜·순서·포함 조정","visible":"24개 행과 include/date/title+memo/order mode","decision":"어떤 조작 mode가 필요한지","primaryAction":"변경 적용","redundantCopy":"24개 행을 mode마다 다시 스캔","depth":2,"currentSupport":"supported","block":"required value와 상세 조정 위계 약함","change":"필요한 값→변경 항목→전체 상세"},
+        {"stage":"My Flow 저장 또는 외부 export","visible":"포함 항목 수와 저장 CTA","decision":"My Flow 또는 외부 Calendar/Checklist","primaryAction":"24개 일정으로 시작","redundantCopy":"일반 저장 라벨","depth":3,"currentSupport":"supported","block":"없음","change":"CTA에 artifact와 count 포함"},
+        {"stage":"결과 receipt","visible":"저장 개수, 단계 수, 날짜 수, 첫 단계","decision":"전체 Flow 또는 Calendar로 갈지","primaryAction":"전체 Flow 열기","redundantCopy":"짧은 Flow는 전체 row와 summary 중복","depth":4,"currentSupport":"supported","block":"긴 Flow 전체 제목은 접힘","change":"요약+전체 Flow 열기 한 계층"},
+        {"stage":"My Flow·Calendar 재열기","visible":"개인 제목, 그룹, 날짜, Flow filter","decision":"실행 또는 일정 이동","primaryAction":"현재 항목 열기","redundantCopy":"My Flow와 Calendar에 같은 설명이 있으면 제거","depth":5,"currentSupport":"supported","block":"wide My Flow master-detail 약함","change":"1024 inventory+selected Flow"},
+        {"stage":"완료·수정·삭제·복구·재사용","visible":"완료/reopen, 보관/복구, 다시 쓰기, export scope","decision":"occurrence 실행 또는 Flow 재사용","primaryAction":"같은 위치에서 완료/reopen","redundantCopy":"없음","depth":6,"currentSupport":"supported","block":"실제 문구 선호는 미관찰","change":"P27 계약 유지, 회귀 gate"}
+      ]
+    },
+    {
+      "id": "kmooc",
+      "name": "K-MOOC 14주 과정",
+      "evidenceKind": ["current_production_interaction", "prior_design_artifact", "heuristic_simulation"],
+      "steps": [
+        {"stage":"원문·URL·메모 입력 또는 Flow 발견","visible":"URL 제출 후 준비된 Flow 없음","decision":"제작 후보 정보를 남길지","primaryAction":"제작 후보 정보 남기기","redundantCopy":"없음","depth":1,"currentSupport":"missing","block":"production source Flow 없음","change":"source scope·rights를 검증한 14주 fixture 등록"},
+        {"stage":"최소 입력","visible":"현재는 진입 불가; prior artifact는 원문 14주와 3/14 진도","decision":"이미 수강 중일 때만 현재 주차","primaryAction":"14주 preview 확인","redundantCopy":"수강 시작 전 현재 주차 질문 금지","depth":null,"currentSupport":"blocked","block":"Flow 미등록","change":"첫 preview 전 필수 입력 0"},
+        {"stage":"저장될 전체 Flow 확인","visible":"prior artifact의 14개 주차 row","decision":"14주 범위가 원문과 맞는지","primaryAction":"14주 전체 펼치기","redundantCopy":"주차 설명 반복 금지","depth":null,"currentSupport":"blocked","block":"current projection 없음","change":"14주 complete outline과 sourceTrace"},
+        {"stage":"primary 결과 형태","visible":"prior artifact Sheet 14주","decision":"진도표로 시작할지","primaryAction":"14주 진도표로 시작","redundantCopy":"Calendar를 primary처럼 설명하지 않음","depth":null,"currentSupport":"blocked","block":"production artifact 없음","change":"Sheet/progress primary"},
+        {"stage":"secondary 결과 형태","visible":"공식 일정이 있는 주차만 Calendar 후보","decision":"공식 기한만 Calendar에 보낼지","primaryAction":"공식 일정 확인","redundantCopy":"모든 주를 반복 Calendar로 만들지 않음","depth":null,"currentSupport":"blocked","block":"eligibility policy 없음","change":"official-window Calendar secondary"},
+        {"stage":"제목·항목·날짜·순서·포함 조정","visible":"제안: 현재 주차, 포함 여부, 개인 메모","decision":"이어 시작 위치","primaryAction":"현재 주차 적용","redundantCopy":"원문 주차·날짜 재입력 금지","depth":null,"currentSupport":"blocked","block":"Flow 미등록","change":"source 값 lock, user progress overlay"},
+        {"stage":"My Flow 저장 또는 외부 export","visible":"제안: Sheet 14행, 공식 일정 n개","decision":"My Flow 진도 또는 Sheet export","primaryAction":"14주 진도표로 시작","redundantCopy":"다섯 format 전부 노출 금지","depth":null,"currentSupport":"blocked","block":"source/right gate","change":"Sheet primary, Calendar limited secondary"},
+        {"stage":"결과 receipt","visible":"제안: 14주 저장, 현재 주차, 공식 일정 수","decision":"전체 진도표 열기","primaryAction":"14주 진도 열기","redundantCopy":"없음","depth":null,"currentSupport":"blocked","block":"receipt projection 없음","change":"same projection count"},
+        {"stage":"My Flow·Calendar 재열기","visible":"제안: 주차 순서와 완료 위치; Calendar에는 공식 일정만","decision":"다음 주차 실행","primaryAction":"다음 주차 열기","redundantCopy":"날짜 없는 주차를 Calendar tray에 강제하지 않음","depth":null,"currentSupport":"blocked","block":"대표 content 없음","change":"progress hierarchy와 optional Calendar"},
+        {"stage":"완료·수정·삭제·복구·재사용","visible":"P27 lifecycle을 사용할 수 있으나 content 없음","decision":"주차 완료/reopen 또는 새 학기 재사용","primaryAction":"주차 완료/reopen","redundantCopy":"없음","depth":null,"currentSupport":"blocked","block":"Flow 미등록","change":"P27 run/reuse 계약 재사용"}
+      ]
+    },
+    {
+      "id": "heat_safety",
+      "name": "농작업 폭염 대응",
+      "evidenceKind": ["current_production_interaction", "current_source", "prior_design_artifact", "heuristic_simulation"],
+      "steps": [
+        {"stage":"원문·URL·메모 입력 또는 Flow 발견","visible":"URL 제출 후 준비된 Flow 없음","decision":"후보 저장 여부","primaryAction":"제작 후보 정보 남기기","redundantCopy":"없음","depth":1,"currentSupport":"missing","block":"source Flow 없음","change":"공식 source scope와 safety review"},
+        {"stage":"최소 입력","visible":"제안: 안전 guidance 즉시, 작업일은 선택","decision":"오늘 작업하는지","primaryAction":"안전 기준 확인","redundantCopy":"날짜·반복 질문 금지","depth":null,"currentSupport":"blocked","block":"top-level role 없음","change":"첫 preview 전 필수 입력 0"},
+        {"stage":"저장될 전체 Flow 확인","visible":"prior: action 2, reference/warning 4","decision":"실행과 참고를 구분해 이해","primaryAction":"전체 안전 정보 보기","redundantCopy":"참고마다 체크박스 금지","depth":null,"currentSupport":"blocked","block":"role/eligibility 부재","change":"action/reference/warning anatomy"},
+        {"stage":"primary 결과 형태","visible":"safety guidance와 중단·신고 조건","decision":"작업 가능 여부","primaryAction":"중단·신고 기준 확인","redundantCopy":"장문 주의문 반복 금지","depth":null,"currentSupport":"blocked","block":"current surface 없음","change":"guidance primary"},
+        {"stage":"secondary 결과 형태","visible":"실행 action 2개 Todo","decision":"실행 항목만 가져갈지","primaryAction":"Todo 2개 가져가기","redundantCopy":"reference export 금지","depth":null,"currentSupport":"blocked","block":"generic projection은 모두 list 대상","change":"role-based Todo/checklist eligibility"},
+        {"stage":"제목·항목·날짜·순서·포함 조정","visible":"제안: 당일 작업일, 개인 장소 메모만 선택","decision":"작업 context 추가","primaryAction":"작업일 메모 추가","redundantCopy":"안전 판단을 개인 입력으로 대체 금지","depth":null,"currentSupport":"blocked","block":"role 계약 선행","change":"source safety lock + personal context"},
+        {"stage":"My Flow 저장 또는 외부 export","visible":"guidance 저장 또는 Todo 2개 export","decision":"FlowMe에서 참고할지 Todo만 이동할지","primaryAction":"실행 항목 2개 가져가기","redundantCopy":"Calendar CTA 금지","depth":null,"currentSupport":"blocked","block":"artifact policy 없음","change":"forbidden recurring Calendar"},
+        {"stage":"결과 receipt","visible":"제안: action 2, reference 4, Calendar 0","decision":"안전 정보 다시 열기","primaryAction":"안전 기준 열기","redundantCopy":"없음","depth":null,"currentSupport":"blocked","block":"대표 content 없음","change":"role별 receipt count"},
+        {"stage":"My Flow·Calendar 재열기","visible":"My Flow guidance와 action; Calendar는 사용자가 작업일을 넣은 action만","decision":"실행 또는 참고","primaryAction":"action 열기","redundantCopy":"reference를 undated tray에 넣지 않음","depth":null,"currentSupport":"blocked","block":"non-action resolver 없음","change":"Calendar non-action invariant"},
+        {"stage":"완료·수정·삭제·복구·재사용","visible":"action만 완료/reopen; guidance는 읽기","decision":"다음 작업일 재사용","primaryAction":"action 완료/reopen","redundantCopy":"reference 완료 상태 금지","depth":null,"currentSupport":"blocked","block":"role 계약 선행","change":"P27 lifecycle은 action에만 연결"}
+      ]
+    },
+    {
+      "id": "remodel_contract",
+      "name": "인테리어·리모델링 계약 검토",
+      "evidenceKind": ["current_production_interaction", "current_source", "prior_design_artifact", "heuristic_simulation"],
+      "steps": [
+        {"stage":"원문·URL·메모 입력 또는 Flow 발견","visible":"URL 제출 후 준비된 Flow 없음","decision":"후보 저장 여부","primaryAction":"제작 후보 정보 남기기","redundantCopy":"없음","depth":1,"currentSupport":"missing","block":"source Flow와 rights decision 없음","change":"source scope·rights review"},
+        {"stage":"최소 입력","visible":"제안: 7개 비교 항목 즉시","decision":"없음","primaryAction":"비교표 확인","redundantCopy":"계약일을 먼저 묻지 않음","depth":null,"currentSupport":"blocked","block":"Flow 미등록","change":"첫 preview 전 필수 입력 0"},
+        {"stage":"저장될 전체 Flow 확인","visible":"비교·확인·자료 7개와 role","decision":"원문 범위가 맞는지","primaryAction":"7개 전체 보기","redundantCopy":"자료 링크를 할 일로 반복 금지","depth":null,"currentSupport":"blocked","block":"record/resource top-level role 없음","change":"record/action/resource outline"},
+        {"stage":"primary 결과 형태","visible":"공사 범위·금액·지급·하자 열을 가진 Sheet","decision":"비교 기록을 시작할지","primaryAction":"비교표로 시작","redundantCopy":"Calendar 설명 금지","depth":null,"currentSupport":"blocked","block":"production artifact 없음","change":"comparison Sheet primary"},
+        {"stage":"secondary 결과 형태","visible":"결정 근거 Memo","decision":"비교 결과만 Memo로 복사할지","primaryAction":"메모에 비교 결과 복사","redundantCopy":"Todo/Calendar 강제 금지","depth":null,"currentSupport":"blocked","block":"artifact policy 없음","change":"Memo secondary, Calendar forbidden"},
+        {"stage":"제목·항목·날짜·순서·포함 조정","visible":"제안: 업체명, 개인 기록, 실제 지급일만 필요할 때","decision":"기록 열과 실제 기한 추가","primaryAction":"비교값 입력","redundantCopy":"원문 조건 재입력 금지","depth":null,"currentSupport":"blocked","block":"record value overlay 미정","change":"record role value + optional schedule"},
+        {"stage":"My Flow 저장 또는 외부 export","visible":"My Flow 비교표 또는 Sheet/Memo","decision":"내부 기록 또는 외부 이동","primaryAction":"비교표로 시작","redundantCopy":"모든 format 탭 금지","depth":null,"currentSupport":"blocked","block":"rights 상태","change":"rights hold와 personal export 분리"},
+        {"stage":"결과 receipt","visible":"제안: 비교 7개, 자료 n개, Calendar 0","decision":"전체 비교표 열기","primaryAction":"비교표 열기","redundantCopy":"없음","depth":null,"currentSupport":"blocked","block":"대표 content 없음","change":"role별 receipt"},
+        {"stage":"My Flow·Calendar 재열기","visible":"My Flow에서 비교 기록; 실제 날짜를 넣은 action만 Calendar","decision":"업체 비교 또는 기한 실행","primaryAction":"선택 항목 열기","redundantCopy":"날짜 없는 record를 tray에 넣지 않음","depth":null,"currentSupport":"blocked","block":"role eligibility 없음","change":"record는 Sheet/Memo, action만 execution"},
+        {"stage":"완료·수정·삭제·복구·재사용","visible":"확인 action 완료/reopen, record 수정, resource 열기","decision":"계약 후보별 재사용","primaryAction":"기록 수정 또는 action 완료","redundantCopy":"resource 완료 금지","depth":null,"currentSupport":"blocked","block":"대표 content 없음","change":"P27 overlay/lifecycle을 역할별 적용"}
+      ]
+    },
+    {
+      "id": "parents_travel",
+      "name": "부모님 여행 동선",
+      "evidenceKind": ["current_production_interaction", "prior_design_artifact", "heuristic_simulation"],
+      "steps": [
+        {"stage":"원문·URL·메모 입력 또는 Flow 발견","visible":"VisitKorea URL은 miss; 메모는 3개 문장 draft","decision":"URL 후보 저장 또는 메모 draft 사용","primaryAction":"메모 항목 확인","redundantCopy":"miss와 draft 설명이 분리됨","depth":1,"currentSupport":"partial","block":"4개 장소가 3개 항목으로 축약","change":"감지 범위와 장소 entity 확인"},
+        {"stage":"최소 입력","visible":"현재 첫 항목 날짜 중심; 제안은 여행일 1개","decision":"여행일 지정, 방문 시각은 나중","primaryAction":"여행일 적용","redundantCopy":"네 장소 날짜를 각각 먼저 묻지 않음","depth":2,"currentSupport":"partial","block":"Flow-level trip date 없음","change":"공통 여행일 후 optional time"},
+        {"stage":"저장될 전체 Flow 확인","visible":"현재 3개 sentence row; 제안은 4개 ordered place","decision":"장소·순서가 맞는지","primaryAction":"4개 동선 확인","redundantCopy":"원문 전체 재표시보다 source 범위만","depth":2,"currentSupport":"partial","block":"장소 의미 손실","change":"4개 ordered outline과 source link"},
+        {"stage":"primary 결과 형태","visible":"현재 content-native preview 없음; 제안은 시간 전 ordered checklist, 시간 후 Calendar","decision":"시간을 정할지","primaryAction":"동선 checklist 확인","redundantCopy":"Calendar를 빈 상태로 먼저 보이지 않음","depth":2,"currentSupport":"missing","block":"artifact promotion policy 없음","change":"input-dependent primary promotion"},
+        {"stage":"secondary 결과 형태","visible":"제안: 이동 메모와 준비 checklist","decision":"Memo를 같이 쓸지","primaryAction":"동선 메모 보기","redundantCopy":"비어 있는 Sheet 금지","depth":3,"currentSupport":"missing","block":"generic format만 존재","change":"Memo secondary"},
+        {"stage":"제목·항목·날짜·순서·포함 조정","visible":"현재 add/delete/restore/reorder/date 지원","decision":"장소 순서와 시간 보정","primaryAction":"변경 적용","redundantCopy":"parser field를 사용자에게 노출하지 않음","depth":3,"currentSupport":"supported","block":"장소/location semantic field 약함","change":"location/time contextual fields"},
+        {"stage":"My Flow 저장 또는 외부 export","visible":"현재 generic 저장/export; 제안은 4개 Calendar 또는 checklist","decision":"시간 확정 여부에 따른 destination","primaryAction":"4개 동선으로 시작","redundantCopy":"다섯 format 전부 금지","depth":4,"currentSupport":"supported","block":"결과가 원문 의미와 다를 수 있음","change":"확정된 projection count로 CTA"},
+        {"stage":"결과 receipt","visible":"현재 저장 row 수; 제안은 장소 4, 시간 n, 미정 n","decision":"전체 동선 또는 Calendar 열기","primaryAction":"전체 동선 열기","redundantCopy":"없음","depth":5,"currentSupport":"supported","block":"artifact-specific count 없음","change":"dated/undated place count"},
+        {"stage":"My Flow·Calendar 재열기","visible":"현재 generic Flow/Calendar; 제안은 순서와 시간 유지","decision":"시간 이동 또는 메모 확인","primaryAction":"선택 장소 열기","redundantCopy":"같은 장소를 action/resource로 중복 금지","depth":6,"currentSupport":"supported","block":"location identity 명시 약함","change":"stable place item identity"},
+        {"stage":"완료·수정·삭제·복구·재사용","visible":"P27 완료/reopen, 구조 수정, archive/restore, 다시 쓰기","decision":"방문 완료 또는 새 여행일 재사용","primaryAction":"같은 위치에서 완료/reopen","redundantCopy":"없음","depth":7,"currentSupport":"supported","block":"실제 사용성 미관찰","change":"P27 lifecycle 유지"}
+      ]
+    }
+  ]
+}

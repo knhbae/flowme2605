@@ -1,0 +1,141 @@
+{
+  "evidenceBoundary": "Independent automated interaction; not observed-user validation.",
+  "observedUserCount": 0,
+  "targetDate": "2026-07-21",
+  "status": "completed",
+  "states": [
+    {
+      "id": "my-mobile",
+      "note": "Mobile Now highlights one primary continuation while the same-date remainder is not shown as one grouped list.",
+      "screenshot": "screenshots/supplemental-cross-flow-my-mobile.png",
+      "url": "https://flowme2605.vercel.app/my",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": 0,
+      "nowSection": "오늘 실행오늘 2개 남음7월 21일이사 방식과 견적 후보 정하기원룸 이사 준비·7월 21일 · 기준 D-30 · 이사 전 준비열기메모",
+      "todayRemaining": "오늘 2개 남음",
+      "todayRows": [],
+      "selectedDateGroups": [],
+      "scopeOptions": [],
+      "savedKeys": [
+        "flow:saved:source-backed-moving-d30",
+        "flow:saved:vehicle-inspection-prep"
+      ]
+    },
+    {
+      "id": "my-wide",
+      "note": "Wide Today counts two items but splits one primary continuation from the remaining same-date list.",
+      "screenshot": "screenshots/supplemental-cross-flow-my-wide.png",
+      "url": "https://flowme2605.vercel.app/my",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "overflow": 0,
+      "nowSection": "오늘 실행오늘 2개 남음오늘 끝낼 항목을 바로 체크할 수 있어요.7월 21일이사 방식과 견적 후보 정하기원룸 이사 준비·7월 21일 · 기준 D-30 · 이사 전 준비열기메모",
+      "todayRemaining": "오늘 2개 남음",
+      "todayRows": [
+        "자동차검사 기간과 예약 가능일 확인하기7월 21일검사 기간 확인자동차검사 준비메모"
+      ],
+      "selectedDateGroups": [],
+      "scopeOptions": [],
+      "savedKeys": [
+        "flow:saved:source-backed-moving-d30",
+        "flow:saved:vehicle-inspection-prep"
+      ]
+    },
+    {
+      "id": "calendar-wide",
+      "note": "Selected date groups rows without merging distinct Flow ownership.",
+      "screenshot": "screenshots/supplemental-cross-flow-calendar-wide.png",
+      "url": "https://flowme2605.vercel.app/calendar",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "overflow": 0,
+      "nowSection": "",
+      "todayRemaining": "",
+      "todayRows": [],
+      "selectedDateGroups": [
+        "원원룸 이사 D-30 일정기준 D-30이사 전 준비이사 방식과 견적 후보 정하기열기메모",
+        "자자동차검사 준비검사 기간 확인자동차검사 기간과 예약 가능일 확인하기열기메모"
+      ],
+      "scopeOptions": [
+        {
+          "name": "캘린더 표시 범위",
+          "pressed": null
+        },
+        {
+          "name": "모든 Flow, 2026년 7월 일정 2개",
+          "pressed": "true"
+        },
+        {
+          "name": "원룸 이사 D-30 일정, 2026년 7월 일정 1개",
+          "pressed": "false"
+        },
+        {
+          "name": "자동차검사 준비, 2026년 7월 일정 1개",
+          "pressed": "false"
+        }
+      ],
+      "savedKeys": [
+        "flow:saved:source-backed-moving-d30",
+        "flow:saved:vehicle-inspection-prep"
+      ]
+    },
+    {
+      "id": "calendar-mobile",
+      "note": "Mobile selected date preserves Flow markers for same-date items.",
+      "screenshot": "screenshots/supplemental-cross-flow-calendar-mobile.png",
+      "url": "https://flowme2605.vercel.app/calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": 0,
+      "nowSection": "",
+      "todayRemaining": "",
+      "todayRows": [],
+      "selectedDateGroups": [
+        "원원룸 이사 D-30 일정기준 D-30이사 전 준비이사 방식과 견적 후보 정하기열기메모",
+        "자자동차검사 준비검사 기간 확인자동차검사 기간과 예약 가능일 확인하기열기메모"
+      ],
+      "scopeOptions": [
+        {
+          "name": "캘린더 표시 범위",
+          "pressed": null
+        },
+        {
+          "name": "모든 Flow, 2026년 7월 일정 2개",
+          "pressed": "true"
+        },
+        {
+          "name": "원룸 이사 D-30 일정, 2026년 7월 일정 1개",
+          "pressed": "false"
+        },
+        {
+          "name": "자동차검사 준비, 2026년 7월 일정 1개",
+          "pressed": "false"
+        }
+      ],
+      "savedKeys": [
+        "flow:saved:source-backed-moving-d30",
+        "flow:saved:vehicle-inspection-prep"
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "summary": {
+    "stateCount": 4,
+    "overflowCount": 0,
+    "todayRowCount": 1,
+    "selectedDateGroupCount": 2,
+    "savedFlowKeyCount": 2,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  }
+}

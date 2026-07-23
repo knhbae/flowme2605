@@ -1,0 +1,4706 @@
+{
+  "generatedAt": "2026-07-20T01:24:52.367Z",
+  "productionBaseUrl": "https://flowme2605.vercel.app",
+  "evidenceKind": "current_production_interaction",
+  "inventory": [
+    {
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/f/moving-d30-basic",
+      "name": "moving",
+      "title": "이사 D-30 준비 | FlowMe",
+      "firstViewportText": [
+        "이사 D-30 준비",
+        "저장 전 일정 확인",
+        "이사일을 정하면 할 일 날짜가 맞춰집니다",
+        "먼저 중요한 날짜만 확인하고, 저장 후 내 Flow에서 각 할 일을 다시 조정할 수 있습니다.",
+        "이렇게 일정이 잡혀요",
+        "+ 나머지 21개 항목",
+        "1. 이사일 입력하기",
+        "입력할 날짜: 이사일"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by FLOW 큐레이션팀",
+          "testid": null,
+          "type": null,
+          "top": 161,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "이사일",
+          "testid": "public-flow-anchor-input",
+          "type": "date",
+          "top": 821,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "입력",
+          "testid": null,
+          "type": "button",
+          "top": 821,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 15,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 3109,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/f/vehicle-inspection-prep",
+      "name": "vehicle",
+      "title": "자동차검사 D-14 준비 | FlowMe",
+      "firstViewportText": [
+        "공유 콘텐츠",
+        "자동차검사 D-14 준비",
+        "자동차검사 D-14 준비",
+        "예시 날짜로 미리보기 · 검사일 7월 20일 (월)",
+        "Flow 구성",
+        "일정과 할 일",
+        "체크리스트",
+        "다가오는 할 일"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "button",
+          "text": "그대로 저장",
+          "testid": null,
+          "type": "button",
+          "top": 788,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "조정",
+          "testid": "public-flow-adjust-entry-mobile",
+          "type": "button",
+          "top": 788,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by 차근차근 모빌리티",
+          "testid": null,
+          "type": null,
+          "top": 161,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "검사일",
+          "testid": "public-flow-anchor-input",
+          "type": "date",
+          "top": 317,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "입력",
+          "testid": null,
+          "type": "button",
+          "top": 317,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "",
+          "testid": null,
+          "type": "button",
+          "top": 410,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "",
+          "testid": null,
+          "type": "button",
+          "top": 456,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 16,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 2224,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/f/washer-tub-clean-monthly",
+      "name": "washer",
+      "title": "세탁기 통세척 월간 관리 | FlowMe",
+      "firstViewportText": [
+        "공유 콘텐츠",
+        "세탁기 통세척 월간 관리",
+        "세탁기 통세척 월간 관리",
+        "Flow 구성",
+        "관리 캘린더",
+        "날짜 안 체크리스트",
+        "통세척할 때 확인할 것",
+        "원문에서 옮긴 실행 단서",
+        "통세척/통살균 코스, 문 열어 건조, 세제통·고무패킹·배수필터 확인"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "button",
+          "text": "그대로 저장",
+          "testid": null,
+          "type": "button",
+          "top": 788,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "조정",
+          "testid": "public-flow-adjust-entry-mobile",
+          "type": "button",
+          "top": 788,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by 생활 루틴 코치",
+          "testid": null,
+          "type": null,
+          "top": 161,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 17,
+      "longBlockCount": 1,
+      "overflowX": 0,
+      "documentHeight": 2967,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/f/new-car-delivery-check",
+      "name": "new-car",
+      "title": "신차 인수 점검 | FlowMe",
+      "firstViewportText": [
+        "공유 콘텐츠",
+        "신차 인수 점검",
+        "신차 인수 점검",
+        "Flow 구성",
+        "실행 리스트",
+        "인수 보류 기준",
+        "- 차대번호, 계약 옵션, 등록 문서가 맞지 않거나 딜러 확인이 비어 있습니다.",
+        "- 외관 흠집, 유리·휠 손상, 경고등 등 결함 사진 파일명이 증거표에 없습니다.",
+        "- 수리·교체·재방문 약속이 말로만 남고 서면 확인이나 담당자명이 없습니다.",
+        "FLOW는 인수 여부를 결정하지 않습니다. 보류 기준이 있으면 서명 전 딜러 확인과 사용자 판단을 분리해 기록합니다.",
+        "딜러 확인: / 사진 파일명: / 보류 사유: / 서명 보류 여부: / 다음 확인 시점:"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "button",
+          "text": "그대로 저장",
+          "testid": null,
+          "type": "button",
+          "top": 788,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "조정",
+          "testid": "public-flow-adjust-entry-mobile",
+          "type": "button",
+          "top": 788,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by 차근차근 모빌리티",
+          "testid": null,
+          "type": null,
+          "top": 161,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "textarea",
+          "text": "보류 사유",
+          "testid": "flow-hold-field-new-car-delivery-check-hold-reason",
+          "type": null,
+          "top": 833,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 15,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 2227,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/flows",
+      "name": "flows",
+      "title": "",
+      "firstViewportText": [
+        "Flow 찾기",
+        "URL·메모로 Flow 찾기",
+        "준비된 Flow를 찾거나 내 초안으로 이어갑니다.",
+        "원룸 이사 D-30",
+        "이사일만 넣으면 저장됩니다: D-30 일정",
+        "먼저 할 일이사 방식과 견적 후보 정하기",
+        "중1 수학 목차 진도",
+        "바로 저장됩니다: 8개 단원 진도표",
+        "먼저 할 일1. 소인수분해"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 38,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "",
+          "testid": null,
+          "type": null,
+          "top": 125,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "홈",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "캘린더",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "내 Flow",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "",
+          "testid": "flow-url-lookup-input",
+          "type": "text",
+          "top": 256,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": "submit",
+          "top": 256,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "",
+          "testid": "flow-catalog-search",
+          "type": null,
+          "top": 331,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "전체",
+          "testid": null,
+          "type": "button",
+          "top": 383,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "이사/계약",
+          "testid": null,
+          "type": "button",
+          "top": 383,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "공부",
+          "testid": null,
+          "type": "button",
+          "top": 383,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "아이/건강",
+          "testid": null,
+          "type": "button",
+          "top": 383,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "구매/생활",
+          "testid": null,
+          "type": "button",
+          "top": 425,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "루틴",
+          "testid": null,
+          "type": "button",
+          "top": 425,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "열어보기 ›",
+          "testid": "flow-map-detail-link",
+          "type": null,
+          "top": 615,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "열어보기 ›",
+          "testid": "flow-map-detail-link",
+          "type": null,
+          "top": 813,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 22,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 2013,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/my",
+      "name": "my",
+      "title": "내 Flow",
+      "firstViewportText": [
+        "내 실행 공간",
+        "내 Flow",
+        "오늘, 다음, 지난 할 일을 먼저 봅니다.",
+        "저장한 콘텐츠 없음",
+        "저장할 콘텐츠를 먼저 고르세요",
+        "하나를 저장하면 오늘, 다음, 지난 할 일이 여기에서 바로 이어집니다."
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 30,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "",
+          "testid": null,
+          "type": null,
+          "top": 117,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "홈",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "캘린더",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "내 Flow",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "데이터 관리",
+          "testid": "my-flow-data-manager-open",
+          "type": "button",
+          "top": 149,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "콘텐츠 고르러 가기",
+          "testid": null,
+          "type": null,
+          "top": 378,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 8,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 844,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/calendar",
+      "name": "calendar",
+      "title": "캘린더",
+      "firstViewportText": [
+        "날짜별 실행",
+        "캘린더",
+        "날짜 항목 없음",
+        "날짜가 있는 콘텐츠를 먼저 고르세요",
+        "언제 할지 정해진 항목을 날짜별로 확인합니다."
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 26,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "",
+          "testid": null,
+          "type": null,
+          "top": 113,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "홈",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "캘린더",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "내 Flow",
+          "testid": null,
+          "type": null,
+          "top": 779,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "콘텐츠 고르러 가기",
+          "testid": null,
+          "type": null,
+          "top": 344,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 7,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 844,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "/f/moving-d30-basic",
+      "name": "moving",
+      "title": "이사 D-30 준비 | FlowMe",
+      "firstViewportText": [
+        "이사 D-30 준비",
+        "저장 전 일정 확인",
+        "이사일을 정하면 할 일 날짜가 맞춰집니다",
+        "먼저 중요한 날짜만 확인하고, 저장 후 내 Flow에서 각 할 일을 다시 조정할 수 있습니다.",
+        "이렇게 일정이 잡혀요",
+        "+ 나머지 21개 항목",
+        "1. 이사일 입력하기",
+        "입력할 날짜: 이사일",
+        "예시 날짜로 미리보기 · 이사일 8월 19일 (수)",
+        "파일로 가져가기는 실행 미리보기 아래에서 선택할 수 있어요.",
+        "7월 20일부터 24개 항목을 옮깁니다.",
+        "Flow 구성"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by FLOW 큐레이션팀",
+          "testid": null,
+          "type": null,
+          "top": 189,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "이사일",
+          "testid": "public-flow-anchor-input",
+          "type": "date",
+          "top": 428,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "입력",
+          "testid": null,
+          "type": "button",
+          "top": 428,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "",
+          "testid": null,
+          "type": "button",
+          "top": 521,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "",
+          "testid": null,
+          "type": "button",
+          "top": 521,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "내 Flow에 저장",
+          "testid": null,
+          "type": "button",
+          "top": 600,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 13,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 1822,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "/f/vehicle-inspection-prep",
+      "name": "vehicle",
+      "title": "자동차검사 D-14 준비 | FlowMe",
+      "firstViewportText": [
+        "자동차검사 D-14 준비",
+        "예시 날짜로 미리보기 · 검사일 7월 20일 (월)",
+        "Flow 구성",
+        "일정과 할 일",
+        "체크리스트",
+        "날짜"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by 차근차근 모빌리티",
+          "testid": null,
+          "type": null,
+          "top": 189,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "검사일",
+          "testid": "public-flow-anchor-input",
+          "type": "date",
+          "top": 345,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "입력",
+          "testid": null,
+          "type": "button",
+          "top": 345,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "",
+          "testid": null,
+          "type": "button",
+          "top": 438,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "",
+          "testid": null,
+          "type": "button",
+          "top": 438,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "그대로 저장",
+          "testid": null,
+          "type": "button",
+          "top": 530,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "내 버전으로 조정",
+          "testid": "public-flow-adjust-entry",
+          "type": "button",
+          "top": 530,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 15,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 1662,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "/f/washer-tub-clean-monthly",
+      "name": "washer",
+      "title": "세탁기 통세척 월간 관리 | FlowMe",
+      "firstViewportText": [
+        "세탁기 통세척 월간 관리",
+        "저장 후 일정과 체크로 이어집니다",
+        "전체 항목은 그대로 볼 수 있고, 날짜가 있거나 반복되는 일은 캘린더와 체크 목록에서 이어서 확인할 수 있어요.",
+        "1. 시작일 입력하기",
+        "입력할 날짜: 시작일",
+        "시작일 기준으로 날짜가 계산됩니다."
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by 생활 루틴 코치",
+          "testid": null,
+          "type": null,
+          "top": 189,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "그대로 저장",
+          "testid": null,
+          "type": "button",
+          "top": 283,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "내 버전으로 조정",
+          "testid": "public-flow-adjust-entry",
+          "type": "button",
+          "top": 283,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "시작일",
+          "testid": "public-flow-anchor-input",
+          "type": "date",
+          "top": 644,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "입력",
+          "testid": null,
+          "type": "button",
+          "top": 644,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "아직 날짜가 안 정해졌어요",
+          "testid": null,
+          "type": "button",
+          "top": 736,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "그냥 예시로 둘러볼게요",
+          "testid": null,
+          "type": "button",
+          "top": 736,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 16,
+      "longBlockCount": 1,
+      "overflowX": 0,
+      "documentHeight": 2299,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "/f/new-car-delivery-check",
+      "name": "new-car",
+      "title": "신차 인수 점검 | FlowMe",
+      "firstViewportText": [
+        "신차 인수 점검",
+        "Flow 구성",
+        "실행 리스트",
+        "인수 보류 기준",
+        "- 차대번호, 계약 옵션, 등록 문서가 맞지 않거나 딜러 확인이 비어 있습니다.",
+        "- 외관 흠집, 유리·휠 손상, 경고등 등 결함 사진 파일명이 증거표에 없습니다.",
+        "- 수리·교체·재방문 약속이 말로만 남고 서면 확인이나 담당자명이 없습니다.",
+        "FLOW는 인수 여부를 결정하지 않습니다. 보류 기준이 있으면 서명 전 딜러 확인과 사용자 판단을 분리해 기록합니다.",
+        "딜러 확인: / 사진 파일명: / 보류 사유: / 서명 보류 여부: / 다음 확인 시점:"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 12,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "by 차근차근 모빌리티",
+          "testid": null,
+          "type": null,
+          "top": 189,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "그대로 저장",
+          "testid": null,
+          "type": "button",
+          "top": 283,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "내 버전으로 조정",
+          "testid": "public-flow-adjust-entry",
+          "type": "button",
+          "top": 283,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 14,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 1643,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "/flows",
+      "name": "flows",
+      "title": "",
+      "firstViewportText": [
+        "Flow 찾기",
+        "URL·메모로 Flow 찾기",
+        "준비된 Flow를 찾거나 내 초안으로 이어갑니다.",
+        "원룸 이사 D-30",
+        "이사일만 넣으면 저장됩니다: D-30 일정",
+        "먼저 할 일이사 방식과 견적 후보 정하기",
+        "중1 수학 목차 진도",
+        "바로 저장됩니다: 8개 단원 진도표",
+        "먼저 할 일1. 소인수분해",
+        "오픽 모의고사 2주/1달 계획표",
+        "시작일만 넣으면 저장됩니다: 2주 모의고사 캘린더",
+        "먼저 할 일1일차: 1회차 연습",
+        "월 4권 독서 기록 루틴",
+        "바로 저장됩니다: 4주 독서 캘린더",
+        "먼저 할 일1일차: 이번 달 책 4권 고르기"
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "홈",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "캘린더",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "내 Flow",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "",
+          "testid": null,
+          "type": null,
+          "top": 123,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "",
+          "testid": "flow-url-lookup-input",
+          "type": "text",
+          "top": 272,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": "submit",
+          "top": 272,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "input",
+          "text": "",
+          "testid": "flow-catalog-search",
+          "type": null,
+          "top": 347,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "전체",
+          "testid": null,
+          "type": "button",
+          "top": 399,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "이사/계약",
+          "testid": null,
+          "type": "button",
+          "top": 399,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "공부",
+          "testid": null,
+          "type": "button",
+          "top": 399,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "아이/건강",
+          "testid": null,
+          "type": "button",
+          "top": 399,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "구매/생활",
+          "testid": null,
+          "type": "button",
+          "top": 399,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "루틴",
+          "testid": null,
+          "type": "button",
+          "top": 399,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "열어보기 ›",
+          "testid": "flow-map-detail-link",
+          "type": null,
+          "top": 595,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "열어보기 ›",
+          "testid": "flow-map-detail-link",
+          "type": null,
+          "top": 595,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 22,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 1315,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "/my",
+      "name": "my",
+      "title": "내 Flow",
+      "firstViewportText": [
+        "내 실행 공간",
+        "내 Flow",
+        "오늘, 다음, 지난 할 일을 먼저 봅니다.",
+        "저장한 콘텐츠 없음",
+        "저장할 콘텐츠를 먼저 고르세요",
+        "하나를 저장하면 오늘, 다음, 지난 할 일이 여기에서 바로 이어집니다."
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "홈",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "캘린더",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "내 Flow",
+          "testid": null,
+          "type": null,
+          "top": 36,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "",
+          "testid": null,
+          "type": null,
+          "top": 123,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "button",
+          "text": "데이터 관리",
+          "testid": "my-flow-data-manager-open",
+          "type": "button",
+          "top": 181,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "콘텐츠 고르러 가기",
+          "testid": null,
+          "type": null,
+          "top": 406,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 8,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 768,
+      "consoleErrors": []
+    },
+    {
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "route": "/calendar",
+      "name": "calendar",
+      "title": "캘린더",
+      "firstViewportText": [
+        "날짜별 실행",
+        "캘린더",
+        "언제 할지 정해진 항목을 날짜별로 확인합니다.",
+        "날짜 항목 없음",
+        "날짜가 있는 콘텐츠를 먼저 고르세요",
+        "언제 할지 정해진 항목을 날짜별로 확인합니다."
+      ],
+      "firstViewportControls": [
+        {
+          "tag": "a",
+          "text": "FLOW",
+          "testid": null,
+          "type": null,
+          "top": 28,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "홈",
+          "testid": null,
+          "type": null,
+          "top": 28,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "Flow 찾기",
+          "testid": null,
+          "type": null,
+          "top": 28,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "캘린더",
+          "testid": null,
+          "type": null,
+          "top": 28,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "내 Flow",
+          "testid": null,
+          "type": null,
+          "top": 28,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "",
+          "testid": null,
+          "type": null,
+          "top": 115,
+          "inFirstViewport": true
+        },
+        {
+          "tag": "a",
+          "text": "콘텐츠 고르러 가기",
+          "testid": null,
+          "type": null,
+          "top": 368,
+          "inFirstViewport": true
+        }
+      ],
+      "controlCount": 7,
+      "longBlockCount": 0,
+      "overflowX": 0,
+      "documentHeight": 768,
+      "consoleErrors": []
+    }
+  ],
+  "journeys": [
+    {
+      "id": "A-moving",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "이사일 2026-08-20 입력",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:48:49.238Z",
+          "status": "supported"
+        },
+        {
+          "label": "그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:48:49.446Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:48:49.658Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow 탭 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:48:50.536Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:48:50.949Z",
+          "status": "supported"
+        },
+        {
+          "label": "이사일 바꾸기 열기",
+          "interactionCount": 0,
+          "status": "missing",
+          "error": "legacy moving-d30-basic 저장본에서 직접 기준일 변경入口를 찾지 못함"
+        },
+        {
+          "label": "첫 항목 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:48:51.417Z",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@265e7d1a186f45e634f56ad693c02812"
+            },
+            "_selector": "[data-flow-slug=\"moving-d30-basic\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-mobile-structure-inline-detail\"s] >> internal:testid=[data-testid=\"my-flow-item-detail\"s]"
+          }
+        },
+        {
+          "label": "할 일 조정 열기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:48:51.452Z",
+          "status": "supported"
+        },
+        {
+          "label": "첫 항목 날짜 2026-07-30 고정",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:48:51.578Z",
+          "status": "supported"
+        },
+        {
+          "label": "첫 항목 완료",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:48:51.927Z",
+          "status": "supported"
+        },
+        {
+          "label": "완료 탭에서 다시 열기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:48:52.229Z",
+          "status": "blocked",
+          "error": "locator.uncheck: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-completed-view').getByTestId('my-flow-task-complete-control').first()\u001b[22m \u001b[2m - locator resolved to <input checked type=\"checkbox\" aria-label=\"이사 방식 정하기 완료 취소\" data-testid=\"my-flow-task-complete-control\" class=\"h-4 w-4 rounded border-slate-300 accent-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200\"/>\u001b[22m \u001b[2m - attempting click action\u001b[22m \u001b[2m - waiting for element to be visible, enabled and stable\u001b[22m \u001b[2m - element is visible, enabled and stable\u001b[22m \u001b[2m - scrolling into view if needed\u001b[22m \u001b[2m - done scrolling\u001b[22m \u001b[2m - performing click action\u001b[22m \u001b[2m - click action done\u001b[22m \u001b[2m - waiting for scheduled navigations to finish\u001b[22m \u001b[2m - navigations have finished\u001b[22m"
+        },
+        {
+          "label": "내 Flow 탭으로 복귀",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:04.416Z",
+          "status": "supported"
+        },
+        {
+          "label": "내보내기 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:04.444Z",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@265e7d1a186f45e634f56ad693c02812"
+            },
+            "_selector": "[data-flow-slug=\"moving-d30-basic\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "Flow 전체 체크리스트 복사",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:04.666Z",
+          "status": "supported",
+          "result": "이사 준비\r\n할 일 24개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 필요 없는 물건 정리하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 이사/청소 업체 견적 받고 예약하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 우편물/카드/은행 주소 변경하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 정기 배달 서비스 중지 요청하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 대형폐기물 배출 신고와 수거일 확인하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 엘리베이터 또는 사다리차 사용 예약하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 인터넷/정수기 이전 설치 예약하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 도시가스 철거/설치 예약하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 자동이체 해지 또는 변경 확인하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 이사 당일 사용할 물건 따로 포장하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 관리사무소에 이사 시간과 차량 동선 공유하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 이사 업체와 일정 최종 확인하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 이체 한도 증액 확인하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 귀중품과 중요 서류 별도 보관하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 냉장고 음식과 쓰레기 최종 정리하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 전기/가스/수도/관리비 정산하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 이삿짐 분실/파손 확인하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 계량기와 집 상태 사진 남기기\r\n  일정: 2026-08-20 종일\r\n- [ ] 열쇠, 출입카드, 주차등록 인수인계하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 전입신고와 확정일자 확인하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 정부24 전입신고 처리 결과 확인하기\r\n  일정: 2026-08-21 종일\r\n- [ ] 임대차 계약 확정일자 부여 여부 확인하기\r\n  일정: 2026-08-21 종일\r\n\r\nFlow 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\r\n"
+        },
+        {
+          "label": "직접 선택 범위 전환",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:04.866Z",
+          "status": "supported"
+        },
+        {
+          "label": "선택 체크리스트 복사",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:05.143Z",
+          "status": "supported",
+          "result": "이사 준비\r\n할 일 2개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n\r\nFlow 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\r\n"
+        },
+        {
+          "label": "선택 범위 ICS 다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:05.349Z",
+          "status": "supported",
+          "result": {
+            "file": "downloads/a-moving-mobile-selected.ics",
+            "suggestedFilename": "이사-준비-selected-calendar.ics",
+            "eventCount": 2,
+            "dateStarts": [
+              "20260730",
+              "20260721"
+            ],
+            "rrules": [],
+            "exdates": [],
+            "summaries": [
+              "이사 방식 정하기",
+              "이사할 집 하자 점검하기"
+            ],
+            "bytes": 1469
+          }
+        }
+      ],
+      "errors": [],
+      "downloads": [
+        {
+          "kind": "clipboard-checklist-whole",
+          "lineCount": 51,
+          "preview": "이사 준비\r\n할 일 24개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 필요 없는 물건 정리하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 이사/청소 업체 견적 받고 예약하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 우편물/카드/은행 주소 변경하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 정기 배달 서비스 중지 요청하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 대형폐기물 배출 신고와 수거일 확인하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 엘리베이터 또는 사다리차 사용 예약하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 인터넷/정수기 이전 설치 "
+        },
+        {
+          "kind": "clipboard-checklist-selected",
+          "lineCount": 7,
+          "preview": "이사 준비\r\n할 일 2개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n\r\nFlow 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\r\n"
+        },
+        {
+          "kind": "ics-selected",
+          "file": "downloads/a-moving-mobile-selected.ics",
+          "suggestedFilename": "이사-준비-selected-calendar.ics",
+          "eventCount": 2,
+          "dateStarts": [
+            "20260730",
+            "20260721"
+          ],
+          "rrules": [],
+          "exdates": [],
+          "summaries": [
+            "이사 방식 정하기",
+            "이사할 집 하자 점검하기"
+          ],
+          "bytes": 1469
+        }
+      ],
+      "snapshots": []
+    },
+    {
+      "id": "B-undated-vehicle",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "날짜 없이 그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:07.261Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:07.461Z",
+          "status": "supported"
+        },
+        {
+          "label": "저장된 전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:08.354Z",
+          "status": "supported"
+        },
+        {
+          "label": "Flow 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:08.836Z",
+          "status": "supported"
+        },
+        {
+          "label": "지금 탭 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:09.050Z",
+          "status": "supported"
+        },
+        {
+          "label": "Calendar로 이동",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:09.476Z",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 정하기 tray 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:11.021Z",
+          "status": "blocked",
+          "error": "locator.click: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-calendar-unscheduled-tray').getByTestId('my-flow-calendar-unscheduled-toggle')\u001b[22m"
+        },
+        {
+          "label": "첫 항목을 2026-07-25에 배치",
+          "interactionCount": 3,
+          "startedAt": "2026-07-20T00:49:35.237Z",
+          "status": "blocked",
+          "error": "locator.check: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-calendar-unscheduled-tray').getByTestId('my-flow-calendar-unscheduled-item').first().locator('input[type=\"checkbox\"]')\u001b[22m"
+        },
+        {
+          "label": "날짜 배치 후 전체 ICS 다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:49:48.586Z",
+          "status": "supported",
+          "result": {
+            "file": "downloads/b-undated-vehicle-mobile-scheduled.ics",
+            "suggestedFilename": "자동차검사-준비-all-calendar.ics",
+            "eventCount": 10,
+            "dateStarts": [
+              "20260706",
+              "20260706",
+              "20260710",
+              "20260717",
+              "20260717",
+              "20260717",
+              "20260717",
+              "20260720",
+              "20260720",
+              "20260720"
+            ],
+            "rrules": [],
+            "exdates": [],
+            "summaries": [
+              "자동차검사 기간과 예약 가능일 확인하기",
+              "차량번호와 예약 정보 확인하기",
+              "가까운 검사소와 수수료 확인하기",
+              "번호판과 차대번호 식별 상태 확인하기",
+              "등화장치와 경음기 작동 확인하기",
+              "타이어 마모와 공기압 확인하기",
+              "오일 누유와 경고등 여부 기록하기",
+              "예약 시간보다 여유 있게 검사소 도착하기",
+              "접수와 수수료 결제 진행하기",
+              "검사 결과와 재검사 필요 항목 기록하기"
+            ],
+            "bytes": 6495
+          }
+        }
+      ],
+      "errors": [],
+      "downloads": [
+        {
+          "kind": "ics-before-date-removal",
+          "file": "downloads/b-undated-vehicle-mobile-scheduled.ics",
+          "suggestedFilename": "자동차검사-준비-all-calendar.ics",
+          "eventCount": 10,
+          "dateStarts": [
+            "20260706",
+            "20260706",
+            "20260710",
+            "20260717",
+            "20260717",
+            "20260717",
+            "20260717",
+            "20260720",
+            "20260720",
+            "20260720"
+          ],
+          "rrules": [],
+          "exdates": [],
+          "summaries": [
+            "자동차검사 기간과 예약 가능일 확인하기",
+            "차량번호와 예약 정보 확인하기",
+            "가까운 검사소와 수수료 확인하기",
+            "번호판과 차대번호 식별 상태 확인하기",
+            "등화장치와 경음기 작동 확인하기",
+            "타이어 마모와 공기압 확인하기",
+            "오일 누유와 경고등 여부 기록하기",
+            "예약 시간보다 여유 있게 검사소 도착하기",
+            "접수와 수수료 결제 진행하기",
+            "검사 결과와 재검사 필요 항목 기록하기"
+          ],
+          "bytes": 6495
+        }
+      ],
+      "snapshots": []
+    },
+    {
+      "id": "C-recurring-washer",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "시작일 2026-08-01 입력",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:50:02.426Z",
+          "status": "supported"
+        },
+        {
+          "label": "그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:02.468Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:02.668Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:03.458Z",
+          "status": "supported"
+        },
+        {
+          "label": "Flow 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:03.904Z",
+          "status": "supported"
+        },
+        {
+          "label": "내보내기 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:04.056Z",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@fba08dc4a8ac096005a2c571f64f5752"
+            },
+            "_selector": "[data-flow-slug=\"washer-tub-clean-monthly\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "반복 ICS 다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:04.085Z",
+          "status": "blocked",
+          "error": "page.waitForEvent: Timeout 12000ms exceeded while waiting for event \"download\" =========================== logs =========================== waiting for event \"download\" ============================================================"
+        },
+        {
+          "label": "이번 회차 완료",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:17.096Z",
+          "status": "supported"
+        },
+        {
+          "label": "이번 회차 다시 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:17.279Z",
+          "status": "supported"
+        },
+        {
+          "label": "reopen 후 반복 ICS 재다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:18.587Z",
+          "status": "blocked",
+          "error": "page.waitForEvent: Timeout 12000ms exceeded while waiting for event \"download\" =========================== logs =========================== waiting for event \"download\" ============================================================"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    },
+    {
+      "id": "D-personal-memo",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "여행 메모 입력 후 Flow 찾기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:50:31.825Z",
+          "status": "supported"
+        },
+        {
+          "label": "초안 이름과 기준일 설정",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:50:32.027Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에 초안 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:32.192Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:33.075Z",
+          "status": "supported"
+        },
+        {
+          "label": "개인 초안 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:33.463Z",
+          "status": "supported"
+        },
+        {
+          "label": "항목 추가",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:50:33.623Z",
+          "status": "supported"
+        },
+        {
+          "label": "추가 항목 위로 이동",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:33.674Z",
+          "status": "supported"
+        },
+        {
+          "label": "추가 항목 열고 편집",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:50:33.863Z",
+          "status": "supported"
+        },
+        {
+          "label": "추가 항목 고급 일정 편집 열기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:50:33.964Z",
+          "status": "supported"
+        },
+        {
+          "label": "날짜·시간·소요시간·반복 설정",
+          "interactionCount": 8,
+          "startedAt": "2026-07-20T00:50:34.002Z",
+          "status": "blocked",
+          "error": "locator.fill: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for locator('[data-flow-slug^=\"url-draft-\"]:visible').first().getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail').getByTestId('my-flow-detail-date-input')\u001b[22m"
+        },
+        {
+          "label": "고급 일정 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:46.270Z",
+          "status": "blocked",
+          "error": "locator.click: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for locator('[data-flow-slug^=\"url-draft-\"]:visible').first().getByTestId('my-flow-mobile-structure-inline-detail').getByTestId('my-flow-item-detail').getByTestId('my-flow-detail-save-changes')\u001b[22m"
+        },
+        {
+          "label": "전체 export 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:50:58.431Z",
+          "status": "blocked",
+          "error": "locator.getAttribute: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for locator('[data-flow-slug^=\"url-draft-\"]:visible').first().getByTestId('my-flow-export-entry')\u001b[22m"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    },
+    {
+      "id": "E-returning-multi-flow",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "서로 다른 Flow 3개 저장",
+          "interactionCount": 8,
+          "startedAt": "2026-07-20T00:51:11.697Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow 탭 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:16.322Z",
+          "status": "supported"
+        },
+        {
+          "label": "이사 Flow 전체 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:16.577Z",
+          "status": "supported"
+        },
+        {
+          "label": "한 항목 완료",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:16.859Z",
+          "status": "supported"
+        },
+        {
+          "label": "완료 탭 이동",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:16.887Z",
+          "status": "supported"
+        },
+        {
+          "label": "완료 취소",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:17.044Z",
+          "status": "blocked",
+          "error": "locator.uncheck: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-completed-view').getByTestId('my-flow-task-complete-control').first()\u001b[22m \u001b[2m - locator resolved to <input checked type=\"checkbox\" aria-label=\"이사 방식 정하기 완료 취소\" data-testid=\"my-flow-task-complete-control\" class=\"h-4 w-4 rounded border-slate-300 accent-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200\"/>\u001b[22m \u001b[2m - attempting click action\u001b[22m \u001b[2m - waiting for element to be visible, enabled and stable\u001b[22m \u001b[2m - element is visible, enabled and stable\u001b[22m \u001b[2m - scrolling into view if needed\u001b[22m \u001b[2m - done scrolling\u001b[22m \u001b[2m - performing click action\u001b[22m \u001b[2m - click action done\u001b[22m \u001b[2m - waiting for scheduled navigations to finish\u001b[22m \u001b[2m - navigations have finished\u001b[22m"
+        },
+        {
+          "label": "여러 할 일 조정 모드 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:30.887Z",
+          "status": "supported"
+        },
+        {
+          "label": "선택 항목 export로 이동",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:31.179Z",
+          "status": "supported"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    },
+    {
+      "id": "F-public-first-visit",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "설명 없이 그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:33.329Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:33.536Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:34.400Z",
+          "status": "supported"
+        },
+        {
+          "label": "저장본 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:34.871Z",
+          "status": "supported"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    },
+    {
+      "id": "A-moving",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "이사일 2026-08-20 입력",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:37.580Z",
+          "status": "supported"
+        },
+        {
+          "label": "그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:37.853Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:38.103Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow 탭 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:39.000Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:39.426Z",
+          "status": "supported"
+        },
+        {
+          "label": "이사일 바꾸기 열기",
+          "interactionCount": 0,
+          "status": "missing",
+          "error": "legacy moving-d30-basic 저장본에서 직접 기준일 변경入口를 찾지 못함"
+        },
+        {
+          "label": "첫 항목 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:40.110Z",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@83c3852283b24d84be1638677f835b76"
+            },
+            "_selector": "[data-flow-slug=\"moving-d30-basic\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-workspace-detail-pane\"s] >> internal:testid=[data-testid=\"my-flow-item-detail\"s]"
+          }
+        },
+        {
+          "label": "할 일 조정 열기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:51:40.168Z",
+          "status": "supported"
+        },
+        {
+          "label": "첫 항목 날짜 2026-07-30 고정",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:51:40.306Z",
+          "status": "supported"
+        },
+        {
+          "label": "첫 항목 완료",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:40.743Z",
+          "status": "supported"
+        },
+        {
+          "label": "완료 탭에서 다시 열기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:51:41.208Z",
+          "status": "blocked",
+          "error": "locator.uncheck: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-completed-view').getByTestId('my-flow-task-complete-control').first()\u001b[22m \u001b[2m - locator resolved to <input checked type=\"checkbox\" aria-label=\"이사 방식 정하기 완료 취소\" data-testid=\"my-flow-task-complete-control\" class=\"h-4 w-4 rounded border-slate-300 accent-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200\"/>\u001b[22m \u001b[2m - attempting click action\u001b[22m \u001b[2m - waiting for element to be visible, enabled and stable\u001b[22m \u001b[2m - element is visible, enabled and stable\u001b[22m \u001b[2m - scrolling into view if needed\u001b[22m \u001b[2m - done scrolling\u001b[22m \u001b[2m - performing click action\u001b[22m \u001b[2m - click action done\u001b[22m \u001b[2m - waiting for scheduled navigations to finish\u001b[22m \u001b[2m - navigations have finished\u001b[22m"
+        },
+        {
+          "label": "내 Flow 탭으로 복귀",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:53.351Z",
+          "status": "supported"
+        },
+        {
+          "label": "내보내기 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:53.387Z",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@83c3852283b24d84be1638677f835b76"
+            },
+            "_selector": "[data-flow-slug=\"moving-d30-basic\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "Flow 전체 체크리스트 복사",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:53.682Z",
+          "status": "supported",
+          "result": "이사 준비\r\n할 일 24개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 필요 없는 물건 정리하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 이사/청소 업체 견적 받고 예약하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 우편물/카드/은행 주소 변경하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 정기 배달 서비스 중지 요청하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 대형폐기물 배출 신고와 수거일 확인하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 엘리베이터 또는 사다리차 사용 예약하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 인터넷/정수기 이전 설치 예약하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 도시가스 철거/설치 예약하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 자동이체 해지 또는 변경 확인하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 이사 당일 사용할 물건 따로 포장하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 관리사무소에 이사 시간과 차량 동선 공유하기\r\n  일정: 2026-08-17 종일\r\n- [ ] 이사 업체와 일정 최종 확인하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 이체 한도 증액 확인하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 귀중품과 중요 서류 별도 보관하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 냉장고 음식과 쓰레기 최종 정리하기\r\n  일정: 2026-08-19 종일\r\n- [ ] 전기/가스/수도/관리비 정산하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 이삿짐 분실/파손 확인하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 계량기와 집 상태 사진 남기기\r\n  일정: 2026-08-20 종일\r\n- [ ] 열쇠, 출입카드, 주차등록 인수인계하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 전입신고와 확정일자 확인하기\r\n  일정: 2026-08-20 종일\r\n- [ ] 정부24 전입신고 처리 결과 확인하기\r\n  일정: 2026-08-21 종일\r\n- [ ] 임대차 계약 확정일자 부여 여부 확인하기\r\n  일정: 2026-08-21 종일\r\n\r\nFlow 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\r\n"
+        },
+        {
+          "label": "직접 선택 범위 전환",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:53.861Z",
+          "status": "supported"
+        },
+        {
+          "label": "선택 체크리스트 복사",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:54.248Z",
+          "status": "supported",
+          "result": "이사 준비\r\n할 일 2개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n\r\nFlow 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\r\n"
+        },
+        {
+          "label": "선택 범위 ICS 다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:54.426Z",
+          "status": "supported",
+          "result": {
+            "file": "downloads/a-moving-wide-selected.ics",
+            "suggestedFilename": "이사-준비-selected-calendar.ics",
+            "eventCount": 2,
+            "dateStarts": [
+              "20260730",
+              "20260721"
+            ],
+            "rrules": [],
+            "exdates": [],
+            "summaries": [
+              "이사 방식 정하기",
+              "이사할 집 하자 점검하기"
+            ],
+            "bytes": 1469
+          }
+        }
+      ],
+      "errors": [],
+      "downloads": [
+        {
+          "kind": "clipboard-checklist-whole",
+          "lineCount": 51,
+          "preview": "이사 준비\r\n할 일 24개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 필요 없는 물건 정리하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 이사/청소 업체 견적 받고 예약하기\r\n  일정: 2026-07-21 종일\r\n- [ ] 우편물/카드/은행 주소 변경하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 정기 배달 서비스 중지 요청하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 대형폐기물 배출 신고와 수거일 확인하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 엘리베이터 또는 사다리차 사용 예약하기\r\n  일정: 2026-08-10 종일\r\n- [ ] 인터넷/정수기 이전 설치 "
+        },
+        {
+          "kind": "clipboard-checklist-selected",
+          "lineCount": 7,
+          "preview": "이사 준비\r\n할 일 2개\r\n\r\n- [ ] 이사 방식 정하기\r\n  일정: 2026-07-30 종일\r\n- [ ] 이사할 집 하자 점검하기\r\n  일정: 2026-07-21 종일\r\n\r\nFlow 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\r\n"
+        },
+        {
+          "kind": "ics-selected",
+          "file": "downloads/a-moving-wide-selected.ics",
+          "suggestedFilename": "이사-준비-selected-calendar.ics",
+          "eventCount": 2,
+          "dateStarts": [
+            "20260730",
+            "20260721"
+          ],
+          "rrules": [],
+          "exdates": [],
+          "summaries": [
+            "이사 방식 정하기",
+            "이사할 집 하자 점검하기"
+          ],
+          "bytes": 1469
+        }
+      ],
+      "snapshots": []
+    },
+    {
+      "id": "B-undated-vehicle",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "날짜 없이 그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:56.669Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:56.956Z",
+          "status": "supported"
+        },
+        {
+          "label": "저장된 전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:57.888Z",
+          "status": "supported"
+        },
+        {
+          "label": "Flow 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:58.330Z",
+          "status": "supported"
+        },
+        {
+          "label": "지금 탭 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:58.538Z",
+          "status": "supported"
+        },
+        {
+          "label": "Calendar로 이동",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:51:59.031Z",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 정하기 tray 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:00.570Z",
+          "status": "blocked",
+          "error": "locator.click: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-calendar-unscheduled-tray').getByTestId('my-flow-calendar-unscheduled-toggle')\u001b[22m"
+        },
+        {
+          "label": "첫 항목을 2026-07-25에 배치",
+          "interactionCount": 3,
+          "startedAt": "2026-07-20T00:52:24.770Z",
+          "status": "blocked",
+          "error": "locator.check: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-calendar-unscheduled-tray').getByTestId('my-flow-calendar-unscheduled-item').first().locator('input[type=\"checkbox\"]')\u001b[22m"
+        },
+        {
+          "label": "날짜 배치 후 전체 ICS 다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:38.111Z",
+          "status": "supported",
+          "result": {
+            "file": "downloads/b-undated-vehicle-wide-scheduled.ics",
+            "suggestedFilename": "자동차검사-준비-all-calendar.ics",
+            "eventCount": 10,
+            "dateStarts": [
+              "20260706",
+              "20260706",
+              "20260710",
+              "20260717",
+              "20260717",
+              "20260717",
+              "20260717",
+              "20260720",
+              "20260720",
+              "20260720"
+            ],
+            "rrules": [],
+            "exdates": [],
+            "summaries": [
+              "자동차검사 기간과 예약 가능일 확인하기",
+              "차량번호와 예약 정보 확인하기",
+              "가까운 검사소와 수수료 확인하기",
+              "번호판과 차대번호 식별 상태 확인하기",
+              "등화장치와 경음기 작동 확인하기",
+              "타이어 마모와 공기압 확인하기",
+              "오일 누유와 경고등 여부 기록하기",
+              "예약 시간보다 여유 있게 검사소 도착하기",
+              "접수와 수수료 결제 진행하기",
+              "검사 결과와 재검사 필요 항목 기록하기"
+            ],
+            "bytes": 6495
+          }
+        },
+        {
+          "label": "배치한 항목 조정 열기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:52:38.246Z",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 제거",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:52:38.324Z",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 제거 후 체크리스트 복사",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:38.558Z",
+          "status": "supported",
+          "result": "자동차검사 준비\r\n할 일 10개\r\n\r\n- [ ] 자동차검사 기간과 예약 가능일 확인하기\r\n  일정: 2026-07-06 종일\r\n- [ ] 차량번호와 예약 정보 확인하기\r\n  일정: 2026-07-06 종일\r\n- [ ] 가까운 검사소와 수수료 확인하기\r\n  일정: 2026-07-10 종일\r\n- [ ] 번호판과 차대번호 식별 상태 확인하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 등화장치와 경음기 작동 확인하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 타이어 마모와 공기압 확인하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 오일 누유와 경고등 여부 기록하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 예약 시간보다 여유 있게 검사소 도착하기\r\n  일정: 2026-07-20 종일\r\n- [ ] 접수와 수수료 결제 진행하기\r\n  일정: 2026-07-20 종일\r\n- [ ] 검사 결과와 재검사 필요 항목 기록하기\r\n  일정: 2026-07-20 종일\r\n\r\nFlow 원문: TS한국교통안전공단 정기검사 대상·기준·유효기간 안내 https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200\r\n"
+        },
+        {
+          "label": "날짜 제거 후 ICS 다운로드 시도",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:38.739Z",
+          "status": "supported",
+          "result": {
+            "file": "downloads/b-undated-vehicle-wide-undated.ics",
+            "suggestedFilename": "자동차검사-준비-all-calendar.ics",
+            "eventCount": 10,
+            "dateStarts": [
+              "20260706",
+              "20260706",
+              "20260710",
+              "20260717",
+              "20260717",
+              "20260717",
+              "20260717",
+              "20260720",
+              "20260720",
+              "20260720"
+            ],
+            "rrules": [],
+            "exdates": [],
+            "summaries": [
+              "자동차검사 기간과 예약 가능일 확인하기",
+              "차량번호와 예약 정보 확인하기",
+              "가까운 검사소와 수수료 확인하기",
+              "번호판과 차대번호 식별 상태 확인하기",
+              "등화장치와 경음기 작동 확인하기",
+              "타이어 마모와 공기압 확인하기",
+              "오일 누유와 경고등 여부 기록하기",
+              "예약 시간보다 여유 있게 검사소 도착하기",
+              "접수와 수수료 결제 진행하기",
+              "검사 결과와 재검사 필요 항목 기록하기"
+            ],
+            "bytes": 6495
+          }
+        }
+      ],
+      "errors": [],
+      "downloads": [
+        {
+          "kind": "ics-before-date-removal",
+          "file": "downloads/b-undated-vehicle-wide-scheduled.ics",
+          "suggestedFilename": "자동차검사-준비-all-calendar.ics",
+          "eventCount": 10,
+          "dateStarts": [
+            "20260706",
+            "20260706",
+            "20260710",
+            "20260717",
+            "20260717",
+            "20260717",
+            "20260717",
+            "20260720",
+            "20260720",
+            "20260720"
+          ],
+          "rrules": [],
+          "exdates": [],
+          "summaries": [
+            "자동차검사 기간과 예약 가능일 확인하기",
+            "차량번호와 예약 정보 확인하기",
+            "가까운 검사소와 수수료 확인하기",
+            "번호판과 차대번호 식별 상태 확인하기",
+            "등화장치와 경음기 작동 확인하기",
+            "타이어 마모와 공기압 확인하기",
+            "오일 누유와 경고등 여부 기록하기",
+            "예약 시간보다 여유 있게 검사소 도착하기",
+            "접수와 수수료 결제 진행하기",
+            "검사 결과와 재검사 필요 항목 기록하기"
+          ],
+          "bytes": 6495
+        },
+        {
+          "kind": "checklist-after-date-removal",
+          "lineCount": 23,
+          "preview": "자동차검사 준비\r\n할 일 10개\r\n\r\n- [ ] 자동차검사 기간과 예약 가능일 확인하기\r\n  일정: 2026-07-06 종일\r\n- [ ] 차량번호와 예약 정보 확인하기\r\n  일정: 2026-07-06 종일\r\n- [ ] 가까운 검사소와 수수료 확인하기\r\n  일정: 2026-07-10 종일\r\n- [ ] 번호판과 차대번호 식별 상태 확인하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 등화장치와 경음기 작동 확인하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 타이어 마모와 공기압 확인하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 오일 누유와 경고등 여부 기록하기\r\n  일정: 2026-07-17 종일\r\n- [ ] 예약 시간보다 여유 있게 검사소 도착하기\r\n  일정: 2026-07-20 종일\r\n"
+        },
+        {
+          "kind": "ics-after-date-removal",
+          "file": "downloads/b-undated-vehicle-wide-undated.ics",
+          "suggestedFilename": "자동차검사-준비-all-calendar.ics",
+          "eventCount": 10,
+          "dateStarts": [
+            "20260706",
+            "20260706",
+            "20260710",
+            "20260717",
+            "20260717",
+            "20260717",
+            "20260717",
+            "20260720",
+            "20260720",
+            "20260720"
+          ],
+          "rrules": [],
+          "exdates": [],
+          "summaries": [
+            "자동차검사 기간과 예약 가능일 확인하기",
+            "차량번호와 예약 정보 확인하기",
+            "가까운 검사소와 수수료 확인하기",
+            "번호판과 차대번호 식별 상태 확인하기",
+            "등화장치와 경음기 작동 확인하기",
+            "타이어 마모와 공기압 확인하기",
+            "오일 누유와 경고등 여부 기록하기",
+            "예약 시간보다 여유 있게 검사소 도착하기",
+            "접수와 수수료 결제 진행하기",
+            "검사 결과와 재검사 필요 항목 기록하기"
+          ],
+          "bytes": 6495
+        }
+      ],
+      "snapshots": []
+    },
+    {
+      "id": "C-recurring-washer",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "시작일 2026-08-01 입력",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:52:41.908Z",
+          "status": "supported"
+        },
+        {
+          "label": "그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:41.957Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:42.189Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:42.997Z",
+          "status": "supported"
+        },
+        {
+          "label": "Flow 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:43.443Z",
+          "status": "supported"
+        },
+        {
+          "label": "내보내기 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:43.639Z",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@2edf02aaac6c865af0d2f88bc75361b1"
+            },
+            "_selector": "[data-flow-slug=\"washer-tub-clean-monthly\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "반복 ICS 다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:43.660Z",
+          "status": "blocked",
+          "error": "page.waitForEvent: Timeout 12000ms exceeded while waiting for event \"download\" =========================== logs =========================== waiting for event \"download\" ============================================================"
+        },
+        {
+          "label": "이번 회차 완료",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:56.665Z",
+          "status": "supported"
+        },
+        {
+          "label": "이번 회차 다시 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:56.901Z",
+          "status": "supported"
+        },
+        {
+          "label": "reopen 후 반복 ICS 재다운로드",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:52:58.224Z",
+          "status": "blocked",
+          "error": "page.waitForEvent: Timeout 12000ms exceeded while waiting for event \"download\" =========================== logs =========================== waiting for event \"download\" ============================================================"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    },
+    {
+      "id": "D-personal-memo",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "여행 메모 입력 후 Flow 찾기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:53:12.007Z",
+          "status": "supported"
+        },
+        {
+          "label": "초안 이름과 기준일 설정",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:53:12.269Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에 초안 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:53:12.503Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:53:13.467Z",
+          "status": "supported"
+        },
+        {
+          "label": "개인 초안 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:53:13.874Z",
+          "status": "supported"
+        },
+        {
+          "label": "항목 추가",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:53:14.100Z",
+          "status": "supported"
+        },
+        {
+          "label": "추가 항목 열고 편집",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:53:26.349Z",
+          "status": "blocked",
+          "error": "locator.click: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for locator('[data-flow-slug^=\"url-draft-\"]:visible').first().getByTestId('personal-draft-effective-item').filter({ hasText: '여권 유효기간 확인' }).getByTestId('my-flow-mobile-structure-step-row')\u001b[22m"
+        },
+        {
+          "label": "추가 항목 고급 일정 편집 열기",
+          "interactionCount": 2,
+          "startedAt": "2026-07-20T00:53:38.353Z",
+          "status": "blocked",
+          "error": "locator.click: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for locator('[data-flow-slug^=\"url-draft-\"]:visible').first().getByTestId('personal-draft-effective-item').filter({ hasText: '여권 유효기간 확인' }).getByTestId('my-flow-mobile-structure-step-row')\u001b[22m"
+        },
+        {
+          "label": "날짜·시간·소요시간·반복 설정",
+          "interactionCount": 8,
+          "startedAt": "2026-07-20T00:53:50.369Z",
+          "status": "blocked",
+          "error": "locator.fill: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-item-detail').filter({ visible: true }).first().getByTestId('my-flow-detail-date-input')\u001b[22m"
+        },
+        {
+          "label": "고급 일정 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:02.615Z",
+          "status": "blocked",
+          "error": "locator.click: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-item-detail').filter({ visible: true }).first().getByTestId('my-flow-detail-save-changes')\u001b[22m"
+        },
+        {
+          "label": "전체 export 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:14.799Z",
+          "status": "blocked",
+          "error": "locator.getAttribute: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for locator('[data-flow-slug^=\"url-draft-\"]:visible').first().getByTestId('my-flow-export-entry')\u001b[22m"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    },
+    {
+      "id": "E-returning-multi-flow",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "서로 다른 Flow 3개 저장",
+          "interactionCount": 8,
+          "startedAt": "2026-07-20T00:54:28.610Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow 탭 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:32.941Z",
+          "status": "supported"
+        },
+        {
+          "label": "이사 Flow 전체 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:33.210Z",
+          "status": "supported"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    },
+    {
+      "id": "F-public-first-visit",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "설명 없이 그대로 저장",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:38.032Z",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:38.358Z",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:39.273Z",
+          "status": "supported"
+        },
+        {
+          "label": "저장본 펼치기",
+          "interactionCount": 1,
+          "startedAt": "2026-07-20T00:54:39.717Z",
+          "status": "supported"
+        }
+      ],
+      "errors": [],
+      "downloads": [],
+      "snapshots": []
+    }
+  ],
+  "targeted": [
+    {
+      "id": "explicit-undated",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "다른 방법 펼치기",
+          "status": "supported"
+        },
+        {
+          "label": "아직 날짜가 안 정해졌어요 선택",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 없이 저장",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 없는 전체 export 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@f7bfb6e75fd29a826d292535984b4f7b"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"vehicle-inspection-prep\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"vehicle-inspection-prep\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "체크리스트 복사",
+          "status": "supported",
+          "result": "자동차검사 준비\r\n할 일 10개\r\n\r\n- [ ] 자동차검사 기간과 예약 가능일 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 차량번호와 예약 정보 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 가까운 검사소와 수수료 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 번호판과 차대번호 식별 상태 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 등화장치와 경음기 작동 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 타이어 마모와 공기압 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 오일 누유와 경고등 여부 기록하기\r\n  일정: 날짜 없음\r\n- [ ] 예약 시간보다 여유 있게 검사소 도착하기\r\n  일정: 날짜 없음\r\n- [ ] 접수와 수수료 결제 진행하기\r\n  일정: 날짜 없음\r\n- [ ] 검사 결과와 재검사 필요 항목 기록하기\r\n  일정: 날짜 없음\r\n\r\nFlow 원문: TS한국교통안전공단 정기검사 대상·기준·유효기간 안내 https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200\r\n"
+        },
+        {
+          "label": "날짜 정하기 열기",
+          "status": "supported"
+        },
+        {
+          "label": "첫 항목 7월 25일 배치",
+          "status": "supported"
+        },
+        {
+          "label": "한 항목 배치 후 ICS",
+          "status": "supported",
+          "result": {
+            "file": "downloads/target-undated-mobile-scheduled.ics",
+            "eventCount": 1,
+            "starts": [
+              "20260725"
+            ],
+            "rrules": [],
+            "summaries": [
+              "자동차검사 기간과 예약 가능일 확인하기"
+            ]
+          }
+        },
+        {
+          "label": "Calendar 항목 열기",
+          "status": "supported"
+        },
+        {
+          "label": "항목 조정 열기",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 제거",
+          "status": "supported"
+        }
+      ],
+      "results": {},
+      "downloads": [],
+      "errors": [],
+      "steps": [
+        {
+          "id": "01-other-methods",
+          "note": "기본 경로 아래 숨겨진 날짜 없음 선택",
+          "screenshot": "screenshots/target-explicit-undated-mobile-01-other-methods.png",
+          "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "02-undated-mode",
+          "note": "날짜 없음 모드가 저장 결과를 어떻게 설명하는지",
+          "screenshot": "screenshots/target-explicit-undated-mobile-02-undated-mode.png",
+          "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "03-post-save-undated",
+          "note": "10개 모두 날짜 없이 저장된 영수증",
+          "screenshot": "screenshots/target-explicit-undated-mobile-03-post-save-undated.png",
+          "url": "https://flowme2605.vercel.app/my?savedFlow=vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 10,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "04-undated-export",
+          "note": "체크리스트 10개와 ICS 0개 예측",
+          "screenshot": "screenshots/target-explicit-undated-mobile-04-undated-export.png",
+          "url": "https://flowme2605.vercel.app/my?savedFlow=vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 10,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "pressed": null
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 10개",
+              "pressed": "true"
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "pressed": "false"
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 10개",
+              "pressed": null
+            }
+          ],
+          "exportButtons": [
+            {
+              "testid": "my-flow-export-surface",
+              "name": "가져가기 무엇을 가져갈까요? × Flow 전체 · 10개 직접 선택 · 0개 Flow 전체 · 10개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 10개 시트로 복사 선택 범위 · 10개 메모로 복사 선택 범위 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-entry",
+              "name": "자동차검사 준비 가져가기",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-panel",
+              "name": "무엇을 가져갈까요? × Flow 전체 · 10개 직접 선택 · 0개 Flow 전체 · 10개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 10개 시트로 복사 선택 범위 · 10개 메모로 복사 선택 범위 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-calendar",
+              "name": "캘린더 파일 0개",
+              "count": "0",
+              "disabled": true
+            },
+            {
+              "testid": "my-flow-export-checklist",
+              "name": "체크리스트 복사 10개",
+              "count": "10",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-sheet",
+              "name": "시트로 복사 10개",
+              "count": "10",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-memo",
+              "name": "메모로 복사 10개",
+              "count": "10",
+              "disabled": false
+            }
+          ],
+          "identities": [
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-0",
+              "occurrenceId": null,
+              "text": "자동차검사 기간과 예약 가능일 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-1",
+              "occurrenceId": null,
+              "text": "차량번호와 예약 정보 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-2",
+              "occurrenceId": null,
+              "text": "가까운 검사소와 수수료 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-3",
+              "occurrenceId": null,
+              "text": "번호판과 차대번호 식별 상태 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-4",
+              "occurrenceId": null,
+              "text": "등화장치와 경음기 작동 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-5",
+              "occurrenceId": null,
+              "text": "타이어 마모와 공기압 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-6",
+              "occurrenceId": null,
+              "text": "오일 누유와 경고등 여부 기록하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-7",
+              "occurrenceId": null,
+              "text": "예약 시간보다 여유 있게 검사소 도착하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-8",
+              "occurrenceId": null,
+              "text": "접수와 수수료 결제 진행하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-9",
+              "occurrenceId": null,
+              "text": "검사 결과와 재검사 필요 항목 기록하기 열기 메모"
+            }
+          ]
+        },
+        {
+          "id": "05-calendar-tray-collapsed",
+          "note": "날짜 없음 tray 기본 접힘과 수량",
+          "screenshot": "screenshots/target-explicit-undated-mobile-05-calendar-tray-collapsed.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "06-calendar-tray-open",
+          "note": "10개 날짜 없는 항목의 batch scheduling 표면",
+          "screenshot": "screenshots/target-explicit-undated-mobile-06-calendar-tray-open.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 10,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "07-scheduled-one",
+          "note": "날짜 배치 후 항목 identity 유지: 자동차검사 기간과 예약 가능일 확인하기",
+          "screenshot": "screenshots/target-explicit-undated-mobile-07-scheduled-one.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 1,
+          "mobileSteps": 0,
+          "unscheduledItems": 9,
+          "calendarEvents": 1,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-0",
+              "occurrenceId": null,
+              "text": "자동차검사 기간과 예약 가능일 확인하기 열기 메모"
+            }
+          ]
+        },
+        {
+          "id": "08-date-removed",
+          "note": "날짜 제거 후 같은 항목이 tray로 복귀",
+          "screenshot": "screenshots/target-explicit-undated-mobile-08-date-removed.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 10,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        }
+      ]
+    },
+    {
+      "id": "routine-export",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "public 형식 보기",
+          "status": "supported"
+        },
+        {
+          "label": "public 반복 ICS 다운로드",
+          "status": "supported",
+          "result": {
+            "file": "downloads/target-routine-mobile-public.ics",
+            "eventCount": 1,
+            "starts": [
+              "20260801"
+            ],
+            "rrules": [
+              "FREQ=MONTHLY;BYMONTHDAY=1"
+            ],
+            "summaries": [
+              "세탁기 통세척 월간 관리 Flow"
+            ]
+          }
+        },
+        {
+          "label": "반복 Flow 저장",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "status": "supported"
+        },
+        {
+          "label": "My Flow export 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@78a6d92a2407498a79d39eb66aae9b2d"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"washer-tub-clean-monthly\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"washer-tub-clean-monthly\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        }
+      ],
+      "results": {},
+      "downloads": [],
+      "errors": [],
+      "steps": [
+        {
+          "id": "01-public-export",
+          "note": "public 반복 Flow의 export 가능 범위",
+          "screenshot": "screenshots/target-routine-export-mobile-01-public-export.png",
+          "url": "https://flowme2605.vercel.app/f/washer-tub-clean-monthly",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "02-my-flow-export",
+          "note": "series 정의 3개와 My Flow Calendar export 수",
+          "screenshot": "screenshots/target-routine-export-mobile-02-my-flow-export.png",
+          "url": "https://flowme2605.vercel.app/my?savedFlow=washer-tub-clean-monthly",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 3,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "pressed": null
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "pressed": "true"
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "pressed": "false"
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "pressed": null
+            }
+          ],
+          "exportButtons": [
+            {
+              "testid": "my-flow-export-surface",
+              "name": "가져가기 무엇을 가져갈까요? × Flow 전체 · 3개 직접 선택 · 0개 Flow 전체 · 3개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 3개 시트로 복사 선택 범위 · 3개 메모로 복사 선택 범위 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-entry",
+              "name": "세탁기 통세척 월간 관리 가져가기",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-panel",
+              "name": "무엇을 가져갈까요? × Flow 전체 · 3개 직접 선택 · 0개 Flow 전체 · 3개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 3개 시트로 복사 선택 범위 · 3개 메모로 복사 선택 범위 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-calendar",
+              "name": "캘린더 파일 0개",
+              "count": "0",
+              "disabled": true
+            },
+            {
+              "testid": "my-flow-export-checklist",
+              "name": "체크리스트 복사 3개",
+              "count": "3",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-sheet",
+              "name": "시트로 복사 3개",
+              "count": "3",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-memo",
+              "name": "메모로 복사 3개",
+              "count": "3",
+              "disabled": false
+            }
+          ],
+          "identities": [
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-0",
+              "occurrenceId": null,
+              "text": "통세척 코스 돌리고 문 열어 건조하기 열기 메모 반복 항목 0/3"
+            },
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-1",
+              "occurrenceId": null,
+              "text": "고무패킹 물기와 먼지 닦기 열기 메모 반복 항목 0/3"
+            },
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-2",
+              "occurrenceId": null,
+              "text": "세제통과 배수필터 확인하기 열기 메모 반복 항목 0/3"
+            }
+          ]
+        },
+        {
+          "id": "03-calendar-series-occurrence",
+          "note": "동일 루틴의 occurrence와 날짜 없는 series 정의 동시 노출",
+          "screenshot": "screenshots/target-routine-export-mobile-03-calendar-series-occurrence.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 1,
+          "mobileSteps": 0,
+          "unscheduledItems": 3,
+          "calendarEvents": 1,
+          "occurrenceRows": [
+            {
+              "occurrenceId": "saved-routine:washer-tub-clean-monthly:flow-washer-tub-clean-monthly-item-0:revision:1:2026-08-01:occurrence:2026-08-01Tall-day",
+              "state": "pending",
+              "text": "통세척 코스 돌리고 문 열어 건조하기 열기 이번 회차 대기 메모"
+            }
+          ],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-0",
+              "occurrenceId": "saved-routine:washer-tub-clean-monthly:flow-washer-tub-clean-monthly-item-0:revision:1:2026-08-01:occurrence:2026-08-01Tall-day",
+              "text": "통세척 코스 돌리고 문 열어 건조하기 열기 이번 회차 대기 메모"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "explicit-undated",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "다른 방법 펼치기",
+          "status": "supported"
+        },
+        {
+          "label": "아직 날짜가 안 정해졌어요 선택",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 없이 저장",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "status": "supported"
+        },
+        {
+          "label": "전체 Flow 열기",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 없는 전체 export 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@01f8eb30b8972938191062bc81f8b5cc"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"vehicle-inspection-prep\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"vehicle-inspection-prep\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "체크리스트 복사",
+          "status": "supported",
+          "result": "자동차검사 준비\r\n할 일 10개\r\n\r\n- [ ] 자동차검사 기간과 예약 가능일 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 차량번호와 예약 정보 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 가까운 검사소와 수수료 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 번호판과 차대번호 식별 상태 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 등화장치와 경음기 작동 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 타이어 마모와 공기압 확인하기\r\n  일정: 날짜 없음\r\n- [ ] 오일 누유와 경고등 여부 기록하기\r\n  일정: 날짜 없음\r\n- [ ] 예약 시간보다 여유 있게 검사소 도착하기\r\n  일정: 날짜 없음\r\n- [ ] 접수와 수수료 결제 진행하기\r\n  일정: 날짜 없음\r\n- [ ] 검사 결과와 재검사 필요 항목 기록하기\r\n  일정: 날짜 없음\r\n\r\nFlow 원문: TS한국교통안전공단 정기검사 대상·기준·유효기간 안내 https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200\r\n"
+        },
+        {
+          "label": "날짜 정하기 열기",
+          "status": "blocked",
+          "error": "locator.click: Timeout 12000ms exceeded. Call log: \u001b[2m - waiting for getByTestId('my-flow-calendar-unscheduled-tray').getByTestId('my-flow-calendar-unscheduled-toggle')\u001b[22m"
+        },
+        {
+          "label": "첫 항목 7월 25일 배치",
+          "status": "supported"
+        },
+        {
+          "label": "한 항목 배치 후 ICS",
+          "status": "supported",
+          "result": {
+            "file": "downloads/target-undated-wide-scheduled.ics",
+            "eventCount": 1,
+            "starts": [
+              "20260725"
+            ],
+            "rrules": [],
+            "summaries": [
+              "자동차검사 기간과 예약 가능일 확인하기"
+            ]
+          }
+        },
+        {
+          "label": "Calendar 항목 열기",
+          "status": "supported"
+        },
+        {
+          "label": "항목 조정 열기",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 제거",
+          "status": "supported"
+        }
+      ],
+      "results": {},
+      "downloads": [],
+      "errors": [],
+      "steps": [
+        {
+          "id": "01-other-methods",
+          "note": "기본 경로 아래 숨겨진 날짜 없음 선택",
+          "screenshot": "screenshots/target-explicit-undated-wide-01-other-methods.png",
+          "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "02-undated-mode",
+          "note": "날짜 없음 모드가 저장 결과를 어떻게 설명하는지",
+          "screenshot": "screenshots/target-explicit-undated-wide-02-undated-mode.png",
+          "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "03-post-save-undated",
+          "note": "10개 모두 날짜 없이 저장된 영수증",
+          "screenshot": "screenshots/target-explicit-undated-wide-03-post-save-undated.png",
+          "url": "https://flowme2605.vercel.app/my?savedFlow=vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 10,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "04-undated-export",
+          "note": "체크리스트 10개와 ICS 0개 예측",
+          "screenshot": "screenshots/target-explicit-undated-wide-04-undated-export.png",
+          "url": "https://flowme2605.vercel.app/my?savedFlow=vehicle-inspection-prep",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 10,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "pressed": null
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 10개",
+              "pressed": "true"
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "pressed": "false"
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 10개",
+              "pressed": null
+            }
+          ],
+          "exportButtons": [
+            {
+              "testid": "my-flow-export-surface",
+              "name": "가져가기 무엇을 가져갈까요? × Flow 전체 · 10개 직접 선택 · 0개 Flow 전체 · 10개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 10개 시트로 복사 선택 범위 · 10개 메모로 복사 선택 범위 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-entry",
+              "name": "자동차검사 준비 가져가기",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-panel",
+              "name": "무엇을 가져갈까요? × Flow 전체 · 10개 직접 선택 · 0개 Flow 전체 · 10개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 10개 시트로 복사 선택 범위 · 10개 메모로 복사 선택 범위 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 10개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-calendar",
+              "name": "캘린더 파일 0개",
+              "count": "0",
+              "disabled": true
+            },
+            {
+              "testid": "my-flow-export-checklist",
+              "name": "체크리스트 복사 10개",
+              "count": "10",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-sheet",
+              "name": "시트로 복사 10개",
+              "count": "10",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-memo",
+              "name": "메모로 복사 10개",
+              "count": "10",
+              "disabled": false
+            }
+          ],
+          "identities": [
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-0",
+              "occurrenceId": null,
+              "text": "자동차검사 기간과 예약 가능일 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-1",
+              "occurrenceId": null,
+              "text": "차량번호와 예약 정보 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-2",
+              "occurrenceId": null,
+              "text": "가까운 검사소와 수수료 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-3",
+              "occurrenceId": null,
+              "text": "번호판과 차대번호 식별 상태 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-4",
+              "occurrenceId": null,
+              "text": "등화장치와 경음기 작동 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-5",
+              "occurrenceId": null,
+              "text": "타이어 마모와 공기압 확인하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-6",
+              "occurrenceId": null,
+              "text": "오일 누유와 경고등 여부 기록하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-7",
+              "occurrenceId": null,
+              "text": "예약 시간보다 여유 있게 검사소 도착하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-8",
+              "occurrenceId": null,
+              "text": "접수와 수수료 결제 진행하기 열기 메모"
+            },
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-9",
+              "occurrenceId": null,
+              "text": "검사 결과와 재검사 필요 항목 기록하기 열기 메모"
+            }
+          ]
+        },
+        {
+          "id": "05-calendar-tray-collapsed",
+          "note": "날짜 없음 tray 기본 접힘과 수량",
+          "screenshot": "screenshots/target-explicit-undated-wide-05-calendar-tray-collapsed.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 10,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "06-calendar-tray-open",
+          "note": "10개 날짜 없는 항목의 batch scheduling 표면",
+          "screenshot": "screenshots/target-explicit-undated-wide-06-calendar-tray-open.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 10,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "07-scheduled-one",
+          "note": "날짜 배치 후 항목 identity 유지: 자동차검사 기간과 예약 가능일 확인하기",
+          "screenshot": "screenshots/target-explicit-undated-wide-07-scheduled-one.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 1,
+          "mobileSteps": 0,
+          "unscheduledItems": 9,
+          "calendarEvents": 1,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-vehicle-inspection-prep-item-0",
+              "occurrenceId": null,
+              "text": "자동차검사 기간과 예약 가능일 확인하기 열기 메모"
+            }
+          ]
+        },
+        {
+          "id": "08-date-removed",
+          "note": "날짜 제거 후 같은 항목이 tray로 복귀",
+          "screenshot": "screenshots/target-explicit-undated-wide-08-date-removed.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 10,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        }
+      ]
+    },
+    {
+      "id": "routine-export",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "public 형식 보기",
+          "status": "supported"
+        },
+        {
+          "label": "public 반복 ICS 다운로드",
+          "status": "supported",
+          "result": {
+            "file": "downloads/target-routine-wide-public.ics",
+            "eventCount": 1,
+            "starts": [
+              "20260801"
+            ],
+            "rrules": [
+              "FREQ=MONTHLY;BYMONTHDAY=1"
+            ],
+            "summaries": [
+              "세탁기 통세척 월간 관리 Flow"
+            ]
+          }
+        },
+        {
+          "label": "반복 Flow 저장",
+          "status": "supported"
+        },
+        {
+          "label": "내 Flow에서 보기",
+          "status": "supported"
+        },
+        {
+          "label": "My Flow export 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@074f1589a14b3d605a4bc08acd7ab455"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"washer-tub-clean-monthly\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"washer-tub-clean-monthly\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        }
+      ],
+      "results": {},
+      "downloads": [],
+      "errors": [],
+      "steps": [
+        {
+          "id": "01-public-export",
+          "note": "public 반복 Flow의 export 가능 범위",
+          "screenshot": "screenshots/target-routine-export-wide-01-public-export.png",
+          "url": "https://flowme2605.vercel.app/f/washer-tub-clean-monthly",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": []
+        },
+        {
+          "id": "02-my-flow-export",
+          "note": "series 정의 3개와 My Flow Calendar export 수",
+          "screenshot": "screenshots/target-routine-export-wide-02-my-flow-export.png",
+          "url": "https://flowme2605.vercel.app/my?savedFlow=washer-tub-clean-monthly",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 3,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "pressed": null
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "pressed": "true"
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "pressed": "false"
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "pressed": null
+            }
+          ],
+          "exportButtons": [
+            {
+              "testid": "my-flow-export-surface",
+              "name": "가져가기 무엇을 가져갈까요? × Flow 전체 · 3개 직접 선택 · 0개 Flow 전체 · 3개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 3개 시트로 복사 선택 범위 · 3개 메모로 복사 선택 범위 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-entry",
+              "name": "세탁기 통세척 월간 관리 가져가기",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-panel",
+              "name": "무엇을 가져갈까요? × Flow 전체 · 3개 직접 선택 · 0개 Flow 전체 · 3개 캘린더 0개 형식 캘린더 파일 날짜 있는 항목 · 0개 체크리스트 복사 선택 범위 · 3개 시트로 복사 선택 범위 · 3개 메모로 복사 선택 범위 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-calendar",
+              "name": "캘린더 파일 0개",
+              "count": "0",
+              "disabled": true
+            },
+            {
+              "testid": "my-flow-export-checklist",
+              "name": "체크리스트 복사 3개",
+              "count": "3",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-sheet",
+              "name": "시트로 복사 3개",
+              "count": "3",
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-memo",
+              "name": "메모로 복사 3개",
+              "count": "3",
+              "disabled": false
+            }
+          ],
+          "identities": [
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-0",
+              "occurrenceId": null,
+              "text": "통세척 코스 돌리고 문 열어 건조하기 열기 메모 반복 항목 0/3"
+            },
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-1",
+              "occurrenceId": null,
+              "text": "고무패킹 물기와 먼지 닦기 열기 메모 반복 항목 0/3"
+            },
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-2",
+              "occurrenceId": null,
+              "text": "세제통과 배수필터 확인하기 열기 메모 반복 항목 0/3"
+            }
+          ]
+        },
+        {
+          "id": "03-calendar-series-occurrence",
+          "note": "동일 루틴의 occurrence와 날짜 없는 series 정의 동시 노출",
+          "screenshot": "screenshots/target-routine-export-wide-03-calendar-series-occurrence.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 1,
+          "mobileSteps": 0,
+          "unscheduledItems": 3,
+          "calendarEvents": 1,
+          "occurrenceRows": [
+            {
+              "occurrenceId": "saved-routine:washer-tub-clean-monthly:flow-washer-tub-clean-monthly-item-0:revision:1:2026-08-01:occurrence:2026-08-01Tall-day",
+              "state": "pending",
+              "text": "통세척 코스 돌리고 문 열어 건조하기 열기 이번 회차 대기 메모"
+            }
+          ],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-washer-tub-clean-monthly-item-0",
+              "occurrenceId": "saved-routine:washer-tub-clean-monthly:flow-washer-tub-clean-monthly-item-0:revision:1:2026-08-01:occurrence:2026-08-01Tall-day",
+              "text": "통세척 코스 돌리고 문 열어 건조하기 열기 이번 회차 대기 메모"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personal-advanced",
+      "viewportName": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "actions": [
+        {
+          "label": "할 일 추가",
+          "status": "supported"
+        },
+        {
+          "label": "추가 항목 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@c7756db1501bbb021e29299b5960cb0c"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"url-draft-\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"url-draft-\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-mobile-structure-inline-detail\"s] >> internal:testid=[data-testid=\"my-flow-item-detail\"s]"
+          }
+        },
+        {
+          "label": "기본 조정 열기",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 지정",
+          "status": "supported"
+        },
+        {
+          "label": "고급 일정 열기",
+          "status": "supported"
+        },
+        {
+          "label": "시간·소요시간·반복 입력 후 저장",
+          "status": "supported"
+        },
+        {
+          "label": "개인 초안 export 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@c7756db1501bbb021e29299b5960cb0c"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"url-draft-\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"url-draft-\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "checklist 복사",
+          "status": "supported",
+          "result": "8월 제주 여행 준비\r\n할 일 3개\r\n\r\n- [ ] 8월 제주 여행 준비하기\r\n  일정: 날짜 없음\r\n- [ ] 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기\r\n  일정: 날짜 없음\r\n- [ ] 여권 유효기간 확인\r\n  일정: 2026-08-10 · 09:30 · 예상 45분\r\n\r\nFlow 원문: 내 메모\r\n"
+        },
+        {
+          "label": "sheet 복사",
+          "status": "supported",
+          "result": "순서\t상태\t할 일\t날짜\t시간\t예상 시간\t메모\t원문\r\n1\t미완료\t8월 제주 여행 준비하기\t날짜 없음\t\t\t\t내 메모\r\n2\t미완료\t항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기\t날짜 없음\t\t\t\t내 메모\r\n3\t미완료\t여권 유효기간 확인\t2026-08-10\t09:30\t45분\t\t원문 없음\r\n"
+        },
+        {
+          "label": "memo 복사",
+          "status": "supported",
+          "result": "8월 제주 여행 준비\r\n\r\n할 일 3개\r\n\r\n1. 8월 제주 여행 준비하기\r\n   상태: 미완료\r\n   일정: 날짜 없음\r\n\r\n2. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기\r\n   상태: 미완료\r\n   일정: 날짜 없음\r\n\r\n3. 여권 유효기간 확인\r\n   상태: 미완료\r\n   일정: 2026-08-10 · 09:30 · 예상 45분\r\n\r\nFlow 원문: 내 메모\r\n"
+        },
+        {
+          "label": "개인 반복 항목 ICS",
+          "status": "supported",
+          "result": {
+            "file": "downloads/target-personal-mobile.ics",
+            "eventCount": 1,
+            "starts": [
+              "20260810T093000"
+            ],
+            "rrules": [
+              "FREQ=DAILY;COUNT=3"
+            ],
+            "summaries": [
+              "여권 유효기간 확인"
+            ]
+          }
+        }
+      ],
+      "results": {},
+      "downloads": [],
+      "errors": [],
+      "steps": [
+        {
+          "id": "01-basic-editor",
+          "note": "기본 편집에서 제목·날짜·메모만 보이는지",
+          "screenshot": "screenshots/target-personal-advanced-mobile-01-basic-editor.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 3,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "단계 1 8월 제주 여행 준비하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "단계 2 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "단계 3 여권 유효기간 확인 내가 추가한 할 일 열림 메모 ↑ ↓ 할 일 수정 취소 날짜 날짜 없음 날짜 지정 내 메모 변경 저장"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "02-advanced-editor",
+          "note": "시간·장소·반복을 펼친 뒤 필드 수와 저장 버튼 위치",
+          "screenshot": "screenshots/target-personal-advanced-mobile-02-advanced-editor.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 3,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "단계 1 8월 제주 여행 준비하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "단계 2 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "단계 3 여권 유효기간 확인 내가 추가한 할 일 열림 메모 ↑ ↓ 할 일 수정 취소 날짜 날짜 없음 날짜 지정 날짜 선택 날짜 지우기 세부 일정· 시간 · 반복 ⌃ 시간 종일 시간 지정 반복 없음 매일 매주 매월 내 메모 변경 저장"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "03-saved-item",
+          "note": "고급 일정 저장 뒤 series 표시",
+          "screenshot": "screenshots/target-personal-advanced-mobile-03-saved-item.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 3,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "단계 1 8월 제주 여행 준비하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "단계 2 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "단계 3 여권 유효기간 확인 8월 10일 · 오전 9:30 · 45분 · 내가 추가한 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "04-export",
+          "note": "개인 draft 전체 export 범위와 형식 결과",
+          "screenshot": "screenshots/target-personal-advanced-mobile-04-export.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 0,
+          "mobileSteps": 3,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "pressed": null
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "pressed": "true"
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "pressed": "false"
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "pressed": null
+            }
+          ],
+          "exportButtons": [
+            {
+              "testid": "my-flow-export-panel",
+              "name": "무엇을 가져갈까요? × Flow 전체 · 3개 직접 선택 · 0개 Flow 전체 · 3개 캘린더 1개 형식 캘린더 파일 날짜 있는 항목 · 1개 체크리스트 복사 선택 범위 · 3개 시트로 복사 선택 범위 · 3개 메모로 복사 선택 범위 · 3개 메모 복사됨",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-calendar",
+              "name": "캘린더 파일 1개",
+              "count": "1",
+              "disabled": false
+            }
+          ],
+          "identities": [
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "단계 1 8월 제주 여행 준비하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "단계 2 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 메모에서 나눈 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-6bb004de-34a4-4b5b-ab61-54b446a51a05-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "단계 3 여권 유효기간 확인 8월 10일 · 오전 9:30 · 45분 · 내가 추가한 할 일 열기 메모 ↑ ↓"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "05-calendar",
+          "note": "개인 반복 항목의 Calendar occurrence",
+          "screenshot": "screenshots/target-personal-advanced-mobile-05-calendar.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 1,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 3,
+          "occurrenceRows": [
+            {
+              "occurrenceId": "personal-recurrence:url-draft-1784509911080-3i7ei:personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea:revision:1:2026-08-10:occurrence:2026-08-10T09:30",
+              "state": "pending",
+              "text": "여권 유효기간 확인 열기 오전 9:30 · 45분 이번 회차 대기 메모"
+            }
+          ],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea",
+              "occurrenceId": "personal-recurrence:url-draft-1784509911080-3i7ei:personal-item-e0822d9d-dc0a-4aa2-bd0e-b14506b36fea:revision:1:2026-08-10:occurrence:2026-08-10T09:30",
+              "text": "여권 유효기간 확인 열기 오전 9:30 · 45분 이번 회차 대기 메모"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personal-advanced",
+      "viewportName": "wide",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "actions": [
+        {
+          "label": "할 일 추가",
+          "status": "supported"
+        },
+        {
+          "label": "추가 항목 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@aa503b73d380ed429fecad3a33f99126"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"url-draft-\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"url-draft-\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-workspace-detail-pane\"s] >> internal:testid=[data-testid=\"my-flow-item-detail\"s]"
+          }
+        },
+        {
+          "label": "기본 조정 열기",
+          "status": "supported"
+        },
+        {
+          "label": "날짜 지정",
+          "status": "supported"
+        },
+        {
+          "label": "고급 일정 열기",
+          "status": "supported"
+        },
+        {
+          "label": "시간·소요시간·반복 입력 후 저장",
+          "status": "supported"
+        },
+        {
+          "label": "개인 초안 export 열기",
+          "status": "supported",
+          "result": {
+            "_apiName": "Locator",
+            "_frame": {
+              "_type": "Frame",
+              "_guid": "frame@aa503b73d380ed429fecad3a33f99126"
+            },
+            "_selector": "[data-testid=\"my-flow-overview-card\"][data-flow-slug^=\"url-draft-\"]:visible, [data-testid=\"my-flow-mobile-structure-row\"][data-flow-slug^=\"url-draft-\"]:visible >> nth=0 >> internal:testid=[data-testid=\"my-flow-export-panel\"s]"
+          }
+        },
+        {
+          "label": "checklist 복사",
+          "status": "supported",
+          "result": "8월 제주 여행 준비\r\n할 일 3개\r\n\r\n- [ ] 8월 제주 여행 준비하기\r\n  일정: 날짜 없음\r\n- [ ] 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기\r\n  일정: 날짜 없음\r\n- [ ] 여권 유효기간 확인\r\n  일정: 2026-08-10 · 09:30 · 예상 45분\r\n\r\nFlow 원문: 내 메모\r\n"
+        },
+        {
+          "label": "sheet 복사",
+          "status": "supported",
+          "result": "순서\t상태\t할 일\t날짜\t시간\t예상 시간\t메모\t원문\r\n1\t미완료\t8월 제주 여행 준비하기\t날짜 없음\t\t\t\t내 메모\r\n2\t미완료\t항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기\t날짜 없음\t\t\t\t내 메모\r\n3\t미완료\t여권 유효기간 확인\t2026-08-10\t09:30\t45분\t\t원문 없음\r\n"
+        },
+        {
+          "label": "memo 복사",
+          "status": "supported",
+          "result": "8월 제주 여행 준비\r\n\r\n할 일 3개\r\n\r\n1. 8월 제주 여행 준비하기\r\n   상태: 미완료\r\n   일정: 날짜 없음\r\n\r\n2. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기\r\n   상태: 미완료\r\n   일정: 날짜 없음\r\n\r\n3. 여권 유효기간 확인\r\n   상태: 미완료\r\n   일정: 2026-08-10 · 09:30 · 예상 45분\r\n\r\nFlow 원문: 내 메모\r\n"
+        },
+        {
+          "label": "개인 반복 항목 ICS",
+          "status": "supported",
+          "result": {
+            "file": "downloads/target-personal-wide.ics",
+            "eventCount": 1,
+            "starts": [
+              "20260810T093000"
+            ],
+            "rrules": [
+              "FREQ=DAILY;COUNT=3"
+            ],
+            "summaries": [
+              "여권 유효기간 확인"
+            ]
+          }
+        }
+      ],
+      "results": {},
+      "downloads": [],
+      "errors": [],
+      "steps": [
+        {
+          "id": "01-basic-editor",
+          "note": "기본 편집에서 제목·날짜·메모만 보이는지",
+          "screenshot": "screenshots/target-personal-advanced-wide-01-basic-editor.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 3,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 메모"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 ↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "02-advanced-editor",
+          "note": "시간·장소·반복을 펼친 뒤 필드 수와 저장 버튼 위치",
+          "screenshot": "screenshots/target-personal-advanced-wide-02-advanced-editor.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 3,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 메모"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 ↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "03-saved-item",
+          "note": "고급 일정 저장 뒤 series 표시",
+          "screenshot": "screenshots/target-personal-advanced-wide-03-saved-item.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 3,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 메모"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 8월 10일 오전 9:30 · 45분 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 ↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "04-export",
+          "note": "개인 draft 전체 export 범위와 형식 결과",
+          "screenshot": "screenshots/target-personal-advanced-wide-04-export.png",
+          "url": "https://flowme2605.vercel.app/my",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 3,
+          "mobileSteps": 0,
+          "unscheduledItems": 0,
+          "calendarEvents": 0,
+          "occurrenceRows": [],
+          "scopeButtons": [
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "pressed": null
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "pressed": "true"
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "pressed": "false"
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "pressed": null
+            }
+          ],
+          "exportButtons": [
+            {
+              "testid": "my-flow-export-panel",
+              "name": "무엇을 가져갈까요? × Flow 전체 · 3개 직접 선택 · 0개 Flow 전체 · 3개 캘린더 1개 형식 캘린더 파일 날짜 있는 항목 · 1개 체크리스트 복사 선택 범위 · 3개 시트로 복사 선택 범위 · 3개 메모로 복사 선택 범위 · 3개 메모 복사됨",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-control",
+              "name": "가져갈 범위",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-flow",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-selected",
+              "name": "직접 선택 · 0개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-scope-summary",
+              "name": "Flow 전체 · 3개",
+              "count": null,
+              "disabled": false
+            },
+            {
+              "testid": "my-flow-export-calendar",
+              "name": "캘린더 파일 1개",
+              "count": "1",
+              "disabled": false
+            }
+          ],
+          "identities": [
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 메모"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 8월 10일 오전 9:30 · 45분 메모"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-1uawf0c",
+              "occurrenceId": null,
+              "text": "8월 제주 여행 준비하기 아래로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 열기 ↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 위로 이동"
+            },
+            {
+              "itemId": "flow-4375311c-6bb6-4776-80e0-b4a4a07387ac-draft-item-memo-2sm116",
+              "occurrenceId": null,
+              "text": "항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인 정리하기 아래로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 열기 ↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "↑ ↓"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 위로 이동"
+            },
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": null,
+              "text": "여권 유효기간 확인 아래로 이동"
+            }
+          ]
+        },
+        {
+          "id": "05-calendar",
+          "note": "개인 반복 항목의 Calendar occurrence",
+          "screenshot": "screenshots/target-personal-advanced-wide-05-calendar.png",
+          "url": "https://flowme2605.vercel.app/calendar",
+          "overflowX": 0,
+          "postSaveSteps": 0,
+          "executionRows": 1,
+          "mobileSteps": 0,
+          "unscheduledItems": 2,
+          "calendarEvents": 3,
+          "occurrenceRows": [
+            {
+              "occurrenceId": "personal-recurrence:url-draft-1784509915832-6zm8w:personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306:revision:1:2026-08-10:occurrence:2026-08-10T09:30",
+              "state": "pending",
+              "text": "여권 유효기간 확인 열기 오전 9:30 · 45분 이번 회차 대기 메모"
+            }
+          ],
+          "scopeButtons": [],
+          "exportButtons": [],
+          "identities": [
+            {
+              "itemId": "personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306",
+              "occurrenceId": "personal-recurrence:url-draft-1784509915832-6zm8w:personal-item-9dfa26c0-a4e5-44ab-ab01-b5cf61b7e306:revision:1:2026-08-10:occurrence:2026-08-10T09:30",
+              "text": "여권 유효기간 확인 열기 오전 9:30 · 45분 이번 회차 대기 메모"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "flowme-p27-decision-matrix-v1",
+  "decisions": [
+    {"surface":"공통","item":"source / personal overlay / run / occurrence / export identity 분리","decision":"Keep","reason":"6개 여정에서 상태와 projection 일관성을 지탱한 P26 핵심 계약","evidenceKind":"current_source"},
+    {"surface":"저장 전","item":"전체 artifact를 최소 입력보다 먼저 또는 같은 viewport에 제시","decision":"Keep","reason":"저장 단위와 결과 수를 예측할 수 있음","evidenceKind":"current_production_interaction"},
+    {"surface":"저장 직후","item":"receipt와 전체 Flow 동시 확인","decision":"Keep","reason":"저장 성공과 effective row 수를 확인 가능","evidenceKind":"current_production_interaction"},
+    {"surface":"My Flow","item":"지금 / Flow 목록 / 완료 역할 분리","decision":"Keep","reason":"재방문 실행, inventory, history가 구분됨","evidenceKind":"current_source"},
+    {"surface":"My Flow","item":"같은 날짜의 primary continuation과 나머지 Today row를 별도 section으로 분리","decision":"Change","reason":"count는 정확하지만 두 Flow의 오늘 항목을 한 번에 훑기 어려움","evidenceKind":"current_production_interaction"},
+    {"surface":"편집","item":"quick / advanced / structure / batch 계약","decision":"Adapt","reason":"기능 경계는 맞지만 structure와 batch 조작 밀도를 더 분리해야 함","evidenceKind":"current_production_interaction"},
+    {"surface":"Calendar","item":"날짜 없는 항목을 별도 placement queue로 유지","decision":"Keep","reason":"undated를 강제 일정으로 만들지 않음","evidenceKind":"current_source"},
+    {"surface":"Calendar","item":"1024px 고정 3-pane과 220px undated rail","decision":"Change","reason":"긴 제목이 잘리고 빈 detail pane이 공간을 소비함","evidenceKind":"current_package_screenshot"},
+    {"surface":"Export","item":"scope -> count -> format -> receipt 계약","decision":"Keep","reason":"preview와 output count가 일치함","evidenceKind":"current_source"},
+    {"surface":"Export","item":"전체 목록과 format matrix를 같은 긴 panel에 재출력","decision":"Remove","reason":"37~42개 visible control과 2,000px 이상의 scroll을 유발","evidenceKind":"current_production_interaction"},
+    {"surface":"완료 후","item":"회고와 다시 쓰기","decision":"Keep","reason":"FlowMe의 실행 기록과 재사용 가치","evidenceKind":"current_production_interaction"},
+    {"surface":"완료 후","item":"회고·원문 보정·export·재사용을 모두 기본 펼침","decision":"Change","reason":"완료 직후 다음 행동이 분산됨","evidenceKind":"heuristic_simulation"},
+    {"surface":"/flows miss","item":"가짜 Flow를 만들지 않고 source 부족 이유를 표시","decision":"Keep","reason":"source fidelity와 안전 경계 유지","evidenceKind":"current_production_interaction"},
+    {"surface":"/flows miss","item":"Flow 이름과 원하는 결과를 preview 전에 필수 입력","decision":"Change","reason":"first useful preview를 지연함","evidenceKind":"current_production_interaction"},
+    {"surface":"prior artifact","item":"원문/Flow rail, 최소 입력 옆 전체 preview, compact row","decision":"Adapt","reason":"current identity와 action 계약에 맞춰 재구성할 가치가 있음","evidenceKind":"prior_design_artifact"},
+    {"surface":"prior artifact","item":"Calendar/checklist/sheet/memo 항상 동일 탭","decision":"Reject","reason":"content shape와 destination eligibility를 무시함","evidenceKind":"prior_design_artifact"},
+    {"surface":"prior artifact","item":"긴 hero·내부 검토 잠금·3열 고정 폭","decision":"Reject","reason":"runtime action보다 문서 설명이 앞서며 1024px overflow 116px가 측정됨","evidenceKind":"prior_design_artifact"},
+    {"surface":"backend","item":"계정, cloud sync, direct provider integration","decision":"Defer","reason":"P27 정보 위계 개선의 선행 조건이 아님","evidenceKind":"current_source"}
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "flowme-p29-independent-decision-matrix-v1",
+  "reviewedAt": "2026-07-22",
+  "verdict": "revise",
+  "observedUserCount": 0,
+  "decisions": [
+    {
+      "promise": "Artifact-first save-before",
+      "status": "complete_verified",
+      "decision": "keep",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    },
+    {
+      "promise": "Distinct saved receipt",
+      "status": "complete_verified",
+      "decision": "keep",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    },
+    {
+      "promise": "Routine summary before advanced inputs",
+      "status": "complete_verified",
+      "decision": "keep",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    },
+    {
+      "promise": "Action-first My Flow at 27 flows",
+      "status": "complete_verified",
+      "decision": "keep_with_accessibility_fix",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    },
+    {
+      "promise": "Calendar scope and undated placement",
+      "status": "partial",
+      "decision": "keep_and_close_demo_evidence_gap",
+      "evidenceKinds": ["current_production_interaction", "heuristic_simulation", "current_source"]
+    },
+    {
+      "promise": "Zero fixed overlap",
+      "status": "partial",
+      "decision": "revise",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    },
+    {
+      "promise": "Stable mobile focus",
+      "status": "partial",
+      "decision": "revise",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    },
+    {
+      "promise": "Source, personal, run, occurrence, and export identity separation",
+      "status": "complete_verified",
+      "decision": "keep_no_migration",
+      "evidenceKinds": ["current_production_interaction", "current_source", "current_package_screenshot"]
+    }
+  ],
+  "contractRegression": {
+    "sourceMutation": 0,
+    "schemaMigration": 0,
+    "projectionIdentityRegression": 0,
+    "exportCountMismatch": 0
+  }
+}

@@ -1,0 +1,249 @@
+FlowMe P25 production 및 P26 전체 UX/UI 프로그램 작업 요청
+
+[이번 요청]
+아래 자료를 우선순위대로 확인한 뒤, P26 전체 방향과 충돌하지 않게 다음 작업을 수행해줘.
+
+요청할 작업:
+[여기에 P26-XX 목표 또는 검토할 내용을 붙여넣기]
+
+중요:
+- 링크와 문서를 단순 요약하지 말고 현재 production, current source, 구조화 evidence를 대조한다.
+- 자동화와 heuristic simulation은 실제 사용자 검증이 아니다.
+- 앱 구현 요청이 아니라면 앱 코드를 수정하지 않는다.
+- 구현 요청이라면 P26 전체를 한 번에 처리하지 말고 지정된 P26-XX 하나만 완료한다.
+- 일부 링크가 열리지 않아도 질문을 멈추지 말고 production, GitHub main, local repo에서 접근 가능한 자료로 계속한다.
+- 확인하지 못한 자료만 evidenceKind=inaccessible로 명시한다.
+
+======================================================================
+1. 가장 먼저 확인할 현재 상태
+======================================================================
+
+Production
+https://flowme2605.vercel.app
+
+GitHub main
+https://github.com/knhbae/flowme2605
+
+현재 상태
+https://github.com/knhbae/flowme2605/blob/main/docs/STATUS.md
+
+현재 로드맵
+https://github.com/knhbae/flowme2605/blob/main/docs/ROADMAP.md
+
+제품 결정
+https://github.com/knhbae/flowme2605/blob/main/docs/DECISIONS.md
+
+판단 우선순위:
+1. current production interaction
+2. current production screenshot/evidence
+3. current source
+4. P25/P26 구조화 audit
+5. prior design artifact
+6. reference pattern
+
+======================================================================
+2. P26 독립 재검토 산출물
+======================================================================
+
+패키지 이름:
+FlowMe UX 재검토 P25 production 마감 (P26 전체 실행 백로그)
+
+Local package:
+D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program
+
+Repo-relative package:
+docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/
+
+GitHub package URL:
+https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program
+
+주의:
+- 이 P26 패키지는 현재 local uncommitted 상태일 수 있다.
+- GitHub 링크가 열리지 않으면 local/clone repo의 같은 상대 경로를 사용한다.
+- 외부 웹 기반 디자인 도구에서 사용하려면 먼저 이 패키지가 GitHub에 push됐는지 확인한다.
+
+통합 HTML 검토 보드:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\review.html
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/review.html
+
+상세 audit:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\audit.md
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/audit.md
+
+Journey scorecard:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\journey-scorecard.json
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/journey-scorecard.json
+
+Decision matrix:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\decision-matrix.json
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/decision-matrix.json
+
+P26 전체 백로그:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\p26-backlog.md
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/p26-backlog.md
+
+P26-01~P26-20 복붙용 /goal:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\p26-goal-prompts.md
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/p26-goal-prompts.md
+
+Production 구조화 evidence 요약:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\production-evidence-summary.json
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/production-evidence-summary.json
+
+HTML 렌더링 검증:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\review-render-check.json
+GitHub: https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/review-render-check.json
+
+Screenshots:
+Local: D:\flowme2605\flow-mvp\docs\content-audit\2026-07-20-flowme-p25-production-review-p26-program\screenshots
+GitHub: https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/screenshots
+
+권장 읽기 순서:
+1. review.html로 판정, findings, journey, current/proposed wireframe 확인
+2. audit.md로 route/viewport/재현/기대/실제/evidenceKind 확인
+3. journey-scorecard.json과 decision-matrix.json으로 누락 여부 확인
+4. p26-backlog.md에서 dependency와 전체 실행 순서 확인
+5. p26-goal-prompts.md에서 지정된 P26-XX 원문 사용
+6. 필요한 screenshot과 production-evidence-summary.json만 추가 확인
+
+현재 최종 판정:
+structural_correction_required
+
+핵심 선행 문제:
+- 예시 날짜가 실제 saved anchor로 저장되는 날짜 의도 오류
+- 반복 series/occurrence/Calendar/ICS 계약 불일치
+- 명확한 다중 행동 메모의 불완전한 분할
+- route별 저장 receipt와 기준일 재사용 불일치
+- 전체 Flow와 모바일 editor의 정보 구조 과밀
+
+======================================================================
+3. P25 마감 근거
+======================================================================
+
+P25 최종 패키지:
+https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-20-p25-final-closeout
+
+P25 완료 판단:
+https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-p25-final-closeout/completion-audit.md
+
+P25 route evidence:
+https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-p25-final-closeout/route-evidence.json
+
+P25 production smoke:
+https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/results.json
+
+P25 기록은 비교 근거일 뿐 현재 production의 정답으로 간주하지 않는다.
+
+======================================================================
+4. 현재 구현 source
+======================================================================
+
+핵심 UI shell:
+https://github.com/knhbae/flowme2605/blob/main/components/flow/AppClient.tsx
+
+Artifact workbench:
+https://github.com/knhbae/flowme2605/blob/main/components/flow/ArtifactWorkbench.tsx
+
+P25 whole Flow E2E:
+https://github.com/knhbae/flowme2605/blob/main/tests/e2e/p25-whole-flow-workspace.spec.ts
+
+Public save-before 관련 E2E:
+https://github.com/knhbae/flowme2605/blob/main/tests/e2e/public-share-cta-order.spec.ts
+
+Source를 볼 때 확인할 계약:
+- source content와 개인 수정본이 분리되는가
+- personal overlay가 원본 갱신으로 덮이지 않는가
+- execution run과 occurrence identity가 안정적인가
+- Today, My Flow, Calendar, export가 같은 effective item을 투영하는가
+- dated/undated와 series/occurrence eligibility가 surface마다 일치하는가
+
+======================================================================
+5. 이전 UX/디자인 비교 자료
+======================================================================
+
+P24 readiness package:
+https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-19-flowme-p24-journey-frame-readiness
+
+P24 화면 검토 보드:
+https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-19-flowme-p24-journey-frame-readiness/review.html
+
+P24 screenshots:
+https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-19-flowme-p24-journey-frame-readiness/screenshots
+
+P24 route evidence:
+https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-19-flowme-p24-journey-frame-readiness/route-evidence.json
+
+P24 journey results:
+https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-19-flowme-p24-journey-frame-readiness/journey-results.json
+
+기존 콘텐츠 편집·실행 시뮬레이션:
+https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-14-flowme-content-edit-execution-simulation-ko.html
+
+이전 Claude Design 자료:
+https://github.com/knhbae/flowme2605/blob/main/FlowMe%20UXUI%20%EC%A0%84%EC%B2%B4%20%EA%B2%80%ED%86%A0%20(8).zip
+
+이전 자료는 비교 근거다. P26 제안과 current production/source가 충돌하면 current evidence를 우선한다.
+
+======================================================================
+6. Evidence 표기
+======================================================================
+
+모든 주요 판단에 아래 evidenceKind 중 하나 이상을 붙인다.
+
+- current_production_interaction
+- current_package_screenshot
+- current_source
+- prior_design_artifact
+- reference_pattern
+- heuristic_simulation
+- inaccessible
+
+Finding에는 가능한 한 다음을 포함한다.
+
+- route
+- viewport
+- 재현 단계
+- 기대 결과
+- 실제 결과
+- 사용자 영향
+- evidenceKind
+- 제안 해결책
+- acceptance screenshot 또는 test marker
+
+======================================================================
+7. 구현 요청일 때의 실행 규칙
+======================================================================
+
+Codex/Claude Code:
+- clean origin/main worktree에서 시작
+- 지정된 P26-XX 하나만 구현
+- 사용자가 만든 다른 변경은 되돌리지 않음
+- docs:check, unit, build, targeted E2E 실행
+- 위험과 영향 범위에 따라 full E2E 실행
+- 390x844와 1024x768 screenshot 확인
+- console/page error, overflow, keyboard focus, accessible name 확인
+- 구현 결과를 실제 사용자 검증으로 표현하지 않음
+
+Claude Design:
+- production과 GitHub evidence를 먼저 읽음
+- 앱 코드 수정 없이 mobile/wide hierarchy와 interaction 대안 작성
+- current와 proposed를 나란히 비교
+- 긴 설명으로 UI 문제를 덮지 않음
+- FlowMe가 무거운 planner가 아니라 기존 memo/todo/calendar 사용자의 portable execution layer라는 기준 유지
+
+======================================================================
+8. 결과 형식
+======================================================================
+
+요청한 P26-XX 작업에 대해 다음 순서로 결과를 제공한다.
+
+1. 확인한 현재 상태와 사용한 evidence
+2. P26 전체 방향과의 일치 여부
+3. 이번 goal의 구현 또는 설계 결과
+4. source/personal overlay/run/occurrence/export 영향
+5. 390/1024 및 접근성 검증
+6. docs/unit/build/E2E 결과
+7. 남은 위험과 다음 P26 dependency
+8. commit/push/PR/merge/deploy 상태
+
+이제 [이번 요청]에 적힌 P26-XX 또는 검토 작업을 수행해줘.

@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-07-21T14:29:54.095Z",
+  "target": "file:///D:/flowme2605/flow-mvp/docs/content-audit/2026-07-21-flowme-p28-00-promise-implementation-alignment/review.html",
+  "observedUserSessions": 0,
+  "entries": [
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "title": "FlowMe P28-00 약속 대비 구현 정합성 검토",
+      "sectionCount": 9,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "horizontalOverflow": false,
+      "focusableCount": 33,
+      "unnamedFocusableCount": 0,
+      "overflowingElements": [],
+      "promiseGeometry": {
+        "main": {
+          "clientWidth": 390,
+          "scrollWidth": 390,
+          "rect": 390,
+          "overflowX": "visible",
+          "minWidth": "0px"
+        },
+        "section": {
+          "clientWidth": 366,
+          "scrollWidth": 366,
+          "rect": 366,
+          "overflowX": "visible",
+          "minWidth": "0px"
+        },
+        "wrapper": {
+          "clientWidth": 366,
+          "scrollWidth": 700,
+          "rect": 366,
+          "overflowX": "auto",
+          "minWidth": "0px"
+        }
+      },
+      "selectedCase": "이사",
+      "selectedMode": "제안",
+      "verdict": "structural_correction_required",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "interaction": {
+        "currentArtifact": "현재 production · 준비된 결과 없음",
+        "proposedArtifact": "Safety guidance · action 2 / reference 4",
+        "expanded": "true",
+        "visibleProductionEvidence": 0,
+        "visiblePriorEvidence": 4
+      }
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "title": "FlowMe P28-00 약속 대비 구현 정합성 검토",
+      "sectionCount": 9,
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "horizontalOverflow": false,
+      "focusableCount": 33,
+      "unnamedFocusableCount": 0,
+      "overflowingElements": [],
+      "promiseGeometry": {
+        "main": {
+          "clientWidth": 1024,
+          "scrollWidth": 1024,
+          "rect": 1024,
+          "overflowX": "visible",
+          "minWidth": "0px"
+        },
+        "section": {
+          "clientWidth": 976,
+          "scrollWidth": 976,
+          "rect": 976,
+          "overflowX": "visible",
+          "minWidth": "0px"
+        },
+        "wrapper": {
+          "clientWidth": 976,
+          "scrollWidth": 976,
+          "rect": 976,
+          "overflowX": "auto",
+          "minWidth": "0px"
+        }
+      },
+      "selectedCase": "이사",
+      "selectedMode": "제안",
+      "verdict": "structural_correction_required",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "interaction": {
+        "currentArtifact": "현재 production · 준비된 결과 없음",
+        "proposedArtifact": "Safety guidance · action 2 / reference 4",
+        "expanded": "true",
+        "visibleProductionEvidence": 0,
+        "visiblePriorEvidence": 4
+      }
+    }
+  ],
+  "summary": {
+    "failed": false,
+    "viewportCount": 2,
+    "horizontalOverflowCount": 0,
+    "unnamedFocusableCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  }
+}

@@ -1,0 +1,423 @@
+{
+  "generatedAt": "2026-07-21T02:59:38.233Z",
+  "summary": {
+    "stateCount": 16,
+    "overflowCount": 0,
+    "unnamedControlStateCount": 0,
+    "brokenImageStateCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "results": [
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "home",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "find",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "save-before",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "post-save",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "my-flow",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "calendar",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "editor",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "screen": "export",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "390",
+        "width": 390,
+        "height": 844
+      },
+      "keyboardFocusSamples": [
+        {
+          "tag": "BUTTON",
+          "name": "1024px",
+          "visible": true
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Flow 확인",
+          "visible": true
+        },
+        {
+          "tag": "DIV",
+          "name": "제안현재 계약주 영향 파일난이도Migration / 선행 조건 Unified composerURL lookup + memo segmentationAppClient.tsx, URL/",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Google Calendar",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Apple Reminders",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Fantastical",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Todoist",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "TickTick",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Microsoft To Do",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Notion Calendar",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Notion",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Hevy",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Fitbod",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Nike Training Club",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Wanderlog",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "TripIt",
+          "visible": true
+        },
+        {
+          "tag": "DIV",
+          "name": "내부에서 닫을 것실제 사용자에게만 확인 가능한 가정 unnamed routine control, editor/export density, Calendar truncation, po",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "flowme2605.vercel.app",
+          "visible": true
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "home",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "find",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "save-before",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "post-save",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "my-flow",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "calendar",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "editor",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "screen": "export",
+      "activeScreenCount": 1,
+      "activeWire": true,
+      "horizontalOverflow": 0,
+      "unnamedControls": [],
+      "brokenImages": []
+    },
+    {
+      "viewport": {
+        "id": "1024",
+        "width": 1024,
+        "height": 768
+      },
+      "keyboardFocusSamples": [
+        {
+          "tag": "BUTTON",
+          "name": "선택 2개 날짜 지정",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Google Calendar",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Apple Reminders",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Fantastical",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Todoist",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "TickTick",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Microsoft To Do",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Notion Calendar",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Notion",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Hevy",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Fitbod",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Nike Training Club",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "Wanderlog",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "TripIt",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "flowme2605.vercel.app",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "상세 audit",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "P27 backlog",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "name": "journey JSON",
+          "visible": true
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

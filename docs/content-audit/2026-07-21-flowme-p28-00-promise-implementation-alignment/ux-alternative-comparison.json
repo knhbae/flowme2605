@@ -1,0 +1,48 @@
+{
+  "canonicalPrompt": "docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prompt-ko.md",
+  "reviewedMainCommit": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
+  "scale": "1 weak - 5 strong; implementation complexity and maintenance are scored inversely",
+  "criteria": [
+    "first_time_comprehension",
+    "content_scalability",
+    "mobile_density",
+    "pre_save_adjustment",
+    "destination_clarity",
+    "source_trust",
+    "implementation_fit",
+    "p27_compatibility",
+    "maintenance"
+  ],
+  "alternatives": [
+    {
+      "id": "A",
+      "name": "전역 5개 사례 Gallery",
+      "scores": [4, 2, 2, 2, 3, 4, 3, 3, 2],
+      "total": 25,
+      "judgment": "reject_as_primary",
+      "reason": "처음에는 이해가 쉽지만 콘텐츠가 늘수록 홈과 모바일을 점유하고 실제 Flow별 결과보다 사례 선택을 먼저 학습시킨다."
+    },
+    {
+      "id": "B",
+      "name": "Flow별 Artifact-first",
+      "scores": [3, 5, 5, 5, 5, 5, 4, 5, 5],
+      "total": 42,
+      "judgment": "keep_after_detection",
+      "reason": "Flow를 찾은 뒤에는 가장 명확하다. 다만 empty 상태에서 FlowMe가 무엇을 돌려주는지 모르는 첫 방문자에게는 예시가 부족하다."
+    },
+    {
+      "id": "C",
+      "name": "Hybrid",
+      "scores": [5, 4, 4, 5, 5, 5, 4, 5, 4],
+      "total": 41,
+      "judgment": "recommended",
+      "reason": "empty에는 composer와 2~3개의 가벼운 결과 예시만 두고, 감지 직후 B로 전환한다. 총점은 B와 비슷하지만 cold-start와 실제 작업을 함께 해결한다."
+    }
+  ],
+  "recommendation": {
+    "id": "C",
+    "implementationRule": "Gallery를 영구 IA로 만들지 않는다. /flows empty에 작은 예시를 두고 source_found 또는 proposal_ready부터 content-native artifact-first workspace를 사용한다.",
+    "mobileRule": "390px에서는 source status -> complete outline trigger -> primary artifact -> required values -> one primary action 순서다.",
+    "wideRule": "1024px에서는 2열을 기본으로 하고 outline은 drawer 또는 compact rail로 둔다. 3열은 1280px 이상에서만 허용한다."
+  }
+}
