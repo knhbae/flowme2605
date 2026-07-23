@@ -1,6 +1,6 @@
 # P32 작업 체크리스트
 
-상태: P32-01~07 구현 및 local verification 완료, publish 대기
+상태: P32-01~07 구현, merge, deploy, canonical production smoke 완료
 
 실제 관찰 사용자: `0`
 
@@ -116,7 +116,8 @@
 - [x] full E2E `314 / 314`
 - [x] final review package
 - [x] observed-user count 0 명시
-- [ ] commit/push/PR/merge/deploy 상태 기록
+- [x] commit/push/PR/merge/deploy 상태 기록
+- [x] canonical production smoke `7 / 7`
 
 ## P32-OPS
 

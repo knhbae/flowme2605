@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-24<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P32 local verification green / publish pending<br>
+**Current Validation Stage:** internal alpha / P32 production green / independent review pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** publish P32, run canonical production smoke, then obtain an independent P32 review before selecting P33
+**Next Milestone:** obtain an independent P32 review and owner acceptance before selecting P33
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -35,10 +35,10 @@ Detailed scope: [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-f
 | P32-04 | Restore Flow-level anchor adjustment while preserving personal fixed dates, memo, and past runs | Complete |
 | P32-05 | Consolidate export and lifecycle command placement without semantic change | Complete |
 | P32-06 | Roll the approved shell across six content shapes without route-specific identity forks | Complete |
-| P32-07 | Re-run continuity, scale, accessibility, and full regression | Local verification complete; publish evidence pending |
+| P32-07 | Re-run continuity, scale, accessibility, and full regression | Released; production smoke `7 / 7` |
 | P32-OPS | Resolve PostCSS advisories without a forced downgrade | Complete; PostCSS 8.5.16 override, audit 0 |
 
-P32 keeps the 4-tab IA, public `/f` shell, source/personal/run/occurrence/export identities, and current localStorage schema. The selected B1 structure keeps the cross-Flow `지금` projection and hides global local-tabs only during Flow drill-in. Local evidence is unit `587 / 587`, full Playwright `314 / 314`, build pass, security vulnerabilities `0`, and 10 screenshots at 390/1024/1440. Observed-user sessions remain `0`.
+P32 keeps the 4-tab IA, public `/f` shell, source/personal/run/occurrence/export identities, and current localStorage schema. The selected B1 structure keeps the cross-Flow `지금` projection and hides global local-tabs only during Flow drill-in. [PR #154](https://github.com/knhbae/flowme2605/pull/154) merged as `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`; GitHub CI and Vercel production succeeded. Evidence is unit `587 / 587`, full Playwright `314 / 314`, build pass, security vulnerabilities `0`, local screenshots `10`, and canonical production smoke `7 / 7` with production screenshots `7`. Observed-user sessions remain `0`.
 
 ## P31 Mobile Journey Reconstruction
 
@@ -235,13 +235,13 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P31 remains canonical production while P32 is a planning-only gate. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P32 is canonical production. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | AI + Owner | P32-01 evidence, route, and prototype decision | Re-measure current production and select one focused-workspace variant | Metrics are reconciled, mixed-shape evidence is valid/blocked, and P32-02 is explicitly approved |
-| Gated | AI | P32-02~07 implementation | Start only the approved slice after its dependency passes | Each slice has rollback, current tests, screenshots, and no identity/schema regression |
-| Parallel | AI | P32-OPS dependency remediation | Find a compatible patch without forced downgrade | critical/high 0 with unit/build/full E2E and separate change scope |
+| Active | AI + Owner | P32 independent post-release review | Re-run current production interaction and compare owner/independent findings | A reproducible gap or explicit keep decision exists before P33 |
+| Completed | AI | P32-01~07 implementation and release | Preserve B1 and stable identities | PR #154, merge `30281a7`, CI green, production smoke `7 / 7` |
+| Completed | AI | P32-OPS dependency remediation | Keep PostCSS compatible without forced downgrade | security audit 0 with unit/build/full E2E |
 | Completed | AI | P31 release verification and publish | Preserve PR #150 and canonical production smoke | Release state, SHA, deployment, rollback, and observed-user count are explicit |
 | Completed | AI + Owner | P31-00A/B/C comparison and decision | Compare alternatives and choose bounded composition changes | Owner authorized P31 completion without reopening the 4-tab IA or data model |
 | Completed | AI | P31-01~05 bounded implementation | Date correctness, discovery/save-before, My Flow, Calendar, lifecycle, and complexity | 24-cell target met in automation; P30 identity regressions 0 |

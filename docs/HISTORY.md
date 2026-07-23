@@ -2,6 +2,14 @@
 
 No tagged releases yet.
 
+## 2026-07-24 - P32 My Flow Focused Workspace
+
+- Released a library-to-focused My Flow workspace that keeps the cross-Flow `지금 / Flow 목록 / 완료` views while giving one opened Flow a dedicated `다음 행동 / 전체 계획 / 기록` object workspace.
+- Added direct title/date/memo quick edit, contextual anchor adjustment, consolidated whole export and lifecycle commands, mobile return-state preservation, and a shared shell for six content shapes without a persistence migration.
+- Merged [PR #154](https://github.com/knhbae/flowme2605/pull/154) as `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`; post-merge GitHub CI and Vercel production succeeded at <https://flowme2605.vercel.app>.
+- Verified unit `587 / 587`, P32 Playwright `4 / 4`, full Playwright `314 / 314`, production build `18 / 18`, security vulnerabilities `0`, and canonical production smoke `7 / 7` with all recorded layout/accessibility/browser-error counters `0`.
+- Published the [P32 final review package](./content-audit/2026-07-24-p32-final-review-package/README.md) with `10` local and `7` production screenshots. No semantic version tag was created, and observed-user sessions remain `0`.
+
 ## 2026-07-23 - P31 Mobile Journey Reconstruction
 
 - Released effective-date precedence parity, distinct Home and Find roles, source-linked discovery cards, content-shaped wedding and workout save-before controls, a dedicated mobile My Flow workspace, Calendar Item bottom sheets, and mobile/wide archive, restore, and guarded permanent-delete parity.

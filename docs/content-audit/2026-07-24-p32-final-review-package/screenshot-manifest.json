@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "capturedAt": "2026-07-24",
-  "count": 10,
+  "count": 17,
   "screenshots": [
     {"file": "screenshots/p32-02-focused-moving-default-viewport-390.png", "viewport": "390x844", "state": "moving focused default"},
     {"file": "screenshots/p32-02-focused-moving-export-390.png", "viewport": "390x1503 full page", "state": "moving export expanded"},
@@ -12,6 +12,13 @@
     {"file": "screenshots/p32-06-six-shape-shared-workspace-1024.png", "viewport": "1024x1234 full page", "state": "six-shape wide workspace"},
     {"file": "screenshots/p32-06-six-shape-shared-workspace-viewport-1024.png", "viewport": "1024x768", "state": "six-shape wide viewport"},
     {"file": "screenshots/p32-07-focused-workspace-1440.png", "viewport": "1440x1210 full page", "state": "focused workspace wide"},
-    {"file": "screenshots/p32-07-focused-workspace-viewport-1440.png", "viewport": "1440x900", "state": "focused workspace wide viewport"}
+    {"file": "screenshots/p32-07-focused-workspace-viewport-1440.png", "viewport": "1440x900", "state": "focused workspace wide viewport"},
+    {"file": "production-smoke/screenshots/p32-production-my-flow-library-390.png", "viewport": "390x844", "state": "production My Flow library"},
+    {"file": "production-smoke/screenshots/p32-production-my-flow-focused-390.png", "viewport": "390x844", "state": "production focused My Flow"},
+    {"file": "production-smoke/screenshots/p32-production-wide-my-flow-focused-1024.png", "viewport": "1024x768", "state": "production focused My Flow wide"},
+    {"file": "production-smoke/screenshots/p32-production-desktop-my-flow-focused-1440.png", "viewport": "1440x900", "state": "production focused My Flow desktop"},
+    {"file": "production-smoke/screenshots/p32-production-public-moving-390.png", "viewport": "390x844", "state": "production public moving shell"},
+    {"file": "production-smoke/screenshots/p32-production-mobile-calendar-390.png", "viewport": "390x844", "state": "production Calendar mobile"},
+    {"file": "production-smoke/screenshots/p32-production-wide-calendar-1024.png", "viewport": "1024x768", "state": "production Calendar wide"}
   ]
 }

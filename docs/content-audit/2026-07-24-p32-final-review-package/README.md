@@ -2,9 +2,11 @@
 
 작성일: 2026-07-24
 
-판정: `local_verification_green_publish_pending`
+판정: `released_production_smoke_green`
 
 기준 SHA: `a2e1d72dadda0104f97682ae662dfbc113a85318`
+
+release SHA: `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`
 
 선택안: `B1 library_to_focused_workspace_with_cross_flow_queue`
 
@@ -39,7 +41,19 @@ P32는 My Flow의 global IA를 바꾸지 않고, 한 Flow를 열었을 때 선�
 | fixed/sticky overlap | `0` |
 | unnamed focusable | `0` |
 | console/page error | `0` |
-| screenshots | `10` |
+| local screenshots | `10` |
+| production smoke | `7 / 7` |
+| production screenshots | `7` |
+
+## Production release
+
+- PR: [#154](https://github.com/knhbae/flowme2605/pull/154)
+- merge: `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`
+- main CI: Docs/Unit/Build와 Playwright E2E 모두 `success`
+- production: <https://flowme2605.vercel.app>
+- Vercel deployment status: `success`
+- production smoke: `7 / 7`
+- production overflow, fixed overlap, unnamed focusable, console/page error: 모두 `0`
 
 ## 유지한 계약
 
@@ -68,6 +82,8 @@ P32는 My Flow의 global IA를 바꾸지 않고, 한 Flow를 열었을 때 선�
 - [route evidence](./route-evidence.json)
 - [journey results](./journey-results.json)
 - [screenshot manifest](./screenshot-manifest.json)
+- [production smoke](./production-smoke/README.md)
+- [production smoke results](./production-smoke/results.json)
 - [독립 검토 프롬프트](./prompt-ko.md)
 - [screenshots](./screenshots/)
 

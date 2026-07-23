@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-24 (P32 implementation closeout)
-**Status:** v0.1.0 RELEASED / P31 PRODUCTION GREEN / P32 LOCAL VERIFICATION GREEN
+**Last Updated:** 2026-07-24 (P32 production closeout)
+**Status:** v0.1.0 RELEASED / P32 PRODUCTION GREEN
 **Current Version:** v0.1.0  
-**Primary Focus:** Publish and production-smoke the implemented [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md). P32 selected B1, keeps the cross-Flow library views, and shows one selected Flow in a focused object workspace with direct quick edit, anchor adjustment, export, and lifecycle commands. The 4-tab IA, public `/f`, stable data identities, and localStorage schema remain unchanged. Full Playwright is `314 / 314`; observed-user sessions remain `0`.
+**Primary Focus:** Independently review the released [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md) before selecting P33. P32 selected B1, keeps the cross-Flow library views, and shows one selected Flow in a focused object workspace with direct quick edit, anchor adjustment, export, and lifecycle commands. The 4-tab IA, public `/f`, stable data identities, and localStorage schema remain unchanged. Full Playwright is `314 / 314`, canonical production smoke is `7 / 7`, and observed-user sessions remain `0`.
 
 ## Current Control Panel
 
@@ -11,15 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P32 publish, canonical production smoke, and independent post-release review |
-| User action now | Review the focused My Flow workspace after production deploy; this is not yet observed-user validation |
-| AI action now | Complete scoped commit/PR/merge/deploy and record canonical production evidence |
+| Active product gate | Independent P32 post-release review and owner acceptance before P33 selection |
+| User action now | Review the focused My Flow workspace on canonical production; this is not yet observed-user validation |
+| AI action now | Preserve release `30281a7`, compare independent findings, and avoid opening P33 without a current reproducible gap |
 | Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P32-01~07 and P32-OPS, unit `587 / 587`, full Playwright `314 / 314`, build pass, security audit 0, 10 final screenshots; publish pending |
+| Completed implementation | P32-01~07 and P32-OPS, PR #154, merge `30281a7`, unit `587 / 587`, full Playwright `314 / 314`, build pass, security audit 0, production smoke `7 / 7`, screenshots `10 + 7` |
 
 ## Recent Direction Notes
 
-- 2026-07-24 P32 local implementation: B1 `library_to_focused_workspace_with_cross_flow_queue` is implemented. Global My Flow local tabs remain in library state and disappear while one Flow is open; mobile uses `다음 행동 / 전체 계획 / 기록`, while wide keeps rail/canvas/inspector with an explicit `전체 보기` return. Item title/date/memo quick edit is directly reachable, saved moving Flows expose a contextual anchor command, and whole export/lifecycle actions live in the selected Flow command area. Six representative content shapes share one shell. No persistence migration or stable identity rewrite was introduced. Full Playwright is `314 / 314`, security audit is `0`, final screenshots cover 390/1024/1440, layout/browser error counts are `0`, and observed-user sessions remain `0`. See [P32 final review package](./content-audit/2026-07-24-p32-final-review-package/README.md).
+- 2026-07-24 P32 production release: B1 `library_to_focused_workspace_with_cross_flow_queue` is released. Global My Flow local tabs remain in library state and disappear while one Flow is open; mobile uses `다음 행동 / 전체 계획 / 기록`, while wide keeps rail/canvas/inspector with an explicit `전체 보기` return. Item title/date/memo quick edit is directly reachable, saved moving Flows expose a contextual anchor command, and whole export/lifecycle actions live in the selected Flow command area. Six representative content shapes share one shell without a persistence migration or stable identity rewrite. [PR #154](https://github.com/knhbae/flowme2605/pull/154) merged as `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`; post-merge GitHub CI and Vercel succeeded. Full Playwright is `314 / 314`, security audit is `0`, canonical production smoke is `7 / 7`, layout/browser error counts are `0`, screenshots are `10 + 7`, and observed-user sessions remain `0`. See [P32 final review package](./content-audit/2026-07-24-p32-final-review-package/README.md).
 
 - 2026-07-24 P32 planning gate: Claude Design and Codex independently selected `library -> focused workspace` and the verdict `my_flow_structural_reopen`. The current Codex browser measurement confirms Flow open depth `2` at 1/5/20/60 Flows, but Item edit, whole export, and archive/reload/restore each require `6` interactions. Claude's proposal is retained as a design alternative rather than current truth because it used an older source/screenshot basis and estimated Flow-open and duplicate-completion metrics differently. P32 therefore starts with a no-app-code evidence/route/prototype gate, recommends keeping the cross-Flow `지금` projection unless current evidence supports removing it, then stages focused workspace, quick edit, anchor adjustment, export/lifecycle, six-shape rollout, and a final continuity gate. No schema migration or app change is part of this planning update. See [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md).
 

@@ -1,0 +1,237 @@
+{
+  "generatedAt": "2026-07-23T21:05:44.101Z",
+  "evidenceKind": "current_production_interaction",
+  "baseUrl": "https://flowme2605.vercel.app",
+  "sourceCommit": "30281a7a8ea9bea1194b4104b5a49b6211c07e3b",
+  "deploymentUrl": "https://vercel.com/flowme/flowme2605/C6GLdoFZhNYH3AdHR8tBWqRRoVTK",
+  "observedUserCount": 0,
+  "summary": {
+    "scenarioCount": 7,
+    "passedScenarioCount": 7,
+    "failedScenarioCount": 0,
+    "horizontalOverflowCount": 0,
+    "unnamedFocusableCount": 0,
+    "fixedOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "results": [
+    {
+      "name": "mobile_my_flow_library",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "mainState": "library",
+      "searchVisible": true,
+      "rowCount": 8,
+      "assertions": {
+        "libraryState": true,
+        "searchVisible": true,
+        "rowsAvailable": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "fixedOverlapCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p32-production-my-flow-library-390.png"
+    },
+    {
+      "name": "mobile_my_flow_focused",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "marker": "P32-02-FOCUSED-MY-FLOW-WORKSPACE",
+      "sharedMarker": "P32-06-SHARED-FOCUSED-WORKSPACE",
+      "mainState": "focused",
+      "commandHierarchyMarker": "P32-05-OBJECT-COMMAND-HIERARCHY",
+      "focusOrder": {
+        "trace": [
+          {
+            "testId": "platform-nav",
+            "accessibleName": "FLOW"
+          },
+          {
+            "testId": "platform-nav",
+            "accessibleName": "보조 메뉴 열기"
+          },
+          {
+            "testId": "my-flow-mobile-library-back",
+            "accessibleName": "저장한 Flow 목록으로 돌아가기"
+          },
+          {
+            "testId": "my-flow-workspace-management-menu",
+            "accessibleName": "이사 준비 관리 메뉴"
+          },
+          {
+            "testId": "my-flow-workspace-tab-execute",
+            "accessibleName": "다음 행동"
+          },
+          {
+            "testId": "my-flow-workspace-tab-plan",
+            "accessibleName": "전체 계획"
+          },
+          {
+            "testId": "my-flow-workspace-tab-record",
+            "accessibleName": "기록"
+          },
+          {
+            "testId": "my-flow-task-complete-control",
+            "accessibleName": "필요 없는 물건 정리하기 완료 체크"
+          },
+          {
+            "testId": "my-flow-execution-row-shell",
+            "accessibleName": "필요 없는 물건 정리하기 열기 · 이사 준비 · 5월 27일"
+          },
+          {
+            "testId": "my-flow-workspace-execute",
+            "accessibleName": "전체 계획 보기"
+          },
+          {
+            "testId": "my-flow-direct-anchor-settings-open",
+            "accessibleName": "이사 준비 이사일 바꾸기"
+          },
+          {
+            "testId": "my-flow-export-entry",
+            "accessibleName": "이사 준비 가져가기"
+          },
+          {
+            "testId": "platform-mobile-tabs",
+            "accessibleName": "홈"
+          }
+        ],
+        "headerIndex": 0,
+        "workspaceIndex": 2,
+        "tabsIndex": 12,
+        "ordered": true
+      },
+      "assertions": {
+        "focusedState": true,
+        "focusedMarker": true,
+        "sharedMarker": true,
+        "commandHierarchy": true,
+        "focusOrder": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "fixedOverlapCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p32-production-my-flow-focused-390.png"
+    },
+    {
+      "name": "wide_my_flow_focused",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1024x768",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "workspaceMarker": "P32-02-FOCUSED-MY-FLOW-WORKSPACE",
+      "flowMarker": "P32-06-SHARED-FOCUSED-WORKSPACE",
+      "detailVisible": true,
+      "backVisible": true,
+      "assertions": {
+        "focusedMarker": true,
+        "sharedMarker": true,
+        "detailVisible": true,
+        "backVisible": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "fixedOverlapCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p32-production-wide-my-flow-focused-1024.png"
+    },
+    {
+      "name": "desktop_my_flow_focused",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1440x900",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "assertionsPassed": true,
+      "workspaceMarker": "P32-02-FOCUSED-MY-FLOW-WORKSPACE",
+      "flowMarker": "P32-06-SHARED-FOCUSED-WORKSPACE",
+      "detailVisible": true,
+      "backVisible": true,
+      "assertions": {
+        "focusedMarker": true,
+        "sharedMarker": true,
+        "detailVisible": true,
+        "backVisible": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "fixedOverlapCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p32-production-desktop-my-flow-focused-1440.png"
+    },
+    {
+      "name": "mobile_public_shell",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/f/moving-d30-basic",
+      "assertionsPassed": true,
+      "workspaceVisible": true,
+      "setupVisible": true,
+      "saveVisible": true,
+      "assertions": {
+        "workspaceVisible": true,
+        "setupVisible": true,
+        "saveVisible": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "fixedOverlapCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p32-production-public-moving-390.png"
+    },
+    {
+      "name": "mobile_calendar",
+      "route": "/calendar?demo=ux20",
+      "viewport": "390x844",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux20",
+      "assertionsPassed": true,
+      "scopeVisible": true,
+      "calendarVisible": true,
+      "assertions": {
+        "scopeVisible": true,
+        "calendarVisible": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "fixedOverlapCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p32-production-mobile-calendar-390.png"
+    },
+    {
+      "name": "wide_calendar",
+      "route": "/calendar?demo=ux20",
+      "viewport": "1024x768",
+      "httpStatus": 200,
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux20",
+      "assertionsPassed": true,
+      "scopeVisible": true,
+      "calendarVisible": true,
+      "assertions": {
+        "scopeVisible": true,
+        "calendarVisible": true
+      },
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "fixedOverlapCount": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p32-production-wide-calendar-1024.png"
+    }
+  ]
+}
