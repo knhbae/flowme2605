@@ -13,6 +13,12 @@ async function captureEvidence(page: Page, name: string) {
 }
 
 async function enterMyFlowDetailEditMode(detail: Locator) {
+  const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
+  if (await quickEdit.isVisible().catch(() => false)) {
+    await quickEdit.click();
+    await expect(detail).toHaveAttribute('data-detail-mode', 'edit');
+    return;
+  }
   const readSummary = detail.getByTestId('my-flow-detail-read-summary');
   await expect(readSummary).toBeVisible();
   if ((await readSummary.getAttribute('open')) === null) {

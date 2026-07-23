@@ -10,7 +10,8 @@ async function openFlowView(page: Page) {
   if (await postSave.isVisible().catch(() => false)) {
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
   }
-  await page.getByTestId('my-flow-view-flow').click();
+  const flowView = page.getByTestId('my-flow-view-flow');
+  if (await flowView.isVisible().catch(() => false)) await flowView.click();
 }
 
 function getDraftFlow(page: Page) {

@@ -23,6 +23,7 @@ import {
   buildSourceBackedFlowMapPublishPackage,
   buildSourceBackedFlowMapReviewedVersion,
   buildSourceBackedMyFlowRows,
+  getFlowBundleDateAnchorCopy,
   getSourceBackedFlowMapDateAnchorCopy,
   getSourceBackedFlowMapQualityDecision,
   getPublicCatalogSourceBackedFlowMaps,
@@ -88,6 +89,11 @@ test('source-backed Flow Map date anchor copy follows the user context', () => {
   assert.equal(getSourceBackedFlowMapDateAnchorCopy(mathPackage).label, '학습 시작일');
   assert.equal(getSourceBackedFlowMapDateAnchorCopy(mathPackage).editLabel, '학습 시작일 바꾸기');
   assert.equal(getSourceBackedFlowMapDateAnchorCopy().label, '기준일');
+
+  const directMovingFlow = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  assert.ok(directMovingFlow);
+  assert.equal(getFlowBundleDateAnchorCopy(directMovingFlow).label, '이사일');
+  assert.equal(getFlowBundleDateAnchorCopy(directMovingFlow).editLabel, '이사일 바꾸기');
 });
 
 const curatedFlowSlugs = [

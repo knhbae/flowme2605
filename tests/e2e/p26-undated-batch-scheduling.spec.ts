@@ -52,14 +52,6 @@ test('undated public Flow supports atomic one and many scheduling with removal u
 
   await page.goto('/my?view=flows');
   const savedFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
-  const recordTab = savedFlow.getByTestId('my-flow-workspace-tab-record');
-  if (await recordTab.isVisible().catch(() => false)) {
-    await recordTab.click();
-    await savedFlow
-      .getByTestId('my-flow-workspace-advanced-actions')
-      .locator('summary')
-      .click();
-  }
   const prescheduleExport = savedFlow.getByTestId('my-flow-export-surface');
   await prescheduleExport.getByTestId('my-flow-export-entry').click();
   await expect(prescheduleExport.getByTestId('my-flow-export-calendar')).toHaveAttribute(

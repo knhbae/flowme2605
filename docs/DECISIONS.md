@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-24 - P32 keeps cross-Flow library views and opens one focused Flow workspace
+
+**Decision:** Use B1 `library_to_focused_workspace_with_cross_flow_queue`. Keep `지금 / Flow 목록 / 완료` in the My Flow library state. When one Flow is opened, hide those global local tabs and show a single object workspace with `다음 행동 / 전체 계획 / 기록`, direct Item quick edit, contextual Flow anchor adjustment, consolidated export, and existing lifecycle management. Keep the 4-tab IA, public `/f` shell, source/personal/run/occurrence/export identities, and localStorage schema unchanged.
+
+**Reason:** Current evidence showed that finding and opening one of 1/5/20/60 Flows was already efficient, while commands inside a selected Flow were dispersed. B1 preserves the useful cross-Flow queue and reduces local navigation competition without the data and IA risk of replacing it with a new continue strip.
+
+**Applies to:** My Flow library and focused states, mobile and wide workspace composition, quick Item edit, anchored saved Flow adjustment, export/lifecycle command placement, six representative content shapes, browser back/query/scroll restoration, and P32 regression evidence.
+
+**Reopen when:** Observed users cannot distinguish the library views from the focused Flow tabs, repeatedly fail to return to their prior query/position, or cannot find the next action, quick edit, export, or lifecycle command. Automated QA alone is not sufficient to reopen this decision.
+
+**Related docs:** [P32 spec](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md), [P32 decision evidence](./content-audit/2026-07-24-p32-01-focused-workspace-decision/README.md), [P32 final review](./content-audit/2026-07-24-p32-final-review-package/README.md)
+
 ### 2026-07-23 - P31 separates mobile surface roles and uses guarded local Flow lifecycle
 
 **Decision:** Keep the 4-tab IA and existing source, personal overlay, execution run, recurrence occurrence, and export identities. Home owns concrete usage examples and returning continuation; Flow finding owns search, catalog, source inspection, and detail entry. Discovery cards show real source and representative work, never invented popularity or review counts. Mobile My Flow opens a compact library row into one dedicated workspace with `실행 / 전체 계획 / 기록`. Calendar Item detail opens in a bottom sheet and undated placement remains a separate mode. Flow lifecycle uses `보관 / 복구 / 이 기기에서 영구 삭제`; permanent delete is available only from archived state, removes personal local data, and preserves a source-backed public Flow for rediscovery.

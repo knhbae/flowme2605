@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "baselineSha": "a2e1d72dadda0104f97682ae662dfbc113a85318",
+  "decision": "B1_library_to_focused_workspace_with_cross_flow_queue",
+  "status": "approved_for_p32_02",
+  "reasons": [
+    "Flow search and open remain within two interactions at 27 fixtures.",
+    "The selected Flow workspace already has a usable object shell.",
+    "Global My Flow local tabs remain visible above the selected Flow and create hierarchy competition.",
+    "B1 removes that competition without deleting the validated cross-Flow queue."
+  ],
+  "preservedContracts": [
+    "global_four_tab_ia",
+    "public_f_shell",
+    "source_identity",
+    "personal_overlay_identity",
+    "execution_run_identity",
+    "occurrence_identity",
+    "export_identity",
+    "archive_restore_permanent_delete_semantics"
+  ],
+  "migrationRequired": false,
+  "rollback": "Remove the focused-state visibility condition and retain the existing P31 composition.",
+  "observedUserCount": 0
+}

@@ -114,9 +114,14 @@ test('mobile drill-in keeps modal focus and fixed feedback above the navigation'
   const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
   await firstRow.getByRole('button', { name: /열기/ }).click();
   const detail = getOpenMyFlowItemDetail(page);
-  const readSummary = detail.getByTestId('my-flow-detail-read-summary');
-  if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
-  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
+  if (await quickEdit.isVisible().catch(() => false)) {
+    await quickEdit.click();
+  } else {
+    const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+    if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
+    await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  }
   const editor = page.getByRole('dialog', { name: '할 일 수정' });
   await expect(editor).toHaveAttribute('data-editor-layout', 'mobile-full-screen');
   const editorBox = await editor.boundingBox();
@@ -185,7 +190,6 @@ test('export reports disabled and pending states without changing scope', async 
   });
   await page.goto('/my?view=flows');
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
-  await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');

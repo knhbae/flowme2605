@@ -424,7 +424,6 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/my?demo=source-backed&view=flows');
     let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
-    await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
 
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();

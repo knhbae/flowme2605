@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-07-23<br>
+**Last Updated:** 2026-07-24<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P31 production green<br>
+**Current Validation Stage:** internal alpha / P32 local verification green / publish pending<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** independently review the released P31 baseline, then choose a bounded P32 slice or a small observed-user study
+**Next Milestone:** publish P32, run canonical production smoke, then obtain an independent P32 review before selecting P33
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,25 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P32 My Flow Focused Workspace
+
+Claude Design and Codex independently concluded that the released P31 data and global IA should stay while the command hierarchy inside a selected My Flow should reopen. Their shared architecture is `library -> focused workspace`; their measurements differ because Claude used an older source/screenshot basis and heuristic estimates, while Codex measured current production at `a2e1d72`. P32 started with an evidence and comparison gate, selected B1, and completed the bounded rollout without changing persistence or stable identity contracts.
+
+Detailed scope: [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md).
+
+| Slice | Purpose | State |
+| --- | --- | --- |
+| P32-01 | Reconcile current metrics, replace the invalid mixed-shape route contract, and compare B1/B2 | Complete; B1 selected |
+| P32-02 | Prove one focused workspace shell on moving and undated checklist saved Flows | Complete |
+| P32-03 | Shorten title/date/memo quick edit from 6 interactions to at most 3 | Complete |
+| P32-04 | Restore Flow-level anchor adjustment while preserving personal fixed dates, memo, and past runs | Complete |
+| P32-05 | Consolidate export and lifecycle command placement without semantic change | Complete |
+| P32-06 | Roll the approved shell across six content shapes without route-specific identity forks | Complete |
+| P32-07 | Re-run continuity, scale, accessibility, and full regression | Local verification complete; publish evidence pending |
+| P32-OPS | Resolve PostCSS advisories without a forced downgrade | Separate dependency lane |
+
+P32 keeps the 4-tab IA, public `/f` shell, source/personal/run/occurrence/export identities, and current localStorage schema. The selected B1 structure keeps the cross-Flow `지금` projection and hides global local-tabs only during Flow drill-in. Local evidence is unit `587 / 587`, full Playwright `314 / 314`, build pass, and 10 screenshots at 390/1024/1440. Observed-user sessions remain `0`.
 
 ## P31 Mobile Journey Reconstruction
 
@@ -216,11 +235,14 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P30 remains canonical production until the implemented P31 branch passes full verification and publish smoke. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P31 remains canonical production while P32 is a planning-only gate. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | AI | P31 release verification and publish | Run full docs/unit/build/E2E/security checks and canonical production smoke | Release state, SHA, deployment, rollback, and observed-user count are explicit |
+| Active | AI + Owner | P32-01 evidence, route, and prototype decision | Re-measure current production and select one focused-workspace variant | Metrics are reconciled, mixed-shape evidence is valid/blocked, and P32-02 is explicitly approved |
+| Gated | AI | P32-02~07 implementation | Start only the approved slice after its dependency passes | Each slice has rollback, current tests, screenshots, and no identity/schema regression |
+| Parallel | AI | P32-OPS dependency remediation | Find a compatible patch without forced downgrade | critical/high 0 with unit/build/full E2E and separate change scope |
+| Completed | AI | P31 release verification and publish | Preserve PR #150 and canonical production smoke | Release state, SHA, deployment, rollback, and observed-user count are explicit |
 | Completed | AI + Owner | P31-00A/B/C comparison and decision | Compare alternatives and choose bounded composition changes | Owner authorized P31 completion without reopening the 4-tab IA or data model |
 | Completed | AI | P31-01~05 bounded implementation | Date correctness, discovery/save-before, My Flow, Calendar, lifecycle, and complexity | 24-cell target met in automation; P30 identity regressions 0 |
 | Completed | AI | P30 evidence-gap closure and release | Preserve PR #148, merge `b3c8500`, and production evidence | CI green, canonical smoke `13 / 13`, observed users explicitly `0` |

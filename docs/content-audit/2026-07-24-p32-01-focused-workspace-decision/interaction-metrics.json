@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "route": "/my?demo=ux20&view=flows",
+  "fixtureSavedFlowCount": 27,
+  "viewports": [
+    {
+      "width": 390,
+      "height": 844,
+      "flowOpenDepth": 2,
+      "globalLocalNavigationVisibleWhenFlowOpen": true,
+      "objectWorkspaceNavigationVisible": true,
+      "horizontalOverflowCount": 0
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "flowOpenDepth": 2,
+      "globalLocalNavigationVisibleWhenFlowOpen": true,
+      "libraryRailVisible": true,
+      "planCanvasVisible": true,
+      "nextActionInspectorVisible": true,
+      "horizontalOverflowCount": 0
+    }
+  ],
+  "consoleErrorCount": 1,
+  "consoleErrors": [
+    "Each child in a list should have a unique key prop in MyFlows."
+  ],
+  "mixedRoute": {
+    "publicJourneyStatus": "blocked",
+    "fixtureRoute": "overseas-travel-d14",
+    "fixtureOnly": true,
+    "userReachableWithoutFixture": false
+  },
+  "evidenceKinds": [
+    "current_fixture_browser",
+    "current_source"
+  ],
+  "observedUserCount": 0
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-24",
+  "baselineSha": "a2e1d72dadda0104f97682ae662dfbc113a85318",
+  "verdict": "local_verification_green_publish_pending",
+  "observedUserCount": 0,
+  "markers": {
+    "p32Architecture": "library_to_focused_workspace_with_cross_flow_queue",
+    "focusedWorkspaceMarker": "P32-02-FOCUSED-MY-FLOW-WORKSPACE",
+    "sharedWorkspaceMarker": "P32-06-SHARED-FOCUSED-WORKSPACE",
+    "objectCommandHierarchyMarker": "P32-05-OBJECT-COMMAND-HIERARCHY",
+    "globalMyFlowTabsVisibleInLibrary": true,
+    "globalMyFlowTabsVisibleInFocusedWorkspace": false,
+    "flowOpenDepthMaximum": 2,
+    "itemEditDepthMaximum": 3,
+    "wholeExportDepthMaximum": 3,
+    "archiveDepthMaximum": 3,
+    "restoreDepthMaximum": 4,
+    "directAnchorEditVisible": true,
+    "directAnchorPreservesPersonalFixedDate": true,
+    "directAnchorPreservesPersonalMemo": true,
+    "directAnchorCreatesSavedMapMigration": false,
+    "sixShapeSharedWorkspace": true,
+    "horizontalOverflowCount": 0,
+    "fixedStickyOverlapCount": 0,
+    "unnamedFocusableCount": 0,
+    "consolePageErrorCount": 0,
+    "dataMigrationRequired": false,
+    "publicShellChanged": false,
+    "stableIdentityContractChanged": false
+  },
+  "routes": [
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "state": "library_to_focused_to_library",
+      "result": "supported",
+      "evidenceKind": ["current_fixture_browser", "current_screenshot", "current_e2e"],
+      "assertions": {
+        "queryRestored": true,
+        "focusedGlobalTabsHidden": true,
+        "nextActionBeforeCommands": true,
+        "quickItemEditVisible": true,
+        "exportScopeAndCountVisible": true
+      }
+    },
+    {
+      "route": "/my?view=flows",
+      "viewport": "390x844",
+      "state": "direct_saved_moving_anchor_edit",
+      "result": "supported",
+      "evidenceKind": ["current_fixture_browser", "current_screenshot", "current_e2e"],
+      "assertions": {
+        "label": "이사일 바꾸기",
+        "personalFixedDatePreserved": true,
+        "personalMemoPreserved": true,
+        "savedMapCreated": false
+      }
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "state": "six_shape_focused_shell",
+      "result": "supported",
+      "evidenceKind": ["current_fixture_browser", "current_screenshot", "current_e2e"],
+      "slugs": [
+        "moving-d30-basic",
+        "travel-packing-list",
+        "washer-tub-clean-monthly",
+        "wedding-d180-basic",
+        "used-car-buying-check",
+        "weekly-meal-plan"
+      ]
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1024x768,1440x900",
+      "state": "six_shape_wide_workspace",
+      "result": "supported",
+      "evidenceKind": ["current_fixture_browser", "current_screenshot", "current_e2e"],
+      "assertions": {
+        "libraryReturnVisible": true,
+        "planCanvasVisible": true,
+        "detailInspectorVisible": true
+      }
+    },
+    {
+      "route": "/f/real-mofa-overseas-travel-prep",
+      "viewport": "route_contract",
+      "state": "closed_public_route",
+      "result": "blocked",
+      "evidenceKind": ["current_source"],
+      "reason": "The public route is intentionally closed and was not reopened for test convenience."
+    }
+  ],
+  "routeContract": {
+    "publicUndatedChecklistResourceSlug": "travel-packing-list",
+    "fixtureOnlyMixedSlug": "overseas-travel-d14",
+    "mixedPublicJourneyStatus": "blocked",
+    "personalDraftMixedUserReachableWithoutFixture": false
+  },
+  "verification": {
+    "unit": {"passed": 587, "failed": 0},
+    "p32TargetedE2e": {"passed": 4, "failed": 0},
+    "fullE2e": {"passed": 314, "failed": 0},
+    "build": "passed",
+    "docsCheck": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "publish": {
+    "commit": "pending",
+    "push": "pending",
+    "pullRequest": "pending",
+    "merge": "pending",
+    "deployment": "pending",
+    "productionSmoke": "pending"
+  }
+}

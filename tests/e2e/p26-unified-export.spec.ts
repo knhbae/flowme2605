@@ -105,7 +105,6 @@ test('public whole Flow export predicts dates, output count, and result receipt'
 
   await page.goto('/my?view=flows');
   const vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
-  await vehicleFlow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
   const vehicleExport = vehicleFlow.getByTestId('my-flow-export-surface');
   await vehicleExport.getByTestId('my-flow-export-entry').click();
   const scheduledCalendar = vehicleExport.getByTestId('my-flow-export-calendar');
@@ -133,7 +132,6 @@ test('whole, selected, and current item exports share scope language and actual 
   await page.getByTestId('my-flow-view-flow').click();
 
   let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
-  await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');
