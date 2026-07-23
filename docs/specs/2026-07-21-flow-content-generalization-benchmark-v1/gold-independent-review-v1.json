@@ -1,0 +1,358 @@
+{
+  "reviewerIdentity": "gpt-5.6-sol high",
+  "method": "source_only_blind_independent_review",
+  "reviewedAt": "2026-07-21T11:40:51.7108699+09:00",
+  "inputsActuallyRead": [
+    "baseline-rules-v1.md",
+    "revised-rules-v1.md",
+    "blind-source-packets-v1.json",
+    "../2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json"
+  ],
+  "forbiddenInputsNotRead": true,
+  "modelOutputsSeen": false,
+  "webUsed": false,
+  "cases": [
+    {
+      "caseId": "GB-01",
+      "flowPossible": true,
+      "state": "needs_confirmation",
+      "naturalArtifact": "calendar",
+      "secondaryArtifacts": ["checklist", "memo"],
+      "requiredUserInputs": ["birth_date", "reporter_relationship"],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "sensitive_private_only",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "The filing duty, deadline, permitted offices, form fields, and documents are complete; the calendar deadline needs the child's birth date and the reporter role affects applicability."
+    },
+    {
+      "caseId": "GB-02",
+      "flowPossible": true,
+      "state": "ready",
+      "naturalArtifact": "checklist",
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "current",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "sensitive_private_only",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "Four complete, ordered account-security steps form one bounded setup checklist without requiring an authentication value in the preview."
+    },
+    {
+      "caseId": "GB-03",
+      "flowPossible": true,
+      "state": "needs_confirmation",
+      "naturalArtifact": "calendar",
+      "secondaryArtifacts": ["checklist"],
+      "requiredUserInputs": ["product_model", "maintenance_anchor_date"],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "restricted",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "The source defines several fixed cleaning and replacement cycles, so a calendar is primary after confirming the applicable model and a user-owned maintenance anchor."
+    },
+    {
+      "caseId": "GB-04",
+      "flowPossible": true,
+      "state": "needs_confirmation",
+      "naturalArtifact": "checklist",
+      "secondaryArtifacts": ["memo"],
+      "requiredUserInputs": ["product_model"],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "current",
+        "locale": "applicable",
+        "safety": "restricted",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "The three timestamped segments provide a complete single-session cleaning sequence, but use should be limited to the confirmed A9S model and the captured safety boundary."
+    },
+    {
+      "caseId": "GB-05",
+      "flowPossible": true,
+      "state": "ready",
+      "naturalArtifact": "checklist",
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "full",
+        "rights": "restricted",
+        "freshness": "current",
+        "locale": "applicable",
+        "safety": "pending",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "Six ordered cooking rows form a complete bounded session; private execution is possible while copying rights and uncaptured allergy and hazard details prevent public export."
+    },
+    {
+      "caseId": "GB-06",
+      "flowPossible": true,
+      "state": "ready",
+      "naturalArtifact": "sheet",
+      "secondaryArtifacts": ["todo"],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "not_required",
+        "locale": "adaptation_required",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "Ten stable book rows need selection or reading-position state across sessions, making a sheet the retained artifact rather than a one-time checklist."
+    },
+    {
+      "caseId": "GB-07",
+      "flowPossible": true,
+      "state": "ready",
+      "naturalArtifact": "memo",
+      "secondaryArtifacts": ["sheet"],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "sensitive_private_only",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "The source supplies complete comparison criteria; the durable result is one backup-method decision with its reason, supported by a comparison sheet."
+    },
+    {
+      "caseId": "GB-08",
+      "flowPossible": true,
+      "state": "needs_confirmation",
+      "naturalArtifact": "calendar",
+      "secondaryArtifacts": ["checklist"],
+      "requiredUserInputs": ["visit_date", "visit_session"],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "sensitive_private_only",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "The booking window, three sessions, approval flow, preparation, arrival steps, and blackout months are complete; the user must select a valid date and session."
+    },
+    {
+      "caseId": "GB-09",
+      "flowPossible": false,
+      "state": "source_import_required",
+      "naturalArtifact": null,
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "metadata_only",
+        "rights": "pending",
+        "freshness": "current",
+        "locale": "pending",
+        "safety": "not_required",
+        "privacy": "pending",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "shortReason": "Only landing-page title, creator metadata, and marketing description are captured; the actual template database and rows require import after account access."
+    },
+    {
+      "caseId": "GB-10",
+      "flowPossible": false,
+      "state": "source_import_required",
+      "naturalArtifact": null,
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "metadata_only",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "pending",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "shortReason": "The course title and promotional claim are metadata, while lesson and assignment rows needed for an executable learning Flow are unavailable."
+    },
+    {
+      "caseId": "GB-11",
+      "flowPossible": false,
+      "state": "hold",
+      "naturalArtifact": null,
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "not_required",
+        "locale": "applicable",
+        "safety": "pending",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "shortReason": "The captured narrative describes broad recommendations and examples but does not establish one bounded user job with observable completion."
+    },
+    {
+      "caseId": "GB-12",
+      "flowPossible": false,
+      "state": "source_import_required",
+      "naturalArtifact": null,
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "partial",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "pending",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "shortReason": "The collection identifies 18 venues but omits the chosen venue's current detailed schedule and use conditions, so executable rows must be imported first."
+    },
+    {
+      "caseId": "GB-13",
+      "flowPossible": true,
+      "state": "needs_confirmation",
+      "naturalArtifact": "checklist",
+      "secondaryArtifacts": ["memo"],
+      "requiredUserInputs": ["application_channel"],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "sensitive_private_only",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "Application paths, processing time, eligibility rules, office, documents, and channel-dependent fees are complete; the chosen channel determines the executable path."
+    },
+    {
+      "caseId": "GB-14",
+      "flowPossible": true,
+      "state": "needs_confirmation",
+      "naturalArtifact": "calendar",
+      "secondaryArtifacts": ["checklist"],
+      "requiredUserInputs": ["child_birth_date"],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "applicable",
+        "safety": "passed_with_boundary",
+        "privacy": "sensitive_private_only",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "Twelve official age windows can be calculated from one birth-date anchor, with the missed-window warning preserved as a constraint rather than a check."
+    },
+    {
+      "caseId": "GB-15",
+      "flowPossible": false,
+      "state": "source_import_required",
+      "naturalArtifact": null,
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "partial",
+        "rights": "pending",
+        "freshness": "current",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "shortReason": "The three-day course span and topic durations are known, but topic dates, start times, and rooms needed for an executable schedule are missing."
+    },
+    {
+      "caseId": "GB-16",
+      "flowPossible": true,
+      "state": "ready",
+      "naturalArtifact": "sheet",
+      "secondaryArtifacts": ["calendar"],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "current",
+        "locale": "adaptation_required",
+        "safety": "not_required",
+        "privacy": "pending",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "The CSV provides eight stable planning rows and status-bearing columns, so it is immediately useful as a sheet even though calendar dates need a later start-date anchor."
+    },
+    {
+      "caseId": "GB-17",
+      "flowPossible": true,
+      "state": "needs_confirmation",
+      "naturalArtifact": "calendar",
+      "secondaryArtifacts": ["checklist"],
+      "requiredUserInputs": ["birth_date", "jurisdiction"],
+      "gates": {
+        "access": "full",
+        "rights": "approved",
+        "freshness": "current",
+        "locale": "adaptation_required",
+        "safety": "restricted",
+        "privacy": "sensitive_private_only",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "shortReason": "Routine age rows support an anchor-derived calendar under the verified open license, but UK jurisdiction must apply and clinical-risk or optional branches remain outside the safe routine preview."
+    },
+    {
+      "caseId": "GB-18",
+      "flowPossible": false,
+      "state": "hold",
+      "naturalArtifact": null,
+      "secondaryArtifacts": [],
+      "requiredUserInputs": [],
+      "gates": {
+        "access": "full",
+        "rights": "pending",
+        "freshness": "pending",
+        "locale": "adaptation_required",
+        "safety": "not_required",
+        "privacy": "pending",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "shortReason": "Five idea templates are visible, but the continuously changing collection does not define one bounded user job or a stable complete row set."
+    }
+  ]
+}

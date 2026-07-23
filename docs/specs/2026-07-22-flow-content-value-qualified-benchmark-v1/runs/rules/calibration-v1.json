@@ -1,0 +1,2462 @@
+{
+  "role": "rules",
+  "phase": "calibration",
+  "independence": "deterministic baseline rules; no other role output used",
+  "cases": [
+    {
+      "caseId": "VQ-01",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "official_procedure_rows",
+      "userJob": "어린이집 보육료 지원 신청의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ01-R01",
+        "VQ01-R02",
+        "VQ01-R03",
+        "VQ01-R04"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-01-I01",
+          "type": "decide",
+          "title": "입소일과 현재 보육서비스 확인",
+          "detail": "보육료 전환 조건과 현재 이용 서비스를 확인한다.",
+          "completion": "공식 조건을 확인하고 적용 여부를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [
+            {
+              "statement": "보육료 전환 조건과 현재 이용 서비스를 확인한다.",
+              "provenance": "source"
+            }
+          ],
+          "sourceRefs": [
+            "VQ01-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-01-I02",
+          "type": "action",
+          "title": "복지로 또는 주민센터에서 신청",
+          "detail": "공식 온라인 또는 방문 신청 경로를 이용한다.",
+          "completion": "“복지로 또는 주민센터에서 신청” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ01-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-01-I03",
+          "type": "record",
+          "title": "신청 결과 확인",
+          "detail": "공식 처리 결과를 확인한다.",
+          "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ01-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-01-I04",
+          "type": "record",
+          "title": "지원 시작월 확인",
+          "detail": "결과에서 보육료 지원 시작월을 확인한다.",
+          "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ01-R04"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "todo",
+      "secondaryProjections": [
+        "memo"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_private_public_review",
+        "locale": "pass",
+        "safety": "pass_benefit_not_determined",
+        "privacy": "pass_no_sensitive_documents"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "todo": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-01-I01",
+              "title": "입소일과 현재 보육서비스 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ01-R01"
+              ],
+              "completion": "source-backed"
+            },
+            {
+              "itemId": "VQ-01-I02",
+              "title": "복지로 또는 주민센터에서 신청",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ01-R02"
+              ],
+              "completion": "source-backed"
+            },
+            {
+              "itemId": "VQ-01-I03",
+              "title": "신청 결과 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ01-R03"
+              ],
+              "completion": "source-backed"
+            },
+            {
+              "itemId": "VQ-01-I04",
+              "title": "지원 시작월 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ01-R04"
+              ],
+              "completion": "source-backed"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+        },
+        "memo": {
+          "availability": "ready",
+          "body": "어린이집 보육료 지원 신청 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1173,
+        "outputCharacters": 2933
+      }
+    },
+    {
+      "caseId": "VQ-02",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "official_periodic_service",
+      "userJob": "자동차검사 D-14의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ02-R01",
+        "VQ02-R02",
+        "VQ02-R03",
+        "VQ02-R04",
+        "VQ02-R05"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-02-I01",
+          "type": "decide",
+          "title": "정기검사 대상 확인",
+          "detail": "등록되어 운행 중인 자동차는 일정 기간마다 정기검사를 받는다.",
+          "completion": "공식 조건을 확인하고 적용 여부를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [
+            {
+              "statement": "등록되어 운행 중인 자동차는 일정 기간마다 정기검사를 받는다.",
+              "provenance": "source"
+            }
+          ],
+          "sourceRefs": [
+            "VQ02-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-02-I02",
+          "type": "action",
+          "title": "검사기간 공식 조회",
+          "detail": "차량별 검사 가능 기간은 공식 시스템에서 확인한다.",
+          "completion": "“검사기간 공식 조회” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ02-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-02-I03",
+          "type": "action",
+          "title": "검사소와 방문일 결정",
+          "detail": "공식 검사소와 예약 가능일을 확인한다.",
+          "completion": "“검사소와 방문일 결정” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ02-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-02-I04",
+          "type": "record",
+          "title": "검사 결과 기록",
+          "detail": "검사 결과와 부적합 여부를 확인한다.",
+          "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ02-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-02-I05",
+          "type": "action",
+          "title": "필요하면 재검사",
+          "detail": "부적합 시 원문에 명시된 재검사기간을 확인한다.",
+          "completion": "“필요하면 재검사” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ02-R05"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "todo",
+      "secondaryProjections": [
+        "memo"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_official_link",
+        "locale": "pass",
+        "safety": "pass_no_vehicle_diagnosis",
+        "privacy": "pass_vehicle_identifier_not_stored"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "todo": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-02-I01",
+              "title": "정기검사 대상 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ02-R01"
+              ],
+              "completion": "source-backed"
+            },
+            {
+              "itemId": "VQ-02-I02",
+              "title": "검사기간 공식 조회",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ02-R02"
+              ],
+              "completion": "source-backed"
+            },
+            {
+              "itemId": "VQ-02-I03",
+              "title": "검사소와 방문일 결정",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ02-R03"
+              ],
+              "completion": "source-backed"
+            },
+            {
+              "itemId": "VQ-02-I04",
+              "title": "검사 결과 기록",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ02-R04"
+              ],
+              "completion": "source-backed"
+            },
+            {
+              "itemId": "VQ-02-I05",
+              "title": "필요하면 재검사",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ02-R05"
+              ],
+              "completion": "source-backed"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+        },
+        "memo": {
+          "availability": "ready",
+          "body": "자동차검사 기간 확인부터 결과 기록 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1258,
+        "outputCharacters": 3312
+      }
+    },
+    {
+      "caseId": "VQ-03",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "weekday_meal_rows",
+      "userJob": "평일 5일 저녁 식단의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ03-R01",
+        "VQ03-R02",
+        "VQ03-R03",
+        "VQ03-R04",
+        "VQ03-R05"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-03-I01",
+          "type": "action",
+          "title": "월요일 양배추참치덮밥·단무지무침",
+          "detail": "월요일 메뉴와 원문 재료·조리법.",
+          "completion": "“월요일 양배추참치덮밥·단무지무침” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "weekday",
+            "selected",
+            "status"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ03-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-03-I02",
+          "type": "action",
+          "title": "화요일 버섯샐러드",
+          "detail": "화요일 메뉴와 원문 재료·조리법.",
+          "completion": "“화요일 버섯샐러드” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "weekday",
+            "selected",
+            "status"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ03-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-03-I03",
+          "type": "action",
+          "title": "수요일 토마토 야채수프",
+          "detail": "수요일 메뉴와 원문 재료·조리법.",
+          "completion": "“수요일 토마토 야채수프” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "weekday",
+            "selected",
+            "status"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ03-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-03-I04",
+          "type": "action",
+          "title": "목요일 굴무솥밥·무된장국",
+          "detail": "목요일 메뉴와 원문 재료·조리법.",
+          "completion": "“목요일 굴무솥밥·무된장국” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "weekday",
+            "selected",
+            "status"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ03-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-03-I05",
+          "type": "action",
+          "title": "금요일 연어 포케",
+          "detail": "금요일 메뉴와 원문 재료·조리법.",
+          "completion": "“금요일 연어 포케” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "weekday",
+            "selected",
+            "status"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ03-R05"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "calendar",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass_food_caution",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "conditional",
+          "events": [],
+          "reason": "원문 확정 일시 또는 사용자가 정한 기준일이 생기기 전에는 ICS를 만들지 않는다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-03-I01",
+              "title": "월요일 양배추참치덮밥·단무지무침",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ03-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-03-I02",
+              "title": "화요일 버섯샐러드",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ03-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-03-I03",
+              "title": "수요일 토마토 야채수프",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ03-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-03-I04",
+              "title": "목요일 굴무솥밥·무된장국",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ03-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-03-I05",
+              "title": "금요일 연어 포케",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ03-R05"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "별도 메모가 없어도 실행 상태가 충분하다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1147,
+        "outputCharacters": 3243
+      }
+    },
+    {
+      "caseId": "VQ-04",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "ordered_procedure",
+      "userJob": "옷장 정리 1일의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ04-R01",
+        "VQ04-R02",
+        "VQ04-R03",
+        "VQ04-R04",
+        "VQ04-R05",
+        "VQ04-R06"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-04-I01",
+          "type": "action",
+          "title": "비움 기준과 유예 기준 정하기",
+          "detail": "원문 기준을 참고하되 내 상황에 맞는 기준을 정한다.",
+          "completion": "“비움 기준과 유예 기준 정하기” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ04-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-04-I02",
+          "type": "action",
+          "title": "분류용 박스·봉투 준비",
+          "detail": "유예·중고거래·기부·폐기 등으로 미리 나눈다.",
+          "completion": "“분류용 박스·봉투 준비” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ04-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-04-I03",
+          "type": "action",
+          "title": "옷을 남김·유예·처분으로 분류",
+          "detail": "옷을 꺼내 정한 기준으로 분류한다.",
+          "completion": "“옷을 남김·유예·처분으로 분류” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ04-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-04-I04",
+          "type": "action",
+          "title": "남길 옷 되돌려 수납",
+          "detail": "사람·계절·종류에 맞춰 정한 위치로 돌려놓는다.",
+          "completion": "“남길 옷 되돌려 수납” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ04-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-04-I05",
+          "type": "action",
+          "title": "비울 옷 처리 방법 선택",
+          "detail": "중고거래·나눔·기부·방문수거·폐의류함 중 원문 선택지를 사용한다.",
+          "completion": "“비울 옷 처리 방법 선택” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ04-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-04-I06",
+          "type": "record",
+          "title": "유예·처분 후속 상태 남기기",
+          "detail": "바로 끝나지 않은 옷의 유예 또는 처리 상태를 남긴다.",
+          "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ04-R06"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "checklist",
+      "secondaryProjections": [
+        "memo"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-04-I01",
+              "title": "비움 기준과 유예 기준 정하기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ04-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-04-I02",
+              "title": "분류용 박스·봉투 준비",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ04-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-04-I03",
+              "title": "옷을 남김·유예·처분으로 분류",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ04-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-04-I04",
+              "title": "남길 옷 되돌려 수납",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ04-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-04-I05",
+              "title": "비울 옷 처리 방법 선택",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ04-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-04-I06",
+              "title": "유예·처분 후속 상태 남기기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ04-R06"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+        },
+        "memo": {
+          "availability": "ready",
+          "body": "옷장 정리 1일 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1325,
+        "outputCharacters": 3571
+      }
+    },
+    {
+      "caseId": "VQ-05",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "lesson_rows",
+      "userJob": "코드 없이 따라하는 빅데이터 분석의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ05-R01",
+        "VQ05-R02",
+        "VQ05-R03",
+        "VQ05-R04",
+        "VQ05-R05",
+        "VQ05-R06",
+        "VQ05-R07",
+        "VQ05-R08",
+        "VQ05-R09",
+        "VQ05-R10"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-05-I01",
+          "type": "consume",
+          "title": "오리엔테이션",
+          "detail": "강의 이용과 전체 학습 안내.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I02",
+          "type": "consume",
+          "title": "학습개요",
+          "detail": "학습목표와 학습내용.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I03",
+          "type": "consume",
+          "title": "데이터 트렌드",
+          "detail": "데이터 분석의 필요성과 시각화.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I04",
+          "type": "consume",
+          "title": "측정값",
+          "detail": "함수를 사용한 측정값 생성.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I05",
+          "type": "consume",
+          "title": "지역별 테이블 만들기",
+          "detail": "테이블 연결과 대시보드 구성.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I06",
+          "type": "consume",
+          "title": "드릴다운",
+          "detail": "계층구조 만들기.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R06"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I07",
+          "type": "consume",
+          "title": "툴팁 사용하기",
+          "detail": "마우스 툴팁 기능 적용.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R07"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I08",
+          "type": "consume",
+          "title": "간단한 시각화 툴 다루기",
+          "detail": "다양한 시각화 도구 사용.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R08"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I09",
+          "type": "consume",
+          "title": "시각적 개체 활용",
+          "detail": "슬라이서를 통한 시각적 개체 활용.",
+          "completion": "이 차시를 완료하고 진행 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R09"
+          ]
+        },
+        {
+          "itemId": "VQ-05-I10",
+          "type": "action",
+          "title": "형성평가와 학습 정리",
+          "detail": "공개 형성평가와 학습 정리.",
+          "completion": "“형성평가와 학습 정리” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ05-R10"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_links_metadata_only",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-05-I01",
+              "title": "오리엔테이션",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I02",
+              "title": "학습개요",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I03",
+              "title": "데이터 트렌드",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I04",
+              "title": "측정값",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I05",
+              "title": "지역별 테이블 만들기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I06",
+              "title": "드릴다운",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R06"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I07",
+              "title": "툴팁 사용하기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R07"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I08",
+              "title": "간단한 시각화 툴 다루기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R08"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I09",
+              "title": "시각적 개체 활용",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R09"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-05-I10",
+              "title": "형성평가와 학습 정리",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R10"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "ready",
+          "columns": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "rows": [
+            {
+              "itemId": "VQ-05-I01",
+              "title": "오리엔테이션",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R01"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I02",
+              "title": "학습개요",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R02"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I03",
+              "title": "데이터 트렌드",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R03"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I04",
+              "title": "측정값",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R04"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I05",
+              "title": "지역별 테이블 만들기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R05"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I06",
+              "title": "드릴다운",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R06"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I07",
+              "title": "툴팁 사용하기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R07"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I08",
+              "title": "간단한 시각화 툴 다루기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R08"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I09",
+              "title": "시각적 개체 활용",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R09"
+              ]
+            },
+            {
+              "itemId": "VQ-05-I10",
+              "title": "형성평가와 학습 정리",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ05-R10"
+              ]
+            }
+          ]
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "별도 메모가 없어도 실행 상태가 충분하다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1672,
+        "outputCharacters": 5778
+      }
+    },
+    {
+      "caseId": "VQ-06",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "comparison_rows",
+      "userJob": "식물성 음료 품질비교의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ06-R01",
+        "VQ06-R02",
+        "VQ06-R03",
+        "VQ06-R04",
+        "VQ06-R05",
+        "VQ06-R06"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-06-I01",
+          "type": "decide",
+          "title": "원재료 유형 비교",
+          "detail": "검은콩·오트·오트/아몬드 혼합·아몬드 유형.",
+          "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "priority",
+            "candidateEvidence",
+            "decision",
+            "reason"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ06-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-06-I02",
+          "type": "decide",
+          "title": "열량·탄수화물·단백질·지방 비교",
+          "detail": "1팩 기준 영양성분 범위.",
+          "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "priority",
+            "candidateEvidence",
+            "decision",
+            "reason"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ06-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-06-I03",
+          "type": "decide",
+          "title": "당류·나트륨 확인",
+          "detail": "1일 기준치 대비 함량.",
+          "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "priority",
+            "candidateEvidence",
+            "decision",
+            "reason"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ06-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-06-I04",
+          "type": "decide",
+          "title": "표시사항 확인",
+          "detail": "칼슘·비타민류 표시 개선 필요 제품 확인.",
+          "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "priority",
+            "candidateEvidence",
+            "decision",
+            "reason"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ06-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-06-I05",
+          "type": "decide",
+          "title": "안전성 시험 결과 확인",
+          "detail": "중금속·미생물·보존료와 빨대 안전성 시험.",
+          "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "priority",
+            "candidateEvidence",
+            "decision",
+            "reason"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ06-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-06-I06",
+          "type": "decide",
+          "title": "가격 비교",
+          "detail": "유형별 1팩 가격과 최대 2.6배 차이.",
+          "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "priority",
+            "candidateEvidence",
+            "decision",
+            "reason"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ06-R06"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_kogl_attribution",
+        "locale": "pass",
+        "safety": "pass_no_health_recommendation",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-06-I01",
+              "title": "원재료 유형 비교",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-06-I02",
+              "title": "열량·탄수화물·단백질·지방 비교",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-06-I03",
+              "title": "당류·나트륨 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-06-I04",
+              "title": "표시사항 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-06-I05",
+              "title": "안전성 시험 결과 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-06-I06",
+              "title": "가격 비교",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R06"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "ready",
+          "columns": [
+            "priority",
+            "candidateEvidence",
+            "decision",
+            "reason"
+          ],
+          "rows": [
+            {
+              "itemId": "VQ-06-I01",
+              "title": "원재료 유형 비교",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R01"
+              ]
+            },
+            {
+              "itemId": "VQ-06-I02",
+              "title": "열량·탄수화물·단백질·지방 비교",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R02"
+              ]
+            },
+            {
+              "itemId": "VQ-06-I03",
+              "title": "당류·나트륨 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R03"
+              ]
+            },
+            {
+              "itemId": "VQ-06-I04",
+              "title": "표시사항 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R04"
+              ]
+            },
+            {
+              "itemId": "VQ-06-I05",
+              "title": "안전성 시험 결과 확인",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R05"
+              ]
+            },
+            {
+              "itemId": "VQ-06-I06",
+              "title": "가격 비교",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ06-R06"
+              ]
+            }
+          ]
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "별도 메모가 없어도 실행 상태가 충분하다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1311,
+        "outputCharacters": 4237
+      }
+    },
+    {
+      "caseId": "VQ-07",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "curriculum_table",
+      "userJob": "OSSU Computer Science 시작 구간의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ07-R01",
+        "VQ07-R02",
+        "VQ07-R03",
+        "VQ07-R04",
+        "VQ07-R05",
+        "VQ07-R06"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-07-I01",
+          "type": "action",
+          "title": "Introduction to Computer Science and Programming using Python",
+          "detail": "14주·주 6~10시간·high school algebra.",
+          "completion": "“Introduction to Computer Science and Programming using Python” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ07-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-07-I02",
+          "type": "action",
+          "title": "Systematic Program Design",
+          "detail": "13주·주 8~10시간·선수조건 없음.",
+          "completion": "“Systematic Program Design” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ07-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-07-I03",
+          "type": "action",
+          "title": "Class-based Program Design",
+          "detail": "13주·주 5~10시간·Systematic Program Design 선행.",
+          "completion": "“Class-based Program Design” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ07-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-07-I04",
+          "type": "action",
+          "title": "Programming Languages",
+          "detail": "11주·주 4~8시간·Systematic Program Design 선행.",
+          "completion": "“Programming Languages” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ07-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-07-I05",
+          "type": "action",
+          "title": "Object-Oriented Design",
+          "detail": "13주·주 5~10시간·Class-based Program Design 선행.",
+          "completion": "“Object-Oriented Design” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ07-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-07-I06",
+          "type": "action",
+          "title": "Software Architecture",
+          "detail": "4주·주 2~5시간·Object-Oriented Design 선행.",
+          "completion": "“Software Architecture” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ07-R06"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "sheet",
+      "secondaryProjections": [
+        "checklist"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_open_license_attribution",
+        "locale": "pass_non_sensitive",
+        "safety": "pass",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-07-I01",
+              "title": "Introduction to Computer Science and Programming using Python",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-07-I02",
+              "title": "Systematic Program Design",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-07-I03",
+              "title": "Class-based Program Design",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-07-I04",
+              "title": "Programming Languages",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-07-I05",
+              "title": "Object-Oriented Design",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-07-I06",
+              "title": "Software Architecture",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R06"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "ready",
+          "columns": [
+            "status",
+            "completedAt",
+            "note"
+          ],
+          "rows": [
+            {
+              "itemId": "VQ-07-I01",
+              "title": "Introduction to Computer Science and Programming using Python",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R01"
+              ]
+            },
+            {
+              "itemId": "VQ-07-I02",
+              "title": "Systematic Program Design",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R02"
+              ]
+            },
+            {
+              "itemId": "VQ-07-I03",
+              "title": "Class-based Program Design",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R03"
+              ]
+            },
+            {
+              "itemId": "VQ-07-I04",
+              "title": "Programming Languages",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R04"
+              ]
+            },
+            {
+              "itemId": "VQ-07-I05",
+              "title": "Object-Oriented Design",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R05"
+              ]
+            },
+            {
+              "itemId": "VQ-07-I06",
+              "title": "Software Architecture",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ07-R06"
+              ]
+            }
+          ]
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "별도 메모가 없어도 실행 상태가 충분하다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1602,
+        "outputCharacters": 4705
+      }
+    },
+    {
+      "caseId": "VQ-08",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": true,
+      "reason": "완전한 SourceRow와 하나의 지속 상태를 확인해 실행본을 생성했다.",
+      "sourceShape": "packing_rows",
+      "userJob": "Wikivoyage 휴대 수하물·입국서류 준비의 남은 실행 상태를 완료한다.",
+      "sourceRowsUsed": [
+        "VQ08-R01",
+        "VQ08-R02",
+        "VQ08-R03",
+        "VQ08-R04",
+        "VQ08-R05",
+        "VQ08-R06",
+        "VQ08-R07"
+      ],
+      "items": [
+        {
+          "itemId": "VQ-08-I01",
+          "type": "action",
+          "title": "신원 확인 수단",
+          "detail": "휴대 수하물 identification 구간.",
+          "completion": "“신원 확인 수단” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ08-R01"
+          ]
+        },
+        {
+          "itemId": "VQ-08-I02",
+          "type": "action",
+          "title": "결제 수단",
+          "detail": "구매·지불 수단.",
+          "completion": "“결제 수단” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ08-R02"
+          ]
+        },
+        {
+          "itemId": "VQ-08-I03",
+          "type": "action",
+          "title": "의약품과 보조기기",
+          "detail": "개인 의약품·의료 보조기기.",
+          "completion": "“의약품과 보조기기” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ08-R03"
+          ]
+        },
+        {
+          "itemId": "VQ-08-I04",
+          "type": "action",
+          "title": "전자기기",
+          "detail": "여행에 필요한 전자기기.",
+          "completion": "“전자기기” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ08-R04"
+          ]
+        },
+        {
+          "itemId": "VQ-08-I05",
+          "type": "action",
+          "title": "도착 직후 의류",
+          "detail": "도착 환경에 맞는 첫 의류.",
+          "completion": "“도착 직후 의류” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ08-R05"
+          ]
+        },
+        {
+          "itemId": "VQ-08-I06",
+          "type": "action",
+          "title": "티켓과 여정표",
+          "detail": "예약·이동 확인 문서.",
+          "completion": "“티켓과 여정표” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ08-R06"
+          ]
+        },
+        {
+          "itemId": "VQ-08-I07",
+          "type": "action",
+          "title": "여권·비자 등 입국 서류",
+          "detail": "목적지 요구에 맞는 공식 서류.",
+          "completion": "“여권·비자 등 입국 서류” 실행을 마치고 완료 상태를 기록했다.",
+          "schedule": null,
+          "location": null,
+          "fields": [
+            "status",
+            "note"
+          ],
+          "conditions": [],
+          "sourceRefs": [
+            "VQ08-R07"
+          ]
+        }
+      ],
+      "minimumInputs": [],
+      "autoFilledValues": [
+        "sourceTitle",
+        "sourceUrl",
+        "sourceRows"
+      ],
+      "valuesToConfirm": [],
+      "primaryProjection": "checklist",
+      "secondaryProjections": [
+        "memo"
+      ],
+      "forbiddenProjections": [
+        "근거 없는 Calendar/ICS"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "pass",
+        "rights": "pass_cc_by_sa",
+        "locale": "pass_with_destination_recheck",
+        "safety": "pass_medication_caution",
+        "privacy": "pass_no_document_numbers"
+      },
+      "publicReleaseAllowed": true,
+      "privateConversionAllowed": true,
+      "status": "ready",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+        },
+        "checklist": {
+          "availability": "ready",
+          "entries": [
+            {
+              "itemId": "VQ-08-I01",
+              "title": "신원 확인 수단",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ08-R01"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-08-I02",
+              "title": "결제 수단",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ08-R02"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-08-I03",
+              "title": "의약품과 보조기기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ08-R03"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-08-I04",
+              "title": "전자기기",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ08-R04"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-08-I05",
+              "title": "도착 직후 의류",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ08-R05"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-08-I06",
+              "title": "티켓과 여정표",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ08-R06"
+              ],
+              "checked": false
+            },
+            {
+              "itemId": "VQ-08-I07",
+              "title": "여권·비자 등 입국 서류",
+              "status": "not_started",
+              "sourceRefs": [
+                "VQ08-R07"
+              ],
+              "checked": false
+            }
+          ]
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+        },
+        "memo": {
+          "availability": "ready",
+          "body": "휴대 수하물·입국서류 준비 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 1498,
+        "outputCharacters": 3823
+      }
+    },
+    {
+      "caseId": "BQ-01",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": false,
+      "reason": "source·rights·locale·safety gate를 먼저 적용해 실행본 생성을 중단했다.",
+      "sourceShape": "subscriber_gate",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": [],
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "모든 실행 projection"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "fail_rows_not_acquired",
+        "rights": "review_required",
+        "locale": "unknown",
+        "safety": "unknown",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "source_import_required",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "원문 확보 또는 검토가 우선"
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 607,
+        "outputCharacters": 1263
+      }
+    },
+    {
+      "caseId": "BQ-02",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": false,
+      "reason": "source·rights·locale·safety gate를 먼저 적용해 실행본 생성을 중단했다.",
+      "sourceShape": "unbounded_advice",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": [],
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "모든 실행 projection"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "fail_unbounded",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "unknown",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "hold",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "원문 확보 또는 검토가 우선"
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 585,
+        "outputCharacters": 1235
+      }
+    },
+    {
+      "caseId": "BQ-03",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": false,
+      "reason": "source·rights·locale·safety gate를 먼저 적용해 실행본 생성을 중단했다.",
+      "sourceShape": "changing_collection",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": [],
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "모든 실행 projection"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "fail_specific_source_missing",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "fail_financial_scope",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "source_import_required",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "원문 확보 또는 검토가 우선"
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 606,
+        "outputCharacters": 1283
+      }
+    },
+    {
+      "caseId": "BQ-04",
+      "role": "rules",
+      "phase": "calibration",
+      "flowPossible": false,
+      "reason": "source·rights·locale·safety gate를 먼저 적용해 실행본 생성을 중단했다.",
+      "sourceShape": "provider_promo",
+      "userJob": null,
+      "sourceRowsUsed": [],
+      "items": [],
+      "minimumInputs": [],
+      "autoFilledValues": [],
+      "valuesToConfirm": [],
+      "primaryProjection": null,
+      "secondaryProjections": [],
+      "forbiddenProjections": [
+        "모든 실행 projection"
+      ],
+      "omittedSourceRows": [],
+      "uncertainty": [],
+      "gates": {
+        "source": "fail_provider_only",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "unknown",
+        "privacy": "pass"
+      },
+      "publicReleaseAllowed": false,
+      "privateConversionAllowed": false,
+      "status": "hold",
+      "projections": {
+        "calendar": {
+          "availability": "omitted",
+          "events": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "checklist": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "todo": {
+          "availability": "omitted",
+          "entries": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "sheet": {
+          "availability": "omitted",
+          "columns": [],
+          "rows": [],
+          "reason": "gate 통과 전 생성 금지"
+        },
+        "memo": {
+          "availability": "omitted",
+          "body": null,
+          "reason": "원문 확보 또는 검토가 우선"
+        }
+      },
+      "runTelemetry": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "processingMs": 0,
+        "retries": 0,
+        "humanInterventions": 0,
+        "actualProviderCost": null,
+        "measurementNote": "결정론적 규칙 실행이며 provider token·비용은 측정 대상이 아니다.",
+        "inputCharacters": 573,
+        "outputCharacters": 1237
+      }
+    }
+  ]
+}

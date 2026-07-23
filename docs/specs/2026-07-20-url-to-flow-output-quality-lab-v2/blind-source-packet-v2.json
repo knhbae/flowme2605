@@ -1,0 +1,2200 @@
+{
+  "documentType": "flowme-output-quality-blind-source-packet",
+  "packetVersion": "blind-source-packet-v2.1",
+  "caseSetVersion": "output-quality-v2-cases-2026-07-20.1",
+  "generatedAt": "2026-07-20T12:00:00.000+09:00",
+  "blinding": {
+    "excluded": "gold classification, expected disposition, expected roles, artifact reason, prior review, model identity and cost",
+    "included": "source identity, acquired scope, rows, landmarks, missing-row declaration and user job"
+  },
+  "task": {
+    "output": "For each case decide feasibility, Taxonomy v1.1 core axes, SourceRow roles, canonical entities and five projection availabilities.",
+    "guardrails": [
+      "Do not invent missing rows, dates, recurrence, conditions, facts or outcomes.",
+      "A SourceRow may be Item, Field, Memo, Reference, Conditional response or Omission.",
+      "Metadata-only or missing source must not become a complete Flow.",
+      "Content conversion, rights, locale, safety, privacy and promotion are independent gates.",
+      "Primary artifact is the one retained result needed to finish or resume the user job."
+    ]
+  },
+  "cases": [
+    {
+      "caseId": "OQ-C01-MOVING",
+      "title": "이사 준비 체크리스트",
+      "source": {
+        "sourceId": "source-easylaw-moving",
+        "title": "이사 준비 체크리스트",
+        "publisher": "찾기쉬운 생활법령정보",
+        "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "public_institution",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "공식 페이지의 2주 전·1주 전·2~4일 전·전날·당일·이사 후 6구간",
+        "snapshotId": "snapshot-oq-c01-moving",
+        "contentHash": "sha256:ad9093bfc0bf17d29bb7d9004ba199698eeb286540a8166b267a19c046ed1d20"
+      },
+      "userJob": "이사일을 기준으로 해야 할 일을 날짜에 배치한다.",
+      "claimedScope": "공식 체크리스트의 6개 상대일 구간",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "DS05-R01",
+          "sourceId": "source-easylaw-moving",
+          "snapshotId": "snapshot-oq-c01-moving",
+          "rowType": "offset",
+          "title": "2주 전",
+          "detail": "허가 이사업체 선택·예약, 이사 방법과 표준계약서, 창고 정리, 불필요 물품 처분",
+          "order": 0,
+          "locator": "이사 2주 전"
+        },
+        {
+          "sourceRowId": "DS05-R02",
+          "sourceId": "source-easylaw-moving",
+          "snapshotId": "snapshot-oq-c01-moving",
+          "rowType": "offset",
+          "title": "1주 전",
+          "detail": "엘리베이터·곤돌라 예약, 주소·우편·전화 이전, 공과금·관리비, 배달 중지",
+          "order": 1,
+          "locator": "이사 1주 전"
+        },
+        {
+          "sourceRowId": "DS05-R03",
+          "sourceId": "source-easylaw-moving",
+          "snapshotId": "snapshot-oq-c01-moving",
+          "rowType": "offset",
+          "title": "2~4일 전",
+          "detail": "콘센트·방·창문 점검, 가구 배치, 구조물 철거, 수족관 처리, 전입신고 유의사항",
+          "order": 2,
+          "locator": "이사 2~4일 전"
+        },
+        {
+          "sourceRowId": "DS05-R04",
+          "sourceId": "source-easylaw-moving",
+          "snapshotId": "snapshot-oq-c01-moving",
+          "rowType": "offset",
+          "title": "전날",
+          "detail": "포장 마무리, 세탁기·냉장고·에어컨 배관 정리, 귀중품 보관, 가스 정리",
+          "order": 3,
+          "locator": "이사 전날"
+        },
+        {
+          "sourceRowId": "DS05-R05",
+          "sourceId": "source-easylaw-moving",
+          "snapshotId": "snapshot-oq-c01-moving",
+          "rowType": "offset",
+          "title": "당일",
+          "detail": "짐·청소·개인물품 확인, 이사비 정산, 공과금 확인",
+          "order": 4,
+          "locator": "이사 당일"
+        },
+        {
+          "sourceRowId": "DS05-R06",
+          "sourceId": "source-easylaw-moving",
+          "snapshotId": "snapshot-oq-c01-moving",
+          "rowType": "offset",
+          "title": "이사 후",
+          "detail": "짐 정리, 공과금·가전 연결, 자녀 전학, 확정일자",
+          "order": 5,
+          "locator": "이사 후"
+        }
+      ],
+      "landmarks": [
+        "2주 전",
+        "당일",
+        "이사 후"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-C02-KMOOC-FULL",
+      "title": "K-MOOC Introduction to Data Analysis",
+      "source": {
+        "sourceId": "source-kmooc-data-analysis",
+        "title": "Introduction to Data Analysis",
+        "publisher": "K-MOOC",
+        "url": "https://www.kmooc.kr/view/course/detail/20097",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "education_provider",
+        "format": "course",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "공개 과정 페이지와 강의계획 이미지의 14개 주차 행을 2026-07-20 확인",
+        "snapshotId": "snapshot-oq-c02-kmooc-full",
+        "contentHash": "sha256:f64e97c94c93793c973dbee6abf73ca668a894f8c57a8cc5381dd7629fe4deec"
+      },
+      "userJob": "14개 주차를 펼쳐 놓고 수강·활동 진도를 기록한다.",
+      "claimedScope": "과정 메타데이터 5행과 강의계획 이미지 14행",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "date",
+          "title": "수강 신청·운영 기간",
+          "detail": "2026-07-01부터 2026-08-31까지",
+          "order": 0,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "reference",
+          "title": "과정 분량",
+          "detail": "14주, 총 40시간, VOD 26시간 15분",
+          "order": 1,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "reference",
+          "title": "난이도와 수료증",
+          "detail": "초급 수준이며 수료증 제공",
+          "order": 2,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "reference",
+          "title": "수료 조건",
+          "detail": "참여 80% 조건",
+          "order": 3,
+          "locator": "수료 조건"
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "date",
+          "title": "성적 입력 기간",
+          "detail": "2026-09-01부터 2026-09-04까지",
+          "order": 4,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-W01",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "1주차 · 데이터 리터러시",
+          "detail": "주차 활동: 퀴즈",
+          "order": 5,
+          "locator": "강의계획 이미지 1행"
+        },
+        {
+          "sourceRowId": "KMOOC-W02",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "2주차 · 생성형 AI 활용 데이터 분석",
+          "detail": "주차 활동: 과제",
+          "order": 6,
+          "locator": "강의계획 이미지 2행"
+        },
+        {
+          "sourceRowId": "KMOOC-W03",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "3주차 · 데이터 분석",
+          "detail": "주차 활동: 토론",
+          "order": 7,
+          "locator": "강의계획 이미지 3행"
+        },
+        {
+          "sourceRowId": "KMOOC-W04",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "4주차 · 데이터 수집",
+          "detail": "주차 활동: 퀴즈",
+          "order": 8,
+          "locator": "강의계획 이미지 4행"
+        },
+        {
+          "sourceRowId": "KMOOC-W05",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "5주차 · 파일 다루기",
+          "detail": "주차 활동: 퀴즈",
+          "order": 9,
+          "locator": "강의계획 이미지 5행"
+        },
+        {
+          "sourceRowId": "KMOOC-W06",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "6주차 · 탐색적 데이터 분석",
+          "detail": "주차 활동: 토론",
+          "order": 10,
+          "locator": "강의계획 이미지 6행"
+        },
+        {
+          "sourceRowId": "KMOOC-W07",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "7주차 · 수치 데이터 분석을 위한 NumPy",
+          "detail": "주차 활동: 과제",
+          "order": 11,
+          "locator": "강의계획 이미지 7행"
+        },
+        {
+          "sourceRowId": "KMOOC-W08",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "8주차 · Pandas 활용 데이터 분석",
+          "detail": "주차 활동: 퀴즈",
+          "order": 12,
+          "locator": "강의계획 이미지 8행"
+        },
+        {
+          "sourceRowId": "KMOOC-W09",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "9주차 · 데이터 시각화",
+          "detail": "주차 활동: 토론",
+          "order": 13,
+          "locator": "강의계획 이미지 9행"
+        },
+        {
+          "sourceRowId": "KMOOC-W10",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "10주차 · 통계분석",
+          "detail": "주차 활동: 토론",
+          "order": 14,
+          "locator": "강의계획 이미지 10행"
+        },
+        {
+          "sourceRowId": "KMOOC-W11",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "11주차 · 데이터 기반 문제 해결 전략",
+          "detail": "주차 활동: 토론",
+          "order": 15,
+          "locator": "강의계획 이미지 11행"
+        },
+        {
+          "sourceRowId": "KMOOC-W12",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "12주차 · 텍스트 데이터 분석",
+          "detail": "주차 활동: 토론",
+          "order": 16,
+          "locator": "강의계획 이미지 12행"
+        },
+        {
+          "sourceRowId": "KMOOC-W13",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "13주차 · 감성 분석",
+          "detail": "주차 활동: 토론",
+          "order": 17,
+          "locator": "강의계획 이미지 13행"
+        },
+        {
+          "sourceRowId": "KMOOC-W14",
+          "sourceId": "source-kmooc-data-analysis",
+          "snapshotId": "snapshot-oq-c02-kmooc-full",
+          "rowType": "table_row",
+          "title": "14주차 · 데이터 분석 보고서 작성법",
+          "detail": "주차 활동: 없음",
+          "order": 18,
+          "locator": "강의계획 이미지 14행"
+        }
+      ],
+      "landmarks": [
+        "14주",
+        "1주차 데이터 리터러시",
+        "14주차 데이터 분석 보고서 작성법"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-C03-LIBRIVOX",
+      "title": "Anne of Green Gables, Version 5",
+      "source": {
+        "sourceId": "source-librivox-anne-v5",
+        "title": "Anne of Green Gables, Version 5",
+        "publisher": "LibriVox",
+        "url": "https://librivox.org/anne-of-green-gables-version-5-by-lucy-maud-montgomery/",
+        "locale": "en",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "open_knowledge",
+        "format": "audio",
+        "rightsBasis": "public_domain",
+        "rightsReview": "approved",
+        "allowedUse": [
+          "link_metadata",
+          "personal_transform",
+          "internal_review",
+          "public_derived"
+        ],
+        "evidence": "공개 페이지의 38개 section 제목과 재생시간 전체 확인",
+        "snapshotId": "snapshot-oq-c03-librivox",
+        "contentHash": "sha256:086f1b97129f9039c152c60b8b0ff6bb234faf95549e4292dfb09f941ed3bbab"
+      },
+      "userJob": "38개 장을 순서대로 듣고 마지막 위치와 완료 상태를 관리한다.",
+      "claimedScope": "공개된 38개 chapter 행",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "LIBRIVOX-C01",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "1. Mrs. Rachel Lynde Is Surprised",
+          "detail": "재생시간 00:14:35",
+          "order": 0,
+          "locator": "Section 1"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C02",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "2. Matthew Cuthbert Is Surprised",
+          "detail": "재생시간 00:26:09",
+          "order": 1,
+          "locator": "Section 2"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C03",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "3. Marilla Cuthbert Is Surprised",
+          "detail": "재생시간 00:12:47",
+          "order": 2,
+          "locator": "Section 3"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C04",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "4. Morning at Green Gables",
+          "detail": "재생시간 00:12:03",
+          "order": 3,
+          "locator": "Section 4"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C05",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "5. Anne's History",
+          "detail": "재생시간 00:11:23",
+          "order": 4,
+          "locator": "Section 5"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C06",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "6. Marilla Makes Up Her Mind",
+          "detail": "재생시간 00:10:18",
+          "order": 5,
+          "locator": "Section 6"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C07",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "7. Anne Says Her Prayers",
+          "detail": "재생시간 00:06:54",
+          "order": 6,
+          "locator": "Section 7"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C08",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "8. Anne's Bringing-Up Is Begun",
+          "detail": "재생시간 00:23:23",
+          "order": 7,
+          "locator": "Section 8"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C09",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "9. Mrs. Rachel Lynde Is Properly Horrified",
+          "detail": "재생시간 00:13:01",
+          "order": 8,
+          "locator": "Section 9"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C10",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "10. Anne's Apology",
+          "detail": "재생시간 00:19:34",
+          "order": 9,
+          "locator": "Section 10"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C11",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "11. Anne's Impressions of Sunday School",
+          "detail": "재생시간 00:09:16",
+          "order": 10,
+          "locator": "Section 11"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C12",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "12. A Solemn Vow and Promise",
+          "detail": "재생시간 00:11:08",
+          "order": 11,
+          "locator": "Section 12"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C13",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "13. The Delights of Anticipation",
+          "detail": "재생시간 00:08:57",
+          "order": 12,
+          "locator": "Section 13"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C14",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "14. Anne's Confession",
+          "detail": "재생시간 00:16:07",
+          "order": 13,
+          "locator": "Section 14"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C15",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "15. A Tempest in the School Teapot",
+          "detail": "재생시간 00:26:34",
+          "order": 14,
+          "locator": "Section 15"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C16",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "16. Diana Is Invited to Tea with Tragic Results",
+          "detail": "재생시간 00:21:11",
+          "order": 15,
+          "locator": "Section 16"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C17",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "17. A New Interest in Life",
+          "detail": "재생시간 00:10:39",
+          "order": 16,
+          "locator": "Section 17"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C18",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "18. Anne to the Rescue",
+          "detail": "재생시간 00:16:59",
+          "order": 17,
+          "locator": "Section 18"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C19",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "19. A Concert a Catastrophe and a Confession",
+          "detail": "재생시간 00:19:47",
+          "order": 18,
+          "locator": "Section 19"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C20",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "20. A Good Imagination Gone Wrong",
+          "detail": "재생시간 00:11:50",
+          "order": 19,
+          "locator": "Section 20"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C21",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "21. A New Departure in Flavorings",
+          "detail": "재생시간 00:18:14",
+          "order": 20,
+          "locator": "Section 21"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C22",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "22. Anne Is Invited Out to Tea",
+          "detail": "재생시간 00:07:55",
+          "order": 21,
+          "locator": "Section 22"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C23",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "23. Anne Comes to Grief in an Affair of Honor",
+          "detail": "재생시간 00:11:46",
+          "order": 22,
+          "locator": "Section 23"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C24",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "24. Miss Stacy and Her Pupils Get Up a Concert",
+          "detail": "재생시간 00:10:34",
+          "order": 23,
+          "locator": "Section 24"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C25",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "25. Matthew Insists on Puffed Sleeves",
+          "detail": "재생시간 00:23:29",
+          "order": 24,
+          "locator": "Section 25"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C26",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "26. The Story Club Is Formed",
+          "detail": "재생시간 00:18:47",
+          "order": 25,
+          "locator": "Section 26"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C27",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "27. Vanity and Vexation of Spirit",
+          "detail": "재생시간 00:17:46",
+          "order": 26,
+          "locator": "Section 27"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C28",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "28. An Unfortunate Lily Maid",
+          "detail": "재생시간 00:15:19",
+          "order": 27,
+          "locator": "Section 28"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C29",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "29. An Epoch in Anne's Life",
+          "detail": "재생시간 00:15:38",
+          "order": 28,
+          "locator": "Section 29"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C30",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "30. The Queens Class Is Organized",
+          "detail": "재생시간 00:21:04",
+          "order": 29,
+          "locator": "Section 30"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C31",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "31. Where the Brook and River Meet",
+          "detail": "재생시간 00:11:24",
+          "order": 30,
+          "locator": "Section 31"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C32",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "32. The Pass List Is Out",
+          "detail": "재생시간 00:16:08",
+          "order": 31,
+          "locator": "Section 32"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C33",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "33. The Hotel Concert",
+          "detail": "재생시간 00:18:13",
+          "order": 32,
+          "locator": "Section 33"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C34",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "34. A Queen's Girl",
+          "detail": "재생시간 00:13:36",
+          "order": 33,
+          "locator": "Section 34"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C35",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "35. The Winter at Queen's",
+          "detail": "재생시간 00:10:14",
+          "order": 34,
+          "locator": "Section 35"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C36",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "36. The Glory and the Dream",
+          "detail": "재생시간 00:11:29",
+          "order": 35,
+          "locator": "Section 36"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C37",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "37. The Reaper Whose Name Is Death",
+          "detail": "재생시간 00:12:23",
+          "order": 36,
+          "locator": "Section 37"
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C38",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-oq-c03-librivox",
+          "rowType": "resource",
+          "title": "38. The Bend in the Road",
+          "detail": "재생시간 00:15:02",
+          "order": 37,
+          "locator": "Section 38"
+        }
+      ],
+      "landmarks": [
+        "Chapter 1",
+        "Chapter 20",
+        "Chapter 38"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-C04-PASSPORT",
+      "title": "18세 이상 여권 만료 재발급",
+      "source": {
+        "sourceId": "source-passport-adult-renewal",
+        "title": "유효기간 만료에 따른 재발급",
+        "publisher": "외교부 여권안내",
+        "url": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "government_public",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "18세 이상 섹션의 신청 경로·구비서류·수수료·유의사항만 범위로 고정",
+        "snapshotId": "snapshot-oq-c04-passport",
+        "contentHash": "sha256:9561e070264def8f67afc357742a1c155ae4e081ac800cd130953e18b8256423"
+      },
+      "userJob": "성인 본인이 여권 만료 재발급에 필요한 준비를 마치고 신청한다.",
+      "claimedScope": "18세 이상 신청자 섹션; 미성년·분실·훼손은 제외",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "PASSPORT-R01",
+          "sourceId": "source-passport-adult-renewal",
+          "snapshotId": "snapshot-oq-c04-passport",
+          "rowType": "procedure",
+          "title": "신청 경로 선택",
+          "detail": "방문 신청 또는 온라인 신청",
+          "order": 0,
+          "locator": "신청방법"
+        },
+        {
+          "sourceRowId": "PASSPORT-R02",
+          "sourceId": "source-passport-adult-renewal",
+          "snapshotId": "snapshot-oq-c04-passport",
+          "rowType": "check",
+          "title": "여권발급신청서",
+          "detail": "여권발급신청서 작성 예시",
+          "order": 1,
+          "locator": "18세 이상 > 기본 구비 서류"
+        },
+        {
+          "sourceRowId": "PASSPORT-R03",
+          "sourceId": "source-passport-adult-renewal",
+          "snapshotId": "snapshot-oq-c04-passport",
+          "rowType": "check",
+          "title": "여권용 사진 1매",
+          "detail": "6개월 이내 촬영한 사진",
+          "order": 2,
+          "locator": "18세 이상 > 기본 구비 서류"
+        },
+        {
+          "sourceRowId": "PASSPORT-R04",
+          "sourceId": "source-passport-adult-renewal",
+          "snapshotId": "snapshot-oq-c04-passport",
+          "rowType": "check",
+          "title": "신분증",
+          "detail": "유효기간 이내의 국가기관 발행 신분 증명서",
+          "order": 3,
+          "locator": "18세 이상 > 기본 구비 서류"
+        },
+        {
+          "sourceRowId": "PASSPORT-R05",
+          "sourceId": "source-passport-adult-renewal",
+          "snapshotId": "snapshot-oq-c04-passport",
+          "rowType": "check",
+          "title": "기존 여권",
+          "detail": "유효기간이 남아 있는 경우 준비",
+          "order": 4,
+          "locator": "18세 이상 > 기본 구비 서류"
+        },
+        {
+          "sourceRowId": "PASSPORT-R06",
+          "sourceId": "source-passport-adult-renewal",
+          "snapshotId": "snapshot-oq-c04-passport",
+          "rowType": "table_row",
+          "title": "여권 종류와 수수료",
+          "detail": "복수여권 10년 58면 52,000원·26면 49,000원, 단수여권 1년 이내 17,000원",
+          "order": 5,
+          "locator": "발급 여권 및 수수료"
+        },
+        {
+          "sourceRowId": "PASSPORT-R07",
+          "sourceId": "source-passport-adult-renewal",
+          "snapshotId": "snapshot-oq-c04-passport",
+          "rowType": "reference",
+          "title": "대리신청 제한",
+          "detail": "본인 직접 신청이 원칙이며 대리신청은 예외적인 경우에 한함",
+          "order": 6,
+          "locator": "유의사항"
+        }
+      ],
+      "landmarks": [
+        "18세 이상",
+        "사진 1매",
+        "방문 또는 온라인 신청"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-C05-WASHER",
+      "title": "Samsung Eco Drum Clean",
+      "source": {
+        "sourceId": "source-samsung-washer-maintenance",
+        "title": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+        "publisher": "Samsung UK Support",
+        "url": "https://www.samsung.com/uk/support/home-appliances/washing-machine-maintenance-tips-to-keep-your-machine-running-smoothly/",
+        "locale": "en-GB",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "brand_official",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "Eco Drum Clean 구간의 실행 조건·3단계·금지사항·모델 경계 확인",
+        "snapshotId": "snapshot-oq-c05-washer",
+        "contentHash": "sha256:bd314162b44beaf45242f73c8f58df8c7edef3ffc0b5cf9e7aa11672403d4656"
+      },
+      "userJob": "40회 세탁 또는 기기 알림 때 안전한 세탁조 청소 task를 실행한다.",
+      "claimedScope": "전체 유지관리 문서 중 Eco Drum Clean 구간",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "WASHER-R01",
+          "sourceId": "source-samsung-washer-maintenance",
+          "snapshotId": "snapshot-oq-c05-washer",
+          "rowType": "condition",
+          "title": "실행 시점",
+          "detail": "40회 세탁마다 또는 세탁기가 필요 알림을 표시하면 더 일찍 실행",
+          "order": 0,
+          "locator": "Eco Drum Clean"
+        },
+        {
+          "sourceRowId": "WASHER-R02",
+          "sourceId": "source-samsung-washer-maintenance",
+          "snapshotId": "snapshot-oq-c05-washer",
+          "rowType": "reference",
+          "title": "드럼 비우기",
+          "detail": "세탁물을 넣지 않고 드럼을 비운다",
+          "order": 1,
+          "locator": "Cycle guidance"
+        },
+        {
+          "sourceRowId": "WASHER-R03",
+          "sourceId": "source-samsung-washer-maintenance",
+          "snapshotId": "snapshot-oq-c05-washer",
+          "rowType": "reference",
+          "title": "세제·표백제 금지",
+          "detail": "세제나 표백제를 사용하지 않는다",
+          "order": 2,
+          "locator": "Cycle guidance"
+        },
+        {
+          "sourceRowId": "WASHER-R04",
+          "sourceId": "source-samsung-washer-maintenance",
+          "snapshotId": "snapshot-oq-c05-washer",
+          "rowType": "procedure",
+          "title": "전원 켜기",
+          "detail": "Power 버튼을 눌러 세탁기를 켠다",
+          "order": 3,
+          "locator": "Step 1"
+        },
+        {
+          "sourceRowId": "WASHER-R05",
+          "sourceId": "source-samsung-washer-maintenance",
+          "snapshotId": "snapshot-oq-c05-washer",
+          "rowType": "procedure",
+          "title": "Eco Drum Clean 선택",
+          "detail": "다이얼에서 Eco Drum Clean을 선택한다",
+          "order": 4,
+          "locator": "Step 2"
+        },
+        {
+          "sourceRowId": "WASHER-R06",
+          "sourceId": "source-samsung-washer-maintenance",
+          "snapshotId": "snapshot-oq-c05-washer",
+          "rowType": "procedure",
+          "title": "세척 시작",
+          "detail": "Start/Pause 버튼을 눌러 시작한다",
+          "order": 5,
+          "locator": "Step 3"
+        },
+        {
+          "sourceRowId": "WASHER-R07",
+          "sourceId": "source-samsung-washer-maintenance",
+          "snapshotId": "snapshot-oq-c05-washer",
+          "rowType": "reference",
+          "title": "모델 확인",
+          "detail": "정확한 코스는 모델에 따라 다르므로 사용자 설명서를 확인한다",
+          "order": 6,
+          "locator": "Model note"
+        }
+      ],
+      "landmarks": [
+        "every 40 washes",
+        "no detergent or bleach",
+        "3 steps"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-C06-NASA",
+      "title": "Build, Launch, Recover: Build a Crane Activity",
+      "source": {
+        "sourceId": "source-nasa-crane",
+        "title": "Build, Launch, Recover: Build a Crane Activity",
+        "publisher": "NASA STEM",
+        "url": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+        "locale": "en-US",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "government_public",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "Materials·Safety·Preparation·Procedure·Challenge Questions 8행",
+        "snapshotId": "snapshot-oq-c06-nasa",
+        "contentHash": "sha256:886123a5b7dc0a588eee26243b1f3a3da60ba7cd487bfeac6f73a43752f53893"
+      },
+      "userJob": "팀 활동에서 재료·가위 안전·제작·시험 순서를 빠뜨리지 않는다.",
+      "claimedScope": "NASA 활동 페이지의 재료·안전·절차·성찰 전체",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "DS12-R01",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "reference",
+          "title": "재료 준비",
+          "detail": "상자, 골판지, 종이클립, 컵, 카드지, 필기구, 나무 막대, 가위, 보안경, 끈, 테이프, 무게추, 스케치 종이",
+          "order": 0,
+          "locator": "Materials List"
+        },
+        {
+          "sourceRowId": "DS12-R02",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "reference",
+          "title": "가위 안전",
+          "detail": "자르는 물체를 지지하고 날카로운 도구를 들고 이동하지 않기",
+          "order": 1,
+          "locator": "Safety"
+        },
+        {
+          "sourceRowId": "DS12-R03",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "procedure",
+          "title": "팀·컵 준비",
+          "detail": "3~4명 팀, 컵 손잡이용 끈, 점차 무거워지는 컵 준비",
+          "order": 2,
+          "locator": "Preparation"
+        },
+        {
+          "sourceRowId": "DS12-R04",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "procedure",
+          "title": "크레인 설계·제작",
+          "detail": "크레인을 스케치하고 고정 베이스와 회전 구조로 제작",
+          "order": 3,
+          "locator": "Procedure 1-2"
+        },
+        {
+          "sourceRowId": "DS12-R05",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "procedure",
+          "title": "감개 설계·제작",
+          "detail": "take-up reel을 스케치하고 제작",
+          "order": 4,
+          "locator": "Procedure 3-4"
+        },
+        {
+          "sourceRowId": "DS12-R06",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "procedure",
+          "title": "끈·후크 연결과 시험",
+          "detail": "끈과 종이클립 후크를 연결하고 바닥의 컵에 닿도록 시험",
+          "order": 5,
+          "locator": "Procedure 5-6"
+        },
+        {
+          "sourceRowId": "DS12-R07",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "procedure",
+          "title": "컵 쌓기",
+          "detail": "가벼운 컵부터 카드지를 사이에 두고 더 무거운 컵을 쌓아 가장 높은 탑 만들기",
+          "order": 6,
+          "locator": "Procedure 7-11"
+        },
+        {
+          "sourceRowId": "DS12-R08",
+          "sourceId": "source-nasa-crane",
+          "snapshotId": "snapshot-oq-c06-nasa",
+          "rowType": "reference",
+          "title": "도전 질문",
+          "detail": "설계 어려움·개선·균형추와 하중에 대해 기록",
+          "order": 7,
+          "locator": "Challenge Questions"
+        }
+      ],
+      "landmarks": [
+        "Materials List",
+        "Safety",
+        "Procedure 7-11"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-C07-FIT100",
+      "title": "국민체력인증 이용안내",
+      "source": {
+        "sourceId": "source-fit100",
+        "title": "국민체력인증 이용안내",
+        "publisher": "국민체력100",
+        "url": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "public_institution",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "공식 이용 절차 STEP 01~09",
+        "snapshotId": "snapshot-oq-c07-fit100",
+        "contentHash": "sha256:5077e918d1832fbd95d88da16d7cf3cb350143c0aa83e99f7f3b3010a6c29072"
+      },
+      "userJob": "체력측정 신청부터 공식 결과·처방 연결까지 순서대로 진행한다.",
+      "claimedScope": "공식 이용 절차 9단계",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "DS07-R01",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "온라인 회원가입",
+          "detail": "결과 확인과 인증서 발급을 위한 회원가입",
+          "order": 0,
+          "locator": "STEP 01"
+        },
+        {
+          "sourceRowId": "DS07-R02",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "문진검사",
+          "detail": "사전 신체활동 질문으로 측정 가능 여부 판별",
+          "order": 1,
+          "locator": "STEP 02"
+        },
+        {
+          "sourceRowId": "DS07-R03",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "체력측정 신청",
+          "detail": "온라인·전화·방문 예약 중 선택",
+          "order": 2,
+          "locator": "STEP 03"
+        },
+        {
+          "sourceRowId": "DS07-R04",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "체력인증센터 방문",
+          "detail": "신청한 센터 방문",
+          "order": 3,
+          "locator": "STEP 04"
+        },
+        {
+          "sourceRowId": "DS07-R05",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "체력측정",
+          "detail": "센터에서 측정",
+          "order": 4,
+          "locator": "STEP 05"
+        },
+        {
+          "sourceRowId": "DS07-R06",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "체력평가",
+          "detail": "측정 결과 평가",
+          "order": 5,
+          "locator": "STEP 06"
+        },
+        {
+          "sourceRowId": "DS07-R07",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "인증서 발급",
+          "detail": "공식 인증서 발급",
+          "order": 6,
+          "locator": "STEP 07"
+        },
+        {
+          "sourceRowId": "DS07-R08",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "운동처방",
+          "detail": "기관이 제공하는 공식 운동처방",
+          "order": 7,
+          "locator": "STEP 08"
+        },
+        {
+          "sourceRowId": "DS07-R09",
+          "sourceId": "source-fit100",
+          "snapshotId": "snapshot-oq-c07-fit100",
+          "rowType": "procedure",
+          "title": "체력관리",
+          "detail": "공식 결과를 바탕으로 체력관리",
+          "order": 8,
+          "locator": "STEP 09"
+        }
+      ],
+      "landmarks": [
+        "STEP 01",
+        "STEP 05",
+        "STEP 09"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-C08-AC-DECISION",
+      "title": "시스템 에어컨 세척 서비스 안내",
+      "source": {
+        "sourceId": "source-samsung-ac-service",
+        "title": "시스템 에어컨 세척 서비스 안내",
+        "publisher": "삼성전자서비스",
+        "url": "https://www.samsungsvc.co.kr/video/28612",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "brand_official",
+        "format": "video",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "전문세척/일반세척 범위·비용/시간·신청 경로 비교 구간",
+        "snapshotId": "snapshot-oq-c08-ac-decision",
+        "contentHash": "sha256:614896b589866d5273e19cb1ba3fd91141c74c318e1dbae468dcf5ada6de6c75"
+      },
+      "userJob": "필요한 세척 범위를 비교해 전문세척 또는 일반세척을 선택한다.",
+      "claimedScope": "전문세척과 일반세척 차이점 구간",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "AC-R01",
+          "sourceId": "source-samsung-ac-service",
+          "snapshotId": "snapshot-oq-c08-ac-decision",
+          "rowType": "table_row",
+          "title": "전문세척 범위",
+          "detail": "전문 장비를 이용해 제품을 분해하고 주요 부품의 먼지·이물·오염물을 세척",
+          "order": 0,
+          "locator": "전문세척"
+        },
+        {
+          "sourceRowId": "AC-R02",
+          "sourceId": "source-samsung-ac-service",
+          "snapshotId": "snapshot-oq-c08-ac-decision",
+          "rowType": "table_row",
+          "title": "일반세척 범위",
+          "detail": "세척용 스프레이로 제품 외관과 필터 등 주요 부위의 먼지·이물을 제거",
+          "order": 1,
+          "locator": "일반세척"
+        },
+        {
+          "sourceRowId": "AC-R03",
+          "sourceId": "source-samsung-ac-service",
+          "snapshotId": "snapshot-oq-c08-ac-decision",
+          "rowType": "table_row",
+          "title": "시간·비용 차이",
+          "detail": "전문세척은 일반세척보다 시간과 비용이 더 든다",
+          "order": 2,
+          "locator": "차이점"
+        },
+        {
+          "sourceRowId": "AC-R04",
+          "sourceId": "source-samsung-ac-service",
+          "snapshotId": "snapshot-oq-c08-ac-decision",
+          "rowType": "reference",
+          "title": "비용 확인",
+          "detail": "세척 비용은 에어컨 평수에 따라 달라 서비스 신청 때 안내받는다",
+          "order": 3,
+          "locator": "비용"
+        },
+        {
+          "sourceRowId": "AC-R05",
+          "sourceId": "source-samsung-ac-service",
+          "snapshotId": "snapshot-oq-c08-ac-decision",
+          "rowType": "reference",
+          "title": "신청 경로",
+          "detail": "전문세척 1588-4190, 일반세척 1588-3366 또는 홈페이지 출장서비스",
+          "order": 4,
+          "locator": "신청"
+        }
+      ],
+      "landmarks": [
+        "전문세척",
+        "일반세척",
+        "시간과 비용"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-B01-HEAT",
+      "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "source": {
+        "sourceId": "source-nongsaro-heat",
+        "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+        "publisher": "농촌진흥청 농사로",
+        "url": "https://www.nongsaro.go.kr/portal/ps/psz/psza/contentSub.ps?bbsId=10&cntntsNo=51&menuId=PS02485&nttSeCode=&pageIndex=1&pageSize=10&searchText=&searchType=title",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "government_public",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "작업 전·중·후와 중지·119 조건 10행",
+        "snapshotId": "snapshot-oq-b01-heat",
+        "contentHash": "sha256:ef87f6adbcd478248429672402e380968cac24b46e72fecf815d72bf5a1d59f1"
+      },
+      "userJob": "폭염 농작업 때 사전 준비와 중지·응급 조건을 놓치지 않는다.",
+      "claimedScope": "가이드의 10개 역할 행",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "DS01-R01",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "condition",
+          "title": "폭염 단계 기준 확인",
+          "detail": "체감온도 기준 관심 33°C, 주의 35°C, 경고 38°C, 위험 39°C 및 열대야 25°C 기준",
+          "order": 0,
+          "locator": "폭염특보 및 체감온도 기준"
+        },
+        {
+          "sourceRowId": "DS01-R02",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "procedure",
+          "title": "작업 전 체감온도 확인",
+          "detail": "작업 시작 전에 체감온도와 경보 단계를 확인",
+          "order": 1,
+          "locator": "농작업 전"
+        },
+        {
+          "sourceRowId": "DS01-R03",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "procedure",
+          "title": "작업 시간 조정",
+          "detail": "정오부터 17시 사이 작업 조정 또는 중지 계획 공유",
+          "order": 2,
+          "locator": "농작업 전"
+        },
+        {
+          "sourceRowId": "DS01-R04",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "procedure",
+          "title": "물·그늘·보호구 준비",
+          "detail": "충분한 물, 가까운 그늘, 작업에 맞는 보호구 준비",
+          "order": 3,
+          "locator": "농작업 전"
+        },
+        {
+          "sourceRowId": "DS01-R05",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "procedure",
+          "title": "20분마다 수분 섭취",
+          "detail": "작업 중 20분 간격으로 물 마시기",
+          "order": 4,
+          "locator": "농작업 중"
+        },
+        {
+          "sourceRowId": "DS01-R06",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "procedure",
+          "title": "휴식 및 위험 단계 작업중지",
+          "detail": "그늘에서 쉬고 위험 단계에서는 작업을 중지",
+          "order": 5,
+          "locator": "농작업 중"
+        },
+        {
+          "sourceRowId": "DS01-R07",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "procedure",
+          "title": "온열질환 증상 확인",
+          "detail": "동료의 이상 증상을 함께 확인",
+          "order": 6,
+          "locator": "농작업 중"
+        },
+        {
+          "sourceRowId": "DS01-R08",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "condition",
+          "title": "의식이 없으면 즉시 119",
+          "detail": "의식이 없는 경우 즉시 119 신고",
+          "order": 7,
+          "locator": "응급조치"
+        },
+        {
+          "sourceRowId": "DS01-R09",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "procedure",
+          "title": "작업 후 회복",
+          "detail": "수분 보충, 샤워, 시원한 곳에서 휴식",
+          "order": 8,
+          "locator": "농작업 후"
+        },
+        {
+          "sourceRowId": "DS01-R10",
+          "sourceId": "source-nongsaro-heat",
+          "snapshotId": "snapshot-oq-b01-heat",
+          "rowType": "reference",
+          "title": "사업주 의무 확인",
+          "detail": "사업주가 제공하고 확인해야 할 안전조치 구간",
+          "order": 9,
+          "locator": "사업주 체크리스트"
+        }
+      ],
+      "landmarks": [
+        "작업 전",
+        "위험 단계 작업중지",
+        "의식이 없으면 119"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-B02-KMOOC-META",
+      "title": "K-MOOC 메타데이터만 확보",
+      "source": {
+        "sourceId": "source-kmooc-meta-only",
+        "title": "Introduction to Data Analysis",
+        "publisher": "K-MOOC",
+        "url": "https://www.kmooc.kr/view/course/detail/20097",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "partial",
+        "providerType": "education_provider",
+        "format": "course",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "강의계획 이미지 행을 제외하고 메타데이터 5행만 확보한 A 조건",
+        "snapshotId": "snapshot-oq-b02-kmooc-meta",
+        "contentHash": "sha256:6c3d3ed98c23f0154586419b296ffa901273920e72cdd240d91c907d88e8e142"
+      },
+      "userJob": "14주 진도를 관리한다.",
+      "claimedScope": "과정 메타데이터만; 14주 주차 행은 미확보",
+      "declaredSourceCompleteness": "partial",
+      "sourceRows": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "sourceId": "source-kmooc-meta-only",
+          "snapshotId": "snapshot-oq-b02-kmooc-meta",
+          "rowType": "date",
+          "title": "수강 신청·운영 기간",
+          "detail": "2026-07-01부터 2026-08-31까지",
+          "order": 0,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "sourceId": "source-kmooc-meta-only",
+          "snapshotId": "snapshot-oq-b02-kmooc-meta",
+          "rowType": "reference",
+          "title": "과정 분량",
+          "detail": "14주, 총 40시간, VOD 26시간 15분",
+          "order": 1,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "sourceId": "source-kmooc-meta-only",
+          "snapshotId": "snapshot-oq-b02-kmooc-meta",
+          "rowType": "reference",
+          "title": "난이도와 수료증",
+          "detail": "초급 수준이며 수료증 제공",
+          "order": 2,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "sourceId": "source-kmooc-meta-only",
+          "snapshotId": "snapshot-oq-b02-kmooc-meta",
+          "rowType": "reference",
+          "title": "수료 조건",
+          "detail": "참여 80% 조건",
+          "order": 3,
+          "locator": "수료 조건"
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "sourceId": "source-kmooc-meta-only",
+          "snapshotId": "snapshot-oq-b02-kmooc-meta",
+          "rowType": "date",
+          "title": "성적 입력 기간",
+          "detail": "2026-09-01부터 2026-09-04까지",
+          "order": 4,
+          "locator": "과정 메타데이터"
+        },
+        {
+          "sourceRowId": "KMOOC-A-MISSING",
+          "sourceId": "source-kmooc-meta-only",
+          "snapshotId": "snapshot-oq-b02-kmooc-meta",
+          "rowType": "omission",
+          "title": "14개 주차 행",
+          "detail": "강의계획 이미지 원문을 확보하지 못한 상태",
+          "order": 5,
+          "locator": "강의계획 이미지"
+        }
+      ],
+      "landmarks": [
+        "14주 과정 메타데이터",
+        "주차 행 미확보"
+      ],
+      "missingRows": [
+        "14개 주차 제목과 활동"
+      ]
+    },
+    {
+      "caseId": "OQ-B03-REMODEL",
+      "title": "리모델링 계약서 체크리스트 10",
+      "source": {
+        "sourceId": "source-ohouse-remodel",
+        "title": "리모델링 계약서 체크리스트 10",
+        "publisher": "오늘의집 노하우",
+        "url": "https://ohou.se/advices/1972",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "editorial_media",
+        "format": "article",
+        "rightsBasis": "unknown",
+        "rightsReview": "pending",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "공개된 계약 확인 10개 행; 법률·권리 독립 검토 필요",
+        "snapshotId": "snapshot-oq-b03-remodel",
+        "contentHash": "sha256:70c42f83d87e3a154f9646b8ba746e944d9be1250f8bb43777d6e1d4280d823d"
+      },
+      "userJob": "리모델링 계약 전에 10개 계약 기준을 비교하고 보완 요청을 정한다.",
+      "claimedScope": "원문 체크리스트 10행",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "DS02-R01",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "업체 정보",
+          "detail": "계약 상대방의 회사 정보",
+          "order": 0,
+          "locator": "체크리스트 1"
+        },
+        {
+          "sourceRowId": "DS02-R02",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "공사 시작일과 종료일",
+          "detail": "공사 기간의 시작·종료일",
+          "order": 1,
+          "locator": "체크리스트 2"
+        },
+        {
+          "sourceRowId": "DS02-R03",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "지연배상",
+          "detail": "공사 지연 시 배상 조건",
+          "order": 2,
+          "locator": "체크리스트 3"
+        },
+        {
+          "sourceRowId": "DS02-R04",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "대금 지급 방법과 날짜",
+          "detail": "지급 단계·방법·시점",
+          "order": 3,
+          "locator": "체크리스트 4"
+        },
+        {
+          "sourceRowId": "DS02-R05",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "최종 금액과 추가 비용",
+          "detail": "총액과 추가 비용 발생 조건",
+          "order": 4,
+          "locator": "체크리스트 5"
+        },
+        {
+          "sourceRowId": "DS02-R06",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "세금계산서 발행 기한",
+          "detail": "세금계산서 발행 시점",
+          "order": 5,
+          "locator": "체크리스트 6"
+        },
+        {
+          "sourceRowId": "DS02-R07",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "자재내역서",
+          "detail": "자재 명칭·규격 등을 담는 별지",
+          "order": 6,
+          "locator": "체크리스트 7"
+        },
+        {
+          "sourceRowId": "DS02-R08",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "변경 권한",
+          "detail": "공사 내용 변경의 승인 주체와 방식",
+          "order": 7,
+          "locator": "체크리스트 8"
+        },
+        {
+          "sourceRowId": "DS02-R09",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "A/S 기간",
+          "detail": "하자 보수 또는 A/S 기간",
+          "order": 8,
+          "locator": "체크리스트 9"
+        },
+        {
+          "sourceRowId": "DS02-R10",
+          "sourceId": "source-ohouse-remodel",
+          "snapshotId": "snapshot-oq-b03-remodel",
+          "rowType": "table_row",
+          "title": "계약 해지와 위약금",
+          "detail": "해지 조건과 위약금",
+          "order": 9,
+          "locator": "체크리스트 10"
+        }
+      ],
+      "landmarks": [
+        "업체 정보",
+        "추가 비용",
+        "계약 해지와 위약금"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-B04-TODOIST",
+      "title": "Todoist Podcast Workflow template",
+      "source": {
+        "sourceId": "source-todoist-podcast",
+        "title": "Podcast Workflow template",
+        "publisher": "Todoist",
+        "url": "https://www.todoist.com/templates/podcast-workflow",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "metadata_only",
+        "providerType": "brand_official",
+        "format": "template",
+        "rightsBasis": "provider_terms",
+        "rightsReview": "pending",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "공개 페이지에는 4개 phase 이름만 있고 세부 task는 템플릿 복사/권한 뒤에 확인",
+        "snapshotId": "snapshot-oq-b04-todoist",
+        "contentHash": "sha256:be9d8d4992281e47d1846a1f2e2e7b378ea5b20188ae0435e863134ad150ba93"
+      },
+      "userJob": "팟캐스트 제작의 실제 task를 프로젝트로 가져온다.",
+      "claimedScope": "공개 phase 이름 4개와 세부 task 접근 경계",
+      "declaredSourceCompleteness": "metadata_only",
+      "sourceRows": [
+        {
+          "sourceRowId": "TODOIST-R01",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-oq-b04-todoist",
+          "rowType": "reference",
+          "title": "Pre-production",
+          "detail": "공개 페이지에서 확인된 상위 단계 이름",
+          "order": 0,
+          "locator": "Public phase 1"
+        },
+        {
+          "sourceRowId": "TODOIST-R02",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-oq-b04-todoist",
+          "rowType": "reference",
+          "title": "Production",
+          "detail": "공개 페이지에서 확인된 상위 단계 이름",
+          "order": 1,
+          "locator": "Public phase 2"
+        },
+        {
+          "sourceRowId": "TODOIST-R03",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-oq-b04-todoist",
+          "rowType": "reference",
+          "title": "Post-production",
+          "detail": "공개 페이지에서 확인된 상위 단계 이름",
+          "order": 2,
+          "locator": "Public phase 3"
+        },
+        {
+          "sourceRowId": "TODOIST-R04",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-oq-b04-todoist",
+          "rowType": "reference",
+          "title": "Distribution",
+          "detail": "공개 페이지에서 확인된 상위 단계 이름",
+          "order": 3,
+          "locator": "Public phase 4"
+        },
+        {
+          "sourceRowId": "TODOIST-R05",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-oq-b04-todoist",
+          "rowType": "omission",
+          "title": "세부 task 행",
+          "detail": "템플릿 복사 또는 권한 있는 원문 확보 전에는 세부 task를 볼 수 없음",
+          "order": 4,
+          "locator": "Copy template boundary"
+        }
+      ],
+      "landmarks": [
+        "Pre-production",
+        "Distribution",
+        "세부 task 미확보"
+      ],
+      "missingRows": [
+        "각 phase의 task·담당자·마감"
+      ]
+    },
+    {
+      "caseId": "OQ-P01-OSSU",
+      "title": "OSSU Computer Science Curriculum",
+      "source": {
+        "sourceId": "source-ossu",
+        "title": "OSSU Computer Science Curriculum",
+        "publisher": "Open Source Society University",
+        "url": "https://github.com/ossu/computer-science",
+        "locale": "en",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "open_knowledge",
+        "format": "table",
+        "rightsBasis": "open_license",
+        "rightsReview": "approved",
+        "allowedUse": [
+          "link_metadata",
+          "personal_transform",
+          "internal_review",
+          "public_derived"
+        ],
+        "evidence": "Intro CS와 Core Programming 6개 과정 행",
+        "snapshotId": "snapshot-oq-p01-ossu",
+        "contentHash": "sha256:7801c785e7ccab278044e7d4a075d7a943390d444c74ef9a4b500fb0da5e20ef"
+      },
+      "userJob": "선수조건을 지키며 OSSU 시작 구간 6개 과정의 진도를 관리한다.",
+      "claimedScope": "전체 커리큘럼이 아니라 시작 구간 6행",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "DS10-R01",
+          "sourceId": "source-ossu",
+          "snapshotId": "snapshot-oq-p01-ossu",
+          "rowType": "resource",
+          "title": "Introduction to Computer Science and Programming using Python",
+          "detail": "14주, 주 6~10시간, 선수조건 high school algebra",
+          "order": 0,
+          "locator": "Intro CS table"
+        },
+        {
+          "sourceRowId": "DS10-R02",
+          "sourceId": "source-ossu",
+          "snapshotId": "snapshot-oq-p01-ossu",
+          "rowType": "resource",
+          "title": "Systematic Program Design",
+          "detail": "13주, 주 8~10시간, 선수조건 없음",
+          "order": 1,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R03",
+          "sourceId": "source-ossu",
+          "snapshotId": "snapshot-oq-p01-ossu",
+          "rowType": "resource",
+          "title": "Class-based Program Design",
+          "detail": "13주, 주 5~10시간, Systematic Program Design와 High School Math 선행",
+          "order": 2,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R04",
+          "sourceId": "source-ossu",
+          "snapshotId": "snapshot-oq-p01-ossu",
+          "rowType": "resource",
+          "title": "Programming Languages",
+          "detail": "11주, 주 4~8시간, Systematic Program Design 선행",
+          "order": 3,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R05",
+          "sourceId": "source-ossu",
+          "snapshotId": "snapshot-oq-p01-ossu",
+          "rowType": "resource",
+          "title": "Object-Oriented Design",
+          "detail": "13주, 주 5~10시간, Class-based Program Design 선행",
+          "order": 4,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R06",
+          "sourceId": "source-ossu",
+          "snapshotId": "snapshot-oq-p01-ossu",
+          "rowType": "resource",
+          "title": "Software Architecture",
+          "detail": "4주, 주 2~5시간, Object Oriented Design 선행",
+          "order": 5,
+          "locator": "Core programming table"
+        }
+      ],
+      "landmarks": [
+        "Intro CS",
+        "Systematic Program Design",
+        "Software Architecture"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-P02-PACKING",
+      "title": "Packing list",
+      "source": {
+        "sourceId": "source-wikivoyage-packing",
+        "title": "Packing list",
+        "publisher": "Wikivoyage",
+        "url": "https://en.wikivoyage.org/wiki/Packing_list",
+        "locale": "en",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "open_knowledge",
+        "format": "article",
+        "rightsBasis": "open_license",
+        "rightsReview": "approved",
+        "allowedUse": [
+          "link_metadata",
+          "personal_transform",
+          "internal_review",
+          "public_derived"
+        ],
+        "evidence": "Carry-on essentials와 Documents 자연 구간 7행",
+        "snapshotId": "snapshot-oq-p02-packing",
+        "contentHash": "sha256:673fab6947ed8eae988f99e89672aa9999017dcc3462e451322d90b1139129e7"
+      },
+      "userJob": "휴대 수하물 필수품과 입국 서류를 빠뜨리지 않는다.",
+      "claimedScope": "휴대 수하물·서류 7행",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "DS11-R01",
+          "sourceId": "source-wikivoyage-packing",
+          "snapshotId": "snapshot-oq-p02-packing",
+          "rowType": "check",
+          "title": "신원 확인 수단",
+          "detail": "휴대 수하물 필수품의 identification 구간",
+          "order": 0,
+          "locator": "Carry-on essentials"
+        },
+        {
+          "sourceRowId": "DS11-R02",
+          "sourceId": "source-wikivoyage-packing",
+          "snapshotId": "snapshot-oq-p02-packing",
+          "rowType": "check",
+          "title": "결제 수단",
+          "detail": "구매·지불 수단",
+          "order": 1,
+          "locator": "Carry-on essentials"
+        },
+        {
+          "sourceRowId": "DS11-R03",
+          "sourceId": "source-wikivoyage-packing",
+          "snapshotId": "snapshot-oq-p02-packing",
+          "rowType": "check",
+          "title": "의약품과 보조기기",
+          "detail": "개인 의약품·의료 보조기기",
+          "order": 2,
+          "locator": "Carry-on essentials"
+        },
+        {
+          "sourceRowId": "DS11-R04",
+          "sourceId": "source-wikivoyage-packing",
+          "snapshotId": "snapshot-oq-p02-packing",
+          "rowType": "check",
+          "title": "전자기기",
+          "detail": "여행에 필요한 전자기기",
+          "order": 3,
+          "locator": "Carry-on essentials"
+        },
+        {
+          "sourceRowId": "DS11-R05",
+          "sourceId": "source-wikivoyage-packing",
+          "snapshotId": "snapshot-oq-p02-packing",
+          "rowType": "check",
+          "title": "도착 직후 의류",
+          "detail": "도착 환경에 맞는 첫 의류",
+          "order": 4,
+          "locator": "Carry-on essentials"
+        },
+        {
+          "sourceRowId": "DS11-R06",
+          "sourceId": "source-wikivoyage-packing",
+          "snapshotId": "snapshot-oq-p02-packing",
+          "rowType": "check",
+          "title": "티켓과 여정표",
+          "detail": "예약·이동 확인 문서",
+          "order": 5,
+          "locator": "Documents"
+        },
+        {
+          "sourceRowId": "DS11-R07",
+          "sourceId": "source-wikivoyage-packing",
+          "snapshotId": "snapshot-oq-p02-packing",
+          "rowType": "check",
+          "title": "여권·비자 등 입국 서류",
+          "detail": "목적지 요구에 맞는 공식 서류",
+          "order": 6,
+          "locator": "Documents"
+        }
+      ],
+      "landmarks": [
+        "identification",
+        "medication",
+        "passport/visa"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-P03-VEHICLE",
+      "title": "자동차검사 공식 날짜창",
+      "source": {
+        "sourceId": "source-ts-inspection",
+        "title": "정기검사 대상·기준·유효기간 안내",
+        "publisher": "한국교통안전공단",
+        "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "public_institution",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "공식 페이지는 기준을 제공하며 개인 차량의 실제 날짜는 공식 조회/사용자 입력 필요",
+        "snapshotId": "snapshot-oq-p03-vehicle",
+        "contentHash": "sha256:ef32b0e9905a8cc2e2c62f876d6b7f9aa851e2243eb0a732a817cd21d700fb07"
+      },
+      "userJob": "공식 조회한 검사 가능 기간 안에 방문일을 정한다.",
+      "claimedScope": "차량별 날짜를 추정하지 않는 날짜창 템플릿",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "VEHICLE-R01",
+          "sourceId": "source-ts-inspection",
+          "snapshotId": "snapshot-oq-p03-vehicle",
+          "rowType": "date",
+          "title": "자동차검사 유효기간",
+          "detail": "공식 조회에서 차량별 검사 가능 시작일과 종료일을 확인해야 함",
+          "order": 0,
+          "locator": "정기검사 대상·기준·유효기간"
+        }
+      ],
+      "landmarks": [
+        "공식 검사 유효기간",
+        "사용자 입력 경계"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-P04-PORTFOLIO",
+      "title": "포트폴리오 4주 만에 준비하기",
+      "source": {
+        "sourceId": "source-velog-portfolio",
+        "title": "포트폴리오 4주 만에 준비하기",
+        "publisher": "Briley / Velog",
+        "url": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "full",
+        "providerType": "creator",
+        "format": "article",
+        "rightsBasis": "unknown",
+        "rightsReview": "pending",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "공개 본문의 가이드 1~7과 준비 순서를 2026-07-20 직접 확인",
+        "snapshotId": "snapshot-oq-p04-portfolio",
+        "contentHash": "sha256:80675b794f7879d136c796b931abb940277a91fa3f66bf2d9c5b2a8de8a79521"
+      },
+      "userJob": "개발 포트폴리오 프로젝트를 기획부터 배포·정리까지 단계별로 진행한다.",
+      "claimedScope": "본문의 7개 프로젝트 개발 가이드",
+      "declaredSourceCompleteness": "complete",
+      "sourceRows": [
+        {
+          "sourceRowId": "PORTFOLIO-R01",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-oq-p04-portfolio",
+          "rowType": "procedure",
+          "title": "팀과 아이템·기술 선정",
+          "detail": "팀을 구성하고 CRUD·로그인·검색 기능 범위와 기술 스택을 정한다",
+          "order": 0,
+          "locator": "가이드 1"
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R02",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-oq-p04-portfolio",
+          "rowType": "procedure",
+          "title": "기능·페이지 기획",
+          "detail": "개발 범위를 명확히 하고 페이지와 기능을 기획한다",
+          "order": 1,
+          "locator": "가이드 2"
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R03",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-oq-p04-portfolio",
+          "rowType": "procedure",
+          "title": "DB·API 설계",
+          "detail": "기능 기획에 맞는 DB와 API를 설계하고 문서를 작성한다",
+          "order": 2,
+          "locator": "가이드 3"
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R04",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-oq-p04-portfolio",
+          "rowType": "procedure",
+          "title": "일정·협업 규칙 설정",
+          "detail": "Git Projects로 일정을 나누고 브랜치·커밋 규칙을 정한다",
+          "order": 3,
+          "locator": "가이드 4"
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R05",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-oq-p04-portfolio",
+          "rowType": "procedure",
+          "title": "개발",
+          "detail": "팀 개발과 코드리뷰를 진행한다",
+          "order": 4,
+          "locator": "가이드 5"
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R06",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-oq-p04-portfolio",
+          "rowType": "procedure",
+          "title": "배포·도메인",
+          "detail": "프로젝트를 배포하고 도메인을 설정한다",
+          "order": 5,
+          "locator": "가이드 6"
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R07",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-oq-p04-portfolio",
+          "rowType": "procedure",
+          "title": "포트폴리오 완성",
+          "detail": "설명·실행방법·구조·배포 방식과 데모를 정리한다",
+          "order": 6,
+          "locator": "가이드 7"
+        }
+      ],
+      "landmarks": [
+        "기획",
+        "개발",
+        "배포",
+        "포트폴리오 완성"
+      ],
+      "missingRows": []
+    },
+    {
+      "caseId": "OQ-N01-FOODCRAFT",
+      "title": "FoodCraft 일주일 식단 계획",
+      "source": {
+        "sourceId": "source-foodcraft-landing",
+        "title": "FoodCraft 일주일 식단 계획",
+        "publisher": "FoodCraft",
+        "url": "https://foodcraft.app/ko/guide/jugan-sigdan-gyehoek",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "public",
+        "rowAccess": "metadata_only",
+        "providerType": "brand_official",
+        "format": "article",
+        "rightsBasis": "link_only_assumption",
+        "rightsReview": "restricted",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "자동 장보기 목록 등 경쟁 제품 기능 설명",
+        "snapshotId": "snapshot-oq-n01-foodcraft",
+        "contentHash": "sha256:e61692686611ee97abd73678f1d7d9c9b4b7f461547a421320a13d589c21c39c"
+      },
+      "userJob": "원문에서 실행 가능한 주간 식단을 만든다.",
+      "claimedScope": "제품 기능 설명 랜딩",
+      "declaredSourceCompleteness": "metadata_only",
+      "sourceRows": [
+        {
+          "sourceRowId": "FOODCRAFT-R01",
+          "sourceId": "source-foodcraft-landing",
+          "snapshotId": "snapshot-oq-n01-foodcraft",
+          "rowType": "reference",
+          "title": "자동 장보기 목록 기능 설명",
+          "detail": "제품이 제공하는 기능을 소개하는 서비스 랜딩 문구",
+          "order": 0,
+          "locator": "제품 기능 설명"
+        }
+      ],
+      "landmarks": [
+        "서비스 기능 설명",
+        "실제 식단 행 없음"
+      ],
+      "missingRows": [
+        "식단·재료·날짜 행"
+      ]
+    },
+    {
+      "caseId": "OQ-N02-LOGIN-WALL",
+      "title": "회원 전용 이사 체크리스트",
+      "source": {
+        "sourceId": "source-fail-003",
+        "title": "회원 전용 이사 체크리스트",
+        "publisher": "example.test fixture",
+        "url": "https://example.test/members/moving-checklist",
+        "locale": "ko-KR",
+        "checkedAt": "2026-07-20",
+        "access": "paywalled",
+        "rowAccess": "unavailable",
+        "providerType": "aggregator",
+        "format": "article",
+        "rightsBasis": "unknown",
+        "rightsReview": "pending",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "evidence": "FAIL-003: 제목과 로그인 벽만 보이고 SourceRow 0개",
+        "snapshotId": "snapshot-oq-n02-login-wall",
+        "contentHash": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "userJob": "이사일까지 해야 할 일을 만든다.",
+      "claimedScope": "제목과 로그인 벽만 확인",
+      "declaredSourceCompleteness": "missing",
+      "sourceRows": [],
+      "landmarks": [
+        "sourceRowCount=0",
+        "bodyReadable=false"
+      ],
+      "missingRows": [
+        "원문 본문 전체"
+      ]
+    }
+  ]
+}

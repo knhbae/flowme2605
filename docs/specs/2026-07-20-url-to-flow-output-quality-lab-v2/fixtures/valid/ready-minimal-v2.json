@@ -1,0 +1,253 @@
+{
+  "envelopeSchemaVersion": "flowme-url-to-flow-output-envelope-v2",
+  "caseId": "FIX-READY-01",
+  "requestId": "fixture-ready-01",
+  "sourceEvidence": {
+    "primarySource": {
+      "sourceId": "source-fixture-ready",
+      "url": "https://example.test/fixture-ready",
+      "title": "Source-backed appointment preparation",
+      "snapshot": {
+        "snapshotId": "snapshot-fixture-ready",
+        "capturedAt": "2026-07-20T00:00:00.000Z",
+        "contentHash": "sha256:fixture-ready",
+        "locator": "fixture snapshot"
+      }
+    },
+    "claimedScope": "One appointment row and one user-supplied appointment date field.",
+    "sourceCompleteness": "complete",
+    "sourceRows": [
+      {
+        "sourceRowId": "FIX-R01",
+        "sourceId": "source-fixture-ready",
+        "snapshotId": "snapshot-fixture-ready",
+        "rowType": "check",
+        "title": "Bring the required document",
+        "detail": "Bring the required document to the appointment.",
+        "order": 0,
+        "locator": "row 1"
+      },
+      {
+        "sourceRowId": "FIX-R02",
+        "sourceId": "source-fixture-ready",
+        "snapshotId": "snapshot-fixture-ready",
+        "rowType": "date",
+        "title": "Appointment date",
+        "detail": "Use the user's appointment date.",
+        "order": 1,
+        "locator": "row 2"
+      }
+    ],
+    "landmarks": [
+      {
+        "landmarkId": "FIX-L01",
+        "label": "Document requirement",
+        "sourceRowIds": ["FIX-R01"]
+      }
+    ],
+    "missingRows": [],
+    "roleAssignments": [
+      {
+        "sourceRowId": "FIX-R01",
+        "role": "item",
+        "targetIds": ["item-fixture-ready"],
+        "reason": "This row is independently checkable."
+      },
+      {
+        "sourceRowId": "FIX-R02",
+        "role": "field",
+        "targetIds": ["field-fixture-date"],
+        "reason": "This value is required to schedule the Item."
+      }
+    ]
+  },
+  "feasibility": {
+    "generationState": "completed",
+    "outcome": "proposal",
+    "conversionReadiness": "ready_second_wave",
+    "errorCode": null,
+    "blockers": [],
+    "executableAllowed": true,
+    "publicExportAllowed": true,
+    "reason": "The complete source has a checkable row and an explicit user-input boundary."
+  },
+  "classification": {
+    "taxonomy": {
+      "classificationStatus": "confirmed",
+      "primaryLifeArea": "money_admin_purchase",
+      "secondaryLifeAreas": [],
+      "topicTags": ["appointment", "document"],
+      "sourceShape": "checklist_rows",
+      "secondarySourceShapes": [],
+      "primaryExecutionPattern": "date_preparation",
+      "secondaryExecutionPatterns": [],
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": ["checklist"]
+    },
+    "audienceAndApplicability": {
+      "roles": ["individual"],
+      "ageBands": ["adult"],
+      "skillLevel": "not_applicable",
+      "contentLocale": "en",
+      "applicableLocales": ["en"],
+      "applicability": "global_general",
+      "prerequisites": [],
+      "accountOrEntitlement": "none",
+      "collaborationContext": "solo",
+      "userNeedSignals": ["remember_when", "avoid_omission"],
+      "frictionSignals": ["missed_deadline"]
+    },
+    "access": {
+      "providerType": "user_owned",
+      "platformRoles": ["host"],
+      "discoveryAccess": "public",
+      "rowAccess": "full",
+      "acquisitionMethods": ["html_fetch"],
+      "sourceFormat": {
+        "category": "checklist",
+        "mediaType": "text/html",
+        "detail": { "fixture": true }
+      }
+    },
+    "rights": {
+      "basis": "open_license",
+      "allowedUse": ["link_metadata", "personal_transform", "public_derived"],
+      "territoryScope": "global",
+      "territories": ["GLOBAL"],
+      "reviewStatus": "approved",
+      "personalTransformAllowed": true,
+      "publicReleaseAllowed": true,
+      "rationale": "Fixture license explicitly allows a derived public example."
+    },
+    "review": {
+      "sourceRowStatus": "complete",
+      "conversionReadiness": "ready_second_wave",
+      "freshnessReview": "current",
+      "localeReview": "applicable",
+      "safetyReview": "not_required",
+      "privacyReview": "not_required",
+      "rightsReview": "approved",
+      "promotionState": "public_candidate",
+      "blockers": [],
+      "portfolioRole": "backup",
+      "editorialAction": "keep",
+      "backendStorable": true
+    }
+  },
+  "canonicalDraft": {
+    "flow": {
+      "flowId": "flow-fixture-ready",
+      "title": "Appointment preparation",
+      "userJob": "Prepare the required document for the appointment.",
+      "stepIds": ["step-fixture-ready"],
+      "anchorDefinitions": []
+    },
+    "steps": [
+      {
+        "stepId": "step-fixture-ready",
+        "flowId": "flow-fixture-ready",
+        "title": "Before the appointment",
+        "order": 0,
+        "itemIds": ["item-fixture-ready"],
+        "sourceRowIds": ["FIX-R01", "FIX-R02"]
+      }
+    ],
+    "items": [
+      {
+        "itemId": "item-fixture-ready",
+        "stepId": "step-fixture-ready",
+        "title": "Bring the required document",
+        "intent": "act",
+        "order": 0,
+        "completion": {
+          "mode": "check",
+          "doneWhen": "The required document is ready for the appointment."
+        },
+        "schedule": {
+          "value": "$user.appointmentDate",
+          "sourceRowIds": ["FIX-R02"],
+          "evidenceQuote": null,
+          "userInputPath": "$user.appointmentDate"
+        },
+        "recurrence": null,
+        "fieldIds": ["field-fixture-date"],
+        "memoIds": [],
+        "referenceIds": [],
+        "conditionalResponseIds": [],
+        "sourceRowIds": ["FIX-R01"]
+      }
+    ],
+    "fields": [
+      {
+        "fieldId": "field-fixture-date",
+        "label": "Appointment date",
+        "value": "$user.appointmentDate",
+        "valueType": "date",
+        "sourceRowIds": ["FIX-R02"],
+        "userEditable": true
+      }
+    ],
+    "memos": [],
+    "references": [],
+    "conditionalResponses": []
+  },
+  "projections": {
+    "calendar": {
+      "availability": "primary",
+      "payload": {
+        "title": "Bring the required document",
+        "date": "$user.appointmentDate",
+        "sourceUrl": "https://example.test/fixture-ready",
+        "sourceRowIds": ["FIX-R01", "FIX-R02"],
+        "userInputPath": "$user.appointmentDate"
+      },
+      "essentialFieldsRetained": ["title", "schedule", "sourceUrl"],
+      "lossManifest": []
+    },
+    "checklist": {
+      "availability": "secondary",
+      "payload": {
+        "title": "Appointment preparation",
+        "rows": ["Bring the required document"],
+        "sourceRowIds": ["FIX-R01"]
+      },
+      "essentialFieldsRetained": ["title", "completion"],
+      "lossManifest": [
+        {
+          "field": "schedule",
+          "reason": "Checklist view keeps the date in linked context.",
+          "severity": "nonessential"
+        }
+      ]
+    },
+    "todo": {
+      "availability": "not_applicable",
+      "payload": null,
+      "essentialFieldsRetained": [],
+      "lossManifest": []
+    },
+    "sheet": {
+      "availability": "not_applicable",
+      "payload": null,
+      "essentialFieldsRetained": [],
+      "lossManifest": []
+    },
+    "memo": {
+      "availability": "not_applicable",
+      "payload": null,
+      "essentialFieldsRetained": [],
+      "lossManifest": []
+    }
+  },
+  "reviewEvidence": {
+    "validatorStatus": "not_run",
+    "independentReviewIds": [],
+    "correction": {
+      "editLevel": "not_reviewed",
+      "minutes": null,
+      "itemKeepRate": null,
+      "notes": "Fixture before independent review."
+    },
+    "unresolvedDisagreements": []
+  }
+}

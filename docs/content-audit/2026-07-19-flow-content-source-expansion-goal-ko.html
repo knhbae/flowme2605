@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 콘텐츠 소스·타깃 확장 — 다음 목표</title>
+  <style>
+    :root{--ink:#17221d;--muted:#5c6962;--line:#d7dfda;--page:#edf2ef;--paper:#fff;--green:#176b4f;--gsoft:#e3f3eb;--blue:#255fc9;--bsoft:#e9effc;--coral:#b65245;--csoft:#f9e9e6;--gold:#94680e;--ysoft:#f7efda;--dark:#182821}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--page);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;line-height:1.5;word-break:keep-all}a{color:var(--blue);text-underline-offset:3px}code{padding:1px 5px;border-radius:4px;background:#f1f4f2;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em}
+    .nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;width:min(1440px,calc(100vw - 28px));min-height:52px;margin:auto;padding:0 14px;overflow-x:auto;background:rgba(237,242,239,.97);border-bottom:1px solid #cbd4cf;white-space:nowrap}.nav strong{font-size:13px}.nav a{padding:16px 0 12px;color:var(--muted);font-size:11px;font-weight:850;text-decoration:none;border-bottom:3px solid transparent}.nav a:hover{color:var(--green);border-color:var(--green)}
+    .deck{display:grid;gap:28px;padding:20px 0 58px}.slide{position:relative;width:min(1440px,calc(100vw - 28px));min-height:810px;margin:auto;padding:38px 48px 56px;overflow:hidden;background:var(--paper);border:1px solid #d4ddd8;border-radius:9px;box-shadow:0 14px 38px rgba(22,40,32,.07)}.slide:after{content:attr(data-page);position:absolute;right:22px;bottom:16px;color:#89938e;font-size:11px;font-weight:850}.head{display:flex;justify-content:space-between;gap:20px;padding-bottom:12px;border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:800}
+    h1,h2,h3,p{margin-top:0}h1{max-width:1180px;margin:38px 0 14px;font-size:48px;line-height:1.13;letter-spacing:-.03em}h2{margin:24px 0 8px;font-size:34px;line-height:1.2;letter-spacing:-.025em}h3{margin-bottom:7px;font-size:18px;line-height:1.34}.lead{max-width:1150px;margin-bottom:20px;color:#405048;font-size:18px;line-height:1.62}.small{color:var(--muted);font-size:13px}.micro{color:var(--muted);font-size:11px}.eyebrow{display:inline-flex;padding:5px 9px;border-radius:5px;background:var(--gsoft);color:var(--green);font-size:11px;font-weight:900}
+    .hero-line{margin:20px 0;padding:17px 20px;border-left:6px solid #63c89f;border-radius:6px;background:var(--dark);color:#fff;font-size:24px;font-weight:850}.hero-line span{color:#bcebd8}.grid4,.grid3,.grid2{display:grid;gap:13px}.grid4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .example,.card,.metric,.lane,.gate,.output{border:1px solid var(--line);border-radius:7px;background:#fff}.example{min-height:236px;padding:15px;border-top:5px solid var(--green)}.example:nth-child(2){border-top-color:var(--blue)}.example:nth-child(3){border-top-color:var(--gold)}.example:nth-child(4){border-top-color:var(--coral)}.example .signal{display:block;margin:8px 0;padding:7px 9px;border-radius:5px;background:#f3f6f4;color:var(--green);font-size:12px;font-weight:900}.example p{margin:7px 0;color:var(--muted);font-size:12px}.example b{font-size:15px}.arrowline{display:block;margin:10px 0;color:var(--blue);font-size:12px;font-weight:850}.state{display:inline-flex;margin-top:6px;padding:4px 7px;border-radius:4px;font-size:10px;font-weight:900}.ready{color:var(--green);background:var(--gsoft)}.need{color:var(--coral);background:var(--csoft)}.import{color:var(--blue);background:var(--bsoft)}.hold{color:var(--gold);background:var(--ysoft)}
+    .flowcase{display:grid;grid-template-columns:1fr 34px 1fr 34px 1fr;gap:9px;align-items:stretch;margin-top:15px}.node{padding:14px;border:1px solid var(--line);border-radius:7px;background:#f8faf9}.node b{display:block;margin-bottom:7px;color:var(--green);font-size:13px}.node ul{margin:0;padding-left:17px;color:var(--muted);font-size:12px}.node li{margin:5px 0}.arr{align-self:center;color:var(--green);font-size:24px;font-weight:900;text-align:center}.case-note{margin-top:10px;padding:9px 11px;border-left:4px solid var(--blue);background:var(--bsoft);color:#294c87;font-size:11px}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.metric{padding:14px 16px;background:#f8faf9}.metric strong{display:block;margin-bottom:5px;color:var(--green);font-size:30px;line-height:1}.metric span{color:var(--muted);font-size:11px}.formula{margin:15px 0;padding:14px 17px;border:1px solid #b9d8ca;border-radius:6px;background:var(--gsoft);color:#174b39;font-size:18px;font-weight:900;text-align:center}
+    .hier{display:grid;grid-template-columns:1fr 30px 1fr 30px 1fr 30px 1fr 30px 1fr;gap:7px;align-items:center;margin-top:18px}.hier .node{text-align:center}.hier .item{background:var(--green);color:#fff;border-color:var(--green)}.hier .item b{color:#fff}.hier .item span{color:#d7efe5}.hier span{color:var(--muted);font-size:11px}.card{padding:15px}.card p{margin:0;color:var(--muted);font-size:12px}.card ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:12px}.card li{margin:5px 0}.bad{border-top:5px solid var(--coral)}.good{border-top:5px solid var(--green)}
+    .barset{display:grid;gap:10px;margin-top:14px}.bar{display:grid;grid-template-columns:135px 1fr 48px;gap:9px;align-items:center;font-size:12px}.track{height:19px;border-radius:4px;background:#edf1ef;overflow:hidden}.fill{height:100%;background:var(--green)}.fill.blue{background:var(--blue)}.fill.gold{background:var(--gold)}.fill.coral{background:var(--coral)}
+    .conditions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:17px}.condition{min-height:128px;padding:13px;border:1px solid var(--line);border-radius:6px;background:#f8faf9}.condition em{display:block;margin-bottom:7px;color:var(--green);font-size:11px;font-style:normal;font-weight:900}.condition b{display:block;margin-bottom:6px;font-size:14px}.condition span{color:var(--muted);font-size:11px}
+    .roles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:18px 0}.role{min-height:210px;padding:15px;border:1px solid var(--line);border-radius:7px;background:#f8faf9}.role b{display:block;margin-bottom:7px;color:var(--green);font-size:15px}.role p{color:var(--muted);font-size:11px}.role strong{display:block;margin-top:10px;font-size:11px}.role.flowme{color:#fff;background:var(--dark);border-color:var(--dark)}.role.flowme b{color:#a8e2c9}.role.flowme p{color:#c8d6d0}
+    table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:9px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f3f6f4;color:#46534d;font-size:10px}td:first-child{font-weight:850}.tablewrap{margin-top:14px;overflow-x:auto;border:1px solid var(--line);border-radius:7px}.tablewrap table{min-width:980px}.signal-cell{color:var(--green);font-weight:800}.risk-cell{color:var(--coral)}
+    .matrix{display:grid;grid-template-columns:165px repeat(4,minmax(0,1fr));gap:7px;margin-top:18px}.matrix div{min-height:78px;padding:10px;border:1px solid var(--line);border-radius:5px;background:#f8faf9;font-size:11px}.matrix .mh{min-height:46px;background:var(--dark);color:#fff;font-weight:850}.matrix .rowh{background:var(--gsoft);color:var(--green);font-weight:850}.matrix b{display:block;margin-bottom:4px}.matrix span{color:var(--muted)}
+    .funnel{display:grid;grid-template-columns:1.15fr 36px 1fr 36px .85fr 36px .9fr;gap:8px;align-items:stretch;margin-top:20px}.stage{padding:17px;border:1px solid var(--line);border-radius:7px;background:#f8faf9}.stage strong{display:block;margin-bottom:8px;color:var(--green);font-size:33px}.stage b{display:block;margin-bottom:8px}.stage ul{margin:0;padding-left:17px;color:var(--muted);font-size:11px}.stage li{margin:5px 0}.stage.final{color:#fff;background:var(--dark);border-color:var(--dark)}.stage.final strong{color:#a8e2c9}.stage.final ul{color:#cad8d1}
+    .costgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:17px}.cost{padding:17px;border:1px solid var(--line);border-radius:7px}.cost.cheap{background:var(--gsoft)}.cost.premium{background:var(--bsoft)}.cost h3{font-size:21px}.cost ul{margin:9px 0 0;padding-left:18px;font-size:12px}.cost li{margin:5px 0}.score{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:13px}.score div{padding:10px;border-top:3px solid var(--green);background:#f8faf9;font-size:11px;text-align:center}.score b{display:block;margin-bottom:4px}
+    .outputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px}.output{min-height:128px;padding:14px;border-left:5px solid var(--green)}.output b{display:block;margin-bottom:7px}.output span{color:var(--muted);font-size:11px}.decision{margin-top:18px;padding:19px 22px;border-radius:7px;background:var(--dark);color:#fff}.decision h3{font-size:24px}.decision p{margin:0;color:#d0ddd7}.links{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:14px;font-size:11px}.note{margin-top:14px;padding-top:11px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;line-height:1.55;overflow-wrap:anywhere}
+    .controls{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;gap:7px}.controls button{width:38px;height:38px;border:1px solid #bdc8c2;border-radius:50%;background:#fff;color:var(--green);font-weight:900;box-shadow:0 7px 18px rgba(20,40,31,.12);cursor:pointer}.controls button:hover{background:var(--gsoft)}
+    @media(max-width:1000px){.grid4,.conditions{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:1fr}.roles{grid-template-columns:repeat(2,minmax(0,1fr))}.roles .role:last-child{grid-column:1/-1}.hier{grid-template-columns:1fr}.hier .arr{transform:rotate(90deg)}.funnel{grid-template-columns:1fr}.funnel .arr{transform:rotate(90deg)}.matrix{grid-template-columns:140px repeat(4,220px);overflow-x:auto}.outputs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:700px){.nav{width:100%;padding-left:14px}.slide{width:calc(100vw - 14px);min-height:0;padding:22px 16px 48px;overflow:visible;border-radius:6px}.head{align-items:flex-start;font-size:10px}h1{margin-top:30px;font-size:34px}h2{font-size:27px}.lead{font-size:16px}.hero-line{font-size:19px}.grid4,.grid3,.grid2,.conditions,.roles,.costgrid,.score,.outputs{grid-template-columns:1fr}.roles .role:last-child{grid-column:auto}.flowcase{grid-template-columns:1fr}.flowcase .arr{transform:rotate(90deg)}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.bar{grid-template-columns:105px 1fr 36px}.controls{display:none}.note{word-break:break-all}}
+    @media print{body{background:#fff}.nav,.controls{display:none}.deck{gap:0;padding:0}.slide{width:100%;min-height:100vh;border:0;border-radius:0;box-shadow:none;page-break-after:always}}
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="장표 바로가기">
+    <strong>Flow 소스 확장</strong>
+    <a href="#s1">01 결론</a><a href="#s2">02 변환 예시</a><a href="#s3">03 기존 기준</a><a href="#s4">04 공백</a>
+    <a href="#s5">05 타깃 조건</a><a href="#s6">06 플랫폼 역할</a><a href="#s7">07 한국 후보</a><a href="#s8">08 글로벌 후보</a>
+    <a href="#s9">09 권리·접근</a><a href="#s10">10 실험 퍼널</a><a href="#s11">11 모델·비용</a><a href="#s12">12 목표</a>
+  </nav>
+  <main class="deck">
+    <section class="slide" id="s1" data-page="01 / 12">
+      <div class="head"><span>FlowMe 다음 목표 · 2026-07-19</span><span>기존 지식 복원 + 신규 플랫폼·제공자 탐색</span></div>
+      <h1>인기 콘텐츠를 더 찾되,<br><em style="color:var(--green);font-style:normal">36개 후보 → 12개 원문 → 6개 모델 비교</em>로 좁힌다</h1>
+      <p class="lead">범위를 넓히는 목적은 seed 수를 늘리는 것이 아니다. 서로 다른 사용자 조건·카테고리·플랫폼·접근 상태에서 “원문을 쓸 만한 Flow로 바꿀 수 있는가”를 확인하는 것이다.</p>
+      <div class="grid4">
+        <article class="example"><b><a href="https://ohou.se/advices/1972">오늘의집 계약 체크 10</a></b><span class="signal">25.3만 조회 · 8,028 스크랩</span><p>계약 전 확인 행 10개</p><span class="arrowline">→ 계약 확인표 + 보류 질문</span><p>반응·구조는 강하지만 공개 변환 허가와 최신 법령 확인이 필요하다.</p><span class="state need">permission_required</span></article>
+        <article class="example"><b><a href="https://www.kmooc.kr/view/course/detail/20097">K-MOOC 데이터 분석</a></b><span class="signal">14주 · 40시간 · 만족도 4.5</span><p>과정 기간·주차·수료 조건</p><span class="arrowline">→ 주차별 진도표 + 캘린더</span><p>강의 본문이 아니라 공개 과정 메타데이터를 실행본으로 만든다.</p><span class="state ready">ready · link_only</span></article>
+        <article class="example"><b><a href="https://github.com/ossu/computer-science">OSSU CS</a></b><span class="signal">약 20.7만 stars · 2.57만 forks</span><p>과목·기간·선수조건 표</p><span class="arrowline">→ 학습 구간 + 진도 Sheet</span><p>MIT·공식 API 대조군. 전체를 한 Flow로 만들지 않고 자연 구간으로 나눈다.</p><span class="state ready">ready · open_license</span></article>
+        <article class="example"><b><a href="https://maily.so/notioninside/posts/92zew6vnzep">Maily 노션인사이드</a></b><span class="signal">2.25K 조회</span><p>수집→분류→프로젝트 3단계</p><span class="arrowline">→ 프로젝트 보드 후보</span><p>뒤쪽 원문이 구독자 전용이다. 보이는 구간만으로 완결된 Flow를 꾸미면 실패다.</p><span class="state import">source_import_required</span></article>
+      </div>
+      <div class="hero-line"><span>인기 = 발견 신호</span> · Flow 승격 = 원문 행 + 사용자 일 + 자연 결과물 + 최신성 + 접근 + 권리</div>
+      <p class="note">현재 조사 seed는 국내 15개, 글로벌 9개 등 24개다. 완료 목표는 후보 36개이며, 각 수치는 2026-07-19 관측값 또는 제공자 공개값으로 기록하고 deep set 선정 전에 다시 확인한다.</p>
+    </section>
+
+    <section class="slide" id="s2" data-page="02 / 12">
+      <div class="head"><span>추상어 대신 실제 변환 모양</span><span>원문을 줄이는 것이 아니라 실행 상태로 옮긴다</span></div>
+      <h2>같은 URL 입력이어도 결과는 Flow·원문 요청·허가 필요·보류로 달라져야 한다</h2>
+      <div class="grid2" style="margin-top:18px">
+        <article class="card">
+          <h3>예시 A · 오늘의집 리모델링 계약</h3>
+          <div class="flowcase">
+            <div class="node"><b>원문 행</b><ul><li>착공·완료일</li><li>대금 지급 조건</li><li>자재 내역서</li><li>A/S·해제 조건</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>Item</b><ul><li>계약 주체 일치 확인</li><li>완료일 기입 여부 결정</li><li>자재 별지 요청</li><li>모호하면 서명 보류</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>결과</b><ul><li>계약 전 checklist</li><li>업체별 질문 memo</li><li>전문가 문의 경계</li></ul></div>
+          </div>
+          <p class="case-note">FlowMe가 계약 조항을 새로 쓰거나 법률 판단을 하지 않는다. 공개 발행은 원 권리자 허가 전 보류한다.</p>
+        </article>
+        <article class="card">
+          <h3>예시 B · K-MOOC 14주 강의</h3>
+          <div class="flowcase">
+            <div class="node"><b>원문 행</b><ul><li>수강 기간</li><li>14주 구성</li><li>예상 40시간</li><li>수료 조건</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>Item</b><ul><li>수강 신청</li><li>주차별 학습 완료</li><li>마감 전 미완료 확인</li><li>수료 결과 기록</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>결과</b><ul><li>주차별 calendar</li><li>진도 sheet</li><li>공식 과정 링크</li></ul></div>
+          </div>
+          <p class="case-note">수강 시작일을 사용자가 고르면 일정 projection이 바뀐다. 강의 영상과 교재 본문은 복제하지 않는다.</p>
+        </article>
+        <article class="card">
+          <h3>예시 C · Wikivoyage 준비물</h3>
+          <div class="flowcase">
+            <div class="node"><b>원문 행</b><ul><li>문서·돈</li><li>의류·세면</li><li>전자기기</li><li>목적별 선택 항목</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>Item</b><ul><li>내 여행에 적용</li><li>이미 있음</li><li>구매·대여</li><li>동행자에게 인계</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>결과</b><ul><li>packing checklist</li><li>담당자 memo</li><li>한국 상황 현지화</li></ul></div>
+          </div>
+          <p class="case-note">공식 API로 최근 12개월 6,447 pageviews를 확인할 수 있고 CC BY-SA 조건을 보존해야 한다.</p>
+        </article>
+        <article class="card">
+          <h3>예시 D · 구독자 전용 뉴스레터</h3>
+          <div class="flowcase">
+            <div class="node"><b>보이는 원문</b><ul><li>3단계 제목</li><li>일부 수집 팁</li><li>뒤쪽 구독 잠금</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>판정</b><ul><li>완결 행 부족</li><li>숨은 본문 추정 금지</li><li>로그인 우회 금지</li></ul></div><div class="arr">→</div>
+            <div class="node"><b>결과</b><ul><li>원문 가져오기 요청</li><li>제작자 제휴 후보</li><li>현재는 hold</li></ul></div>
+          </div>
+          <p class="case-note">“그럴듯한 3단계 Flow”를 만들어내는 것보다 올바르게 멈추는 능력이 backend 품질이다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" id="s3" data-page="03 / 12">
+      <div class="head"><span>기존 작업에서 이미 남아 있는 지식</span><span>새 taxonomy를 다시 만들 필요는 없다</span></div>
+      <h2>콘텐츠 구조는 준비되어 있다. 비어 있는 것은 “현재 반응이 있는 원문·제공자” 연결 원장이다</h2>
+      <div class="metrics">
+        <div class="metric"><strong>9</strong><span>lifeArea · 집, 육아, 학습, 돈, 건강, 여행, 식사, 일, 취미</span></div>
+        <div class="metric"><strong>7</strong><span>planningPattern · 날짜, 순서, 반복, 행, 큐, 비교, 단계</span></div>
+        <div class="metric"><strong>6</strong><span>primaryArtifact · calendar, checklist, todo, sheet, memo, hybrid</span></div>
+        <div class="metric"><strong>4</strong><span>portfolioRole · 시작, 반복, 제작자 변형, 공식 앵커</span></div>
+      </div>
+      <div class="hier">
+        <div class="node"><b>SourceRow</b><span>원문 최소 근거</span></div><div class="arr">→</div>
+        <div class="node item"><b>Item</b><span>독립 상태 최소 단위</span></div><div class="arr">→</div>
+        <div class="node"><b>Step</b><span>의미가 같은 Item 묶음</span></div><div class="arr">→</div>
+        <div class="node"><b>Flow</b><span>하나의 사용자 일</span></div><div class="arr">→</div>
+        <div class="node"><b>Bundle / Flow Map</b><span>여러 Flow의 관계</span></div>
+      </div>
+      <div class="formula">ICS나 checklist는 최소 데이터 단위가 아니라 같은 Item의 목적지별 projection이다</div>
+      <div class="grid3">
+        <article class="card"><h3>이미 정한 변환 gate</h3><p>하나의 원문 → 하나의 사용자 일 → 하나의 자연 결과물 → 최소 실행 UI. 원문이 뒷받침하지 않으면 구조를 크게 만들지 않는다.</p></article>
+        <article class="card"><h3>이미 정한 사용자 가치</h3><p>원문을 다시 읽고 수동으로 Calendar·Todo·Memo·Sheet에 옮기는 비용을 줄이되, 사용자의 기존 도구를 대체하지 않는다.</p></article>
+        <article class="card"><h3>이번에 추가할 연결</h3><p><code>targetCondition</code>, 플랫폼 역할, 제공자 유형, 반응 지표, 접근·권리·지역·위험, 변환 상태를 후보마다 붙인다.</p></article>
+      </div>
+      <p class="note">근거: Flow 콘텐츠 계약 v1, canonical data model, source-to-Flow conversion gate, 플랫폼·버티컬 전략, P0 24 예시 원장.</p>
+    </section>
+
+    <section class="slide" id="s4" data-page="04 / 12">
+      <div class="head"><span>왜 지금 확장해야 하는가</span><span>현재 P0의 양보다 분포와 증거가 문제</span></div>
+      <h2>현재 후보는 육아·여행·날짜 준비에 몰려 있고, 전략 플랫폼과 실제 표본도 어긋나 있다</h2>
+      <div class="grid2" style="margin-top:18px">
+        <article class="card bad">
+          <h3>P0 24의 planningPattern 분포</h3>
+          <div class="barset">
+            <div class="bar"><span>날짜 준비</span><div class="track"><div class="fill" style="width:100%"></div></div><b>8</b></div>
+            <div class="bar"><span>순서 실행</span><div class="track"><div class="fill blue" style="width:62.5%"></div></div><b>5</b></div>
+            <div class="bar"><span>반복 루틴</span><div class="track"><div class="fill gold" style="width:25%"></div></div><b>2</b></div>
+            <div class="bar"><span>행·표</span><div class="track"><div class="fill blue" style="width:37.5%"></div></div><b>3</b></div>
+            <div class="bar"><span>자료 큐</span><div class="track"><div class="fill coral" style="width:12.5%"></div></div><b>1</b></div>
+            <div class="bar"><span>비교 결정</span><div class="track"><div class="fill blue" style="width:37.5%"></div></div><b>3</b></div>
+            <div class="bar"><span>단계 성장</span><div class="track"><div class="fill gold" style="width:25%"></div></div><b>2</b></div>
+          </div>
+        </article>
+        <article class="card bad">
+          <h3>기존 조사에서 확인된 6개 공백</h3>
+          <ul>
+            <li>제작자 원본 16개 중 육아 8, 여행 4로 편향</li>
+            <li>P0 전략은 YouTube·NAVER·Brunch지만 실제 100개 표본은 일반 웹·Tistory·공식 페이지 중심</li>
+            <li>100개 중 눈에 보이는 강한 수요 근거는 4개</li>
+            <li>플랫폼 규모와 개별 콘텐츠 반응이 섞임</li>
+            <li>Shorts/Reels·newsletter·PDF·template·사용자 연결형이 비교되지 않음</li>
+            <li>실제 사용자·제공자 사용 검증은 아직 0</li>
+          </ul>
+        </article>
+      </div>
+      <div class="grid3" style="margin-top:14px">
+        <article class="card good"><h3>넓힐 것</h3><p>학습·커리어, 집·생활, 식사, 건강 행동, 취미·만들기, 중장년 지원과 반복·자료 큐·단계 성장.</p></article>
+        <article class="card good"><h3>분리할 것</h3><p>원문 호스트 / 제공자 발굴 / 배포 / 실행 목적지 / benchmark, 그리고 개별 반응 / 제공자 규모.</p></article>
+        <article class="card good"><h3>그대로 둘 것</h3><p>원문 충실도, Item 최소 단위, 자연 결과물, 권리·지역·위험 gate, 실제 사용자 검증 경계.</p></article>
+      </div>
+    </section>
+
+    <section class="slide" id="s5" data-page="05 / 12">
+      <div class="head"><span>타깃 범위</span><span>사람의 나이보다 실행 직전의 상태를 기록</span></div>
+      <h2>“육아 사용자”가 아니라 “무엇 때문에 다시 찾고 옮기는가”를 후보마다 붙인다</h2>
+      <div class="conditions">
+        <div class="condition"><em>01 saved_researching_again</em><b>저장했지만 다시 찾음</b><span>오늘의집 수납팁, 여행 코스, 레시피를 저장해두고 실행 당일 원문을 다시 연다.</span></div>
+        <div class="condition"><em>02 known_anchor_date</em><b>기준 날짜가 있음</b><span>이사일, 출발일, 지원 마감일, 강의 종료일에 맞춰 일정이 움직인다.</span></div>
+        <div class="condition"><em>03 repeating_ownership</em><b>반복 관리가 필요함</b><span>주간 정리, 아이 안전, 운동 관리처럼 한 번 읽고 끝나지 않는다.</span></div>
+        <div class="condition"><em>04 many_rows_to_progress</em><b>행이 많아 진도를 잃음</b><span>14주 강의, CS 커리큘럼, 30개 만들기 프로젝트를 어디까지 했는지 모른다.</span></div>
+        <div class="condition"><em>05 decision_uncertainty</em><b>비교·보류 기준 필요</b><span>리모델링 계약, 전문가 견적, 구매 후보에서 확인 전 진행하면 위험하다.</span></div>
+        <div class="condition"><em>06 handoff_or_share</em><b>누군가에게 인계함</b><span>동행자 준비물, 가족 역할, 행사 준비, 아이 돌봄 안전을 나눠 맡는다.</span></div>
+        <div class="condition"><em>07 official_latest_check</em><b>최신 공식 확인 필요</b><span>지원 공고, 행정 절차, 운영시간, 안전·건강 정보는 실행 시점에 다시 본다.</span></div>
+        <div class="condition"><em>08 portable_tool_transfer</em><b>기존 도구로 옮김</b><span>Calendar, Todo, Notion, Obsidian, Sheets에서 바로 쓸 실행본을 원한다.</span></div>
+      </div>
+      <div class="formula">targetCondition × lifeArea × planningPattern × natural artifact — 네 축을 섞지 않는다</div>
+      <p class="note">최근 육아 wedge는 여전히 가설이다. 이번 확장에서는 육아를 버리는 것이 아니라 여행·학습·생활·커리어·취미 등에서 같은 행동 조건이 반복되는지 비교한다.</p>
+    </section>
+
+    <section class="slide" id="s6" data-page="06 / 12">
+      <div class="head"><span>플랫폼 범위</span><span>플랫폼 이름보다 이번 후보에서 맡는 역할을 먼저 본다</span></div>
+      <h2>모든 플랫폼을 URL fetch 대상으로 보면 backend 범위가 잘못 커진다</h2>
+      <div class="roles">
+        <article class="role"><b>1. source_host</b><p>실제 원문 행이 공개되어 있는 곳.</p><strong>오늘의집 · Maily · K-MOOC · GitHub</strong><p>fetch/extract 후 Flow 또는 hold를 판정한다.</p></article>
+        <article class="role"><b>2. provider_discovery</b><p>권리자·제공자를 찾는 곳.</p><strong>숨고 · 여행에미치다 · Gumroad</strong><p>자동 수집보다 제휴·creator file 흐름을 설계한다.</p></article>
+        <article class="role"><b>3. distribution</b><p>사용자가 콘텐츠를 발견하는 곳.</p><strong>YouTube · Pinterest · Careerly</strong><p>가능하면 연결된 원 출처로 이동한다.</p></article>
+        <article class="role"><b>4. execution_destination</b><p>Flow를 가져가 실제로 쓰는 곳.</p><strong>Calendar · Todoist · Notion · Sheets</strong><p>ICS·Markdown·CSV 같은 projection을 만든다.</p></article>
+        <article class="role flowme"><b>5. benchmark / hold</b><p>수요와 UX는 강하지만 직접 가져오면 안 되는 곳.</p><strong>roadmap.sh · Medium · Pinterest data</strong><p>정확한 hold가 제품 품질이다.</p></article>
+      </div>
+      <div class="grid3">
+        <article class="card"><h3>YouTube는 두 얼굴</h3><p>공개 metadata·통계 API는 후보 발굴에 쓰고, 영상·자막·제작자 경험의 변환은 권리와 제공 방식이 필요하다.</p></article>
+        <article class="card"><h3>Notion도 두 얼굴</h3><p>템플릿 평점은 수요 신호지만 실제 DB 행은 사용자 OAuth·페이지 공유 또는 제작자 파일이 있어야 읽는다.</p></article>
+        <article class="card"><h3>인기 목록의 역할</h3><p>Pinterest·Medium·Substack ranking은 원문을 고르는 discovery layer이지 파생 콘텐츠 생성 허가가 아니다.</p></article>
+      </div>
+    </section>
+
+    <section class="slide" id="s7" data-page="07 / 12">
+      <div class="head"><span>한국 신규 후보</span><span>반응·구조·공식성·제공자 역할을 섞지 않고 비교</span></div>
+      <h2>우선 deep set 후보는 “인기 글 + 공식 실행 원문 + 제공자 lead”를 함께 담는다</h2>
+      <div class="tablewrap">
+        <table aria-label="한국 후보 비교">
+          <thead><tr><th>후보</th><th>현재 근거</th><th>자연 Flow</th><th>역할·상태</th><th>핵심 위험</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://ohou.se/advices/9345">오늘의집 수납팁 5</a></td><td class="signal-cell">68.4만 조회 · 5.31만 스크랩</td><td>수납 실행 checklist</td><td>source_host · 허가 필요</td><td class="risk-cell">이미지·본문 권리</td></tr>
+            <tr><td><a href="https://ohou.se/advices/1972">리모델링 계약 체크 10</a></td><td class="signal-cell">25.3만 조회 · 8,028 스크랩</td><td>계약 확인표 + 보류 질문</td><td>source_host · 허가 필요</td><td class="risk-cell">법률·최신성</td></tr>
+            <tr><td><a href="https://maily.so/notioninside/posts/92zew6vnzep">Maily 노션인사이드</a></td><td class="signal-cell">2.25K 조회</td><td>아이디어→프로젝트 board</td><td>source_host · import 요청</td><td class="risk-cell">구독자 잠금</td></tr>
+            <tr><td><a href="https://www.kmooc.kr/view/course/detail/20097">K-MOOC</a></td><td class="signal-cell">14주 · 40시간 · 만족도 4.5</td><td>학습 calendar + progress sheet</td><td>source_host · ready</td><td class="risk-cell">과정 metadata만</td></tr>
+            <tr><td><a href="https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=666&amp;popMenu=ov">생활법령 이사 체크</a></td><td class="signal-cell">전날·당일·이후 공식 행</td><td>이사 일정 + 서류 checklist</td><td>official source · ready</td><td class="risk-cell">실행 시 최신 확인</td></tr>
+            <tr><td><a href="https://www.childcare.go.kr/?menuno=448">아이사랑 월령 안전</a></td><td class="signal-cell">월령별 공식 행동</td><td>가정 안전 반복 checklist</td><td>official source · ready</td><td class="risk-cell">의료 판단 제외</td></tr>
+            <tr><td><a href="https://www.50plus.or.kr/appView.do?ANN_NO=1540">50Plus 공고</a></td><td class="signal-cell">자격·기간·서류·교육</td><td>지원 calendar + checklist</td><td>official source · 교체 필요</td><td class="risk-cell">예시 공고 마감</td></tr>
+            <tr><td><a href="https://www.10000recipe.com/company/intro.html">만개의레시피</a></td><td class="signal-cell">18만 레시피 · 월 462만 방문</td><td>장보기 + 조리 Flow</td><td>provider_discovery</td><td class="risk-cell">제휴·개별 권리</td></tr>
+            <tr><td><a href="https://yeomi.travel/creator">여행에미치다</a></td><td class="signal-cell">팔로워 500만 · 누적 2억 조회</td><td>권리 있는 코스 package</td><td>provider_discovery</td><td class="risk-cell">원문·권리자 확보</td></tr>
+            <tr><td><a href="https://help.soomgo.com/hc/ko/articles/44174824912793-%EC%88%A8%EA%B3%A0%EC%9D%98-%EC%83%88%EB%A1%9C%EC%9A%B4-%EB%B3%80%ED%99%94-%EC%9D%B4%EB%A0%87%EA%B2%8C-%EC%8B%9C%EC%9E%91%ED%95%A9%EB%8B%88%EB%8B%A4">숨고</a></td><td class="signal-cell">고객 1,400만 · 전문가 200만</td><td>의뢰서 + 견적 비교 sheet</td><td>provider_discovery</td><td class="risk-cell">개별 게시물 수집 금지</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">추천 12개 한국 중심 deep set의 뼈대: 오늘의집 2, Maily 2, K-MOOC, 생활법령, 아이사랑, 국민체력100, 대한민국 구석구석, 비투자 생활재무 1, 최신 50Plus 공고 1, 권리 확보 가능한 레시피 1. 약한 원문을 숫자 맞추기로 넣지 않는다.</p>
+    </section>
+
+    <section class="slide" id="s8" data-page="08 / 12">
+      <div class="head"><span>글로벌·접근 상태 대조군</span><span>한국 후보만으로는 backend의 권리·접근 판정을 시험하기 어렵다</span></div>
+      <h2>공개 API, open license, 사용자 연결, 유료 파일, 차단을 한 번에 비교한다</h2>
+      <div class="tablewrap">
+        <table aria-label="글로벌 후보 비교">
+          <thead><tr><th>후보</th><th>수요·반응 신호</th><th>자연 Flow</th><th>접근·권리</th><th>판정</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://github.com/ossu/computer-science">OSSU CS</a></td><td class="signal-cell">약 20.7만 stars</td><td>구간별 학습 진도표</td><td>GitHub API · MIT</td><td><span class="state ready">ready</span></td></tr>
+            <tr><td><a href="https://en.wikivoyage.org/wiki/Packing_list">Wikivoyage Packing</a></td><td class="signal-cell">최근 12개월 6,447 views</td><td>조건별 준비 checklist</td><td>Wikimedia API · CC BY-SA</td><td><span class="state ready">ready</span></td></tr>
+            <tr><td><a href="https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/">NASA Crane Activity</a></td><td class="signal-cell">5–12학년 · 45–90분</td><td>재료·안전·실험 checklist</td><td>public HTML · asset 확인</td><td><span class="state ready">ready</span></td></tr>
+            <tr><td><a href="https://www.instructables.com/Origami-For-Everyone/">Instructables Origami</a></td><td class="signal-cell">약 130만 views · 30 projects</td><td>만들기 resource queue</td><td>프로젝트별 license</td><td><span class="state need">permission</span></td></tr>
+            <tr><td><a href="https://www.notion.com/templates/content-calendar">Notion Content Calendar</a></td><td class="signal-cell">4.8/5 · 100+ ratings</td><td>콘텐츠 운영 sheet</td><td>user_authorized</td><td><span class="state import">source import</span></td></tr>
+            <tr><td><a href="https://www.bbcgoodfood.com/recipes/lemon-drizzle-cake">BBC Good Food</a></td><td class="signal-cell">4.7/5 · 3,000+ ratings</td><td>장보기 + 조리 checklist</td><td>commercial · link only</td><td><span class="state need">permission</span></td></tr>
+            <tr><td><a href="https://theorganizednotebook.gumroad.com/l/content-planner-template">Gumroad Planner</a></td><td class="signal-cell">821 sales</td><td>creator-file 운영 sheet</td><td>paid_private</td><td><span class="state import">creator file</span></td></tr>
+            <tr><td><a href="https://roadmap.sh/">roadmap.sh</a></td><td class="signal-cell">약 36만 GitHub stars</td><td>학습 Flow Map benchmark</td><td>재배포 제한</td><td><span class="state hold">hold</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid3" style="margin-top:14px">
+        <article class="card"><h3>open control</h3><p>OSSU와 Wikivoyage는 구조·반응·API·라이선스가 비교적 분명해 변환 로직의 기준선이 된다.</p></article>
+        <article class="card"><h3>user/creator import</h3><p>Notion·Gumroad는 공개 웹을 읽는 문제가 아니라 사용자가 권한을 주거나 제작자가 파일을 제공하는 lane이다.</p></article>
+        <article class="card"><h3>correct hold</h3><p>roadmap.sh 같은 인기 대상을 멋대로 변환하지 않고 benchmark로만 두는 것이 backend의 필수 성공 사례다.</p></article>
+      </div>
+    </section>
+
+    <section class="slide" id="s9" data-page="09 / 12">
+      <div class="head"><span>백엔드 판정 계약</span><span>200 OK로 Flow JSON을 내는 것만 성공이 아니다</span></div>
+      <h2>접근 방식과 권리 상태의 조합에 따라 결과 disposition이 달라진다</h2>
+      <div class="matrix" role="table" aria-label="접근과 권리 판정 매트릭스">
+        <div class="mh">access \ rights</div><div class="mh">open_license</div><div class="mh">link_only</div><div class="mh">permission / paid</div><div class="mh">blocked</div>
+        <div class="rowh">public_html / API</div><div><b>ready</b><span>출처·license 조건을 보존해 변환</span></div><div><b>internal draft</b><span>본문 복제 없이 링크·metadata 중심</span></div><div><b>permission_required</b><span>개인 preview와 공개 발행 분리</span></div><div><b>hold</b><span>benchmark만 유지</span></div>
+        <div class="rowh">user_authorized</div><div><b>ready</b><span>사용자가 공유한 범위만</span></div><div><b>personal only</b><span>개인 실행본으로 제한</span></div><div><b>source_import_required</b><span>권한·소유 확인</span></div><div><b>hold</b><span>연결하지 않음</span></div>
+        <div class="rowh">creator_file</div><div><b>ready</b><span>제작자 제공 조건 기록</span></div><div><b>partner preview</b><span>CTA·원문 링크 보존</span></div><div><b>provider_lead</b><span>허가·가격·범위 협의 전 보류</span></div><div><b>hold</b><span>수집 금지</span></div>
+      </div>
+      <div class="grid3" style="margin-top:16px">
+        <article class="card bad"><h3>실패 1 · 인기=허가</h3><p>조회·스크랩·판매·별점이 크다는 이유로 본문을 저장하거나 공개 Flow로 발행한다.</p></article>
+        <article class="card bad"><h3>실패 2 · 잠금=추정</h3><p>구독·로그인·유료 구간을 제목과 앞부분만 보고 모델이 채워 넣는다.</p></article>
+        <article class="card bad"><h3>실패 3 · 공식=영구 최신</h3><p>공고·운영시간·법령·지원 자격을 한 번 가져온 뒤 실행 시점 재확인 없이 사용한다.</p></article>
+      </div>
+      <div class="hero-line" style="font-size:20px"><span>성공 response</span> = Flow draft만이 아니라 <span>source_import_required · permission_required · hold</span>도 포함한다</div>
+    </section>
+
+    <section class="slide" id="s10" data-page="10 / 12">
+      <div class="head"><span>실행 퍼널</span><span>넓게 찾고, 작게 변환하고, 더 작게 비용 비교</span></div>
+      <h2>36개를 모두 Flow로 만들지 않는다 — 세 단계에서 약한 후보를 자연스럽게 탈락시킨다</h2>
+      <div class="funnel">
+        <article class="stage"><strong>36</strong><b>Candidate ledger</b><ul><li>class 12+</li><li>lifeArea 9/9</li><li>pattern 7/7</li><li>target condition 8/8</li><li>반응 종류·값·날짜·URL</li></ul></article><div class="arr">→</div>
+        <article class="stage"><strong>12</strong><b>Deep source set</b><ul><li>한국 원문 8+</li><li>open/API 2+</li><li>제한 대조군 2+</li><li>형식 4+</li><li>Flow 또는 올바른 hold</li></ul></article><div class="arr">→</div>
+        <article class="stage"><strong>6</strong><b>Model & cost</b><ul><li>동일 packet</li><li>저비용 vs 고비용</li><li>token·지연·재시도</li><li>편집 시간</li></ul></article><div class="arr">→</div>
+        <article class="stage final"><strong>P0 v2</strong><b>결정</b><ul><li>keep / replace / park</li><li>backend go / hold / shift</li><li>실사용 3–5개</li></ul></article>
+      </div>
+      <div class="grid3" style="margin-top:17px">
+        <article class="card"><h3>36 후보의 역할</h3><p>포트폴리오 공백과 플랫폼·접근 상태를 넓게 비교한다. 이 단계에서 상세 Flow를 모두 만들지 않는다.</p></article>
+        <article class="card"><h3>12 원문의 역할</h3><p>실제 원문 snapshot과 SourceRow를 기준으로 “쓸 만한 Flow가 나오는가”를 사람이 직접 판단한다.</p></article>
+        <article class="card"><h3>6 모델의 역할</h3><p>구조 pass뿐 아니라 편집 부담까지 비교해 싼 모델이 실제로 싼지 확인한다.</p></article>
+      </div>
+      <div class="formula">12개를 채우기 위해 원문 밖 행동을 만들지 않는다 — correct hold도 실험 성공이다</div>
+    </section>
+
+    <section class="slide" id="s11" data-page="11 / 12">
+      <div class="head"><span>LLM·비용 검증</span><span>이전 10 URL benchmark의 다음 단계</span></div>
+      <h2>모델 가격보다 “한 개의 공개 가능한 Flow까지 드는 총비용”을 비교한다</h2>
+      <div class="costgrid">
+        <article class="cost cheap"><h3>저비용 lane</h3><ul><li>동일한 source packet·schema·rubric</li><li>구조 통과율과 source accounting</li><li>누락·과잉 Item·hold 실패</li><li>사람이 고치는 분량과 시간</li><li>재시도 후 최종 usable package 비율</li></ul></article>
+        <article class="cost premium"><h3>고비용 lane</h3><ul><li>동일 조건에서 의미 보존과 copy 품질</li><li>복잡한 표·분기·공식 경계 처리</li><li>싼 모델 대비 편집 시간 절감</li><li>6개 모두 고비용이 필요한지, 어려운 1–2개만 필요한지</li><li>선택적 escalation 규칙</li></ul></article>
+      </div>
+      <div class="score">
+        <div><b>Model/API</b>모델명·증거 수준</div><div><b>Machine cost</b>token·원화·지연</div><div><b>Repair cost</b>편집 분·재시도</div><div><b>Quality</b>keep rate·7축 점수</div><div><b>Decision</b>cheap / escalate / hold</div>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <article class="card"><h3>6개 대표 모양</h3><p>단순 순서 1 · 날짜 1 · 행/표 1 · 자료 큐/단계 1 · 위험/지역성 1 · 올바른 hold 1.</p></article>
+        <article class="card"><h3>비용 보고 원칙</h3><p>세션이 token·가격을 노출하지 않으면 추정치로 표시한다. 추정과 실제 측정값을 같은 표에서 합산하지 않는다.</p></article>
+      </div>
+      <div class="hero-line" style="font-size:19px"><span>권장 운영 가설</span> · 저비용 초안 → deterministic gate → 위험·복잡 사례만 고비용 escalation → 사람 승인</div>
+      <p class="note">이 가설은 이번 6개 비교로 검증한다. 이전 benchmark의 자동 QA·blind review 결과만으로 production model 선택을 승인하지 않는다.</p>
+    </section>
+
+    <section class="slide" id="s12" data-page="12 / 12">
+      <div class="head"><span>권장 다음 목표</span><span>승인 가능한 산출물과 완료 조건</span></div>
+      <span class="eyebrow">ACTIVE GOAL</span>
+      <h2 style="margin-top:14px">확장된 타깃·카테고리·플랫폼에서 실제 원문 12개가 만드는 Flow의 가치와 비용을 검증한다</h2>
+      <p class="lead">24개 초기 seed를 36개 후보 원장으로 확장하고, 12개 원문을 같은 계약으로 변환·보류한 뒤, 6개를 모델별로 비교해 P0 v2와 backend 입력 범위를 결정한다.</p>
+      <div class="outputs">
+        <div class="output"><b>1. 후보 36 JSON</b><span>실제 URL, targetCondition, lifeArea, pattern, 반응, 접근, 권리, 위험.</span></div>
+        <div class="output"><b>2. 원문 12 gallery</b><span>원문 행과 생성 Flow/hold를 처음부터 나란히 보여 판단 가능.</span></div>
+        <div class="output"><b>3. 모델 6 비교</b><span>저비용·고비용의 token·지연·재시도·편집 부담·품질.</span></div>
+        <div class="output"><b>4. P0 v2</b><span>기존 24를 keep / replace / park하고 대표 3–5개를 고름.</span></div>
+        <div class="output"><b>5. Backend contract</b><span>public HTML, API, user auth, creator file과 Flow/import/permission/hold disposition.</span></div>
+        <div class="output"><b>6. 실제 검증 handoff</b><span>사용자·제공자에게 보여줄 질문과 관찰 항목. 자동 QA와 분리.</span></div>
+      </div>
+      <div class="decision">
+        <h3>완료 판정</h3>
+        <p>36 후보 coverage 충족 · 12/12 올바른 disposition · 출처 없는 행동/날짜/사실 0 · 내부 리뷰 Flow 8개 이상 · 6개 모델·비용 비교 · P0 v2와 backend go/hold/shift 결정.</p>
+      </div>
+      <div class="grid3" style="margin-top:14px">
+        <article class="card"><h3>하지 않는 것</h3><p>앱 seed, DB, queue, live API, 자동 공개, 제작자 연락, 로그인 우회.</p></article>
+        <article class="card"><h3>첫 실행 순서</h3><p>초기 24 중 중복·약한 후보 제거 → 12개 추가 탐색 → 36 coverage 검사 → deep 12 확정.</p></article>
+        <article class="card"><h3>첫 review 질문</h3><p>“원문과 생성 Flow를 같이 봤을 때, 다시 읽지 않고 실제 도구로 가져갈 만큼 쓸 만한가?”</p></article>
+      </div>
+      <div class="links">
+        <a href="./2026-07-19-flow-content-source-expansion-seed.json">초기 후보 원장 JSON</a>
+        <a href="../specs/2026-07-19-flow-content-source-expansion/spec.md">목표 spec</a>
+        <a href="./2026-07-18-flowme-flow-content-contract-v1.json">Flow 콘텐츠 계약 v1</a>
+        <a href="../flow-rules/source-to-flow-conversion-gate.md">Source-to-Flow gate</a>
+      </div>
+      <p class="note">판정 경계: 이 보고서와 seed는 2026-07-19 조사·기획 근거다. 후보 반응 수치와 정책은 바뀔 수 있으며, SourceRow 추출·권리 확인·실제 사용자 또는 제공자 반응 전에는 공개 준비 완료나 시장 검증으로 부르지 않는다.</p>
+    </section>
+  </main>
+  <div class="controls" aria-label="장표 이동"><button type="button" id="prev" aria-label="이전 장표">↑</button><button type="button" id="next" aria-label="다음 장표">↓</button></div>
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const nearest = () => slides.reduce((best, slide) => Math.abs(slide.getBoundingClientRect().top) < Math.abs(best.getBoundingClientRect().top) ? slide : best, slides[0]);
+      const move = (delta) => {
+        const current = nearest();
+        const index = slides.indexOf(current);
+        slides[Math.max(0, Math.min(slides.length - 1, index + delta))].scrollIntoView({behavior:'smooth', block:'start'});
+      };
+      document.getElementById('prev').addEventListener('click', () => move(-1));
+      document.getElementById('next').addEventListener('click', () => move(1));
+      document.addEventListener('keydown', (event) => {
+        if (['ArrowDown','PageDown'].includes(event.key)) { event.preventDefault(); move(1); }
+        if (['ArrowUp','PageUp'].includes(event.key)) { event.preventDefault(); move(-1); }
+      });
+    })();
+  </script>
+</body>
+</html>

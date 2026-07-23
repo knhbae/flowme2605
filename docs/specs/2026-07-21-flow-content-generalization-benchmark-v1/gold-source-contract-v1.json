@@ -1,0 +1,1960 @@
+{
+  "schemaVersion": "flow-content-generalization-gold-source-contract-v1",
+  "cases": [
+    {
+      "caseId": "GB-01",
+      "sourceRows": [
+        {
+          "sourceRowId": "BIR-01",
+          "text": "혼인 중 출생자의 출생신고 의무자는 아버지 또는 어머니다.",
+          "meaning": "부모 신고 의무",
+          "goldRole": "conditional_response",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BIR-02",
+          "text": "부모가 신고할 수 없으면 동거 친족, 이어서 분만에 관여한 의사가 대리 순위가 된다.",
+          "meaning": "신고 대리 순위",
+          "goldRole": "conditional_response",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BIR-03",
+          "text": "출생신고는 출생한 날부터 1개월 이내에 해야 한다.",
+          "meaning": "신고 기한",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BIR-04",
+          "text": "정당한 사유 없이 기간 내 신고하지 않으면 5만원 이하 과태료가 부과될 수 있다.",
+          "meaning": "지연 과태료",
+          "goldRole": "memo",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BIR-05",
+          "text": "출생지, 등록기준지, 신고인 주소지 또는 현재지의 허용된 신고기관에 제출할 수 있다.",
+          "meaning": "허용 신고기관",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BIR-06",
+          "text": "신고서에는 자녀의 성명·본·성별·출생 시각·출생 장소와 부모 정보를 적는다.",
+          "meaning": "신고서 기재 항목",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BIR-07",
+          "text": "출생증명서와 신고인 신분증이 필요하며 국적·혼인 상황에 따라 추가 서류가 필요할 수 있다.",
+          "meaning": "필수·조건부 서류",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "출생신고 기한과 자격을 확인하고 서류를 준비해 허용 기관에 제출한다.",
+        "naturalArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "confirm-reporter",
+            "titleIntent": "신고 의무자 또는 대리 순위 확인",
+            "sourceRefs": [
+              "BIR-01",
+              "BIR-02"
+            ]
+          },
+          {
+            "itemKey": "meet-deadline",
+            "titleIntent": "출생 후 1개월 안에 신고",
+            "sourceRefs": [
+              "BIR-03",
+              "BIR-04"
+            ]
+          },
+          {
+            "itemKey": "choose-office",
+            "titleIntent": "허용된 신고기관 선택",
+            "sourceRefs": [
+              "BIR-05"
+            ]
+          },
+          {
+            "itemKey": "complete-form",
+            "titleIntent": "신고서 필수 항목 작성",
+            "sourceRefs": [
+              "BIR-06"
+            ]
+          },
+          {
+            "itemKey": "prepare-documents",
+            "titleIntent": "출생증명서·신분증과 조건부 서류 준비",
+            "sourceRefs": [
+              "BIR-07"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "원문에 없는 특정 방문일 생성",
+          "조건 확인 없이 추가 서류를 필수로 단정"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "birth_date",
+            "requiredBeforeFirstPreview": true
+          },
+          {
+            "semanticKey": "reporter_context",
+            "requiredBeforeFirstPreview": false
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "unknown",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "review_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "법정 기한, 신고자, 기관, 기재 항목과 서류가 완결된 신고 체크리스트를 지지한다."
+      }
+    },
+    {
+      "caseId": "GB-02",
+      "sourceRows": [
+        {
+          "sourceRowId": "G2F-01",
+          "text": "Google 계정을 연다.",
+          "meaning": "계정 진입",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "G2F-02",
+          "text": "보안 및 로그인을 연다.",
+          "meaning": "보안 메뉴 진입",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "G2F-03",
+          "text": "Google에 로그인하는 방법에서 2단계 인증을 선택한다.",
+          "meaning": "2단계 인증 선택",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "G2F-04",
+          "text": "화면에 표시되는 설정 절차를 따른다.",
+          "meaning": "화면 안내 완료",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "ready",
+        "sourceCompleteness": "complete",
+        "userJob": "Google 계정에서 2단계 인증 설정을 완료한다.",
+        "naturalArtifact": "checklist",
+        "secondaryArtifacts": [
+          "todo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "open-account",
+            "titleIntent": "Google 계정 열기",
+            "sourceRefs": [
+              "G2F-01"
+            ]
+          },
+          {
+            "itemKey": "open-security",
+            "titleIntent": "보안 및 로그인 열기",
+            "sourceRefs": [
+              "G2F-02"
+            ]
+          },
+          {
+            "itemKey": "select-2sv",
+            "titleIntent": "2단계 인증 선택",
+            "sourceRefs": [
+              "G2F-03"
+            ]
+          },
+          {
+            "itemKey": "finish-setup",
+            "titleIntent": "화면 안내에 따라 설정 완료",
+            "sourceRefs": [
+              "G2F-04"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "원문에 없는 인증 수단 또는 복구 절차 추가"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "open",
+          "rights": "link_only",
+          "freshness": "passed",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "review_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "네 단계가 순서 있는 설정 체크리스트를 직접 지지한다."
+      }
+    },
+    {
+      "caseId": "GB-03",
+      "sourceRows": [
+        {
+          "sourceRowId": "HUM-01",
+          "text": "워터 필터는 매주 청소하고 3~5개월마다 교체하며 교체 알림은 자동 초기화된다.",
+          "meaning": "워터 필터 주기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "HUM-02",
+          "text": "이물질 필터는 매주 청소하고 워터 필터와 함께 교체한다.",
+          "meaning": "이물질 필터 주기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "HUM-03",
+          "text": "가습 필터는 물세척하지 않고 매년 교체한다. 녹색 표시등 점멸 시 물 버튼을 3초 눌러 초기화한다.",
+          "meaning": "가습 필터 금지·교체·초기화",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "HUM-04",
+          "text": "극세 필터는 2개월마다 청소한다.",
+          "meaning": "극세 필터 주기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "HUM-05",
+          "text": "본체, 물통, 가습기 부분은 매주 청소한다.",
+          "meaning": "본체 계통 주기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "가습기 부품별 관리 주기를 놓치지 않고 수행한다.",
+        "naturalArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "water-filter",
+            "titleIntent": "워터 필터 청소·교체",
+            "sourceRefs": [
+              "HUM-01"
+            ]
+          },
+          {
+            "itemKey": "foreign-filter",
+            "titleIntent": "이물질 필터 청소·교체",
+            "sourceRefs": [
+              "HUM-02"
+            ]
+          },
+          {
+            "itemKey": "humidifying-filter",
+            "titleIntent": "가습 필터 교체 및 알림 초기화",
+            "sourceRefs": [
+              "HUM-03"
+            ]
+          },
+          {
+            "itemKey": "fine-filter",
+            "titleIntent": "극세 필터 청소",
+            "sourceRefs": [
+              "HUM-04"
+            ]
+          },
+          {
+            "itemKey": "body-tank",
+            "titleIntent": "본체·물통·가습부 청소",
+            "sourceRefs": [
+              "HUM-05"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "가습 필터 물세척",
+          "3~5개월 교체 주기를 단일 확정일로 바꾸기"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "maintenance_start_date",
+            "requiredBeforeFirstPreview": true
+          },
+          {
+            "semanticKey": "product_model_match",
+            "requiredBeforeFirstPreview": true
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "link_only",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "반복 주기가 명시되어 시작일 한 개로 개인 캘린더 미리보기를 만들 수 있다."
+      }
+    },
+    {
+      "caseId": "GB-04",
+      "sourceRows": [
+        {
+          "sourceRowId": "LGV-01",
+          "text": "00:05 청소를 준비하고 먼지통을 비운다.",
+          "meaning": "준비와 먼지 비우기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "LGV-02",
+          "text": "01:09 먼지통 부품을 분리해 세척한다.",
+          "meaning": "분리 세척",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "LGV-03",
+          "text": "02:17 필터를 관리하고 부품을 다시 조립한다.",
+          "meaning": "필터 관리와 재조립",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "LG 코드제로 A9S 먼지통과 필터를 영상 순서대로 청소한다.",
+        "naturalArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "prepare-empty",
+            "titleIntent": "청소 준비 후 먼지통 비우기",
+            "sourceRefs": [
+              "LGV-01"
+            ]
+          },
+          {
+            "itemKey": "separate-wash",
+            "titleIntent": "부품 분리 세척",
+            "sourceRefs": [
+              "LGV-02"
+            ]
+          },
+          {
+            "itemKey": "filter-reassemble",
+            "titleIntent": "필터 관리 후 재조립",
+            "sourceRefs": [
+              "LGV-03"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "영상에 없는 세척제·건조 시간 추가"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "product_model_match",
+            "requiredBeforeFirstPreview": true
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "link_only",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "동일 제공자의 영상과 미러에서 세 구간의 실행 순서가 확인된다."
+      }
+    },
+    {
+      "caseId": "GB-05",
+      "sourceRows": [
+        {
+          "sourceRowId": "REC-01",
+          "text": "당근과 대파를 잘게 썬다.",
+          "meaning": "채소 손질",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "REC-02",
+          "text": "달걀 6개를 푼다.",
+          "meaning": "달걀 풀기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "REC-03",
+          "text": "기름을 두른 팬에서 달걀말이를 만든다.",
+          "meaning": "달걀말이 조리",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "REC-04",
+          "text": "따뜻한 달걀말이를 김발로 모양 잡는다.",
+          "meaning": "달걀말이 성형",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "REC-05",
+          "text": "김에 밥 한 숟갈을 펴고 달걀말이를 올려 만다.",
+          "meaning": "김밥 말기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "REC-06",
+          "text": "완성된 김밥을 썬다.",
+          "meaning": "썰기",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "ready",
+        "sourceCompleteness": "complete",
+        "userJob": "계란말이 김밥 2인분을 레시피 순서대로 만든다.",
+        "naturalArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "chop",
+            "titleIntent": "당근과 대파 썰기",
+            "sourceRefs": [
+              "REC-01"
+            ]
+          },
+          {
+            "itemKey": "beat-eggs",
+            "titleIntent": "달걀 6개 풀기",
+            "sourceRefs": [
+              "REC-02"
+            ]
+          },
+          {
+            "itemKey": "cook-roll",
+            "titleIntent": "달걀말이 만들기",
+            "sourceRefs": [
+              "REC-03"
+            ]
+          },
+          {
+            "itemKey": "shape-roll",
+            "titleIntent": "따뜻할 때 김발로 모양 잡기",
+            "sourceRefs": [
+              "REC-04"
+            ]
+          },
+          {
+            "itemKey": "roll-gimbap",
+            "titleIntent": "김·밥·달걀말이 말기",
+            "sourceRefs": [
+              "REC-05"
+            ]
+          },
+          {
+            "itemKey": "slice",
+            "titleIntent": "김밥 썰기",
+            "sourceRefs": [
+              "REC-06"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "원문에 없는 재료 양 또는 조리 시간 추가",
+          "이미지·원문 재배포"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "open",
+          "rights": "restricted",
+          "freshness": "passed",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "여섯 조리 행은 개인 실행 체크리스트를 지지하지만 공개 복제는 권리 문구로 막힌다."
+      }
+    },
+    {
+      "caseId": "GB-06",
+      "sourceRows": [
+        {
+          "sourceRowId": "READ-01",
+          "text": "Stormy — Guojing",
+          "meaning": "읽기 후보 1",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-02",
+          "text": "You’re Snug With Me — Chitra Soundar, Poonam Mistry",
+          "meaning": "읽기 후보 2",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-03",
+          "text": "The Lost Spells — Robert Macfarlane, Jackie Morris",
+          "meaning": "읽기 후보 3",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-04",
+          "text": "The Boy Who Lost His Spark — Maggie O’Farrell, Daniela Jaglenka Terrazzini",
+          "meaning": "읽기 후보 4",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-05",
+          "text": "Winter Tales — Dawn Casey, Zanna Goldhawk",
+          "meaning": "읽기 후보 5",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-06",
+          "text": "Everyone Sang — William Sieghart, Emily Sutton",
+          "meaning": "읽기 후보 6",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-07",
+          "text": "Every Leaf a Hallelujah — Ben Okri, Diana Ejaita",
+          "meaning": "읽기 후보 7",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-08",
+          "text": "Where the Mountain Meets the Moon — Grace Lin",
+          "meaning": "읽기 후보 8",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-09",
+          "text": "Cress Watercress — Gregory Maguire, David Litchfield",
+          "meaning": "읽기 후보 9",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "READ-10",
+          "text": "A Children’s Literary Treasury — Anna James 편집",
+          "meaning": "읽기 후보 10",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "가족이 함께 읽을 책 10권을 읽기 대기열로 관리한다.",
+        "naturalArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "read-01",
+            "titleIntent": "Stormy 읽기",
+            "sourceRefs": [
+              "READ-01"
+            ]
+          },
+          {
+            "itemKey": "read-02",
+            "titleIntent": "You’re Snug With Me 읽기",
+            "sourceRefs": [
+              "READ-02"
+            ]
+          },
+          {
+            "itemKey": "read-03",
+            "titleIntent": "The Lost Spells 읽기",
+            "sourceRefs": [
+              "READ-03"
+            ]
+          },
+          {
+            "itemKey": "read-04",
+            "titleIntent": "The Boy Who Lost His Spark 읽기",
+            "sourceRefs": [
+              "READ-04"
+            ]
+          },
+          {
+            "itemKey": "read-05",
+            "titleIntent": "Winter Tales 읽기",
+            "sourceRefs": [
+              "READ-05"
+            ]
+          },
+          {
+            "itemKey": "read-06",
+            "titleIntent": "Everyone Sang 읽기",
+            "sourceRefs": [
+              "READ-06"
+            ]
+          },
+          {
+            "itemKey": "read-07",
+            "titleIntent": "Every Leaf a Hallelujah 읽기",
+            "sourceRefs": [
+              "READ-07"
+            ]
+          },
+          {
+            "itemKey": "read-08",
+            "titleIntent": "Where the Mountain Meets the Moon 읽기",
+            "sourceRefs": [
+              "READ-08"
+            ]
+          },
+          {
+            "itemKey": "read-09",
+            "titleIntent": "Cress Watercress 읽기",
+            "sourceRefs": [
+              "READ-09"
+            ]
+          },
+          {
+            "itemKey": "read-10",
+            "titleIntent": "A Children’s Literary Treasury 읽기",
+            "sourceRefs": [
+              "READ-10"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "원문에 없는 읽기 순서·기한·반복 생성"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "reading_language_access",
+            "requiredBeforeFirstPreview": false
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "link_only",
+          "freshness": "passed",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "고정된 10권은 완료 표시 가능한 읽기 대기열을 지지한다."
+      }
+    },
+    {
+      "caseId": "GB-07",
+      "sourceRows": [
+        {
+          "sourceRowId": "BAK-01",
+          "text": "iCloud 백업은 백업 데이터를 iCloud에 저장한다.",
+          "meaning": "iCloud 저장 위치",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BAK-02",
+          "text": "iCloud 저장 용량은 최대 12TB이며 Apple One Premier와 결합하면 최대 14TB다.",
+          "meaning": "iCloud 용량",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BAK-03",
+          "text": "iCloud 백업은 항상 암호화된다.",
+          "meaning": "iCloud 암호화",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BAK-04",
+          "text": "Wi-Fi가 있으면 어디서나 iCloud 백업을 만들고 사용할 수 있다.",
+          "meaning": "iCloud 접근 조건",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BAK-05",
+          "text": "컴퓨터 백업은 Mac 또는 PC에 저장하며 사용 가능한 디스크 공간만큼 보관한다.",
+          "meaning": "컴퓨터 위치·용량",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BAK-06",
+          "text": "컴퓨터 백업 암호화는 선택 사항이고 기본적으로 꺼져 있으며 Mac 또는 PC가 필요하다.",
+          "meaning": "컴퓨터 암호화·기기 조건",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "iCloud 백업과 컴퓨터 백업의 차이를 비교한다.",
+        "naturalArtifact": "memo",
+        "secondaryArtifacts": [
+          "sheet"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "compare-methods",
+            "titleIntent": "저장 위치·용량·암호화·접근 조건 비교",
+            "sourceRefs": [
+              "BAK-01",
+              "BAK-02",
+              "BAK-03",
+              "BAK-04",
+              "BAK-05",
+              "BAK-06"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "비용·속도·복원 성능을 근거 없이 비교",
+          "특정 방식을 정답으로 추천"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "backup_priority",
+            "requiredBeforeFirstPreview": false
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "link_only",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "두 방식의 비교 필드가 자연스러운 표 한 장을 이룬다."
+      }
+    },
+    {
+      "caseId": "GB-08",
+      "sourceRows": [
+        {
+          "sourceRowId": "MMC-01",
+          "text": "오늘 기준 7일 이후부터 90일 이내 날짜로 예약한다.",
+          "meaning": "예약 가능일 범위",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "MMC-02",
+          "text": "신청 후 승인을 기다리고 이메일로 승인 결과를 받는다.",
+          "meaning": "신청 승인 흐름",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "MMC-03",
+          "text": "오전 회차 하나는 10:00~11:10이다.",
+          "meaning": "첫 회차",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "MMC-04",
+          "text": "오전 회차 하나는 11:20~12:30이다.",
+          "meaning": "둘째 회차",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "MMC-05",
+          "text": "오후 회차는 13:30~14:40이다.",
+          "meaning": "셋째 회차",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "MMC-06",
+          "text": "승인 후 마이페이지를 확인하고 관람 예절 서약과 사전 교육을 한다.",
+          "meaning": "승인 후 준비",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "MMC-07",
+          "text": "도착하면 안내 데스크 확인, 서약서 제출, 관람권 수령을 거쳐 인솔자와 입장한다.",
+          "meaning": "현장 입장 절차",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "MMC-08",
+          "text": "7~8월과 12~1월에는 단체 관람을 운영하지 않는다.",
+          "meaning": "운영 제외 기간",
+          "goldRole": "memo",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "MMCA 어린이 단체 관람을 신청하고 승인 후 현장 입장까지 준비한다.",
+        "naturalArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "apply",
+            "titleIntent": "허용 기간과 회차를 확인해 신청",
+            "sourceRefs": [
+              "MMC-01",
+              "MMC-03",
+              "MMC-04",
+              "MMC-05",
+              "MMC-08"
+            ]
+          },
+          {
+            "itemKey": "await-approval",
+            "titleIntent": "승인 이메일 확인",
+            "sourceRefs": [
+              "MMC-02"
+            ]
+          },
+          {
+            "itemKey": "prepare-after-approval",
+            "titleIntent": "마이페이지·서약·사전 교육 완료",
+            "sourceRefs": [
+              "MMC-06"
+            ]
+          },
+          {
+            "itemKey": "enter",
+            "titleIntent": "안내 데스크부터 인솔 입장까지 진행",
+            "sourceRefs": [
+              "MMC-07"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "사용자가 고르지 않은 날짜·회차를 예약 사실로 생성",
+          "운영 제외 월에 방문 일정 생성"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "visit_date",
+            "requiredBeforeFirstPreview": true
+          },
+          {
+            "semanticKey": "visit_time_slot",
+            "requiredBeforeFirstPreview": true
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "unknown",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "review_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "신청 전 조건, 승인 후 준비, 현장 절차가 연결된 체크리스트다."
+      }
+    },
+    {
+      "caseId": "GB-09",
+      "sourceRows": [
+        {
+          "sourceRowId": "NOT-01",
+          "text": "페이지에서 템플릿 제목과 제작자 메타데이터를 확인할 수 있다.",
+          "meaning": "템플릿 메타데이터",
+          "goldRole": "omission",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NOT-02",
+          "text": "페이지에 템플릿의 마케팅 설명이 있다.",
+          "meaning": "마케팅 설명",
+          "goldRole": "omission",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "boundary",
+        "flowPossible": false,
+        "state": "source_import_required",
+        "sourceCompleteness": "metadata_only",
+        "userJob": "실제 템플릿 행이 없어 실행 job을 특정할 수 없음",
+        "naturalArtifact": null,
+        "secondaryArtifacts": [],
+        "allowedItems": [],
+        "forbiddenItems": [
+          "마케팅 설명을 실제 템플릿 행 또는 실행 단계로 변환"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "account_required",
+          "rights": "unknown",
+          "freshness": "unknown",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": false
+        },
+        "reason": "실제 데이터베이스와 템플릿 행이 없어 메타데이터만으로 Flow를 만들 수 없다."
+      }
+    },
+    {
+      "caseId": "GB-10",
+      "sourceRows": [
+        {
+          "sourceRowId": "CLS-01",
+          "text": "강의 제목은 ‘하루 10분 만에 바뀌는 스피치 강의’다.",
+          "meaning": "강의 제목",
+          "goldRole": "omission",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "CLS-02",
+          "text": "페이지에서 프로모션 혜택 문구를 확인할 수 있다.",
+          "meaning": "프로모션 문구",
+          "goldRole": "omission",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "boundary",
+        "flowPossible": false,
+        "state": "source_import_required",
+        "sourceCompleteness": "metadata_only",
+        "userJob": "실제 차시와 과제가 없어 학습 실행 job을 특정할 수 없음",
+        "naturalArtifact": null,
+        "secondaryArtifacts": [],
+        "allowedItems": [],
+        "forbiddenItems": [
+          "강의 제목에서 임의의 10분 반복 일정 생성",
+          "혜택 문구를 학습 과제로 변환"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "account_required",
+          "rights": "unknown",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": false
+        },
+        "reason": "실제 차시와 과제가 없어 강의 실행 Flow의 근거가 없다."
+      }
+    },
+    {
+      "caseId": "GB-11",
+      "sourceRows": [
+        {
+          "sourceRowId": "OHO-01",
+          "text": "페이지의 제목과 도입부가 조언 주제를 소개한다.",
+          "meaning": "조언 주제 소개",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "OHO-02",
+          "text": "본문은 긴 서술형 추천과 조언으로 구성된다.",
+          "meaning": "서술형 추천",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "OHO-03",
+          "text": "본문에 조언을 설명하는 여러 사례가 포함된다.",
+          "meaning": "설명 사례",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "boundary",
+        "flowPossible": false,
+        "state": "hold",
+        "sourceCompleteness": "complete",
+        "userJob": "서술형 조언에서 한 가지 실행 job을 특정할 수 없음",
+        "naturalArtifact": null,
+        "secondaryArtifacts": [],
+        "allowedItems": [],
+        "forbiddenItems": [
+          "서술형 조언을 임의의 행동 목록으로 쪼개기",
+          "사례를 사용자 과제로 바꾸기"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "open",
+          "rights": "link_only",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": false
+        },
+        "reason": "원문은 완전하지만 한 가지 사용자 일과 고정된 완료 단위를 지지하지 않는다."
+      }
+    },
+    {
+      "caseId": "GB-12",
+      "sourceRows": [
+        {
+          "sourceRowId": "SEO-01",
+          "text": "페이지는 서울형 키즈카페 18곳을 모은 컬렉션이다.",
+          "meaning": "18곳 컬렉션",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "SEO-02",
+          "text": "컬렉션에 넓은 범위의 기간과 시간 안내가 있다.",
+          "meaning": "개괄 운영 정보",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "SEO-03",
+          "text": "개별 장소의 상세 정보와 일정은 각각의 별도 페이지에 있다.",
+          "meaning": "상세 정보의 외부 위치",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "boundary",
+        "flowPossible": false,
+        "state": "source_import_required",
+        "sourceCompleteness": "partial",
+        "userJob": "개별 장소 상세가 없어 한 곳의 방문 job을 특정할 수 없음",
+        "naturalArtifact": null,
+        "secondaryArtifacts": [],
+        "allowedItems": [],
+        "forbiddenItems": [
+          "18곳에 같은 운영 시간 적용",
+          "장소를 고르지 않은 채 방문 일정 생성"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "partial",
+          "rights": "unknown",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": false
+        },
+        "reason": "개별 장소의 최신 상세 일정과 조건이 별도 페이지에 있어 컬렉션만으로 방문 Flow를 만들 수 없다."
+      }
+    },
+    {
+      "caseId": "GB-13",
+      "sourceRows": [
+        {
+          "sourceRowId": "RID-01",
+          "text": "주민등록증 재발급은 인터넷 또는 방문으로 신청할 수 있다.",
+          "meaning": "신청 경로",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "RID-02",
+          "text": "처리 기간은 14일이다.",
+          "meaning": "처리 기간",
+          "goldRole": "memo",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "RID-03",
+          "text": "신청자 자격과 대리 신청 가능 여부에 관한 규칙이 있다.",
+          "meaning": "신청 자격",
+          "goldRole": "conditional_response",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "RID-04",
+          "text": "읍·면·동 기관에서 접수하고 처리한다.",
+          "meaning": "처리 기관",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "RID-05",
+          "text": "6개월 이내 촬영한 3.5×4.5cm 사진과 기존 주민등록증이 필요하며 상황별 추가 증빙이 있을 수 있다.",
+          "meaning": "필수·조건부 준비물",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "RID-06",
+          "text": "수수료는 신청 방식 등에 따라 5천원 또는 1만원이다.",
+          "meaning": "조건부 수수료",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "주민등록증 재발급 경로와 자격을 확인하고 준비물을 갖춰 신청한다.",
+        "naturalArtifact": "todo",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "choose-route",
+            "titleIntent": "인터넷 또는 방문 신청 경로 선택",
+            "sourceRefs": [
+              "RID-01",
+              "RID-04"
+            ]
+          },
+          {
+            "itemKey": "confirm-eligibility",
+            "titleIntent": "신청자·대리 신청 규칙 확인",
+            "sourceRefs": [
+              "RID-03"
+            ]
+          },
+          {
+            "itemKey": "prepare",
+            "titleIntent": "사진·기존 주민등록증·조건부 증빙과 수수료 준비",
+            "sourceRefs": [
+              "RID-05",
+              "RID-06"
+            ]
+          },
+          {
+            "itemKey": "submit",
+            "titleIntent": "재발급 신청 제출",
+            "sourceRefs": [
+              "RID-01",
+              "RID-04"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "5천원과 1만원 중 하나를 조건 확인 없이 확정",
+          "14일을 사용자 신청일 없는 캘린더 날짜로 생성"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "application_route",
+            "requiredBeforeFirstPreview": true
+          },
+          {
+            "semanticKey": "ic_card_choice",
+            "requiredBeforeFirstPreview": false
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "unknown",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "review_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "신청 경로, 자격, 기관, 준비물과 비용이 재발급 체크리스트를 지지한다."
+      }
+    },
+    {
+      "caseId": "GB-14",
+      "sourceRows": [
+        {
+          "sourceRowId": "INF-01",
+          "text": "영유아 건강검진 1차 기간은 생후 14~35일이다.",
+          "meaning": "14~35일 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-02",
+          "text": "건강검진 기간은 생후 4~6개월이다.",
+          "meaning": "4~6개월 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-03",
+          "text": "건강검진 기간은 생후 9~12개월이다.",
+          "meaning": "9~12개월 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-04",
+          "text": "건강검진 기간은 생후 18~24개월이다.",
+          "meaning": "18~24개월 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-05",
+          "text": "구강검진 기간은 생후 18~29개월이다.",
+          "meaning": "18~29개월 구강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-06",
+          "text": "건강검진 기간은 생후 30~36개월이다.",
+          "meaning": "30~36개월 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-07",
+          "text": "구강검진 기간은 생후 30~41개월이다.",
+          "meaning": "30~41개월 구강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-08",
+          "text": "건강검진 기간은 생후 42~48개월이다.",
+          "meaning": "42~48개월 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-09",
+          "text": "구강검진 기간은 생후 42~53개월이다.",
+          "meaning": "42~53개월 구강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-10",
+          "text": "건강검진 기간은 생후 54~60개월이다.",
+          "meaning": "54~60개월 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-11",
+          "text": "구강검진 기간은 생후 54~65개월이다.",
+          "meaning": "54~65개월 구강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-12",
+          "text": "건강검진 기간은 생후 66~71개월이다.",
+          "meaning": "66~71개월 건강검진",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "INF-13",
+          "text": "검진 기간을 놓치면 지난 차수 검진을 나중에 받을 수 없다.",
+          "meaning": "검진 기간 경고",
+          "goldRole": "memo",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "아이 생년월일을 기준으로 건강·구강검진 가능 기간을 관리한다.",
+        "naturalArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "health-14d",
+            "titleIntent": "생후 14~35일 건강검진",
+            "sourceRefs": [
+              "INF-01",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "health-4m",
+            "titleIntent": "생후 4~6개월 건강검진",
+            "sourceRefs": [
+              "INF-02",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "health-9m",
+            "titleIntent": "생후 9~12개월 건강검진",
+            "sourceRefs": [
+              "INF-03",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "health-18m",
+            "titleIntent": "생후 18~24개월 건강검진",
+            "sourceRefs": [
+              "INF-04",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "oral-18m",
+            "titleIntent": "생후 18~29개월 구강검진",
+            "sourceRefs": [
+              "INF-05",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "health-30m",
+            "titleIntent": "생후 30~36개월 건강검진",
+            "sourceRefs": [
+              "INF-06",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "oral-30m",
+            "titleIntent": "생후 30~41개월 구강검진",
+            "sourceRefs": [
+              "INF-07",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "health-42m",
+            "titleIntent": "생후 42~48개월 건강검진",
+            "sourceRefs": [
+              "INF-08",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "oral-42m",
+            "titleIntent": "생후 42~53개월 구강검진",
+            "sourceRefs": [
+              "INF-09",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "health-54m",
+            "titleIntent": "생후 54~60개월 건강검진",
+            "sourceRefs": [
+              "INF-10",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "oral-54m",
+            "titleIntent": "생후 54~65개월 구강검진",
+            "sourceRefs": [
+              "INF-11",
+              "INF-13"
+            ]
+          },
+          {
+            "itemKey": "health-66m",
+            "titleIntent": "생후 66~71개월 건강검진",
+            "sourceRefs": [
+              "INF-12",
+              "INF-13"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "생년월일 없이 절대 날짜 생성",
+          "기간 종료 후 소급 검진 가능 표시"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "child_birth_date",
+            "requiredBeforeFirstPreview": true
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "unknown",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "review_required",
+          "privacy": "review_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "출생일 한 개로 모든 검진 창을 계산할 수 있고 기간 경고가 중요하다."
+      }
+    },
+    {
+      "caseId": "GB-15",
+      "sourceRows": [
+        {
+          "sourceRowId": "NHI-01",
+          "text": "교육은 2026년 8월 12~14일, 3일간 집합교육으로 진행된다.",
+          "meaning": "교육 날짜·형식",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-02",
+          "text": "대상은 공무원과 공공기관 종사자이고 정원 30명, 교육비 15만원이다.",
+          "meaning": "대상·정원·비용",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-03",
+          "text": "미국 관련 교육은 2시간이다.",
+          "meaning": "미국 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-04",
+          "text": "유럽 관련 교육은 2시간이다.",
+          "meaning": "유럽 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-05",
+          "text": "중국 관련 교육은 2시간이다.",
+          "meaning": "중국 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-06",
+          "text": "중동 관련 교육은 2시간이다.",
+          "meaning": "중동 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-07",
+          "text": "세계 경제 관련 교육은 2시간이다.",
+          "meaning": "세계 경제 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-08",
+          "text": "기후 관련 교육은 2시간이다.",
+          "meaning": "기후 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-09",
+          "text": "AI와 미래 관련 교육은 2시간이다.",
+          "meaning": "AI와 미래 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-10",
+          "text": "전쟁과 안보 관련 교육은 2시간이다.",
+          "meaning": "전쟁과 안보 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-11",
+          "text": "이슈 토론은 2시간이다.",
+          "meaning": "이슈 토론 2시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-12",
+          "text": "이슈 페이퍼 발표는 1시간이다.",
+          "meaning": "이슈 페이퍼 발표 1시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "NHI-13",
+          "text": "종합 토론은 1시간이다.",
+          "meaning": "종합 토론 1시간",
+          "goldRole": "field",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "교육 개요와 주제별 교육시간을 검토한다.",
+        "naturalArtifact": "sheet",
+        "secondaryArtifacts": [
+          "calendar",
+          "memo"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "review-course",
+            "titleIntent": "대상·정원·비용과 주제별 교육시간 검토",
+            "sourceRefs": [
+              "NHI-01",
+              "NHI-02",
+              "NHI-03",
+              "NHI-04",
+              "NHI-05",
+              "NHI-06",
+              "NHI-07",
+              "NHI-08",
+              "NHI-09",
+              "NHI-10",
+              "NHI-11",
+              "NHI-12",
+              "NHI-13"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "주제별 날짜·시각·강의실 생성",
+          "3일 범위를 13개 시간표 이벤트로 분배"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "participation_confirmed",
+            "requiredBeforeFirstPreview": false
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "unknown",
+          "freshness": "passed",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "과정과 시간은 비교 표를 지지하지만 주제별 시간표가 없어 개별 캘린더 이벤트는 금지된다."
+      }
+    },
+    {
+      "caseId": "GB-16",
+      "sourceRows": [
+        {
+          "sourceRowId": "TPL-01",
+          "text": "1주 월요일: Instagram 이미지로 작업 공간과 주간 시작을 공유한다.",
+          "meaning": "1주 월 Instagram 이미지",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "TPL-02",
+          "text": "1주 수요일: Instagram/TikTok 교육형 FAQ 콘텐츠다.",
+          "meaning": "1주 수 Instagram/TikTok FAQ",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "TPL-03",
+          "text": "1주 금요일: LinkedIn 업계 인사이트 콘텐츠다.",
+          "meaning": "1주 금 LinkedIn 인사이트",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "TPL-04",
+          "text": "1주 토요일: Instagram Stories 커뮤니티 질문 콘텐츠다.",
+          "meaning": "1주 토 Instagram 질문",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "TPL-05",
+          "text": "2주 화요일: Instagram Reel 고객 사례 콘텐츠다.",
+          "meaning": "2주 화 Instagram Reel",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "TPL-06",
+          "text": "2주 수요일: LinkedIn/X 교육형 콘텐츠다.",
+          "meaning": "2주 수 LinkedIn/X 교육",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "TPL-07",
+          "text": "2주 목요일: YouTube Shorts 비하인드 콘텐츠다.",
+          "meaning": "2주 목 YouTube Shorts",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "TPL-08",
+          "text": "2주 금요일: 모든 플랫폼에 제품 또는 서비스 콘텐츠를 게시한다.",
+          "meaning": "2주 금 전 플랫폼 제품 콘텐츠",
+          "goldRole": "item",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "positive",
+        "flowPossible": true,
+        "state": "needs_confirmation",
+        "sourceCompleteness": "complete",
+        "userJob": "2주 소셜 콘텐츠 템플릿을 편집 가능한 계획표로 사용한다.",
+        "naturalArtifact": "sheet",
+        "secondaryArtifacts": [
+          "calendar"
+        ],
+        "allowedItems": [
+          {
+            "itemKey": "post-01",
+            "titleIntent": "1주 월 Instagram 작업 공간 이미지",
+            "sourceRefs": [
+              "TPL-01"
+            ]
+          },
+          {
+            "itemKey": "post-02",
+            "titleIntent": "1주 수 Instagram/TikTok FAQ",
+            "sourceRefs": [
+              "TPL-02"
+            ]
+          },
+          {
+            "itemKey": "post-03",
+            "titleIntent": "1주 금 LinkedIn 업계 인사이트",
+            "sourceRefs": [
+              "TPL-03"
+            ]
+          },
+          {
+            "itemKey": "post-04",
+            "titleIntent": "1주 토 Instagram Stories 질문",
+            "sourceRefs": [
+              "TPL-04"
+            ]
+          },
+          {
+            "itemKey": "post-05",
+            "titleIntent": "2주 화 Instagram Reel 고객 사례",
+            "sourceRefs": [
+              "TPL-05"
+            ]
+          },
+          {
+            "itemKey": "post-06",
+            "titleIntent": "2주 수 LinkedIn/X 교육 콘텐츠",
+            "sourceRefs": [
+              "TPL-06"
+            ]
+          },
+          {
+            "itemKey": "post-07",
+            "titleIntent": "2주 목 YouTube Shorts 비하인드",
+            "sourceRefs": [
+              "TPL-07"
+            ]
+          },
+          {
+            "itemKey": "post-08",
+            "titleIntent": "2주 금 전 플랫폼 제품·서비스 콘텐츠",
+            "sourceRefs": [
+              "TPL-08"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "상대 Week/Day를 절대 날짜로 해석",
+          "빈 Post Description을 임의 콘텐츠로 채우기"
+        ],
+        "minimumInputs": [
+          {
+            "semanticKey": "plan_start_date",
+            "requiredBeforeFirstPreview": true
+          },
+          {
+            "semanticKey": "brand_context",
+            "requiredBeforeFirstPreview": true
+          }
+        ],
+        "gates": {
+          "access": "open",
+          "rights": "unknown",
+          "freshness": "passed",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": true
+        },
+        "reason": "CSV의 여덟 행과 열은 소스 값 재입력 없이 편집 가능한 시트 미리보기를 지지한다."
+      }
+    },
+    {
+      "caseId": "GB-17",
+      "sourceRows": [
+        {
+          "sourceRowId": "UKV-01",
+          "text": "정기 예방접종 일정에 생후 8주 항목이 있다.",
+          "meaning": "8주 접종",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-02",
+          "text": "정기 예방접종 일정에 생후 12주 항목이 있다.",
+          "meaning": "12주 접종",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-03",
+          "text": "정기 예방접종 일정에 생후 16주 항목이 있다.",
+          "meaning": "16주 접종",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-04",
+          "text": "정기 예방접종 일정에 만 1세 항목이 있다.",
+          "meaning": "1세 접종",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-05",
+          "text": "생후 18개월 항목은 출생일에 따른 분기가 있다.",
+          "meaning": "18개월 출생일 분기",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-06",
+          "text": "만 3세 4개월 항목에는 분기 조건이 있다.",
+          "meaning": "3세 4개월 분기",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-07",
+          "text": "만 12~13세에는 HPV 접종 항목이 있다.",
+          "meaning": "12~13세 HPV",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-08",
+          "text": "만 14세에는 Td/IPV와 MenACWY 접종 항목이 있다.",
+          "meaning": "14세 Td/IPV·MenACWY",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "UKV-09",
+          "text": "임상 위험군과 선택 접종은 별도 표와 임상 판단이 필요하다.",
+          "meaning": "임상 판단 경계",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "boundary",
+        "flowPossible": false,
+        "state": "hold",
+        "sourceCompleteness": "complete",
+        "userJob": "한국 적용성과 임상 분기를 확정할 수 없어 실행 job을 특정할 수 없음",
+        "naturalArtifact": null,
+        "secondaryArtifacts": [],
+        "allowedItems": [],
+        "forbiddenItems": [
+          "영국 일정을 한국 사용자에게 적용",
+          "임상 위험군·선택 접종을 자동 판정",
+          "출생일만으로 모든 분기 확정"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "open",
+          "rights": "open",
+          "freshness": "passed",
+          "locale": "not_applicable",
+          "safety": "review_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": false
+        },
+        "reason": "원문은 완전하고 공개 조건도 있으나 영국 전용이며 임상 분기가 있어 한국 맥락의 실행 Flow로 허용하지 않는다."
+      }
+    },
+    {
+      "caseId": "GB-18",
+      "sourceRows": [
+        {
+          "sourceRowId": "BUF-01",
+          "text": "예전 게시물을 다른 형식으로 재활용하는 템플릿이 있다.",
+          "meaning": "게시물 재활용 템플릿",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BUF-02",
+          "text": "댓글을 게시물로 전환하는 템플릿이 있다.",
+          "meaning": "댓글 전환 템플릿",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BUF-03",
+          "text": "월간 성과를 공유하는 템플릿이 있다.",
+          "meaning": "성과 공유 템플릿",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BUF-04",
+          "text": "개인 경험을 3단계 게시물로 바꾸는 템플릿이 있다.",
+          "meaning": "경험 3단계 템플릿",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        },
+        {
+          "sourceRowId": "BUF-05",
+          "text": "독자에게 질문하는 템플릿이 있다.",
+          "meaning": "독자 질문 템플릿",
+          "goldRole": "reference",
+          "requiredForMeaning": true
+        }
+      ],
+      "gold": {
+        "admissionLabel": "boundary",
+        "flowPossible": false,
+        "state": "hold",
+        "sourceCompleteness": "complete",
+        "userJob": "계속 변하는 컬렉션에서 하나의 고정 실행 job을 특정할 수 없음",
+        "naturalArtifact": null,
+        "secondaryArtifacts": [],
+        "allowedItems": [],
+        "forbiddenItems": [
+          "컬렉션의 예시를 한 사용자의 실행 계획으로 자동 결합",
+          "계속 변하는 목록을 완전한 고정 행 집합으로 주장"
+        ],
+        "minimumInputs": [],
+        "gates": {
+          "access": "open",
+          "rights": "link_only",
+          "freshness": "review_required",
+          "locale": "applicable",
+          "safety": "not_required",
+          "privacy": "not_required",
+          "publicExportAllowed": false,
+          "personalPreviewAllowed": false
+        },
+        "reason": "계속 갱신되는 템플릿 라이브러리는 한 가지 사용자 일과 완전한 고정 행 집합을 제공하지 않는다."
+      }
+    }
+  ],
+  "goldReview": {
+    "reviewedAt": "2026-07-21T02:05:41.914Z",
+    "reviewerRole": "parent source-contract adjudicator",
+    "rule": "The gold contract may use only the frozen source packet and baseline product rules.",
+    "changedCaseIds": [
+      "GB-01",
+      "GB-03",
+      "GB-04",
+      "GB-06",
+      "GB-07",
+      "GB-08",
+      "GB-13",
+      "GB-14",
+      "GB-15",
+      "GB-16"
+    ],
+    "rationale": "Corrected source-owned versus user-owned values and chose the retained artifact that best supports resuming the job.",
+    "independenceRisk": "This correction was recorded after the low-cost calibration file existed; it was based on pre-existing product rules, but temporal contamination cannot be ruled out.",
+    "mitigation": "Obtain an independent source-only gold review before opening final-holdout results and preserve disagreements."
+  }
+}

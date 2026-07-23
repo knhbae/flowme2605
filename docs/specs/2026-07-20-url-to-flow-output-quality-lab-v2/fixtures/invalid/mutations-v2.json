@@ -1,0 +1,22 @@
+{
+  "fixtureVersion": "flowme-output-quality-invalid-mutations-v2",
+  "mutations": [
+    { "mutationId": "duplicate-role", "expectedCode": "duplicate_role_assignment" },
+    { "mutationId": "wrong-role", "expectedCode": "role_gold_mismatch" },
+    { "mutationId": "source-row-content-drift", "expectedCode": "source_row_content_gold" },
+    { "mutationId": "sparse-promoted-ready", "expectedCode": "incomplete_source_promoted" },
+    { "mutationId": "source-import-with-items", "expectedCode": "blocked_has_canonical_output" },
+    { "mutationId": "invented-schedule", "expectedCode": "invented_semantic_claim" },
+    { "mutationId": "invented-derived-schedule", "expectedCode": "invented_semantic_claim" },
+    { "mutationId": "invented-condition", "expectedCode": "invented_condition" },
+    { "mutationId": "blocked-projection-payload", "expectedCode": "blocked_projection_payload" },
+    { "mutationId": "projection-essential-loss", "expectedCode": "projection_essential_loss" },
+    { "mutationId": "projection-warning-declared-but-missing", "expectedCode": "projection_payload_evidence_loss" },
+    { "mutationId": "invented-projection-date", "expectedCode": "projection_semantic_provenance" },
+    { "mutationId": "rights-hold-usable-projection", "expectedCode": "hold_projection_exposed" },
+    { "mutationId": "public-rights-bypass", "expectedCode": "public_rights_gate" },
+    { "mutationId": "unknown-source-reference", "expectedCode": "item_source_ref" },
+    { "mutationId": "duplicate-step-membership", "expectedCode": "item_step_membership" },
+    { "mutationId": "forbidden-inference", "expectedCode": "unsupported_inference" }
+  ]
+}

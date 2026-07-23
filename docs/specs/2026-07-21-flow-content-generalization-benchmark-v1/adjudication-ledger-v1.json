@@ -1,0 +1,4112 @@
+{
+  "schemaVersion": "flow-content-generalization-adjudication-v1",
+  "benchmarkId": "flow-content-generalization-benchmark-v1",
+  "adjudicatedAt": "2026-07-21T03:44:19.229Z",
+  "adjudicator": {
+    "name": "gpt-5.6-sol high internal semantic adjudicator",
+    "reviewBasis": "agent_assisted_internal",
+    "humanReviewerConfirmed": false,
+    "independenceNote": "Agent-assisted internal semantic adjudication of calibration and final-holdout runs against the gold source contract; not observed-user validation; human reviewer confirmation remains pending."
+  },
+  "entries": [
+    {
+      "caseId": "GB-01",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BIR-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb01-form",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb01-documents",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The detail requires checking conditional additional documents, but doneWhen allows completion after only the two base documents."
+        },
+        {
+          "itemId": "gb01-submit",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "child-birth-date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-01",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BIR-01",
+          "meaningPreservation": "lost",
+          "note": "The reporter-duty meaning is not expressed in the canonical content or projection."
+        },
+        {
+          "sourceRowId": "BIR-02",
+          "meaningPreservation": "lost",
+          "note": "The alternate reporter order is reduced to an empty source reference without its meaning."
+        },
+        {
+          "sourceRowId": "BIR-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-04",
+          "meaningPreservation": "lost",
+          "note": "The late-penalty warning is reduced to an empty reference and is not visible to the user."
+        },
+        {
+          "sourceRowId": "BIR-05",
+          "meaningPreservation": "partially_preserved",
+          "note": "The output says only a permitted institution and loses the four source-listed filing bases."
+        },
+        {
+          "sourceRowId": "BIR-06",
+          "meaningPreservation": "lost",
+          "note": "The form_contents key does not retain the required form fields."
+        },
+        {
+          "sourceRowId": "BIR-07",
+          "meaningPreservation": "partially_preserved",
+          "note": "A generic document-preparation action remains, but the required documents and conditional evidence are omitted."
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-01-I1",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-01-I2",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "birth_date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Substantial semantic, completion, recurrence, or canonical-state repair is required before use."
+      ]
+    },
+    {
+      "caseId": "GB-01",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BIR-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BIR-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-01-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-01-I2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "GB-01-IN1",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "GB-01-IN2",
+          "disposition": "major_edit",
+          "sourceValueReentry": false,
+          "note": "Reporter context is a valid applicability input, but gold does not require it before the first useful preview."
+        }
+      ],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-02",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "G2F-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb02-account",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb02-security",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb02-two-step",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb02-complete",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-02",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "G2F-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-02-I1",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-02-I2",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-02-I3",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-02-I4",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Substantial semantic, completion, recurrence, or canonical-state repair is required before use."
+      ]
+    },
+    {
+      "caseId": "GB-02",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "G2F-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "G2F-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-02-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-02-I2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-02-I3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-02-I4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-03",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "HUM-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb03-water-clean",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb03-water-replace",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "repeat"
+          ],
+          "note": "The source gives a 3-to-5-month replacement window; converting it to a user-selected fixed recurrence changes that source meaning."
+        },
+        {
+          "itemId": "gb03-debris-clean",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb03-debris-replace",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "repeat"
+          ],
+          "note": "The linked recurrence inherits the unsupported fixed interval selected for the water filter."
+        },
+        {
+          "itemId": "gb03-humidifying",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb03-ultrafine",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb03-body",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "maintenance-start-date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "replacement-interval-months",
+          "disposition": "delete",
+          "sourceValueReentry": false,
+          "note": "The source's 3-to-5-month window should remain a window; forcing a fixed interval choice is not a minimum input."
+        }
+      ],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Substantial semantic, completion, recurrence, or canonical-state repair is required before use."
+      ]
+    },
+    {
+      "caseId": "GB-03",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "HUM-01",
+          "meaningPreservation": "lost",
+          "note": "The weekly cleaning, 3-to-5-month replacement window, and automatic reset meaning are absent."
+        },
+        {
+          "sourceRowId": "HUM-02",
+          "meaningPreservation": "lost",
+          "note": "The weekly cleaning and linked replacement meaning are absent."
+        },
+        {
+          "sourceRowId": "HUM-03",
+          "meaningPreservation": "lost",
+          "note": "The no-water-wash rule, annual replacement, and conditional reset meaning are absent."
+        },
+        {
+          "sourceRowId": "HUM-04",
+          "meaningPreservation": "lost",
+          "note": "The two-month cleaning recurrence is absent."
+        },
+        {
+          "sourceRowId": "HUM-05",
+          "meaningPreservation": "lost",
+          "note": "The weekly body, tank, and humidifier-section cleaning meaning is absent."
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-03-I1",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion. It also collapses distinct maintenance cycles into one generic action."
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "maintenance_start",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "model_confirmation",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The generated artifact does not retain enough source meaning for safe execution."
+      ]
+    },
+    {
+      "caseId": "GB-03",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "HUM-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "HUM-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-03-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-03-I2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-03-I3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-03-I4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-03-I5",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-03-I6",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "GB-03-IN1",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "GB-03-IN2",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-04",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "LGV-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "LGV-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "LGV-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb04-empty",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb04-wash",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb04-reassemble",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-04",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "LGV-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "LGV-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "LGV-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-04-I1",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-04-I2",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-04-I3",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Substantial semantic, completion, recurrence, or canonical-state repair is required before use."
+      ]
+    },
+    {
+      "caseId": "GB-04",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "LGV-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "LGV-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "LGV-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-04-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-04-I2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-04-I3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-05",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "REC-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb05-1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb05-2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb05-3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb05-4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb05-5",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb05-6",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-05",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "REC-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-05-I1",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-05-I2",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-05-I3",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-05-I4",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-05-I5",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-05-I6",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Substantial semantic, completion, recurrence, or canonical-state repair is required before use."
+      ]
+    },
+    {
+      "caseId": "GB-05",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "REC-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "REC-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-05-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-05-I2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-05-I3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-05-I4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-05-I5",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-05-I6",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-06",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "READ-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-10",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb06-1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-5",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-6",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-7",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-8",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-9",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb06-10",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-06",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "READ-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-10",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Substantial semantic, completion, recurrence, or canonical-state repair is required before use."
+      ]
+    },
+    {
+      "caseId": "GB-06",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "READ-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "READ-10",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-06-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I5",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I6",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I7",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I8",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I9",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-06-I10",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-07",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BAK-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb07-decision",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "backup-method-choice",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "backup-decision-reason",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-07",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BAK-01",
+          "meaningPreservation": "lost",
+          "note": "A bare source reference does not retain the iCloud storage-location fact."
+        },
+        {
+          "sourceRowId": "BAK-02",
+          "meaningPreservation": "lost",
+          "note": "A bare source reference does not retain the iCloud capacity limits."
+        },
+        {
+          "sourceRowId": "BAK-03",
+          "meaningPreservation": "lost",
+          "note": "A bare source reference does not retain the always-encrypted fact."
+        },
+        {
+          "sourceRowId": "BAK-04",
+          "meaningPreservation": "lost",
+          "note": "A bare source reference does not retain the Wi-Fi access condition."
+        },
+        {
+          "sourceRowId": "BAK-05",
+          "meaningPreservation": "lost",
+          "note": "A bare source reference does not retain the computer storage and capacity facts."
+        },
+        {
+          "sourceRowId": "BAK-06",
+          "meaningPreservation": "lost",
+          "note": "A bare source reference does not retain the optional-encryption default and computer requirement."
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The generated artifact does not retain enough source meaning for safe execution."
+      ]
+    },
+    {
+      "caseId": "GB-07",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BAK-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BAK-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-07-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The source-backed result is usable after a small state, input, completion, or applicability correction."
+      ]
+    },
+    {
+      "caseId": "GB-08",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "MMC-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb08-apply",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb08-prepare",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb08-enter",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "visit-date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "visit-session",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-08",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "MMC-01",
+          "meaningPreservation": "lost",
+          "note": "The 7-to-90-day reservation window is not expressed."
+        },
+        {
+          "sourceRowId": "MMC-02",
+          "meaningPreservation": "partially_preserved",
+          "note": "Approval is mentioned only as a condition; the application wait and email-result flow are omitted."
+        },
+        {
+          "sourceRowId": "MMC-03",
+          "meaningPreservation": "lost",
+          "note": "The 10:00-to-11:10 session value is not expressed."
+        },
+        {
+          "sourceRowId": "MMC-04",
+          "meaningPreservation": "lost",
+          "note": "The 11:20-to-12:30 session value is not expressed."
+        },
+        {
+          "sourceRowId": "MMC-05",
+          "meaningPreservation": "lost",
+          "note": "The 13:30-to-14:40 session value is not expressed."
+        },
+        {
+          "sourceRowId": "MMC-06",
+          "meaningPreservation": "partially_preserved",
+          "note": "Generic pre-visit preparation omits My Page, pledge, and advance-training completion."
+        },
+        {
+          "sourceRowId": "MMC-07",
+          "meaningPreservation": "partially_preserved",
+          "note": "Generic arrival steps omit desk confirmation, pledge submission, ticket receipt, and escorted entry."
+        },
+        {
+          "sourceRowId": "MMC-08",
+          "meaningPreservation": "lost",
+          "note": "The blackout months are reduced to an empty reference and are not visible."
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-08-I1",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "GB-08-I2",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The generic done condition does not state an observable source-backed completion criterion."
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "visit_date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "session_choice",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The generated artifact does not retain enough source meaning for safe execution."
+      ]
+    },
+    {
+      "caseId": "GB-08",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "MMC-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "MMC-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "GB-08-I1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-08-I2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "GB-08-I3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "GB-08-IN1",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "GB-08-IN2",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-09",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "NOT-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NOT-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [
+        {
+          "inputId": "template-row-import",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-09",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "NOT-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NOT-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-09",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "NOT-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NOT-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-10",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "CLS-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "CLS-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [
+        {
+          "inputId": "course-outline-import",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-10",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "CLS-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "CLS-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-10",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "CLS-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "CLS-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-11",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "OHO-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "OHO-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "OHO-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-11",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "OHO-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "OHO-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "OHO-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-11",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "OHO-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "OHO-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "OHO-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-12",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "SEO-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "SEO-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "SEO-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [
+        {
+          "inputId": "venue-detail-source",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-12",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "SEO-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "SEO-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "SEO-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-12",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:28:59.632Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "SEO-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "SEO-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "SEO-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-13",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "RID-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb13-channel",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb13-materials",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb13-submit",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Primary artifact, minimum-input, retained-state, or task semantics require substantial repair before use."
+      ]
+    },
+    {
+      "caseId": "GB-13",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "RID-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-03",
+          "meaningPreservation": "partially_preserved",
+          "note": "The output retains a generic qualification condition but not the applicant and proxy-rule meaning needed for execution."
+        },
+        {
+          "sourceRowId": "RID-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-05",
+          "meaningPreservation": "partially_preserved",
+          "note": "The generic photo and ID field loses the six-month age limit, exact dimensions, and conditional additional evidence."
+        },
+        {
+          "sourceRowId": "RID-06",
+          "meaningPreservation": "partially_preserved",
+          "note": "The output says the fee depends on method but loses the source-listed 5,000 and 10,000 won values."
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "rid-apply",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The route action is source-backed, but the generic done condition is not observable and the result omits preparation and submission completion."
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "application-route",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The run is not usable because it stops a positive case, exposes null projections, or violates a locale and safety boundary."
+      ]
+    },
+    {
+      "caseId": "GB-13",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "RID-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "RID-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "rid-select-channel",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "rid-prepare-documents",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "rid-submit-application",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "rid-channel-input",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        },
+        {
+          "inputId": "rid-role-input",
+          "disposition": "major_edit",
+          "sourceValueReentry": false,
+          "note": "Applicant role can refine eligibility after preview, but the gold contract does not require it as a second first-preview blocker."
+        }
+      ],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Primary artifact, minimum-input, retained-state, or task semantics require substantial repair before use."
+      ]
+    },
+    {
+      "caseId": "GB-14",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "INF-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-10",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-11",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-12",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-13",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb14-health-1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-health-2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-health-3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-health-4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-oral-1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-health-5",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-oral-2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-health-6",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-oral-3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-health-7",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-oral-4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb14-health-8",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "child-birth-date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "usable_after_minor_edit",
+      "actualCost": null,
+      "notes": [
+        "The result is usable after a small artifact, gate, or secondary-projection correction."
+      ]
+    },
+    {
+      "caseId": "GB-14",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "INF-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-10",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-11",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-12",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-13",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "screen-inf-01",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-02",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-03",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-04",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-05",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-06",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-07",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-08",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-09",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-10",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-11",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "screen-inf-12",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "child-birth-date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The run is not usable because it stops a positive case, exposes null projections, or violates a locale and safety boundary."
+      ]
+    },
+    {
+      "caseId": "GB-14",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "INF-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-10",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-11",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-12",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "INF-13",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "inf-health-14d",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-health-4m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-health-9m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-health-18m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-oral-18m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-health-30m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-oral-30m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-health-42m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-oral-42m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-health-54m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-oral-54m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "inf-health-66m",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "inf-birth-date-input",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "directly_usable",
+      "actualCost": null,
+      "notes": [
+        "Source-backed internal proposal is semantically usable without content repair."
+      ]
+    },
+    {
+      "caseId": "GB-15",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "NHI-01",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-02",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-03",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-04",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-05",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-06",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-07",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-08",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-09",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-10",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-11",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-12",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-13",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [
+        {
+          "inputId": "detailed-timetable-source",
+          "disposition": "delete",
+          "sourceValueReentry": false,
+          "note": "A detailed timetable is not required for the supported course-overview sheet job; the captured source is complete for that job."
+        }
+      ],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The run is not usable because it stops a positive case, exposes null projections, or violates a locale and safety boundary."
+      ]
+    },
+    {
+      "caseId": "GB-15",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "NHI-01",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-02",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-03",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-04",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-05",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-06",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-07",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-08",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-09",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-10",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-11",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-12",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        },
+        {
+          "sourceRowId": "NHI-13",
+          "meaningPreservation": "lost",
+          "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The run is not usable because it stops a positive case, exposes null projections, or violates a locale and safety boundary."
+      ]
+    },
+    {
+      "caseId": "GB-15",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "NHI-01",
+          "meaningPreservation": "partially_preserved",
+          "note": "The three dates and in-person format remain, but a descriptive course fact is converted into a personal attendance task."
+        },
+        {
+          "sourceRowId": "NHI-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-10",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-11",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-12",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "NHI-13",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "nhi-attend-course",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "completion"
+          ],
+          "note": "The source describes a course and its date range; it does not establish that this user will attend or that attendance completion is the benchmark job."
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Primary artifact, minimum-input, retained-state, or task semantics require substantial repair before use."
+      ]
+    },
+    {
+      "caseId": "GB-16",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "TPL-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb16-row-1",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb16-row-2",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb16-row-3",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb16-row-4",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb16-row-5",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb16-row-6",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb16-row-7",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "gb16-row-8",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "plan-start-date",
+          "disposition": "major_edit",
+          "sourceValueReentry": false,
+          "note": "The start-date anchor is valid but is incorrectly marked optional even though gold requires it before the first preview."
+        }
+      ],
+      "runInventions": [
+        {
+          "inventionType": "field",
+          "affectedPath": "canonical.fields.row-status.allowedValues",
+          "note": "The CSV has a Status column, but the allowed values planned, in_progress, and published are not supplied by the source rows."
+        }
+      ],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Primary artifact, minimum-input, retained-state, or task semantics require substantial repair before use."
+      ]
+    },
+    {
+      "caseId": "GB-16",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "TPL-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "post-tpl-01",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "post-tpl-02",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "post-tpl-03",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "post-tpl-04",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "post-tpl-05",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "post-tpl-06",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "post-tpl-07",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        },
+        {
+          "itemId": "post-tpl-08",
+          "disposition": "major_edit",
+          "semanticSupport": "partially_supported",
+          "inventionTypes": [
+            "completion"
+          ],
+          "note": "The source row is retained in detail, but the generic done condition is not an observable source-backed completion criterion."
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "template-start-date",
+          "disposition": "keep",
+          "sourceValueReentry": false,
+          "note": null
+        }
+      ],
+      "runInventions": [],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The run is not usable because it stops a positive case, exposes null projections, or violates a locale and safety boundary."
+      ]
+    },
+    {
+      "caseId": "GB-16",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "TPL-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "TPL-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "tpl-w1-mon-instagram",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "tpl-w1-wed-faq",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "tpl-w1-fri-insight",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "tpl-w1-sat-question",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "tpl-w2-tue-customer",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "tpl-w2-wed-educational",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "tpl-w2-thu-behind-scenes",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        },
+        {
+          "itemId": "tpl-w2-fri-product",
+          "disposition": "keep",
+          "semanticSupport": "supported",
+          "inventionTypes": [],
+          "note": null
+        }
+      ],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "requires_major_edit",
+      "actualCost": null,
+      "notes": [
+        "Primary artifact, minimum-input, retained-state, or task semantics require substantial repair before use."
+      ]
+    },
+    {
+      "caseId": "GB-17",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "UKV-01",
+          "meaningPreservation": "partially_preserved",
+          "note": "The 8-week heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+        },
+        {
+          "sourceRowId": "UKV-02",
+          "meaningPreservation": "partially_preserved",
+          "note": "The 12-week heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+        },
+        {
+          "sourceRowId": "UKV-03",
+          "meaningPreservation": "partially_preserved",
+          "note": "The 16-week heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+        },
+        {
+          "sourceRowId": "UKV-04",
+          "meaningPreservation": "partially_preserved",
+          "note": "The age-one heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+        },
+        {
+          "sourceRowId": "UKV-05",
+          "meaningPreservation": "partially_preserved",
+          "note": "The 18-month branch warning remains only as a generic conditional task and cannot be resolved from birth date alone."
+        },
+        {
+          "sourceRowId": "UKV-06",
+          "meaningPreservation": "partially_preserved",
+          "note": "The 3-year-4-month branch warning remains only as a generic conditional task and cannot be resolved from birth date alone."
+        },
+        {
+          "sourceRowId": "UKV-07",
+          "meaningPreservation": "partially_preserved",
+          "note": "The HPV age range remains, but it is converted into a personalized medical action and date despite the locale stop."
+        },
+        {
+          "sourceRowId": "UKV-08",
+          "meaningPreservation": "partially_preserved",
+          "note": "The age-14 vaccine heading remains, but it is converted into a personalized medical action and date despite the locale stop."
+        },
+        {
+          "sourceRowId": "UKV-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [
+        {
+          "itemId": "gb17-8w",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        },
+        {
+          "itemId": "gb17-12w",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        },
+        {
+          "itemId": "gb17-16w",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        },
+        {
+          "itemId": "gb17-1y",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        },
+        {
+          "itemId": "gb17-18m",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        },
+        {
+          "itemId": "gb17-3y4m",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        },
+        {
+          "itemId": "gb17-12-13y",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        },
+        {
+          "itemId": "gb17-14y",
+          "disposition": "delete",
+          "semanticSupport": "unsupported",
+          "inventionTypes": [
+            "action",
+            "date",
+            "completion"
+          ],
+          "note": "A UK reference heading is converted into a personalized medical action and computed date despite the locale and clinical stop."
+        }
+      ],
+      "inputJudgments": [
+        {
+          "inputId": "child-birth-date",
+          "disposition": "delete",
+          "sourceValueReentry": false,
+          "note": "The locale and clinical boundary requires a stop; a birth date must not activate a personalized schedule."
+        },
+        {
+          "inputId": "uk-routine-applicability",
+          "disposition": "delete",
+          "sourceValueReentry": false,
+          "note": "A user self-confirmation cannot resolve UK jurisdiction, clinical-risk branches, or optional-vaccination judgment."
+        }
+      ],
+      "runInventions": [
+        {
+          "inventionType": "condition",
+          "affectedPath": "canonical.fields.uk-routine-applicability",
+          "note": "The run invents a user-resolvable applicability condition for a locale and clinical boundary that the gold contract requires to stop."
+        }
+      ],
+      "usability": "not_usable",
+      "actualCost": null,
+      "notes": [
+        "The run is not usable because it stops a positive case, exposes null projections, or violates a locale and safety boundary."
+      ]
+    },
+    {
+      "caseId": "GB-17",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "UKV-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-17",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "UKV-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-06",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-07",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-08",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "UKV-09",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-18",
+      "role": "rules",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BUF-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-18",
+      "role": "low_cost",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BUF-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    },
+    {
+      "caseId": "GB-18",
+      "role": "high_capability",
+      "reviewStatus": "reviewed",
+      "reviewedAt": "2026-07-21T03:44:19.229Z",
+      "rowJudgments": [
+        {
+          "sourceRowId": "BUF-01",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-02",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-03",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-04",
+          "meaningPreservation": "preserved",
+          "note": null
+        },
+        {
+          "sourceRowId": "BUF-05",
+          "meaningPreservation": "preserved",
+          "note": null
+        }
+      ],
+      "itemJudgments": [],
+      "inputJudgments": [],
+      "runInventions": [],
+      "usability": "correct_stop",
+      "actualCost": null,
+      "notes": [
+        "Boundary case stops without canonical Items or usable projection payloads."
+      ]
+    }
+  ]
+}

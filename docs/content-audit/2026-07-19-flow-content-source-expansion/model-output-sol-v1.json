@@ -1,0 +1,288 @@
+{
+  "cases": [
+    {
+      "caseId": "DS01",
+      "decision": "review_locked",
+      "reason": "원문 행은 완결됐지만 고위험 안전 콘텐츠이며 사람 검토와 링크 전용 권리 제한이 있다.",
+      "artifact": "checklist",
+      "title": "농작업 온열질환 예방 점검",
+      "items": [
+        {
+          "title": "폭염 단계와 작업 전 체감온도 확인하기",
+          "sourceRowRefs": ["DS01-R01", "DS01-R02"],
+          "completionCriterion": "체감온도와 해당 경보 단계를 작업 시작 전에 확인했다."
+        },
+        {
+          "title": "정오~17시 작업 조정·중지 계획 공유하기",
+          "sourceRowRefs": ["DS01-R03"],
+          "completionCriterion": "정오부터 17시 사이의 작업 조정 또는 중지 계획을 공유했다."
+        },
+        {
+          "title": "물·그늘·보호구 준비하기",
+          "sourceRowRefs": ["DS01-R04"],
+          "completionCriterion": "충분한 물, 가까운 그늘, 작업에 맞는 보호구를 준비했다."
+        },
+        {
+          "title": "20분마다 물을 마시고 위험 단계에서 작업 중지하기",
+          "sourceRowRefs": ["DS01-R05", "DS01-R06"],
+          "completionCriterion": "작업 중 20분 간격 수분 섭취와 그늘 휴식을 지켰고, 위험 단계에서는 작업을 중지했다."
+        },
+        {
+          "title": "동료 증상을 확인하고 의식이 없으면 119 신고하기",
+          "sourceRowRefs": ["DS01-R07", "DS01-R08"],
+          "completionCriterion": "동료의 이상 증상을 확인했고, 의식이 없는 경우 즉시 119에 신고했다."
+        },
+        {
+          "title": "작업 후 수분 보충하고 시원한 곳에서 쉬기",
+          "sourceRowRefs": ["DS01-R09"],
+          "completionCriterion": "수분 보충과 샤워를 하고 시원한 곳에서 휴식했다."
+        },
+        {
+          "title": "사업주 안전조치 제공·확인 구간 점검하기",
+          "sourceRowRefs": ["DS01-R10"],
+          "completionCriterion": "사업주가 제공하고 확인해야 할 안전조치 구간을 점검했다."
+        }
+      ],
+      "unmappedSourceRows": [],
+      "projection": "작업일마다 다시 쓰는 체크리스트로 투영하고 원문 링크를 함께 보존한다.",
+      "warnings": [
+        "사람의 안전 검토 전에는 공개하지 않는다.",
+        "체감온도 기준과 응급조치를 임의로 바꾸거나 추가 판단하지 않는다.",
+        "원문은 링크 전용으로 취급한다."
+      ]
+    },
+    {
+      "caseId": "DS02",
+      "decision": "review_locked",
+      "reason": "계약 점검 행은 완결됐지만 공개 변환에 권리 허가가 필요하고 법률·금융 위험 검토가 필요하다.",
+      "artifact": "sheet",
+      "title": "리모델링 계약서 확인표",
+      "items": [
+        {
+          "title": "계약 상대방 회사 정보 확인하기",
+          "sourceRowRefs": ["DS02-R01"],
+          "completionCriterion": "계약 상대방의 회사 정보를 계약서에서 확인해 표시했다."
+        },
+        {
+          "title": "공사 기간과 지연배상 조건 확인하기",
+          "sourceRowRefs": ["DS02-R02", "DS02-R03"],
+          "completionCriterion": "공사 시작일·종료일과 지연 시 배상 조건을 확인해 표시했다."
+        },
+        {
+          "title": "대금 지급·총액·세금계산서 조건 확인하기",
+          "sourceRowRefs": ["DS02-R04", "DS02-R05", "DS02-R06"],
+          "completionCriterion": "지급 단계·방법·날짜, 최종 금액·추가 비용 조건, 세금계산서 발행 기한을 확인해 표시했다."
+        },
+        {
+          "title": "자재내역서의 명칭과 규격 확인하기",
+          "sourceRowRefs": ["DS02-R07"],
+          "completionCriterion": "별지 자재내역서에서 자재 명칭과 규격을 확인해 표시했다."
+        },
+        {
+          "title": "공사 내용 변경 권한과 방식 확인하기",
+          "sourceRowRefs": ["DS02-R08"],
+          "completionCriterion": "공사 내용 변경의 승인 주체와 방식을 확인해 표시했다."
+        },
+        {
+          "title": "A/S·계약 해지·위약금 조건 확인하기",
+          "sourceRowRefs": ["DS02-R09", "DS02-R10"],
+          "completionCriterion": "A/S 기간과 계약 해지 조건·위약금을 확인해 표시했다."
+        }
+      ],
+      "unmappedSourceRows": [],
+      "projection": "각 계약 항목의 확인 상태와 계약서·별지 메모를 남기는 시트로 투영한다.",
+      "warnings": [
+        "공개 변환에는 원저작자 또는 권리자의 허가가 필요하다.",
+        "법률·금융 판단을 새로 만들지 말고 사람 검토 전에는 공개하지 않는다.",
+        "실행 전 공식 계약 관련 출처를 다시 확인한다."
+      ]
+    },
+    {
+      "caseId": "DS03",
+      "decision": "source_import_required",
+      "reason": "프로젝트 설계 이후가 구독자 잠금으로 누락되어 자연스러운 전체 artifact와 실행 단계를 확정할 수 없다.",
+      "artifact": "none",
+      "title": null,
+      "items": [],
+      "unmappedSourceRows": [
+        {
+          "id": "DS03-R01",
+          "reason": "공개 단편만으로 전체 수집 단계와 실행 조건을 확정할 수 없다."
+        },
+        {
+          "id": "DS03-R02",
+          "reason": "공개 단편만으로 전체 분류 단계와 실행 조건을 확정할 수 없다."
+        },
+        {
+          "id": "DS03-R03",
+          "reason": "공개 단편만으로 관계형 연결의 필드와 완료 기준을 확정할 수 없다."
+        },
+        {
+          "id": "DS03-R04",
+          "reason": "공개 단편만으로 다차원 태그의 축과 적용 조건을 확정할 수 없다."
+        },
+        {
+          "id": "DS03-R05",
+          "reason": "공개 단편만으로 보드 매트릭스의 행·열과 완료 기준을 확정할 수 없다."
+        },
+        {
+          "id": "DS03-R06",
+          "reason": "공개 단편만으로 상태 변화의 단계와 전환 조건을 확정할 수 없다."
+        },
+        {
+          "id": "DS03-R07",
+          "reason": "구독자 전용 구간이라 3단계 프로젝트 설계 이후의 원문 행을 확인하지 못했다."
+        }
+      ],
+      "projection": "권한 있는 원문을 가져오기 전에는 projection을 생성하지 않는다.",
+      "warnings": [
+        "사용자가 권한 있게 원문을 가져오거나 제작자 허가를 받아야 한다.",
+        "잠긴 구간을 추정해 완결 Flow로 만들지 않는다."
+      ]
+    },
+    {
+      "caseId": "DS05",
+      "decision": "ready_internal",
+      "reason": "공식 원문의 기준일 상대 구간이 완결되어 사용자 이사일을 anchor로 내부 실행안을 만들 수 있다.",
+      "artifact": "hybrid",
+      "title": "이사일 기준 준비 체크리스트",
+      "items": [
+        {
+          "title": "이사 2주 전 준비 마치기",
+          "sourceRowRefs": ["DS05-R01"],
+          "completionCriterion": "허가 이사업체 선택·예약, 이사 방법과 표준계약서 확인, 창고 정리와 불필요 물품 처분을 마쳤다."
+        },
+        {
+          "title": "이사 1주 전 예약·이전·정산 준비하기",
+          "sourceRowRefs": ["DS05-R02"],
+          "completionCriterion": "엘리베이터·곤돌라 예약, 주소·우편·전화 이전, 공과금·관리비 확인, 배달 중지를 마쳤다."
+        },
+        {
+          "title": "이사 2~4일 전 집과 배치 점검하기",
+          "sourceRowRefs": ["DS05-R03"],
+          "completionCriterion": "콘센트·방·창문, 가구 배치, 구조물 철거, 수족관 처리와 전입신고 유의사항을 확인했다."
+        },
+        {
+          "title": "이사 전날 포장과 설비 정리 마치기",
+          "sourceRowRefs": ["DS05-R04"],
+          "completionCriterion": "포장, 세탁기·냉장고·에어컨 배관, 귀중품 보관과 가스 정리를 마쳤다."
+        },
+        {
+          "title": "이사 당일 짐·청소·정산 확인하기",
+          "sourceRowRefs": ["DS05-R05"],
+          "completionCriterion": "짐·청소·개인물품, 이사비 정산과 공과금을 확인했다."
+        },
+        {
+          "title": "이사 후 정리·연결·신고 마치기",
+          "sourceRowRefs": ["DS05-R06"],
+          "completionCriterion": "짐 정리, 공과금·가전 연결, 자녀 전학과 확정일자 관련 항목을 확인했다."
+        }
+      ],
+      "unmappedSourceRows": [],
+      "projection": "사용자가 제공한 이사일을 anchor로 상대 구간을 캘린더에 배치하고 같은 항목을 체크리스트로 투영한다.",
+      "warnings": [
+        "원문은 링크 전용으로 취급한다.",
+        "행정 항목은 실행 시점에 공식 출처를 다시 확인한다.",
+        "전입신고나 확정일자에 관한 새로운 기한·법률 판단을 추가하지 않는다."
+      ]
+    },
+    {
+      "caseId": "DS10",
+      "decision": "review_locked",
+      "reason": "선택된 시작 구간의 과정 행과 선수조건은 완결됐지만 과정 변경 재확인과 현지화 검토가 필요하다.",
+      "artifact": "sheet",
+      "title": "OSSU Intro CS·Core Programming 진도표",
+      "items": [
+        {
+          "title": "Introduction to Computer Science and Programming using Python 이수하기",
+          "sourceRowRefs": ["DS10-R01"],
+          "completionCriterion": "14주·주 6~10시간 과정의 이수 상태를 완료로 표시했다."
+        },
+        {
+          "title": "Systematic Program Design 이수하기",
+          "sourceRowRefs": ["DS10-R02"],
+          "completionCriterion": "13주·주 8~10시간 과정의 이수 상태를 완료로 표시했다."
+        },
+        {
+          "title": "Class-based Program Design 이수하기",
+          "sourceRowRefs": ["DS10-R03"],
+          "completionCriterion": "Systematic Program Design와 High School Math 선행 여부를 확인하고 13주·주 5~10시간 과정의 이수 상태를 완료로 표시했다."
+        },
+        {
+          "title": "Programming Languages 이수하기",
+          "sourceRowRefs": ["DS10-R04"],
+          "completionCriterion": "Systematic Program Design 선행 여부를 확인하고 11주·주 4~8시간 과정의 이수 상태를 완료로 표시했다."
+        },
+        {
+          "title": "Object-Oriented Design 이수하기",
+          "sourceRowRefs": ["DS10-R05"],
+          "completionCriterion": "Class-based Program Design 선행 여부를 확인하고 13주·주 5~10시간 과정의 이수 상태를 완료로 표시했다."
+        },
+        {
+          "title": "Software Architecture 이수하기",
+          "sourceRowRefs": ["DS10-R06"],
+          "completionCriterion": "Object Oriented Design 선행 여부를 확인하고 4주·주 2~5시간 과정의 이수 상태를 완료로 표시했다."
+        }
+      ],
+      "unmappedSourceRows": [],
+      "projection": "과정명, 예상 주수, 주당 시간, 선수조건, 상태를 보존하는 진도 시트로 투영한다.",
+      "warnings": [
+        "시작 전에 OSSU 저장소의 최신 과정표와 선수조건을 다시 확인한다.",
+        "MIT 라이선스에 따른 출처 표시를 보존한다.",
+        "현지화 검토 전에는 공개하지 않는다."
+      ]
+    },
+    {
+      "caseId": "DS11",
+      "decision": "review_locked",
+      "reason": "휴대 수하물과 문서 행은 완결됐지만 목적지별 입국 규칙과 의약품 조건의 현지화 검토가 필요하다.",
+      "artifact": "checklist",
+      "title": "휴대 수하물 필수품·입국 서류 점검",
+      "items": [
+        {
+          "title": "신원 확인 수단 챙기기",
+          "sourceRowRefs": ["DS11-R01"],
+          "completionCriterion": "여행에 사용할 신원 확인 수단을 휴대 수하물에 넣었다."
+        },
+        {
+          "title": "결제 수단 챙기기",
+          "sourceRowRefs": ["DS11-R02"],
+          "completionCriterion": "구매와 지불에 사용할 결제 수단을 챙겼다."
+        },
+        {
+          "title": "개인 의약품과 보조기기 챙기기",
+          "sourceRowRefs": ["DS11-R03"],
+          "completionCriterion": "필요한 개인 의약품과 의료 보조기기를 휴대 수하물에 넣었다."
+        },
+        {
+          "title": "여행에 필요한 전자기기 챙기기",
+          "sourceRowRefs": ["DS11-R04"],
+          "completionCriterion": "여행에 필요한 전자기기를 휴대 수하물에 넣었다."
+        },
+        {
+          "title": "도착 환경에 맞는 첫 의류 챙기기",
+          "sourceRowRefs": ["DS11-R05"],
+          "completionCriterion": "도착 직후 입을 의류를 휴대 수하물에 넣었다."
+        },
+        {
+          "title": "티켓과 여정표 챙기기",
+          "sourceRowRefs": ["DS11-R06"],
+          "completionCriterion": "예약과 이동을 확인할 티켓과 여정표를 챙겼다."
+        },
+        {
+          "title": "목적지 요구에 맞는 입국 서류 확인하기",
+          "sourceRowRefs": ["DS11-R07"],
+          "completionCriterion": "목적지 공식 요구를 확인하고 필요한 여권·비자 등 입국 서류를 챙겼다."
+        }
+      ],
+      "unmappedSourceRows": [],
+      "projection": "여행별로 복제해 휴대 수하물과 문서 구간을 확인하는 체크리스트로 투영한다.",
+      "warnings": [
+        "출발 전에 목적지의 공식 입국 규칙을 다시 확인한다.",
+        "의약품 반입이나 비자 요건을 원문 밖의 판단으로 추가하지 않는다.",
+        "CC BY-SA 출처 표시와 동일조건변경허락 요건을 보존한다.",
+        "현지화 검토 전에는 공개하지 않는다."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,366 @@
+{
+  "documentType": "flowme-independent-decision-set",
+  "decisionSetVersion": "independent-decision-v2.1",
+  "roundId": "round-1",
+  "profile": "high_capability_agent",
+  "caseSetVersion": "output-quality-v2-cases-2026-07-20.1",
+  "blind": true,
+  "modelEvidence": {
+    "modelFamily": "gpt-5.6-sol",
+    "actualApiCostMeasured": false
+  },
+  "decisions": [
+    {
+      "caseId": "OQ-C01-MOVING",
+      "feasibility": {"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":["user_input_required"]},
+      "classification": {
+        "classificationStatus":"classified","primaryLifeArea":"home_living","secondaryLifeAreas":["money_admin_purchase"],"topicTags":["moving","d_day","household_admin"],
+        "sourceShape":"date_offsets","secondarySourceShapes":["checklist_rows"],"primaryExecutionPattern":"date_preparation","secondaryExecutionPatterns":[],"primaryArtifact":"calendar","secondaryArtifacts":["checklist","memo"],
+        "access":{"providerType":"public_institution","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},
+        "rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},
+        "review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"applicable","safetyReview":"not_required","privacyReview":"sensitive_private_only","rightsReview":"restricted","promotionState":"internal_review","blockers":["user_input_required"]}
+      },
+      "roles": [
+        {"sourceRowId":"DS05-R01","role":"item","targetIds":["ITEM-MOVING-D14"],"reason":"2주 전 실행 묶음이다."},
+        {"sourceRowId":"DS05-R02","role":"item","targetIds":["ITEM-MOVING-D7"],"reason":"1주 전 실행 묶음이다."},
+        {"sourceRowId":"DS05-R03","role":"item","targetIds":["ITEM-MOVING-D4-D2"],"reason":"2~4일 전 실행 묶음이다."},
+        {"sourceRowId":"DS05-R04","role":"item","targetIds":["ITEM-MOVING-D1"],"reason":"전날 실행 묶음이다."},
+        {"sourceRowId":"DS05-R05","role":"item","targetIds":["ITEM-MOVING-D0"],"reason":"당일 실행 묶음이다."},
+        {"sourceRowId":"DS05-R06","role":"item","targetIds":["ITEM-MOVING-AFTER"],"reason":"이사 후 실행 묶음이다."}
+      ],
+      "canonicalPlan":{"itemCount":6,"fieldCount":1,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"사용자 이사일 한 필드에 6개 상대일 Item을 배치하고 세부 행과 원문 링크는 메모에 보존한다."},
+      "projectionAvailabilities":{"calendar":true,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"상대일 6행이 완전하며 이사일만 받으면 날짜 실행표를 만들 수 있다. 링크 전제 권리는 공개 파생을 허용하지 않는다.",
+      "confidence":0.97
+    },
+    {
+      "caseId": "OQ-C02-KMOOC-FULL",
+      "feasibility": {"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":[]},
+      "classification": {
+        "classificationStatus":"classified","primaryLifeArea":"study_reading","secondaryLifeAreas":[],"topicTags":["online_course","data_analysis","weekly_progress"],
+        "sourceShape":"lesson_rows","secondarySourceShapes":["table_rows","date_window"],"primaryExecutionPattern":"progress_tracking","secondaryExecutionPatterns":[],"primaryArtifact":"sheet","secondaryArtifacts":["checklist","todo","memo"],
+        "access":{"providerType":"education_provider","discoveryAccess":"public","rowAccess":"full","sourceFormat":"course"},
+        "rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},
+        "review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"applicable","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"restricted","promotionState":"internal_review","blockers":[]}
+      },
+      "roles": [
+        {"sourceRowId":"KMOOC-M01","role":"field","targetIds":["FIELD-KMOOC-OPERATING-WINDOW"],"reason":"과정 운영 기간 필드다."},
+        {"sourceRowId":"KMOOC-M02","role":"field","targetIds":["FIELD-KMOOC-COURSE-LOAD"],"reason":"전체 분량을 나타내는 추적 필드다."},
+        {"sourceRowId":"KMOOC-M03","role":"memo","targetIds":["MEMO-KMOOC-CONTEXT"],"reason":"난이도와 수료증은 과정 맥락이다."},
+        {"sourceRowId":"KMOOC-M04","role":"field","targetIds":["FIELD-KMOOC-COMPLETION-THRESHOLD"],"reason":"수료 판정에 쓰이는 기준 필드다."},
+        {"sourceRowId":"KMOOC-M05","role":"reference","targetIds":["REF-KMOOC-GRADE-WINDOW"],"reason":"학습자 실행보다 운영 참고에 가깝다."},
+        {"sourceRowId":"KMOOC-W01","role":"item","targetIds":["ITEM-KMOOC-W01"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W02","role":"item","targetIds":["ITEM-KMOOC-W02"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W03","role":"item","targetIds":["ITEM-KMOOC-W03"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W04","role":"item","targetIds":["ITEM-KMOOC-W04"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W05","role":"item","targetIds":["ITEM-KMOOC-W05"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W06","role":"item","targetIds":["ITEM-KMOOC-W06"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W07","role":"item","targetIds":["ITEM-KMOOC-W07"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W08","role":"item","targetIds":["ITEM-KMOOC-W08"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W09","role":"item","targetIds":["ITEM-KMOOC-W09"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W10","role":"item","targetIds":["ITEM-KMOOC-W10"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W11","role":"item","targetIds":["ITEM-KMOOC-W11"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W12","role":"item","targetIds":["ITEM-KMOOC-W12"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W13","role":"item","targetIds":["ITEM-KMOOC-W13"],"reason":"독립 진도 단위다."},
+        {"sourceRowId":"KMOOC-W14","role":"item","targetIds":["ITEM-KMOOC-W14"],"reason":"독립 진도 단위다."}
+      ],
+      "canonicalPlan":{"itemCount":14,"fieldCount":3,"memoCount":1,"referenceCount":1,"conditionalResponseCount":0,"summary":"14주 행을 상태 추적 Item으로 만들고 운영기간·분량·수료 기준을 과정 필드로 둔다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"14개 주차와 활동이 모두 확보되어 고정 커리큘럼 진도표가 가능하다. 실제 주차별 날짜는 원문에 없어 생성하지 않는다.",
+      "confidence":0.98
+    },
+    {
+      "caseId": "OQ-C03-LIBRIVOX",
+      "feasibility": {"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":true,"blockers":[]},
+      "classification": {
+        "classificationStatus":"classified","primaryLifeArea":"study_reading","secondaryLifeAreas":[],"topicTags":["audiobook","chapter_queue","listening_progress"],
+        "sourceShape":"resource_collection","secondarySourceShapes":[],"primaryExecutionPattern":"progress_tracking","secondaryExecutionPatterns":["resource_queue"],"primaryArtifact":"sheet","secondaryArtifacts":["todo","memo"],
+        "access":{"providerType":"open_knowledge","discoveryAccess":"public","rowAccess":"full","sourceFormat":"audio"},
+        "rights":{"basis":"public_domain","allowedUse":["link_metadata","personal_transform","internal_review","public_derived"],"reviewStatus":"approved"},
+        "review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"not_required","localeReview":"not_required","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"approved","promotionState":"internal_canary","blockers":[]}
+      },
+      "roles": [
+        {"sourceRowId":"LIBRIVOX-C01","role":"item","targetIds":["ITEM-LIBRIVOX-C01"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C02","role":"item","targetIds":["ITEM-LIBRIVOX-C02"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C03","role":"item","targetIds":["ITEM-LIBRIVOX-C03"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C04","role":"item","targetIds":["ITEM-LIBRIVOX-C04"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C05","role":"item","targetIds":["ITEM-LIBRIVOX-C05"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C06","role":"item","targetIds":["ITEM-LIBRIVOX-C06"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C07","role":"item","targetIds":["ITEM-LIBRIVOX-C07"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C08","role":"item","targetIds":["ITEM-LIBRIVOX-C08"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C09","role":"item","targetIds":["ITEM-LIBRIVOX-C09"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C10","role":"item","targetIds":["ITEM-LIBRIVOX-C10"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C11","role":"item","targetIds":["ITEM-LIBRIVOX-C11"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C12","role":"item","targetIds":["ITEM-LIBRIVOX-C12"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C13","role":"item","targetIds":["ITEM-LIBRIVOX-C13"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C14","role":"item","targetIds":["ITEM-LIBRIVOX-C14"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C15","role":"item","targetIds":["ITEM-LIBRIVOX-C15"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C16","role":"item","targetIds":["ITEM-LIBRIVOX-C16"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C17","role":"item","targetIds":["ITEM-LIBRIVOX-C17"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C18","role":"item","targetIds":["ITEM-LIBRIVOX-C18"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C19","role":"item","targetIds":["ITEM-LIBRIVOX-C19"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C20","role":"item","targetIds":["ITEM-LIBRIVOX-C20"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C21","role":"item","targetIds":["ITEM-LIBRIVOX-C21"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C22","role":"item","targetIds":["ITEM-LIBRIVOX-C22"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C23","role":"item","targetIds":["ITEM-LIBRIVOX-C23"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C24","role":"item","targetIds":["ITEM-LIBRIVOX-C24"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C25","role":"item","targetIds":["ITEM-LIBRIVOX-C25"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C26","role":"item","targetIds":["ITEM-LIBRIVOX-C26"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C27","role":"item","targetIds":["ITEM-LIBRIVOX-C27"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C28","role":"item","targetIds":["ITEM-LIBRIVOX-C28"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C29","role":"item","targetIds":["ITEM-LIBRIVOX-C29"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C30","role":"item","targetIds":["ITEM-LIBRIVOX-C30"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C31","role":"item","targetIds":["ITEM-LIBRIVOX-C31"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C32","role":"item","targetIds":["ITEM-LIBRIVOX-C32"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C33","role":"item","targetIds":["ITEM-LIBRIVOX-C33"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C34","role":"item","targetIds":["ITEM-LIBRIVOX-C34"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C35","role":"item","targetIds":["ITEM-LIBRIVOX-C35"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C36","role":"item","targetIds":["ITEM-LIBRIVOX-C36"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C37","role":"item","targetIds":["ITEM-LIBRIVOX-C37"],"reason":"재생할 독립 장이다."},
+        {"sourceRowId":"LIBRIVOX-C38","role":"item","targetIds":["ITEM-LIBRIVOX-C38"],"reason":"재생할 독립 장이다."}
+      ],
+      "canonicalPlan":{"itemCount":38,"fieldCount":2,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"38개 장을 재생시간과 완료 상태 열을 가진 고정 진도표로 만들고 마지막 위치를 보존한다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"고정된 38개 리소스와 재생시간이 모두 있어 긴 큐의 위치·완료 상태를 손실 없이 추적할 수 있다.",
+      "confidence":0.99
+    },
+    {
+      "caseId":"OQ-C04-PASSPORT",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":[]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"money_admin_purchase","secondaryLifeAreas":[],"topicTags":["passport","renewal","government_document"],"sourceShape":"checklist_rows","secondarySourceShapes":["decision_criteria"],"primaryExecutionPattern":"ordered_procedure","secondaryExecutionPatterns":["compare_decide"],"primaryArtifact":"checklist","secondaryArtifacts":["memo"],"access":{"providerType":"government_public","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"applicable","safetyReview":"not_required","privacyReview":"sensitive_private_only","rightsReview":"restricted","promotionState":"internal_review","blockers":[]}},
+      "roles":[
+        {"sourceRowId":"PASSPORT-R01","role":"field","targetIds":["FIELD-PASSPORT-APPLICATION-PATH"],"reason":"방문·온라인 경로 선택 필드다."},
+        {"sourceRowId":"PASSPORT-R02","role":"item","targetIds":["ITEM-PASSPORT-FORM"],"reason":"필수 준비 확인이다."},
+        {"sourceRowId":"PASSPORT-R03","role":"item","targetIds":["ITEM-PASSPORT-PHOTO"],"reason":"필수 준비 확인이다."},
+        {"sourceRowId":"PASSPORT-R04","role":"item","targetIds":["ITEM-PASSPORT-ID"],"reason":"필수 준비 확인이다."},
+        {"sourceRowId":"PASSPORT-R05","role":"conditional_response","targetIds":["ITEM-PASSPORT-OLD-PASSPORT"],"reason":"기존 여권 유효 여부에 따른 조건부 준비다."},
+        {"sourceRowId":"PASSPORT-R06","role":"reference","targetIds":["REF-PASSPORT-FEES"],"reason":"선택을 돕는 수수료 표다."},
+        {"sourceRowId":"PASSPORT-R07","role":"reference","targetIds":["REF-PASSPORT-PROXY-LIMIT"],"reason":"신청 경계 유의사항이다."}
+      ],
+      "canonicalPlan":{"itemCount":4,"fieldCount":1,"memoCount":1,"referenceCount":2,"conditionalResponseCount":1,"summary":"신청 경로를 고르고 3개 기본 서류와 조건부 기존 여권을 준비한 뒤 신청하는 체크리스트다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"성인 만료 재발급 범위가 닫혀 있고 준비 행과 조건이 명확하다. 개인정보는 사적 실행에만 둔다.","confidence":0.96
+    },
+    {
+      "caseId":"OQ-C05-WASHER",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_second_wave","errorCode":null,"executableAllowed":false,"publicExportAllowed":false,"blockers":["locale_review_required"]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"home_living","secondaryLifeAreas":[],"topicTags":["washing_machine","maintenance","drum_clean"],"sourceShape":"recurrence_rule","secondarySourceShapes":["procedure_rows"],"primaryExecutionPattern":"repeating_routine","secondaryExecutionPatterns":["ordered_procedure"],"primaryArtifact":"calendar","secondaryArtifacts":["checklist","memo"],"access":{"providerType":"brand_official","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_second_wave","freshnessReview":"current","localeReview":"adaptation_required","safetyReview":"passed_with_boundary","privacyReview":"not_required","rightsReview":"restricted","promotionState":"internal_review","blockers":["locale_review_required"]}},
+      "roles":[
+        {"sourceRowId":"WASHER-R01","role":"field","targetIds":["FIELD-WASHER-TRIGGER"],"reason":"40회 또는 알림이라는 반복 조건이다."},
+        {"sourceRowId":"WASHER-R02","role":"memo","targetIds":["MEMO-WASHER-SAFETY"],"reason":"실행 전 안전 조건이다."},
+        {"sourceRowId":"WASHER-R03","role":"memo","targetIds":["MEMO-WASHER-SAFETY"],"reason":"세제·표백제 금지 경계다."},
+        {"sourceRowId":"WASHER-R04","role":"item","targetIds":["ITEM-WASHER-POWER"],"reason":"순서가 필요한 실행 단계다."},
+        {"sourceRowId":"WASHER-R05","role":"item","targetIds":["ITEM-WASHER-SELECT"],"reason":"순서가 필요한 실행 단계다."},
+        {"sourceRowId":"WASHER-R06","role":"item","targetIds":["ITEM-WASHER-START"],"reason":"순서가 필요한 실행 단계다."},
+        {"sourceRowId":"WASHER-R07","role":"conditional_response","targetIds":["COND-WASHER-MODEL"],"reason":"모델별 코스 차이를 확인해야 한다."}
+      ],
+      "canonicalPlan":{"itemCount":3,"fieldCount":1,"memoCount":1,"referenceCount":0,"conditionalResponseCount":1,"summary":"40회 또는 기기 알림을 트리거로 3단계 세척을 반복하고 안전·모델 경계를 보존한다."},
+      "projectionAvailabilities":{"calendar":true,"checklist":true,"todo":true,"sheet":false,"memo":true},
+      "rationale":"반복 조건과 절차는 충분하지만 영국 지원 문서의 모델·지역 적용을 한국 대상에 확인해야 한다.","confidence":0.94
+    },
+    {
+      "caseId":"OQ-C06-NASA",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_second_wave","errorCode":null,"executableAllowed":false,"publicExportAllowed":false,"blockers":["locale_review_required"]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"study_reading","secondaryLifeAreas":[],"topicTags":["stem_activity","crane_build","team_activity"],"sourceShape":"procedure_rows","secondarySourceShapes":["checklist_rows","template_fields"],"primaryExecutionPattern":"ordered_procedure","secondaryExecutionPatterns":[],"primaryArtifact":"checklist","secondaryArtifacts":["memo"],"access":{"providerType":"government_public","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_second_wave","freshnessReview":"not_required","localeReview":"adaptation_required","safetyReview":"passed_with_boundary","privacyReview":"not_required","rightsReview":"restricted","promotionState":"internal_review","blockers":["locale_review_required"]}},
+      "roles":[
+        {"sourceRowId":"DS12-R01","role":"item","targetIds":["ITEM-NASA-MATERIALS"],"reason":"활동 전 준비 확인이다."},
+        {"sourceRowId":"DS12-R02","role":"memo","targetIds":["MEMO-NASA-SAFETY"],"reason":"가위 사용 안전 경계다."},
+        {"sourceRowId":"DS12-R03","role":"item","targetIds":["ITEM-NASA-TEAM-PREP"],"reason":"실행 전 팀·컵 준비다."},
+        {"sourceRowId":"DS12-R04","role":"item","targetIds":["ITEM-NASA-CRANE"],"reason":"순서가 필요한 제작 단계다."},
+        {"sourceRowId":"DS12-R05","role":"item","targetIds":["ITEM-NASA-REEL"],"reason":"순서가 필요한 제작 단계다."},
+        {"sourceRowId":"DS12-R06","role":"item","targetIds":["ITEM-NASA-CONNECT-TEST"],"reason":"연결과 시험 단계다."},
+        {"sourceRowId":"DS12-R07","role":"item","targetIds":["ITEM-NASA-STACK"],"reason":"최종 제작·시험 단계다."},
+        {"sourceRowId":"DS12-R08","role":"item","targetIds":["ITEM-NASA-REFLECTION"],"reason":"답을 기록하는 독립 성찰 Item이다."}
+      ],
+      "canonicalPlan":{"itemCount":7,"fieldCount":0,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"재료와 팀 준비부터 제작·시험·성찰까지 7개 Item을 순서대로 두고 가위 안전을 메모로 고정한다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"전체 활동 행과 안전 경계가 있으나 영어 원문의 재료·안전 문구를 한국 실행 맥락에 맞게 검토해야 한다.","confidence":0.93
+    },
+    {
+      "caseId":"OQ-C07-FIT100",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":[]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"health_fitness","secondaryLifeAreas":["money_admin_purchase"],"topicTags":["fitness_assessment","public_service","exercise_prescription"],"sourceShape":"procedure_rows","secondarySourceShapes":[],"primaryExecutionPattern":"ordered_procedure","secondaryExecutionPatterns":[],"primaryArtifact":"checklist","secondaryArtifacts":["memo"],"access":{"providerType":"public_institution","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"applicable","safetyReview":"passed_with_boundary","privacyReview":"sensitive_private_only","rightsReview":"restricted","promotionState":"internal_review","blockers":[]}},
+      "roles":[
+        {"sourceRowId":"DS07-R01","role":"item","targetIds":["ITEM-FIT100-01"],"reason":"순서가 필요한 서비스 단계다."},
+        {"sourceRowId":"DS07-R02","role":"item","targetIds":["ITEM-FIT100-02"],"reason":"측정 가능 여부를 판별하는 단계다."},
+        {"sourceRowId":"DS07-R03","role":"item","targetIds":["ITEM-FIT100-03"],"reason":"순서가 필요한 서비스 단계다."},
+        {"sourceRowId":"DS07-R04","role":"item","targetIds":["ITEM-FIT100-04"],"reason":"순서가 필요한 방문 단계다."},
+        {"sourceRowId":"DS07-R05","role":"item","targetIds":["ITEM-FIT100-05"],"reason":"측정 실행 단계다."},
+        {"sourceRowId":"DS07-R06","role":"item","targetIds":["ITEM-FIT100-06"],"reason":"기관 평가 확인 단계다."},
+        {"sourceRowId":"DS07-R07","role":"item","targetIds":["ITEM-FIT100-07"],"reason":"인증서 수령 단계다."},
+        {"sourceRowId":"DS07-R08","role":"item","targetIds":["ITEM-FIT100-08"],"reason":"기관 처방 수령 단계다."},
+        {"sourceRowId":"DS07-R09","role":"item","targetIds":["ITEM-FIT100-09"],"reason":"공식 결과를 연결하는 마지막 단계다."}
+      ],
+      "canonicalPlan":{"itemCount":9,"fieldCount":0,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"공식 STEP 01~09를 한 순서형 체크리스트로 만들고 문진·결과·처방 기록은 사적 오버레이로 둔다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"공식 9단계가 완전하고 문진이 안전 경계를 제공한다. 개인 건강 결과는 공개 투영하지 않는다.","confidence":0.96
+    },
+    {
+      "caseId":"OQ-C08-AC-DECISION",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":[]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"home_living","secondaryLifeAreas":["money_admin_purchase"],"topicTags":["air_conditioner","cleaning_service","service_choice"],"sourceShape":"decision_criteria","secondarySourceShapes":["table_rows"],"primaryExecutionPattern":"compare_decide","secondaryExecutionPatterns":["ordered_procedure"],"primaryArtifact":"sheet","secondaryArtifacts":["memo"],"access":{"providerType":"brand_official","discoveryAccess":"public","rowAccess":"full","sourceFormat":"video"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"applicable","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"restricted","promotionState":"internal_review","blockers":[]}},
+      "roles":[
+        {"sourceRowId":"AC-R01","role":"field","targetIds":["FIELD-AC-PRO-SCOPE"],"reason":"전문세척 비교 값이다."},
+        {"sourceRowId":"AC-R02","role":"field","targetIds":["FIELD-AC-GENERAL-SCOPE"],"reason":"일반세척 비교 값이다."},
+        {"sourceRowId":"AC-R03","role":"field","targetIds":["FIELD-AC-TIME-COST"],"reason":"두 선택지의 비교 기준이다."},
+        {"sourceRowId":"AC-R04","role":"reference","targetIds":["REF-AC-COST"],"reason":"확정되지 않은 비용 확인 경계다."},
+        {"sourceRowId":"AC-R05","role":"conditional_response","targetIds":["COND-AC-CONTACT"],"reason":"선택한 서비스에 따라 신청 경로가 달라진다."}
+      ],
+      "canonicalPlan":{"itemCount":1,"fieldCount":4,"memoCount":1,"referenceCount":1,"conditionalResponseCount":1,"summary":"한 결정 Item에서 전문·일반 세척 범위를 비교하고 선택값에 맞는 신청 경로를 제시한다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":false,"todo":false,"sheet":true,"memo":true},
+      "rationale":"두 선택지와 비교 기준, 후속 연락처가 완전해 결정표가 자연스럽다. 미확정 비용은 조회 참고로 남긴다.","confidence":0.97
+    },
+    {
+      "caseId":"OQ-B01-HEAT",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":[]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"work_career","secondaryLifeAreas":["health_fitness"],"topicTags":["heat_illness","farm_work","occupational_safety"],"sourceShape":"checklist_rows","secondarySourceShapes":["procedure_rows","decision_criteria"],"primaryExecutionPattern":"ordered_procedure","secondaryExecutionPatterns":[],"primaryArtifact":"checklist","secondaryArtifacts":["memo"],"access":{"providerType":"government_public","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"applicable","safetyReview":"passed_with_boundary","privacyReview":"not_required","rightsReview":"restricted","promotionState":"internal_review","blockers":[]}},
+      "roles":[
+        {"sourceRowId":"DS01-R01","role":"field","targetIds":["FIELD-HEAT-THRESHOLDS"],"reason":"조건 판단에 쓰이는 공식 임계값이다."},
+        {"sourceRowId":"DS01-R02","role":"item","targetIds":["ITEM-HEAT-CHECK"],"reason":"작업 전 독립 확인이다."},
+        {"sourceRowId":"DS01-R03","role":"item","targetIds":["ITEM-HEAT-SCHEDULE"],"reason":"작업 전 조정 행동이다."},
+        {"sourceRowId":"DS01-R04","role":"item","targetIds":["ITEM-HEAT-PREP"],"reason":"작업 전 준비 행동이다."},
+        {"sourceRowId":"DS01-R05","role":"item","targetIds":["ITEM-HEAT-HYDRATE"],"reason":"작업 중 반복 행동이다."},
+        {"sourceRowId":"DS01-R06","role":"conditional_response","targetIds":["COND-HEAT-STOP"],"reason":"위험 단계에 따른 중지 조건이다."},
+        {"sourceRowId":"DS01-R07","role":"item","targetIds":["ITEM-HEAT-SYMPTOMS"],"reason":"작업 중 동료 상태 확인이다."},
+        {"sourceRowId":"DS01-R08","role":"conditional_response","targetIds":["COND-HEAT-119"],"reason":"의식 상실 때 즉시 실행하는 응급 분기다."},
+        {"sourceRowId":"DS01-R09","role":"item","targetIds":["ITEM-HEAT-RECOVER"],"reason":"작업 후 회복 행동이다."},
+        {"sourceRowId":"DS01-R10","role":"reference","targetIds":["REF-HEAT-OWNER"],"reason":"사업주 역할 경계를 별도 보존한다."}
+      ],
+      "canonicalPlan":{"itemCount":6,"fieldCount":1,"memoCount":1,"referenceCount":1,"conditionalResponseCount":2,"summary":"작업 전·중·후 6개 행동과 공식 임계값, 작업중지·119 분기를 분리해 보존한다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":false,"memo":true},
+      "rationale":"2026 공식 가이드의 예방 행동과 중지·응급 조건이 모두 있어 경계를 보존한 내부 실행안이 가능하다.","confidence":0.98
+    },
+    {
+      "caseId":"OQ-B02-KMOOC-META",
+      "feasibility":{"generationState":"completed","outcome":"no_proposal","conversionReadiness":"source_import_required","errorCode":"SOURCE_ROWS_INCOMPLETE","executableAllowed":false,"publicExportAllowed":false,"blockers":["source_incomplete","source_import_required"]},
+      "classification":{"classificationStatus":"partially_classified","primaryLifeArea":"study_reading","secondaryLifeAreas":[],"topicTags":["online_course","missing_syllabus","weekly_progress"],"sourceShape":"date_window","secondarySourceShapes":[],"primaryExecutionPattern":null,"secondaryExecutionPatterns":[],"primaryArtifact":null,"secondaryArtifacts":[],"access":{"providerType":"education_provider","discoveryAccess":"public","rowAccess":"partial","sourceFormat":"course"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"partial","conversionReadiness":"source_import_required","freshnessReview":"current","localeReview":"applicable","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"restricted","promotionState":"research_only","blockers":["source_incomplete","source_import_required"]}},
+      "roles":[
+        {"sourceRowId":"KMOOC-M01","role":"reference","targetIds":["REF-KMOOC-META-WINDOW"],"reason":"현재는 과정 메타데이터 참고만 가능하다."},
+        {"sourceRowId":"KMOOC-M02","role":"reference","targetIds":["REF-KMOOC-META-LOAD"],"reason":"주차 Item이 없는 분량 메타데이터다."},
+        {"sourceRowId":"KMOOC-M03","role":"reference","targetIds":["REF-KMOOC-META-LEVEL"],"reason":"과정 설명 메타데이터다."},
+        {"sourceRowId":"KMOOC-M04","role":"reference","targetIds":["REF-KMOOC-META-THRESHOLD"],"reason":"행 없는 상태의 수료 기준 참고다."},
+        {"sourceRowId":"KMOOC-M05","role":"reference","targetIds":["REF-KMOOC-META-GRADE"],"reason":"학습자 실행행이 아닌 운영 참고다."},
+        {"sourceRowId":"KMOOC-A-MISSING","role":"omission","targetIds":[],"reason":"14개 주차 원문이 확보되지 않았다."}
+      ],
+      "canonicalPlan":{"itemCount":0,"fieldCount":0,"memoCount":0,"referenceCount":5,"conditionalResponseCount":0,"summary":"14개 주차 행을 가져오기 전에는 진도 Flow를 생성하지 않고 메타데이터만 보존한다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":false,"todo":false,"sheet":false,"memo":false},
+      "rationale":"기간과 분량은 알아도 실제 14주 실행행이 없으므로 lesson_rows나 진도표를 확정할 수 없다.","confidence":0.99
+    },
+    {
+      "caseId":"OQ-B03-REMODEL",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_second_wave","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":["rights_unknown","editorial_review_required"]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"money_admin_purchase","secondaryLifeAreas":["home_living"],"topicTags":["remodeling_contract","contract_review","change_request"],"sourceShape":"decision_criteria","secondarySourceShapes":["checklist_rows","table_rows"],"primaryExecutionPattern":"compare_decide","secondaryExecutionPatterns":[],"primaryArtifact":"sheet","secondaryArtifacts":["checklist","memo"],"access":{"providerType":"editorial_media","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"unknown","allowedUse":["link_metadata","internal_review"],"reviewStatus":"pending"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_second_wave","freshnessReview":"unknown","localeReview":"applicable","safetyReview":"restricted","privacyReview":"sensitive_private_only","rightsReview":"pending","promotionState":"internal_review","blockers":["rights_unknown","editorial_review_required"]}},
+      "roles":[
+        {"sourceRowId":"DS02-R01","role":"item","targetIds":["ITEM-REMODEL-01"],"reason":"계약 전 독립 확인 기준이다."},
+        {"sourceRowId":"DS02-R02","role":"item","targetIds":["ITEM-REMODEL-02"],"reason":"계약 전 독립 확인 기준이다."},
+        {"sourceRowId":"DS02-R03","role":"item","targetIds":["ITEM-REMODEL-03"],"reason":"계약 전 독립 확인 기준이다."},
+        {"sourceRowId":"DS02-R04","role":"item","targetIds":["ITEM-REMODEL-04"],"reason":"계약 전 독립 확인 기준이다."},
+        {"sourceRowId":"DS02-R05","role":"item","targetIds":["ITEM-REMODEL-05"],"reason":"계약 전 독립 확인 기준이다."},
+        {"sourceRowId":"DS02-R06","role":"item","targetIds":["ITEM-REMODEL-06"],"reason":"계약 전 독립 확인 기준이다."},
+        {"sourceRowId":"DS02-R07","role":"item","targetIds":["ITEM-REMODEL-07"],"reason":"별지 존재를 확인하는 기준이다."},
+        {"sourceRowId":"DS02-R08","role":"item","targetIds":["ITEM-REMODEL-08"],"reason":"변경 승인 조건 확인이다."},
+        {"sourceRowId":"DS02-R09","role":"item","targetIds":["ITEM-REMODEL-09"],"reason":"보수 기간 확인이다."},
+        {"sourceRowId":"DS02-R10","role":"item","targetIds":["ITEM-REMODEL-10"],"reason":"해지·위약 조건 확인이다."}
+      ],
+      "canonicalPlan":{"itemCount":10,"fieldCount":3,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"10개 계약 기준마다 확인 상태·근거·보완 요청을 기록하는 비교 시트를 만든다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":false,"sheet":true,"memo":true},
+      "rationale":"10개 계약 기준은 완전해 사적 비교표는 만들 수 있으나 비공식 법률 콘텐츠와 미확인 권리는 공개 후보 전에 별도 검토가 필요하다.","confidence":0.95
+    },
+    {
+      "caseId":"OQ-B04-TODOIST",
+      "feasibility":{"generationState":"completed","outcome":"no_proposal","conversionReadiness":"source_import_required","errorCode":"TEMPLATE_TASK_ROWS_MISSING","executableAllowed":false,"publicExportAllowed":false,"blockers":["source_incomplete","source_import_required","account_or_entitlement_required","rights_permission_required"]},
+      "classification":{"classificationStatus":"partially_classified","primaryLifeArea":"work_career","secondaryLifeAreas":[],"topicTags":["podcast_workflow","template","missing_tasks"],"sourceShape":null,"secondarySourceShapes":[],"primaryExecutionPattern":null,"secondaryExecutionPatterns":[],"primaryArtifact":null,"secondaryArtifacts":[],"access":{"providerType":"brand_official","discoveryAccess":"public","rowAccess":"metadata_only","sourceFormat":"template"},"rights":{"basis":"provider_terms","allowedUse":["link_metadata","internal_review"],"reviewStatus":"pending"},"review":{"sourceRowStatus":"metadata_only","conversionReadiness":"source_import_required","freshnessReview":"unknown","localeReview":"pending","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"pending","promotionState":"research_only","blockers":["source_incomplete","source_import_required","account_or_entitlement_required","rights_permission_required"]}},
+      "roles":[
+        {"sourceRowId":"TODOIST-R01","role":"reference","targetIds":["REF-TODOIST-PHASES"],"reason":"세부 작업 없는 상위 단계명이다."},
+        {"sourceRowId":"TODOIST-R02","role":"reference","targetIds":["REF-TODOIST-PHASES"],"reason":"세부 작업 없는 상위 단계명이다."},
+        {"sourceRowId":"TODOIST-R03","role":"reference","targetIds":["REF-TODOIST-PHASES"],"reason":"세부 작업 없는 상위 단계명이다."},
+        {"sourceRowId":"TODOIST-R04","role":"reference","targetIds":["REF-TODOIST-PHASES"],"reason":"세부 작업 없는 상위 단계명이다."},
+        {"sourceRowId":"TODOIST-R05","role":"omission","targetIds":[],"reason":"실제 task 행이 권한 경계 뒤에 있다."}
+      ],
+      "canonicalPlan":{"itemCount":0,"fieldCount":0,"memoCount":0,"referenceCount":4,"conditionalResponseCount":0,"summary":"세부 task와 사용 권한을 확보할 때까지 phase 이름만 참고로 보존하고 Flow는 만들지 않는다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":false,"todo":false,"sheet":false,"memo":false},
+      "rationale":"메타데이터만으로 template_fields나 phase_lifecycle을 확정하면 빈 단계를 실행행으로 오인한다.","confidence":0.99
+    },
+    {
+      "caseId":"OQ-P01-OSSU",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":true,"blockers":[]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"study_reading","secondaryLifeAreas":[],"topicTags":["computer_science","curriculum","prerequisite_progress"],"sourceShape":"lesson_rows","secondarySourceShapes":["table_rows"],"primaryExecutionPattern":"progress_tracking","secondaryExecutionPatterns":["ordered_procedure"],"primaryArtifact":"sheet","secondaryArtifacts":["todo","memo"],"access":{"providerType":"open_knowledge","discoveryAccess":"public","rowAccess":"full","sourceFormat":"table"},"rights":{"basis":"open_license","allowedUse":["link_metadata","personal_transform","internal_review","public_derived"],"reviewStatus":"approved"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"not_required","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"approved","promotionState":"internal_canary","blockers":[]}},
+      "roles":[
+        {"sourceRowId":"DS10-R01","role":"item","targetIds":["ITEM-OSSU-01"],"reason":"선수조건과 분량을 가진 과정 단위다."},
+        {"sourceRowId":"DS10-R02","role":"item","targetIds":["ITEM-OSSU-02"],"reason":"선수조건과 분량을 가진 과정 단위다."},
+        {"sourceRowId":"DS10-R03","role":"item","targetIds":["ITEM-OSSU-03"],"reason":"선수조건과 분량을 가진 과정 단위다."},
+        {"sourceRowId":"DS10-R04","role":"item","targetIds":["ITEM-OSSU-04"],"reason":"선수조건과 분량을 가진 과정 단위다."},
+        {"sourceRowId":"DS10-R05","role":"item","targetIds":["ITEM-OSSU-05"],"reason":"선수조건과 분량을 가진 과정 단위다."},
+        {"sourceRowId":"DS10-R06","role":"item","targetIds":["ITEM-OSSU-06"],"reason":"선수조건과 분량을 가진 과정 단위다."}
+      ],
+      "canonicalPlan":{"itemCount":6,"fieldCount":4,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"6개 과정을 기간·주당 시간·선수조건·상태 열을 가진 진도 시트로 만든다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"과정 행과 선수조건이 모두 있어 고정 진도표와 다음 과정 계산이 가능하다. 실제 시작일은 생성하지 않는다.","confidence":0.98
+    },
+    {
+      "caseId":"OQ-P02-PACKING",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":true,"blockers":[]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"travel_outings","secondaryLifeAreas":[],"topicTags":["carry_on","travel_documents","packing"],"sourceShape":"checklist_rows","secondarySourceShapes":[],"primaryExecutionPattern":null,"secondaryExecutionPatterns":[],"primaryArtifact":"checklist","secondaryArtifacts":["memo"],"access":{"providerType":"open_knowledge","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"open_license","allowedUse":["link_metadata","personal_transform","internal_review","public_derived"],"reviewStatus":"approved"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"not_required","safetyReview":"passed_with_boundary","privacyReview":"not_required","rightsReview":"approved","promotionState":"internal_canary","blockers":[]}},
+      "roles":[
+        {"sourceRowId":"DS11-R01","role":"item","targetIds":["ITEM-PACKING-01"],"reason":"독립 포장 확인행이다."},
+        {"sourceRowId":"DS11-R02","role":"item","targetIds":["ITEM-PACKING-02"],"reason":"독립 포장 확인행이다."},
+        {"sourceRowId":"DS11-R03","role":"item","targetIds":["ITEM-PACKING-03"],"reason":"독립 포장 확인행이다."},
+        {"sourceRowId":"DS11-R04","role":"item","targetIds":["ITEM-PACKING-04"],"reason":"독립 포장 확인행이다."},
+        {"sourceRowId":"DS11-R05","role":"item","targetIds":["ITEM-PACKING-05"],"reason":"독립 포장 확인행이다."},
+        {"sourceRowId":"DS11-R06","role":"item","targetIds":["ITEM-PACKING-06"],"reason":"독립 서류 확인행이다."},
+        {"sourceRowId":"DS11-R07","role":"item","targetIds":["ITEM-PACKING-07"],"reason":"목적지 공식 요건을 확인하는 서류행이다."}
+      ],
+      "canonicalPlan":{"itemCount":7,"fieldCount":0,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"휴대 수하물 5행과 여행 서류 2행을 한정된 누락 방지 체크리스트로 만든다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"7개 행이 독립 확인 단위이며 목적지별 공식 서류 확인 경계를 그대로 유지할 수 있다.","confidence":0.97
+    },
+    {
+      "caseId":"OQ-P03-VEHICLE",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_for_internal_canary","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":["user_input_required"]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"money_admin_purchase","secondaryLifeAreas":[],"topicTags":["vehicle_inspection","official_date_window","visit_booking"],"sourceShape":"date_window","secondarySourceShapes":["single_action"],"primaryExecutionPattern":"date_preparation","secondaryExecutionPatterns":[],"primaryArtifact":"calendar","secondaryArtifacts":["todo","memo"],"access":{"providerType":"public_institution","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_for_internal_canary","freshnessReview":"current","localeReview":"applicable","safetyReview":"passed_with_boundary","privacyReview":"sensitive_private_only","rightsReview":"restricted","promotionState":"internal_review","blockers":["user_input_required"]}},
+      "roles":[
+        {"sourceRowId":"VEHICLE-R01","role":"conditional_response","targetIds":["FIELD-VEHICLE-WINDOW-START","FIELD-VEHICLE-WINDOW-END","ITEM-VEHICLE-BOOK"],"reason":"공식 조회한 시작·종료일 입력 뒤 방문 Item을 생성하는 경계다."}
+      ],
+      "canonicalPlan":{"itemCount":1,"fieldCount":2,"memoCount":1,"referenceCount":0,"conditionalResponseCount":1,"summary":"사용자가 공식 조회한 시작일·종료일을 입력하면 그 창 안의 방문 일정 한 건을 만든다."},
+      "projectionAvailabilities":{"calendar":true,"checklist":false,"todo":true,"sheet":false,"memo":true},
+      "rationale":"차량별 날짜를 추정하지 않고 공식 조회값을 요구하므로 한 날짜창 Item으로 안전하게 변환할 수 있다.","confidence":0.97
+    },
+    {
+      "caseId":"OQ-P04-PORTFOLIO",
+      "feasibility":{"generationState":"completed","outcome":"proposal","conversionReadiness":"ready_second_wave","errorCode":null,"executableAllowed":true,"publicExportAllowed":false,"blockers":["rights_unknown","editorial_review_required"]},
+      "classification":{"classificationStatus":"classified","primaryLifeArea":"work_career","secondaryLifeAreas":[],"topicTags":["developer_portfolio","project_delivery","career"],"sourceShape":"procedure_rows","secondarySourceShapes":[],"primaryExecutionPattern":"phase_lifecycle","secondaryExecutionPatterns":["ordered_procedure"],"primaryArtifact":"sheet","secondaryArtifacts":["checklist","todo","memo"],"access":{"providerType":"creator","discoveryAccess":"public","rowAccess":"full","sourceFormat":"article"},"rights":{"basis":"unknown","allowedUse":["link_metadata","internal_review"],"reviewStatus":"pending"},"review":{"sourceRowStatus":"complete","conversionReadiness":"ready_second_wave","freshnessReview":"unknown","localeReview":"applicable","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"pending","promotionState":"internal_review","blockers":["rights_unknown","editorial_review_required"]}},
+      "roles":[
+        {"sourceRowId":"PORTFOLIO-R01","role":"item","targetIds":["ITEM-PORTFOLIO-01"],"reason":"다음 단계를 여는 기획 산출물이다."},
+        {"sourceRowId":"PORTFOLIO-R02","role":"item","targetIds":["ITEM-PORTFOLIO-02"],"reason":"다음 단계를 여는 기획 산출물이다."},
+        {"sourceRowId":"PORTFOLIO-R03","role":"item","targetIds":["ITEM-PORTFOLIO-03"],"reason":"다음 단계를 여는 설계 산출물이다."},
+        {"sourceRowId":"PORTFOLIO-R04","role":"item","targetIds":["ITEM-PORTFOLIO-04"],"reason":"실행을 여는 협업 규칙 산출물이다."},
+        {"sourceRowId":"PORTFOLIO-R05","role":"item","targetIds":["ITEM-PORTFOLIO-05"],"reason":"핵심 개발 산출물 단계다."},
+        {"sourceRowId":"PORTFOLIO-R06","role":"item","targetIds":["ITEM-PORTFOLIO-06"],"reason":"배포 결과를 만드는 단계다."},
+        {"sourceRowId":"PORTFOLIO-R07","role":"item","targetIds":["ITEM-PORTFOLIO-07"],"reason":"최종 포트폴리오 산출물 단계다."}
+      ],
+      "canonicalPlan":{"itemCount":7,"fieldCount":2,"memoCount":1,"referenceCount":0,"conditionalResponseCount":0,"summary":"7개 산출물 단계를 상태·완료 근거와 함께 추적하되 제목의 4주를 임의 날짜로 펼치지 않는다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":true,"todo":true,"sheet":true,"memo":true},
+      "rationale":"7개 단계의 산출물 의존성이 명확해 생애주기 시트가 가능하지만 creator 권리와 편집 검토가 남아 있다.","confidence":0.96
+    },
+    {
+      "caseId":"OQ-N01-FOODCRAFT",
+      "feasibility":{"generationState":"completed","outcome":"no_proposal","conversionReadiness":"source_import_required","errorCode":"SOURCE_ROWS_METADATA_ONLY","executableAllowed":false,"publicExportAllowed":false,"blockers":["source_incomplete","source_import_required"]},
+      "classification":{"classificationStatus":"partially_classified","primaryLifeArea":"meals_grocery","secondaryLifeAreas":[],"topicTags":["meal_plan","grocery_list","product_landing"],"sourceShape":null,"secondarySourceShapes":[],"primaryExecutionPattern":null,"secondaryExecutionPatterns":[],"primaryArtifact":null,"secondaryArtifacts":[],"access":{"providerType":"brand_official","discoveryAccess":"public","rowAccess":"metadata_only","sourceFormat":"article"},"rights":{"basis":"link_only_assumption","allowedUse":["link_metadata","internal_review"],"reviewStatus":"restricted"},"review":{"sourceRowStatus":"metadata_only","conversionReadiness":"source_import_required","freshnessReview":"unknown","localeReview":"applicable","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"restricted","promotionState":"research_only","blockers":["source_incomplete","source_import_required"]}},
+      "roles":[
+        {"sourceRowId":"FOODCRAFT-R01","role":"reference","targetIds":["REF-FOODCRAFT-FEATURE"],"reason":"실제 식단이 아닌 제품 기능 설명이다."}
+      ],
+      "canonicalPlan":{"itemCount":0,"fieldCount":0,"memoCount":0,"referenceCount":1,"conditionalResponseCount":0,"summary":"식단·재료·날짜 행을 확보하기 전에는 기능 설명만 참고로 두고 실행안을 만들지 않는다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":false,"todo":false,"sheet":false,"memo":false},
+      "rationale":"장보기 목록 기능 소개만으로 주간 식단 Item을 만들면 원문에 없는 음식·재료·날짜를 발명하게 된다.","confidence":0.99
+    },
+    {
+      "caseId":"OQ-N02-LOGIN-WALL",
+      "feasibility":{"generationState":"completed","outcome":"no_proposal","conversionReadiness":"source_import_required","errorCode":"SOURCE_ROWS_UNAVAILABLE","executableAllowed":false,"publicExportAllowed":false,"blockers":["source_unavailable","source_import_required","account_or_entitlement_required","rights_unknown"]},
+      "classification":{"classificationStatus":"unclassified","primaryLifeArea":"home_living","secondaryLifeAreas":[],"topicTags":["moving","login_wall","missing_source"],"sourceShape":null,"secondarySourceShapes":[],"primaryExecutionPattern":null,"secondaryExecutionPatterns":[],"primaryArtifact":null,"secondaryArtifacts":[],"access":{"providerType":"aggregator","discoveryAccess":"paywalled","rowAccess":"unavailable","sourceFormat":"article"},"rights":{"basis":"unknown","allowedUse":["link_metadata","internal_review"],"reviewStatus":"pending"},"review":{"sourceRowStatus":"missing","conversionReadiness":"source_import_required","freshnessReview":"unknown","localeReview":"pending","safetyReview":"not_required","privacyReview":"not_required","rightsReview":"pending","promotionState":"research_only","blockers":["source_unavailable","source_import_required","account_or_entitlement_required","rights_unknown"]}},
+      "roles":[],
+      "canonicalPlan":{"itemCount":0,"fieldCount":0,"memoCount":0,"referenceCount":0,"conditionalResponseCount":0,"summary":"원문 SourceRow와 접근 권한을 확보하기 전에는 제목에서 이사 체크리스트를 생성하지 않는다."},
+      "projectionAvailabilities":{"calendar":false,"checklist":false,"todo":false,"sheet":false,"memo":false},
+      "rationale":"제목과 로그인 벽만 있고 SourceRow가 0개이므로 내용·형태·실행 패턴을 판정할 증거가 없다.","confidence":0.99
+    }
+  ]
+}

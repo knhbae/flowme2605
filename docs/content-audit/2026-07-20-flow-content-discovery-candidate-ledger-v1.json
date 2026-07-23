@@ -1,0 +1,677 @@
+{
+  "documentType": "flow_content_discovery_candidate_ledger",
+  "schemaVersion": "1.0.0-proposal",
+  "observedAt": "2026-07-20T23:30:00+09:00",
+  "status": "review_required",
+  "evidenceBoundary": "기존 36개 조사는 기준선으로 재사용했고 신규 16개 URL은 이 세션에서 실제로 열었다. 보이지 않는 수요 수치는 추정하지 않았다.",
+  "priorEvidence": {
+    "source": "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+    "candidateCount": 36,
+    "conversionStateCounts": {
+      "permission_required": 7,
+      "source_import_required": 7,
+      "hold": 3,
+      "ready": 14,
+      "provider_lead": 5
+    }
+  },
+  "freshCandidateCount": 16,
+  "freshCandidates": [
+    {
+      "candidateId": "NEW-OHOUSE-MAP-01",
+      "title": "오늘의집 셀프인테리어 가이드 묶음",
+      "provider": "오늘의집",
+      "sourceUrl": "https://contents.ohou.se/advices/guides/self_interior",
+      "lifeArea": "home_living",
+      "sourceShape": "resource_collection",
+      "rowEvidence": "비용·계획·페인트·바닥·조명·배치·수납·패브릭·벽꾸미기 9개 섹션과 다수의 개별 글 링크.",
+      "visibleDemand": "개별 글에 조회·스크랩이 노출된다. 예: 20평대 비용 글 조회 383,626·스크랩 2,258, 원룸 공간 활용 글 조회 490,705·스크랩 5,328.",
+      "rights": "permission_required",
+      "risk": "commercial_creator",
+      "admissionTier": "link_bucket",
+      "targetTier": "full_flow",
+      "readiness": "provider_permission_required",
+      "decision": "shortlist_provider_map",
+      "nextAction": "개별 글 1개 단위로 URL·행·권리를 수입하고, 가이드 전체는 Flow Map이 아니라 탐색용 Link/Bucket으로 유지한다.",
+      "scores": {
+        "demand": [
+          96,
+          "조회·스크랩이 실제로 보이며 수십만 단위 글이 다수다."
+        ],
+        "conversion": [
+          68,
+          "목록 구조는 강하지만 전체 묶음을 하나의 Flow로 만들면 목적이 섞인다."
+        ],
+        "creator": [
+          92,
+          "여러 제작자·주제별 fork와 원문 유입이 자연스럽다."
+        ],
+        "ux": [
+          72,
+          "현재 앱에는 Link/Bucket 표면이 필요하며 Full Flow 카드로 바로 넣으면 과밀하다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-QUOTE-01",
+      "title": "인테리어 상담 준비 체크리스트",
+      "provider": "오늘의집",
+      "sourceUrl": "https://ohou.se/advices/12360",
+      "lifeArea": "money_admin_purchase",
+      "sourceShape": "decision_checklist",
+      "rowEvidence": "공사 범위·스타일, 방문 상담 2~3곳, 포함 항목, 현장 실측, 예산 조정의 명시적 체크 5개.",
+      "visibleDemand": "현재 페이지에서 조회·스크랩 수치는 확인되지 않았다.",
+      "rights": "permission_required",
+      "risk": "commercial_purchase",
+      "admissionTier": "quick_flow",
+      "targetTier": "quick_flow",
+      "readiness": "provider_permission_required",
+      "decision": "provider_queue",
+      "nextAction": "업체 선택 판정은 만들지 않고 5개 확인행과 업체별 메모만 쓰는 내부 Quick Flow를 제작자 협의 후 검토한다.",
+      "scores": {
+        "demand": [
+          61,
+          "검색·복사 의도는 높지만 페이지의 직접 수요 수치는 보이지 않는다."
+        ],
+        "conversion": [
+          88,
+          "명시적 5행이 있어 임의 행동 없이 변환 가능하다."
+        ],
+        "creator": [
+          78,
+          "시공 전문가가 사례·지역별 버전을 만들 여지가 크다."
+        ],
+        "ux": [
+          84,
+          "Quick checklist와 memo에 잘 맞고 날짜 입력이 필수가 아니다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-SEOUL-WEDDING-110",
+      "title": "서울시 결혼 준비 체크리스트 110선",
+      "provider": "서울특별시",
+      "sourceUrl": "https://opengov.seoul.go.kr/og/com/download.php?dname=%EC%98%88%EB%B9%84%EB%B6%80%EB%B6%80+%EC%8A%A4%C2%B7%EB%93%9C%C2%B7%EB%A9%94+%EC%B6%94%EA%B0%80%EA%B8%88+%ED%8F%AD%ED%83%84%E2%80%A6+%EC%84%9C%EC%9A%B8%EC%8B%9C+%EA%B2%B0%ED%98%BC+%EC%A4%80%EB%B9%84+%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8+%EC%A0%9C%EC%9E%91.pdf&dtype=basic&nid=31208121&rid=F0000105564892",
+      "lifeArea": "family_parenting",
+      "sourceShape": "source_table_rows",
+      "rowEvidence": "보도자료에서 본식 40·스튜디오 19·드레스 24·메이크업 27, 합계 110개라고 확인. 이 세션에서는 실제 110행 파일을 안정적으로 추출하지 못했다.",
+      "visibleDemand": "서울시가 소비자상담 825건을 분석했고 66%가 계약 해제·해지·위약금 문제였다고 공개했다. 이는 문제 강도이지 콘텐츠 조회수는 아니다.",
+      "rights": "official_rights_review_required",
+      "risk": "legal_purchase",
+      "admissionTier": "hold_reject",
+      "targetTier": "full_flow",
+      "readiness": "source_import_required",
+      "decision": "high_priority_import",
+      "nextAction": "110행 원본과 공공누리 유형을 확보한 뒤 예식·스드메를 한 Flow로 합치지 말고 비교 Sheet 중심 Flow Map으로 나눈다.",
+      "scores": {
+        "demand": [
+          90,
+          "피해상담 825건이라는 실제 문제 신호가 있으나 다운로드 수요와는 구분했다."
+        ],
+        "conversion": [
+          74,
+          "110행 표 구조는 강하지만 현재 행 본문을 모두 확보하지 못했다."
+        ],
+        "creator": [
+          55,
+          "공식 trust anchor이며 제작자 fork보다 업체 비교·후기 overlay가 적합하다."
+        ],
+        "ux": [
+          70,
+          "Sheet/decision UI가 필요하고 110행을 모바일 체크리스트로 평면 노출하면 실패한다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-SEOUL-ECO-VACATION",
+      "title": "친환경 여름휴가 체크리스트",
+      "provider": "서울특별시",
+      "sourceUrl": "https://news.seoul.go.kr/env/archives/570011",
+      "lifeArea": "travel_outings",
+      "sourceShape": "grouped_checklist",
+      "rowEvidence": "집을 나서기 전·이동·여행지·분리배출 4개 Step, 각 5개 안팎의 명시적 체크 행.",
+      "visibleDemand": "2026-07-15 최신 게시. 추천 수는 0으로 노출된다.",
+      "rights": "kogl_type_4_no_derivatives",
+      "risk": "low",
+      "admissionTier": "link_bucket",
+      "targetTier": "quick_flow",
+      "readiness": "rights_restricted_no_derivatives",
+      "decision": "link_only",
+      "nextAction": "원문 링크와 4개 주제 요약만 보관한다. 파생 체크리스트 공개는 하지 않는다.",
+      "scores": {
+        "demand": [
+          46,
+          "계절성·최신성은 있으나 추천 0 외에 강한 수요 신호는 없다."
+        ],
+        "conversion": [
+          86,
+          "행과 그룹이 명확하지만 변경금지 권리가 변환을 막는다."
+        ],
+        "creator": [
+          38,
+          "공식 캠페인 콘텐츠라 사용자 fork 동기가 약하다."
+        ],
+        "ux": [
+          68,
+          "링크 저장에는 맞고 20개 체크를 그대로 노출하면 정보량이 과하다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-SEOUL-MUSEUM-GROUP",
+      "title": "서울상상나라 인솔교사 사전 단체 체크리스트",
+      "provider": "서울상상나라",
+      "sourceUrl": "https://www.seoulchildrensmuseum.org/download.do?fn=%EC%82%AC%EC%A0%84%EB%8B%A8%EC%B2%B4%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8%2819.10%29.pdf&fnR=%2Ff00_files%2F20191003112143_492.pdf",
+      "lifeArea": "family_parenting",
+      "sourceShape": "role_handoff_checklist",
+      "rowEvidence": "방문 전·방문 시·방문 후 구분, 2시간 이동 운영, 권장 어린이:성인 7:1, 증빙 준비 등은 검색 추출로 확인. PDF 직접 열기는 실패했다.",
+      "visibleDemand": "조회·다운로드 수치는 보이지 않는다.",
+      "rights": "official_unknown",
+      "risk": "child_group_safety",
+      "admissionTier": "hold_reject",
+      "targetTier": "full_flow",
+      "readiness": "source_import_required",
+      "decision": "shortlist_after_import",
+      "nextAction": "PDF 원문 행과 최신 운영 여부를 확보한 뒤 기준일·담당자·방문 전/중/후가 있는 Full Flow로 검토한다.",
+      "scores": {
+        "demand": [
+          63,
+          "단체 인솔이라는 반복 업무 수요는 추론되지만 직접 수치는 없다."
+        ],
+        "conversion": [
+          79,
+          "역할·시점·완료 행이 있어 Full Flow 적합성이 높다."
+        ],
+        "creator": [
+          70,
+          "교사·기관별 수정본과 역할 분담 공유가 자연스럽다."
+        ],
+        "ux": [
+          77,
+          "담당자와 단계 접기가 필요하며 현재 평면 카드만으로는 부족하다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-GOV24-ONESTOP",
+      "title": "정부24 원스톱 서비스 모음",
+      "provider": "정부24",
+      "sourceUrl": "https://www.gov.kr/portal/main/nologin",
+      "lifeArea": "money_admin_purchase",
+      "sourceShape": "service_directory",
+      "rowEvidence": "전입신고+, 맘편한 임신, 행복출산, 온종일 돌봄, 취업서류, 안심상속, 내차관리 등 원스톱 서비스 목록.",
+      "visibleDemand": "정부 공식 대표 포털이지만 개별 서비스 수요 수치는 이 페이지에 없다.",
+      "rights": "official_link_only",
+      "risk": "admin_sensitive",
+      "admissionTier": "link_bucket",
+      "targetTier": "link_bucket",
+      "readiness": "provider_directory",
+      "decision": "source_provider_index",
+      "nextAction": "하나의 Flow로 만들지 않고 개별 서비스 상세 URL을 찾는 공식 source provider 인덱스로 사용한다.",
+      "scores": {
+        "demand": [
+          82,
+          "공식 생활행정 진입점이라 의도는 높지만 페이지 자체 이용량은 확인하지 않았다."
+        ],
+        "conversion": [
+          35,
+          "목록은 서비스 디렉터리이며 실행 행이 아니다."
+        ],
+        "creator": [
+          20,
+          "공식 source discovery 역할이지 creator fork 대상이 아니다."
+        ],
+        "ux": [
+          78,
+          "Link/Bucket 검색·저장에는 맞고 Flow 카드로 만들면 목적이 섞인다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-EASYLAW-WEDDING-MAP",
+      "title": "찾기쉬운 생활법령 결혼준비자 법령 맵",
+      "provider": "찾기쉬운 생활법령정보",
+      "sourceUrl": "https://easylaw.go.kr/CSP/SysChartRetrievePLst.laf?csmSeq=170",
+      "lifeArea": "family_parenting",
+      "sourceShape": "reference_map",
+      "rowEvidence": "결혼자금·신혼집·혼수·이삿짐·예식장·신혼여행 등 대분류와 다수 법령 링크.",
+      "visibleDemand": "조회·저장 수치는 보이지 않는다. 페이지가 구 버전으로 표시된다.",
+      "rights": "official_link_only",
+      "risk": "legal_stale",
+      "admissionTier": "link_bucket",
+      "targetTier": "link_bucket",
+      "readiness": "freshness_review_required",
+      "decision": "backup_reference",
+      "nextAction": "공식 주제 맵으로만 연결하고 최신 세부 페이지를 개별 source로 재탐색한다.",
+      "scores": {
+        "demand": [
+          67,
+          "결혼·계약의 높은 의도는 추론되지만 직접 수요 신호는 없다."
+        ],
+        "conversion": [
+          42,
+          "법령 맵은 참고 구조이지 사용자가 그대로 실행할 행이 아니다."
+        ],
+        "creator": [
+          24,
+          "공식 trust anchor이며 사용자 fork와 거리가 있다."
+        ],
+        "ux": [
+          73,
+          "Link/Bucket 참고 탭에는 맞고 실행 체크리스트로 만들면 법률 설명을 행동으로 오해한다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-IFIXIT-WASHER",
+      "title": "세탁기 정기 관리 7단계",
+      "provider": "iFixit",
+      "sourceUrl": "https://www.ifixit.com/Guide/How+To+Maintain+Your+Washing+Machine/182518",
+      "lifeArea": "home_living",
+      "sourceShape": "ordered_procedure",
+      "rowEvidence": "전원 분리·세제함·고무 패킹·도어 유리·펌프 필터·급수 필터·관리 코스 7개 명시적 Step.",
+      "visibleDemand": "확인 시점 기준 최근 30일 51회, 누적 1,055회 조회.",
+      "rights": "cc_by_nc_sa_commercial_license_required",
+      "risk": "household_safety",
+      "admissionTier": "quick_flow",
+      "targetTier": "quick_flow",
+      "readiness": "commercial_license_required",
+      "decision": "provider_permission_queue",
+      "nextAction": "모델별 제조사 지침 우선 경고와 비상업 라이선스 경계를 유지하고 상업 이용 허가 후 한국어 Quick Flow로 검토한다.",
+      "scores": {
+        "demand": [
+          58,
+          "실제 조회는 보이지만 아직 대중 수요가 강하다고 보기는 어렵다."
+        ],
+        "conversion": [
+          94,
+          "행·순서·준비물·주의가 모두 명확하다."
+        ],
+        "creator": [
+          91,
+          "기여·수정·번역·평판 구조가 강한 커뮤니티형 원천이다."
+        ],
+        "ux": [
+          86,
+          "한 세션 Quick Flow와 반복 일정 옵션에 잘 맞는다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-IFIXIT-HOSE",
+      "title": "새는 정원 호스 연결부 교체",
+      "provider": "iFixit",
+      "sourceUrl": "https://www.ifixit.com/Guide/How+to+Fix+a+Leaking+Garden+Hose+Connector/189188",
+      "lifeArea": "home_living",
+      "sourceShape": "ordered_procedure",
+      "rowEvidence": "분리·절단·새 연결부 삽입·클램프·조임·누수 확인 6개 Step과 칼날 주의.",
+      "visibleDemand": "확인 시점 기준 최근 30일 1,210회, 누적 1,717회 조회.",
+      "rights": "cc_by_nc_sa_commercial_license_required",
+      "risk": "sharp_tool_safety",
+      "admissionTier": "hold_reject",
+      "targetTier": "quick_flow",
+      "readiness": "license_and_safety_review_required",
+      "decision": "second_wave_after_review",
+      "nextAction": "상업 이용 허가와 칼날 안전 검토 후 한 세션 Quick Flow로 만든다.",
+      "scores": {
+        "demand": [
+          72,
+          "최근 30일 조회가 누적 대비 높아 현재 계절 수요 신호가 보인다."
+        ],
+        "conversion": [
+          92,
+          "정확한 순서와 완료 기준이 있다."
+        ],
+        "creator": [
+          88,
+          "댓글로 순서 수정 의견이 남는 편집형 커뮤니티 구조다."
+        ],
+        "ux": [
+          74,
+          "Quick Flow에는 맞지만 안전 경고를 실행행과 분리해 상단에 고정해야 한다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-IFIXIT-HOUSEHOLD-MAP",
+      "title": "iFixit Household 수리 가이드 묶음",
+      "provider": "iFixit",
+      "sourceUrl": "https://www.ifixit.com/Device/Household",
+      "lifeArea": "home_living",
+      "sourceShape": "community_resource_collection",
+      "rowEvidence": "17개 카테고리와 다수 교체·기술 가이드. 개별 가이드는 독립 Step 구조.",
+      "visibleDemand": "카테고리 페이지 최근 30일 50,795회, 누적 1,842,632회 조회.",
+      "rights": "cc_by_nc_sa_commercial_license_required",
+      "risk": "mixed_repair_safety",
+      "admissionTier": "link_bucket",
+      "targetTier": "full_flow",
+      "readiness": "provider_partnership_required",
+      "decision": "provider_lead",
+      "nextAction": "카테고리 전체를 변환하지 말고 수요·안전·모델 적합도가 높은 개별 가이드만 공급 제휴 대상으로 삼는다.",
+      "scores": {
+        "demand": [
+          98,
+          "카테고리 자체의 강한 실제 조회 신호가 있다."
+        ],
+        "conversion": [
+          82,
+          "개별 가이드는 매우 강하지만 컬렉션 전체는 하나의 Flow가 아니다."
+        ],
+        "creator": [
+          97,
+          "누구나 작성·수정하고 기여 평판을 얻는 구조가 명확하다."
+        ],
+        "ux": [
+          76,
+          "Link/Bucket과 개별 Quick Flow를 함께 지원해야 하며 현재 단일 카드만으로는 부족하다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-SEOUL-LEARNING-2026",
+      "title": "2026 서울시민대학 여름 계절학기",
+      "provider": "서울특별시평생교육진흥원",
+      "sourceUrl": "https://mediahub.seoul.go.kr/archives/2018516",
+      "lifeArea": "study_reading",
+      "sourceShape": "dated_resource_queue",
+      "rowEvidence": "7월 7일~8월 21일, 4개 캠퍼스, 110개 강좌, 대부분 1~4회차라는 일정·목록 구조.",
+      "visibleDemand": "페이지 조회 5,300, 좋아요 7, 모집 3,700명.",
+      "rights": "kogl_type_4_no_derivatives",
+      "risk": "time_sensitive",
+      "admissionTier": "link_bucket",
+      "targetTier": "full_flow",
+      "readiness": "source_import_and_rights_required",
+      "decision": "seasonal_provider_lead",
+      "nextAction": "뉴스 페이지를 Flow로 만들지 않고 강좌 상세·프로그램북을 수입한 뒤 선택한 강좌 1개만 일정 Flow로 만든다.",
+      "scores": {
+        "demand": [
+          80,
+          "조회와 모집 규모가 실제로 보인다."
+        ],
+        "conversion": [
+          66,
+          "프로그램북을 수입해야 개별 회차가 생긴다."
+        ],
+        "creator": [
+          45,
+          "공식 강좌 제공자 중심이며 사용자 fork보다 선택·저장이 중요하다."
+        ],
+        "ux": [
+          71,
+          "resource queue와 선택 후 Full Flow 전환이 필요하다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-KTO-INCENTIVE-COURSE",
+      "title": "기업 인센티브 관광 패키지 과정",
+      "provider": "한국관광공사 관광e배움터",
+      "sourceUrl": "https://touredu.visitkorea.or.kr/common/C202300286/0000/0",
+      "lifeArea": "work_career",
+      "sourceShape": "course_package",
+      "rowEvidence": "현재 과정 외 3개 연계 과정을 완료해야 수료증을 받는 패키지 구조, 신청 후 30일, 진도 80% 수료 기준.",
+      "visibleDemand": "학습인원 300+와 후기 1건이 노출된다.",
+      "rights": "official_link_only",
+      "risk": "low_b2b",
+      "admissionTier": "full_flow",
+      "targetTier": "full_flow",
+      "readiness": "ready_second_wave",
+      "decision": "niche_backup",
+      "nextAction": "소비자 P0가 아니라 업무·관광 B2B 포트폴리오 공백을 채우는 second-wave 학습 Flow로 둔다.",
+      "scores": {
+        "demand": [
+          59,
+          "300+ 학습자는 보이나 대중 생활 콘텐츠 수요는 아니다."
+        ],
+        "conversion": [
+          87,
+          "패키지·기간·완료 기준이 명시적이다."
+        ],
+        "creator": [
+          50,
+          "교육 제공자 공유는 가능하지만 사용자 fork 동기는 보통이다."
+        ],
+        "ux": [
+          83,
+          "K-MOOC와 같은 progress Full Flow 틀에 자연스럽게 맞는다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CREATOR-GUIDE",
+      "title": "오늘의집 사용자가 좋아하는 콘텐츠 가이드",
+      "provider": "오늘의집 필진단",
+      "sourceUrl": "https://ohou.se/advices/9760",
+      "lifeArea": "work_career",
+      "sourceShape": "creator_playbook",
+      "rowEvidence": "노하우형·큐레이션형과 살림·요리·식물·캠핑 등 Good Case 링크를 제공한다.",
+      "visibleDemand": "해당 안내 글 자체는 조회 66, 좋아요 1, 스크랩·댓글 0.",
+      "rights": "permission_required",
+      "risk": "commercial_creator",
+      "admissionTier": "link_bucket",
+      "targetTier": "link_bucket",
+      "readiness": "provider_research_only",
+      "decision": "creator_source_strategy",
+      "nextAction": "사용자 Flow로 만들지 않고 어떤 제작자 콘텐츠가 모방·저장되는지 발굴하는 공급 측 가이드로 사용한다.",
+      "scores": {
+        "demand": [
+          35,
+          "안내 글 자체 수요는 낮다."
+        ],
+        "conversion": [
+          28,
+          "실행행이 아니라 제작자 콘텐츠 선정 기준이다."
+        ],
+        "creator": [
+          94,
+          "제작자 공급과 카테고리 확장 인사이트는 매우 강하다."
+        ],
+        "ux": [
+          62,
+          "제품 콘텐츠가 아니라 내부 source scout 도구로 적합하다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-SEOUL-BUS-FARE",
+      "title": "서울시 장애인 버스요금 지원 신청",
+      "provider": "서울특별시",
+      "sourceUrl": "https://news.seoul.go.kr/welfare/dsbus/ko/conts/view.do?menuId=K_USAGE_INFO",
+      "lifeArea": "money_admin_purchase",
+      "sourceShape": "official_application_steps",
+      "rowEvidence": "신청자격 체크부터 자격 확인·동의·본인인증·정보 입력·카드/계좌 확인·완료까지 7개 공식 Step.",
+      "visibleDemand": "페이지에 조회 수치는 없다.",
+      "rights": "official_link_only",
+      "risk": "sensitive_identity_finance",
+      "admissionTier": "quick_flow",
+      "targetTier": "quick_flow",
+      "readiness": "privacy_and_accessibility_review_required",
+      "decision": "official_second_wave",
+      "nextAction": "FlowMe는 주민번호·계좌를 받지 않고 공식 신청 링크와 완료 상태만 제공한다.",
+      "scores": {
+        "demand": [
+          66,
+          "대상자에게는 강한 필요지만 지역·자격 범위가 좁고 수치는 없다."
+        ],
+        "conversion": [
+          91,
+          "공식 7단계가 명확하다."
+        ],
+        "creator": [
+          18,
+          "공식 trust anchor이며 fork 대상이 아니다."
+        ],
+        "ux": [
+          79,
+          "Quick Flow에 맞지만 민감정보 입력이 FlowMe 화면처럼 보이지 않게 외부 이동을 명확히 해야 한다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-EASYLAW-BIRTH-REPORT",
+      "title": "출생신고 준비",
+      "provider": "찾기쉬운 생활법령정보",
+      "sourceUrl": "https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
+      "lifeArea": "family_parenting",
+      "sourceShape": "official_deadline_procedure",
+      "rowEvidence": "출생 후 1개월 기한, 신고 장소, 신고서 기재사항, 출생증명서·신분증명서 등 첨부서류가 명시되어 있다.",
+      "visibleDemand": "페이지에 조회·저장 수치는 없다.",
+      "rights": "official_link_only",
+      "risk": "legal_identity_sensitive",
+      "admissionTier": "quick_flow",
+      "targetTier": "quick_flow",
+      "readiness": "ready_second_wave",
+      "decision": "second_wave_candidate",
+      "nextAction": "출생일을 넣기 전에는 날짜 없이 저장하고, 입력 시 공식 1개월 기한만 계산한다. 개인정보는 수집하지 않는다.",
+      "scores": {
+        "demand": [
+          84,
+          "기한을 놓치면 과태료가 발생하는 높은 긴급성은 확인되지만 이용량은 모른다."
+        ],
+        "conversion": [
+          93,
+          "기한·장소·서류 행이 명확하다."
+        ],
+        "creator": [
+          22,
+          "공식 trust anchor이며 개인 경험은 메모로만 분리해야 한다."
+        ],
+        "ux": [
+          91,
+          "기준일 1개와 Todo/Calendar 변환을 검증하는 강한 Quick Flow다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    },
+    {
+      "candidateId": "NEW-SEOUL-KIDS-CAFE",
+      "title": "2026 여기저기 서울형 키즈카페",
+      "provider": "서울특별시",
+      "sourceUrl": "https://news.seoul.go.kr/welfare/archives/579652",
+      "lifeArea": "family_parenting",
+      "sourceShape": "dynamic_location_schedule",
+      "rowEvidence": "18개소, 4~6월·9~11월 주말, 10:00~17:30 3회차, 4~9세, 사전예약 또는 현장접수. 장소별 일정은 별도 포털에 있다.",
+      "visibleDemand": "추천 0이 노출되며 개별 장소 수요는 이 페이지에서 확인되지 않는다.",
+      "rights": "kogl_type_4_no_derivatives",
+      "risk": "child_local_schedule",
+      "admissionTier": "link_bucket",
+      "targetTier": "full_flow",
+      "readiness": "dynamic_source_import_required",
+      "decision": "resource_queue_only",
+      "nextAction": "뉴스를 Flow로 만들지 않고 최신 장소·회차 API/상세표를 확보한 뒤 사용자가 선택한 1회 방문만 일정화한다.",
+      "scores": {
+        "demand": [
+          62,
+          "가족 나들이 의도는 높지만 직접 수요 수치는 약하다."
+        ],
+        "conversion": [
+          58,
+          "운영 틀은 있으나 장소별 실제 회차가 별도 원문에 있다."
+        ],
+        "creator": [
+          48,
+          "지역별 후기 fork는 가능하지만 공식 일정이 우선이다."
+        ],
+        "ux": [
+          74,
+          "장소 큐와 선택 후 일정화가 필요해 현재 단일 Flow보다 Link/Bucket이 맞다."
+        ]
+      },
+      "openedAt": "2026-07-20T23:30:00+09:00"
+    }
+  ],
+  "nextProductionQueue": [
+    {
+      "rank": 1,
+      "refId": "O02",
+      "title": "자동차검사",
+      "wave": "first_canary",
+      "why": "Quick·공식·0입력 저장·나중 일정화"
+    },
+    {
+      "rank": 2,
+      "refId": "R01",
+      "title": "이사일 기준 준비",
+      "wave": "first_canary",
+      "why": "Full·기준일 1개·다중 projection"
+    },
+    {
+      "rank": 3,
+      "refId": "C14",
+      "title": "옷장 정리",
+      "wave": "first_canary",
+      "why": "Quick·날짜 없음·한 세션 실행"
+    },
+    {
+      "rank": 4,
+      "refId": "C08",
+      "title": "K-MOOC 진도",
+      "wave": "first_canary",
+      "why": "Full·주차 진도·재개 상태"
+    },
+    {
+      "rank": 5,
+      "refId": "C16",
+      "title": "블로그 글을 영상으로",
+      "wave": "first_canary",
+      "why": "creator 원문 유입·수정·공유"
+    },
+    {
+      "rank": 6,
+      "refId": "C01",
+      "title": "다음 영유아 건강검진",
+      "wave": "first_canary",
+      "why": "공식 가능 기간과 한 건 알림의 최소 모델"
+    },
+    {
+      "rank": 7,
+      "refId": "C06",
+      "title": "평일 5일 저녁 식단",
+      "wave": "second_wave",
+      "why": "주간 source row와 Calendar 연결"
+    },
+    {
+      "rank": 8,
+      "refId": "NEW-EASYLAW-BIRTH-REPORT",
+      "title": "출생신고 준비",
+      "wave": "second_wave",
+      "why": "공식 기한·기준일 1개·민감정보 비수집"
+    }
+  ],
+  "boundaryControls": [
+    {
+      "refId": "C11",
+      "expectedTier": "link_bucket",
+      "why": "실행 구조는 있으나 변경금지 권리"
+    },
+    {
+      "refId": "C02",
+      "expectedTier": "hold_reject",
+      "why": "제작자 권리와 계약 민감성"
+    },
+    {
+      "refId": "C15",
+      "expectedTier": "hold_reject",
+      "why": "홈페이지뿐인 운동량 근거"
+    },
+    {
+      "refId": "NEW-GOV24-ONESTOP",
+      "expectedTier": "link_bucket",
+      "why": "공식 provider index이지 하나의 사용자 목표가 아님"
+    }
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/benchmark-envelope-v1.schema.json",
+  "title": "Flow Content Generalization Benchmark run envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "caseId",
+    "benchmarkTrace",
+    "processor",
+    "sourceAssessment",
+    "feasibility",
+    "classification",
+    "sourceRowAssignments",
+    "canonical",
+    "minimumInputs",
+    "projections",
+    "gates",
+    "selfReview"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "flow-content-generalization-run-v1" },
+    "caseId": { "$ref": "#/$defs/nonEmptyString" },
+    "benchmarkTrace": { "$ref": "#/$defs/benchmarkTrace" },
+    "processor": { "$ref": "#/$defs/processor" },
+    "sourceAssessment": { "$ref": "#/$defs/sourceAssessment" },
+    "feasibility": { "$ref": "#/$defs/feasibility" },
+    "classification": { "$ref": "#/$defs/classification" },
+    "sourceRowAssignments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/sourceRowAssignment" }
+    },
+    "canonical": { "$ref": "#/$defs/canonical" },
+    "minimumInputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/minimumInput" }
+    },
+    "projections": { "$ref": "#/$defs/projections" },
+    "gates": { "$ref": "#/$defs/gates" },
+    "selfReview": { "$ref": "#/$defs/selfReview" }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "nullableString": { "type": ["string", "null"] },
+    "stringArray": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "benchmarkTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["split", "rulesHash", "promptHash", "sealedSplitHash"],
+      "properties": {
+        "split": { "enum": ["calibration", "final_holdout"] },
+        "rulesHash": { "$ref": "#/$defs/sha256" },
+        "promptHash": { "$ref": "#/$defs/sha256" },
+        "sealedSplitHash": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "processor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "modelOrAgent",
+        "actualProviderApiUsed",
+        "measuredInputTokens",
+        "measuredOutputTokens",
+        "elapsedMs",
+        "retryCount",
+        "humanInterventionCount"
+      ],
+      "properties": {
+        "role": { "enum": ["rules", "low_cost", "high_capability"] },
+        "modelOrAgent": { "$ref": "#/$defs/nonEmptyString" },
+        "actualProviderApiUsed": { "type": "boolean" },
+        "measuredInputTokens": { "type": ["integer", "null"], "minimum": 0 },
+        "measuredOutputTokens": { "type": ["integer", "null"], "minimum": 0 },
+        "elapsedMs": { "type": ["number", "null"], "minimum": 0 },
+        "retryCount": { "type": "integer", "minimum": 0 },
+        "humanInterventionCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "sourceAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completeness", "acquiredRowIds", "missingBoundary"],
+      "properties": {
+        "completeness": { "enum": ["complete", "partial", "metadata_only", "missing"] },
+        "acquiredRowIds": { "$ref": "#/$defs/stringArray" },
+        "missingBoundary": { "$ref": "#/$defs/stringArray" },
+        "sourceValueSemanticKeys": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "feasibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flowPossible", "executableAllowed", "state", "reason", "blockers"],
+      "properties": {
+        "flowPossible": { "type": "boolean" },
+        "executableAllowed": { "type": "boolean" },
+        "state": { "enum": ["ready", "needs_confirmation", "source_import_required", "hold", "blocked"] },
+        "reason": { "$ref": "#/$defs/nonEmptyString" },
+        "blockers": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primaryLifeArea",
+        "secondaryLifeAreas",
+        "topicTags",
+        "sourceShape",
+        "primaryExecutionPattern",
+        "primaryArtifact",
+        "secondaryArtifacts"
+      ],
+      "properties": {
+        "primaryLifeArea": { "$ref": "#/$defs/nullableString" },
+        "secondaryLifeAreas": { "$ref": "#/$defs/stringArray" },
+        "topicTags": { "$ref": "#/$defs/stringArray" },
+        "sourceShape": { "$ref": "#/$defs/nullableString" },
+        "primaryExecutionPattern": { "$ref": "#/$defs/nullableString" },
+        "primaryArtifact": {
+          "oneOf": [
+            { "enum": ["calendar", "checklist", "todo", "sheet", "memo"] },
+            { "type": "null" }
+          ]
+        },
+        "secondaryArtifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["calendar", "checklist", "todo", "sheet", "memo"] }
+        }
+      }
+    },
+    "sourceRowAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowId", "role", "reason"],
+      "properties": {
+        "sourceRowId": { "$ref": "#/$defs/nonEmptyString" },
+        "role": { "enum": ["item", "field", "memo", "reference", "conditional_response", "omission"] },
+        "reason": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "completion": {
+      "oneOf": [
+        { "$ref": "#/$defs/nonEmptyString" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "doneWhen"],
+          "properties": {
+            "mode": { "enum": ["check", "decision", "record", "consume"] },
+            "doneWhen": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        }
+      ]
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "intent",
+        "title",
+        "detail",
+        "completion",
+        "schedule",
+        "location",
+        "fields",
+        "conditions",
+        "sourceRefs"
+      ],
+      "properties": {
+        "itemId": { "$ref": "#/$defs/nonEmptyString" },
+        "intent": { "enum": ["action", "decision", "record", "consume"] },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "detail": { "type": "string" },
+        "completion": { "$ref": "#/$defs/completion" },
+        "schedule": { "type": ["object", "string", "null"] },
+        "location": { "type": ["object", "string", "null"] },
+        "fields": { "type": "array" },
+        "conditions": { "type": "array" },
+        "sourceRefs": { "$ref": "#/$defs/stringArray", "minItems": 1 }
+      }
+    },
+    "canonical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "items", "fields", "memos", "references", "conditionalResponses"],
+      "properties": {
+        "title": {
+          "oneOf": [
+            { "$ref": "#/$defs/nonEmptyString" },
+            { "type": "null" }
+          ]
+        },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "fields": { "type": "array" },
+        "memos": { "type": "array" },
+        "references": { "type": "array" },
+        "conditionalResponses": { "type": "array" }
+      }
+    },
+    "minimumInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputId", "owner", "semanticKey", "requiredBeforeFirstPreview", "reason", "consumerRefs"],
+      "properties": {
+        "inputId": { "$ref": "#/$defs/nonEmptyString" },
+        "owner": { "enum": ["creator", "user"] },
+        "semanticKey": { "$ref": "#/$defs/nonEmptyString" },
+        "requiredBeforeFirstPreview": { "type": "boolean" },
+        "reason": { "$ref": "#/$defs/nonEmptyString" },
+        "consumerRefs": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["availability", "payload", "losses"],
+      "properties": {
+        "availability": { "enum": ["primary", "secondary", "fallback", "blocked", "not_applicable"] },
+        "payload": { "type": ["object", "array", "null"] },
+        "losses": { "type": "array" }
+      }
+    },
+    "projections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["calendar", "checklist", "todo", "sheet", "memo", "ics"],
+      "properties": {
+        "calendar": { "$ref": "#/$defs/projection" },
+        "checklist": { "$ref": "#/$defs/projection" },
+        "todo": { "$ref": "#/$defs/projection" },
+        "sheet": { "$ref": "#/$defs/projection" },
+        "memo": { "$ref": "#/$defs/projection" },
+        "ics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["eventCount", "actionVisible"],
+          "properties": {
+            "eventCount": { "type": "integer", "minimum": 0 },
+            "actionVisible": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["access", "rights", "freshness", "locale", "safety", "privacy", "publicExportAllowed", "personalPreviewAllowed"],
+      "properties": {
+        "access": { "enum": ["open", "partial", "account_required", "unavailable"] },
+        "rights": { "enum": ["open", "link_only", "permission_required", "restricted", "unknown"] },
+        "freshness": { "enum": ["passed", "review_required", "unknown"] },
+        "locale": { "enum": ["applicable", "review_required", "not_applicable"] },
+        "safety": { "enum": ["not_required", "review_required", "blocked"] },
+        "privacy": { "enum": ["not_required", "review_required", "blocked"] },
+        "publicExportAllowed": { "type": "boolean" },
+        "personalPreviewAllowed": { "type": "boolean" }
+      }
+    },
+    "selfReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uncertainties", "omissions", "potentialInventions", "sourceValueReentryCount", "unscheduledIcsViolationCount"],
+      "properties": {
+        "uncertainties": { "type": "array" },
+        "omissions": { "type": "array" },
+        "potentialInventions": { "type": "array" },
+        "sourceValueReentryCount": { "type": "integer", "minimum": 0 },
+        "unscheduledIcsViolationCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

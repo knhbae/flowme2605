@@ -1,0 +1,17 @@
+{
+  "documentType": "flowme_input_composer_invalid_mutations",
+  "version": "1.0.0",
+  "mutations": [
+    { "id": "required-budget", "expectedCode": "required_input_budget" },
+    { "id": "unnecessary-input", "expectedCode": "unnecessary_input" },
+    { "id": "source-reentry", "expectedCode": "source_value_reentry" },
+    { "id": "owner-boundary", "expectedCode": "owner_write_boundary" },
+    { "id": "hidden-input", "expectedCode": "hidden_input_without_disclosure" },
+    { "id": "invented-action", "expectedCode": "invented_action" },
+    { "id": "semantic-loss", "expectedCode": "semantic_loss" },
+    { "id": "unscheduled-ics", "expectedCode": "unscheduled_ics" },
+    { "id": "blocked-artifact", "expectedCode": "blocked_fake_artifact" },
+    { "id": "route-coverage", "expectedCode": "route_coverage" },
+    { "id": "internal-token", "expectedCode": "internal_enum_leak" }
+  ]
+}

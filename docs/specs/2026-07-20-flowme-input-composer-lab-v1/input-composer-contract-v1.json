@@ -1,0 +1,75 @@
+{
+  "documentType": "flowme_input_composer_contract",
+  "contractVersion": "1.0.0-lab",
+  "status": "review_candidate",
+  "claimBoundary": "Deterministic fixture and agent QA contract; not runtime implementation, observed-user validation, or public-release approval.",
+  "canonicalItem": {
+    "minimumStatefulUnit": true,
+    "required": ["itemId", "stepId", "intent", "title", "detail", "completion", "provenance"],
+    "optional": ["schedule", "location", "fields", "conditions", "sourceRefs"],
+    "intents": ["action", "decision", "record", "consume"],
+    "rules": {
+      "title": "Source-backed action or explicit user request only.",
+      "detail": "Supporting method, context, caution and source explanation; not inflated into extra actions.",
+      "completion": "Typed done condition required for every Item.",
+      "schedule": "Only a real absolute date, anchor offset, date window or time recurrence. Event trigger alone is not a schedule.",
+      "location": "User overlay unless the source explicitly owns the location.",
+      "fields": "Execution or decision state; never re-entry of known source rows.",
+      "conditions": "Conditional response kept separate from normal completion.",
+      "sourceRefs": "Required for source-backed Item; explicit user_request provenance is the only source-less exception."
+    }
+  },
+  "inputOwnership": {
+    "layers": ["source", "creator_draft", "user_overlay", "run_state", "system_derived"],
+    "writeBoundaries": {
+      "source": "read_only",
+      "creator_draft": "/creatorDraft/",
+      "user_overlay": "/userOverlay/",
+      "run_state": "/runState/",
+      "system_derived": "read_only"
+    },
+    "rule": "No two writable layers share a path and source-derived values are never editable inputs."
+  },
+  "inputModes": [
+    "quick_line",
+    "multiline_paste",
+    "url_confirm",
+    "table_curriculum_import"
+  ],
+  "projectionTargets": ["calendar", "checklist", "todo", "sheet", "memo"],
+  "projectionRules": {
+    "ics": "Generated only from effective scheduled Item occurrences; zero schedule means no ICS object or action.",
+    "calendar": "Only when date/time is natural to the user job.",
+    "checklist": "Independent checkable rows, not conditional emergency responses.",
+    "todo": "A next action or condition-triggered task.",
+    "sheet": "Row order and persistent progress/record state.",
+    "memo": "Decision rationale, cautions, references and fallback context."
+  },
+  "progressiveDisclosure": {
+    "initial": ["primary_source_payload", "source_scope", "natural_artifact_preview"],
+    "conditional": ["schedule_anchor", "location", "progress_state", "last_position", "decision_note"],
+    "neverHidden": ["safety_stop_rule", "emergency_response", "missing_source_rows", "blocked_reason"]
+  },
+  "visibleCopyPolicy": {
+    "forbiddenRawTokens": [
+      "taxonomy",
+      "schema",
+      "canonical",
+      "DTO",
+      "SourceRow",
+      "sourceShape",
+      "executionPattern",
+      "primaryArtifact",
+      "secondaryArtifact",
+      "projection",
+      "metadata_only",
+      "source_import_required",
+      "conversionReadiness",
+      "promotionState",
+      "rightsReview",
+      "$user",
+      "ready_for_internal_canary"
+    ],
+    "rule": "Internal identifiers may exist in application/json data but not in rendered text, accessible names, labels, help, errors, or options."
+  }
+}

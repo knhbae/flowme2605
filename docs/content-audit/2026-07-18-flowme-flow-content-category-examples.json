@@ -1,0 +1,800 @@
+{
+  "documentType": "flowme_flow_content_category_examples_ledger",
+  "ledgerVersion": "1.0.0",
+  "date": "2026-07-18",
+  "status": "strategy_proposal_not_published_content",
+  "linkedContract": "./2026-07-18-flowme-flow-content-contract-v1.json",
+  "scopeNoteKo": "카테고리 예시는 제품·콘텐츠 설계를 위한 후보이며, 출처·권리·검토 상태가 명시적으로 통과하지 않은 항목은 실제 발행 완료 콘텐츠가 아니다.",
+  "evidenceLabels": {
+    "repository_fact": "현재 저장소와 실제 집계 결과",
+    "official_source": "공식 기관의 현재 자료",
+    "strategic_inference": "전략 설계를 위한 판단",
+    "hypothesis_unmeasured": "실험 전 가설 또는 미측정"
+  },
+  "currentInventorySnapshot": {
+    "asOf": "2026-07-18",
+    "scope": "lib/flow/seed-flows.ts의 seedBundles",
+    "flowBundles": 153,
+    "items": 847,
+    "sections": 341,
+    "distinctCurrentCategoryStrings": 90,
+    "lifecycle": {
+      "keep": 44,
+      "fix": 105,
+      "previewOnly": 2,
+      "hide": 2
+    },
+    "primaryDestinationMissing": 24,
+    "structuredStopOrHoldBundles": 6,
+    "sourceStatus": {
+      "real": 94,
+      "needsReview": 36,
+      "preview": 14,
+      "missing": 9
+    },
+    "evidence": "repository_fact"
+  },
+  "categoryGroups": [
+    {
+      "id": "family_parenting",
+      "labelKo": "육아 생활 운영",
+      "examples": [
+        {
+          "id": "parenting-weekend-museum",
+          "titleKo": "아이와 주말 박물관 나들이",
+          "userJobKo": "예약부터 귀가 후 정리까지 한 번에 준비한다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration", "source_trust"],
+          "minimalInputs": ["방문일", "지역", "참여자", "이동수단"],
+          "appliedOutputKo": "예약·출발 캘린더, 준비 체크리스트, 가족 역할 메모",
+          "sourceMode": "creator_original_plus_official_venue",
+          "risk": "low",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "parenting-family-birthday",
+          "titleKo": "가족 생일 집에서 준비하기",
+          "userJobKo": "날짜, 음식, 선물, 역할과 정리를 가족이 나눠 맡는다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["행사일", "참여자 수", "역할", "예산 범위"],
+          "appliedOutputKo": "D-7 일정, 구매 체크, 역할표, 당일 진행 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "parenting-picture-book-night",
+          "titleKo": "그림책 읽기와 질문 한 가지",
+          "userJobKo": "책을 고르고 읽은 뒤 아이가 고른 장면을 한 줄 남긴다.",
+          "planningPattern": "repeating_routine",
+          "primaryArtifact": "checklist",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["읽을 요일", "책", "반복 여부"],
+          "appliedOutputKo": "반복 일정, 읽기 체크, 비공개 한 줄 메모",
+          "sourceMode": "existing_repository_preview",
+          "risk": "low",
+          "p0Fit": "preview_until_exact_source",
+          "evidence": "repository_fact"
+        },
+        {
+          "id": "parenting-dino-art",
+          "titleKo": "공룡 발자국 미술 놀이",
+          "userJobKo": "준비, 놀이, 정리와 다음 놀이 선택을 45분 안에 끝낸다.",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "overlays": ["collaboration", "source_trust"],
+          "minimalInputs": ["놀이일", "참여자", "준비물 보유 여부"],
+          "appliedOutputKo": "놀이 일정, 준비·정리 체크, 선택적 비공개 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "model_example_not_publishable",
+          "evidence": "hypothesis_unmeasured"
+        }
+      ]
+    },
+    {
+      "id": "travel_outings",
+      "labelKo": "여행·외출",
+      "examples": [
+        {
+          "id": "travel-family-d30",
+          "titleKo": "가족여행 D-30",
+          "userJobKo": "예약, 서류, 짐, 이동과 가족 역할을 출발일에 맞춰 정리한다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration", "source_trust"],
+          "minimalInputs": ["출발일", "지역", "여행 일수", "참여자"],
+          "appliedOutputKo": "예약 일정, 가족별 짐 체크, 비용·예약표, 원본 메모",
+          "sourceMode": "creator_original_plus_official_travel",
+          "risk": "medium",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "travel-daytrip-weather-choice",
+          "titleKo": "비 예보가 있는 당일 나들이",
+          "userJobKo": "날씨와 예약 조건에 따라 실외·실내 대안을 고른다.",
+          "planningPattern": "compare_decide",
+          "primaryArtifact": "memo",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["날짜", "지역", "참여자", "취소 가능 여부"],
+          "appliedOutputKo": "선택표, 최종 장소, 출발 일정, 취소 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "travel-camping-packing-table",
+          "titleKo": "초보 가족 캠핑 준비표",
+          "userJobKo": "보유, 대여, 구매, 현장 제공 준비물을 구분한다.",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "sheet",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["숙박일", "인원", "장비 보유", "캠핑장 제공 항목"],
+          "appliedOutputKo": "준비물 표, 담당자, 구매 보류, 출발 체크",
+          "sourceMode": "creator_original_required",
+          "risk": "medium",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "travel-creator-place-queue",
+          "titleKo": "제작자가 고른 지역 체험 큐",
+          "userJobKo": "여러 추천 장소 중 다음에 갈 곳을 고르고 방문 순서를 관리한다.",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "todo",
+          "overlays": ["experience_map", "source_trust"],
+          "minimalInputs": ["지역", "가능한 날짜", "관심 주제"],
+          "appliedOutputKo": "방문 후보 큐, 다음 장소, 원본 링크, 완료 기록",
+          "sourceMode": "creator_playlist_or_collection_required",
+          "risk": "low",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        }
+      ]
+    },
+    {
+      "id": "study_career",
+      "labelKo": "학습·커리어",
+      "examples": [
+        {
+          "id": "study-exam-d30",
+          "titleKo": "자격시험 D-30",
+          "userJobKo": "범위, 회독, 모의시험과 시험 당일 준비를 단계별로 끝낸다.",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "hybrid",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["시험일", "가능 시간", "현재 진도"],
+          "appliedOutputKo": "주차별 할 일, 시험 일정, 오답표, 준비 메모",
+          "sourceMode": "creator_original_plus_official_exam",
+          "risk": "low",
+          "p0Fit": "cross_category_reference",
+          "evidence": "repository_fact"
+        },
+        {
+          "id": "career-interview-d14",
+          "titleKo": "면접 D-14",
+          "userJobKo": "회사 조사, 경험 정리, 모의 답변, 이동 준비를 면접일에 맞춘다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "calendar",
+          "overlays": [],
+          "minimalInputs": ["면접일", "직무", "면접 방식"],
+          "appliedOutputKo": "준비 일정, 질문 체크, 답변 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "career-onboarding-30day",
+          "titleKo": "입사 첫 30일 적응",
+          "userJobKo": "첫날 준비, 관계 형성, 업무 파악, 30일 회고를 단계별로 진행한다.",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "todo",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["입사일", "근무 방식", "역할"],
+          "appliedOutputKo": "주차별 할 일, 미팅 일정, 질문·회고 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "study-video-resource-queue",
+          "titleKo": "강의 영상 학습 큐",
+          "userJobKo": "영상 목록을 가져와 학습 순서와 다음 영상을 정한다.",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "sheet",
+          "overlays": ["experience_map", "source_trust"],
+          "minimalInputs": ["목표일", "주당 가능 시간", "완료한 자료"],
+          "appliedOutputKo": "영상 행, 예정일, 완료 상태, 다음 영상",
+          "sourceMode": "full_playlist_import_required",
+          "risk": "low",
+          "p0Fit": "source_import_required",
+          "evidence": "strategic_inference"
+        }
+      ]
+    },
+    {
+      "id": "meals_living",
+      "labelKo": "요리·식사·생활",
+      "examples": [
+        {
+          "id": "meals-weekly-prep",
+          "titleKo": "주간 식사 준비",
+          "userJobKo": "이번 주 메뉴, 재료, 조리 시점과 남은 재료를 한 표로 관리한다.",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "sheet",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["식사 횟수", "참여자", "보유 재료"],
+          "appliedOutputKo": "메뉴·재료 행, 장보기 체크, 조리 일정",
+          "sourceMode": "creator_original_required",
+          "risk": "medium",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "meals-creator-recipe",
+          "titleKo": "제작자 레시피 한 끼 실행",
+          "userJobKo": "원본 레시피의 재료, 순서, 타이밍을 조리용 실행본으로 바꾼다.",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["인분", "보유 재료", "조리 시작 시각"],
+          "appliedOutputKo": "재료 체크, 조리 순서, 타이머 메모, 원본 링크",
+          "sourceMode": "permitted_creator_original_required",
+          "risk": "medium",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "living-guests-at-home",
+          "titleKo": "손님 초대 D-3",
+          "userJobKo": "메뉴, 좌석, 정리, 구매와 당일 역할을 방문일에 맞춘다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["방문일", "인원", "식사 여부", "역할"],
+          "appliedOutputKo": "D-3 일정, 구매 체크, 역할표, 당일 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "living-fridge-cleanout",
+          "titleKo": "냉장고 파먹기 7일",
+          "userJobKo": "우선 소진 재료, 메뉴 후보, 구매 보류를 7일 표로 정리한다.",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "sheet",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["시작일", "우선 재료", "폐기할 재료"],
+          "appliedOutputKo": "재고·메뉴 표, 장보기 보류, 주간 일정",
+          "sourceMode": "existing_repository_source",
+          "risk": "medium",
+          "p0Fit": "cross_category_reference",
+          "evidence": "repository_fact"
+        }
+      ]
+    },
+    {
+      "id": "exercise_hobby",
+      "labelKo": "운동·취미",
+      "examples": [
+        {
+          "id": "fitness-5k-four-week",
+          "titleKo": "5km 달리기 4주",
+          "userJobKo": "주차별 달리기·걷기 세션과 휴식·중단 조건을 적용한다.",
+          "planningPattern": "repeating_routine",
+          "primaryArtifact": "calendar",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["시작일", "가능 요일", "현재 수준"],
+          "appliedOutputKo": "반복 일정, 세션 체크, 중단 메모",
+          "sourceMode": "permitted_creator_original_required",
+          "risk": "medium",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "hobby-hiking-day",
+          "titleKo": "초보 등산 하루 준비",
+          "userJobKo": "코스, 날씨, 장비, 출발·하산 연락을 하루 일정으로 묶는다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration", "source_trust"],
+          "minimalInputs": ["등산일", "코스", "동행자", "이동수단"],
+          "appliedOutputKo": "출발 일정, 장비 체크, 비상 연락 메모",
+          "sourceMode": "creator_original_plus_official_park",
+          "risk": "medium",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "hobby-exhibition-project",
+          "titleKo": "작은 전시 준비 6주",
+          "userJobKo": "작품 선정, 제작, 설치, 홍보와 철수를 단계별로 완성한다.",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "todo",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["행사일", "참여자", "작품 수"],
+          "appliedOutputKo": "단계별 할 일, 설치 일정, 역할표",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "hobby-diy-weekend",
+          "titleKo": "주말 벽 한 면 칠하기",
+          "userJobKo": "면적 확인, 준비물, 보양, 도장, 건조와 정리를 순서대로 진행한다.",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["작업일", "면적", "보유 도구"],
+          "appliedOutputKo": "준비물 체크, 작업 순서, 건조 메모",
+          "sourceMode": "permitted_creator_original_required",
+          "risk": "medium",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        }
+      ]
+    },
+    {
+      "id": "events_admin",
+      "labelKo": "이사·행사·행정",
+      "examples": [
+        {
+          "id": "admin-moving-d30",
+          "titleKo": "이사 D-30",
+          "userJobKo": "예약, 정리, 당일 인계와 전입 후 확인을 이사일 기준으로 배치한다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration", "source_trust"],
+          "minimalInputs": ["이사일", "주거 형태", "참여자", "이전 서비스"],
+          "appliedOutputKo": "D-day 일정, 체크리스트, 업체·역할표, 공식 링크 메모",
+          "sourceMode": "existing_repository_source",
+          "risk": "medium",
+          "p0Fit": "cross_category_reference",
+          "evidence": "repository_fact"
+        },
+        {
+          "id": "events-wedding-timeline",
+          "titleKo": "결혼 준비 타임라인",
+          "userJobKo": "예식일 전 준비와 비교 결정을 분리하고 역할을 공유한다.",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration", "experience_map"],
+          "minimalInputs": ["예식일", "참여자", "예산 범위"],
+          "appliedOutputKo": "단계 지도, 일정, 비교표, 역할 메모",
+          "sourceMode": "existing_repository_source",
+          "risk": "financial_sensitive",
+          "p0Fit": "strengthen",
+          "evidence": "repository_fact"
+        },
+        {
+          "id": "admin-vehicle-inspection",
+          "titleKo": "자동차검사 D-14",
+          "userJobKo": "검사 기간, 예약, 방문 준비와 결과 후 조치를 놓치지 않는다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["검사일 또는 만료일", "차량", "검사소"],
+          "appliedOutputKo": "예약 일정, 방문 체크, 결과 메모",
+          "sourceMode": "official_source",
+          "risk": "medium",
+          "p0Fit": "official_trust_anchor",
+          "evidence": "official_source"
+        },
+        {
+          "id": "admin-passport-renewal",
+          "titleKo": "여권 재발급 준비",
+          "userJobKo": "신청 가능 경로, 사진, 접수와 수령 준비를 공식 기준으로 확인한다.",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["기존 전자여권 여부", "재발급 사유", "신청자 연령"],
+          "appliedOutputKo": "조건별 체크리스트, 사용자 지정 알림, 공식 링크 메모",
+          "sourceMode": "official_source",
+          "risk": "medium",
+          "p0Fit": "official_trust_anchor",
+          "evidence": "official_source"
+        }
+      ]
+    },
+    {
+      "id": "creative_projects",
+      "labelKo": "창작·프로젝트",
+      "examples": [
+        {
+          "id": "creator-video-series",
+          "titleKo": "영상 시리즈 4주",
+          "userJobKo": "기획, 촬영, 편집, 발행과 다음 편 개선을 주차별로 진행한다.",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["첫 발행일", "편수", "참여자"],
+          "appliedOutputKo": "주차별 할 일, 촬영 일정, 제작표, 회고 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "creator_pilot",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "creator-newsletter-routine",
+          "titleKo": "주간 글 연재",
+          "userJobKo": "아이디어 수집, 초안, 편집, 발행과 반응 확인을 매주 반복한다.",
+          "planningPattern": "repeating_routine",
+          "primaryArtifact": "calendar",
+          "overlays": [],
+          "minimalInputs": ["발행 요일", "마감 시각", "반복 기간"],
+          "appliedOutputKo": "반복 일정, 발행 체크, 회고 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "project-event-operation",
+          "titleKo": "소규모 행사 운영",
+          "userJobKo": "장소, 참가자, 진행, 장비, 역할과 당일 돌발 대응을 묶는다.",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "hybrid",
+          "overlays": ["collaboration"],
+          "minimalInputs": ["행사일", "장소", "참가자 수", "운영자"],
+          "appliedOutputKo": "운영 일정, 준비 체크, 역할표, 비상 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "medium",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "project-collaborative-production",
+          "titleKo": "공동 제작 프로젝트",
+          "userJobKo": "결과물, 단계, 담당자, 전달 기준과 수정 이력을 공유한다.",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "sheet",
+          "overlays": ["collaboration", "experience_map"],
+          "minimalInputs": ["마감일", "결과물", "참여자"],
+          "appliedOutputKo": "단계·담당자 표, 마감 일정, 인수인계 메모",
+          "sourceMode": "creator_original_required",
+          "risk": "low",
+          "p0Fit": "second_wave",
+          "evidence": "strategic_inference"
+        }
+      ]
+    },
+    {
+      "id": "sensitive_preparation",
+      "labelKo": "민감 영역의 준비·확인",
+      "examples": [
+        {
+          "id": "sensitive-jeonse-precheck",
+          "titleKo": "전세계약 전 공식 서류 확인",
+          "userJobKo": "계약 결론을 내리지 않고 공식 서류 상태와 문의 대상을 정리한다.",
+          "planningPattern": "compare_decide",
+          "primaryArtifact": "hybrid",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["계약 예정일", "확인할 서류", "보류 상태"],
+          "appliedOutputKo": "확인 체크, 보류표, 공식 기관·전문가 문의 메모",
+          "sourceMode": "official_primary_source_required",
+          "risk": "financial_sensitive",
+          "p0Fit": "review_locked",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "sensitive-tax-documents",
+          "titleKo": "세금 신고 서류 준비",
+          "userJobKo": "세무 판단 없이 공식 서류 목록, 발급처와 제출 상태를 확인한다.",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "sheet",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["신고 유형", "기준 연도", "보유 서류"],
+          "appliedOutputKo": "서류 행, 발급처, 상태, 전문가 문의 메모",
+          "sourceMode": "official_source",
+          "risk": "financial_sensitive",
+          "p0Fit": "second_wave_review_locked",
+          "evidence": "strategic_inference"
+        },
+        {
+          "id": "sensitive-health-visit",
+          "titleKo": "건강검진 방문 준비",
+          "userJobKo": "진단 없이 대상 기간, 예약, 문진표, 준비물과 질문을 정리한다.",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "overlays": ["source_trust"],
+          "minimalInputs": ["공식 대상 기간", "예약일", "기관"],
+          "appliedOutputKo": "예약 일정, 준비 체크, 질문 메모",
+          "sourceMode": "official_source",
+          "risk": "medical_sensitive",
+          "p0Fit": "review_locked",
+          "evidence": "repository_fact"
+        },
+        {
+          "id": "sensitive-child-safety-outing",
+          "titleKo": "아동 동반 외출 안전 확인",
+          "userJobKo": "안전 조언을 생성하지 않고 장소의 공식 규정과 보호자 연락·인계만 확인한다.",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "overlays": ["collaboration", "source_trust"],
+          "minimalInputs": ["장소", "일시", "보호자", "공식 규정"],
+          "appliedOutputKo": "공식 규정 링크, 연락·인계 체크, 비상 메모",
+          "sourceMode": "official_venue_source_required",
+          "risk": "child_safety_sensitive",
+          "p0Fit": "review_locked",
+          "evidence": "strategic_inference"
+        }
+      ]
+    }
+  ],
+  "fullExamples": [
+    {
+      "id": "worked-parenting-dino-art",
+      "titleKo": "상세 사례 1 · 토요일 공룡 발자국 미술 놀이",
+      "publicationState": "model_example_not_publishable",
+      "evidence": "hypothesis_unmeasured",
+      "sourceData": {
+        "primarySource": "허가된 제작자 원본이 필요함",
+        "repositoryReference": "kids-dino-footprint-art",
+        "sourceRows": [
+          {"id": "S1", "kind": "action", "textKo": "준비물을 한곳에 모은다."},
+          {"id": "S2", "kind": "action", "textKo": "공룡 발자국을 찍고 이야기로 이어간다."},
+          {"id": "S3", "kind": "creator_experience", "textKo": "바닥 보양과 닦을 도구를 먼저 둔다."},
+          {"id": "S4", "kind": "boundary", "textKo": "발달 평가나 교육 효과를 주장하지 않는다."}
+        ],
+        "blockers": ["제작자 허가", "정확한 원문 행", "재료 안전 주의의 출처"]
+      },
+      "canonicalBaseline": {
+        "userJobKo": "보호자가 준비부터 정리까지 45분 안에 놀이 한 번을 끝낸다.",
+        "lifeArea": "family_parenting",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "overlays": ["collaboration", "source_trust"],
+        "prerequisitesKo": ["세척 가능한 재료", "바닥 보양", "정리할 물과 수건"],
+        "items": [
+          {"order": 1, "titleKo": "바닥을 보양하고 준비물을 꺼내기", "doneWhenKo": "놀이 공간과 준비물이 바로 시작 가능한 상태다.", "sourceRefs": ["S1", "S3"]},
+          {"order": 2, "titleKo": "물감을 묻혀 공룡 발자국 찍기", "doneWhenKo": "발자국 작품 한 장이 완성됐다.", "sourceRefs": ["S2"]},
+          {"order": 3, "titleKo": "아이가 고른 장면을 한 문장으로 듣기", "doneWhenKo": "아이의 말이나 보호자의 관찰 한 줄이 선택적으로 남았다.", "sourceRefs": ["S2"]},
+          {"order": 4, "titleKo": "재료를 닦고 작품을 말리기", "doneWhenKo": "바닥과 도구를 정리하고 작품을 말릴 곳에 옮겼다.", "sourceRefs": ["S3"]},
+          {"order": 5, "titleKo": "다음 놀이를 할지 끝낼지 정하기", "doneWhenKo": "반복, 다른 놀이, 종료 중 하나를 골랐다.", "sourceRefs": ["S2"]}
+        ],
+        "branches": [
+          {"whenKo": "재료가 없을 때", "thenKo": "구매를 강요하지 않고 다른 놀이로 바꾸거나 보류한다."},
+          {"whenKo": "아이가 중단을 원할 때", "thenKo": "완성 강요 없이 정리 단계로 이동한다."}
+        ]
+      },
+      "minimalUserInputs": [
+        {"field": "playDateTime", "example": "2026-07-25T10:00:00+09:00", "changes": "calendar"},
+        {"field": "participants", "example": ["보호자 1", "아이 1"], "changes": "roleAssignments"},
+        {"field": "materialsReady", "example": true, "changes": "includeOrHold"}
+      ],
+      "appliedInstance": {
+        "titleKo": "7월 25일 10시 · 공룡 발자국 놀이",
+        "roles": [
+          {"participant": "보호자", "responsibilityKo": "보양, 재료, 정리"},
+          {"participant": "아이", "responsibilityKo": "놀이 선택과 참여"}
+        ],
+        "privateState": ["완료", "건너뜀", "아이의 말 한 줄"],
+        "sourceAndCautionLocked": true
+      },
+      "projections": {
+        "calendar": {"enabled": true, "resultKo": "10:00~10:45 놀이 일정 한 건"},
+        "checklist": {"enabled": true, "resultKo": "준비·놀이·정리·다음 선택 5개"},
+        "sheet": {"enabled": false, "reasonKo": "한 번의 놀이에는 행·열 관리가 자연스럽지 않음"},
+        "memo": {"enabled": true, "resultKo": "준비물, 원본, 주의, 선택적 비공개 한 줄"}
+      }
+    },
+    {
+      "id": "worked-moving-d30",
+      "titleKo": "상세 사례 2 · 두 사람이 함께 하는 이사 D-30",
+      "publicationState": "existing_reference_requires_strengthening",
+      "evidence": "repository_fact",
+      "sourceData": {
+        "primarySource": "이사 체크리스트 참고 콘텐츠",
+        "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+        "officialSupportingSources": [
+          "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016&tp_seq=01",
+          "https://www.iros.go.kr"
+        ],
+        "repositorySlug": "moving-d30-basic",
+        "sourceRowsInCurrentBundle": 24,
+        "knownGapKo": "현재 24개 Item 중 5개만 구체적 완료 기준이 있다."
+      },
+      "canonicalBaseline": {
+        "userJobKo": "이사일 전후의 예약, 준비, 인계와 행정 확인을 빠뜨리지 않는다.",
+        "lifeArea": "home_living",
+        "planningPattern": "date_preparation",
+        "primaryArtifact": "hybrid",
+        "overlays": ["collaboration", "source_trust"],
+        "stepsKo": ["D-30", "D-10", "D-3", "D-1", "D-Day", "D+1"],
+        "representativeItems": [
+          {"offset": -30, "titleKo": "이사·청소 업체 견적을 비교하고 예약하기", "doneWhenKo": "선정 업체, 금액, 날짜와 취소 조건이 기록됐다."},
+          {"offset": -10, "titleKo": "대형폐기물 배출 신고와 수거일 확인하기", "doneWhenKo": "신고 번호와 수거 예정일을 남겼다."},
+          {"offset": -3, "titleKo": "이전 설치가 필요한 서비스를 예약하기", "doneWhenKo": "적용 서비스의 접수번호와 방문일이 정해졌다."},
+          {"offset": -1, "titleKo": "귀중품과 당일 가방을 따로 보관하기", "doneWhenKo": "이삿짐과 섞이지 않는 위치에 두었다."},
+          {"offset": 0, "titleKo": "집 상태와 계량기를 사진으로 남기기", "doneWhenKo": "필요한 사진을 개인 보관 위치에 저장했다."},
+          {"offset": 1, "titleKo": "전입신고 처리 결과와 확정일자를 확인하기", "doneWhenKo": "처리 상태와 확인일을 기록했다."}
+        ]
+      },
+      "minimalUserInputs": [
+        {"field": "moveDate", "example": "2026-08-31", "changes": "all_anchor_dates"},
+        {"field": "homeType", "example": "아파트", "changes": "elevator_and_management_items"},
+        {"field": "participants", "example": ["A", "B"], "changes": "roleAssignments"},
+        {"field": "servicesToMove", "example": ["인터넷"], "changes": "filtered_service_items"}
+      ],
+      "appliedInstance": {
+        "titleKo": "8월 31일 이사",
+        "calendarDatesKo": ["8월 1일 D-30", "8월 21일 D-10", "8월 28일 D-3", "8월 30일 D-1", "8월 31일 이사", "9월 1일 행정 확인"],
+        "roles": [
+          {"participant": "A", "responsibilityKo": "업체·관리사무소·이전 설치"},
+          {"participant": "B", "responsibilityKo": "물건 정리·당일 가방·서류"}
+        ],
+        "filteredOutKo": ["정수기 이전 설치"],
+        "privateState": ["업체 견적", "접수번호", "개인 사진 위치", "완료 상태"]
+      },
+      "projections": {
+        "calendar": {"enabled": true, "resultKo": "D-30~D+1 일정"},
+        "checklist": {"enabled": true, "resultKo": "적용 가능한 실행 항목만 역할별로 표시"},
+        "sheet": {"enabled": true, "resultKo": "업체·견적·담당자·접수번호 표"},
+        "memo": {"enabled": true, "resultKo": "원본, 공식 링크, 예외, 개인 보관 위치"}
+      }
+    },
+    {
+      "id": "worked-passport-renewal",
+      "titleKo": "상세 사례 3 · 공식 기준으로 여권 재발급 준비",
+      "publicationState": "official_source_refresh_required",
+      "evidence": "official_source",
+      "sourceData": {
+        "repositorySlug": "passport-renewal-docs",
+        "repositoryCheckedAt": "2026-07-11",
+        "repositorySourceUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+        "currentOfficialSourcesCheckedAt": "2026-07-18",
+        "currentOfficialSources": [
+          "https://www.passport.go.kr/home/kor/contents.do?menuPos=6",
+          "https://www.passport.go.kr/home/kor/contents.do?menuPos=11",
+          "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=12600000001&tp_seq="
+        ],
+        "versionFindingKo": "저장소의 메뉴 경로와 현재 공식 안내 경로가 달라 최신 URL 갱신이 필요하다."
+      },
+      "canonicalBaseline": {
+        "userJobKo": "신청 가능 경로를 공식 기준으로 판단하고 사진, 접수와 수령 준비를 빠뜨리지 않는다.",
+        "lifeArea": "money_admin_purchase",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "overlays": ["source_trust"],
+        "items": [
+          {"order": 1, "titleKo": "기존 전자여권 발급 이력과 재발급 사유 확인하기", "doneWhenKo": "온라인 또는 방문 신청 경로를 판단할 정보가 정리됐다."},
+          {"order": 2, "titleKo": "온라인 신청 불가 조건 확인하기", "doneWhenKo": "분실·훼손·정보 변경 등 방문 필요 여부를 확인했다."},
+          {"order": 3, "titleKo": "공식 규격에 맞는 최근 사진 준비하기", "doneWhenKo": "공식 안내의 촬영 시점과 파일 조건을 확인했다."},
+          {"order": 4, "titleKo": "신청 경로와 수령 기관 정하기", "doneWhenKo": "신청 채널과 수령 기관을 정했다."},
+          {"order": 5, "titleKo": "접수번호와 상태 확인 위치 기록하기", "doneWhenKo": "접수 정보와 확인 경로가 개인 메모에 남았다."}
+        ],
+        "cautionKo": "대상, 사진 규격, 수수료와 수령 방식은 발행 전과 사용 시점에 공식 안내를 다시 확인한다."
+      },
+      "minimalUserInputs": [
+        {"field": "hasPriorElectronicPassport", "example": true, "changes": "online_eligibility"},
+        {"field": "reason", "example": "유효기간 만료", "changes": "online_or_visit_branch"},
+        {"field": "applicantAgeGroup", "example": "adult", "changes": "representative_and_documents"},
+        {"field": "userReminderDate", "example": "2026-09-01", "changes": "one_user_selected_calendar_reminder"}
+      ],
+      "appliedInstance": {
+        "titleKo": "여권 재발급 온라인 신청 준비",
+        "branchKo": "성인, 기존 전자여권 있음, 유효기간 만료 → 온라인 신청 가능성 확인 경로",
+        "privateState": ["접수번호", "수령 기관", "상태 확인 메모"],
+        "sourceAndCautionLocked": true
+      },
+      "projections": {
+        "calendar": {"enabled": true, "resultKo": "사용자가 정한 확인 알림 한 건", "boundaryKo": "공식 마감일처럼 표현하지 않음"},
+        "checklist": {"enabled": true, "resultKo": "조건 확인, 사진, 신청, 접수, 수령 준비"},
+        "sheet": {"enabled": false, "reasonKo": "한 사람의 단일 신청에는 행·열 관리가 불필요함"},
+        "memo": {"enabled": true, "resultKo": "현재 공식 링크, 확인일, 접수 정보, 주의"}
+      }
+    }
+  ],
+  "currentContentAudit": {
+    "sampleCount": 20,
+    "itemCount": 179,
+    "itemsWithAnyCompletionCriteria": 148,
+    "genericCompletionCriteria": 21,
+    "missingPrimaryDestination": 2,
+    "missingSourceStatus": 3,
+    "broadSource": 3,
+    "structuredStopOrHold": 2,
+    "dispositionCounts": {
+      "reference_keep": 5,
+      "strengthen": 8,
+      "preview_until_review": 6,
+      "hold": 1
+    },
+    "rows": [
+      {"slug": "moving-d30-basic", "titleKo": "이사 D-30 준비", "currentStructure": "timeline", "recommendedPattern": "date_preparation", "destination": "missing", "items": 24, "completionItems": 5, "disposition": "strengthen", "gapKo": "기본 결과물과 19개 완료 기준, 역할·적용 조건 보강"},
+      {"slug": "wedding-d180-basic", "titleKo": "결혼 준비 D-300", "currentStructure": "timeline", "recommendedPattern": "date_preparation", "destination": "calendar", "items": 12, "completionItems": 12, "disposition": "strengthen", "gapKo": "일정과 비교 결정 Flow를 분리하고 역할표 연결"},
+      {"slug": "domestic-trip-d7", "titleKo": "국내여행 짐 준비", "currentStructure": "checklist", "recommendedPattern": "source_table_rows", "destination": "memo", "items": 7, "completionItems": 7, "disposition": "strengthen", "gapKo": "짐 목록에 맞는 체크리스트·표 목적지와 상황 분기 보강"},
+      {"slug": "travel-packing-list", "titleKo": "여행 짐 싸기", "currentStructure": "checklist", "recommendedPattern": "source_table_rows", "destination": "memo", "items": 6, "completionItems": 6, "disposition": "reference_keep", "gapKo": "대표 목록으로 유지하되 공식 규정은 확인 링크로 분리"},
+      {"slug": "funmom-hangul-2w", "titleKo": "펀맘 한글 2주", "currentStructure": "routine", "recommendedPattern": "resource_queue", "destination": "hybrid", "items": 5, "completionItems": 5, "disposition": "preview_until_review", "gapKo": "서로 같은 Item 제목을 실제 자료 행과 순서로 교체"},
+      {"slug": "picture-book-reading-routine", "titleKo": "그림책 읽기 루틴", "currentStructure": "routine", "recommendedPattern": "repeating_routine", "destination": "hybrid", "items": 6, "completionItems": 6, "disposition": "preview_until_review", "gapKo": "넓은 출처를 정확한 질문 행과 제작자 승인으로 좁힘"},
+      {"slug": "kids-dino-footprint-art", "titleKo": "공룡 발자국 미술 놀이", "currentStructure": "timeline", "recommendedPattern": "ordered_procedure", "destination": "hybrid", "items": 4, "completionItems": 4, "disposition": "preview_until_review", "gapKo": "제작자 원본·권리·재료 주의와 역할을 확보"},
+      {"slug": "infant-health-checkup-prep", "titleKo": "영유아 건강검진 예약 준비", "currentStructure": "timeline", "recommendedPattern": "date_preparation", "destination": "hybrid", "items": 6, "completionItems": 6, "disposition": "preview_until_review", "gapKo": "공식 최신성 재검토 후 준비 Flow로만 잠금"},
+      {"slug": "elementary-school-entry-d30", "titleKo": "초등학교 입학 D-30", "currentStructure": "timeline", "recommendedPattern": "date_preparation", "destination": "hybrid", "items": 5, "completionItems": 5, "disposition": "preview_until_review", "gapKo": "지역·학교별 분기와 공식 통지 우선 원칙 보강"},
+      {"slug": "baby-food-menu-recipe", "titleKo": "초기 이유식 메뉴·레시피", "currentStructure": "phase", "recommendedPattern": "phase_lifecycle", "destination": "calendar", "items": 0, "completionItems": 0, "disposition": "hold", "gapKo": "실행 Item이 없고 의료 민감도가 높아 신규 공개 보류"},
+      {"slug": "computer-skills-d30-study", "titleKo": "컴퓨터활용능력 1급 D-30", "currentStructure": "timeline", "recommendedPattern": "phase_lifecycle", "destination": "hybrid", "items": 9, "completionItems": 9, "disposition": "reference_keep", "gapKo": "필기·실기 범위와 오답 Field를 좁게 보강"},
+      {"slug": "qnet-exam-application-prep", "titleKo": "Q-Net 원서접수 준비", "currentStructure": "timeline", "recommendedPattern": "date_preparation", "destination": "hybrid", "items": 9, "completionItems": 3, "disposition": "strengthen", "gapKo": "마감·결제·수험표·시험 당일 완료 기준 보강"},
+      {"slug": "recipe-video-execute", "titleKo": "레시피 영상 실전 적용", "currentStructure": "checklist", "recommendedPattern": "ordered_procedure", "destination": "memo", "items": 6, "completionItems": 6, "disposition": "preview_until_review", "gapKo": "채널이 아닌 개별 영상 행과 사용 권리를 확보"},
+      {"slug": "fridge-cleanout-weekly-plan", "titleKo": "냉장고 파먹기 7일", "currentStructure": "checklist", "recommendedPattern": "source_table_rows", "destination": "sheet", "items": 6, "completionItems": 6, "disposition": "reference_keep", "gapKo": "절약·영양·안전 보장을 제거한 표 기준 사례로 유지"},
+      {"slug": "plank-30-day-challenge", "titleKo": "30일 플랭크", "currentStructure": "timeline", "recommendedPattern": "repeating_routine", "destination": "calendar", "items": 30, "completionItems": 30, "disposition": "strengthen", "gapKo": "반복, 휴식, 중단 조건을 루틴 데이터로 분리"},
+      {"slug": "portfolio-4week", "titleKo": "개발 포트폴리오 4주", "currentStructure": "timeline", "recommendedPattern": "phase_lifecycle", "destination": "hybrid", "items": 6, "completionItems": 6, "disposition": "reference_keep", "gapKo": "원문 제작 순서를 유지한 단계형 기준 사례"},
+      {"slug": "passport-renewal-docs", "titleKo": "여권 재발급 준비", "currentStructure": "checklist", "recommendedPattern": "ordered_procedure", "destination": "memo", "items": 6, "completionItems": 6, "disposition": "reference_keep", "gapKo": "현재 공식 URL과 구체적 접수·수령 완료 기준 갱신"},
+      {"slug": "vehicle-inspection-prep", "titleKo": "자동차검사 D-14", "currentStructure": "timeline", "recommendedPattern": "date_preparation", "destination": "hybrid", "items": 10, "completionItems": 4, "disposition": "strengthen", "gapKo": "방문·결과 후 조치와 6개 완료 기준 보강"},
+      {"slug": "used-car-buying-check", "titleKo": "중고차 구매 현장 점검", "currentStructure": "checklist", "recommendedPattern": "compare_decide", "destination": "missing", "items": 15, "completionItems": 15, "disposition": "strengthen", "gapKo": "비교표 목적지와 구체 완료 기준, 전문가 점검 경계 보강"},
+      {"slug": "jeonse-contract-precheck-docs", "titleKo": "전세계약 전 서류 체크", "currentStructure": "checklist", "recommendedPattern": "compare_decide", "destination": "hybrid", "items": 7, "completionItems": 7, "disposition": "strengthen", "gapKo": "공식 주 출처와 보류 조건을 강화하고 법률 결론은 금지"}
+    ]
+  },
+  "p0Portfolio24": {
+    "decisionStatus": "proposed",
+    "total": 24,
+    "sourceModelMix": {
+      "permittedCreatorOriginal": 16,
+      "officialTrustAnchor": 4,
+      "existingRepositoryReference": 4
+    },
+    "creatorPilotChangeKo": "기존 8명×3개 가설을 8명×2개 제작자 원본으로 낮추고, 나머지 8개를 공식 기준 4개와 현재 기준 사례 4개로 채운다. 세 번째 제작자 Flow는 첫 두 개가 발행 기준과 실제 유입 조건을 통과한 뒤 만든다.",
+    "resourceHypothesis": {
+      "creatorCount": 8,
+      "creatorOriginalFlows": 16,
+      "internalHours": "120~176시간",
+      "creatorHonorarium": "240만~400만원",
+      "rightsReviewCost": "별도",
+      "measurementStatus": "hypothesis_unmeasured"
+    },
+    "patternCoverage": {
+      "date_preparation": 8,
+      "ordered_procedure": 5,
+      "repeating_routine": 2,
+      "source_table_rows": 3,
+      "resource_queue": 1,
+      "compare_decide": 3,
+      "phase_lifecycle": 2
+    },
+    "rows": [
+      {"id": "C01", "titleKo": "아이와 주말 박물관", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "date_preparation", "artifact": "hybrid", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C02", "titleKo": "비 오는 날 대체 나들이", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "compare_decide", "artifact": "memo", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C03", "titleKo": "공룡 발자국 미술 놀이", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "ordered_procedure", "artifact": "checklist", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C04", "titleKo": "그림책 질문 한 가지", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "repeating_routine", "artifact": "checklist", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C05", "titleKo": "가족 생일 집에서 준비", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "date_preparation", "artifact": "hybrid", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C06", "titleKo": "가족 캠핑 1박", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "date_preparation", "artifact": "hybrid", "risk": "medium", "readiness": "source_and_permission_required"},
+      {"id": "C07", "titleKo": "아이와 피크닉 도시락", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "ordered_procedure", "artifact": "checklist", "risk": "medium", "readiness": "source_and_permission_required"},
+      {"id": "C08", "titleKo": "학교 행사 가족 역할", "sourceModel": "creator_original", "category": "family_parenting", "pattern": "date_preparation", "artifact": "hybrid", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C09", "titleKo": "가족여행 D-7", "sourceModel": "creator_original", "category": "travel_outings", "pattern": "date_preparation", "artifact": "hybrid", "risk": "medium", "readiness": "source_and_permission_required"},
+      {"id": "C10", "titleKo": "가족여행 짐 준비표", "sourceModel": "creator_original", "category": "travel_outings", "pattern": "source_table_rows", "artifact": "sheet", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C11", "titleKo": "테마파크 방문 선택", "sourceModel": "creator_original", "category": "travel_outings", "pattern": "compare_decide", "artifact": "memo", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "C12", "titleKo": "제작자 지역 체험 큐", "sourceModel": "creator_original", "category": "travel_outings", "pattern": "resource_queue", "artifact": "todo", "risk": "low", "readiness": "full_collection_import_required"},
+      {"id": "C13", "titleKo": "제작자 레시피 한 끼", "sourceModel": "creator_original", "category": "meals_grocery", "pattern": "ordered_procedure", "artifact": "checklist", "risk": "medium", "readiness": "source_and_permission_required"},
+      {"id": "C14", "titleKo": "주말 벽 한 면 칠하기", "sourceModel": "creator_original", "category": "hobby_pet", "pattern": "ordered_procedure", "artifact": "checklist", "risk": "medium", "readiness": "source_and_permission_required"},
+      {"id": "C15", "titleKo": "5km 달리기 4주", "sourceModel": "creator_original", "category": "health_fitness", "pattern": "repeating_routine", "artifact": "calendar", "risk": "medium", "readiness": "source_and_permission_required"},
+      {"id": "C16", "titleKo": "영상 시리즈 4주", "sourceModel": "creator_original", "category": "work_career", "pattern": "phase_lifecycle", "artifact": "hybrid", "risk": "low", "readiness": "source_and_permission_required"},
+      {"id": "O01", "titleKo": "여권 재발급 준비", "sourceModel": "official", "category": "money_admin_purchase", "pattern": "ordered_procedure", "artifact": "checklist", "risk": "medium", "readiness": "refresh_current_official_url"},
+      {"id": "O02", "titleKo": "자동차검사 D-14", "sourceModel": "official", "category": "money_admin_purchase", "pattern": "date_preparation", "artifact": "hybrid", "risk": "medium", "readiness": "strengthen_completion"},
+      {"id": "O03", "titleKo": "초등학교 입학 공식 준비", "sourceModel": "official", "category": "family_parenting", "pattern": "date_preparation", "artifact": "hybrid", "risk": "medium", "readiness": "local_source_review"},
+      {"id": "O04", "titleKo": "전세계약 전 공식 서류 확인", "sourceModel": "official", "category": "money_admin_purchase", "pattern": "compare_decide", "artifact": "hybrid", "risk": "financial_sensitive", "readiness": "review_locked"},
+      {"id": "R01", "titleKo": "이사 D-30", "sourceModel": "repository_reference", "category": "home_living", "pattern": "date_preparation", "artifact": "hybrid", "risk": "medium", "readiness": "strengthen"},
+      {"id": "R02", "titleKo": "냉장고 파먹기 7일", "sourceModel": "repository_reference", "category": "meals_grocery", "pattern": "source_table_rows", "artifact": "sheet", "risk": "medium", "readiness": "reference_keep"},
+      {"id": "R03", "titleKo": "개발 포트폴리오 4주", "sourceModel": "repository_reference", "category": "work_career", "pattern": "phase_lifecycle", "artifact": "hybrid", "risk": "low", "readiness": "reference_keep"},
+      {"id": "R04", "titleKo": "여행 짐 준비표", "sourceModel": "repository_reference", "category": "travel_outings", "pattern": "source_table_rows", "artifact": "checklist", "risk": "low", "readiness": "reference_keep"}
+    ],
+    "releaseGate": [
+      "하나의 사용자 일, 주 출처, 기본 결과물이 분명함",
+      "모든 발행 Item에 원문 행 근거가 있음",
+      "행동형 제목과 확인 가능한 완료 기준이 있음",
+      "최소 입력 전후의 실행본 미리보기가 있음",
+      "필요한 분기·역할·기록·주의만 구조화됨",
+      "제작자 승인 또는 공식 최신성 확인이 끝남",
+      "Public MVP 평균 3.5 이상, 실행 명확성·출처 안전성 4 이상",
+      "모바일에서 결과물과 출처가 잘림 없이 보임"
+    ]
+  }
+}

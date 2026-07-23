@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlowMe 콘텐츠 발굴·편입 전략</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--ink:#18201c;--muted:#5e6862;--line:#d5ddd8;--paper:#fff;--page:#edf1ee;--green:#176b4f;--green-soft:#e7f3ed;--blue:#285bc5;--blue-soft:#eaf0fc;--gold:#8b650f;--gold-soft:#f8efd8;--red:#ad463b;--red-soft:#fae9e6;--dark:#17251f}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--page);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;line-height:1.58;letter-spacing:0;word-break:keep-all}button,a{font:inherit;letter-spacing:0}a{color:var(--blue);text-underline-offset:3px}.top{position:sticky;top:0;z-index:20;border-bottom:1px solid #cbd4ce;background:rgba(237,241,238,.96)}.top-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;width:min(1240px,calc(100% - 32px));min-height:54px;margin:auto}.brand{font-weight:900}.nav{display:flex;gap:14px;overflow:auto;white-space:nowrap}.nav a{padding:15px 0 12px;color:var(--muted);font-size:12px;font-weight:800;text-decoration:none}main{width:min(1240px,calc(100% - 32px));margin:auto;padding:20px 0 72px}.slide{margin:0 0 20px;padding:34px 38px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}.slide-no{margin:0 0 8px;color:var(--green);font-size:12px;font-weight:900;text-transform:uppercase}.hero{padding:46px 46px 40px;background:var(--dark);color:#fff}.hero .slide-no{color:#aee0ca}h1,h2,h3,p{margin-top:0}h1{max-width:920px;margin-bottom:16px;font-size:46px;line-height:1.15;letter-spacing:0}h2{margin-bottom:10px;font-size:31px;line-height:1.24;letter-spacing:0}h3{font-size:17px;line-height:1.34;letter-spacing:0}.lead{max-width:940px;margin-bottom:22px;color:#d5dfd9;font-size:18px}.decision{padding:16px 18px;border-left:5px solid #6fd0a6;border-radius:5px;background:#24372f;font-size:20px;font-weight:850}.metrics,.four,.three,.two{display:grid;gap:12px}.metrics{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px}.four{grid-template-columns:repeat(4,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.metric,.panel,.tier,.projection,.case{padding:16px;border:1px solid var(--line);border-radius:7px;background:#f8faf9}.metric strong{display:block;color:#b9ead5;font-size:30px}.metric span{color:#ced9d3;font-size:12px}.panel b,.tier b,.projection b{display:block;margin-bottom:6px}.panel p,.tier p,.projection p{margin:0;color:var(--muted);font-size:13px}.tier{border-top:5px solid var(--blue)}.tier.green{border-top-color:var(--green)}.tier.gold{border-top-color:var(--gold)}.tier.red{border-top-color:var(--red)}.callout{margin-top:14px;padding:14px 16px;border-left:5px solid var(--gold);background:var(--gold-soft);color:#604917}.flowline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0}.node{padding:9px 11px;border:1px solid var(--line);border-radius:5px;background:#fff;font-size:13px;font-weight:850}.arrow{color:var(--muted)}.source-note{color:var(--muted);font-size:13px}.filters{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0}.filter{min-height:38px;padding:7px 11px;border:1px solid #cbd4ce;border-radius:5px;background:#fff;color:#455049;font-size:12px;font-weight:850;cursor:pointer}.filter.active{border-color:var(--dark);background:var(--dark);color:#fff}.records,.candidates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.record,.candidate{min-width:0;padding:16px;border:1px solid var(--line);border-radius:7px;background:#fff}.record-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.id{color:var(--muted);font-size:11px;font-weight:850;overflow-wrap:anywhere}.badge{padding:4px 7px;border-radius:4px;font-size:10px;font-weight:900;white-space:nowrap}.badge.blue{background:var(--blue-soft);color:var(--blue)}.badge.green{background:var(--green-soft);color:var(--green)}.badge.gold{background:var(--gold-soft);color:var(--gold)}.badge.red{background:var(--red-soft);color:var(--red)}.record h3,.candidate h3{margin-bottom:8px}.reason,.candidate>p{color:#3e4943;font-size:13px}.meta{color:var(--muted)!important}.demand{padding:10px;border-left:4px solid var(--blue);background:var(--blue-soft)}.next{padding:10px;background:#f5f7f6}.record dl{margin:12px 0}.record dl div{display:grid;grid-template-columns:74px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid #edf0ee;font-size:12px}.record dt{color:var(--muted);font-weight:800}.record dd{margin:0;overflow-wrap:anywhere}.source{display:inline-flex;margin-top:12px;font-size:12px;font-weight:850}details{margin-top:10px;border-top:1px solid var(--line);padding-top:9px}summary{cursor:pointer;font-size:12px;font-weight:850}details p{margin:9px 0 0;color:var(--muted);font-size:12px}.score-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}.score{padding:9px;border:1px solid var(--line);border-radius:5px;background:#f8faf9}.score b{font-size:11px}.score strong{float:right;color:var(--green)}.score p{clear:both}.queue{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:16px 0 0;padding:0;list-style:none}.queue li{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);border-radius:6px;background:#fff}.queue li>span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--dark);color:#fff;font-size:12px;font-weight:900;flex:0 0 auto}.queue b,.queue small{display:block}.queue small{margin-top:3px;color:var(--muted)}.origin{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.origin div{padding:12px;border:1px solid var(--line);border-radius:5px}.origin b{display:block;font-size:12px}.origin span{color:var(--muted);font-size:11px}.diagram{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:10px;margin-top:18px}.diagram .panel{height:100%}.decision-list{margin:18px 0 0;padding:0;list-style:none}.decision-list li{padding:13px 0;border-bottom:1px solid var(--line);font-weight:750}.decision-list span{display:inline-grid;place-items:center;width:25px;height:25px;margin-right:8px;border-radius:50%;background:var(--dark);color:#fff;font-size:11px}.refs{columns:2;column-gap:28px}.refs a{display:block;margin:5px 0;font-size:12px;overflow-wrap:anywhere}.hidden{display:none!important}.compact{color:var(--muted);font-size:13px}
+@media(max-width:900px){.records,.candidates{grid-template-columns:repeat(2,minmax(0,1fr))}.four{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.diagram{grid-template-columns:1fr}.diagram .arrow{transform:rotate(90deg);text-align:center}.origin{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.top-inner,main{width:min(100% - 20px,1240px)}.nav{max-width:62vw}.slide{padding:22px 16px}.hero{padding:28px 20px}h1{font-size:31px}h2{font-size:24px}.lead{font-size:15px}.decision{font-size:16px}.records,.candidates,.two,.four,.queue{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.metric{padding:12px}.metric strong{font-size:24px}.score-grid{grid-template-columns:1fr}.record dl div{grid-template-columns:64px 1fr}.origin{grid-template-columns:1fr}.refs{columns:1}.flowline{align-items:stretch}.node{flex:1 1 100%}.arrow{display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-inner"><div class="brand">FLOWME / SOURCE ADMISSION</div><nav class="nav"><a href="#model">편입 모델</a><a href="#p0">P0 24</a><a href="#fresh">신규 후보</a><a href="#queue">제작 큐</a></nav></div></header>
+<main>
+<section class="slide hero" id="top"><p class="slide-no">01 / 전략 결론</p><h1>모든 좋은 URL을 Flow로 만들지 않는다</h1><p class="lead">이번 목표는 새 실행 객체를 발명하는 일이 아니다. 실제 원문을 발굴한 뒤 지금 안전한 편입 단계와 보강 후 목표 단계를 분리해, 콘텐츠팀이 같은 기준으로 제작 큐를 만들게 하는 일이다.</p><div class="decision">Flow는 원문 근거가 있는 최소 행동만 실행시키고, 나머지는 Link/Bucket·detail·memo 또는 Hold로 남긴다.</div><div class="metrics"><div class="metric"><strong>24</strong><span>현재 P0 재분류</span></div><div class="metric"><strong>36</strong><span>기존 source scout 기준선</span></div><div class="metric"><strong>16</strong><span>이번 실제 URL 추가 검토</span></div><div class="metric"><strong>8</strong><span>다음 제작 후보</span></div></div></section>
+
+<section class="slide"><p class="slide-no">02 / 목표 보정</p><h2>콘텐츠 발굴 레이어만 추가한다</h2><div class="three"><div class="panel"><b>재사용</b><p>Canonical hierarchy, Taxonomy v1.1, Output Quality v2, P25/P26 날짜·export 계약.</p></div><div class="panel"><b>새로 결정</b><p>Link/Bucket·Quick·Full·Hold 편입 판정과 source scout 원장.</p></div><div class="panel"><b>제외</b><p>앱 코드, seed, 편집기, Calendar API, 새 runtime type.</p></div></div><div class="callout"><b>중복 방지:</b> Calendar·checklist·todo·sheet·memo는 기존처럼 같은 Item의 projection이다. 이번 문서는 새로운 Flow 종류를 만들지 않는다.</div></section>
+
+<section class="slide"><p class="slide-no">03 / 증거 범위</p><h2>확인한 것과 아직 모르는 것을 분리했다</h2><div class="four"><div class="panel"><b>원문</b><p>현재 P0 갤러리 24개 URL과 Item, 기존 후보 36개, 신규 URL 16개.</p></div><div class="panel"><b>수요</b><p>조회·스크랩·모집·학습인원처럼 화면에 보인 수치만 visible로 기록.</p></div><div class="panel"><b>불확실성</b><p>보이지 않는 조회·다운로드는 unknown. PDF 직접 추출 실패도 그대로 기록.</p></div><div class="panel"><b>검증 경계</b><p>실제 사용자 관찰이나 제작자 허가가 완료됐다는 뜻은 아니다.</p></div></div></section>
+
+<section class="slide"><p class="slide-no">04 / 최소 계약</p><h2>한 사용자의 한 목표, 한 자연스러운 결과물</h2><div class="flowline"><span class="node">SourceRow</span><span class="arrow">→</span><span class="node">Item</span><span class="arrow">→</span><span class="node">Step</span><span class="arrow">→</span><span class="node">Flow</span><span class="arrow">→</span><span class="node">Bundle / Map</span></div><div class="two"><div class="panel"><b>Item에 필수</b><p>행동 제목 · 실행 방법/detail · 완료/기록 기준 · sourceRowIds · 순서.</p></div><div class="panel"><b>Item이 아닌 것</b><p>원문 설명 · 참고 · 주의 · 팁 · 비행동 링크 · 조건부 후속 안내 · 개인 메모.</p></div></div></section>
+
+<section class="slide" id="model"><p class="slide-no">05 / 편입 모델</p><h2>구조 tier와 공개 gate는 서로 다른 축이다</h2><div class="four"><div class="tier"><b>Link/Bucket</b><p>정확한 URL과 저장 이유. 실행행을 만들 근거가 없거나 링크 보존이 목적.</p></div><div class="tier green"><b>Quick Flow</b><p>한 세션·한 결정에서 끝나는 최소 행동. 항목 수는 보조 신호다.</p></div><div class="tier gold"><b>Full Flow</b><p>날짜·순서·분기·역할·진도 중 하나 이상이 성공에 중요.</p></div><div class="tier red"><b>Hold/Reject</b><p>행·최신성·권리·안전·적용 범위가 부족해 실행시키면 안 됨.</p></div></div><div class="callout">같은 후보에도 <b>구조상 Quick</b>과 <b>공개 전 권리 검토</b>가 동시에 존재할 수 있다. 이를 하나의 readiness 점수로 뭉개지 않는다.</div></section>
+
+<section class="slide"><p class="slide-no">06 / 판정 순서</p><h2>URL을 열면 이 순서로 자른다</h2><div class="diagram"><div class="panel"><b>1. 원문 gate</b><p>실제 행·일정·표·파일·영상 목록이 있는가?</p></div><span class="arrow">→</span><div class="panel"><b>2. 사용자 일</b><p>저장 뒤 첫 행동과 완료 결과를 한 문장으로 말할 수 있는가?</p></div><span class="arrow">→</span><div class="panel"><b>3. 구조·공개</b><p>Link/Quick/Full을 정하고 rights·freshness·safety를 별도 잠근다.</p></div></div><div class="callout">실패하면 AI로 빈 행을 채우지 않는다. Link/Bucket, source_import_required, Hold 중 하나로 보낸다.</div></section>
+
+<section class="slide"><p class="slide-no">07 / 최소 입력</p><h2>저장은 0개, 일정화는 결과를 본 뒤</h2><div class="origin"><div><b>source_fact</b><span>원문 제목·행·기간·링크</span></div><div><b>user_input</b><span>기준일·선택·담당</span></div><div><b>calculated_value</b><span>D-day 적용 결과</span></div><div><b>preview_example</b><span>저장하지 않는 예시</span></div></div><div class="flowline"><span class="node">열람</span><span class="arrow">→</span><span class="node">날짜 없이 저장</span><span class="arrow">→</span><span class="node">항목 수·결과 미리보기</span><span class="arrow">→</span><span class="node">필요 시 0~1개 입력</span><span class="arrow">→</span><span class="node">일부 일정화</span></div></section>
+
+<section class="slide"><p class="slide-no">08 / 결과물 변환</p><h2>한 Item을 다섯 결과물로 투영한다</h2><div class="five four"><div class="projection"><b>Calendar</b><p>사용자가 확정한 날짜만. 날짜 없음·예시는 제외.</p></div><div class="projection"><b>Checklist / Todo</b><p>행동 제목과 완료 상태. detail은 접어서 표시.</p></div><div class="projection"><b>Sheet</b><p>Item 행, 상태·날짜·담당·메모·source URL 열.</p></div><div class="projection"><b>Memo</b><p>목표·설명·주의·출처·개인 기록. 실행 상태와 분리.</p></div></div></section>
+
+<section class="slide"><p class="slide-no">09 / 현재 UX·UI 적합</p><h2>틀은 맞지만 콘텐츠 밀도 규칙이 더 엄격해야 한다</h2><div class="three"><div class="panel"><b>/flows</b><p>카드에서 “저장하면 무엇이 생기는지”와 Item 수보다 첫 결과를 먼저 보여준다.</p></div><div class="panel"><b>/my</b><p>Quick은 한 화면, Full은 현재 Step과 다음 Step 우선. 전체 Item을 평면 나열하지 않는다.</p></div><div class="panel"><b>Calendar·export</b><p>확정 일정만 보낸다. source link와 detail은 메모에 보존하고 예시 날짜를 저장하지 않는다.</p></div></div><div class="callout"><b>P26 충돌 없음:</b> schedule now · keep undated · preview only 세 상태와 같은 방향이다. 필요한 것은 새 화면보다 콘텐츠 admission과 압축이다.</div></section>
+
+<section class="slide" id="p0"><p class="slide-no">10 / 현재 P0 24</p><h2>편입 결과: Link 4 · Quick 10 · Full 7 · Hold 3</h2><p class="compact">필터를 누르면 해당 단계만 보인다. 각 카드의 “과밀·UX 점검”에서 무엇을 Item에서 내릴지 확인할 수 있다.</p><div class="filters" data-filter-scope="p0"><button class="filter active" data-filter="all">전체 24</button><button class="filter" data-filter="link_bucket">Link 4</button><button class="filter" data-filter="quick_flow">Quick 10</button><button class="filter" data-filter="full_flow">Full 7</button><button class="filter" data-filter="hold_reject">Hold 3</button></div><div class="records" id="p0Records">
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">C01</span><span class="badge green">Quick Flow</span></div>
+      <h3>영유아 건강검진 일정</h3>
+      <p class="reason">사용자의 일은 전체 8회 표를 관리하는 것이 아니라 다음 검진 1건과 공식 가능 기간을 놓치지 않는 것이다.</p>
+      <dl><div><dt>현재</dt><dd>8 Item · timing</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>ready_for_internal_canary</dd></div><div><dt>기본 결과물</dt><dd>todo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>현재 8개 회차 Item은 공식 참고표로 내리고, 활성 Item은 다음 일반·구강검진 1건만 둔다. 예약일은 사용자가 정한 뒤 Calendar로 보낸다.</p><p><b>UX 88</b> · 공개 카드에서 “다음 검진 1건”이 바로 보이면 5초 이해가 가능하다. 현재 8행 노출은 모바일 첫 행동을 흐린다.</p></details>
+      <a class="source" href="https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="hold_reject">
+      <div class="record-head"><span class="id">C02</span><span class="badge red">Hold/Reject</span></div>
+      <h3>리모델링 계약 전 10항목 확인</h3>
+      <p class="reason">행은 있으나 계약 판단에 가까운 민감 영역이고 제작자 원문의 변환 허가와 공식 계약 근거가 없다.</p>
+      <dl><div><dt>현재</dt><dd>7 Item · decision</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>rights_and_legal_review_required</dd></div><div><dt>기본 결과물</dt><dd>sheet</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>7개 확인행은 유지할 수 있지만 “적정/안전” 판정은 만들지 않는다. 업체별 진행·보류·거절 상태와 질문만 별도 실행 상태로 둔다.</p><p><b>UX 57</b> · Sheet 비교에는 맞지만 현재 앱에서 법률적 확정처럼 읽힐 위험이 크다. 공개보다 내부 대조군이 적절하다.</p></details>
+      <a class="source" href="https://ohou.se/advices/1972" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="link_bucket">
+      <div class="record-head"><span class="id">C03</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>공룡 발자국 미술 놀이</h3>
+      <p class="reason">현재 PDF 범위가 넓어 네 행동이 해당 활동의 직접 원문 행인지 설명하기 어렵다.</p>
+      <dl><div><dt>현재</dt><dd>4 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>source_import_required</dd></div><div><dt>기본 결과물</dt><dd>memo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>제목·원문 링크·준비물·대상 연령만 Link/Bucket으로 보존한다. 정확한 활동 행을 확보한 뒤 한 번의 만들기 Quick Flow로 승격한다.</p><p><b>UX 45</b> · 링크 보관은 자연스럽지만 현재 네 Item을 실행 화면에 보이면 출처 신뢰가 깨진다.</p></details>
+      <a class="source" href="https://info.childcare.go.kr/info/pnis/search/PnisFileDownload.jsp?STCODE_POP=41480000016&amp;filetype=YUPLOADU&amp;flag=DNGB&amp;schoolyear=2026&amp;wkyear=202604" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="link_bucket">
+      <div class="record-head"><span class="id">C04</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>그림책 질문 한 가지</h3>
+      <p class="reason">원문 질문 템플릿보다 FlowMe가 만든 독서 절차가 더 많아 source fidelity가 낮다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · progress</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>source_import_required</dd></div><div><dt>기본 결과물</dt><dd>memo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>원문 질문 1개와 책 링크만 보관한다. 책 읽기 자체를 여러 Item으로 늘리지 않는다.</p><p><b>UX 42</b> · 사용자는 질문 한 가지를 원하지만 현재 6행은 독서법 강의처럼 보인다.</p></details>
+      <a class="source" href="https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">C05</span><span class="badge green">Quick Flow</span></div>
+      <h3>어린이집 보육료 지원 신청</h3>
+      <p class="reason">신청 경로 확인·신청·결과 확인이라는 짧은 행정 작업이며 다단계 계획은 필요 없다.</p>
+      <dl><div><dt>현재</dt><dd>4 Item · timing</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>ready_second_wave</dd></div><div><dt>기본 결과물</dt><dd>todo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>변경 시 재확인은 조건부 후속 안내로 내리고 핵심 행동 3개만 체크한다.</p><p><b>UX 83</b> · 공식 링크와 다음 행동이 명확해 현재 카드·My Flow·내보내기 틀에 잘 맞는다.</p></details>
+      <a class="source" href="https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&amp;wlfareInfoReldBztpCd=01" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="full_flow">
+      <div class="record-head"><span class="id">C06</span><span class="badge gold">Full Flow</span></div>
+      <h3>평일 5일 저녁 식단</h3>
+      <p class="reason">월~금 메뉴 행과 장보기 준비가 연결되어 주간 일정 구조가 실행 성공에 중요하다.</p>
+      <dl><div><dt>현재</dt><dd>7 Item · timing</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>rights_review_required</dd></div><div><dt>기본 결과물</dt><dd>calendar</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>재고 확인은 별도 Item이 아니라 장보기 Step의 detail로 묶고, 5개 요일 메뉴를 핵심 Item으로 유지한다.</p><p><b>UX 84</b> · 주간 Calendar와 체크리스트로 자연스럽게 투영된다. 공개 전 제작자 권리 협의가 필요하다.</p></details>
+      <a class="source" href="https://ohou.se/advices/8220" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">C07</span><span class="badge green">Quick Flow</span></div>
+      <h3>아이 도안 스퀴시 만들기</h3>
+      <p class="reason">한 번의 만들기 세션이며 날짜·장기 진도보다 정확한 원문 도안과 순서가 중요하다.</p>
+      <dl><div><dt>현재</dt><dd>7 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>rights_review_required</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>완성 사진·다음 놀이·남은 재료 정리는 개인 메모로 내리고 준비·만들기·정리 3묶음만 체크한다.</p><p><b>UX 76</b> · Quick Flow로는 맞지만 원문 도안 파일을 복제하지 않는 링크 중심 UI가 필수다.</p></details>
+      <a class="source" href="https://blog.naver.com/PostView.naver?blogId=makeitdiy&amp;logNo=223260911491" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="full_flow">
+      <div class="record-head"><span class="id">C08</span><span class="badge gold">Full Flow</span></div>
+      <h3>K-MOOC 데이터 분석 14주 진도표</h3>
+      <p class="reason">14주차 순서와 진도 상태가 핵심이며 완료·보류·재개가 장기간 유지되어야 한다.</p>
+      <dl><div><dt>현재</dt><dd>14 Item · progress</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>ready_for_internal_canary</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>주차별 주제와 원문 활동만 유지하고 세부 차시·임의 마감은 만들지 않는다.</p><p><b>UX 91</b> · 현재 progress surface와 가장 잘 맞는 대표 Full Flow다. 모바일에서는 현재 주차와 다음 주차를 우선 노출해야 한다.</p></details>
+      <a class="source" href="https://www.kmooc.kr/view/course/detail/20097" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="link_bucket">
+      <div class="record-head"><span class="id">C09</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>일본 eSIM 출국 전 등록</h3>
+      <p class="reason">통신사·기기별 절차가 다른데 현재 원문 범위가 넓어 6개 행동을 직접 뒷받침하지 못한다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>source_import_required</dd></div><div><dt>기본 결과물</dt><dd>memo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>구매처 링크·지원 기기·QR 보관 정보만 남긴다. 설치 행은 정확한 상품별 원문 확보 후 승격한다.</p><p><b>UX 49</b> · 출국 전 링크 보관 가치는 있으나 잘못된 설치 순서를 체크리스트로 고정하면 실패 비용이 크다.</p></details>
+      <a class="source" href="https://blog.naver.com/PostView.naver?blogId=travelnote_jp&amp;logNo=223529001204" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">C10</span><span class="badge green">Quick Flow</span></div>
+      <h3>가족여행 짐 준비표</h3>
+      <p class="reason">짐 싸기는 한 세션에서 끝나는 작업이며 장기 단계보다 준비물 그룹과 담당 상태가 중요하다.</p>
+      <dl><div><dt>현재</dt><dd>7 Item · progress</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>ready_second_wave</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>여행 조건 입력과 사후 개선은 Item이 아니라 setup/memo로 이동한다. 준비물 5묶음만 체크한다.</p><p><b>UX 79</b> · 체크리스트와 Sheet export에는 잘 맞지만 비슷한 R04와 중복되어 대표 슬롯 하나만 유지해야 한다.</p></details>
+      <a class="source" href="https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="link_bucket">
+      <div class="record-head"><span class="id">C11</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>공주 부모님 동행 당일 코스</h3>
+      <p class="reason">목적지 순서는 명확하지만 공공누리 변경금지 조건 때문에 파생 실행본 공개가 잠긴다.</p>
+      <dl><div><dt>현재</dt><dd>4 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>rights_restricted_no_derivatives</dd></div><div><dt>기본 결과물</dt><dd>memo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>원문 제목·네 목적지·원문 링크를 한 카드에 보존하고, 사용자가 직접 방문일만 붙이게 한다.</p><p><b>UX 68</b> · Link/Bucket의 경계 사례로 유용하다. “Flow 실행”보다 “원문 코스 저장”이 정확하다.</p></details>
+      <a class="source" href="https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="full_flow">
+      <div class="record-head"><span class="id">C12</span><span class="badge gold">Full Flow</span></div>
+      <h3>OSSU Intro CS + Core Programming 시작 구간</h3>
+      <p class="reason">선수조건과 과정 순서, 장기 진도 상태가 필수인 학습 경로다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · progress</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>ready_second_wave</dd></div><div><dt>기본 결과물</dt><dd>sheet</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>전체 OSSU를 한 번에 노출하지 않고 시작 구간만 활성화하며 이후 구간은 잠금/참고로 둔다.</p><p><b>UX 87</b> · Full Flow 구조에는 잘 맞지만 전체 로드맵을 모바일에 평면 나열하면 과밀해진다.</p></details>
+      <a class="source" href="https://github.com/ossu/computer-science" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">C13</span><span class="badge green">Quick Flow</span></div>
+      <h3>제작자 레시피 한 끼</h3>
+      <p class="reason">한 끼 조리는 한 세션의 순서형 실행이며 재료·수량·주의는 detail에 속한다.</p>
+      <dl><div><dt>현재</dt><dd>4 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>rights_review_required</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>결과 평가를 별도 Item으로 두지 않고 개인 메모로 남긴다. 원문 조리 행 3개만 체크한다.</p><p><b>UX 82</b> · 짧은 실행과 원문 복귀가 명확해 Quick Flow 대표형이다. 제작자 허가 전 공개는 잠근다.</p></details>
+      <a class="source" href="https://www.recipio.kr/recipes/WwyL63J3" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">C14</span><span class="badge green">Quick Flow</span></div>
+      <h3>옷장 정리 1일</h3>
+      <p class="reason">하루 안에 끝나는 한 번의 정리 작업이며 날짜 없이 저장해도 바로 가치가 있다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>rights_review_required</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>기준 결정은 setup/memo로 두고 꺼내기·분류·되돌리기·처분 예약 네 묶음만 체크한다.</p><p><b>UX 90</b> · 날짜 없는 저장, 나중 일정화, 짧은 체크리스트를 한 번에 검증하는 좋은 Quick Flow다.</p></details>
+      <a class="source" href="https://ohou.se/advices/7406" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="hold_reject">
+      <div class="record-head"><span class="id">C15</span><span class="badge red">Hold/Reject</span></div>
+      <h3>5km 달리기 4주</h3>
+      <p class="reason">4주·세트·거리·휴식이 현재 홈페이지에서 직접 확인되지 않아 운동 처방을 만들어낸 상태다.</p>
+      <dl><div><dt>현재</dt><dd>12 Item · progress</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>source_and_health_review_required</dd></div><div><dt>기본 결과물</dt><dd>calendar</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>모든 회차를 숨기고 정확한 공식 프로그램 원문과 중단 기준이 확보될 때까지 Hold한다.</p><p><b>UX 31</b> · 일정 UI에는 맞아 보여도 출처 없는 운동량을 실행하게 하므로 현재 틀에 넣으면 안 된다.</p></details>
+      <a class="source" href="https://www.runday.co.kr/" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">C16</span><span class="badge green">Quick Flow</span></div>
+      <h3>블로그 글을 영상으로 옮기기</h3>
+      <p class="reason">기존 글 한 편을 영상으로 전환하는 하나의 명확한 제작 작업이다.</p>
+      <dl><div><dt>현재</dt><dd>4 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>rights_review_required</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>4개 산출물 중심 행동을 유지하고 채널 성장·4주 계획으로 범위를 넓히지 않는다.</p><p><b>UX 89</b> · 제작자가 자신의 원문 링크를 유지하면서 수정·공유할 이유가 분명한 creator canary다.</p></details>
+      <a class="source" href="https://brunch.co.kr/@skychang44/346" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">O01</span><span class="badge green">Quick Flow</span></div>
+      <h3>여권 재발급 준비</h3>
+      <p class="reason">재발급 필요 확인·신청·수령이라는 짧은 행정 작업이다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · steps</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>ready_second_wave</dd></div><div><dt>기본 결과물</dt><dd>todo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>사진·수수료·수령 방식은 detail로 묶고 핵심 행동 3개만 체크한다.</p><p><b>UX 85</b> · 공식 링크와 마감 연결이 좋아 Quick Flow에 맞는다. 실행 시 최신 공지를 재확인해야 한다.</p></details>
+      <a class="source" href="https://www.passport.go.kr/home/kor/contents.do?menuPos=7" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">O02</span><span class="badge green">Quick Flow</span></div>
+      <h3>자동차검사 D-14</h3>
+      <p class="reason">사용자의 핵심 일은 검사 가능 기간 확인과 방문일 결정이며 차량 점검표 전체가 아니다.</p>
+      <dl><div><dt>현재</dt><dd>10 Item · timing</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>ready_for_internal_canary</dd></div><div><dt>기본 결과물</dt><dd>todo</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>현재 10개 Item을 “검사 가능 기간 확인”, “검사소·방문일 정하기” 2개로 줄인다. 검사 결과는 메모에 남긴다.</p><p><b>UX 93</b> · 0입력 저장 후 날짜를 나중에 붙이는 최소 입력 모델의 가장 선명한 Quick Flow다.</p></details>
+      <a class="source" href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="full_flow">
+      <div class="record-head"><span class="id">O03</span><span class="badge gold">Full Flow</span></div>
+      <h3>초등학교 입학 공식 준비</h3>
+      <p class="reason">공통 준비와 학교별 일정·제출물이 분리되어야 하며 여러 시점의 준비가 연결된다.</p>
+      <dl><div><dt>현재</dt><dd>5 Item · timing</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>local_source_import_required</dd></div><div><dt>기본 결과물</dt><dd>calendar</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>전국 공통 행만 기본으로 두고 학교별 제출물은 사용자가 원문을 추가하기 전 만들지 않는다.</p><p><b>UX 72</b> · Full Flow 구조에는 맞지만 지역 원문이 없으면 사용자가 그대로 따를 수 없다.</p></details>
+      <a class="source" href="https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&amp;boardSeq=104634&amp;lev=0&amp;m=020402&amp;opType=N&amp;page=1&amp;s=moe&amp;searchType=null&amp;statusYN=W" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="hold_reject">
+      <div class="record-head"><span class="id">O04</span><span class="badge red">Hold/Reject</span></div>
+      <h3>전세계약 전 공식 서류 확인</h3>
+      <p class="reason">법률·재무 영향이 큰데 공식 주 출처와 전문가 검토가 부족하다.</p>
+      <dl><div><dt>현재</dt><dd>7 Item · decision</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>official_source_and_legal_review_required</dd></div><div><dt>기본 결과물</dt><dd>sheet</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>안전 판정·가입 가능 판정을 만들지 않는다. 공식 조회 링크와 질문 목록이 확보될 때까지 Hold한다.</p><p><b>UX 38</b> · 비교 Sheet는 필요하지만 현재 데이터로 실행시키면 잘못된 확신을 줄 수 있다.</p></details>
+      <a class="source" href="https://contents.kakaopay.com/contents/2056" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="full_flow">
+      <div class="record-head"><span class="id">R01</span><span class="badge gold">Full Flow</span></div>
+      <h3>이사일 기준 공식 준비 체크리스트</h3>
+      <p class="reason">D-14부터 이사 후까지 상대 날짜와 단계 순서가 실행 성공에 직접 영향을 준다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · timing</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>ready_for_internal_canary</dd></div><div><dt>기본 결과물</dt><dd>calendar</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>6개 기간 Step은 유지하되 24개 세부 행동을 모바일에서 단계별로 접고, 예시 날짜는 저장하지 않는다.</p><p><b>UX 94</b> · 기준일 1개로 Calendar·checklist·sheet를 모두 설명할 수 있는 대표 Full Flow다.</p></details>
+      <a class="source" href="https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=666&amp;popMenu=ov" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="full_flow">
+      <div class="record-head"><span class="id">R02</span><span class="badge gold">Full Flow</span></div>
+      <h3>냉장고 파먹기 7일</h3>
+      <p class="reason">7일간 재료 소진 순서와 중간 조정이 핵심인 짧은 진도형 계획이다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · progress</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>rights_review_required</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>개인 재고 선택은 setup/memo로 두고 원문 7일 구간만 실행 상태로 유지한다.</p><p><b>UX 81</b> · 진도형 Full Flow로 쓸 수 있으나 개인 재고 입력을 별도 데이터 모델로 확장하면 안 된다.</p></details>
+      <a class="source" href="https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="full_flow">
+      <div class="record-head"><span class="id">R03</span><span class="badge gold">Full Flow</span></div>
+      <h3>개발 포트폴리오 4주</h3>
+      <p class="reason">범위 결정부터 배포·설명까지 선행 관계와 여러 산출물이 이어지는 프로젝트다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · progress</dd></div><div><dt>목표</dt><dd>Full Flow</dd></div><div><dt>준비</dt><dd>rights_review_required</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>원문에 없는 4주 마감은 강제하지 않고 사용자가 목표일을 정할 때만 일정화한다.</p><p><b>UX 78</b> · Full Flow에는 맞지만 현재 제목의 4주가 원문 근거인지 재확인해야 한다.</p></details>
+      <a class="source" href="https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8" target="_blank" rel="noreferrer">원문 열기</a>
+    </article>
+    <article class="record" data-tier="quick_flow">
+      <div class="record-head"><span class="id">R04</span><span class="badge green">Quick Flow</span></div>
+      <h3>여행 짐 준비표</h3>
+      <p class="reason">한 번의 짐 싸기 작업이며 날짜·장기 단계보다 준비물 묶음이 중요하다.</p>
+      <dl><div><dt>현재</dt><dd>6 Item · progress</dd></div><div><dt>목표</dt><dd>Quick Flow</dd></div><div><dt>준비</dt><dd>ready_second_wave</dd></div><div><dt>기본 결과물</dt><dd>checklist</dd></div></dl>
+      <details><summary>과밀·UX 점검</summary><p>6개 준비물 그룹은 유지하고 목적지별 비자·반입 규정은 공식 링크 참고로 분리한다.</p><p><b>UX 80</b> · Quick Flow로 자연스럽지만 C10과 역할이 겹쳐 한 버전만 대표로 운영해야 한다.</p></details>
+      <a class="source" href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist" target="_blank" rel="noreferrer">원문 열기</a>
+    </article></div></section>
+
+<section class="slide"><p class="slide-no">11 / 과도한 Item 정리</p><h2>대표 네 사례는 이렇게 줄인다</h2><div class="two"><div class="case"><h3>영유아 건강검진</h3><p>8회 전체를 실행 Item으로 만들지 않는다. <b>다음 검진 1건</b>과 공식 가능 기간만 실행, 전체 회차표는 reference.</p></div><div class="case"><h3>자동차검사</h3><p>10개 점검을 만들지 않는다. <b>기간 확인</b>과 <b>검사소·방문일 결정</b> 2개, 결과는 memo.</p></div><div class="case"><h3>가족여행 짐</h3><p>조건 입력과 사후 개선을 Item에서 내린다. 준비물 그룹만 체크하고 담당·가방 위치는 Sheet/memo.</p></div><div class="case"><h3>레시피·만들기</h3><p>결과 평가·다음 후보·사진 기록은 별도 Item이 아니다. 원문 조리·제작 순서만 체크한다.</p></div></div></section>
+
+<section class="slide" id="fresh"><p class="slide-no">12 / 신규 실제 URL 16</p><h2>수요가 커도 원문 행과 권리가 없으면 승격하지 않는다</h2><div class="filters" data-filter-scope="fresh"><button class="filter active" data-filter="all">전체 16</button><button class="filter" data-filter="link_bucket">Link</button><button class="filter" data-filter="quick_flow">Quick</button><button class="filter" data-filter="full_flow">Full</button><button class="filter" data-filter="hold_reject">Hold</button></div><div class="candidates" id="freshRecords">
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-OHOUSE-MAP-01</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>오늘의집 셀프인테리어 가이드 묶음</h3>
+      <p class="meta">오늘의집 · resource_collection · provider_permission_required</p>
+      <p>비용·계획·페인트·바닥·조명·배치·수납·패브릭·벽꾸미기 9개 섹션과 다수의 개별 글 링크.</p>
+      <p class="demand"><b>보이는 수요</b> 개별 글에 조회·스크랩이 노출된다. 예: 20평대 비용 글 조회 383,626·스크랩 2,258, 원룸 공간 활용 글 조회 490,705·스크랩 5,328.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>96</strong><p>조회·스크랩이 실제로 보이며 수십만 단위 글이 다수다.</p></div><div class="score"><b>변환</b><strong>68</strong><p>목록 구조는 강하지만 전체 묶음을 하나의 Flow로 만들면 목적이 섞인다.</p></div><div class="score"><b>제작자</b><strong>92</strong><p>여러 제작자·주제별 fork와 원문 유입이 자연스럽다.</p></div><div class="score"><b>UX</b><strong>72</strong><p>현재 앱에는 Link/Bucket 표면이 필요하며 Full Flow 카드로 바로 넣으면 과밀하다.</p></div></div></details>
+      <p class="next"><b>다음</b> 개별 글 1개 단위로 URL·행·권리를 수입하고, 가이드 전체는 Flow Map이 아니라 탐색용 Link/Bucket으로 유지한다.</p>
+      <a class="source" href="https://contents.ohou.se/advices/guides/self_interior" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="quick_flow">
+      <div class="record-head"><span class="id">NEW-OHOUSE-QUOTE-01</span><span class="badge green">Quick Flow</span></div>
+      <h3>인테리어 상담 준비 체크리스트</h3>
+      <p class="meta">오늘의집 · decision_checklist · provider_permission_required</p>
+      <p>공사 범위·스타일, 방문 상담 2~3곳, 포함 항목, 현장 실측, 예산 조정의 명시적 체크 5개.</p>
+      <p class="demand"><b>보이는 수요</b> 현재 페이지에서 조회·스크랩 수치는 확인되지 않았다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>61</strong><p>검색·복사 의도는 높지만 페이지의 직접 수요 수치는 보이지 않는다.</p></div><div class="score"><b>변환</b><strong>88</strong><p>명시적 5행이 있어 임의 행동 없이 변환 가능하다.</p></div><div class="score"><b>제작자</b><strong>78</strong><p>시공 전문가가 사례·지역별 버전을 만들 여지가 크다.</p></div><div class="score"><b>UX</b><strong>84</strong><p>Quick checklist와 memo에 잘 맞고 날짜 입력이 필수가 아니다.</p></div></div></details>
+      <p class="next"><b>다음</b> 업체 선택 판정은 만들지 않고 5개 확인행과 업체별 메모만 쓰는 내부 Quick Flow를 제작자 협의 후 검토한다.</p>
+      <a class="source" href="https://ohou.se/advices/12360" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="hold_reject">
+      <div class="record-head"><span class="id">NEW-SEOUL-WEDDING-110</span><span class="badge red">Hold/Reject</span></div>
+      <h3>서울시 결혼 준비 체크리스트 110선</h3>
+      <p class="meta">서울특별시 · source_table_rows · source_import_required</p>
+      <p>보도자료에서 본식 40·스튜디오 19·드레스 24·메이크업 27, 합계 110개라고 확인. 이 세션에서는 실제 110행 파일을 안정적으로 추출하지 못했다.</p>
+      <p class="demand"><b>보이는 수요</b> 서울시가 소비자상담 825건을 분석했고 66%가 계약 해제·해지·위약금 문제였다고 공개했다. 이는 문제 강도이지 콘텐츠 조회수는 아니다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>90</strong><p>피해상담 825건이라는 실제 문제 신호가 있으나 다운로드 수요와는 구분했다.</p></div><div class="score"><b>변환</b><strong>74</strong><p>110행 표 구조는 강하지만 현재 행 본문을 모두 확보하지 못했다.</p></div><div class="score"><b>제작자</b><strong>55</strong><p>공식 trust anchor이며 제작자 fork보다 업체 비교·후기 overlay가 적합하다.</p></div><div class="score"><b>UX</b><strong>70</strong><p>Sheet/decision UI가 필요하고 110행을 모바일 체크리스트로 평면 노출하면 실패한다.</p></div></div></details>
+      <p class="next"><b>다음</b> 110행 원본과 공공누리 유형을 확보한 뒤 예식·스드메를 한 Flow로 합치지 말고 비교 Sheet 중심 Flow Map으로 나눈다.</p>
+      <a class="source" href="https://opengov.seoul.go.kr/og/com/download.php?dname=%EC%98%88%EB%B9%84%EB%B6%80%EB%B6%80+%EC%8A%A4%C2%B7%EB%93%9C%C2%B7%EB%A9%94+%EC%B6%94%EA%B0%80%EA%B8%88+%ED%8F%AD%ED%83%84%E2%80%A6+%EC%84%9C%EC%9A%B8%EC%8B%9C+%EA%B2%B0%ED%98%BC+%EC%A4%80%EB%B9%84+%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8+%EC%A0%9C%EC%9E%91.pdf&amp;dtype=basic&amp;nid=31208121&amp;rid=F0000105564892" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-SEOUL-ECO-VACATION</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>친환경 여름휴가 체크리스트</h3>
+      <p class="meta">서울특별시 · grouped_checklist · rights_restricted_no_derivatives</p>
+      <p>집을 나서기 전·이동·여행지·분리배출 4개 Step, 각 5개 안팎의 명시적 체크 행.</p>
+      <p class="demand"><b>보이는 수요</b> 2026-07-15 최신 게시. 추천 수는 0으로 노출된다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>46</strong><p>계절성·최신성은 있으나 추천 0 외에 강한 수요 신호는 없다.</p></div><div class="score"><b>변환</b><strong>86</strong><p>행과 그룹이 명확하지만 변경금지 권리가 변환을 막는다.</p></div><div class="score"><b>제작자</b><strong>38</strong><p>공식 캠페인 콘텐츠라 사용자 fork 동기가 약하다.</p></div><div class="score"><b>UX</b><strong>68</strong><p>링크 저장에는 맞고 20개 체크를 그대로 노출하면 정보량이 과하다.</p></div></div></details>
+      <p class="next"><b>다음</b> 원문 링크와 4개 주제 요약만 보관한다. 파생 체크리스트 공개는 하지 않는다.</p>
+      <a class="source" href="https://news.seoul.go.kr/env/archives/570011" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="hold_reject">
+      <div class="record-head"><span class="id">NEW-SEOUL-MUSEUM-GROUP</span><span class="badge red">Hold/Reject</span></div>
+      <h3>서울상상나라 인솔교사 사전 단체 체크리스트</h3>
+      <p class="meta">서울상상나라 · role_handoff_checklist · source_import_required</p>
+      <p>방문 전·방문 시·방문 후 구분, 2시간 이동 운영, 권장 어린이:성인 7:1, 증빙 준비 등은 검색 추출로 확인. PDF 직접 열기는 실패했다.</p>
+      <p class="demand"><b>보이는 수요</b> 조회·다운로드 수치는 보이지 않는다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>63</strong><p>단체 인솔이라는 반복 업무 수요는 추론되지만 직접 수치는 없다.</p></div><div class="score"><b>변환</b><strong>79</strong><p>역할·시점·완료 행이 있어 Full Flow 적합성이 높다.</p></div><div class="score"><b>제작자</b><strong>70</strong><p>교사·기관별 수정본과 역할 분담 공유가 자연스럽다.</p></div><div class="score"><b>UX</b><strong>77</strong><p>담당자와 단계 접기가 필요하며 현재 평면 카드만으로는 부족하다.</p></div></div></details>
+      <p class="next"><b>다음</b> PDF 원문 행과 최신 운영 여부를 확보한 뒤 기준일·담당자·방문 전/중/후가 있는 Full Flow로 검토한다.</p>
+      <a class="source" href="https://www.seoulchildrensmuseum.org/download.do?fn=%EC%82%AC%EC%A0%84%EB%8B%A8%EC%B2%B4%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8%2819.10%29.pdf&amp;fnR=%2Ff00_files%2F20191003112143_492.pdf" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-GOV24-ONESTOP</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>정부24 원스톱 서비스 모음</h3>
+      <p class="meta">정부24 · service_directory · provider_directory</p>
+      <p>전입신고+, 맘편한 임신, 행복출산, 온종일 돌봄, 취업서류, 안심상속, 내차관리 등 원스톱 서비스 목록.</p>
+      <p class="demand"><b>보이는 수요</b> 정부 공식 대표 포털이지만 개별 서비스 수요 수치는 이 페이지에 없다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>82</strong><p>공식 생활행정 진입점이라 의도는 높지만 페이지 자체 이용량은 확인하지 않았다.</p></div><div class="score"><b>변환</b><strong>35</strong><p>목록은 서비스 디렉터리이며 실행 행이 아니다.</p></div><div class="score"><b>제작자</b><strong>20</strong><p>공식 source discovery 역할이지 creator fork 대상이 아니다.</p></div><div class="score"><b>UX</b><strong>78</strong><p>Link/Bucket 검색·저장에는 맞고 Flow 카드로 만들면 목적이 섞인다.</p></div></div></details>
+      <p class="next"><b>다음</b> 하나의 Flow로 만들지 않고 개별 서비스 상세 URL을 찾는 공식 source provider 인덱스로 사용한다.</p>
+      <a class="source" href="https://www.gov.kr/portal/main/nologin" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-EASYLAW-WEDDING-MAP</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>찾기쉬운 생활법령 결혼준비자 법령 맵</h3>
+      <p class="meta">찾기쉬운 생활법령정보 · reference_map · freshness_review_required</p>
+      <p>결혼자금·신혼집·혼수·이삿짐·예식장·신혼여행 등 대분류와 다수 법령 링크.</p>
+      <p class="demand"><b>보이는 수요</b> 조회·저장 수치는 보이지 않는다. 페이지가 구 버전으로 표시된다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>67</strong><p>결혼·계약의 높은 의도는 추론되지만 직접 수요 신호는 없다.</p></div><div class="score"><b>변환</b><strong>42</strong><p>법령 맵은 참고 구조이지 사용자가 그대로 실행할 행이 아니다.</p></div><div class="score"><b>제작자</b><strong>24</strong><p>공식 trust anchor이며 사용자 fork와 거리가 있다.</p></div><div class="score"><b>UX</b><strong>73</strong><p>Link/Bucket 참고 탭에는 맞고 실행 체크리스트로 만들면 법률 설명을 행동으로 오해한다.</p></div></div></details>
+      <p class="next"><b>다음</b> 공식 주제 맵으로만 연결하고 최신 세부 페이지를 개별 source로 재탐색한다.</p>
+      <a class="source" href="https://easylaw.go.kr/CSP/SysChartRetrievePLst.laf?csmSeq=170" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="quick_flow">
+      <div class="record-head"><span class="id">NEW-IFIXIT-WASHER</span><span class="badge green">Quick Flow</span></div>
+      <h3>세탁기 정기 관리 7단계</h3>
+      <p class="meta">iFixit · ordered_procedure · commercial_license_required</p>
+      <p>전원 분리·세제함·고무 패킹·도어 유리·펌프 필터·급수 필터·관리 코스 7개 명시적 Step.</p>
+      <p class="demand"><b>보이는 수요</b> 확인 시점 기준 최근 30일 51회, 누적 1,055회 조회.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>58</strong><p>실제 조회는 보이지만 아직 대중 수요가 강하다고 보기는 어렵다.</p></div><div class="score"><b>변환</b><strong>94</strong><p>행·순서·준비물·주의가 모두 명확하다.</p></div><div class="score"><b>제작자</b><strong>91</strong><p>기여·수정·번역·평판 구조가 강한 커뮤니티형 원천이다.</p></div><div class="score"><b>UX</b><strong>86</strong><p>한 세션 Quick Flow와 반복 일정 옵션에 잘 맞는다.</p></div></div></details>
+      <p class="next"><b>다음</b> 모델별 제조사 지침 우선 경고와 비상업 라이선스 경계를 유지하고 상업 이용 허가 후 한국어 Quick Flow로 검토한다.</p>
+      <a class="source" href="https://www.ifixit.com/Guide/How+To+Maintain+Your+Washing+Machine/182518" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="hold_reject">
+      <div class="record-head"><span class="id">NEW-IFIXIT-HOSE</span><span class="badge red">Hold/Reject</span></div>
+      <h3>새는 정원 호스 연결부 교체</h3>
+      <p class="meta">iFixit · ordered_procedure · license_and_safety_review_required</p>
+      <p>분리·절단·새 연결부 삽입·클램프·조임·누수 확인 6개 Step과 칼날 주의.</p>
+      <p class="demand"><b>보이는 수요</b> 확인 시점 기준 최근 30일 1,210회, 누적 1,717회 조회.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>72</strong><p>최근 30일 조회가 누적 대비 높아 현재 계절 수요 신호가 보인다.</p></div><div class="score"><b>변환</b><strong>92</strong><p>정확한 순서와 완료 기준이 있다.</p></div><div class="score"><b>제작자</b><strong>88</strong><p>댓글로 순서 수정 의견이 남는 편집형 커뮤니티 구조다.</p></div><div class="score"><b>UX</b><strong>74</strong><p>Quick Flow에는 맞지만 안전 경고를 실행행과 분리해 상단에 고정해야 한다.</p></div></div></details>
+      <p class="next"><b>다음</b> 상업 이용 허가와 칼날 안전 검토 후 한 세션 Quick Flow로 만든다.</p>
+      <a class="source" href="https://www.ifixit.com/Guide/How+to+Fix+a+Leaking+Garden+Hose+Connector/189188" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-IFIXIT-HOUSEHOLD-MAP</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>iFixit Household 수리 가이드 묶음</h3>
+      <p class="meta">iFixit · community_resource_collection · provider_partnership_required</p>
+      <p>17개 카테고리와 다수 교체·기술 가이드. 개별 가이드는 독립 Step 구조.</p>
+      <p class="demand"><b>보이는 수요</b> 카테고리 페이지 최근 30일 50,795회, 누적 1,842,632회 조회.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>98</strong><p>카테고리 자체의 강한 실제 조회 신호가 있다.</p></div><div class="score"><b>변환</b><strong>82</strong><p>개별 가이드는 매우 강하지만 컬렉션 전체는 하나의 Flow가 아니다.</p></div><div class="score"><b>제작자</b><strong>97</strong><p>누구나 작성·수정하고 기여 평판을 얻는 구조가 명확하다.</p></div><div class="score"><b>UX</b><strong>76</strong><p>Link/Bucket과 개별 Quick Flow를 함께 지원해야 하며 현재 단일 카드만으로는 부족하다.</p></div></div></details>
+      <p class="next"><b>다음</b> 카테고리 전체를 변환하지 말고 수요·안전·모델 적합도가 높은 개별 가이드만 공급 제휴 대상으로 삼는다.</p>
+      <a class="source" href="https://www.ifixit.com/Device/Household" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-SEOUL-LEARNING-2026</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>2026 서울시민대학 여름 계절학기</h3>
+      <p class="meta">서울특별시평생교육진흥원 · dated_resource_queue · source_import_and_rights_required</p>
+      <p>7월 7일~8월 21일, 4개 캠퍼스, 110개 강좌, 대부분 1~4회차라는 일정·목록 구조.</p>
+      <p class="demand"><b>보이는 수요</b> 페이지 조회 5,300, 좋아요 7, 모집 3,700명.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>80</strong><p>조회와 모집 규모가 실제로 보인다.</p></div><div class="score"><b>변환</b><strong>66</strong><p>프로그램북을 수입해야 개별 회차가 생긴다.</p></div><div class="score"><b>제작자</b><strong>45</strong><p>공식 강좌 제공자 중심이며 사용자 fork보다 선택·저장이 중요하다.</p></div><div class="score"><b>UX</b><strong>71</strong><p>resource queue와 선택 후 Full Flow 전환이 필요하다.</p></div></div></details>
+      <p class="next"><b>다음</b> 뉴스 페이지를 Flow로 만들지 않고 강좌 상세·프로그램북을 수입한 뒤 선택한 강좌 1개만 일정 Flow로 만든다.</p>
+      <a class="source" href="https://mediahub.seoul.go.kr/archives/2018516" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="full_flow">
+      <div class="record-head"><span class="id">NEW-KTO-INCENTIVE-COURSE</span><span class="badge gold">Full Flow</span></div>
+      <h3>기업 인센티브 관광 패키지 과정</h3>
+      <p class="meta">한국관광공사 관광e배움터 · course_package · ready_second_wave</p>
+      <p>현재 과정 외 3개 연계 과정을 완료해야 수료증을 받는 패키지 구조, 신청 후 30일, 진도 80% 수료 기준.</p>
+      <p class="demand"><b>보이는 수요</b> 학습인원 300+와 후기 1건이 노출된다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>59</strong><p>300+ 학습자는 보이나 대중 생활 콘텐츠 수요는 아니다.</p></div><div class="score"><b>변환</b><strong>87</strong><p>패키지·기간·완료 기준이 명시적이다.</p></div><div class="score"><b>제작자</b><strong>50</strong><p>교육 제공자 공유는 가능하지만 사용자 fork 동기는 보통이다.</p></div><div class="score"><b>UX</b><strong>83</strong><p>K-MOOC와 같은 progress Full Flow 틀에 자연스럽게 맞는다.</p></div></div></details>
+      <p class="next"><b>다음</b> 소비자 P0가 아니라 업무·관광 B2B 포트폴리오 공백을 채우는 second-wave 학습 Flow로 둔다.</p>
+      <a class="source" href="https://touredu.visitkorea.or.kr/common/C202300286/0000/0" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-OHOUSE-CREATOR-GUIDE</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>오늘의집 사용자가 좋아하는 콘텐츠 가이드</h3>
+      <p class="meta">오늘의집 필진단 · creator_playbook · provider_research_only</p>
+      <p>노하우형·큐레이션형과 살림·요리·식물·캠핑 등 Good Case 링크를 제공한다.</p>
+      <p class="demand"><b>보이는 수요</b> 해당 안내 글 자체는 조회 66, 좋아요 1, 스크랩·댓글 0.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>35</strong><p>안내 글 자체 수요는 낮다.</p></div><div class="score"><b>변환</b><strong>28</strong><p>실행행이 아니라 제작자 콘텐츠 선정 기준이다.</p></div><div class="score"><b>제작자</b><strong>94</strong><p>제작자 공급과 카테고리 확장 인사이트는 매우 강하다.</p></div><div class="score"><b>UX</b><strong>62</strong><p>제품 콘텐츠가 아니라 내부 source scout 도구로 적합하다.</p></div></div></details>
+      <p class="next"><b>다음</b> 사용자 Flow로 만들지 않고 어떤 제작자 콘텐츠가 모방·저장되는지 발굴하는 공급 측 가이드로 사용한다.</p>
+      <a class="source" href="https://ohou.se/advices/9760" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="quick_flow">
+      <div class="record-head"><span class="id">NEW-SEOUL-BUS-FARE</span><span class="badge green">Quick Flow</span></div>
+      <h3>서울시 장애인 버스요금 지원 신청</h3>
+      <p class="meta">서울특별시 · official_application_steps · privacy_and_accessibility_review_required</p>
+      <p>신청자격 체크부터 자격 확인·동의·본인인증·정보 입력·카드/계좌 확인·완료까지 7개 공식 Step.</p>
+      <p class="demand"><b>보이는 수요</b> 페이지에 조회 수치는 없다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>66</strong><p>대상자에게는 강한 필요지만 지역·자격 범위가 좁고 수치는 없다.</p></div><div class="score"><b>변환</b><strong>91</strong><p>공식 7단계가 명확하다.</p></div><div class="score"><b>제작자</b><strong>18</strong><p>공식 trust anchor이며 fork 대상이 아니다.</p></div><div class="score"><b>UX</b><strong>79</strong><p>Quick Flow에 맞지만 민감정보 입력이 FlowMe 화면처럼 보이지 않게 외부 이동을 명확히 해야 한다.</p></div></div></details>
+      <p class="next"><b>다음</b> FlowMe는 주민번호·계좌를 받지 않고 공식 신청 링크와 완료 상태만 제공한다.</p>
+      <a class="source" href="https://news.seoul.go.kr/welfare/dsbus/ko/conts/view.do?menuId=K_USAGE_INFO" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="quick_flow">
+      <div class="record-head"><span class="id">NEW-EASYLAW-BIRTH-REPORT</span><span class="badge green">Quick Flow</span></div>
+      <h3>출생신고 준비</h3>
+      <p class="meta">찾기쉬운 생활법령정보 · official_deadline_procedure · ready_second_wave</p>
+      <p>출생 후 1개월 기한, 신고 장소, 신고서 기재사항, 출생증명서·신분증명서 등 첨부서류가 명시되어 있다.</p>
+      <p class="demand"><b>보이는 수요</b> 페이지에 조회·저장 수치는 없다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>84</strong><p>기한을 놓치면 과태료가 발생하는 높은 긴급성은 확인되지만 이용량은 모른다.</p></div><div class="score"><b>변환</b><strong>93</strong><p>기한·장소·서류 행이 명확하다.</p></div><div class="score"><b>제작자</b><strong>22</strong><p>공식 trust anchor이며 개인 경험은 메모로만 분리해야 한다.</p></div><div class="score"><b>UX</b><strong>91</strong><p>기준일 1개와 Todo/Calendar 변환을 검증하는 강한 Quick Flow다.</p></div></div></details>
+      <p class="next"><b>다음</b> 출생일을 넣기 전에는 날짜 없이 저장하고, 입력 시 공식 1개월 기한만 계산한다. 개인정보는 수집하지 않는다.</p>
+      <a class="source" href="https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?ccfNo=2&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=707&amp;popMenu=ov" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article>
+    <article class="candidate" data-tier="link_bucket">
+      <div class="record-head"><span class="id">NEW-SEOUL-KIDS-CAFE</span><span class="badge blue">Link/Bucket</span></div>
+      <h3>2026 여기저기 서울형 키즈카페</h3>
+      <p class="meta">서울특별시 · dynamic_location_schedule · dynamic_source_import_required</p>
+      <p>18개소, 4~6월·9~11월 주말, 10:00~17:30 3회차, 4~9세, 사전예약 또는 현장접수. 장소별 일정은 별도 포털에 있다.</p>
+      <p class="demand"><b>보이는 수요</b> 추천 0이 노출되며 개별 장소 수요는 이 페이지에서 확인되지 않는다.</p>
+      <details><summary>점수와 코멘트</summary><div class="score-grid"><div class="score"><b>수요</b><strong>62</strong><p>가족 나들이 의도는 높지만 직접 수요 수치는 약하다.</p></div><div class="score"><b>변환</b><strong>58</strong><p>운영 틀은 있으나 장소별 실제 회차가 별도 원문에 있다.</p></div><div class="score"><b>제작자</b><strong>48</strong><p>지역별 후기 fork는 가능하지만 공식 일정이 우선이다.</p></div><div class="score"><b>UX</b><strong>74</strong><p>장소 큐와 선택 후 일정화가 필요해 현재 단일 Flow보다 Link/Bucket이 맞다.</p></div></div></details>
+      <p class="next"><b>다음</b> 뉴스를 Flow로 만들지 않고 최신 장소·회차 API/상세표를 확보한 뒤 사용자가 선택한 1회 방문만 일정화한다.</p>
+      <a class="source" href="https://news.seoul.go.kr/welfare/archives/579652" target="_blank" rel="noreferrer">실제 원문 열기</a>
+    </article></div></section>
+
+<section class="slide" id="queue"><p class="slide-no">13 / 다음 제작 큐</p><h2>첫 canary 6개, second wave 2개</h2><ol class="queue"><li><span>1</span><div><b>자동차검사</b><small>first_canary · Quick·공식·0입력 저장·나중 일정화</small></div></li><li><span>2</span><div><b>이사일 기준 준비</b><small>first_canary · Full·기준일 1개·다중 projection</small></div></li><li><span>3</span><div><b>옷장 정리</b><small>first_canary · Quick·날짜 없음·한 세션 실행</small></div></li><li><span>4</span><div><b>K-MOOC 진도</b><small>first_canary · Full·주차 진도·재개 상태</small></div></li><li><span>5</span><div><b>블로그 글을 영상으로</b><small>first_canary · creator 원문 유입·수정·공유</small></div></li><li><span>6</span><div><b>다음 영유아 건강검진</b><small>first_canary · 공식 가능 기간과 한 건 알림의 최소 모델</small></div></li><li><span>7</span><div><b>평일 5일 저녁 식단</b><small>second_wave · 주간 source row와 Calendar 연결</small></div></li><li><span>8</span><div><b>출생신고 준비</b><small>second_wave · 공식 기한·기준일 1개·민감정보 비수집</small></div></li></ol><div class="callout">C11 Link/Bucket, C02·C15 Hold, 정부24 provider index를 함께 대조해 admission gate가 실제로 작동하는지도 검증한다.</div></section>
+
+<section class="slide"><p class="slide-no">14 / CEO 결정 요청</p><h2>세 가지만 승인하면 다음 콘텐츠 제작으로 넘어갈 수 있다</h2><ol class="decision-list"><li><span>1</span>Link/Bucket · Quick Flow · Full Flow · Hold/Reject를 콘텐츠 발굴 편입 단계로 채택한다.</li><li><span>2</span>구조 tier와 source·rights·freshness·safety 공개 gate를 분리한다.</li><li><span>3</span>날짜 없는 0입력 저장과 결과 확인 후 일정화를 기본 사용 방식으로 채택한다.</li></ol><h3 style="margin-top:24px">근거 문서</h3><div class="refs"><a href="../content-audit/2026-07-18-flowme-flow-content-contract-v1.json">docs/content-audit/2026-07-18-flowme-flow-content-contract-v1.json</a><a href="../specs/2026-07-20-flowme-taxonomy-v1-1/spec.md">docs/specs/2026-07-20-flowme-taxonomy-v1-1/spec.md</a><a href="../specs/2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json">docs/specs/2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json</a><a href="../specs/2026-07-20-url-to-flow-output-quality-lab-v2/spec.md">docs/specs/2026-07-20-url-to-flow-output-quality-lab-v2/spec.md</a><a href="../content-audit/2026-07-20-flowme-p25-production-review-p26-program/decision-matrix.json">docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/decision-matrix.json</a><a href="../flow-rules/source-to-flow-conversion-gate.md">docs/flow-rules/source-to-flow-conversion-gate.md</a><a href="../flow-rules/content-conversion-playbooks.md">docs/flow-rules/content-conversion-playbooks.md</a><a href="../flow-rules/quality-gate.md">docs/flow-rules/quality-gate.md</a><a href="../PRODUCT_PRINCIPLES.md">docs/PRODUCT_PRINCIPLES.md</a></div></section>
+</main>
+<script>
+document.querySelectorAll('[data-filter-scope]').forEach((group)=>{
+  group.addEventListener('click',(event)=>{
+    const button=event.target.closest('[data-filter]'); if(!button)return;
+    group.querySelectorAll('.filter').forEach((item)=>item.classList.toggle('active',item===button));
+    const target=group.dataset.filterScope==='p0'?document.getElementById('p0Records'):document.getElementById('freshRecords');
+    target.querySelectorAll('[data-tier]').forEach((card)=>card.classList.toggle('hidden',button.dataset.filter!=='all'&&card.dataset.tier!==button.dataset.filter));
+  });
+});
+</script>
+</body>
+</html>

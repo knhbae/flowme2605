@@ -1,0 +1,4817 @@
+{
+  "documentType": "flow_content_generalization_final_holdout_results_v1",
+  "schemaVersion": "flow-content-generalization-evaluation-v1",
+  "evaluatedAt": "2026-07-21T03:58:41.843Z",
+  "validationBoundary": "Internal automated checks plus explicit internal adjudication; not observed-user validation.",
+  "split": "final_holdout",
+  "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc",
+  "frozenRulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+  "records": [
+    {
+      "caseId": "GB-13",
+      "split": "final_holdout",
+      "role": "rules",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "ready",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "todo",
+          "actual": "checklist",
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "application_route"
+          ],
+          "actualSemanticKeys": [],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 6,
+        "acquiredCount": 6,
+        "accountedCount": 6,
+        "requiredMeaningCount": 6,
+        "meaningPreservationWeightedCount": 6,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "RID-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 3,
+        "provenanceFulfilledCount": 3,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "gb13-channel",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb13-materials",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb13-submit",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          }
+        ]
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 0,
+        "issueCount": 0,
+        "omissions": [],
+        "mismatches": []
+      },
+      "review": {
+        "usability": "requires_major_edit",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-13",
+      "split": "final_holdout",
+      "role": "low_cost",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "needs_confirmation",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "todo",
+          "actual": "checklist",
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "application_route"
+          ],
+          "actualSemanticKeys": [
+            "chosenApplicationRoute"
+          ],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 6,
+        "acquiredCount": 6,
+        "accountedCount": 6,
+        "requiredMeaningCount": 6,
+        "meaningPreservationWeightedCount": 4.5,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "RID-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-03",
+            "meaningPreservation": "partially_preserved",
+            "note": "The output retains a generic qualification condition but not the applicant and proxy-rule meaning needed for execution."
+          },
+          {
+            "sourceRowId": "RID-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-05",
+            "meaningPreservation": "partially_preserved",
+            "note": "The generic photo and ID field loses the six-month age limit, exact dimensions, and conditional additional evidence."
+          },
+          {
+            "sourceRowId": "RID-06",
+            "meaningPreservation": "partially_preserved",
+            "note": "The output says the fee depends on method but loses the source-listed 5,000 and 10,000 won values."
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 1,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 1,
+        "details": [
+          {
+            "itemId": "rid-apply",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          }
+        ]
+      },
+      "inventions": {
+        "total": 1,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 1,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.rid-apply",
+            "source": "item_judgment"
+          }
+        ],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": true
+      },
+      "inputs": {
+        "totalCount": 1,
+        "requiredBeforeFirstPreviewCount": 1,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 1,
+        "issueCount": 1,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "safety",
+            "gold": "not_required",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "not_usable",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-13",
+      "split": "final_holdout",
+      "role": "high_capability",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "needs_confirmation",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "todo",
+          "actual": "checklist",
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "application_route"
+          ],
+          "actualSemanticKeys": [
+            "preferred_application_channel",
+            "applicant_role"
+          ],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 6,
+        "acquiredCount": 6,
+        "accountedCount": 6,
+        "requiredMeaningCount": 6,
+        "meaningPreservationWeightedCount": 6,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "RID-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "RID-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 3,
+        "provenanceFulfilledCount": 3,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "rid-select-channel",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "rid-prepare-documents",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "rid-submit-application",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          }
+        ]
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 2,
+        "requiredBeforeFirstPreviewCount": 2,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "checklist",
+          "todo",
+          "memo"
+        ],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 0,
+        "issueCount": 0,
+        "omissions": [],
+        "mismatches": []
+      },
+      "review": {
+        "usability": "requires_major_edit",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-14",
+      "split": "final_holdout",
+      "role": "rules",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "needs_confirmation",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "calendar",
+          "actual": "calendar",
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "child_birth_date"
+          ],
+          "actualSemanticKeys": [
+            "child_birth_date"
+          ],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 13,
+        "acquiredCount": 13,
+        "accountedCount": 13,
+        "requiredMeaningCount": 13,
+        "meaningPreservationWeightedCount": 13,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "INF-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-09",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-10",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-11",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-12",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-13",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 12,
+        "provenanceFulfilledCount": 12,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "gb14-health-1",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-health-2",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-health-3",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-health-4",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-oral-1",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-health-5",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-oral-2",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-health-6",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-oral-3",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-health-7",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-oral-4",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb14-health-8",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          }
+        ]
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 1,
+        "requiredBeforeFirstPreviewCount": 1,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "calendar",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [
+          "sheet"
+        ],
+        "unnecessaryCount": 1,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 0,
+        "issueCount": 0,
+        "omissions": [],
+        "mismatches": []
+      },
+      "review": {
+        "usability": "usable_after_minor_edit",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-14",
+      "split": "final_holdout",
+      "role": "low_cost",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "needs_confirmation",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "calendar",
+          "actual": "calendar",
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "child_birth_date"
+          ],
+          "actualSemanticKeys": [
+            "childBirthDate"
+          ],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 13,
+        "acquiredCount": 13,
+        "accountedCount": 13,
+        "requiredMeaningCount": 13,
+        "meaningPreservationWeightedCount": 13,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "INF-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-09",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-10",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-11",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-12",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-13",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 12,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 12,
+        "details": [
+          {
+            "itemId": "screen-inf-01",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-02",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-03",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-04",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-05",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-06",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-07",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-08",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-09",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-10",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-11",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "screen-inf-12",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          }
+        ]
+      },
+      "inventions": {
+        "total": 12,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 12,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-01",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-02",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-03",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-04",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-05",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-06",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-07",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-08",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-09",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-10",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-11",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.screen-inf-12",
+            "source": "item_judgment"
+          }
+        ],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": true
+      },
+      "inputs": {
+        "totalCount": 1,
+        "requiredBeforeFirstPreviewCount": 1,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "calendar",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [
+          "sheet"
+        ],
+        "unnecessaryCount": 1,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 0,
+        "issueCount": 0,
+        "omissions": [],
+        "mismatches": []
+      },
+      "review": {
+        "usability": "not_usable",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-14",
+      "split": "final_holdout",
+      "role": "high_capability",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "needs_confirmation",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "calendar",
+          "actual": "calendar",
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "child_birth_date"
+          ],
+          "actualSemanticKeys": [
+            "child_birth_date"
+          ],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 13,
+        "acquiredCount": 13,
+        "accountedCount": 13,
+        "requiredMeaningCount": 13,
+        "meaningPreservationWeightedCount": 13,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "INF-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-09",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-10",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-11",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-12",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "INF-13",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 12,
+        "provenanceFulfilledCount": 12,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "inf-health-14d",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-health-4m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-health-9m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-health-18m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-oral-18m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-health-30m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-oral-30m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-health-42m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-oral-42m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-health-54m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-oral-54m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "inf-health-66m",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          }
+        ]
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 1,
+        "requiredBeforeFirstPreviewCount": 1,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "calendar",
+          "checklist",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [
+          "sheet"
+        ],
+        "unnecessaryCount": 1,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 0,
+        "issueCount": 0,
+        "omissions": [],
+        "mismatches": []
+      },
+      "review": {
+        "usability": "directly_usable",
+        "directlyUsablePositive": true,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-15",
+      "split": "final_holdout",
+      "role": "rules",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": false,
+          "match": false
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "source_import_required",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "partial",
+          "match": false
+        },
+        "primaryArtifact": {
+          "gold": "sheet",
+          "actual": null,
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 13,
+        "acquiredCount": 13,
+        "accountedCount": 13,
+        "requiredMeaningCount": 13,
+        "meaningPreservationWeightedCount": 0,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "NHI-01",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-02",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-03",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-04",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-05",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-06",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-07",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-08",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-09",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-10",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-11",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-12",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-13",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 0,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": []
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 1,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 1,
+        "issueCount": 1,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "personalPreviewAllowed",
+            "gold": true,
+            "actual": false
+          }
+        ]
+      },
+      "review": {
+        "usability": "not_usable",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-15",
+      "split": "final_holdout",
+      "role": "low_cost",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": false,
+          "match": false
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "hold",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "partial",
+          "match": false
+        },
+        "primaryArtifact": {
+          "gold": "sheet",
+          "actual": null,
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 13,
+        "acquiredCount": 13,
+        "accountedCount": 13,
+        "requiredMeaningCount": 13,
+        "meaningPreservationWeightedCount": 0,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "NHI-01",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-02",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-03",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-04",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-05",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-06",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-07",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-08",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-09",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-10",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-11",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-12",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          },
+          {
+            "sourceRowId": "NHI-13",
+            "meaningPreservation": "lost",
+            "note": "The positive course-review source row is discarded by an unsupported stop and has no canonical or usable projection representation."
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 0,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": []
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 2,
+        "issueCount": 2,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "locale",
+            "gold": "applicable",
+            "actual": "review_required"
+          },
+          {
+            "key": "personalPreviewAllowed",
+            "gold": true,
+            "actual": false
+          }
+        ]
+      },
+      "review": {
+        "usability": "not_usable",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-15",
+      "split": "final_holdout",
+      "role": "high_capability",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "ready",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "sheet",
+          "actual": "calendar",
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 13,
+        "acquiredCount": 13,
+        "accountedCount": 13,
+        "requiredMeaningCount": 13,
+        "meaningPreservationWeightedCount": 12.5,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "NHI-01",
+            "meaningPreservation": "partially_preserved",
+            "note": "The three dates and in-person format remain, but a descriptive course fact is converted into a personal attendance task."
+          },
+          {
+            "sourceRowId": "NHI-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-09",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-10",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-11",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-12",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "NHI-13",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 1,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 1,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "nhi-attend-course",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "completion"
+            ]
+          }
+        ]
+      },
+      "inventions": {
+        "total": 2,
+        "byType": {
+          "action": 1,
+          "date": 0,
+          "repeat": 0,
+          "completion": 1,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 1,
+        "labels": [
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.nhi-attend-course",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.nhi-attend-course",
+            "source": "item_judgment"
+          }
+        ],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": true
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "calendar",
+          "todo",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [
+          "todo"
+        ],
+        "unnecessaryCount": 1,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 0,
+        "issueCount": 0,
+        "omissions": [],
+        "mismatches": []
+      },
+      "review": {
+        "usability": "requires_major_edit",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-16",
+      "split": "final_holdout",
+      "role": "rules",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "ready",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "sheet",
+          "actual": "sheet",
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "plan_start_date",
+            "brand_context"
+          ],
+          "actualSemanticKeys": [],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 8,
+        "acquiredCount": 8,
+        "accountedCount": 8,
+        "requiredMeaningCount": 8,
+        "meaningPreservationWeightedCount": 8,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "TPL-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 8,
+        "provenanceFulfilledCount": 8,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "gb16-row-1",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb16-row-2",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb16-row-3",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb16-row-4",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb16-row-5",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb16-row-6",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb16-row-7",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "gb16-row-8",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          }
+        ]
+      },
+      "inventions": {
+        "total": 1,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 1,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [
+          {
+            "inventionType": "field",
+            "affectedPath": "canonical.fields.row-status.allowedValues",
+            "note": "The CSV has a Status column, but the allowed values planned, in_progress, and published are not supplied by the source rows.",
+            "source": "run_judgment"
+          }
+        ],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": true
+      },
+      "inputs": {
+        "totalCount": 1,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "calendar",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 2,
+        "issueCount": 2,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "locale",
+            "gold": "applicable",
+            "actual": "review_required"
+          },
+          {
+            "key": "privacy",
+            "gold": "not_required",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "requires_major_edit",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-16",
+      "split": "final_holdout",
+      "role": "low_cost",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "needs_confirmation",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "sheet",
+          "actual": "calendar",
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "plan_start_date",
+            "brand_context"
+          ],
+          "actualSemanticKeys": [
+            "templateStartDate"
+          ],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 8,
+        "acquiredCount": 8,
+        "accountedCount": 8,
+        "requiredMeaningCount": 8,
+        "meaningPreservationWeightedCount": 8,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "TPL-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 8,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 8,
+        "details": [
+          {
+            "itemId": "post-tpl-01",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "post-tpl-02",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "post-tpl-03",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "post-tpl-04",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "post-tpl-05",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "post-tpl-06",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "post-tpl-07",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          },
+          {
+            "itemId": "post-tpl-08",
+            "validReferences": true,
+            "semanticSupport": "partially_supported",
+            "provenanceFulfilled": false,
+            "disposition": "major_edit",
+            "inventionTypes": [
+              "completion"
+            ]
+          }
+        ]
+      },
+      "inventions": {
+        "total": 8,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 8,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-01",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-02",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-03",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-04",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-05",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-06",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-07",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.post-tpl-08",
+            "source": "item_judgment"
+          }
+        ],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": true
+      },
+      "inputs": {
+        "totalCount": 1,
+        "requiredBeforeFirstPreviewCount": 1,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "calendar",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 3,
+        "issueCount": 3,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "freshness",
+            "gold": "passed",
+            "actual": "review_required"
+          },
+          {
+            "key": "locale",
+            "gold": "applicable",
+            "actual": "review_required"
+          },
+          {
+            "key": "privacy",
+            "gold": "not_required",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "not_usable",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-16",
+      "split": "final_holdout",
+      "role": "high_capability",
+      "goldAdmissionLabel": "positive",
+      "comparisons": {
+        "flowPossible": {
+          "gold": true,
+          "actual": true,
+          "match": true
+        },
+        "state": {
+          "gold": "needs_confirmation",
+          "actual": "ready",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": "sheet",
+          "actual": "sheet",
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [
+            "plan_start_date",
+            "brand_context"
+          ],
+          "actualSemanticKeys": [],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 8,
+        "acquiredCount": 8,
+        "accountedCount": 8,
+        "requiredMeaningCount": 8,
+        "meaningPreservationWeightedCount": 8,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "TPL-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "TPL-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 8,
+        "provenanceFulfilledCount": 8,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "tpl-w1-mon-instagram",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "tpl-w1-wed-faq",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "tpl-w1-fri-insight",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "tpl-w1-sat-question",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "tpl-w2-tue-customer",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "tpl-w2-wed-educational",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "tpl-w2-thu-behind-scenes",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          },
+          {
+            "itemId": "tpl-w2-fri-product",
+            "validReferences": true,
+            "semanticSupport": "supported",
+            "provenanceFulfilled": true,
+            "disposition": "keep",
+            "inventionTypes": []
+          }
+        ]
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "checklist",
+          "todo",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [
+          "checklist",
+          "todo"
+        ],
+        "unnecessaryCount": 2,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 1,
+        "issueCount": 1,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "privacy",
+            "gold": "not_required",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "requires_major_edit",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-17",
+      "split": "final_holdout",
+      "role": "rules",
+      "goldAdmissionLabel": "boundary",
+      "comparisons": {
+        "flowPossible": {
+          "gold": false,
+          "actual": true,
+          "match": false
+        },
+        "state": {
+          "gold": "hold",
+          "actual": "needs_confirmation",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": null,
+          "actual": "calendar",
+          "match": false
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [
+            "child_birth_date",
+            "uk_routine_schedule_applicability"
+          ],
+          "exactMatch": false
+        }
+      },
+      "boundary": {
+        "correctStop": false
+      },
+      "sourceRows": {
+        "goldCount": 9,
+        "acquiredCount": 9,
+        "accountedCount": 9,
+        "requiredMeaningCount": 9,
+        "meaningPreservationWeightedCount": 5,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "UKV-01",
+            "meaningPreservation": "partially_preserved",
+            "note": "The 8-week heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+          },
+          {
+            "sourceRowId": "UKV-02",
+            "meaningPreservation": "partially_preserved",
+            "note": "The 12-week heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+          },
+          {
+            "sourceRowId": "UKV-03",
+            "meaningPreservation": "partially_preserved",
+            "note": "The 16-week heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+          },
+          {
+            "sourceRowId": "UKV-04",
+            "meaningPreservation": "partially_preserved",
+            "note": "The age-one heading remains, but it is converted into a personalized medical action and date without an applicable locale."
+          },
+          {
+            "sourceRowId": "UKV-05",
+            "meaningPreservation": "partially_preserved",
+            "note": "The 18-month branch warning remains only as a generic conditional task and cannot be resolved from birth date alone."
+          },
+          {
+            "sourceRowId": "UKV-06",
+            "meaningPreservation": "partially_preserved",
+            "note": "The 3-year-4-month branch warning remains only as a generic conditional task and cannot be resolved from birth date alone."
+          },
+          {
+            "sourceRowId": "UKV-07",
+            "meaningPreservation": "partially_preserved",
+            "note": "The HPV age range remains, but it is converted into a personalized medical action and date despite the locale stop."
+          },
+          {
+            "sourceRowId": "UKV-08",
+            "meaningPreservation": "partially_preserved",
+            "note": "The age-14 vaccine heading remains, but it is converted into a personalized medical action and date despite the locale stop."
+          },
+          {
+            "sourceRowId": "UKV-09",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 8,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 8,
+        "majorEditCount": 0,
+        "details": [
+          {
+            "itemId": "gb17-8w",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          },
+          {
+            "itemId": "gb17-12w",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          },
+          {
+            "itemId": "gb17-16w",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          },
+          {
+            "itemId": "gb17-1y",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          },
+          {
+            "itemId": "gb17-18m",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          },
+          {
+            "itemId": "gb17-3y4m",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          },
+          {
+            "itemId": "gb17-12-13y",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          },
+          {
+            "itemId": "gb17-14y",
+            "validReferences": true,
+            "semanticSupport": "unsupported",
+            "provenanceFulfilled": false,
+            "disposition": "delete",
+            "inventionTypes": [
+              "action",
+              "date",
+              "completion"
+            ]
+          }
+        ]
+      },
+      "inventions": {
+        "total": 25,
+        "byType": {
+          "action": 8,
+          "date": 8,
+          "repeat": 0,
+          "completion": 8,
+          "condition": 1,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 16,
+        "labels": [
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-8w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-8w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-8w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-12w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-12w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-12w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-16w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-16w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-16w",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-1y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-1y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-1y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-18m",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-18m",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-18m",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-3y4m",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-3y4m",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-3y4m",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-12-13y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-12-13y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-12-13y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "action",
+            "affectedPath": "canonical.items.gb17-14y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "date",
+            "affectedPath": "canonical.items.gb17-14y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "completion",
+            "affectedPath": "canonical.items.gb17-14y",
+            "source": "item_judgment"
+          },
+          {
+            "inventionType": "condition",
+            "affectedPath": "canonical.fields.uk-routine-applicability",
+            "note": "The run invents a user-resolvable applicability condition for a locale and clinical boundary that the gold contract requires to stop.",
+            "source": "run_judgment"
+          }
+        ],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": true
+      },
+      "inputs": {
+        "totalCount": 2,
+        "requiredBeforeFirstPreviewCount": 2,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": false
+      },
+      "projections": {
+        "offeredArtifacts": [
+          "calendar",
+          "sheet"
+        ],
+        "unnecessaryArtifacts": [
+          "calendar",
+          "sheet"
+        ],
+        "unnecessaryCount": 2,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 3,
+        "issueCount": 3,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "locale",
+            "gold": "not_applicable",
+            "actual": "review_required"
+          },
+          {
+            "key": "privacy",
+            "gold": "not_required",
+            "actual": "review_required"
+          },
+          {
+            "key": "personalPreviewAllowed",
+            "gold": false,
+            "actual": true
+          }
+        ]
+      },
+      "review": {
+        "usability": "not_usable",
+        "directlyUsablePositive": false,
+        "correctStopJudged": false
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-17",
+      "split": "final_holdout",
+      "role": "low_cost",
+      "goldAdmissionLabel": "boundary",
+      "comparisons": {
+        "flowPossible": {
+          "gold": false,
+          "actual": false,
+          "match": true
+        },
+        "state": {
+          "gold": "hold",
+          "actual": "hold",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "partial",
+          "match": false
+        },
+        "primaryArtifact": {
+          "gold": null,
+          "actual": null,
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": true
+      },
+      "sourceRows": {
+        "goldCount": 9,
+        "acquiredCount": 9,
+        "accountedCount": 9,
+        "requiredMeaningCount": 9,
+        "meaningPreservationWeightedCount": 9,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "UKV-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-09",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 0,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": []
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 1,
+        "issueCount": 1,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "locale",
+            "gold": "not_applicable",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "correct_stop",
+        "directlyUsablePositive": false,
+        "correctStopJudged": true
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-17",
+      "split": "final_holdout",
+      "role": "high_capability",
+      "goldAdmissionLabel": "boundary",
+      "comparisons": {
+        "flowPossible": {
+          "gold": false,
+          "actual": false,
+          "match": true
+        },
+        "state": {
+          "gold": "hold",
+          "actual": "hold",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "complete",
+          "match": true
+        },
+        "primaryArtifact": {
+          "gold": null,
+          "actual": null,
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": true
+      },
+      "sourceRows": {
+        "goldCount": 9,
+        "acquiredCount": 9,
+        "accountedCount": 9,
+        "requiredMeaningCount": 9,
+        "meaningPreservationWeightedCount": 9,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "UKV-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-06",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-07",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-08",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "UKV-09",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 0,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": []
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 0,
+        "issueCount": 0,
+        "omissions": [],
+        "mismatches": []
+      },
+      "review": {
+        "usability": "correct_stop",
+        "directlyUsablePositive": false,
+        "correctStopJudged": true
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-18",
+      "split": "final_holdout",
+      "role": "rules",
+      "goldAdmissionLabel": "boundary",
+      "comparisons": {
+        "flowPossible": {
+          "gold": false,
+          "actual": false,
+          "match": true
+        },
+        "state": {
+          "gold": "hold",
+          "actual": "hold",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "partial",
+          "match": false
+        },
+        "primaryArtifact": {
+          "gold": null,
+          "actual": null,
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": true
+      },
+      "sourceRows": {
+        "goldCount": 5,
+        "acquiredCount": 5,
+        "accountedCount": 5,
+        "requiredMeaningCount": 5,
+        "meaningPreservationWeightedCount": 5,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "BUF-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 0,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": []
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 3,
+        "issueCount": 3,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "rights",
+            "gold": "link_only",
+            "actual": "unknown"
+          },
+          {
+            "key": "locale",
+            "gold": "applicable",
+            "actual": "review_required"
+          },
+          {
+            "key": "privacy",
+            "gold": "not_required",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "correct_stop",
+        "directlyUsablePositive": false,
+        "correctStopJudged": true
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-18",
+      "split": "final_holdout",
+      "role": "low_cost",
+      "goldAdmissionLabel": "boundary",
+      "comparisons": {
+        "flowPossible": {
+          "gold": false,
+          "actual": false,
+          "match": true
+        },
+        "state": {
+          "gold": "hold",
+          "actual": "hold",
+          "match": true
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "partial",
+          "match": false
+        },
+        "primaryArtifact": {
+          "gold": null,
+          "actual": null,
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": true
+      },
+      "sourceRows": {
+        "goldCount": 5,
+        "acquiredCount": 5,
+        "accountedCount": 5,
+        "requiredMeaningCount": 5,
+        "meaningPreservationWeightedCount": 5,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "BUF-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 0,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": []
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 3,
+        "issueCount": 3,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "rights",
+            "gold": "link_only",
+            "actual": "unknown"
+          },
+          {
+            "key": "locale",
+            "gold": "applicable",
+            "actual": "review_required"
+          },
+          {
+            "key": "privacy",
+            "gold": "not_required",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "correct_stop",
+        "directlyUsablePositive": false,
+        "correctStopJudged": true
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    },
+    {
+      "caseId": "GB-18",
+      "split": "final_holdout",
+      "role": "high_capability",
+      "goldAdmissionLabel": "boundary",
+      "comparisons": {
+        "flowPossible": {
+          "gold": false,
+          "actual": false,
+          "match": true
+        },
+        "state": {
+          "gold": "hold",
+          "actual": "source_import_required",
+          "match": false
+        },
+        "sourceCompleteness": {
+          "gold": "complete",
+          "actual": "partial",
+          "match": false
+        },
+        "primaryArtifact": {
+          "gold": null,
+          "actual": null,
+          "match": true
+        },
+        "requiredMinimumInputs": {
+          "goldSemanticKeys": [],
+          "actualSemanticKeys": [],
+          "exactMatch": true
+        }
+      },
+      "boundary": {
+        "correctStop": true
+      },
+      "sourceRows": {
+        "goldCount": 5,
+        "acquiredCount": 5,
+        "accountedCount": 5,
+        "requiredMeaningCount": 5,
+        "meaningPreservationWeightedCount": 5,
+        "meaningJudgments": [
+          {
+            "sourceRowId": "BUF-01",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-02",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-03",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-04",
+            "meaningPreservation": "preserved",
+            "note": null
+          },
+          {
+            "sourceRowId": "BUF-05",
+            "meaningPreservation": "preserved",
+            "note": null
+          }
+        ]
+      },
+      "items": {
+        "generatedCount": 0,
+        "provenanceFulfilledCount": 0,
+        "deleteCount": 0,
+        "majorEditCount": 0,
+        "details": []
+      },
+      "inventions": {
+        "total": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 0,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "coreActionDateRepeat": 0,
+        "labels": [],
+        "selfReviewPotentialCount": 0,
+        "adjudicationFoundBeyondEmptySelfReview": false
+      },
+      "inputs": {
+        "totalCount": 0,
+        "requiredBeforeFirstPreviewCount": 0,
+        "sourceValueReentryCount": 0,
+        "sourceValueReentryInputIds": [],
+        "exactGoldRequiredInputMatch": true
+      },
+      "projections": {
+        "offeredArtifacts": [],
+        "unnecessaryArtifacts": [],
+        "unnecessaryCount": 0,
+        "unscheduledIcsCount": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "mismatchCount": 2,
+        "issueCount": 2,
+        "omissions": [],
+        "mismatches": [
+          {
+            "key": "rights",
+            "gold": "link_only",
+            "actual": "unknown"
+          },
+          {
+            "key": "privacy",
+            "gold": "not_required",
+            "actual": "review_required"
+          }
+        ]
+      },
+      "review": {
+        "usability": "correct_stop",
+        "directlyUsablePositive": false,
+        "correctStopJudged": true
+      },
+      "measurements": {
+        "elapsedMs": null,
+        "inputTokens": null,
+        "outputTokens": null,
+        "totalTokens": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0,
+        "actualProviderApiUsed": false,
+        "actualCost": null
+      }
+    }
+  ],
+  "byRole": {
+    "rules": {
+      "label": "final_holdout:rules",
+      "runCount": 6,
+      "positiveRunCount": 4,
+      "boundaryRunCount": 2,
+      "flowPossibilityAgreement": {
+        "matches": 4,
+        "total": 6,
+        "rate": 0.666667
+      },
+      "finalStateAgreement": {
+        "matches": 2,
+        "total": 6,
+        "rate": 0.333333
+      },
+      "sourceCompletenessAgreement": {
+        "matches": 4,
+        "total": 6,
+        "rate": 0.666667
+      },
+      "boundaryRecall": {
+        "correctStops": 1,
+        "total": 2,
+        "rate": 0.5
+      },
+      "sourceRowExtractionRecall": {
+        "acquired": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowAccounting": {
+        "accounted": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowMeaningPreservation": {
+        "weightedPreserved": 37,
+        "requiredRows": 54,
+        "rate": 0.685185
+      },
+      "itemProvenance": {
+        "fulfilled": 23,
+        "generated": 31,
+        "rate": 0.741935
+      },
+      "inventions": {
+        "total": 26,
+        "coreActionDateRepeat": 16,
+        "byType": {
+          "action": 8,
+          "date": 8,
+          "repeat": 0,
+          "completion": 8,
+          "condition": 1,
+          "location": 0,
+          "field": 1,
+          "other": 0
+        },
+        "runsWhereAdjudicationFoundInventionBeyondEmptySelfReview": 2
+      },
+      "sourceValueReentry": {
+        "count": 0
+      },
+      "minimumInputAgreement": {
+        "exactMatches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "firstPreviewInputBudget": {
+        "positiveRunsOverTwo": 0,
+        "positiveRuns": 4
+      },
+      "primaryArtifactAgreement": {
+        "positiveMatches": 2,
+        "positiveTotal": 4,
+        "positiveRate": 0.5,
+        "allCaseMatches": 3,
+        "allCaseTotal": 6,
+        "allCaseRate": 0.5
+      },
+      "unnecessaryProjections": {
+        "count": 3
+      },
+      "unscheduledIcs": {
+        "count": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "disagreementCount": 9,
+        "issueCount": 9
+      },
+      "reviewedItemChanges": {
+        "generatedItems": 31,
+        "deletedItems": 8,
+        "majorEditedItems": 0,
+        "deleteRate": 0.258065,
+        "majorEditRate": 0,
+        "combinedRate": 0.258065
+      },
+      "directlyUsablePositiveResults": {
+        "count": 0,
+        "total": 4,
+        "rate": 0
+      },
+      "measurements": {
+        "elapsedMs": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "inputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "outputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "totalTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "actualCost": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "byCurrency": []
+        },
+        "retryCount": {
+          "total": 0,
+          "average": 0
+        },
+        "humanInterventionCount": {
+          "total": 0,
+          "average": 0
+        }
+      },
+      "targets": {
+        "results": [
+          {
+            "id": "flow_possibility_at_least_85",
+            "description": "Flow possibility agrees with gold in at least 85% of runs.",
+            "actual": 0.666667,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "boundary_recall_100",
+            "description": "Every boundary run stops without canonical Items or usable projections.",
+            "actual": 0.5,
+            "threshold": "= 1",
+            "pass": false
+          },
+          {
+            "id": "source_meaning_at_least_90",
+            "description": "Meaning-required SourceRows retain at least 90% weighted meaning.",
+            "actual": 0.685185,
+            "threshold": ">= 0.90",
+            "pass": false
+          },
+          {
+            "id": "primary_artifact_at_least_85",
+            "description": "Positive runs choose the gold primary artifact in at least 85% of runs.",
+            "actual": 0.5,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "core_invention_zero",
+            "description": "Adjudicated action, date, and repeat inventions are zero.",
+            "actual": 16,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "all_invention_zero",
+            "description": "All adjudicated invention labels are zero.",
+            "actual": 26,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "source_value_reentry_zero",
+            "description": "Source-derived values are never requested as user input.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "unscheduled_ics_zero",
+            "description": "No ICS event exists without a scheduled canonical Item.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "gate_issue_zero",
+            "description": "No source, rights, locale, safety, privacy, or publication gate is omitted or disagrees with gold.",
+            "actual": 9,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "first_preview_input_budget",
+            "description": "Positive runs require no more than two user values before first preview.",
+            "actual": 0,
+            "threshold": "= 0 violations",
+            "pass": true
+          },
+          {
+            "id": "reviewed_item_delete_or_major_edit_at_most_20",
+            "description": "Deleted plus major-edited Items are at most 20% of generated Items.",
+            "actual": 0.258065,
+            "threshold": "<= 0.20",
+            "pass": false
+          }
+        ],
+        "passed": 3,
+        "total": 11,
+        "allPass": false
+      }
+    },
+    "low_cost": {
+      "label": "final_holdout:low_cost",
+      "runCount": 6,
+      "positiveRunCount": 4,
+      "boundaryRunCount": 2,
+      "flowPossibilityAgreement": {
+        "matches": 5,
+        "total": 6,
+        "rate": 0.833333
+      },
+      "finalStateAgreement": {
+        "matches": 5,
+        "total": 6,
+        "rate": 0.833333
+      },
+      "sourceCompletenessAgreement": {
+        "matches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "boundaryRecall": {
+        "correctStops": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "sourceRowExtractionRecall": {
+        "acquired": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowAccounting": {
+        "accounted": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowMeaningPreservation": {
+        "weightedPreserved": 39.5,
+        "requiredRows": 54,
+        "rate": 0.731481
+      },
+      "itemProvenance": {
+        "fulfilled": 0,
+        "generated": 21,
+        "rate": 0
+      },
+      "inventions": {
+        "total": 21,
+        "coreActionDateRepeat": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 21,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "runsWhereAdjudicationFoundInventionBeyondEmptySelfReview": 3
+      },
+      "sourceValueReentry": {
+        "count": 0
+      },
+      "minimumInputAgreement": {
+        "exactMatches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "firstPreviewInputBudget": {
+        "positiveRunsOverTwo": 0,
+        "positiveRuns": 4
+      },
+      "primaryArtifactAgreement": {
+        "positiveMatches": 1,
+        "positiveTotal": 4,
+        "positiveRate": 0.25,
+        "allCaseMatches": 3,
+        "allCaseTotal": 6,
+        "allCaseRate": 0.5
+      },
+      "unnecessaryProjections": {
+        "count": 1
+      },
+      "unscheduledIcs": {
+        "count": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "disagreementCount": 10,
+        "issueCount": 10
+      },
+      "reviewedItemChanges": {
+        "generatedItems": 21,
+        "deletedItems": 0,
+        "majorEditedItems": 21,
+        "deleteRate": 0,
+        "majorEditRate": 1,
+        "combinedRate": 1
+      },
+      "directlyUsablePositiveResults": {
+        "count": 0,
+        "total": 4,
+        "rate": 0
+      },
+      "measurements": {
+        "elapsedMs": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "inputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "outputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "totalTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "actualCost": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "byCurrency": []
+        },
+        "retryCount": {
+          "total": 0,
+          "average": 0
+        },
+        "humanInterventionCount": {
+          "total": 0,
+          "average": 0
+        }
+      },
+      "targets": {
+        "results": [
+          {
+            "id": "flow_possibility_at_least_85",
+            "description": "Flow possibility agrees with gold in at least 85% of runs.",
+            "actual": 0.833333,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "boundary_recall_100",
+            "description": "Every boundary run stops without canonical Items or usable projections.",
+            "actual": 1,
+            "threshold": "= 1",
+            "pass": true
+          },
+          {
+            "id": "source_meaning_at_least_90",
+            "description": "Meaning-required SourceRows retain at least 90% weighted meaning.",
+            "actual": 0.731481,
+            "threshold": ">= 0.90",
+            "pass": false
+          },
+          {
+            "id": "primary_artifact_at_least_85",
+            "description": "Positive runs choose the gold primary artifact in at least 85% of runs.",
+            "actual": 0.25,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "core_invention_zero",
+            "description": "Adjudicated action, date, and repeat inventions are zero.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "all_invention_zero",
+            "description": "All adjudicated invention labels are zero.",
+            "actual": 21,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "source_value_reentry_zero",
+            "description": "Source-derived values are never requested as user input.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "unscheduled_ics_zero",
+            "description": "No ICS event exists without a scheduled canonical Item.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "gate_issue_zero",
+            "description": "No source, rights, locale, safety, privacy, or publication gate is omitted or disagrees with gold.",
+            "actual": 10,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "first_preview_input_budget",
+            "description": "Positive runs require no more than two user values before first preview.",
+            "actual": 0,
+            "threshold": "= 0 violations",
+            "pass": true
+          },
+          {
+            "id": "reviewed_item_delete_or_major_edit_at_most_20",
+            "description": "Deleted plus major-edited Items are at most 20% of generated Items.",
+            "actual": 1,
+            "threshold": "<= 0.20",
+            "pass": false
+          }
+        ],
+        "passed": 5,
+        "total": 11,
+        "allPass": false
+      }
+    },
+    "high_capability": {
+      "label": "final_holdout:high_capability",
+      "runCount": 6,
+      "positiveRunCount": 4,
+      "boundaryRunCount": 2,
+      "flowPossibilityAgreement": {
+        "matches": 6,
+        "total": 6,
+        "rate": 1
+      },
+      "finalStateAgreement": {
+        "matches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "sourceCompletenessAgreement": {
+        "matches": 5,
+        "total": 6,
+        "rate": 0.833333
+      },
+      "boundaryRecall": {
+        "correctStops": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "sourceRowExtractionRecall": {
+        "acquired": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowAccounting": {
+        "accounted": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowMeaningPreservation": {
+        "weightedPreserved": 53.5,
+        "requiredRows": 54,
+        "rate": 0.990741
+      },
+      "itemProvenance": {
+        "fulfilled": 23,
+        "generated": 24,
+        "rate": 0.958333
+      },
+      "inventions": {
+        "total": 2,
+        "coreActionDateRepeat": 1,
+        "byType": {
+          "action": 1,
+          "date": 0,
+          "repeat": 0,
+          "completion": 1,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "runsWhereAdjudicationFoundInventionBeyondEmptySelfReview": 1
+      },
+      "sourceValueReentry": {
+        "count": 0
+      },
+      "minimumInputAgreement": {
+        "exactMatches": 4,
+        "total": 6,
+        "rate": 0.666667
+      },
+      "firstPreviewInputBudget": {
+        "positiveRunsOverTwo": 0,
+        "positiveRuns": 4
+      },
+      "primaryArtifactAgreement": {
+        "positiveMatches": 2,
+        "positiveTotal": 4,
+        "positiveRate": 0.5,
+        "allCaseMatches": 4,
+        "allCaseTotal": 6,
+        "allCaseRate": 0.666667
+      },
+      "unnecessaryProjections": {
+        "count": 4
+      },
+      "unscheduledIcs": {
+        "count": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "disagreementCount": 3,
+        "issueCount": 3
+      },
+      "reviewedItemChanges": {
+        "generatedItems": 24,
+        "deletedItems": 1,
+        "majorEditedItems": 0,
+        "deleteRate": 0.041667,
+        "majorEditRate": 0,
+        "combinedRate": 0.041667
+      },
+      "directlyUsablePositiveResults": {
+        "count": 1,
+        "total": 4,
+        "rate": 0.25
+      },
+      "measurements": {
+        "elapsedMs": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "inputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "outputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "totalTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "actualCost": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "byCurrency": []
+        },
+        "retryCount": {
+          "total": 0,
+          "average": 0
+        },
+        "humanInterventionCount": {
+          "total": 0,
+          "average": 0
+        }
+      },
+      "targets": {
+        "results": [
+          {
+            "id": "flow_possibility_at_least_85",
+            "description": "Flow possibility agrees with gold in at least 85% of runs.",
+            "actual": 1,
+            "threshold": ">= 0.85",
+            "pass": true
+          },
+          {
+            "id": "boundary_recall_100",
+            "description": "Every boundary run stops without canonical Items or usable projections.",
+            "actual": 1,
+            "threshold": "= 1",
+            "pass": true
+          },
+          {
+            "id": "source_meaning_at_least_90",
+            "description": "Meaning-required SourceRows retain at least 90% weighted meaning.",
+            "actual": 0.990741,
+            "threshold": ">= 0.90",
+            "pass": true
+          },
+          {
+            "id": "primary_artifact_at_least_85",
+            "description": "Positive runs choose the gold primary artifact in at least 85% of runs.",
+            "actual": 0.5,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "core_invention_zero",
+            "description": "Adjudicated action, date, and repeat inventions are zero.",
+            "actual": 1,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "all_invention_zero",
+            "description": "All adjudicated invention labels are zero.",
+            "actual": 2,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "source_value_reentry_zero",
+            "description": "Source-derived values are never requested as user input.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "unscheduled_ics_zero",
+            "description": "No ICS event exists without a scheduled canonical Item.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "gate_issue_zero",
+            "description": "No source, rights, locale, safety, privacy, or publication gate is omitted or disagrees with gold.",
+            "actual": 3,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "first_preview_input_budget",
+            "description": "Positive runs require no more than two user values before first preview.",
+            "actual": 0,
+            "threshold": "= 0 violations",
+            "pass": true
+          },
+          {
+            "id": "reviewed_item_delete_or_major_edit_at_most_20",
+            "description": "Deleted plus major-edited Items are at most 20% of generated Items.",
+            "actual": 0.041667,
+            "threshold": "<= 0.20",
+            "pass": true
+          }
+        ],
+        "passed": 7,
+        "total": 11,
+        "allPass": false
+      }
+    }
+  },
+  "overall": {
+    "label": "final_holdout:all_roles",
+    "runCount": 18,
+    "positiveRunCount": 12,
+    "boundaryRunCount": 6,
+    "flowPossibilityAgreement": {
+      "matches": 15,
+      "total": 18,
+      "rate": 0.833333
+    },
+    "finalStateAgreement": {
+      "matches": 10,
+      "total": 18,
+      "rate": 0.555556
+    },
+    "sourceCompletenessAgreement": {
+      "matches": 12,
+      "total": 18,
+      "rate": 0.666667
+    },
+    "boundaryRecall": {
+      "correctStops": 5,
+      "total": 6,
+      "rate": 0.833333
+    },
+    "sourceRowExtractionRecall": {
+      "acquired": 162,
+      "gold": 162,
+      "rate": 1
+    },
+    "sourceRowAccounting": {
+      "accounted": 162,
+      "gold": 162,
+      "rate": 1
+    },
+    "sourceRowMeaningPreservation": {
+      "weightedPreserved": 130,
+      "requiredRows": 162,
+      "rate": 0.802469
+    },
+    "itemProvenance": {
+      "fulfilled": 46,
+      "generated": 76,
+      "rate": 0.605263
+    },
+    "inventions": {
+      "total": 49,
+      "coreActionDateRepeat": 17,
+      "byType": {
+        "action": 9,
+        "date": 8,
+        "repeat": 0,
+        "completion": 30,
+        "condition": 1,
+        "location": 0,
+        "field": 1,
+        "other": 0
+      },
+      "runsWhereAdjudicationFoundInventionBeyondEmptySelfReview": 6
+    },
+    "sourceValueReentry": {
+      "count": 0
+    },
+    "minimumInputAgreement": {
+      "exactMatches": 10,
+      "total": 18,
+      "rate": 0.555556
+    },
+    "firstPreviewInputBudget": {
+      "positiveRunsOverTwo": 0,
+      "positiveRuns": 12
+    },
+    "primaryArtifactAgreement": {
+      "positiveMatches": 5,
+      "positiveTotal": 12,
+      "positiveRate": 0.416667,
+      "allCaseMatches": 10,
+      "allCaseTotal": 18,
+      "allCaseRate": 0.555556
+    },
+    "unnecessaryProjections": {
+      "count": 8
+    },
+    "unscheduledIcs": {
+      "count": 0
+    },
+    "gates": {
+      "omissionCount": 0,
+      "disagreementCount": 22,
+      "issueCount": 22
+    },
+    "reviewedItemChanges": {
+      "generatedItems": 76,
+      "deletedItems": 9,
+      "majorEditedItems": 21,
+      "deleteRate": 0.118421,
+      "majorEditRate": 0.276316,
+      "combinedRate": 0.394737
+    },
+    "directlyUsablePositiveResults": {
+      "count": 1,
+      "total": 12,
+      "rate": 0.083333
+    },
+    "measurements": {
+      "elapsedMs": {
+        "measuredRunCount": 0,
+        "unmeasuredRunCount": 18,
+        "coverageRate": 0,
+        "total": null,
+        "averageOverMeasuredRuns": null,
+        "minimum": null,
+        "maximum": null
+      },
+      "inputTokens": {
+        "measuredRunCount": 0,
+        "unmeasuredRunCount": 18,
+        "coverageRate": 0,
+        "total": null,
+        "averageOverMeasuredRuns": null,
+        "minimum": null,
+        "maximum": null
+      },
+      "outputTokens": {
+        "measuredRunCount": 0,
+        "unmeasuredRunCount": 18,
+        "coverageRate": 0,
+        "total": null,
+        "averageOverMeasuredRuns": null,
+        "minimum": null,
+        "maximum": null
+      },
+      "totalTokens": {
+        "measuredRunCount": 0,
+        "unmeasuredRunCount": 18,
+        "coverageRate": 0,
+        "total": null,
+        "averageOverMeasuredRuns": null,
+        "minimum": null,
+        "maximum": null
+      },
+      "actualCost": {
+        "measuredRunCount": 0,
+        "unmeasuredRunCount": 18,
+        "coverageRate": 0,
+        "byCurrency": []
+      },
+      "retryCount": {
+        "total": 0,
+        "average": 0
+      },
+      "humanInterventionCount": {
+        "total": 0,
+        "average": 0
+      }
+    },
+    "targets": {
+      "results": [
+        {
+          "id": "flow_possibility_at_least_85",
+          "description": "Flow possibility agrees with gold in at least 85% of runs.",
+          "actual": 0.833333,
+          "threshold": ">= 0.85",
+          "pass": false
+        },
+        {
+          "id": "boundary_recall_100",
+          "description": "Every boundary run stops without canonical Items or usable projections.",
+          "actual": 0.833333,
+          "threshold": "= 1",
+          "pass": false
+        },
+        {
+          "id": "source_meaning_at_least_90",
+          "description": "Meaning-required SourceRows retain at least 90% weighted meaning.",
+          "actual": 0.802469,
+          "threshold": ">= 0.90",
+          "pass": false
+        },
+        {
+          "id": "primary_artifact_at_least_85",
+          "description": "Positive runs choose the gold primary artifact in at least 85% of runs.",
+          "actual": 0.416667,
+          "threshold": ">= 0.85",
+          "pass": false
+        },
+        {
+          "id": "core_invention_zero",
+          "description": "Adjudicated action, date, and repeat inventions are zero.",
+          "actual": 17,
+          "threshold": "= 0",
+          "pass": false
+        },
+        {
+          "id": "all_invention_zero",
+          "description": "All adjudicated invention labels are zero.",
+          "actual": 49,
+          "threshold": "= 0",
+          "pass": false
+        },
+        {
+          "id": "source_value_reentry_zero",
+          "description": "Source-derived values are never requested as user input.",
+          "actual": 0,
+          "threshold": "= 0",
+          "pass": true
+        },
+        {
+          "id": "unscheduled_ics_zero",
+          "description": "No ICS event exists without a scheduled canonical Item.",
+          "actual": 0,
+          "threshold": "= 0",
+          "pass": true
+        },
+        {
+          "id": "gate_issue_zero",
+          "description": "No source, rights, locale, safety, privacy, or publication gate is omitted or disagrees with gold.",
+          "actual": 22,
+          "threshold": "= 0",
+          "pass": false
+        },
+        {
+          "id": "first_preview_input_budget",
+          "description": "Positive runs require no more than two user values before first preview.",
+          "actual": 0,
+          "threshold": "= 0 violations",
+          "pass": true
+        },
+        {
+          "id": "reviewed_item_delete_or_major_edit_at_most_20",
+          "description": "Deleted plus major-edited Items are at most 20% of generated Items.",
+          "actual": 0.394737,
+          "threshold": "<= 0.20",
+          "pass": false
+        }
+      ],
+      "passed": 3,
+      "total": 11,
+      "allPass": false
+    }
+  }
+}
