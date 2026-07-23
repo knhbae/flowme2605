@@ -2,20 +2,21 @@
 
 ## Trigger
 
-Use when starting a new FlowMe task, resuming after a context switch, receiving a broad "what next" request, or before changing a dirty worktree.
+Use when starting or resuming broad FlowMe work, returning after context loss, answering an overall status/release/"what next" request, or separating ownership in a mixed or unclear worktree.
+
+Skip for a clear low-risk answer or local change with obvious ownership. Before any edit, still inspect current Git state even when this workflow is skipped.
 
 ## Inputs
 
-- `AGENTS.md` and `agent.md`
-- `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/DECISIONS.md`, and `docs/IDEAS.md`
-- Relevant active spec, service structure, tooling, and newest audit evidence
+- `AGENTS.md`, `agent.md`, and the user's newest request
+- Only the status, roadmap, decision, idea, service, tooling, spec, or audit files routed by the request
 - Current branch, HEAD/upstream relation, and worktree status
 - The user's newest request and any explicit publish boundary
 
 ## Steps
 
 1. Run `npm run workflow:session-start` from the repo root.
-2. Read the required documents in the order printed by the report.
+2. Read the core entry files, then select only request-relevant context from the routes printed by the report.
 3. Inspect diffs for files relevant to the request. Treat every pre-existing change as unowned until evidence shows otherwise.
 4. Separate current product-validation Stage, implemented capability, automated QA, deployed state, and observed-user evidence.
 5. State the task scope, assumptions, likely files, verification lane, and out-of-scope items.

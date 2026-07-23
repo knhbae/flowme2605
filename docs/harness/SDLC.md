@@ -1,138 +1,78 @@
-# Development Cycle
+# Adaptive Development Cycle
 
-This cycle mirrors the referenced harness guide while staying AI-agnostic.
+Choose the lightest lane that can support the final claim. Escalate when scope or risk grows.
 
-## 1. Status
+## Lane 1: Minimal
 
-Start with the read-only repo report:
+Use for a clear answer, typo, isolated documentation edit, or low-risk local code fix.
 
-```powershell
-npm run workflow:session-start
-```
+1. Read `AGENTS.md`, `agent.md`, and the directly relevant files/tests.
+2. Inspect Git state before editing and exclude pre-existing changes.
+3. Make the scoped change.
+4. Review the diff from a failure-mode perspective.
+5. Run the targeted verification required by [QA.md](./QA.md).
 
-Read:
+Skip Session Start, a durable spec, role delegation, Notion projection, and Work Closeout unless the task reveals a reason to escalate.
 
-```powershell
-Get-Content -Raw AGENTS.md
-Get-Content -Raw agent.md
-Get-Content -Raw docs/STATUS.md
-Get-Content -Raw docs/ROADMAP.md
-Get-Content -Raw docs/IDEAS.md
-Get-Content -Raw docs/TOOLING.md
-Get-Content -Raw docs/specs/README.md
-git status --short --branch
-node --version
-```
+## Lane 2: Standard
 
-Confirm current focus, branch, dirty files, and required verification.
+Use for multi-file work, FlowMe product/content work, or user-facing behavior with bounded scope.
 
-## 2. Issue / Scope
+1. Run Session Start only when resuming context or ownership is mixed.
+2. Add the relevant product, architecture, tooling, decision, or spec document through the routes in `AGENTS.md`.
+3. Select the matching FlowMe skill and write a short plan.
+4. Perform the four core passes in [ROLES.md](./ROLES.md), combining them in one agent when appropriate.
+5. Run targeted checks, then broaden according to blast radius.
+6. Capture only material decisions, deferred directions, or changed current truth.
 
-For new work, define:
+A short inline plan is enough when the work is coherent and reversible. Create a durable spec only when another session must inherit the contract before implementation completes.
 
-- User-visible goal
-- Files likely to change
-- Product constraints from `agent.md`
-- Verification commands
-- Runtime, dependency, data-access, and external-tool prerequisites
-- Out-of-scope items
-- Deferred ideas from `docs/IDEAS.md` that should influence or stay out of scope
+## Lane 3: Full
 
-Keep detailed specs in `docs/specs/` or a tracker issue. Keep `docs/ROADMAP.md` short.
+Use for broad or ambiguous work, mixed ownership, architecture/security changes, deployment/release work, product-wide review, or a committed initiative that spans multiple passes or verification modes.
 
-When ambiguity could materially change the outcome, scope, risk, or success evidence, use the [Request Interview workflow](../workflows/request-interview.md) before fixing the scope. Inspect repo evidence first and ask only 1-3 high-information questions; skip the interview for clear or low-risk work.
+1. Run `npm run workflow:session-start` and inspect request-relevant diffs and evidence.
+2. Create or update `docs/specs/YYYY-MM-DD-short-topic/` with scope, plan, tasks, and QA evidence.
+3. Use only the specialist lenses justified by concrete risk.
+4. Implement in reviewable units with targeted tests first.
+5. Run broad verification, browser evidence, security checks, or external-state inspection as required.
+6. Run scoped Work Closeout before handoff or publication.
+7. Update PR history and release documents only when the corresponding event actually exists.
 
-If a useful idea appears during implementation but is not part of the current scope, append it to `docs/IDEAS.md` instead of expanding the task.
+## Spec Gate
 
-## 3. Spec Gate
+Create a durable spec before implementation when the work:
 
-Create a `docs/specs/YYYY-MM-DD-short-topic/` folder before implementation when the work is multi-step, user-facing, content/risk-sensitive, security-sensitive, deployment-sensitive, or changes the harness itself.
+- Changes a user-facing flow or shared data/ownership contract across multiple modules.
+- Is source/risk-sensitive, security-sensitive, deployment-sensitive, or difficult to reverse.
+- Changes automatic agent entry, skill discovery/sync, verification enforcement, or other harness behavior future sessions must follow.
+- Requires more than one session, owner, implementation pass, or verification mode.
 
-The folder should contain:
+Skip a spec for a small wording fix, isolated test correction, reversible local refactor, or investigation that commits no durable direction.
 
-- `spec.md`: user need, Stage fit, scope, FlowMe gates, and acceptance criteria.
-- `plan.md`: files, sequence, dependencies, and risk controls.
-- `tasks.md`: executable checklist.
-- `qa.md`: required checks and evidence table.
+## Common Scope Rules
 
-Tiny docs or local code fixes may skip a spec, but the final report should say why a spec was unnecessary.
+- Define the user-visible or process-visible goal, affected files, verification, and explicit non-goals.
+- Use Request Interview only when unresolved ambiguity materially changes the result; inspect repo evidence first.
+- Keep good but uncommitted ideas out of the implementation scope. Record them only when they have durable value and a revisit trigger.
+- Preserve user changes and never infer ownership from modification time alone.
+- Prefer existing patterns and structured APIs over new abstraction.
 
-If a tool-specific skill writes artifacts under `docs/superpowers/`, keep them there and link them from the relevant `docs/specs/` folder when the work becomes durable product direction.
+## Common QA And Review
 
-## 4. Plan
+- Use [QA.md](./QA.md); do not claim a command passed unless it ran in the current worktree.
+- For behavior changes, update tests where practical and run the smallest useful test first.
+- For docs, policy, harness, or skill changes, run `npm run docs:check`.
+- For user-facing changes, verify the actual rendered surface and relevant state transitions.
+- Review independently. When one agent authored and reviewed, explicitly switch to a failure-mode pass.
 
-For multi-step work, write a plan with:
+## Publish, Release, And Deploy
 
-- Parallel vs sequential tasks
-- Exact files
-- Tests to add or update
-- Browser/manual checks
-- Commit or PR boundary
+Publication is never implied by local completion.
 
-Small documentation-only changes may use a short inline plan.
-
-## 5. Implement
-
-Follow existing patterns. Keep edits scoped. Preserve user changes.
-
-For behavior changes:
-
-1. Write or update a failing test where practical.
-2. Implement the smallest change that passes.
-3. Run targeted tests.
-4. Run broader checks required by [QA.md](./QA.md).
-
-For documentation/config-only changes, verify with file inspection and project commands that are relevant.
-For agent or docs graph changes, run `npm run docs:check`.
-
-## 6. QA
-
-Use [QA.md](./QA.md). Do not move to PR/release until required checks pass or skipped checks are explicitly explained.
-
-## 7. PR / Review
-
-Run `npm run workflow:closeout` and inspect the scoped diff before choosing verification and commit boundaries.
-
-Before opening a PR, create or update a PR history entry under `docs/pr-history/` using the naming pattern:
-
-```text
-docs/pr-history/YYYY-MM-DD-short-topic.md
-```
-
-Package changes with:
-
-- Summary
-- Related roadmap, `docs/specs/`, generated `docs/superpowers/`, or issue links
-- PR history file link
-- Test evidence
-- Known risks
-- Not-done items and follow-ups
-
-Review independently. If the same AI implemented the work, switch to reviewer stance and look for failure modes first.
-
-After the PR is opened, update the PR history entry with the PR URL/number. If the PR is deployed, merged, reverted, or materially rescoped, update its status, deploy URL, smoke-test result, risks, rollback notes, and follow-ups.
-
-## 8. Release
-
-On release:
-
-1. Confirm clean working tree except intended release changes.
-2. Confirm the active and configured Node.js version is supported by CI and the deployment target.
-3. Run `npm run security:audit` and disclose any remaining moderate or higher finding.
-4. Confirm tests, build, required browser checks, and downloadable CI failure evidence.
-5. Keep automated QA, preview smoke, and observed-user evidence as separate claims.
-6. Tag the release.
-7. Update `docs/STATUS.md`, `docs/ROADMAP.md`, and `docs/HISTORY.md`.
-8. Record user-facing changes, verification evidence, known risks, and rollback conditions.
-
-## 9. Deploy
-
-Before deployment:
-
-- Confirm target environment and branch.
-- Confirm the deployment runtime matches `package.json` and is not EOL.
-- Run production build.
-- Deploy.
-- Smoke test the deployed URL.
-- Record rollback notes when relevant.
-- Update the matching `docs/pr-history/` entry with deploy URL, smoke-test evidence, and rollback notes.
+1. Inspect the scoped diff and verification evidence.
+2. Create intentional commit groups and a PR history entry for PR-sized work.
+3. Push, open/merge a PR, or deploy only when requested.
+4. Verify each external state directly.
+5. Record deploy smoke evidence and rollback notes when relevant.
+6. Report automated QA, preview smoke, and observed-user evidence separately.

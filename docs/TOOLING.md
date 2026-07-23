@@ -1,8 +1,8 @@
 # FLOW Tooling Policy
 
-Last updated: 2026-07-11
+Last updated: 2026-07-19
 
-Status: P0 tooling and supported-runtime refresh applied; selective Notion operations projection active.
+Status: P0 tooling and supported-runtime refresh applied; adaptive lean harness and selective Notion projection active.
 
 This document turns the current tool and plugin review into day-to-day routing rules. The goal is not to install every useful tool. The goal is to make planning, design, implementation, QA, and PR work consistently choose the strongest available tool lane.
 
@@ -15,7 +15,7 @@ Use the smallest tool set that proves the work. Treat user comments as evidence 
 | Lane | Use when | Required behavior |
 |------|----------|-------------------|
 | Runtime and supply-chain hygiene | Installing, building, releasing, or refreshing dependencies | Use Node.js 24, keep high-severity audit findings at zero, review remaining moderate findings, and let Dependabot propose bounded updates. Do not defer a known vulnerable runtime because tests pass. |
-| FLOW repo skills | Converting source content, reviewing FLOW UX, editing FLOW microcopy, making Korean output less generic, or reviewing overall release readiness | Read the relevant skill before acting. Canonical skills live in `.agents/skills/`; `.claude/skills/` and optional Codex user-scope copies are generated and must not be edited directly. |
+| FLOW repo skills | A task matches FlowMe-specific content, UX, release, memory, or conditional collaboration behavior | Load only the matching skill. Canonical skills live in `.agents/skills/`; `.claude/skills/` and optional Codex user-scope copies are generated and must not be edited directly. Skill availability does not make every skill a default phase. |
 | Notion operations projection | Reviewing active human gates, direct user actions, high-level AI work packages, blockers, or handoff checkpoints | Use [00 FlowMe 운영 홈](https://app.notion.com/p/39ac0d8f693f81339a34fdb75552bc27) as a selective view only. Read and update the canonical repo first; update only touched rows. |
 | Playwright and browser QA | Changing user-facing routes, HTML workboards, save/export behavior, calendar behavior, or responsive layout | Verify the real rendered surface. For UI work, capture at least the route-level behavior that changed; add mobile/desktop checks when layout or readability is affected. |
 | GitHub workflow tools | Handling PRs, conflicts, review comments, CI failures, branch state, or release handoff | Prefer GitHub/gh-assisted inspection for PR state and checks. Keep commits scoped to the task unit and report verification evidence. |
@@ -100,13 +100,13 @@ The hooks use native Git `core.hooksPath` and do not add a package dependency. U
 
 ## Skill Discovery And Sync
 
-Canonical FLOW skills are:
+Canonical skills are grouped by trigger:
 
-- `flow-content-conversion`
-- `flow-copy-editor`
-- `flow-release-readiness`
-- `flow-ux-review`
-- `humanize-korean`
+| Group | Skills | Policy |
+| --- | --- | --- |
+| FlowMe domain | `flow-content-conversion`, `flow-ux-review`, `flow-release-readiness`, `flow-direction-capture` | Keep because they encode project-specific product, source/risk, validation, or memory boundaries. Load the one relevant to the task. |
+| Conditional workflow | `flow-session-start`, `flow-request-interview`, `flow-work-closeout` | Use only for the trigger stated in each skill; they are not a mandatory lifecycle. |
+| Optional editorial | `flow-copy-editor`, `humanize-korean` | Use only for explicit copy/naturalness work. Do not load for normal implementation or planning. |
 
 Use these commands after changing a canonical skill:
 
@@ -116,7 +116,7 @@ npm run skills:install:codex
 npm run skills:check:codex
 ```
 
-`skills:sync` refreshes Claude Code copies inside the repo. `skills:install:codex` refreshes only same-named FLOW skills under the current user's Codex home, which helps tasks opened from the workspace parent. Other user skills are left untouched.
+`skills:sync` refreshes Claude Code copies inside the repo. `skills:install:codex` refreshes same-named canonical skills under the current user's Codex home, which helps tasks opened from the workspace parent. Other user skills are left untouched.
 
 ## Current Capability Inventory
 

@@ -275,6 +275,18 @@ Do not use this for:
 
 **Related docs:** [journey reset spec](./specs/2026-07-18-save-personalize-execute-journey-reset/spec.md), [P24 readiness package](./content-audit/2026-07-19-flowme-p24-journey-frame-readiness/README.md)
 
+### 2026-07-19 - The agent harness is adaptive and lean by default
+
+**Decision:** Keep a small automatic entry layer and route additional context by task type and risk. Small, clear changes use `AGENTS.md`, the request-relevant files, current Git state when files may change, and targeted verification. FlowMe product/content work adds only the relevant canonical product document and domain skill. Broad, high-risk, release, deployment, or mixed-worktree work may add Session Start, a spec, specialist review lenses, browser evidence, and Work Closeout. Keep four core passes for substantial work: orchestrate/product-frame, implement, review, and evidence/QA. Preserve Git hooks, CI, source/risk boundaries, and FlowMe-specific content, UX, release, and direction-capture knowledge. Treat workflow skills, copy editing, Korean humanization, and specialist roles as conditional capabilities rather than a default swarm. This narrows the 2026-07-14 workflow decision: the four procedures remain canonical and discoverable, but they are no longer described as a default P0 lifecycle for every task.
+
+**Reason:** The previous entry path required ten documents, repeated the same workflow and Notion policies across several layers, and exposed 17 role lenses even for small work. Newer models already provide strong planning and multi-agent behavior, but available research also shows that no single minimal or rich harness wins every task horizon. An adaptive layer keeps repo-specific memory and deterministic safety while reducing duplicated behavioral instructions and attention dilution.
+
+**Applies to:** `AGENTS.md`, `agent.md`, `docs/harness/`, `docs/workflows/`, `.agents/skills/`, generated Claude/Codex copies, task planning, verification selection, and completion reporting.
+
+**Reopen when:** repeated task comparison shows the minimal path misses FlowMe constraints, the full path materially improves quality enough to justify its cost, a supported agent changes instruction/skill discovery behavior, or hooks and CI become noisy in normal work.
+
+**Related docs:** [adaptive harness spec](./specs/2026-07-19-adaptive-lean-agent-harness/spec.md), [harness README](./harness/README.md), [tooling policy](./TOOLING.md)
+
 ### 2026-07-14 - Execution notes stay lightweight, private, and separate from source correction
 
 **Decision:** A user may add an optional note directly from an execution row without opening the structural item editor. Personal execution notes and `원본에 알릴 점` are separate records. The latter remains an unsent local draft until a real delivery path exists. When a Flow completes, non-empty notes are collected automatically into separate groups; no rating, tag, or required review step is added. Reusing the Flow clears notes from the new current run while preserving them in the completed-run snapshot and history export.

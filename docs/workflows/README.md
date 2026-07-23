@@ -1,6 +1,6 @@
 # FLOW Collaboration Workflows
 
-These workflows turn repeated FlowMe collaboration patterns into stable, tool-independent procedures. They compose the existing harness, skills, scripts, hooks, CI, repo memory, and optional Notion projection instead of creating a second operating system.
+These workflows are conditional, tool-independent procedures for collaboration patterns that are costly to reconstruct when they actually occur. They compose the lean harness, skills, scripts, hooks, CI, repo memory, and optional Notion projection; they are not a mandatory lifecycle for every task.
 
 ## Workflow Contract
 
@@ -16,14 +16,16 @@ Every workflow defines:
 
 Scripts may collect facts and recommend verification. They must not decide product direction, claim user validation, edit Notion, commit, push, merge, or deploy automatically.
 
-## P0 Workflows
+## Conditional Workflows
 
 | Workflow | Primary trigger | Deterministic entry | Agent skill |
 | --- | --- | --- | --- |
-| [Session Start](./session-start.md) | Start, resume, or reorient repo work | `npm run workflow:session-start` | `flow-session-start` |
+| [Session Start](./session-start.md) | Broad/resumed work, context loss, overall review, or mixed ownership | `npm run workflow:session-start` | `flow-session-start` |
 | [Request Interview](./request-interview.md) | Material ambiguity could change the requested outcome or scope | None; clarification requires judgment | `flow-request-interview` |
-| [Direction Capture](./capture-direction.md) | A conversation changes product or process direction | None; classification requires judgment | `flow-direction-capture` |
-| [Work Closeout](./work-closeout.md) | Finish, hand off, publish, or report work | `npm run workflow:closeout` | `flow-work-closeout` |
+| [Direction Capture](./capture-direction.md) | A durable direction or actionable deferred item must survive the task | None; classification requires judgment | `flow-direction-capture` |
+| [Work Closeout](./work-closeout.md) | Substantial completion, handoff, publish action, status report, or mixed ownership | `npm run workflow:closeout` | `flow-work-closeout` |
+
+Clear low-risk tasks may skip all four workflows. Normal implementation discipline, relevant verification, and dirty-path protection still apply.
 
 ## Layer Ownership
 

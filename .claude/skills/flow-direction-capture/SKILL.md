@@ -1,11 +1,11 @@
 ---
 name: flow-direction-capture
-description: Classify and record FlowMe product, UX, data, content, source-risk, process, and planning direction discussed during a task. Use when the user or agent settles a rule, raises a deferred idea, approves multi-step work, changes current status, or mentions important direction mid-implementation that must not remain only in chat.
+description: Record FlowMe direction that must survive the current task. Use for a confirmed durable rule, actionable deferred idea with a revisit trigger, approved multi-step initiative, active blocker, route contract, or release fact. Skip passing thoughts, duplicates, and implementation details already evident from the diff.
 ---
 
 # FLOW Direction Capture
 
-1. Read [the canonical workflow](../../../docs/workflows/capture-direction.md) and the current repo memory layer relevant to the statement.
+1. Read [the canonical workflow](../../../docs/workflows/capture-direction.md), search for an existing entry, and open only the repo memory layer relevant to the statement.
 2. Treat user comments as evidence of context, discomfort, or desired direction unless they are explicit instructions or confirmed decisions.
 3. Check for an existing decision or idea before adding another entry.
 4. Route once: settled rule to `DECISIONS`, deferred direction to `IDEAS`, approved multi-step work to `specs`, active blocker/state to `STATUS`, route ownership to `SERVICE_STRUCTURE`, release fact to `HISTORY`/PR history, and source/review evidence to `content-audit`.

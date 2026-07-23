@@ -1,121 +1,58 @@
 # Harness Roles
 
-These roles describe responsibilities, not specific AI products. Use subagents when the tool supports them. Otherwise, run each role as a separate pass in the same session.
+Roles are review lenses, not required agents or job titles. A capable model may perform several passes itself; use subagents only when independence or parallel evidence is worth the coordination cost.
 
-Roles are review lenses, not job titles. Most tasks should use only the roles needed for the risk and scope; do not create every role for every small change.
+## Four Core Passes
 
-## Orchestrator
+### 1. Orchestrate And Product-Frame
 
-- Reads `AGENTS.md`, `agent.md`, `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/IDEAS.md`, and relevant code before changing files.
-- Clarifies scope, writes plans, delegates work, and reports evidence.
-- Keeps changes focused and protects existing user edits.
-- Does not claim completion without verification output.
+- Confirm the user-visible or process-visible goal, scope, and evidence needed.
+- Read only task-routed context and protect unowned dirty paths.
+- Check current Stage fit without confusing implementation with user validation.
+- Select Minimal, Standard, or Full lane from [SDLC.md](./SDLC.md).
 
-## Product Planner
+### 2. Implement
 
-- Defines why the work belongs in the current FlowMe stage before implementation starts.
-- Identifies the first user action, completion signal, and measurable behavior such as open, anchor input, copy/export, check, or feedback.
-- Protects Stage 0 from premature platform expansion, account systems, integrations, monetization, and broad marketplace features.
-- Names what is explicitly out of scope for the current task.
+- Follow existing code and document patterns.
+- Make the smallest coherent change and update affected tests.
+- Preserve source facts, user state, and ownership boundaries.
+- Run the smallest useful check before broadening verification.
 
-## Flow Content Planner
+### 3. Review
 
-- Judges whether a source or topic can become a useful FLOW route before conversion work starts.
-- Chooses the likely artifact destination first: calendar, sheet, memo, internal check state, or hybrid.
-- Checks whether the source has real execution structure such as dates, repeats, rows, checklist items, preparation steps, or decision points.
-- Rejects topics that need generic filler, invented steps, or heavier input than a normal calendar, reminder, checklist, sheet, or memo.
+- Switch from author intent to failure-mode review.
+- Look first for bugs, regressions, missing tests, unintended scope, stale docs, and unsupported product claims.
+- Lead with concrete findings and file references.
+- Treat no findings as a result while still naming residual risk.
 
-## Source Scout
+### 4. Evidence And QA
 
-- Finds original content candidates, prioritizing Korean sources when validation users are Korean.
-- Looks for creator/user interaction signals such as comments, views, downloads, follow-up posts, corrections, or repeated user questions.
-- Separates source discovery from source accuracy, risk review, and Flow conversion.
-- Reports only candidates with source links, visible execution shape, and a short note on why each candidate is worth or not worth converting.
+- Run the verification lane justified by the changed surface.
+- Inspect real browser behavior when the user-facing route or layout changed.
+- Separate local edits, checks, commit, push, PR, merge, deploy, and observed-user evidence.
+- Never upgrade automated evidence into user validation.
 
-## Flow Converter
+Small, clear tasks may combine all four in one session. Keep review distinct enough that it can contradict the implementation pass.
 
-- Converts approved sources into FLOW structure after source fit is established.
-- Keeps the primary artifact destination visible while choosing structure type, action count, item shape, and export behavior.
-- Writes action-first items and moves supporting method, preparation, source links, video links, purchase links, cautions, and creator notes into memo or detail where appropriate.
-- Preserves source facts and creator experience without presenting either as guaranteed outcomes.
+## Optional Specialist Lenses
 
-## UX Designer
+| Lens | Add when | Main responsibility |
+| --- | --- | --- |
+| Product/UX | Navigation, execution flow, information architecture, or product priority changes | First useful action, cognitive load, familiar-tool portability, and Stage fit |
+| Content/source/risk | Source-to-Flow conversion or sensitive claims | Source fidelity, provenance, omissions, cautions, and natural artifact fit |
+| Visual/browser | Layout, responsive behavior, HTML boards, or interactive controls | Hierarchy, overflow, state feedback, screenshots, console and browser behavior |
+| Architecture/security | Shared contracts, persistence, auth, external input, dependencies, or trust boundaries | Ownership, migration, failure modes, data exposure, and rollback |
+| Validation/release | Readiness scores, CI, deployment, external cohorts, or observed sessions | Operational evidence, release state, and QA-versus-validation boundaries |
+| Memory/spec | A durable rule, deferred direction, multi-step initiative, or route ownership changes | Write once to the correct canonical document and link instead of duplicating |
 
-- Designs or reviews the user journey from entry to first action, artifact preview, copy/export, check, and feedback.
-- Keeps artifact-first layout decisions visible, especially on mobile where screen density can hide the first useful action.
-- Checks whether controls lead to predictable destinations such as calendar, sheet, memo, checklist, or item detail.
-- Removes UI that exists only because a generic component already supports it.
+Do not add a specialist merely because its title matches the task. Add it when omitting that lens creates a concrete risk.
 
-## UI Designer
+## Typical Selection
 
-- Reviews visual hierarchy, layout density, spacing, state feedback, and responsive behavior.
-- Keeps cards, chips, badges, rails, panels, and tabs subordinate to the user's execution artifact.
-- Checks that mobile and desktop views remain readable without overlapping text, clipped controls, or competing primary actions.
-- Uses screenshots or browser inspection when visual changes are user-facing.
-
-## Content Designer
-
-- Writes and reviews UI copy, action titles, completion labels, warnings, empty states, and export labels.
-- Replaces vague labels with concrete destination or action language, such as calendar save, sheet export, memo copy, or current item completion.
-- Keeps sensitive content calm and precise without outcome guarantees or advice-like certainty.
-- Ensures source facts, creator experience, user notes, and cautions are not blurred by copy.
-
-## Source/Risk Steward
-
-- Reviews official facts, creator experience, user-editable notes, and cautions as separate layers.
-- Flags medical, health, legal, finance, family, vehicle, safety, and official-document risks before public or representative framing.
-- Prevents unverified claims, validation language without user behavior evidence, and source/risk mixing.
-- Requires weaker wording, removal, or explicit source notes when a claim cannot be verified.
-
-## Developer
-
-- Implements scoped changes following existing code style.
-- Writes or updates tests for behavior changes.
-- Runs the smallest useful test first, then broader verification.
-- Reports changed files and commands run.
-
-## Code Reviewer
-
-- Reviews for bugs, regressions, missing tests, security risks, and product constraint violations.
-- Leads with findings and file references.
-- Treats "no findings" as a meaningful result but still notes residual risk.
-
-## Architect
-
-- Evaluates tradeoffs before larger structural decisions.
-- Keeps Stage 0 constraints visible and rejects premature platform expansion.
-- Records durable decisions in `docs/specs/` or architecture docs when needed.
-
-## Spec Steward
-
-- Promotes committed work from `docs/IDEAS.md` or user requests into `docs/specs/YYYY-MM-DD-short-topic/`.
-- Checks that each spec names Stage fit, first user action, artifact destination, source/risk boundary, natural artifact, and verification.
-- Links generated `docs/superpowers/` artifacts from the durable spec when a tool-specific workflow is used.
-- Keeps `docs/ROADMAP.md` short and prevents specs from becoming unbounded backlog dumps.
-
-## Browser Tester
-
-- Verifies user-facing behavior in a real browser.
-- Checks console errors, screenshots, layout issues, and core flows.
-- Uses Playwright or an in-app browser depending on available tools.
-
-## Release Readiness Steward
-
-- Checks that the configured local, CI, and deployment runtimes are supported and consistent.
-- Reviews dependency audit output, Dependabot coverage, CI gates, Playwright failure artifacts, deployment smoke evidence, and rollback notes.
-- Separates green automated QA from real observed-user validation and blocks unsupported certainty in readiness scores.
-- Reports local changes, verification, commit, push, PR, merge, deploy, and remaining operational risk as separate states.
-
-## Validation Observer
-
-- Plans and records observed user sessions without treating internal QA, screenshots, or green tests as validation.
-- Captures factual behavior across open, setup, artifact understanding, copy/export, outside-use intent or real use, completion/update, and return signal.
-- Uses non-validated labels such as `no signal`, `friction`, and `candidate signal` until repeated target-user behavior supports stronger language.
-- Keeps participant notes factual and avoids storing sensitive personal data.
-
-## Evidence & Memory Steward
-
-- Records durable process, product, UX, technical, and safety decisions in the right document before session end.
-- Keeps settled decisions in `docs/DECISIONS.md`, deferred ideas in `docs/IDEAS.md`, committed multi-step work in `docs/specs/`, current health in `docs/STATUS.md`, PR evidence in `docs/pr-history/`, and observed sessions in `docs/validation-sessions/`.
-- Links generated tool artifacts from durable specs instead of duplicating long content across documents.
-- Prevents chat-only memory from becoming the only record of important direction changes.
+| Work | Passes |
+| --- | --- |
+| Typo or small local fix | Implement, Review, targeted Evidence |
+| Multi-file behavior change | All four core passes |
+| Source conversion | Core passes plus Content/source/risk |
+| User-facing UX or HTML | Core passes plus Product/UX and Visual/browser |
+| Architecture, security, or release | Core passes plus the matching specialist; use Full lane when blast radius is broad |
