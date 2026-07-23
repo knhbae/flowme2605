@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "flowme-p29-00-decision-matrix-v1",
+  "generatedAt": "2026-07-22T09:00:00+09:00",
+  "observedUserCount": 0,
+  "evidenceKinds": [
+    "current_production_interaction",
+    "current_package_screenshot",
+    "current_source",
+    "prior_design_artifact",
+    "reference_pattern",
+    "heuristic_simulation"
+  ],
+  "criteria": [
+    { "id": "journey_continuity", "label": "여정 연속성", "weight": 20 },
+    { "id": "first_viewport_clarity", "label": "첫 viewport 명확성", "weight": 15 },
+    { "id": "progressive_disclosure", "label": "점진적 공개", "weight": 15 },
+    { "id": "content_adaptability", "label": "콘텐츠 유형 적응성", "weight": 10 },
+    { "id": "contract_preservation", "label": "P28 계약 보존", "weight": 15 },
+    { "id": "mobile_fit", "label": "모바일 적합성", "weight": 10 },
+    { "id": "accessibility", "label": "접근성 개선 가능성", "weight": 10 },
+    { "id": "reversibility", "label": "롤백 가능성", "weight": 5 }
+  ],
+  "alternatives": [
+    {
+      "id": "incremental_polish",
+      "label": "A. Incremental polish",
+      "scores": {
+        "journey_continuity": 2,
+        "first_viewport_clarity": 2,
+        "progressive_disclosure": 2,
+        "content_adaptability": 3,
+        "contract_preservation": 5,
+        "mobile_fit": 2,
+        "accessibility": 3,
+        "reversibility": 5
+      },
+      "weightedScore": 56,
+      "decision": "reject",
+      "reason": "색·간격·타입만 바꿔서는 중복 outline, 같은 화면에 남는 receipt, routine 전체 폼, DOM focus order를 해결하지 못한다."
+    },
+    {
+      "id": "coordinated_surface_reset",
+      "label": "B. Coordinated surface reset",
+      "scores": {
+        "journey_continuity": 5,
+        "first_viewport_clarity": 5,
+        "progressive_disclosure": 5,
+        "content_adaptability": 4,
+        "contract_preservation": 5,
+        "mobile_fit": 5,
+        "accessibility": 4,
+        "reversibility": 4
+      },
+      "weightedScore": 95,
+      "decision": "recommend",
+      "reason": "stable projection과 4탭 IA를 유지하면서 save-before, receipt, My Flow, Calendar, result choice의 composition과 명령 문법을 함께 고칠 수 있다."
+    },
+    {
+      "id": "full_product_rewrite",
+      "label": "C. Full product rewrite",
+      "scores": {
+        "journey_continuity": 3,
+        "first_viewport_clarity": 4,
+        "progressive_disclosure": 5,
+        "content_adaptability": 5,
+        "contract_preservation": 1,
+        "mobile_fit": 2,
+        "accessibility": 3,
+        "reversibility": 1
+      },
+      "weightedScore": 63,
+      "decision": "reject",
+      "reason": "문제의 주된 원인은 화면 composition이며 P28의 source/personal/run/occurrence/export 계약과 4탭 IA를 재작성할 근거가 없다."
+    }
+  ],
+  "selectedAlternative": "coordinated_surface_reset",
+  "confidence": 5,
+  "firstVerticalSlice": "P29-01 moving artifact-first save-before and distinct saved receipt",
+  "migrationRequired": false
+}

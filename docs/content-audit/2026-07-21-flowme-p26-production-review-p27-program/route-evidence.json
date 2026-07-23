@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "flowme-p27-route-evidence-v1",
+  "generatedAt": "2026-07-21T11:30:00+09:00",
+  "production":"https://flowme2605.vercel.app",
+  "reviewMode":"independent automated simulation; not observed-user validation",
+  "observedUserCount":0,
+  "summary":{"journeys":6,"coreStates":41,"supplementalStates":4,"states":45,"screenshots":45,"horizontalOverflowStates":0,"consoleErrors":0,"pageErrors":0,"unnamedControlStates":2},
+  "routes":[
+    {"route":"/flow-maps/moving-d30","viewports":["390x844","1024x768"],"states":["save-before","adjust","post-save","quick-edit","complete-undo","selected-export"],"result":"supported_with_export_density_friction"},
+    {"route":"/f/vehicle-inspection-prep","viewports":["390x844","1024x768"],"states":["save-before","undated-save","post-save","calendar-tray","batch-schedule","complete-undo","selected-export"],"result":"supported_with_calendar_density_friction"},
+    {"route":"/f/washer-tub-clean-monthly","viewports":["390x844","1024x768"],"states":["series-preview","series-export","series-definition","occurrence-complete-reopen"],"result":"supported_with_occurrence_a11y_friction"},
+    {"route":"/flows -> /my","viewports":["390x844","1024x768"],"states":["project-segmentation","structure-mode","batch-date","selected-export"],"result":"supported_with_editor_density_friction"},
+    {"route":"/flows -> /my","viewports":["390x844","1024x768"],"states":["record-draft","execution-note","complete","reflection","reuse"],"result":"supported_with_post_completion_density_friction"},
+    {"route":"/flows","viewports":["390x844","1024x768"],"states":["url-miss","candidate-draft","memo-draft","add-delete-restore-reorder","date","export"],"result":"partial_first_preview"}
+  ],
+  "supplemental": {
+    "route": "/my -> /calendar",
+    "scenario": "Two saved Flows with one item each on 2026-07-21",
+    "result": "Calendar preserves two Flow groups; My Flow splits the primary continuation from the remaining same-date list.",
+    "evidence": "cross-flow-results.json"
+  },
+  "sourceParity":{"originMain":"63ea641","productionRelease":"0a33dd84","appRuntimeDiffAfterRelease":0,"evidenceKind":"current_source"},
+  "rawEvidence":["production-journey-results.json","cross-flow-results.json"]
+}

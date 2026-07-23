@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-21T14:29:55.601Z",
+  "canonicalPrompt": "docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prompt-ko.md",
+  "reviewedMainCommit": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
+  "applicationSourceCommit": "45b1f424a9e73a188750eb22691a756b86153231",
+  "priorArtifactSha256": "7D608B993342AEF5F570AA7C967E3DF46A7BC1083BB3BCCA8C631473E451A6C0",
+  "observedUserSessions": 0,
+  "summary": {
+    "checkCount": 67,
+    "passedCount": 67,
+    "failedCount": 0,
+    "canonicalRequirementMissingCount": 0
+  },
+  "checks": [
+    {
+      "id": "file:README.md",
+      "passed": true,
+      "detail": "README.md"
+    },
+    {
+      "id": "file:audit.md",
+      "passed": true,
+      "detail": "audit.md"
+    },
+    {
+      "id": "file:canonical-alignment.md",
+      "passed": true,
+      "detail": "canonical-alignment.md"
+    },
+    {
+      "id": "file:p28-development-handoff.md",
+      "passed": true,
+      "detail": "p28-development-handoff.md"
+    },
+    {
+      "id": "file:p28-backlog.md",
+      "passed": true,
+      "detail": "p28-backlog.md"
+    },
+    {
+      "id": "file:qa.md",
+      "passed": true,
+      "detail": "qa.md"
+    },
+    {
+      "id": "file:review.html",
+      "passed": true,
+      "detail": "review.html"
+    },
+    {
+      "id": "file:promise-matrix.json",
+      "passed": true,
+      "detail": "promise-matrix.json"
+    },
+    {
+      "id": "file:case-journey-matrix.json",
+      "passed": true,
+      "detail": "case-journey-matrix.json"
+    },
+    {
+      "id": "file:journey-step-matrix.json",
+      "passed": true,
+      "detail": "journey-step-matrix.json"
+    },
+    {
+      "id": "file:source-capability-matrix.json",
+      "passed": true,
+      "detail": "source-capability-matrix.json"
+    },
+    {
+      "id": "file:ux-alternative-comparison.json",
+      "passed": true,
+      "detail": "ux-alternative-comparison.json"
+    },
+    {
+      "id": "file:production-journey-results.json",
+      "passed": true,
+      "detail": "production-journey-results.json"
+    },
+    {
+      "id": "file:prior-artifact-results.json",
+      "passed": true,
+      "detail": "prior-artifact-results.json"
+    },
+    {
+      "id": "origin-main",
+      "passed": true,
+      "detail": "46e567ec09c5eba37ac703529b3d3eccc75e0dde"
+    },
+    {
+      "id": "canonical-package-files",
+      "passed": true,
+      "detail": "8"
+    },
+    {
+      "id": "canonical-prompt-exists",
+      "passed": true,
+      "detail": "docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prompt-ko.md"
+    },
+    {
+      "id": "canonical-prompt-title",
+      "passed": true,
+      "detail": "prompt title"
+    },
+    {
+      "id": "canonical-prompt-e2e",
+      "passed": true,
+      "detail": "canonical E2E path"
+    },
+    {
+      "id": "canonical-prompt-feedback",
+      "passed": true,
+      "detail": "P27 feedback input"
+    },
+    {
+      "id": "main-delta-count",
+      "passed": true,
+      "detail": "8"
+    },
+    {
+      "id": "main-delta-docs-only",
+      "passed": true,
+      "detail": "docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/README.md, docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/artifact-manifest.json, docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/artifact-summary.md, docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prior-artifacts/flow-content-usage-preview-ko.html, docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prompt-ko.md, docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/screenshots/README.md, docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/screenshots/prior-preview-desktop.png, docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/screenshots/prior-preview-mobile.png"
+    },
+    {
+      "id": "prior-artifact-sha",
+      "passed": true,
+      "detail": "7D608B993342AEF5F570AA7C967E3DF46A7BC1083BB3BCCA8C631473E451A6C0"
+    },
+    {
+      "id": "promise-count",
+      "passed": true,
+      "detail": "15"
+    },
+    {
+      "id": "promise-ids",
+      "passed": true,
+      "detail": "PR-01..PR-15"
+    },
+    {
+      "id": "promise-main",
+      "passed": true,
+      "detail": "46e567ec09c5eba37ac703529b3d3eccc75e0dde"
+    },
+    {
+      "id": "promise-app-source",
+      "passed": true,
+      "detail": "45b1f424a9e73a188750eb22691a756b86153231"
+    },
+    {
+      "id": "promise-prior-sha",
+      "passed": true,
+      "detail": "7D608B993342AEF5F570AA7C967E3DF46A7BC1083BB3BCCA8C631473E451A6C0"
+    },
+    {
+      "id": "promise-missing-zero",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "id": "case-count",
+      "passed": true,
+      "detail": "5"
+    },
+    {
+      "id": "step-case-count",
+      "passed": true,
+      "detail": "5"
+    },
+    {
+      "id": "ten-steps-each",
+      "passed": true,
+      "detail": "moving:10, kmooc:10, heat_safety:10, remodel_contract:10, parents_travel:10"
+    },
+    {
+      "id": "step-fields",
+      "passed": true,
+      "detail": "stage, visible, decision, primaryAction, redundantCopy, depth, currentSupport, block, change"
+    },
+    {
+      "id": "alternatives-abc",
+      "passed": true,
+      "detail": "A,B,C"
+    },
+    {
+      "id": "hybrid-recommended",
+      "passed": true,
+      "detail": "C"
+    },
+    {
+      "id": "backlog-slices",
+      "passed": true,
+      "detail": "P28-01,P28-02,P28-03,P28-04,P28-05,P28-06,P28-07"
+    },
+    {
+      "id": "P28-01:fields",
+      "passed": true,
+      "detail": "사용자 문제, 적용 route, 구현 범위, 비범위, 데이터 영향, 선행 의존성, 접근성, unit/E2E, screenshot marker, 완료 기준"
+    },
+    {
+      "id": "P28-02:fields",
+      "passed": true,
+      "detail": "사용자 문제, 적용 route, 구현 범위, 비범위, 데이터 영향, 선행 의존성, 접근성, unit/E2E, screenshot marker, 완료 기준"
+    },
+    {
+      "id": "P28-03:fields",
+      "passed": true,
+      "detail": "사용자 문제, 적용 route, 구현 범위, 비범위, 데이터 영향, 선행 의존성, 접근성, unit/E2E, screenshot marker, 완료 기준"
+    },
+    {
+      "id": "P28-04:fields",
+      "passed": true,
+      "detail": "사용자 문제, 적용 route, 구현 범위, 비범위, 데이터 영향, 선행 의존성, 접근성, unit/E2E, screenshot marker, 완료 기준"
+    },
+    {
+      "id": "P28-05:fields",
+      "passed": true,
+      "detail": "사용자 문제, 적용 route, 구현 범위, 비범위, 데이터 영향, 선행 의존성, 접근성, unit/E2E, screenshot marker, 완료 기준"
+    },
+    {
+      "id": "P28-06:fields",
+      "passed": true,
+      "detail": "사용자 문제, 적용 route, 구현 범위, 비범위, 데이터 영향, 선행 의존성, 접근성, unit/E2E, screenshot marker, 완료 기준"
+    },
+    {
+      "id": "P28-07:fields",
+      "passed": true,
+      "detail": "사용자 문제, 적용 route, 구현 범위, 비범위, 데이터 영향, 선행 의존성, 접근성, unit/E2E, screenshot marker, 완료 기준"
+    },
+    {
+      "id": "audit-section-1",
+      "passed": true,
+      "detail": "section 1"
+    },
+    {
+      "id": "audit-section-2",
+      "passed": true,
+      "detail": "section 2"
+    },
+    {
+      "id": "audit-section-3",
+      "passed": true,
+      "detail": "section 3"
+    },
+    {
+      "id": "audit-section-4",
+      "passed": true,
+      "detail": "section 4"
+    },
+    {
+      "id": "audit-section-5",
+      "passed": true,
+      "detail": "section 5"
+    },
+    {
+      "id": "audit-section-6",
+      "passed": true,
+      "detail": "section 6"
+    },
+    {
+      "id": "audit-section-7",
+      "passed": true,
+      "detail": "section 7"
+    },
+    {
+      "id": "audit-section-8",
+      "passed": true,
+      "detail": "section 8"
+    },
+    {
+      "id": "audit-section-9",
+      "passed": true,
+      "detail": "section 9"
+    },
+    {
+      "id": "audit-section-10",
+      "passed": true,
+      "detail": "section 10"
+    },
+    {
+      "id": "audit-section-11",
+      "passed": true,
+      "detail": "section 11"
+    },
+    {
+      "id": "audit-section-12",
+      "passed": true,
+      "detail": "section 12"
+    },
+    {
+      "id": "audit-feedback-synthesis",
+      "passed": true,
+      "detail": "feedback reconciliation"
+    },
+    {
+      "id": "audit-canonical-sha",
+      "passed": true,
+      "detail": "7D608B993342AEF5F570AA7C967E3DF46A7BC1083BB3BCCA8C631473E451A6C0"
+    },
+    {
+      "id": "handoff-first-goal",
+      "passed": true,
+      "detail": "P28-01"
+    },
+    {
+      "id": "handoff-sequence",
+      "passed": true,
+      "detail": "required sequence"
+    },
+    {
+      "id": "handoff-e2e",
+      "passed": true,
+      "detail": "canonical E2E"
+    },
+    {
+      "id": "handoff-no-app-overreach",
+      "passed": true,
+      "detail": "P28-01 boundary"
+    },
+    {
+      "id": "html-main-commit",
+      "passed": true,
+      "detail": "reviewed main"
+    },
+    {
+      "id": "html-app-commit",
+      "passed": true,
+      "detail": "application source"
+    },
+    {
+      "id": "html-alignment-link",
+      "passed": true,
+      "detail": "alignment link"
+    },
+    {
+      "id": "html-handoff-link",
+      "passed": true,
+      "detail": "handoff link"
+    },
+    {
+      "id": "stale-e2e-path-zero",
+      "passed": true,
+      "detail": "deprecated E2E path absent"
+    },
+    {
+      "id": "evidence-kinds",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

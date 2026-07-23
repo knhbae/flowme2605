@@ -1,0 +1,345 @@
+{
+  "generatedAt": "2026-07-20T01:55:52.595Z",
+  "reportUrl": "file:///D:/flowme2605/.tmp/flowme-p26-independent-production-review/docs/content-audit/2026-07-20-flowme-p25-production-review-p26-program/review.html",
+  "results": [
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "FlowMe UX 재검토 P25 production 마감 (P26 전체 실행 백로그)",
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 32520,
+      "overflowPx": 0,
+      "overflowing": [
+        {
+          "tag": "a",
+          "className": "",
+          "text": "레퍼런스",
+          "rect": {
+            "x": 393.796875,
+            "y": 10,
+            "width": 64.171875,
+            "height": 33.4375,
+            "top": 10,
+            "right": 457.96875,
+            "bottom": 43.4375,
+            "left": 393.796875
+          }
+        },
+        {
+          "tag": "a",
+          "className": "",
+          "text": "공통 시스템",
+          "rect": {
+            "x": 463.96875,
+            "y": 10,
+            "width": 78.5625,
+            "height": 33.4375,
+            "top": 10,
+            "right": 542.53125,
+            "bottom": 43.4375,
+            "left": 463.96875
+          }
+        },
+        {
+          "tag": "a",
+          "className": "",
+          "text": "P26 백로그",
+          "rect": {
+            "x": 548.53125,
+            "y": 10,
+            "width": 78.65625,
+            "height": 33.4375,
+            "top": 10,
+            "right": 627.1875,
+            "bottom": 43.4375,
+            "left": 548.53125
+          }
+        },
+        {
+          "tag": "a",
+          "className": "",
+          "text": "마감 조건",
+          "rect": {
+            "x": 633.1875,
+            "y": 10,
+            "width": 67.53125,
+            "height": 33.4375,
+            "top": 10,
+            "right": 700.71875,
+            "bottom": 43.4375,
+            "left": 633.1875
+          }
+        },
+        {
+          "tag": "table",
+          "className": "",
+          "text": "JourneyOverallSupportedHidden / PartialMissing / Blocked A. 이사 준비24 itemspartialpreview, item date, ",
+          "rect": {
+            "x": 13,
+            "y": 11109.34375,
+            "width": 760,
+            "height": 493.515625,
+            "top": 11109.34375,
+            "right": 773,
+            "bottom": 11602.859375,
+            "left": 13
+          }
+        },
+        {
+          "tag": "thead",
+          "className": "",
+          "text": "JourneyOverallSupportedHidden / PartialMissing / Blocked",
+          "rect": {
+            "x": 13,
+            "y": 11109.34375,
+            "width": 760,
+            "height": 40.3125,
+            "top": 11109.34375,
+            "right": 773,
+            "bottom": 11149.65625,
+            "left": 13
+          }
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "JourneyOverallSupportedHidden / PartialMissing / Blocked",
+          "rect": {
+            "x": 13,
+            "y": 11109.34375,
+            "width": 760,
+            "height": 40.3125,
+            "top": 11109.34375,
+            "right": 773,
+            "bottom": 11149.65625,
+            "left": 13
+          }
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Supported",
+          "rect": {
+            "x": 201.140625,
+            "y": 11109.34375,
+            "width": 219.828125,
+            "height": 40.3125,
+            "top": 11109.34375,
+            "right": 420.96875,
+            "bottom": 11149.65625,
+            "left": 201.140625
+          }
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Hidden / Partial",
+          "rect": {
+            "x": 420.96875,
+            "y": 11109.34375,
+            "width": 206.578125,
+            "height": 40.3125,
+            "top": 11109.34375,
+            "right": 627.546875,
+            "bottom": 11149.65625,
+            "left": 420.96875
+          }
+        },
+        {
+          "tag": "th",
+          "className": "",
+          "text": "Missing / Blocked",
+          "rect": {
+            "x": 627.546875,
+            "y": 11109.34375,
+            "width": 145.453125,
+            "height": 40.3125,
+            "top": 11109.34375,
+            "right": 773,
+            "bottom": 11149.65625,
+            "left": 627.546875
+          }
+        },
+        {
+          "tag": "tbody",
+          "className": "",
+          "text": "A. 이사 준비24 itemspartialpreview, item date, complete, whole/selected exportpost-save receipt hidden, ",
+          "rect": {
+            "x": 13,
+            "y": 11149.65625,
+            "width": 760,
+            "height": 453.203125,
+            "top": 11149.65625,
+            "right": 773,
+            "bottom": 11602.859375,
+            "left": 13
+          }
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "A. 이사 준비24 itemspartialpreview, item date, complete, whole/selected exportpost-save receipt hidden, ",
+          "rect": {
+            "x": 13,
+            "y": 11149.65625,
+            "width": 760,
+            "height": 65.09375,
+            "top": 11149.65625,
+            "right": 773,
+            "bottom": 11214.75,
+            "left": 13
+          }
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "preview, item date, complete, whole/selected export",
+          "rect": {
+            "x": 201.140625,
+            "y": 11149.65625,
+            "width": 219.828125,
+            "height": 65.09375,
+            "top": 11149.65625,
+            "right": 420.96875,
+            "bottom": 11214.75,
+            "left": 201.140625
+          }
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "post-save receipt hidden, reopen movement",
+          "rect": {
+            "x": 420.96875,
+            "y": 11149.65625,
+            "width": 206.578125,
+            "height": 65.09375,
+            "top": 11149.65625,
+            "right": 627.546875,
+            "bottom": 11214.75,
+            "left": 420.96875
+          }
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "anchor change, new-anchor reuse",
+          "rect": {
+            "x": 627.546875,
+            "y": 11149.65625,
+            "width": 145.453125,
+            "height": 65.09375,
+            "top": 11149.65625,
+            "right": 773,
+            "bottom": 11214.75,
+            "left": 627.546875
+          }
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "B. 날짜 없는 차량 점검10 itemspartialexplicit undated, tray schedule/remove, checklistundated intent hidden,",
+          "rect": {
+            "x": 13,
+            "y": 11214.75,
+            "width": 760,
+            "height": 86.140625,
+            "top": 11214.75,
+            "right": 773,
+            "bottom": 11300.890625,
+            "left": 13
+          }
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "explicit undated, tray schedule/remove, checklist",
+          "rect": {
+            "x": 201.140625,
+            "y": 11214.75,
+            "width": 219.828125,
+            "height": 86.140625,
+            "top": 11214.75,
+            "right": 420.96875,
+            "bottom": 11300.890625,
+            "left": 201.140625
+          }
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "undated intent hidden, ICS eligibility contextual",
+          "rect": {
+            "x": 420.96875,
+            "y": 11214.75,
+            "width": 206.578125,
+            "height": 86.140625,
+            "top": 11214.75,
+            "right": 627.546875,
+            "bottom": 11300.890625,
+            "left": 420.96875
+          }
+        },
+        {
+          "tag": "td",
+          "className": "",
+          "text": "blank save semantics blocked",
+          "rect": {
+            "x": 627.546875,
+            "y": 11214.75,
+            "width": 145.453125,
+            "height": 86.140625,
+            "top": 11214.75,
+            "right": 773,
+            "bottom": 11300.890625,
+            "left": 627.546875
+          }
+        },
+        {
+          "tag": "tr",
+          "className": "",
+          "text": "C. 반복 루틴3 definitionspartialpublic RRULE, occurrence complete/reopenseries/occurrence separationMy F",
+          "rect": {
+            "x": 13,
+            "y": 11300.890625,
+            "width": 760,
+            "height": 65.09375,
+            "top": 11300.890625,
+            "right": 773,
+            "bottom": 11365.984375,
+            "left": 13
+          }
+        }
+      ],
+      "brokenImages": [],
+      "missingAnchors": [],
+      "mainHeading": "FlowMe UX 재검토 P25production 마감(P26 전체 실행 백로그)",
+      "sectionCount": 9,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": {
+        "name": "wide",
+        "width": 1024,
+        "height": 768
+      },
+      "title": "FlowMe UX 재검토 P25 production 마감 (P26 전체 실행 백로그)",
+      "clientWidth": 1024,
+      "scrollWidth": 1024,
+      "scrollHeight": 21271,
+      "overflowPx": 0,
+      "overflowing": [],
+      "brokenImages": [],
+      "missingAnchors": [],
+      "mainHeading": "FlowMe UX 재검토 P25production 마감(P26 전체 실행 백로그)",
+      "sectionCount": 9,
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

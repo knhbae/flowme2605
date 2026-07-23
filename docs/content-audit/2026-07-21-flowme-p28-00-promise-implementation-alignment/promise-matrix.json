@@ -1,0 +1,157 @@
+{
+  "reviewId": "P28-00",
+  "reviewDate": "2026-07-21",
+  "production": "https://flowme2605.vercel.app",
+  "canonicalPrompt": "docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prompt-ko.md",
+  "reviewedMainCommit": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
+  "applicationSourceCommit": "45b1f424a9e73a188750eb22691a756b86153231",
+  "mainDeltaFromApplicationSource": "canonical_handoff_docs_only",
+  "priorArtifactSha256": "7D608B993342AEF5F570AA7C967E3DF46A7BC1083BB3BCCA8C631473E451A6C0",
+  "canonicalRequirementMissingCount": 0,
+  "observedUserSessions": 0,
+  "statuses": [
+    "complete_verified",
+    "partial",
+    "missing",
+    "deferred_with_reason",
+    "superseded",
+    "inaccessible"
+  ],
+  "promises": [
+    {
+      "id": "PR-01",
+      "promise": "저장 전 전체 Flow가 충분히 보인다",
+      "status": "partial",
+      "actual": "source-backed moving-d30 5개는 모두 보이지만 public moving-d30-basic 24개는 '전체 Flow' 영역에 5개와 외 19개만 보인다. 별도 workbench나 조정 화면을 열어야 나머지를 확인한다.",
+      "evidenceKind": ["current_production_interaction", "current_source"],
+      "evidence": ["screenshots/source-backed-moving-save-before-wide.png", "screenshots/moving-save-before-mobile.png", "components/flow/FlowSaveBeforeFrame.tsx:48"],
+      "next": "P28-01"
+    },
+    {
+      "id": "PR-02",
+      "promise": "저장 전에 무엇이 저장되는지 예측할 수 있다",
+      "status": "partial",
+      "actual": "항목 수와 일부 outline, 날짜 결과는 보이지만 긴 Flow의 전체 제목과 destination별 손실은 한 화면에서 확인할 수 없다.",
+      "evidenceKind": ["current_production_interaction", "heuristic_simulation"],
+      "evidence": ["screenshots/moving-save-before-mobile.png"],
+      "next": "P28-01"
+    },
+    {
+      "id": "PR-03",
+      "promise": "저장 전 제목·항목·날짜·순서·포함 여부를 조정한다",
+      "status": "complete_verified",
+      "actual": "public moving 24개 조정 화면에서 포함, 날짜, 제목·메모, 순서 mode와 전체 행을 확인했다. 한 번에 한 조작 mode만 활성화한다.",
+      "evidenceKind": ["current_production_interaction", "current_source"],
+      "evidence": ["screenshots/moving-adjustment-mobile.png", "tests/e2e/p27-foundation.spec.ts"],
+      "next": "P28-03에서 콘텐츠별 필요한 값만 먼저 노출"
+    },
+    {
+      "id": "PR-04",
+      "promise": "콘텐츠에 가장 자연스러운 결과 형태가 먼저 제안된다",
+      "status": "partial",
+      "actual": "artifact-plan이 primary surface를 계산하고 workbench가 이를 쓰지만 저장 결정 shell과 모든 콘텐츠의 export eligibility까지 일관되게 지배하지 않는다.",
+      "evidenceKind": ["current_source", "current_production_interaction"],
+      "evidence": ["lib/flow/artifact-plan.ts:105", "lib/flow/execution-model.ts:109"],
+      "next": "P28-02"
+    },
+    {
+      "id": "PR-05",
+      "promise": "Calendar·Checklist·Sheet·Memo를 실제 데이터로 비교한다",
+      "status": "partial",
+      "actual": "구현된 moving/workout/vehicle에서는 실데이터 projection이 있으나 K-MOOC, 폭염, 계약, 부모님 여행 source는 production miss라 비교가 불가능하다.",
+      "evidenceKind": ["current_production_interaction", "prior_design_artifact"],
+      "evidence": ["screenshots/source-probe-kmooc-mobile.png", "screenshots/prior-course-1024.png"],
+      "next": "P28-01, P28-06"
+    },
+    {
+      "id": "PR-06",
+      "promise": "의미 없는 결과 형태는 숨긴다",
+      "status": "partial",
+      "actual": "일부 surface 계획은 콘텐츠별이지만 generic execution/export 계약은 checklist·sheet·memo를 모든 visible item에 허용하고 Flow 유형별 destination도 넓다.",
+      "evidenceKind": ["current_source"],
+      "evidence": ["lib/flow/personal-structural-overlay.ts:545", "lib/flow/execution-model.ts:168", "lib/flow/export-scope.ts:1"],
+      "next": "P28-02"
+    },
+    {
+      "id": "PR-07",
+      "promise": "저장 receipt와 일반 My Flow가 같은 화면 문법을 쓴다",
+      "status": "complete_verified",
+      "actual": "저장 receipt에서 단계/항목/날짜 요약 후 같은 My Flow workspace와 Calendar로 이어지고 개인 제목도 유지된다.",
+      "evidenceKind": ["current_production_interaction", "current_package_screenshot"],
+      "evidence": ["screenshots/source-backed-moving-receipt-mobile.png", "screenshots/moving-receipt-my-calendar-wide.png"],
+      "next": "P28-04에서 hierarchy만 정리"
+    },
+    {
+      "id": "PR-08",
+      "promise": "My Flow에서 저장한 Flow를 찾고 전체 구조를 이해한다",
+      "status": "complete_verified",
+      "actual": "1~4개는 직접 browse, 5개 이상은 검색·필터가 나타나며 그룹별 전체 구조로 진입한다. 실제 발견성 선호는 관찰하지 않았다.",
+      "evidenceKind": ["current_production_interaction", "current_source", "current_package_screenshot"],
+      "evidence": ["screenshots/my-flow-demo-wide.png", "components/flow/AppClient.tsx:15397"],
+      "next": "P28-04"
+    },
+    {
+      "id": "PR-09",
+      "promise": "반복 기간·series·occurrence를 구분한다",
+      "status": "complete_verified",
+      "actual": "washer Flow에서 '미리보기 4주'와 '종료일 없음'이 분리되고 한 occurrence에 한 완료 control만 존재한다.",
+      "evidenceKind": ["current_production_interaction", "current_package_screenshot", "current_source"],
+      "evidence": ["screenshots/workout-save-before-mobile.png", "docs/content-audit/2026-07-21-p27-lifecycle-workspace-final/route-evidence.json"],
+      "next": "P28-05 회귀 고정"
+    },
+    {
+      "id": "PR-10",
+      "promise": "Flow와 Item을 삭제·복구한다",
+      "status": "complete_verified",
+      "actual": "영구 삭제 대신 Flow 보관/복구, source item 제외/복구, personal item tombstone/복구로 가역적 lifecycle을 제공한다.",
+      "evidenceKind": ["current_source", "current_package_screenshot"],
+      "evidence": ["lib/flow/personal-flow-lifecycle.ts:135", "components/flow/AppClient.tsx:14635"],
+      "next": "P28-04에서 문구와 위치 유지"
+    },
+    {
+      "id": "PR-11",
+      "promise": "확인·실행·URL/영상 resource를 역할에 맞게 구분한다",
+      "status": "partial",
+      "actual": "nested subcheck/resource는 분리됐지만 top-level FlowItem은 todo/calendar만 있어 폭염 경고·참고정보를 비완료 항목으로 표현하는 계약이 없다.",
+      "evidenceKind": ["current_source", "prior_design_artifact"],
+      "evidence": ["lib/flow/types.ts:100", "lib/flow/personal-item-detail-overlay.ts", "screenshots/prior-heat-1024.png"],
+      "next": "P28-02"
+    },
+    {
+      "id": "PR-12",
+      "promise": "Calendar에서 특정 Flow만 본다",
+      "status": "complete_verified",
+      "actual": "wide Calendar에서 Flow scope selector, grid marker, selected-day agenda가 같은 projection을 사용한다.",
+      "evidenceKind": ["current_production_interaction", "current_package_screenshot"],
+      "evidence": ["screenshots/calendar-demo-wide.png"],
+      "next": "P28-05 회귀 고정"
+    },
+    {
+      "id": "PR-13",
+      "promise": "같은 날짜 항목이 My Flow에서 자연스럽게 묶인다",
+      "status": "complete_verified",
+      "actual": "P27 route evidence와 production My Flow/Calendar에서 날짜·Flow grouping을 확인했다.",
+      "evidenceKind": ["current_production_interaction", "current_package_screenshot"],
+      "evidence": ["screenshots/moving-receipt-my-calendar-wide.png"],
+      "next": "P28-05 회귀 고정"
+    },
+    {
+      "id": "PR-14",
+      "promise": "전체·선택·개별 export 범위를 직관적으로 선택한다",
+      "status": "complete_verified",
+      "actual": "source-backed moving export에서 Flow 전체 5개와 destination별 개수, Calendar 날짜 항목 수, 손실 안내를 확인했다. current contract는 flow/selected/item scope를 가진다.",
+      "evidenceKind": ["current_production_interaction", "current_source"],
+      "evidence": ["screenshots/source-backed-moving-export-mobile.png", "lib/flow/export-scope.ts"],
+      "next": "P28-05에서 eligibility와 결합"
+    },
+    {
+      "id": "PR-15",
+      "promise": "저장 전 조정이 기존 todo/calendar 수준의 기본 명료성을 가진다",
+      "status": "partial",
+      "actual": "조정 기능 자체는 충분하지만 긴 Flow의 전체 확인, content-native primary, 빠른 값과 상세 값의 문맥적 위계가 부족하다. 이는 reference pattern 대비 heuristic 판정이며 사용자 관찰은 아니다.",
+      "evidenceKind": ["heuristic_simulation", "reference_pattern", "current_production_interaction"],
+      "evidence": ["screenshots/moving-adjustment-mobile.png"],
+      "next": "P28-01, P28-03"
+    }
+  ]
+}

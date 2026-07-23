@@ -1,0 +1,154 @@
+{
+  "generatedAt": "2026-07-15T01:00:00+09:00",
+  "auditor": "claude-code",
+  "evidenceGrade": "automated_simulated",
+  "observedUserSessions": "0 / 15",
+  "environment": {
+    "originMainSha": "1f0361209fac3cdd85c67cf64496ff5d5dd9fb9d",
+    "originMainSubject": "Merge P24 independent review handoff",
+    "worktree": "D:/flowme2605/.tmp/flowme-p24-clean-1f03612 (detached, clean)",
+    "worktreeReason": "Local checkout is branch wip/worktree-consolidation-20260714 with untracked files; a separate clean detached worktree at origin/main was used.",
+    "install": "npm ci against tracked package-lock.json",
+    "diskNote": "Initial C: temp worktree stalled npm ci because C: had 0 GB free; the clean worktree was relocated to D: (187 GB free). The stall was disk exhaustion, not a product or lockfile fault.",
+    "versions": {
+      "node": "v24.17.0",
+      "next": "15.5.20",
+      "@playwright/test": "1.61.1",
+      "postcss": "8.5.16",
+      "react": "19.0.0",
+      "tailwindcss": "3.4.17",
+      "typescript": "5.8.3"
+    },
+    "productionAlias": "https://flowme2605.vercel.app",
+    "productionAnonymousAccess": "HTTP 200 for all six representative routes at 390x844 and 1024x768 (no SSO). The SSO redirect seen previously was on the protected branch preview, not this production alias."
+  },
+  "classificationPolicy": {
+    "confirmed_current": "Reproduced on the clean origin/main build or production alias in this run.",
+    "not_reproduced_current": "Prior dispute could not be reproduced on clean origin/main; automated assertion and/or production browser shows correct behavior.",
+    "environment_specific": "Observed only under an environment condition (dirty uncommitted deps, wall-clock date, disk state), not from committed product code.",
+    "prior_artifact_only": "Only prior-session or prior-package evidence exists; not independently re-run here.",
+    "blocked": "A required runtime, route, deployment, or fixture was unavailable."
+  },
+  "verificationCommands": {
+    "docs:check": "pass (14 required files, 2214 local links)",
+    "npm test": "pass 514/514",
+    "npm run build": "pass, compiled successfully, 18/18 static pages, 21 route rows",
+    "targeted_e2e_p24-execution-trust.spec.ts": "pass 14/14 (single worker)",
+    "full_e2e_single_worker": "272 passed, 2 failed of 274 distinct tests (11.9m). Both failures are date-fragile fixtures (see ENV-DATE-01).",
+    "git diff --check": "clean (no whitespace errors); app/, components/, lib/, package.json, playwright.config.ts unmodified in the clean worktree",
+    "production_screenshots": "12 captured (6 routes x 2 viewports); horizontal overflow 0px and console errors 0 on every route/viewport",
+    "production_exports": "ICS (5 VEVENT, stable UIDs), checklist, sheet, memo captured from production"
+  },
+  "disputedItems": [
+    {
+      "id": "BUILD-01",
+      "dispute": "build fails at Collecting page data",
+      "priorClaim": "claude_code_dirty_dev: Blocking B1, build exit 1",
+      "classification": "not_reproduced_current",
+      "environmentSpecificCause": "Prior failure came from the dirty working tree's uncommitted package.json additions (overrides tmp/uuid + engines node:24.x) that are NOT part of the committed dependency upgrade. Clean origin/main lockfile omits them.",
+      "evidence": ["npm run build exit 0", "Compiled successfully in 43s", "Generating static pages (18/18)"]
+    },
+    {
+      "id": "ENTRY-01",
+      "dispute": "/flows direct entry / reload stays in infinite loading",
+      "priorClaim": "claude_code_dirty_dev: High H1 (dev server only)",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:717 pass (the Flow finder resolves after repeated hard navigation and reloads)", "production /flows HTTP 200, overflow 0, console 0"]
+    },
+    {
+      "id": "ENTRY-02",
+      "dispute": "public save then /my renders empty until reload",
+      "priorClaim": "claude_code_dirty_dev: High H2 (1 of 5 dev saves)",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:758 pass (public saves hydrate the matching My Flow immediately across repeated clean sessions)", "production save landed on /my?savedMap=moving-d30 with the flow visible without reload"]
+    },
+    {
+      "id": "DATE-01",
+      "dispute": "KST morning defaults use the previous UTC date",
+      "priorClaim": "codex_clean_baseline: Blocking",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:59 pass under Asia/Seoul (KST morning uses the local calendar day)", "fix b9fcc06 use local calendar dates for user defaults"]
+    },
+    {
+      "id": "DATE-02",
+      "dispute": "Today/summary ignores an Item date override",
+      "priorClaim": "claude_code_dirty_dev + user_feedback: Blocking B4",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:113 pass (a personal date override is identical in Today, the full list, Calendar, and ICS)", "fix 1ec51d2 unify My Flow effective dates; resolveMyFlowEffectiveDate precedence draft>execution_override>personal_copy>source", "production ICS export DTSTART matches the item override dates"]
+    },
+    {
+      "id": "DATE-03",
+      "dispute": "reuse keep-fixed-dates behaves like reset-to-anchor",
+      "priorClaim": "claude_code_dirty_dev + user_feedback: Blocking B5",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:199 pass (reuse keeps a fixed personal date while rekeying it to the new anchor schedule)", "fix 6e376bc preserve fixed dates across flow reuse"]
+    },
+    {
+      "id": "REC-01",
+      "dispute": "recurrence preview shows many occurrences but saved projections show one",
+      "priorClaim": "claude_code_dirty_dev: Blocking B2 (My Flow/Calendar/ICS kept only first occurrence)",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e flow-mvp.spec.ts pass (saved Allblanc routine keeps all four-week occurrences, sibling completion, and RRULE export aligned)", "unit recurrence.test.ts pass (saved source routine expands the selected four-week cadence into stable occurrences)", "fix e6c0f8f materialize saved routine occurrences; lib/flow/saved-routine-occurrence.ts (357 lines)"]
+    },
+    {
+      "id": "DRAFT-01",
+      "dispute": "memo-split todo Items persisted but hidden from UI and export",
+      "priorClaim": "claude_code_dirty_dev: Blocking B3",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:324 pass (a dated memo draft keeps every split item in My Flow and the whole-flow export)", "fix b0f7744 keep memo draft items intact"]
+    },
+    {
+      "id": "DRAFT-02",
+      "dispute": "empty miss input can persist a status sentence as a Flow/Item title",
+      "priorClaim": "codex_clean_baseline: High",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:532 pass (an empty URL miss request stays unsaved and a memo-only request uses user copy)", "url-first-supply-queue.ts requires a title, derives from the first memo thought, returns undefined when empty"]
+    },
+    {
+      "id": "EXPORT-01",
+      "dispute": "Calendar export appears Flow-level but exports only the current Item",
+      "priorClaim": "claude_code_dirty_dev + user_feedback: High (M3)",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:464 pass (source-backed Flow export chooses whole or selected scope before format)", "production 가져가기 sheet shows scope first: 전체 Flow · 5개 / 선택한 항목 · 0개, then format each with counts (캘린더 파일 · 날짜 있는 항목 · 5개)", "production whole-flow ICS contained 5 VEVENT with stable UIDs, not one"]
+    },
+    {
+      "id": "EDIT-01",
+      "dispute": "personal Item edit form exposes unrelated generic fields (e.g. decision status on a non-decision item)",
+      "priorClaim": "claude_code_dirty_dev + user_feedback: Medium (M1)",
+      "classification": "not_reproduced_current",
+      "evidence": ["e2e p24-execution-trust.spec.ts:806 pass (My Flow keeps common item edits visible and intent-specific settings progressive)", "e2e p24-execution-trust.spec.ts:905 pass (decision fields appear only for an eligible decision item)", "fix f4ba196 simplify My Flow item editing"]
+    },
+    {
+      "id": "LOCK-01",
+      "dispute": "source-backed vs personal draft structural-edit boundary",
+      "priorClaim": "claude_code_dirty_dev: Medium (M2, boundary intact but unexplained)",
+      "classification": "boundary_maintained",
+      "evidence": ["source-backed Flow still exposes no add/delete/reorder structural controls (personal date/time/memo/completion overlays only), consistent with the documented gate until the P24-01A source v2 merge contract", "personal drafts retain full add/delete/undo/reorder (unit personal-draft-structural-edit; prior E2E)"],
+      "note": "Whether the absence needs a user-facing explanation remains a human-observation question, not a defect."
+    }
+  ],
+  "claudeDesignAG": [
+    {"key": "A", "name": "progressive editor", "classification": "present", "evidence": "e2e p24-execution-trust.spec.ts:806 + :905; fix f4ba196"},
+    {"key": "B", "name": "inline completion undo", "classification": "present", "evidence": "e2e p24-execution-trust.spec.ts:583 (Today completion stays reversible in place with one control per visible task); fix 74a78eb"},
+    {"key": "C", "name": "Calendar unscheduled tray", "classification": "present", "evidence": "e2e p24-execution-trust.spec.ts:959 (Calendar schedules an undated personal draft item with preview, undo, and reload persistence); fix 1d9717d"},
+    {"key": "D", "name": "whole/selected/current export scope", "classification": "present", "evidence": "e2e p24-execution-trust.spec.ts:464; production 가져가기 scope-before-format with counts; fix 69c572d"},
+    {"key": "E", "name": "linked/fixed date movement", "classification": "present", "evidence": "lib/flow/date-movement.ts + date-movement.test.ts; fix fc34e39; e2e ux12 moves only one routine occurrence from calendar detail"},
+    {"key": "F", "name": "one occurrence / one executable control", "classification": "present", "evidence": "e2e p24-execution-trust.spec.ts:658 (Today renders future queue items as control-free previews on mobile and wide)"},
+    {"key": "G", "name": "inline private/correction notes and completion aggregation", "classification": "present", "evidence": "e2e p24-execution-trust.spec.ts:1054 (inline execution notes stay one tap away and aggregate separately at completion); fix 8f87a38"}
+  ],
+  "newFindings": [
+    {
+      "id": "ENV-DATE-01",
+      "severity": "low",
+      "title": "Two full-suite E2E tests use a hardcoded moving anchor (2026-07-22) and fail when the wall-clock is not near it",
+      "classification": "environment_specific",
+      "failingTests": [
+        "flow-mvp.spec.ts:1539 product IA v2 keeps discovery simple and saved execution clear",
+        "flow-mvp.spec.ts:3893 source-backed moving map saves one dated timeline into My Flow calendar"
+      ],
+      "rootCause": "On origin/main these two tests fill the moving anchor with the literal 2026-07-22. With today = 2026-07-15 the moving timeline's current item becomes the D-7 item (7/15), so assertions expecting the D-30 first item or a 지난 할 일 bucket fail. The rendered app is correct for the date.",
+      "alreadyFixedOnBranch": "Commit 1aba5da 'test: make moving E2E fixtures date-independent' (on branch wip/worktree-consolidation-20260714, NOT in origin/main) replaces the literal anchor with createMovingDateFixture() = today + 10 days. Merging it removes both failures.",
+      "productImpact": "none (test-harness date fragility, not a product regression)"
+    }
+  ]
+}

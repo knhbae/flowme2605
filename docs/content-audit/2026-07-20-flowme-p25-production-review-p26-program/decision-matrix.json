@@ -1,0 +1,228 @@
+{
+  "title": "FlowMe P25 production decision matrix for P26",
+  "reviewedAt": "2026-07-20",
+  "verdict": "structural_correction_required",
+  "reason": "P25 contains working execution primitives, but date intent, recurring-series export, memo segmentation, and public-route handoff do not yet share one predictable contract.",
+  "decisions": [
+    {
+      "id": "K-01",
+      "bucket": "Keep",
+      "decision": "Keep source content immutable and store personal edits as an overlay.",
+      "why": "This preserves source traceability while allowing private execution changes.",
+      "contractImpact": ["source", "personal_overlay"],
+      "evidenceKind": "current_source"
+    },
+    {
+      "id": "K-02",
+      "bucket": "Keep",
+      "decision": "Keep the post-save whole-Flow receipt pattern used by vehicle and source-backed Flow Maps.",
+      "why": "It provides item count, complete artifact confirmation, and a deliberate next action.",
+      "contractImpact": ["execution_run"],
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "K-03",
+      "bucket": "Keep",
+      "decision": "Keep scope-first export with visible destination counts.",
+      "why": "Flow whole and selected exports were predictable and output counts matched for non-routine flows.",
+      "contractImpact": ["export"],
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "K-04",
+      "bucket": "Keep",
+      "decision": "Keep the wide Calendar rail, month grid, and selected-day agenda.",
+      "why": "It uses wide space purposefully and supports undated-to-dated scheduling.",
+      "contractImpact": ["execution_run", "occurrence"],
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "id": "K-05",
+      "bucket": "Keep",
+      "decision": "Keep deterministic memo parsing without AI generation for P26.",
+      "why": "The current trust boundary is appropriate; parsing and review quality can improve without adding provider, privacy, or cost risk.",
+      "contractImpact": ["source", "personal_overlay"],
+      "evidenceKind": "current_source"
+    },
+    {
+      "id": "K-06",
+      "bucket": "Keep",
+      "decision": "Keep completion state reversible and occurrence-specific.",
+      "why": "Current production can complete and reopen recurring occurrences without changing the series definition.",
+      "contractImpact": ["execution_run", "occurrence"],
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "C-01",
+      "bucket": "Change",
+      "decision": "Make date intent an explicit three-state choice: schedule now, keep undated, preview only.",
+      "why": "A blank date currently saves an example anchor as a real schedule.",
+      "contractImpact": ["personal_overlay", "execution_run", "export"],
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "C-02",
+      "bucket": "Change",
+      "decision": "Route every public save through one canonical receipt and whole-Flow handoff.",
+      "why": "The moving-specific CTA bypasses the receipt while other public routes use it.",
+      "contractImpact": ["execution_run"],
+      "evidenceKind": "current_source"
+    },
+    {
+      "id": "C-03",
+      "bucket": "Change",
+      "decision": "Define one recurrence contract for definition, generated occurrence, completion, and ICS.",
+      "why": "Public ICS exports a recurring event while the saved My Flow exports zero calendar events.",
+      "contractImpact": ["execution_run", "occurrence", "export"],
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "C-04",
+      "bucket": "Change",
+      "decision": "Turn memo splitting into a reviewable clause parser with visible source-to-item mapping.",
+      "why": "One non-matching clause prevents an otherwise actionable comma list from splitting.",
+      "contractImpact": ["source", "personal_overlay"],
+      "evidenceKind": "current_source"
+    },
+    {
+      "id": "C-05",
+      "bucket": "Change",
+      "decision": "Make whole Flow a phase-grouped plan outline, not a long list of full-control rows.",
+      "why": "The 24-item moving Flow repeats open and memo controls across a very long mobile surface.",
+      "contractImpact": ["execution_run"],
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "id": "C-06",
+      "bucket": "Change",
+      "decision": "Separate quick edit from advanced schedule editing and use a contained mobile sheet.",
+      "why": "Inline advanced fields compete with Flow structure, reordering, completion, export, and global navigation.",
+      "contractImpact": ["personal_overlay", "execution_run", "occurrence"],
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "id": "C-07",
+      "bucket": "Change",
+      "decision": "Rename the My Flow subview from '내 Flow' to '전체 Flow' or 'Flow 목록'.",
+      "why": "The page and one of its tabs currently have the same label but different scopes.",
+      "contractImpact": ["none"],
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "C-08",
+      "bucket": "Change",
+      "decision": "Unify Flow, selected, and current-item export into one scope vocabulary and preview.",
+      "why": "Current-item export lives in detail while whole and selected scopes live in a separate panel.",
+      "contractImpact": ["export"],
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "C-09",
+      "bucket": "Change",
+      "decision": "Group same-day Calendar items by Flow in the agenda and preserve full titles outside the grid.",
+      "why": "Color and initials distinguish flows, but month cells truncate titles and make comparisons difficult.",
+      "contractImpact": ["execution_run", "occurrence"],
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "id": "R-01",
+      "bucket": "Remove",
+      "decision": "Remove example dates from the persisted execution record unless the user explicitly confirms them.",
+      "why": "Preview data must not become personal schedule data implicitly.",
+      "contractImpact": ["personal_overlay", "execution_run", "export"],
+      "evidenceKind": "current_source"
+    },
+    {
+      "id": "R-02",
+      "bucket": "Remove",
+      "decision": "Remove recurring series definitions from the undated Calendar tray.",
+      "why": "Definitions are not unscheduled work and duplicate the generated occurrence visually.",
+      "contractImpact": ["occurrence"],
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "R-03",
+      "bucket": "Remove",
+      "decision": "Remove route-specific save CTAs that use a different destination or label.",
+      "why": "Moving has a special CTA to /my while the canonical public CTA uses /my?savedFlow=... .",
+      "contractImpact": ["execution_run"],
+      "evidenceKind": "current_source"
+    },
+    {
+      "id": "R-04",
+      "bucket": "Remove",
+      "decision": "Remove persistent primary-surface prose that only explains controls already represented structurally.",
+      "why": "Copy should preserve safety and source context, not compensate for unclear action hierarchy.",
+      "contractImpact": ["none"],
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "E-01",
+      "bucket": "Experiment",
+      "decision": "Compare a phase outline default with an optional timeline view for long Flow plans.",
+      "why": "Moving requires both sequence comprehension and executable rows; one presentation need not carry both at once.",
+      "contractImpact": ["execution_run"],
+      "evidenceKind": "reference_pattern"
+    },
+    {
+      "id": "E-02",
+      "bucket": "Experiment",
+      "decision": "Test batch scheduling as a tray-to-calendar preview with a single commit.",
+      "why": "Date-less work is useful when it behaves as an inbox, but users need to see how many items and dates will change before commit.",
+      "contractImpact": ["personal_overlay", "execution_run"],
+      "evidenceKind": "reference_pattern"
+    },
+    {
+      "id": "E-03",
+      "bucket": "Experiment",
+      "decision": "Add a post-export receipt that previews row/event count and destination semantics.",
+      "why": "Counts are present before action but routine contradictions show that result-level confirmation is still needed.",
+      "contractImpact": ["export"],
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "D-01",
+      "bucket": "Defer",
+      "decision": "Defer direct Google Calendar, Notion, Obsidian, and todo API connections until export contracts are stable.",
+      "why": "An integration would amplify current date and recurrence inconsistencies.",
+      "contractImpact": ["export"],
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "D-02",
+      "bucket": "Defer",
+      "decision": "Defer AI memo generation and URL content generation.",
+      "why": "P26 should first make deterministic intake, review, persistence, and export trustworthy.",
+      "contractImpact": ["source", "personal_overlay"],
+      "evidenceKind": "current_source"
+    },
+    {
+      "id": "D-03",
+      "bucket": "Defer",
+      "decision": "Defer account sync, server persistence, collaboration, and full version history.",
+      "why": "Local execution semantics and migration-safe identity must be closed before adding distributed state.",
+      "contractImpact": ["personal_overlay", "execution_run", "occurrence"],
+      "evidenceKind": "heuristic_simulation"
+    }
+  ],
+  "referencePatternPolicy": {
+    "apply": [
+      "Explicit undated inbox separate from dated calendar",
+      "Project or itinerary receipt after import",
+      "Quick edit separated from advanced recurrence controls",
+      "Occurrence completion separate from repeating template",
+      "Wide rail-list-detail composition"
+    ],
+    "adapt": [
+      "Today planning because FlowMe also needs source sequence and relative dates",
+      "Calendar drag-and-drop because FlowMe must preserve anchor-relative and fixed overrides",
+      "Template duplication because FlowMe retains source trace and personal overlay"
+    ],
+    "doNotApply": [
+      "A full replacement planner information architecture",
+      "Mandatory accounts or cloud sync",
+      "Dense professional calendar controls on mobile",
+      "Automatic AI publication without review"
+    ]
+  }
+}

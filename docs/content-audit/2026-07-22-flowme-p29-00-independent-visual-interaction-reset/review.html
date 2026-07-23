@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowMe P29-00 Visual & Interaction Reset 독립 검토</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171714;
+      --muted: #66645e;
+      --faint: #8b887f;
+      --paper: #f6f6f2;
+      --surface: #ffffff;
+      --line: #deded7;
+      --line-strong: #b9b8b0;
+      --accent: #2547d0;
+      --accent-soft: #edf1ff;
+      --green: #14704a;
+      --green-soft: #eaf7f0;
+      --amber: #8c570b;
+      --amber-soft: #fff3dc;
+      --red: #a9342b;
+      --red-soft: #fff0ed;
+      --coral: #d65a42;
+      --shadow: 0 12px 32px rgba(23, 23, 20, 0.08);
+      --radius: 6px;
+      --max: 1440px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; letter-spacing: 0; }
+    button:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid rgba(37, 71, 208, 0.35);
+      outline-offset: 3px;
+    }
+    img { display: block; max-width: 100%; }
+
+    .skip-link {
+      position: fixed;
+      left: 12px;
+      top: -60px;
+      z-index: 100;
+      background: var(--ink);
+      color: white;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+    }
+    .skip-link:focus { top: 12px; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      padding: 8px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(246, 246, 242, 0.96);
+      backdrop-filter: blur(12px);
+    }
+    .brand { display: flex; align-items: baseline; gap: 9px; font-weight: 800; }
+    .brand small { color: var(--muted); font-size: 12px; font-weight: 650; }
+    .nav { display: flex; gap: 4px; overflow-x: auto; }
+    .nav a {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      padding: 6px 10px;
+      border-radius: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .nav a:hover { background: var(--surface); color: var(--ink); }
+
+    main { max-width: var(--max); margin: 0 auto; padding: 28px 20px 80px; }
+    section { scroll-margin-top: 76px; margin-top: 54px; }
+    .eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    h1 { margin: 0; max-width: 1050px; font-size: clamp(30px, 4vw, 58px); line-height: 1.08; }
+    h2 { margin: 0; font-size: 28px; line-height: 1.2; }
+    h3 { margin: 0; font-size: 18px; line-height: 1.3; }
+    p { margin: 0; }
+    .lead { max-width: 880px; margin-top: 16px; color: var(--muted); font-size: 18px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .section-head p { max-width: 660px; color: var(--muted); font-size: 14px; }
+
+    .verdict {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      gap: 1px;
+      margin-top: 28px;
+      border: 1px solid var(--line-strong);
+      background: var(--line);
+      box-shadow: var(--shadow);
+    }
+    .verdict-main, .verdict-side { min-width: 0; background: var(--surface); padding: 24px; }
+    .decision-label { color: var(--green); font-size: 13px; font-weight: 850; }
+    .decision { margin-top: 6px; overflow-wrap: anywhere; font-size: 30px; font-weight: 850; line-height: 1.15; }
+    .decision-copy { max-width: 760px; margin-top: 12px; color: var(--muted); }
+    .verdict-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; padding: 0; background: var(--line); }
+    .metric { min-height: 108px; padding: 18px; background: var(--surface); }
+    .metric strong { display: block; font-size: 26px; }
+    .metric span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+
+    .notice {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--amber);
+      background: var(--amber-soft);
+      color: #5d3a08;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .evidence-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+    .evidence-item { padding: 14px; border-top: 2px solid var(--ink); background: var(--surface); }
+    .evidence-item strong { display: block; font-size: 20px; }
+    .evidence-item span { color: var(--muted); font-size: 12px; }
+
+    .filterbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .filterbar button {
+      min-height: 40px;
+      border: 1px solid var(--line-strong);
+      border-radius: 5px;
+      background: var(--surface);
+      color: var(--muted);
+      padding: 7px 12px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .filterbar button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: white; }
+
+    .findings { display: grid; gap: 8px; }
+    .finding {
+      display: grid;
+      grid-template-columns: 104px minmax(190px, 0.72fr) minmax(0, 1.8fr) minmax(220px, 0.8fr);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .finding > div { min-width: 0; padding: 14px; border-left: 1px solid var(--line); }
+    .finding > div:first-child { border-left: 0; }
+    .severity { font-size: 12px; font-weight: 850; text-transform: uppercase; }
+    .severity.high { color: var(--red); }
+    .severity.medium { color: var(--amber); }
+    .severity.low { color: var(--green); }
+    .route { margin-top: 6px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+    .finding h3 { font-size: 15px; }
+    .finding p { margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .finding .change { color: var(--ink); font-weight: 700; }
+    .marker { display: inline-block; margin-top: 7px; padding: 3px 6px; background: var(--accent-soft); color: #1c348c; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+    table { width: 100%; border-collapse: collapse; min-width: 780px; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 12px; }
+    th { background: #efefea; font-weight: 850; }
+    tr:last-child td { border-bottom: 0; }
+    .rating { font-weight: 800; }
+    .clear { color: var(--green); }
+    .friction { color: var(--red); }
+    .not-tested { color: var(--faint); }
+
+    .option-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .option { position: relative; padding: 20px; border: 1px solid var(--line); background: var(--surface); }
+    .option.recommended { border: 2px solid var(--green); }
+    .option .score { margin-top: 18px; font-size: 34px; font-weight: 850; }
+    .option p { margin-top: 8px; color: var(--muted); font-size: 13px; }
+    .option .tag { position: absolute; right: 12px; top: 12px; color: var(--green); font-size: 11px; font-weight: 850; }
+
+    .surface { margin-top: 22px; border-top: 1px solid var(--line-strong); padding-top: 22px; }
+    .surface-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .surface-head p { color: var(--muted); font-size: 13px; }
+    .compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+    .panel { min-width: 0; border: 1px solid var(--line); background: var(--surface); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+    .panel-head strong { font-size: 13px; }
+    .panel-head span { color: var(--muted); font-size: 11px; }
+    .shot { aspect-ratio: 16 / 10; overflow: auto; background: #e5e5df; }
+    .shot.mobile { display: grid; place-items: start center; padding: 16px; }
+    .shot.mobile img { width: min(100%, 312px); border: 1px solid #b9b8b0; box-shadow: 0 8px 20px rgba(23,23,20,.12); }
+    .panel-note { padding: 12px; color: var(--muted); font-size: 12px; }
+
+    .mode-toggle { display: flex; gap: 4px; }
+    .mode-toggle button {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--surface);
+      padding: 4px 9px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .mode-toggle button[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
+    .wireframe { min-height: 520px; padding: 18px; background: #ecece7; }
+    .wire-mobile { max-width: 330px; min-height: 570px; margin: 0 auto; border: 1px solid #aaa9a1; background: white; box-shadow: 0 8px 22px rgba(23,23,20,.12); }
+    .wire-wide { display: none; min-height: 420px; border: 1px solid #aaa9a1; background: white; }
+    .wireframe[data-mode="wide"] .wire-mobile { display: none; }
+    .wireframe[data-mode="wide"] .wire-wide { display: block; }
+    .wf-head { padding: 14px; border-bottom: 1px solid var(--line); }
+    .wf-eyebrow { color: var(--accent); font-size: 9px; font-weight: 850; }
+    .wf-title { margin-top: 5px; font-size: 17px; font-weight: 850; }
+    .wf-meta { margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .wf-section { padding: 13px 14px; border-bottom: 1px solid var(--line); }
+    .wf-label { color: var(--muted); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+    .wf-result { margin-top: 9px; border-left: 3px solid var(--accent); padding-left: 10px; }
+    .wf-row { display: flex; justify-content: space-between; gap: 8px; padding: 7px 0; border-bottom: 1px solid #eeeeea; font-size: 10px; }
+    .wf-row:last-child { border-bottom: 0; }
+    .wf-action { display: flex; align-items: center; justify-content: center; min-height: 42px; margin: 12px 14px; border-radius: 5px; background: var(--ink); color: white; font-size: 11px; font-weight: 850; }
+    .wf-link { color: var(--accent); font-weight: 800; }
+    .wf-columns { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(250px, .75fr); min-height: 418px; }
+    .wf-canvas { padding: 18px; border-right: 1px solid var(--line); }
+    .wf-inspector { padding: 18px; }
+    .wf-rail-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr) 250px; min-height: 418px; }
+    .wf-rail, .wf-center, .wf-side { padding: 14px; }
+    .wf-rail, .wf-center { border-right: 1px solid var(--line); }
+    .wf-pill { display: inline-block; margin: 3px 2px 0 0; padding: 3px 6px; background: #efefea; font-size: 9px; }
+
+    .anatomy { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .atom { padding: 16px; border-top: 3px solid var(--coral); background: var(--surface); }
+    .atom span { display: block; color: var(--muted); font-size: 12px; margin-top: 5px; }
+
+    .continuity { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line-strong); background: var(--line); }
+    .frame { min-height: 190px; padding: 15px; background: var(--surface); }
+    .frame b { display: block; color: var(--accent); font-size: 11px; }
+    .frame h3 { margin-top: 8px; font-size: 15px; }
+    .frame p { margin-top: 8px; color: var(--muted); font-size: 11px; }
+    .frame .command { margin-top: 14px; padding-top: 9px; border-top: 1px solid var(--line); font-size: 11px; font-weight: 800; }
+
+    .roadmap { display: grid; gap: 8px; }
+    .slice { display: grid; grid-template-columns: 92px minmax(200px, .7fr) minmax(0, 1.3fr) 160px; border: 1px solid var(--line); background: var(--surface); }
+    .slice > div { padding: 13px; border-left: 1px solid var(--line); }
+    .slice > div:first-child { border-left: 0; }
+    .slice-id { font-weight: 850; color: var(--accent); }
+    .slice p { color: var(--muted); font-size: 12px; }
+    .slice strong { font-size: 13px; }
+
+    .gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .gallery a { display: block; border: 1px solid var(--line); background: var(--surface); text-decoration: none; }
+    .gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: top; background: #eee; }
+    .gallery span { display: block; padding: 9px; color: var(--muted); font-size: 11px; }
+
+    .keep-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .keep-grid article { padding: 16px; background: var(--surface); border-top: 3px solid var(--line-strong); }
+    .keep-grid article:nth-child(1) { border-color: var(--green); }
+    .keep-grid article:nth-child(2) { border-color: var(--amber); }
+    .keep-grid article:nth-child(3) { border-color: var(--red); }
+    .keep-grid article:nth-child(4) { border-color: var(--faint); }
+    .keep-grid p { margin-top: 7px; color: var(--muted); font-size: 12px; }
+
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .links a { display: inline-flex; align-items: center; min-height: 42px; padding: 8px 12px; border: 1px solid var(--line-strong); border-radius: 5px; background: var(--surface); font-size: 12px; font-weight: 750; text-decoration: none; }
+    footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 980px) {
+      .nav { max-width: 65vw; }
+      .verdict { grid-template-columns: 1fr; }
+      .finding { grid-template-columns: 90px 1fr; }
+      .finding > div:nth-child(3), .finding > div:nth-child(4) { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); }
+      .compare { grid-template-columns: 1fr; }
+      .option-grid, .anatomy { grid-template-columns: 1fr; }
+      .continuity { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .slice { grid-template-columns: 82px 1fr; }
+      .slice > div:nth-child(3), .slice > div:nth-child(4) { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); }
+      .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .keep-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 620px) {
+      .topbar { align-items: flex-start; padding: 8px 12px; }
+      .brand small { display: none; }
+      .nav { max-width: 72vw; }
+      .nav a { padding-inline: 8px; }
+      main { padding: 22px 12px 64px; }
+      section { margin-top: 42px; }
+      h1 { font-size: 34px; }
+      h2 { font-size: 23px; }
+      .lead { font-size: 16px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 7px; }
+      .verdict-main, .verdict-side { padding: 18px; }
+      .verdict-side { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
+      .metric { min-height: 90px; padding: 13px; }
+      .evidence-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .finding { grid-template-columns: 76px 1fr; }
+      .finding > div { padding: 11px; }
+      .continuity { grid-template-columns: 1fr; }
+      .frame { min-height: auto; }
+      .wireframe { padding: 10px; }
+      .gallery, .keep-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 이동</a>
+  <header class="topbar">
+    <div class="brand">FLOW <small>P29-00 independent gate</small></div>
+    <nav class="nav" aria-label="보고서 목차">
+      <a href="#verdict">판정</a>
+      <a href="#findings">Findings</a>
+      <a href="#surfaces">화면</a>
+      <a href="#continuity">연속성</a>
+      <a href="#backlog">백로그</a>
+      <a href="#evidence">Evidence</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="verdict" aria-labelledby="verdict-title" style="margin-top:0">
+      <p class="eyebrow">P28 production → P29 implementation gate</p>
+      <h1 id="verdict-title">구조는 유지하고, 핵심 surface는 함께 다시 구성한다.</h1>
+      <p class="lead">P28은 데이터 계약과 실제 기능을 안정화했다. 그러나 저장 전, 저장 직후, My Flow, Calendar, 결과 선택의 화면 문법은 아직 카드·설정 폼·문서가 누적된 형태다. 결론은 token polish도 full rewrite도 아닌 coordinated surface reset이다.</p>
+
+      <div class="verdict">
+        <div class="verdict-main">
+          <div class="decision-label">FINAL DECISION · CONFIDENCE 5/5</div>
+          <div class="decision">coordinated_surface_reset</div>
+          <p class="decision-copy">stable projection, identity, 4탭 IA, public shell은 보존한다. save-before, receipt, routine, My Flow, Calendar, result choice의 composition과 interaction hierarchy만 하나의 공통 문법으로 맞춘다.</p>
+        </div>
+        <div class="verdict-side" aria-label="검토 핵심 수치">
+          <div class="metric"><strong>64</strong><span>production states</span></div>
+          <div class="metric"><strong>0</strong><span>scripted failure</span></div>
+          <div class="metric"><strong>0</strong><span>horizontal overflow</span></div>
+          <div class="metric"><strong>0</strong><span>observed users</span></div>
+        </div>
+      </div>
+      <div class="notice">자동화와 heuristic simulation은 실제 사용자 관찰이 아니다. 오류 0은 usability pass가 아니라 이번 상태에서 명백한 기능 차단을 찾지 못했다는 뜻이다.</div>
+
+      <div class="evidence-strip">
+        <div class="evidence-item"><strong>2.09×</strong><span>moving 모바일 문서 높이</span></div>
+        <div class="evidence-item"><strong>3.83×</strong><span>math 모바일 문서 높이</span></div>
+        <div class="evidence-item"><strong>3.29×</strong><span>27개 My Flow 모바일</span></div>
+        <div class="evidence-item"><strong>40 / 49</strong><span>Calendar 첫 화면 action 수, mobile/wide</span></div>
+      </div>
+    </section>
+
+    <section id="findings" aria-labelledby="findings-title">
+      <div class="section-head">
+        <div><p class="eyebrow">Severity first</p><h2 id="findings-title">Findings</h2></div>
+        <p>Blocking 0. High는 composition·interaction state, Medium은 density·scope·wide hierarchy, Low는 composition 이후의 token 마감이다.</p>
+      </div>
+      <div class="filterbar" aria-label="Finding severity filter">
+        <button type="button" data-filter="all" aria-pressed="true">전체 12</button>
+        <button type="button" data-filter="high" aria-pressed="false">High 7</button>
+        <button type="button" data-filter="medium" aria-pressed="false">Medium 4</button>
+        <button type="button" data-filter="low" aria-pressed="false">Low 1</button>
+      </div>
+      <div class="findings">
+        <article class="finding" data-severity="high">
+          <div><span class="severity high">High</span><div class="route">/f/moving<br>/f/math<br>/f/safety<br>390·1024</div></div>
+          <div><h3>저장 전 결과가 중복된다</h3><p>outline, artifact preview, legacy workbench에 같은 item이 반복된다.</p></div>
+          <div><p><b>기대</b> source·저장 단위·primary 결과를 한 번에 이해.</p><p><b>실제</b> math는 3.83 viewport, bordered surface 23개.</p><p class="change">Primary artifact를 첫 결과로 올리고 outline은 한 번만 노출한다.</p></div>
+          <div><p>Evidence: production + screenshot + source</p><span class="marker">P29-SAVE-BEFORE-PRIMARY-RESULT</span></div>
+        </article>
+        <article class="finding" data-severity="high">
+          <div><span class="severity high">High</span><div class="route">/f/moving<br>390</div></div>
+          <div><h3>저장 후 receipt가 분리되지 않는다</h3><p>같은 긴 화면에 `저장됨`과 다음 링크만 바뀐다.</p></div>
+          <div><p><b>기대</b> 저장된 이름·항목·날짜와 다음 행동 확인.</p><p><b>실제</b> save-before control이 그대로 남는다.</p><p class="change">SavedReceiptFrame을 별도 composition으로 만든다.</p></div>
+          <div><p>Evidence: production + source</p><span class="marker">P29-SAVED-RECEIPT-DISTINCT</span></div>
+        </article>
+        <article class="finding" data-severity="high">
+          <div><span class="severity high">High</span><div class="route">/f · /my · /calendar<br>390</div></div>
+          <div><h3>모바일 focus 순서가 시각 순서와 다르다</h3><p>fixed save CTA와 bottom nav가 본문보다 먼저 포커스된다.</p></div>
+          <div><p><b>기대</b> header → content → contextual command → nav.</p><p><b>실제</b> 문맥 없이 하단 action을 먼저 만난다.</p><p class="change">DOM order와 focus restore를 composition 계약에 포함한다.</p></div>
+          <div><p>Evidence: production + source</p><span class="marker">P29-MOBILE-FOCUS-ORDER</span></div>
+        </article>
+        <article class="finding" data-severity="high">
+          <div><span class="severity high">High</span><div class="route">/f/allblanc<br>390·1024</div></div>
+          <div><h3>Routine보다 설정 폼이 더 크다</h3><p>요일, 시간, duration, 종료 조건이 한 번에 펼쳐진다.</p></div>
+          <div><p><b>기대</b> 현재 계획을 한 줄로 읽고 필요한 부분만 조정.</p><p><b>실제</b> 저장까지 9 click depth.</p><p class="change">Summary + next 3 occurrences + conditional edit sheet로 바꾼다.</p></div>
+          <div><p>Evidence: production + source</p><span class="marker">P29-ROUTINE-PROGRESSIVE</span></div>
+        </article>
+        <article class="finding" data-severity="high">
+          <div><span class="severity high">High</span><div class="route">/my?demo=ux20<br>390</div></div>
+          <div><h3>라이브러리에 export가 반복된다</h3><p>8개 큰 card마다 `가져가기`, 열기는 card click에 암시된다.</p></div>
+          <div><p><b>기대</b> Flow 찾기와 다음 행동이 먼저.</p><p><b>실제</b> initial 3.29 viewport.</p><p class="change">Compact row, explicit open, export는 detail/overflow로 이동한다.</p></div>
+          <div><p>Evidence: production + screenshot</p><span class="marker">P29-MY-FLOW-LIBRARY</span></div>
+        </article>
+        <article class="finding" data-severity="high">
+          <div><span class="severity high">High</span><div class="route">five shape /f<br>390·1024</div></div>
+          <div><h3>결과 추천 이유와 손실이 없다</h3><p>실제 data/count는 맞지만 shape label만으로 선택해야 한다.</p></div>
+          <div><p><b>기대</b> 왜 추천하며 바꾸면 무엇이 빠지는지 예측.</p><p><b>실제</b> reason/loss 없음.</p><p class="change">Derived recommendation VM을 추가하고 저장하지 않는다.</p></div>
+          <div><p>Evidence: production + source + heuristic</p><span class="marker">P29-RESULT-CHOICE</span></div>
+        </article>
+        <article class="finding" data-severity="high">
+          <div><span class="severity high">High</span><div class="route">/f → /my → /calendar</div></div>
+          <div><h3>데이터는 이어지지만 화면 문법은 끊긴다</h3><p>header, command, state feedback 위치가 surface마다 다르다.</p></div>
+          <div><p><b>기대</b> 같은 Flow를 계속 쓰는 느낌.</p><p><b>실제</b> 서로 다른 도구를 오가는 인상.</p><p class="change">Identity strip + state line + contextual command bar를 공유한다.</p></div>
+          <div><p>Evidence: production + source</p><span class="marker">P29-CONTINUITY</span></div>
+        </article>
+        <article class="finding" data-severity="medium">
+          <div><span class="severity medium">Medium</span><div class="route">/calendar?demo=ux12<br>390·1024</div></div>
+          <div><h3>Scope picker가 관리 화면으로 커진다</h3><p>12개 Flow를 같은 무게로 나열한다.</p></div>
+          <div><p><b>실제</b> first-view actions 40/49.</p><p class="change">닫힌 summary + active/recent grouping + all dialog로 나눈다.</p></div>
+          <div><p>Evidence: production + source</p><span class="marker">P29-CALENDAR-SCOPE</span></div>
+        </article>
+        <article class="finding" data-severity="medium">
+          <div><span class="severity medium">Medium</span><div class="route">/calendar undated<br>390</div></div>
+          <div><h3>Undated tray가 Calendar를 밀어낸다</h3><p>15개 item과 날짜 controls가 page flow에 펼쳐진다.</p></div>
+          <div><p><b>유지</b> selection, date placement, undo.</p><p class="change">Count action + internal-scroll bottom sheet로 바꾼다.</p></div>
+          <div><p>Evidence: production + screenshot</p><span class="marker">P29-UNDATED-SHEET</span></div>
+        </article>
+        <article class="finding" data-severity="medium">
+          <div><span class="severity medium">Medium</span><div class="route">wide /f · /my · /calendar</div></div>
+          <div><h3>Wide가 넓어진 mobile처럼 보인다</h3><p>빈 공간과 border/label이 동시에 많다.</p></div>
+          <div><p class="change">Rail + primary canvas + inspector로 column 역할을 고정한다.</p></div>
+          <div><p>Evidence: screenshot + heuristic</p><span class="marker">P29-WIDE-COMPOSITION</span></div>
+        </article>
+        <article class="finding" data-severity="medium">
+          <div><span class="severity medium">Medium</span><div class="route">routine /my /calendar</div></div>
+          <div><h3>Occurrence 문맥이 약하다</h3><p>완료·undo·reopen은 작동하지만 Calendar row에서 series와 회차가 약하게 구분된다.</p></div>
+          <div><p class="change">계약은 유지하고 occurrence label과 series link만 추가한다.</p></div>
+          <div><p>Evidence: production + source</p><span class="marker">P29-OCCURRENCE-LABEL</span></div>
+        </article>
+        <article class="finding" data-severity="low">
+          <div><span class="severity low">Low</span><div class="route">all surfaces</div></div>
+          <div><h3>Container가 정보보다 먼저 보인다</h3><p>rounded border, chip, pale action surface가 반복된다.</p></div>
+          <div><p class="change">Composition 이후 type/divider/radius/state token을 정리한다.</p></div>
+          <div><p>Evidence: screenshot + source + reference</p><span class="marker">P29-VISUAL-TOKENS</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="journeys" aria-labelledby="journey-title">
+      <div class="section-head">
+        <div><p class="eyebrow">6 simulated personas</p><h2 id="journey-title">여정 Scorecard</h2></div>
+        <p>기능 차단은 없었지만 전체가 clear인 여정도 없었다. P28 지원 여부와 P29 사용성 품질을 분리해 판정했다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Persona</th><th>발견</th><th>저장 전</th><th>조정</th><th>저장</th><th>실행·재개</th><th>Calendar</th><th>가져가기</th><th>전체</th></tr></thead>
+          <tbody>
+            <tr><td>이사 첫 사용자</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating clear">clear</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td></tr>
+            <tr><td>홈트 반복 사용자</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating clear">clear</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td></tr>
+            <tr><td>27개 My Flow 재방문</td><td class="rating friction">friction</td><td class="rating not-tested">not_tested</td><td class="rating friction">friction</td><td class="rating not-tested">not_tested</td><td class="rating clear">clear</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td></tr>
+            <tr><td>12개 Calendar 사용자</td><td class="rating not-tested">not_tested</td><td class="rating not-tested">not_tested</td><td class="rating clear">clear</td><td class="rating not-tested">not_tested</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating not-tested">not_tested</td><td class="rating friction">friction</td></tr>
+            <tr><td>기존 도구 결과 선택자</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating not-tested">not_tested</td><td class="rating not-tested">not_tested</td><td class="rating friction">friction</td><td class="rating friction">friction</td></tr>
+            <tr><td>Cross-surface 재사용자</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating friction">friction</td><td class="rating clear">clear</td><td class="rating clear">clear</td><td class="rating friction">friction</td><td class="rating friction">friction</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="alternatives" aria-labelledby="alternative-title">
+      <div class="section-head">
+        <div><p class="eyebrow">A / B / C</p><h2 id="alternative-title">Polish도 rewrite도 아니다</h2></div>
+        <p>가중치: 여정 연속성 20, 첫 viewport 15, 점진적 공개 15, 계약 보존 15, 나머지 35.</p>
+      </div>
+      <div class="option-grid">
+        <article class="option"><h3>A. Incremental polish</h3><div class="score">56</div><p>안전하지만 중복 outline, receipt 부재, routine 전체 폼, focus order가 남는다.</p></article>
+        <article class="option recommended"><span class="tag">RECOMMENDED</span><h3>B. Coordinated reset</h3><div class="score">95</div><p>P28 계약을 유지하며 다섯 surface의 composition과 command grammar를 함께 바꾼다.</p></article>
+        <article class="option"><h3>C. Full rewrite</h3><div class="score">63</div><p>시각 변화는 크지만 planner rewrite가 되고 stable identity 회귀 위험이 과도하다.</p></article>
+      </div>
+    </section>
+
+    <section id="surfaces" aria-labelledby="surfaces-title">
+      <div class="section-head">
+        <div><p class="eyebrow">Current vs proposed</p><h2 id="surfaces-title">다섯 핵심 Surface</h2></div>
+        <p>각 proposed는 같은 visual grammar를 쓰되 save-before, receipt, returning execution의 역할을 합치지 않는다. 버튼으로 390과 wide wireframe을 전환할 수 있다.</p>
+      </div>
+
+      <article class="surface" id="surface-save-before">
+        <div class="surface-head"><div><h3>1. Save-before</h3><p>실제 저장 결과가 edit command보다 먼저</p></div></div>
+        <div class="compare">
+          <div class="panel">
+            <div class="panel-head"><strong>Current · 390</strong><span>2.09 viewport</span></div>
+            <div class="shot mobile"><img src="screenshots/mobile-journey-moving-01-save-before.png" alt="현재 이사 Flow 저장 전 모바일 화면" loading="lazy" /></div>
+            <p class="panel-note">5개 outline과 Calendar 결과가 반복되고 row마다 수정이 보인다. fixed CTA가 header보다 먼저 포커스된다.</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><strong>Proposed</strong><div class="mode-toggle" data-target="wf-save"><button type="button" data-mode="mobile" aria-pressed="true">390</button><button type="button" data-mode="wide" aria-pressed="false">1024+</button></div></div>
+            <div class="wireframe" id="wf-save" data-mode="mobile">
+              <div class="wire-mobile">
+                <div class="wf-head"><div class="wf-eyebrow">FLOW · 출처 확인됨</div><div class="wf-title">이사 D-30 준비 <small>24개</small></div><div class="wf-meta">AJD 원문 · 기준일 역산형</div></div>
+                <div class="wf-section"><div class="wf-label">추천 결과 · Calendar</div><div class="wf-result"><div class="wf-row"><span>7/2</span><b>이사 방식 정하기</b></div><div class="wf-row"><span>7/18</span><b>입주청소 확인</b></div><div class="wf-row"><span>8/1</span><b>이사 당일</b></div></div><div class="wf-row"><span>24개 일정 · 날짜 없는 일 0</span><span class="wf-link">전체 Flow</span></div></div>
+                <div class="wf-section"><div class="wf-label">내 상황</div><div class="wf-row"><span>이사일</span><b>2026.08.01 · 조정</b></div></div>
+                <div class="wf-action">내 Flow에 저장</div>
+              </div>
+              <div class="wire-wide"><div class="wf-head"><div class="wf-eyebrow">FLOW / 출처 / 24개</div><div class="wf-title">이사 D-30 준비</div></div><div class="wf-columns"><div class="wf-canvas"><div class="wf-label">PRIMARY ARTIFACT CANVAS</div><div class="wf-result"><div class="wf-row"><span>7/2</span><b>이사 방식 정하기</b></div><div class="wf-row"><span>7/18</span><b>입주청소 확인</b></div><div class="wf-row"><span>8/1</span><b>이사 당일</b></div></div><div class="wf-section">전체 Flow outline · 한 번만 · section disclosure</div></div><div class="wf-inspector"><div class="wf-label">CONTEXT INSPECTOR</div><p class="wf-meta">Calendar가 맞는 이유</p><div class="wf-row"><span>이사일</span><b>8/1</b></div><div class="wf-action">내 Flow에 저장</div></div></div></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="surface" id="surface-routine">
+        <div class="surface-head"><div><h3>2. Routine setup</h3><p>지원 필드가 아니라 현재 계획을 먼저 읽는다</p></div></div>
+        <div class="compare">
+          <div class="panel"><div class="panel-head"><strong>Current · 390</strong><span>9 click depth</span></div><div class="shot mobile"><img src="screenshots/mobile-journey-routine-02-configured.png" alt="현재 반복 홈트 설정 모바일 화면" loading="lazy" /></div><p class="panel-note">요일, 시간, duration, 종료 조건이 한 번에 펼쳐져 한 개 실행 항목보다 설정이 더 크게 보인다.</p></div>
+          <div class="panel"><div class="panel-head"><strong>Proposed</strong><div class="mode-toggle" data-target="wf-routine"><button type="button" data-mode="mobile" aria-pressed="true">390</button><button type="button" data-mode="wide" aria-pressed="false">1024+</button></div></div><div class="wireframe" id="wf-routine" data-mode="mobile">
+            <div class="wire-mobile"><div class="wf-head"><div class="wf-eyebrow">ROUTINE · 원문 영상</div><div class="wf-title">아침 전신 운동</div><div class="wf-meta">영상 15분 · 실행 항목 1개</div></div><div class="wf-section"><div class="wf-label">반복 계획</div><div class="wf-row"><b>월·수·금 · 07:30</b><span class="wf-link">조정</span></div><div class="wf-row"><span>45분 · 8회</span><span>다음 7/22</span></div><span class="wf-pill">7/22</span><span class="wf-pill">7/24</span><span class="wf-pill">7/27</span></div><div class="wf-section"><div class="wf-label">실행할 내용</div><div class="wf-row"><span>□ 영상 따라 운동 완료</span><span>열기</span></div></div><div class="wf-action">이 계획으로 저장</div></div>
+            <div class="wire-wide"><div class="wf-head"><div class="wf-title">아침 전신 운동</div></div><div class="wf-columns"><div class="wf-canvas"><div class="wf-label">SERIES SUMMARY + OCCURRENCES</div><div class="wf-result"><div class="wf-row"><b>월·수·금 · 07:30 · 45분</b><span>8회</span></div><div class="wf-row"><span>다음 3회</span><span>7/22 · 7/24 · 7/27</span></div></div></div><div class="wf-inspector"><div class="wf-label">RESOURCE / ADJUST</div><div class="wf-row"><span>원문 영상</span><span>열기</span></div><div class="wf-action">일정 조정</div></div></div></div>
+          </div></div>
+        </div>
+      </article>
+
+      <article class="surface" id="surface-my-flow">
+        <div class="surface-head"><div><h3>3. My Flow</h3><p>라이브러리는 찾기, detail은 실행과 조정</p></div></div>
+        <div class="compare">
+          <div class="panel"><div class="panel-head"><strong>Current · 390</strong><span>27 Flow · 3.29 viewport</span></div><div class="shot mobile"><img src="screenshots/mobile-journey-my-flow-mobile-01-library.png" alt="현재 My Flow 27개 라이브러리 모바일 화면" loading="lazy" /></div><p class="panel-note">큰 card마다 가져가기가 반복되고, Flow 열기는 row의 명시적 command로 보이지 않는다.</p></div>
+          <div class="panel"><div class="panel-head"><strong>Proposed</strong><div class="mode-toggle" data-target="wf-my"><button type="button" data-mode="mobile" aria-pressed="true">390</button><button type="button" data-mode="wide" aria-pressed="false">1024+</button></div></div><div class="wireframe" id="wf-my" data-mode="mobile">
+            <div class="wire-mobile"><div class="wf-head"><div class="wf-title">내 Flow 27 <span style="float:right">⌕</span></div><div class="wf-meta">지금 · 내 Flow · 완료</div></div><div class="wf-section"><div class="wf-row"><span><b>이사 D-30 준비</b><br><small>다음 7/22 · 0/24</small></span><b>›</b></div><div class="wf-row"><span><b>아침 전신 운동</b><br><small>오늘 07:30 · 1/8회</small></span><b>›</b></div><div class="wf-row"><span><b>차량 점검</b><br><small>날짜 없음 · 10개</small></span><b>›</b></div><div class="wf-row"><span><b>중1 수학</b><br><small>다음 3주차 · 2/8</small></span><b>›</b></div><div class="wf-row"><span><b>해외 안전 등록</b><br><small>확인 4개</small></span><b>›</b></div></div></div>
+            <div class="wire-wide"><div class="wf-rail-layout"><div class="wf-rail"><div class="wf-label">LIBRARY 280</div><div class="wf-row"><b>이사 D-30</b><span>›</span></div><div class="wf-row"><span>홈트</span><span>›</span></div><div class="wf-row"><span>차량 점검</span><span>›</span></div></div><div class="wf-center"><div class="wf-label">PLAN CANVAS</div><div class="wf-title">이사 D-30 준비</div><div class="wf-meta">AJD 원문 · 0/24</div><div class="wf-result"><div class="wf-row"><span>□ 7/2 이사 방식</span><span>열기</span></div><div class="wf-row"><span>□ 7/18 입주청소</span><span>열기</span></div><div class="wf-row"><span>□ 8/1 이사 당일</span><span>열기</span></div></div></div><div class="wf-side"><div class="wf-label">CONTEXT 320</div><p class="wf-meta">다음 할 일</p><div class="wf-title" style="font-size:14px">이사 방식 정하기</div><div class="wf-action">열기</div><div class="wf-row"><span>조정</span><span>가져가기</span></div></div></div></div>
+          </div></div>
+        </div>
+      </article>
+
+      <article class="surface" id="surface-calendar">
+        <div class="surface-head"><div><h3>4. Calendar</h3><p>Scope, 날짜 일정, undated 배치를 분리한다</p></div></div>
+        <div class="compare">
+          <div class="panel"><div class="panel-head"><strong>Current · 1024</strong><span>first-view actions 49</span></div><div class="shot"><img src="screenshots/wide-journey-calendar-wide-03-selected.png" alt="현재 Calendar 와이드 Flow 다중 선택 화면" loading="lazy" /></div><p class="panel-note">기능은 작동하지만 scope·calendar·selected day의 command 밀도가 높고 모든 Flow가 같은 우선순위다.</p></div>
+          <div class="panel"><div class="panel-head"><strong>Proposed</strong><div class="mode-toggle" data-target="wf-cal"><button type="button" data-mode="mobile" aria-pressed="true">390</button><button type="button" data-mode="wide" aria-pressed="false">1024+</button></div></div><div class="wireframe" id="wf-cal" data-mode="mobile">
+            <div class="wire-mobile"><div class="wf-head"><div class="wf-title">7월 22일 · 오늘</div></div><div class="wf-section"><div class="wf-row"><span>□ 이사 방식 정하기</span><span>이사 ›</span></div><div class="wf-row"><span>□ 아침 전신 운동</span><span>홈트 ›</span></div></div><div class="wf-section"><div class="wf-row"><b>보는 Flow 2개</b><span class="wf-link">변경</span></div><div class="wf-label" style="margin-top:10px">2026년 7월</div><div style="height:150px;margin-top:8px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:11px">MONTH GRID</div></div><div class="wf-action" style="background:#fff;color:var(--ink);border:1px solid var(--line-strong)">날짜 없는 일 15개 배치</div></div>
+            <div class="wire-wide"><div class="wf-rail-layout"><div class="wf-rail"><div class="wf-label">FLOW SCOPE</div><div class="wf-row"><b>활성 2개</b><span>변경</span></div><div class="wf-row"><span>최근 Flow</span><span>3</span></div><div class="wf-row"><span>날짜 없는 일</span><b>15</b></div></div><div class="wf-center"><div class="wf-label">CALENDAR CANVAS</div><div style="height:340px;margin-top:10px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:11px">MONTH / WEEK GRID</div></div><div class="wf-side"><div class="wf-label">SELECTED DAY</div><div class="wf-title" style="font-size:15px">7월 22일</div><div class="wf-row"><span>이사 방식</span><span>열기</span></div><div class="wf-row"><span>아침 운동</span><span>열기</span></div></div></div></div>
+          </div></div>
+        </div>
+      </article>
+
+      <article class="surface" id="surface-result">
+        <div class="surface-head"><div><h3>5. Result choice & receipt</h3><p>무엇이 좋은지와 무엇이 빠지는지를 action 전에</p></div></div>
+        <div class="compare">
+          <div class="panel"><div class="panel-head"><strong>Current · Sheet</strong><span>actual data, no reason/loss</span></div><div class="shot mobile"><img src="screenshots/mobile-shape-source-backed-middle-school-math-1-primary.png" alt="현재 중1 수학 Sheet 결과 모바일 화면" loading="lazy" /></div><p class="panel-note">Sheet + Checklist eligibility와 8개 count는 정확하다. 다만 왜 Sheet인지, Checklist로 바꾸면 무엇이 빠지는지는 없다.</p></div>
+          <div class="panel"><div class="panel-head"><strong>Proposed</strong><div class="mode-toggle" data-target="wf-result"><button type="button" data-mode="mobile" aria-pressed="true">390</button><button type="button" data-mode="wide" aria-pressed="false">1024+</button></div></div><div class="wireframe" id="wf-result" data-mode="mobile">
+            <div class="wire-mobile"><div class="wf-head"><div class="wf-eyebrow">추천 결과</div><div class="wf-title">실행표 8행</div><div class="wf-meta">주차와 순서를 한눈에 관리하기 좋아요.</div></div><div class="wf-section"><div class="wf-row"><span>1주차</span><b>수와 연산 · 미완료</b></div><div class="wf-row"><span>2주차</span><b>문자와 식 · 미완료</b></div><div class="wf-row"><span>3주차</span><b>좌표와 그래프 · 미완료</b></div></div><div class="wf-action">8주 진도표로 시작</div><div class="wf-section"><div class="wf-label">함께 쓰기</div><div class="wf-row"><span><b>체크리스트 8개</b><br><small>주차 열과 현재 위치는 빠져요.</small></span><span class="wf-link">보기</span></div></div></div>
+            <div class="wire-wide"><div class="wf-columns"><div class="wf-canvas"><div class="wf-label">RECOMMENDED ARTIFACT</div><div class="wf-title">실행표 8행</div><div class="wf-result"><div class="wf-row"><span>1주차</span><b>수와 연산</b></div><div class="wf-row"><span>2주차</span><b>문자와 식</b></div></div></div><div class="wf-inspector"><div class="wf-label">WHY / WHAT CHANGES</div><p class="wf-meta">순서와 진도 열 유지</p><div class="wf-row"><span>Checklist</span><span>주차 열 제외</span></div><div class="wf-action">8주 진도표로 시작</div></div></div></div>
+          </div></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="continuity" aria-labelledby="continuity-title">
+      <div class="section-head"><div><p class="eyebrow">One Flow, distinct frames</p><h2 id="continuity-title">Continuity map</h2></div><p>같은 객체를 이어 쓰되 frame 역할은 합치지 않는다.</p></div>
+      <div class="continuity">
+        <article class="frame"><b>01 NOT SAVED</b><h3>Save-before</h3><p>무엇이 저장되는가?</p><p>title · source · count · primary artifact</p><div class="command">내 Flow에 저장</div></article>
+        <article class="frame"><b>02 SAVED</b><h3>Receipt</h3><p>무엇이 저장됐고 다음은?</p><p>personal title · included count · date range</p><div class="command">내 Flow에서 열기</div></article>
+        <article class="frame"><b>03 RUN</b><h3>My Flow</h3><p>지금 무엇을 하나?</p><p>progress · next item · whole plan</p><div class="command">다음 할 일 열기</div></article>
+        <article class="frame"><b>04 OCCURRENCE</b><h3>Calendar</h3><p>언제 실행하나?</p><p>Flow marker · date · occurrence</p><div class="command">항목 열기 / 날짜 이동</div></article>
+        <article class="frame"><b>05 SNAPSHOT</b><h3>Export</h3><p>무엇을 어디로 옮기나?</p><p>scope · personal overlay · source</p><div class="command">형식별 결과 가져가기</div></article>
+      </div>
+    </section>
+
+    <section id="grammar" aria-labelledby="grammar-title">
+      <div class="section-head"><div><p class="eyebrow">Shared grammar</p><h2 id="grammar-title">공통 Component Anatomy</h2></div><p>카드를 공통화하는 것이 아니라 identity, result, context, command, receipt의 역할을 공통화한다.</p></div>
+      <div class="anatomy">
+        <article class="atom"><h3>Identity strip</h3><span>title · source · type · count. Card가 아닌 header band.</span></article>
+        <article class="atom"><h3>Artifact canvas</h3><span>실제 결과, 추천 이유, 범위. 한 surface의 중심.</span></article>
+        <article class="atom"><h3>Flow outline</h3><span>section + execution row. 한 화면에서 한 번만.</span></article>
+        <article class="atom"><h3>Context inspector</h3><span>mobile sheet, wide right pane. 개인화와 item detail.</span></article>
+        <article class="atom"><h3>Command bar</h3><span>primary 1, secondary 최대 2. 결과가 드러나는 동사.</span></article>
+        <article class="atom"><h3>Receipt frame</h3><span>저장·export 결과와 다음 위치. preview와 분리.</span></article>
+      </div>
+    </section>
+
+    <section id="backlog" aria-labelledby="backlog-title">
+      <div class="section-head"><div><p class="eyebrow">P29-01 → P29-08</p><h2 id="backlog-title">실행 프로그램</h2></div><p>첫 slice에서 composition과 rollback을 증명한 뒤 병렬화한다. migration은 없다.</p></div>
+      <div class="roadmap">
+        <article class="slice"><div class="slice-id">P29-01</div><div><strong>Moving vertical slice</strong><p>Artifact-first + distinct receipt</p></div><div><p>`/f/moving-d30-basic`만 opt-in. shared identity/artifact/command primitive와 focus order를 고정한다.</p></div><div><p>Dependency: P28<br>Risk: medium</p></div></article>
+        <article class="slice"><div class="slice-id">P29-02</div><div><strong>Save-before rollout</strong><p>Public/source-backed</p></div><div><p>다섯 actual shape에서 outline 중복과 legacy workbench를 정리한다.</p></div><div><p>After 01<br>Risk: medium-high</p></div></article>
+        <article class="slice"><div class="slice-id">P29-03</div><div><strong>Routine disclosure</strong><p>Summary-first</p></div><div><p>다음 3회, resource, conditional schedule sheet, series/occurrence label.</p></div><div><p>After 01<br>Parallel 02/04</p></div></article>
+        <article class="slice"><div class="slice-id">P29-04</div><div><strong>My Flow reset</strong><p>Action-first library</p></div><div><p>Compact rows, wide plan canvas/inspector, export를 detail로 이동.</p></div><div><p>After 01<br>Parallel 03</p></div></article>
+        <article class="slice"><div class="slice-id">P29-05</div><div><strong>Calendar reset</strong><p>Scope/day/undated</p></div><div><p>Active/recent scope, selected day, internal-scroll undated sheet.</p></div><div><p>After 01 + 04 grammar</p></div></article>
+        <article class="slice"><div class="slice-id">P29-06</div><div><strong>Result & export</strong><p>Reason/loss/scope</p></div><div><p>Derived recommendation VM, whole/selected/current receipt continuity.</p></div><div><p>After 02/04/05</p></div></article>
+        <article class="slice"><div class="slice-id">P29-07</div><div><strong>Visual & a11y</strong><p>Responsive contract</p></div><div><p>Type, density, divider, state tokens, focus order, 390/1024/1440.</p></div><div><p>After 02-06</p></div></article>
+        <article class="slice"><div class="slice-id">P29-08</div><div><strong>Final gate</strong><p>Production closeout</p></div><div><p>P28 regression, P29 markers, 64-state recapture, rollback/publish state.</p></div><div><p>After 01-07</p></div></article>
+      </div>
+    </section>
+
+    <section id="evidence" aria-labelledby="evidence-title">
+      <div class="section-head"><div><p class="eyebrow">Current production</p><h2 id="evidence-title">핵심 Screenshot Evidence</h2></div><p>전체 64장은 screenshots 폴더와 raw JSON에서 확인할 수 있다.</p></div>
+      <div class="gallery">
+        <a href="screenshots/mobile-journey-moving-05-saved-receipt.png"><img src="screenshots/mobile-journey-moving-05-saved-receipt.png" alt="저장 후에도 같은 화면에 머문 moving receipt" loading="lazy" /><span>Moving saved state · distinct receipt 부재</span></a>
+        <a href="screenshots/mobile-journey-routine-02-configured.png"><img src="screenshots/mobile-journey-routine-02-configured.png" alt="반복 설정 전체 필드가 펼쳐진 화면" loading="lazy" /><span>Routine · all fields expanded</span></a>
+        <a href="screenshots/wide-journey-my-flow-wide-02-selected.png"><img src="screenshots/wide-journey-my-flow-wide-02-selected.png" alt="My Flow wide rail detail 화면" loading="lazy" /><span>My Flow wide · keep the rail-detail base</span></a>
+        <a href="screenshots/mobile-journey-undated-02-expanded.png"><img src="screenshots/mobile-journey-undated-02-expanded.png" alt="날짜 없는 할 일 tray가 확장된 화면" loading="lazy" /><span>Undated tray · functionality works, composition grows</span></a>
+        <a href="screenshots/mobile-shape-used-car-buying-check-primary.png"><img src="screenshots/mobile-shape-used-car-buying-check-primary.png" alt="차량 점검 checklist primary 결과" loading="lazy" /><span>Checklist primary · eligibility works</span></a>
+        <a href="screenshots/mobile-shape-overseas-safety-register-primary.png"><img src="screenshots/mobile-shape-overseas-safety-register-primary.png" alt="해외 안전 등록 memo primary 결과" loading="lazy" /><span>Memo primary · actual data works</span></a>
+        <a href="screenshots/wide-journey-calendar-wide-03-selected.png"><img src="screenshots/wide-journey-calendar-wide-03-selected.png" alt="Calendar wide 다중 Flow 선택 화면" loading="lazy" /><span>Calendar wide · scope works, density remains</span></a>
+        <a href="screenshots/mobile-journey-my-flow-mobile-05-reopened.png"><img src="screenshots/mobile-journey-my-flow-mobile-05-reopened.png" alt="My Flow에서 완료 취소한 화면" loading="lazy" /><span>Completion reopen · contract to keep</span></a>
+      </div>
+    </section>
+
+    <section id="closeout" aria-labelledby="closeout-title">
+      <div class="section-head"><div><p class="eyebrow">Decision closeout</p><h2 id="closeout-title">Keep / Revise / Redesign / Defer</h2></div></div>
+      <div class="keep-grid">
+        <article><h3>Keep</h3><p>P28 projection, stable identity, artifact eligibility, completion/reopen, undated placement, 4탭 IA.</p></article>
+        <article><h3>Revise</h3><p>Typography, density, divider, responsive rail/inspector, semantic state feedback.</p></article>
+        <article><h3>Redesign</h3><p>Save-before composition, receipt, routine disclosure, My Flow command hierarchy, Calendar scope, result reason/loss.</p></article>
+        <article><h3>Defer</h3><p>Account/DB, AI/crawler, OAuth, marketplace, planner rewrite, observed-user validation.</p></article>
+      </div>
+      <div class="links">
+        <a href="audit.md">전체 audit.md</a>
+        <a href="p29-backlog.md">P29 backlog</a>
+        <a href="p29-goal-prompts.md">복붙용 /goal</a>
+        <a href="technical-impact.md">기술 영향</a>
+        <a href="production-review-results.json">Raw evidence JSON</a>
+        <a href="decision-matrix.json">Decision matrix</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>FlowMe P29-00 independent review · 2026-07-22 · production interaction + current source + official reference pattern + heuristic simulation · observed-user count 0 · app code modified: false</p>
+    </footer>
+  </main>
+
+  <script>
+    const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
+    const findings = Array.from(document.querySelectorAll('.finding'));
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.filter;
+        filterButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        findings.forEach((finding) => {
+          finding.hidden = filter !== 'all' && finding.dataset.severity !== filter;
+        });
+      });
+    });
+
+    document.querySelectorAll('.mode-toggle').forEach((toggle) => {
+      const target = document.getElementById(toggle.dataset.target);
+      toggle.querySelectorAll('button').forEach((button) => {
+        button.addEventListener('click', () => {
+          target.dataset.mode = button.dataset.mode;
+          toggle.querySelectorAll('button').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        });
+      });
+    });
+  </script>
+</body>
+</html>

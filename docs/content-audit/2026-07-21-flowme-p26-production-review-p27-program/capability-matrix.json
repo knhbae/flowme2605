@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "flowme-p27-capability-matrix-v1",
+  "baseline": "P26 production",
+  "observedUserCount": 0,
+  "capabilities": [
+    {"capability":"저장 전 전체 artifact preview","status":"supported","routes":["/flow-maps/moving-d30","/f/vehicle-inspection-prep","/f/washer-tub-clean-monthly"],"risk":"low","contract":"effective Flow projection"},
+    {"capability":"그대로 시작 / 조정 선택","status":"supported","routes":["/flow-maps/moving-d30","/f/*"],"risk":"low","contract":"same effective Flow resolver"},
+    {"capability":"저장 직후 전체 Flow receipt","status":"supported","routes":["/my?savedFlow=*","/my?savedMap=*"],"risk":"low","contract":"post-save receipt + outline"},
+    {"capability":"제목·날짜·메모 quick edit","status":"supported","routes":["/my"],"risk":"low","contract":"personal value overlay"},
+    {"capability":"시간·장소·반복 advanced edit","status":"hidden","routes":["/my"],"risk":"medium","contract":"personal value overlay + recurrence"},
+    {"capability":"add/delete/restore/reorder","status":"supported","routes":["/my"],"risk":"medium","contract":"personal structural overlay"},
+    {"capability":"날짜 없는 inbox와 batch schedule","status":"partial","routes":["/calendar"],"risk":"medium","contract":"calendar unscheduled tray + atomic move"},
+    {"capability":"완료와 완료 취소","status":"supported","routes":["/my","/calendar"],"risk":"low","contract":"execution run"},
+    {"capability":"같은 날짜의 여러 Flow 구분","status":"partial","routes":["/my","/calendar"],"risk":"medium","contract":"Calendar grouping is supported; My Flow splits primary continuation from remaining Today rows"},
+    {"capability":"series와 occurrence 분리","status":"supported","routes":["/my","/calendar","/f/washer-tub-clean-monthly"],"risk":"medium","contract":"series definition + occurrence execution"},
+    {"capability":"Flow별 Calendar scope","status":"supported","routes":["/calendar"],"risk":"low","contract":"calendar-flow-scope"},
+    {"capability":"전체/선택/현재 export","status":"partial","routes":["/my","/f/*"],"risk":"medium","contract":"export scope plan + receipt"},
+    {"capability":"단계 메모·완료 후 회고·재사용","status":"partial","routes":["/my"],"risk":"medium","contract":"execution note + reflection + reuse preview"},
+    {"capability":"URL miss truthful fallback","status":"supported","routes":["/flows"],"risk":"low","contract":"miss/candidate/draft separation"},
+    {"capability":"원문/메모 unified composer","status":"missing","routes":["/flows"],"risk":"medium","contract":"new UI state only; source model rewrite not required"},
+    {"capability":"계정·cross-device persistence","status":"missing","routes":["/my","/calendar"],"risk":"high","contract":"deferred backend persistence"},
+    {"capability":"Calendar/Notion/Todo 직접 연결","status":"missing","routes":["export"],"risk":"high","contract":"deferred provider integration"}
+  ],
+  "identityAssessment": {
+    "source":"supported",
+    "personalOverlay":"supported",
+    "executionRun":"supported",
+    "occurrence":"supported",
+    "export":"supported",
+    "recommendation":"P27 visual composition must consume these contracts without migration or key changes."
+  }
+}

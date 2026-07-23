@@ -1,0 +1,103 @@
+{
+  "reviewedMainCommit": "46e567ec09c5eba37ac703529b3d3eccc75e0dde",
+  "applicationSourceCommit": "45b1f424a9e73a188750eb22691a756b86153231",
+  "mainDeltaFromApplicationSource": "canonical_handoff_docs_only",
+  "canonicalPrompt": "docs/content-audit/2026-07-21-p28-00-promise-delivery-reconciliation/prompt-ko.md",
+  "assessment": "current_source",
+  "capabilities": [
+    {
+      "capability": "save_before_projection",
+      "status": "partial",
+      "current": "FlowSaveBeforeFrame receives previewRows but renders slice(0, 5); ArtifactWorkbench separately renders a broader projection.",
+      "reuse": "Reuse existing normalized rows and workbench surfaces through one SaveBeforeProjectionVM.",
+      "migration": "none"
+    },
+    {
+      "capability": "primary_artifact_plan",
+      "status": "supported",
+      "current": "artifact-plan defines timeline, routine, sheet, decision, memo, progress, checklist primary surfaces and bundle-specific overrides.",
+      "reuse": "Use as initial policy resolver; remove slug-only exceptions over time.",
+      "migration": "none for adapter; optional policy backfill later"
+    },
+    {
+      "capability": "destination_eligibility",
+      "status": "partial",
+      "current": "Flow-level targets exist, but generic visible items are always checklist/sheet/memo eligible and Calendar depends only on schedule.",
+      "reuse": "Keep export rendering; add explicit eligibility before plan construction.",
+      "migration": "additive defaults required before non-action items ship"
+    },
+    {
+      "capability": "top_level_item_role",
+      "status": "missing",
+      "current": "FlowItem.type is todo or calendar. Reference, warning, resource, record, and decision are not top-level execution roles.",
+      "reuse": "Nested subcheck/resource overlay remains valid.",
+      "migration": "default legacy items to action; backfill only new representative content"
+    },
+    {
+      "capability": "pre_post_save_overlay",
+      "status": "supported",
+      "current": "PersonalStructuralOverlay already stores title, memo, schedule, selection, order, personal items, and tombstones.",
+      "reuse": "Use an ephemeral draft of the same overlay before save and commit atomically.",
+      "migration": "none"
+    },
+    {
+      "capability": "source_personal_run_occurrence_export_identity",
+      "status": "supported",
+      "current": "Projection and P27 tests preserve canonical source, personal overlay, run, occurrence, and export identity.",
+      "reuse": "Do not rewrite identifiers or persistence shape in P28-01 through P28-03.",
+      "migration": "none"
+    },
+    {
+      "capability": "archive_restore",
+      "status": "supported",
+      "current": "Flow archive and restore, source exclusion and restore, personal tombstone and restore are reversible.",
+      "reuse": "Retain existing lifecycle records and controls.",
+      "migration": "none"
+    },
+    {
+      "capability": "nested_subcheck_resource",
+      "status": "supported",
+      "current": "Source and personal subchecks/resources have separate overlay operations; resource links are not completion controls.",
+      "reuse": "Keep for item detail. Do not misuse it as the only model for top-level safety guidance.",
+      "migration": "none"
+    },
+    {
+      "capability": "series_occurrence",
+      "status": "supported",
+      "current": "Preview horizon, open-ended series, stable occurrence identity, completion and reopen are separated.",
+      "reuse": "Regression gate only.",
+      "migration": "none"
+    },
+    {
+      "capability": "calendar_flow_scope_and_undated",
+      "status": "supported",
+      "current": "Flow filter, same-date grouping, undated tray, batch schedule, move and undo work in production.",
+      "reuse": "Connect new eligibility and roles without changing calendar projection identity.",
+      "migration": "none"
+    },
+    {
+      "capability": "export_scope",
+      "status": "supported_with_policy_gap",
+      "current": "flow, selected, item scopes and counts are supported, but destination list is globally broad.",
+      "reuse": "Keep scope engine; filter destinations and rows through artifact policy and item roles.",
+      "migration": "none if derived at runtime"
+    }
+  ],
+  "recommendedAdditions": {
+    "itemRole": ["action", "reference", "warning", "resource", "record", "decision"],
+    "artifactPolicy": {
+      "primary": "one natural surface",
+      "secondary": "zero to two useful surfaces",
+      "forbidden": "surfaces that distort content",
+      "lossNotes": "destination-specific detail loss"
+    },
+    "saveBeforeProjectionVM": [
+      "source status",
+      "complete outline",
+      "artifact plan",
+      "unresolved user-owned values",
+      "ephemeral personal overlay",
+      "destination counts and loss notes"
+    ]
+  }
+}

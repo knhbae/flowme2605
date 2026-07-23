@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "flowme-p29-independent-journey-scorecard-v1",
+  "reviewedAt": "2026-07-22",
+  "production": "https://flowme2605.vercel.app",
+  "reviewedCommit": "afe834addf0e954d39c6da165c9f8931caba25b3",
+  "observedUserCount": 0,
+  "verdict": "revise",
+  "scale": ["supported", "partial", "hidden", "missing", "blocked"],
+  "journeys": [
+    {
+      "id": "moving",
+      "route": "/f/moving-d30-basic",
+      "status": "partial",
+      "supported": [
+        "artifact-first 24-item preview",
+        "anchor adjustment",
+        "24-row personal adjustment",
+        "distinct saved receipt",
+        "My Flow and Calendar continuity",
+        "whole-flow export count and identity"
+      ],
+      "gap": "Mobile export primary action is partially covered by a fixed layer.",
+      "evidenceKinds": ["current_production_interaction", "current_source", "heuristic_simulation"]
+    },
+    {
+      "id": "routine",
+      "route": "/f/curated-allblanc-morning-workout",
+      "status": "supported",
+      "supported": [
+        "summary-first schedule",
+        "next three occurrences",
+        "weekday, time, duration, and count adjustment",
+        "one occurrence completion",
+        "reopen without mutating the series"
+      ],
+      "gap": "Advanced controls are dense after explicit expansion, but remain progressively disclosed.",
+      "evidenceKinds": ["current_production_interaction", "current_source", "heuristic_simulation"]
+    },
+    {
+      "id": "many_my_flow",
+      "route": "/my?demo=ux20&view=flows",
+      "status": "partial",
+      "supported": [
+        "27-flow compact library",
+        "search to one result",
+        "flow drill-in",
+        "next action",
+        "completion and reopen",
+        "whole and selected export scopes"
+      ],
+      "gap": "Bottom navigation precedes main controls in keyboard focus order and overlaps an opened export action.",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    },
+    {
+      "id": "many_calendar",
+      "route": "/calendar?demo=ux20",
+      "status": "partial",
+      "supported": [
+        "compact 12-flow scope",
+        "search and two-flow selection",
+        "selected-day grouped agenda",
+        "wide 664/320 workspace",
+        "controlled undated placement and undo"
+      ],
+      "gap": "The exact production demo has no undated fixture, and mobile keyboard focus visits bottom navigation before the workspace.",
+      "evidenceKinds": ["current_production_interaction", "current_source", "heuristic_simulation"]
+    },
+    {
+      "id": "result_and_export",
+      "route": "/f/moving-d30-basic and /my?demo=source-backed&view=flows",
+      "status": "partial",
+      "supported": [
+        "primary and secondary artifact reason",
+        "whole 24-item prediction and output parity",
+        "selected 2-item scope",
+        "current 1-item scope",
+        "source identity in receipts"
+      ],
+      "gap": "The public and My Flow mobile preflight can open underneath fixed commands.",
+      "evidenceKinds": ["current_production_interaction", "current_source"]
+    }
+  ]
+}

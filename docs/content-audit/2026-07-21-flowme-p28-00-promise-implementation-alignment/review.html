@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P28-00 약속 대비 구현 정합성 검토</title>
+  <style>
+    :root {
+      --bg: #f4f6f5;
+      --surface: #ffffff;
+      --surface-2: #eef2f0;
+      --ink: #17201d;
+      --muted: #5d6965;
+      --line: #d8dfdc;
+      --green: #16724d;
+      --green-weak: #e4f3eb;
+      --blue: #2f5d95;
+      --blue-weak: #e8f0fa;
+      --amber: #9a6200;
+      --amber-weak: #fff3d9;
+      --red: #a43a35;
+      --red-weak: #fae9e7;
+      --violet: #6651a3;
+      --shadow: 0 1px 2px rgba(23,32,29,.08), 0 8px 24px rgba(23,32,29,.05);
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; line-height: 1.55; letter-spacing: 0; }
+    button, input, select { font: inherit; letter-spacing: 0; }
+    button { cursor: pointer; }
+    a { color: var(--blue); }
+    img { display: block; width: 100%; height: auto; }
+    code { font-family: "SFMono-Regular", Consolas, monospace; font-size: .92em; }
+    .skip { position: absolute; left: -999px; top: 8px; z-index: 99; padding: 10px 14px; background: var(--ink); color: white; }
+    .skip:focus { left: 8px; }
+    .topbar { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.96); backdrop-filter: blur(10px); }
+    .topbar-inner { max-width: 1440px; margin: 0 auto; min-height: 58px; padding: 8px 24px; display: flex; align-items: center; gap: 16px; }
+    .brand { display: flex; align-items: baseline; gap: 10px; min-width: 235px; }
+    .brand strong { font-size: 17px; }
+    .brand span { color: var(--muted); font-size: 12px; }
+    .nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .nav a { flex: 0 0 auto; padding: 7px 9px; border-radius: 4px; color: var(--muted); font-size: 12px; font-weight: 700; text-decoration: none; }
+    .nav a:hover, .nav a:focus-visible { color: var(--ink); background: var(--surface-2); outline: none; }
+    main { max-width: 1440px; margin: 0 auto; padding: 24px; }
+    section { scroll-margin-top: 76px; margin: 0 0 44px; }
+    .eyebrow { margin: 0 0 6px; color: var(--green); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 12px; font-size: clamp(28px, 4vw, 48px); line-height: 1.08; max-width: 870px; }
+    h2 { margin-bottom: 16px; font-size: 25px; line-height: 1.2; }
+    h3 { margin-bottom: 8px; font-size: 16px; line-height: 1.3; }
+    .lede { max-width: 900px; margin-bottom: 20px; color: var(--muted); font-size: 16px; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr); gap: 18px; align-items: stretch; }
+    .hero-main, .verdict, .panel, .finding, .case-shell, .alt, .wire, .backlog-item, .evidence-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+    .hero-main { padding: 28px; }
+    .verdict { padding: 22px; border-top: 4px solid var(--amber); }
+    .verdict strong { display: block; margin: 5px 0 8px; font-size: 20px; color: var(--amber); overflow-wrap: anywhere; }
+    .verdict p { margin: 0; color: var(--muted); font-size: 13px; }
+    .metric-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 22px; }
+    .metric { min-width: 0; padding: 12px; border: 1px solid var(--line); background: var(--surface-2); border-radius: 4px; }
+    .metric strong { display: block; font-size: 22px; }
+    .metric span { color: var(--muted); font-size: 11px; }
+    .evidence-note { margin-top: 14px; padding: 10px 12px; border-left: 3px solid var(--blue); background: var(--blue-weak); color: #294968; font-size: 12px; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 14px; }
+    .section-head p { max-width: 700px; margin: 0; color: var(--muted); font-size: 13px; }
+    .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .status-box { padding: 16px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius); }
+    .status-box strong { display: block; font-size: 24px; }
+    .status-box span { color: var(--muted); font-size: 12px; }
+    .status-box.complete { border-top: 3px solid var(--green); }
+    .status-box.partial { border-top: 3px solid var(--amber); }
+    .status-box.missing { border-top: 3px solid var(--red); }
+    .status-box.defer { border-top: 3px solid var(--blue); }
+    .promise-table { width: 100%; border-collapse: collapse; border: 1px solid var(--line); background: var(--surface); font-size: 12px; }
+    .promise-wrap { display: block; width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; }
+    .promise-table th, .promise-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    .promise-table th { background: var(--surface-2); color: var(--muted); }
+    .promise-table tr:last-child td { border-bottom: 0; }
+    .pill { display: inline-flex; align-items: center; min-height: 24px; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .pill.complete { color: var(--green); background: var(--green-weak); }
+    .pill.partial { color: var(--amber); background: var(--amber-weak); }
+    .pill.missing, .pill.blocking { color: var(--red); background: var(--red-weak); }
+    .pill.high { color: #793d00; background: #ffead3; }
+    .pill.medium { color: var(--blue); background: var(--blue-weak); }
+    .pill.low { color: var(--muted); background: var(--surface-2); }
+    .case-tabs { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; }
+    .case-tab { flex: 0 0 auto; min-height: 38px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--muted); font-weight: 800; }
+    .case-tab[aria-selected="true"] { border-color: var(--ink); background: var(--ink); color: white; }
+    .case-shell { overflow: hidden; box-shadow: var(--shadow); }
+    .case-summary { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: 470px; }
+    .case-source { padding: 20px; border-right: 1px solid var(--line); background: var(--surface-2); }
+    .case-source .source-state { margin-bottom: 16px; color: var(--green); font-size: 11px; font-weight: 800; }
+    .case-source dl { margin: 0; }
+    .case-source dt { margin-top: 12px; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .case-source dd { margin: 2px 0 0; font-size: 13px; }
+    .case-work { padding: 20px; }
+    .mode-switch { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-2); }
+    .mode-switch button { min-height: 32px; padding: 5px 10px; border: 0; border-radius: 3px; background: transparent; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .mode-switch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+    .case-content { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr); gap: 14px; margin-top: 16px; }
+    .artifact, .outline { min-width: 0; border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+    .artifact-head, .outline-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+    .artifact-head strong, .outline-head strong { font-size: 13px; }
+    .artifact-body, .outline-body { padding: 12px; }
+    .artifact-row { display: grid; grid-template-columns: 70px minmax(0,1fr); gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+    .artifact-row:last-child { border-bottom: 0; }
+    .artifact-row time { color: var(--blue); font-size: 11px; font-weight: 800; }
+    .artifact-row b { display: block; font-size: 12px; }
+    .artifact-row small { color: var(--muted); }
+    .outline-row { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+    .outline-row:last-child { border-bottom: 0; }
+    .role-mark { flex: 0 0 20px; height: 20px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 3px; color: var(--muted); font-size: 10px; font-weight: 900; }
+    .role-mark.action { border-color: #76ac94; color: var(--green); background: var(--green-weak); }
+    .role-mark.warning { border-color: #e2b467; color: var(--amber); background: var(--amber-weak); }
+    .case-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .btn { min-height: 38px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); font-weight: 800; }
+    .btn.primary { border-color: var(--green); background: var(--green); color: white; }
+    .btn:focus-visible, .case-tab:focus-visible, .mode-switch button:focus-visible { outline: 3px solid rgba(47,93,149,.35); outline-offset: 2px; }
+    .finding-list { display: grid; gap: 10px; }
+    .finding { display: grid; grid-template-columns: 112px minmax(0,1fr) 250px; gap: 16px; padding: 16px; }
+    .finding h3 { margin: 0 0 4px; }
+    .finding p { margin: 0; color: var(--muted); font-size: 12px; }
+    .finding .fix { padding-left: 14px; border-left: 1px solid var(--line); color: var(--ink); }
+    .comparison { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .panel { overflow: hidden; }
+    .panel-title { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+    .panel-title strong { font-size: 13px; }
+    .panel-body { padding: 14px; }
+    .screen-frame { border: 1px solid #bcc7c2; border-radius: 6px; overflow: hidden; background: white; }
+    .screen-toolbar { height: 27px; padding: 6px 9px; border-bottom: 1px solid var(--line); background: #eef1f0; color: var(--muted); font-size: 9px; }
+    .screen-content { padding: 12px; }
+    .mini-title { font-weight: 900; font-size: 15px; }
+    .mini-sub { color: var(--muted); font-size: 10px; }
+    .mini-section { margin-top: 10px; padding: 9px; border: 1px solid var(--line); border-radius: 4px; }
+    .mini-row { display: flex; align-items: center; gap: 7px; min-height: 26px; border-bottom: 1px solid #edf0ee; font-size: 10px; }
+    .mini-row:last-child { border-bottom: 0; }
+    .mini-hidden { padding: 6px 0; color: var(--muted); font-size: 9px; text-align: center; }
+    .mini-action { margin-top: 10px; padding: 8px; border-radius: 3px; background: var(--green); color: white; font-size: 10px; font-weight: 900; text-align: center; }
+    .annotation { margin-top: 10px; padding: 9px; border-left: 3px solid var(--amber); background: var(--amber-weak); color: #704800; font-size: 11px; }
+    .alt-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+    .alt { padding: 16px; }
+    .alt.recommended { border: 2px solid var(--green); }
+    .score { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+    .score strong { font-size: 26px; }
+    .score span { color: var(--muted); font-size: 11px; }
+    .alt p { color: var(--muted); font-size: 12px; }
+    .wire-grid { display: grid; grid-template-columns: minmax(280px,.45fr) minmax(0,1.55fr); gap: 12px; }
+    .wire { padding: 16px; overflow: hidden; }
+    .phone { width: min(100%, 310px); margin: 0 auto; border: 8px solid #29312e; border-radius: 24px; background: white; overflow: hidden; }
+    .phone-top { height: 24px; background: #29312e; }
+    .phone-body { padding: 10px; }
+    .desktop-wire { min-height: 420px; display: grid; grid-template-columns: 36% 64%; border: 1px solid #aebbb6; border-radius: 6px; overflow: hidden; background: white; }
+    .desktop-rail { padding: 14px; border-right: 1px solid var(--line); background: var(--surface-2); }
+    .desktop-main { padding: 14px; }
+    .wire-block { margin-bottom: 8px; padding: 9px; border: 1px solid var(--line); border-radius: 3px; background: white; font-size: 10px; }
+    .wire-block.primary { border-color: #6ca88c; background: var(--green-weak); }
+    .wire-block.ref { border-style: dashed; color: var(--muted); }
+    .contract-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 8px; }
+    .contract-node { position: relative; padding: 14px 10px; border: 1px solid var(--line); background: var(--surface); border-radius: 4px; text-align: center; }
+    .contract-node:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 50%; z-index: 2; color: var(--muted); font-weight: 900; }
+    .contract-node strong { display: block; font-size: 12px; }
+    .contract-node span { color: var(--muted); font-size: 10px; }
+    .risk-table { width: 100%; border-collapse: collapse; margin-top: 12px; background: var(--surface); font-size: 12px; }
+    .risk-wrap { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; }
+    .risk-table th, .risk-table td { padding: 9px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .risk-table th { background: var(--surface-2); }
+    .backlog { display: grid; gap: 8px; }
+    .backlog-item { display: grid; grid-template-columns: 86px minmax(0,1fr) 180px; gap: 14px; padding: 14px; }
+    .backlog-id { font-weight: 900; color: var(--green); }
+    .backlog-item h3 { margin: 0 0 3px; }
+    .backlog-item p { margin: 0; color: var(--muted); font-size: 12px; }
+    .backlog-meta { font-size: 10px; color: var(--muted); }
+    .sequence { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .sequence span { padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); font-size: 11px; font-weight: 800; }
+    .sequence i { color: var(--muted); font-style: normal; }
+    .evidence-filter { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; }
+    .evidence-filter button { flex: 0 0 auto; min-height: 34px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 4px; background: white; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .evidence-filter button[aria-pressed="true"] { background: var(--ink); color: white; }
+    .evidence-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 9px; }
+    .evidence-card { overflow: hidden; }
+    .evidence-card img { aspect-ratio: 4 / 3; object-fit: cover; object-position: top; background: var(--surface-2); }
+    .evidence-card figcaption { padding: 9px; font-size: 11px; }
+    .evidence-card small { display: block; color: var(--muted); }
+    .gate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .checklist { margin: 0; padding: 0; list-style: none; }
+    .checklist li { position: relative; padding: 8px 8px 8px 32px; border-bottom: 1px solid var(--line); font-size: 12px; }
+    .checklist li::before { content: "✓"; position: absolute; left: 9px; color: var(--green); font-weight: 900; }
+    .checklist.questions li::before { content: "?"; color: var(--violet); }
+    .footer { padding: 26px 0 8px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 900px) {
+      .topbar-inner { padding: 8px 14px; }
+      .brand { min-width: auto; }
+      .brand span { display: none; }
+      main { padding: 16px; }
+      .hero { grid-template-columns: 1fr; }
+      .metric-row, .status-grid { grid-template-columns: repeat(2, 1fr); }
+      .case-summary { grid-template-columns: 1fr; }
+      .case-source { border-right: 0; border-bottom: 1px solid var(--line); }
+      .case-content { grid-template-columns: 1fr; }
+      .finding { grid-template-columns: 90px minmax(0,1fr); }
+      .finding .fix { grid-column: 2; padding: 8px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+      .alt-grid { grid-template-columns: 1fr; }
+      .wire-grid { grid-template-columns: 1fr; }
+      .contract-grid { grid-template-columns: 1fr; }
+      .contract-node:not(:last-child)::after { content: "↓"; top: auto; right: 50%; bottom: -16px; }
+      .backlog-item { grid-template-columns: 72px minmax(0,1fr); }
+      .backlog-meta { grid-column: 2; }
+      .evidence-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 560px) {
+      .topbar-inner { display: block; }
+      .brand { margin-bottom: 5px; }
+      .nav { margin: 0 -4px; }
+      main { padding: 12px; }
+      section { margin-bottom: 34px; }
+      h1 { font-size: 31px; }
+      h2 { font-size: 21px; }
+      .hero-main, .verdict { padding: 18px; }
+      .metric strong { font-size: 19px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 5px; }
+      .promise-table { width: 700px; min-width: 700px; }
+      .risk-table { width: 620px; min-width: 620px; }
+      .case-source, .case-work { padding: 14px; }
+      .case-actions { position: sticky; bottom: 0; margin: 14px -14px -14px; padding: 10px 14px; border-top: 1px solid var(--line); background: rgba(255,255,255,.97); }
+      .finding { grid-template-columns: 1fr; gap: 8px; }
+      .finding .fix { grid-column: 1; }
+      .comparison { grid-template-columns: 1fr; }
+      .desktop-wire { grid-template-columns: 1fr; min-height: 0; }
+      .desktop-rail { border-right: 0; border-bottom: 1px solid var(--line); }
+      .backlog-item { grid-template-columns: 1fr; }
+      .backlog-meta { grid-column: 1; }
+      .evidence-grid { grid-template-columns: 1fr; }
+      .gate-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 이동</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><strong>FlowMe P28-00</strong><span>약속 대비 구현 정합성</span></div>
+      <nav class="nav" aria-label="검토 섹션">
+        <a href="#verdict">판정</a><a href="#promise">약속</a><a href="#cases">사례</a><a href="#findings">Findings</a><a href="#proposal">제안</a><a href="#data">계약</a><a href="#backlog">P28</a><a href="#evidence">근거</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="verdict" class="hero">
+      <div class="hero-main">
+        <p class="eyebrow">Independent production + source review</p>
+        <h1>실행 기반은 맞다. 저장 전 약속은 아직 절반이다.</h1>
+        <p class="lede">P27의 완료·복구·반복·Calendar·export 계약은 보존한다. P28은 긴 Flow의 전체 확인, 콘텐츠별 primary artifact, 비실행 참고정보의 역할을 저장 전에 하나로 통합해야 한다.</p>
+        <div class="metric-row" aria-label="검토 핵심 수치">
+          <div class="metric"><strong>17/17</strong><span>production 상태 실행</span></div>
+          <div class="metric"><strong>0</strong><span>console/page error</span></div>
+          <div class="metric"><strong>1/5</strong><span>대표 source 즉시 hit</span></div>
+          <div class="metric"><strong>0</strong><span>실제 관찰 사용자</span></div>
+        </div>
+        <div class="evidence-note">자동화와 페르소나 시뮬레이션은 실제 사용자 검증이 아니다. 정본 main은 <code>46e567e</code>, application source는 <code>45b1f42</code>이며 두 commit 차이는 handoff 문서뿐이다. 정본 요구사항 누락은 <code>0</code>이다.</div>
+      </div>
+      <aside class="verdict" aria-label="최종 판정">
+        <span class="pill partial">최종 판정</span>
+        <strong>structural_correction_<wbr>required</strong>
+        <p>전면 재설계가 아니라 저장 전 projection과 artifact eligibility의 구조적 보정이다. P27 전체를 폐기하지 않는다.</p>
+      </aside>
+    </section>
+
+    <section id="promise">
+      <div class="section-head">
+        <div><p class="eyebrow">Promise matrix</p><h2>사용자 약속은 어디까지 지켜졌나</h2></div>
+        <p>15개 약속을 production interaction과 current source로 다시 분류했다.</p>
+      </div>
+      <div class="status-grid" aria-label="약속 상태 집계">
+        <div class="status-box complete"><strong>8</strong><span>complete_verified</span></div>
+        <div class="status-box partial"><strong>7</strong><span>partial</span></div>
+        <div class="status-box missing"><strong>0</strong><span>약속 자체가 완전 missing</span></div>
+        <div class="status-box defer"><strong>2</strong><span>제품 범위상 deferred 별도</span></div>
+      </div>
+      <div class="promise-wrap" style="margin-top:10px">
+        <table class="promise-table">
+          <thead><tr><th>약속</th><th>상태</th><th>production/source 판정</th><th>다음 slice</th></tr></thead>
+          <tbody>
+            <tr><td>저장 전 전체 Flow</td><td><span class="pill partial">partial</span></td><td>5개 source Flow는 전체, 24개 public Flow는 5 + 외 19개</td><td>P28-01</td></tr>
+            <tr><td>저장 결과 예측</td><td><span class="pill partial">partial</span></td><td>개수·일부 날짜는 보이나 전체 제목과 destination 손실은 분산</td><td>P28-01</td></tr>
+            <tr><td>제목·항목·날짜·순서·포함 조정</td><td><span class="pill complete">complete</span></td><td>24개 전체 행, 4개 조정 mode 확인</td><td>P28-03 polish</td></tr>
+            <tr><td>content-native result first</td><td><span class="pill partial">partial</span></td><td>artifact plan은 있으나 save/export 정책과 분리</td><td>P28-02</td></tr>
+            <tr><td>실데이터 artifact 비교</td><td><span class="pill partial">partial</span></td><td>구현 Flow만 가능, 대표 4 source는 miss</td><td>P28-01/06</td></tr>
+            <tr><td>의미 없는 결과 숨김</td><td><span class="pill partial">partial</span></td><td>generic item은 checklist/sheet/memo에 광범위하게 포함</td><td>P28-02</td></tr>
+            <tr><td>receipt ↔ My Flow 문법</td><td><span class="pill complete">complete</span></td><td>저장 요약과 동일 workspace 연결</td><td>유지</td></tr>
+            <tr><td>My Flow 탐색·전체 구조</td><td><span class="pill complete">complete</span></td><td>1~4 직접 browse, 5+ 검색/필터</td><td>P28-04 wide</td></tr>
+            <tr><td>series·occurrence</td><td><span class="pill complete">complete</span></td><td>4주 preview와 종료일 없음 분리</td><td>회귀 고정</td></tr>
+            <tr><td>삭제·복구</td><td><span class="pill complete">complete</span></td><td>보관/제외/tombstone의 가역 경로</td><td>유지</td></tr>
+            <tr><td>action·confirmation·resource</td><td><span class="pill partial">partial</span></td><td>nested role은 분리, top-level role은 없음</td><td>P28-02</td></tr>
+            <tr><td>Calendar Flow filter</td><td><span class="pill complete">complete</span></td><td>scope/grid/agenda 일치</td><td>회귀 고정</td></tr>
+            <tr><td>same-date grouping</td><td><span class="pill complete">complete</span></td><td>My Flow·Calendar에서 유지</td><td>회귀 고정</td></tr>
+            <tr><td>전체·선택·개별 export</td><td><span class="pill complete">complete</span></td><td>scope와 destination count 사전 표시</td><td>P28-05 eligibility</td></tr>
+            <tr><td>저장 전 기본 명료성</td><td><span class="pill partial">partial</span></td><td>기능은 있으나 전체/primary/required value 위계 부족</td><td>P28-01/03</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="cases">
+      <div class="section-head">
+        <div><p class="eyebrow">Five content journeys</p><h2>같은 UI가 아니라 같은 약속을 적용한다</h2></div>
+        <p>탭을 바꾸면 current 지원 상태와 권장 첫 결과가 실제 데이터 형태로 바뀐다.</p>
+      </div>
+      <div class="case-tabs" role="tablist" aria-label="콘텐츠 사례">
+        <button class="case-tab" role="tab" aria-selected="true" data-case="moving">이사</button>
+        <button class="case-tab" role="tab" aria-selected="false" data-case="course">K-MOOC</button>
+        <button class="case-tab" role="tab" aria-selected="false" data-case="heat">폭염 대응</button>
+        <button class="case-tab" role="tab" aria-selected="false" data-case="contract">계약 검토</button>
+        <button class="case-tab" role="tab" aria-selected="false" data-case="trip">부모님 여행</button>
+      </div>
+      <div class="case-shell" role="tabpanel" id="case-panel" tabindex="0">
+        <div class="case-summary">
+          <aside class="case-source">
+            <div id="case-state" class="source-state">CURRENT HIT · SOURCE 확인</div>
+            <h3 id="case-title">원룸 이사 D-30 준비</h3>
+            <dl>
+              <dt>현재 production</dt><dd id="case-current">부분 지원</dd>
+              <dt>첫 사용자 값</dt><dd id="case-input">이사일 1개</dd>
+              <dt>primary</dt><dd id="case-primary">Calendar</dd>
+              <dt>secondary</dt><dd id="case-secondary">Checklist · Memo</dd>
+              <dt>숨길 결과</dt><dd id="case-forbidden">새 정보가 없는 Sheet</dd>
+            </dl>
+          </aside>
+          <div class="case-work">
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
+              <div><p class="eyebrow" style="margin-bottom:2px">Save-before workspace</p><h3 id="case-heading">24개 전체 Flow와 일정 결과</h3></div>
+              <div class="mode-switch" aria-label="화면 비교">
+                <button type="button" aria-pressed="false" data-mode="current">현재</button>
+                <button type="button" aria-pressed="true" data-mode="proposed">제안</button>
+              </div>
+            </div>
+            <div class="case-content">
+              <div class="artifact">
+                <div class="artifact-head"><strong id="artifact-name">Calendar 결과 · 24개</strong><span class="pill complete" id="artifact-badge">primary</span></div>
+                <div class="artifact-body" id="artifact-body"></div>
+              </div>
+              <div class="outline">
+                <div class="outline-head"><strong id="outline-name">저장될 전체 Flow · 24개</strong><button class="btn" id="toggle-outline" type="button" aria-expanded="false">전체 보기</button></div>
+                <div class="outline-body" id="outline-body"></div>
+              </div>
+            </div>
+            <div id="case-warning" class="annotation">현재는 5개와 외 19개로 보인다. 제안은 같은 24개 projection을 artifact와 저장에 사용한다.</div>
+            <div class="case-actions"><button class="btn" type="button">필요한 항목만 조정</button><button class="btn primary" id="case-cta" type="button">24개 일정으로 시작</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="findings">
+      <div class="section-head">
+        <div><p class="eyebrow">Severity findings</p><h2>구조를 먼저 고칠 이유</h2></div>
+        <p>앱 전체의 문제가 아니라 저장 전 약속을 깨뜨리는 계약과 연결 문제다.</p>
+      </div>
+      <div class="finding-list">
+        <article class="finding"><div><span class="pill blocking">Blocking</span><p>B-01</p></div><div><h3>top-level reference/warning role 부재</h3><p>폭염 참고·중단·신고 정보가 현재 generic projection에서는 완료 가능한 할 일이 될 수 있다.</p></div><p class="fix"><strong>해결</strong><br>additive itemRole + destination eligibility. 준비 전 안전 사례 public 활성화 금지.</p></article>
+        <article class="finding"><div><span class="pill high">High</span><p>H-01</p></div><div><h3>`전체 Flow`가 24개 중 5개만 표시</h3><p><code>/f/moving-d30-basic</code>, 390px. 조정 화면을 열어야 24개 전체를 확인한다.</p></div><p class="fix"><strong>해결</strong><br>canonical complete outline과 1회 펼치기. 5개 slice 제거.</p></article>
+        <article class="finding"><div><span class="pill high">High</span><p>H-02</p></div><div><h3>artifact plan과 export eligibility 분리</h3><p>primary surface는 계산하지만 generic visible item은 checklist/sheet/memo에 넓게 포함된다.</p></div><p class="fix"><strong>해결</strong><br>artifactPolicy를 save-before부터 export까지 공유.</p></article>
+        <article class="finding"><div><span class="pill high">High</span><p>H-03</p></div><div><h3>대표 5 source 중 4개 production miss</h3><p>K-MOOC, 폭염, 계약, 여행은 가짜 생성 없이 정직하게 멈추지만 content-native UX를 검증할 수 없다.</p></div><p class="fix"><strong>해결</strong><br>계약 후 source·rights·safety gate를 통과한 fixture만 등록.</p></article>
+        <article class="finding"><div><span class="pill high">High</span><p>H-04</p></div><div><h3>여행 메모의 장소·순서 의미 손실</h3><p>4개 장소가 3개 문장 항목으로 분할되고 artifact preview 없이 parser 보정부터 요구한다.</p></div><p class="fix"><strong>해결</strong><br>감지 범위 확인, ordered checklist, 시간 입력 후 Calendar 승격.</p></article>
+        <article class="finding"><div><span class="pill medium">Medium</span><p>M-01~04</p></div><div><h3>receipt·조정·wide My Flow의 위계</h3><p>기능은 맞지만 긴 Flow receipt, contextual value, 1024 master-detail에서 추가 정리가 필요하다.</p></div><p class="fix"><strong>해결</strong><br>P27 동작을 유지하고 view model과 layout만 수렴.</p></article>
+      </div>
+    </section>
+
+    <section id="proposal">
+      <div class="section-head">
+        <div><p class="eyebrow">Current vs proposed</p><h2>저장 전 화면은 하나의 결과 계약이어야 한다</h2></div>
+        <p>긴 설명을 추가하지 않고 outline, artifact, 필요한 값, 결과 CTA의 위치로 해결한다.</p>
+      </div>
+      <div class="comparison">
+        <article class="panel">
+          <div class="panel-title"><strong>Current · public moving 24개</strong><span class="pill partial">partial</span></div>
+          <div class="panel-body">
+            <div class="screen-frame">
+              <div class="screen-toolbar">flowme2605.vercel.app/f/moving-d30-basic</div>
+              <div class="screen-content">
+                <div class="mini-title">이사 D-30</div><div class="mini-sub">날짜를 정하고 24개 준비를 저장</div>
+                <div class="mini-section"><b style="font-size:11px">저장될 전체 Flow</b><div class="mini-row">D-30 · 이사 방식 정하기</div><div class="mini-row">D-28 · 견적 후보</div><div class="mini-row">D-21 · 계약 확인</div><div class="mini-row">D-14 · 청소 일정</div><div class="mini-row">D-7 · 주소 변경</div><div class="mini-hidden">외 19개</div></div>
+                <div class="mini-section"><b style="font-size:11px">Calendar workbench</b><div class="mini-row">다가오는 8개</div><div class="mini-hidden">나머지 16개 보기</div></div>
+                <div class="mini-action">이 날짜로 시작</div>
+              </div>
+            </div>
+            <div class="annotation">서로 다른 두 요약이 `전체`를 대신한다. 사용자는 같은 24개인지 추론해야 한다.</div>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-title"><strong>Proposed · one SaveBeforeProjectionVM</strong><span class="pill complete">recommended</span></div>
+          <div class="panel-body">
+            <div class="screen-frame">
+              <div class="screen-toolbar">출처 확인됨 · 24개 · 6단계</div>
+              <div class="screen-content">
+                <div class="mini-title">이사 D-30</div><div class="mini-sub">저장될 24개와 Calendar 결과</div>
+                <div class="mini-section"><b style="font-size:11px">전체 Flow · 24개</b><div class="mini-row">▾ D-30 · 4개</div><div class="mini-row">▸ D-14 · 5개</div><div class="mini-row">▸ D-7 · 6개</div><div class="mini-row">▸ D-1 · 5개</div><div class="mini-row">▸ D-Day · 4개</div><div class="mini-hidden">24개 전체 보기</div></div>
+                <div class="mini-section" style="background:var(--green-weak)"><b style="font-size:11px">Calendar 결과 · 24개</b><div class="mini-row">7/02 견적 후보</div><div class="mini-row">7/18 청소·폐기물</div><div class="mini-row">8/01 정산·전입신고</div></div>
+                <div class="mini-action">24개 일정으로 시작</div>
+              </div>
+            </div>
+            <div class="annotation" style="border-color:var(--green);background:var(--green-weak);color:#175a40">outline·artifact·receipt·export가 같은 item identity와 count를 사용한다.</div>
+          </div>
+        </article>
+      </div>
+
+      <div style="margin-top:26px" class="section-head"><div><p class="eyebrow">Alternative decision</p><h2>A/B/C 비교</h2></div><p>총점만이 아니라 cold-start와 실제 작업 전환을 함께 본다.</p></div>
+      <div class="alt-grid">
+        <article class="alt"><span class="pill low">A</span><h3>전역 5개 Gallery</h3><div class="score"><strong>25</strong><span>/ 45</span></div><p>첫 이해는 쉽지만 모바일과 콘텐츠 확장성이 약하다. 다섯 사례를 영구 IA로 만들지 않는다.</p></article>
+        <article class="alt"><span class="pill medium">B</span><h3>Flow별 Artifact-first</h3><div class="score"><strong>42</strong><span>/ 45</span></div><p>Flow를 찾은 뒤 가장 좋다. empty 첫 방문자에게 결과 예시가 부족하다.</p></article>
+        <article class="alt recommended"><span class="pill complete">C · 권장</span><h3>Hybrid</h3><div class="score"><strong>41</strong><span>/ 45</span></div><p>empty에는 composer와 작은 예시, 감지 후에는 B로 전환한다. 전략 적합성이 가장 높다.</p></article>
+      </div>
+
+      <div style="margin-top:26px" class="section-head"><div><p class="eyebrow">Responsive wireframe</p><h2>390과 1024는 같은 위계, 다른 밀도</h2></div><p>이전 artifact의 고정 3열은 1024에서 5/5 overflow. 의미만 보존한다.</p></div>
+      <div class="wire-grid">
+        <article class="wire"><h3>모바일 390</h3><div class="phone"><div class="phone-top"></div><div class="phone-body"><div class="wire-block ref">원문 확인됨 · 출처</div><div class="wire-block"><b>원룸 이사 D-30</b><br>24개 · 6단계<br><u>24개 전체 보기</u></div><div class="wire-block primary"><b>Calendar 결과</b><br>7/02 견적 후보<br>7/18 청소·폐기물<br>8/01 정산</div><div class="wire-block">이사일 *<br><b>2026-08-01</b></div><div class="wire-block" style="background:var(--green);color:white;text-align:center"><b>24개 일정으로 시작</b></div></div></div></article>
+        <article class="wire"><h3>wide 1024 · 2열 기본</h3><div class="desktop-wire"><div class="desktop-rail"><div class="wire-block ref">AJD · source 확인</div><div class="wire-block"><b>전체 Flow · 24개</b></div><div class="wire-block">▾ D-30 · 4개</div><div class="wire-block">▸ D-14 · 5개</div><div class="wire-block">▸ D-7 · 6개</div><div class="wire-block">▸ D-1 · 5개</div><div class="wire-block">▸ D-Day · 4개</div></div><div class="desktop-main"><div class="wire-block primary" style="min-height:230px"><b>Calendar 결과 · 24개</b><br><br>월간 grid + 선택 날짜 agenda</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="wire-block">이사일<br><b>2026-08-01</b></div><div class="wire-block">변경<br><b>2개 항목</b></div></div><div class="wire-block" style="background:var(--green);color:white;text-align:center"><b>24개 일정으로 시작</b></div></div></div></article>
+      </div>
+    </section>
+
+    <section id="data">
+      <div class="section-head">
+        <div><p class="eyebrow">Data and regression boundary</p><h2>새 화면보다 먼저 지킬 계약</h2></div>
+        <p>identity는 다시 만들지 않고 role·eligibility·view model만 additive하게 확장한다.</p>
+      </div>
+      <div class="contract-grid" aria-label="데이터 경계">
+        <div class="contract-node"><strong>Source</strong><span>canonical content</span></div>
+        <div class="contract-node"><strong>Personal overlay</strong><span>pre/post save edits</span></div>
+        <div class="contract-node"><strong>Execution run</strong><span>completion and notes</span></div>
+        <div class="contract-node"><strong>Occurrence</strong><span>one recurring instance</span></div>
+        <div class="contract-node"><strong>Export</strong><span>scope + destination receipt</span></div>
+      </div>
+      <div class="risk-wrap"><table class="risk-table">
+        <thead><tr><th>변경</th><th>현재 가능성</th><th>migration</th><th>회귀 방어</th></tr></thead>
+        <tbody>
+          <tr><td>SaveBeforeProjectionVM</td><td>public/source-backed adapter로 가능</td><td>없음</td><td>save-before/receipt/My Flow count parity</td></tr>
+          <tr><td>itemRole</td><td>top-level 계약 없음</td><td>legacy action default, 대표 content backfill</td><td>non-action completion/export 0</td></tr>
+          <tr><td>artifactPolicy</td><td>artifact-plan을 초기 resolver로 재사용</td><td>runtime derive 가능</td><td>five-case fixture</td></tr>
+          <tr><td>pre-save adjustment</td><td>PersonalStructuralOverlay 재사용</td><td>없음</td><td>cancel write 0, atomic save</td></tr>
+          <tr><td>My Flow/Calendar/export</td><td>P27 기반 완성</td><td>없음</td><td>P27 targeted + full E2E 유지</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="backlog">
+      <div class="section-head">
+        <div><p class="eyebrow">P28 execution program</p><h2>순차 계약, 병렬 화면, 마지막 통합</h2></div>
+        <p>각 slice의 상세 범위·비범위·acceptance는 <a href="p28-backlog.md">p28-backlog.md</a>에 있다.</p>
+      </div>
+      <div class="sequence" aria-label="필수 순차 실행"><span>P28-01</span><i>→</i><span>P28-02</span><i>→</i><span>P28-03</span><i>→</i><span>P28-05</span><i>→</i><span>P28-07</span></div>
+      <div class="backlog">
+        <article class="backlog-item"><div class="backlog-id">P28-01</div><div><h3>저장 전 전체 Flow와 artifact preview shell</h3><p>공통 view model, 24개 complete outline, primary artifact, 결과 단위 CTA. persistence 변경 없음.</p></div><div class="backlog-meta">High · 먼저 실행<br>390/1024 screenshot</div></article>
+        <article class="backlog-item"><div class="backlog-id">P28-02</div><div><h3>primary/secondary destination 정책</h3><p>itemRole, artifactPolicy, destination eligibility. 안전 참고정보를 완료·Calendar에서 제외.</p></div><div class="backlog-meta">Blocking contract<br>P28-01 의존</div></article>
+        <article class="backlog-item"><div class="backlog-id">P28-03</div><div><h3>contextual adjustment workspace</h3><p>필요한 값, 변경된 항목, 전체 상세 순서. ephemeral overlay와 atomic save.</p></div><div class="backlog-meta">High · 순차<br>P28-01/02 의존</div></article>
+        <article class="backlog-item"><div class="backlog-id">P28-04</div><div><h3>My Flow 탐색·전체 Flow·복구 hierarchy</h3><p>1024 inventory + selected Flow, 모바일 현재 전환 유지. P27 lifecycle 보존.</p></div><div class="backlog-meta">Medium · 병렬 가능<br>P28-01 이후</div></article>
+        <article class="backlog-item"><div class="backlog-id">P28-05</div><div><h3>Calendar·반복·export scope 통합</h3><p>새 role/policy를 P27 Flow filter, undated, occurrence, export scope에 연결.</p></div><div class="backlog-meta">High · 순차<br>P28-02/03 의존</div></article>
+        <article class="backlog-item"><div class="backlog-id">P28-06</div><div><h3>다섯 대표 콘텐츠 source gate</h3><p>sourceTrace, rights, safety, primary/secondary fixture. 추정 생성 금지.</p></div><div class="backlog-meta">High · 준비 병렬<br>활성화는 P28-05 후</div></article>
+        <article class="backlog-item"><div class="backlog-id">P28-07</div><div><h3>regression/final gate</h3><p>docs, unit, build, targeted/full E2E, production 390/1024, identity/count reconciliation.</p></div><div class="backlog-meta">Integration · 마지막<br>관찰 사용자 0 유지</div></article>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="section-head">
+        <div><p class="eyebrow">Inspectable evidence</p><h2>현재 화면과 이전 제안을 분리해서 본다</h2></div>
+        <p>필터는 화면 근거를 숨기고 보여줄 뿐 판정을 바꾸지 않는다.</p>
+      </div>
+      <div class="evidence-note" style="margin:0 0 12px">정본 prior artifact와 최초 검토 HTML의 SHA-256은 <code>7D608B...A6C0</code>로 일치한다. P27 사용자 피드백 종합이 지적한 archive, recurrence, resource, SSR, My Flow, Calendar, export 문제는 current P27에서 재확인했고, 남은 저장 전 전체 결과 문제만 P28로 승격했다.</div>
+      <div class="evidence-note" style="margin:0 0 12px">Claude Design <code>(10).zip</code>의 최신 관련 P26→P27 보고서가 지적한 <code>/flows</code> loading-only와 <code>/my</code> 5-tab shell은 current production에서 해소됐다. 긴 save-before와 wide density 제안만 이번 P28 근거로 이어받았다. archive root의 P9 review는 최신 근거로 쓰지 않았다.</div>
+      <div class="evidence-filter" aria-label="근거 필터">
+        <button type="button" aria-pressed="true" data-filter="all">전체</button>
+        <button type="button" aria-pressed="false" data-filter="production">current production</button>
+        <button type="button" aria-pressed="false" data-filter="prior">prior artifact</button>
+      </div>
+      <div class="evidence-grid">
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/moving-save-before-mobile.png" alt="현재 production 이사 24개 저장 전 모바일"><figcaption>긴 public Flow<small>5개 + 외 19개, 별도 workbench</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/moving-adjustment-mobile.png" alt="현재 production 이사 저장 전 조정 모바일"><figcaption>조정 workspace<small>24개, 4개 progressive mode</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/source-backed-moving-receipt-mobile.png" alt="현재 production source-backed 이사 저장 receipt"><figcaption>짧은 Flow receipt<small>5개 전체와 날짜 확인</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/source-backed-moving-export-mobile.png" alt="현재 production export scope"><figcaption>export preflight<small>Flow 전체 5개와 destination count</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/workout-save-before-mobile.png" alt="현재 production 반복 Flow"><figcaption>반복 hierarchy<small>4주 preview, 종료일 없음, resource</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/vehicle-undated-calendar-mobile.png" alt="현재 production 날짜 없는 차량 점검 Calendar"><figcaption>undated placement<small>한 항목 날짜 배치 후 9개 tray</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/my-flow-demo-wide.png" alt="현재 production My Flow wide"><figcaption>My Flow wide<small>검색·필터는 지원, master-detail 약함</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="production"><img src="screenshots/calendar-demo-wide.png" alt="현재 production Calendar wide"><figcaption>Calendar wide<small>Flow scope와 agenda</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="prior"><img src="screenshots/prior-course-1024.png" alt="이전 artifact K-MOOC Sheet"><figcaption>K-MOOC prior<small>14주 Sheet 의미는 유지</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="prior"><img src="screenshots/prior-heat-1024.png" alt="이전 artifact 폭염 대응"><figcaption>폭염 prior<small>action과 reference 구분</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="prior"><img src="screenshots/prior-contract-1024.png" alt="이전 artifact 계약 검토"><figcaption>계약 prior<small>비교 Sheet와 rights hold</small></figcaption></figure>
+        <figure class="evidence-card" data-kind="prior"><img src="screenshots/prior-route-390.png" alt="이전 artifact 부모님 여행 모바일"><figcaption>여행 prior<small>4개 장소와 사용자 시간</small></figcaption></figure>
+      </div>
+    </section>
+
+    <section id="gates">
+      <div class="section-head"><div><p class="eyebrow">Before observation</p><h2>내부에서 닫을 것과 사용자에게 물을 것</h2></div></div>
+      <div class="gate-grid">
+        <article class="panel"><div class="panel-title"><strong>먼저 자동·내부 gate로 닫기</strong></div><div class="panel-body"><ul class="checklist"><li>non-action completion/Calendar/ Todo export 0</li><li>5·14·24·38개 전체 outline count 일치</li><li>save-before/receipt/My Flow/export identity mismatch 0</li><li>390·1024 overflow·overlap·keyboard trap 0</li><li>sourceTrace·rights·safety gate 누락 0</li><li>cancel/retry/export 실패에서 draft 손실 0</li></ul></div></article>
+        <article class="panel"><div class="panel-title"><strong>실제 사용자에게만 확인</strong></div><div class="panel-body"><ul class="checklist questions"><li>empty의 작은 결과 예시가 입력을 돕는가?</li><li>긴 Flow에서 어느 수준까지 펼쳐야 확신하는가?</li><li>여행의 checklist → Calendar 승격이 이해되는가?</li><li>보관·제외·복구 문구가 삭제 기대와 맞는가?</li><li>검색 임계값 5가 실제 저장량에 적절한가?</li><li>primary 하나가 선택권을 제한한다고 느끼는가?</li></ul></div></article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p><strong>검토 경계:</strong> 앱 코드·migration·seed·AI API·crawler·계정·OAuth·배포 변경 없음. 자동 상호작용은 실제 사용자 관찰이 아님.</p>
+      <p><a href="audit.md">상세 감사</a> · <a href="canonical-alignment.md">정본 정합성</a> · <a href="p28-development-handoff.md">개발 handoff</a> · <a href="promise-matrix.json">약속 matrix</a> · <a href="case-journey-matrix.json">사례 matrix</a> · <a href="journey-step-matrix.json">50단계 상세</a> · <a href="p28-backlog.md">P28 백로그</a> · <a href="production-journey-results.json">production evidence</a> · <a href="prior-artifact-results.json">prior evidence</a></p>
+    </footer>
+  </main>
+
+  <script>
+    const cases = {
+      moving: {
+        state: 'CURRENT HIT · SOURCE 확인', title: '원룸 이사 D-30 준비', current: '부분 지원 · 24개 중 전체 shell은 5개', input: '이사일 1개', primary: 'Calendar', secondary: 'Checklist · Memo', forbidden: '새 정보가 없는 Sheet', heading: '24개 전체 Flow와 일정 결과', artifact: 'Calendar 결과 · 24개', outline: '저장될 전체 Flow · 24개', cta: '24개 일정으로 시작', warning: '현재는 5개와 외 19개로 보인다. 제안은 같은 24개 projection을 artifact와 저장에 사용한다.', rows: [['2026-07-02','이사 방식과 견적 후보'],['2026-07-18','청소와 대형폐기물'],['2026-07-25','관리사무소와 주소 변경'],['2026-07-31','계량기와 집 상태 사진'],['2026-08-01','정산과 전입신고']], outlineRows: [['action','D-30 · 이사 방식과 견적 후보'],['action','D-14 · 청소와 대형폐기물'],['action','D-7 · 관리사무소와 주소 변경'],['action','D-1 · 계량기와 집 상태 사진'],['action','D-Day · 정산과 전입신고'],['action','외 19개 · 단계별 전체 보기']] },
+      course: {
+        state: 'CURRENT MISS · PRIOR ARTIFACT ONLY', title: 'K-MOOC 14주 과정', current: '차단 · URL lookup miss', input: '0개 · 이어 듣기만 현재 주차', primary: '14주 progress Sheet', secondary: '공식 기한 Calendar', forbidden: '가짜 반복 Calendar · 일반 Memo', heading: '14주 전체 진도와 공식 일정', artifact: 'Sheet 결과 · 14주', outline: '저장될 전체 Flow · 14주', cta: '14주 진도표로 시작', warning: 'production은 정직하게 miss다. source·rights gate와 14주 fixture를 통과하기 전 실행 가능한 것처럼 보이면 안 된다.', rows: [['1주','강좌 안내와 학습 목표'],['2주','기초 개념'],['3주','핵심 원리'],['4주','적용 과제'],['14주','최종 정리']], outlineRows: [['action','1주 · 강좌 안내'],['action','2주 · 기초 개념'],['action','3주 · 핵심 원리'],['action','4주 · 적용 과제'],['action','…'],['action','14주 · 최종 정리']] },
+      heat: {
+        state: 'CURRENT MISS · SAFETY GATE REQUIRED', title: '농작업 폭염 대응', current: '차단 · URL lookup miss + role 부재', input: '0개 · 작업일은 선택', primary: '안전 guidance', secondary: '실행 Todo 2개', forbidden: '반복 Calendar · 경고 체크박스', heading: '실행 2개와 중단·신고 기준', artifact: 'Safety guidance · action 2 / reference 4', outline: '전체 정보 · 6개', cta: '실행 항목 2개 가져가기', warning: 'top-level itemRole이 선행돼야 한다. reference와 warning은 완료·Calendar·Todo 대상이 아니다.', rows: [['실행','물·그늘·휴식 준비'],['실행','작업 전 기상과 체감 확인'],['중단','어지럼·두통 시 즉시 작업 중단'],['신고','의식 저하 시 119']], outlineRows: [['action','물·그늘·휴식 준비'],['action','작업 전 기상 확인'],['warning','작업 중단 조건'],['warning','119 신고 조건'],['reference','폭염 단계 참고'],['reference','공식 출처 보기']] },
+      contract: {
+        state: 'CURRENT MISS · RIGHTS REVIEW', title: '인테리어 계약 검토', current: '차단 · URL lookup miss', input: '0개', primary: '비교 Sheet', secondary: '검토 Memo', forbidden: '날짜 없는 Calendar · 참고자료 Todo', heading: '7개 계약 항목과 기록 열', artifact: 'Comparison Sheet · 7개', outline: '검토 구조 · 7개', cta: '비교표로 시작', warning: 'source와 rights 상태는 사용자 날짜 입력으로 해결하지 않는다. action·record·resource를 분리한다.', rows: [['공사 범위','포함·제외 공정 기록'],['금액','총액·부가세·추가비'],['지급','계약금·중도금·잔금'],['하자','보수 범위와 기간'],['자료','견적서·도면 링크']], outlineRows: [['record','공사 범위 비교'],['record','자재·등급 기록'],['record','공사 금액 비교'],['action','지급 조건 확인'],['action','하자 보수 확인'],['resource','견적서·도면'],['warning','법률 자문 아님']] },
+      trip: {
+        state: 'URL MISS · MEMO DRAFT PARTIAL', title: '부모님 공주 당일 여행', current: '부분 지원 · 4개 장소가 3개 문장으로 분할', input: '여행일 1개 · 방문 시각은 점진적', primary: '시간 전 Checklist → 시간 후 Calendar', secondary: 'Memo', forbidden: '비어 있는 Sheet', heading: '4개 장소 순서와 시간 결과', artifact: 'Calendar 결과 · 4개 장소', outline: '저장될 전체 Flow · 4개', cta: '4개 동선으로 시작', warning: '감지 결과에서 4개 장소를 먼저 보존한다. 날짜·시각을 넣으면 checklist가 Calendar로 승격된다.', rows: [['10:00','공주한옥마을'],['11:30','무령왕릉과 왕릉원'],['14:00','루치아의 뜰'],['16:00','공산성']], outlineRows: [['action','공주한옥마을'],['action','무령왕릉과 왕릉원'],['action','루치아의 뜰'],['action','공산성'],['reference','원문 여행 정보'],['record','부모님 이동 메모']] }
+    };
+
+    let selectedCase = 'moving';
+    let selectedMode = 'proposed';
+    let outlineExpanded = false;
+
+    function renderCase() {
+      const item = cases[selectedCase];
+      document.getElementById('case-state').textContent = item.state;
+      document.getElementById('case-title').textContent = item.title;
+      document.getElementById('case-current').textContent = item.current;
+      document.getElementById('case-input').textContent = item.input;
+      document.getElementById('case-primary').textContent = item.primary;
+      document.getElementById('case-secondary').textContent = item.secondary;
+      document.getElementById('case-forbidden').textContent = item.forbidden;
+      document.getElementById('case-heading').textContent = item.heading;
+      document.getElementById('artifact-name').textContent = selectedMode === 'current' && selectedCase !== 'moving' ? '현재 production · 준비된 결과 없음' : item.artifact;
+      document.getElementById('outline-name').textContent = selectedMode === 'current' && selectedCase === 'moving' ? '저장될 전체 Flow · 5 / 24' : item.outline;
+      document.getElementById('case-cta').textContent = selectedMode === 'current' && selectedCase !== 'moving' ? '제작 후보 정보 남기기' : item.cta;
+      document.getElementById('case-warning').textContent = item.warning;
+      document.getElementById('artifact-badge').textContent = selectedMode === 'current' && selectedCase !== 'moving' ? 'miss' : 'primary';
+      document.getElementById('artifact-badge').className = `pill ${selectedMode === 'current' && selectedCase !== 'moving' ? 'missing' : 'complete'}`;
+      const artifactBody = document.getElementById('artifact-body');
+      if (selectedMode === 'current' && selectedCase !== 'moving') {
+        artifactBody.innerHTML = '<p style="margin:0;color:var(--muted);font-size:12px">바로 시작할 Flow를 찾지 못했어요. 제목과 메모를 남겨 제작 후보로 저장할 수 있습니다.</p>';
+      } else {
+        artifactBody.innerHTML = item.rows.map(([time, title]) => `<div class="artifact-row"><time>${time}</time><div><b>${title}</b><small>${selectedCase === 'heat' && (time === '중단' || time === '신고') ? '완료 대상 아님' : '원문 값 또는 사용자 값'}</small></div></div>`).join('');
+      }
+      const currentLimit = selectedMode === 'current' && selectedCase === 'moving' ? 5 : item.outlineRows.length;
+      const limit = outlineExpanded ? item.outlineRows.length : Math.min(currentLimit, 5);
+      document.getElementById('outline-body').innerHTML = item.outlineRows.slice(0, limit).map(([role, title]) => `<div class="outline-row"><span class="role-mark ${role}">${role === 'action' ? '✓' : role === 'warning' ? '!' : 'i'}</span><span>${title}</span></div>`).join('') + (limit < item.outlineRows.length ? `<div class="mini-hidden">외 ${item.outlineRows.length - limit}개</div>` : '');
+      const toggle = document.getElementById('toggle-outline');
+      toggle.textContent = outlineExpanded ? '접기' : '전체 보기';
+      toggle.setAttribute('aria-expanded', String(outlineExpanded));
+    }
+
+    document.querySelectorAll('.case-tab').forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedCase = button.dataset.case;
+        outlineExpanded = false;
+        document.querySelectorAll('.case-tab').forEach((tab) => tab.setAttribute('aria-selected', String(tab === button)));
+        renderCase();
+        document.getElementById('case-panel').focus({ preventScroll: true });
+      });
+    });
+    document.querySelectorAll('[data-mode]').forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedMode = button.dataset.mode;
+        document.querySelectorAll('[data-mode]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        renderCase();
+      });
+    });
+    document.getElementById('toggle-outline').addEventListener('click', () => { outlineExpanded = !outlineExpanded; renderCase(); });
+    document.querySelectorAll('[data-filter]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.filter;
+        document.querySelectorAll('[data-filter]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        document.querySelectorAll('.evidence-card').forEach((card) => { card.hidden = filter !== 'all' && card.dataset.kind !== filter; });
+      });
+    });
+    renderCase();
+  </script>
+</body>
+</html>
