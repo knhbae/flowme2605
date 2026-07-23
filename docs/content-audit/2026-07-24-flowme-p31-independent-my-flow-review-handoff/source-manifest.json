@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-07-24T00:15:45+09:00",
+  "packageId": "2026-07-24-flowme-p31-independent-my-flow-review-handoff",
+  "production": {
+    "url": "https://flowme2605.vercel.app",
+    "expectedP31AppCommit": "0227cd2fa7a93ea9ff7d9776b76b0cc33401279b",
+    "p31CloseoutCommit": "97f7d31e770cbc77eaae3291eefddbca5adf202b",
+    "observedUserCount": 0
+  },
+  "repository": {
+    "url": "https://github.com/knhbae/flowme2605",
+    "reviewedOriginMain": "555da4e013cc9090b76b78cc81619057409772dc",
+    "reviewBranch": "codex/p31-independent-my-flow-review",
+    "appImplementationPr": "https://github.com/knhbae/flowme2605/pull/150",
+    "closeoutPr": "https://github.com/knhbae/flowme2605/pull/151"
+  },
+  "currentDocuments": [
+    {
+      "path": "docs/STATUS.md",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/docs/STATUS.md",
+      "kind": "current_source"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/docs/ROADMAP.md",
+      "kind": "current_source"
+    },
+    {
+      "path": "docs/PRODUCT_PRINCIPLES.md",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/docs/PRODUCT_PRINCIPLES.md",
+      "kind": "current_source"
+    }
+  ],
+  "p31Evidence": [
+    {
+      "path": "docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md",
+      "kind": "current_structured_evidence"
+    },
+    {
+      "path": "docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/route-evidence.json",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/route-evidence.json",
+      "kind": "current_structured_evidence"
+    },
+    {
+      "path": "docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/journey-results.json",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/journey-results.json",
+      "kind": "current_structured_evidence"
+    },
+    {
+      "path": "docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/production-smoke/screenshots",
+      "url": "https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/production-smoke/screenshots",
+      "kind": "current_production_screenshot"
+    }
+  ],
+  "currentSource": [
+    "components/flow/AppClient.tsx",
+    "components/flow/MyFlowDataManager.tsx",
+    "components/flow/FlowExecutionPrimitives.tsx",
+    "lib/flow/storage.ts",
+    "lib/flow/source-backed-my-flow.ts",
+    "lib/flow/personal-structural-projection.ts",
+    "lib/flow/personal-structural-recurrence.ts",
+    "lib/flow/export.ts",
+    "tests/e2e/p31-mobile-journey-reconstruction.spec.ts"
+  ],
+  "referenceSources": [
+    {
+      "product": "Todoist",
+      "url": "https://www.todoist.com/help/articles/plan-your-day-with-the-today-view-UVUXaiSs",
+      "pattern": "Today versus project and filter context"
+    },
+    {
+      "product": "Todoist",
+      "url": "https://www.todoist.com/help/articles/customize-views-in-todoist-AoHhBxFdZ",
+      "pattern": "Multiple views over the same task data"
+    },
+    {
+      "product": "Things",
+      "url": "https://culturedcode.com/things/support/articles/4001304/",
+      "pattern": "Today, Upcoming, Anytime, Someday, Logbook"
+    },
+    {
+      "product": "Things",
+      "url": "https://culturedcode.com/things/support/articles/2803579/",
+      "pattern": "When and deadline semantics"
+    },
+    {
+      "product": "Apple Reminders",
+      "url": "https://support.apple.com/en-gb/guide/iphone/iphe882772ed/ios",
+      "pattern": "Smart Lists and source lists"
+    },
+    {
+      "product": "Google Calendar",
+      "url": "https://support.google.com/calendar/answer/72143?co=GENIE.Platform%3DAndroid&hl=en",
+      "pattern": "Event placement, detail, and edit"
+    },
+    {
+      "product": "Notion",
+      "url": "https://www.notion.com/help/views-filters-and-sorts",
+      "pattern": "One object in multiple views"
+    },
+    {
+      "product": "Notion",
+      "url": "https://www.notion.com/help/intro-to-databases",
+      "pattern": "Structured object and focused detail"
+    },
+    {
+      "product": "TickTick",
+      "url": "https://ticktick.com/features?language=en_US",
+      "pattern": "List, calendar, and detail roles"
+    },
+    {
+      "product": "Wanderlog",
+      "url": "https://help.wanderlog.com/hc/en-us",
+      "pattern": "Trip identity and day-by-day itinerary"
+    },
+    {
+      "product": "Hevy",
+      "url": "https://help.hevyapp.com/hc/en-us/articles/33703513582871-Workouts-vs-Routines-in-Hevy-What-They-Mean-and-How-to-Use-Them",
+      "pattern": "Routine definition versus workout run"
+    },
+    {
+      "product": "Hevy",
+      "url": "https://help.hevyapp.com/hc/en-us/articles/35361530647959-How-to-Log-a-Workout-in-the-Hevy-App-Step-by-Step-Guide",
+      "pattern": "Active workout execution"
+    },
+    {
+      "product": "Strava",
+      "url": "https://support.strava.com/en-us/articles/15402077-training-log",
+      "pattern": "Training history and current plan separation"
+    }
+  ],
+  "packageFiles": [
+    "README.md",
+    "unified-review-prompt-ko.md",
+    "claude-design-prompt-ko.md",
+    "codex-independent-review-prompt-ko.md",
+    "persona-journey-simulation-ko.md",
+    "my-flow-structural-review-framework.md",
+    "reference-benchmark.md",
+    "review-checklist-ko.md",
+    "simulation-output-contract.json",
+    "source-manifest.json",
+    "handoff-preparation-smoke.json",
+    "screenshots/"
+  ]
+}

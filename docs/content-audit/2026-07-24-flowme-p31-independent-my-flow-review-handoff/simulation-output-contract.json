@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "packageId": "2026-07-24-flowme-p31-independent-my-flow-review-handoff",
+  "reviewTypes": [
+    "claude_design",
+    "codex_independent"
+  ],
+  "observedUserCount": 0,
+  "evidenceKinds": [
+    "current_production_interaction",
+    "current_production_screenshot",
+    "current_source",
+    "current_structured_evidence",
+    "prior_design_artifact",
+    "reference_pattern",
+    "heuristic_simulation",
+    "inaccessible"
+  ],
+  "journeyStatuses": [
+    "supported",
+    "hidden",
+    "partial",
+    "missing",
+    "blocked"
+  ],
+  "verdicts": [
+    "keep_p31",
+    "bounded_revision",
+    "my_flow_structural_reopen",
+    "cross_tab_ia_reopen"
+  ],
+  "requiredFiles": [
+    "README.md",
+    "audit.md",
+    "review.html",
+    "persona-journey-scorecard.json",
+    "my-flow-complexity-metrics.json",
+    "journey-discontinuity-matrix.json",
+    "reference-pattern-matrix.md",
+    "decision-matrix.json",
+    "next-program.md",
+    "route-evidence.json",
+    "screenshots/"
+  ],
+  "personaJourneyScorecard": {
+    "requiredCellCount": 24,
+    "personas": [
+      {
+        "id": "P1",
+        "name": "anchor_timeline",
+        "sessions": [
+          "discover_save_land",
+          "personalize_execute_reopen",
+          "export_lifecycle_reuse"
+        ]
+      },
+      {
+        "id": "P2",
+        "name": "undated_checklist",
+        "sessions": [
+          "preview_save",
+          "schedule_undo_complete",
+          "scope_export_remove_date"
+        ]
+      },
+      {
+        "id": "P3",
+        "name": "recurring_routine",
+        "sessions": [
+          "configure_save",
+          "execute_occurrence_reopen",
+          "history_next_occurrence_export"
+        ]
+      },
+      {
+        "id": "P4",
+        "name": "artifact_choice_mixed_plan",
+        "sessions": [
+          "choose_artifact_save",
+          "adjust_phase_item_note",
+          "export_source_update"
+        ]
+      },
+      {
+        "id": "P5",
+        "name": "personal_draft",
+        "sessions": [
+          "miss_memo_save_land",
+          "structure_schedule_edit",
+          "projection_lifecycle"
+        ]
+      },
+      {
+        "id": "P6",
+        "name": "large_library",
+        "sessions": [
+          "find_open",
+          "switch_cross_surface_restore",
+          "archive_restore_delete_resave"
+        ]
+      },
+      {
+        "id": "P7",
+        "name": "returning_completed",
+        "sessions": [
+          "resume",
+          "complete_undo_reopen",
+          "reflect_new_run_history"
+        ]
+      },
+      {
+        "id": "P8",
+        "name": "keyboard_recovery",
+        "sessions": [
+          "keyboard_core",
+          "overlay_focus_return",
+          "error_destructive_cancel"
+        ]
+      }
+    ],
+    "cellRequiredFields": [
+      "personaId",
+      "sessionId",
+      "route",
+      "viewport",
+      "initialState",
+      "steps",
+      "stepCount",
+      "status",
+      "mentalModelPrediction",
+      "actualResult",
+      "explanationFree",
+      "crossSurfaceParity",
+      "recoveryPath",
+      "actionableDuplicateCount",
+      "contextLossCount",
+      "evidenceKinds",
+      "evidenceRefs",
+      "observedUserQuestion"
+    ]
+  },
+  "myFlowComplexityMetrics": {
+    "requiredAlternatives": [
+      "A_keep_and_tighten",
+      "B_library_to_focused_workspace",
+      "C_run_first_workspace"
+    ],
+    "requiredFlowScales": [
+      1,
+      5,
+      20,
+      60
+    ],
+    "requiredContentShapes": [
+      "anchor_timeline",
+      "undated_checklist",
+      "recurrence_routine",
+      "artifact_choice",
+      "mixed_travel",
+      "personal_draft"
+    ],
+    "requiredViewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1024,
+        "height": 768
+      }
+    ],
+    "metrics": [
+      "firstViewportDistinctCardTypeCount",
+      "firstViewportHeadingCount",
+      "firstViewportVisibleCommandCount",
+      "firstActionDepth",
+      "flowOpenDepth",
+      "reopenDepth",
+      "itemEditDepth",
+      "wholeExportDepth",
+      "archiveRestoreDepth",
+      "actionableDuplicateCount",
+      "contextLossCount",
+      "horizontalOverflowPx",
+      "unnamedFocusableCount",
+      "explanationDependencyCount"
+    ]
+  },
+  "findingContract": {
+    "requiredFields": [
+      "id",
+      "severity",
+      "title",
+      "route",
+      "viewport",
+      "startState",
+      "reproductionSteps",
+      "expected",
+      "actual",
+      "userImpact",
+      "affectedPersonas",
+      "evidenceKinds",
+      "evidenceRefs",
+      "dataContractImpact",
+      "proposedResolution",
+      "rejectedAlternatives",
+      "rollback",
+      "acceptanceScreenshot",
+      "acceptanceMarker",
+      "observedUserQuestion"
+    ],
+    "severities": [
+      "Blocking",
+      "High",
+      "Medium",
+      "Low"
+    ]
+  },
+  "decisionContract": {
+    "requiredFields": [
+      "verdict",
+      "currentEvidence",
+      "alternativeScores",
+      "selectedAlternative",
+      "rejectedAlternatives",
+      "stableContracts",
+      "migrationRequired",
+      "stagedRollout",
+      "rollback",
+      "acceptanceMarkers",
+      "observedUserQuestions"
+    ],
+    "crossTabReopenGate": {
+      "requiresFailedMyFlowAlternatives": true,
+      "requiresCurrentCrossTabDuplicateEvidence": true
+    }
+  },
+  "prohibitedClaims": [
+    "automated QA is observed-user validation",
+    "screenshots are observed-user validation",
+    "heuristic simulation is observed-user validation",
+    "invented social proof is production evidence",
+    "a reference product pattern is automatically required for FlowMe"
+  ]
+}
